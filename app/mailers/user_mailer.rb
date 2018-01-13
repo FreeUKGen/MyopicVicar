@@ -196,6 +196,25 @@ class UserMailer < ActionMailer::Base
     mail(:from => user.email_address, :to => cc_email, :subject => subject, :body => email_body)
   end
 
+  def notify_sc_allocate_request_rejection(user,group_name,syndicate)
+    syndicate = Syndicate.where(:syndicate_code=>syndicate).first
+
+    if !syndicate.nil?
+      sc = UseridDetail.where(:userid=>syndicate.syndicate_coordinator).first
+
+      if !sc.nil?
+        subject = "allocate request rejected"
+        email_body = "Your request to have image group " + group_name + " be allocated was rejected"
+
+        mail(:from => user.email_address, :to => sc.email_address, :subject => subject, :body => email_body)
+      else
+        flush[:notice] = 'syndicate coordinator does not exist, email not send'
+      end
+    else
+      flush[:notice] = 'syndicate does not exist, email not send'
+    end
+  end
+
   def notify_sc_assignment_complete(assignment_id)
     assignment = Assignment.id(assignment_id).first
     user = UseridDetail.id(assignment.userid_detail_id).first

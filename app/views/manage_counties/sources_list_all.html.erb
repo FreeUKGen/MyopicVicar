@@ -7,6 +7,7 @@
   <%= link_to 'Image Groups Allocated by Place', sort_image_group_by_place_path, method: :get, :class => "btn weight--light btn--small" %> 
   <%= link_to 'List All Image Groups', manage_image_group_manage_county_path, method: :get, :class => "btn weight--light btn--small" %>
   <%= link_to 'List Unallocated Image Groups', manage_unallocated_image_group_manage_county_path, method: :get, :class => "btn weight--light btn--small" %>
+  <%= link_to 'List Allocate Request Image Groups', manage_allocate_request_image_group_manage_county_path, method: :get, :class => "btn weight--light btn--small" %>
   <%= link_to 'List Completion Submitted Allocations', manage_completion_submitted_image_group_manage_county_path, method: :get, :class => "btn weight--light btn--small" %>
   <%= link_to 'List Uninitialized Sources', uninitialized_source_list_path, method: :get, :class => "btn weight--light btn--small" %>
   <% if session[:manage_user_origin] == 'manage county' %>

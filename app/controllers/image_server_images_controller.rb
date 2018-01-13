@@ -32,12 +32,13 @@ class ImageServerImagesController < ApplicationController
     @place = @church.place #id?
     @county =  @place.county
     @place_name = @place.place_name
+    @chapman_code = @place.chapman_code
     @user = cookies.signed[:userid]
     @source = Source.find(:id=>session[:source_id])
     @group = ImageServerGroup.find(:id=>session[:image_server_group_id])
   end
   
-   def download
+  def download
     image = ImageServerImage.id(params[:object]).first
     process,chapman_code,folder_name,image_file_name = image.file_location
     if !process
@@ -86,7 +87,6 @@ class ImageServerImagesController < ApplicationController
 
   def get_userids_and_transcribers
     @user = cookies.signed[:userid]
-    @first_name = @user.person_forename unless @user.blank?
 
     case session[:manage_user_origin]
       when 'manage county'
@@ -98,10 +98,7 @@ class ImageServerImagesController < ApplicationController
         redirect_to :back and return
       end
 
-    @people =Array.new
-    @userids.each do |ids|
-      @people << ids.userid
-    end
+    @people = Array.new{ @userids.each { |ids| a << ids.userid }}
   end
 
   def index
@@ -126,12 +123,18 @@ class ImageServerImagesController < ApplicationController
     @group_name = ImageServerImage.get_sorted_group_name(@image_server_group[:source_id])
 
     @image_server_image = ImageServerImage.image_server_group_id(params[:id]).first
-    move_allowed_status = ['u','a']
-    @images = ImageServerImage.get_image_list(params[:id],move_allowed_status)
 
     if @image_server_image.nil?
       flash[:notice] = 'Attempted to edit a non_esxistent image file'
-      redirect_to :back
+      redirect_to :back and return
+    end
+
+    move_allowed_status = ['u','a']
+    @images = ImageServerImage.get_image_list(params[:id],move_allowed_status)
+
+    if @images.empty?
+      flash[:notice] = 'No image files can be moved'
+      redirect_to :back and return
     end
   end
 
@@ -149,7 +152,6 @@ class ImageServerImagesController < ApplicationController
                 {'$unwind'=>"$image_group"}
              ]).first
   end
-  
   
   def return_from_image_deletion
     return_location = ImageServerGroup.id(params[:image_server_group_id]).first

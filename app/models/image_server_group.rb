@@ -91,13 +91,9 @@ class ImageServerGroup
                       {'$match'=>{"image_server_group_id"=>{'$in': group_list}}},
                       {'$group'=>{_id:'$image_server_group_id', 'count':{'$sum':1}}}
                 ])
+      @num = Hash.new{ @total.each { |x| @num.store(x[:_id], x[:count]) }}
 
-      @num = {}
-      @total.each do |x|
-        @num.store(x[:_id], x[:count])
-      end
-
-      @num
+      return @num
     end
     
     def check_all_images_status_before_initialize_source(source_id)
@@ -172,6 +168,8 @@ class ImageServerGroup
         case allocation_filter
           when 'all'
             @image_server_group = ImageServerGroup.find_by_source_ids(@source_id).where(:syndicate_code=>{'$nin'=>['', nil]}).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
+          when 'allocate request'
+            @image_server_group = ImageServerGroup.find_by_source_ids(@source_id).where('summary.status'=>{'$in'=>['ar']}).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
           when 'unallocate'
             @image_server_group = ImageServerGroup.find_by_source_ids(@source_id).where('summary.status'=>{'$in'=>['u']}).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
           when 'completion_submitted'
@@ -316,9 +314,25 @@ class ImageServerGroup
       return @source, @g_id, @group_id
     end
     
-    def group_ilst_by_status(source_id,status)    
+    def get_userids_and_transcribers(user)
+      case user.person_role
+        when 'system_administrator', 'country_coordinator', 'data_manager'
+          @userids = UseridDetail.where(:active=>true).order_by(userid_lower_case: 1)
+        when 'county_coordinator'
+          @userids = UseridDetail.where(:syndicate => user.syndicate, :active=>true).all.order_by(userid_lower_case: 1) # need to add ability for more than one county
+        else
+          flash[:notice] = 'Your account does not support this action'
+          redirect_to :back and return
+      end
+
+      @people = Array.new{ @userids.each { |ids| a << ids.userid }}
+
+      return @people
+    end
+
+    def group_list_by_status(source_id,status)    
       # get hash key=image_server_group_id, val=ig, sorted by ig
-      ig_array = ImageServerGroup.where(:source_id=>source_id, :number_of_images=>{'$nin'=>[nil,'',0]}, :"summary.status"=>status).pluck(:id, :group_name)
+      ig_array = ImageServerGroup.where(:source_id=>source_id, :number_of_images=>{'$nin'=>[nil,'',0]}, :"summary.status"=>{'$in'=>status}).pluck(:id, :group_name)
       @group_name = Hash[ig_array.map {|key,value| [key,value]}]
 
       return @group_name
@@ -366,17 +380,27 @@ class ImageServerGroup
       group.save
     end
     
-    def update_image_server_group_from_put_request(status)
-      case status
+    def update_image_server_group_from_put_request(old_status,new_status,user=nil)
+      case new_status
+        when 'a'
+          flash_notice = 'Image Group successfully allocated'
+          self.update(:assign_date=>Time.now.iso8601)
         when 'u'
-          flash_notice = 'Unallocate of Image Group was successful'
+          case old_status
+            when 'a'
+              flash_notice = 'Unallocate of Image Group was successful'
+            when 'ar'
+              flash_notice = 'successfully rejected Image Group allocate request'
+
+              ig = self.first
+              UserMailer.notify_sc_allocate_request_rejection(user,ig.group_name,ig.syndicate_code).deliver_now
+          end
+          self.update(:syndicate_code=>'', :assign_date=>nil)
         when 'c'
           flash_notice = 'Image Group is marked as complete'
       end
 
-      self.update(:syndicate_code=>'', :assign_date=>nil) if status == 'u'
-
-      ImageServerImage.where(:image_server_group_id=>self.first.id).update_all(:status=>status)
+      ImageServerImage.where(:image_server_group_id=>self.first.id).update_all(:status=>new_status)
       ImageServerImage.refresh_src_dest_group_summary(self)
 
       return flash_notice

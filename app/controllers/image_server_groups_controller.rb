@@ -6,7 +6,7 @@ class ImageServerGroupsController < ApplicationController
     display_info
 
     @syndicate = Syndicate.get_syndicates
-    @group_name = ImageServerGroup.group_ilst_by_status(params[:id], 'u')
+    @group_name = ImageServerGroup.group_list_by_status(params[:id], ['u','ar'])
     @group = ImageServerGroup.source_id(params[:id])
     @image_server_group = @group.first
   end
@@ -50,7 +50,7 @@ class ImageServerGroupsController < ApplicationController
 
   def destroy
     display_info
-    get_userids_and_transcribers or return
+    ImageServerGroup.get_userids_and_transcribers(cookies.signed[:userid]) or return
 
     image_server_group = ImageServerGroup.id(params[:id]).first
     begin
@@ -91,7 +91,8 @@ class ImageServerGroupsController < ApplicationController
     @place_name = @place.place_name
     session[:place_name] = @place_name
     @county =  @place.county
-    @syndicate = @place.chapman_code
+
+    @chapman_code = @place.chapman_code
     session[:county] = @county
     session[:chapman_code] = @syndicate if session[:chapman_code].nil?
     @user = cookies.signed[:userid]
@@ -99,7 +100,7 @@ class ImageServerGroupsController < ApplicationController
 
   def edit
     display_info
-    get_userids_and_transcribers or return
+    ImageServerGroup.get_userids_and_transcribers(cookies.signed[:userid]) or return
 
     @group = ImageServerGroup.id(params[:id])
     @syndicate = Syndicate.get_syndicates
@@ -114,26 +115,6 @@ class ImageServerGroupsController < ApplicationController
   end
 
   def error
-  end
-
-  def get_userids_and_transcribers
-    @user = cookies.signed[:userid]
-    @first_name = @user.person_forename unless @user.blank?
-
-    case @user.person_role
-      when 'system_administrator', 'country_coordinator', 'data_manager'
-        @userids = UseridDetail.where(:active=>true).order_by(userid_lower_case: 1)
-      when 'county_coordinator'
-        @userids = UseridDetail.where(:syndicate => @user.syndicate, :active=>true).all.order_by(userid_lower_case: 1) # need to add ability for more than one county
-      else
-        flash[:notice] = 'Your account does not support this action'
-        redirect_to :back and return
-    end
-
-    @people =Array.new
-    @userids.each do |ids|
-      @people << ids.userid
-    end
   end
 
   def index
@@ -172,7 +153,7 @@ class ImageServerGroupsController < ApplicationController
     session[:assignment_filter_list] = 'syndicate'
     @user = UseridDetail.where(:userid=>session[:userid]).first
     session[:syndicate] = @user.syndicate
-    @image_server_group = ImageServerGroup.where(:syndicate_code=>session[:syndicate])
+    @image_server_group = ImageServerGroup.where(:syndicate_code=>session[:syndicate], :assign_date=>{'$nin'=>[nil,'']})        # filter allocate_request image groups
 
     if @image_server_group.first.nil?
       flash[:notice] = 'No assignment under your syndicate'
@@ -185,15 +166,15 @@ class ImageServerGroupsController < ApplicationController
   def new 
     display_info
     @group = ImageServerGroup.id(params[:id])
-    get_userids_and_transcribers or return
+    ImageServerGroup.get_userids_and_transcribers(cookies.signed[:userid]) or return
 
     @image_server_group = ImageServerGroup.new
     @parent_source = Source.id(session[:source_id]).first
   end
 
   def request_cc_image_server_group
-    ig = ImageServerGroup.id(params[:id]).first
-    image_server_group = ig.group_name if !ig.nil?
+    image_server_group = ImageServerGroup.id(params[:id])
+    ig = image_server_group.first
 
     sc = UseridDetail.where(:id=>params[:user], :email_address_valid => true).first
     if !sc.nil?
@@ -201,7 +182,12 @@ class ImageServerGroupsController < ApplicationController
       if !county.nil?
         cc = UseridDetail.where(:userid=>county.county_coordinator).first
         if !cc.nil?
-          UserMailer.request_cc_image_server_group(sc, cc.email_address, image_server_group).deliver_now
+          ImageServerImage.where(:image_server_group_id=>ig.id).update_all(:status=>'ar')
+          ImageServerImage.refresh_src_dest_group_summary(image_server_group)
+          
+          ImageServerGroup.find(:id=>ig.id).update_attributes(:syndicate_code=>sc.syndicate)
+
+          UserMailer.request_cc_image_server_group(sc, cc.email_address, ig.group_name).deliver_now
           flash[:notice] = 'email sent to county coordinator'
         else
           flash[:notice] = 'county coordinator does not exist, please contact administrator'
@@ -272,11 +258,17 @@ class ImageServerGroupsController < ApplicationController
         image_server_group = ImageServerGroup.id(params[:id])
 
         case params[:type]
+          when 'allocate accept'
+            flash[:notice] = image_server_group.update_image_server_group_from_put_request('ar','a')
+            redirect_to index_image_server_group_path(image_server_group.first.source)
+          when 'allocate reject'
+            flash[:notice] = image_server_group.update_image_server_group_from_put_request('ar','u',cookies.signed[:userid])
+            redirect_to index_image_server_group_path(image_server_group.first.source)
           when 'unallocate'
-            flash[:notice] = image_server_group.update_image_server_group_from_put_request('u')
+            flash[:notice] = image_server_group.update_image_server_group_from_put_request('a','u')
             redirect_to index_image_server_group_path(image_server_group.first.source)
           when 'complete'
-            flash[:notice] = image_server_group.update_image_server_group_from_put_request('c')
+            flash[:notice] = image_server_group.update_image_server_group_from_put_request('r','c')
             redirect_to index_image_server_group_path(image_server_group.first.source)
         end
       else
@@ -347,7 +339,7 @@ class ImageServerGroupsController < ApplicationController
     @church = @image_server_group.church
     @church_name = @church.church_name
     @county = @place.county
-   get_user_info_from_userid
+    get_user_info_from_userid
     @syndicate = @user.syndicate
  end
 

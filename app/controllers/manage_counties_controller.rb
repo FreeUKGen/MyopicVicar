@@ -165,6 +165,27 @@ class ManageCountiesController < ApplicationController
     end
   end
 
+  def manage_allocate_request_image_group
+    get_user_info_from_userid
+    session.delete(:from_source)
+    session[:image_group_filter] = 'allocate request'
+
+    if session[:chapman_code].nil?
+      redirect_to main_app.new_manage_resource_path
+      return
+    else
+      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_not_by_syndicate(session[:chapman_code], true, 'allocate request')            # not sort by place, unallocated groups
+      @county = session[:county]
+
+      if @source.nil? || @group_ids.nil? || @group_id.nil?
+        flash[:notice] = 'No Allocate Request image groups exists'
+        redirect_to :back
+      else
+        render 'image_server_group_allocate_request'
+      end
+    end
+  end
+
   def manage_sources
     get_user_info_from_userid
     clean_session_for_images

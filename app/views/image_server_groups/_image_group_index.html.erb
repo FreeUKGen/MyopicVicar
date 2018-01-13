@@ -27,7 +27,7 @@
         <th class="t10">Reviewer</th>
         <th class="t10">Action <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '14' %>
           <% if session[:manage_user_origin] == 'manage county' %>  <%# any user from manage_counties %>
-            <span>SH: Show Group Properties;<br>ED: Edit Group Properties;<br>DE: Delete Group; LS: List Images in the Group</span>
+            <span>SH: Show Group Properties;<br>ED: Edit Group Properties;<br>DE: Delete Group;<br>LS: List Images in the Group;<br>AL: Allocate Group;<br>RJ: Reject Allocate Request</span>
           <% else %>          <%# any user from manage_syndicates %>
             <span>SH: Show Group Properties;<br>LS: List Images in the Group</span>
           <% end %>
@@ -82,12 +82,16 @@
                 <% end %>
               <% end %>
             &nbsp;</td>
-            <td class="t10"><%= link_to 'SH', image_server_group_path(group) %> 
+            <td class="t10"><%= link_to 'SH', image_server_group_path(group), :title=>'show image group properties' %> 
               <% if session[:manage_user_origin] == 'manage county' %>
-                <%= link_to 'ED', edit_image_server_group_path(group) %> 
-                <%= link_to 'DE', image_server_group_path(group), data: { confirm: 'Are you sure you want to delete Image Group "'+group.group_name+'"?'}, method: :delete %> 
+                <%= link_to 'ED', edit_image_server_group_path(group), :title=>'edit image group properties' %> 
+                <%= link_to 'DE', image_server_group_path(group), :title=>'delete image group', data: { confirm: 'Are you sure you want to delete Image Group "'+group.group_name+'"?'}, method: :delete %> 
               <% end %>
-              <%= link_to 'LS', index_image_server_image_path(group) %>
+              <%= link_to 'LS', index_image_server_image_path(group), :title=>'list images in image group' %>
+              <% if !session[:my_own] && group[:summary][:status] == ['ar'] %>
+                <%= link_to 'AL', image_server_group_path(group, :type=>'allocate accept'), :title=>'accept allocate request', method: :put %>
+                <%= link_to 'RJ', image_server_group_path(group, :type=>'allocate reject'), :title=>'reject allocate request', data: { confirm: 'Are you sure you want to reject the allocation request?'}, method: :put %>
+              <% end %>
             </td>
           </tr>
         <% end %>

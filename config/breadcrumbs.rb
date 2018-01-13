@@ -649,6 +649,8 @@ end
             link "List All Image Groups", manage_image_group_manage_county_path
           when 'unallocate'
             link "List Unallocated Image Groups", manage_unallocated_image_group_manage_county_path
+          when 'allocate request'
+            link "List Allocate Request Image Groups", manage_allocate_request_image_group_manage_county_path
           when 'completion_submitted'
             link "List Completion Submitted Allocations", manage_completion_submitted_image_group_manage_county_path
           when 'syndicate'
