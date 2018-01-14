@@ -1,12 +1,16 @@
 <% breadcrumb :submitted_transcribe_assignments, @user, @county, @register, @source, @group %>
 
-<div style="clear:both;"></div><br>
 <% title "Assignment - transcription_submitted" %>
-<%= render partial: 'header' %>
+<div style="clear:both;"></div><br>
+<p style="text-align: center">Submitted_Transcription Assignments in Syndicate <b><%= session[:syndicate] %></b>
 <%= render partial: 'flash_notice' %>
 
 <div class="grid">
   <section class="island">
-		<%= render partial: 'assignments_list', :locals=>{:assignment_filter_list=>'submitted_transcribe'} %>
+  	<% if @count.length == 1 %>
+  		<%= render 'assignment_list' %>
+  	<% else %>
+			<%= render partial: 'assignments_list', :locals=>{:assignment_filter_list=>'submitted_transcribe'} %>
+		<% end %>
 	</section>
 </div>

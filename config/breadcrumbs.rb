@@ -577,7 +577,7 @@ end
 
             crumb :syndicate_all_assignments do |syndicate|
               link "List User Assignments", list_assignments_by_syndicate_coordinator_assignment_path(session[:syndicate], :assignment_list_type=>'all')
-              if session[:select_user] == true
+              if session[:list_user_assignments] == true
                 parent :syndicate_all_assignments_select_user, session[:syndicate]
               else
                 parent :syndicate_manage_images, session[:syndicate]
@@ -586,7 +586,7 @@ end
 
                     crumb :syndicate_all_assignment do |syndicate|
                     link "List User Assignment"
-                    if session[:select_user] == true
+                    if session[:list_user_assignments] == true
                       parent :syndicate_all_assignments, session[:syndicate]
                     else
                       parent :syndicate_manage_images, session[:syndicate]

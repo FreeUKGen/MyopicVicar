@@ -169,7 +169,7 @@ class AssignmentsController < ApplicationController
     @assignment, @count = Assignment.filter_assignments_by_assignment_id(params[:id])
 
     if @assignment.nil?
-      flash[:notice] = 'Assignment information was changed, please try again'
+      flash[:notice] = 'Assignment information was changed, please refresh the browser and try again'
       redirect_to :back
     end
   end
@@ -183,8 +183,7 @@ class AssignmentsController < ApplicationController
 
       if @count.empty?
         flash[:notice] = 'No Submitted_Review Assignments in the Syndicate'
-      elsif @count.length == 1
-        render 'list_assignment_images'
+        redirect_to :back
       end
     end
   end
@@ -198,8 +197,7 @@ class AssignmentsController < ApplicationController
 
       if @count.empty?
         flash[:notice] = 'No Submitted_Transcription Assignments in the Syndicate'
-      elsif @count.length == 1
-        render 'list_assignment_images'
+        redirect_to :back
       end
     end
   end
@@ -256,6 +254,7 @@ class AssignmentsController < ApplicationController
       flash[:notice] = 'No user under this syndicate'
       redirect_to :back
     else
+      session[:list_user_assignments] = true
       @assignment = Assignment.new
     end
   end
@@ -278,8 +277,13 @@ class AssignmentsController < ApplicationController
     if session[:my_own]
       redirect_to list_assignments_of_myself_assignment_path
     else
-      image_server_group_id = assignment_params[:image_server_group_id] if !params[:assignment].nil?
-      redirect_to list_assignments_by_syndicate_coordinator_assignment_path(:image_server_group_id=>image_server_group_id, :assignment_list_type=>params[:assignment_list_type])
+byebug      
+      if params[:assignment].nil?
+        redirect_to :back
+      else
+        image_server_group_id = assignment_params[:image_server_group_id]
+        redirect_to list_assignments_by_syndicate_coordinator_assignment_path(:image_server_group_id=>image_server_group_id, :assignment_list_type=>params[:assignment_list_type])
+      end
     end
   end
 

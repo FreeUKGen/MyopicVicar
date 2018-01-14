@@ -276,7 +276,7 @@ class ApplicationController < ActionController::Base
     session.delete(:assignment_list_type)
     session.delete(:image_group_filter)
     session.delete(:from_source)
-    session.delete(:select_user)
+    session.delete(:list_user_assignments)
   end
 
   def clean_session_for_managed_images
@@ -285,7 +285,7 @@ class ApplicationController < ActionController::Base
     session.delete(:assignment_list_type)
     session.delete(:image_group_filter)
     session.delete(:from_source)
-    session.delete(:select_user)
+    session.delete(:list_user_assignments)
   end
 
   def clean_session_for_syndicate
