@@ -51,7 +51,7 @@
             <% if syndicate.nil? %>
               <tr><td class="t15">un_assigned</td><td class="t15">&nbsp;</td>
             <% else %>
-              <tr><td class="t15"><%= syndicate %></td><td class="t15"><%= assign_date.to_time.strftime('%Y-%m-%d') %>&nbsp;</td>
+              <tr><td class="t15"><%= syndicate %></td><td class="t15"><%= assign_date.to_time.strftime('%Y-%m-%d') if !assign_date.nil? %>&nbsp;</td>
             <% end %>
           <% else %>
             <tr><td class="t15">&nbsp;</td><td class="t15">&nbsp;</td>

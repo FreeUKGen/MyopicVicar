@@ -112,7 +112,7 @@ class ImageServerGroup
     end
 
     def get_group_ids_and_sort_by_syndicate(chapman_code)
-      gid=[]
+      gid = []
       @syndicate = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
 
       place_id, church_id, register_id, source, source_id = prepare_base_id_hash(chapman_code)
@@ -135,25 +135,23 @@ class ImageServerGroup
       return source, g_id, @syndicate
     end
 
-    def get_group_ids_and_sort_by_place(chapman_code, sort_by_place, allocation_filter)
-      gid-[]
+    def get_group_ids_and_sort_by_place(chapman_code, allocation_filter=nil)
+      gid = []
       @group_id = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
 
       place_id, church_id, register_id, source, source_id = prepare_base_id_hash(chapman_code)
 
-      if sort_by_place
-        case allocation_filter
-          when 'all'
-            image_server_group = ImageServerGroup.find_by_source_ids(source_id).where(:syndicate_code=>{'$nin'=>['', nil]}).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
-          when 'allocate request'
-            image_server_group = ImageServerGroup.find_by_source_ids(source_id).where('summary.status'=>{'$in'=>['ar']}).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
-          when 'unallocate'
-            image_server_group = ImageServerGroup.find_by_source_ids(source_id).where('summary.status'=>{'$in'=>['u']}).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
-          when 'completion_submitted'
-            image_server_group = ImageServerGroup.find_by_source_ids(source_id).where('summary.status'=>{'$in'=>['cs']}).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
-        end
-      else
-        image_server_group = ImageServerGroup.find_by_source_ids(source_id).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
+      case allocation_filter
+        when 'all'
+          image_server_group = ImageServerGroup.find_by_source_ids(source_id).where(:syndicate_code=>{'$nin'=>['', nil]}).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
+        when 'allocate request'
+          image_server_group = ImageServerGroup.find_by_source_ids(source_id).where('summary.status'=>{'$in'=>['ar']}).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
+        when 'unallocate'
+          image_server_group = ImageServerGroup.find_by_source_ids(source_id).where('summary.status'=>{'$in'=>['u']}).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
+        when 'completion_submitted'
+          image_server_group = ImageServerGroup.find_by_source_ids(source_id).where('summary.status'=>{'$in'=>['cs']}).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
+        else
+          image_server_group = ImageServerGroup.find_by_source_ids(source_id).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
       end
 
       if image_server_group.nil?

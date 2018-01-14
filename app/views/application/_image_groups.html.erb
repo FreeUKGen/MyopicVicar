@@ -102,7 +102,7 @@
           <% if assign_date.nil? %>
             <td class="t12">&nbsp;</td></tr>
           <% else %>
-            <td class="t12"><%= assign_date.to_time.strftime('%Y-%m-%d') %>&nbsp;</td></tr>
+            <td class="t12"><%= assign_date.to_time.strftime('%Y-%m-%d') if !assign_date.nil? %>&nbsp;</td></tr>
           <% end %>
 
           <% source_rows = source_rows - 1 unless source_rows == 0 %>
