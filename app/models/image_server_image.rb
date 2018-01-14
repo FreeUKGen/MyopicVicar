@@ -158,6 +158,11 @@ class ImageServerImage
       image_server_group.update_image_group_summary(summary[0], summary[1], summary[2], summary[3], summary[4]) if !summary.nil? && !summary.empty?
     end
 
+    def update_image_status(image_server_group,status)
+      ImageServerImage.where(:image_server_group_id=>image_server_group.first.id).update_all(:status=>status)
+      refresh_src_dest_group_summary(image_server_group)
+    end
+  
   end # end of class methods
   
   def deletion_permitted?
@@ -182,7 +187,7 @@ class ImageServerImage
     register = source.register
     return group,source,register
   end
-  
+
   def url_for_delete_image_from_image_server
     image_server_group = self.image_server_group
     source = image_server_group.source

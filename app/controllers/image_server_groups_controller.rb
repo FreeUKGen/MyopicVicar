@@ -73,6 +73,7 @@ class ImageServerGroupsController < ApplicationController
     elsif session[:source_id].present?
       @source = Source.find(session[:source_id])
     else
+      flash[:notice] = 'can not locate image group'
       redirect_to main_app.new_manage_resource_path
       return
     end
@@ -113,6 +114,12 @@ class ImageServerGroupsController < ApplicationController
   end
 
   def error
+  end
+
+  def image_server_group_exist?(param)
+    count = ImageServerGroup.where(:source_id=>param[:source_id], :group_name=>param[:group_name]).count
+
+    return count > 0 ? true : false
   end
 
   def index
@@ -163,7 +170,6 @@ class ImageServerGroupsController < ApplicationController
 
   def new 
     display_info
-    @group = ImageServerGroup.id(params[:id])
 
     @image_server_group = ImageServerGroup.new
     @parent_source = Source.id(session[:source_id]).first
@@ -174,27 +180,26 @@ class ImageServerGroupsController < ApplicationController
     ig = image_server_group.first
 
     sc = UseridDetail.where(:id=>params[:user], :email_address_valid => true).first
-    if !sc.nil?
-      county = County.where(:chapman_code=>params[:county]).first
-      if !county.nil?
-        cc = UseridDetail.where(:userid=>county.county_coordinator).first
-        if !cc.nil?
-          ImageServerImage.where(:image_server_group_id=>ig.id).update_all(:status=>'ar')
-          ImageServerImage.refresh_src_dest_group_summary(image_server_group)
-          
-          ImageServerGroup.find(:id=>ig.id).update_attributes(:syndicate_code=>sc.syndicate)
-
-          UserMailer.request_cc_image_server_group(sc, cc.email_address, ig.group_name).deliver_now
-          flash[:notice] = 'email sent to county coordinator'
-        else
-          flash[:notice] = 'county coordinator does not exist, please contact administrator'
-        end
-      else
-        flash[:notice] = 'county does not exist'
-      end
-    else
-      flash[:notice] = 'SC does not exist'
+    if sc.nil?
+      flash[:notice] = 'SC does not exist' and redirect_to :back
     end
+
+    county = County.where(:chapman_code=>params[:county]).first
+    if county.nil?
+      flash[:notice] = 'county does not exist' and redirect_to :back
+    end
+
+    cc = UseridDetail.where(:userid=>county.county_coordinator).first
+    if cc.nil?
+      flash[:notice] = 'county coordinator does not exist, please contact administrator' and redirect_to :back
+    end
+
+    ImageServerImage.update_image_status(image_server_group, 'ar')
+
+    ImageServerGroup.find(:id=>ig.id).update_attributes(:syndicate_code=>sc.syndicate)
+    UserMailer.request_cc_image_server_group(sc, cc.email_address, ig.group_name).deliver_now
+    flash[:notice] = 'email sent to county coordinator'
+
     redirect_to :back
   end
 
@@ -203,34 +208,34 @@ class ImageServerGroupsController < ApplicationController
     image_server_group = ig.group_name if !ig.nil?
 
     transcriber = UseridDetail.where(:id=>params[:user]).first
-    if !transcriber.nil?
-      syndicate = Syndicate.where(syndicate_code: transcriber.syndicate).first
-      if !syndicate.nil?
-        sc = UseridDetail.where(:userid=>syndicate.syndicate_coordinator).first
-        if !sc.nil?
-          UserMailer.request_sc_image_server_group(transcriber, sc.email_address, image_server_group).deliver_now
-          flash[:notice] = 'email sent to Syndicate Coordinator'
-        else
-          flash[:notice] = 'SC does not exist, please contact administrator'
-        end
-      else
-        flash[:notice] = 'syndicate does not exist'
-      end
-    else
-      flash[:notice] = 'transcriber does not exist'
+    if transcriber.nil?
+      flash[:notice] = 'transcriber does not exist' and redirect_to :back
     end
+
+    syndicate = Syndicate.where(syndicate_code: transcriber.syndicate).first
+    if syndicate.nil?
+      flash[:notice] = 'syndicate does not exist' and redirect_to :back
+    end
+    
+    sc = UseridDetail.where(:userid=>syndicate.syndicate_coordinator).first
+    if sc.nil?
+      flash[:notice] = 'SC does not exist, please contact administrator' and redirect_to :back
+    end
+
+    UserMailer.request_sc_image_server_group(transcriber, sc.email_address, image_server_group).deliver_now
+
+    flash[:notice] = 'email sent to Syndicate Coordinator'
     redirect_to :back
   end
 
   def send_complete_to_cc
     display_info
 
-    ImageServerImage.where(:image_server_group_id=>params[:id]).update_all(:status=>'cs')
-    
     image_server_group = ImageServerGroup.where(:id=>params[:id])
-    ImageServerImage.refresh_src_dest_group_summary(image_server_group)
+    ImageServerGroup.update_image_status(image_server_group,'cs')
 
     UserMailer.notify_cc_assignment_complete(@user,params[:id],@place[:chapman_code]).deliver_now
+
     flash[:notice] = 'email is sent to county coordinator'
     redirect_to :back
   end
@@ -239,6 +244,7 @@ class ImageServerGroupsController < ApplicationController
     session[:image_server_group_id] = params[:id]
     session[:assignment_filter_list] = params[:assignment_filter_list] if !params[:assignment_filter_list].nil?
     display_info
+
     @group = ImageServerGroup.id(params[:id])
 
     if @group.nil?
@@ -250,66 +256,30 @@ class ImageServerGroupsController < ApplicationController
   end
 
   def update
-    case params[:_method]
-      when 'put'
-        image_server_group = ImageServerGroup.id(params[:id])
+    if params[:_method] =='put'
+      image_server_group = ImageServerGroup.id(params[:id])
 
-        case params[:type]
-          when 'allocate accept'
-            flash[:notice] = image_server_group.update_image_server_group_from_put_request('ar','a')
-            redirect_to index_image_server_group_path(image_server_group.first.source)
-          when 'allocate reject'
-            flash[:notice] = image_server_group.update_image_server_group_from_put_request('ar','u',cookies.signed[:userid])
-            redirect_to index_image_server_group_path(image_server_group.first.source)
-          when 'unallocate'
-            flash[:notice] = image_server_group.update_image_server_group_from_put_request('a','u')
-            redirect_to index_image_server_group_path(image_server_group.first.source)
-          when 'complete'
-            flash[:notice] = image_server_group.update_image_server_group_from_put_request('r','c')
-            redirect_to index_image_server_group_path(image_server_group.first.source)
-        end
+      flash[:notice] = ImageServerGroup.update_put_request(image_server_group, params[:type], cookies.signed[:userid])
+      redirect_to index_image_server_group_path(image_server_group.first.source)
+    else
+      if image_server_group_params[:origin] == 'allocate'
+        image_server_group = ImageServerGroup.update_allocate_request(image_server_group_params)
+
+        flash[:notice] = 'Allocate of Image Groups was successful'
+        redirect_to index_image_server_group_path(image_server_group.first.source)
       else
-        case image_server_group_params[:origin]
-          when 'allocate'
-            group_list = []
-            image_server_group_params[:custom_field].each { |x| group_list << BSON::ObjectId.from_string(x) unless x=='0' }
-            number_of_images = ImageServerGroup.calculate_image_numbers(group_list)
+        image_server_group = ImageServerGroup.id(params[:id]).first
 
-            group_list.each do |x|
-              image_server_group = ImageServerGroup.where(:id=>x)
-              image_server_group.update_all(:syndicate_code=>image_server_group_params[:syndicate_code], 
-                                        :assign_date=>Time.now.iso8601, 
-                                        :number_of_images=>number_of_images[x])
+        if image_server_group_exist?(image_server_group_params)
+          ImageServerGroup.update_edit_request(image_server_group,image_server_group_params)
 
-              ImageServerImage.where(:image_server_group_id=>x, :status=>{'$in'=>['u','',nil]}).update_all(:status=>'a')
-              ImageServerImage.refresh_src_dest_group_summary(image_server_group)
-            end
-
-            flash[:notice] = 'Allocate of Image Groups was successful'
-            redirect_to index_image_server_group_path(image_server_group.first.source)
-          else            # create and edit
-            image_server_group = ImageServerGroup.id(params[:id]).first
-            count = ImageServerGroup.where(:source_id=>image_server_group_params[:source_id], :group_name=>image_server_group_params[:group_name]).count
-
-            if count > 0 && image_server_group_params[:orig_group_name] != image_server_group_params[:group_name]
-              flash[:notice] = 'Image Group "'+image_server_group_params[:group_name]+'" already exist'
-              redirect_to :back and return
-            else
-              image_server_group_params[:number_of_images] = ImageServerImage.image_server_group_id(image_server_group.id).count
-              image_server_group_params[:assign_date] = Time.now.iso8601 if !image_server_group_params[:syndicate_code].nil? && (image_server_group_params[:syndicate_code] != image_server_group_params[:orig_syndicate_code])
-
-              image_server_group_params.delete(:origin)
-              image_server_group_params.delete(:source_start_date)
-              image_server_group_params.delete(:source_end_date)
-              image_server_group_params.delete(:orig_group_name)
-              image_server_group_params.delete(:orig_syndicate_code)
-
-              image_server_group.update_attributes(image_server_group_params)
-
-              flash[:notice] = 'Update of Image Group "'+params[:image_server_group][:group_name]+'" was successful'
-              redirect_to image_server_group_path(image_server_group)
-            end
+          flash[:notice] = 'Image Group "'+params[:image_server_group][:group_name]+'" was updated successfully'
+          redirect_to image_server_group_path(image_server_group)
+        else
+          flash[:notice] = 'Image Group does not exist'
+          redirect_to :back and return
         end
+      end
     end
   end
   

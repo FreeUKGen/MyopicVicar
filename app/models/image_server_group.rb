@@ -107,6 +107,16 @@ class ImageServerGroup
       end
     end
     
+    def clean_params_before_update(image_server_group_params)
+      image_server_group_params.delete(:origin)
+      image_server_group_params.delete(:source_start_date)
+      image_server_group_params.delete(:source_end_date)
+      image_server_group_params.delete(:orig_group_name)
+      image_server_group_params.delete(:orig_syndicate_code)
+
+      return image_server_group_params
+    end
+
     def find_by_source_ids(id)
       where(:source_id => {'$in'=>id.keys})
     end
@@ -257,7 +267,7 @@ class ImageServerGroup
 
       return @source, @g_id, @group_id
     end
-    
+
     def group_list_by_status(source_id,status)    
       # get hash key=image_server_group_id, val=ig, sorted by ig
       ig_array = ImageServerGroup.where(:source_id=>source_id, :number_of_images=>{'$nin'=>[nil,'',0]}, :"summary.status"=>{'$in'=>status}).pluck(:id, :group_name)
@@ -325,7 +335,35 @@ class ImageServerGroup
       summarization
     end
 
-    def update_image_group_summary(difficulty, status, transcriber, reviewer, count)
+    def update_allocate_request(params)
+      group_list = []
+      params[:custom_field].each { |x| group_list << BSON::ObjectId.from_string(x) unless x=='0' }
+
+      number_of_images = ImageServerGroup.calculate_image_numbers(group_list)
+
+      group_list.each do |x|
+        @image_server_group = ImageServerGroup.where(:id=>x)
+        @image_server_group.update_all(:syndicate_code=>params[:syndicate_code], 
+                                     :assign_date=>Time.now.iso8601, 
+                                     :number_of_images=>number_of_images[x])
+
+        ImageServerImage.where(:image_server_group_id=>x, :status=>{'$in'=>['u','',nil]}).update_all(:status=>'a')
+        ImageServerImage.refresh_src_dest_group_summary(@image_server_group)
+      end
+
+      return @image_server_group
+    end
+
+    def update_edit_request(image_server_group,params)
+      params[:number_of_images] = ImageServerImage.image_server_group_id(image_server_group.id).count
+      params[:assign_date] = Time.now.iso8601 if !params[:syndicate_code].nil? && (params[:syndicate_code] != params[:orig_syndicate_code])
+
+      attribute_params = clean_params_before_update(params)
+
+      image_server_group.update_attributes(attribute_params)
+    end
+
+    def update_image_group_summary(difficulty,status,transcriber,reviewer,count)
       group = self.first
 
       group.summary[:difficulty] = difficulty
@@ -337,7 +375,7 @@ class ImageServerGroup
       group.save
     end
     
-    def update_image_server_group_from_put_request(old_status,new_status,user=nil)
+    def update_image_and_group_for_put_request(old_status,new_status,user=nil)
       case new_status
         when 'a'
           flash_notice = 'Image Group successfully allocated'
@@ -363,6 +401,21 @@ class ImageServerGroup
       return flash_notice
     end
 
+    def update_put_request(image_server_group,put_request_type,userid)
+      case put_request_type
+        when 'allocate accept'
+          flash_message = image_server_group.update_image_and_group_for_put_request('ar','a')
+        when 'allocate reject'
+          flash_message = image_server_group.update_image_and_group_for_put_request('ar','u',userid)
+        when 'unallocate'
+          flash_message = image_server_group.update_image_and_group_for_put_request('a','u')
+        when 'complete'
+          flash_message = image_server_group.update_image_and_group_for_put_request('r','c')
+      end
+
+      return flash_message
+    end
+    
   end
   
   def create_upload_images_url
