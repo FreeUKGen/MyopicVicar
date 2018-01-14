@@ -1,7 +1,7 @@
 module UseridRole
   VALUES = ["researcher","trainee",'pending', 'transcriber','syndicate_coordinator','county_coordinator','country_coordinator',
             'volunteer_coordinator','data_manager', 'technical','system_administrator', 'contacts_coordinator','project_manager','executive_director',
-            'publicity_coordinator', 'genealogy_coordinator', 'documentation_coordinator', 'engagement_coordinator','computer']
+            'publicity_coordinator', 'genealogy_coordinator', 'documentation_coordinator', 'engagement_coordinator','computer', 'website_coordinator', 'general_communication_coordinator']
   OPTIONS = {
     'researcher' => [ "Profile","Roadmap"],
     'computer' => [ "Profile","Roadmap"],
@@ -27,6 +27,8 @@ module UseridRole
     'genealogy_coordinator'=> [ "Batches", "Contacts","Profile", "Roadmap" ,"System Documentation" ],
     'documentation_coordinator' => [   "Batches",  "Contacts","Display Userids","Feedback", "Manage Syndicates", "Manage Counties", "Profile","RefineryCMS","Roadmap",
                                        "System Documentation" ],
+    'website_coordinator' => [ "Batches", "Contacts","Display Userids", "Feedback", "Message System", "Profile", "RefineryCMS" ,"Roadmap", "System Documentation" ],
+    'general_communication_coordinator' => [ "Batches", "Contacts","Display Userids", "Feedback", "Message System", "Profile", "RefineryCMS" ,"Roadmap", "System Documentation" ],
     'engagement_coordinator' => [  "Batches", "Contacts","Display Userids", "Feedback", "Message System", "Profile", "RefineryCMS" ,"Roadmap", "System Documentation" ]
   }
 
