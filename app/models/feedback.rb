@@ -72,9 +72,12 @@ class Feedback
 
   def communicate
     ccs = Array.new
-    UseridDetail.where(:person_role => 'contacts_coordinator').email_address_valid.all.each do |person|
+    UseridDetail.any_of({ person_role: 'website_coordinator', email_address_valid: true}, secondary_role: { '$in': ["website_coordinator"] }).all.each do |person|
       ccs << person.email_address
     end
+    #UseridDetail.where(:person_role => 'contacts_coordinator').email_address_valid.all.each do |person|
+     # ccs << person.email_address
+    #end
     if ccs.blank?
       UseridDetail.where(:person_role => 'system_administrator').email_address_valid.all.each do |person|
         ccs << person.email_address
