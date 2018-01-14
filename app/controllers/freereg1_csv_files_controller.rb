@@ -589,6 +589,8 @@ class Freereg1CsvFilesController < ApplicationController
       go_back("batch",params[:id])
     end
     @freereg1_csv_entries = @freereg1_csv_file.get_entries_zero_year
+    display_info
+    @zero_year = true
     render 'freereg1_csv_entries/index'
   end
 
@@ -597,6 +599,7 @@ class Freereg1CsvFilesController < ApplicationController
     @freereg1_csv_file = Freereg1CsvFile.where(id: file_id).first
     @freereg1_csv_entries = @freereg1_csv_file.get_zero_year_records
     display_info
+    @get_zero_year_records = true
     render 'freereg1_csv_entries/index'
   end
 
