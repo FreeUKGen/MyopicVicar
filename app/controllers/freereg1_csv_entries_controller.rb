@@ -205,6 +205,8 @@ class Freereg1CsvEntriesController < ApplicationController
   end
 
   def show
+    @get_zero_year_records = "true" if params[:zero_record]== "true"
+    @zero_year = "true" if params[:zero_listing] == "true"
     @freereg1_csv_entry = Freereg1CsvEntry.id(params[:id]).first
     if @freereg1_csv_entry.present?
       get_user_info_from_userid

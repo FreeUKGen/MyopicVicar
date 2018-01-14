@@ -522,6 +522,39 @@ crumb :create_syndicate do |syndicate|
   parent :syndicates
 end
 
+crumb :zero_year_records do |record|
+  link "Zero Year Records", show_zero_startyear_entries_freereg1_csv_file_path(id: "#{record.id}")
+  parent :files
+end
+
+crumb :zero_year_record_detail do |entry,file|
+    @get_zero_year_records = "true"
+    link "Zero Year Record Detail", freereg1_csv_entry_path(entry, "zero_record" => @get_zero_year_records)
+    parent :zero_year_records, file
+end
+
+crumb :edit_zero_year_record do |entry,file|
+  link "Edit Zero Year Record", edit_freereg1_csv_entry_path(entry)
+  parent :zero_year_record_detail, entry,file
+  parent :zero_year_records, file if request.referer.include?"zero_year_entries" unless request.referer.nil?
+end
+
+crumb :listing_of_zero_year_entries do |file|
+  link "Listing of Zero Year Entries", zero_year_freereg1_csv_file_path(id: "#{file.id}")
+  parent :show_file, file
+end
+
+crumb :show_zero_year_entry do |entry, file|
+  @zero_year = "true"
+  link "Show Zero Year Entry", freereg1_csv_entry_path(entry, "zero_listing" => @zero_year)
+  parent :listing_of_zero_year_entries, file
+end
+
+crumb :edit_zero_year_entry do |entry,file|
+  link "Edit Zero Year Entry", edit_freereg1_csv_entry_path(entry)
+  parent :show_zero_year_entry, entry,file
+  parent :listing_of_zero_year_entries, file if request.referer.match(/zero_year/) unless request.referer.nil?
+end
 
 # crumb :projects do
 #   link "Projects", projects_path
