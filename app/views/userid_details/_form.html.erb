@@ -1,4 +1,3 @@
-
 <%= simple_form_for @userid, :html => { :class => "grid"} do |f| %>
 <% role_lbl = "Role in " + MyopicVicar::Application.config.freexxx_display_name + ":" %>
 <p style="text-align: center">Required fields are show with an *</p>
@@ -13,7 +12,7 @@
     <% end%>
   <% else%>
     <%= f.input :userid, :label => "UserId",:input_html => { :size => 40, :disabled => false }%>
-    <% if  session[:my_own]%>
+    <% if  @current_user == @userid %>
       <%= f.input :transcription_agreement, :label => "Transcription Agreement",:input_html => {:disabled => true }  if @userid.transcription_agreement == "Accepted" %>
       <% unless @userid.transcription_agreement == "Accepted"%>
         <div class="input select optional userid_detail_transcription_agreement" style="text-align: center;">

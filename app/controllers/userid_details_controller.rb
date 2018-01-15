@@ -103,6 +103,7 @@ class UseridDetailsController < ApplicationController
     session[:return_to] = request.fullpath
     session[:type] = "edit"
     get_user_info_from_userid
+    @current_user = cookies.signed[:userid]
     @userid = @user if  session[:my_own]
     load(params[:id])
     @syndicates = Syndicate.get_syndicates
