@@ -226,7 +226,6 @@ class UseridDetailsController < ApplicationController
   end
 
   def record_validation_errors(exception)
-    raise "hi"
     flash[:notice] = "The registration was unsuccessful due to #{exception.record.errors.messages}"
     @userid.delete
     next_place_to_go_unsuccessful_update
