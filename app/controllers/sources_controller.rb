@@ -75,10 +75,7 @@ class SourcesController < ApplicationController
 
     @source = Source.id(params[:id]).first
 
-    if @source.nil?
-      flash[:notice] = 'Attempted to edit a non_esxistent Source'
-      redirect_to :back
-    end
+    redirect_to(:back, :notice => 'Attempted to edit a non_existent Source') if @source.nil?
   end
 
   def flush
@@ -87,7 +84,7 @@ class SourcesController < ApplicationController
     @source = Source.id(params[:id]).first
 
     if @source.nil?
-      go_back("source#flush",params[:id])
+      go_back("source#flush", params[:id])
     else
       @source_id = Source.get_propagate_source_list(@source)
     end
@@ -98,26 +95,22 @@ class SourcesController < ApplicationController
     params[:id] = session[:register_id] if params[:id].nil?
     @source = Source.where(:register_id=>params[:id]).all
 
-    if @source.nil?
-      go_back("source#index",params[:id])
-    else
-      case @source.count
-        when 0
-          flash[:notice] = 'No Source under this register'
-          redirect_to :back
-        when 1
-          case @source.first.source_name
-            when 'Image Server'
-              redirect_to source_path(:id=>@source.first.id)
-            when 'other server1'
-#              redirect_to :controller=>'server1', :action=>'show', :source_name=>'other server1'
-            when 'other server2'
-#              redirect_to :controller=>'server2', :action=>'show', :source_name=>'other server1'
-            else
-              flash[:notice] = 'Somthing wrong'
-              redirect_to :back
-          end
-       end
+    go_back("source#index",params[:id]) and return if @source.nil?
+
+    case @source.count
+      when 0
+        redirect_to(:back, :notice => 'No Source under this register')
+      when 1
+        case @source.first.source_name
+          when 'Image Server'
+            redirect_to source_path(:id=>@source.first.id)
+          when 'other server1'
+            redirect_to :controller=>'server1', :action=>'show', :source_name=>'other server1'
+          when 'other server2'
+#            redirect_to :controller=>'server2', :action=>'show', :source_name=>'other server1'
+          else
+            redirect_to(:back, :notice => 'Something wrong')
+        end
     end
   end
 
@@ -126,17 +119,14 @@ class SourcesController < ApplicationController
 
     allow_initialize = ImageServerGroup.check_all_images_status_before_initialize_source(params[:id])
 
-    if not allow_initialize
-      flash[:notice] = 'You can only initialize a source when all image groups status is unset'
-      redirect_to :back
-    end
+    redirect_to(:back, :notice=>'You can only initialize a source when all image groups status is unset') and return if not allow_initialize
   end
 
   def load(source_id)
     @source = Source.id(source_id).first
 
     if @source.nil?
-      go_back("source",source_id)
+      go_back("source", source_id)
     else
       session[:source_id] = @source.id
       @register = @source.register
@@ -164,37 +154,34 @@ class SourcesController < ApplicationController
     name_array = Source.where(:register_id=>session[:register_id]).pluck(:source_name)
 
     if name_array.nil?
-      go_back("source#new",params[:id])
+      go_back("source#new", params[:id])
     else
       @list = FreeregOptionsConstants::SOURCE_NAME - name_array
     end
   end
 
   def show
-    load(params[:id])
-
-    #used for breadcrumb
+    # sessions used for breadcrumb
     session[:image_group_filter] = params[:image_group_filter] if !params[:image_group_filter].nil?
     session[:assignment_filter_list] = params[:assignment_filter_list] if !params[:assignment_filter_list].nil?
-
-    # used for breadcrumb, to indicate image group display comes from Source or filters under 'All Sources' directly
+    # indicate image group display comes from Source or filters under 'All Sources' directly
     session[:from_source] = true
 
-    go_back("source#show",params[:id]) if @source.nil?
+    load(params[:id])
+    go_back("source#show", params[:id]) if @source.nil?
   end
 
   def update
     source = Source.where(:id=>params[:id]).first
 
     if source.nil?
-      go_back("source#update",params[:id])
+      go_back("source#update", params[:id])
     else
       if source_params[:choice] == '1'                        # to propagate Source
         Source.update_for_propagate(params)
         flash[:notice] = 'Update of source was successful'
       elsif !source_params[:initialize_status].nil?           # to initialize Source
         ImageServerGroup.initialize_all_images_status_under_source(params[:id], source_params[:initialize_status])
-
         flash[:notice] = 'Successfully initialized source'
       else                                                    # to edit Source
         params[:source].delete(:choice)

@@ -280,6 +280,16 @@ class ImageServerGroup
       where(:id => id)
     end
 
+    def image_server_groups_by_user_role(user_role,source_id,syndicate=nil)
+      if user_role == 'manage syndicate'
+        image_server_group = ImageServerGroup.where(:source_id=>source_id, :syndicate_code=>syndicate).sort_by{|x| x.group_name.downcase} if !session[:syndicate].nil?
+      else
+        image_server_group = ImageServerGroup.source_id(source_id).sort_by{|x| x.group_name.downcase}
+      end
+
+      return image_server_group
+    end
+
     def initialize_all_images_status_under_source(source_id,status)
       image_server_group_ids = ImageServerGroup.source_id(source_id).pluck(:id)
       ImageServerImage.where(:image_server_group_id=>{'$in'=>image_server_group_ids}).update_all(:status=>status)

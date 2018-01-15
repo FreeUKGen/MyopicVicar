@@ -15,7 +15,7 @@ class ImageServerGroupsController < ApplicationController
     display_info
     image_server_group = ImageServerGroup.source_id(session[:source_id]).first
     group_list = ImageServerGroup.source_id(session[:source_id]).pluck(:group_name)
-    source = @source # image_server_group.source
+    source = @source          # image_server_group.source
     church = source.register.church
     place = church.place
 
@@ -91,7 +91,6 @@ class ImageServerGroupsController < ApplicationController
     @place_name = @place.place_name
     session[:place_name] = @place_name
     @county =  @place.county
-
     @chapman_code = @place.chapman_code
     session[:county] = @county
     session[:chapman_code] = @syndicate if session[:chapman_code].nil?
@@ -126,11 +125,7 @@ class ImageServerGroupsController < ApplicationController
     session[:source_id] = params[:id]
     display_info
 
-    if session[:manage_user_origin] == 'manage syndicate'
-      @image_server_group = ImageServerGroup.where(:source_id=>params[:id], :syndicate_code=>session[:syndicate]).sort_by{|x| x.group_name.downcase} if !session[:syndicate].nil?
-    else
-      @image_server_group = ImageServerGroup.source_id(params[:id]).sort_by{|x| x.group_name.downcase}
-    end
+    @image_server_group = ImageServerGroup.image_server_groups_by_user_role(session[:manage_user_origin], session[:source_id], session[:syndicate])
 
     if @image_server_group.nil?
       flash[:notice] = "Register does not have any Image Group from Image Server."
@@ -158,7 +153,8 @@ class ImageServerGroupsController < ApplicationController
     session[:assignment_filter_list] = 'syndicate'
     @user = UseridDetail.where(:userid=>session[:userid]).first
     session[:syndicate] = @user.syndicate
-    @image_server_group = ImageServerGroup.where(:syndicate_code=>session[:syndicate], :assign_date=>{'$nin'=>[nil,'']})        # filter allocate_request image groups
+
+    @image_server_group = ImageServerGroup.where(:syndicate_code=>@user.syndicate, :assign_date=>{'$nin'=>[nil,'']})        # filter allocate_request image groups
 
     if @image_server_group.first.nil?
       flash[:notice] = 'No assignment under your syndicate'
@@ -180,27 +176,20 @@ class ImageServerGroupsController < ApplicationController
     ig = image_server_group.first
 
     sc = UseridDetail.where(:id=>params[:user], :email_address_valid => true).first
-    if sc.nil?
-      flash[:notice] = 'SC does not exist' and redirect_to :back
-    end
+    redirect_to(:back, :notice => 'SC does not exist') and return if sc.nil?
 
     county = County.where(:chapman_code=>params[:county]).first
-    if county.nil?
-      flash[:notice] = 'county does not exist' and redirect_to :back
-    end
+    redirect_to(:back, :notice => 'County does not exist') and return if county.nil?
 
     cc = UseridDetail.where(:userid=>county.county_coordinator).first
-    if cc.nil?
-      flash[:notice] = 'county coordinator does not exist, please contact administrator' and redirect_to :back
-    end
+    redirect_to(:back, :notice => 'County coordinator does not exist, please contact administrator') and return if cc.nil?
 
     ImageServerImage.update_image_status(image_server_group, 'ar')
 
     ImageServerGroup.find(:id=>ig.id).update_attributes(:syndicate_code=>sc.syndicate)
     UserMailer.request_cc_image_server_group(sc, cc.email_address, ig.group_name).deliver_now
-    flash[:notice] = 'email sent to county coordinator'
 
-    redirect_to :back
+    redirect_to(:back, :notice => 'Email send to County Coordinator')
   end
 
   def request_sc_image_server_group
@@ -208,24 +197,17 @@ class ImageServerGroupsController < ApplicationController
     image_server_group = ig.group_name if !ig.nil?
 
     transcriber = UseridDetail.where(:id=>params[:user]).first
-    if transcriber.nil?
-      flash[:notice] = 'transcriber does not exist' and redirect_to :back
-    end
+    redirect_to(:back, :notice => 'Transcriber does not exist') and return if !transcriber.nil?
 
     syndicate = Syndicate.where(syndicate_code: transcriber.syndicate).first
-    if syndicate.nil?
-      flash[:notice] = 'syndicate does not exist' and redirect_to :back
-    end
+    redirect_to(:back, :notice => 'Syndicate does not exist') and return if syndicate.nil?
     
     sc = UseridDetail.where(:userid=>syndicate.syndicate_coordinator).first
-    if sc.nil?
-      flash[:notice] = 'SC does not exist, please contact administrator' and redirect_to :back
-    end
+    redirect_to(:back, :notice => 'SC does not exist, please contact administrator') and return if sc.nil?
 
     UserMailer.request_sc_image_server_group(transcriber, sc.email_address, image_server_group).deliver_now
 
-    flash[:notice] = 'email sent to Syndicate Coordinator'
-    redirect_to :back
+    redirect_to(:back, :notice => 'Email send to Syndicate Coordinator')
   end
 
   def send_complete_to_cc
@@ -236,8 +218,7 @@ class ImageServerGroupsController < ApplicationController
 
     UserMailer.notify_cc_assignment_complete(@user,params[:id],@place[:chapman_code]).deliver_now
 
-    flash[:notice] = 'email is sent to county coordinator'
-    redirect_to :back
+    redirect_to(:back, :notice => 'Email sent to County Coordinator')
   end
 
   def show
@@ -248,8 +229,7 @@ class ImageServerGroupsController < ApplicationController
     @group = ImageServerGroup.id(params[:id])
 
     if @group.nil?
-      flash[:notice] = "Register does not have any Image Group from Image Server."
-      redirect_to :back
+      redirect_to(:back, :notice => 'Register does not have any Image Group from Image Server')
     else
       @image_server_group = @group.first
     end
