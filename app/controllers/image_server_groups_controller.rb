@@ -197,7 +197,7 @@ class ImageServerGroupsController < ApplicationController
     image_server_group = ig.group_name if !ig.nil?
 
     transcriber = UseridDetail.where(:id=>params[:user]).first
-    redirect_to(:back, :notice => 'Transcriber does not exist') and return if !transcriber.nil?
+    redirect_to(:back, :notice => 'Transcriber does not exist') and return if transcriber.nil?
 
     syndicate = Syndicate.where(syndicate_code: transcriber.syndicate).first
     redirect_to(:back, :notice => 'Syndicate does not exist') and return if syndicate.nil?
