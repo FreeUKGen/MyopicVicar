@@ -43,7 +43,7 @@
   <%= f.input :person_surname,:label => "Surname", :required => true,:input_html => { :class => "simple_form_bgcolour",:size => 40 }%>
   <%= f.input :email_address,:label => "Email", :required => true,:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
 
-  <%= f.input :address,:label => "Physical location",:hint => "Just a country will do",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+  <%= f.input :address,:label => "Physical location",:hint => "Full address, if telephone number not given, otherwise just a Country will do.",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
   <% unless @user.person_role == 'researcher' %>
     <%= f.input :telephone_number,:label => "Telephone",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
     <%= f.input :fiche_reader, :as => :boolean,boolean_style: :inline,:label => "Has a Fiche Reader?"%>
