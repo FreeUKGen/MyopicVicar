@@ -562,5 +562,6 @@ class UseridDetailsController < ApplicationController
         return false
       end
     end
+    true
   end
 end
