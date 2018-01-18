@@ -45,7 +45,7 @@
                 <% end %>
                 <td class="t12"><%= x[:group_name] %>&nbsp;</td>
                 <td class="t12"><%= x[:assign_date].to_date.strftime("%Y-%m-%d") %>&nbsp;</td>
-                <td class="t12"><%= ImageServerData::STATUS[x[:status]] %>&nbsp;</td>
+                <td class="t12"><%= SourceProperty::STATUS[x[:status]] %>&nbsp;</td>
                 <td><%= x[:instructions] %>&nbsp;</td>
                 <td class="t8"><%= rows %>&nbsp;</td>
 

@@ -1,5 +1,5 @@
 class ImageServerImage
-  require 'image_server_data'
+  require 'source_property'
 
   include Mongoid::Document
   include Mongoid::Timestamps::Created::Short

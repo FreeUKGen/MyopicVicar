@@ -1,4 +1,4 @@
-module ImageServerData
+module SourceProperty
 
   DIFFICULTY = {
     'c'     => 'Complicated Forms', 

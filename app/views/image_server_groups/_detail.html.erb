@@ -48,20 +48,20 @@
       <tr><td>Difficulty</td><td class="t15">
         <% unless @image_server_group.summary[:difficulty].nil? %>
           <% @image_server_group.summary[:difficulty].each do |difficulty| %>
-            <span><%= ImageServerData::DIFFICULTY[difficulty] %></span>
+            <span><%= SourceProperty::DIFFICULTY[difficulty] %></span>
           <% end %>
         <% end %>
       &nbsp;</td></tr>
       <tr><td>Status</td><td class="t10">
         <% unless @image_server_group.summary[:status].nil? %>
           <% @image_server_group.summary[:status].each do |status| %>
-            <% case ImageServerData::STATUS[status] %>
+            <% case SourceProperty::STATUS[status] %>
               <% when 'ERROR', 'UNALLOCATED' %>
-                <span style="color:red"><%= ImageServerData::STATUS[status] %></span>
+                <span style="color:red"><%= SourceProperty::STATUS[status] %></span>
               <% when 'REVIEWED' %>
-                <span style="color:green"><%= ImageServerData::STATUS[status] %></span>
+                <span style="color:green"><%= SourceProperty::STATUS[status] %></span>
               <% else %>
-                <span><%= ImageServerData::STATUS[status] %></span>
+                <span><%= SourceProperty::STATUS[status] %></span>
             <% end %>
           <% end %>
         <% end %>

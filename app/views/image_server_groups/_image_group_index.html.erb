@@ -56,14 +56,14 @@
             <td class="t12">
               <% unless group.summary[:status].nil? %>
                 <% group.summary[:status].each do |status| %>
-                  <span><%= ImageServerData::STATUS[status] %></span><br/>
+                  <span><%= SourceProperty::STATUS[status] %></span><br/>
                 <% end %>
               <% end %>
             &nbsp;</td>
             <td class="t10">
               <% unless group.summary[:difficulty].nil? %>
                 <% group.summary[:difficulty].each do |difficulty| %>
-                  <span><%= ImageServerData::DIFFICULTY[difficulty] %></span><br/>
+                  <span><%= SourceProperty::DIFFICULTY[difficulty] %></span><br/>
                 <% end %>
               <% end %>
             &nbsp;</td>
