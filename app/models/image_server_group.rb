@@ -282,7 +282,7 @@ class ImageServerGroup
 
     def image_server_groups_by_user_role(user_role,source_id,syndicate=nil)
       if user_role == 'manage syndicate'
-        image_server_group = ImageServerGroup.where(:source_id=>source_id, :syndicate_code=>syndicate).sort_by{|x| x.group_name.downcase} if !session[:syndicate].nil?
+        image_server_group = ImageServerGroup.where(:source_id=>source_id, :syndicate_code=>syndicate).sort_by{|x| x.group_name.downcase} if !syndicate.nil?
       else
         image_server_group = ImageServerGroup.source_id(source_id).sort_by{|x| x.group_name.downcase}
       end
