@@ -15,11 +15,7 @@ class ImageServerGroupsController < ApplicationController
 
   def create
     display_info
-    image_server_group = ImageServerGroup.source_id(session[:source_id]).first
     group_list = ImageServerGroup.source_id(session[:source_id]).pluck(:group_name)
-    source = @source          # image_server_group.source
-    church = source.register.church
-    place = church.place
 
     if not group_list.include? params[:image_server_group][:group_name]
       params[:image_server_group].delete(:source_start_date)
@@ -34,15 +30,10 @@ class ImageServerGroupsController < ApplicationController
         flash[:notice] = 'Addition of Image Group "'+image_server_group_params[:group_name]+'" was unsuccessful'
         redirect_to :back
       else
-        source.image_server_groups << image_server_group
-        source.save
-        church.image_server_groups << image_server_group
-        church.save
-        place.image_server_groups << image_server_group
-        place.save
+        image_server_group.update_attributes(:source_id=>@source.id, :church_id=>@church.id, :place_id=>@place.id)
 
         flash[:notice] = 'Addition of Image Group "'+image_server_group_params[:group_name]+'" was successful'
-        redirect_to index_image_server_group_path(source)
+        redirect_to index_image_server_group_path(@source)
       end
     else
       flash[:notice] = 'Image Group "'+image_server_group_params[:group_name]+'" already exist'
