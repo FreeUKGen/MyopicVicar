@@ -9,6 +9,8 @@ class ImageServerGroupsController < ApplicationController
     @group_name = ImageServerGroup.group_list_by_status(params[:id], ['u','ar'])
     @group = ImageServerGroup.source_id(params[:id])
     @image_server_group = @group.first
+
+    redirect_to(:back, :notice => 'No gruop for allocation.') if @group_name.empty?
   end
 
   def create
@@ -62,7 +64,7 @@ class ImageServerGroupsController < ApplicationController
     rescue Mongoid::Errors::DeleteRestriction
       logger.info "Logged Error for Image Server Group Delete"
       logger.debug image_server_group.group_name+' is not empty'
-      redirect_to(:back, :notice=> image_server_group.group_name+' IS NOT EMPTY, CAN NOT BE DELETED')
+      redirect_to(:back, :notice => image_server_group.group_name+' IS NOT EMPTY, CAN NOT BE DELETED')
     end     
   end
 
@@ -104,6 +106,7 @@ class ImageServerGroupsController < ApplicationController
     @syndicate = Syndicate.get_syndicates
 
     @image_server_group = @group.first
+    @parent_source = Source.id(session[:source_id]).first
 
     if @image_server_group.nil?
       flash[:notice] = 'Attempted to edit a non_esxistent Image Group'
