@@ -1,5 +1,6 @@
 class AssignmentsController < ApplicationController
   require 'userid_role'
+  require 'image_server_data'
  
   skip_before_filter :require_login, only: [:show]
 

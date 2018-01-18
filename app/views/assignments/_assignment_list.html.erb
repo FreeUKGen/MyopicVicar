@@ -52,7 +52,7 @@
             <% end %>
 
             <td class="t25"><%= link_to x[:image_file_name], list_assignment_image_assignment_path(x[:image_id]), :remote=>true %>&nbsp;</td>
-            <td class="t12"><%= ImageServerImage::Difficulty::ALL_DIFFICULTIES[x[:difficulty]] %>&nbsp;</td>
+            <td class="t12"><%= ImageServerData::DIFFICULTY[x[:difficulty]] %>&nbsp;</td>
             <td class="t30"><%= x[:notes] %>&nbsp;</td>
 
             <% if session[:my_own] %>
@@ -86,7 +86,7 @@
             <% end %>
 
             <% if rows != 0 %>
-              <td class="t12" rowspan=<%= rows*2 %> style="vertical-align:top"><%= ImageServerImage::Status::ALL_STATUSES[x[:status]] %></td>
+              <td class="t12" rowspan=<%= rows*2 %> style="vertical-align:top"><%= ImageServerData::STATUS[x[:status]] %></td>
             <% end %>
           </tr>
           <tr id="<%= x[:image_id] %>" style="display:none;"></tr>

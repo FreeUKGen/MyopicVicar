@@ -1,38 +1,9 @@
 class ImageServerImage
+  require 'image_server_data'
+
   include Mongoid::Document
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
-
-  module Difficulty
-    Complicated_Forms = 'c'
-    Damaged = 'd'
-    Learning = 'l'
-    Post_1700_modern_freehand = 'p17'
-    Post_1530_freehand_Secretary = 'p15s'
-    Post_1530_freehand_Latin = 'p15l'
-    Post_1530_freehand_Latin_Chancery = 'p15c'
-    Straight_Forward_Forms = 's'
-
-    ALL_DIFFICULTIES = {'c'=>'Complicated_Forms', 'd'=>'Damaged', 'l'=>'Learning', 'p17'=>'Post_1700_modern_freehand', 'p15s'=>'Post_1530_freehand_Secretary',  'p15l'=>'Post_1530_freehand_Latin', 'p15c'=>'Post_1530_freehand_Latin_Chancery', 's'=>'Straight_Forward_Forms'}
-  end
-
-  module Status
-    Unallocated = 'u'
-    Allocation_Requested = 'ar'
-    Allocated = 'a'
-    Being_Transcribed = 'bt'
-    Transcription_submitted = 'ts'
-    Transcribed = 't'
-    Being_Reviewed = 'br'
-    Review_submitted = 'rs'
-    Reviewed = 'r'
-    Completion_Submitted = 'cs'
-    Complete = 'c'
-    Error = 'e'
-
-    ARRAY_ALL = ['u', 'ar', 'a', 'bt', 'ts', 't', 'br', 'rs', 'r', 'cs', 'c', 'e']
-    ALL_STATUSES = {'u'=>'Unallocated', 'ar'=>'Allocation Requested', 'a'=>'Allocated', 'bt'=>'Being Transcribed', 'ts'=>'Transcription Submitted', 't'=>'Transcribed', 'br'=>'Being Reviewed', 'rs'=>'Review Submitted', 'r'=>'Reviewed', 'cs'=>'Completion Submitted', 'c'=>'Complete', 'e'=>'Error'}
-  end
 
   field :image_file_name, type: String
   field :start_date, type: String

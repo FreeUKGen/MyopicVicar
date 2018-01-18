@@ -6,7 +6,7 @@
 
 <% x = @assignment.values.first.values.first.values.first %>
 <div style="clear:both;"></div><br>
-<p style="text-align: center"><b><%= x[:group_name] %></b> assigned on <b><%= x[:assign_date].to_date.strftime("%Y-%m-%d") %> <%= ImageServerImage::Status::ALL_STATUSES[x[:status]] %></b> for <b><%= x[:userid] %></b>
+<p style="text-align: center"><b><%= x[:group_name] %></b> assigned on <b><%= x[:assign_date].to_date.strftime("%Y-%m-%d") %> <%= ImageServerData::STATUS[x[:status]] %></b> for <b><%= x[:userid] %></b>
 <%= render partial: 'flash_notice' %>
 
 <% title "Assignment - list" %>

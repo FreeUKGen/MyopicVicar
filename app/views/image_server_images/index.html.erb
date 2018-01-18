@@ -51,8 +51,8 @@
         <% @image_server_image.each do |x| %>
           <tr>
             <td class="t15"><%= x[:image_file_name] %></td>
-            <td class="t15"><%= ImageServerImage::Status::ALL_STATUSES[x[:status]] if !x[:status].blank? %>&nbsp;</td>
-            <td class="t15"><%= ImageServerImage::Difficulty::ALL_DIFFICULTIES[x[:difficulty]] if !x[:difficulty].blank? %>&nbsp;</td>
+            <td class="t15"><%= ImageServerData::STATUS[x[:status]] if !x[:status].blank? %>&nbsp;</td>
+            <td class="t15"><%= ImageServerData::DIFFICULTY[x[:difficulty]] if !x[:difficulty].blank? %>&nbsp;</td>
             <td class="t15"><%= x[:transcriber].join(' / ') if !x[:transcriber].blank? %>&nbsp;</td>
             <td class="t15"><%= x[:reviewer].join(' / ') if !x[:reviewer].blank? %>&nbsp;</td>
             <td class="t15">

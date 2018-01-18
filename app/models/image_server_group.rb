@@ -1,59 +1,10 @@
 class ImageServerGroup
+  require 'image_server_data'
+  
   include Mongoid::Document
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
   
-  module Difficulty
-    Complicated_Forms = 'c'
-    Damaged = 'd'
-    Learning = 'l'
-    Post_1700_modern_freehand = 'p17'
-    Post_1530_freehand_Secretary = 'p15s'
-    Post_1530_freehand_Latin = 'p15l'
-    Post_1530_freehand_Latin_Chancery = 'p15c'
-    Straight_Forward_Forms = 's'
-
-    ALL_DIFFICULTIES = {'c'=>'Complicated_Forms', 'd'=>'Damaged', 'l'=>'Learning', 'p17'=>'Post_1700_modern_freehand', 'p15s'=>'Post_1530_freehand_Secretary',  'p15l'=>'Post_1530_freehand_Latin', 'p15c'=>'Post_1530_freehand_Latin_Chancery', 's'=>'Straight_Forward_Forms'}
-  end
-
-  module Status
-    Unallocated = 'u'
-    Allocation_Requested = 'ar'
-    Allocated = 'a'
-    Being_Transcribed = 'bt'
-    Transcription_submitted = 'ts'
-    Transcribed = 't'
-    Being_Reviewed = 'br'
-    Review_submitted = 'rs'
-    Reviewed = 'r'
-    Completion_Submitted = 'cs'
-    Complete = 'c'
-    Error = 'e'
-
-    ARRAY_ALL = ['u', 'ar', 'a', 'bt', 'ts', 't', 'br', 'rs', 'r', 'cs', 'c', 'e']
-    ALL_STATUSES = {'u'=>'Unallocated', 'ar'=>'Allocation Requested', 'a'=>'Allocated', 'bt'=>'Being Transcribed', 'ts'=>'Transcription Submitted', 't'=>'Transcribed', 'br'=>'Being Reviewed', 'rs'=>'Review Submitted', 'r'=>'Reviewed', 'cs'=>'Completion Submitted', 'c'=>'Complete', 'e'=>'Error'}
-
-    CHURCH_STATUS = {}
-
-    REGISTER_STATUS = {
-      'C4A' => 'image church name does not match the only existed church in FR, create church',
-      'C4B' => 'image no church in file name and no church in FR from place name', # what to do?
-      'C4C' => 'image church in file name matches the only existed chruch in FR', 
-      'C4E' => 'image no church in file name, use the only existed church in FR as church',
-      'C4F' => 'image church in file name match one record in FR', 
-      'C4H' => 'image no church in file name, but multiple churches in FR', # what to do? skip right now
-      'C5A' => 'image church name does not match the only existed church in FR, create church', 
-      'C5B' => 'image church name does not match any existed church in FR, create church', 
-      'R4A' => 'image not transcribed yet. File on IS does not have register type on FR, create register',
-      'R4B' => 'image no register in file name and no register in FR from church name', # what to do?
-      'R4C' => 'image register in file name matches the only register in FR', 
-      'R4E' => 'image no register in file name, use the only existed register in FR as register', 
-      'R4H' => 'image no register in file name, but multiple registers in FR', # what to do? skip right now
-      'R6A1' => 'replace register " " on FR with IS image register type(when FR has one register',
-      'R6B1' => 'replace register " " on FR with IS image register type(when FR has multiple registers'
-    }
-  end
-
   field :group_name, type: String
   field :start_date, type: String
   field :end_date, type: String

@@ -11,7 +11,7 @@ class ImageServerImagesController < ApplicationController
       website =  image_server_image.url_for_delete_image_from_image_server
       redirect_to website
     else 
-      flash[:notice] = "Deletion of #{image_server_image.image_file_name} is not permitted due to its status of #{ImageServerImage::Status::ALL_STATUSES[image_server_image.status]}"
+      flash[:notice] = "Deletion of #{image_server_image.image_file_name} is not permitted due to its status of #{ImageServerData::Status[image_server_image.status]}"
       redirect_to :back and return
     end
   end
@@ -71,7 +71,7 @@ class ImageServerImagesController < ApplicationController
         status_list = ['u']
       else
         @image_server_image = ImageServerImage.image_server_group_id(params[:id]).first
-        status_list = ImageServerImage::Status::ARRAY_ALL
+        status_list = ImageServerData::STATUS_ARRAY
     end        
     @images = ImageServerImage.get_image_list(params[:id],status_list)
     @propagate_choice = params[:propagate_choice]
