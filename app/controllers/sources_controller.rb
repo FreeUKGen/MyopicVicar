@@ -75,26 +75,23 @@ class SourcesController < ApplicationController
 
     @source = Source.id(params[:id]).first
 
-    redirect_to(:back, :notice => 'Attempted to edit a non_existent Source') if @source.nil?
+    redirect_to(:back, :notice => 'Attempted to edit a non_existent Source') and return if @source.nil?
   end
 
   def flush
     display_info
 
     @source = Source.id(params[:id]).first
+    go_back("source#flush", params[:id]) and return if @source.nil?
 
-    if @source.nil?
-      go_back("source#flush", params[:id])
-    else
-      @source_id = Source.get_propagate_source_list(@source)
-    end
+    @source_id = Source.get_propagate_source_list(@source)
   end
 
   def index
     display_info
     params[:id] = session[:register_id] if params[:id].nil?
-    @source = Source.where(:register_id=>params[:id]).all
 
+    @source = Source.where(:register_id=>params[:id]).all
     go_back("source#index",params[:id]) and return if @source.nil?
 
     case @source.count
@@ -152,12 +149,9 @@ class SourcesController < ApplicationController
 
     @source_new = Source.new
     name_array = Source.where(:register_id=>session[:register_id]).pluck(:source_name)
+    go_back("source#new", params[:id]) and return if name_array.nil?
 
-    if name_array.nil?
-      go_back("source#new", params[:id])
-    else
-      @list = FreeregOptionsConstants::SOURCE_NAME - name_array
-    end
+    @list = FreeregOptionsConstants::SOURCE_NAME - name_array
   end
 
   def show
@@ -168,30 +162,27 @@ class SourcesController < ApplicationController
     session[:from_source] = true
 
     load(params[:id])
-    go_back("source#show", params[:id]) if @source.nil?
+    go_back("source#show", params[:id]) and return if @source.nil?
   end
 
   def update
     source = Source.where(:id=>params[:id]).first
+    go_back("source#update", params[:id]) and return if source.nil?
 
-    if source.nil?
-      go_back("source#update", params[:id])
-    else
-      if source_params[:choice] == '1'                        # to propagate Source
-        Source.update_for_propagate(params)
-        flash[:notice] = 'Update of source was successful'
-      elsif !source_params[:initialize_status].nil?           # to initialize Source
-        ImageServerGroup.initialize_all_images_status_under_source(params[:id], source_params[:initialize_status])
-        flash[:notice] = 'Successfully initialized source'
-      else                                                    # to edit Source
-        params[:source].delete(:choice)
-        source.update_attributes(source_params)
-        flash[:notice] = 'Update of source was successful'
-      end
-
-      flash.keep(:notice)
-      redirect_to index_source_path(source.register)
+    if source_params[:choice] == '1'                        # to propagate Source
+      Source.update_for_propagate(params)
+      flash[:notice] = 'Update of source was successful'
+    elsif !source_params[:initialize_status].nil?           # to initialize Source
+      ImageServerGroup.initialize_all_images_status_under_source(params[:id], source_params[:initialize_status])
+      flash[:notice] = 'Successfully initialized source'
+    else                                                    # to edit Source
+      params[:source].delete(:choice)
+      source.update_attributes(source_params)
+      flash[:notice] = 'Update of source was successful'
     end
+
+    flash.keep(:notice)
+    redirect_to index_source_path(source.register)
   end
 
   private

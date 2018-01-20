@@ -111,12 +111,11 @@ class ManageCountiesController < ApplicationController
       redirect_to main_app.new_manage_resource_path
       return
     else
-      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_by_place(session[:chapman_code], 'completion_submitted')            # not sort by place, unallocated groups
+      @source,@group_ids,@group_id = ImageServerGroup.group_ids_sort_by_place(session[:chapman_code], 'completion_submitted')            # not sort by place, unallocated groups
       @county = session[:county]
 
-      if @source.nil? || @group_ids.nil? || @group_id.nil?
-        flash[:notice] = 'No completion submitted image groups exists'
-        redirect_to :back
+      if @source.nil? || @group_ids.empty? || @group_id.empty?
+        redirect_to(:back, :notice => 'No Completion Submitted Image Groups exists') and return
       else
         render 'image_server_group_completion_submitted'
       end
@@ -132,12 +131,11 @@ class ManageCountiesController < ApplicationController
       redirect_to main_app.new_manage_resource_path
       return
     else
-      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_by_place(session[:chapman_code])                   # not sort by place, all groups
+      @source,@group_ids,@group_id = ImageServerGroup.group_ids_sort_by_place(session[:chapman_code])                   # not sort by place, all groups
       @county = session[:county]
 
-      if @source.nil? || @group_ids.nil? || @group_id.nil?
-        flash[:notice] = 'No image groups exists'
-        redirect_to :back
+      if @source.nil? || @group_ids.empty? || @group_id.empty?
+        redirect_to(:back, :notice => 'No Image Groups exists') and return
       else
         render 'image_server_group_all'
       end
@@ -153,12 +151,11 @@ class ManageCountiesController < ApplicationController
       redirect_to main_app.new_manage_resource_path
       return
     else
-      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_by_place(session[:chapman_code], 'unallocate')            # not sort by place, unallocated groups
+      @source,@group_ids,@group_id = ImageServerGroup.group_ids_sort_by_place(session[:chapman_code], 'unallocate')            # not sort by place, unallocated groups
       @county = session[:county]
 
-      if @source.nil? || @group_ids.nil? || @group_id.nil?
-        flash[:notice] = 'No unallocated image groups exists'
-        redirect_to :back
+      if @source.nil? || @group_ids.empty? || @group_id.empty?
+        redirect_to(:back, :notice => 'No unallocated image groups exists') and return
       else
         render 'image_server_group_unallocate'
       end
@@ -174,12 +171,11 @@ class ManageCountiesController < ApplicationController
       redirect_to main_app.new_manage_resource_path
       return
     else
-      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_by_place(session[:chapman_code], 'allocate request')            # not sort by place, unallocated groups
+      @source,@group_ids,@group_id = ImageServerGroup.group_ids_sort_by_place(session[:chapman_code], 'allocate request')            # not sort by place, unallocated groups
       @county = session[:county]
 
-      if @source.nil? || @group_ids.nil? || @group_id.nil?
-        flash[:notice] = 'No Allocate Request image groups exists'
-        redirect_to :back
+      if @source.nil? || @group_ids.empty? || @group_id.empty?
+        redirect_to(:back, :notice => 'No Allocate Request Image Groups exists') and return
       else
         render 'image_server_group_allocate_request'
       end
@@ -199,7 +195,7 @@ class ManageCountiesController < ApplicationController
       @source_ids,@source_id = Source.get_source_ids(session[:chapman_code])
       @county = session[:county]
 
-      if @source_ids.nil? || @source_id.nil?
+      if @source_ids.empty? || @source_id.empty?
         flash[:notice] = 'No requested Sources exists'
         redirect_to :back
       else
@@ -338,10 +334,14 @@ class ManageCountiesController < ApplicationController
       redirect_to main_app.new_manage_resource_path
       return
     else
-      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_and_sort_by_place(session[:chapman_code], 'all')        # sort by place, all groups
+      @source,@group_ids,@group_id = ImageServerGroup.group_ids_sort_by_place(session[:chapman_code], 'all')        # sort by place, all groups
       @county = session[:county]
 
-      render 'image_server_group_by_place'
+      if @source.nil? || @group_ids.empty?
+        redirect_to(:back, :notice => 'No Image Groups Allocated by Place for County ' + @county)
+      else
+        render 'image_server_group_by_place'
+      end
     end
   end
 
@@ -355,10 +355,14 @@ class ManageCountiesController < ApplicationController
       redirect_to main_app.new_manage_resource_path
       return
     else
-      @source,@group_ids,@syndicate = ImageServerGroup.get_group_ids_and_sort_by_syndicate(session[:chapman_code])
+      @source,@group_ids,@syndicate = ImageServerGroup.group_ids_sort_by_syndicate(session[:chapman_code])
       @county = session[:county]
-  
-      render 'image_server_group_by_syndicate'
+
+      if @source.nil? || @group_ids.empty? || @syndicate.empty?
+        redirect_to(:back, :notice => 'No Image Groups Allocated by Syndicate for County ' + @county)
+      else
+        render 'image_server_group_by_syndicate'
+      end
     end
   end
 

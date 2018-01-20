@@ -104,10 +104,10 @@ class ManageSyndicatesController < ApplicationController
       redirect_to main_app.new_manage_resource_path
       return
     else
-      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_for_syndicate(session[:syndicate], 'r')
+      @source,@group_ids,@group_id = ImageServerGroup.group_ids_by_syndicate(session[:syndicate], 'r')
 
       if @source.nil?
-        flash[:notice] = 'There is No Fully Reviewed Image Groups Under This Syndicate'
+        flash[:notice] = 'No Fully Reviewed Image Groups Under This Syndicate'
         redirect_to :back
       else
         session.delete(:from_source)
@@ -125,10 +125,10 @@ class ManageSyndicatesController < ApplicationController
       redirect_to main_app.new_manage_resource_path
       return
     else
-      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_for_syndicate(session[:syndicate], 't')
+      @source,@group_ids,@group_id = ImageServerGroup.group_ids_by_syndicate(session[:syndicate], 't')
 
       if @source.nil?
-        flash[:notice] = 'There is No Fully Transcribed Image Groups Under This Syndicate'
+        flash[:notice] = 'No Fully Transcribed Image Groups Under This Syndicate'
         redirect_to :back
       else
         session.delete(:from_source)
@@ -146,14 +146,9 @@ class ManageSyndicatesController < ApplicationController
       redirect_to main_app.new_manage_resource_path
       return
     else
-      @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_for_syndicate(session[:syndicate])
+      @source,@group_ids,@group_id = ImageServerGroup.group_ids_by_syndicate(session[:syndicate])
 
-      if !@source.nil? && !@group_ids.nil? && !@group_id.nil?
-        render 'image_server_group_by_syndicate'
-      else
-        flash[:notice] = 'No image group under managed syndicate'
-        redirect_to :back
-      end
+      render 'image_server_group_by_syndicate'
     end
   end
 

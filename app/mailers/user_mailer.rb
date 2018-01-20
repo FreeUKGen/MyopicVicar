@@ -188,31 +188,31 @@ class UserMailer < ActionMailer::Base
 
     county_coordinator = County.where(:chapman_code=>chapman_code).first.county_coordinator
     cc = UseridDetail.where(userid: county_coordinator, email_address_valid: true).first
-    cc_email = cc.email_address if cc.present?
+    redirect_to(:back, :notice => 'county coordinator does not exist') and return if cc.nil?
 
     subject = "assignment completed"
     email_body = "Transcription of image group " + image_server_group.group_name + " is completed"
 
-    mail(:from => user.email_address, :to => cc_email, :subject => subject, :body => email_body)
+    mail(:from => user.email_address, :to => cc.email_address, :subject => subject, :body => email_body)
   end
 
-  def notify_sc_allocate_request_rejection(user,group_name,syndicate)
+  def notify_sc_allocate_request_rejection(user,group_name,syndicate,action_type)
     syndicate = Syndicate.where(:syndicate_code=>syndicate).first
+    redirect_to(:back, :notice => 'syndicate does not exist, email not send') and return if syndicate.nil?
 
-    if !syndicate.nil?
-      sc = UseridDetail.where(:userid=>syndicate.syndicate_coordinator).first
+    sc = UseridDetail.where(:userid=>syndicate.syndicate_coordinator).first
+    redirect_to(:back, :notice => 'syndicate coordinator does not exist, email not send') and return if sc.nil?
 
-      if !sc.nil?
+    case action_type
+      when 'allocate'
+        subject = "allocate request accepted"
+        email_body = "Your request to have image group " + group_name + " be allocated is approved"
+      when 'reject'
         subject = "allocate request rejected"
         email_body = "Your request to have image group " + group_name + " be allocated was rejected"
-
-        mail(:from => user.email_address, :to => sc.email_address, :subject => subject, :body => email_body)
-      else
-        flush[:notice] = 'syndicate coordinator does not exist, email not send'
-      end
-    else
-      flush[:notice] = 'syndicate does not exist, email not send'
     end
+
+    mail(:from => user.email_address, :to => sc.email_address, :subject => subject, :body => email_body)
   end
 
   def notify_sc_assignment_complete(assignment_id)
