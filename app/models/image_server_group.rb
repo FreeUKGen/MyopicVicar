@@ -321,12 +321,14 @@ class ImageServerGroup
     def update_image_and_group_for_put_request(old_status,new_status,user=nil)
       case new_status
         when 'a'
-          ig = self.first
           self.update(:assign_date=>Time.now.iso8601)
-          flash_notice = 'Image Group successfully allocated'
+          ig = self.first
           UserMailer.notify_sc_allocate_request_rejection(user,ig.group_name,ig.syndicate_code,'allocate').deliver_now
 
+          flash_notice = 'Image Group successfully allocated'
+
         when 'u'
+          self.update(:syndicate_code=>'', :assign_date=>nil)
           case old_status
             when 'a'
               flash_notice = 'Unallocate of Image Group was successful'
@@ -336,7 +338,6 @@ class ImageServerGroup
 
               flash_notice = 'successfully rejected Image Group allocate request'
           end
-          self.update(:syndicate_code=>'', :assign_date=>nil)
 
         when 'c'
           flash_notice = 'Image Group is marked as complete'

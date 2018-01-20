@@ -209,7 +209,7 @@ class UserMailer < ActionMailer::Base
         email_body = "Your request to have image group " + group_name + " be allocated is approved"
       when 'reject'
         subject = "allocate request rejected"
-        email_body = "Your request to have image group " + group_name + " be allocated was rejected"
+        email_body = "Your request to have image group " + group_name + " be allocated is rejected"
     end
 
     mail(:from => user.email_address, :to => sc.email_address, :subject => subject, :body => email_body)
