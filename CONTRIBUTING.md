@@ -3,6 +3,16 @@
 Thank you for your interest in Free UK Genealogy and the MyopicVicar 
 genealogical records database and search engine!
 
+# Get Started
+
+Please begin by filling in our new tech volunteer form and letting us know a bit about you. We will also use this to add you to our Slack community.
+
+https://docs.google.com/forms/d/1QX4-Cw5-d4ipZVZ4uvl2QPcCvnA5Sm0Aj-IWJhP7igA/
+
+Ensure you let us know what idea you might like to help develop, or indeed if you have a new idea you would like to discuss. We will update the ideas as often as possible, however it is always a good idea to check them out on Github too (see below for instructions).
+
+If you are interested in Google’s Summer of Code, please read and apply here: https://summerofcode.withgoogle.com/get-started/.
+
 ## Our Code of Conduct
 
 Free UK Genealogy, including its software development team, operates 
