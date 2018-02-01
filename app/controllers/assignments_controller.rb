@@ -1,6 +1,5 @@
 class AssignmentsController < ApplicationController
   require 'userid_role'
-  require 'source_property'
 
   skip_before_filter :require_login, only: [:show]
 

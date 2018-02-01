@@ -10,7 +10,7 @@ class ImageServerGroupsController < ApplicationController
     @group = ImageServerGroup.source_id(params[:id])
     @image_server_group = @group.first
 
-    redirect_to(:back, :notice => 'No gruop for allocation.') if @group_name.empty?
+    redirect_to(:back, :notice => 'No gruop for allocation.') and return if @group_name.empty?
   end
 
   def create
@@ -55,7 +55,7 @@ class ImageServerGroupsController < ApplicationController
     rescue Mongoid::Errors::DeleteRestriction
       logger.info "Logged Error for Image Server Group Delete"
       logger.debug image_server_group.group_name+' is not empty'
-      redirect_to(:back, :notice => image_server_group.group_name+' IS NOT EMPTY, CAN NOT BE DELETED')
+      redirect_to(:back, :notice => image_server_group.group_name+' IS NOT EMPTY, CAN NOT BE DELETED') and return
     end     
   end
 
@@ -99,11 +99,7 @@ class ImageServerGroupsController < ApplicationController
     @image_server_group = @group.first
     @parent_source = Source.id(session[:source_id]).first
 
-    if @image_server_group.nil?
-      flash[:notice] = 'Attempted to edit a non_esxistent Image Group'
-      redirect_to :back
-      return
-    end
+    redirect_to(:back, :notice => 'Attempted to edit a non_esxistent Image Group') and return if @image_server_group.nil?
   end
 
   def error
@@ -121,10 +117,7 @@ class ImageServerGroupsController < ApplicationController
 
     @image_server_group = ImageServerGroup.image_server_groups_by_user_role(session[:manage_user_origin], session[:source_id], session[:syndicate])
 
-    if @image_server_group.nil?
-      flash[:notice] = "Register does not have any Image Group from Image Server."
-      redirect_to :back
-    end
+    redirect_to(:back, :notice => "Register does not have any Image Group from Image Server.") and return if @image_server_group.nil?
   end
 
   def my_list_by_county
@@ -132,10 +125,10 @@ class ImageServerGroupsController < ApplicationController
     session[:chapman_code] = params[:id]
 
     @user = UseridDetail.where(:userid=>session[:userid]).first
-    @source,@group_ids,@group_id = ImageServerGroup.get_group_ids_for_available_assignment_by_county(session[:chapman_code])
+    @source,@group_ids,@group_id = ImageServerGroup.group_ids_for_available_assignment_by_county(session[:chapman_code])
 
     if @group_id.empty?
-      flash[:notice] = 'No image groups for allocation under county ' + params[:id]
+      flash[:notice] = 'No Image Groups for Allocation under County ' + params[:id]
       redirect_to :back
     else
       session[:source_id] = @source[0][0]

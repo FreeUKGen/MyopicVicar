@@ -33,9 +33,7 @@
         <th class="t15">Transcriber</th>
         <th class="t15">Reviewer</th>
         <th class="t15">Action <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '14' %>
-          <% if session[:manage_user_origin] == 'manage syndicate' %>   <%# any user from manage_syndicates %>
-            <span>SH: Show Image Properties;<br>ED: Edit Image Properties;<br>VW: View Original Image;<br>DL: Download Original Image;</span>
-          <% elsif @user.person_role == 'system_administrator' %>     <%# system_administrator from manage_counties %>
+          <% if @user.person_role == 'system_administrator' %>     <%# system_administrator from manage_counties %>
             <span>SH: Show Image Properties;<br>ED: Edit Image Properties;<br>VW: View Original Image;<br>DL: Download Original Image;<br>DE: Delete Image information from FR</span>
           <% else %>        <%# non admin from manage_counties %>
             <span>SH: Show Image Properties;<br>ED: Edit Image Properties;<br>VW: View Original Image;<br>DL: Download Original Image;</span>

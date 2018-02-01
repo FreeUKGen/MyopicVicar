@@ -21,9 +21,9 @@ class Assignment
         ImageServerImage.where(:id=>{'$in'=>image_list}).update_all(:assignment_id=>assignment.id, :transcriber=>[user.userid])
       else
         case image_status
-          when 'bt'
+        when 'bt'
             ImageServerImage.where(:id=>{'$in'=>image_list}).update_all(:assignment_id=>assignment.id, :status=>image_status, :transcriber=>[user.userid])
-          when 'br'
+        when 'br'
             ImageServerImage.where(:id=>{'$in'=>image_list}).update_all(:assignment_id=>assignment.id, :status=>image_status, :reviewer=>[user.userid])
         end
       end
@@ -32,26 +32,24 @@ class Assignment
     def bulk_update_assignment(my_own,assignment_id,action_type,orig_status,new_status)
       assignment = Assignment.id(assignment_id)
 
-      if assignment.first.nil?
-        return false
-      else
-        image_server_image = ImageServerImage.where(:assignment_id=>assignment_id, :status=>orig_status)
-        image_server_group = ImageServerGroup.where(:id=>image_server_image.first.image_server_group.id)
-        user = UseridDetail.where(:id=>assignment.first.userid_detail_id).first.userid
+      return false if assignment.first.nil?
 
-        if !my_own          # accept from SC
-          assignment_list = assignment.pluck(:id)
-          image_list = image_server_image.pluck(:id).map {|x| x.to_s}
+      image_server_image = ImageServerImage.where(:assignment_id=>assignment_id, :status=>orig_status)
+      image_server_group = ImageServerGroup.where(:id=>image_server_image.first.image_server_group.id)
+      user = UseridDetail.where(:id=>assignment.first.userid_detail_id).first.userid
 
-          update_original_assignments(assignment_list,'',image_list)
-        end
+      if !my_own          # accept from SC
+        assignment_list = assignment.pluck(:id)
+        image_list = image_server_image.pluck(:id).map {|x| x.to_s}
 
-        update_image_server_image_to_update_assignment(image_server_image,assignment_id,action_type,new_status,user)
-
-        ImageServerImage.refresh_src_dest_group_summary(image_server_group)
-
-        return true
+        update_original_assignments(assignment_list,'',image_list)
       end
+
+      update_image_server_image_to_update_assignment(image_server_image,assignment_id,action_type,new_status,user)
+
+      ImageServerImage.refresh_src_dest_group_summary(image_server_group)
+
+      return true
     end
 
   	def create_assignment(source_id,user_id,instructions,assign_list,image_status)
@@ -83,12 +81,8 @@ class Assignment
         userid = Hash.new{|h,k| h[k]=[]}.tap{|h| u_ids.each{|k,v| h[k] = v}}
 
         i_ids = ImageServerImage.where(:assignment_id=>a_ids[0][0]).pluck(:id, :assignment_id, :image_server_group_id, :image_file_name, :status, :difficulty, :notes)
-        image_assignment_id = Hash.new{|h,k| h[k]=[]}.tap{|h| i_ids.each{|k,v1,v2| h[k] = v1}}
-        image_group_id = Hash.new{|h,k| h[k]=[]}.tap{|h| i_ids.each{|k,v1,v2,v3| h[k] = v2}}
-        image = Hash.new{|h,k| h[k]=[]}.tap{|h| i_ids.each{|k,v1,v2,v3,v4,v5,v6| h[k] << v3 << v4 << v5 << v6}}
 
-        g_ids = ImageServerGroup.where(:id=>{'$in'=>image_group_id.values.uniq}).pluck(:id, :group_name)
-        group_name = Hash.new{|h,k| h[k]=[]}.tap{|h| g_ids.each{|k,v| h[k] = v}}
+        (assignment_id, image_assignment_id, image_group_id, image, group_name) = prepare_for_parsing(a_ids,i_ids)
 
         assignment, count = generate_parsing_assignment(assignment_id,userid,group_name,image_group_id,image_assignment_id,image)
       end
@@ -107,15 +101,10 @@ class Assignment
       end
 
       userid = Hash.new{|h,k| h[k]=[]}.tap{|h| u_ids.each{|k,v| h[k] = v}}
-      assignment_id = Hash.new{|h,k| h[k]=[]}.tap{|h| a_ids.each{|k,v1,v2,v3,v4| h[k] << v1 << v2 << v3 << v4}}
 
       i_ids = ImageServerImage.where(:assignment_id=>{'$in'=>a_ids.map(&:first)}).pluck(:id, :assignment_id, :image_server_group_id, :image_file_name, :status, :difficulty, :notes)
-      image_assignment_id = Hash.new{|h,k| h[k]=[]}.tap{|h| i_ids.each{|k,v1,v2| h[k] = v1}}
-      image_group_id = Hash.new{|h,k| h[k]=[]}.tap{|h| i_ids.each{|k,v1,v2,v3| h[k] = v2}}
-      image = Hash.new{|h,k| h[k]=[]}.tap{|h| i_ids.each{|k,v1,v2,v3,v4,v5,v6| h[k] << v3 << v4 << v5 << v6}}
 
-      g_ids = ImageServerGroup.where(:id=>{'$in'=>image_group_id.values.uniq}).pluck(:id, :group_name)
-      group_name = Hash.new{|h,k| h[k]=[]}.tap{|h| g_ids.each{|k,v| h[k] = v}}
+      (assignment_id, image_assignment_id, image_group_id, image, group_name) = prepare_for_parsing(a_ids,i_ids)
 
       assignment, count = generate_parsing_assignment(assignment_id,userid,group_name,image_group_id,image_assignment_id,image)
 
@@ -150,15 +139,13 @@ class Assignment
 
     def get_flash_message(type,my_own)
       case type
-        when 'complete'
-          if my_own                 # from SC
-            flash_message = 'email is sent to syndicate coordinator'
-          else                                # from transcriber
-            flash_message = 'Accept assignment was successful'
+      when 'complete'
+          if my_own then flash_message = 'email is sent to syndicate coordinator'  # from SC
+                    else flash_message = 'Accept assignment was successful'        # from transcriber
           end
-        when 'unassign'
+      when 'unassign'
           flash_message = 'UN_ASSIGN assignment was successful'
-        when 'error'
+      when 'error'
           flash_message = 'Modify images in assignment as ERROR was successful'
       end
 
@@ -178,7 +165,7 @@ class Assignment
     def get_group_id_for_update_request(image_server_group_id)
       if image_server_group_id.nil?    # list assignment under a syndicate
         group_id = nil
-      else                                # list assignments under a image group of a syndicate
+      else                             # list assignments under a image group of a syndicate
         group_id = BSON::ObjectId.from_string(image_server_group_id)
       end
 
@@ -207,15 +194,13 @@ class Assignment
 
     def get_update_assignment_new_status(type,my_own,orig_status)
       case type
-        when 'complete'
-          if my_own                 # from SC
-            new_status = orig_status == 'bt' ? 'ts' : 'rs'
-          else                                # from transcriber
-            new_status = orig_status == 'ts' ? 't' : 'r'
+      when 'complete'
+          if my_own then new_status = orig_status == 'bt' ? 'ts' : 'rs' # from SC
+                    else new_status = orig_status == 'ts' ? 't' : 'r'   # from transcriber
           end
-        when 'unassign'
+      when 'unassign'
           new_status = orig_status == 'bt' ? 'a' : 't'
-        when 'error'
+      when 'error'
           new_status = 'e'
       end
 
@@ -224,20 +209,17 @@ class Assignment
 
     def get_reassign_list(type,transcriber_list,reviewer_list)
       case type
-        when 'transcriber'
+      when 'transcriber'
           reassign_list = transcriber_list.reject{|x| x.to_i == 0}
-        when 'reviewer'
+      when 'reviewer'
           reassign_list = reviewer_list.reject{|x| x.to_i == 0}
-        else
       end
     end
 
     def get_source_id(type,source_id,transcriber_list,reviewer_list)
       if source_id.nil?       # from list assignments under a syndicate
-        if type == 'transcriber'
-          image_id = transcriber_list.reject{|x| x.to_i == 0}[0]
-        else
-          image_id = reviewer_list.reject{|x| x.to_i == 0}[0]
+        if type == 'transcriber' then image_id = transcriber_list.reject{|x| x.to_i == 0}[0]
+                                 else image_id = reviewer_list.reject{|x| x.to_i == 0}[0]
         end
         source_id = ImageServerImage.id(image_id).first.image_server_group.source.id
       end
@@ -253,13 +235,22 @@ class Assignment
       image_server_group = ImageServerGroup.where(:syndicate_code=>syndicate).pluck(:id, :group_name)
       group_id = image_server_group.map{|a| a[0]}.uniq
 
-      u_ids = UseridDetail.where(:syndicate=>syndicate).pluck(:id,:userid)
+      u_ids = UseridDetail.pluck(:id,:userid)
       userid = Hash.new{|h,k| h[k]=[]}.tap{|h| u_ids.each{|k,v| h[k] = v}}
 
       a_ids = Assignment.pluck(:id, :source_id, :assign_date, :instructions, :userid_detail_id)
-      assignment_id = Hash.new{|h,k| h[k]=[]}.tap{|h| a_ids.each{|k,v1,v2,v3,v4| h[k] << v1 << v2 << v3 << v4}}
 
       i_ids = ImageServerImage.where(:assignment_id=>{'$in'=>a_ids.map(&:first)}, :status=>status, :image_server_group_id=>{'$in'=>group_id}).pluck(:id, :assignment_id, :image_server_group_id, :image_file_name, :status, :difficulty, :notes)
+
+      (assignment_id, image_assignment_id, image_group_id, image, group_name) = prepare_for_parsing(a_ids,i_ids)
+
+      assignment, count = generate_parsing_assignment(assignment_id,userid,group_name,image_group_id,image_assignment_id,image)
+
+      return assignment, count
+    end
+
+    def prepare_for_parsing(a_ids,i_ids)
+      assignment_id = Hash.new{|h,k| h[k]=[]}.tap{|h| a_ids.each{|k,v1,v2,v3,v4| h[k] << v1 << v2 << v3 << v4}}
       image_assignment_id = Hash.new{|h,k| h[k]=[]}.tap{|h| i_ids.each{|k,v1,v2| h[k] = v1}}
       image_group_id = Hash.new{|h,k| h[k]=[]}.tap{|h| i_ids.each{|k,v1,v2,v3| h[k] = v2}}
       image = Hash.new{|h,k| h[k]=[]}.tap{|h| i_ids.each{|k,v1,v2,v3,v4,v5,v6| h[k] << v3 << v4 << v5 << v6}}
@@ -267,9 +258,7 @@ class Assignment
       g_ids = ImageServerGroup.where(:id=>{'$in'=>image_group_id.values.uniq}).pluck(:id, :group_name)
       group_name = Hash.new{|h,k| h[k]=[]}.tap{|h| g_ids.each{|k,v| h[k] = v}}
 
-      assignment, count = generate_parsing_assignment(assignment_id,userid,group_name,image_group_id,image_assignment_id,image)
-
-      return assignment, count
+      return assignment_id, image_assignment_id, image_group_id, image, group_name
     end
 
     def source_id(id)
@@ -331,23 +320,23 @@ class Assignment
 
     def update_image_server_image_to_update_assignment(image_server_image,assignment_id,action_type,new_status,user)
       case action_type
-        when 'complete'
+      when 'complete'
           case new_status
-            when 'ts', 'rs'         # from transcriber
+          when 'ts', 'rs'         # from transcriber
               image_server_image.where(:assignment_id=>assignment_id).update_all(:status=>new_status)
-           when 't'                 # from SC
+          when 't'                 # from SC
               image_server_image.update_all(:assignment_id=>nil, :status=>new_status, :transcriber=>[user])
-            when 'r'                # from SC
+          when 'r'                # from SC
               image_server_image.update_all(:assignment_id=>nil, :status=>new_status, :reviewer=>[user])
           end
-        when 'unassign'
+      when 'unassign'
           case new_status
-            when 'a'
+          when 'a'
               image_server_image.update_all(:assignment_id=>nil, :status=>new_status, :transcriber=>[''])
-            when 't'
+          when 't'
               image_server_image.update_all(:assignment_id=>nil, :status=>new_status, :reviewer=>[''])
           end
-        when 'error'
+      when 'error'
           image_server_image.update_all(:assignment_id=>nil, :status=>new_status, :reviewer=>[user])
       end
     end
