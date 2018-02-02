@@ -173,7 +173,6 @@ class SourcesController < ApplicationController
       Source.update_for_propagate(params)
       flash[:notice] = 'Update of source was successful'
     elsif !source_params[:initialize_status].nil?           # to initialize Source
-byebug      
       ImageServerGroup.initialize_all_images_status_under_source(params[:id], source_params[:initialize_status])
       flash[:notice] = 'Successfully initialized source'
     else                                                    # to edit Source

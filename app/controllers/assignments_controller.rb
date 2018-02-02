@@ -277,7 +277,6 @@ class AssignmentsController < ApplicationController
     if session[:my_own]
       redirect_to list_assignments_of_myself_assignment_path
     else
-byebug      
       if params[:assignment].nil?
         redirect_to :back
       else
