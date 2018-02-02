@@ -116,7 +116,7 @@ class SourcesController < ApplicationController
 
     allow_initialize = ImageServerGroup.check_all_images_status_before_initialize_source(params[:id])
 
-    redirect_to(:back, :notice=>'You can only initialize a source when all image groups status is unset') and return if not allow_initialize
+    redirect_to(:back, :notice=>'Source can be initialized only when all image groups status is unset') and return if not allow_initialize
   end
 
   def load(source_id)
@@ -173,6 +173,7 @@ class SourcesController < ApplicationController
       Source.update_for_propagate(params)
       flash[:notice] = 'Update of source was successful'
     elsif !source_params[:initialize_status].nil?           # to initialize Source
+byebug      
       ImageServerGroup.initialize_all_images_status_under_source(params[:id], source_params[:initialize_status])
       flash[:notice] = 'Successfully initialized source'
     else                                                    # to edit Source
