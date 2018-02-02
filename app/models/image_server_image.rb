@@ -52,7 +52,7 @@ class ImageServerImage
 
     def get_group_and_image_from_group_id(group_id)
       image_server_group = ImageServerGroup.id(group_id)
-      image_server_image = ImageServerImage.where(:mage_server_group_id=>group_id)
+      image_server_image = ImageServerImage.where(:image_server_group_id=>group_id)
 
       return image_server_group, image_server_image
     end
