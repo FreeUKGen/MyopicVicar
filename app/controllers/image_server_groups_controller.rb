@@ -10,7 +10,7 @@ class ImageServerGroupsController < ApplicationController
     @group = ImageServerGroup.source_id(params[:id])
     @image_server_group = @group.first
 
-    redirect_to(:back, :notice => 'No gruop for allocation.') and return if @group_name.empty?
+    redirect_to(:back, :notice => 'No group for allocation.') and return if @group_name.empty?
   end
 
   def create
