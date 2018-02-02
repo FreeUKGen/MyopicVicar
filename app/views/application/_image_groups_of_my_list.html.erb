@@ -13,7 +13,7 @@
         <th class="t25">Image Groups <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
               <span>A Source can have multiple groups.</span></a></th>
         <th class="t10">Number of Images</th>
-        <th class="t11">Request Allocation <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+        <th class="t10">Request Allocation <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
           <% if session[:manage_user_origin] == 'manage syndicate' %>
             <span>Email County Coordinator to request the allocation of this image group</span></a>
           <% elsif session[:my_own] %>
@@ -74,9 +74,9 @@
           <td class="t25"><%= link_to(group_name, image_server_group_path(gid, :assignment_filter_list=>session[:assignment_filter_list])) %></td>
           <td class="t10"><center><%= number_of_images %></center>&nbsp;</td>
           <% if session[:manage_user_origin] == 'manage syndicate' %>
-            <td class="t11"><%= link_to 'Email CC', request_cc_image_server_group_path(gid, :county=>session[:chapman_code], :user=>cookies.signed[:userid]), :title=>'email county coordinator to request the allocation of this image group' %></td>
+            <td class="t10"><%= link_to 'Email CC', request_cc_image_server_group_path(gid, :county=>session[:chapman_code], :user=>cookies.signed[:userid]), :title=>'email county coordinator to request the allocation of this image group' %></td>
           <% elsif session[:my_own] %>
-            <td class="t11"><%= link_to 'Email SC', request_sc_image_server_group_path(gid, :syndicate=>session[:syndicate], :user=>cookies.signed[:userid]), :title=>'email Syndicate Coordinator to request the assignment of this image group' %></td>
+            <td class="t10"><%= link_to 'Email SC', request_sc_image_server_group_path(gid, :syndicate=>session[:syndicate], :user=>cookies.signed[:userid]), :title=>'email Syndicate Coordinator to request the assignment of this image group' %></td>
           <% end %>
 
           <% source_rows = source_rows - 1 unless source_rows == 0 %>
