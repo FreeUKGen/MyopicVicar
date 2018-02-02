@@ -145,8 +145,6 @@ class Assignment
           end
       when 'unassign'
           flash_message = 'UN_ASSIGN assignment was successful'
-      when 'error'
-          flash_message = 'Modify images in assignment as ERROR was successful'
       end
 
       return flash_message
@@ -200,8 +198,6 @@ class Assignment
           end
       when 'unassign'
           new_status = orig_status == 'bt' ? 'a' : 't'
-      when 'error'
-          new_status = 'e'
       end
 
       return new_status
@@ -336,8 +332,6 @@ class Assignment
           when 't'
               image_server_image.update_all(:assignment_id=>nil, :status=>new_status, :reviewer=>[''])
           end
-      when 'error'
-          image_server_image.update_all(:assignment_id=>nil, :status=>new_status, :reviewer=>[user])
       end
     end
 

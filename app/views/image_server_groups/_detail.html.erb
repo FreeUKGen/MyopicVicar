@@ -56,7 +56,7 @@
         <% unless @image_server_group.summary[:status].nil? %>
           <% @image_server_group.summary[:status].each do |status| %>
             <% case SourceProperty::STATUS[status] %>
-              <% when 'ERROR', 'UNALLOCATED' %>
+              <% when 'UNALLOCATED' %>
                 <span style="color:red"><%= SourceProperty::STATUS[status] %></span>
               <% when 'REVIEWED' %>
                 <span style="color:green"><%= SourceProperty::STATUS[status] %></span>

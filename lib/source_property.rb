@@ -22,10 +22,9 @@ module SourceProperty
     'rs'  => 'Review Submitted', 
     'r'   => 'Reviewed', 
     'cs'  => 'Completion Submitted', 
-    'c'   => 'Complete', 
-    'e'   => 'Error'
+    'c'   => 'Complete'
   }
 
-  STATUS_ARRAY = ['u', 'ar', 'a', 'bt', 'ts', 't', 'br', 'rs', 'r', 'cs', 'c', 'e']
+  STATUS_ARRAY = ['u', 'ar', 'a', 'bt', 'ts', 't', 'br', 'rs', 'r', 'cs', 'c']
 
 end

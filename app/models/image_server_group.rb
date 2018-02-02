@@ -78,9 +78,9 @@ class ImageServerGroup
 
       case type
         when 't'
-          scope = ['u','ar','a','bt','ts','br','rs','r','cs','c','e']
+          scope = ['u','ar','a','bt','ts','br','rs','r','cs','c']
         when 'r'
-          scope = ['u','ar','a','bt','ts','t','br','rs','cs','c','e']
+          scope = ['u','ar','a','bt','ts','t','br','rs','cs','c']
       end
 
       match_image_group = ImageServerGroup.where(:syndicate_code=>syndicate)
