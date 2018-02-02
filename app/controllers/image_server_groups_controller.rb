@@ -144,7 +144,7 @@ class ImageServerGroupsController < ApplicationController
     @image_server_group = ImageServerGroup.where(:syndicate_code=>@user.syndicate, :assign_date=>{'$nin'=>[nil,'']})        # filter allocate_request image groups
 
     if @image_server_group.first.nil?
-      flash[:notice] = 'No assignment under your syndicate'
+      flash[:notice] = 'No allocation under ' + @user.syndicate
     else
       session[:image_server_group_id] = @image_server_group.first.id
       display_info

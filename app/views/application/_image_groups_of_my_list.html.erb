@@ -13,7 +13,9 @@
         <th class="t25">Image Groups <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
               <span>A Source can have multiple groups.</span></a></th>
         <th class="t10">Number of Images</th>
-        <th class="t10">Request Allocation</th>
+        <th class="t10">Request Allocation <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+          <span>Email Syndicator Coordinator to request the assignment of this image group</span></a>
+        </th>
       </tr>
     </thead>
   </table>
@@ -70,7 +72,7 @@
           <% if session[:manage_user_origin] == 'manage syndicate' %>
             <td class="t10"><%= link_to 'Email CC', request_cc_image_server_group_path(gid, :county=>session[:chapman_code], :user=>cookies.signed[:userid]), :title=>'email county coordinator to request the allocation of this image group' %></td>
           <% elsif session[:my_own] %>
-            <td class="t10"><%= link_to 'Email SC', request_sc_image_server_group_path(gid, :syndicate=>session[:syndicate], :user=>cookies.signed[:userid]), :title=>'email syndicate coordinator to request the assignment of this image group' %></td>
+            <td class="t10"><%= link_to 'Email SC', request_sc_image_server_group_path(gid, :syndicate=>session[:syndicate], :user=>cookies.signed[:userid]), :title=>'email Syndicate Coordinator to request the assignment of this image group' %></td>
           <% end %>
 
           <% source_rows = source_rows - 1 unless source_rows == 0 %>
