@@ -201,7 +201,7 @@ class ImageServerGroupsController < ApplicationController
     display_info
 
     image_server_group = ImageServerGroup.where(:id=>params[:id])
-    ImageServerGroup.update_image_status(image_server_group,'cs')
+    ImageServerImage.update_image_status(image_server_group,'cs')
 
     UserMailer.notify_cc_assignment_complete(@user,params[:id],@place[:chapman_code]).deliver_now
 
