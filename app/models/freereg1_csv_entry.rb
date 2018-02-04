@@ -100,6 +100,10 @@ class Freereg1CsvEntry
 
   has_one :search_record
 
+  scope :zero_baptism_records, -> { where(:baptism_date.in => [nil, "","0"], :birth_date.in => [nil, "","0"]) }
+  scope :zero_marriage_records, -> { where(:marriage_date.in => [nil,"","0"]) }
+  scope :zero_burial_records, -> { where(:burial_date.in => [nil,"","0"]) }
+
 
   embeds_many :multiple_witnesses, cascade_callbacks: true
   accepts_nested_attributes_for :multiple_witnesses,allow_destroy: true,

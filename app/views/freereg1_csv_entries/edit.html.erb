@@ -1,4 +1,6 @@
 <% breadcrumb :edit_record,  @freereg1_csv_entry,@freereg1_csv_file%>
+<% breadcrumb :edit_zero_year_record,  @freereg1_csv_entry,@freereg1_csv_file if params[:zero_record] == "true" %>
+<% breadcrumb :edit_zero_year_entry,  @freereg1_csv_entry,@freereg1_csv_file if params[:zero_listing] == "true"%>
 <p style="text-align: center">Editing record <b><%= @freereg1_csv_entry.file_line_number %></b> for batch: <b><%= @freereg1_csv_file_name %></b> (<%= @file_owner %>) in <b><%= @register_name %></b> of <b> <%= @church_name%></b> in <b><%= @place_name %></b> of <b><%= @county %></b></p>
 <div  style="text-align: center">  </div><br>
 

@@ -222,7 +222,7 @@ class Freereg1CsvFilesController < ApplicationController
         (session[:role] == "county_coordinator" || session[:role] == "system_administrator" || session[:role] == "technical" || session[:role] == "country_coordinator" ||
          session[:role] == "volunteer_coordinator" || session[:role] == "syndicate_coordinator" || session[:role] == 'data_manager' || session[:role] == "documentation_coordinator")
         userids = Syndicate.get_userids_for_syndicate(session[:syndicate])
-      @freereg1_csv_files = Freereg1CsvFile.in(userid: userids).order_by(session[:sort]).all.page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
+      @freereg1_csv_files = Freereg1CsvFile.in(userid: userids).order_by(session[:sort]).all.page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE).includes(:freereg1_csv_entries)
     when session[:syndicate].present? && session[:userid_id].present? &&
         (session[:role] == "county_coordinator" || session[:role] == "system_administrator" || session[:role] == "technical" || session[:role] == "country_coordinator" ||
          session[:role] == "volunteer_coordinator" || session[:role] == "syndicate_coordinator" || session[:role] == 'data_manager' || session[:role] == "documentation_coordinator")
@@ -579,17 +579,6 @@ class Freereg1CsvFilesController < ApplicationController
       go_back("batch",params[:id])
     end
   end
-  def zero_year
-    #get the entries with a zero year
-    @freereg1_csv_file = Freereg1CsvFile.id(params[:id]).first
-    if @freereg1_csv_file.present?
-      set_controls(@freereg1_csv_file)
-    else
-      go_back("batch",params[:id])
-    end
-    @freereg1_csv_entries = @freereg1_csv_file.get_zero_year_entries
-    render 'freereg1_csv_entries/index'
-  end
   
   def unique_names
      @freereg1_csv_file = Freereg1CsvFile.id(params[:object]).first
@@ -601,10 +590,47 @@ class Freereg1CsvFilesController < ApplicationController
     @freereg1_csv_entries = @freereg1_csv_file.get_unique_names
   end
 
+  def zero_year
+    #get the entries with a zero year
+    @freereg1_csv_file = Freereg1CsvFile.id(params[:id]).first
+    if @freereg1_csv_file.present?
+      set_controls(@freereg1_csv_file)
+    else
+      go_back("batch",params[:id])
+    end
+    @freereg1_csv_entries = @freereg1_csv_file.get_entries_zero_year
+    display_info
+    @zero_year = true
+    render 'freereg1_csv_entries/index'
+  end
+
+  def show_zero_startyear_entries
+    file_id = params[:id]
+    @freereg1_csv_file = Freereg1CsvFile.where(id: file_id).first
+    @freereg1_csv_entries = @freereg1_csv_file.get_zero_year_records
+    display_info
+    @get_zero_year_records = true
+    render 'freereg1_csv_entries/index'
+  end
 
   private
   def freereg1_csv_file_params
     params.require(:freereg1_csv_file).permit!
+  end
+
+  def display_info
+    @freereg1_csv_file_id =  @freereg1_csv_file.id
+    @freereg1_csv_file_name =  @freereg1_csv_file.file_name
+    @file_owner = @freereg1_csv_file.userid
+    @register = @freereg1_csv_file.register
+    @register_name = RegisterType.display_name(@register.register_type)
+    @church = @register.church #id?
+    @church_name = @church.church_name
+    @place = @church.place #id?
+    @county =  @place.county
+    @place_name = @place.place_name
+    @user = cookies.signed[:userid]
+    @first_name = @user.person_forename unless @user.blank?
   end
 
 end
