@@ -4,7 +4,6 @@
     <%= flash[:notice] %>  <% flash[:notice] = nil %><br>
   </div>
 <% end %>
-
 <% if MyopicVicar::Application.config.template_set == 'freereg' %>
   <% contents_link =  link_to "Transcriptions" , "/freereg_contents/new", :title => "By county, place and church" %>
 <% elsif MyopicVicar::Application.config.template_set == 'freecen' %>
@@ -47,7 +46,7 @@
     <div class="adsense_center">
       <span>Advertisement</span>
       <div>
-        <%= fullwidth_adsense %>
+        <%= google_advert %>
       </div>
     </div>
     <div class="text--center">
