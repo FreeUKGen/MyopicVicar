@@ -173,7 +173,7 @@ module ApplicationHelper
     </style>
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 <!-- FreeCEN2 Responsive Header -->
-    <ins class="adsbygoogle"
+    <ins class="adsbygoogle adSenseBanner"
        style="display:block"
        data-ad-client="ca-pub-5379635334920389"
        data-ad-slot="7868124617"
@@ -183,11 +183,11 @@ module ApplicationHelper
       $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})})
     </script>
     HTML
-    if Rails.env.development?
-     banner = <<-HTML
-      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
-      HTML
-    end
+    #if Rails.env.development?
+     #banner = <<-HTML
+      #<img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
+      #HTML
+    #end
     banner.html_safe
   end
 
