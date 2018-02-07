@@ -12,6 +12,12 @@
     <%= link_to 'Place for this Church', show_place_freereg_content_path(@place_name), :class => "btn weight--light  btn--small" %> 
     <%= link_to 'Church for this Register', show_church_freereg_content_path( @register.church), :class => "btn weight--light  btn--small" %>     
     </div><br>
+
+    <% if !@images.empty? %>
+      <h3 class="text--center">Images being Transcribed and Available for Transcription</h3>
+      <%= render 'images' %>
+    <% end %>
+
     <h1 class=" text--center">Transcriptions</h1> <h2 class=" text--center">Register <%= @register_type %> for <%=@church.church_name %> of <%= @place_name %> in <%= @county %> </h2>
     <%= render 'register_information' %>
       <h3 class=" text--center">Number of transcriptions  </h3>

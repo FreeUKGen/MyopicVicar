@@ -197,6 +197,9 @@ class FreeregContentsController < ApplicationController
         return
       end
     end
+
+    @images = Register.image_transcriptions_calculation(params[:id])
+
     @church  = @register.church
     if  @church.present?
       @place = @church.place

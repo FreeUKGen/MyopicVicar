@@ -1,0 +1,40 @@
+<div class="container">  
+  <section class="island " > 
+   <div class="table-wrapper">
+    <table class="table--bordered table--data" >
+      <colgroup >
+        <col class="t30">
+        <col class="t10">
+        <col class="t15">
+        <col class="t15">
+        <col class="t15 ">
+        <col class="t15">
+      </colgroup>
+      <thead >
+        <tr style="font-size: 20px; font-weight: bold">
+          <th>Group</th>
+          <th>Total Images</th>
+          <th>Being Transcribed</th>
+          <th>Transcription Submitted</th>
+          <th>Being Reviewed</th>
+          <th>Review Submitted</th>
+        </tr>
+      </thead>
+      <tbody >
+        <% @images.each do |k1,v1| %>
+          <% v1.each do |k2,v2| %>
+            <tr>
+              <td><%= k2 %></td>
+              <td><%= v2[:count] %>&nbsp;</td>
+              <td><%= v2[:being_transcribed] %>&nbsp;</td>
+              <td><%= v2[:transcription_submitted] %>&nbsp;</td>
+              <td><%= v2[:being_reviewed] %>&nbsp;</td>
+              <td><%= v2[:review_submitted] %>&nbsp;</td>
+            </tr>
+          <% end %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</section>
+</div>
