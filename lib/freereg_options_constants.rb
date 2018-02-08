@@ -1,56 +1,27 @@
 module FreeregOptionsConstants
   require 'record_type'
 
-  CHAPMAN_CODE_ELIMINATIONS = ['England', 'Scotland', 'Wales','Unknown', 'Clwyd','Dyfed','Gwent','Gwynedd','Powys','Mid Glamorgan',
-                               'South Glamorgan','West Glamorgan','Borders','Central','Dumfries and Galloway','Grampian','Highland','Lothian','Orkney Isles',
-                               'Shetland Isles','Strathclyde','Tayside','Western Isles', 'Northern Ireland']
-  MAXIMUM_NUMBER_OF_RESULTS = 250
-  MAXIMUM_NUMBER_OF_SCANS = 500
-  DATERANGE_MINIMUM = 1530
-  ISSUES = ['Data Question', 'Website Problem','Volunteering Question','Genealogical Question', 'Enhancement Suggestion', 'Thank-you' ,'General Comment']
-  FORCE_SEARCH_RECORD_RECREATE = [
-    "baptism_date",
-    "birth_date",
-    "bride_father_forename",
-    "bride_father_surname",
-    "bride_forename",
-    "bride_surname",
-    "burial_date",
-    "burial_person_forename",
-    "burial_person_surname",
-    "father_forename",
-    "father_surname",
-    "female_relative_forename",
-    "groom_father_forename",
-    "groom_father_surname",
-    "groom_forename",
-    "groom_surname",
-    "male_relative_forename",
-    "marriage_date",
-    "mother_forename",
-    "mother_surname",
-    "person_forename",
-    "relative_surname",
-    "witness1_forename",
-    "witness1_surname",
-    "witness2_forename",
-    "witness2_surname"
-  ]
   ALPHABET = ["A-C","D-F","G-I","J-L","M-N","O-Q","R-T","U-Z"]
   ALPHABET_SELECTION_LIST = ["CAM","CON","DUR","ESS","GLA","KEN","LAN","LIN","MDX","NBL","NFK","NTH","NTT","SOM","SRY","STS","WRY"]
   ALPHABETS = [
-    ["A-Z"], ["A-L","M-Z"], ["A-I","J-O", "P-Z"], ["A-F", "G-L", "M-Q", "R-Z"],["A-D","E-I","J-M","N-R","P-Z"],["A-D","E-H","I-L","M-O","P-S","T-Z"],
-    ["A-D","E-G","H-J","K-M","N-P","Q-S","T-Z"],["A-C","D-F","G-I","J-L","M-N","O-Q","R-T","U-Z"],
-    ["A-B","C-D","E-F","G-H","I-J","K-L","M-N","O-P","Q-R","S-T","U-V","W-Z"],
-    ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q-R","S","T","U-V","W-X","Y-Z"]
-  ]
-  RECORDS_PER_RANGE = 100000
-  FILES_PER_PAGE = 500
-  MAX_RECORDS_COORDINATOR = 4000
-  MAX_RECORDS_DATA_MANAGER = 15000
-  MAX_RECORDS_SYSTEM_ADMINISTRATOR = 100000
-  MESSAGE_RECIPIENTS = ['Myself to Review',"Active Transcribers",'Inactive Transcribers','Coordinators','Researchers', 'Managers', 'Coordinators and Managers']
-  MINIMUM_NUMBER_OF_FIELDS = 3
+                ["A-Z"], ["A-L","M-Z"], ["A-I","J-O", "P-Z"], ["A-F", "G-L", "M-Q", "R-Z"],["A-D","E-I","J-M","N-R","P-Z"],["A-D","E-H","I-L","M-O","P-S","T-Z"],
+                ["A-D","E-G","H-J","K-M","N-P","Q-S","T-Z"],["A-C","D-F","G-I","J-L","M-N","O-Q","R-T","U-Z"],
+                ["A-B","C-D","E-F","G-H","I-J","K-L","M-N","O-P","Q-R","S-T","U-V","W-Z"],
+                ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q-R","S","T","U-V","W-X","Y-Z"]  ]
+
+  BAPTISM_FIELDS = ['register_entry_number','birth_date','baptism_date','person_forename','person_sex','father_forename','mother_forename','father_surname','mother_surname',
+                    'person_abode','father_occupation','notes','film','film_number']
+
+  BURIAL_FIELDS = ['register_entry_number','burial_date','burial_person_forename','relationship','male_relative_forename','female_relative_forename','relative_surname',
+                   'burial_person_surname','person_age','burial_person_abode','notes','film','film_number'] 
+
+  CAPITALIZATION_WORD_EXCEPTIONS = [ "a", "ad" ,"an", "and", "at", "but", "by", "cum", "de", "en" ,"for", "has", "in", "la", "le", "near", "next", "nor", "nr",
+                                     "or", "on", "of", "so",  "the", "to", "under","upon","von", "with", "yet", "y"   ]
+
+  CHAPMAN_CODE_ELIMINATIONS = ['England', 'Scotland', 'Wales','Unknown', 'Clwyd','Dyfed','Gwent','Gwynedd','Powys','Mid Glamorgan',
+                               'South Glamorgan','West Glamorgan','Borders','Central','Dumfries and Galloway','Grampian','Highland','Lothian','Orkney Isles',
+                               'Shetland Isles','Strathclyde','Tayside','Western Isles', 'Northern Ireland']
+  
   CHURCH_WORD_EXPANSIONS =  {
     'Albans' => 'Alban',
     'Albright\'s' => 'Albright',
@@ -127,8 +98,8 @@ module FreeregOptionsConstants
     #    'Marys' => 'Mary',   #duplicate key (Marys is already included above)
     #    "Mary\'s" => 'Mary', #duplicate key (Mary\'s is already included above)
     "Marys\'" => 'Mary',
-    'Nicholas\'' => 'Nicholas'
-  }
+    'Nicholas\'' => 'Nicholas'  }
+
   COMMON_WORD_EXPANSIONS = {
     'Saints\'' => 'St',
     'Saint\'s' => 'St',
@@ -149,30 +120,14 @@ module FreeregOptionsConstants
     'LT.' => 'Little',
     '&' => "and",
     'NR' => 'near',
-    'nr' => 'near',
-  }
-  CAPITALIZATION_WORD_EXCEPTIONS = [
-    "a", "ad" ,"an", "and", "at", "but", "by", "cum", "de", "en" ,"for", "has", "in", "la", "le", "near", "next", "nor", "nr",
-    "or", "on", "of", "so",  "the", "to", "under","upon","von", "with", "yet", "y"
-  ]
-  WORD_START_BRACKET =  /\A\(/
-  WORD_SPLITS = {
-    "-" => /\-/,
-    "&" => /\&/
-  }
-  HEADER_DETECTION = /[+#][IN][NA][FM][OE].?/
-  RECORD_TYPE_TRANSLATION = {
-    "BAPTISMS" => RecordType::BAPTISM,
-    "MARRIAGES" => RecordType::MARRIAGE,
-    "BURIALS" => RecordType::BURIAL,
-    "BA" => RecordType::BAPTISM,
-    "MA" => RecordType::MARRIAGE,
-    "BU" => RecordType::BURIAL
-  }
-  VALID_RECORD_TYPE = ["BAPTISMS", "MARRIAGES", "BURIALS", "BA","MA", "BU"]
-  VALID_CCC_CODE = /\A[CcSs]{3,6}\z/
-  HEADER_FLAG = /\A\#\z/
-  VALID_CREDIT_CODE = ["CREDIT", "Credit", "credit"]
+    'nr' => 'near'  }
+
+  CONFIRM_EMAIL_ADDRESS = 120
+
+  CONTAINS_PERIOD = /\./
+
+  DATERANGE_MINIMUM = 1530
+
   ENTRY_ORDER_DEFINITION = { "ba" => {
                                :chapman_code=> 1,
                                :place_name=> 2,
@@ -240,13 +195,66 @@ module FreeregOptionsConstants
                                :burial_person_abode=> 13,
                                :notes=> 14,
                                :film=> 15,
-                               :film_number=> 16
-  }}
-  VALID_REGISTER_TYPES = /\A[AaBbDdEeMmOoTtPpUu\(][AaBbDdEeHhTtPpTtXxRrWw]?[KkIiTtXxRrWw]?'?[Ss]? ?[\)]?\z/
-  CONTAINS_PERIOD = /\./
-  ST_PERIOD = /\A[Ss][Tt]\z/
-  TEST = {:fieldset => "mine", otherset: "yours"}
-  CONFIRM_EMAIL_ADDRESS = 120
+                               :film_number=> 16  }}
 
-  SOURCE_NAME = ['Image Server', 'Other Server1', 'Other Server2', 'Other Server3']
+  FILES_PER_PAGE = 500
+
+  FORCE_SEARCH_RECORD_RECREATE = ["baptism_date","birth_date","bride_father_forename","bride_father_surname","bride_forename","bride_surname","burial_date",
+                                  "burial_person_forename","burial_person_surname","father_forename","father_surname","female_relative_forename","groom_father_forename",
+                                  "groom_father_surname","groom_forename","groom_surname","male_relative_forename","marriage_date","mother_forename","mother_surname",
+                                  "person_forename","relative_surname","witness1_forename","witness1_surname","witness2_forename","witness2_surname"]
+
+  ISSUES = ['Data Question', 'Website Problem','Volunteering Question','Genealogical Question', 'Enhancement Suggestion', 'Thank-you' ,'General Comment']
+  
+
+  HEADER_DETECTION = /[+#][IN][NA][FM][OE].?/
+
+  HEADER_FLAG = /\A\#\z/
+
+  MARRIAGE_FIELDS = ['register_entry_number','marriage_date','groom_forename','groom_surname','groom_age','groom_parish','groom_condition','groom_occupation','groom_abode',
+                     'bride_forename','bride_surname','bride_age','bride_parish','bride_condition','bride_occupation','bride_abode','groom_father_forename',
+                     'groom_father_surname','groom_father_occupation','bride_father_forename','bride_father_surname','bride_father_occupation','witness1_forename',
+                     'witness1_surname','witness2_forename','witness2_surname','notes','film','film_number'] 
+
+  MAXIMUM_NUMBER_OF_RESULTS = 250
+
+  MAXIMUM_NUMBER_OF_SCANS = 500 
+
+  MAX_RECORDS_COORDINATOR = 4000
+
+  MAX_RECORDS_DATA_MANAGER = 15000
+
+  MAX_RECORDS_SYSTEM_ADMINISTRATOR = 100000
+
+  MESSAGE_RECIPIENTS = ['Myself to Review',"Active Transcribers",'Inactive Transcribers','Coordinators','Researchers', 'Managers', 'Coordinators and Managers']
+
+  MINIMUM_NUMBER_OF_FIELDS = 3
+
+  RECORDS_PER_RANGE = 100000
+
+  RECORD_TYPE_TRANSLATION = {
+    "BAPTISMS" => RecordType::BAPTISM,
+    "MARRIAGES" => RecordType::MARRIAGE,
+    "BURIALS" => RecordType::BURIAL,
+    "BA" => RecordType::BAPTISM,
+    "MA" => RecordType::MARRIAGE,
+    "BU" => RecordType::BURIAL   }
+
+  ST_PERIOD = /\A[Ss][Tt]\z/
+
+  TEST = {:fieldset => "mine", otherset: "yours"}
+
+  VALID_RECORD_TYPE = ["BAPTISMS", "MARRIAGES", "BURIALS", "BA","MA", "BU"]
+  VALID_CCC_CODE = /\A[CcSs]{3,6}\z/
+  
+  VALID_CREDIT_CODE = ["CREDIT", "Credit", "credit"]
+ 
+  VALID_REGISTER_TYPES = /\A[AaBbDdEeMmOoTtPpUu\(][AaBbDdEeHhTtPpTtXxRrWw]?[KkIiTtXxRrWw]?'?[Ss]? ?[\)]?\z/
+   
+  WORD_START_BRACKET =  /\A\(/
+
+  WORD_SPLITS = {
+    "-" => /\-/,
+    "&" => /\&/   }
+
 end

@@ -22,6 +22,9 @@ class Freereg1CsvEntry
   require 'multiple_witness'
   require 'chapman_code'
 
+  # IF your add or delete fields you MAY have to alter the freereg_options_constants fields for baptisms, burials and marriages to enable the 
+  # new_freereg_csv_update_processor to process them
+
 
   # Fields here represent those currently requested by FreeREG1 at
   # http://www.freereg.org.uk/howto/enterdata.htm
@@ -123,12 +126,17 @@ class Freereg1CsvEntry
   index({"multiple_witnesses.witness_forename":1})
   
   validate :errors_in_fields
+
+
+
+
   class << self
     def id(id)
       where(:id => id)
     end
     def delete_entries_for_a_file(fileid)
       entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => fileid).all.no_timeout
+      p "#{entries.length}" unless entries.nil?
       entries.destroy_all
     end
     def update_entries_userid(userid,batch)
