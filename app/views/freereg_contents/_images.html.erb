@@ -1,53 +1,65 @@
 <div class="container">  
   <section class="island " > 
    <div class="table-wrapper">
-    <table class="table--bordered table--data" >
+    <table class="table--bordered table--data">
       <colgroup >
-        <col class="t30">
-        <col class="t10">
         <col class="t40">
         <col class="t20">
+        <col class="t20">
+        <col class="t10">
+        <col class="t10">
       </colgroup>
       <thead >
         <tr style="font-size: 20px; font-weight: bold">
-          <th>Group</th>
-          <th>Total Images</th>
-          <th colspan=4>In Progress</th>
-          <th colspan=2>Available</th>
+          <th class="t40">Group
+            <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '14' %><span>The name of the group if images ued to identify them internally</span></a>
+          </th>
+          <th class="t20">Total Images</th>
+          <th class="t20" colspan=4>In Progress
+            <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '14' %><span>Images currently being transcribed and/or reviewed</span></a>
+          </th>
+          <th class="t10" colspan=2>Available
+            <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '14' %><span>Number of images that are available to be transcribed</span></a>
+          </th>
+          <th class="t10">Volunteer
+            <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '14' %><span>Send email to FreeREG Coordinator indicating you are interested in becoming a transcriber for these images</span></a>
+          </th>
         </tr>
       </thead>
       <tbody id="show_detail">
         <% @images.each do |k1,v1| %>
           <% v1.each do |k2,v2| %>
-            <tr title="click to see detail">
-              <td><%= k2 %></td>
-              <td><%= v2[:count] %>&nbsp;</td>
-              <td colspan=4 id="progress_detail" title="click to see detail"><%= v2[:in_progress] %></td>
-              <td colspan=2 id="available_detail", title="click to see detail"><%= v2[:available] %>&nbsp;
-                <% if v2[:available] != 0 %>
-                  <%= link_to "Volunteer", "/cms/opportunities-to-volunteer-with-freereg" %>
+            <tr>
+              <td class="t40"><%= k2 %></td>
+              <td class="t20"><%= v2[:count] %>&nbsp;</td>
+              <td class="t20" colspan=4 id="progress_detail" title="click to see detail"><%= v2[:in_progress] %></td>
+              <td class="t10" colspan=2 id="available_detail", title="click to see detail"><%= v2[:available] %>&nbsp;</td>
+              <td class="t10">
+                <% if v2[:available] > 0 %>
+                  <%= link_to "Send Email", "/cms/opportunities-to-volunteer-with-freereg", :class => "btn weight--light btn--small" %>
+                <% else %>
+                  &nbsp;
                 <% end %>
               </td>
             </tr>
             <tr>
-              <td style="display: none;">&nbsp;</td>
-              <td style="display: none;">&nbsp;</td>
-              <td class="t10" style="display: none;">Being Transcribed</td>
-              <td class="t10" style="display: none;">Transcription Submitted</td>
-              <td class="t10" style="display: none;">Being Reviewed</td>
-              <td class="t10" style="display: none;">Review Submitted</td>
-              <td class="t10" style="display: none;">Unallocated</td>
-              <td class="t10" style="display: none;">Allocated</td>
+              <td class="t40" rowspan=2 style="display: none;">&nbsp;</td>
+              <td class="t20" rowspan=2 style="display: none;">&nbsp;</td>
+              <td class="t5" style="display: none;">Being Transcribed</div></td>
+              <td class="t5" style="display: none;">Transcription Submitted</td>
+              <td class="t5" style="display: none;">Being Reviewed</td>
+              <td class="t5" style="display: none;">Review Submitted</td>
+              <td class="t5" style="display: none;">Unallocated</td>
+              <td class="t5" style="display: none;">Allocated</td>
+              <td class="t10" rowspan=2 style="display: none;">&nbsp;</td>
             </tr>
             <tr>
-              <td style="display: none;">&nbsp;</td>
-              <td style="display: none;">&nbsp;</td>
-              <td style="display: none;"><%= v2[:being_transcribed] %>&nbsp;</td>
-              <td style="display: none;"><%= v2[:transcription_submitted] %>&nbsp;</td>
-              <td style="display: none;"><%= v2[:being_reviewed] %>&nbsp;</td>
-              <td style="display: none;"><%= v2[:review_submitted] %>&nbsp;</td>
-              <td style="display: none;"><%= v2[:unallocated] %>&nbsp;</td>
-              <td style="display: none;"><%= v2[:allocated] %>&nbsp;</td>
+              <td class="t5" style="display: none;"><%= v2[:being_transcribed] %>&nbsp;</td>
+              <td class="t5" style="display: none;"><%= v2[:transcription_submitted] %>&nbsp;</td>
+              <td class="t5" style="display: none;"><%= v2[:being_reviewed] %>&nbsp;</td>
+              <td class="t5" style="display: none;"><%= v2[:review_submitted] %>&nbsp;</td>
+              <td class="t5" style="display: none;"><%= v2[:unallocated] %>&nbsp;</td>
+              <td class="t5" style="display: none;"><%= v2[:allocated] %>&nbsp;</td>
             </tr>
           <% end %>
         <% end %>

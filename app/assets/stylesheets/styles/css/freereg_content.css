@@ -382,17 +382,35 @@ dl.table-display
 .t10 {
   width: 10%;
 }
+.t11 {
+  width: 11%;
+}
 .t12 {
   width: 12%;
 }
 .t13 {
   width: 13%;
 }
+.t14 {
+  width: 14%;
+}
+.t15 {
+  width: 15%;
+}
 .t18 {
   width: 18%;
 }
+.t20 {
+  width: 20%;
+}
 .t25 {
   width: 25%;
+}
+.t30 {
+  width: 30%;
+}
+.t40 {
+  width: 40%;
 }
 .table--data--bold{
    font: 12px/1.5 bold sans-serif;

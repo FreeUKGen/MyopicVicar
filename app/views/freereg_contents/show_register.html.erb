@@ -1,5 +1,14 @@
 <% title "#{RegisterType.display_name(@register.register_type)} #{@church_name} #{@place_name} #{@county} transcriptions" %>
 <div class="container">
+  <details>
+    <summary><strong>Navigate the page</summary>
+    <ul>
+      <li><a href="#register_information">Register Information</a></li>
+      <li><a href="#image_information">Image Information</a></li>
+      <li><a href="#transcriptions">Trnascriptions</a></li>
+    </ul></strong>
+  </details>
+
   <section class="island ">
   <div class="text--center">
     <%= link_to 'County Selection', new_freereg_content_path, method: :get, :class => "btn weight--light  btn--small"%> 
@@ -13,14 +22,17 @@
     <%= link_to 'Church for this Register', show_church_freereg_content_path( @register.church), :class => "btn weight--light  btn--small" %>     
     </div><br>
 
+    <h1 class=" text--center">Information about the Register</h1>
+
+    <a id="register_information"><h3 class=" text--center">Register <%= @register_type %> for <%=@church.church_name %> of <%= @place_name %> in <%= @county %></h3></a>
+    <%= render 'register_information' %>
+
     <% if !@images.empty? %>
-      <h3 class="text--center">Images being Transcribed and Available for Transcription</h3>
+      <br><a id="image_information"><h3 class="text--center">Images being Transcribed and Available for Transcription</h3></a>
       <%= render 'images' %>
     <% end %>
 
-    <h1 class=" text--center">Transcriptions</h1> <h2 class=" text--center">Register <%= @register_type %> for <%=@church.church_name %> of <%= @place_name %> in <%= @county %> </h2>
-    <%= render 'register_information' %>
-      <h3 class=" text--center">Number of transcriptions  </h3>
+    <a id="transcriptions"><h3 class=" text--center">Number of transcriptions</h3></a>
     <p class=" text--center">Those periods with zero data may span several decades. The first period may include pre 1530 records. </p> 
     <%= render 'decade' %>
   </section>
