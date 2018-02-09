@@ -120,6 +120,11 @@ class ImageServerGroupsController < ApplicationController
     redirect_to(:back, :notice => "Register does not have any Image Group from Image Server.") and return if @image_server_group.nil?
   end
 
+  def initialize_status
+    display_info
+    @image_server_group = ImageServerGroup.id(params[:id]).first
+  end
+
   def my_list_by_county
     session[:assignment_filter_list] = 'county'
     session[:chapman_code] = params[:id]
@@ -234,6 +239,12 @@ class ImageServerGroupsController < ApplicationController
 
         flash[:notice] = 'Allocate of Image Groups was successful'
         redirect_to index_image_server_group_path(image_server_group.first.source)
+      elsif !image_server_group_params[:initialize_status].nil?           # to initialize Image Group
+        image_server_group = ImageServerGroup.id(params[:id]).first
+        ImageServerGroup.initialize_all_images_status_under_image_group(params[:id], image_server_group_params[:initialize_status])
+
+        flash[:notice] = 'Successfully initialized Image Group'
+        redirect_to index_image_server_group_path(image_server_group.source)
       else
         image_server_group = ImageServerGroup.id(params[:id]).first
 
