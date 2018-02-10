@@ -13,18 +13,20 @@ $(':checkbox').click(function(e){
 			})
 		}
 	} else {
-		if (e.shiftKey) {
-			if (!lastChecked) {
-				lastChecked = this;
-				return;
-			}
+		if (!lastChecked) {
+			lastChecked = this;
+			return
+		}
 
+		if (e.shiftKey) {
 			var start_id = $(':checkbox').index(lastChecked);
 			var end_id = $(':checkbox').index(this);
 
 			$(':checkbox').slice(Math.min(start_id,end_id), Math.max(start_id,end_id)+1).prop('checked', lastChecked.checked);
 
 			lastChecked = null;
+		} else {
+			lastChecked = this;
 		}
 		document.getElementById('assignment_transcriber_image_file_name_0').checked = false;
 		document.getElementById('assignment_reviewer_image_file_name_0').checked = false;
