@@ -29,8 +29,45 @@ class Freereg1CsvEntry
   # Fields here represent those currently requested by FreeREG1 at
   # http://www.freereg.org.uk/howto/enterdata.htm
   # They have only been modified to replace hyphens with underscores.
+  #Common fields
+  field :county, type: String # note this is actually a chapman code in the records
+  field :place, type: String #every where else this is place_name
+  field :church_name, type: String
+  field :register_type, type: String 
+  field :register_entry_number, type: String
+  field :notes, type: String
+  field :transcriber_notes, type: String
+  field :film, type: String
+  field :film_number, type: String
+
+  #baptism fields
   field :baptism_date, type: String #actual date as written
   field :birth_date, type: String #actual date as written
+  field :person_forename, type: String
+  field :person_sex, type: String
+  field :father_forename, type: String
+  field :father_occupation, type: String
+  field :father_surname, type: String
+  field :mother_forename, type: String
+  field :mother_surname, type: String  
+  field :person_abode, type: String
+
+
+  #burial fields
+  field :burial_date, type: String #actual date as written
+  field :burial_person_forename, type: String
+  field :burial_person_surname, type: String
+  field :burial_person_abode, type: String
+  field :female_relative_forename, type: String
+  field :male_relative_forename, type: String
+  field :person_age, type: String
+  field :relationship, type: String
+  field :relative_surname, type: String
+  
+
+
+
+  #marriage fields
   field :bride_abode, type: String
   field :bride_age, type: String
   field :bride_condition, type: String
@@ -41,16 +78,6 @@ class Freereg1CsvEntry
   field :bride_occupation, type: String
   field :bride_parish, type: String
   field :bride_surname, type: String
-  field :burial_date, type: String #actual date as written
-  field :burial_person_forename, type: String
-  field :burial_person_surname, type: String
-  field :burial_person_abode, type: String
-  field :church_name, type: String
-  field :county, type: String # note this is actually a chapman code in the records
-  field :father_forename, type: String
-  field :father_occupation, type: String
-  field :father_surname, type: String
-  field :female_relative_forename, type: String
   field :groom_abode, type: String
   field :groom_age, type: String
   field :groom_condition, type: String
@@ -61,34 +88,21 @@ class Freereg1CsvEntry
   field :groom_occupation, type: String
   field :groom_parish, type: String
   field :groom_surname, type: String
-  field :male_relative_forename, type: String
   field :marriage_date, type: String #actual date as written
-  field :mother_forename, type: String
-  field :mother_surname, type: String
-  field :notes, type: String
-  field :notes_from_transcriber, type: String
-  field :person_abode, type: String
-  field :person_age, type: String
-  field :person_forename, type: String
-  field :person_sex, type: String
-  field :place, type: String #every where else this is place_name
-
-  field :register, type: String
-  field :register_entry_number, type: String
-  field :register_type, type: String
-  field :relationship, type: String
-  field :relative_surname, type: String
   field :witness1_forename, type: String
   field :witness1_surname, type: String
   field :witness2_forename, type: String
   field :witness2_surname, type: String
+
+
+  field :register, type: String
+  field :record_type, type: String
+
+  #calculated fields
   field :year, type: String
   field :line_id, type: String
   field :file_line_number, type: Integer
-  field :film, type: String
-  field :film_number, type: String
-  field :error_flag, type:String, default: 'false'
-  field :record_type, type: String
+  field :error_flag, type:String, default: 'false'  
   field :record_digest, type: String
   field :location, type: String
 
