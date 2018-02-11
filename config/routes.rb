@@ -319,6 +319,7 @@ MyopicVicar::Application.routes.draw do
   get 'image_server_groups/my_list_by_syndicate', :to => 'image_server_groups#my_list_by_syndicate', :as => :my_list_by_syndicate_image_server_group
   get 'image_server_groups/:id/my_list_by_county(.:format)', :to => 'image_server_groups#my_list_by_county', :as => :my_list_by_county_image_server_group
   get 'image_server_groups/:id/allocate(.:format)', :to => 'image_server_groups#allocate', :as => :allocate_image_server_group
+  get 'image_server_groups/:id/initialize_status(.:format)', :to => 'image_server_groups#initialize_status', :as => :initialize_status_image_server_group
   get 'image_server_groups/:id/index(.:format)', :to => 'image_server_groups#index', :as => :index_image_server_group
   get 'image_server_groups/:id/upload(.:format)', :to => 'image_server_groups#upload', :as => :upload_image_server_group
   get 'image_server_groups/upload_return', :to => 'image_server_groups#upload_return', :as => :upload_return_image_server_group

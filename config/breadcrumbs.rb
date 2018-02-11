@@ -776,7 +776,12 @@ end
       end
 
       crumb :new_image_server_group do |user,syndicate,county,register,source,group|
-        link"Create Image Group"
+        link "Create Image Group"
+        parent :image_server_groups, user,syndicate,county,register,source
+      end
+
+      crumb :initialize_image_server_group do |user,syndicate,county,register,source,group|
+        link "Initialize Image Group"
         parent :image_server_groups, user,syndicate,county,register,source
       end
 

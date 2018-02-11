@@ -225,6 +225,11 @@ class ImageServerGroup
       return image_server_group
     end
 
+    def initialize_all_images_status_under_image_group(group_id,status)
+      ImageServerImage.where(:image_server_group_id=>group_id).update_all(:status=>status)
+      ImageServerGroup.where(:id=>group_id).update_all('summary.status'=>[status])
+    end
+
     def initialize_all_images_status_under_source(source_id,status)
       image_server_group_ids = ImageServerGroup.source_id(source_id).pluck(:id)
       ImageServerImage.where(:image_server_group_id=>{'$in'=>image_server_group_ids}).update_all(:status=>status)
