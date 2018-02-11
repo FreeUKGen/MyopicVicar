@@ -1,7 +1,8 @@
 var lastChecked = null;
 
 $(':checkbox').click(function(e){
-	var x = document.activeElement
+	var x = this;
+
 	if ((x.id == 'assignment_transcriber_image_file_name_0') || (x.id == 'assignment_reviewer_image_file_name_0') || (x.id == 'assignment_user_id_0')) {
 		if (x.checked) {
 			$(':checkbox').each(function(){
@@ -13,6 +14,9 @@ $(':checkbox').click(function(e){
 			})
 		}
 	} else {
+		document.getElementById('assignment_transcriber_image_file_name_0').checked = false;
+		document.getElementById('assignment_reviewer_image_file_name_0').checked = false;
+
 		if (!lastChecked) {
 			lastChecked = this;
 			return
@@ -28,8 +32,6 @@ $(':checkbox').click(function(e){
 		} else {
 			lastChecked = this;
 		}
-		document.getElementById('assignment_transcriber_image_file_name_0').checked = false;
-		document.getElementById('assignment_reviewer_image_file_name_0').checked = false;
 	}
 })
 

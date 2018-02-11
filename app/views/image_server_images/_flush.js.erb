@@ -1,23 +1,25 @@
 var lastChecked = null;
 
 $(':checkbox').click(function(e){
-	var x = document.activeElement;
+	var x = this;
 
 	if (x.id == 'image_server_image_id_0') {
 		if (x.checked) {
 			if (confirm("Are you sure you want to select all images?")) {
 				$(':checkbox').each(function(){
 					$(this).prop('checked', true);
-				})
+				});
 			} else {
 				document.getElementById('image_server_image_id_0').checked = false;
 			}
 		} else {
 			$(':checkbox').each(function(){
 				$(this).prop('checked', false);
-			})
+			});
 		}
 	} else {
+		document.getElementById('image_server_image_id_0').checked = false;
+
 		if (!lastChecked) {
 			lastChecked = this;
 			return
@@ -33,7 +35,6 @@ $(':checkbox').click(function(e){
 		} else {
 			lastChecked = this;
 		}
-		document.getElementById('image_server_image_id_0').checked = false;
 	}
 })
 
