@@ -152,14 +152,8 @@ module ApplicationHelper
       @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; } }
     </style>
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <!-- Responsive ad -->
-    <ins class="adsbygoogle adSenseBanner"
-      style="display:block"
-      data-ad-client="ca-pub-7825403497160061"
-      data-ad-slot="9011588433"
-      data-ad-format="auto">
-    </ins>
-    <script>
+    <!-- Pagelevel ad -->
+    <script class="adSenseBanner">
       $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({ 
         google_ad_client: "ca-pub-1788116026113570",
         enable_page_level_ads: true
@@ -167,11 +161,70 @@ module ApplicationHelper
     })
     </script>
     HTML
-    #if Rails.env.development?
-     #banner = <<-HTML
-      #<img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
-      #HTML
-    #end
+    banner.html_safe
+  end
+
+  def banner_header
+    banner = <<-HTML
+    <style>
+      .adSenseBanner { width: 320px; height: 100px; text-align: center; margin: auto;}
+      @media(min-width: 500px) { .adSenseBanner { width: 468px; height: 60px; text-align: center; margin: auto; } }
+      @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
+    </style>
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- FreeCEN2 Responsive Header -->
+    <ins class="adsbygoogle adSenseBanner"
+       style="display:block"
+       data-ad-client="ca-pub-5379635334920389"
+       data-ad-slot="7868124617"
+       data-ad-format="auto">
+    </ins>
+    <script>
+      $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})})
+    </script>
+    HTML
+    if Rails.env.development?
+     banner = <<-HTML
+      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
+      HTML
+    end
+    banner.html_safe
+  end
+
+  def google_advert
+    @data_ad_slot = ""
+    case
+    when current_page?(freecen_coverage_path)
+      @data_ad_slot = "9056426667"
+    when current_page?('/') || current_page?(new_search_query_path) || current_page?(new_search_query_path(:search_id => @search_query))
+      @data_ad_slot = "2003577939"
+    when current_page?(search_query_path(@search_query))
+      @data_ad_slot = "3316180679"
+    when current_page?(:action => 'show', :controller => 'search_records')
+      @data_ad_slot = "5173021979"
+    end
+    banner = <<-HTML
+    <style>
+      .adSenseBanner { width: 320px; height: 100px; text-align: center; margin: auto;}
+      @media(min-width: 500px) { .adSenseBanner { width: 468px; height: 60px; text-align: center; margin: auto; } }
+      @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
+    </style>
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- Responsive ad -->
+    <ins class="adsbygoogle adSenseBanner"
+     style="display:block"
+     data-ad-client="ca-pub-5379635334920389"
+     data-ad-slot= #{@data_ad_slot}
+     data-ad-format="auto"></ins>
+    <script>
+      $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})})
+    </script>
+    HTML
+    if Rails.env.development?
+     banner = <<-HTML
+      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
+      HTML
+    end
     banner.html_safe
   end
 
