@@ -1,6 +1,6 @@
 <header class="site__header" >
   <div class="container">
-    <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found')%>
+    <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found') || current_page?('/cms/refinery/users/login')%>
       <div class="banner-horz">
         <% unless device_type == :mobile%>
           <%= display_banner %>
