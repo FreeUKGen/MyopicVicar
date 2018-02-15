@@ -14,8 +14,15 @@ $(':checkbox').click(function(e){
 			})
 		}
 	} else {
-		document.getElementById('assignment_transcriber_image_file_name_0').checked = false;
-		document.getElementById('assignment_reviewer_image_file_name_0').checked = false;
+		var transcriberIdExists = document.getElementById('assignment_transcriber_image_file_name_0');
+		if (transcriberIdExists) {
+			document.getElementById('assignment_transcriber_image_file_name_0').checked = false;
+		}
+
+		var reviewerIdExists = document.getElementById('assignment_reviewer_image_file_name_0');
+		if (reviewerIdExists) {
+			document.getElementById('assignment_reviewer_image_file_name_0').checked = false;
+		}
 
 		if (!lastChecked) {
 			lastChecked = this;
