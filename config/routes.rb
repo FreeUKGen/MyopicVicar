@@ -208,6 +208,8 @@ MyopicVicar::Application.routes.draw do
   get 'freereg_contents/:id/show_church(.:format)', :to => 'freereg_contents#show_church', :as => :show_church_freereg_content
   get 'freereg_contents/:id/show_register(.:format)', :to => 'freereg_contents#show_register', :as => :show_register_freereg_content
   get 'freereg_contents/:id/place(.:format)', :to => 'freereg_contents#place', :as => :place_freereg_content
+  get 'freereg_contents/:id/church(.:format)', :to => 'freereg_contents#church', :as => :church_freereg_content
+  get 'freereg_contents/:id/register(.:format)', :to => 'freereg_contents#register', :as => :register_freereg_content
   get 'freereg_contents/select_places(.:format)', :to => 'freereg_contents#select_places', :as => :select_places_freereg_content
   resources :freereg_contents
 

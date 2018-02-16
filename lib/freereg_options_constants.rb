@@ -128,6 +128,8 @@ module FreeregOptionsConstants
 
   DATERANGE_MINIMUM = 1530
 
+  END_FIELDS = ['transcribed_by', 'credit', 'file_line_number']
+
   ENTRY_ORDER_DEFINITION = { "ba" => {
                                :chapman_code=> 1,
                                :place_name=> 2,
@@ -204,12 +206,13 @@ module FreeregOptionsConstants
                                   "groom_father_surname","groom_forename","groom_surname","male_relative_forename","marriage_date","mother_forename","mother_surname",
                                   "person_forename","relative_surname","witness1_forename","witness1_surname","witness2_forename","witness2_surname"]
 
-  ISSUES = ['Data Question', 'Website Problem','Volunteering Question','Genealogical Question', 'Enhancement Suggestion', 'Thank-you' ,'General Comment']
-  
-
   HEADER_DETECTION = /[+#][IN][NA][FM][OE].?/
 
   HEADER_FLAG = /\A\#\z/
+
+  ISSUES = ['Data Question', 'Website Problem','Volunteering Question','Genealogical Question', 'Enhancement Suggestion', 'Thank-you' ,'General Comment']
+  
+  LOCATION_FIELDS = ['county','place','church_name','register_type']
 
   MARRIAGE_FIELDS = ['register_entry_number','marriage_date','groom_forename','groom_surname','groom_age','groom_parish','groom_condition','groom_occupation','groom_abode',
                      'bride_forename','bride_surname','bride_age','bride_parish','bride_condition','bride_occupation','bride_abode','groom_father_forename',

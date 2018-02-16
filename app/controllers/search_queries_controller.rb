@@ -110,6 +110,7 @@ class SearchQueriesController < ApplicationController
     else
       @page = nil
     end
+    session.delete(:search_controller)
     if params[:search_id]
 
       old_query = SearchQuery.search_id(params[:search_id]).first

@@ -391,8 +391,18 @@ dl.table-display
 .t18 {
   width: 18%;
 }
+.t20{
+  width: 20;
+}
 .t25 {
   width: 25%;
+}
+.t50 {
+  width: 50%;
+}
+
+.t100 {
+  width: 100%;
 }
 .table--data--bold{
    font: 12px/1.5 bold sans-serif;
@@ -480,3 +490,8 @@ caption .additional, h3 + .additional {
 dl.table-display { width: 100%; }
 dl.table-display dt { width: 4em; }
 dl.table-display dd { width: calc(100% - 4em); }
+table.center50 {
+    width:50%; 
+    margin-left:25%; 
+    margin-right:25%;
+  }

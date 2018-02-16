@@ -132,6 +132,16 @@ class Church
     return stats
   end
 
+  def get_alternate_church_names
+    names = Array.new
+    alternate_church_names = self.alternatechurchnames.all
+    alternate_church_names.each do |acn|
+      name = acn.alternate_name
+      names << name
+    end
+    names
+  end
+
   def has_input?
     value = false
     value = true if (self.denomination.present? || self.church_notes.present? || self.location.present? || self.website.present?)
