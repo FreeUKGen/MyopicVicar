@@ -159,6 +159,13 @@ class UseridDetailsController < ApplicationController
     session[:my_own] = true
     get_user_info_from_userid
     @userid = @user
+    respond_to do |format|
+      format.html 
+      format.json do
+        json_of_my_profile = @userid.json_of_my_profile
+        send_data json_of_my_profile, :type => 'application/txt; header=present', :disposition => "attachment; filename=my_profile.txt"
+      end
+    end
   end
 
   def next_place_to_go_successful_create

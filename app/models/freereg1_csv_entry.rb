@@ -266,14 +266,13 @@ class Freereg1CsvEntry
     file = self.freereg1_csv_file
     if file.present?
       transcriber = file.userid_detail
-      transcribed_by = transcriber.person_forename
-      transcribed_by.nil? ? transcribed_by = transcriber.person_surname : transcribed_by = transcribed_by + ' ' + transcriber.person_surname
-      credit = file.credit_name
+      show,transcriber_by = UseridDetail.can_we_acknowledge_the_transcriber(transcriber)
+      credit = file.credit_name if "2018-05-25".to_date >= Date.today
     else
       transcribed_by = nil
       credit = nil
     end
-    self.update_attributes(:transcribed_by => transcribed_by, :credit => credit)
+    self.update_attributes(:transcribed_by => transcribed_by, :credit => credit) if show
   end 
 
   def add_digest

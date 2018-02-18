@@ -225,6 +225,12 @@ div.boolean, .simple_form input[type='submit'] {
   margin-right: auto;
   display: block;
 }
+.boolean input[type='checkbox'] {
+   margin-left: 15px;
+  vertical-align: -3px;
+  margin-right: 20px;
+ 
+}
 
 div.boolean label, label.collection_radio_buttons {
   display: inline;
@@ -256,24 +262,32 @@ label.collection_radio_buttons {
 
 .simple_form .hint {
   clear: left;
-  margin-left: 400px;
+  margin-left: 45%;
   font-size: 16px;
   color: #555;
   display: block;
   font-style: italic;
 }
 
-
+.simple_form .control-label {
+ margin-left: 35px;
+ width: 40%;
+}
 input.radio {
   margin-right: 5px;
   vertical-align: -3px;
 }
 
 input.check_boxes {
-  margin-left: 3px;
+  margin-left: 5px;
   vertical-align: -3px;
+  margin-right: 10px;
 }
-
+input.checkbox {
+  margin-left: 15px;
+  vertical-align: -3px;
+  margin-right: 20px;
+}
 label.collection_check_boxes {
   display: inline;
   float: left;
@@ -289,7 +303,11 @@ label.collection_check_boxes {
     width: 350px !important;  
 }
 .simple_form_bgcolour{background: #C2FFD1; color: #000000; font-weight: bold;}
-.simple_form_position{margin-left: 10px}
+.simple_form_position {
+ margin-left: auto;
+  margin-right: auto;
+
+}
 .collection_check_boxes{
   font-weight: normal;
   border: 1px ridge;
