@@ -7,17 +7,18 @@ namespace :check_church_records do
     FileUtils.mkdir_p(File.dirname(file_for_output) )
     output_file = File.new(file_for_output, "w")
   	
+    id = 0
+    h = Hash.new
     place = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
     record = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
     sorted_record = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
-    h = Hash.new
   	
   	puts "========Get Church records"
 
     places = Place.all
     places.each do |entry|
-      place[entry.id]['chapman_code'] = entry.chapman_code
-      place[entry.id]['place_name'] = entry.place_name
+      place[entry.id.to_s]['chapman_code'] = entry.chapman_code
+      place[entry.id.to_s]['place_name'] = entry.place_name
     end
   	
   	churches = Church.all
@@ -29,32 +30,36 @@ namespace :check_church_records do
         end
       end
 
-      entry.attributes.each { |k,v| record[id][k] = v }
+      entry.attributes.each { |k,v| record[id][k] = v.to_s.gsub("\r\n", "") }
       record[id]['place_name'] = place[record[id]['place_id']]['place_name']
       record[id]['chapman_code'] = place[record[id]['place_id']]['chapman_code']
     end  
+
+    record.each do |k1,v1|
+      record[k1]['alternatechurchname'] = '' if !record[k1].key?('alternatechurchname')
+      record[k1]['alternatechurchnames'] = '' if !record[k1].key?('alternatechurchnames')
+      record[k1]['chapman_code'] = '' if !record[k1].key?('place_id')
+      record[k1]['church_name'] = '' if !record[k1].key?('church_name')
+      record[k1]['church_notes'] = '' if !record[k1].key?('church_notes')
+      record[k1]['contributors'] = '' if !record[k1].key?('contributors')
+      record[k1]['datemax'] = '' if !record[k1].key?('datemax')
+      record[k1]['datemin'] = '' if !record[k1].key?('datemin')
+      record[k1]['daterange'] = '' if !record[k1].key?('daterange')
+      record[k1]['denomination'] = '' if !record[k1].key?('denomination')
+      record[k1]['last_amended'] = '' if !record[k1].key('last_amended')
+      record[k1]['location'] = '' if !record[k1].key?('location')
+      record[k1]['place_name'] = '' if !record[k1].key?('place_id')
+      record[k1]['records'] = '' if  !record[k1].key?('records')
+      record[k1]['transcribers'] = '' if !record[k1].key?('transcribers')
+      record[k1]['website'] = '' if !record[k1].key?('website')
+    end
 
     sorted_record = record.inject({}) do |h, (k, v)|
       h[k] = Hash[v.sort_by {|k1,v1| k1}]
       h
     end
 
-    sorted_record.each do |k1,v1|
-      sorted_record[k1]['church_notes'] = '' if sorted_record[k1]['church_notes'].nil?
-      sorted_record[k1]['contributors'] = '' if sorted_record[k1]['contributors'].nil?
-      sorted_record[k1]['datemax'] = '' if sorted_record[k1]['datemax'].nil?
-      sorted_record[k1]['datemin'] = '' if sorted_record[k1]['datemin'].nil?
-      sorted_record[k1]['daterange'] = '' if sorted_record[k1]['daterange'].nil?
-      sorted_record[k1]['last_amended'] = '' if sorted_record[k1]['last_amended'].nil?
-      sorted_record[k1]['location'] = '' if sorted_record[k1]['location'].nil?
-      sorted_record[k1]['place_name'] = '' if sorted_record[k1]['place_id'].nil?
-      sorted_record[k1]['chapman_code'] = '' if sorted_record[k1]['place_id'].nil?
-      sorted_record[k1]['records'] = '' if sorted_record[k1]['records'].nil?
-      sorted_record[k1]['transcribers'] = '' if sorted_record[k1]['transcribers'].nil?
-      sorted_record[k1]['website'] = '' if sorted_record[k1]['website'].nil?
-    end
-
-    csv_string = ['id','chapman_code','church_name','church_notes','contributors','datemax','datemin','daterange','last_amended','location','place_id','place_name','records','transcribers','website'].to_csv
+    csv_string = ['id','alternatechurchname','alternatechurchnames','chapman_code','church_name','church_notes','contributors','datemax','datemin','daterange','denomination','last_amended','location','place_id','place_name','records','transcribers','website'].to_csv
     output_file.puts csv_string
 
     sorted_record.each do |k1,v1|
