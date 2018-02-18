@@ -31,27 +31,32 @@ namespace :check_church_records do
       end
 
       entry.attributes.each { |k,v| record[id][k] = v.to_s.gsub("\r\n", "") }
-      record[id]['place_name'] = place[record[id]['place_id']]['place_name']
-      record[id]['chapman_code'] = place[record[id]['place_id']]['chapman_code']
+      if record[id]['place_id'].nil? || record[id]['place_id'].empty?
+        record[id]['place_name'] = ''
+        record[id]['chapman_code'] = ''
+      else
+        record[id]['place_name'] = place[record[id]['place_id']]['place_name']
+        record[id]['chapman_code'] = place[record[id]['place_id']]['chapman_code']
+      end
     end  
 
     record.each do |k1,v1|
-      record[k1]['alternatechurchname'] = '' if !record[k1].key?('alternatechurchname')
-      record[k1]['alternatechurchnames'] = '' if !record[k1].key?('alternatechurchnames')
-      record[k1]['chapman_code'] = '' if !record[k1].key?('place_id')
-      record[k1]['church_name'] = '' if !record[k1].key?('church_name')
-      record[k1]['church_notes'] = '' if !record[k1].key?('church_notes')
-      record[k1]['contributors'] = '' if !record[k1].key?('contributors')
-      record[k1]['datemax'] = '' if !record[k1].key?('datemax')
-      record[k1]['datemin'] = '' if !record[k1].key?('datemin')
-      record[k1]['daterange'] = '' if !record[k1].key?('daterange')
-      record[k1]['denomination'] = '' if !record[k1].key?('denomination')
-      record[k1]['last_amended'] = '' if !record[k1].key('last_amended')
-      record[k1]['location'] = '' if !record[k1].key?('location')
-      record[k1]['place_name'] = '' if !record[k1].key?('place_id')
-      record[k1]['records'] = '' if  !record[k1].key?('records')
-      record[k1]['transcribers'] = '' if !record[k1].key?('transcribers')
-      record[k1]['website'] = '' if !record[k1].key?('website')
+      record[k1]['alternatechurchname'] = '' if not record[k1].key?('alternatechurchname')
+      record[k1]['alternatechurchnames'] = '' if not record[k1].key?('alternatechurchnames')
+      record[k1]['chapman_code'] = '' if not record[k1].key?('place_id')
+      record[k1]['church_name'] = '' if not record[k1].key?('church_name')
+      record[k1]['church_notes'] = '' if not record[k1].key?('church_notes')
+      record[k1]['contributors'] = '' if not record[k1].key?('contributors')
+      record[k1]['datemax'] = '' if not record[k1].key?('datemax')
+      record[k1]['datemin'] = '' if not record[k1].key?('datemin')
+      record[k1]['daterange'] = '' if not record[k1].key?('daterange')
+      record[k1]['denomination'] = '' if not record[k1].key?('denomination')
+      record[k1]['last_amended'] = '' if not record[k1].key('last_amended')
+      record[k1]['location'] = '' if not record[k1].key?('location')
+      record[k1]['place_name'] = '' if not record[k1].key?('place_id')
+      record[k1]['records'] = '' if  not record[k1].key?('records')
+      record[k1]['transcribers'] = '' if not record[k1].key?('transcribers')
+      record[k1]['website'] = '' if not record[k1].key?('website')
     end
 
     sorted_record = record.inject({}) do |h, (k, v)|
