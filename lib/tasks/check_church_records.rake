@@ -30,7 +30,16 @@ namespace :check_church_records do
         end
       end
 
-      entry.attributes.each { |k,v| record[id][k] = v.to_s.gsub("\r\n", "") }
+      entry.attributes.each do |k,v| 
+        if ['_id', 'place_id', 'church_notes'].include? k
+          record[id][k] = v.to_s.gsub("\r\n", "")
+        else
+          record[id][k] = v
+        end
+
+        record[id]['alternate_church_name'] = record[id][k][0]['alternate_name'] if k == 'alternatechurchnames' && !record[id][k].empty?
+      end
+
       if record[id]['place_id'].nil? || record[id]['place_id'].empty?
         record[id]['place_name'] = ''
         record[id]['chapman_code'] = ''
@@ -38,11 +47,11 @@ namespace :check_church_records do
         record[id]['place_name'] = place[record[id]['place_id']]['place_name']
         record[id]['chapman_code'] = place[record[id]['place_id']]['chapman_code']
       end
-    end  
+    end
 
     record.each do |k1,v1|
+      record[k1]['alternate_church_name'] = '' if not record[k1].key?('alternate_church_name')
       record[k1]['alternatechurchname'] = '' if not record[k1].key?('alternatechurchname')
-      record[k1]['alternatechurchnames'] = '' if not record[k1].key?('alternatechurchnames')
       record[k1]['chapman_code'] = '' if not record[k1].key?('place_id')
       record[k1]['church_name'] = '' if not record[k1].key?('church_name')
       record[k1]['church_notes'] = '' if not record[k1].key?('church_notes')
@@ -57,6 +66,7 @@ namespace :check_church_records do
       record[k1]['records'] = '' if  not record[k1].key?('records')
       record[k1]['transcribers'] = '' if not record[k1].key?('transcribers')
       record[k1]['website'] = '' if not record[k1].key?('website')
+      record[k1].delete('alternatechurchnames')
     end
 
     sorted_record = record.inject({}) do |h, (k, v)|
@@ -64,7 +74,7 @@ namespace :check_church_records do
       h
     end
 
-    csv_string = ['id','alternatechurchname','alternatechurchnames','chapman_code','church_name','church_notes','contributors','datemax','datemin','daterange','denomination','last_amended','location','place_id','place_name','records','transcribers','website'].to_csv
+    csv_string = ['id','church_name','alternatechurchname','chapman_code','official_church_name','church_notes','contributors','datemax','datemin','daterange','denomination','last_amended','location','place_id','place_name','records','transcribers','website'].to_csv
     output_file.puts csv_string
 
     sorted_record.each do |k1,v1|
