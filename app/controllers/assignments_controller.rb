@@ -180,11 +180,6 @@ class AssignmentsController < ApplicationController
       return
     else
       @assignment, @count = Assignment.list_assignment_by_status(session[:syndicate], 'rs')
-
-      if @count.empty?
-        flash[:notice] = 'No Submitted_Review Assignments in the Syndicate'
-        redirect_to :back
-      end
     end
   end
 
@@ -194,11 +189,6 @@ class AssignmentsController < ApplicationController
       return
     else
       @assignment, @count = Assignment.list_assignment_by_status(session[:syndicate], 'ts')
-
-      if @count.empty?
-        flash[:notice] = 'No Submitted_Transcription Assignments in the Syndicate'
-        redirect_to :back
-      end
     end
   end
 

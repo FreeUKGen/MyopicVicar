@@ -102,6 +102,7 @@ class UseridDetailsController < ApplicationController
     session[:type] = "edit"
     get_user_info_from_userid
     @userid = @user if  session[:my_own]
+    @current_user = cookies.signed[:userid]
     load(params[:id])
     @syndicates = Syndicate.get_syndicates
   end
@@ -436,6 +437,7 @@ class UseridDetailsController < ApplicationController
       end
     end
     email_valid_change_message
+    redirect_to edit_userid_detail_path(@userid) and return unless update_userid
     params[:userid_detail][:email_address_last_confirmned] = ['1', 'true'].include?(params[:userid_detail][:email_address_valid]) ? Time.now : ''
     #    params[:userid_detail][:email_address_valid]  = true
     
@@ -545,6 +547,23 @@ class UseridDetailsController < ApplicationController
 
   def email_valid_change
     @userid.email_address_valid == true ? "Valid" : "Invalid" 
+  end
+  
+  def update_userid
+    if userid_updated?
+      unless userid_taken?
+        refinery_user = Refinery::Authentication::Devise::User.where(username: session[:userid]).first
+        refinery_user.username = userid_details_params[:userid]
+        refinery_user.save!
+        @userid.update_attributes(userid: userid_details_params[:userid])
+        update_session(userid_details_params[:userid]) if refinery_user.save!
+        return true
+      else
+        flash[:notice] = " #{userid_details_params[:userid]} : Userid already exists"
+        return false
+      end
+    end
+    true
   end
 
 end

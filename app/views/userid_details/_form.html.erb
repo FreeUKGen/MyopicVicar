@@ -26,6 +26,21 @@
          <%= f.input :person_role,:label => "Role in Freereg",:include_blank => false,:collection => ["transcriber", "trainee"],:input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 2 },:selected => "trainee" %>
     <% end%>
   <% else %>
+    <% if  @current_user == @userid %>
+      <%= f.input :new_transcription_agreement, :label => "Transcription Agreement",:input_html => {:disabled => true }  if @userid.new_transcription_agreement == "Accepted" %>
+      <% unless @userid.new_transcription_agreement == "Accepted"%>
+        <div class="input select optional userid_detail_transcription_agreement" style="text-align: center;">
+          <span>Please sign the agreement to keep your transcriptions Open.</span><br />
+          <label class="select optional control-label" for="userid_detail_transcription_agreement">Transcription Agreement</label>
+          <div class="simple_form_bgcolour overide_selection_field_width">
+            <%= f.radio_button(:new_transcription_agreement, "Accepted") %>
+              <span>I have read and hereby sign, the <%= link_to 'Transcription Agreement(pdf)', "http://www.freeukgenealogy.org.uk/files/Documents/FreeUKGenealogyTranscriptionAgreement.pdf", target: '_blank', title: "Click here to view or download the Agreement" %></span><br /><br />
+            <%#= f.radio_button(:transcription_agreement, "Declined") %>
+              <!--span>I hereby prefer not to sign, the <%#= link_to 'Transcription Agreement(pdf)', "http://www.freeukgenealogy.org.uk/files/Documents/FreeUKGenealogyTranscriptionAgreement.pdf", target: '_blank', title: "Click here to view or download the Agreement" %></span><br /><br /-->
+          </div>
+        </div>
+      <% end %>
+    <% end %>
 
     <% if (@user.person_role == 'system_administrator' || @user.person_role == 'volunteer_coordinator') && !session[:my_own] %>
       <%= f.input :syndicate,:label => "Syndicate",:include_blank => false,  :collection => @syndicates,:input_html => {  :class => "text-input simple_form_bgcolour simple_form_position", :size => 4 }, :hint => "The syndicate MUST be selected"%>
