@@ -76,7 +76,7 @@ class Place
 
   has_many :churches, dependent: :restrict
   has_many :search_records
-  has_many :sources
+  has_many :image_server_groups
   has_many :gaps
   PLACE_BASE_URL = "http://www.genuki.org.uk"
 
@@ -104,7 +104,11 @@ class Place
     end
 
     def chapman_code(chapman)
-      where(:chapman_code => chapman)
+      if chapman.nil?
+        all
+      else
+        where(:chapman_code => chapman)
+      end
     end
 
     def county(county)

@@ -185,7 +185,7 @@ class Freereg1CsvFile
     def calculate_min_year(entries)
       datemin = FreeregValidations::YEAR_MAX.to_i
       entries.each do |entry|
-        datemin = entry.year.to_i if entry.year.to_i < datemin
+        datemin = entry.year.to_i if ((entry.year.to_i < datemin) && (entry.year.to_i > 0))
       end
       datemin
     end
@@ -604,6 +604,12 @@ class Freereg1CsvFile
     end
   end
 
+      def get_zero_year_entries
+        freereg1_csv_entries = Array.new
+        self.freereg1_csv_entries.each do |entry|
+          freereg1_csv_entries << entry if entry.year.nil? ||  entry.year == '0'
+        end
+      end
 
   def lock(type)
     batches = Freereg1CsvFile.where(:file_name => self.file_name, :userid => self.userid).all
@@ -927,7 +933,40 @@ class Freereg1CsvFile
       end #end records
     end #end csv
   end #end method
-
+      
+  def get_unique_names
+    entries = Hash.new
+    all_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => self.id)
+    case self.record_type
+    when "ba"
+      entries["Father Surname"] = all_entries.distinct(:father_surname).delete_if{|x| x == nil}.sort
+      entries["Mother Surname"] = all_entries.distinct(:mother_surname).delete_if{|x| x == nil}.sort
+      entries["Father Forename"] = all_entries.distinct(:father_forename).delete_if{|x| x == nil}.sort
+      entries["Mother Forename"] = all_entries.distinct(:mother_forename).delete_if{|x| x == nil}.sort
+      entries["Person Forename"] = all_entries.distinct(:person_forename).delete_if{|x| x == nil}.sort
+    when "bu"
+      entries["Burial Person Surname"] = all_entries.distinct(:burial_person_surname).delete_if{|x| x == nil}.sort
+      entries["Burial Person Forename"] = all_entries.distinct(:burial_person_forename).delete_if{|x| x == nil}.sort
+      entries["Relative's Surname"] = all_entries.distinct(:relative_surname).delete_if{|x| x == nil}.sort
+      entries["Male Relative's Forename"] = all_entries.distinct(:male_relative_forename).delete_if{|x| x == nil}.sort
+      entries["Female Relative's Forename"] = all_entries.distinct(:female_relative_forename).delete_if{|x| x == nil}.sort
+    when "ma"
+      entries["Groom's Surname"] = all_entries.distinct(:groom_surname).delete_if{|x| x == nil}.sort
+      entries["Groom's Forename"] = all_entries.distinct(:groom_forename).delete_if{|x| x == nil}.sort
+      entries["Brides Surname"] = all_entries.distinct(:bride_surname).delete_if{|x| x == nil}.sort
+      entries["Brides Forename"] = all_entries.distinct(:bride_forename).delete_if{|x| x == nil}.sort
+      entries["Grooms Father Surname"] = all_entries.distinct(:groom_father_surname).delete_if{|x| x == nil}.sort
+      entries["Grooms Father Forename"] = all_entries.distinct(:groom_father_forename).delete_if{|x| x == nil}.sort
+      entries["Brides Father Surname"] = all_entries.distinct(:bride_father_surname).delete_if{|x| x == nil}.sort
+      entries["Brides Father Forename"] = all_entries.distinct(:bride_father_forename).delete_if{|x| x == nil}.sort
+      entries["Witness1 Surname"] = all_entries.distinct(:witness1_surname).delete_if{|x| x == nil}.sort
+      entries["witness1 Forename"] = all_entries.distinct(:witness1_forename).delete_if{|x| x == nil}.sort
+      entries["Witness2 Surname"] = all_entries.distinct(:witness2_surname).delete_if{|x| x == nil}.sort
+      entries["witness2 Forename"] = all_entries.distinct(:witness2_forename).delete_if{|x| x == nil}.sort
+    end 
+    entries
+  end
+      
   def get_entries_zero_year
     freereg1_csv_entries = Array.new
     get_entries.each do |entry|

@@ -76,6 +76,7 @@ class ManageResourcesController < ApplicationController
       clean_session
       clean_session_for_syndicate
       clean_session_for_county
+      clean_session_for_images
       if @page = Refinery::Page.where(:slug => 'information-for-members').exists?
         @page = Refinery::Page.where(:slug => 'information-for-members').first.parts.first.body.html_safe
       else

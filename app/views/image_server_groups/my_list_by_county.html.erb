@@ -1,0 +1,13 @@
+<% breadcrumb :request_assignments_by_county, @user, @county %>
+
+<% title "IS Group - list" %>
+<div style="clear:both;"></div><br>
+<p style="text-align: center">Image Groups Available for Allocation in <b><%= session[:chapman_code] %></b></p>
+
+<%= render partial: 'flash_notice' %>
+
+<div class="grid">
+  <section class="island">
+    <%= render 'image_groups_of_my_list' %>
+  </section>
+</div>

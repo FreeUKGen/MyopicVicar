@@ -91,6 +91,7 @@ MyopicVicar::Application.configure do
   config.datafiles_changeset = MyopicVicar::MongoConfig['datafiles_changeset'] unless MyopicVicar::MongoConfig['datafiles_changeset'].blank?
   config.datafiles_delta = MyopicVicar::MongoConfig['datafiles_delta'] unless MyopicVicar::MongoConfig['datafiles_delta'].blank?
   config.website = MyopicVicar::MongoConfig['website']
+  config.image_server_access =  MyopicVicar::MongoConfig['image_server_access']
   config.backup_directory = MyopicVicar::MongoConfig['backup_directory']
   config.github_issues_login = MyopicVicar::MongoConfig['github_issues_login']
   config.github_issues_password = MyopicVicar::MongoConfig['github_issues_password']

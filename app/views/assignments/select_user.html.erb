@@ -1,0 +1,29 @@
+<% if params[:assignment_list_type] == 'group' %>
+  <% breadcrumb :syndicate_image_group_assignments, @user, @syndicate, @county, @register, @source, @group %>
+<% else %>
+  <% breadcrumb :syndicate_all_assignments_select_user, session[:syndicate] %>
+<% end %>
+
+<% title "IS Image - assignment" %>
+<%= render partial: 'header' %>
+<%= render partial: 'flash_notice' %>
+
+<section class="island  island--light">
+<div class="grid">
+<%= simple_form_for @assignment, :url=>url_for(:action=>'list_assignments_by_syndicate_coordinator', :controller=>'assignments'), :method=>'get' do |s| %>
+	<%= s.input :user_id, :as=>:check_boxes, :collection=>@people.invert.sort_by{|v| v[0].downcase}.unshift(['select all', '0']), :label=>'select a user', :include_hidden=>false, :label_html=>{:style=>'margin-left:2px'}, :item_label_class=>"collection_check_boxes", :input_html=>{:class=>"simple_form_position", :checked=>false} %>
+
+  <% if params[:assignment_list_type] == 'group' %>
+    <%= s.hidden_field :source_id, :value=>@source.id %>
+    <%= s.hidden_field :image_server_group_id, :value=>params[:id] %>
+  <% end %>
+  <%= s.hidden_field :assign_type, as: :fake, :value=>params[:assign_type] %>
+  <%= s.hidden_field :assignment_list_type, as: :fake, :value=>params[:assignment_list_type] %>
+  <%= s.button :submit, 'Submit', :onclick => 'return validate_selection()' %>
+<% end %>
+</div>
+</section>
+
+<script type="text/javascript">
+  <%= render :partial => 'assignment.js' %>
+</script>

@@ -18,7 +18,7 @@ class Church
   field :transcribers, type: Hash
   field :contributors, type: Hash
   has_many :registers, dependent: :restrict
-
+  has_many :image_server_groups
   embeds_many :alternatechurchnames
   accepts_nested_attributes_for :alternatechurchnames, allow_destroy: true,  reject_if: :all_blank
 
@@ -30,6 +30,10 @@ class Church
   class << self
     def id(id)
       where(:id => id)
+    end
+
+    def find_by_place_ids(id)
+      where(:place_id => {'$in'=>id.keys})
     end
 
     def find_by_name_and_place(chapman_code, place_name,church_name)

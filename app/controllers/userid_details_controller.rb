@@ -352,6 +352,7 @@ class UseridDetailsController < ApplicationController
       redirect_to :back
       return
     end
+    @label = params[:option]
     @location = get_option_parameter(params[:option], @location)
     params[:option] = nil
     @manage_syndicate = session[:syndicate]

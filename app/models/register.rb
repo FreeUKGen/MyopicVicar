@@ -30,7 +30,7 @@ class Register
   has_many :freereg1_csv_files, dependent: :restrict
   belongs_to :church, index: true
 
-  has_many :sources # includes transcripts, printed editions, and microform, and digital versions of these
+  has_many :sources # includes origin server of images
 
   index({ church_id: 1, register_name: 1})
   index({ register_name: 1})
@@ -69,7 +69,14 @@ class Register
       @@my_church.save
       register
     end
+    
+    def create_folder_url(chapman_code,folder_name,register)
+      URI.escape(Rails.application.config.image_server + 'manage_freereg_images/create_folder?chapman_code=' + chapman_code + '&folder_name=' + folder_name +  '&register=' + register + '&image_server_access=' + Rails.application.config.image_server_access)
+    end
 
+    def find_by_church_ids(id)
+      Register.where(:church_id => {'$in'=>id.keys})
+    end
 
     def find_register(args)
       @@my_church = Church.find_by_name_and_place(args[:chapman_code], args[:place_name], args[:church_name])
@@ -106,6 +113,22 @@ class Register
   end #self
 
   ######################################################################## instance methods
+  def add_source(folder_name)
+    proceed = true
+    message = ''
+    self.sources.each do |source|
+      if source.source_name == "Image Server"
+        proceed = false
+        message = 'Image Server already exists'
+      end
+    end
+    if proceed
+      source = Source.new(:source_name => "Image Server",:folder_name => folder_name)
+      self.sources << source
+      self.save
+    end
+    return proceed,message
+  end
 
   def calculate_register_numbers
 
@@ -169,6 +192,16 @@ class Register
     value = true if (self.status.present? || self.quality.present? || self.source.present? || self.copyright.present?|| self.register_notes.present? ||
                      self.minimum_year_for_register.present? || self.maximum_year_for_register.present? )
     value
+  end
+  
+  def image_server_exists?
+    image_server = false
+      unless self.sources.nil?
+        self.sources.each do |source|
+           image_server = true if source.source_name == "Image Server"  
+        end
+      end
+      image_server
   end
 
   def merge_registers

@@ -1,0 +1,19 @@
+<% breadcrumb :show_file,  @freereg1_csv_file%>
+<%= render 'show_header' %>
+
+<%case%>
+  <%when @freereg1_csv_file.record_type == "ba"%>
+     <p style="text-align: center"><b>Baptisms</b></p>
+  <%when @freereg1_csv_file.record_type == "ma"%>
+     <p style="text-align: center"><b>Marriages</b></p>
+  <%when @freereg1_csv_file.record_type == "bu"%>
+     <p style="text-align: center"><b>Burials</b></p>
+<%end%>
+
+<% @freereg1_csv_entries.each_pair do |key,value|  %>
+     <b></b> <%= key %></b>
+       <br>
+      <%= value %>
+      <br>
+<%end%>
+<br>
