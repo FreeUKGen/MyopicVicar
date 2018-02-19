@@ -91,6 +91,7 @@ class FreeregContentsController < ApplicationController
         redirect_to :action => :new and return
       end
     end
+    @images = Register.image_transcriptions_calculation(params[:id])
     @church  = @register.church
     if  @church.present?
       get_variables_for_register_show

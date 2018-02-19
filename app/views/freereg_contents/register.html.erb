@@ -1,0 +1,55 @@
+<% title "#{RegisterType.display_name(@register.register_type)} #{@church_name} #{@place_name} #{@county} transcriptions" %>
+<div class="container">
+  <section class="island ">
+  <div class="text--center">
+    <%= link_to 'Back to Search Record', :back, :class => "btn weight--light  btn--small"%>    
+    </div><br>
+    
+    <h2 class=" text--center">Register <%= @register_type %> for <%=@church.church_name %> of <%= @place_name %> in <%= @county %> </h2>
+       <details>
+    <summary style="outline: none; display: list-item;"><strong>Navigate the page</summary>
+    <ul>
+      <li><a href="#register_information">Register Information</a></li>
+      <li><a href="#image_information">Image Information</a></li>
+      <li><a href="#transcriptions">Transcriptions</a></li>
+    </ul></strong>
+  </details>
+    <h3 class=" text--center">Information about the register  </h3>
+    <%= render 'register_information' %>
+      
+
+    <% if @images.present? %>
+      <details>
+      <summary style="outline: none; display: list-item;"><strong>Navigate the page</summary>
+      <ul>
+        <li><a href="#register_information">Register Information</a></li>
+        <li><a href="#image_information">Image Information</a></li>
+        <li><a href="#transcriptions">Transcriptions</a></li>
+      </ul></strong>
+    </details>
+      <br><a id="image_information"><h3 class="text--center">Images being Transcribed and Available for Transcription</h3></a>
+      <%= render 'images' %>
+    <% end %>
+
+    <details>
+      <summary style="outline: none; display: list-item;"><strong>Navigate the page</summary>
+      <ul>
+        <li><a href="#register_information">Register Information</a></li>
+        <li><a href="#image_information">Image Information</a></li>
+        <li><a href="#transcriptions">Transcriptions</a></li>
+      </ul></strong>
+    </details>
+      <h3 class=" text--center">Number of transcriptions for this register </h3>
+    <p class=" text--center">Those periods with zero data may span several decades. The first period may include pre 1530 records. </p> 
+    <%= render 'decade' %>
+      <details>
+      <summary style="outline: none; display: list-item;"><strong>Navigate the page</summary>
+      <ul>
+        <li><a href="#register_information">Register Information</a></li>
+        <li><a href="#image_information">Image Information</a></li>
+        <li><a href="#transcriptions">Transcriptions</a></li>
+      </ul></strong>
+    </details>
+
+  </section>
+</div>
