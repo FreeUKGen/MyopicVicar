@@ -95,6 +95,61 @@ class Register
       register
     end
 
+    def image_transcriptions_calculation(register_id)
+      images = Hash.new()
+
+      source = Source.where(:register_id=>register_id).pluck(:id, :source_name)
+      return {} if source.empty? || source == [''] || source == [nil]
+
+      @source_name = Hash.new{|h,k| h[k]=[]}.tap{|h| source.each{|k,v| h[k] = v}}
+      source_ids = source.map {|k,v| k}
+      
+      image_server_group = ImageServerGroup.where(:source_id=>{'$in'=>source_ids}).pluck(:id, :group_name, :source_id, :number_of_images)
+      return {} if image_server_group.empty? || image_server_group == [''] || image_server_group == [nil]
+
+      image_server_group_ids = image_server_group.map {|k,v1,v2,v3| k}
+      group_name = Hash.new{|h,k| h[k]=[]}.tap{|h| image_server_group.each{|k,v1,v2,v3| h[k] = v1}}
+      group_in_source = Hash.new{|h,k| h[k]=[]}.tap{|h| image_server_group.each{|k,v1,v2,v3| h[k] = v2}}
+      total_images = Hash.new{|h,k| h[k]=[]}.tap{|h| image_server_group.each{|k,v1,v2,v3| h[k] = v3}}
+
+      image_server_image = ImageServerImage.where(:image_server_group_id=>{'$in'=>image_server_group_ids})
+
+      image_server_image.each do |x|
+        s_id = group_in_source[x.image_server_group_id]
+        g_name = group_name[x.image_server_group_id]
+
+        if ['u','a','bt','ts','br','rs'].include?(x.status)
+          images[s_id] = Hash.new() if images[s_id].nil?
+          images[s_id][g_name] = Hash.new() if images[s_id][g_name].nil?
+          images[s_id][g_name][:count] = total_images[x.image_server_group_id]
+        end
+
+        case x.status
+        when 'u'
+          images[s_id][g_name][:unallocated] = images[s_id][g_name][:unallocated].nil? ? 1 : images[s_id][g_name][:unallocated] + 1
+        when 'a'
+          images[s_id][g_name][:allocated] = images[s_id][g_name][:allocated].nil? ? 1 : images[s_id][g_name][:allocated] + 1
+        when 'bt'
+          images[s_id][g_name][:being_transcribed] = images[s_id][g_name][:being_transcribed].nil? ? 1 : images[s_id][g_name][:being_transcribed] + 1
+        when 'ts'
+          images[s_id][g_name][:transcription_submitted] = images[s_id][g_name][:transcription_submitted].nil? ? 1 : images[s_id][g_name][:transcription_submitted] + 1
+        when 'br'
+          images[s_id][g_name][:being_reviewed] = images[s_id][g_name][:being_reviewed].nil? ? 1 : images[s_id][g_name][:being_reviewed] + 1
+        when 'rs'
+          images[s_id][g_name][:review_submitted] = images[s_id][g_name][:review_submitted].nil? ? 1 : images[s_id][g_name][:review_submitted] + 1
+        end
+      end
+
+      images.each do |s_id,v1|
+        v1.each do |g_name,v2|
+          images[s_id][g_name][:in_progress] = (v2[:being_transcribed].nil? ? ''.to_i : v2[:being_transcribed]) + (v2[:transcription_submitted].nil? ? ''.to_i : v2[:transcription_submitted]) + (v2[:being_reviewed].nil? ? ''.to_i : v2[:being_reviewed]) + (v2[:review_submitted].nil? ? ''.to_i : v2[:review_submitted])
+          images[s_id][g_name][:available] = (v2[:unallocated].nil? ? ''.to_i : v2[:unallocated]) + (v2[:allocated].nil? ? ''.to_i : v2[:allocated])
+        end
+      end
+
+      return images
+    end
+
     def update_or_create_register(freereg1_csv_file)
       # find if register exists
       register = find_register(freereg1_csv_file.to_register)
