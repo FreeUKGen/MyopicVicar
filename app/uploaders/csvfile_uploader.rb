@@ -14,10 +14,13 @@ class CsvfileUploader < CarrierWave::Uploader::Base
   # This is a sensible default for uploaders that are meant to be mounted:
   def store_dir
         # "#{Rails.application.config.datafiles}/#{mounted_as}/#{model.userid}/"
-    "#{Rails.root}/#{Rails.application.config.datafiles}/#{model.userid}/"
+   if Rails.application.config.datafiles == '/raid/freereg2/users'
+          "#{Rails.application.config.datafiles}/#{model.userid}/"
+   else
+          "#{Rails.root}/#{Rails.application.config.datafiles}/#{model.userid}/"
+   end
     #{ }"#{Rails.application.config.datafiles}/#{mounted_as}/#{model.userid}/"
     #{}"uploads/#{model.class.to_s.underscore}/#{mounted_as}/#{model.id}"
-    
   end
   def cache_dir
     File.join(Rails.root, 'tmp', 'carrierwave')
