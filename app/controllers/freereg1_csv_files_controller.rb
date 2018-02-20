@@ -347,8 +347,13 @@ class Freereg1CsvFilesController < ApplicationController
       else
         flash[:notice] = message
       end
-      redirect_to register_path(@return_location)
-      return
+      if @return_location.nil?
+        redirect_to manage_resource_path(@user)
+        return
+      else
+        redirect_to register_path(@return_location) 
+        return
+      end
     else
       #no id
       go_back("batch",params[:id])
