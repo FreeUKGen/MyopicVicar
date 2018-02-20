@@ -21,6 +21,7 @@ class SearchRecordsController < ApplicationController
     @display_date = false
     @entry.display_fields(@search_record)
     @entry.acknowledge
+    p @entry
     @place_id,@church_id,@register_id = @entry.get_location_ids
     @annotations = Annotation.find(@search_record[:annotation_ids]) if @search_record[:annotation_ids]
     @search_result = @search_query.search_result

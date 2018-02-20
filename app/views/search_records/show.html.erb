@@ -68,18 +68,7 @@
              <% end %>
           <% end %>
         <% end %>
-        <% if @transcribed_by.present? %>
-          <tr>
-            <td>Transcribed by </td>
-            <td><%= @transcribed_by %></td>
-          </tr>
-        <% end%>
-        <% if @credit.present? %>
-          <tr>
-            <td>Also please credit </td>
-            <td><%= @credit %></td>
-          </tr>
-        <% end%>
+        <%= current_authentication_devise_user.present? %>
         <% if current_authentication_devise_user.present? %>
           <tr>
             <td>Line ID</td>

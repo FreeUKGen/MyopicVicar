@@ -114,11 +114,10 @@ class UseridDetail
       answer = false
       transcribed_by = nil
       date = "2018-05-25".to_date
-      user = self.userid(userid).first
-      answer = true if user.present? && user.acknowledge_me && (date >= Date.today )
-      if user.present?
-        transcribed_by = user.person_forename 
-        transcribed_by.nil? ? transcribed_by = user.person_surname : transcribed_by = transcribed_by + ' ' + user.person_surname
+      if userid.present?  && ((date >= Date.today) || userid.acknowledge_me.present?)
+        answer = true
+        transcribed_by = userid.person_forename 
+        transcribed_by.nil? ? transcribed_by = userid.person_surname : transcribed_by = transcribed_by + ' ' + userid.person_surname
       end
       return answer, transcribed_by
     end
