@@ -549,6 +549,18 @@ class UseridDetailsController < ApplicationController
     @userid.email_address_valid == true ? "Valid" : "Invalid" 
   end
   
+   def userid_updated?
+    params[:userid_detail][:userid] != session[:userid]
+  end
+
+  def userid_taken?
+    UseridDetail.where(:userid => params[:userid_detail][:userid]).exists? || Refinery::Authentication::Devise::User.where(:username => params[:userid_detail][:userid]).exists?
+  end
+
+  def update_session userid
+    session[:userid] = userid
+  end
+  
   def update_userid
     if userid_updated?
       unless userid_taken?
