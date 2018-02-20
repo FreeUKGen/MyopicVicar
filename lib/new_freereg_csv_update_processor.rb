@@ -1222,6 +1222,7 @@ class CsvRecords <  CsvFile
       @data_entry_order = get_default_data_entry_order(csvfile)
     when header_field[0] == "#" && header_field[1] == "DEF"
       csvfile.header[:def]  = true
+      @data_lines[0][0] = (@data_lines[0][0]).downcase
       if !valid_field_definition?(@data_lines[0][0])
         proceed = false
         csvfile.header_error << "The field order definition is missing. <br>"
