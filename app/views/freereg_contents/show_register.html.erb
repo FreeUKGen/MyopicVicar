@@ -4,7 +4,7 @@
     <summary style="outline: none; display: list-item;"><strong>Navigate the page</summary>
     <ul>
       <li><a href="#register_information">Register Information</a></li>
-      <% if !@images.empty? %>
+      <% if @images.present? %>
         <li><a href="#image_information">Image Information</a></li>
       <% end %>
       <li><a href="#transcriptions">Transcriptions</a></li>
@@ -29,7 +29,7 @@
     <a id="register_information"><h3 class=" text--center">Information about the Register</h3></a>
     <%= render 'register_information' %>
 
-    <% if !@images.empty? %>
+    <% if @images.present? %>
       <details>
         <summary style="outline: none; display: list-item;"><strong>Navigate the page</summary>
         <ul>
@@ -47,26 +47,9 @@
       <summary style="outline: none; display: list-item;"><strong>Navigate the page</summary>
       <ul>
         <li><a href="#register_information">Register Information</a></li>
-        <% if !@images.empty? %>
+        <% if @images.present? %>
           <li><a href="#image_information">Image Information</a></li>
         <% end %>
-        <li><a href="#transcriptions">Transcriptions</a></li>
-      </ul></strong>
-    </details>
-
-    <a id="transcriptions"><h3 class=" text--center">Number of transcriptions</h3></a>
-    <p class=" text--center">Those periods with zero data may span several decades. The first period may include pre 1530 records. </p> 
-    <%= render 'decade' %>
-  </section>
-</div>
-
-    <% end %>
-
-    <details>
-      <summary style="outline: none; display: list-item;"><strong>Navigate the page</summary>
-      <ul>
-        <li><a href="#register_information">Register Information</a></li>
-        <li><a href="#image_information">Image Information</a></li>
         <li><a href="#transcriptions">Transcriptions</a></li>
       </ul></strong>
     </details>
