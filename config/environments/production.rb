@@ -90,6 +90,7 @@ MyopicVicar::Application.configure do
   config.dataset_date =  MyopicVicar::MongoConfig['dataset_date'] unless MyopicVicar::MongoConfig['dataset_date'].blank?
   config.datafiles_changeset = MyopicVicar::MongoConfig['datafiles_changeset'] unless MyopicVicar::MongoConfig['datafiles_changeset'].blank?
   config.datafiles_delta = MyopicVicar::MongoConfig['datafiles_delta'] unless MyopicVicar::MongoConfig['datafiles_delta'].blank?
+  config.image_server = MyopicVicar::MongoConfig['image_server']
   config.website = MyopicVicar::MongoConfig['website']
   config.image_server_access =  MyopicVicar::MongoConfig['image_server_access']
   config.backup_directory = MyopicVicar::MongoConfig['backup_directory']
