@@ -96,6 +96,62 @@ class ManageSyndicatesController < ApplicationController
     redirect_to :action => 'new'
   end
 
+  def list_fully_reviewed_group
+    get_user_info_from_userid
+
+    if session[:syndicate].nil?
+      flash[:notice] = 'Your other actions cleared the syndicate information, please select syndicate again'
+      redirect_to main_app.new_manage_resource_path
+      return
+    else
+      @source,@group_ids,@group_id = ImageServerGroup.group_ids_by_syndicate(session[:syndicate], 'r')
+
+      if @source.nil?
+        flash[:notice] = 'No Fully Reviewed Image Groups Under This Syndicate'
+        redirect_to :back
+      else
+        session.delete(:from_source)
+        session[:image_group_filter] = 'fully_reviewed'
+        render 'list_fully_reviewed_group'
+      end
+    end
+  end
+
+  def list_fully_transcribed_group
+    get_user_info_from_userid
+
+    if session[:syndicate].nil?
+      flash[:notice] = 'Your other actions cleared the syndicate information, please select syndicate again'
+      redirect_to main_app.new_manage_resource_path
+      return
+    else
+      @source,@group_ids,@group_id = ImageServerGroup.group_ids_by_syndicate(session[:syndicate], 't')
+
+      if @source.nil?
+        flash[:notice] = 'No Fully Transcribed Image Groups Under This Syndicate'
+        redirect_to :back
+      else
+        session.delete(:from_source)
+        session[:image_group_filter] = 'fully_transcribed'
+        render 'list_fully_transcribed_group'
+      end
+    end
+  end
+
+  def manage_image_group
+    get_user_info_from_userid
+    clean_session_for_managed_images
+
+    if session[:syndicate].nil?
+      redirect_to main_app.new_manage_resource_path
+      return
+    else
+      @source,@group_ids,@group_id = ImageServerGroup.group_ids_by_syndicate(session[:syndicate])
+
+      render 'image_server_group_by_syndicate'
+    end
+  end
+
   def member_by_email
     redirect_to :controller => 'userid_details', :action => 'selection', :option =>"Select specific email"
     return
@@ -116,6 +172,10 @@ class ManageSyndicatesController < ApplicationController
     session.delete(:chapman_code)
     session.delete(:county)
     session[:page] = request.original_url
+
+    clean_session_for_images
+    session[:manage_user_origin] = 'manage syndicate'
+
     get_user_info_from_userid
     get_syndicates_for_selection
     number_of_syndicates = @syndicates.length unless @syndicates.nil?

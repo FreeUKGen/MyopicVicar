@@ -129,7 +129,6 @@ class Freereg1CsvEntry
     end
     def delete_entries_for_a_file(fileid)
       entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => fileid).all.no_timeout
-      p "#{entries.length}" unless entries.nil?
       entries.destroy_all
     end
     def update_entries_userid(userid,batch)

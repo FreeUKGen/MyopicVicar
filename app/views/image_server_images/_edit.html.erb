@@ -1,0 +1,25 @@
+<div style="clear:both;"></div><br>
+<center><b><%= @image_server_image[:image_file_name] %></b></center>
+
+<section class="island  island--light">
+<div class="grid">
+<%= simple_form_for @image_server_image do |s| %>
+  <% if session[:manage_user_origin] == 'manage county' %>
+    <% if @image_server_image[:status] == 'u' %>
+      <%= s.input :image_server_group_id, :as => :select, :collection => @group_name.invert, :label => 'Re-sssign the image to Image Group', :include_blank => false, :include_hidden => false, :input_html => {:class => "simple_form_bgcolour simple_form_position", :size => 5} %>
+    <% end %>
+    <% if not ['bt','br'].include? @image_server_image[:status] %>
+      <%= s.input :status, :collection => [['Unallocated','u'], ['Transcribed','t'], ['Reviewed','r'], ['Complete','c']], :selected => s.object.status, :label => 'transcription status', :value => SourceProperty::STATUS[s.object.status], :include_blank => false, :input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 5} %>
+    <% end %>
+  <% end %>
+  <%= s.input :difficulty, :collection => SourceProperty::DIFFICULTY.invert, selected: s.object.difficulty, :label => 'difficulty', :value => SourceProperty::DIFFICULTY[s.object.difficulty], :include_blank => false, :input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 5} %>
+ 	<%= s.input :notes, :input_html => {:class => "simple_form_bgcolour", :size => 70} %>
+
+	<%= s.hidden_field :id, :value=>@image_server_image[:id] %>
+	<%= s.hidden_field :image_file_name, :value=>@image_server_image[:image_file_name] %>
+  <%= s.hidden_field :orig_image_server_group_id, as: :fake, :value=>@image_server_image[:image_server_group_id] %>
+  <%= s.hidden_field :origin, as: :fake, :value=>'edit' %>
+  <%= s.button :submit, 'Submit' %>
+<% end %>
+</div>
+</section>

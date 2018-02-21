@@ -1,0 +1,15 @@
+<% if params[:assignment_list_type] == 'group' || (!params[:assignment].nil? && params[:assignment][:assignment_list_type] == 'group') %>
+	<% breadcrumb :syndicate_image_group_assignments, @user, @syndicate, @county, @register, @source, @group %>
+<% else %>
+	<% breadcrumb :syndicate_all_assignments, session[:syndicate] %>
+<% end %>
+
+<% title "Assignment - list by syndicate_coordinator" %>
+<%= render partial: 'header' %>
+<%= render partial: 'flash_notice' %>
+
+<div class="grid">
+  <section class="island">
+		<%= render partial: 'assignments_list', :locals=>{:assignment_filter_list=>''} %>
+	</section>
+</div>

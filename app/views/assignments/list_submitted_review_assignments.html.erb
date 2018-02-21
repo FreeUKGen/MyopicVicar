@@ -1,0 +1,16 @@
+<% breadcrumb :submitted_review_assignments, @user, @county, @register, @source, @group %>
+
+<% title "Assignment - review_submitted" %>
+<div style="clear:both;"></div><br>
+<p style="text-align: center">Submitted_Review Assignments in Syndicate <b><%= session[:syndicate] %></b>
+<%= render partial: 'flash_notice' %>
+
+<div class="grid">
+  <section class="island">
+  	<% if @count.length == %>
+  		<%= render 'assignment_list' %>
+  	<% else %>
+			<%= render partial: 'assignments_list', :locals=>{:assignment_filter_list=>'submitted_review'} %>
+		<% end %>
+	</section>
+</div>

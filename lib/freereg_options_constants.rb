@@ -247,4 +247,6 @@ module FreeregOptionsConstants
   ST_PERIOD = /\A[Ss][Tt]\z/
   TEST = {:fieldset => "mine", otherset: "yours"}
   CONFIRM_EMAIL_ADDRESS = 120
+
+  SOURCE_NAME = ['Image Server', 'Other Server1', 'Other Server2', 'Other Server3']
 end

@@ -1,0 +1,20 @@
+<% breadcrumb :upload_image_server_group, @user, @chapman_code, @county, @register, @source, @image_server_group %>
+
+<% title "IS Group - upload images report" %>
+<%= render partial: 'header' %>
+<%= render partial: 'flash_notice' %>
+
+<% if show_images_list?( @uploaded) %>
+  <p style="text-align: center"><b>We uploaded the following new images</b><br>
+  <%=  @uploaded %>
+  </p>
+<% end%>
+<br>
+<% if show_images_list?( @not_uploaded) %>
+  <p style="text-align: center"><b>The following images were already present and were unchanged</b><br>
+  <%=  @not_uploaded %>
+  </p>
+<% end%>
+  <p style="text-align: center">
+<%= link_to ' Continue', image_server_group_path(@image_server_group), method: :get, :class => "btn weight--light " %>
+</p>

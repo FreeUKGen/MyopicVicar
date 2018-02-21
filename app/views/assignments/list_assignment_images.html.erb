@@ -1,0 +1,19 @@
+<% if session[:my_own] %>
+  <% breadcrumb :my_own_assignment, @user %>
+<% else %>
+  <% breadcrumb :syndicate_all_assignment, @user, @county, @register, @source, @group %>
+<% end %>
+
+<% x = @assignment.values.first.values.first.values.first %>
+<div style="clear:both;"></div><br>
+<p style="text-align: center"><b><%= x[:group_name] %></b> assigned on <b><%= x[:assign_date].to_date.strftime("%Y-%m-%d") %> <%= SourceProperty::STATUS[x[:status]] %></b> for <b><%= x[:userid] %></b>
+<%= render partial: 'flash_notice' %>
+
+<% title "Assignment - list" %>
+<%= render partial: 'flash_notice' %>
+
+<div class="grid">
+  <section class="island">
+		<%= render 'assignment_list' %>
+	</section>
+</div>

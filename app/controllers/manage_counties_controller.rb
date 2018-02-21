@@ -102,9 +102,112 @@ class ManageCountiesController < ApplicationController
     redirect_to :action => 'new'
   end
 
+  def manage_completion_submitted_image_group
+    get_user_info_from_userid
+    session.delete(:from_source)
+    session[:image_group_filter] = 'completion_submitted'
+
+    if session[:chapman_code].nil?
+      redirect_to main_app.new_manage_resource_path
+      return
+    else
+      @source,@group_ids,@group_id = ImageServerGroup.group_ids_sort_by_place(session[:chapman_code], 'completion_submitted')            # not sort by place, unallocated groups
+      @county = session[:county]
+
+      if @source.nil? || @group_ids.empty? || @group_id.empty?
+        redirect_to(:back, :notice => 'No Completion Submitted Image Groups exists') and return
+      else
+        render 'image_server_group_completion_submitted'
+      end
+    end
+  end
+
+  def manage_image_group
+    get_user_info_from_userid
+    clean_session_for_managed_images
+    session[:image_group_filter] = 'all'
+
+    if session[:chapman_code].nil?
+      redirect_to main_app.new_manage_resource_path
+      return
+    else
+      @source,@group_ids,@group_id = ImageServerGroup.group_ids_sort_by_place(session[:chapman_code])                   # not sort by place, all groups
+      @county = session[:county]
+
+      if @source.nil? || @group_ids.empty? || @group_id.empty?
+        redirect_to(:back, :notice => 'No Image Groups exists') and return
+      else
+        render 'image_server_group_all'
+      end
+    end
+  end
+
+  def manage_unallocated_image_group
+    get_user_info_from_userid
+    session.delete(:from_source)
+    session[:image_group_filter] = 'unallocate'
+
+    if session[:chapman_code].nil?
+      redirect_to main_app.new_manage_resource_path
+      return
+    else
+      @source,@group_ids,@group_id = ImageServerGroup.group_ids_sort_by_place(session[:chapman_code], 'unallocate')            # not sort by place, unallocated groups
+      @county = session[:county]
+
+      if @source.nil? || @group_ids.empty? || @group_id.empty?
+        redirect_to(:back, :notice => 'No unallocated image groups exists') and return
+      else
+        render 'image_server_group_unallocate'
+      end
+    end
+  end
+
+  def manage_allocate_request_image_group
+    get_user_info_from_userid
+    session.delete(:from_source)
+    session[:image_group_filter] = 'allocate request'
+
+    if session[:chapman_code].nil?
+      redirect_to main_app.new_manage_resource_path
+      return
+    else
+      @source,@group_ids,@group_id = ImageServerGroup.group_ids_sort_by_place(session[:chapman_code], 'allocate request')            # not sort by place, unallocated groups
+      @county = session[:county]
+
+      if @source.nil? || @group_ids.empty? || @group_id.empty?
+        redirect_to(:back, :notice => 'No Allocate Request Image Groups exists') and return
+      else
+        render 'image_server_group_allocate_request'
+      end
+    end
+  end
+
+  def manage_sources
+    get_user_info_from_userid
+    clean_session_for_images
+    session[:manage_user_origin] = 'manage county'
+    
+    if session[:chapman_code].nil?
+      flash[:notice] = 'Your other actions cleared the county information, please select county again'
+      redirect_to main_app.new_manage_resource_path
+      return
+    else
+      @source_ids,@source_id = Source.get_source_ids(session[:chapman_code])
+      @county = session[:county]
+
+      if @source_ids.empty? || @source_id.empty?
+        flash[:notice] = 'No requested Sources exists'
+        redirect_to :back
+      else
+        render 'sources_list_all'
+      end
+    end
+  end
+
   def new
     #get county to be used
     clean_session_for_county
+    clean_session_for_images
     session.delete(:county)
     session.delete(:chapman_code)
     get_user_info_from_userid
@@ -221,7 +324,69 @@ class ManageCountiesController < ApplicationController
     redirect_to :action => 'new'
   end
 
+  def sort_image_group_by_place
+    get_user_info_from_userid
+    session.delete(:from_source)
+    session[:image_group_filter] = 'place'
 
+    if session[:chapman_code].nil?
+      flash[:notice] = 'Your other actions cleared the county information, you need to select county again'
+      redirect_to main_app.new_manage_resource_path
+      return
+    else
+      @source,@group_ids,@group_id = ImageServerGroup.group_ids_sort_by_place(session[:chapman_code], 'all')        # sort by place, all groups
+      @county = session[:county]
+
+      if @source.nil? || @group_ids.empty?
+        redirect_to(:back, :notice => 'No Image Groups Allocated by Place for County ' + @county)
+      else
+        render 'image_server_group_by_place'
+      end
+    end
+  end
+
+  def sort_image_group_by_syndicate
+    get_user_info_from_userid
+    session.delete(:from_source)
+    session[:image_group_filter] = 'syndicate'
+
+    if session[:chapman_code].nil?
+      flash[:notice] = 'Your other actions cleared the county information, you need to select county again'
+      redirect_to main_app.new_manage_resource_path
+      return
+    else
+      @source,@group_ids,@syndicate = ImageServerGroup.group_ids_sort_by_syndicate(session[:chapman_code])
+      @county = session[:county]
+
+      if @source.nil? || @group_ids.empty? || @syndicate.empty?
+        redirect_to(:back, :notice => 'No Image Groups Allocated by Syndicate for County ' + @county)
+      else
+        render 'image_server_group_by_syndicate'
+      end
+    end
+  end
+
+  def uninitialized_source_list
+    get_user_info_from_userid
+    session.delete(:from_source)
+    session[:image_group_filter] = 'uninitialized'
+
+    if session[:chapman_code].nil?
+      flash[:notice] = 'Your other actions cleared the county information, please select county again'
+      redirect_to main_app.new_manage_resource_path
+      return
+    else
+      @source_ids,@source_id = Source.get_unitialized_source_list(session[:chapman_code])
+      @county = session[:county]
+
+      if @source_ids.empty?
+        flash[:notice] = 'No Uninitialized Sources'
+        redirect_to selection_active_manage_counties_path(session[:chapman_code], :option =>'Manage Images')
+      else
+        render 'uninitialized_source_list'
+      end
+    end
+  end
 
   def upload_batch
     redirect_to new_csvfile_path

@@ -1,0 +1,11 @@
+<% breadcrumb :image_server_groups, @user, @chapman_code, @county, @register, @source %>
+
+<% title "IS Group - list" %>
+<%= render partial: 'header' %>
+<%= render partial: 'flash_notice' %>
+
+<div class="grid">
+  <section class="island">
+    <%= render 'image_group_index' %>
+  </section>
+</div>
