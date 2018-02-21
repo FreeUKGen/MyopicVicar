@@ -36,7 +36,7 @@ class Freereg1CsvEntry
   field :register_type, type: String 
   field :register_entry_number, type: String
   field :notes, type: String
-  field :transcriber_notes, type: String
+  field :notes_from_transcriber, type: String
   field :file_line_number, type: Integer
   field :film, type: String
   field :film_number, type: String
