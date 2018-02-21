@@ -46,7 +46,7 @@ class UseridDetail
   field :new_transcription_agreement, type: String, default: "Unknown"
   field :email_address_validity_change_message, type: Array, default: []
   field :secondary_role, type: Array, default: []
-  field :acknowledge_me, type: Boolean
+  field :do_not_acknowledge_me, type: Boolean
   field :acknowledge_with_pseudo_name, type: Boolean
   field :pseudo_name, type: String
    # Note if you add or change fields you may need to update the display and edit field order in /lib/freereg_options_constants
@@ -113,8 +113,7 @@ class UseridDetail
     def can_we_acknowledge_the_transcriber(userid)
       answer = false
       transcribed_by = nil
-      date = "2018-05-25".to_date
-      if userid.present?  && ((date >= Date.today) || userid.acknowledge_me.present?)
+      if userid.present? || !(userid.do_not_acknowledge_me.present?)
         answer = true
         transcribed_by = userid.person_forename 
         transcribed_by.nil? ? transcribed_by = userid.person_surname : transcribed_by = transcribed_by + ' ' + userid.person_surname

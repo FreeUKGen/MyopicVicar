@@ -57,7 +57,7 @@
         </tr> <tr>
           <td>Just send my processing messages to my coordinator:</td><td > <%=@userid.no_processing_messages %>  </td>
         </tr> <tr>
-          <td>Acknowledge my transcriptions:</td><td > <%= @userid.acknowledge_me%>  </td>
+          <td>Do not ccknowledge my contributions:</td><td > <%= @userid.do_not_acknowledge_me%>  </td>
         </tr> <tr>
           <td>Use a pseudonym in place of my name:</td><td > <%=@userid.acknowledge_with_pseudo_name%>  </td>
           <% if @userid.acknowledge_with_pseudo_name %> 

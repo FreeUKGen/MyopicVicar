@@ -277,6 +277,11 @@ input.radio {
   margin-right: 5px;
   vertical-align: -3px;
 }
+input.radio_button {
+  float: left;
+  margin-right: 5px;
+  vertical-align: -3px;
+}
 
 input.check_boxes {
   margin-left: 5px;
@@ -295,6 +300,7 @@ label.collection_check_boxes {
   vertical-align: -2px;
   margin-left: 2px;
 }
+
 
 /* ----- Override selection field width ----- */
 
