@@ -9,12 +9,11 @@ if Rails.env.development? && !Rails.application.config.website == 'http://test2.
       :authentication       => "plain",
       :enable_starttls_auto => true
     }
+    ActionMailer::Base.register_interceptor(DevelopmentMailInterceptor)
 else
   ActionMailer::Base.delivery_method = :sendmail
   ActionMailer::Base.perform_deliveries = true
   ActionMailer::Base.raise_delivery_errors = true
 end
 ActionMailer::Base.default_url_options[:host] = Rails.application.config.website
-if Rails.env.development?
-  ActionMailer::Base.register_interceptor(DevelopmentMailInterceptor)
-end
+
