@@ -816,16 +816,11 @@ class CsvFile < CsvFiles
     freereg1_csv_file = Freereg1CsvFile.where(:userid => @header[:userid],:file_name => @header[:file_name],:county => thisvalue[:chapman_code], :place => thisvalue[:place_name], :church_name => thisvalue[:church_name], :register_type => thisvalue[:register_type], :record_type =>@header[:record_type]).first
     #:place => value[:place_name], :church_name => value[:church_name], :register_type => value[:register_type], :record_type =>@header[:record_type]
     if freereg1_csv_file.nil?
-      p "creating new"
-      p batch_header
       freereg1_csv_file = Freereg1CsvFile.new(batch_header)
       freereg1_csv_file.update_register
       message = "Creating a new batch for #{batch_header[:chapman_code]}, #{batch_header[:place_name]}, #{batch_header[:church_name]}, #{RegisterType::display_name(batch_header[:register_type])}. <br>"
     else
       freereg1_csv_file.update_attributes(:uploaded_date => self.uploaded_date, :lds => self.header[:lds], :def => self.header[:def], :order => self.header[:order])
-      p "using current"
-      p self.header[:order]
-      p freereg1_csv_file
       message = "Updating the current batch for #{batch_header[:chapman_code]}, #{batch_header[:place_name]}, #{batch_header[:church_name]}, #{RegisterType::display_name(batch_header[:register_type])}. <br>"
       #remove batch errors for this location
       freereg1_csv_file.error = 0
@@ -1242,9 +1237,6 @@ class CsvRecords <  CsvFile
       @data_entry_order = get_default_data_entry_order(csvfile)
     end
     csvfile.header[:order]  = @data_entry_order
-    p "order"
-    p @data_entry_order
-    p csvfile.header[:order]
     return proceed
   end
 
@@ -1266,7 +1258,6 @@ class CsvRecords <  CsvFile
       end 
       n = n + 1  
     end 
-    p @data_entry_order
     return proceed,  @data_entry_order
   end
 
@@ -1334,12 +1325,10 @@ class CsvRecords <  CsvFile
   end
 
   def valid_field_definition?(fields)
-    p 'validating'
     entry_fields = Freereg1CsvEntry.attribute_names
     entry_fields << "chapman_code"
     entry_fields << "place_name"
     result = true
-    p fields
     unless fields.kind_of?(Array)
       result = false if !entry_fields.include?(fields)
       return result
@@ -1348,7 +1337,6 @@ class CsvRecords <  CsvFile
       result = false if !entry_fields.include?(field)
       break unless result
     end
-    p result
     return result
   end
 end
@@ -1494,7 +1482,6 @@ class CsvRecord < CsvRecords
   end
 
   def process_baptism_data_fields(csvrecords,csvfile,project,line)
-      p line
     #p "extracting baptism"
     FreeregOptionsConstants::BAPTISM_FIELDS.each do |field|
       field_symbol = field.to_sym
@@ -1511,7 +1498,6 @@ class CsvRecord < CsvRecords
   end
 
   def process_burial_data_fields(csvrecords,csvfile,project,line)
-    p line
     #p "Extracting burial"
     FreeregOptionsConstants::BURIAL_FIELDS.each do |field|
       field_symbol = field.to_sym
@@ -1526,7 +1512,6 @@ class CsvRecord < CsvRecords
   end
 
   def process_marriage_data_fields(csvrecords,csvfile,project,line)
-      p line
     #p "extracting marriage"
      FreeregOptionsConstants::MARRIAGE_FIELDS.each do |field|
       field_symbol = field.to_sym
