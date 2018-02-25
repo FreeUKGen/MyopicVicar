@@ -816,13 +816,16 @@ class CsvFile < CsvFiles
     freereg1_csv_file = Freereg1CsvFile.where(:userid => @header[:userid],:file_name => @header[:file_name],:county => thisvalue[:chapman_code], :place => thisvalue[:place_name], :church_name => thisvalue[:church_name], :register_type => thisvalue[:register_type], :record_type =>@header[:record_type]).first
     #:place => value[:place_name], :church_name => value[:church_name], :register_type => value[:register_type], :record_type =>@header[:record_type]
     if freereg1_csv_file.nil?
-      #p "creating new"
+      p "creating new"
+      p batch_header
       freereg1_csv_file = Freereg1CsvFile.new(batch_header)
       freereg1_csv_file.update_register
       message = "Creating a new batch for #{batch_header[:chapman_code]}, #{batch_header[:place_name]}, #{batch_header[:church_name]}, #{RegisterType::display_name(batch_header[:register_type])}. <br>"
     else
-      freereg1_csv_file.update_attributes(:uploaded_date => self.uploaded_date, :lds => self.header[:lds], :def => self.header[:def])
-      #p "using current"
+      freereg1_csv_file.update_attributes(:uploaded_date => self.uploaded_date, :lds => self.header[:lds], :def => self.header[:def], :order => self.header[:order])
+      p "using current"
+      p self.header[:order]
+      p freereg1_csv_file
       message = "Updating the current batch for #{batch_header[:chapman_code]}, #{batch_header[:place_name]}, #{batch_header[:church_name]}, #{RegisterType::display_name(batch_header[:register_type])}. <br>"
       #remove batch errors for this location
       freereg1_csv_file.error = 0
@@ -1211,7 +1214,7 @@ class CsvRecords <  CsvFile
     end
   end
 
-  def extract_from_header_five(header_field,csvfile)
+  def extract_from_header_five(header_field,csvfile,project)
     #process the optional header line 5
     #eg +LDS,,,,
     #get an array of current entry fields
@@ -1222,19 +1225,26 @@ class CsvRecords <  CsvFile
       @data_entry_order = get_default_data_entry_order(csvfile)
     when header_field[0] == "#" && header_field[1] == "DEF"
       csvfile.header[:def]  = true
-      @data_lines[0][0] = (@data_lines[0][0]).downcase
-      if !valid_field_definition?(@data_lines[0][0])
+      project.write_messages_to_all("Flexible csv flag detected. The next line will be taken a column specification. <p>", true)
+     
+      if !valid_field_definition?(@data_lines[0][0].downcase)
         proceed = false
-        csvfile.header_error << "The field order definition is missing. <br>"
+        csvfile.header_error << "The field order definition is missing. "
       else
         proceed, @data_entry_order = extract_data_field_order(@data_lines[0],csvfile)
       end
+     
+      project.write_messages_to_all("Will use the following column specification \n\r #{@data_lines[0]} ", true)
       @data_lines.shift if proceed
     else
       csvfile.header[:lds] = "no"
       csvfile.header[:def]  = false
       @data_entry_order = get_default_data_entry_order(csvfile)
     end
+    csvfile.header[:order]  = @data_entry_order
+    p "order"
+    p @data_entry_order
+    p csvfile.header[:order]
     return proceed
   end
 
@@ -1247,9 +1257,9 @@ class CsvRecords <  CsvFile
     n = 0
     while n < header_fields.length 
       #need to verify fields
-      if valid_field_definition?(header_fields[n]) 
-        field = header_fields[n].to_sym
-        @data_entry_order[field] = n 
+      field = header_fields[n].downcase
+      if valid_field_definition?(field) 
+        @data_entry_order[field.to_sym] = n 
       else
         proceed = false
         csvfile.header_error << "The field order definition contains an invalid field #{header_fields[n]}. <br>"
@@ -1303,7 +1313,7 @@ class CsvRecords <  CsvFile
     csvfile.header_error << "There were only three header lines. <br>" if @header_lines.length == 3
     success3 = extract_from_header_four(@header_lines[3],csvfile)  unless @header_lines.length <= 3
     @data_entry_order = get_default_data_entry_order(csvfile)  if @header_lines.length <= 4 && csvfile.header[:record_type].present?
-    success4 = extract_from_header_five(@header_lines[4],csvfile) unless @header_lines.length <= 4
+    success4 = extract_from_header_five(@header_lines[4],csvfile,project) unless @header_lines.length <= 4
     if csvfile.header_error.present?
       if !success || !success1 || !success2 || !success3 || !success4
         project.write_messages_to_all("Processing was terminated because of a fatal header error. <p>",true)
@@ -1323,12 +1333,22 @@ class CsvRecords <  CsvFile
     end
   end
 
-  def valid_field_definition?(field)
+  def valid_field_definition?(fields)
+    p 'validating'
     entry_fields = Freereg1CsvEntry.attribute_names
     entry_fields << "chapman_code"
     entry_fields << "place_name"
-    result = false 
-    result = true if entry_fields.include?(field) 
+    result = true
+    p fields
+    unless fields.kind_of?(Array)
+      result = false if !entry_fields.include?(fields)
+      return result
+    end
+    fields.each do |field|
+      result = false if !entry_fields.include?(field)
+      break unless result
+    end
+    p result
     return result
   end
 end
@@ -1548,9 +1568,7 @@ class CsvRecord < CsvRecords
 
   def avoid_look_up_of_nil_field(line,record,csvrecords)
     record = record.to_sym
-    p record
     field_actually_exists_in_def(record,csvrecords) ? result = line[csvrecords.data_entry_order[record]] : result = nil  
-    p result
     result
   end
 
