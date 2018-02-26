@@ -1,5 +1,16 @@
 <% title "#{RegisterType.display_name(@register.register_type)} #{@church_name} #{@place_name} #{@county} transcriptions" %>
 <div class="container">
+  <details>
+    <summary style="outline: none; display: list-item;"><strong>Navigate the page</summary>
+    <ul>
+      <li><a href="#register_information">Register Information</a></li>
+      <% if @images.present? %>
+        <li><a href="#image_information">Image Information</a></li>
+      <% end %>
+      <li><a href="#transcriptions">Transcriptions</a></li>
+    </ul></strong>
+  </details>
+
   <section class="island ">
   <div class="text--center">
     <%= link_to 'County Selection', new_freereg_content_path, method: :get, :class => "btn weight--light  btn--small"%> 
