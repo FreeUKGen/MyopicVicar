@@ -70,7 +70,7 @@ namespace :check_register_records do
       h
     end
 
-    csv_string = ['id','status','register_name','alternate_register_name','register_type','quality','source','copyright','register_notes','credit','minimum_year_for_register','maximum_year_for_register','credit_from_files','records','last_amended','datemin','datemax','transcribers','contributors'].to_csv
+    csv_string = ['id','status','register_name','alternate_register_name','register_type','chapmon_code','place_name','church_name','quality','source','copyright','register_notes','credit','minimum_year_for_register','maximum_year_for_register','credit_from_files','records','last_amended','datemin','datemax','transcribers','contributors'].to_csv
     output_file.puts csv_string
 
     sorted_record.each do |k1,v1|
@@ -81,6 +81,9 @@ namespace :check_register_records do
       record_str << v1['register_name']
       record_str << v1['alternate_register_name']
       record_str << v1['register_type']
+      record_str << v1['chapman_code']
+      record_str << v1['place_name']
+      record_str << v1['church_name']
       record_str << v1['quality']
       record_str << v1['source']
       record_str << v1['copyright']
