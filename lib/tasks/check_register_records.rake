@@ -42,8 +42,9 @@ namespace :check_register_records do
 
     record.each do |k1,v1|
       record[k1]['alternate_register_name'] = '' if not record[k1].key?('alternate_register_name')
+      record[k1]['chapman_code'] = '' if not record[k1].key?('chapman_code')
       record[k1]['church_id'] = '' if not record[k1].key?('church_id')
-      record[k1]['church_names'] = '' if not record[k1].key?('church_names')
+      record[k1]['church_name'] = '' if not record[k1].key?('church_name')
       record[k1]['contributors'] = '' if not record[k1].key?('contributors')
       record[k1]['copyright'] = '' if not record[k1].key?('copyright')
       record[k1]['credit'] = '' if not record[k1].key?('credit')
@@ -70,7 +71,7 @@ namespace :check_register_records do
       h
     end
 
-    csv_string = ['id','status','register_name','alternate_register_name','register_type','chapmon_code','place_name','church_name','quality','source','copyright','register_notes','credit','minimum_year_for_register','maximum_year_for_register','credit_from_files','records','last_amended','datemin','datemax','transcribers','contributors'].to_csv
+    csv_string = ['id','status','register_name','alternate_register_name','register_type','chapman_code','place_name','church_name','quality','source','copyright','register_notes','credit','minimum_year_for_register','maximum_year_for_register','credit_from_files','records','last_amended','datemin','datemax','transcribers','contributors'].to_csv
     output_file.puts csv_string
 
     sorted_record.each do |k1,v1|
