@@ -8,13 +8,29 @@ namespace :check_register_records do
     output_file = File.new(file_for_output, "w")
   	
     id = 0
+    place = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
+    church = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
     record = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
   	
   	puts "========Get Register records"
 
     chapman_code = args.chapman_code == 'ALL' ? nil : args.chapman_code
-  	registers = Register.all
 
+    places = Place.all
+    places.each do |entry|
+      place[entry.id]['chapman_code'] = entry.chapman_code
+      place[entry.id]['place_name'] = entry.place_name
+    end
+    
+    churches = Church.all
+    churches.each do |entry|
+      church[entry.id]['place_id'] = entry.place_id
+      church[entry.id]['church_name'] = entry.church_name
+      church[entry.id]['place_name'] = place[entry.place_id]['place_name']
+      church[entry.id]['chapman_code'] = place[entry.place_id]['chapman_code']
+    end
+
+    registers = Register.all
     registers.each do |entry|
       entry.attributes.each do |k,v|
         if k == '_id'
@@ -35,7 +51,11 @@ namespace :check_register_records do
         end
       end
 
-      if !chapman_code.nil? && record[id]['chapman_code'] != chapman_code
+      if record[id]['church_id'].present? && (chapman_code.nil? || church[record[id]['church_id']]['chapman_code'] == chapman_code)
+          record[id]['chapman_code'] = church[record[id]['church_id']]['chapman_code']
+          record[id]['place_name'] = church[record[id]['church_id']]['place_name']
+          record[id]['church_name'] = church[record[id]['church_id']]['church_name']
+      else
         record.delete(id)
       end
     end
@@ -71,20 +91,20 @@ namespace :check_register_records do
       h
     end
 
-    csv_string = ['id','status','register_name','alternate_register_name','register_type','chapman_code','place_name','church_name','quality','source','copyright','register_notes','credit','minimum_year_for_register','maximum_year_for_register','credit_from_files','records','last_amended','datemin','datemax','transcribers','contributors'].to_csv
+    csv_string = ['id','register_name','alternate_register_name','register_type','chapman_code','place_name','church_name','status','quality','source','copyright','register_notes','credit','minimum_year_for_register','maximum_year_for_register','credit_from_files','records','last_amended','datemin','datemax','transcribers','contributors'].to_csv
     output_file.puts csv_string
 
     sorted_record.each do |k1,v1|
       record_str = Array.new
 
       record_str << k1
-      record_str << v1['status']
       record_str << v1['register_name']
       record_str << v1['alternate_register_name']
       record_str << v1['register_type']
       record_str << v1['chapman_code']
       record_str << v1['place_name']
       record_str << v1['church_name']
+      record_str << v1['status']
       record_str << v1['quality']
       record_str << v1['source']
       record_str << v1['copyright']
