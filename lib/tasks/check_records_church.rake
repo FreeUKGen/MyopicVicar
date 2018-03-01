@@ -1,4 +1,4 @@
-namespace :check_church_records do
+namespace :check_records_church do
 
   desc "Export Church entries into excel"
   task :check_church, [:chapman_code] => :environment do |t, args|
@@ -94,7 +94,7 @@ namespace :check_church_records do
       h
     end
 
-    csv_string = ['id','chapman_code','place_name', 'official_church_name','alt_church_name','alt_church_names','denomination','website','records','last_amended','datemin','datemax','church_notes','transcribers','contributors','location',].to_csv
+    csv_string = ['id','chapman_code','place_name', 'official_church_name','alt_church_name','alt_church_names','denomination','website','records','last_amended','datemin','datemax','church_notes','transcribers','contributors','location'].to_csv
     output_file.puts csv_string
 
     sorted_record.each do |k1,v1|

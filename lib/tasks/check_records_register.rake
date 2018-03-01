@@ -1,4 +1,4 @@
-namespace :check_register_records do
+namespace :check_records_register do
 
   desc "Export Church entries into excel"
   task :check_register, [:chapman_code] => :environment do |t, args|
