@@ -7,7 +7,7 @@
 <section class="island  island--light">
 <div class="grid">
 <%= simple_form_for @image_server_group do |s| %>
-  <%= s.input :initialize_status, :as=>:select, :collection=>[['Unallocated','u'], ['Transcribed','t'], ['Completed','c']], :label=>"Initialize Image Group to Status", :include_blank=>false, :selected=>false, :required=>false, :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :style=>'width: 100%', :size=>3} %>
+  <%= s.input :initialize_status, :as=>:select, :collection=>[['Unallocated','u'], ['Transcribed','t'], ['Completed','c']], :label=>"Initialize Image Group to Status", :include_blank=>false, :selected=>false, :required=>false, :selected=>@image_server_group[:summary][:status], :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :style=>'width: 100%', :size=>3} %>
   
   <%= s.button :submit, 'Submit' %>
 <% end %>
