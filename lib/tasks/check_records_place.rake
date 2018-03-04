@@ -14,7 +14,7 @@ namespace :check_records_place do
   	puts "========Get Place records"
 
     chapman_code = args.chapman_code == 'ALL' ? nil : args.chapman_code
-    places = Place.all
+    places = Place.where(:disabled=>false)
 
     places.each do |entry|
       entry.attributes.each do |k,v|
