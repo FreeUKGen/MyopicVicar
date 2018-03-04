@@ -1,9 +1,7 @@
-namespace :check_records_church do
+class CheckRecordsChurch
 
-  desc "Export Church entries into excel"
-  task :check_church, [:chapman_code] => :environment do |t, args|
-
-  	file_for_output = "#{Rails.root}/log/church_records.csv"
+  def self.process(chapmancode)
+    file_for_output = "#{Rails.root}/log/church_records.csv"
     FileUtils.mkdir_p(File.dirname(file_for_output) )
     output_file = File.new(file_for_output, "w")
   	
@@ -15,7 +13,7 @@ namespace :check_records_church do
   	
   	puts "========Get Church records"
 
-    chapman_code = args.chapman_code == 'ALL' ? nil : args.chapman_code
+    chapman_code = chapmancode == 'ALL' ? nil : args.chapman_code
     places = Place.all
 
     places.each do |entry|

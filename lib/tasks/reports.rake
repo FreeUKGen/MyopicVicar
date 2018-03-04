@@ -196,4 +196,28 @@ namespace :reports do
     end
   end
 
+  desc "Create a report of Enabled Places"
+  task :check_records_place, [:chapmancode] => [:environment] do |t, args|
+    require 'check_records_place'
+
+    CheckRecordsPlace.process(args.chapmancode)
+    puts "Task complete."
+  end
+
+  desc "Create a report of Churches"
+  task :check_records_church, [:chapmancode] => [:environment] do |t, args|
+    require 'check_records_church'
+
+    CheckRecordsChurch.process(args.chapmancode)
+    puts "Task complete."
+  end
+
+  desc "Create a report of Registers"
+  task :check_records_register, [:chapmancode] => [:environment] do |t, args|
+    require 'check_records_register'
+
+    CheckRecordsRegister.process(args.chapmancode)
+    puts "Task complete."
+  end
+
 end
