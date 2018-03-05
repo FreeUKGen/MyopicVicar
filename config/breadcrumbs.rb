@@ -97,6 +97,12 @@ crumb :show_file do |file|
     end
   end
 end
+
+crumb :unique_names do |file|
+  link "Unique Names"
+  parent :show_file, file
+end
+
 crumb :edit_file do |file|
   link "Editing Batch Information", edit_freereg1_csv_file_path(file)
 
