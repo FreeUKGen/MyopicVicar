@@ -11,7 +11,7 @@ class CheckRecordsPlace
   	
   	puts "========Get Place records"
 
-    chapman_code = chapmancode == 'ALL' ? nil : args.chapman_code
+    chapman_code = chapmancode == 'ALL' ? nil : chapman_code
     places = Place.where(:disabled=>false)
 
     places.each do |entry|
