@@ -1,6 +1,6 @@
 class CheckRecordsFreereg1CsvFile
 
-  def self.process
+  def self.process(chapmancode)
   	file_for_output = "#{Rails.root}/log/freereg1_csv_file_records.csv"
     FileUtils.mkdir_p(File.dirname(file_for_output) )
     output_file = File.new(file_for_output, "w")
@@ -17,6 +17,8 @@ class CheckRecordsFreereg1CsvFile
     record = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
   	
   	puts "========Get Freereg1CsvFile records"
+    chapman_code = chapmancode == 'ALL' ? nil : chapmancode
+
     places = Place.all
     places.each do |entry|
       place[entry.id]['chapman_code'] = entry.chapman_code
@@ -58,7 +60,12 @@ class CheckRecordsFreereg1CsvFile
         record[id][k] = v
       end
 
-      if record[id]['register_id'].present? 
+      if record[id]['userid_detail_id'].present?
+        record[id]['userid'] = userid_detail_id[record[id]['userid_detail_id']]['userid']
+        record[id]['userid_lower_case'] = userid_detail_id[record[id]['userid_detail_id']]['userid_lower_case']
+      end
+
+      if record[id]['register_id'].present? && (chapman_code.nil? || register[record[id]['register_id']]['chapman_code'] == chapman_code)
         record[id]['chapman_code'] = register[record[id]['register_id']]['chapman_code']
         record[id]['place_name'] = register[record[id]['register_id']]['place_name']
         record[id]['church_name'] = register[record[id]['register_id']]['church_name']
@@ -66,11 +73,8 @@ class CheckRecordsFreereg1CsvFile
 
         record[id]['church_id'] = register[record[id]['register_id']]['church_id']
         record[id]['place_id'] = register[record[id]['register_id']]['place_id']
-      end
-
-      if record[id]['userid_detail_id'].present?
-      	record[id]['userid'] = userid_detail_id[record[id]['userid_detail_id']]['userid']
-      	record[id]['userid_lower_case'] = userid_detail_id[record[id]['userid_detail_id']]['userid_lower_case']
+      else
+        record.delete(id)
       end
 		end
 

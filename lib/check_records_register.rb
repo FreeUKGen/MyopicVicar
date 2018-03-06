@@ -12,7 +12,7 @@ class CheckRecordsRegister
   	
   	puts "========Get Register records"
 
-    chapman_code = chapmancode == 'ALL' ? nil : chapman_code
+    chapman_code = chapmancode == 'ALL' ? nil : chapmancode
 
     places = Place.all
     places.each do |entry|
