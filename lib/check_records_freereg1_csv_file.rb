@@ -1,8 +1,6 @@
-namespace :check_records_freereg1_csv_file do
+class CheckRecordsFreereg1CsvFile
 
-  desc "Export freereg1_csv_file_records into excel"
-  task :check => :environment do |t, args|
-
+  def self.process
   	file_for_output = "#{Rails.root}/log/freereg1_csv_file_records.csv"
     FileUtils.mkdir_p(File.dirname(file_for_output) )
     output_file = File.new(file_for_output, "w")

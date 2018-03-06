@@ -220,4 +220,11 @@ namespace :reports do
     puts "Task complete."
   end
 
+  desc "Create a report of Freereg1_Csv_File"
+  task :check_records_freereg1_csv_file => [:environment] do |t, args|
+    require 'check_records_freereg1_csv_file'
+
+    CheckRecordsFreereg1CsvFile.process
+    puts "Task complete."
+  end
 end
