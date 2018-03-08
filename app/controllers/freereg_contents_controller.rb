@@ -72,6 +72,7 @@ class FreeregContentsController < ApplicationController
   
   
   def register
+    #this is the search details entry for a register
     @register = Register.id(params[:id]).first
     if @register.present?
       get_variables_for_register_show
@@ -82,6 +83,7 @@ class FreeregContentsController < ApplicationController
   end
 
   def show_register
+    # this is the Transcription entry for a register
     @register = Register.id(params[:id]).first
     if @register.nil?
       flash[:notice] = "No register was selected while reviewing the content; you will need to start again"
