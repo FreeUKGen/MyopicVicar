@@ -266,8 +266,14 @@ class Freereg1CsvEntry
     file = self.freereg1_csv_file
     if file.present?
       transcriber = file.userid_detail
+      if transcriber.nil?
+        userid = file.userid
+        if userid.present?
+          transcriber = UseridDetail.userid(userid).first
+        end
+      end
       show,transcribed_by = UseridDetail.can_we_acknowledge_the_transcriber(transcriber)
-      credit = file.credit_name if "2018-05-25".to_date >= Date.today
+      credit = file.credit_name 
     else
       transcribed_by = nil
       credit = nil

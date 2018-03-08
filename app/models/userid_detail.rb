@@ -113,7 +113,7 @@ class UseridDetail
     def can_we_acknowledge_the_transcriber(userid)
       answer = false
       transcribed_by = nil
-      if userid.present? || !(userid.do_not_acknowledge_me.present?)
+      if userid.present? && !(userid.do_not_acknowledge_me.present?)
         answer = true
         transcribed_by = userid.person_forename 
         transcribed_by.nil? ? transcribed_by = userid.person_surname : transcribed_by = transcribed_by + ' ' + userid.person_surname
