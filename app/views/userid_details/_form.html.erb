@@ -12,7 +12,7 @@
      <%= f.input :do_not_acknowledge_me,  :as => :boolean,:label => "Do not acknowledge my contributions"%>
      <%= f.input :acknowledge_with_pseudo_name, :as => :boolean,:label => "Use a pseudonym instead of my name"%>
      <%= f.input :pseudo_name,:label => "Use this pseudonym for acknowledgements", :input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
-     <%= f.input :no_processing_messages, :collection => [['Yes', 'true'], ['No', 'false']], :selected => @userid.no_processing_messages, :label => " SC uploads my data", :input_html => {  :class => " simple_form_bgcolour  overide_selection_field_width", :size => 2, "data-tooltip" => true, :title => "no email to transcriber if SC upload data"} %>
+     <%= f.input :no_processing_messages, :collection => [['Yes', 'true'], ['No', 'false']], :selected => @userid.no_processing_messages, :label => " SC uploads my data", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 2, "data-tooltip" => true, :title => "no email to transcriber if SC upload data"} %>
   <% end%>
 
   <% if controller.action_name == 'new' || controller.action_name == 'create'%>
