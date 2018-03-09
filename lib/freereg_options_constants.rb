@@ -242,6 +242,8 @@ module FreeregOptionsConstants
     "BA" => RecordType::BAPTISM,
     "MA" => RecordType::MARRIAGE,
     "BU" => RecordType::BURIAL   }
+    
+  SOURCE_NAME = ['Image Server', 'Other Server1', 'Other Server2', 'Other Server3']
 
   ST_PERIOD = /\A[Ss][Tt]\z/
 
