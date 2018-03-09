@@ -85,13 +85,23 @@ class PhysicalFile
           header <<  column_name unless  row == 0
           row = row + 1
         end
-        header <<  sorted
-        header <<  who if who.present?
-        header <<  county if county.present?
+        explanation = "This was a selection based on " 
+        explanation = explanation + sorted
+        explanation = explanation + " for " + who if who.present? 
+        explanation = explanation + " in " + county if county.present?
+        header << explanation
         csv <<  header
-        batch.each do |physical_file|
+        case
+        when batch.nil?
+          message = 'No batches'
+        when batch.length == 1
           row = row + 1
-          csv << physical_file.attributes.values_at(*PhysicalFile.attribute_names)
+          csv << batch.first.attributes.values_at(*PhysicalFile.attribute_names)
+        when batch.length > 1
+          batch.each do |physical_file|
+            row = row + 1
+            csv << physical_file.attributes.values_at(*PhysicalFile.attribute_names)
+          end
         end
       end
     end
