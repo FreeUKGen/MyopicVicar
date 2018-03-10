@@ -87,7 +87,7 @@ class PhysicalFile
         end
         explanation = "This was a selection based on " 
         explanation = explanation + sorted
-        explanation = explanation + " for " + who if who.present? 
+        explanation = explanation + " for " + who if who.respond_to?(:to_str)
         explanation = explanation + " in " + county if county.present?
         header << explanation
         csv <<  header
