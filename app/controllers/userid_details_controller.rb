@@ -430,7 +430,7 @@ class UseridDetailsController < ApplicationController
         return
       else
         session[:my_own] = true
-        redirect_to :action => 'edit'
+         redirect_to edit_userid_detail_path(@userid)
         return
       end
     end
@@ -449,7 +449,7 @@ class UseridDetailsController < ApplicationController
     else
       flash[:notice] = "The update of the profile was unsuccessful #{success[1]} #{@userid.errors.full_messages}"
       @syndicates = Syndicate.get_syndicates_open_for_transcription
-      render :action => 'edit', page_name: params[:page_name]
+       redirect_to edit_userid_detail_path(@userid)
       return
     end
   end
