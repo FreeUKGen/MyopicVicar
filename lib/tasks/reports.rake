@@ -227,4 +227,12 @@ namespace :reports do
     CheckRecordsFreereg1CsvFile.process(args.chapmancode)
     puts "Task complete."
   end
+
+  desc "Create a report of Search_Record"
+  task :check_records_search_record => [:environment] do |t, args|
+    require 'check_records_search_record'
+
+    CheckRecordsSearchRecord.process
+    puts "Task complete."
+  end
 end
