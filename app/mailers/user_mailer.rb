@@ -188,7 +188,7 @@ class UserMailer < ActionMailer::Base
 
     county_coordinator = County.where(:chapman_code=>chapman_code).first.county_coordinator
     cc = UseridDetail.where(userid: county_coordinator, email_address_valid: true).first
-    redirect_to(:back, :notice => 'county coordinator does not exist') and return if cc.nil?
+    return if cc.nil?
 
     subject = "assignment completed"
     email_body = "Transcription of image group " + image_server_group.group_name + " is completed"
@@ -198,10 +198,10 @@ class UserMailer < ActionMailer::Base
 
   def notify_sc_allocate_request_rejection(user,group_name,syndicate,action_type)
     syndicate = Syndicate.where(:syndicate_code=>syndicate).first
-    redirect_to(:back, :notice => 'syndicate does not exist, email not send') and return if syndicate.nil?
+    return if syndicate.nil?
 
     sc = UseridDetail.where(:userid=>syndicate.syndicate_coordinator).first
-    redirect_to(:back, :notice => 'syndicate coordinator does not exist, email not send') and return if sc.nil?
+    return if sc.nil?
 
     case action_type
       when 'allocate'
