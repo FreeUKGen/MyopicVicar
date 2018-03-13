@@ -73,7 +73,7 @@ class PhysicalFilesController < ApplicationController
   def file_not_processed
     @batches = PhysicalFile.uploaded_into_base.not_processed.all.order_by(base_uploaded_date: -1, userid: 1)
     @selection = 'all'
-    @sorted_by = 'Files not processed'
+    @sorted_by = 'Not processed'
     session[:sorted_by] =  @sorted_by
     @number =  @batches.length
     @paginate = false
