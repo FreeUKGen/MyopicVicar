@@ -9,7 +9,7 @@
   <%= s.input :end_date, :label => "End Year", :input_html => {:class => "simple_form_bgcolour simple_form_position", :size => 10, :onkeypress => 'test(this,event)'} %>
     <div id='ig_wrong_format_end_date' style='display:none; color:red; margin:2px 10px'>end date needs to be 4 digits</div>
     <div id='ig_wrong_range_end_date' style='display:none; color:red; margin:2px 10px'>end date can not be 1. earlier than start date 2. latter than current year 3. latter than image source end date <%= @parent_source.end_date if !@parent_source.nil? %></div>
-  <%= s.input :notes, :label => 'Notes', :as => :text, :input_html => {:class => "simple_form_bgcolour simple_form_position", :style => 'width: 100%', :rows => 5} %>
+  <%= s.input :notes, :label => 'Notes', :as => :text, :input_html => {:class => "simple_form_bgcolour", :style => 'width: 100%', :rows => 5} %>
 
 	<% if controller.controller_name == 'image_server_groups' %>
     <% case controller.action_name %>
