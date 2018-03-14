@@ -1,7 +1,5 @@
 class SourcesController < ApplicationController
   require 'freereg_options_constants'
- 
-  skip_before_filter :require_login, only: [:show]
   
   def access_image_server
     @user = cookies.signed[:userid]
