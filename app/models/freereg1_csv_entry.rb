@@ -142,7 +142,7 @@ class Freereg1CsvEntry
   index({burial_person_forename: 1})
   index({bride_forename: 1})
   index({bride_father_forename: 1})
-  index({"multiple_witnesses.witness_forename":1})
+  index({"multiple_witnesses.witness_forename": 1})
   
   validate :errors_in_fields
 
