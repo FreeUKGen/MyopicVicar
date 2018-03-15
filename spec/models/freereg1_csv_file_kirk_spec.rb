@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'freereg_csv_update_processor'
+require 'new_freereg_csv_update_processor'
 clean_database
 describe Freereg1CsvFile do
   FREEREG1_CSV_FILES.each_with_index do |file, index|

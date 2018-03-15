@@ -1,6 +1,6 @@
 require 'spec_helper'
 require 'create_places_docs'
-require 'freereg_csv_update_processor'
+require 'new_freereg_csv_update_processor'
 
 
 SAME_REGISTER_FILES = [

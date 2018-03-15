@@ -1,7 +1,5 @@
 class CsvfilesController < ApplicationController
  
-
-  require 'freereg_csv_update_processor'
   require 'digest/md5'
 
 
