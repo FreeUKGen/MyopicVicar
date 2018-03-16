@@ -11,7 +11,7 @@ class CheckRecordsSearchRecord
   	
   	puts "========Get empty freereg1_csv_entry_id SearchRecord records"
 
-    search_records = SearchRecord.all
+    search_records = SearchRecord.where(:freereg1_csv_entry_id => nil)
 
     search_records.each do |entry|
       entry.attributes.each do |k,v|
@@ -29,7 +29,6 @@ class CheckRecordsSearchRecord
     record.each do |k1,v1|
       record[k1]['filed_id'] = '' if not record[k1].key?('field_id')
       record[k1]['location'] = '' if not record[k1].key?('location')
-      record.delete(k1) if record[k1].key?('freereg1_csv_entry_id')
     end
 
     sorted_record = record.inject({}) do |h, (k, v)|
@@ -60,7 +59,7 @@ class CheckRecordsSearchRecord
     
     puts "========Get empty place_id SearchRecord records"
 
-    search_records = SearchRecord.all
+    search_records = SearchRecord.where(:place_id => nil)
 
     search_records.each do |entry|
       entry.attributes.each do |k,v|
@@ -78,7 +77,6 @@ class CheckRecordsSearchRecord
     record.each do |k1,v1|
       record[k1]['filed_id'] = '' if not record[k1].key?('field_id')
       record[k1]['location'] = '' if not record[k1].key?('location')
-      record.delete(k1)  if record[k1].key?('place_id')
     end
 
     sorted_record = record.inject({}) do |h, (k, v)|
