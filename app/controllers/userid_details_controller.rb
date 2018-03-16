@@ -425,7 +425,7 @@ class UseridDetailsController < ApplicationController
       params[:userid_detail][:previous_syndicate] =  @userid.syndicate unless params[:userid_detail][:syndicate] == @userid.syndicate
     when params[:commit] == "Confirm"
       if params[:userid_detail][:email_address_valid] == 'true'
-        @userid.update_attributes(email_address_valid: true, email_address_last_confirmned: Time.new)
+        @userid.update_attributes(email_address_valid: true, email_address_last_confirmned: Time.new, email_address_validity_change_message: Array.new)
         redirect_to '/manage_resources/new'
         return
       else
