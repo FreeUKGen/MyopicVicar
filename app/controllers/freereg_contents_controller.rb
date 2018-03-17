@@ -82,6 +82,27 @@ class FreeregContentsController < ApplicationController
     end
   end
 
+  def send_request_email
+    applier_name = params[:email_info][:name]
+    applier_email = params[:email_info][:email]
+    group_name = params[:email_info][:group]
+
+    group_syndicate = ImageServerGroup.where(:group_name=>group_name)
+    return if group_syndicate.nil?
+
+    syndicate_code = group_syndicate.first.syndicate_code
+
+    syndicate = Syndicate.where(:syndicate_code=>syndicate_code)
+    return if syndicate.nil?
+
+    sc = UseridDetail.where(:userid=>syndicate.first.syndicate_coordinator)
+    return if sc.nil?
+
+    UserMailer.request_sc_to_volunteer(sc.first,group_name,applier_name,applier_email).deliver_now
+
+    redirect_to request.referer + '#image_information'
+  end
+
   def show_register
     # this is the Transcription entry for a register
     @register = Register.id(params[:id]).first

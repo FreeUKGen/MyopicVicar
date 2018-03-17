@@ -211,6 +211,7 @@ MyopicVicar::Application.routes.draw do
   get 'freereg_contents/:id/church(.:format)', :to => 'freereg_contents#church', :as => :church_freereg_content
   get 'freereg_contents/:id/register(.:format)', :to => 'freereg_contents#register', :as => :register_freereg_content
   get 'freereg_contents/select_places(.:format)', :to => 'freereg_contents#select_places', :as => :select_places_freereg_content
+  post 'freereg_contents/send_request_email(.:format)', :to => 'freereg_contents#send_request_email', :as => :send_request_email_freereg_content
   resources :freereg_contents
 
 
