@@ -95,7 +95,10 @@ class FreeregContentsController < ApplicationController
     syndicate = Syndicate.where(:syndicate_code=>syndicate_code)
     return if syndicate.nil?
 
-    sc = UseridDetail.where(:userid=>syndicate.first.syndicate_coordinator)
+    syndicate_coordinator = syndicate.first.syndicate_coordinator
+    return if syndicate_coordinator.nil? or syndicate_coordinator.empty?
+
+    sc = UseridDetail.where(:userid=>syndicate_coordinator)
     return if sc.nil?
 
     UserMailer.request_sc_to_volunteer(sc.first,group_name,applier_name,applier_email).deliver_now
