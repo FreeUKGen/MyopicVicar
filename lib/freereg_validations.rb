@@ -4,6 +4,7 @@ module FreeregValidations
   VALID_NAME =/[\p{L}\'\"\ \.\;\:]/
   VALID_NUMERIC  = /[\p{N}]/
   VALID_TEXT = /[\p{C}\p{P}p{N}\p{S}]/
+  VALID_CREDIT = /@+/
   VALID_AGE_WORDS = ["infant", "child", "minor", "of age","full age","of full age","above", "over", "+"]
   VALID_AGE_MAXIMUM = {'d' => 100, 'w' => 100 , 'm' => 100 , 'y' => 120 , 'h' => 100, '?' => 100, 'years' => 120, 'months' => 100, 'weeks' => 100, 'days' => 100, 'hours' => 100}
   VALID_AGE_TYPE1 = /\A\d{1,3}\z/
@@ -93,6 +94,11 @@ module FreeregValidations
     return true if field.nil? || field.empty?
      return true if field =~ VALID_TEXT
        return true     
+  end
+  def FreeregValidations.cleancredit(field)
+    return true if field.nil? || field.empty?
+     return false if field =~ VALID_CREDIT
+       return false     
   end
   def FreeregValidations.cleanname(field)
  
