@@ -287,6 +287,19 @@ namespace :foo do
 
   end
   
+  task :locate_batches_with_bad_credit_names, [:limit] => [:environment] do |t,args|
+    p "looking for @ in credit name"
+    number = 0
+    affected_batches = Hash.new
+    Freereg1CsvFile.each do |file|
+      affected_batches[file.id.to_s.to_sym] = {:file_name => file.file_name.to_s, :credit_name => file.credit_name.to_s, :userid => file.userid} if file.present? && file.credit_name.present? && file.credit_name.include?('@')
+      number = number + 1
+      break if args.limit.to_i == number
+    end
+    p affected_batches.length
+    p affected_batches
+  end
+  
 
   desc "Refresh UCF lists on places"
   task :refresh_ucf_lists, [:skip] => [:environment] do |t,args|
