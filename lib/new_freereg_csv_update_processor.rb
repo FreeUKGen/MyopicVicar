@@ -1491,7 +1491,7 @@ class CsvRecord < CsvRecords
     @data_record[:file_line_number] = line
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:baptism_date])
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:birth_date]) if FreeregValidations.year_extract(@data_record[:baptism_date]).nil?
-    @data_record[:person_sex] = @data_record[:person_sex] if FreeregValidations.cleansex(@data_record[:person_sex])
+    @data_record[:person_sex] = process_baptism_sex_field(@data_record[:person_sex])
     @data_record[:father_surname] = Unicode::upcase(@data_record[:father_surname] ) unless @data_record[:father_surname] .nil?
     @data_record[:mother_surname] = Unicode::upcase(@data_record[:mother_surname]) unless  @data_record[:mother_surname].nil?
     csvfile.data[line] = data_record
@@ -1528,6 +1528,29 @@ class CsvRecord < CsvRecords
     @data_record[:witness2_surname] = Unicode::upcase(@data_record[:witness2_surname]) unless @data_record[:witness2_surname].nil?
     csvfile.data[line] = data_record
   end
+  
+  def  process_baptism_sex_field(field)
+    case
+      when field.nil?
+        return_field = "?" 
+      when FreeregValidations::UNCERTAIN_SEX.include?(field.upcase)
+        return_field = field    
+      when FreeregValidations::VALID_MALE_SEX.include?(field.upcase)
+        return_field = "M" 
+      when FreeregValidations::UNCERTAIN_MALE_SEX.include?(field.upcase)
+        return_field = "M?" 
+      when FreeregValidations::VALID_FEMALE_SEX.include?(field.upcase)
+        return_field = "F"
+      when FreeregValidations::UNCERTAIN_FEMALE_SEX.include?(field.upcase)
+        return_field = "F?"
+      when field =~ FreeregValidations::VALID_UCF
+        return_field = "?"  
+      else
+        return_field = field
+    end
+    return return_field
+  end
+
 
   def validate_church_and_set(church_name,chapman_code,place_name)
     place = Place.chapman_code(chapman_code).place(place_name).not_disabled.first

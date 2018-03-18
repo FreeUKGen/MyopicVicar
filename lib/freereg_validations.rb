@@ -168,29 +168,22 @@ module FreeregValidations
 
 
   def  FreeregValidations.cleansex(field)
-  
-      return false unless FreeregValidations.cleanname(field)
     case
-       when field.nil? || field =~ VALID_UCF
-          field = "?" 
+      when field.nil? 
           return true 
-        when UNCERTAIN_SEX.include?(field.upcase)
-          field = "?" 
+      when UNCERTAIN_SEX.include?(field.upcase)
           return true 
-       when VALID_MALE_SEX.include?(field.upcase)
-          field = "M" 
+      when VALID_MALE_SEX.include?(field.upcase)
           return true 
-       when UNCERTAIN_MALE_SEX.include?(field.upcase)
-          field = "M?" 
+      when UNCERTAIN_MALE_SEX.include?(field.upcase)
           return true 
-       when VALID_FEMALE_SEX.include?(field.upcase)
-          field = "F"
+      when VALID_FEMALE_SEX.include?(field.upcase)
           return true  
-       when UNCERTAIN_FEMALE_SEX.include?(field.upcase)
-          field = "F?"
+      when UNCERTAIN_FEMALE_SEX.include?(field.upcase)
           return true  
-            
-        else
+      when field =~ VALID_UCF 
+          return true  
+      else
           return false
     end
   end
