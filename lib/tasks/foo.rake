@@ -300,6 +300,26 @@ namespace :foo do
     p affected_batches
   end
   
+  task :update_html_address_for_place_location, [:limit] => [:environment] do |t,args|
+    p "Updating Place location links"
+    number = 0
+    empty_place = Hash.new
+    Place.approved.each do |place|
+      if place.genuki_url.present? && place.genuki_url.include?("http:")
+        genuki = place.genuki_url
+        genuki = genuki.gsub(/cgi-bin/,'maps').gsub(/gazplace/,'gmap').gsub(/,/,'&')
+        place.update_attribute(:genuki_url,genuki)
+      else
+        empty_place[place.id.to_s.to_sym] = {:place_name => place.place_name.to_s, :county => place.chapman_code.to_s} 
+      end
+      number = number + 1
+      break if args.limit.to_i == number
+      p number if (number/1000)*1000 == number
+    end
+    p empty_place.length
+    p empty_place
+  end
+  
 
   desc "Refresh UCF lists on places"
   task :refresh_ucf_lists, [:skip] => [:environment] do |t,args|
