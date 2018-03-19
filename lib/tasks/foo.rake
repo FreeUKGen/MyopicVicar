@@ -320,10 +320,11 @@ namespace :foo do
       p number if (number/1000)*1000 == number
     end
     p empty_place.length
-    p empty_place
     output_file.puts empty_place.length
-    empty_place.each_pair do |id, place|
-      output_file.puts place
+    if empty_place.length > 0
+      empty_place.each_pair do |id, place|
+        output_file.puts place
+      end
     end
   end
   
