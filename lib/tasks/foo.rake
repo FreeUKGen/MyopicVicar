@@ -301,6 +301,9 @@ namespace :foo do
   end
   
   task :update_html_address_for_place_location, [:limit] => [:environment] do |t,args|
+    file_for_output = "#{Rails.root}/log/place_location_linkords.log"
+    FileUtils.mkdir_p(File.dirname(file_for_output) )
+    output_file = File.new(file_for_output, "w")
     p "Updating Place location links"
     number = 0
     empty_place = Hash.new
@@ -318,6 +321,10 @@ namespace :foo do
     end
     p empty_place.length
     p empty_place
+    output_file.puts empty_place.length
+    empty_place.each_pair do |id, place|
+      output_file.puts place
+    end
   end
   
 
