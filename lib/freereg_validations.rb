@@ -28,7 +28,7 @@ module FreeregValidations
             "-" => /\-/,
             "/" => /\\/}
    WILD_CHARACTER = /[\*\[\]\-\_\?]/
-   YEAR_MAX = 2015
+   YEAR_MAX = Date.today.year
    YEAR_MIN = 1300
    VALID_MALE_SEX = ["M","M." ,"SON","MALE","MM","SON OF"]
    UNCERTAIN_MALE_SEX = ["M?","SON?","[M]" ,"MF"]
