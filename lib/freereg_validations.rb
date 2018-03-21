@@ -98,7 +98,7 @@ module FreeregValidations
   def FreeregValidations.cleancredit(field)
     return true if field.nil? || field.empty?
      return false if field =~ VALID_CREDIT
-       return false     
+       return true    
   end
   def FreeregValidations.cleanname(field)
  
