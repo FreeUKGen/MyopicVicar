@@ -1089,7 +1089,7 @@ class CsvRecords <  CsvFile
   end
 
   def process_header_line_three_block(header_field,csvfile)
-    csvfile.header_error << "The credit person name #{header_field[2]} can only contain alphabetic and space characters in the third header line. <br>" unless FreeregValidations.cleancredit(header_field[2])
+    csvfile.header_error << "The credit person name #{header_field[2]} cannot contain what might be an email address in the third header line. <br>" unless FreeregValidations.cleancredit(header_field[2])
     csvfile.header[:credit_name] = header_field[2]
     # # suppressing for the moment
     # address = EmailVeracity::Address.new(header_field[3])
