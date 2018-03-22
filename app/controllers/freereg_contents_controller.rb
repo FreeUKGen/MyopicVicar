@@ -87,15 +87,13 @@ class FreeregContentsController < ApplicationController
     applier_email = params[:email_info][:email]
     group_name = params[:email_info][:group]
 
-    group_syndicate = ImageServerGroup.where(:group_name=>group_name)
-    return if group_syndicate.first.nil? or group_syndicate.first.empty?
+    group_syndicate = ImageServerGroup.where(:group_name=>group_name).first
+    return if group_syndicate.nil? or group_syndicate.empty?
 
-    syndicate_code = group_syndicate.first.syndicate_code
+    syndicate = Syndicate.where(:syndicate_code=>group_syndicate.syndicate_code).first
+    return if syndicate.nil? or syndicate.empty?
 
-    syndicate = Syndicate.where(:syndicate_code=>syndicate_code)
-    return if syndicate.first.nil? or syndicate.first.empty?
-
-    syndicate_coordinator = syndicate.first.syndicate_coordinator
+    syndicate_coordinator = syndicate.syndicate_coordinator
     return if syndicate_coordinator.nil? or syndicate_coordinator.empty?
 
     sc = UseridDetail.where(:userid=>syndicate_coordinator)
