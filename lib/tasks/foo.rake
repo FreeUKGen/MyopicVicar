@@ -287,6 +287,57 @@ namespace :foo do
 
   end
   
+  task :locate_batches_with_bad_credit_names, [:limit,:fix] => [:environment] do |t,args|
+    p "looking for @ in credit name"
+    file_for_output = "#{Rails.root}/log/files_with_email_in_credit_name.log"
+    FileUtils.mkdir_p(File.dirname(file_for_output) )
+    output_file = File.new(file_for_output, "w")
+    number = 0
+    affected_batches = Hash.new
+    Freereg1CsvFile.each do |file|
+      affected_batches[file.id.to_s] = {:file_name => file.file_name.to_s, :credit_name => file.credit_name.to_s, :userid => file.userid} if file.present? && file.credit_name.present? && file.credit_name.include?('@')
+      number = number + 1
+      break if args.limit.to_i == number
+    end
+    p affected_batches.length
+    output_file.puts affected_batches
+    if args.fix == "fix" && affected_batches.length > 0
+      p "Fixing"
+      affected_batches.each_pair do |id, value|
+        file = Freereg1CsvFile.id(id).first
+        file.update_attribute(:credit_name,nil)
+      end
+    end
+  end
+  
+  task :update_html_address_for_place_location, [:limit] => [:environment] do |t,args|
+    file_for_output = "#{Rails.root}/log/place_location_linkords.log"
+    FileUtils.mkdir_p(File.dirname(file_for_output) )
+    output_file = File.new(file_for_output, "w")
+    p "Updating Place location links"
+    number = 0
+    empty_place = Hash.new
+    Place.approved.each do |place|
+      if place.genuki_url.present? && place.genuki_url.include?("http:")
+        genuki = place.genuki_url
+        genuki = genuki.gsub(/cgi-bin/,'maps').gsub(/gazplace/,'gmap').gsub(/,/,'&')
+        place.update_attribute(:genuki_url,genuki)
+      else
+        empty_place[place.id.to_s.to_sym] = {:place_name => place.place_name.to_s, :county => place.chapman_code.to_s} 
+      end
+      number = number + 1
+      break if args.limit.to_i == number
+      p number if (number/1000)*1000 == number
+    end
+    p empty_place.length
+    output_file.puts empty_place.length
+    if empty_place.length > 0
+      empty_place.each_pair do |id, place|
+        output_file.puts place
+      end
+    end
+  end
+  
 
   desc "Refresh UCF lists on places"
   task :refresh_ucf_lists, [:skip] => [:environment] do |t,args|

@@ -425,12 +425,12 @@ class UseridDetailsController < ApplicationController
       params[:userid_detail][:previous_syndicate] =  @userid.syndicate unless params[:userid_detail][:syndicate] == @userid.syndicate
     when params[:commit] == "Confirm"
       if params[:userid_detail][:email_address_valid] == 'true'
-        @userid.update_attributes(email_address_valid: true, email_address_last_confirmned: Time.new)
+        @userid.update_attributes(email_address_valid: true, email_address_last_confirmned: Time.new, email_address_validity_change_message: Array.new)
         redirect_to '/manage_resources/new'
         return
       else
         session[:my_own] = true
-        redirect_to :action => 'edit'
+         redirect_to edit_userid_detail_path(@userid)
         return
       end
     end
@@ -449,7 +449,7 @@ class UseridDetailsController < ApplicationController
     else
       flash[:notice] = "The update of the profile was unsuccessful #{success[1]} #{@userid.errors.full_messages}"
       @syndicates = Syndicate.get_syndicates_open_for_transcription
-      render :action => 'edit', page_name: params[:page_name]
+       redirect_to edit_userid_detail_path(@userid)
       return
     end
   end

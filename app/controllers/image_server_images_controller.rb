@@ -1,8 +1,5 @@
 class ImageServerImagesController < ApplicationController
   require 'userid_role'
-
-  skip_before_filter :require_login, only: [:show]
-
   def destroy
     display_info
 

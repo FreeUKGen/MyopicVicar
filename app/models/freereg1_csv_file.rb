@@ -900,7 +900,7 @@ class Freereg1CsvFile
   def write_csv_marriage(csv,rec,fields,chapman_code, place_name, church_name, register_type)
     number_of_witnesses = rec.multiple_witnesses.count
     case
-    when !self.def 
+    when !self.def
       self.write_csv_marriage_standard(csv,rec,fields,chapman_code, place_name, church_name, register_type)
     when self.def &&  number_of_witnesses <= 2
       self.write_csv_marriage_standard(csv,rec,fields,chapman_code, place_name, church_name, register_type)
@@ -911,11 +911,23 @@ class Freereg1CsvFile
   
   def write_csv_marriage_standard(csv,rec,fields,chapman_code, place_name, church_name, register_type)
     witnesses = rec.get_listing_of_witnesses
+    number_of_witnesses = witnesses.length
+    if number_of_witnesses == 0
+      self.write_csv_marriage_standard_line(csv,rec,fields,chapman_code, place_name, church_name, register_type,witnesses)
+    else
+      while number_of_witnesses > 0
+        self.write_csv_marriage_standard_line(csv,rec,fields,chapman_code, place_name, church_name, register_type,witnesses)
+        number_of_witnesses = number_of_witnesses - 2
+        witnesses = witnesses.drop(2)
+      end
+    end
+  end  
+  
+  def write_csv_marriage_standard_line(csv,rec,fields,chapman_code, place_name, church_name, register_type,witnesses)
     witnesses.length > 2 ? dup_notice = true : dup_notice = false
-    while witnesses.length > 0
-      record = Array.new
-      fields.each do |field|
-        case field
+    record = Array.new
+    fields.each do |field|
+      case field
         when :chapman_code
           record = record.push(chapman_code.to_s) 
         when :place_name
@@ -935,12 +947,10 @@ class Freereg1CsvFile
           record = record.push(notes)
         else
           record = record.push(rec[field.to_sym].to_s)
-        end  
-      end
-      csv << record
-      witnesses = witnesses.drop(2)
+      end  
     end
-  end  
+    csv << record  
+  end
   
   def write_csv_marriage_flexible(csv,rec,fields,chapman_code, place_name, church_name, register_type)
     witnesses = rec.get_listing_of_witnesses

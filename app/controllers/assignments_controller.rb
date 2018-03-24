@@ -1,8 +1,6 @@
 class AssignmentsController < ApplicationController
   require 'userid_role'
 
-  skip_before_filter :require_login, only: [:show]
-
   def assign
     get_userids_and_transcribers or return
     heading_info

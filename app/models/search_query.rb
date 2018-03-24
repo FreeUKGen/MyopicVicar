@@ -351,6 +351,7 @@ class SearchQuery
     if self.search_result.records.respond_to?(:values)
       search_results =   self.search_result.records.values
       search_results = self.filter_name_types(search_results)
+      search_results = self.sort_results(search_results) unless search_results.nil?
       record_number = locate_index(search_results,current)
       next_record = nil
       previous_record = nil

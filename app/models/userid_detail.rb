@@ -115,8 +115,12 @@ class UseridDetail
       transcribed_by = nil
       if userid.present? && !(userid.do_not_acknowledge_me.present?)
         answer = true
-        transcribed_by = userid.person_forename 
-        transcribed_by.nil? ? transcribed_by = userid.person_surname : transcribed_by = transcribed_by + ' ' + userid.person_surname
+        if userid.acknowledge_with_pseudo_name
+          transcribed_by = userid.pseudo_name
+        else
+          transcribed_by = userid.person_forename 
+          transcribed_by.nil? ? transcribed_by = userid.person_surname : transcribed_by = transcribed_by + ' ' + userid.person_surname
+        end
       end
       return answer, transcribed_by
     end

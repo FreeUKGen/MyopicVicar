@@ -21,7 +21,7 @@ module UseridRole
                                 "Software Version Information", "Syndicate Coordinators","System Documentation" ],
     'project_manager' =>[  "Assignments","Batches","Contacts", "Manage Userids",  "Feedback", "Profile",  "RefineryCMS","Roadmap" ,"Search Performance","Site Statistics",
                            "System Documentation"],
-    'executive_director' =>[  "Assignments", "Batches", "Contacts", "County Coordinators","Country Coordinators", "Feedback","Manage Userids", "Message System","RefineryCMS","Roadmap","Site Statistics","Search Performance",
+    'executive_director' =>[  "Assignments", "Batches", "Contacts", "County Coordinators","Country Coordinators", "Feedback","Profile","Manage Userids", "Message System","RefineryCMS","Roadmap","Site Statistics","Search Performance",
                               "Syndicate Coordinators", "System Documentation" ],
     'publicity_coordinator'=> [ "Assignments", "Batches", "Contacts", "Profile","Roadmap","System Documentation" ],
     'genealogy_coordinator'=> [ "Assignments", "Batches", "Contacts","Profile", "Roadmap" ,"System Documentation" ],

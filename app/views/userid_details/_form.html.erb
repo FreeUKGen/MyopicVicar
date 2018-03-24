@@ -3,7 +3,7 @@
   <%= f.input :person_forename,:label => "Forename (Required)",  :input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
   <%= f.input :person_surname,:label => "Surname (Required)", :input_html => { :class => "simple_form_bgcolour",:size => 40 }%>
   <%= f.input :email_address,:label => "Email address (Required)", :input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
-  <%= f.input :email_address,:label => "Alternate email address (Desirable)", :input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+  <%= f.input :alternate_email_address,:label => "Alternate email address (Desirable)", :input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
   <%= f.input :address,:label => "Physical location",:hint => "Just a country will do",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
 
   <% unless @user.person_role == 'researcher' %>

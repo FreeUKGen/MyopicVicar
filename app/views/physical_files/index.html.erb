@@ -1,5 +1,5 @@
 <% breadcrumb :physical_files, @selection, @nature%>
-<h2 style="text-align: center">Listing of physical files <%= @sorted_by%> for <%= @selection %> </h2>
+<h2 style="text-align: center">Listing of physical files; <%= @sorted_by%> for <%= @selection %> </h2>
   <p style="text-align: center"> Number of files <%= @number if @number.present?%>.  Download first page of report as: <%= link_to "CSV", physical_files_path(format: "csv") %> </p>
 
 <% if flash[:notice] %>

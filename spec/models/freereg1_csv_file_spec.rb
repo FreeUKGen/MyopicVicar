@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'freereg_csv_update_processor'
+require 'new_freereg_csv_update_processor'
 
 describe Freereg1CsvFile do
   before(:all) do
