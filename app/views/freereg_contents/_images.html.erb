@@ -1,3 +1,5 @@
+<%= render partial: 'flash_notice' %>
+
 <div class="container">  
   <section class="island " > 
    <div class="table-wrapper">
@@ -54,8 +56,7 @@
               <td class="t20" colspan=4 id="progress_detail" title="click to see detail"><%= v2[:in_progress] %></td>
               <td class="t10" colspan=2 id="available_detail", title="click to see detail"><%= v2[:available] %>&nbsp;</td>
               <td class="t10" id="send_email">
-                <% if v2[:allocated].to_i > 0 %>
-                  <%# link_to "Send Email", "/cms/opportunities-to-volunteer-with-freereg", :class => "btn weight--light btn--small" %>
+                <% if v2[:available].to_i > 0 %>
                   <div class="btn weight--light btn--small">Send Email</div>
                 <% else %>
                   &nbsp;

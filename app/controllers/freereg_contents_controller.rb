@@ -87,19 +87,35 @@ class FreeregContentsController < ApplicationController
     applier_email = params[:email_info][:email]
     group_name = params[:email_info][:group]
 
-    group_syndicate = ImageServerGroup.where(:group_name=>group_name).first
-    return if group_syndicate.nil?
+    image_server_group = ImageServerGroup.where(:group_name=>group_name).first
+    redirect_to request.referer + '#image_information' and return if image_server_group.nil?
 
-    syndicate = Syndicate.where(:syndicate_code=>group_syndicate.syndicate_code).first
-    return if syndicate.nil?
+    group_status = image_server_group.summary[:status]
 
-    syndicate_coordinator = syndicate.syndicate_coordinator
-    return if syndicate_coordinator.nil? or syndicate_coordinator.empty?
+    if group_status.include? 'a'
+      syndicate = Syndicate.where(:syndicate_code=>image_server_group.syndicate_code).first
+      redirect_to request.referer + '#image_information' and return if syndicate.nil?
 
-    sc = UseridDetail.where(:userid=>syndicate_coordinator)
-    return if sc.nil?
+      syndicate_coordinator = syndicate.syndicate_coordinator
+      redirect_to request.referer + '#image_information' and return if syndicate_coordinator.nil? or syndicate_coordinator.empty?
 
-    UserMailer.request_sc_to_volunteer(sc.first,group_name,applier_name,applier_email).deliver_now
+      sc = UseridDetail.where(:userid=>syndicate_coordinator).first
+      redirect_to request.referer + '#image_information' and return if sc.nil?
+
+      UserMailer.request_to_volunteer(sc,group_name,applier_name,applier_email).deliver_now
+      flash[:notice] = 'email is sent to syndicate coordinator'
+    elsif group_status.include? 'u'
+      vc = UseridDetail.where(:person_role=>'volunteer_coordinator').first
+
+      if vc.nil?
+        vc = UseridDetail.where(:secondary_role=>'volunteer_coordinator').first
+        flash[:notice] = 'No coordinator is found to handle this image group'
+        redirect_to request.referer + '#image_information' and return if vc.nil?
+      end
+
+      UserMailer.request_to_volunteer(vc,group_name,applier_name,applier_email).deliver_now
+      flash[:notice] = 'email is sent to volunteer coordinator'
+    end
 
     redirect_to request.referer + '#image_information'
   end

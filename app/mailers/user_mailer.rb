@@ -293,10 +293,10 @@ class UserMailer < ActionMailer::Base
     mail(:from => transcriber.email_address, :to => sc_email, :subject => subject, :body => email_body)
   end
 
-  def request_sc_to_volunteer(sc,group_name,applier_name,applier_email)
+  def request_to_volunteer(coordinator,group_name,applier_name,applier_email)
     subject = "Request to transcribe image group "+group_name
     email_body = applier_name+' requests to transcribe '+group_name
-    mail(:from => applier_email, :to => sc.email_address, :subject => subject, :body => email_body)
+    mail(:from => applier_email, :to => coordinator.email_address, :subject => subject, :body => email_body)
   end
 
   def send_change_of_syndicate_notification_to_sc(user)
