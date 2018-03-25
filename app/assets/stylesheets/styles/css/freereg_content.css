@@ -421,10 +421,12 @@ dl.table-display
 .t25 {
   width: 25%;
 }
+.t40 {
+  width: 40%;
+}
 .t50 {
   width: 50%;
 }
-
 .t100 {
   width: 100%;
 }
@@ -519,3 +521,72 @@ table.center50 {
     margin-left:25%; 
     margin-right:25%;
   }
+
+
+
+/* for volunteer request to transcribe allcated image group */
+.inputForm {
+  display: none;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  width: 400px;
+  padding: 40px;
+  color: #fff;
+  background: rgba(0,0,0,.8);
+  box-sizing: border-box;
+  box-shadow: 0 15px 25px rgba(0,0,0,.5);
+  border-radius: 10px;
+  z-index: 100;
+}
+
+.inputForm .inputBox {
+  position: relative;
+}
+
+.inputForm .inputBox input {
+  width: 100%;
+  padding: 10px 0;
+  margin-bottom: 30px;
+  color: #fff;
+  border: none;
+  border-bottom: 1px solid #fff;
+  outline: none;
+  background: transparent;
+}
+
+.inputForm .inputBox label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 10px 0;
+  color: #fff;
+  pointer-events: none;
+  transition: .5s;
+}
+
+.inputForm .inputBox input:focus ~ label,
+.inputForm .inputBox input:valid ~ label {
+  top: -20px;
+  left: 0;
+  color: #009f98;
+}
+
+.inputForm .buttonBox {
+  text-align: center;
+}
+
+.inputForm input[type="submit"], 
+.inputForm input[type="button"] {
+  background: transparent;
+  border: none;
+  outline: none;
+  text-align: center;
+  color: #fff;
+  background-color: #009f98;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+

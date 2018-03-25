@@ -9,6 +9,9 @@ for (i=0; i<tbody_childs.length; i++) {
 			if (tr_childs[j].id == 'progress_detail' || tr_childs[j].id == 'available_detail') {
 				tr_childs[j].addEventListener("click", onCellClicked, false);
 			}
+			if (tr_childs[j].id == 'send_email') {
+				tr_childs[j].addEventListener("click", sendEmailClicked, false);
+			}
 		}
 	}
 }
@@ -40,3 +43,21 @@ function onCellClicked(e) {
 		}
 	}
 }
+
+function sendEmailClicked(e) {
+	var group = $(this).closest('tr').find("td:first").html();
+
+	$('<input>').attr({
+		type: 'hidden',
+		name: 'email_info[group]',
+		value: group 
+	}).appendTo('form');
+
+	$("#inputForm").show();
+}
+
+$("#cancel_email").click(function() {
+	$(":input[type=text]","#inputForm").val('');
+	$(":input[type=hidden]","#inputForm").remove();
+	$("#inputForm").hide("slow");
+});

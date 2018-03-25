@@ -82,6 +82,49 @@ class FreeregContentsController < ApplicationController
     end
   end
 
+  def send_request_email
+    applier_name = params[:email_info][:name]
+    applier_email = params[:email_info][:email]
+    group_name = params[:email_info][:group]
+
+    image_server_group = ImageServerGroup.where(:group_name=>group_name).first
+    redirect_to request.referer + '#image_information' and return if image_server_group.nil?
+
+    group_status = image_server_group.summary[:status]
+
+    if group_status.include? 'a'
+      syndicate = Syndicate.where(:syndicate_code=>image_server_group.syndicate_code).first
+
+      if !syndicate.nil?
+        syndicate_coordinator = syndicate.syndicate_coordinator
+        
+        if !(syndicate_coordinator.nil? and syndicate_coordinator.empty?)
+          sc = UseridDetail.where(:userid=>syndicate_coordinator).first
+          
+          if !sc.nil?
+            UserMailer.request_to_volunteer(sc,group_name,applier_name,applier_email).deliver_now
+
+            flash[:notice] = 'email is sent to syndicate coordinator'
+            redirect_to request.referer + '#image_information' and return
+          end
+        end
+      end
+    end
+
+    vc = UseridDetail.where(:person_role=>'volunteer_coordinator').first
+
+    if vc.nil?
+      vc = UseridDetail.where(:secondary_role=>'volunteer_coordinator').first
+      flash[:notice] = 'No coordinator is found to process this image group'
+      redirect_to request.referer + '#image_information' and return if vc.nil?
+    end
+
+    UserMailer.request_to_volunteer(vc,group_name,applier_name,applier_email).deliver_now
+
+    flash[:notice] = 'email is sent to volunteer coordinator'
+    redirect_to request.referer + '#image_information'
+  end
+
   def show_register
     # this is the Transcription entry for a register
     @register = Register.id(params[:id]).first
