@@ -59,6 +59,10 @@ class ApplicationController < ActionController::Base
     #empty current session
     cookies.signed[:Administrator] = Rails.application.config.github_issues_password
     cookies.signed[:userid] = UseridDetail.id(current_authentication_devise_user.userid_detail_id).first
+    p current_authentication_devise_user
+    p current_authentication_devise_user.id
+    p current_authentication_devise_user.userid_detail_id
+    p current_authentication_devise_user.email
     session[:userid_detail_id] = current_authentication_devise_user.userid_detail_id
     session[:devise] = current_authentication_devise_user.id
     logger.warn "FREEREG::USER current  #{current_authentication_devise_user.userid_detail_id}"
