@@ -1,6 +1,6 @@
 class SearchRecordsController < ApplicationController
-  before_filter :viewed
-  skip_before_filter :require_login
+  before_action :viewed
+  skip_before_action :require_login
   require 'csv'
   rescue_from Mongo::Error::OperationFailure, :with => :catch_error
   

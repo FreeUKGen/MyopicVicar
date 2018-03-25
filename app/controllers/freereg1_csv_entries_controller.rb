@@ -2,7 +2,7 @@ class Freereg1CsvEntriesController < ApplicationController
   require 'chapman_code'
   require 'freereg_validations'
 
-  skip_before_filter :require_login, only: [:show]
+  skip_before_action :require_login, only: [:show]
  
   def create
     get_user_info_from_userid

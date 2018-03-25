@@ -1,7 +1,7 @@
 class FreeregContentsController < ApplicationController
   require 'chapman_code'
   require 'freereg_options_constants'
-  skip_before_filter :require_login
+  skip_before_action :require_login
   skip_before_action :verify_authenticity_token
   def create
     case

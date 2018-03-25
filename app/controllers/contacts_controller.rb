@@ -2,7 +2,7 @@ class ContactsController < ApplicationController
 
   require 'freereg_options_constants'
 
-  skip_before_filter :require_login, only: [:new, :report_error, :create]
+  skip_before_action :require_login, only: [:new, :report_error, :create]
 
   def convert_to_issue
     @contact = Contact.id(params[:id]).first

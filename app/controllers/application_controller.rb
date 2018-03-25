@@ -17,10 +17,10 @@
 class ApplicationController < ActionController::Base
 
   protect_from_forgery :with => :reset_session
-  before_filter :require_login
-  #before_filter :require_cookie_directive
-  before_filter :load_last_stat
-  before_filter :load_message_flag
+  before_action :require_login
+  #before_action :require_cookie_directive
+  before_action :load_last_stat
+  before_action :load_message_flag
   require 'record_type'
   require 'name_role'
   require 'chapman_code'

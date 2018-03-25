@@ -1,7 +1,7 @@
 class UseridDetailsController < ApplicationController
   include ActiveModel::Dirty
   require 'userid_role'
-  skip_before_filter :require_login, only: [:general, :create,:researcher_registration, :transcriber_registration,:technical_registration]
+  skip_before_action :require_login, only: [:general, :create,:researcher_registration, :transcriber_registration,:technical_registration]
   rescue_from ActiveRecord::RecordInvalid, :with => :record_validation_errors
 
   def all

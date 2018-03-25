@@ -1,9 +1,9 @@
 class ManageResourcesController < ApplicationController
   require "county"
   require 'userid_role'
-  #skip_before_filter :require_login, only: [:new, :pages]
-  skip_before_filter :require_login, only: [:logout]
-  skip_before_filter :refinery_authentication_devise_users
+  #skip_before_action :require_login, only: [:new, :pages]
+  skip_before_action :require_login, only: [:logout]
+  skip_before_action :refinery_authentication_devise_users
 
   def create
     #@user = UseridDetail.where(:userid => params[:manage_resource][:userid] ).first
