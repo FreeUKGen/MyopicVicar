@@ -18,7 +18,6 @@ class ApplicationController < ActionController::Base
 
   protect_from_forgery :with => :reset_session
   before_action :require_login
-  #before_action :require_cookie_directive
   before_action :load_last_stat
   before_action :load_message_flag
   require 'record_type'
@@ -57,12 +56,16 @@ class ApplicationController < ActionController::Base
 
   def after_sign_in_path_for(resource_or_scope)
     #empty current session
-    cookies.signed[:Administrator] = Rails.application.config.github_issues_password
-    cookies.signed[:userid] = UseridDetail.id(current_authentication_devise_user.userid_detail_id).first
+    
     p current_authentication_devise_user
     p current_authentication_devise_user.id
     p current_authentication_devise_user.userid_detail_id
     p current_authentication_devise_user.email
+    p current_authentication_devise_user.username
+    p current_authentication_devise_user.slug
+    p current_authentication_devise_user.updated_at
+    cookies.signed[:Administrator] = Rails.application.config.github_issues_password
+    cookies.signed[:userid] = UseridDetail.id(current_authentication_devise_user.userid_detail_id).first
     session[:userid_detail_id] = current_authentication_devise_user.userid_detail_id
     session[:devise] = current_authentication_devise_user.id
     logger.warn "FREEREG::USER current  #{current_authentication_devise_user.userid_detail_id}"
@@ -177,14 +180,6 @@ class ApplicationController < ActionController::Base
     logger.info "FREEREG:ACCESS ISSUE: The #{user} attempted to access #{action}."
     redirect_to main_app.new_manage_resource_path
     return
-  end
-
-  def require_cookie_directive
-    #p "cookie"
-    if cookies[:cookiesDirective].blank?
-      flash[:notice] = 'This website only works if you are willing to explicitly accept cookies. If you did not see the cookie declaration you could be using an obsolete browser or a browser add on that blocks cookie messages'
-      redirect_to main_app.new_search_query_path
-    end
   end
 
   def require_login
