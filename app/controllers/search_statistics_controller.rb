@@ -1,4 +1,4 @@
-class SearchStatisticsController < InheritedResources::Base
+class SearchStatisticsController < ApplicationController
   skip_before_action :require_login
 
   LAUNCH = [2015, 4, 14, 14]

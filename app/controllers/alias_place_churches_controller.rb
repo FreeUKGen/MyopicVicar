@@ -1,5 +1,4 @@
-class AliasPlaceChurchesController < InheritedResources::Base
-
+class AliasPlaceChurchesController < ApplicationController
  require 'chapman_code'
  require 'place'
   def show

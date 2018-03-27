@@ -1,2 +1,2 @@
-class PlaceCachesController < InheritedResources::Base
+class PlaceCachesController < ApplicationController
 end

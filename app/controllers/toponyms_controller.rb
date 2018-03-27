@@ -1,4 +1,4 @@
-class ToponymsController < InheritedResources::Base
+class ToponymsController < ApplicationController
   def show
     super
   end

@@ -44,7 +44,7 @@ gem 'pry-byebug'
 gem 'email_veracity'
 gem "unicode"
 gem 'kaminari'
-
+gem 'kaminari-mongoid'
 gem "gretel"
 gem 'geocoder', '1.3.7' #appears to be a regression in 1.4
 #gem 'activeadmin'
