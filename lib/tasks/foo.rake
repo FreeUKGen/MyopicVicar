@@ -317,11 +317,16 @@ namespace :foo do
     p "Updating Place location links"
     number = 0
     empty_place = Hash.new
+    different_location = Hash.new
     Place.approved.each do |place|
       if place.genuki_url.present? && place.genuki_url.include?("http:")
         genuki = place.genuki_url
-        genuki = genuki.gsub(/cgi-bin/,'maps').gsub(/gazplace/,'gmap').gsub(/,/,'&')
-        place.update_attribute(:genuki_url,genuki)
+        if genuki.include?("cgi-bin/gazplace")
+          genuki = genuki.gsub(/cgi-bin/,'maps').gsub(/gazplace/,'gmap').gsub(/,/,'&')
+          place.update_attribute(:genuki_url,genuki)
+        else
+          different_location[place.id.to_s.to_sym] = {:place_name => place.place_name.to_s, :county => place.chapman_code.to_s, :location => genuki}
+        end
       else
         empty_place[place.id.to_s.to_sym] = {:place_name => place.place_name.to_s, :county => place.chapman_code.to_s} 
       end
@@ -330,9 +335,16 @@ namespace :foo do
       p number if (number/1000)*1000 == number
     end
     p empty_place.length
+    p different_location.length
     output_file.puts empty_place.length
     if empty_place.length > 0
       empty_place.each_pair do |id, place|
+        output_file.puts place
+      end
+    end
+    output_file.puts different_location.length
+    if different_location.length > 0
+      different_location.each_pair do |id, place|
         output_file.puts place
       end
     end
