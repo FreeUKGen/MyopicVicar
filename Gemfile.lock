@@ -7,7 +7,7 @@ GIT
 PATH
   remote: vendor/extensions
   specs:
-    refinerycms-county_pages (1.3)
+    refinerycms-county_pages (1.4)
       refinerycms-core
 
 GEM
@@ -358,7 +358,7 @@ GEM
       pry (~> 0.10)
     public_suffix (3.0.2)
     rack (2.0.4)
-    rack-test (0.8.3)
+    rack-test (1.0.0)
       rack (>= 1.0, < 3)
     rails (5.1.5)
       actioncable (= 5.1.5)
