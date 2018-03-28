@@ -56,8 +56,6 @@ class ApplicationController < ActionController::Base
   private
   
   def configure_permitted_parameters
-    p 'llllllllllllllllllllllllllllllllllllllllllllllllllllllllll'
-    p "sanitize"
     devise_parameter_sanitizer.permit(:sign_in) do |user_params|
       user_params.permit(:login, :userid_detail_id, :reset_password_token, :reset_password_sent_at, :username, :password, :email)
     end
@@ -72,17 +70,9 @@ class ApplicationController < ActionController::Base
   def after_sign_in_path_for(resource_or_scope)
     cookies.signed[:Administrator] = Rails.application.config.github_issues_password
     cookies.signed[:userid] = UseridDetail.id(current_authentication_devise_user[:userid_detail_id]).first
-    session[:userid_detail_id] = current_authentication_devise_user[:userid_detail_id]
-    session[:devise] = current_authentication_devise_user[:id]
-    myuser = Refinery::Authentication::Devise::User.where(:id => current_authentication_devise_user[:id]).first
-    p myuser
-    p myuser[:reset_password_token]
-    p 'apppppppppppppppppppppppppppppp'
-    p current_authentication_devise_user[:sign_in_count]
-    p current_authentication_devise_user.userid_detail_id
-    p current_authentication_devise_user[:last_sign_in_at]
-    logger.warn "FREEREG::USER current  #{current_authentication_devise_user[:userid_detail_id]}"
-    logger.warn "FREEREG::USER current  #{current_authentication_devise_user.inspect}"
+    session[:userid_detail_id] = current_authentication_devise_user.userid_detail_id
+    session[:devise] = current_authentication_devise_user.id
+    logger.warn "FREEREG::USER current  #{current_authentication_devise_user.username}"
     scope = Devise::Mapping.find_scope!(resource_or_scope)
     home_path = "#{scope}_root_path"
     respond_to?(home_path, true) ? refinery.send(home_path) : main_app.new_manage_resource_path
