@@ -1,8 +1,6 @@
 <% unless session[:userid].nil?%>
   <div style="text-align: center">  
-  <% if session[:manage_user_origin] == 'manage county' %>
-    <%= link_to 'Create New Source', new_source_path, method: :get, :class => "btn weight--light btn--small"  %> 
-  <% end %>
+    <%= link_to 'Create New GAP', new_gap_path, method: :get, :class => "btn weight--light btn--small"  %> 
   </div>
   <div style="clear:both;"> </div><br>
 <% end %>
@@ -11,9 +9,12 @@
   <table class="my-width-min flush--bottom" >
     <thead>
       <tr>
-        <th class="t15">Image Source</th>
+        <th class="t15">Start Date</th>
+        <th class="t15">End Date</th>
+        <th class="t15">Reason</th>
         <th class="t30">Notes</th>
-        <th class="t15">Action</th>
+        <th class="t15">Url</th>
+        <th class="t10">Action</th>
       </tr>
     </thead>
   </table>
@@ -21,46 +22,17 @@
   <div class="scrollable">
     <table class=" table--bordered my-width table--data just--left">
       <tbody>  
-        <% @source.each do |x| %>
+        <% @gap.each do |x| %>
           <tr>
-            <td class="t15"><%= x.source_name %></td>
-            <td class="t30"><%= x.notes %>&nbsp;</td>
-            <td class="t15">
-              <% case x.source_name %>
-                <% when 'Image Server' %>
-                  <%= link_to 'SH', source_path(x) %> 
-                  <% if session[:manage_user_origin] == 'manage county' %>
-                    <%= link_to 'ED', edit_source_path(x) %> 
-                    <% if @user.person_role = 'system_administrator' %>
-                      <%= link_to 'DE', source_path(x), data: { confirm: 'Are you sure you want to delete "'+x[:source_name]+'"?'}, method: :delete %>
-                    <% end %>
-                  <% end %>
-                <% when 'Other Server1' %>
-                  <%= link_to 'SH', source_path(x) %> 
-                  <% if session[:manage_user_origin] == 'manage county' %>
-                    <%= link_to 'ED', edit_source_path(x) %> 
-                    <% if @user.person_role = 'system_administrator' %>
-                      <%= link_to 'DE', source_path(x), data: { confirm: 'Are you sure you want to delete "'+x[:source_name]+'"?'}, method: :delete %>
-                    <% end %>
-                  <% end %>
-                <% when 'Other Server2' %>
-                  <%= link_to 'SH', source_path(x) %> 
-                  <% if session[:manage_user_origin] == 'manage county' %>
-                    <%= link_to 'ED', edit_source_path(x) %> 
-                    <% if @user.person_role = 'system_administrator' %>
-                      <%= link_to 'DE', source_path(x), data: { confirm: 'Are you sure you want to delete "'+x[:source_name]+'"?'}, method: :delete %>
-                    <% end %>
-                  <% end %>
-                <% when 'Other Server3' %>
-                  <%= link_to 'SH', source_path(x) %> 
-                  <% if session[:manage_user_origin] == 'manage county' %>
-                    <%= link_to 'ED', edit_source_path(x) %> 
-                    <% if @user.person_role = 'system_administrator' %>
-                      <%= link_to 'DE', source_path(x), data: { confirm: 'Are you sure you want to delete "'+x[:source_name]+'"?'}, method: :delete %>
-                    <% end %>
-                  <% end %>
-                <% else %>
-              <% end %>
+            <td class="t15"><%= x.start_date %></td>
+            <td class="t15"><%= x.end_date %>&nbsp;</td>
+            <td class="t15"><%= Gap::Reason::REASON[x.reason] %>&nbsp;</td>
+            <td class="t30"><%= x.note %>&nbsp;</td>
+            <td class="t15"><%= x.url %>&nbsp;</td>
+            <td class="t10">
+              <%= link_to 'SH', gap_path(x), :title=>'show GAP properties' %>
+              <%= link_to 'ED', edit_gap_path(x), :title=>'edit image group properties' %> 
+              <%= link_to 'DE', gap_path(x), :title=>'delete gap', data: { confirm: 'Are you sure you want to delete?'}, method: :delete %>
             </td>
           </tr>
         <% end %>

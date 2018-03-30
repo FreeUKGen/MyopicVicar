@@ -7,6 +7,12 @@ class Gap
     REFUSAL='r'
     
     ALL_REASONS = [UNTRANSCRIBED, DESTROYED, REFUSAL]
+
+    REASON = {
+    'u'   => 'UNTRANSCRIBED', 
+    'd'   => 'DESTROYED', 
+    'r'   => 'REFUSAL'
+    }    
   end
 
 
@@ -16,6 +22,7 @@ class Gap
   validates_inclusion_of :reason, :in => Reason::ALL_REASONS
   field :note, type: String
   field :url, type: String
+
   belongs_to :place
   belongs_to :source # only has a value if the gap_type is UNTRANSCRIBED
 end
