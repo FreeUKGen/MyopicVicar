@@ -870,6 +870,12 @@ end
 
 
 
+# breadcrumb for GAP
+crumb :gap do |user,syndicate,county,register,source,group|
+  link "GAP"
+  parent :show_image_source
+end
+
 
 # crumb :projects do
 #   link "Projects", projects_path
