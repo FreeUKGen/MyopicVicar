@@ -892,6 +892,26 @@ end
       end
 
 
+crumb :gap_reasons do
+  link "GAP Reasons", gap_reasons_path
+  parent :root
+end
+
+crumb :show_gap_reason do |gap_reason|
+  link "Show GAP Reason", gap_reason_path(gap_reason)
+  parent :gap_reasons
+end
+
+crumb :edit_gap_reason do |gap_reason|
+  link "Edit GAP Reason", edit_gap_reason_path(gap_reason)
+  parent :show_gap_reason, gap_reason
+end
+
+crumb :create_gap_reason do |gap_reason|
+  link "Create GAP Reason", new_gap_reason_path(gap_reason)
+  parent :gap_reasons
+end
+
 
 # crumb :projects do
 #   link "Projects", projects_path
