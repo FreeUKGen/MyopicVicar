@@ -10,10 +10,10 @@ module FreeregOptionsConstants
                 ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q-R","S","T","U-V","W-X","Y-Z"]  ]
 
   BAPTISM_FIELDS = ['register_entry_number','birth_date','baptism_date','person_forename','person_sex','father_forename','mother_forename','father_surname','mother_surname',
-                    'person_abode','father_occupation','notes','film','film_number']
+                    'person_abode','father_occupation']
 
   BURIAL_FIELDS = ['register_entry_number','burial_date','burial_person_forename','relationship','male_relative_forename','female_relative_forename','relative_surname',
-                   'burial_person_surname','person_age','burial_person_abode','notes','film','film_number'] 
+                   'burial_person_surname','person_age','burial_person_abode'] 
 
   CAPITALIZATION_WORD_EXCEPTIONS = [ "a", "ad" ,"an", "and", "at", "but", "by", "cum", "de", "en" ,"for", "has", "in", "la", "le", "near", "next", "nor", "nr",
                                      "or", "on", "of", "so",  "the", "to", "under","upon","von", "with", "yet", "y"   ]
@@ -99,6 +99,10 @@ module FreeregOptionsConstants
     #    "Mary\'s" => 'Mary', #duplicate key (Mary\'s is already included above)
     "Marys\'" => 'Mary',
     'Nicholas\'' => 'Nicholas'  }
+    
+  COMMON_FIELDS = [
+   'notes','notes_from_transcriber','film','film_number','image_file_name'
+  ]
 
   COMMON_WORD_EXPANSIONS = {
     'Saints\'' => 'St',
@@ -217,7 +221,7 @@ module FreeregOptionsConstants
   MARRIAGE_FIELDS = ['register_entry_number','marriage_date','groom_forename','groom_surname','groom_age','groom_parish','groom_condition','groom_occupation','groom_abode',
                      'bride_forename','bride_surname','bride_age','bride_parish','bride_condition','bride_occupation','bride_abode','groom_father_forename',
                      'groom_father_surname','groom_father_occupation','bride_father_forename','bride_father_surname','bride_father_occupation','witness1_forename',
-                     'witness1_surname','witness2_forename','witness2_surname','notes','film','film_number'] 
+                     'witness1_surname','witness2_forename','witness2_surname'] 
 
   MAXIMUM_NUMBER_OF_RESULTS = 250
 

@@ -40,8 +40,9 @@ class Freereg1CsvEntry
   field :file_line_number, type: Integer
   field :film, type: String
   field :film_number, type: String
-  #new commonf fields
-
+  #new common fields
+  field :image_file_name, type: String
+  
   #baptism fields
   field :baptism_date, type: String #actual date as written
   field :birth_date, type: String #actual date as written
@@ -481,6 +482,34 @@ class Freereg1CsvEntry
       1 # assume illegible dates are old -- start with year 1
     end
   end
+  
+  def get_the_image_id(church,user,manage_user_origin,image_server_group_id,chapman_code)
+    #church = Church.id('55b14c71f493fd0b910006e5').first
+    image_id = nil
+    if self.image_file_name.present?
+      image_server_groups = church.image_server_groups
+      image_server_groups.each do |group|
+        image = group.image_server_images.where(:image_file_name => self.image_file_name).first
+        image_id = image.id if image.present?
+        @group = group
+        break if image.present?
+      end
+    end
+    if image_id.present?
+      if !self.open_data?(@group)
+        if user.present?
+          if !ImageServerImage.image_detail_access_allowed?(user,manage_user_origin,image_server_group_id,chapman_code)
+            if !self.transcribed_by_me?(user)
+              image_id = nil
+            end 
+          end
+        else
+          image_id = nil 
+        end
+      end
+    end
+    image_id
+  end
 
  
   def hex_to_base64_digest(hexdigest)
@@ -496,11 +525,19 @@ class Freereg1CsvEntry
     end
     return present
   end
+  
+  def open_data?(group)
+    value = false
+    source = group.source
+    value = true if source.present? && source.open_data
+    return value
+  end
 
   def ordered_baptism_display_fields
     order = []
     order  = order + FreeregOptionsConstants::LOCATION_FIELDS
     order = order + FreeregOptionsConstants::BAPTISM_FIELDS
+    order = order + FreeregOptionsConstants::COMMON_FIELDS
     order = order + FreeregOptionsConstants::END_FIELDS
     order = order.uniq 
     order
@@ -510,6 +547,7 @@ class Freereg1CsvEntry
     order = []
     order  = order + FreeregOptionsConstants::LOCATION_FIELDS
     order = order + FreeregOptionsConstants::BURIAL_FIELDS
+    order = order + FreeregOptionsConstants::COMMON_FIELDS
     order = order + FreeregOptionsConstants::END_FIELDS
     order = order.uniq 
     order
@@ -521,6 +559,7 @@ class Freereg1CsvEntry
     order = order + FreeregOptionsConstants::BAPTISM_FIELDS
     order  = order + FreeregOptionsConstants::BURIAL_FIELDS
     order  = order + FreeregOptionsConstants::MARRIAGE_FIELDS
+    order = order + FreeregOptionsConstants::COMMON_FIELDS
     order = order + FreeregOptionsConstants::END_FIELDS
     order = order.uniq 
     order
@@ -530,6 +569,7 @@ class Freereg1CsvEntry
     order = []
     order  = order + FreeregOptionsConstants::LOCATION_FIELDS
     order = order + FreeregOptionsConstants::MARRIAGE_FIELDS
+    order = order + FreeregOptionsConstants::COMMON_FIELDS
     order = order + FreeregOptionsConstants::END_FIELDS
     order = order.uniq 
     order
@@ -800,6 +840,17 @@ class Freereg1CsvEntry
       witnesses << single_witness
     end
     witnesses
+  end
+  
+  def transcribed_by_me?(user)
+    if user.person_role == 'transcriber'
+      all_assignments = user.assignments
+      all_assignments.each do |assignment|
+        image = assignment.image_server_images.where(:image_file_name => self.image_file_name).first
+        return true if image.present?
+      end
+    end
+    return false
   end
   
   def record_updateable?

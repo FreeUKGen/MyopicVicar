@@ -31,6 +31,7 @@ class SearchRecordsController < ApplicationController
       @viewed_records = @search_result.viewed_records
       @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
       @search_result.update_attribute(:viewed_records, @viewed_records)
+      @image_id = @entry.get_the_image_id(@church,@user,session[:manage_user_origin],session[:image_server_group_id],session[:chapman_code])
       @order,@array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type])  
       #session[:viewed] << params[:id] unless  session[:viewed].length >= 10
     end
@@ -51,6 +52,7 @@ class SearchRecordsController < ApplicationController
       @annotations = Annotation.find(@search_record[:annotation_ids]) if @search_record[:annotation_ids]
       @search_result = @search_query.search_result
       @order,@array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type]) 
+      
       respond_to do |format|
         format.html {render "show", :layout => false}
         format.json do

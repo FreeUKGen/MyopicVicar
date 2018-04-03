@@ -1374,6 +1374,24 @@ class CsvRecord < CsvRecords
       csvfile.header_error << e.backtrace.inspect
     end
   end
+  def validate_and_set_register_type(possible_register_type)
+    if possible_register_type =~ FreeregOptionsConstants::VALID_REGISTER_TYPES
+      # deal with possible register type; clean up variations before we check
+      possible_register_type = possible_register_type.gsub(/\(?\)?'?"?[Ss]?/, '')
+      possible_register_type = Unicode::upcase(possible_register_type)
+      if RegisterType::OPTIONS.values.include?(possible_register_type)
+        register_type = possible_register_type
+        register_type = "DW" if register_type == "DT"
+        register_type = "PH" if register_type == "PT"
+        register_type = "TR" if register_type == "OT"
+      else
+        register_type = " "
+      end
+    else
+      register_type = " "
+    end
+    register_type
+  end
 
   def extract_register_type_and_church_name(csvrecords,csvfile,project,line)
     #p "extracting register type"
@@ -1418,10 +1436,7 @@ class CsvRecord < CsvRecords
 
   def extract_register_location(csvrecords,csvfile,project,line)
     #p "Extracting location"
-    cleaningsuccess = false
     success1 = false
-    success2 = false
-    success3 = false
     success4 = false
     success5 = false
     register_location = Hash.new
@@ -1437,10 +1452,18 @@ class CsvRecord < CsvRecords
     project.write_messages_to_all("The place name at field #{@data_line[csvrecords.data_entry_order[:place_name]]} is invalid at line #{line}. <br>", true)   if  !success1
     place_name = set_place_name if success1
     #allows for different Register type input
+    if csvfile.header[:def] && csvrecords.data_entry_order[:register_type].present?
+      success4 = true
+      church_name = @data_line[csvrecords.data_entry_order[:church_name]]
+      possible_register_type = @data_line[csvrecords.data_entry_order[:register_type]]
+      register_type = validate_and_set_register_type(possible_register_type)
+      success5, set_church_name = validate_church_and_set(church_name,chapman_code,place_name) if success1
+    else
       #part of church name
-    success4,message,church_name,register_type = self.extract_register_type_and_church_name(csvrecords,csvfile,project,line)
-    project.write_messages_to_all("The church field #{church_name} is invalid at line #{line}. <br>", true)   if  !success4
-    success5, set_church_name = validate_church_and_set(church_name,chapman_code,place_name) if success1 && success4
+      success4,message,church_name,register_type = self.extract_register_type_and_church_name(csvrecords,csvfile,project,line)
+      project.write_messages_to_all("The church field #{church_name} is invalid at line #{line}. <br>", true)   if  !success4
+      success5, set_church_name = validate_church_and_set(church_name,chapman_code,place_name) if success1 && success4
+    end
     project.write_messages_to_all("The church name #{church_name} is not in the database for #{place_name} at line #{line}. <br>", true)   if  !success5
       #we use the server church name in case of case differences
     church_name = set_church_name if  success5
@@ -1487,6 +1510,10 @@ class CsvRecord < CsvRecords
       field_symbol = field.to_sym
       @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
     end
+    FreeregOptionsConstants::COMMON_FIELDS.each do |field|
+      field_symbol = field.to_sym
+      @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
+    end
     @data_record[:line_id] = csvfile.header[:userid] + "." + csvfile.header[:file_name] + "." + line.to_s
     @data_record[:file_line_number] = line
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:baptism_date])
@@ -1503,6 +1530,10 @@ class CsvRecord < CsvRecords
       field_symbol = field.to_sym
       @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
     end
+    FreeregOptionsConstants::COMMON_FIELDS.each do |field|
+      field_symbol = field.to_sym
+      @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
+    end
     @data_record[:line_id] = csvfile.header[:userid] + "." + csvfile.header[:file_name] + "." + line.to_s
     @data_record[:file_line_number] = line
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:burial_date])
@@ -1514,6 +1545,10 @@ class CsvRecord < CsvRecords
   def process_marriage_data_fields(csvrecords,csvfile,project,line)
     #p "extracting marriage"
      FreeregOptionsConstants::MARRIAGE_FIELDS.each do |field|
+      field_symbol = field.to_sym
+      @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
+    end
+    FreeregOptionsConstants::COMMON_FIELDS.each do |field|
       field_symbol = field.to_sym
       @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
     end
