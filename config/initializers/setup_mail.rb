@@ -1,3 +1,4 @@
+require 'development_mail_interceptor'
 if Rails.env.development? && !(Rails.application.config.website == 'http://test2.freereg.org.uk')
   ActionMailer::Base.delivery_method = :smtp
     # SMTP settings for gmail
