@@ -3,7 +3,29 @@
 <% breadcrumb :edit_zero_year_entry,  @freereg1_csv_entry,@freereg1_csv_file if params[:zero_listing] == "true"%>
 <p style="text-align: center">Editing record <b><%= @freereg1_csv_entry.file_line_number %></b> for batch: <b><%= @freereg1_csv_file_name %></b> (<%= @file_owner %>) in <b><%= @register_name %></b> of <b> <%= @church_name%></b> in <b><%= @place_name %></b> of <b><%= @county %></b></p>
 <div  style="text-align: center">  </div><br>
-
-<%= render 'form' %>
-
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+  </div>
+<% end %> 
+<% case @freereg1_csv_file.record_type %>
+  <% when "ba" %> 
+    <% if @freereg1_csv_file.def %>
+      <%= render 'extended_baptism_form' %>    
+    <% else %>
+      <%= render 'original_baptism_form' %>
+    <% end %>
+  <% when "bu" %> 
+    <% if @freereg1_csv_file.def %>
+      <%= render 'extended_burial_form' %>
+    <% else %>  
+      <%= render 'original_burial_form' %>
+    <% end %>
+  <% when "ma" %> 
+    <% if @freereg1_csv_file.def %>
+      <%= render 'extended_marriage_form' %>
+    <% else %>
+      <%= render 'original_marriage_form' %>    
+    <% end %>
+<% end %>
 

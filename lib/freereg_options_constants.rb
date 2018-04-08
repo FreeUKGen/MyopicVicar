@@ -1,6 +1,14 @@
 module FreeregOptionsConstants
   require 'record_type'
+  
+  ADDITIONAL_BAPTISM_FIELDS = []
 
+  ADDITIONAL_BURIAL_FIELDS = [] 
+
+  ADDITONAL_MARRIAGE_FIELDS = [] 
+
+  ADDITIONAL_COMMON_FIELDS = ['notes_from_transcriber','image_file_name']
+  
   ALPHABET = ["A-C","D-F","G-I","J-L","M-N","O-Q","R-T","U-Z"]
   ALPHABET_SELECTION_LIST = ["CAM","CON","DUR","ESS","GLA","KEN","LAN","LIN","MDX","NBL","NFK","NTH","NTT","SOM","SRY","STS","WRY"]
   ALPHABETS = [
@@ -9,19 +17,12 @@ module FreeregOptionsConstants
                 ["A-B","C-D","E-F","G-H","I-J","K-L","M-N","O-P","Q-R","S-T","U-V","W-Z"],
                 ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q-R","S","T","U-V","W-X","Y-Z"]  ]
 
-  BAPTISM_FIELDS = ['register_entry_number','birth_date','baptism_date','person_forename','person_sex','father_forename','mother_forename','father_surname','mother_surname',
-                    'person_abode','father_occupation']
-
-  BURIAL_FIELDS = ['register_entry_number','burial_date','burial_person_forename','relationship','male_relative_forename','female_relative_forename','relative_surname',
-                   'burial_person_surname','person_age','burial_person_abode'] 
-
   CAPITALIZATION_WORD_EXCEPTIONS = [ "a", "ad" ,"an", "and", "at", "but", "by", "cum", "de", "en" ,"for", "has", "in", "la", "le", "near", "next", "nor", "nr",
                                      "or", "on", "of", "so",  "the", "to", "under","upon","von", "with", "yet", "y"   ]
 
   CHAPMAN_CODE_ELIMINATIONS = ['England', 'Scotland', 'Wales','Unknown', 'Clwyd','Dyfed','Gwent','Gwynedd','Powys','Mid Glamorgan',
                                'South Glamorgan','West Glamorgan','Borders','Central','Dumfries and Galloway','Grampian','Highland','Lothian','Orkney Isles',
                                'Shetland Isles','Strathclyde','Tayside','Western Isles', 'Northern Ireland']
-  
   CHURCH_WORD_EXPANSIONS =  {
     'Albans' => 'Alban',
     'Albright\'s' => 'Albright',
@@ -99,10 +100,6 @@ module FreeregOptionsConstants
     #    "Mary\'s" => 'Mary', #duplicate key (Mary\'s is already included above)
     "Marys\'" => 'Mary',
     'Nicholas\'' => 'Nicholas'  }
-    
-  COMMON_FIELDS = [
-   'notes','notes_from_transcriber','film','film_number','image_file_name'
-  ]
 
   COMMON_WORD_EXPANSIONS = {
     'Saints\'' => 'St',
@@ -218,11 +215,6 @@ module FreeregOptionsConstants
   
   LOCATION_FIELDS = ['county','place','church_name','register_type']
 
-  MARRIAGE_FIELDS = ['register_entry_number','marriage_date','groom_forename','groom_surname','groom_age','groom_parish','groom_condition','groom_occupation','groom_abode',
-                     'bride_forename','bride_surname','bride_age','bride_parish','bride_condition','bride_occupation','bride_abode','groom_father_forename',
-                     'groom_father_surname','groom_father_occupation','bride_father_forename','bride_father_surname','bride_father_occupation','witness1_forename',
-                     'witness1_surname','witness2_forename','witness2_surname'] 
-
   MAXIMUM_NUMBER_OF_RESULTS = 250
 
   MAXIMUM_NUMBER_OF_SCANS = 500 
@@ -236,6 +228,20 @@ module FreeregOptionsConstants
   MESSAGE_RECIPIENTS = ['Myself to Review',"Active Transcribers",'Inactive Transcribers','Coordinators','Researchers', 'Managers', 'Coordinators and Managers']
 
   MINIMUM_NUMBER_OF_FIELDS = 3
+  
+  ORIGINAL_BAPTISM_FIELDS = ['register_entry_number','birth_date','baptism_date','person_forename','person_sex','father_forename','mother_forename','father_surname','mother_surname',
+                    'person_abode','father_occupation']
+
+  ORIGINAL_BURIAL_FIELDS = ['register_entry_number','burial_date','burial_person_forename','relationship','male_relative_forename','female_relative_forename','relative_surname',
+                   'burial_person_surname','person_age','burial_person_abode'] 
+
+  ORIGINAL_COMMON_FIELDS = ['notes','film','film_number']
+  
+  ORIGINAL_MARRIAGE_FIELDS = ['register_entry_number','marriage_date','groom_forename','groom_surname','groom_age','groom_parish','groom_condition','groom_occupation','groom_abode',
+                     'bride_forename','bride_surname','bride_age','bride_parish','bride_condition','bride_occupation','bride_abode','groom_father_forename',
+                     'groom_father_surname','groom_father_occupation','bride_father_forename','bride_father_surname','bride_father_occupation','witness1_forename',
+                     'witness1_surname','witness2_forename','witness2_surname'] 
+
 
   RECORDS_PER_RANGE = 100000
 

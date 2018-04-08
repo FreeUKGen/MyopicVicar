@@ -1506,13 +1506,25 @@ class CsvRecord < CsvRecords
 
   def process_baptism_data_fields(csvrecords,csvfile,project,line)
     #p "extracting baptism"
-    FreeregOptionsConstants::BAPTISM_FIELDS.each do |field|
+    FreeregOptionsConstants::ORIGINAL_BAPTISM_FIELDS.each do |field|
       field_symbol = field.to_sym
       @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
     end
-    FreeregOptionsConstants::COMMON_FIELDS.each do |field|
+    if csvfile.header[:def]
+      FreeregOptionsConstants::ADDITIONAL_BAPTISM_FIELDS.each do |field|
+        field_symbol = field.to_sym
+        @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
+      end
+    end
+    FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS.each do |field|
       field_symbol = field.to_sym
       @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
+    end
+    if csvfile.header[:def]
+      FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS.each do |field|
+        field_symbol = field.to_sym
+        @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
+      end
     end
     @data_record[:line_id] = csvfile.header[:userid] + "." + csvfile.header[:file_name] + "." + line.to_s
     @data_record[:file_line_number] = line
@@ -1526,13 +1538,25 @@ class CsvRecord < CsvRecords
 
   def process_burial_data_fields(csvrecords,csvfile,project,line)
     #p "Extracting burial"
-    FreeregOptionsConstants::BURIAL_FIELDS.each do |field|
+    FreeregOptionsConstants::ORIGINAL_BURIAL_FIELDS.each do |field|
       field_symbol = field.to_sym
       @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
     end
-    FreeregOptionsConstants::COMMON_FIELDS.each do |field|
+    if csvfile.header[:def]
+      FreeregOptionsConstants::ADDITIONAL_BURIAL_FIELDS.each do |field|
+        field_symbol = field.to_sym
+        @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
+      end
+    end
+    FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS.each do |field|
       field_symbol = field.to_sym
       @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
+    end
+    if csvfile.header[:def]
+      FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS.each do |field|
+        field_symbol = field.to_sym
+        @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
+      end
     end
     @data_record[:line_id] = csvfile.header[:userid] + "." + csvfile.header[:file_name] + "." + line.to_s
     @data_record[:file_line_number] = line
@@ -1544,13 +1568,25 @@ class CsvRecord < CsvRecords
 
   def process_marriage_data_fields(csvrecords,csvfile,project,line)
     #p "extracting marriage"
-     FreeregOptionsConstants::MARRIAGE_FIELDS.each do |field|
+     FreeregOptionsConstants::ORIGINAL_MARRIAGE_FIELDS.each do |field|
       field_symbol = field.to_sym
       @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
     end
-    FreeregOptionsConstants::COMMON_FIELDS.each do |field|
+    if csvfile.header[:def]
+      FreeregOptionsConstants::ADDITONAL_MARRIAGE_FIELDS.each do |field|
+        field_symbol = field.to_sym
+        @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
+      end
+    end
+    FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS.each do |field|
       field_symbol = field.to_sym
       @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
+    end
+    if csvfile.header[:def]
+      FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS.each do |field|
+        field_symbol = field.to_sym
+        @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
+      end
     end
     @data_record[:line_id] = csvfile.header[:userid] + "." + csvfile.header[:file_name] + "." + line.to_s
     @data_record[:file_line_number] = line

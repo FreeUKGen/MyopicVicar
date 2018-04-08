@@ -25,14 +25,14 @@ class SearchRecordsController < ApplicationController
       @display_date = false
       @entry.display_fields(@search_record)
       @entry.acknowledge
-      @place_id,@church_id,@register_id = @entry.get_location_ids
+      @place_id,@church_id,@register_id,extended_def = @entry.get_location_ids
       @annotations = Annotation.find(@search_record[:annotation_ids]) if @search_record[:annotation_ids]
       @search_result = @search_query.search_result
       @viewed_records = @search_result.viewed_records
       @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
       @search_result.update_attribute(:viewed_records, @viewed_records)
       @image_id = @entry.get_the_image_id(@church,@user,session[:manage_user_origin],session[:image_server_group_id],session[:chapman_code])
-      @order,@array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type])  
+      @order,@array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type],extended_def)  
       #session[:viewed] << params[:id] unless  session[:viewed].length >= 10
     end
   end
@@ -48,10 +48,10 @@ class SearchRecordsController < ApplicationController
       @all_data = true
       @entry.display_fields(@search_record)
       @entry.acknowledge
-      @place_id,@church_id,@register_id = @entry.get_location_ids
+      @place_id,@church_id,@register_id,extended_def = @entry.get_location_ids
       @annotations = Annotation.find(@search_record[:annotation_ids]) if @search_record[:annotation_ids]
       @search_result = @search_query.search_result
-      @order,@array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type]) 
+      @order,@array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type],extended_def) 
       
       respond_to do |format|
         format.html {render "show", :layout => false}

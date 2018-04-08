@@ -387,6 +387,7 @@ class Freereg1CsvEntry
   def get_location_ids
     file = self.freereg1_csv_file
     if file.present?
+      extended_def = file.def
       register = file.register
       if register.present?
         church = register.church
@@ -400,7 +401,7 @@ class Freereg1CsvEntry
         end
       end
     end
-    return place_id, church_id, register_id 
+    return place_id, church_id, register_id,extended_def 
   end
     
   def date_beyond_cutoff?(date_string, cutoff)
@@ -486,7 +487,7 @@ class Freereg1CsvEntry
   def get_the_image_id(church,user,manage_user_origin,image_server_group_id,chapman_code)
     #church = Church.id('55b14c71f493fd0b910006e5').first
     image_id = nil
-    if self.image_file_name.present?
+    if self.image_file_name.present? && church.present?
       image_server_groups = church.image_server_groups
       image_server_groups.each do |group|
         image = group.image_server_images.where(:image_file_name => self.image_file_name).first
@@ -533,59 +534,69 @@ class Freereg1CsvEntry
     return value
   end
 
-  def ordered_baptism_display_fields
+  def ordered_baptism_display_fields(extended_def)
     order = []
     order  = order + FreeregOptionsConstants::LOCATION_FIELDS
-    order = order + FreeregOptionsConstants::BAPTISM_FIELDS
-    order = order + FreeregOptionsConstants::COMMON_FIELDS
+    order = order + FreeregOptionsConstants::ORIGINAL_BAPTISM_FIELDS
+    order = order + FreeregOptionsConstants::ADDITIONAL_BAPTISM_FIELDS if extended_def
+    order = order + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS
+    order = order + FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS if extended_def
     order = order + FreeregOptionsConstants::END_FIELDS
     order = order.uniq 
     order
   end
 
-  def ordered_burial_display_fields
+  def ordered_burial_display_fields(extended_def)
     order = []
     order  = order + FreeregOptionsConstants::LOCATION_FIELDS
-    order = order + FreeregOptionsConstants::BURIAL_FIELDS
-    order = order + FreeregOptionsConstants::COMMON_FIELDS
+    order = order + FreeregOptionsConstants::ORIGINAL_BURIAL_FIELDS
+    order = order + FreeregOptionsConstants::ADDITIONAL_BURIAL_FIELDS if extended_def
+    order = order + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS
+    order = order + FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS if extended_def
     order = order + FreeregOptionsConstants::END_FIELDS
     order = order.uniq 
     order
   end
 
-   def ordered_display_fields
+   def ordered_display_fields(extended_def)
     order = []
     order  = order + FreeregOptionsConstants::LOCATION_FIELDS
-    order = order + FreeregOptionsConstants::BAPTISM_FIELDS
-    order  = order + FreeregOptionsConstants::BURIAL_FIELDS
-    order  = order + FreeregOptionsConstants::MARRIAGE_FIELDS
-    order = order + FreeregOptionsConstants::COMMON_FIELDS
+    order = order + FreeregOptionsConstants::ORIGINAL_BAPTISM_FIELDS
+    order = order + FreeregOptionsConstants::ADDITIONAL_BAPTISM_FIELDS if extended_def
+    order  = order + FreeregOptionsConstants::ORIGINAL_BURIAL_FIELDS
+    order = order + FreeregOptionsConstants::ADDITIONAL_BURIAL_FIELDS if extended_def
+    order  = order + FreeregOptionsConstants::ORIGINAL_MARRIAGE_FIELDS
+    order = order + FreeregOptionsConstants::ADDITONAL_MARRIAGE_FIELDS if extended_def
+    order = order + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS
+    order = order + FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS if extended_def
     order = order + FreeregOptionsConstants::END_FIELDS
     order = order.uniq 
     order
   end
 
-  def ordered_marriage_display_fields
+  def ordered_marriage_display_fields(extended_def)
     order = []
     order  = order + FreeregOptionsConstants::LOCATION_FIELDS
-    order = order + FreeregOptionsConstants::MARRIAGE_FIELDS
-    order = order + FreeregOptionsConstants::COMMON_FIELDS
+    order = order + FreeregOptionsConstants::ORIGINAL_MARRIAGE_FIELDS
+    order = order + FreeregOptionsConstants::ADDITONAL_MARRIAGE_FIELDS if extended_def
+    order = order + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS
+    order = order + FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS if extended_def
     order = order + FreeregOptionsConstants::END_FIELDS
     order = order.uniq 
     order
   end
 
-  def order_fields_for_record_type(record_type)
+  def order_fields_for_record_type(record_type,extended_def)
     order = Array.new
     array_of_entries = Array.new
     json_of_entries = Hash.new
     case record_type
       when 'ba'
-        fields = ordered_baptism_display_fields
+        fields = ordered_baptism_display_fields(extended_def)
       when 'ma'
-        fields = ordered_marriage_display_fields
+        fields = ordered_marriage_display_fields(extended_def)
       when 'bu'
-        fields = ordered_burial_display_fields
+        fields = ordered_burial_display_fields(extended_def)
     end
     fields.each do |field|
       order << field
