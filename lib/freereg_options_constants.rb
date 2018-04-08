@@ -3,9 +3,10 @@ module FreeregOptionsConstants
   
   ADDITIONAL_BAPTISM_FIELDS = []
 
-  ADDITIONAL_BURIAL_FIELDS = [] 
+  ADDITIONAL_BURIAL_FIELDS = ['death_date','burial_person_title','male_relative_title','female_relative_surname','female_relative_title',
+                              'cause_of_death','burial_location_information','place_of_death','memorial_information'] 
 
-  ADDITONAL_MARRIAGE_FIELDS = [] 
+  ADDITIONAL_MARRIAGE_FIELDS = [] 
 
   ADDITIONAL_COMMON_FIELDS = ['notes_from_transcriber','image_file_name']
   
@@ -199,6 +200,16 @@ module FreeregOptionsConstants
                                :notes=> 14,
                                :film=> 15,
                                :film_number=> 16  }}
+                               
+  EXTENDED_BAPTISM_LAYOUT = []
+                               
+  EXTENDED_BURIAL_LAYOUT = ['register_entry_number','burial_date','death_date','burial_person_forename',
+  'burial_person_surname','burial_person_title','relationship','male_relative_forename','relative_surname',
+  'male_relative_title','female_relative_forename','female_relative_surname','female_relative_title','person_age',
+  'burial_person_abode','cause_of_death','burial_location_information','place_of_death','memorial_information',
+  'notes','notes_from_transcriber','film','film_number','image_file_name'] 
+  
+  EXTENDED_MARRIAGE_LAYOUT = []
 
   FILES_PER_PAGE = 500
 

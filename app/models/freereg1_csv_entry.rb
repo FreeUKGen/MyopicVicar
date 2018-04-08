@@ -68,7 +68,15 @@ class Freereg1CsvEntry
   field :relationship, type: String
   field :relative_surname, type: String
   #new burial fields
-  
+  field :death_date, type: String  #Date of death	(To be used if date of burial is absent)
+  field :burial_person_title, type: String
+  field :male_relative_title, type: String 
+  field :female_relative_surname, type: String #To be added to search_names
+  field :female_relative_title, type: String
+  field :cause_of_death, type: String
+  field :burial_location_information, type: String
+  field :place_of_death, type: String
+  field :memorial_information, type: String
 
 
   #original marriage fields
@@ -537,11 +545,13 @@ class Freereg1CsvEntry
 
   def ordered_baptism_display_fields(extended_def)
     order = []
-    order  = order + FreeregOptionsConstants::LOCATION_FIELDS
-    order = order + FreeregOptionsConstants::ORIGINAL_BAPTISM_FIELDS
-    order = order + FreeregOptionsConstants::ADDITIONAL_BAPTISM_FIELDS if extended_def
-    order = order + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS
-    order = order + FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS if extended_def
+    if extended_def
+      order  = order + FreeregOptionsConstants::LOCATION_FIELDS
+      order = order + FreeregOptionsConstants::EXTENDED_BAPTISM_LAYOUT
+    else
+      order  = order + FreeregOptionsConstants::LOCATION_FIELDS
+      order = order + FreeregOptionsConstants::ORIGINAL_BAPTISM_FIELDS
+    end
     order = order + FreeregOptionsConstants::END_FIELDS
     order = order.uniq 
     order
@@ -549,18 +559,21 @@ class Freereg1CsvEntry
 
   def ordered_burial_display_fields(extended_def)
     order = []
-    order  = order + FreeregOptionsConstants::LOCATION_FIELDS
-    order = order + FreeregOptionsConstants::ORIGINAL_BURIAL_FIELDS
-    order = order + FreeregOptionsConstants::ADDITIONAL_BURIAL_FIELDS if extended_def
-    order = order + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS
-    order = order + FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS if extended_def
+    if extended_def
+      order  = order + FreeregOptionsConstants::LOCATION_FIELDS
+      order = order + FreeregOptionsConstants::EXTENDED_BURIAL_LAYOUT
+    else
+      order  = order + FreeregOptionsConstants::LOCATION_FIELDS
+      order = order + FreeregOptionsConstants::ORIGINAL_BURIAL_FIELDS
+    end
     order = order + FreeregOptionsConstants::END_FIELDS
     order = order.uniq 
     order
   end
 
-   def ordered_display_fields(extended_def)
+  def ordered_display_fields(extended_def)
     order = []
+    order = order + FreeregOptionsConstants::END_FIELDS
     order  = order + FreeregOptionsConstants::LOCATION_FIELDS
     order = order + FreeregOptionsConstants::ORIGINAL_BAPTISM_FIELDS
     order = order + FreeregOptionsConstants::ADDITIONAL_BAPTISM_FIELDS if extended_def
@@ -577,11 +590,13 @@ class Freereg1CsvEntry
 
   def ordered_marriage_display_fields(extended_def)
     order = []
-    order  = order + FreeregOptionsConstants::LOCATION_FIELDS
-    order = order + FreeregOptionsConstants::ORIGINAL_MARRIAGE_FIELDS
-    order = order + FreeregOptionsConstants::ADDITONAL_MARRIAGE_FIELDS if extended_def
-    order = order + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS
-    order = order + FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS if extended_def
+    if extended_def
+      order  = order + FreeregOptionsConstants::LOCATION_FIELDS
+      order = order + FreeregOptionsConstants::EXTENDED_MARRIAGE_LAYOUT
+    else
+      order  = order + FreeregOptionsConstants::LOCATION_FIELDS
+      order = order + FreeregOptionsConstants::ORIGINAL_MARRIAGE_FIELDS
+    end
     order = order + FreeregOptionsConstants::END_FIELDS
     order = order.uniq 
     order

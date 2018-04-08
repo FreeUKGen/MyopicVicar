@@ -71,7 +71,7 @@ module Freereg1Translator
     new_attrs[:line_id] = entry[:line_id]
 
     new_attrs[:transcript_dates] = []
-    ['baptism_date', 'burial_date', 'marriage_date', 'birth_date'].each do |date_key|
+    ['baptism_date', 'burial_date', 'marriage_date', 'birth_date', 'death_date'].each do |date_key|
       new_attrs[:transcript_dates] << entry[date_key] if entry[date_key]
     end
     #new_attrs[:line_id] = entry.line_id
@@ -157,11 +157,22 @@ module Freereg1Translator
     # - role: fr
     # type: other
     # fields:
+    
     # first_name: female_relative_forename
+    # last_name: female_relative_surname
     # last_name:  relative_surname
+    #
     if entry.female_relative_forename.present? || entry.male_relative_forename.present? || entry.relative_surname.present?
       if entry.female_relative_forename
-        names << { :role => 'fr', :type => 'other', :first_name => entry.female_relative_forename, :last_name => entry.relative_surname.present? ? entry.relative_surname : entry.burial_person_surname }
+        if entry.female_relative_surname.present?
+          names << { :role => 'fr', :type => 'other', :first_name => entry.female_relative_forename, :last_name => entry.female_relative_surname }
+        else
+          if entry.relative_surname.present? 
+            names << { :role => 'fr', :type => 'other', :first_name => entry.female_relative_forename, :last_name => entry.relative_surname }
+          else 
+            names << { :role => 'fr', :type => 'other', :first_name => entry.female_relative_forename, :last_name => entry.burial_person_surname }
+          end
+        end
       end
       # - role: mr
       # type: other
