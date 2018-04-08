@@ -29,21 +29,22 @@ class Freereg1CsvEntry
   # Fields here represent those currently requested by FreeREG1 at
   # http://www.freereg.org.uk/howto/enterdata.htm
   # They have only been modified to replace hyphens with underscores.
-  #Common fields
+  #original Common fields
   field :county, type: String # note this is actually a chapman code in the records
   field :place, type: String #every where else this is place_name
   field :church_name, type: String
   field :register_type, type: String 
   field :register_entry_number, type: String
   field :notes, type: String
-  field :notes_from_transcriber, type: String
   field :file_line_number, type: Integer
   field :film, type: String
   field :film_number, type: String
   #new common fields
   field :image_file_name, type: String
+  field :notes_from_transcriber, type: String
   
-  #baptism fields
+  
+  #original baptism fields
   field :baptism_date, type: String #actual date as written
   field :birth_date, type: String #actual date as written
   field :person_forename, type: String
@@ -56,7 +57,7 @@ class Freereg1CsvEntry
   field :person_abode, type: String
   #new baptism fields
 
-  #burial fields
+  #original burial fields
   field :burial_date, type: String #actual date as written
   field :burial_person_forename, type: String
   field :burial_person_surname, type: String
@@ -67,10 +68,10 @@ class Freereg1CsvEntry
   field :relationship, type: String
   field :relative_surname, type: String
   #new burial fields
+  
 
 
-
-  #marriage fields
+  #original marriage fields
   field :bride_abode, type: String
   field :bride_age, type: String
   field :bride_condition, type: String
