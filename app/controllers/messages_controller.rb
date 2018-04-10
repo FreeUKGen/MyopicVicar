@@ -138,6 +138,8 @@ class MessagesController < ApplicationController
       when "Submit"
         @message.update_attributes(message_params)
       when "Send"
+        @current_user = cookies.signed[:userid]
+        @syndicate = @current_user.syndicate if params[:recipients].include?("Members of Syndicate")
         sender = params[:sender]
         @sent_message = @message.sent_messages.id(params[:message][:action]).first
         reasons = Array.new
@@ -147,7 +149,7 @@ class MessagesController < ApplicationController
           flash[:notice] = "Invalid Send: Please select Recipients and Open Data Status"
           redirect_to action:'send_message' and return
         else
-         @message.communicate(params[:recipients],  params[:active], reasons,sender, params[:open_data_status])
+         @message.communicate(params[:recipients],  params[:active], reasons,sender, params[:open_data_status], @syndicate)
          flash[:notice] = @message.reciever_notice(params)
         end
       end
@@ -169,6 +171,7 @@ class MessagesController < ApplicationController
       go_back("message",params[:id])
     end
   end
+
   private
   def message_params
     params.require(:message).permit!
