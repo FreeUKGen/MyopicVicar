@@ -87,6 +87,25 @@
     <%= javascript_include_tag "freecen_coverage_graph.js" %>
    
     <%= csrf_meta_tags %>
+    <% google_analytics_tracking_id = '' %>
+    <% if MyopicVicar::Application.config.template_set == 'freereg' %>
+      <% google_analytics_tracking_id = 'UA-62395250-1' %>
+
+    <% elsif MyopicVicar::Application.config.template_set == 'freecen' %>
+      <% if MyopicVicar::MongoConfig["website"].eql? "https://freecen2.freecen.org.uk" %>
+      <% google_analytics_tracking_id = 'UA-89287207-1' %>
+      <% else %>
+      <%  google_analytics_tracking_id = "" %>
+      <% end %>
+    <% end %>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+      ga('create', '<%= google_analytics_tracking_id %>', 'auto');
+      ga('send', 'pageview');
+    </script>
   </head>
   <body ontouchstart class="offcanvas  offcanvas--rev">
     
@@ -163,26 +182,6 @@
             backgroundOpacity: '99',
         });
     });
-    </script>
-
-<% google_analytics_tracking_id = '' %>
-<% if MyopicVicar::Application.config.template_set == 'freereg' %>
-  <% google_analytics_tracking_id = 'UA-62395250-1' %>
-
-<% elsif MyopicVicar::Application.config.template_set == 'freecen' %>
-  <% if MyopicVicar::MongoConfig["website"].eql? "https://freecen2.freecen.org.uk" %>
-  <% google_analytics_tracking_id = 'UA-89287207-1' %>
-  <% else %>
-  <%  google_analytics_tracking_id = "" %>
-  <% end %>
-<% end %>
-    <script>
-      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-      ga('create', '<%= google_analytics_tracking_id %>', 'auto');
-      ga('send', 'pageview');
     </script>
   </body>
 </html>
