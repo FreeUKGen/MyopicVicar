@@ -6,7 +6,11 @@ module FreeregOptionsConstants
   ADDITIONAL_BURIAL_FIELDS = ['death_date','burial_person_title','male_relative_title','female_relative_surname','female_relative_title',
                               'cause_of_death','burial_location_information','place_of_death','memorial_information'] 
 
-  ADDITIONAL_MARRIAGE_FIELDS = [] 
+  ADDITIONAL_MARRIAGE_FIELDS = ['contract_date','bride_title','bride_marked','bride_father_title','bride_mother_forename',
+  'bride_mother_surname','bride_mother_title','bride_mother_occupation','groom_title','groom_marked','groom_father_title',
+  'groom_mother_forename','groom_mother_surname','groom_mother_title','groom_mother_occupation','marriage_by_licence',
+  'witness3_forename','witness3_surname','witness4_forename','witness4_surname','witness5_forename','witness5_surname',
+  'witness6_forename','witness6_surname','witness7_forename','witness7_surname','witness8_forename','witness8_surname'] 
 
   ADDITIONAL_COMMON_FIELDS = ['notes_from_transcriber','image_file_name']
   
@@ -209,7 +213,11 @@ module FreeregOptionsConstants
   'burial_person_abode','cause_of_death','burial_location_information','place_of_death','memorial_information',
   'notes','notes_from_transcriber','film','film_number','image_file_name'] 
   
-  EXTENDED_MARRIAGE_LAYOUT = []
+  EXTENDED_MARRIAGE_LAYOUT = ['register_entry_number','marriage_date','contract_date','marriage_by_licence','groom_forename','groom_surname','groom_title','groom_age',
+  'groom_parish','groom_condition','groom_occupation','groom_abode','groom_marked','groom_father_forename','groom_father_surname','groom_father_occupation',
+  'groom_mother_forename','groom_mother_surname','groom_mother_title','groom_mother_occupation','bride_forename','bride_surname','bride_title','bride_age',
+  'bride_parish','bride_condition','bride_occupation','bride_abode','bride_marked','bride_father_forename','bride_father_surname','bride_father_occupation',
+  'bride_father_title','bride_mother_forename','bride_mother_surname','bride_mother_title','bride_mother_occupation','witness']
 
   FILES_PER_PAGE = 500
 
