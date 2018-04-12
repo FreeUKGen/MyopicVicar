@@ -42,8 +42,7 @@ class Freereg1CsvFilesController < ApplicationController
       set_controls(@freereg1_csv_file)
       if @freereg1_csv_file.locked_by_transcriber ||  @freereg1_csv_file.locked_by_coordinator
         flash[:notice] = 'The deletion of the batch was unsuccessful; the batch is locked'
-        redirect_to :back
-        return
+        redirect_back fallback_location: "/manage_resources/new" and return
       end
       @freereg1_csv_file.update_freereg_contents_after_processing
       #save a copy to attic and delete all batches
@@ -59,7 +58,8 @@ class Freereg1CsvFilesController < ApplicationController
         return
       end
     else
-      go_back("batch",params[:id])
+     flash[:notice] = 'The batch entry did not exist'
+     redirect_back fallback_location: "/manage_resources/new" and return
     end
   end
 
@@ -148,8 +148,7 @@ class Freereg1CsvFilesController < ApplicationController
     else
       flash[:notice] =  "The file has you are attempting to download does not exist"
     end
-    redirect_to :back
-    return
+    redirect_back fallback_location: "/manage_resources/new" and return
   end
 
   def edit
@@ -169,7 +168,8 @@ class Freereg1CsvFilesController < ApplicationController
       @role = session[:role]
       get_places_for_menu_selection
     else
-      go_back("batch",params[:id])
+    flash[:notice] = 'The batch entry did not exist'
+     redirect_back fallback_location: "/manage_resources/new" and return
     end
   end
 
@@ -249,11 +249,10 @@ class Freereg1CsvFilesController < ApplicationController
       set_controls(@freereg1_csv_file)
       @freereg1_csv_file.lock(session[:my_own])
       flash[:notice] = 'The lock change to all the batches in the file was successful'
-      redirect_to :back
-      return
     else
-      go_back("batch",params[:id])
-    end
+      flash[:notice] = 'The batch entry did not exist'
+   end
+    redirect_back fallback_location: "/manage_resources/new" and return
   end
 
   def merge
@@ -276,7 +275,8 @@ class Freereg1CsvFilesController < ApplicationController
       redirect_to freereg1_csv_file_path(@freereg1_csv_file)
       return
     else
-      go_back("batch",params[:id])
+     flash[:notice] = 'The batch entry did not exist'
+     redirect_back fallback_location: "/manage_resources/new" and return
     end
   end
 
@@ -330,7 +330,8 @@ class Freereg1CsvFilesController < ApplicationController
         @selected_place = @selected_church = @selected_register = ''
       end
     else
-      go_back("batch",params[:id])
+      flash[:notice] = 'The batch entry did not exist'
+      redirect_back fallback_location: "/manage_resources/new" and return
     end
   end
 
@@ -355,8 +356,8 @@ class Freereg1CsvFilesController < ApplicationController
         return
       end
     else
-      #no id
-      go_back("batch",params[:id])
+      flash[:notice] = 'The removal of the batch entry was unsuccessful'
+      redirect_back fallback_location: "/manage_resources/new" and return
     end
   end
 
@@ -382,7 +383,8 @@ class Freereg1CsvFilesController < ApplicationController
     if @freereg1_csv_file.present?
       set_controls(@freereg1_csv_file)
     else
-      go_back("batch",params[:id])
+     flash[:notice] = 'The batch entry did not exist'
+     redirect_back fallback_location: "/manage_resources/new" and return
     end
   end
 
@@ -581,7 +583,8 @@ class Freereg1CsvFilesController < ApplicationController
       redirect_to session[:return_to]
       return
     else
-      go_back("batch",params[:id])
+      flash[:notice] = 'The batch entry did not exist'
+      redirect_back fallback_location: "/manage_resources/new" and return
     end
   end
   
@@ -590,7 +593,8 @@ class Freereg1CsvFilesController < ApplicationController
     if @freereg1_csv_file.present?
       set_controls(@freereg1_csv_file)
     else
-      go_back("batch",params[:id])
+     flash[:notice] = 'The batch entry did not exist'
+     redirect_back fallback_location: "/manage_resources/new" and return
     end
     @freereg1_csv_entries = @freereg1_csv_file.get_unique_names
   end
@@ -601,7 +605,8 @@ class Freereg1CsvFilesController < ApplicationController
     if @freereg1_csv_file.present?
       set_controls(@freereg1_csv_file)
     else
-      go_back("batch",params[:id])
+     flash[:notice] = 'The batch entry did not exist'
+     redirect_back fallback_location: "/manage_resources/new" and return
     end
     @freereg1_csv_entries = @freereg1_csv_file.get_entries_zero_year
     display_info

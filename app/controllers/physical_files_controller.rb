@@ -36,10 +36,14 @@ class PhysicalFilesController < ApplicationController
 
   def destroy
     load(params[:id])
-    @batch.file_and_entries_delete
-    @batch.delete
-    flash[:notice] = 'The destruction of the physical files and all its entries and search records was successful'
-    redirect_to :back
+    if @batch.nil?
+      flash[:notice] = "The destruction of the physical file failed as there was no such file"
+    else
+      @batch.file_and_entries_delete
+      @batch.delete
+      flash[:notice] = 'The destruction of the physical files and all its entries and search records was successful'
+    end
+    redirect_back fallback_location: { action: "select_action" } and return
   end
 
   def download
@@ -154,9 +158,6 @@ class PhysicalFilesController < ApplicationController
 
   def load(batch)
     @batch = PhysicalFile.id(batch).first
-    if @batch.nil?
-      go_back("physical file",batch)
-    end
   end
 
   def processed_but_no_file
@@ -172,10 +173,14 @@ class PhysicalFilesController < ApplicationController
 
   def remove
     load(params[:id])
-    @batch.file_delete
-    @batch.delete
-    flash[:notice] = 'The file and physical files entry was removed'
-    redirect_to :back
+    if @batch.nil?
+      flash[:notice] = "The deletion of the physical file failed as there was no such file"
+    else
+      @batch.file_delete
+      @batch.delete
+      flash[:notice] = 'The file and physical files entry was removed'
+    end
+    redirect_back fallback_location: { action: "select_action" } and return
   end
 
   def reprocess
@@ -184,7 +189,7 @@ class PhysicalFilesController < ApplicationController
     ok_to_proceed = file.check_file
     if !ok_to_proceed[0]
       flash[:notice] =  "There is a problem with the file you are attempting to reproces #{ok_to_proceed[1]}. Contact a system administrator if you are concerned."
-      redirect_to :back and return
+      redirect_back fallback_location: { action: "select_action" } and return
     end
     file.backup_file
     @batch = PhysicalFile.where(:file_name => file.file_name, :userid => file.userid).first
@@ -196,8 +201,7 @@ class PhysicalFilesController < ApplicationController
       flash[:notice] = "There was a problem with the reprocessing: #{success[1]} "
     end
     @batch.save
-    redirect_to :back#freereg1_csv_files_path(:anchor => "#{file.id}")
-    return
+    redirect_back fallback_location: { action: "select_action" } and return
   end
 
   def select_action
@@ -211,9 +215,12 @@ class PhysicalFilesController < ApplicationController
   end
 
   def show
-    #show an individual batch
     get_user_info_from_userid
     load(params[:id])
+    if @batch.nil?
+      flash[:notice] = "The physical file cannot be shown as there was no such file"
+      redirect_back fallback_location: { action: "select_action" } and return
+    end
   end
 
   def sorted_by_base_uploaded_date(batches)
@@ -242,9 +249,14 @@ class PhysicalFilesController < ApplicationController
 
   def submit_for_processing
     load(params[:id])
-    success = @batch.add_file(params[:loc])
-    flash[:notice] = success[1]
-    redirect_to physical_files_path(:anchor => "#{@batch.id}", :page => "#{ session[:physical_index_page] }")
+    if @batch.nil?
+      flash[:notice] = "The physical file cannot be submitted as there was no such file"
+      redirect_back fallback_location: { action: "select_action" } and return
+    else
+      success = @batch.add_file(params[:loc])
+      flash[:notice] = success[1]
+      redirect_to physical_files_path(:anchor => "#{@batch.id}", :page => "#{ session[:physical_index_page] }")
+    end
   end
 
   def waiting_to_be_processed

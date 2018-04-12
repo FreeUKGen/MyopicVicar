@@ -78,7 +78,7 @@ class FreeregContentsController < ApplicationController
       get_variables_for_register_show
     else
       flash[:notice] = "Non existent register has been selected."
-      redirect_to :back and return
+      redirect_back fallback_location: {action: "new"} and return
     end
   end
 
@@ -170,11 +170,11 @@ class FreeregContentsController < ApplicationController
       get_variables_for_church_show
     else
       flash[:notice] = "Non existent church has been selected."
-      redirect_to :back and return
+      redirect_back fallback_location: { action: "new"} and return
     end
   end
 
-   def show_church
+  def show_church
     @church = Church.id(params[:id]).first
     if @church.nil?
       flash[:notice] = "No church was selected while reviewing the content; you will need to start again"
@@ -220,7 +220,7 @@ class FreeregContentsController < ApplicationController
       get_variables_for_place_show
     else
       flash[:notice] = "Non existent place has been selected."
-      redirect_to :back and return
+      redirect_back fallback_location: { action: "new"} and return
     end
   end
 

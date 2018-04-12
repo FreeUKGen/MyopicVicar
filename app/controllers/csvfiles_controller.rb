@@ -8,8 +8,7 @@ class CsvfilesController < ApplicationController
     #processing is slightly different depending upon the type
     if params[:csvfile].blank? || params[:csvfile][:csvfile].blank?
       flash[:notice] = 'You must select a file'
-      redirect_to :back
-      return
+      redirect_back fallback_location: "/manage_resources/new" and return
     end
     get_user_info_from_userid
     @csvfile  = Csvfile.new(csvfile_params)
@@ -22,14 +21,14 @@ class CsvfilesController < ApplicationController
       if !name_ok
         flash[:notice] = 'The file you are replacing must have the same name'
         session.delete(:file_name)
-        redirect_to :back
+        redirect_back fallback_location: "/manage_resources/new" and return
         return
       else
         setup = @csvfile.setup_batch_on_replace
         if !setup[0]
           flash[:notice] = setup[1]
           session.delete(:file_name)
-          redirect_to :back
+          redirect_back fallback_location: "/manage_resources/new" and return
           return
         else
           batch = setup[1]
@@ -40,8 +39,7 @@ class CsvfilesController < ApplicationController
       if !ok
         session.delete(:file_name)
         flash[:notice] = message
-        redirect_to :back
-        return
+        redirect_back fallback_location: "/manage_resources/new" and return
       end
     end
     #lets check for existing file, save if required
@@ -51,8 +49,7 @@ class CsvfilesController < ApplicationController
     if @csvfile.errors.any?
       flash[:notice] = "The upload with file name #{@csvfile.file_name} was unsuccessful because #{@csvfile.errors.messages}"
       get_userids_and_transcribers
-      redirect_to :back
-      return
+      redirect_back fallback_location: "/manage_resources/new" and return
     end #error
     batch = @csvfile.create_batch_unless_exists
     range = File.join(@csvfile.userid,@csvfile.file_name)
@@ -125,8 +122,7 @@ class CsvfilesController < ApplicationController
       Freereg1CsvFile.where(:userid => @person,:file_name => @file_name).each do |file|
         if file.locked_by_transcriber ||  file.locked_by_coordinator
           flash[:notice] = 'The replacement of the file is not permitted as it has been locked due to on-line changes; download the updated copy and remove the lock'
-          redirect_to :back
-          return
+          redirect_back fallback_location: "/manage_resources/new" and return
         end
       end
       @csvfile  = Csvfile.new(:userid  => @person, :file_name => @file_name)
@@ -135,7 +131,7 @@ class CsvfilesController < ApplicationController
       @action = "Replace"
     else
       flash[:notice] = "There was no file to replace"
-      redirect_to :back
+      redirect_back fallback_location: "/manage_resources/new" and return
       return
     end
   end

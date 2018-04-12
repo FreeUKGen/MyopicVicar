@@ -59,7 +59,7 @@ class CountiesController < ApplicationController
       @location = 'location.href= "select?act=show&county=" + this.value'
     else
       flash[:notice] = 'Invalid option'
-      redirect_to :back
+      redirect_back fallback_location: { action: "show" } and return
       return
     end
     @prompt = 'Select county'
@@ -73,7 +73,7 @@ class CountiesController < ApplicationController
     when !params[:county].nil?
       if params[:county] == ""
         flash[:notice] = 'Blank cannot be selected'
-        redirect_to :back
+        redirect_back fallback_location: { action: "show" } and return
         return
       else
         county = County.where(:chapman_code => params[:county]).first
@@ -87,7 +87,7 @@ class CountiesController < ApplicationController
       end
     else
       flash[:notice] = 'Invalid option'
-      redirect_to :back
+      redirect_back fallback_location: { action: "show" } and return
       return
     end
   end

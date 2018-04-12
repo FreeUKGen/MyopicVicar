@@ -131,7 +131,8 @@ class UseridDetailsController < ApplicationController
     @first_name = @user.person_forename unless @user.blank?
     @userid = UseridDetail.id(userid_id).first
     if @userid.nil?
-      go_back("userid",userid_id)
+      flash[:notice] = 'The entry did not exist'
+      redirect_back fallback_location: "/manage_resources/new" and return
     else
       session[:userid_id] = userid_id
       @syndicate = session[:syndicate]
@@ -274,8 +275,7 @@ class UseridDetailsController < ApplicationController
     when !params[:userid].nil?
       if params[:userid] == ""
         flash[:notice] = 'Blank cannot be selected'
-        redirect_to :back
-        return
+        redirect_back fallback_location: "/manage_resources/new" and return
       else
         userid = UseridDetail.where(:userid => params[:userid]).first
         redirect_to userid_detail_path(userid, option: params[:option])
@@ -285,8 +285,7 @@ class UseridDetailsController < ApplicationController
       #selection by email
       if params[:email] == ""
         flash[:notice] = 'Blank cannot be selected'
-        redirect_to :back
-        return
+        redirect_back fallback_location: "/manage_resources/new" and return
       else
         #adjust for + having been replaced with space
         params[:email] = params[:email].gsub(/\s/,"+")
@@ -298,8 +297,7 @@ class UseridDetailsController < ApplicationController
       #selection by name
       if params[:name] == ""
         flash[:notice] = 'Blank cannot be selected'
-        redirect_to :back
-        return
+        redirect_back fallback_location: "/manage_resources/new" and return
       else
         name = params[:name].split(":")
         number = UseridDetail.where(:person_surname => name[0],:person_forename => name[1] ).count
@@ -323,8 +321,7 @@ class UseridDetailsController < ApplicationController
       end
     else
       flash[:notice] = 'Invalid option'
-      redirect_to :back
-      return
+      redirect_back fallback_location: "/manage_resources/new" and return
     end
   end
 
@@ -356,8 +353,7 @@ class UseridDetailsController < ApplicationController
     else
       flash[:notice] = 'Invalid option'
       params[:option] = nil
-      redirect_to :back
-      return
+      redirect_back fallback_location: "/manage_resources/new" and return
     end
     @location = get_option_parameter(params[:option], @location)
     params[:option] = nil

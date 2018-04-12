@@ -8,14 +8,18 @@ class AtticFilesController < ApplicationController
     else
       flash[:notice] = 'The file does not exist!'
     end
-    redirect_to :back
+    redirect_back fallback_location: { action: "show" } and return
   end
 
   def destroy
     file = AtticFile.find(params[:id])
-    user = file.userid_detail.userid
-    file.destroy
-    flash[:notice] = 'The destruction of the file was successful'
+    if file.nil?
+      flash[:notice] = 'The destruction failed as the file does not exist'
+    else
+      user = file.userid_detail.userid
+      file.destroy
+      flash[:notice] = 'The destruction of the file was successful'
+    end
     redirect_to attic_file_path(user)
   end
 

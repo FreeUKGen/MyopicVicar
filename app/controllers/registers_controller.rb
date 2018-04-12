@@ -48,6 +48,7 @@ class RegistersController < ApplicationController
   
   def destroy
     load(params[:id])
+    
     return_location = @register.church
     @register.destroy
     flash[:notice] = 'The deletion of the Register was successful'
@@ -60,8 +61,7 @@ class RegistersController < ApplicationController
     get_user_info_from_userid
     if @register.nil?
       flash[:notice] = 'Attempting to edit a non_esxistent register'
-      redirect_to :back
-      return
+      redirect_back fallback_location: "/manage_resources/new" and return
     end
   end
 
@@ -122,7 +122,6 @@ class RegistersController < ApplicationController
 
   def record_cannot_be_deleted
     flash[:notice] = 'The deletion of the register was unsuccessful because there were dependent documents; please delete them first'
-
     redirect_to register_path(@register)
   end
 
@@ -165,7 +164,7 @@ class RegistersController < ApplicationController
     load(params[:id])
     if @register.nil?
       flash[:notice] = 'Trying to show a non-existent register'
-      redirect_to :back and return
+      redirect_back fallback_location: "/manage_resources/new" and return
     end
 
     @user = UseridDetail.where(userid: cookies.signed[:userid].userid).first
@@ -181,8 +180,7 @@ class RegistersController < ApplicationController
     case
     when @register.nil?
       flash[:notice] = 'Trying to update a non-existent register'
-      redirect_to :back
-      return
+      redirect_back fallback_location: "/manage_resources/new" and return
     when params[:commit] == 'Submit'
       @register.update_attributes(register_params)
       if @register.errors.any?  then

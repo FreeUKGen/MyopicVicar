@@ -93,8 +93,7 @@ class SyndicatesController < ApplicationController
     when !params[:synd].nil?
       if params[:synd] == ""
         flash[:notice] = 'Blank cannot be selected'
-        redirect_to :back
-        return
+        redirect_back fallback_location: "/manage_resources/new" and return
       else
         syndicate = Syndicate.where(:syndicate_code => params[:synd]).first
         if params[:action] == "show"
@@ -107,8 +106,7 @@ class SyndicatesController < ApplicationController
       end
     else
       flash[:notice] = 'Invalid option'
-      redirect_to :back
-      return
+      redirect_back fallback_location: "/manage_resources/new" and return
     end
   end
 
@@ -139,8 +137,7 @@ class SyndicatesController < ApplicationController
       @location = 'location.href= "select?action=edit&synd=" + this.value'
     else
       flash[:notice] = 'Invalid option'
-      redirect_to :back
-      return
+      redirect_back fallback_location: "/manage_resources/new" and return
     end
     @prompt = 'Select syndicate'
     @syndicate = session[:syndicate]

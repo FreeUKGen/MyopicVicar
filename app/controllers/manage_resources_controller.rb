@@ -98,8 +98,7 @@ class ManageResourcesController < ApplicationController
       return
     else
       flash[:notice] = 'Invalid option'
-      redirect_to :back
-      return
+      redirect_back fallback_location: {action: "new"} and return
     end
   end
 
