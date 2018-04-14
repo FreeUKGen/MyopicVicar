@@ -122,9 +122,18 @@ class Freereg1CsvEntry
   field :groom_mother_title, type: String
   field :groom_mother_occupation, type: String
   field :marriage_by_licence, type: Boolean, default: false
-
-  field :register, type: String
-  field :record_type, type: String
+  field :witness3_forename, type: String
+  field :witness3_surname, type: String
+  field :witness4_forename, type: String
+  field :witness4_surname, type: String
+  field :witness5_forename, type: String
+  field :witness5_surname, type: String
+  field :witness6_forename, type: String
+  field :witness6_surname, type: String
+  field :witness7_forename, type: String
+  field :witness7_surname, type: String
+  field :witness8_forename, type: String
+  field :witness8_surname, type: String
 
   #calculated fields
   field :year, type: String
@@ -135,6 +144,8 @@ class Freereg1CsvEntry
   field :location, type: String
   field :transcribed_by, type: String
   field :credit, type: String
+  field :register, type: String
+  field :record_type, type: String
 
   belongs_to :freereg1_csv_file, index: true
 
@@ -331,10 +342,12 @@ class Freereg1CsvEntry
   end
   def captitalize_surnames
     self.bride_father_surname = self.bride_father_surname.upcase if self.bride_father_surname.present?
+    self.bride_mother_surname = self.bride_mother_surname.upcase if self.bride_mother_surname.present?
     self.bride_surname = self.bride_surname.upcase if self.bride_surname.present?
     self.burial_person_surname = self.burial_person_surname.upcase if self.burial_person_surname.present?
     self.father_surname = self.father_surname.upcase if self.father_surname.present?
     self.groom_father_surname = self.groom_father_surname.upcase if self.groom_father_surname.present?
+    self.groom_mother_surname = self.groom_mother_surname.upcase if self.groom_mother_surname.present?
     self.groom_surname = self.groom_surname.upcase if self.groom_surname.present?
     self.mother_surname = self.mother_surname.upcase if self.mother_surname.present?
     self.relative_surname = self.relative_surname.upcase if self.relative_surname.present?
@@ -475,15 +488,7 @@ class Freereg1CsvEntry
     end
   end
 
-  def embed_witness
-    #does not appear to be called
-    if self.record_type == 'ma'
-      self.multiple_witnesses_attributes = [{:witness_forename => self[:witness1_forename], :witness_surname => self[:witness1_surname]}] unless self[:witness1_forename].blank? &&  self[:witness1_surname].blank?
-      self.multiple_witnesses_attributes = [{:witness_forename => self[:witness2_forename], :witness_surname => self[:witness2_surname]}] unless self[:witness2_forename].blank? &&  self[:witness2_surname].blank?
-    end
-  end
-
-  def enough_name_fields?
+   def enough_name_fields?
     process = false
     case self.record_type
     when "ba"
@@ -630,9 +635,22 @@ class Freereg1CsvEntry
         fields = ordered_burial_display_fields(extended_def)
     end
     fields.each do |field|
-      order << field
-      self[field].blank? ? array_of_entries << nil : array_of_entries << self[field]
-      self[field].blank? ? json_of_entries[field.to_sym] = nil : json_of_entries[field.to_sym]  = self[field]
+      if field == 'witness'
+        increment = 1
+        self.multiple_witnesses.each do |witness| 
+          field_for_order = field + increment.to_s  
+          order << field_for_order
+          witness.witness_forename.present? ? actual_witness =  (witness.witness_forename + '' + witness.witness_surname) : witness.witness_surname 
+          self[field_for_order] = actual_witness
+          array_of_entries << actual_witness
+          json_of_entries[field.to_sym]  = actual_witness
+          increment = increment + 1
+        end
+      else
+        order << field
+        self[field].blank? ? array_of_entries << nil : array_of_entries << self[field]
+        self[field].blank? ? json_of_entries[field.to_sym] = nil : json_of_entries[field.to_sym]  = self[field]
+      end
     end 
     return  order,array_of_entries, json_of_entries
   end

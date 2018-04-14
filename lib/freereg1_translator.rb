@@ -71,7 +71,7 @@ module Freereg1Translator
     new_attrs[:line_id] = entry[:line_id]
 
     new_attrs[:transcript_dates] = []
-    ['baptism_date', 'burial_date', 'marriage_date', 'birth_date', 'death_date'].each do |date_key|
+    ['baptism_date', 'burial_date', 'marriage_date', 'birth_date', 'death_date', 'contract_date'].each do |date_key|
       new_attrs[:transcript_dates] << entry[date_key] if entry[date_key]
     end
     #new_attrs[:line_id] = entry.line_id
@@ -131,6 +131,12 @@ module Freereg1Translator
 
     if entry.bride_father_surname
       names << { :role => 'bf', :type => 'other', :first_name => entry.bride_father_forename, :last_name => entry.bride_father_surname }
+    end
+    if entry.bride_mother_surname
+      names << { :role => 'bm', :type => 'other', :first_name => entry.bride_mother_forename, :last_name => entry.bride_mother_surname }
+    end
+    if entry.groom_mother_surname
+      names << { :role => 'gm', :type => 'other', :first_name => entry.groom_mother_forename, :last_name => entry.groom_mother_surname }
     end
     # - role: wt
     # type: witness

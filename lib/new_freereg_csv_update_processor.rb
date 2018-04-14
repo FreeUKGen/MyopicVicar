@@ -553,6 +553,12 @@ class CsvFile < CsvFiles
      if data_record[:record_type] == "ma"
        entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness1_forename],:witness_surname => data_record[:witness1_surname]) unless data_record[:witness1_forename].blank? && data_record[:witness1_surname].blank?
        entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness2_forename],:witness_surname => data_record[:witness2_surname]) unless data_record[:witness2_forename].blank? && data_record[:witness2_surname].blank?
+       entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness3_forename], :witness_surname => data_record[:witness3_surname]) unless data_record[:witness3_forename].blank? &&  data_record[:witness3_surname].blank?
+       entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness4_forename], :witness_surname => data_record[:witness4_surname]) unless data_record[:witness4_forename].blank? &&  data_record[:witness4_surname].blank?
+       entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness5_forename], :witness_surname => data_record[:witness5_surname]) unless data_record[:witness5_forename].blank? &&  data_record[:witness5_surname].blank?
+       entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness6_forename], :witness_surname => data_record[:witness6_surname]) unless data_record[:witness6_forename].blank? &&  data_record[:witness6_surname].blank?
+       entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness7_forename], :witness_surname => data_record[:witness7_surname]) unless data_record[:witness7_forename].blank? &&  data_record[:witness7_surname].blank?
+       entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness8_forename], :witness_surname => data_record[:witness8_surname]) unless data_record[:witness8_forename].blank? &&  data_record[:witness8_surname].blank?
      end
      entry.freereg1_csv_file = freereg1_csv_file
      # p "creating entry"
@@ -1575,7 +1581,7 @@ class CsvRecord < CsvRecords
       @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
     end
     if csvfile.header[:def]
-      FreeregOptionsConstants::ADDITONAL_MARRIAGE_FIELDS.each do |field|
+      FreeregOptionsConstants::ADDITIONAL_MARRIAGE_FIELDS.each do |field|
         field_symbol = field.to_sym
         @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
       end
@@ -1590,15 +1596,32 @@ class CsvRecord < CsvRecords
         @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
       end
     end
+    
     @data_record[:line_id] = csvfile.header[:userid] + "." + csvfile.header[:file_name] + "." + line.to_s
     @data_record[:file_line_number] = line
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:marriage_date])
+    @data_record[:year] = FreeregValidations.year_extract(@data_record[:contract_date]) if FreeregValidations.year_extract(@data_record[:marriage_date]).nil? && csvfile.header[:def]
+    @data_record[:marriage_by_licence] = true if @data_record[:marriage_by_licence].present? && (@data_record[:marriage_by_licence].downcase == 'y' || @data_record[:marriage_by_licence].downcase == 'yes' ||
+          @data_record[:marriage_by_licence].downcase == 'by licence' ||  @data_record[:marriage_by_licence].downcase == 'licence' )      
+    @data_record[:groom_marked] = true if @data_record[:groom_marked].present? && (@data_record[:groom_marked].downcase == 'y' || @data_record[:groom_marked].downcase == 'yes' ||
+          @data_record[:groom_marked].downcase == 'marked' ||  @data_record[:groom_marked].downcase == 'mark')
+    @data_record[:bride_marked] = true if @data_record[:bride_marked].present? && (@data_record[:bride_marked].downcase == 'y' || @data_record[:bride_marked].downcase == 'yes' ||
+          @data_record[:bride_marked].downcase == 'marked' ||  @data_record[:bride_marked].downcase == 'mark')
     @data_record[:groom_surname] = Unicode::upcase(@data_record[:groom_surname]) unless @data_record[:groom_surname].nil?
     @data_record[:bride_surname] = Unicode::upcase(@data_record[:bride_surname]) unless @data_record[:bride_surname].nil?
     @data_record[:groom_father_surname] = Unicode::upcase(@data_record[:groom_father_surname]) unless @data_record[:groom_father_surname].nil?
     @data_record[:bride_father_surname] = Unicode::upcase(@data_record[:bride_father_surname]) unless @data_record[:bride_father_surname].nil?
+    @data_record[:groom_mother_surname] = Unicode::upcase(@data_record[:groom_mother_surname]) unless @data_record[:groom_mother_surname].nil?
+    @data_record[:bride_mother_surname] = Unicode::upcase(@data_record[:bride_mother_surname]) unless @data_record[:bride_mother_surname].nil?
     @data_record[:witness1_surname] = Unicode::upcase(@data_record[:witness1_surname]) unless @data_record[:witness1_surname].nil?
     @data_record[:witness2_surname] = Unicode::upcase(@data_record[:witness2_surname]) unless @data_record[:witness2_surname].nil?
+    @data_record[:witness3_surname] = Unicode::upcase(@data_record[:witness3_surname]) unless @data_record[:witness3_surname].nil?
+    @data_record[:witness4_surname] = Unicode::upcase(@data_record[:witness4_surname]) unless @data_record[:witness4_surname].nil?
+    @data_record[:witness5_surname] = Unicode::upcase(@data_record[:witness5_surname]) unless @data_record[:witness5_surname].nil?
+    @data_record[:witness6_surname] = Unicode::upcase(@data_record[:witness6_surname]) unless @data_record[:witness6_surname].nil?
+    @data_record[:witness7_surname] = Unicode::upcase(@data_record[:witness7_surname]) unless @data_record[:witness7_surname].nil?
+    @data_record[:witness8_surname] = Unicode::upcase(@data_record[:witness8_surname]) unless @data_record[:witness8_surname].nil?
+    
     csvfile.data[line] = data_record
   end
   

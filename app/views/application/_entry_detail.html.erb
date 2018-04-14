@@ -38,14 +38,7 @@
                 <% else %>
                   <td><%= @entry[field] %></td>
                 <% end %>  
-              </tr>  
-            <% when 'witness' %>
-              <% @entry.multiple_witnesses.each do |witness| %>
-                <tr>
-                  <td>Witness </td>
-                  <td><%= witness.witness_forename %> <%= witness.witness_surname %></td>
-                </tr>
-              <% end%>
+              </tr> 
             <% when 'image_file_name' %>
               <% if @image_id.present? %>
                 <tr>
