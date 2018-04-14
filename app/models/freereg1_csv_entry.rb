@@ -39,6 +39,7 @@ class Freereg1CsvEntry
   field :file_line_number, type: Integer
   field :film, type: String
   field :film_number, type: String
+  
   #new common fields
   field :image_file_name, type: String
   field :notes_from_transcriber, type: String
@@ -55,7 +56,47 @@ class Freereg1CsvEntry
   field :mother_forename, type: String
   field :mother_surname, type: String  
   field :person_abode, type: String
+  
   #new baptism fields
+  field :confirmation_date, type: String #actual date as written
+  field :received_into_church_date, type: String #actual date as written
+  field :person_surname, type: String
+  field :person_title, type: String
+  field :person_age, type: String
+  field :person_condition, type: String
+  field :person_status, type: String
+  field :person_occupation, type: String
+  field :person_place_birth, type: String
+  field :person_county_birth, type: String
+  field :person_relationship, type: String
+  field :father_title, type: String
+  field :father_abode, type: String
+  field :father_place, type: String
+  field :father_county, type: String
+  field :mother_title, type: String
+  field :mother_abode, type: String
+  field :mother_condition_prior_to_marriage, type: String
+  field :mother_place_prior_to_marriage, type: String
+  field :mother_county_prior_to_marriage, type: String
+  field :mother_occupation, type: String
+  field :private_baptism, type: Boolean, default: false
+  field :witness1_forename, type: String
+  field :witness1_surname, type: String
+  field :witness2_forename, type: String
+  field :witness2_surname, type: String
+  field :witness3_forename, type: String
+  field :witness3_surname, type: String
+  field :witness4_forename, type: String
+  field :witness4_surname, type: String
+  field :witness5_forename, type: String
+  field :witness5_surname, type: String
+  field :witness6_forename, type: String
+  field :witness6_surname, type: String
+  field :witness7_forename, type: String
+  field :witness7_surname, type: String
+  field :witness8_forename, type: String
+  field :witness8_surname, type: String
+  
 
   #original burial fields
   field :burial_date, type: String #actual date as written
@@ -67,6 +108,7 @@ class Freereg1CsvEntry
   field :person_age, type: String
   field :relationship, type: String
   field :relative_surname, type: String
+  
   #new burial fields
   field :death_date, type: String  #Date of death	(To be used if date of burial is absent)
   field :burial_person_title, type: String
@@ -105,6 +147,7 @@ class Freereg1CsvEntry
   field :witness1_surname, type: String
   field :witness2_forename, type: String
   field :witness2_surname, type: String
+  
   #new marriage fields
   field :contract_date, type: String #actual date as written usage mainly in Scotland
   field :bride_title, type: String
@@ -351,6 +394,8 @@ class Freereg1CsvEntry
     self.groom_surname = self.groom_surname.upcase if self.groom_surname.present?
     self.mother_surname = self.mother_surname.upcase if self.mother_surname.present?
     self.relative_surname = self.relative_surname.upcase if self.relative_surname.present?
+    self.person_surname = self.person_surname.upcase if self.person_surname.present?
+    self.female_relative_surname = self.female_relative_surname.upcase if self.female_relative_surname.present?
   end
 
   def create_baptism_string
@@ -640,7 +685,7 @@ class Freereg1CsvEntry
         self.multiple_witnesses.each do |witness| 
           field_for_order = field + increment.to_s  
           order << field_for_order
-          witness.witness_forename.present? ? actual_witness =  (witness.witness_forename + '' + witness.witness_surname) : witness.witness_surname 
+          witness.witness_forename.present? ? actual_witness =  (witness.witness_forename + ' ' + witness.witness_surname) : witness.witness_surname 
           self[field_for_order] = actual_witness
           array_of_entries << actual_witness
           json_of_entries[field.to_sym]  = actual_witness

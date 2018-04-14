@@ -1,7 +1,12 @@
 module FreeregOptionsConstants
   require 'record_type'
   
-  ADDITIONAL_BAPTISM_FIELDS = []
+  ADDITIONAL_BAPTISM_FIELDS = ['confirmation_date','received_into_church_date','person_surname','person_title','person_age','person_condition',
+  'person_status','person_occupation','person_place_birth','person_county_birth','person_relationship','father_title','father_abode',
+  'father_place','father_county','mother_title','mother_abode','mother_condition_prior_to_marriage','mother_place_prior_to_marriage',
+  'mother_county_prior_to_marriage','mother_occupation','private_baptism','witness1_forename','witness1_surname','witness2_forename','witness2_surname',
+  'witness3_forename','witness3_surname','witness4_forename','witness4_surname','witness5_forename','witness5_surname','witness6_forename',
+  'witness6_surname','witness7_forename','witness7_surname','witness8_forename','witness8_surname']
 
   ADDITIONAL_BURIAL_FIELDS = ['death_date','burial_person_title','male_relative_title','female_relative_surname','female_relative_title',
                               'cause_of_death','burial_location_information','place_of_death','memorial_information'] 
@@ -205,7 +210,12 @@ module FreeregOptionsConstants
                                :film=> 15,
                                :film_number=> 16  }}
                                
-  EXTENDED_BAPTISM_LAYOUT = []
+  EXTENDED_BAPTISM_LAYOUT = ['register_entry_number','birth_date','baptism_date','confirmation_date','received_into_church_date',
+  'person_forename','person_surname','person_title','person_age','person_relationship','person_sex','person_abode','person_condition',
+  'person_status','person_occupation','person_place_birth','person_county_birth','father_forename','father_surname','father_title',
+  'father_abode','father_occupation','father_place','father_county','mother_forename','mother_surname','mother_title','mother_abode',
+  'mother_condition_prior_to_marriage','mother_place_prior_to_marriage','mother_county_prior_to_marriage','mother_occupation',
+  'private_baptism','witness']
                                
   EXTENDED_BURIAL_LAYOUT = ['register_entry_number','burial_date','death_date','burial_person_forename',
   'burial_person_surname','burial_person_title','relationship','male_relative_forename','relative_surname',
