@@ -297,6 +297,7 @@ MyopicVicar::Application.routes.draw do
 
 
   get 'search_records/:id/show_print_version(.:format)', :to => 'search_records#show_print_version', :as => :show_print_version_search_record
+  get 'search_records/:id/:friendly(.:format)', :to => 'search_records#show', :as => :friendly_search_record
   resources :search_records
 
 

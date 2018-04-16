@@ -28,7 +28,7 @@
         </dt>
         <dd><%= format_location(search_record) %></dd>
         <dt>Detail</dt>
-        <dd><%= link_to("Detail ", search_record_path(search_record[:_id], :search_id => @search_query)) %> 
+        <dd><%= link_to("Detail ", friendly_search_record_path(search_record.id, search_record.friendly_url, :search_id => @search_query, :ucf => ucf_results)) %> 
             <i><%= viewed(@search_query,search_record)%></i></dd>
       </dl>
     </div>

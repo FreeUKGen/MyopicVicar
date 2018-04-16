@@ -380,8 +380,10 @@ class SearchQuery
       record_number = locate_index(search_results,current)
       next_record = nil
       previous_record = nil
-      next_record = search_results[record_number + 1][:_id] unless record_number.nil? || search_results.nil? || record_number >= search_results.length - 1
-      previous_record = search_results[record_number - 1][:_id] unless search_results.nil?  || record_number.nil? || record_number == 0
+      next_record_id = search_results[record_number + 1][:_id] unless record_number.nil? || search_results.nil? || record_number >= search_results.length - 1
+      previous_record_id = search_results[record_number - 1][:_id] unless search_results.nil?  || record_number.nil? || record_number == 0
+      next_record = SearchRecord.find(next_record_id)
+      previous_record = SearchRecord.find(previous_record_id)
       response = true
       return  response,next_record, previous_record
     else

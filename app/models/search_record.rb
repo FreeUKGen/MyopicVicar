@@ -557,6 +557,31 @@ class SearchRecord
     location_array
   end
 
+  def friendly_url
+    particles = []
+    # first the primary names
+    transcript_names.each do |name|
+      if name[:type] == 'primary' #TODO constantize
+        particles << name[:first_name] if name[:first_name]
+        particles << name[:last_name] if name[:last_name]
+      end
+    end
+
+    # then the record types
+    particles << RecordType::display_name(record_type)
+    # then county name
+    particles << ChapmanCode.name_from_code(chapman_code)
+    # then location
+    particles << self.place.place_name if self.place.place_name
+    # finally date
+    particles << search_dates.first
+    # join and clean
+    friendly = particles.join('-')
+    friendly.gsub(/\W/, '-')
+    friendly.gsub(/-+/, '-')
+    friendly.downcase
+  end
+
   def gender_from_role(role)
     if 'f'==role||'h'==role||'g'==role||'bf'==role||'gf'==role||'mr'==role
       return 'm'
