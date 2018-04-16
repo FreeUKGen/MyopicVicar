@@ -215,6 +215,15 @@ class Register
     self.update_attributes(:records => records,:datemin => datemin, :datemax => datemax, :daterange => total_hash, :transcribers => transcriber_hash["transcriber"],
                            :contributors => transcriber_hash["contributor"], :last_amended => last_amended   )
   end
+  
+  def can_create_image_source
+    proceed = true
+    if self.register_type.nil? || self.register_type == ' '
+      proceed = false
+      message = 'Cannot create source for unspecified register'
+    end
+    return proceed,message
+  end
 
   def change_type(type)
     old_type = self.register_type
