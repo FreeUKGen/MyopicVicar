@@ -47,7 +47,7 @@
         <% end%>
         <tr>
         <% if @message.attachment.present?%>
-            <td>Attachment :</td><td class="weight--semibold"> <%= link_to("Click here to view attachment", @message.attachment_url, target: "_blank") %><a href="#" class="right_tooltip"> <%= image_tag 'info.png', alt: 'Information', height: '16' %><span>The link will open in a new tab</span></a></td>
+            <td>Attachment :</td><td class="weight--semibold"> <%= link_to("#{@message[:attachment]}", @message.attachment_url, target: "_blank") %><a href="#" class="bottom_tooltip"> <%= image_tag 'info.png', alt: 'Information', height: '16' %><span>The link will open in a new tab</span></a></td>
         <% else %>
           <td>Attachment :</td><td class="weight--semibold"> No document attached.</td>
         <% end %> 
