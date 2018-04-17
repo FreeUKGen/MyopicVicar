@@ -33,10 +33,16 @@ class RegistersController < ApplicationController
   
   def create_image_server
     load(params[:id])
-    flash[:notice] = 'creating image server'
-    folder_name = @place_name.to_s + " " + @church_name.to_s + " " + @register.register_type.to_s
-    website = Register.create_folder_url(@chapman_code,folder_name,params[:id])
-    redirect_to website and return
+    proceed,message = @register.can_create_image_source
+    if proceed 
+      flash[:notice] = 'creating image server'
+      folder_name = @place_name.to_s + " " + @church_name.to_s + " " + @register.register_type.to_s
+      website = Register.create_folder_url(@chapman_code,folder_name,params[:id])
+      redirect_to website and return
+    else
+      flash[:notice] = message
+      redirect_to register_path(params[:id]) and return
+    end
   end
   
   def create_image_server_return
