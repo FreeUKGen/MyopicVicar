@@ -105,7 +105,7 @@ class MessagesController < ApplicationController
     @syndicate = session[:syndicate]
     if @message.present?
       @options = UseridRole::VALUES
-      @sent_message = SentMessage.new(:message_id => @message.id, :sent_time => Time.now,:sender => @userid)
+      @sent_message = SentMessage.new(:message_id => @message.id, :sent_time => Time.now,:sender => @user_userid)
       @message.sent_messages <<  [ @sent_message ]
       @sent_message.save
       @sent_message.active = true
