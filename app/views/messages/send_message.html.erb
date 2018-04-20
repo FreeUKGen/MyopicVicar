@@ -12,14 +12,7 @@
         <li  class="grid__item  one-quarter  palm-one-whole push--bottom " id="message_recipients">
           <label class="ttip" for="recipients" tabindex="0"> Recipients  <%= image_tag 'info.png', alt: 'Info', height: '16' %><span  class="ttip__text">You may select multiple roles for recipients</span></a></label>
           <select id="recipients" name="recipients[]"  multiple="multiple" class="select" required="required" size="4">
-            <%= options_for_select(["Members of Syndicate"]) if @current_user.person_role == "syndicate_coordinator" %>
-            <% @options.each do |value| %>
-              <% if value == @sent_message.recipients %>
-                <option value="<%=value%>" selected="selected" ><%=value%></option>
-              <% else %>
-                <option value="<%=value%>" ><%=value%></option>
-              <% end %>
-            <% end %>
+            <%= recipients_list %>
           </select>
         </li>
         <li  class="grid__item  one-quarter  palm-one-whole push--bottom " id="message_recipients">

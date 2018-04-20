@@ -43,20 +43,20 @@ class Message
       recipient_user = recipient_users(recip, syndicate)
       case
       when active_user
-        recipient_user.role(recip).new_transcription_agreement(open_data_status_value(open_data_status)).active(active_user).email_address_valid.all.each do |person|
+        recipient_user.new_transcription_agreement(open_data_status_value(open_data_status)).active(active_user).email_address_valid.all.each do |person|
           add_message_to_userid_messages(person)
           ccs << person.email_address
         end
       when reasons.present? && !active_user
         reasons.each do |reason|
-          recipient_user.role(recip).new_transcription_agreement(open_data_status_value(open_data_status)).active(active_user).reason(reason).email_address_valid.all.each do |person|
+          recipient_user.new_transcription_agreement(open_data_status_value(open_data_status)).active(active_user).reason(reason).email_address_valid.all.each do |person|
             add_message_to_userid_messages(person)
             ccs << person.email_address
           end
         end
       when reasons.blank? && !active_user
         reasons.each do |reason|
-          recipient_user.role(recip).new_transcription_agreement(open_data_status_value(open_data_status)).active(active_user).reason("temporary").email_address_valid.all.each do |person|
+          recipient_user.new_transcription_agreement(open_data_status_value(open_data_status)).active(active_user).reason("temporary").email_address_valid.all.each do |person|
             add_message_to_userid_messages(person)
             ccs << person.email_address
           end
@@ -95,9 +95,9 @@ class Message
 
   def recipient_users(recipients, syndicate=nil)
     if recipients == "Members of Syndicate"
-      users = UseridDetail.syndicate(syndicate).all
+      users = UseridDetail.syndicate(syndicate)
     else
-      users = UseridDetail.all
+      users = UseridDetail.role(recipients)
     end
     users
   end

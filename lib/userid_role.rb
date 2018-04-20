@@ -8,7 +8,7 @@ module UseridRole
     'trainee' => [ "Assignments", "Batches","Profile", "Batches","Roadmap"],
     'pending' => [ "Profile"],
     'transcriber' => [  "Assignments", "Batches", "Profile", "Roadmap"],
-    'syndicate_coordinator' => [ "Assignments", "Batches", "Manage Syndicate", "Message System", "Profile", "Roadmap"],
+    'syndicate_coordinator' => [ "Assignments", "Batches", "Manage Syndicate", "Profile", "Roadmap"],
     'contacts_coordinator'=> ["Assignments", "Batches", "Contacts","Display County Coordinators","Display Syndicate Coordinators","Display Userids","Feedback", "Manage Counties", "Profile", "System Documentation" ,"Roadmap"],
     'county_coordinator' =>  [ "Assignments", "Batches", "Contacts",  "Display Userids","Manage County", "Manage Syndicate", "Profile","Roadmap"],
     'country_coordinator' => [   "Assignments", "Batches", "Contacts","Display Userids","Manage Country", "Manage County","Manage Syndicate", "Profile","Roadmap"],
@@ -112,7 +112,7 @@ module UseridRole
   SYNDICATE_MANAGEMENT_OPTIONS =  ['Review Active Members' ,'Review All Members', 'Select Specific Member by Userid',
                                    'Select Specific Member by Email Address','Select Specific Member by Surname/Forename',"Incomplete Registrations","Create userid",'Review Batches with Errors','Review Batches by Filename',
                                    'Review Batches by Userid then Filename', 'Review Batches by Most Recent Date of Change','Review Batches by Oldest Date of Change',
-                                   'Review Specific Batch','List files waiting to be processed','List files NOT processed',"Upload New Batch",'Change Recruiting Status','Manage Images']
+                                   'Review Specific Batch','List files waiting to be processed','List files NOT processed',"Upload New Batch",'Change Recruiting Status','Manage Images', "Message To Syndicate"]
   SYNDICATE_OPTIONS_TRANSLATION = {
     'Review Active Members' => "/manage_syndicates/selection?option=Review Active Members",
     'Review All Members'=> "/manage_syndicates/selection?option=Review All Members",
@@ -131,7 +131,8 @@ module UseridRole
     'List files waiting to be processed'  => "/manage_syndicates/display_files_waiting_to_be_processed",
     'List files NOT processed' => "/manage_syndicates/display_files_not_processed",
     'Change Recruiting Status' => "/manage_syndicates/selection?option=Change Recruiting Status",
-    'Manage Images' => "/manage_syndicates/selection?option=Manage Images"
+    'Manage Images' => "/manage_syndicates/selection?option=Manage Images",
+    "Message To Syndicate" => "/messages"
   }
   PHYSICAL_FILES_OPTIONS =  ['Waiting to be processed','Files not processed','Processed but no file','Browse files' ,'Files for specific userid' ]
 

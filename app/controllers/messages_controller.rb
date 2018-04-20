@@ -102,7 +102,7 @@ class MessagesController < ApplicationController
   def send_message
     get_user_info_from_userid
     @message = Message.id(params[:id]).first
-    @current_user = cookies.signed[:userid]
+    @syndicate = session[:syndicate]
     if @message.present?
       @options = UseridRole::VALUES
       @sent_message = SentMessage.new(:message_id => @message.id, :sent_time => Time.now,:sender => @userid)
@@ -139,7 +139,7 @@ class MessagesController < ApplicationController
       when "Submit"
         @message.update_attributes(message_params)
       when "Send"
-        @syndicate = @current_user.syndicate if params[:recipients].include?("Members of Syndicate")
+        @syndicate = session[:syndicate] if params[:recipients].include?("Members of Syndicate")
         sender = params[:sender]
         @sent_message = @message.sent_messages.id(params[:message][:action]).first
         reasons = Array.new

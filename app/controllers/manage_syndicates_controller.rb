@@ -85,6 +85,7 @@ class ManageSyndicatesController < ApplicationController
     @syndicates = @user.syndicate_groups
     @syndicates = Syndicate.all.order_by(syndicate_code: 1) if all
     synd = Array.new
+    display_no_syndicate_message and return if @syndicates.nil?
     @syndicates.each do |syn|
       synd << syn unless all
       synd << syn.syndicate_code if all
@@ -180,8 +181,7 @@ class ManageSyndicatesController < ApplicationController
     get_syndicates_for_selection
     number_of_syndicates = @syndicates.length unless @syndicates.nil?
     if number_of_syndicates == 0
-      flash[:notice] = 'You do not have any syndicates to manage'
-      redirect_to new_manage_resource_path
+      display_no_syndicate_message
       return
     end
     if number_of_syndicates == 1
@@ -249,5 +249,10 @@ class ManageSyndicatesController < ApplicationController
 
   def upload_batch
     redirect_to new_csvfile_path
+  end
+
+  def display_no_syndicate_message
+    flash[:notice] = 'You do not have any syndicates to manage'
+    redirect_to new_manage_resource_path
   end
 end

@@ -42,4 +42,11 @@ module MessagesHelper
     end
     response
   end
+  def recipients_list
+    if @syndicate
+      options_for_select(["Members of Syndicate"])
+    else
+      options_for_select(@options,@sent_message.recipients)
+    end
+  end
 end
