@@ -450,8 +450,35 @@ class Freereg1CsvFile
     end
     return result
   end
-
-
+  
+  def check_and_augment_def(param)
+    return unless self.def
+    param.each_pair do |mykey,myvalue|
+      if myvalue.present? && !(mykey == "multiple_witnesses_attributes") && !self.order.has_key?(mykey)
+        end_member = self.order.max_by{ |k,v| v }[1]
+        self.order[mykey] = end_member + 1
+      end
+      if mykey == "multiple_witnesses_attributes"
+        def_witnesses = self.determine_number_of_def_witnesses
+        edit_witnesses = param[mykey].length
+        param[mykey].each_value do |witval|
+          edit_witnesses = edit_witnesses - 1 if (witval['id'].nil? && witval["witness_forename"].blank? && witval["witness_surname"].blank?)
+        end
+        if edit_witnesses < FreeregOptionsConstants::MAXIMUM_WINESSES
+          while edit_witnesses > def_witnesses 
+            witness_forename = 'witness' + edit_witnesses.to_s + '_forename'
+            witness_surname = 'witness' + edit_witnesses.to_s + '_surname'
+            end_member = self.order.max_by{ |k,v| v }[1]
+            self.order[witness_forename] = end_member + 1
+            self.order[witness_surname] = end_member + 2
+            def_witnesses = def_witnesses + 1
+          end
+        end
+      end
+    end
+  
+  end
+  
   def check_batch
     success = Array.new
     success[0] = true
@@ -595,6 +622,15 @@ class Freereg1CsvFile
       color = "color:black"
     end
     color
+  end
+  
+  def determine_number_of_def_witnesses
+    fields = self.order
+    witnesses = 0
+    fields.each_key do |key|
+      witnesses = witnesses + 1 if key.include?("witness") && (key.include?("_forename") || key.include?("_surname"))
+    end
+    return witnesses/2
   end
 
   def force_unlock

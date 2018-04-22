@@ -181,7 +181,6 @@ class Freereg1CsvEntry
   #calculated fields
   field :year, type: String
   field :line_id, type: String
-  field :file_line_number, type: Integer
   field :error_flag, type:String, default: 'false'  
   field :record_digest, type: String
   field :location, type: String
@@ -314,7 +313,6 @@ class Freereg1CsvEntry
 
     def delete_entries_for_a_file(fileid)
       entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => fileid).all.no_timeout
-      p "#{entries.length}" unless entries.nil?
       entries.destroy_all
     end
 
@@ -362,6 +360,18 @@ class Freereg1CsvEntry
 
   def add_digest
     self.record_digest = self.cal_digest
+  end
+  
+  def adjust_parameters(param,entry_file)
+    param[:record_type] =  entry_file.record_type
+    param[:year] = self.get_year(param)
+    param[:person_sex] == self.person_sex ? sex_change = false : sex_change = true
+    number_of_witnesses =  param["multiple_witnesses_attributes"].length
+    while number_of_witnesses > FreeregOptionsConstants::MAXIMUM_WINESSES
+     param["multiple_witnesses_attributes"].delete_if {|key, value| key.to_i >= FreeregOptionsConstants::MAXIMUM_WINESSES }
+     number_of_witnesses = number_of_witnesses - 1
+    end
+    return param, sex_change
   end
 
   def cal_digest
@@ -494,7 +504,6 @@ class Freereg1CsvEntry
   def display_fields(search_record)
     self['register_type'] = ""
     self['register_type'] = search_record[:location_names][1].gsub('[','').gsub(']','') unless search_record[:location_names].nil? || search_record[:location_names][1].nil?
-    
     place = ''
     church = ''
     unless search_record[:location_names].nil? || search_record[:location_names][0].nil?
@@ -533,7 +542,7 @@ class Freereg1CsvEntry
     end
   end
 
-   def enough_name_fields?
+  def enough_name_fields?
     process = false
     case self.record_type
     when "ba"
@@ -584,6 +593,19 @@ class Freereg1CsvEntry
       end
     end
     image_id
+  end
+  
+  def get_year(param)
+    case param[:record_type]
+    when "ba"
+      year = FreeregValidations.year_extract(param[:baptism_date]) if  param[:baptism_date].present?
+      year = FreeregValidations.year_extract(param[:birth_date]) if param[:birth_date].present? && year.blank?
+    when "bu"
+      year = FreeregValidations.year_extract(param[:burial_date]) if  param[:burial_date].present?
+    when "ma"
+      year = FreeregValidations.year_extract(param[:marriage_date]) if  param[:marriage_date].present?
+    end
+    year
   end
 
  
@@ -681,11 +703,12 @@ class Freereg1CsvEntry
     end
     fields.each do |field|
       if field == 'witness'
+        #this translate the embedded witness fields into specific line displays
         increment = 1
         self.multiple_witnesses.each do |witness| 
           field_for_order = field + increment.to_s  
           order << field_for_order
-          witness.witness_forename.present? ? actual_witness =  (witness.witness_forename + ' ' + witness.witness_surname) : witness.witness_surname 
+          witness.witness_forename.present? ? actual_witness =  (witness.witness_forename + ' ' + witness.witness_surname) : actual_witness =  witness.witness_surname 
           self[field_for_order] = actual_witness
           array_of_entries << actual_witness
           json_of_entries[field.to_sym]  = actual_witness
@@ -699,7 +722,7 @@ class Freereg1CsvEntry
     end 
     return  order,array_of_entries, json_of_entries
   end
-
+  
   def same_location(record,file)
     success = true
     record_id = record.freereg1_csv_file_id
@@ -716,12 +739,7 @@ class Freereg1CsvEntry
   end
   
   def update_location(record,file)
-    #p "updating location"
-    #p record
-    #p file
-    #p self
     self.update_attributes(:freereg1_csv_file_id => file.id, :place => record[:place], :church_name => record[:church_name], :register_type => record[:register_type])
-    #p self
   end
 
   def errors_in_fields

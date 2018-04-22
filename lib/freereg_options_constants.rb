@@ -139,7 +139,7 @@ module FreeregOptionsConstants
 
   DATERANGE_MINIMUM = 1530
 
-  END_FIELDS = ['transcribed_by', 'credit', 'file_line_number']
+  END_FIELDS = ['transcribed_by', 'credit', 'file_line_number','film','film_number']
 
   ENTRY_ORDER_DEFINITION = { "ba" => {
                                :chapman_code=> 1,
@@ -247,6 +247,8 @@ module FreeregOptionsConstants
   MAXIMUM_NUMBER_OF_RESULTS = 250
 
   MAXIMUM_NUMBER_OF_SCANS = 500 
+  
+  MAXIMUM_WINESSES = 8
 
   MAX_RECORDS_COORDINATOR = 4000
 

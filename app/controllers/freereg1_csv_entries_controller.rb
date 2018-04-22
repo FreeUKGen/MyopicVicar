@@ -8,9 +8,8 @@ class Freereg1CsvEntriesController < ApplicationController
     get_user_info_from_userid
     @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
     params[:freereg1_csv_entry][:record_type] =  @freereg1_csv_file.record_type
-    params[:freereg1_csv_entry][:year] = get_year(params[:freereg1_csv_entry])
     @freereg1_csv_entry = Freereg1CsvEntry.new(freereg1_csv_entry_params)
-
+    year =  @freereg1_csv_entry.get_year(params[:freereg1_csv_entry])
     unless session[:error_id].nil?
       error_file = @freereg1_csv_file.batch_errors.find( session[:error_id])
       file_line_number = error_file.record_number
@@ -20,7 +19,7 @@ class Freereg1CsvEntriesController < ApplicationController
       line_id = @freereg1_csv_file.userid + "." + @freereg1_csv_file.file_name.upcase + "." +  file_line_number.to_s
       @freereg1_csv_file.update_attributes(:records => file_line_number)
     end
-    @freereg1_csv_entry.update_attributes(:line_id => line_id,:record_type  => @freereg1_csv_file.record_type, :file_line_number => file_line_number)
+    @freereg1_csv_entry.update_attributes(:year => year, :line_id => line_id,:record_type  => @freereg1_csv_file.record_type, :file_line_number => file_line_number)
     #need to deal with change in place
     unless @freereg1_csv_file.register.church.place.place_name == params[:freereg1_csv_entry][:place]
       #need to think about how to do this
@@ -148,20 +147,6 @@ class Freereg1CsvEntriesController < ApplicationController
     end
   end
 
-  def get_year(param)
-    case param[:record_type]
-    when "ba"
-      year = FreeregValidations.year_extract(param[:baptism_date]) if  param[:baptism_date].present?
-      year = FreeregValidations.year_extract(param[:birth_date]) if param[:birth_date].present? && year.blank?
-    when "bu"
-      year = FreeregValidations.year_extract(param[:burial_date]) if  param[:burial_date].present?
-    when "ma"
-      year = FreeregValidations.year_extract(param[:marriage_date]) if  param[:marriage_date].present?
-    end
-    year
-  end
-
-
   def index
     display_info
     @freereg1_csv_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => @freereg1_csv_file_id ).all.order_by(file_line_number: 1)
@@ -226,9 +211,8 @@ class Freereg1CsvEntriesController < ApplicationController
     @freereg1_csv_entry = Freereg1CsvEntry.id(params[:id]).first
     if @freereg1_csv_entry.present?
       @freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
-      params[:freereg1_csv_entry][:record_type] =  @freereg1_csv_file.record_type
-      params[:freereg1_csv_entry][:year] = get_year(params[:freereg1_csv_entry])
-      params[:freereg1_csv_entry][:person_sex] == @freereg1_csv_entry.person_sex ? sex_change = false : sex_change = true
+      @freereg1_csv_file.check_and_augment_def(params[:freereg1_csv_entry])
+      params[:freereg1_csv_entry],sex_change = @freereg1_csv_entry.adjust_parameters(params[:freereg1_csv_entry], @freereg1_csv_file)
       @freereg1_csv_entry.update_attributes(freereg1_csv_entry_params)
       if @freereg1_csv_entry.errors.any?
         flash[:notice] = 'The update of the record was unsuccessful'
@@ -240,10 +224,12 @@ class Freereg1CsvEntriesController < ApplicationController
         search_version = ''
         search_version  = software_version.last_search_record_version unless software_version.blank?
         place_id = get_place_id_from_file(@freereg1_csv_file)
+        
         @freereg1_csv_entry.search_record.destroy  if sex_change # updating the search names is too complex on a sex change it is better to just recreate
         @freereg1_csv_entry.search_record(true)   if sex_change#this frefreshes the cache
         SearchRecord.update_create_search_record(@freereg1_csv_entry,search_version,place_id)
         # lock file and note modification date
+       
         @freereg1_csv_file.locked_by_transcriber = true if session[:my_own]
         @freereg1_csv_file.locked_by_coordinator = true unless session[:my_own]
         @freereg1_csv_file.modification_date = Time.now.strftime("%d %b %Y")
