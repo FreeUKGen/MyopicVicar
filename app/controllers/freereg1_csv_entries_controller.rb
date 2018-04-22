@@ -7,8 +7,8 @@ class Freereg1CsvEntriesController < ApplicationController
   def create
     get_user_info_from_userid
     @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
-    params[:freereg1_csv_entry][:record_type] =  @freereg1_csv_file.record_type
     @freereg1_csv_entry = Freereg1CsvEntry.new(freereg1_csv_entry_params)
+    @freereg1_csv_file.check_and_augment_def(params[:freereg1_csv_entry])
     year =  @freereg1_csv_entry.get_year(params[:freereg1_csv_entry])
     unless session[:error_id].nil?
       error_file = @freereg1_csv_file.batch_errors.find( session[:error_id])
@@ -19,7 +19,7 @@ class Freereg1CsvEntriesController < ApplicationController
       line_id = @freereg1_csv_file.userid + "." + @freereg1_csv_file.file_name.upcase + "." +  file_line_number.to_s
       @freereg1_csv_file.update_attributes(:records => file_line_number)
     end
-    @freereg1_csv_entry.update_attributes(:year => year, :line_id => line_id,:record_type  => @freereg1_csv_file.record_type, :file_line_number => file_line_number)
+    @freereg1_csv_entry.update_attributes(:register_type => @freereg1_csv_file.register_type,:year => year, :line_id => line_id,:record_type  => @freereg1_csv_file.record_type, :file_line_number => file_line_number)
     #need to deal with change in place
     unless @freereg1_csv_file.register.church.place.place_name == params[:freereg1_csv_entry][:place]
       #need to think about how to do this
@@ -65,7 +65,7 @@ class Freereg1CsvEntriesController < ApplicationController
       else
         session[:error_id] = nil
         flash[:notice] = 'The creation/update in entry contents was successful, backup of file made and locked'
-        render :action => 'show'
+        redirect_to freereg1_csv_entry_path(@freereg1_csv_entry)
         return
       end
     end
