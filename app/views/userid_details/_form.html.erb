@@ -11,7 +11,7 @@
          <%= f.input :person_role,:label => role_lbl,:include_blank => false,:collection => ["transcriber", "trainee"],:input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 2 },:selected => "trainee" %>
     <% end%>
   <% else%>
-    <%= f.input :userid, :label => "UserId",:input_html => { :size => 40, :disabled => false }%>
+    <%= f.input :userid, :label => "UserId",:input_html => { :size => 40, :disabled => true }%>
     <% if  @current_user == @userid %>
       <%= f.input :transcription_agreement, :label => "Transcription Agreement",:input_html => {:disabled => true }  if @userid.transcription_agreement == "Accepted" %>
       <% unless @userid.transcription_agreement == "Accepted"%>
