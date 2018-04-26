@@ -9,7 +9,7 @@ class ImageServerImagesController < ApplicationController
       redirect_to website
     else 
       flash[:notice] = "Deletion of #{image_server_image.image_file_name} is not permitted due to its status of #{SourceProperty::Status[image_server_image.status]}"
-      redirect_to :back and return
+      redirect_back(fallback_location: root_path) and return
     end
   end
 
@@ -39,7 +39,7 @@ class ImageServerImagesController < ApplicationController
     process,chapman_code,folder_name,image_file_name = image.file_location
     if !process
        flash[:notice] = 'There were problems with the lookup'
-      redirect_to :back and return
+              redirect_back(fallback_location: root_path) and return
     end
     @user = cookies.signed[:userid]
     website = ImageServerImage.create_url('download',params[:object],chapman_code,folder_name, image_file_name,@user.userid)  
@@ -53,7 +53,7 @@ class ImageServerImagesController < ApplicationController
     image_server_group = @image_server_image.image_server_group
     @group_name = ImageServerImage.get_sorted_group_name(image_server_group.source_id)
 
-    redirect_to(:back, :notice => 'Attempted to edit a non_esxistent image file') and return if @image_server_image.nil?
+    redirect_to(fallback_location: root_path, :notice => 'Attempted to edit a non_esxistent image file') and return if @image_server_image.nil?
   end
 
   def flush
@@ -70,7 +70,7 @@ class ImageServerImagesController < ApplicationController
     @images = ImageServerImage.get_image_list(params[:id],status_list)
     @propagate_choice = params[:propagate_choice]
 
-    redirect_to(:back, :notice => 'No Unallocated images to be propagated') and return if @image_server_image.nil?
+    redirect_to(fallback_location: root_path, :notice => 'No Unallocated images to be propagated') and return if @image_server_image.nil?
   end
 
   def index
@@ -94,12 +94,12 @@ class ImageServerImagesController < ApplicationController
     @group_name = ImageServerImage.get_sorted_group_name(@image_server_group[:source_id])
 
     @image_server_image = ImageServerImage.image_server_group_id(params[:id]).first
-    redirect_to(:back, :notice => 'Attempted to edit a non_esxistent image file') and return if @image_server_image.nil?
+    redirect_to(fallback_location: root_path, :notice => 'Attempted to edit a non_esxistent image file') and return if @image_server_image.nil?
 
     move_allowed_status = ['u','a']
     @images = ImageServerImage.get_image_list(params[:id],move_allowed_status)
 
-    redirect_to(:back, :notice => 'No image files can be moved') and return if @images.empty?
+    redirect_to(fallback_location: root_path, :notice => 'No image files can be moved') and return if @images.empty?
   end
 
   def new      
@@ -136,7 +136,7 @@ class ImageServerImagesController < ApplicationController
 
     image_server_group, image_server_image = ImageServerImage.get_group_and_image_from_group_id(group_id)
 
-    redirect_to(:back, :notice => 'Image "'+image_server_image_params[:image_file_name]+' does not exist') and return if image_server_image.nil?
+    redirect_to(fallback_location: root_path, :notice => 'Image "'+image_server_image_params[:image_file_name]+' does not exist') and return if image_server_image.nil?
 
     case image_server_image_params[:origin]
       when 'edit'
@@ -172,7 +172,7 @@ class ImageServerImagesController < ApplicationController
 
       else
         flash[:notice] = 'Something wrong at ImageServerImage#update, please contact developer'
-        redirect_to :back and return
+        redirect_back(fallback_location: root_path) and return
     end
     flash[:notice] = 'Update of the Image file(s) was successful'
     redirect_to index_image_server_image_path(image_server_group.first)
@@ -183,7 +183,7 @@ class ImageServerImagesController < ApplicationController
     process,chapman_code,folder_name,image_file_name = image.file_location
     if !process
        flash[:notice] = 'There were problems with the lookup'
-      redirect_to :back and return
+        redirect_back(fallback_location: root_path) and return
     end
     @user = cookies.signed[:userid]
     website = ImageServerImage.create_url('view',params[:object],chapman_code,folder_name, image_file_name,@user.userid)

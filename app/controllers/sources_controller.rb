@@ -19,7 +19,7 @@ class SourcesController < ApplicationController
 
     if source.errors.any? then
       flash[:notice] = 'Addition of Source "'+params[:source][:source_name]+'" was unsuccessful'
-      redirect_to :back
+      redirect_back(fallback_location: root_path)
     else
       register.sources << source
       register.save
@@ -45,12 +45,12 @@ class SourcesController < ApplicationController
       rescue Mongoid::Errors::DeleteRestriction
         logger.info "Logged Error for Source Delete"
         logger.debug source.source_name+' is not empty'
-        redirect_to(:back, :notice=> source.source_name+' IS NOT EMPTY, CAN NOT BE DELETED')
+        redirect_to(fallback_location: root_path, :notice=> source.source_name+' IS NOT EMPTY, CAN NOT BE DELETED')
       end 
 
     else
       flash[:notice] = 'Only system_administrator and data_manager is allowed to delete source'
-      redirect_to :back
+      redirect_back(fallback_location: root_path)
     end
   end
 
@@ -73,7 +73,7 @@ class SourcesController < ApplicationController
 
     @source = Source.id(params[:id]).first
 
-    redirect_to(:back, :notice => 'Attempted to edit a non_existent Source') and return if @source.nil?
+    redirect_to(fallback_location: root_path, :notice => 'Attempted to edit a non_existent Source') and return if @source.nil?
   end
 
   def flush
@@ -94,7 +94,7 @@ class SourcesController < ApplicationController
 
     case @source.count
       when 0
-        redirect_to(:back, :notice => 'No Source under this register')
+        redirect_to(fallback_location: root_path, :notice => 'No Source under this register')
       when 1
         case @source.first.source_name
           when 'Image Server'
@@ -104,7 +104,7 @@ class SourcesController < ApplicationController
           when 'other server2'
 #            redirect_to :controller=>'server2', :action=>'show', :source_name=>'other server1'
           else
-            redirect_to(:back, :notice => 'Something wrong')
+            redirect_to(fallback_location: root_path, :notice => 'Something wrong')
         end
     end
   end
@@ -114,7 +114,7 @@ class SourcesController < ApplicationController
 
     allow_initialize = ImageServerGroup.check_all_images_status_before_initialize_source(params[:id])
 
-    redirect_to(:back, :notice=>'Source can be initialized only when all image groups status is unset') and return if not allow_initialize
+    redirect_back(fallback_location: root_path, :notice=>'Source can be initialized only when all image groups status is unset') and return if not allow_initialize
   end
 
   def load(source_id)

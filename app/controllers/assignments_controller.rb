@@ -37,7 +37,7 @@ class AssignmentsController < ApplicationController
     assignment.destroy if assignment_image_count.nil?
 
     flash[:notice] = 'Removal of this image from Assignment was successful'
-    redirect_to :back
+    redirect_back(fallback_location: root_path)
   end
 
   def heading_info
@@ -132,7 +132,7 @@ class AssignmentsController < ApplicationController
 
     if @assignment.nil?
       flash[:notice] = 'No assignment found.'
-      redirect_to :back
+      redirect_back(fallback_location: root_path)
     else
       render 'list_assignment_images' if @count.length == 1
     end
@@ -144,7 +144,7 @@ class AssignmentsController < ApplicationController
 
     if @assignment.nil?
       flash[:notice] = 'No assignment found.'
-      redirect_to :back
+      redirect_back(fallback_location: root_path)
     else
       render 'list_assignment_images' if @count.length == 1
     end
@@ -168,7 +168,7 @@ class AssignmentsController < ApplicationController
 
     if @assignment.nil?
       flash[:notice] = 'Assignment information was changed, please refresh the browser and try again'
-      redirect_to :back
+      redirect_back(fallback_location: root_path)
     end
   end
 
@@ -214,7 +214,7 @@ class AssignmentsController < ApplicationController
 
     if @assignment.nil?
       flash[:notice] = 'No assignment in this Image Source'
-      redirect_to :back
+      redirect_back(fallback_location: root_path)
     end
   end
 
@@ -240,7 +240,7 @@ class AssignmentsController < ApplicationController
 
     if users.empty?
       flash[:notice] = 'No user under this syndicate'
-      redirect_to :back
+      redirect_back(fallback_location: root_path)
     else
       session[:list_user_assignments] = true
       @assignment = Assignment.new
@@ -266,7 +266,7 @@ class AssignmentsController < ApplicationController
       redirect_to list_assignments_of_myself_assignment_path
     else
       if params[:assignment].nil?
-        redirect_to :back
+        redirect_back(fallback_location: root_path)
       else
         image_server_group_id = assignment_params[:image_server_group_id]
         redirect_to list_assignments_by_syndicate_coordinator_assignment_path(:image_server_group_id=>image_server_group_id, :assignment_list_type=>params[:assignment_list_type])
