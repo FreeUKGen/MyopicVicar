@@ -9,7 +9,7 @@ class ImageServerGroupsController < ApplicationController
     @group = ImageServerGroup.source_id(params[:id])
     @image_server_group = @group.first
 
-    redirect_to(fallback_location: root_path, :notice => 'No group for allocation.') and return if @group_name.empty?
+    redirect_back(fallback_location: root_path, :notice => 'No group for allocation.') and return if @group_name.empty?
   end
 
   def create
@@ -54,7 +54,7 @@ class ImageServerGroupsController < ApplicationController
     rescue Mongoid::Errors::DeleteRestriction
       logger.info "Logged Error for Image Server Group Delete"
       logger.debug image_server_group.group_name+' is not empty'
-      redirect_to(fallback_location: root_path, :notice => image_server_group.group_name+' IS NOT EMPTY, CAN NOT BE DELETED') and return
+      redirect_back(fallback_location: root_path, :notice => image_server_group.group_name+' IS NOT EMPTY, CAN NOT BE DELETED') and return
     end     
   end
 
@@ -98,7 +98,7 @@ class ImageServerGroupsController < ApplicationController
     @image_server_group = @group.first
     @parent_source = Source.id(session[:source_id]).first
 
-    redirect_to(fallback_location: root_path, :notice => 'Attempted to edit a non_esxistent Image Group') and return if @image_server_group.nil?
+    redirect_back(fallback_location: root_path, :notice => 'Attempted to edit a non_esxistent Image Group') and return if @image_server_group.nil?
   end
 
   def error
@@ -116,7 +116,7 @@ class ImageServerGroupsController < ApplicationController
 
     @image_server_group = ImageServerGroup.image_server_groups_by_user_role(session[:manage_user_origin], session[:source_id], session[:syndicate])
 
-    redirect_to(fallback_location: root_path, :notice => "Register does not have any Image Group from Image Server.") and return if @image_server_group.nil?
+    redirect_back(fallback_location: root_path, :notice => "Register does not have any Image Group from Image Server.") and return if @image_server_group.nil?
   end
 
   def initialize_status
@@ -167,20 +167,20 @@ class ImageServerGroupsController < ApplicationController
     ig = image_server_group.first
 
     sc = UseridDetail.where(:id=>params[:user], :email_address_valid => true).first
-    redirect_to(fallback_location: root_path, :notice => 'SC does not exist') and return if sc.nil?
+    redirect_back(fallback_location: root_path, :notice => 'SC does not exist') and return if sc.nil?
 
     county = County.where(:chapman_code=>params[:county]).first
-    redirect_to(fallback_location: root_path, :notice => 'County does not exist') and return if county.nil?
+    redirect_back(fallback_location: root_path, :notice => 'County does not exist') and return if county.nil?
 
     cc = UseridDetail.where(:userid=>county.county_coordinator).first
-    redirect_to(fallback_location: root_path, :notice => 'County coordinator does not exist, please contact administrator') and return if cc.nil?
+    redirect_back(fallback_location: root_path, :notice => 'County coordinator does not exist, please contact administrator') and return if cc.nil?
 
     ImageServerImage.update_image_status(image_server_group, 'ar')
 
     ImageServerGroup.find(:id=>ig.id).update_attributes(:syndicate_code=>sc.syndicate)
     UserMailer.request_cc_image_server_group(sc, cc.email_address, ig.group_name).deliver_now
 
-    redirect_to(fallback_location: root_path, :notice => 'Email send to County Coordinator')
+    redirect_back(fallback_location: root_path, :notice => 'Email send to County Coordinator')
   end
 
   def request_sc_image_server_group
@@ -188,17 +188,17 @@ class ImageServerGroupsController < ApplicationController
     image_server_group = ig.group_name if !ig.nil?
 
     transcriber = UseridDetail.where(:id=>params[:user]).first
-    redirect_to(fallback_location: root_path, :notice => 'Transcriber does not exist') and return if transcriber.nil?
+    redirect_back(fallback_location: root_path, :notice => 'Transcriber does not exist') and return if transcriber.nil?
 
     syndicate = Syndicate.where(syndicate_code: transcriber.syndicate).first
-    redirect_to(fallback_location: root_path, :notice => 'Syndicate does not exist') and return if syndicate.nil?
+    redirect_back(fallback_location: root_path, :notice => 'Syndicate does not exist') and return if syndicate.nil?
     
     sc = UseridDetail.where(:userid=>syndicate.syndicate_coordinator).first
-    redirect_to(fallback_location: root_path, :notice => 'SC does not exist, please contact administrator') and return if sc.nil?
+    redirect_back(fallback_location: root_path, :notice => 'SC does not exist, please contact administrator') and return if sc.nil?
 
     UserMailer.request_sc_image_server_group(transcriber, sc.email_address, image_server_group).deliver_now
 
-    redirect_to(fallback_location: root_path, :notice => 'Email send to Syndicate Coordinator')
+    redirect_back(fallback_location: root_path, :notice => 'Email send to Syndicate Coordinator')
   end
 
   def send_complete_to_cc
@@ -209,7 +209,7 @@ class ImageServerGroupsController < ApplicationController
 
     UserMailer.notify_cc_assignment_complete(@user,params[:id],@place[:chapman_code]).deliver_now
 
-    redirect_to(fallback_location: root_path, :notice => 'Email sent to County Coordinator')
+    redirect_back(fallback_location: root_path, :notice => 'Email sent to County Coordinator')
   end
 
   def show
@@ -220,7 +220,7 @@ class ImageServerGroupsController < ApplicationController
     @group = ImageServerGroup.id(params[:id])
 
     if @group.nil?
-      redirect_to(fallback_location: root_path, :notice => 'Register does not have any Image Group from Image Server')
+      redirect_back(fallback_location: root_path, :notice => 'Register does not have any Image Group from Image Server')
     else
       @image_server_group = @group.first
     end

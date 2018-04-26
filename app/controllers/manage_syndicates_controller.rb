@@ -108,7 +108,7 @@ class ManageSyndicatesController < ApplicationController
 
       if @source.nil?
         flash[:notice] = 'No Fully Reviewed Image Groups Under This Syndicate'
-        redirect_to :back
+        redirect_back(fallback_location: root_path)
       else
         session.delete(:from_source)
         session[:image_group_filter] = 'fully_reviewed'
@@ -129,7 +129,7 @@ class ManageSyndicatesController < ApplicationController
 
       if @source.nil?
         flash[:notice] = 'No Fully Transcribed Image Groups Under This Syndicate'
-        redirect_to :back
+        redirect_back(fallback_location: root_path)
       else
         session.delete(:from_source)
         session[:image_group_filter] = 'fully_transcribed'

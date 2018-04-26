@@ -115,7 +115,7 @@ class ManageCountiesController < ApplicationController
       @county = session[:county]
 
       if @source.nil? || @group_ids.empty? || @group_id.empty?
-        redirect_to(:back, :notice => 'No Completion Submitted Image Groups exists') and return
+        redirect_back(fallback_location: root_path, :notice => 'No Completion Submitted Image Groups exists') and return
       else
         render 'image_server_group_completion_submitted'
       end
@@ -135,7 +135,7 @@ class ManageCountiesController < ApplicationController
       @county = session[:county]
 
       if @source.nil? || @group_ids.empty? || @group_id.empty?
-        redirect_to(:back, :notice => 'No Image Groups exists') and return
+        redirect_back(fallback_location: root_path, :notice => 'No Image Groups exists') and return
       else
         render 'image_server_group_all'
       end
@@ -155,7 +155,7 @@ class ManageCountiesController < ApplicationController
       @county = session[:county]
 
       if @source.nil? || @group_ids.empty? || @group_id.empty?
-        redirect_to(:back, :notice => 'No unallocated image groups exists') and return
+        redirect_back(fallback_location: root_path, :notice => 'No unallocated image groups exists') and return
       else
         render 'image_server_group_unallocate'
       end
@@ -175,7 +175,7 @@ class ManageCountiesController < ApplicationController
       @county = session[:county]
 
       if @source.nil? || @group_ids.empty? || @group_id.empty?
-        redirect_to(:back, :notice => 'No Allocate Request Image Groups exists') and return
+        redirect_back(fallback_location: root_path, :notice => 'No Allocate Request Image Groups exists') and return
       else
         render 'image_server_group_allocate_request'
       end
@@ -197,7 +197,7 @@ class ManageCountiesController < ApplicationController
 
       if @source_ids.empty? || @source_id.empty?
         flash[:notice] = 'No requested Sources exists'
-        redirect_to :back
+        redirect_back(fallback_location: root_path)
       else
         render 'sources_list_all'
       end
@@ -338,7 +338,7 @@ class ManageCountiesController < ApplicationController
       @county = session[:county]
 
       if @source.nil? || @group_ids.empty?
-        redirect_to(:back, :notice => 'No Image Groups Allocated by Place for County ' + @county)
+        redirect_back(fallback_location: root_path, :notice => 'No Image Groups Allocated by Place for County ' + @county)
       else
         render 'image_server_group_by_place'
       end
@@ -359,7 +359,7 @@ class ManageCountiesController < ApplicationController
       @county = session[:county]
 
       if @source.nil? || @group_ids.empty? || @syndicate.empty?
-        redirect_to(:back, :notice => 'No Image Groups Allocated by Syndicate for County ' + @county)
+        redirect_back(fallback_location: root_path, :notice => 'No Image Groups Allocated by Syndicate for County ' + @county)
       else
         render 'image_server_group_by_syndicate'
       end
