@@ -2,6 +2,7 @@ class Message
   include Mongoid::Document
   include Mongoid::Timestamps
   field :subject, type: String
+  field :source_message_id, type: String
   field :body, type: String
   field :message_time, type: DateTime
   field :userid, type: String

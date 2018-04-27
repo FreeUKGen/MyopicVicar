@@ -8,31 +8,7 @@
 <section class="island">
   <div class="table-wrapper">
     <% if @messages.present? %>
-    <table class="table--bordered table--data">
-      <thead>
-        <tr>
-          <th class="t20">Subject</th>
-          <th class="t20">Sent by</th>
-          <th class="t10">Posted</th>
-          <th class="t10">Attachment</th>
-          <th class="t20">Message begins</th>
-          <th class="t20">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-      <% @messages.each do |message| %>
-        <tr>
-          <td><%= message.subject %></td>
-          <td><%= message.userid %></td>
-          <td><%= message.message_time.strftime("%d %b %Y") unless message.message_time.nil?%></td>
-          <td><%= attachment(message)%></td>
-          <td><%= message.body[0,100] %>&hellip;</td>
-          <td> <%= link_to 'SH', show_waitlist_msg_path(message.id), :class => "btn weight--light  btn--small" %>
-          <%= link_to 'Remove', remove_from_useriddetail_waitlist_path(message.id), :class => "btn weight--light  btn--small", method: :delete, data: { confirm: 'Are you sure you want to remove this message from your list?' } %> </td>
-        </tr>
-      <% end %>
-      </tbody>
-    </table>
+      <%= render 'list_messages'%>
     <% else%>
       <p>No messages.</p>
     <% end%>

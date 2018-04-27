@@ -13,6 +13,7 @@ class MessagesController < ApplicationController
     @user.reload
     @messages = []
     @user.userid_messages.each do |msg_id|
+      next unless Message.id(msg_id).first.source_message_id.blank?
       @messages << Message.id(msg_id).first
     end
   end
@@ -30,11 +31,25 @@ class MessagesController < ApplicationController
   def show_waitlist_msg
     get_user_info_from_userid
     @message = Message.id(params[:id]).first
+    @reply_messages = Message.where(source_message_id: params[:id]).all
     @user = cookies.signed[:userid]
     if @message.blank?
       go_back("message",params[:id])
     end
     @sent =   @message.sent_messages.order_by(sent_time: 1)
+  end
+
+  def user_reply_messages
+    get_user_info_from_userid
+    @messages = Message.where(source_message_id: params[:id], userid: @user.userid).all
+    @main_message = Message.id(params[:id]).first
+  end
+
+  def show_reply_messages
+    get_user_info_from_userid
+    @user_messages = UseridDetail.id(@user.id).first.userid_messages
+    @messages = Message.where(source_message_id: params[:id]).all
+    @main_message = Message.id(params[:id]).first
   end
 
   def show
@@ -83,19 +98,28 @@ class MessagesController < ApplicationController
     @message = Message.new
     @message.message_time = Time.now
     @message.userid = @user.userid
-
+    @respond_to_message = Message.id(params[:id]).first
+    @reply_messages = Message.where(source_message_id: params[:id]).all
   end
 
   def create
     @message = Message.new(message_params)
     @message.file_name = @message.attachment_identifier
-    if @message.save
-      flash[:notice] = "Message created"
-      redirect_to :action => 'index'
-      return
-    else
-      redirect_to  :new
-      return
+    case params[:commit]
+    when "Submit"
+      if @message.save
+        flash[:notice] = "Message created"
+        redirect_to :action => 'index'
+        return
+      else
+        redirect_to  :new
+        return
+      end
+    when "Save & Send"
+      @message.save
+      params[:id] = @message.id if @message
+      send_message
+      redirect_to send_message_messages_path(@message.id)
     end
   end
 
@@ -139,6 +163,7 @@ class MessagesController < ApplicationController
       when "Submit"
         @message.update_attributes(message_params)
       when "Send"
+        @respond_to_message = Message.id(@message.source_message_id).first
         @syndicate = session[:syndicate] if params[:recipients].include?("Members of Syndicate")
         sender = params[:sender]
         @sent_message = @message.sent_messages.id(params[:message][:action]).first

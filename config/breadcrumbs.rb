@@ -447,9 +447,25 @@ crumb :userid_messages do
   link "User Messages", userid_messages_path
 end
 
-crumb :show_messages_user do
-  link "Show User Messages", userid_messages_path
+crumb :reply_messages_list do |message|
+  link "Reply Messages List", show_reply_messages_path(message.id)
+  parent :show_messages_user, message
+end
+
+crumb :user_reply_messages_list do |message|
+  link "User Reply Messages List", user_reply_messages_path(message.id)
+  parent :reply_messages_list, message
+end
+
+crumb :show_messages_user do |message|
+  link "Show User Message", show_waitlist_msg_path(message.id)
   parent :userid_messages
+end
+
+crumb :show_reply_message do |message|
+  source_message = Message.id(message.source_message_id).first
+  link "Show Reply Message", show_waitlist_msg_path
+  parent :reply_messages_list, source_message
 end
 
 crumb :edit_message do |message|
@@ -461,9 +477,16 @@ crumb :create_message do |message|
   parent :messages
   parent :message_to_syndicate if session[:syndicate]
 end
+crumb :create_reply do |message|
+  link "Create Reply Message", reply_messages_path(message.id)
+  parent :userid_messages
+  parent :message_to_syndicate if session[:syndicate]
+end
 crumb :send_message do |message|
+  source_message = Message.id(message.source_message_id).first
   link "Send Message", send_message_messages_path(message)
-  parent :show_message, message
+  parent :create_reply, source_message
+  parent :show_message, message if message.source_message_id.blank?
 end
 crumb :message_to_syndicate do
   link "Messages To Syndicate", messages_path

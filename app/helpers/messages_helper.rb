@@ -49,4 +49,19 @@ module MessagesHelper
       options_for_select(@options,@sent_message.recipients)
     end
   end
+
+  def message_subject
+    case
+    when !@respond_to_message.nil?
+      text_field_tag 'message[subject]', "Re: #{@respond_to_message.subject}", :class => "text-input", readonly: true
+    when @message.subject.nil? && @respond_to_message.nil?
+      text_field_tag 'message[subject]', nil, :class => "text-input", placeholder: "Mandatory", required: true
+    when @message.subject.present? && @respond_to_message.nil?
+      text_field_tag 'message[subject]', "#{@message.subject}", :class => "text-input"
+    end
+  end
+
+  def reply_messages_count(source_message)
+    Message.where(source_message_id: source_message.id).all.count
+  end
 end
