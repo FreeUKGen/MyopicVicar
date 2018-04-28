@@ -1,7 +1,7 @@
 class Freereg1CsvEntriesController < ApplicationController
   require 'chapman_code'
   require 'freereg_validations'
-
+  require 'freereg_options_constants'
   skip_before_filter :require_login, only: [:show]
  
   def create

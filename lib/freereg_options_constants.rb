@@ -231,6 +231,8 @@ module FreeregOptionsConstants
 
   FILES_PER_PAGE = 500
 
+  
+
   FORCE_SEARCH_RECORD_RECREATE = ["baptism_date","birth_date","bride_father_forename","bride_father_surname","bride_forename","bride_surname","burial_date",
                                   "burial_person_forename","burial_person_surname","father_forename","father_surname","female_relative_forename","groom_father_forename",
                                   "groom_father_surname","groom_forename","groom_surname","male_relative_forename","marriage_date","mother_forename","mother_surname",
@@ -309,5 +311,17 @@ module FreeregOptionsConstants
   WORD_SPLITS = {
     "-" => /\-/,
     "&" => /\&/   }
+  
+  FLEXIBLE_CSV_FORMAT_BAPTISM = LOCATION_FIELDS + ORIGINAL_BAPTISM_FIELDS + ADDITIONAL_BAPTISM_FIELDS + ORIGINAL_COMMON_FIELDS + ADDITIONAL_COMMON_FIELDS
+
+  FLEXIBLE_CSV_FORMAT_BURIAL = LOCATION_FIELDS + ORIGINAL_BURIAL_FIELDS + ADDITIONAL_BURIAL_FIELDS + ORIGINAL_COMMON_FIELDS + ADDITIONAL_COMMON_FIELDS
+
+  FLEXIBLE_CSV_FORMAT_MARRIAGE = LOCATION_FIELDS + ORIGINAL_MARRIAGE_FIELDS + ADDITIONAL_MARRIAGE_FIELDS + ORIGINAL_COMMON_FIELDS + ADDITIONAL_COMMON_FIELDS
+  
+  ORIGINAL_CSV_FORMAT_BAPTISM = LOCATION_FIELDS + ORIGINAL_BAPTISM_FIELDS + ORIGINAL_COMMON_FIELDS
+
+  ORIGINAL_CSV_FORMAT_BURIAL = LOCATION_FIELDS + ORIGINAL_BURIAL_FIELDS + ORIGINAL_COMMON_FIELDS
+
+  ORIGINAL_CSV_FORMAT_MARRIAGE = LOCATION_FIELDS + ORIGINAL_MARRIAGE_FIELDS + ORIGINAL_COMMON_FIELDS
 
 end
