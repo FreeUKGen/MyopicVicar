@@ -234,79 +234,30 @@ class Freereg1CsvEntry
 
     def compare_baptism_fields?(one, two)
     #used in  task check_record_digest
-      if one.person_forename == two.person_forename &&
-        one.baptism_date == two.baptism_date &&
-        one.birth_date == two.birth_date &&
-        one.father_forename == two.father_forename &&
-        one.father_surname == two.father_surname &&
-        one.mother_forename == two.mother_forename &&
-        one.mother_surname == two.mother_surname &&
-        one.register_entry_number  == two.register_entry_number &&
-        one.person_sex == two.person_sex &&
-        one.father_occupation == two.father_occupation &&
-        one.person_abode == two.person_abode &&
-        one.notes == two.notes &&
-        one.film == two.film &&
-        one.film_number == two.film_number
-        equal = true
-      else
-        equal = false
+      fields = FreeregOptionsConstants::ORIGINAL_BAPTISM_FIELDS + FreeregOptionsConstants::ADDITIONAL_BAPTISM_FIELDS + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS + FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS
+      equal = true
+      fields.each do |field|
+        one[field.to_sym] == two[field.to_sym] && equal ? equal = true : equal = false
       end
       equal
     end
 
     def compare_marriage_fields?(one, two)
       #used in  task check_record_digest
-      if one.groom_forename  ==  two.groom_forename             &&
-        one.groom_surname  ==  two.groom_surname            &&
-        one.groom_age  ==            two.groom_age  &&
-        one.groom_occupation  ==          two.groom_occupation &&
-        one.groom_abode  ==    two.groom_abode &&
-        one.groom_condition  ==        two.groom_condition &&
-        one.groom_parish  ==             two.groom_parish  &&
-        one.bride_forename  ==   two.bride_forename &&
-        one.bride_surname  ==  two.bride_surname &&
-        one.bride_age  ==   two.bride_age  &&
-        one.bride_occupation  ==  two.bride_occupation &&
-        one.bride_abode  ==  two.bride_abode  &&
-        one.bride_condition  ==            two.bride_condition &&
-        one.bride_parish  ==      two.bride_parish &&
-        one.bride_father_forename  ==   two.bride_father_forename &&
-        one.bride_father_surname  ==  two.bride_father_surname &&
-        one.bride_father_occupation  == two.bride_father_occupation &&
-        one.marriage_date  ==  two.marriage_date &&
-        one.register_entry_number  ==         two.register_entry_number &&
-        one.witness1_forename  ==  two.witness1_forename &&
-        one.witness1_surname  ==          two.witness1_surname &&
-        one.witness2_forename  ==              two.witness2_forename &&
-        one.witness2_surname  ==   two.witness2_surname &&
-        one.notes == two.notes &&
-        one.film == two.film &&
-        one.film_number == two.film_number
-        equal = true
-      else
-        equal = false
+      fields = FreeregOptionsConstants::ORIGINAL_MARRIAGE_FIELDS + FreeregOptionsConstants::ADDITIONAL_MARRIAGE_FIELDS + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS + FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS
+      equal = true
+      fields.each do |field|
+        one[field.to_sym] == two[field.to_sym] && equal ? equal = true : equal = false
       end
       equal
     end
 
     def compare_burial_fields?(one, two)
       #used in  task check_record_digest
-      if one.burial_person_forename == two.burial_person_forename &&
-        one.burial_date == two.burial_date &&
-        one.burial_person_surname  == two.burial_person_surname &&
-        one.male_relative_forename == two.male_relative_forename &&
-        one.female_relative_forename ==  two.female_relative_forename &&
-        one.relative_surname == two.relative_surname &&
-        one.register_entry_number  == two.register_entry_number &&
-        one.person_sex == two.person_sex &&
-        one.burial_person_abode == one.burial_person_abode &&
-        one.notes == two.notes &&
-        one.film == two.film &&
-        one.film_number == two.film_number
-        equal = true
-      else
-        equal = false
+      fields = FreeregOptionsConstants::ORIGINAL_BURIAL_FIELDS + FreeregOptionsConstants::ADDITIONAL_BURIAL_FIELDS + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS + FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS
+      equal = true
+      fields.each do |field|
+        one[field.to_sym] == two[field.to_sym] && equal ? equal = true : equal = false
       end
       equal
     end
@@ -409,73 +360,37 @@ class Freereg1CsvEntry
   end
 
   def create_baptism_string
-    string = ''
-    string = string + self.person_forename.strip + "person" unless  self.person_forename.nil?
-    string = string + self.baptism_date.strip + "baptism" unless self.baptism_date.nil?
-    string = string + self.birth_date.strip + "birth" unless self.birth_date.nil?
-    string = string + self.father_forename.strip + "male" unless self.father_forename.nil?
-    string = string + self.father_surname.strip + "malesurname" unless self.father_surname.nil?
-    string = string + self.mother_forename.strip + "female" unless self.mother_forename.nil?
-    string = string + self.mother_surname.strip + "femalesurname" unless self.mother_surname.nil?
-    string = string + self.register_entry_number.strip + "register" unless self.register_entry_number.nil?
-    string = string + self.person_sex.strip unless self.person_sex.nil?
-    string = string + self.father_occupation.strip + "occupation" unless self.father_occupation.nil?
-    string = string + self.person_abode.strip + "abode" unless self.person_abode.nil?
-    string = string + self.notes.strip + "notes" unless self.notes.nil?
-    string = string + self.film.strip + "film" unless self.film.nil?
-    string = string + self.film_number.strip + "film_number" unless self.film_number.nil?
-    return string
+    fields = FreeregOptionsConstants::ORIGINAL_BAPTISM_FIELDS + FreeregOptionsConstants::ADDITIONAL_BAPTISM_FIELDS + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS + FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS
+    my_string = self.create_string(fields)
+    p my_string 
+    return my_string 
   end
 
   def create_burial_string
-    string = ''
-    string = string + self.burial_person_forename.strip + "person" unless  self.burial_person_forename.nil?
-    string = string + self.burial_date.strip unless self.burial_date.nil?
-    string = string + self.burial_person_surname.strip + "personsurname" unless self.burial_person_surname.nil?
-    string = string + self.male_relative_forename.strip + "male" unless self.male_relative_forename.nil?
-    string = string + self.female_relative_forename.strip + "female" unless self.female_relative_forename.nil?
-    string = string + self.relative_surname.strip + "relative" unless self.relative_surname.nil?
-    string = string + self.register_entry_number.strip + "register" unless self.register_entry_number.nil?
-    string = string + self.person_sex.strip unless self.person_sex.nil?
-    string = string + self.burial_person_abode.strip + "abode" unless self.burial_person_abode.nil?
-    string = string + self.notes.strip + "notes" unless self.notes.nil?
-    string = string + self.film.strip + "film" unless self.film.nil?
-    string = string + self.film_number.strip + "film_number" unless self.film_number.nil?
-    return string
+    fields = FreeregOptionsConstants::ORIGINAL_BURIAL_FIELDS + FreeregOptionsConstants::ADDITIONAL_BURIAL_FIELDS + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS + FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS
+    my_string = self.create_string(fields)
+    return my_string 
   end
 
   def create_marriage_string
-   
-    string = ''
-    string = string + self.groom_forename.strip + "groom" unless  self.groom_forename.nil?
-    string = string + self.groom_surname.strip + "groomsurname" unless self.groom_surname.nil?
-    string = string + self.groom_age.strip + "groomage" unless self.groom_age.nil?
-    string = string + self.groom_occupation.strip + "groomoccupation" unless self.groom_occupation.nil?
-    string = string + self.groom_abode.strip + "grromabode" unless self.groom_abode.nil?
-    string = string + self.groom_condition.strip + "groomcondition" unless self.groom_condition.nil?
-    string = string + self.groom_parish.strip + "groomparish" unless self.groom_parish.nil?
-    string = string + self.bride_forename.strip + "bride" unless  self.bride_forename.nil?
-    string = string + self.bride_surname.strip + "bridesurname" unless self.bride_surname.nil?
-    string = string + self.bride_age.strip unless self.bride_age.nil?
-    string = string + self.bride_occupation.strip + "brideoccupation" unless self.bride_occupation.nil?
-    string = string + self.bride_abode.strip + "brideabode" unless self.bride_abode.nil?
-    string = string + self.bride_condition.strip unless self.bride_condition.nil?
-    string = string + self.bride_parish.strip + "brideparish" unless self.bride_parish.nil?
-    string = string + self.bride_father_forename.strip + "father" unless self.bride_father_forename.nil?
-    string = string + self.bride_father_surname.strip + "fathersurname" unless self.bride_father_surname.nil?
-    string = string + self.bride_father_occupation.strip + "fatheroccupation" unless self.bride_father_occupation.nil?
-    string = string + self.marriage_date.strip unless self.marriage_date.nil?
-    string = string + self.register_entry_number.strip + "register" unless self.register_entry_number.nil?
-    string = string + self.witness1_forename.strip + "witness1" unless self.witness1_forename.nil?
-    string = string + self.witness1_surname.strip + "witness1surname" unless self.witness1_surname.nil?
-    string = string + self.witness2_forename.strip + "witness2" unless self.witness2_forename.nil?
-    string = string + self.witness2_surname.strip + "witness2surname" unless self.witness2_surname.nil?
-    string = string + self.notes.strip + "notes" unless self.notes.nil?
-    string = string + self.film.strip + "film" unless self.film.nil?
-    string = string + self.film_number.strip + "film_number" unless self.film_number.nil?
-    return string
+    fields = FreeregOptionsConstants::ORIGINAL_MARRIAGE_FIELDS + FreeregOptionsConstants::ADDITIONAL_MARRIAGE_FIELDS + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS + FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS
+    my_string = self.create_string(fields)
+    return my_string 
   end
-
+    
+  def create_string(fields)
+    my_string = ''
+    fields.each do |field|
+      if !!self[field.to_sym] == self[field.to_sym]
+        self[field.to_sym] ? hold = "true" : hold = "false"
+        my_string = my_string +  hold + field.to_s unless self[field.to_sym].blank?
+      else
+        my_string = my_string + self[field.to_sym].strip + field.to_s unless self[field.to_sym].blank?
+      end
+    end
+    my_string
+  end
+   
   def get_location_ids
     file = self.freereg1_csv_file
     if file.present?
