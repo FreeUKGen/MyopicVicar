@@ -83,7 +83,7 @@ class ImageServerGroup
           scope = ['u','ar','a','bt','ts','t','br','rs','cs','c']
       end
 
-      match_image_group = ImageServerGroup.where(:syndicate_code=>syndicate)
+      match_image_group = ImageServerGroup.where(:syndicate_code=>syndicate, 'summary.status'=>{'$nin'=>['c']})
       if type == 't' || type == 'r'
         filtered_group_id = Array.new
   
