@@ -231,8 +231,6 @@ module FreeregOptionsConstants
 
   FILES_PER_PAGE = 500
 
-  
-
   FORCE_SEARCH_RECORD_RECREATE = ["baptism_date","birth_date","bride_father_forename","bride_father_surname","bride_forename","bride_surname","burial_date",
                                   "burial_person_forename","burial_person_surname","father_forename","father_surname","female_relative_forename","groom_father_forename",
                                   "groom_father_surname","groom_forename","groom_surname","male_relative_forename","marriage_date","mother_forename","mother_surname",
