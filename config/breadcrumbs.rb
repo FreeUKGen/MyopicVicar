@@ -440,6 +440,7 @@ end
 crumb :show_message do |message|
   link "Show Message", message_path(message)
   parent :messages
+  parent :message_to_syndicate if session[:syndicate]
 end
 
 crumb :userid_messages do
@@ -458,10 +459,15 @@ end
 crumb :create_message do |message|
   link "Create Message", new_message_path(message)
   parent :messages
+  parent :message_to_syndicate if session[:syndicate]
 end
 crumb :send_message do |message|
   link "Send Message", send_message_messages_path(message)
   parent :show_message, message
+end
+crumb :message_to_syndicate do
+  link "Messages To Syndicate", messages_path
+  parent :syndicate_options, session[:syndicate]
 end
 crumb :denominations do
   link "Denominations", denominations_path

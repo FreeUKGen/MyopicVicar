@@ -1,4 +1,5 @@
 <% breadcrumb :messages %>
+<% breadcrumb :message_to_syndicate if session[:syndicate]%>
   <h2 class=" text--center">List of all messages</h2>
   <p style="text-align: center"><%= link_to 'Create New Message', new_message_path, method: :get , :class => "btn weight--light btn--small" %> <%= link_to 'List by Name', list_by_name_messages_path, method: :get , :class => "btn weight--light btn--small" %> <%= link_to 'List by Posted Date' , list_by_date_messages_path, method: :get , :class => "btn weight--light btn--small"%> <%= link_to 'List by Identifier' , list_by_identifier_messages_path, method: :get , :class => "btn weight--light btn--small" %>  <%= link_to 'Select by Identifier' , select_by_identifier_messages_path, method: :get , :class => "btn weight--light btn--small" %> </p>
 <% if flash[:notice] %>

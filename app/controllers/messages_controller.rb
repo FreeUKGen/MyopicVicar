@@ -102,9 +102,10 @@ class MessagesController < ApplicationController
   def send_message
     get_user_info_from_userid
     @message = Message.id(params[:id]).first
+    @syndicate = session[:syndicate]
     if @message.present?
       @options = UseridRole::VALUES
-      @sent_message = SentMessage.new(:message_id => @message.id, :sent_time => Time.now,:sender => @userid)
+      @sent_message = SentMessage.new(:message_id => @message.id, :sent_time => Time.now,:sender => @user_userid)
       @message.sent_messages <<  [ @sent_message ]
       @sent_message.save
       @sent_message.active = true
@@ -138,6 +139,7 @@ class MessagesController < ApplicationController
       when "Submit"
         @message.update_attributes(message_params)
       when "Send"
+        @syndicate = session[:syndicate] if params[:recipients].include?("Members of Syndicate")
         sender = params[:sender]
         @sent_message = @message.sent_messages.id(params[:message][:action]).first
         reasons = Array.new
@@ -147,7 +149,7 @@ class MessagesController < ApplicationController
           flash[:notice] = "Invalid Send: Please select Recipients and Open Data Status"
           redirect_to action:'send_message' and return
         else
-         @message.communicate(params[:recipients],  params[:active], reasons,sender, params[:open_data_status])
+         @message.communicate(params[:recipients],  params[:active], reasons,sender, params[:open_data_status], @syndicate)
          flash[:notice] = @message.reciever_notice(params)
         end
       end
@@ -169,6 +171,7 @@ class MessagesController < ApplicationController
       go_back("message",params[:id])
     end
   end
+
   private
   def message_params
     params.require(:message).permit!

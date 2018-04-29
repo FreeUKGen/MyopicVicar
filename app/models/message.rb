@@ -34,28 +34,29 @@ class Message
     self.identifier = Time.now.to_i - Time.gm(2015).to_i
   end
 
-  def communicate(recipients,active,reasons,sender, open_data_status)
+  def communicate(recipients,active,reasons,sender, open_data_status, syndicate=nil)
     sender_email = UseridDetail.userid(sender).first.email_address unless sender.blank?
     sender_email = "freereg-contacts@freereg.org.uk" if sender_email.blank?
     ccs = Array.new
     active_user = user_status(active)
     recipients.each do |recip|
+      recipient_user = recipient_users(recip, syndicate)
       case
       when active_user
-        UseridDetail.role(recip).new_transcription_agreement(open_data_status_value(open_data_status)).active(active_user).email_address_valid.all.each do |person|
+        recipient_user.new_transcription_agreement(open_data_status_value(open_data_status)).active(active_user).email_address_valid.all.each do |person|
           add_message_to_userid_messages(person)
           ccs << person.email_address
         end
       when reasons.present? && !active_user
         reasons.each do |reason|
-          UseridDetail.role(recip).new_transcription_agreement(open_data_status_value(open_data_status)).active(active_user).reason(reason).email_address_valid.all.each do |person|
+          recipient_user.new_transcription_agreement(open_data_status_value(open_data_status)).active(active_user).reason(reason).email_address_valid.all.each do |person|
             add_message_to_userid_messages(person)
             ccs << person.email_address
           end
         end
       when reasons.blank? && !active_user
         reasons.each do |reason|
-          UseridDetail.role(recip).new_transcription_agreement(open_data_status_value(open_data_status)).active(active_user).reason("temporary").email_address_valid.all.each do |person|
+          recipient_user.new_transcription_agreement(open_data_status_value(open_data_status)).active(active_user).reason("temporary").email_address_valid.all.each do |person|
             add_message_to_userid_messages(person)
             ccs << person.email_address
           end
@@ -90,6 +91,15 @@ class Message
 
   def user_status status
     status == "true"
+  end
+
+  def recipient_users(recipients, syndicate=nil)
+    if recipients == "Members of Syndicate"
+      users = UseridDetail.syndicate(syndicate)
+    else
+      users = UseridDetail.role(recipients)
+    end
+    users
   end
 
 end
