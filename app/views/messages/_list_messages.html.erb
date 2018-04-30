@@ -1,7 +1,6 @@
 <table class="table--bordered table--data">
   <thead>
     <tr>
-      <th class="t20">ID</th>
       <th class="t20">Subject</th>
       <th class="t10">Sent by</th>
       <th class="t10">Posted</th>
@@ -13,8 +12,8 @@
   </thead>
   <tbody>
   <% @messages.each do |message| %>
+  <%# raise (message.source_message_id.blank? || params[:id].blank?).inspect%>
     <tr>
-      <td><%= message.id %></td>
       <td><%= message.subject %></td>
       <td><%= message.userid %></td>
       <td><%= message.message_time.strftime("%d %b %Y") unless message.message_time.nil?%></td>
@@ -28,8 +27,9 @@
       <td>
         <%= link_to 'SH', show_waitlist_msg_path(message.id), :class => "btn weight--light  btn--small" %>
         <%#= link_to 'DES', message_path(message.id), :class => "btn weight--light  btn--small", method: :delete, data: { confirm: 'Are you sure you want to delete this message' } unless @user_messages.include?(message.id) %>
-        <%= link_to 'Remove', remove_from_useriddetail_waitlist_path(message.id), :class => "btn weight--light  btn--small", method: :delete, data: { confirm: 'Are you sure you want to remove this message from your list?' } if message.source_message_id.blank? %>
+        <%= link_to 'Remove', remove_from_useriddetail_waitlist_path(message.id), :class => "btn weight--light  btn--small", method: :delete, data: { confirm: 'Are you sure you want to remove this message from your list?' } if Message.can_be_destroyed?(message) %>
         <%= link_to 'Reply', reply_messages_path(message.id),method: :get,:class => "btn weight--light  btn--small" if message.source_message_id.blank? %>
+        <%= image_tag 'star--dark.png', :title =>'This message has replies. Please make sure delete the replies before destoying this message', height: '10' unless Message.can_be_destroyed?(message)%>
       </td>
     </tr>
   <% end %>

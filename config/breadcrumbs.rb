@@ -447,6 +447,11 @@ crumb :userid_messages do
   link "User Messages", userid_messages_path
 end
 
+crumb :userid_reply_messages do
+  link "Reply Messages Recieved", userid_reply_messages_path
+  parent :userid_messages
+end
+
 crumb :reply_messages_list do |message|
   link "Reply Messages List", show_reply_messages_path(message.id)
   parent :show_messages_user, message
@@ -485,8 +490,15 @@ end
 crumb :send_message do |message|
   source_message = Message.id(message.source_message_id).first
   link "Send Message", send_message_messages_path(message)
+  parent :create_reply, source_message if request.referer.include?"/reply" unless request.referer.nil?
+  parent :show_message, message
+  parent :messages if request.referer.include?"messages?" unless request.referer.nil?
+end
+crumb :send_reply_message do |message|
+  source_message = Message.id(message.source_message_id).first
+  link "Send Message", send_message_messages_path(message)
   parent :create_reply, source_message
-  parent :show_message, message if message.source_message_id.blank?
+  #parent :show_message, message #if message.source_message_id.blank?
 end
 crumb :message_to_syndicate do
   link "Messages To Syndicate", messages_path

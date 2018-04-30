@@ -7,7 +7,6 @@ class MessagesController < ApplicationController
     @messages = Message.all.order_by(message_time: -1)
   end
 
-
   def userid_messages
     get_user_info_from_userid
     @user.reload
@@ -31,8 +30,9 @@ class MessagesController < ApplicationController
   def show_waitlist_msg
     get_user_info_from_userid
     @message = Message.id(params[:id]).first
-    @reply_messages = Message.where(source_message_id: params[:id]).all
+    @reply_messages = Message.fetch_replies(params[:id])
     @user = cookies.signed[:userid]
+    @sent_replies = Message.sent_messages(@reply_messages)
     if @message.blank?
       go_back("message",params[:id])
     end
@@ -41,21 +41,34 @@ class MessagesController < ApplicationController
 
   def user_reply_messages
     get_user_info_from_userid
-    @messages = Message.where(source_message_id: params[:id], userid: @user.userid).all
     @main_message = Message.id(params[:id]).first
+    @reply_messages = Message.where(source_message_id: params[:id], userid: @user.userid).all
+    @messages = Message.sent_messages(@reply_messages).order_by(sent_time: 1)
+  end
+
+  def userid_reply_messages
+    get_user_info_from_userid
+    @user.reload
+    @messages = []
+    @user.userid_messages.each do |msg_id|
+      next if Message.id(msg_id).first.source_message_id.blank?
+      @messages << Message.id(msg_id).first
+    end
   end
 
   def show_reply_messages
     get_user_info_from_userid
     @user_messages = UseridDetail.id(@user.id).first.userid_messages
-    @messages = Message.where(source_message_id: params[:id]).all
+    @reply_messages = Message.fetch_replies(params[:id])
+    @messages = Message.sent_messages(@reply_messages)
     @main_message = Message.id(params[:id]).first
   end
 
   def show
     get_user_info_from_userid
-
     @message = Message.id(params[:id]).first
+    @reply_messages = Message.fetch_replies(params[:id])
+    @sent_replies = Message.sent_messages(@reply_messages)
     if @message.blank?
       go_back("message",params[:id])
     end
@@ -64,20 +77,20 @@ class MessagesController < ApplicationController
 
   def list_by_name
     get_user_info_from_userid
-    @messages = Message.all.order_by(userid: 1)
+    @messages = Message.list_messages(params[:action])
     render :index
   end
 
   def list_by_identifier
     get_user_info_from_userid
-    @messages = Message.all.order_by(identifier: -1)
+    @messages = Message.list_messages(params[:action])
     render :index
   end
 
 
   def list_by_date
     get_user_info_from_userid
-    @messages = Message.all.order_by(message_time: 1)
+    @messages = Message.list_messages(params[:action])
     render :index
   end
 
@@ -93,13 +106,20 @@ class MessagesController < ApplicationController
     render '_form_for_selection'
   end
 
+  def list_unsent_messages
+    get_user_info_from_userid
+    @messages = Message.list_messages(params[:action])
+    render :index
+  end
+
   def new
     get_user_info_from_userid
     @message = Message.new
     @message.message_time = Time.now
     @message.userid = @user.userid
     @respond_to_message = Message.id(params[:id]).first
-    @reply_messages = Message.where(source_message_id: params[:id]).all
+    @reply_messages = Message.fetch_replies(params[:id])
+    @sent_replies = Message.sent_messages(@reply_messages)
   end
 
   def create
@@ -116,10 +136,14 @@ class MessagesController < ApplicationController
         return
       end
     when "Save & Send"
-      @message.save
-      params[:id] = @message.id if @message
-      send_message
-      redirect_to send_message_messages_path(@message.id)
+      if @message.save
+        flash[:notice] = "Reply created"
+        params[:id] = @message.id if @message
+        send_message
+        redirect_to send_message_messages_path(@message.id)
+      else
+        redirect_to reply_messages_path(@message.source_message_id)
+      end
     end
   end
 
@@ -129,7 +153,7 @@ class MessagesController < ApplicationController
     @syndicate = session[:syndicate]
     if @message.present?
       @options = UseridRole::VALUES
-      @sent_message = SentMessage.new(:message_id => @message.id, :sent_time => Time.now,:sender => @user_userid)
+      @sent_message = SentMessage.new(:message_id => @message.id,:sender => @user_userid)
       @message.sent_messages <<  [ @sent_message ]
       @sent_message.save
       @sent_message.active = true
@@ -175,6 +199,8 @@ class MessagesController < ApplicationController
           redirect_to action:'send_message' and return
         else
          @message.communicate(params[:recipients],  params[:active], reasons,sender, params[:open_data_status], @syndicate)
+         @sent_message.update_attributes(sent_time: Time.now)
+         @message.update_attributes(message_sent_time: Time.now)
          flash[:notice] = @message.reciever_notice(params)
         end
       end

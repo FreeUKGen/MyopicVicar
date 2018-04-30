@@ -54,6 +54,11 @@ MyopicVicar::Application.routes.draw do
   get 'messages/list_by_date',  :to => 'messages#list_by_date', :as => :list_by_date_messages
   get 'messages/list_by_identifier',  :to => 'messages#list_by_identifier', :as => :list_by_identifier_messages
   get 'messages/select_by_identifier',  :to => 'messages#select_by_identifier', :as => :select_by_identifier_messages
+  get 'messages/:id/reply',  :to => 'messages#new', :as => :reply_messages
+  get 'messages/:id/show_reply_messages',:to => 'messages#show_reply_messages', :as => :show_reply_messages
+  get 'messages/:id/user_reply_messages',:to => 'messages#user_reply_messages', :as => :user_reply_messages
+  get 'messages/userid_reply_messages', :to => 'messages#userid_reply_messages', :as => :userid_reply_messages
+  get 'messages/list_unsent_messages',  :to => 'messages#list_unsent_messages', :as => :list_unsent_messages
   resources :messages
 
   get 'attic_files/select', :to =>'attic_files#select', :as => :select_attic_files

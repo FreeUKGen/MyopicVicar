@@ -8,7 +8,7 @@ module MessagesHelper
     attachment
   end
   def sent(message)
-    if message.sent_messages.present?
+    if message.sent_messages.present? && message.message_sent_time.present?
       sent_messages = "Yes"
     else
       sent_messages = "No"
@@ -63,5 +63,17 @@ module MessagesHelper
 
   def reply_messages_count(source_message)
     Message.where(source_message_id: source_message.id).all.count
+  end
+
+  def email_attachment_tag(message)
+    if message.attachment.present?
+      @file_name = File.basename(message.attachment.path)
+      attachments[@file_name] = File.read("#{Rails.root}/public#{message.attachment_url}")
+      image_tag attachments[@file_name].url
+    end
+    if message.images.present?
+      @image = File.basename(message.images.path)
+      attachments[@image] = File.binread("#{Rails.root}/public#{message.images_url}")
+    end
   end
 end

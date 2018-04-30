@@ -8,6 +8,7 @@ class SentMessage
   field :inactive_reason, type: Array
   field :open_data_status, type: String
   embedded_in :message
+  scope :deliveries, -> { where({:sent_time.ne => nil, :recipients.ne => nil}) }
 
   ALL_STATUS_MESSAGES = ["All","Unknown","Accepted","Declined","Requested"]
   ACTUAL_STATUS_MESSAGES = ["Unknown","Accepted","Declined","Requested"]

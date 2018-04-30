@@ -56,11 +56,13 @@
         <tr>
           <td>Recipients :</td>
           <td>
-            <div style="height: 300px;overflow: scroll">
+            <div class="scrollable">
               <% if @message.sent_messages.present?%>
                 <% @message.sent_messages.order_by(sent_time: -1).each do |each_message| %>
                   <%= content_tag :p, class: "weight--semibold" do %>
-                    <%= active_field(each_message)%> <%= each_message.recipients%> <%= reason(each_message.inactive_reason) if !each_message.active%><%= formatted_date(each_message)%> Sent by: <%= each_message.sender%>
+                    <% unless each_message.recipients.blank? %>
+                      <%= active_field(each_message)%> <%= each_message.recipients%> <%= reason(each_message.inactive_reason) if !each_message.active%><%= formatted_date(each_message)%> Sent by: <%= each_message.sender%>
+                    <% end %>
                   <% end %>
                 <% end%>
               <% end%>
@@ -93,8 +95,8 @@
         </tr> 
       </table>
       <%= link_to 'Send this Message', send_message_messages_path(@message.id), :class => "btn weight--light  btn--small", method: :get, data: { confirm: 'Are you sure you want to send this message' } %>
-      <% unless @reply_messages.count == 0 %>
-        <%= link_to "View #{pluralize(@reply_messages.count, 'Reply') }", show_reply_messages_path(@message.id), :class => "btn weight--light  btn--small" %>
+      <% unless @sent_replies.count == 0 %>
+        <%= link_to "View #{pluralize(@sent_replies.count, 'Reply') }", show_reply_messages_path(@message.id), :class => "btn weight--light  btn--small" %>
       <% end %>
     </div>
   </section>

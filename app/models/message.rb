@@ -5,6 +5,7 @@ class Message
   field :source_message_id, type: String
   field :body, type: String
   field :message_time, type: DateTime
+  field :message_sent_time, type: DateTime
   field :userid, type: String
   field :attachment, type: String
   field :identifier, type: String
@@ -16,6 +17,7 @@ class Message
   accepts_nested_attributes_for :sent_messages,allow_destroy: true,
     reject_if: :all_blank
 
+  scope :fetch_replies, -> (id) { where(source_message_id: id) }
   mount_uploader :attachment, AttachmentUploader
   mount_uploader :images, ScreenshotUploader
   before_create :add_identifier
@@ -77,6 +79,10 @@ class Message
     end
   end
 
+  def self.can_be_destroyed?message
+    message.source_message_id.present? || Message.fetch_replies(message.id).count == 0
+  end
+
   private
   def add_message_to_userid_messages(person)
     @message_userid =  person.userid_messages
@@ -103,4 +109,40 @@ class Message
     users
   end
 
+  def self.list_messages(action)
+    case action
+    when "list_by_name"
+      @messages = Message.all.order_by(userid: 1)
+    when "list_by_date"
+      @messages = Message.all.order_by(message_time: 1)
+    when "list_by_identifier"
+      @messages = Message.all.order_by(identifier: -1)
+    when "list_unsent_messages"
+      @messages = Array.new
+      Message.each do |message|
+        @messages << message unless Message.sent?(message)
+      end
+    end
+    return @messages
+  end
+
+  def self.formatted_time(message)
+    unless message.message_sent_time.blank?
+      message.message_sent_time.to_formatted_s(:long) unless message.message_sent_time.blank?
+    else
+      message.message_time.to_formatted_s(:long)
+    end
+  end
+
+  def self.sent_messages(messages)
+    sent_messages = Array.new
+    messages.order(message_sent_time: :asc).each do |message|
+      sent_messages << message if Message.sent?(message)
+    end
+    sent_messages
+  end
+
+  def self.sent?(message)
+    message.sent_messages.deliveries != 0
+  end
 end

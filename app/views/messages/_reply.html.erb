@@ -7,7 +7,7 @@
       <h4>Original Message</h4>
       <i><strong>Subject: </strong> <%= @respond_to_message.subject %></i>
       <%= content_tag :p, class: "strong" do %>
-        On <%= @respond_to_message.message_time.to_formatted_s(:long)%>, Userid: <%= @respond_to_message.userid%> wrote:<br/>
+        On <%= Message.formatted_time(@respond_to_message) %>, Userid: <%= @respond_to_message.userid%> wrote:<br/>
         <%= @respond_to_message.body %>
         <% if @respond_to_message.attachment.present?%>
             <br/>
@@ -16,14 +16,14 @@
         <% end %>
       <% end %>
       <br />
-      <% unless @reply_messages.count == 0 %>
+      <% unless @sent_replies.count == 0 %>
         <h4>
-          <%= pluralize(@reply_messages.count, 'Reply Message')%>
+          <%= pluralize(@sent_replies.count, 'Reply Message')%>
         </h4>
-        <% @reply_messages.each do |reply| %>
+        <% @sent_replies.each do |reply| %>
           <i><strong>Subject: </strong> <%= reply.subject %></i>
           <%= content_tag :p, class: "strong" do %>
-            On <%= reply.message_time.to_formatted_s(:long)%>, Userid: <%= reply.userid%> wrote:<br/>
+            On <%= Message.formatted_time(reply)%>, Userid: <%= reply.userid%> wrote:<br/>
             <%= reply.body %>
             <% if reply.attachment.present?%>
               <br/>
