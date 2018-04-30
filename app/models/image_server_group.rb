@@ -83,7 +83,7 @@ class ImageServerGroup
           scope = ['u','ar','a','bt','ts','t','br','rs','cs','c']
       end
 
-      match_image_group = ImageServerGroup.where(:syndicate_code=>syndicate)
+      match_image_group = ImageServerGroup.where(:syndicate_code=>syndicate, 'summary.status'=>{'$nin'=>['c']})
       if type == 't' || type == 'r'
         filtered_group_id = Array.new
   
@@ -217,7 +217,7 @@ class ImageServerGroup
 
     def image_server_groups_by_user_role(user_role,source_id,syndicate=nil)
       if user_role == 'manage syndicate'
-        image_server_group = ImageServerGroup.where(:source_id=>source_id, :syndicate_code=>syndicate).sort_by{|x| x.group_name.downcase} if !syndicate.nil?
+        image_server_group = ImageServerGroup.where(:source_id=>source_id, :syndicate_code=>syndicate, 'summary.status'=>{'$nin'=>['c']}).sort_by{|x| x.group_name.downcase} if !syndicate.nil?
       else
         image_server_group = ImageServerGroup.where(:source_id=>source_id).sort_by{|x| x.group_name.downcase}
       end
