@@ -25,11 +25,10 @@
         <th class="caps">Field</th>
         <th class="caps">Value</th>
       </tr>
-      <tr><td>Start Date</td><td class="t15"><%= @gap[:start_date] %></td></tr>
+      <tr><td>Start Date</td><td class="t15"><%= @gap[:start_date] %>&nbsp;</td></tr>
       <tr><td>End Date</td><td class="t15"><%= @gap[:end_date] %>&nbsp;</td></tr>
-      <tr><td>Reason</td><td class="t30"><%= Gap::Reason::REASON[@gap[:reason]] %>&nbsp;</td></tr>
+      <tr><td>Reason</td><td class="t30"><%= @gap[:reason] %>&nbsp;</td></tr>
       <tr><td>Note</td><td class="t15"><%= @gap[:note] %>&nbsp;</td></tr>
-      <tr><td>Url</td><td class="t15"><%= @gap[:url] %>&nbsp;</td></tr>
     </table>
   </div>
   </section>
