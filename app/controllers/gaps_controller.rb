@@ -8,7 +8,7 @@ class GapsController < ApplicationController
     gap.save
 
     if gap.errors.any? then
-      flash[:notice] = 'Addition of GAP was unsuccessful'
+      flash[:notice] = 'Addition of Gap failed: ' + gap.errors.full_messages.join("<br/>").html_safe
       redirect_to :back
     else
       flash[:notice] = 'Addition of Gap was successful'
@@ -72,6 +72,7 @@ class GapsController < ApplicationController
 
   def new 
     display_info
+    @reason = GapReason.all.pluck(:reason).sort_by{|x| x}
 
     @gap = Gap.new
   end

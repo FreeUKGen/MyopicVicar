@@ -13,7 +13,6 @@
         <th class="t15">End Date</th>
         <th class="t15">Reason</th>
         <th class="t30">Notes</th>
-        <th class="t15">Url</th>
         <th class="t10">Action</th>
       </tr>
     </thead>
@@ -24,11 +23,10 @@
       <tbody>  
         <% @gap.each do |x| %>
           <tr>
-            <td class="t15"><%= x.start_date %></td>
+            <td class="t15"><%= x.start_date %>&nbsp;</td>
             <td class="t15"><%= x.end_date %>&nbsp;</td>
             <td class="t15"><%= Gap::Reason::REASON[x.reason] %>&nbsp;</td>
             <td class="t30"><%= x.note %>&nbsp;</td>
-            <td class="t15"><%= x.url %>&nbsp;</td>
             <td class="t10">
               <%= link_to 'SH', gap_path(x), :title=>'show GAP properties' %>
               <%= link_to 'ED', edit_gap_path(x), :title=>'edit image group properties' %> 
