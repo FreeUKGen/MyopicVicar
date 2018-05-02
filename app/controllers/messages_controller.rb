@@ -10,10 +10,9 @@ class MessagesController < ApplicationController
   def userid_messages
     get_user_info_from_userid
     @user.reload
-    @messages = []
-    @user.userid_messages.each do |msg_id|
+    @messages = @user.userid_messages.map do |msg_id|
       next unless Message.id(msg_id).first.source_message_id.blank?
-      @messages << Message.id(msg_id).first
+      Message.id(msg_id).first
     end
   end
 
