@@ -10,10 +10,11 @@ class MessagesController < ApplicationController
   def userid_messages
     get_user_info_from_userid
     @user.reload
-    @messages = @user.userid_messages.map do |msg_id|
+    @message_list = @user.userid_messages.map do |msg_id|
       next unless Message.id(msg_id).first.source_message_id.blank?
       Message.id(msg_id).first
     end
+    @messages = @message_list.compact
   end
 
   def remove_from_useriddetail_waitlist
