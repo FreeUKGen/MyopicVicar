@@ -65,15 +65,23 @@ module MessagesHelper
     Message.where(source_message_id: source_message.id).all.count
   end
 
-  def email_attachment_tag(message)
+  def message_attachment_tag(message)
     if message.attachment.present?
-      @file_name = File.basename(message.attachment.path)
-      attachments[@file_name] = File.read("#{Rails.root}/public#{message.attachment_url}")
-      image_tag attachments[@file_name].url
+      content_tag :td, :class => "weight--semibold" do
+        File.open("#{Rails.root}/public#{message.attachment_url}")
+      end
+    else
+      content_tag(:td, "No text document attached.", :class => "weight--semibold")
     end
+  end
+
+  def message_image_tag(message)
     if message.images.present?
-      @image = File.basename(message.images.path)
-      attachments[@image] = File.binread("#{Rails.root}/public#{message.images_url}")
+      content_tag :td, :class => "weight--semibold" do
+        image_tag message.images_url
+      end
+    else
+      content_tag :td, 'No images attached', :class => "weight--semibold"
     end
   end
 end

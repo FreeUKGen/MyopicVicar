@@ -43,7 +43,7 @@ class MessagesController < ApplicationController
     get_user_info_from_userid
     @main_message = Message.id(params[:id]).first
     @reply_messages = Message.where(source_message_id: params[:id], userid: @user.userid).all
-    @messages = Message.sent_messages(@reply_messages).order_by(sent_time: 1)
+    @messages = Message.sent_messages(@reply_messages)
   end
 
   def userid_reply_messages

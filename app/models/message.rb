@@ -118,9 +118,8 @@ class Message
     when "list_by_identifier"
       @messages = Message.all.order_by(identifier: -1)
     when "list_unsent_messages"
-      @messages = Array.new
-      Message.each do |message|
-        @messages << message unless Message.sent?(message)
+      @messages = Message.all.find_all do |message|
+        !Message.sent?(message)
       end
     end
     return @messages
@@ -135,14 +134,12 @@ class Message
   end
 
   def self.sent_messages(messages)
-    sent_messages = Array.new
-    messages.order(message_sent_time: :asc).each do |message|
-      sent_messages << message if Message.sent?(message)
+    messages.order(message_sent_time: :asc).find_all do |message|
+      Message.sent?(message)
     end
-    sent_messages
   end
 
   def self.sent?(message)
-    message.sent_messages.deliveries != 0
+    message.sent_messages.deliveries.count != 0
   end
 end

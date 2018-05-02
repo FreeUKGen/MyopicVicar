@@ -1,5 +1,4 @@
 <%= @message.body %><br />
-<%# raise @message.inspect %>
 <% if @message.attachment.present?%>
 
 There is an File attachment
@@ -13,31 +12,33 @@ There is an Image attachment
   <% unless @reply_messages.count == 0 %>
     <div class= "grid">
       <section class="island  island--light ">
-        <div class="grid__item  one-whole  palm-one-whole push--bottom" style="height: 300px; overflow: scroll">
-        <h4>Original Message</h4>
-          <%= content_tag :p, class: "strong" do %>
-            On <%= @respond_to_message.message_time.to_formatted_s(:long)%>, Userid: <%= @respond_to_message.userid%> wrote:<br/>
-            <%= @respond_to_message.body %>
-            <% if @respond_to_message.attachment.present?%>
-                <br/>
-                <span>Attachment: </span>
-                <span><%= link_to("#{@respond_to_message[:attachment]}", @respond_to_message.attachment_url, target: "_blank", style:'color:black') %><a href="#" class="bottom_tooltip"> <%= image_tag 'info.png', alt: 'Information', height: '16' %><span>The link will open in a new tab</span></a></span>
-            <% end %>
-          <% end %>
-          <br />
-          <h4>Reply Messages</h4>
-          <% @reply_messages.each do |reply| %>
-            <% next if reply == @message %>
+        <div class="scrollable">
+          <div class="grid__item  one-whole  palm-one-whole push--bottom">
+          <h4>Original Message</h4>
             <%= content_tag :p, class: "strong" do %>
-              On <%= reply.message_time.to_formatted_s(:long)%>, Userid: <%= reply.userid%> wrote:<br/>
-              <%= reply.body %>
-              <% if reply.attachment.present?%>
-                <br/>
-                <span>Attachment: </span>
-                <%= email_attachment_tag(reply) %>
+              On <%= @respond_to_message.message_time.to_formatted_s(:long)%>, Userid: <%= @respond_to_message.userid%> wrote:<br/>
+              <%= @respond_to_message.body %>
+              <% if @respond_to_message.attachment.present?%>
+                  <br/>
+                  <span>Attachment: </span>
+                  <span><%= link_to("#{@respond_to_message[:attachment]}", @respond_to_message.attachment_url, target: "_blank", style:'color:black') %><a href="#" class="bottom_tooltip"> <%= image_tag 'info.png', alt: 'Information', height: '16' %><span>The link will open in a new tab</span></a></span>
               <% end %>
             <% end %>
-          <% end %>
+            <br />
+            <h4>Reply Messages</h4>
+            <% @reply_messages.each do |reply| %>
+              <% next if reply == @message %>
+              <%= content_tag :p, class: "strong" do %>
+                On <%= reply.message_time.to_formatted_s(:long)%>, Userid: <%= reply.userid%> wrote:<br/>
+                <%= reply.body %>
+                <% if reply.attachment.present? || reply.images.present?%>
+                  <br/>
+                  <span>Attachment: </span>
+                  <%= email_attachment_tag(reply) %>
+                <% end %>
+              <% end %>
+            <% end %>
+          </div>
         </div>
       </section>
     </div>

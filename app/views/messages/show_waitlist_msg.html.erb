@@ -70,29 +70,13 @@
           </td>
         </tr>
         <tr>
-          <% if @message.attachment.present?%>        
-            <td>Text Attachment :</td>
-            <td class="weight--semibold">
-              <%= File.open("#{Rails.root}/public" + @message.attachment_url) %>
-            </td>
-          <% else %>
-            <td>Text Attachment :</td>
-            <td class="weight--semibold">
-              No text document attached.
-            </td>
-          <% end %> 
+          <td>Image Attachment</td>
+          <%= message_attachment_tag(@message) %>
         </tr>
         <tr>
-          <% if @message.images_url %>
-            <td>Image Attachment :</td>
-            <td class="weight--semibold">
-              <%= image_tag @message.images_url %>
-            </td>
-          <% else %>
-            <td>Image Attachment :</td>
-            <td class="weight--semibold"> No images attached.</td>
-          <% end %>       
-        </tr> 
+          <td>Image Attachment</td>
+          <%= message_image_tag(@message) %>
+        </tr>
       </table>
       <%= link_to 'Send this Message', send_message_messages_path(@message.id), :class => "btn weight--light  btn--small", method: :get, data: { confirm: 'Are you sure you want to send this message' } %>
       <% unless @sent_replies.count == 0 %>

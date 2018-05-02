@@ -35,30 +35,30 @@
         <tr>
           <td>Message :</td><td class="weight--semibold"><textarea style="width:90%;" rows="8" readonly="readonly"><%= @message.body %></textarea></td>
         </tr>
-        <% if @message.sent_messages.present?%>
-          <% @message.sent_messages.order_by(sent_time: -1).each do |each_message| %>
-            <tr>
-              <td>Recipients :</td>
-              <td class="weight--semibold">
-                <%= active_field(each_message)%> <%= each_message.recipients%> <%= reason(each_message.inactive_reason) if !each_message.active%><%= formatted_date(each_message)%> Sent by: <%= each_message.sender%>
-              </td>
-            </tr>
-          <% end%>
-        <% end%>
         <tr>
-        <% if @message.attachment.present?%>        
-            <td>Text Attachment :</td><td class="weight--semibold"> <%= File.open("#{Rails.root}/public" + @message.attachment_url) %> </td>
-        <% else %>
-          <td>Text Attachment :</td><td class="weight--semibold"> No text document attached.</td>
-        <% end %> 
+          <td>Recipients :</td>
+          <td>
+            <div class="scrollable">
+              <% if @message.sent_messages.present?%>
+                <% @message.sent_messages.order_by(sent_time: -1).each do |each_message| %>
+                  <%= content_tag :p, class: "weight--semibold" do %>
+                    <% unless each_message.recipients.blank? %>
+                      <%= active_field(each_message)%> <%= each_message.recipients%> <%= reason(each_message.inactive_reason) if !each_message.active%><%= formatted_date(each_message)%> Sent by: <%= each_message.sender%>
+                    <% end %>
+                  <% end %>
+                <% end%>
+              <% end%>
+            </div>
+          </td>
         </tr>
         <tr>
-        <% if @message.images_url %>
-          <td>Image Attachment :</td><td class="weight--semibold"> <%= image_tag @message.images_url %></td>
-        <% else %>
-          <td>Image Attachment :</td><td class="weight--semibold"> No images attached.</td>
-        <% end %>       
-         </tr> 
+          <td>Image Attachment</td>
+          <%= message_attachment_tag(@message) %>
+        </tr>
+        <tr>
+          <td>Image Attachment</td>
+          <%= message_image_tag(@message) %>
+        </tr>
       </table>
        <%= link_to 'Send this Message', send_message_messages_path(@message.id), :class => "btn weight--light  btn--small", method: :get, data: { confirm: 'Are you sure you want to send this message' } %>
        <%= link_to 'Edit this Message', edit_message_path(@message.id),  :class => "btn weight--light  btn--small", method: :get%>
