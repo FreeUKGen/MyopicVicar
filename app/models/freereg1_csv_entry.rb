@@ -317,7 +317,7 @@ class Freereg1CsvEntry
     param[:record_type] =  entry_file.record_type
     param[:year] = self.get_year(param)
     param[:person_sex] == self.person_sex ? sex_change = false : sex_change = true
-    number_of_witnesses =  param["multiple_witnesses_attributes"].length
+    param["multiple_witnesses_attributes"].present? ? number_of_witnesses =  param["multiple_witnesses_attributes"].length : number_of_witnesses = 0
     while number_of_witnesses > FreeregOptionsConstants::MAXIMUM_WINESSES
      param["multiple_witnesses_attributes"].delete_if {|key, value| key.to_i >= FreeregOptionsConstants::MAXIMUM_WINESSES }
      number_of_witnesses = number_of_witnesses - 1
