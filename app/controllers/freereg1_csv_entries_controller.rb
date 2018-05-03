@@ -201,9 +201,6 @@ class Freereg1CsvEntriesController < ApplicationController
       @forenames = Array.new
       @surnames = Array.new
       @entry = @freereg1_csv_entry
-      logger.warn("showing")
-      logger.warn(" #{@entry.inspect}") 
-      logger.warn(" #{@entry.search_record.inspect}")
       @image_id = @entry.get_the_image_id(@church,@user,session[:manage_user_origin],session[:image_server_group_id],session[:chapman_code])
       @all_data = true
       @order,@array_of_entries, @json_of_entries = @freereg1_csv_entry.order_fields_for_record_type(@freereg1_csv_entry[:record_type],@freereg1_csv_file.def)  
@@ -219,6 +216,7 @@ class Freereg1CsvEntriesController < ApplicationController
       @freereg1_csv_file.check_and_augment_def(params[:freereg1_csv_entry])
       params[:freereg1_csv_entry],sex_change = @freereg1_csv_entry.adjust_parameters(params[:freereg1_csv_entry], @freereg1_csv_file)
       @freereg1_csv_entry.update_attributes(freereg1_csv_entry_params)
+      @freereg1_csv_entry.check_and_correct_county
       if @freereg1_csv_entry.errors.any?
         flash[:notice] = 'The update of the record was unsuccessful'
         render :action => 'edit'

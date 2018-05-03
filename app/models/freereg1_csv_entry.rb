@@ -344,6 +344,7 @@ class Freereg1CsvEntry
     end
     return the_digest
   end
+  
   def captitalize_surnames
     self.bride_father_surname = self.bride_father_surname.upcase if self.bride_father_surname.present?
     self.bride_mother_surname = self.bride_mother_surname.upcase if self.bride_mother_surname.present?
@@ -357,6 +358,19 @@ class Freereg1CsvEntry
     self.relative_surname = self.relative_surname.upcase if self.relative_surname.present?
     self.person_surname = self.person_surname.upcase if self.person_surname.present?
     self.female_relative_surname = self.female_relative_surname.upcase if self.female_relative_surname.present?
+  end
+  
+  def check_and_correct_county
+    search_record = self.search_record
+    place_id = search_record.place_id
+    place = Place.id(place_id).first
+    if self.county.blank?
+      self.update_attribute(:county,place.chapman_code) if place.present?
+    else
+      unless ChapmanCode.value?(self.county)
+        self.update_attribute(:county,place.chapman_code) if place.present?
+      end
+    end
   end
 
   def create_baptism_string
