@@ -119,6 +119,28 @@ class ImageServerGroup
       return source, g_id, @group_id
     end
 
+    def group_ids_for_available_assignment_by_county(chapman_code)
+      gid = []
+      @group_id = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
+
+      place_id = Place.chapman_code(chapman_code).pluck(:id, :place_name).to_h
+      church_id, register_id, source, source_id = prepare_location_id_hash(place_id)
+
+      image_server_group = ImageServerGroup.find_by_source_ids(source_id).where("summary.status"=>{'$in'=>['u']}).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
+      group_id = Hash.new{|h,k| h[k]=[]}.tap{|h| image_server_group.each{|k,v1,v2,v3,v4,v5| h[k] << v1 << v2 << v3 << v4 << v5}}
+
+      group_id.each do |key,value|
+        (place_name, church_name, register_type, sourceId, sourceName, group_name, syndicate, assign_date, number_of_images) = prepare_gid_array_value(place_id, church_id, register_id, source_id, value)
+
+        gid << [key, place_name, church_name, register_type, sourceName, sourceId, group_name, syndicate, assign_date, number_of_images]
+
+        @group_id[place_name][church_name][register_type][sourceName][group_name] = key
+      end
+      g_id = gid.sort_by { |a,b,c,d,e,f,g,h,i,j| [b,c,d,e,g ? 0:1,g.downcase] }
+
+      return source, g_id, @group_id
+    end
+
     def group_ids_sort_by_syndicate(chapman_code)
       gid = []
       @syndicate = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
@@ -177,28 +199,6 @@ class ImageServerGroup
         end
         g_id = gid.sort_by {|a,b,c,d,e,f,g,h,i,j| [b,c,d,e,g ? 0:1,g.downcase]}
       end
-
-      return source, g_id, @group_id
-    end
-
-    def group_ids_for_available_assignment_by_county(chapman_code)
-      gid = []
-      @group_id = Hash.new { |hash, key| hash[key] = Hash.new(&hash.default_proc) }
-
-      place_id = Place.chapman_code(chapman_code).pluck(:id, :place_name).to_h
-      church_id, register_id, source, source_id = prepare_location_id_hash(place_id)
-
-      image_server_group = ImageServerGroup.find_by_source_ids(source_id).where("summary.status"=>{'$in'=>['u']}).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
-      group_id = Hash.new{|h,k| h[k]=[]}.tap{|h| image_server_group.each{|k,v1,v2,v3,v4,v5| h[k] << v1 << v2 << v3 << v4 << v5}}
-
-      group_id.each do |key,value|
-        (place_name, church_name, register_type, sourceId, sourceName, group_name, syndicate, assign_date, number_of_images) = prepare_gid_array_value(place_id, church_id, register_id, source_id, value)
-
-        gid << [key, place_name, church_name, register_type, sourceName, sourceId, group_name, syndicate, assign_date, number_of_images]
-
-        @group_id[place_name][church_name][register_type][sourceName][group_name] = key
-      end
-      g_id = gid.sort_by { |a,b,c,d,e,f,g,h,i,j| [b,c,d,e,g ? 0:1,g.downcase] }
 
       return source, g_id, @group_id
     end
