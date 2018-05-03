@@ -362,7 +362,6 @@ class Freereg1CsvEntry
   def create_baptism_string
     fields = FreeregOptionsConstants::ORIGINAL_BAPTISM_FIELDS + FreeregOptionsConstants::ADDITIONAL_BAPTISM_FIELDS + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS + FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS
     my_string = self.create_string(fields)
-    p my_string 
     return my_string 
   end
 
@@ -642,9 +641,6 @@ class Freereg1CsvEntry
     success = true
     record_id = record.freereg1_csv_file_id
     file_id = file.id
-    #p "checking location"
-    #p record_id
-    #p file_id
     if record_id == file_id
       success = true
     else
@@ -892,13 +888,11 @@ class Freereg1CsvEntry
   end
   
   def record_updateable?
-#    p "updateable"
     is_ok = true
     record = self.search_record
     return false if record.nil?
     return false unless updateable_search_date?(record)
     return false unless updateable_county?(record)
-#    p is_ok
     return is_ok
   end
   
@@ -920,9 +914,15 @@ class Freereg1CsvEntry
      is_ok = true
     if record.search_date.present? && self.baptism_date.present? && DateParser::searchable(self.baptism_date)  != record.search_date
       is_ok = false
+    elsif record.search_date.present? && self.confirmation_date.present? && DateParser::searchable(self.confirmation_date)  != record.search_date
+      is_ok = false
     elsif record.search_date.present? && self.burial_date.present? && DateParser::searchable(self.burial_date)  != record.search_date
       is_ok = false
+    elsif record.search_date.present? && self.death_date.present? && DateParser::searchable(self.death_date)  != record.search_date
+      is_ok = false
     elsif record.search_date.present? && self.marriage_date.present? && DateParser::searchable(self.marriage_date)  != record.search_date
+      is_ok = false
+    elsif record.search_date.present? && self.contract_date.present? && DateParser::searchable(self.contract_date)  != record.search_date
       is_ok = false
     elsif record.secondary_search_date.present? && self.birth_date.present? && DateParser::searchable(self.birth_date)  != record.secondary_search_date 
       is_ok = false

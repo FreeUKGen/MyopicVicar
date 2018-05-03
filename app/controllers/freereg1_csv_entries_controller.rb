@@ -42,8 +42,10 @@ class Freereg1CsvEntriesController < ApplicationController
       software_version = SoftwareVersion.control.first
       search_version = ''
       search_version  = software_version.last_search_record_version unless software_version.blank?
-      place_id = get_place_id_from_file(@freereg1_csv_file)
-      SearchRecord.update_create_search_record(@freereg1_csv_entry,search_version,place_id)
+      place = get_place_from_file(@freereg1_csv_file)
+      place_id = place.id
+      chapman_code = place.chapman_code
+      SearchRecord.update_create_search_record(@freereg1_csv_entry,search_version,place)
       @freereg1_csv_file.backup_file
       #update file with date and lock and delete error
       @freereg1_csv_file.lock_all(session[:my_own])
@@ -199,6 +201,9 @@ class Freereg1CsvEntriesController < ApplicationController
       @forenames = Array.new
       @surnames = Array.new
       @entry = @freereg1_csv_entry
+      logger.warn("showing")
+      logger.warn(" #{@entry.inspect}") 
+      logger.warn(" #{@entry.search_record.inspect}")
       @image_id = @entry.get_the_image_id(@church,@user,session[:manage_user_origin],session[:image_server_group_id],session[:chapman_code])
       @all_data = true
       @order,@array_of_entries, @json_of_entries = @freereg1_csv_entry.order_fields_for_record_type(@freereg1_csv_entry[:record_type],@freereg1_csv_file.def)  
@@ -223,13 +228,11 @@ class Freereg1CsvEntriesController < ApplicationController
         software_version = SoftwareVersion.control.first
         search_version = ''
         search_version  = software_version.last_search_record_version unless software_version.blank?
-        place_id = get_place_id_from_file(@freereg1_csv_file)
-        
+        place = get_place_from_file(@freereg1_csv_file)
         @freereg1_csv_entry.search_record.destroy  if sex_change # updating the search names is too complex on a sex change it is better to just recreate
         @freereg1_csv_entry.search_record(true)   if sex_change#this frefreshes the cache
-        SearchRecord.update_create_search_record(@freereg1_csv_entry,search_version,place_id)
+        SearchRecord.update_create_search_record(@freereg1_csv_entry,search_version,place)
         # lock file and note modification date
-       
         @freereg1_csv_file.locked_by_transcriber = true if session[:my_own]
         @freereg1_csv_file.locked_by_coordinator = true unless session[:my_own]
         @freereg1_csv_file.modification_date = Time.now.strftime("%d %b %Y")

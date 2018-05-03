@@ -358,7 +358,8 @@ class CsvFile < CsvFiles
        success = "change"
        #transform_search_record is a method in freereg1_csv_entry.rb.rb
        # enough_name_fields is a method in freereg1_csv_entry.rb that ensures we have names to create a search record on
-       place = self.place_id
+       place_id = self.place_id
+       place = Place.id(place_id)
        SearchRecord.update_create_search_record(existing_record,self.header[:search_record_version],place) if  project.create_search_records && existing_record.enough_name_fields?
        sleep_time = (Rails.application.config.sleep.to_f).to_f
        sleep(sleep_time)
@@ -567,7 +568,8 @@ class CsvFile < CsvFiles
      if entry.errors.any?
        success = entry.errors.messages
      else
-       place = self.place_id
+       place_id = self.place_id
+       place = Place.id(place_id)
        SearchRecord.update_create_search_record(entry,self.header[:search_record_version],place) if  project.create_search_records && entry.enough_name_fields?
        success = "new"
      end
@@ -652,7 +654,8 @@ class CsvFile < CsvFiles
         success = "change"
         #need to create search record as one does not exist
         #p "creating search record as not there"
-        place = self.place_id
+        place_id = self.place_id
+        place = Place.id(place_id)
         SearchRecord.update_create_search_record(existing_record,self.header[:search_record_version],place) if project.create_search_records && existing_record.enough_name_fields?
         sleep_time = (Rails.application.config.sleep.to_f).to_f
         sleep(sleep_time)

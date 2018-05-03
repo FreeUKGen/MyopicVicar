@@ -285,13 +285,8 @@ class SearchRecord
       candidates = MERGED_INDEXES.keys
       scores = {}
       search_fields = fields_from_params(search_params)
-       # p candidates
       candidates.each { |name| scores[name] = index_score(name,search_fields)}
-       # p "scores"
-       # p scores
       best = scores.max_by { |k,v| v}
-       # p "selected"
-       # p best[0]
       best[0]
     end
 
@@ -344,33 +339,30 @@ class SearchRecord
       end
     end
 
-    def update_create_search_record(entry,search_version,place_id)
+    def update_create_search_record(entry,search_version,place)
      unless   entry.record_updateable?
         search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
         search_record = SearchRecord.new(search_record_parameters)
         search_record.freereg1_csv_entry = entry
         search_record.search_record_version = search_version
         search_record.transform
-        search_record.place_id = place_id
+        search_record.place_id = place.id
         search_record.digest = search_record.cal_digest
+        search_record.chapman_code = place.chapman_code
         search_record.save
-        #p search_record
         return "created"
       else
         search_record = entry.search_record
-        #p "updating"
-        #p search_record
         digest = search_record.digest
         digest = search_record.cal_digest if digest.blank?
         #create a temporary search record with the new information; this will not be saved
         search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
         new_search_record = SearchRecord.new(search_record_parameters)
         new_search_record.freereg1_csv_entry = entry
-        new_search_record.place_id = place_id
+        new_search_record.digest = search_record.cal_digest
+        new_search_record.chapman_code = place.chapman_code
         new_search_record.transform
         brand_new_digest = new_search_record.cal_digest
-        #p digest
-        #p brand_new_digest
         if  brand_new_digest != digest
           #we have to update the current search record
           #add the search version and digest
@@ -387,7 +379,6 @@ class SearchRecord
           #create a hash of search names from the original search names
           #note adjust_search_names does a save of the search record
           search_record.adjust_search_names(new_search_record)
-          #p search_record
           return "updated"
         else
           #unless search_record.search_record_version == search_version && search_record.digest == digest
