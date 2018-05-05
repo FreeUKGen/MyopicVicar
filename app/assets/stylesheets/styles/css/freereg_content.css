@@ -590,3 +590,11 @@ table.center50 {
   border-radius: 5px;
 }
 
+.disabled_link {
+  cursor: text;
+  background: #a5a5a5;
+}
+
+.disabled_link:hover {
+  background: #a5a5a5;
+}

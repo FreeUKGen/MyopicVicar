@@ -31,7 +31,6 @@ class MessagesController < ApplicationController
     get_user_info_from_userid
     @message = Message.id(params[:id]).first
     @reply_messages = Message.fetch_replies(params[:id])
-    @user = cookies.signed[:userid]
     @sent_replies = Message.sent_messages(@reply_messages)
     if @message.blank?
       go_back("message",params[:id])
@@ -49,11 +48,10 @@ class MessagesController < ApplicationController
   def userid_reply_messages
     get_user_info_from_userid
     @user.reload
-    @messages = []
-    @user.userid_messages.each do |msg_id|
-      next if Message.id(msg_id).first.source_message_id.blank?
-      @messages << Message.id(msg_id).first
+    @reply_list = @user.userid_messages.map do |msg_id|
+      Message.id(msg_id).first unless Message.id(msg_id).first.source_message_id.blank?
     end
+    @messages = @reply_list.compact
   end
 
   def show_reply_messages

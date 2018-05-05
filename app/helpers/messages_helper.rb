@@ -8,7 +8,7 @@ module MessagesHelper
     attachment
   end
   def sent(message)
-    if message.sent_messages.present? && message.message_sent_time.present?
+    if message.sent_messages.deliveries.count != 0 #present? && message.message_sent_time.present?
       sent_messages = "Yes"
     else
       sent_messages = "No"

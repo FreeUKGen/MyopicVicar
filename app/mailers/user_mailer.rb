@@ -319,7 +319,7 @@ class UserMailer < ActionMailer::Base
     @respond_to_message = Message.id(@message.source_message_id).first
     from = "vinodhini.subbu@freeukgenealogy.org.uk" if from.blank?
     #get_message_attachment if @message.attachment.present? ||  @message.images.present?
-    mail(:from => from ,:to => "vinodhini.subbu@freeukgenealogy.org.uk",:bcc => ["meera_kalai@rediffmail.com"], :subject => "#{@message.subject}. Reference #{@message.identifier}")
+    mail(:from => from ,:to => "freereg-contacts@freereg.org.uk",  :bcc => ccs, :subject => "#{@message.subject}. Reference #{@message.identifier}")
   end
 
   def send_logs(file,ccs,body_message,subjects)

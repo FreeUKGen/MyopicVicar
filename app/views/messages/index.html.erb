@@ -32,10 +32,14 @@
                   <td><%= message.identifier  %></td>
                   <td><%= sent(message)  %></td>
                   <td>
-                    <%= link_to 'SH', message_path(message.id),  :class => "btn weight--light  btn--small", method: :get%> <%= link_to 'ED', edit_message_path(message.id),  :class => "btn weight--light  btn--small", method: :get%>
-                    <%= link_to 'DES', message_path(message.id), :class => "btn weight--light  btn--small", method: :delete, data: { confirm: 'Are you sure you want to delete this message' } if Message.can_be_destroyed?(message) %>
+                    <%= link_to 'SH', message_path(message.id),  :class => "btn weight--light  btn--small", method: :get%>
+                    <%= link_to 'ED', edit_message_path(message.id),  :class => "btn weight--light  btn--small", method: :get%>
+                    <% if Message.can_be_destroyed?(message) %>
+                      <%= link_to 'DES', message_path(message.id), :class => "btn weight--light  btn--small link_disabled", method: :delete, data: { confirm: 'Are you sure you want to delete this message'} %>
+                    <% else %>
+                      <%= content_tag :span, 'DES', class: 'disabled_link btn btn--small weight--light', title: 'This message has replies. Please make sure to delete the replies before destroying this message' %>
+                    <% end %>
                     <%= link_to 'SEND', send_message_messages_path(message.id), :class => "btn weight--light  btn--small", method: :get, data: { confirm: 'Are you sure you want to send this message' } %>
-                    <%= image_tag 'star--dark.png', :title =>'This message has replies. Please make sure delete the replies before destoying this message', height: '10' unless Message.can_be_destroyed?(message)%>
                   </td>
                 </tr>
               <% end %>
@@ -49,3 +53,10 @@
   </div>
 </section>
 <br />
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('.link_disabled').click(function(event){
+        event.preventDefault(); // Prevent link from following its href
+    });
+}); 
+</script>
