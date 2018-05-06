@@ -563,6 +563,8 @@ class Freereg1CsvEntry
     if extended_def
       order  = order + FreeregOptionsConstants::LOCATION_FIELDS
       order = order + FreeregOptionsConstants::EXTENDED_BAPTISM_LAYOUT
+      order = order + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS
+      order = order + FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS
     else
       order  = order + FreeregOptionsConstants::LOCATION_FIELDS
       order = order + FreeregOptionsConstants::ORIGINAL_BAPTISM_FIELDS
@@ -577,6 +579,8 @@ class Freereg1CsvEntry
     if extended_def
       order  = order + FreeregOptionsConstants::LOCATION_FIELDS
       order = order + FreeregOptionsConstants::EXTENDED_BURIAL_LAYOUT
+      order = order + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS
+      order = order + FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS
     else
       order  = order + FreeregOptionsConstants::LOCATION_FIELDS
       order = order + FreeregOptionsConstants::ORIGINAL_BURIAL_FIELDS
@@ -608,6 +612,8 @@ class Freereg1CsvEntry
     if extended_def
       order  = order + FreeregOptionsConstants::LOCATION_FIELDS
       order = order + FreeregOptionsConstants::EXTENDED_MARRIAGE_LAYOUT
+      order = order + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS
+      order = order + FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS
     else
       order  = order + FreeregOptionsConstants::LOCATION_FIELDS
       order = order + FreeregOptionsConstants::ORIGINAL_MARRIAGE_FIELDS

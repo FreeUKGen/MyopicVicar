@@ -40,19 +40,50 @@
                 <% end %>  
               </tr> 
             <% when 'image_file_name' %>
-              <% if @image_id.present? %>
+              <% if !@image_id.present?  %>
+                <tr>
+                  <td ><%= field.gsub('_',' ').capitalize %></td>
+                  <td ><%= @entry[field] %></td>
+                </tr>
+              <% else %>
                 <tr>
                   <td ><%= field.gsub('_',' ').capitalize %></td>
                   <td>  <%= link_to 'View image', view_image_server_image_path(:object => @image_id), method: :get,:target => "_blank" , :class => "btn weight--light btn--small" %></td>
                 </tr>
-              <% else %>
-                <% if controller_name == 'freereg1_csv_entries' %>
-                  <tr>
-                   <td ><%= field.gsub('_',' ').capitalize %></td>
-                   <td ><%= @entry[field] %></td>
-                  </tr>
-                <% end %>    
-              <% end %>  
+              <% end %> 
+            <% when 'film' %>  
+              <% if  current_authentication_devise_user.present?%>
+                <tr>
+                  <td>Film</td>
+                  <td><%= @entry.film %></td>
+                </tr>
+              <% end%>  
+            <% when 'film_number' %>  
+              <% if  current_authentication_devise_user.present?%>
+                 <tr>
+                  <td>Film Number</td>
+                  <td><%= @entry.film_number %></td>
+                </tr>
+              <% end%>
+            <% when 'line_id' %>  
+              <% if  current_authentication_devise_user.present?%>
+                <tr>
+                  <td><%= field.gsub('_',' ').capitalize %></td>
+                  <td><%= @entry.line_id %></td>
+                </tr>
+              <% end%>
+            <% when 'error_flag'  %>
+              <% if  current_authentication_devise_user.present?%>
+                <% if @entry.error_flag == 'true' %>
+                  <tr style= "color:blue">
+                <% else%>
+                  <tr style= "color:black">
+                <% end%>
+                <td >Error in record</td><td >  <%= @entry.error_flag %> </td>
+                </tr>
+                <tr style= "color:black">
+                </tr>
+              <% end%>
             <%else%>
               <tr>
                 <td ><%= field.gsub('_',' ').capitalize %></td>
@@ -61,29 +92,6 @@
              <% end %>
           <% end %>
         <% end %>
-        <% if current_authentication_devise_user.present? %>
-           <tr>
-            <td>Film</td>
-            <td><%= @entry.film %></td>
-          </tr>
-          <tr>
-            <td>Film number</td>
-            <td><%= @entry.film_number %></td>
-          </tr>
-          <tr>
-            <td>Line ID</td>
-            <td><%= @entry.line_id %></td>
-          </tr>
-          <% if @entry.error_flag == 'true' %>
-        <tr style= "color:blue">
-          <% else%>
-          <tr style= "color:black">
-            <% end%>
-            <td >Error in record</td><td >  <%= @entry.error_flag %> </td>
-          </tr>
-          <tr style= "color:black">
-          </tr>
-        <% end%>
       </tbody>
       </table>
     </div>

@@ -139,7 +139,7 @@ module FreeregOptionsConstants
 
   DATERANGE_MINIMUM = 1530
 
-  END_FIELDS = ['transcribed_by', 'credit', 'file_line_number','film','film_number']
+  END_FIELDS = ['transcribed_by', 'credit', 'file_line_number','film','film_number','line_id']
 
   ENTRY_ORDER_DEFINITION = { "ba" => {
                                :chapman_code=> 1,
@@ -314,6 +314,7 @@ module FreeregOptionsConstants
 
   FLEXIBLE_CSV_FORMAT_BURIAL = LOCATION_FIELDS + ORIGINAL_BURIAL_FIELDS + ADDITIONAL_BURIAL_FIELDS + ORIGINAL_COMMON_FIELDS + ADDITIONAL_COMMON_FIELDS
 
+  
   FLEXIBLE_CSV_FORMAT_MARRIAGE = LOCATION_FIELDS + ORIGINAL_MARRIAGE_FIELDS + ADDITIONAL_MARRIAGE_FIELDS + ORIGINAL_COMMON_FIELDS + ADDITIONAL_COMMON_FIELDS
   
   ORIGINAL_CSV_FORMAT_BAPTISM = LOCATION_FIELDS + ORIGINAL_BAPTISM_FIELDS + ORIGINAL_COMMON_FIELDS
