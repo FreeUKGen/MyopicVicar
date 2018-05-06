@@ -368,13 +368,13 @@ class CsvFile < CsvFiles
   end
 
   def check_and_create_db_record_for_entry(project,data_record,freereg1_csv_file)
-      p " check and create"
+      #p " check and create"
      if !project.force_rebuild
       #p "processing create_db_record_for_entry"
       data_record.delete(:chapman_code)
        entry = Freereg1CsvEntry.new(data_record)
-       p "new entry"
-       p entry
+       #p "new entry"
+       #p entry
        new_digest = entry.cal_digest
        if @all_existing_records.has_value?(new_digest)
          #p "we have an existing record but may be for different location"
@@ -563,9 +563,9 @@ class CsvFile < CsvFiles
        entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness8_forename], :witness_surname => data_record[:witness8_surname].upcase) unless data_record[:witness8_forename].blank? &&  data_record[:witness8_surname].blank?
      end
      entry.freereg1_csv_file = freereg1_csv_file
-      p "creating entry"
+      #p "creating entry"
      entry.save
-      p entry
+      #p entry
      if entry.errors.any?
        success = entry.errors.messages
      else
