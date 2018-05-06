@@ -62,7 +62,10 @@ module MessagesHelper
   end
 
   def reply_messages_count(source_message)
-    Message.where(source_message_id: source_message.id).all.count
+    reply_messages = Message.where(source_message_id: source_message.id).reject do |message|
+      message.sent_messages.deliveries.count == 0
+    end
+    reply_messages.count
   end
 
   def message_attachment_tag(message)
@@ -82,6 +85,15 @@ module MessagesHelper
       end
     else
       content_tag :td, 'No images attached', :class => "weight--semibold"
+    end
+  end
+
+  def reply_action(message)
+    case
+    when ReplyUseridRole::GENERAL_REPLY_ROLES.include?(@user.person_role)
+      link_to 'Reply', reply_messages_path(message.id),method: :get,:class => "btn weight--light  btn--small" if message.source_message_id.blank?
+    when session[:syndicate].present? &&  ReplyUseridRole::COORDINATOR_ROLES.include?(@user.person_role)
+      link_to 'Reply', reply_messages_path(message.id),method: :get,:class => "btn weight--light  btn--small" if message.source_message_id.blank?
     end
   end
 end

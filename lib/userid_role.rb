@@ -11,7 +11,7 @@ module UseridRole
     'syndicate_coordinator' => [ "Assignments", "Batches", "Manage Syndicate", "Profile", "Roadmap"],
     'contacts_coordinator'=> ["Assignments", "Batches", "Contacts","Display County Coordinators","Display Syndicate Coordinators","Display Userids","Feedback", "Manage Counties", "Profile", "System Documentation" ,"Roadmap"],
     'county_coordinator' =>  [ "Assignments", "Batches", "Contacts",  "Display Userids","Manage County", "Manage Syndicate", "Profile","Roadmap"],
-    'country_coordinator' => [   "Assignments", "Batches", "Contacts","Display Userids","Manage Country", "Manage County","Manage Syndicate", "Profile","Roadmap"],
+    'country_coordinator' => ["Assignments", "Batches", "Contacts","Display Userids","Manage Country", "Manage County","Manage Syndicate", "Profile","Roadmap"],
     'volunteer_coordinator' => [ "Assignments", "Batches", "Contacts","Manage Syndicates", "Manage Userids","Profile","Roadmap"],
     'data_manager' => [ "Access Attic", "Assignments", "Batches", "Contacts", "Denominations", "Display Userids","Display Syndicate Coordinators","Display County Coordinators", "Manage Counties", "Manage Syndicates", "Physical Files", "Profile", "Roadmap" ],
     'technical' => [  "Access Attic", "Assignments", "Batches", "Manage Assignments", "Contacts", "Feedback", "Profile","RefineryCMS", "Roadmap" ,"Search Performance",  "Site Statistics",
@@ -110,7 +110,7 @@ module UseridRole
     'Manage Images' => '/manage_counties/selection?option=Manage Images'
   }
   SYNDICATE_MANAGEMENT_OPTIONS =  ['Review Active Members' ,'Review All Members', 'Select Specific Member by Userid',
-                                   'Select Specific Member by Email Address','Select Specific Member by Surname/Forename',"Incomplete Registrations","Create userid","Message To Syndicate",'Review Batches with Errors','Review Batches by Filename',
+                                   'Select Specific Member by Email Address','Select Specific Member by Surname/Forename',"Incomplete Registrations","Create userid","Message To Syndicate",'View your Messages','Review Batches with Errors','Review Batches by Filename',
                                    'Review Batches by Userid then Filename', 'Review Batches by Most Recent Date of Change','Review Batches by Oldest Date of Change',
                                    'Review Specific Batch','List files waiting to be processed','List files NOT processed',"Upload New Batch",'Change Recruiting Status','Manage Images']
   SYNDICATE_OPTIONS_TRANSLATION = {
@@ -122,6 +122,7 @@ module UseridRole
     "Incomplete Registrations" => "/userid_details/incomplete_registrations",
     "Create userid"=> "/userid_details/selection?option=Create userid",
     "Message To Syndicate" => "/messages",
+    'View your Messages' => "/messages/userid_messages",
     'Review Batches with Errors'=> "/manage_syndicates/selection?option=Review Batches with Errors",
     'Review Batches by Filename' => "/manage_syndicates/selection?option=Review Batches by Filename",
     'Review Batches by Userid then Filename' => "/manage_syndicates/selection?option=Review Batches by Userid then Filename",

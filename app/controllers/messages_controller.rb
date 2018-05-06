@@ -2,6 +2,7 @@ class MessagesController < ApplicationController
   
   require 'freereg_options_constants'
   require 'userid_role'
+  require 'reply_userid_role'
   def index
     get_user_info_from_userid
     @messages = Message.all.order_by(message_time: -1)
@@ -10,11 +11,27 @@ class MessagesController < ApplicationController
   def userid_messages
     get_user_info_from_userid
     @user.reload
-    @message_list = @user.userid_messages.map do |msg_id|
-      next unless Message.id(msg_id).first.source_message_id.blank?
-      Message.id(msg_id).first
+    @main_messages = Message.in(id: @user.userid_messages, source_message_id: nil)
+    @messages = @main_messages
+    if session[:syndicate].present?
+      @syndicate_messages = @main_messages.reject do |msg|
+        msg.sent_messages.syndicate_messages(session[:syndicate]).blank?
+      end
+      @messages = @syndicate_messages
     end
-    @messages = @message_list.compact
+  end
+
+  def userid_reply_messages
+    get_user_info_from_userid
+    @user.reload
+    @reply_messages = Message.in(id: @user.userid_messages).where(:source_message_id.ne => nil)
+    @messages = @reply_messages
+    if session[:syndicate].present?
+      @syndicate_reply_messages = @reply_messages.reject do |reply_msg|
+        reply_msg.sent_messages.syndicate_messages(session[:syndicate]).blank?
+      end
+      @messages = @syndicate_reply_messages
+    end
   end
 
   def remove_from_useriddetail_waitlist
@@ -43,15 +60,6 @@ class MessagesController < ApplicationController
     @main_message = Message.id(params[:id]).first
     @reply_messages = Message.where(source_message_id: params[:id], userid: @user.userid).all
     @messages = Message.sent_messages(@reply_messages)
-  end
-
-  def userid_reply_messages
-    get_user_info_from_userid
-    @user.reload
-    @reply_list = @user.userid_messages.map do |msg_id|
-      Message.id(msg_id).first unless Message.id(msg_id).first.source_message_id.blank?
-    end
-    @messages = @reply_list.compact
   end
 
   def show_reply_messages
@@ -191,7 +199,7 @@ class MessagesController < ApplicationController
         @sent_message = @message.sent_messages.id(params[:message][:action]).first
         reasons = Array.new
         #params[:inactive_reasons].blank?  ? reasons << 'temporary' : reasons =  params[:inactive_reasons]
-        @sent_message.update_attributes(:recipients => params[:recipients], :active => params[:active], :inactive_reason => reasons, :sender => sender, open_data_status: params[:open_data_status])
+        @sent_message.update_attributes(:recipients => params[:recipients], :active => params[:active], :inactive_reason => reasons, :sender => sender, open_data_status: params[:open_data_status], syndicate: @syndicate)
         if @sent_message.recipients.nil? || @sent_message.open_data_status.nil?
           flash[:notice] = "Invalid Send: Please select Recipients and Open Data Status"
           redirect_to action:'send_message' and return

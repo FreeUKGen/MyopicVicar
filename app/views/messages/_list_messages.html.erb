@@ -26,7 +26,7 @@
       <td>
         <%= link_to 'SH', show_waitlist_msg_path(message.id), :class => "btn weight--light  btn--small" %>
         <%= link_to 'Remove', remove_from_useriddetail_waitlist_path(message.id), :class => "btn weight--light  btn--small", method: :delete, data: { confirm: 'Are you sure you want to remove this message from your list?' } if Message.can_be_destroyed?(message) %>
-        <%= link_to 'Reply', reply_messages_path(message.id),method: :get,:class => "btn weight--light  btn--small" if message.source_message_id.blank? %>
+        <%= reply_action(message) %>
         <%= image_tag 'star--dark.png', :title =>'This message has replies. Please make sure delete the replies before destoying this message', height: '10' unless Message.can_be_destroyed?(message)%>
       </td>
     </tr>
