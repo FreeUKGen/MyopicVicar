@@ -62,7 +62,7 @@ module MessagesHelper
   end
 
   def reply_messages_count(source_message)
-    reply_messages = Message.where(source_message_id: source_message.id).reject do |message|
+    reply_messages = Message.fetch_replies(source_message.id).reject do |message|
       message.sent_messages.deliveries.count == 0
     end
     reply_messages.count

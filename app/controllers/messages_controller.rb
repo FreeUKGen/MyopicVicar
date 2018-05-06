@@ -11,7 +11,7 @@ class MessagesController < ApplicationController
   def userid_messages
     get_user_info_from_userid
     @user.reload
-    @main_messages = Message.in(id: @user.userid_messages, source_message_id: nil)
+    @main_messages = Message.in(id: @user.userid_messages, source_message_id: nil).all.order_by(message_sent_time: -1)
     @messages = @main_messages
     if session[:syndicate].present?
       @syndicate_messages = @main_messages.reject do |msg|
@@ -24,7 +24,7 @@ class MessagesController < ApplicationController
   def userid_reply_messages
     get_user_info_from_userid
     @user.reload
-    @reply_messages = Message.in(id: @user.userid_messages).where(:source_message_id.ne => nil)
+    @reply_messages = Message.in(id: @user.userid_messages).where(:source_message_id.ne => nil).all.order_by(message_sent_time: -1)
     @messages = @reply_messages
     if session[:syndicate].present?
       @syndicate_reply_messages = @reply_messages.reject do |reply_msg|
@@ -58,8 +58,9 @@ class MessagesController < ApplicationController
   def user_reply_messages
     get_user_info_from_userid
     @main_message = Message.id(params[:id]).first
-    @reply_messages = Message.where(source_message_id: params[:id], userid: @user.userid).all
-    @messages = Message.sent_messages(@reply_messages)
+    @reply_messages = Message.fetch_replies(params[:id])
+    @user_replies = @reply_messages.where(userid: @user.userid).all
+    @messages = Message.sent_messages(@user_replies)
   end
 
   def show_reply_messages
@@ -92,7 +93,6 @@ class MessagesController < ApplicationController
     @messages = Message.list_messages(params[:action])
     render :index
   end
-
 
   def list_by_date
     get_user_info_from_userid

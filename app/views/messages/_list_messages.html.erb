@@ -3,7 +3,7 @@
     <tr>
       <th class="t20">Subject</th>
       <th class="t10">Sent by</th>
-      <th class="t10">Posted</th>
+      <th class="t10">Recieved at</th>
       <th class="t10">Attachment</th>
       <th class="t20">Message begins</th>
       <th class="t10">Reply Message</th>
@@ -15,7 +15,7 @@
     <tr>
       <td><%= message.subject %></td>
       <td><%= message.userid %></td>
-      <td><%= message.message_time.strftime("%d %b %Y") unless message.message_time.nil?%></td>
+      <td><%= Message.formatted_time(message) unless message.message_time.nil?%></td>
       <td><%= attachment(message)%></td>
       <td><%= message.body[0,100] %>&hellip;</td>
       <% unless reply_messages_count(message) == 0 %>
@@ -25,9 +25,12 @@
       <% end %>
       <td>
         <%= link_to 'SH', show_waitlist_msg_path(message.id), :class => "btn weight--light  btn--small" %>
-        <%= link_to 'Remove', remove_from_useriddetail_waitlist_path(message.id), :class => "btn weight--light  btn--small", method: :delete, data: { confirm: 'Are you sure you want to remove this message from your list?' } if Message.can_be_destroyed?(message) %>
+        <% if Message.can_be_destroyed?(message) %>
+          <%= link_to 'Remove', remove_from_useriddetail_waitlist_path(message.id), :class => "btn weight--light  btn--small", method: :delete, data: { confirm: 'Are you sure you want to remove this message from your list?' } %>
+        <% else %>
+          <%= content_tag :span, 'Remove', class: 'disabled_link btn btn--small weight--light', title: 'This message has replies. Please make sure to delete the replies before destroying this message' %>
+        <% end %>
         <%= reply_action(message) %>
-        <%= image_tag 'star--dark.png', :title =>'This message has replies. Please make sure delete the replies before destoying this message', height: '10' unless Message.can_be_destroyed?(message)%>
       </td>
     </tr>
   <% end %>
