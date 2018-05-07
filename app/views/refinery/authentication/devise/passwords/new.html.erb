@@ -1,5 +1,10 @@
 <% content_for :header, t('enter_email_address', :scope => 'refinery.authentication.devise.users.forgot') %>
 <h2 class=" text--center">Request a reset of your FreeCEN password</h2>
+<% if flash.now[:error] %>
+   <div class="push-half--bottom" id="notice" style="color:blue;">
+    <%= flash.now[:error] %>  <% flash.now[:error]%><br>
+  </div>
+<% end %>
 <%= form_for resource, :as => resource_name,
                        :url => refinery.authentication_devise_user_password_path,
                        :html => { :method => :post } do |f| %>
