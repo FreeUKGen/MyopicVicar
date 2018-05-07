@@ -84,11 +84,16 @@ class ManageSyndicatesController < ApplicationController
     all = true if  @user.person_role == 'volunteer_coordinator' || @user.person_role == 'data_manager' || @user.person_role == 'system_administrator' || @user.person_role == "SNDManager" ||  @user.person_role == 'documentation_coordinator'
     @syndicates = @user.syndicate_groups
     @syndicates = Syndicate.all.order_by(syndicate_code: 1) if all
-    synd = Array.new
-    @syndicates.each do |syn|
-      synd << syn unless all
-      synd << syn.syndicate_code if all
+    unless @syndicates.nil?
+      synd = Array.new
+      @syndicates.each do |syn|
+        synd << syn unless all
+        synd << syn.syndicate_code if all
+      end
       @syndicates = synd
+    else
+      logger.warn "FREEREG::USER #{@user.userid} has no syndicates and attempting to manage one"
+      logger.warn "FREEREG::USER #{@user.inspect}"
     end
   end
 
@@ -178,22 +183,23 @@ class ManageSyndicatesController < ApplicationController
 
     get_user_info_from_userid
     get_syndicates_for_selection
-    number_of_syndicates = @syndicates.length unless @syndicates.nil?
-    if number_of_syndicates == 0
-      flash[:notice] = 'You do not have any syndicates to manage'
-      redirect_to new_manage_resource_path
-      return
+    @syndicates.nil? ? number_of_syndicates = 0 : number_of_syndicates = @syndicates.length
+    case number_of_syndicates
+      when 0
+        flash[:notice] = 'You do not have any syndicates to manage'
+        redirect_to new_manage_resource_path
+        return 
+      when 1
+        @syndicate = @syndicates[0]
+        session[:syndicate] =  @syndicate
+        redirect_to :action => 'select_action'
+        return
+      else
+        @manage_syndicate = ManageSyndicate.new
+        @options = @syndicates
+        @prompt = 'You have access to multiple syndicates, please select one'
+        @location = 'location.href= "/manage_syndicates/" + this.value +/selected/'
     end
-    if number_of_syndicates == 1
-      @syndicate = @syndicates[0]
-      session[:syndicate] =  @syndicate
-      redirect_to :action => 'select_action'
-      return
-    end
-    @manage_syndicate = ManageSyndicate.new
-    @options = @syndicates
-    @prompt = 'You have access to multiple syndicates, please select one'
-    @location = 'location.href= "/manage_syndicates/" + this.value +/selected/'
   end
 
   def select_action
