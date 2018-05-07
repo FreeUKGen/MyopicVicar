@@ -31,6 +31,7 @@ class ImageServerImage
   index({image_server_group_id:1,difficulty:1},{name: "image_server_group_id_difficulty"})
   index({image_server_group_id:1,transcriber:1},{name: "image_server_group_id_transcriber"})
   index({image_server_group_id:1,reviewer:1},{name: "image_server_group_id_reviewer"})
+  index({image_server_group_id:1,image_file_name:1},{name: "image_server_group_id_image_file_name"})
 
   class << self
 
