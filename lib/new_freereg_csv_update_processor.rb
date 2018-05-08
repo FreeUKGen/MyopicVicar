@@ -1144,7 +1144,7 @@ class CsvRecords <  CsvFile
       csvfile.header[:first_comment] = header_field[1]
     when number_of_fields == 3  && header_field[0] =~FreeregOptionsConstants::HEADER_FLAG
       # Many comments
-      header_field.drop(1)
+      header_field = header_field.drop(1)
       csvfile.header[:first_comment] = header_field.join(" ")
     when (number_of_fields == 4 && header_field[0] =~FreeregOptionsConstants::HEADER_FLAG && @modern_date_field_1)
       #date and 3 comments
