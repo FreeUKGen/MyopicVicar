@@ -870,6 +870,48 @@ end
 
 
 
+# breadcrumb for GAP
+crumb :gaps do |user,syndicate,county,register,source|
+  link "GAPs", index_gap_path(source)
+  parent :show_image_source, register,source
+end
+
+      crumb :show_gap do |user,syndicate,county,register,source|
+        link "GAP"
+        parent :gaps, user,syndicate,county,register,source
+      end
+
+      crumb :new_gap do |user,syndicate,county,register,source|
+        link "Create New GAP"
+        parent :gaps, user,syndicate,county,register,source
+      end
+
+      crumb :edit_gap do |user,syndicate,county,register,source|
+        link "Edit GAP"
+        parent :gaps, user,syndicate,county,register,source
+      end
+
+
+crumb :gap_reasons do
+  link "GAP Reasons", gap_reasons_path
+  parent :root
+end
+
+crumb :show_gap_reason do |gap_reason|
+  link "Show GAP Reason", gap_reason_path(gap_reason)
+  parent :gap_reasons
+end
+
+crumb :edit_gap_reason do |gap_reason|
+  link "Edit GAP Reason", edit_gap_reason_path(gap_reason)
+  parent :show_gap_reason, gap_reason
+end
+
+crumb :create_gap_reason do |gap_reason|
+  link "Create GAP Reason", new_gap_reason_path(gap_reason)
+  parent :gap_reasons
+end
+
 
 # crumb :projects do
 #   link "Projects", projects_path

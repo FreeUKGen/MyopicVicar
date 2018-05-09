@@ -346,6 +346,13 @@ MyopicVicar::Application.routes.draw do
   get 'assignments/:id/list_by_syndicate(.:format)', :to => 'assignments#list_by_syndicate', :as => :list_by_syndicate_assignment
 resources :assignments
 
+  get 'gaps/:id/index(.:format)', :to => 'gaps#index', :as => :index_gap
+resources :gaps
+
+  get 'gap_reasons/:id/index(.:format)', :to => 'gap_reasons#index', :as => :index_gap_reason
+resources :gap_reasons
+
+
 
   # This line mounts Refinery's routes at the root of your application.
   # This means, any requests to the root URL of your application will go to Refinery::PagesController#home.
