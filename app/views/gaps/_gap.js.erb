@@ -1,0 +1,10 @@
+function validate_reason() {
+	var reason = document.getElementById('gap_reason');
+
+	if (reason.value != "") {
+		return true;
+	} else {
+		alert("You Need to Select a Reason");
+		return false;
+	}
+}

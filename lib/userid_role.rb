@@ -16,7 +16,7 @@ module UseridRole
     'data_manager' => [ "Access Attic", "Assignments", "Batches", "Contacts", "Denominations", "Display Userids","Display Syndicate Coordinators","Display County Coordinators", "Manage Counties", "Manage Syndicates", "Physical Files", "Profile", "Roadmap" ],
     'technical' => [  "Access Attic", "Assignments", "Batches", "Manage Assignments", "Contacts", "Feedback", "Profile","RefineryCMS", "Roadmap" ,"Search Performance",  "Site Statistics",
                       "System Documentation"],
-    'system_administrator' =>[  "Access Attic","Assignments","Batches", "Contacts", "County Coordinators", "Country Coordinators","Denominations","Feedback",
+    'system_administrator' =>[  "Access Attic","Assignments","Batches", "Contacts", "County Coordinators", "Country Coordinators","Denominations","GAP Reasons","Feedback",
                                 "Manage Counties","Manage Countries", "Manage Image Server", "Manage Syndicates" ,"Manage Userids",  "Message System",  "Physical Files","Profile","RefineryCMS","Roadmap","Search Performance","Site Statistics",
                                 "Software Version Information", "Syndicate Coordinators","System Documentation" ],
     'project_manager' =>[  "Assignments","Batches","Contacts", "Manage Userids",  "Feedback", "Profile",  "RefineryCMS","Roadmap" ,"Search Performance","Site Statistics",
@@ -34,6 +34,7 @@ module UseridRole
 
   OPTIONS_TRANSLATION = {
     "Denominations" => "/denominations",
+    "GAP Reasons" => "/gap_reasons", 
     "Saved Searches" => "/my_saved_searches",
     "Profile" => "/userid_details/my_own" ,
     "Batches" => "/freereg1_csv_files/my_own" ,

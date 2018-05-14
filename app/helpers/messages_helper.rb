@@ -71,7 +71,7 @@ module MessagesHelper
   def message_attachment_tag(message)
     if message.attachment.present?
       content_tag :td, :class => "weight--semibold" do
-        File.open("#{Rails.root}/public#{message.attachment_url}")
+        link_to("#{@message[:attachment]}", @message.attachment_url, target: "_blank", title: 'The link will open in a new tab')
       end
     else
       content_tag(:td, "No text document attached.", :class => "weight--semibold")

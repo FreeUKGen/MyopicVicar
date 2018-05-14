@@ -94,9 +94,8 @@ class AssignmentsController < ApplicationController
 
   def get_counties_for_selection
     @counties = Array.new
-    counties = County.all.order_by(chapman_code: 1)
 
-    counties.each {|county| @counties << county.chapman_code }
+    @counties = County.county_with_unallocated_image_groups
 
     @counties.compact unless @counties.nil?
     @counties.delete("nil") unless @counties.nil?

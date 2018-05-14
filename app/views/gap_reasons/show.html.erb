@@ -1,0 +1,32 @@
+<% breadcrumb :show_gap_reason, @gap_reason %>
+
+<h2 class="text--center">GAP Reason</h2>
+<%= render partial: 'flash_notice' %>
+
+<div  class="text--center">  
+  <%= link_to 'Edit GAP reason', edit_gap_reason_path(@gap_reason) , method: :get, :class => "btn weight--light btn--small" %>     
+  <%= link_to 'Create GAP reason', new_gap_reason_path , method: :get, :class => "btn weight--light btn--small" %> 
+  <%= link_to 'Destroy GAP reason', gap_reason_path(@gap_reason), method: :delete, data: { confirm: 'Are you sure you want to destroy this GAP reason?' } , :class => "btn  weight--light btn--small"%>
+</div>
+<div style="clear:both;"> </div><br>
+
+<div class="grid__item  ">
+  <table class=" table--bordered table--data">
+    <colgroup >
+      <col class="t40">
+      <col class="t60">
+    </colgroup>
+  
+    <tr>
+      <th class="caps">Field</th>
+      <th class="caps">Value</th>
+    </tr>
+    <tr>
+      <td>Reason :</td><td class="weight--semibold"><%= @gap_reason.reason %></td>
+    </tr>
+    <tr>
+      <td>Notes about the Reason :</td><td class="weight--semibold"> <%= @gap_reason.notes %> </td>
+    </tr>
+          
+  </table>
+</div>

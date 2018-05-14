@@ -1,0 +1,35 @@
+<% breadcrumb :show_gap, @user, @chapman_code, @county, @register, @source %>
+
+<% title "Gap - properties" %>
+<%= render partial: 'header' %>
+<%= render partial: 'flash_notice' %>
+
+<% unless session[:userid].nil?%>
+  <div style="text-align: center">  
+    <%= link_to 'Create New GAP', new_gap_path, method: :get, :class => "btn weight--light btn--small"  %> 
+    <%= link_to 'Edit GAP', edit_gap_path(@gap), method: :get, :class => "btn weight--light btn--small"  %> 
+    <%= link_to 'Delete GAP', gap_path(@gap), method: :delete, :class => "btn weight--light btn--small"  %> 
+  </div>
+  <div style="clear:both;"></div><br>
+<% end %>
+
+<div class="grid">
+  <section class="island ">
+  <div class="grid__item ">
+    <table class="table--bordered  table--data">
+      <colgroup >
+        <col class=t40>
+        <col class=t60>
+      </colgroup>
+      <tr>
+        <th class="caps">Field</th>
+        <th class="caps">Value</th>
+      </tr>
+      <tr><td>Start Date</td><td class="t15"><%= @gap[:start_date] %>&nbsp;</td></tr>
+      <tr><td>End Date</td><td class="t15"><%= @gap[:end_date] %>&nbsp;</td></tr>
+      <tr><td>Reason</td><td class="t30"><%= @gap[:reason] %>&nbsp;</td></tr>
+      <tr><td>Note</td><td class="t15"><%= @gap[:note] %>&nbsp;</td></tr>
+    </table>
+  </div>
+  </section>
+</div>
