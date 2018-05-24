@@ -69,16 +69,17 @@
     <%= stylesheet_link_tag "styles/scss/palm" %>
     <%= stylesheet_link_tag "styles/scss/lap_and_up", media:"(min-width:571px)" %>
     <!--[if (lt IE 9) & (!IEMobile)]>
-    <%= stylesheet_link_tag "styles/scss/lap_and_up" %>
+    <%#= stylesheet_link_tag "styles/scss/lap_and_up" %>
     <![endif]-->
     <!--[if lte IE 7]>
-    <%= stylesheet_link_tag "styles/scss/ie" %>
+    <%#= stylesheet_link_tag "styles/scss/ie" %>
     <![endif]-->
     <%= stylesheet_link_tag "styles/css/donate_icon" %>
     <%= stylesheet_link_tag "styles/css/freereg_content" %>
     <%= stylesheet_link_tag "styles/css/ladda.min" %>
     <%= stylesheet_link_tag "styles/css/donate_icon" %>
-    <%= javascript_include_tag "application" %>
+    <!-- Javascript -->
+    <%= javascript_include_tag "application.js" %>
     <%= javascript_include_tag "jquery.min.js" %>
     <%= javascript_include_tag "jquery.chained.remote.js" %>
     <%= javascript_include_tag "jquery.cookiesDirective.js" %>
@@ -100,16 +101,12 @@
     <% end %>
 
     <script>
-      function delete_cookie(name) {
-        document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-      }
-
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-      var update_third_party_cookies_user_preference = function (preference) {
+      window.update_third_party_cookies_user_preference = function (preference) {
         if(preference == 'accept') {
           var analytics_parameters = 'auto';
         } else if(preference == 'deny') {
@@ -120,8 +117,6 @@
         };
         ga('create', '<%= google_analytics_tracking_id %>', analytics_parameters);
         ga('send', 'pageview');
-        alert('Your prefernces has been updated.');
-        location.reload();
       };
     </script>
   </head>
@@ -133,36 +128,34 @@
       <%= render "layouts/header" %>
       
       <main  class="site__content  icon__honeycomb--top-right">
-      <div class="container">
-     
-      <% if session[:userid_detail_id].present?%>
-         <%= breadcrumbs  :class => "delta  text--teal"  unless controller_name == "refinery" ||
-         controller_name == "pages"%>
-      <% end%> 
-     
-        <% if content_for? :sidebar %>
-        <div class="grid">
-          <div class="grid__item  two-thirds  lap-three-fifths  palm-one-whole">
+        <div class="container">
+          <% if session[:userid_detail_id].present?%>
+             <%= breadcrumbs  :class => "delta  text--teal"  unless controller_name == "refinery" ||
+             controller_name == "pages"%>
+          <% end%>
+          <% if content_for? :sidebar %>
+            <div class="grid">
+              <div class="grid__item  two-thirds  lap-three-fifths  palm-one-whole">
+                <%= yield %>
+              </div>
+              <div class="grid__item  one-third  lap-two-fifths  palm-one-whole  push-half--top">
+                <%= yield :sidebar %>
+              </div>
+            </div>
+          <% else %>
             <%= yield %>
-          </div>
-          <div class="grid__item  one-third  lap-two-fifths  palm-one-whole  push-half--top">
-            <%= yield :sidebar %>
-          </div>
-        </div>
-        <% else %>
-        <%= yield %>
-        <% end %>
-        <% if  session[:userid_detail_id].present?%>
-        <div  style="float:left;">
-          <%= form_tag(problem_url, :method=>:get) do %>
-          <% problem_button_options.each_pair do |name, value| %>
-          <%= hidden_field_tag(name, value)%>
           <% end %>
-          <input type="submit" value="Report a Problem"  class = "btn  btn--small"/>
+          <% if  session[:userid_detail_id].present?%>
+            <div  style="float:left;">
+              <%= form_tag(problem_url, :method=>:get) do %>
+                <% problem_button_options.each_pair do |name, value| %>
+                  <%= hidden_field_tag(name, value)%>
+                <% end %>
+                <input type="submit" value="Report a Problem"  class = "btn  btn--small"/>
+              <% end %>
+            </div>
           <% end %>
         </div>
-        <% end %>
-      </div>
       </main>
       <%= render "layouts/footer" %>
     </div>
@@ -201,14 +194,6 @@
           });
       });
 
-      $('#deny_cookies').click(function() {
-        update_third_party_cookies_user_preference('deny');
-      });
-
-      $('#accept_cookies').click(function() {
-        update_third_party_cookies_user_preference('accept');
-      });
     </script>
-
   </body>
 </html>

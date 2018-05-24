@@ -26,7 +26,6 @@
       backgroundOpacity: '80',
       linkColor: '#CA0000'
     }, options);
-		
 		// Perform consent checks
 		if(!getCookie('cookiesDirective')) {
 			if(settings.limit > 0) {
@@ -88,7 +87,7 @@
 	
 	// Helper scripts
 	// Get cookie
-	var getCookie = function(name) {
+	window.getCookie = function(name) {
 		var nameEQ = name + "=";
 		var ca = document.cookie.split(';');
 		for(var i=0;i < ca.length;i++) {
@@ -100,7 +99,7 @@
 	};
 	
 	// Set cookie
-	var setCookie = function(name,value,days) {
+	 window.setCookie = function(name,value,days) {
 		var expires = "";
 		if (days) {
 			var date = new Date();
@@ -204,8 +203,8 @@
 			// Implied consent disclosure
 			html += scriptsDisclosure + 'Review our <a tabindex="1" style="color:'+ settings.linkColor + ';font-weight:bold;';
       html += 'font-family:' + settings.fontFamily + ';font-size:' + settings.fontSize + ';" href="'+ settings.privacyPolicyUri + '">Cookie policy</a>.';
-			html += '<div style="margin-top:5px;"><input class="btn btn--navy btn--small weight--light" tabindex="3" type="submit" name="impliedsubmit" id="impliedsubmit" value="Do not show this message again"/></div></div>';	
-		}		
+      html += '<div style="margin-top:5px;"><input class="btn btn--navy btn--small weight--light" tabindex="3" type="submit" name="impliedsubmit" id="impliedsubmit" value="Do not show this message again"/></div></div>';
+		}
 		html += '</div></div>';
 		$('body').append(html);
 		
