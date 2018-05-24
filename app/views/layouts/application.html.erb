@@ -98,13 +98,31 @@
       <%  google_analytics_tracking_id = "" %>
       <% end %>
     <% end %>
+
     <script>
+      function delete_cookie(name) {
+        document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+      }
+
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-      ga('create', '<%= google_analytics_tracking_id %>', 'auto');
-      ga('send', 'pageview');
+
+      var update_third_party_cookies_user_preference = function (preference) {
+        if(preference == 'accept') {
+          var analytics_parameters = 'auto';
+        } else if(preference == 'deny') {
+          delete_cookie('_ga');
+          delete_cookie('_gid');
+          delete_cookie('_gat');
+          var analytics_parameters = {'storage': 'none', 'cookieExpires': 0 };
+        };
+        ga('create', '<%= google_analytics_tracking_id %>', analytics_parameters);
+        ga('send', 'pageview');
+        alert('Your prefernces has been updated.');
+        location.reload();
+      };
     </script>
   </head>
   <body ontouchstart class="offcanvas  offcanvas--rev">
@@ -165,23 +183,32 @@
     </script> 
 
     <script type="text/javascript">
-    $(document).ready(function() {
-        $.cookiesDirective({
-            privacyPolicyUri:  "/cms/about/cookie-policy",
-            duration: 120,
-            <% if MyopicVicar::Application.config.template_set == 'freecen' %>
-              fontColor: '#FFFFFF', // font color for disclosure panel
-              backgroundColor: '#4A993E',
-              linkColor: '#ffff00',
-            <% else %>
-              fontColor: '#282828', // font color for disclosure panel
-              backgroundColor: '#f7a21c', //background color of disclosure panel
-              linkColor: ' #000080'// link color in disclosure panel
-            <% end %>
-            fontSize: '1.0rem', // font size for disclosure panel
-            backgroundOpacity: '99',
-        });
-    });
+      $(document).ready(function() {
+          $.cookiesDirective({
+              privacyPolicyUri:  "/cms/about/cookie-policy",
+              duration: 120,
+              <% if MyopicVicar::Application.config.template_set == 'freecen' %>
+                fontColor: '#FFFFFF', // font color for disclosure panel
+                backgroundColor: '#4A993E',
+                linkColor: '#ffff00',
+              <% else %>
+                fontColor: '#282828', // font color for disclosure panel
+                backgroundColor: '#f7a21c', //background color of disclosure panel
+                linkColor: ' #000080'// link color in disclosure panel
+              <% end %>
+              fontSize: '1.0rem', // font size for disclosure panel
+              backgroundOpacity: '99',
+          });
+      });
+
+      $('#deny_cookies').click(function() {
+        update_third_party_cookies_user_preference('deny');
+      });
+
+      $('#accept_cookies').click(function() {
+        update_third_party_cookies_user_preference('accept');
+      });
     </script>
+
   </body>
 </html>
