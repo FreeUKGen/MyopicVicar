@@ -107,13 +107,14 @@
       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
       window.update_third_party_cookies_user_preference = function (preference) {
+        var analytics_parameters;
         if(preference == 'accept') {
-          var analytics_parameters = 'auto';
+          analytics_parameters = 'auto';
         } else if(preference == 'deny') {
           delete_cookie('_ga');
           delete_cookie('_gid');
           delete_cookie('_gat');
-          var analytics_parameters = {'storage': 'none', 'cookieExpires': 0 };
+          analytics_parameters = {'storage': 'none', 'cookieExpires': 0 };
         };
         ga('create', '<%= google_analytics_tracking_id %>', analytics_parameters);
         ga('send', 'pageview');
