@@ -109,13 +109,13 @@
       window.update_third_party_cookies_user_preference = function (preference) {
         if(preference == 'accept') {
           analytics_parameters = 'auto';
+          ga('create', '<%= google_analytics_tracking_id %>', 'auto');
         } else if(preference == 'deny') {
           delete_cookie('_ga');
           delete_cookie('_gid');
           delete_cookie('_gat');
-          analytics_parameters = {'storage': 'none', 'cookieExpires': 0 };
+          ga('create', '<%= google_analytics_tracking_id %>', {'storage': 'none', 'cookieExpires': 0 });
         };
-        ga('create', '<%= google_analytics_tracking_id %>', analytics_parameters);
         ga('send', 'pageview');
       };
     </script>
