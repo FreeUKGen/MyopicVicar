@@ -524,84 +524,52 @@ border-radius: 50%; }
 /* End toggle slider CSS */
 
 /* For Cookie Consent notification bar */
-
-
 .cookieConsent {
-    margin: auto;
-    padding-top: 15px;
-    background-color: #4b993e;
-    box-shadow: 0 5px 0 hsla(0,0%,0%,.1);
-    color: white;
-    display: block;
-    font: 16px/40px sans-serif;
-    height: 130px;
-    position: fixed;
-    text-align: center;
-    text-decoration: none;
-    top: -45px;
-    width: 100%;
-    line-height: 24px;
-    z-index: 99999999;
-    -webkit-animation: cookieConsent 1s ease forwards;
-       -moz-animation: cookieConsent 1s ease forwards;
-        -ms-animation: cookieConsent 1s ease forwards;
-         -o-animation: cookieConsent 1s ease forwards;
-            animation: cookieConsent 1s ease forwards;
-}
-
-/* Animation */
-
-@-webkit-keyframes cookieConsent {
-    0% { opacity: 0; }
-    50% { opacity: 1; }
-    100% { top: 0; }
-}
-@-moz-keyframes cookieConsent {
-    0% { opacity: 0; }
-    50% { opacity: 1; }
-    100% { top: 0; }
-}
-@-ms-keyframes cookieConsent {
-    0% { opacity: 0; }
-    50% { opacity: 1; }
-    100% { top: 0; }
-}
-@-o-keyframes cookieConsent {
-    0% { opacity: 0; }
-    50% { opacity: 1; }
-    100% { top: 0; }
-}
-@keyframes cookieConsent {
-    0% { opacity: 0; }
-    50% { opacity: 1; }
-    100% { top: 0; }
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: auto;
+  background: rgb(74, 153, 62);
+  opacity: 0.99;
+  color: rgb(255, 255, 255);
+  font-family: helvetica;
+  font-size: 0.8125rem;
+  text-align: center;
+  z-index: 1000;
 }
 
 div#cookieText {
-  width: 50%;
-  float: left;
-  margin: 0 5%;
+  position:relative;
+  height:auto;
+  width:90%;
+  padding:10px;
+  margin-left:auto;
+  margin-right:auto;
 }
 
 div#cookieAcceptButton {
-  width: 15%;
-  float: left;
-  padding-top: 25px;
-}
-
-div#cookieCloseButton {
-  width: 10%;
-  float: left;
-  margin: 0 5% 0 0;
-  padding-top: 25px;
-}
-#CloseCookieConsent {
-  color: white;
-  font-weight: bold;
+  margin-top:5px;
 }
 
 .cookie_policy_link {
   color: yellow;
 
 }
+.cookie_closebtn {
+    margin-left: 15px;
+    color: white;
+    font-weight: bold;
+    float: right;
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+    background-color: red;
+    margin-right: 5px;
+    padding: 3px;
+}
 
+.cookie_closebtn:hover {
+    color: black;
+}

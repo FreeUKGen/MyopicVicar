@@ -26,15 +26,13 @@
       <% end %>
     <% end %>
   </div>
-  <div class="cookieConsent">
-    <div id="cookieText">
-      <strong>Please note:</strong> We use cookies to ensure you get the best experience with our website. This includes carefully chosen third-party cookies for analysing traffic and advertising. Please select ‘Accept’ if you consent and wish to continue using the site. <strong><a href="/cms/about/cookie-policy" class="cookie_policy_link">Learn more about how we use cookies.</a></strong>
+    <div class="cookieConsent">
+      <span class="cookie_closebtn">&times;</span>
+      <div id="cookieText" >
+        We use cookies to ensure you get the best experience with our website. This includes carefully chosen third-party cookies for analysing traffic and advertising. Please select ‘Accept’ if you consent and wish to continue using the site. <strong><a tabindex = "1" href="/cms/about/cookie-policy" class="cookie_policy_link">Learn more about how we use cookies.</a></strong>
+      </div>
+      <div class = "cookieAcceptButton">
+        <input class="btn btn--small accept_cookies" tabindex="3" type="submit" name="accept_cookies" id="accept_cookies" value="Accept Cookies" />
+      </div>
     </div>
-    <div id="cookieAcceptButton">
-      <input class="btn btn--small accept_cookies" tabindex="3" type="submit" name="accept_cookies" id="accept_cookies" value="Accept Cookies" />
-    </div>
-    <div id="cookieCloseButton">
-      <a href="#" id="CloseCookieConsent">X</a>
-    </div>
-  </div>
 </header>

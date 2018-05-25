@@ -50,7 +50,7 @@ $(document).ready(function() {
   }
 
   // Close the CookieConsent div at the top
-  $('#CloseCookieConsent').click(function() {
+  $('.cookie_closebtn').click(function() {
     $('.cookieConsent').slideUp();
   });
 
