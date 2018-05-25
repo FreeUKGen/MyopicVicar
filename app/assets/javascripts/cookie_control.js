@@ -1,38 +1,44 @@
 $(document).ready(function() {
-
   // Delete Cookie
-  window.delete_cookie = function(name) {
+  window.delete_cookie = function(name, path, domain) {
     if (getCookie(name)) document.cookie = name + '=' +
-        (('/') ? ';path=' + '/' : '') +
-        (('.freecen.org.uk') ? ';domain=' + '.freecen.org.uk' : '') +
-        ';expires=Thu, 01-Jan-1970 00:00:01 GMT';
+      (('/') ? ';path=' + '/' : '') +
+      (('.freecen.org.uk') ? ';domain=' + '.freecen.org.uk' : '') +
+         ';expires=Thu, 01-Jan-1970 00:00:01 GMT';
   }
+
+  // Switch Cookie checkbox value
+  var toggleCookieCheckbox = function() {
+    if (getCookie('userAcceptance') == 1) {
+      $('#cookie_check_box').prop('checked', true);
+    } else {
+      $('#cookie_check_box').prop('checked', false);
+    };
+  };
 
   // Create userAcceptance cookie if not exists
   var createUserAcceptance = function() {
-    if ((getCookie('cookiesDirective') === null) || (getCookie('cookiesDirective') == '0')) {
+    if ((getCookie('cookiesDirective') === null) || (getCookie('cookiesDirective') == 0)) {
       delete_cookie('cookiesDirective');
       setCookie('cookiesDirective', 1, 365);
     };
 
-    if (getCookie('userAcceptance') === null) {
-      setCookie('userAcceptance', 0, 365);
+    if ((getCookie('userAcceptance') === null) || (getCookie('userAcceptance') == 'unknown')){
+      setCookie('userAcceptance', 'unknown', 365);
       update_third_party_cookies_user_preference('deny');
-    } else if (getCookie('userAcceptance') == 1) {
+      $('.cookieConsent').slideDown('3000');
+    } else {
       $('.cookieConsent').remove();
     };
   };
 
   // Accept Cookie
   var acceptCookie = function() {
-    if (getCookie('userAcceptance') == 0) {
+    if ((getCookie('userAcceptance') == 0) || (getCookie('userAcceptance') == 'unknown')) {
       delete_cookie('userAcceptance');
       update_third_party_cookies_user_preference('accept');
       setCookie('userAcceptance', 1, 365);
       location.reload();
-      $('.cookieConsent').remove();
-    } else {
-      alert('Thank you. You have already accepted the cookie policy.');
     };
   }
 
@@ -43,25 +49,29 @@ $(document).ready(function() {
       update_third_party_cookies_user_preference('deny');
       setCookie('userAcceptance', 0, 365);
       location.reload();
-      $('.cookieConsent').slideDown();
     } else {
-      alert('Thank you. You have already Declined the cookie policy.');
+      setCookie('userAcceptance', 0, 365);
     };
   }
 
-  // Close the CookieConsent div at the top
-  $('.cookie_closebtn').click(function() {
-    $('.cookieConsent').slideUp();
+  // Close the CookieConsent div if user accepts the policy
+  createUserAcceptance();
+  toggleCookieCheckbox();
+  $('#cookie_check_box').change(function() {
+    if($(this).is(":checked")) {
+      acceptCookie();
+    } else {
+      denyCookie();
+    };
   });
 
-  // Close the CookieConsent div if user accepts the policy
-
-  createUserAcceptance();
   $('.accept_cookies').click(function() {
     acceptCookie();
   });
-  $('#deny_cookies').click(function() {
-    denyCookie();
+
+  $('#cookie_policy').click(function() {
+    setCookie('userAcceptance', 0, 365);
+    $('.cookieConsent').remove();
   });
 
 });
