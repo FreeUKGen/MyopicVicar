@@ -51,27 +51,43 @@
     <noscript>
     <link rel="stylesheet" type="text/css" href="<%= path_to_stylesheet('styles/css/icons.fallback.css') %>">
     </noscript>
-    
     <!-- Styles -->
     <%= stylesheet_link_tag "styles/css/palm.min" %>
     <%= stylesheet_link_tag "styles/css/lap_and_up.min", media:"(min-width:571px)" %>
     <!--[if (lt IE 9) & (!IEMobile)]>
-    <%= stylesheet_link_tag "styles/css/lap_and_up.min.css" %>
+    <%#= stylesheet_link_tag "styles/css/lap_and_up.min.css" %>
     <![endif]-->
     <!--[if lte IE 7]>
-    <%= stylesheet_link_tag "styles/css/ie.min" %>
+    <%#= stylesheet_link_tag "styles/css/ie.min" %>
     <![endif]-->
     <%= stylesheet_link_tag "styles/css/donate_icon" %>
     <%= stylesheet_link_tag "styles/css/freereg_content" %>
     <%= stylesheet_link_tag "styles/css/ladda.min" %>
+    <!-- JavaScripts -->
     <%= javascript_include_tag "application" %>
     <%= javascript_include_tag "jquery.min.js" %>
     <%= javascript_include_tag "jquery.chained.remote.js" %>
     <%= javascript_include_tag "jquery.cookiesDirective.js" %>
     <%= javascript_include_tag "spin.min.js" %>
     <%= javascript_include_tag "ladda.min.js" %>
-     <%= csrf_meta_tags %>
-
+    <%= csrf_meta_tags %>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })( window,document,'script','//www.google-analytics.com/analytics.js','ga');
+      window.update_third_party_cookies_user_preference = function (preference) {
+          if(preference == 'accept') {
+              ga('create', 'UA-62395250-1', 'auto');
+          } else if(preference == 'deny') {
+              delete_cookie('_ga');
+              delete_cookie('_gid');
+              delete_cookie('_gat');
+              ga('create', 'UA-62395250-1', {'storage': 'none', 'cookieExpires': 0 });
+          };
+          ga('send', 'pageview');
+        };
+    </script>
   </head>
   <body ontouchstart class="offcanvas  offcanvas--rev">
     
@@ -118,64 +134,53 @@
     <!-- example offcanvas switching code -->
     
     <script type="text/javascript">
-    var el = document.getElementById("trigger-offcanvas");
-        var switchOffCanvas = function() {
-          classie.toggle(document.body, 'offcanvas--active');
-          classie.toggle(el, 'site__header__menu-btn--active');
-        }
-        if (el.addEventListener) {
-          el.addEventListener('click', switchOffCanvas, false);
-        } else if (el.attachEvent) {
+      var el = document.getElementById("trigger-offcanvas");
+      var switchOffCanvas = function() {
+        classie.toggle(document.body, 'offcanvas--active');
+        classie.toggle(el, 'site__header__menu-btn--active');
+      }
+      if (el.addEventListener) {
+        el.addEventListener('click', switchOffCanvas, false);
+      } else if (el.attachEvent) {
           el.attachEvent('onclick', switchOffCanvas);
-        }
+      }
     </script> 
 
     <script type="text/javascript">
-    $(document).ready(function() {
+      $(document).ready(function() {
         $.cookiesDirective({
-            privacyPolicyUri:  "/cms/about/cookie-policy",
-            duration: 120,
-            fontColor: '#282828', // font color for disclosure panel
-            fontSize: '1.0rem', // font size for disclosure panel
-            backgroundColor: '#f7a21c', // background color of disclosure panel
-            backgroundOpacity: '99',
-            linkColor: ' #000080'// link color in disclosure panel
+          privacyPolicyUri:  "/cms/about/cookie-policy",
+          duration: 120,
+          fontColor: '#282828', // font color for disclosure panel
+          fontSize: '1.0rem', // font size for disclosure panel
+          backgroundColor: '#f7a21c', // background color of disclosure panel
+          backgroundOpacity: '99',
+          linkColor: ' #000080'// link color in disclosure panel
         });
-    });
-</script> 
+      });
+    </script>
 
-<script type="text/javascript">
-  $('#source_original_form_type').ready(function(){
-    if ($('#source_original_form_type :selected').val() === 'other') {
-      $('#original_form_label').show()
-      $('#source_original_form_name').show()
-    } else {
-      $('#original_form_label').hide()
-      $('#source_original_form_name').hide()
-    }    
-  })
-  $('#source_original_form_type').on('change',function(){
-    x = document.getElementById('source_original_form_type')
-    if (x.options[x.selectedIndex].value === 'other') {
-      $('#original_form_label').show()
-      $('#source_original_form_name').show()
-    } else {
-      $('#original_form_label').hide()
-      $('#source_original_form_name').hide()
-      document.getElementById('source_original_form_name').value = ''
-    }    
-  })
-</script>
-
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })( window,document,'script','//www.google-analytics.com/analytics.js','ga');
-  ga('create', 'UA-62395250-1', 'auto');
-  ga('send', 'pageview');
-</script>  
-
+    <script type="text/javascript">
+      $('#source_original_form_type').ready(function(){
+        if ($('#source_original_form_type :selected').val() === 'other') {
+          $('#original_form_label').show()
+          $('#source_original_form_name').show()
+        } else {
+          $('#original_form_label').hide()
+          $('#source_original_form_name').hide()
+        }
+      })
+      $('#source_original_form_type').on('change',function(){
+        x = document.getElementById('source_original_form_type')
+        if (x.options[x.selectedIndex].value === 'other') {
+          $('#original_form_label').show()
+          $('#source_original_form_name').show()
+        } else {
+          $('#original_form_label').hide()
+          $('#source_original_form_name').hide()
+          document.getElementById('source_original_form_name').value = ''
+        }
+      })
+    </script>
   </body>
-
 </html>

@@ -88,7 +88,7 @@
 	
 	// Helper scripts
 	// Get cookie
-	var getCookie = function(name) {
+	window.getCookie = function(name) {
 		var nameEQ = name + "=";
 		var ca = document.cookie.split(';');
 		for(var i=0;i < ca.length;i++) {
@@ -100,7 +100,7 @@
 	};
 	
 	// Set cookie
-	var setCookie = function(name,value,days) {
+	window.setCookie = function(name,value,days) {
 		var expires = "";
 		if (days) {
 			var date = new Date();
