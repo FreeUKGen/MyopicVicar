@@ -2,8 +2,11 @@ $(document).ready(function() {
 
   // Delete Cookie
   window.delete_cookie = function(name) {
-    document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-  };
+    if (getCookie(name)) document.cookie = name + '=' +
+        (('/') ? ';path=' + '/' : '') +
+        (('.freecen.org.uk') ? ';domain=' + '.freecen.org.uk' : '') +
+        ';expires=Thu, 01-Jan-1970 00:00:01 GMT';
+  }
 
   // Create userAcceptance cookie if not exists
   var createUserAcceptance = function() {

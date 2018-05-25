@@ -108,13 +108,12 @@
 
       window.update_third_party_cookies_user_preference = function (preference) {
         if(preference == 'accept') {
-          analytics_parameters = 'auto';
           ga('create', '<%= google_analytics_tracking_id %>', 'auto');
         } else if(preference == 'deny') {
           delete_cookie('_ga');
           delete_cookie('_gid');
           delete_cookie('_gat');
-          ga('create', '<%= google_analytics_tracking_id %>', {storeGac: false, 'storage': 'none', 'cookieExpires': 0 });
+          ga('create', '<%= google_analytics_tracking_id %>', {'storage': 'none', 'cookieExpires': 0 });
         };
         ga('send', 'pageview');
       };
