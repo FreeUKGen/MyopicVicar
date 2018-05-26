@@ -1091,6 +1091,7 @@ class CsvRecords <  CsvFile
   def process_header_line_three_block(header_field,csvfile)
     csvfile.header_error << "The credit name #{header_field[2]} cannot contain what might be an email address in the third field of the third header line. <br>" unless FreeregValidations.cleancredit(header_field[2])
     csvfile.header[:credit_name] = header_field[2]
+    csvfile.header[:credit_email] = header_field[3]
     # # suppressing for the moment
     # address = EmailVeracity::Address.new(header_field[3])
     # raise FreeREGError, "Invalid email address '#{header_field[3]}' for the credit person or organization in the forth field of the third line of header" unless address.valid? || header_field[3].nil?
