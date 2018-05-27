@@ -30,7 +30,7 @@ class Register
   has_many :freereg1_csv_files, dependent: :restrict
   belongs_to :church, index: true
 
-  has_many :sources # includes origin server of images
+  has_many :sources, dependent: :restrict # includes origin server of images
 
   index({ church_id: 1, register_name: 1})
   index({ register_name: 1})
