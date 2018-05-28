@@ -1,4 +1,5 @@
 <% if @message.errors.any? %>
+
   <div id="error_explanation">
     <h2><%= pluralize(@message.errors.count, "error") %> prohibited your message from being submitted:</h2>
     <ul class="validation-list">
@@ -28,7 +29,7 @@
   </li>
   
   <li class="grid__item  one-third  palm-one-whole push--bottom">
-    <label>Textual Attachment<span  class="weight--normal"> (optional)</span><a href="#" class="right_tooltip"> <%= image_tag 'info.png', alt: 'Information', height: '16' %><span  >Please select the image you wish to upload (txt, html, htm, log, rtf, pdf only)</span></a></label>
+    <label>Textual Attachment<span  class="weight--normal"> (optional)</span><a href="#" class="right_tooltip"> <%= image_tag 'info.png', alt: 'Information', height: '16' %><span  >Please select the file you wish to upload (txt, html, htm, log, rtf, pdf only)</span></a></label>
     <input name="message[attachment]" type="file" >
   </li>
   <li class="grid__item  one-third  palm-one-whole push--bottom">

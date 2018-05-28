@@ -46,7 +46,7 @@
         <% end%>
         <tr>
         <% if @message.attachment.present?%>        
-            <td>Text Attachment :</td><td class="weight--semibold"> <%= File.open("#{Rails.root}/public" + @message.attachment_url) %> </td>
+            <td>Text Attachment :</td><td class="weight--semibold"> <%= link_to("#{@message[:attachment]}", @message.attachment_url, target: "_blank") %><a href="#" class="bottom_tooltip"> <%= image_tag 'info.png', alt: 'Information', height: '16' %><span>The link will open in a new tab</span></a> </td>
         <% else %>
           <td>Text Attachment :</td><td class="weight--semibold"> No text document attached.</td>
         <% end %> 
