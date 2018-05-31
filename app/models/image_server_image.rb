@@ -80,7 +80,15 @@ class ImageServerImage
       image_list
     end
 
-    def get_sorted_group_name(source_id)    # get hash key=image_server_group_id, val=ig, sorted by ig
+    def get_sorted_group_name_under_church(church_id)    # get hash key=image_server_group_id, val=ig, sorted by ig
+      ig_array = ImageServerGroup.where(:church_id=>church_id).pluck(:id, :group_name)
+      group_name = Hash[ig_array.map {|key,value| [key,value]}]
+      group_name = group_name.sort_by{|key,value| value.downcase}.to_h
+
+      group_name
+    end
+
+    def get_sorted_group_name_under_source(source_id)    # get hash key=image_server_group_id, val=ig, sorted by ig
       ig_array = ImageServerGroup.where(:source_id=>source_id).pluck(:id, :group_name)
       group_name = Hash[ig_array.map {|key,value| [key,value]}]
       group_name = group_name.sort_by{|key,value| value.downcase}.to_h
