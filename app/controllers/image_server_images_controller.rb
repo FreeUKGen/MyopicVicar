@@ -99,7 +99,7 @@ class ImageServerImagesController < ApplicationController
     move_allowed_status = ['u','a']
     @images = ImageServerImage.get_image_list(params[:id],move_allowed_status)
 
-    redirect_to(:back, :notice => 'No image files can be moved') and return if @images.empty?
+    redirect_to(:back, :notice => 'Only Unallocated or Allocated images can be moved') and return if @images.empty?
   end
 
   def new      
