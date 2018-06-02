@@ -623,7 +623,7 @@ class Freereg1CsvEntry
     order
   end
 
-  def order_fields_for_record_type(record_type,extended_def)
+  def order_fields_for_record_type(record_type,extended_def,member)
     order = Array.new
     array_of_entries = Array.new
     json_of_entries = Hash.new
@@ -636,7 +636,8 @@ class Freereg1CsvEntry
         fields = ordered_burial_display_fields(extended_def)
     end
     fields.each do |field|
-      if field == 'witness'
+      case field
+      when 'witness'
         #this translate the embedded witness fields into specific line displays
         increment = 1
         self.multiple_witnesses.each do |witness| 
@@ -647,6 +648,30 @@ class Freereg1CsvEntry
           array_of_entries << actual_witness
           json_of_entries[field.to_sym]  = actual_witness
           increment = increment + 1
+        end
+      when 'film' 
+          if member
+            order << field
+            self[field].blank? ? array_of_entries << nil : array_of_entries << self[field]
+            self[field].blank? ? json_of_entries[field.to_sym] = nil : json_of_entries[field.to_sym]  = self[field]
+          end
+      when 'film_number'
+        if member
+            order << field
+            self[field].blank? ? array_of_entries << nil : array_of_entries << self[field]
+            self[field].blank? ? json_of_entries[field.to_sym] = nil : json_of_entries[field.to_sym]  = self[field]
+        end
+      when 'line_id'
+        if member
+            order << field
+            self[field].blank? ? array_of_entries << nil : array_of_entries << self[field]
+            self[field].blank? ? json_of_entries[field.to_sym] = nil : json_of_entries[field.to_sym]  = self[field]
+        end
+      when 'error_flag'
+        if member
+            order << field
+            self[field].blank? ? array_of_entries << nil : array_of_entries << self[field]
+            self[field].blank? ? json_of_entries[field.to_sym] = nil : json_of_entries[field.to_sym]  = self[field]
         end
       else
         order << field

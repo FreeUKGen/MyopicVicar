@@ -32,7 +32,7 @@ class SearchRecordsController < ApplicationController
       @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
       @search_result.update_attribute(:viewed_records, @viewed_records)
       @image_id = @entry.get_the_image_id(@church,@user,session[:manage_user_origin],session[:image_server_group_id],session[:chapman_code])
-      @order,@array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type],extended_def)  
+      @order,@array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type],@entry.freereg1_csv_file.def,current_authentication_devise_user.present?)  
       #session[:viewed] << params[:id] unless  session[:viewed].length >= 10
     end
   end
@@ -51,12 +51,13 @@ class SearchRecordsController < ApplicationController
       @place_id,@church_id,@register_id,extended_def = @entry.get_location_ids
       @annotations = Annotation.find(@search_record[:annotation_ids]) if @search_record[:annotation_ids]
       @search_result = @search_query.search_result
-      @order,@array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type],extended_def) 
-      
+      @all_data = true
+      @order,@array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type],@entry.freereg1_csv_file.def,current_authentication_devise_user.present?)  
       respond_to do |format|
         format.html {render "show", :layout => false}
         format.json do
-          send_data @json_of_entries.to_json, :type => 'application/json; header=present', :disposition => "attachment; filename=search_result.json"
+          file_name = "search-record-#{@entry.id}.json"
+          send_data @json_of_entries.to_json, :type => 'application/json; header=present', :disposition => "attachment; filename=\"#{file_name}\""
         end
         format.csv do 
           header_line = CSV.generate_line(@order,options = {:row_sep => "\r\n"})
