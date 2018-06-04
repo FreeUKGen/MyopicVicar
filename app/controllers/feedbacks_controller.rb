@@ -20,6 +20,24 @@ class FeedbacksController < ApplicationController
     end
   end
 
+  def userid_feedbacks
+    get_user_info_from_userid
+    @user.reload
+    @feedbacks_without_reply = @user.userid_feedback_replies.keys.select do |feedback|
+      @user.userid_feedback_replies[feedback].blank?
+    end
+    @feedbacks = Feedback.in(id: @feedbacks_without_reply)
+  end
+
+  def userid_feedbacks_with_replies
+    get_user_info_from_userid
+    @user.reload
+    @feedbacks_with_reply = @user.userid_feedback_replies.keys.reject do |feedback|
+      @user.userid_feedback_replies[feedback].blank?
+    end
+    @feedbacks = Feedback.in(id: @feedbacks_with_reply)
+  end
+
   def create
     @feedback = Feedback.new(feedback_params)
     #eliminate any flash message as the conversion to bson fails
@@ -56,6 +74,23 @@ class FeedbacksController < ApplicationController
     else
       go_back("feedback",params[:id])
     end
+  end
+
+  def force_destroy
+    @feedback = Feedback.id(params[:id]).first
+    if @feedback.present? && @feedback.has_replies?(params[:id])
+      delete_reply_messages(params[:id])
+      @feedback.delete
+      flash.notice = "Feedback and all its replies are destroyed"
+      redirect_to :action => 'index'
+      return
+    else
+      go_back("feedback",params[:id])
+    end
+  end
+
+  def delete_reply_messages(feedback_id)
+    Message.where(source_feedback_id: feedback_id).destroy
   end
 
   def edit
@@ -103,7 +138,12 @@ class FeedbacksController < ApplicationController
   def new
     session[:return_to] ||= request.referer
     get_user_info_from_userid
-    @feedback = Feedback.new(new_params)
+    @feedback = Feedback.new(new_params) if params[:source_feedback_id].nil?
+    @message = Message.new
+    @message.message_time = Time.now
+    @message.userid = @user.userid
+    @respond_to_feedback = Feedback.id(params[:source_feedback_id]).first
+    @feedback_replies = Message.fetch_feedback_replies(params[:source_feedback_id])
   end
 
   def select_by_identifier

@@ -5,7 +5,7 @@ class MessagesController < ApplicationController
   require 'reply_userid_role'
   def index
     get_user_info_from_userid
-    @messages = Message.all.order_by(message_time: -1)
+    @messages = Message.non_feedback_reply_messages.all.order_by(message_time: -1)
   end
 
   def userid_messages
@@ -88,6 +88,12 @@ class MessagesController < ApplicationController
     render :index
   end
 
+  def list_feedback_reply_message
+    get_user_info_from_userid
+    @messages = Message.list_messages(params[:action])
+    render :index
+  end
+
   def list_by_identifier
     get_user_info_from_userid
     @messages = Message.list_messages(params[:action])
@@ -116,7 +122,7 @@ class MessagesController < ApplicationController
     get_user_info_from_userid
     @messages = Message.list_messages(params[:action])
     render :index
-  end
+  end  
 
   def new
     get_user_info_from_userid
@@ -150,6 +156,30 @@ class MessagesController < ApplicationController
       else
         redirect_to reply_messages_path(@message.source_message_id)
       end
+    when "Reply Feedback"
+      if @message.save
+      flash[:notice] = "Reply for feedback is created"
+      send_feedback_message
+      reply_for_feedback
+      end
+    end
+  end
+
+  def reply_for_feedback
+    sender = UseridDetail.where(userid: @message.userid).first
+    sender_email = sender.email_address
+    @feedback = Feedback.id(@message.source_feedback_id).first
+    @reply_to_email = @feedback.email_address
+    @feedback.communicate_reply(@message,params[:email], sender_email)
+    redirect_to reply_feedbacks_path(@message.source_feedback_id)
+  end
+
+  def send_feedback_message
+    get_user_info_from_userid
+    if @message.present?
+      @sent_message = SentMessage.new(:message_id => @message.id,:sender => @user_userid, recipients: ["website_coordinator"], other_recipient: params[:email])
+      @message.sent_messages <<  [ @sent_message ]
+      @sent_message.save
     end
   end
 
@@ -222,6 +252,7 @@ class MessagesController < ApplicationController
     if @message.present?
       @message.destroy
       flash.notice = "Message destroyed"
+      redirect_to list_feedback_reply_message_path and return if @message.source_feedback_id.present?
       redirect_to :action => 'index'
       return
     else

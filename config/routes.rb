@@ -53,6 +53,7 @@ MyopicVicar::Application.routes.draw do
   get 'messages/list_by_name',  :to => 'messages#list_by_name', :as => :list_by_name_messages
   get 'messages/list_by_date',  :to => 'messages#list_by_date', :as => :list_by_date_messages
   get 'messages/list_by_identifier',  :to => 'messages#list_by_identifier', :as => :list_by_identifier_messages
+  get 'messages/list_feedback_reply_messages',  :to => 'messages#list_feedback_reply_message', :as => :list_feedback_reply_message
   get 'messages/select_by_identifier',  :to => 'messages#select_by_identifier', :as => :select_by_identifier_messages
   get 'messages/:id/reply',  :to => 'messages#new', :as => :reply_messages
   get 'messages/:id/show_reply_messages',:to => 'messages#show_reply_messages', :as => :show_reply_messages
@@ -87,7 +88,11 @@ MyopicVicar::Application.routes.draw do
   get 'feedbacks/list_by_date',  :to => 'feedbacks#list_by_date', :as => :list_by_date_feedbacks
   get 'feedbacks/list_by_identifier',  :to => 'feedbacks#list_by_identifier', :as => :list_by_identifier_feedbacks
   get 'feedbacks/select_by_identifier',  :to => 'feedbacks#select_by_identifier', :as => :select_by_identifier_feedbacks
+  get 'feedbacks/:source_feedback_id/reply',  :to => 'feedbacks#new', :as => :reply_feedbacks
   post 'feedbacks/:id/convert_to_issue(.:format)', :to => 'feedbacks#convert_to_issue', :as => :convert_feedback_to_issue
+  get 'feedbacks/userid_feedbacks', :to => 'feedbacks#userid_feedbacks', :as => :userid_feedbacks
+  get 'feedbacks/userid_feedbacks_with_replies', :to => 'feedbacks#userid_feedbacks_with_replies', :as => :userid_feedbacks_with_replies
+  get 'feedbacks/:id/force_destroy',  :to => 'feedbacks#force_destroy', :as => :force_destroy
   resources :feedbacks
 
 

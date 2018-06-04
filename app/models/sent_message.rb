@@ -2,11 +2,12 @@ class SentMessage
   include Mongoid::Document
   field :sent_time, type: DateTime
   field :recipients, type: Array
+  field :other_recipient, type: String
   field :active, type: Boolean, default: true
   field :message_id, type: String
   field :sender, type: String
   field :inactive_reason, type: Array
-  field :open_data_status, type: String
+  field :open_data_status, type: String, default: "All"
   field :syndicate, type: String
   embedded_in :message
   scope :deliveries, -> { where({:sent_time.ne => nil, :recipients.ne => nil}) }

@@ -16,6 +16,10 @@
               <%= link_to("#{@respond_to_message[:attachment]}", @respond_to_message.attachment_url, target: "_blank", style:'color:black') %><a href="#" class="bottom_tooltip"> <%= image_tag 'info.png', alt: 'Information', height: '16' %><span>The link will open in a new tab</span></a>
             </span>
           <% end %>
+          <% if @respond_to_message.images.present? %><br />
+            <span>Image Attachment: </span>
+            <span><%= image_tag reply.images_url %></span>
+          <% end %>
         <% end %>
         <br />
         <% unless @sent_replies.count == 0 %>

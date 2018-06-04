@@ -3,6 +3,7 @@ class Message
   include Mongoid::Timestamps
   field :subject, type: String
   field :source_message_id, type: String
+  field :source_feedback_id, type: String
   field :body, type: String
   field :message_time, type: DateTime
   field :message_sent_time, type: DateTime
@@ -18,6 +19,9 @@ class Message
     reject_if: :all_blank
 
   scope :fetch_replies, -> (id) { where(source_message_id: id) }
+  scope :fetch_feedback_replies, -> (id) { where(source_feedback_id: id) }
+  scope :non_feedback_reply_messages, -> { where(source_feedback_id: nil) }
+  scope :feedback_replies, -> { where({ :source_feedback_id.ne => nil })}
   mount_uploader :attachment, AttachmentUploader
   mount_uploader :images, ScreenshotUploader
   before_create :add_identifier
@@ -112,15 +116,17 @@ class Message
   def self.list_messages(action)
     case action
     when "list_by_name"
-      @messages = Message.all.order_by(userid: 1)
+      @messages = Message.non_feedback_reply_messages.all.order_by(userid: 1)
     when "list_by_date"
-      @messages = Message.all.order_by(message_time: 1)
+      @messages = Message.non_feedback_reply_messages.all.order_by(message_time: 1)
     when "list_by_identifier"
-      @messages = Message.all.order_by(identifier: -1)
+      @messages = Message.non_feedback_reply_messages.all.order_by(identifier: -1)
     when "list_unsent_messages"
-      @messages = Message.all.find_all do |message|
+      @messages = Message.non_feedback_reply_messages.all.find_all do |message|
         !Message.sent?(message)
       end
+    when "list_feedback_reply_message"
+      @messages = Message.feedback_replies.order_by(message_time: -1)
     end
     return @messages
   end

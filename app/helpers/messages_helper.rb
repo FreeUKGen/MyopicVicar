@@ -52,14 +52,17 @@ module MessagesHelper
 
   def message_subject
     case
+    when !@respond_to_feedback.nil?
+      text_field_tag 'message[subject]', "Re: Thank you for your feedback. Reference #{@respond_to_feedback.identifier}", :class => "text-input", readonly: true, title: "Re: Thank you for your feedback. Reference #{@respond_to_feedback.identifier}"
     when !@respond_to_message.nil?
       text_field_tag 'message[subject]', "Re: #{@respond_to_message.subject}", :class => "text-input", readonly: true
-    when @message.subject.nil? && @respond_to_message.nil?
+    when @message.subject.nil? && @respond_to_message.nil? && @respond_to_feedback.nil?
       text_field_tag 'message[subject]', nil, :class => "text-input", placeholder: "Mandatory", required: true
-    when @message.subject.present? && @respond_to_message.nil?
+    when @message.subject.present? && @respond_to_message.nil? && @respond_to_feedback.nil?
       text_field_tag 'message[subject]', "#{@message.subject}", :class => "text-input"
     end
   end
+
 
   def reply_messages_count(source_message)
     reply_messages = Message.fetch_replies(source_message.id).reject do |message|
