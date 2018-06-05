@@ -27,12 +27,13 @@ class SearchRecordsController < ApplicationController
       @entry.acknowledge
       @place_id,@church_id,@register_id = @entry.get_location_ids
       @annotations = Annotation.find(@search_record[:annotation_ids]) if @search_record[:annotation_ids]
-      @search_result = @search_query.search_result
-      @viewed_records = @search_result.viewed_records
-      @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
-      @search_result.update_attribute(:viewed_records, @viewed_records)
       @order,@array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type])  
-      #session[:viewed] << params[:id] unless  session[:viewed].length >= 10
+      unless proceed == :no_query
+        @search_result = @search_query.search_result
+        @viewed_records = @search_result.viewed_records
+        @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
+        @search_result.update_attribute(:viewed_records, @viewed_records)
+      end
     end
   end
 
@@ -49,7 +50,9 @@ class SearchRecordsController < ApplicationController
       @entry.acknowledge
       @place_id,@church_id,@register_id = @entry.get_location_ids
       @annotations = Annotation.find(@search_record[:annotation_ids]) if @search_record[:annotation_ids]
-      @search_result = @search_query.search_result
+      unless proceed == :no_query
+        @search_result = @search_query.search_result
+      end
       @order,@array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type]) 
       respond_to do |format|
         format.html {render "show", :layout => false}
@@ -70,38 +73,36 @@ class SearchRecordsController < ApplicationController
     proceed = true
     begin
       if params[:search_id].nil? || params[:id].nil?
+        proceed = :no_query
+      end
+      @search_query = SearchQuery.where(:id => params[:search_id]).first
+      unless @search_query
+        log_possible_host_change
+        proceed = :no_query         
+      end
+      if params[:ucf] == "true" || @search_query.nil?
+        @search_record = SearchRecord.find(params[:id])
+      else
+        response, @next_record, @previous_record = @search_query.next_and_previous_records(params[:id])
+        response ? @search_record = @search_query.locate(params[:id]) : @search_record = nil
+      end
+      if @search_record.nil?
         flash[:notice] = "Prior records no longer exist, if this continues please let us know"
         proceed = false
       else
-        @search_query = SearchQuery.find(params[:search_id])
-        if params[:ucf] == "true" 
-          @search_record = SearchRecord.find(params[:id])
+        if @search_record[:freereg1_csv_entry_id].present? 
+          @entry = Freereg1CsvEntry.find(@search_record[:freereg1_csv_entry_id]) 
         else
-          response, @next_record, @previous_record = @search_query.next_and_previous_records(params[:id])
-          response ? @search_record = @search_query.locate(params[:id]) : @search_record = nil
-        end
-        if @search_record.nil?
-          flash[:notice] = "Prior records no longer exist, if this continues please let us know"
+          log_missing_document("entry for search record",@search_record[:id], @search_query.id)
+          flash[:notice] = "We encountered a problem retrieving that original entry, if this continues please let us know"
           proceed = false
-        else
-          if @search_record[:freereg1_csv_entry_id].present? 
-            @entry = Freereg1CsvEntry.find(@search_record[:freereg1_csv_entry_id]) 
-          else
-            log_missing_document("entry for search record",@search_record[:id], @search_query.id)
-            flash[:notice] = "We encountered a problem retrieving that original entry, if this continues please let us know"
-            proceed = false
-          end
-          if  @entry.nil?
-            proceed = false
-            log_missing_document("entry for search record",@search_record[:id], @search_query.id)
-            flash[:notice] = "We encountered a problem retrieving that original entry, if this continues please let us know"
-          end
+        end
+        if  @entry.nil?
+          proceed = false
+          log_missing_document("entry for search record",@search_record[:id], @search_query.id)
+          flash[:notice] = "We encountered a problem retrieving that original entry, if this continues please let us know"
         end
       end
-      rescue Mongoid::Errors::DocumentNotFound 
-        log_possible_host_change
-        flash[:notice] = "We encountered a problem retrieving that search, if this continues please let us know"
-        proceed = false
       rescue Mongoid::Errors::InvalidFind
         log_missing_document("entry for search record",@search_record[:id], @search_query.id)
         flash[:notice] = "We encountered a problem retrieving that original entry, if this continues please let us know"
