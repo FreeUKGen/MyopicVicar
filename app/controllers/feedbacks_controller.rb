@@ -1,5 +1,5 @@
 class FeedbacksController < ApplicationController
-
+require 'reply_userid_role'
   skip_before_filter :require_login
 
   def convert_to_issue
@@ -27,6 +27,15 @@ class FeedbacksController < ApplicationController
       @user.userid_feedback_replies[feedback].blank?
     end
     @feedbacks = Feedback.in(id: @feedbacks_without_reply)
+  end
+
+  def feedback_reply_messages
+    get_user_info_from_userid
+    @feedback = Feedback.id(params[:id]).first
+    if @feedback.present?
+      @messages = Message.where(source_feedback_id: params[:id]).all
+      render 'messages/index'
+    end
   end
 
   def userid_feedbacks_with_replies
@@ -108,6 +117,7 @@ class FeedbacksController < ApplicationController
   end
 
   def index
+    get_user_info_from_userid
     @feedbacks = Feedback.all.order_by(feedback_time: -1)
   end
 

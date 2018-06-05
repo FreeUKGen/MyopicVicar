@@ -37,7 +37,7 @@
                   <td><%= sent(message)  %></td>
                   <td>
                     <%= link_to 'SH', message_path(message.id),  :class => "btn weight--light  btn--small", method: :get%>
-                    <% unless params[:action] == "list_feedback_reply_message" %>
+                    <% if message.source_feedback_id.blank? %>
                       <%= link_to 'ED', edit_message_path(message.id),  :class => "btn weight--light  btn--small", method: :get%>
                       <%= link_to 'SEND', send_message_messages_path(message.id), :class => "btn weight--light  btn--small", method: :get, data: { confirm: 'Are you sure you want to send this message' } %>
                     <% end%>

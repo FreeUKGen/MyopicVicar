@@ -142,6 +142,11 @@ class Feedback
     Message.where(source_feedback_id: feedback_id).exists?
   end
 
+  def member_can_reply?(user)
+    @user = user
+    permitted_person_role || permitted_secondary_role
+  end
+
   private
 
   def add_reply_to_userid_feedbacks(person)
@@ -166,5 +171,12 @@ class Feedback
       @feedback_userid[self.id.to_s] << message.id.to_s unless @feedback_userid[self.id.to_s].include?(message.id.to_s)
       person.update_attribute(:userid_feedback_replies, @feedback_userid)
     end
+  end
+
+  def permitted_person_role
+    ReplyUseridRole::FEEDBACK_REPLY_ROLE.include?(@user.person_role)
+  end
+  def permitted_secondary_role
+    (@user.secondary_role & ReplyUseridRole::FEEDBACK_REPLY_ROLE).any?
   end
 end
