@@ -1,9 +1,10 @@
 class UsersNeverUploadedFile
-  attr_accessor :model_name, :output_directory
+  attr_accessor :model_name, :output_directory, :process
 
-  def initialize(model_name=nil, output_directory = nil)
+  def initialize(model_name=nil, output_directory = nil, process=nil)
     @model_name = model_name
     @output_directory = output_directory
+    @process = process
   end
 
   def lists
@@ -35,12 +36,25 @@ class UsersNeverUploadedFile
     registered_user_lists
   end
 
+  def users_syndicate_any_county
+    users_list = []
+    model_name.in(syndicate: ["Any County and Year", "Any questions? Ask us"]).each do |user|
+      users_list << [user.userid, user.syndicate]
+    end
+    users_list
+  end
+
   def registered_password
     Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil)
   end
 
   def uniq_userid_list
-    registered_users.uniq
+    case @process
+    when "users_never_uploaded_files"
+      registered_users.uniq
+    when "any_county_users"
+      users_syndicate_any_county.uniq
+    end
   end
 
   def valid_directory?
@@ -51,7 +65,7 @@ class UsersNeverUploadedFile
   def new_file
     raise "Not a Valid Directory" unless valid_directory?
 
-    file_name = "#{Time.now.strftime("%Y%m%d%H%M%S")}_users_never_uploaded_file.txt"
+    file_name = "#{Time.now.strftime("%Y%m%d%H%M%S")}_#{process}.txt"
     "#{output_directory_path}#{file_name}"
   end
 
@@ -68,7 +82,7 @@ class UsersNeverUploadedFile
   end
 
   def delete_file_if_exists
-    File.delete(*Dir.glob("#{output_directory_path}*_users_never_uploaded_file.txt"))
+    File.delete(*Dir.glob("#{output_directory_path}*_#{process}.txt"))
   end
 
 end

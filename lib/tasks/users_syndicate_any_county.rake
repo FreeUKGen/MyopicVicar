@@ -1,15 +1,16 @@
-namespace :freereg do    
+namespace :freecen do
 
-  desc "List the userids registered for more than 6 months and never uploaded a file"
-  task :find_userids_never_uploaded_file => [:environment] do |t, args|
-    require 'users_never_uploaded_file'
+  desc "Users with Any County and Year/Any Questions? Ask Us as syndicate"
+  task :any_county_any_questions_syndicate_users => [:environment] do
+require 'users_never_uploaded_file'
 
     start_time = Time.now    
         p "Starting at #{start_time}"
 
         model_name = UseridDetail
         output_directory = File.join(Rails.root, 'script')
-        process = "users_never_uploaded_files"
+        process = "any_county_users"
+
 
         users = UsersNeverUploadedFile.new(model_name, output_directory, process)
         a = users.lists
@@ -20,4 +21,3 @@ namespace :freereg do
         p "Running time #{running_time} "
     end
 end
-
