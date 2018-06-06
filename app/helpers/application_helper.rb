@@ -196,7 +196,7 @@ module ApplicationHelper
     case
     when current_page?(freecen_coverage_path)
       @data_ad_slot = "9056426667"
-    when current_page?('/') || current_page?(new_search_query_path) || current_page?(new_search_query_path(:search_id => @search_query))
+    when current_page?('/') || ('/search_queries') || current_page?(new_search_query_path) || current_page?(new_search_query_path(:search_id => @search_query))
       @data_ad_slot = "2003577939"
     when current_page?(search_query_path(@search_query))
       @data_ad_slot = "3316180679"
