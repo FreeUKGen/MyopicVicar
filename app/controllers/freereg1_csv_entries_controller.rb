@@ -213,6 +213,8 @@ class Freereg1CsvEntriesController < ApplicationController
       display_info
       @forenames = Array.new
       @surnames = Array.new
+      @all_data = true
+      @order,@array_of_entries, @json_of_entries = @freereg1_csv_entry.order_fields_for_record_type(@freereg1_csv_entry[:record_type],@freereg1_csv_file.def,current_authentication_devise_user.present?)  
     else
       go_back("entry",params[:id])
     end
