@@ -50,7 +50,6 @@ crumb :files  do |file|
       link "List of Batches", freereg1_csv_files_path
     else
       link "List of Batches", freereg1_csv_files_path(:anchor => "#{file.id}",  :page => "#{session[:current_page]}")
-
     end
     case
     when session[:county].present? &&
@@ -81,7 +80,7 @@ crumb :files  do |file|
   end
 end
 crumb :show_file do |file|
-  link "Batch Information", freereg1_csv_file_path(file)
+  link "Batch Information", freereg1_csv_file_path(file.id)
   if session[:my_own]
     parent :files, file
   else
@@ -136,13 +135,17 @@ end
 
 
 #record or entry
-crumb :show_records do |file|
-  link "List of Records", freereg1_csv_entries_path(:anchor => "#{file.id}")
+crumb :show_records do |entry,file|
+  if entry.nil?
+    link "List of Records", freereg1_csv_entries_path
+  else
+    link "List of Records", freereg1_csv_entries_path(:anchor => "#{entry.id}")
+  end
   parent :show_file, file
 end
 crumb :new_record do |entry,file|
   link "Create New Record", new_freereg1_csv_entry_path
-  parent :show_records, file
+  parent :show_records, entry,file
 end
 crumb :error_records do |file|
   link "List of Errors", error_freereg1_csv_file_path(file)
@@ -150,7 +153,7 @@ crumb :error_records do |file|
 end
 crumb :show_record do |entry,file|
   link "Record Contents", freereg1_csv_entry_path(entry)
-  parent :show_records, file
+  parent :show_records, entry,file
 end
 crumb :edit_record do |entry,file|
   link "Edit Record", edit_freereg1_csv_entry_path(entry)
