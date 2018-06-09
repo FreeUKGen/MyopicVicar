@@ -310,6 +310,7 @@ end
 
 #Profile
 crumb :userid_detail do |syndicate,userid_detail,page_name,option|
+  
   link "Profile:#{userid_detail.userid}", userid_detail_path(userid_detail.id)
   if session[:my_own]
     parent :root
@@ -317,7 +318,7 @@ crumb :userid_detail do |syndicate,userid_detail,page_name,option|
     if page_name == 'incomplete_registrations'
       parent :incomplete_registrations, syndicate
     elsif option
-      parent :selection_user_id, option
+      parent :selection_user_id, option, syndicate
     elsif session[:edit_userid]
       syndicate = session[:syndicate]
       syndicate = "all"  if  session[:role] == "system_administrator" || session[:role] == "technical"
@@ -328,9 +329,13 @@ crumb :userid_detail do |syndicate,userid_detail,page_name,option|
   end
 end
 
-crumb :selection_user_id do |selection|
+crumb :selection_user_id do |selection,syndicate|
   link "#{selection}", selection_userid_details_path(option: selection)
-  parent :regmanager_userid_options
+  if syndicate.nil? || @syndicate == 'all'
+    parent :regmanager_userid_options
+  else
+    parent :syndicate_options, syndicate
+  end
 end
 
 #manage userids
