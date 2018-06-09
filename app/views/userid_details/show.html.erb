@@ -40,7 +40,7 @@
       </tr> <tr>
         <td>Alternate email address:</td><td > <%= @userid.alternate_email_address   %> </td>
       </tr> <tr>
-        <td>Adress or physical Location:</td><td > <%= @userid.address  %>  </td>
+        <td>Address or physical Location:</td><td > <%= @userid.address  %>  </td>
       </tr> <tr>
         <td>Telephone number:</td><td > <%= @userid.telephone_number %>   </td>
       <% unless @userid.person_role == 'researcher'%>
@@ -57,7 +57,7 @@
         </tr> <tr>
           <td>Just send my processing messages to my coordinator:</td><td > <%=@userid.no_processing_messages %>  </td>
         </tr> <tr>
-          <td>Do not ccknowledge my contributions:</td><td > <%= @userid.do_not_acknowledge_me%>  </td>
+          <td>Do not acknowledge my contributions:</td><td > <%= @userid.do_not_acknowledge_me%>  </td>
         </tr> <tr>
           <td>Use a pseudonym in place of my name:</td><td > <%=@userid.acknowledge_with_pseudo_name%>  </td>
           <% if @userid.acknowledge_with_pseudo_name %> 
@@ -83,7 +83,9 @@
         <% unless @userid.country_groups.nil? || @userid.country_groups.length == 0  %>
           </tr> <tr>
              <td>Counties managed as Country Coordinator:</td><td > <%= @userid.country_groups %>  </td>
-        <% end%> 
+        <% end%>
+        </tr> <tr>
+          <td>Active:</td><td > <%= @userid.active %>  </td>
         <% unless  @userid.active %>
           </tr> <tr>
           <% unless @userid.disabled_date.nil?%>
