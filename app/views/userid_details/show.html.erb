@@ -34,7 +34,9 @@
       </tr> <tr>
         <td>Email address valid:</td><td > <%= @userid.email_address_valid   %> </td>
       </tr> <tr>
+        <% unless @userid.email_address_valid%>
         <td>Reason email address is invalid:</td><td > <%= @userid.email_address_validity_change_message  %></td>
+       <% end%>
       </tr> <tr>
         <td>Email address last confirmed:</td><td > <%= @userid.email_address_last_confirmned.strftime("%d %b %Y")  unless @userid.email_address_last_confirmned.nil? %> </td>
       </tr> <tr>
@@ -43,13 +45,13 @@
         <td>Address or physical Location:</td><td > <%= @userid.address  %>  </td>
       </tr> <tr>
         <td>Telephone number:</td><td > <%= @userid.telephone_number %>   </td>
-      <% unless @userid.person_role == 'researcher'%>
+      </tr> <tr>
+          <td>Syndicate:</td><td > <%=@userid.syndicate %>  </td>
+      <% unless @userid.person_role == 'researcher' || !session[:edit_userid]%>
         </tr> <tr>
           <td>Role in FreeREG:</td><td > <%=@userid.person_role%>  </td>
         </tr> <tr>
           <td>Transcription agreement accepted:</td><td > <%= @userid.new_transcription_agreement%>  </td>
-        </tr> <tr>
-          <td>Syndicate:</td><td > <%=@userid.syndicate %>  </td>
         </tr> <tr>
           <td>Previous Syndicate:</td><td > <%= @userid.previous_syndicate%>  </td>
         </tr> <tr>

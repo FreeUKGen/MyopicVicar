@@ -331,11 +331,17 @@ end
 
 crumb :selection_user_id do |selection,syndicate|
   link "#{selection}", selection_userid_details_path(option: selection)
-  if syndicate.nil? || @syndicate == 'all'
-    parent :regmanager_userid_options
+  case
+  when session[:edit_userid]
+    if syndicate.nil? || @syndicate == 'all'
+      parent :regmanager_userid_options
+    else
+      parent :syndicate_options, syndicate
+    end
   else
-    parent :syndicate_options, syndicate
+    parent :coordinator_userid_options
   end
+    
 end
 
 #manage userids
