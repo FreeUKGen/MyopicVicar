@@ -77,7 +77,7 @@ class PhysicalFilesController < ApplicationController
     session[:sorted_by] =  @sorted_by
     @number =  @batches.length
     @paginate = false
-    @user = cookies.signed[:userid]
+    @user = get_user
     session[:by_userid] = false
     session[:who] = @user 
     @has_access = ((@user.person_role == "data_manager") || (@user.person_role == "system_administrator"))
@@ -256,7 +256,7 @@ class PhysicalFilesController < ApplicationController
     @batches = PhysicalFile.waiting.all.order_by(waiting_date: -1, userid: 1,)
     @number =  @batches.length
     @paginate = false
-    @user = cookies.signed[:userid]
+    @user = get_user
     @has_access = ((@user.person_role == "data_manager") || (@user.person_role == "system_administrator"))
     render  'index'
   end

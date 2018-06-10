@@ -247,7 +247,7 @@ class Register
     @place = @church.place
     @county =  @place.county
     @place_name = @place.place_name
-    @user = cookies.signed[:userid]
+    @user = get_user
     @first_name = @user.person_forename unless @user.blank?
   end
 
