@@ -122,7 +122,7 @@ module ApplicationHelper
       display_map["Place"] = place if search_query_places_size > 0
     end
     display_map["Include Family Members"] = "Yes" if search_query.inclusive
-    display_map["Include Winesses"] = "Yes" if search_query.witness
+    display_map["Include Witnesses"] = "Yes" if search_query.witness
     display_map
   end
 
