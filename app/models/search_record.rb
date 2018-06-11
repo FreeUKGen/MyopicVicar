@@ -558,6 +558,10 @@ class SearchRecord
   end
 
   def friendly_url
+    year = search_date.gsub(/\D.*$/, '')
+
+    
+    
     particles = []
     # first the primary names
     transcript_names.each do |name|
@@ -567,14 +571,21 @@ class SearchRecord
       end
     end
 
-    # then the record types
-    particles << RecordType::display_name(record_type)
-    # then county name
-    particles << ChapmanCode.name_from_code(chapman_code)
-    # then location
-    particles << self.place.place_name if self.place.place_name
-    # finally date
-    particles << search_dates.first
+    # redact baptisms of possibly-living persons
+    cutoff = Time.now.year - 115
+    unless year > cutoff.to_s && record_type == RecordType::BAPTISM 
+
+      # then the record types
+      particles << RecordType::display_name(record_type)
+      # then county name
+      particles << ChapmanCode.name_from_code(chapman_code)
+      # then location
+      particles << self.place.place_name if self.place.place_name
+      # finally date
+      year = search_date.gsub(/\D.*$/, '')
+      particles << year
+      
+    end
     # join and clean
     friendly = particles.join('-')
     friendly.gsub(/\W/, '-')
