@@ -27,7 +27,7 @@ class SearchRecordsController < ApplicationController
       @entry.acknowledge
       @place_id,@church_id,@register_id = @entry.get_location_ids
       @annotations = Annotation.find(@search_record[:annotation_ids]) if @search_record[:annotation_ids]
-      @order,@array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type])  
+      @order,@array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type],@entry.freereg1_csv_file.def,current_authentication_devise_user.present?)  
       unless proceed == :no_query
         @search_result = @search_query.search_result
         @viewed_records = @search_result.viewed_records
@@ -53,11 +53,13 @@ class SearchRecordsController < ApplicationController
       unless proceed == :no_query
         @search_result = @search_query.search_result
       end
-      @order,@array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type]) 
+      @all_data = true
+      @order,@array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type],@entry.freereg1_csv_file.def,current_authentication_devise_user.present?)  
       respond_to do |format|
         format.html {render "show", :layout => false}
         format.json do
-          send_data @json_of_entries.to_json, :type => 'application/json; header=present', :disposition => "attachment; filename=search_result.json"
+          file_name = "search-record-#{@entry.id}.json"
+          send_data @json_of_entries.to_json, :type => 'application/json; header=present', :disposition => "attachment; filename=\"#{file_name}\""
         end
         format.csv do 
           header_line = CSV.generate_line(@order,options = {:row_sep => "\r\n"})
