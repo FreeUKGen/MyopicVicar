@@ -28,10 +28,11 @@
             <% end %>
           <% end %>
 
+          <tr id="<%= source_id %>">
           <% if register_rows == @source_id[place_name][church_name][register_type].count && church_rows == @source_id[place_name][church_name].count && place_rows == @source_id[place_name].count %>
-            <tr><td class="t15"><%= place_name %></td>
+            <td class="t15"><%= place_name %></td>
           <% else %>
-            <tr><td class="t15">&nbsp;</td>
+            <td class="t15">&nbsp;</td>
           <% end %>
 
           <% if register_rows == @source_id[place_name][church_name][register_type].count && church_rows == @source_id[place_name][church_name].count %>
