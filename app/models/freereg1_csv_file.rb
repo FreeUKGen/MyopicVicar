@@ -900,6 +900,7 @@ class Freereg1CsvFile
   end #end method
   
   def write_csv_baptism(csv,rec,fields,chapman_code, place_name, church_name, register_type)
+    p csv
     record = Array.new
     fields.each do |field|
       case field
@@ -1061,7 +1062,7 @@ class Freereg1CsvFile
       # eg #,05-Feb-2006,data taken from computer records and converted using Excel, LDS
     csv << ['#',Time.now.strftime("%d-%b-%Y"),file.first_comment,file.second_comment]
       #eg +LDS,,,,
-    csv << ['+LDS'] if file.lds =='yes'
+    csv << ['+LDS'] unless file.def
     if file.def
       csv << ['#','DEF']
       csv << fields
