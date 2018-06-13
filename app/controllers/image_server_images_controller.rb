@@ -53,6 +53,9 @@ class ImageServerImagesController < ApplicationController
     image_server_group = @image_server_image.image_server_group
     @group_name = ImageServerImage.get_sorted_group_name(image_server_group.source_id)
 
+    # leave for issue 1447 - Relicate image group, commit 9abecd5
+    # @group_name = ImageServerImage.get_sorted_group_name_under_source(image_server_group.source_id)
+
     redirect_to(:back, :notice => 'Attempted to edit a non_esxistent image file') and return if @image_server_image.nil?
   end
 
@@ -91,7 +94,7 @@ class ImageServerImagesController < ApplicationController
     display_info
 
     @image_server_group = ImageServerGroup.id(params[:id]).first
-    @group_name = ImageServerImage.get_sorted_group_name(@image_server_group[:source_id])
+    @group_name = ImageServerImage.get_sorted_group_name_under_church(@image_server_group[:church_id])
 
     @image_server_image = ImageServerImage.image_server_group_id(params[:id]).first
     redirect_to(:back, :notice => 'Attempted to edit a non_esxistent image file') and return if @image_server_image.nil?
