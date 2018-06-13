@@ -263,8 +263,7 @@ class CsvFile < CsvFiles
   attr_accessor :header, :list_of_registers, :header_error, :system_error, :data_hold,
     :array_of_data_lines, :default_charset, :file, :file_name, :userid, :uploaded_date, :slurp_fail_message,
     :file_start, :file_locations, :data, :unique_locations, :unique_existing_locations,
-    :all_existing_records, :total_files, :total_records, :total_data_errors, :total_header_errors, :place_id
-
+    :all_existing_records, :total_files, :total_records, :total_data_errors, :total_header_errors, :place_id, :uploaded_file_is_flexible_format
   def initialize(file)
     standalone_filename = File.basename(file)
     full_dirname = File.dirname(file)
@@ -302,6 +301,7 @@ class CsvFile < CsvFiles
     @total_records = 0
     @unique_existing_locations = Hash.new
     @unique_locations = Hash.new
+    @uploaded_file_is_flexible_format = false
   end
 
   def a_single_csv_file_process(project)
@@ -450,6 +450,7 @@ class CsvFile < CsvFiles
     end
   end
 
+  
 
   def check_file_is_not_locked?(batch,project)
     return true, "OK" if batch.blank?
@@ -1212,7 +1213,7 @@ class CsvRecords <  CsvFile
 
   def extract_from_header_five(header_field,csvfile,project)
     #process the optional header line 5
-    #eg +LDS,,,,
+    #eg +LDS,,,, #,DEF
     #get an array of current entry fields
     proceed = true
     case
@@ -1294,7 +1295,7 @@ class CsvRecords <  CsvFile
 
   def get_the_file_information_from_the_headers(csvfile,project)
     #p "Extracting header information"
-    success1 = success2 = success3 = success4 = true
+    success1 = success2 = success3 = success4 = success5 = true 
     success = false
     csvfile.header_error << "There are no valid header lines. <br>" if @header_lines.length == 0
     success = extract_from_header_one(@header_lines[0],csvfile) unless @header_lines.length <= 0
@@ -1306,8 +1307,11 @@ class CsvRecords <  CsvFile
     success3 = extract_from_header_four(@header_lines[3],csvfile)  unless @header_lines.length <= 3
     @data_entry_order = get_default_data_entry_order(csvfile)  if @header_lines.length <= 4 && csvfile.header[:record_type].present?
     success4 = extract_from_header_five(@header_lines[4],csvfile,project) unless @header_lines.length <= 4
+    original_file_is_flexible_format = check_original_file_is_flexible_format?(csvfile.file_name,csvfile.userid)
+    success5 = false unless !original_file_is_flexible_format || (original_file_is_flexible_format && csvfile.header[:def])
+    csvfile.header_error << "The file has been process as extended but this file does not contain a DEF control"  unless success5
     if csvfile.header_error.present?
-      if !success || !success1 || !success2 || !success3 || !success4
+      if !success || !success1 || !success2 || !success3 || !success4 || !success5
         project.write_messages_to_all("Processing was terminated because of a fatal header error. <p>",true)
         inform_the_user(csvfile,project)
         return false, "Header problem"
@@ -1318,7 +1322,14 @@ class CsvRecords <  CsvFile
     end
     return true, "OK"
   end
-
+  
+  def check_original_file_is_flexible_format?(batch,userid)
+    file = Freereg1CsvFile.file_name(batch).userid(userid).first
+    result = false
+    result = true if file.def
+    return result 
+  end
+  
   def inform_the_user(csvfile,project)
     csvfile.header_error.each do |error|
       project.write_messages_to_all(error,true)

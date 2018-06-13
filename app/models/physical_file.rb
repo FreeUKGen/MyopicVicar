@@ -156,6 +156,7 @@ class PhysicalFile
     return[success,message]
   end
   def file_and_entries_delete
+    p "physical files delete"
     file =   Freereg1CsvFile.where(:file_name => self.file_name, :userid => self.userid).first
     file.save_to_attic unless file.blank?
     Freereg1CsvFile.where(:file_name => self.file_name, :userid => self.userid).destroy_all unless file.blank?
