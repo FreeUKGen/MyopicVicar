@@ -147,11 +147,11 @@ class CsvfilesController < ApplicationController
     @people = Array.new
     @people <<  @user.userid
     case
+    when session[:manage_user_origin] == 'manage syndicate'
+      @userids = UseridDetail.syndicate(syndicate).all.order_by(userid_lower_case: 1)
+      load_people(@userids)
     when  @user.person_role == 'country_coordinator' || @user.person_role == 'county_coordinator'  || @user.person_role == 'system_administrator' ||  @user.person_role == 'volunteer_coordinator' ||  @user.person_role == 'data_manager'
       @userids = UseridDetail.all.order_by(userid_lower_case: 1)
-      load_people(@userids)
-    when  @user.person_role == 'country_coordinator' || @user.person_role == 'county_coordinator'  || @user.person_role == 'syndicate_coordinator'
-      @userids = UseridDetail.syndicate(syndicate).all.order_by(userid_lower_case: 1)
       load_people(@userids)
     else
       @userids = @user
