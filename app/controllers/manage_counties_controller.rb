@@ -210,6 +210,7 @@ class ManageCountiesController < ApplicationController
     clean_session_for_images
     session.delete(:county)
     session.delete(:chapman_code)
+    session[:manage_user_origin] = 'manage county'
     get_user_info_from_userid
     get_counties_for_selection
     number_of_counties = 0

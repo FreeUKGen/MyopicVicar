@@ -83,6 +83,7 @@ class ManageResourcesController < ApplicationController
         @page = ""
       end
       @manage_resources = ManageResource.new
+      p 
       render 'actions'
       return
     end
