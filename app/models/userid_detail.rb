@@ -12,6 +12,7 @@ class UseridDetail
   field :person_surname, type: String
   field :person_forename, type: String
   field :email_address, type: String
+  field :alternate_email_address, type: String
   field :email_address_confirmation, type: String
   field :address, type: String
   field :telephone_number, type: String
@@ -33,7 +34,7 @@ class UseridDetail
   field :county_groups, type: Array
   field :country_groups, type: Array
   field :digest, type: String, default: nil
-  field :skill_notes, type: String
+  field :skill_notes, type: String # only planned to be used for technical registrations
   field :transcription_agreement, type: Boolean, default: false
   field :technical_agreement, type: Boolean, default: false
   field :research_agreement, type: Boolean, default: false
@@ -44,6 +45,11 @@ class UseridDetail
   field :reason_for_invalidating,type: String
   field :new_transcription_agreement, type: String, default: "Unknown"
   field :email_address_validity_change_message, type: Array, default: []
+  field :secondary_role, type: Array, default: []
+  field :do_not_acknowledge_me, type: Boolean
+  field :acknowledge_with_pseudo_name, type: Boolean
+  field :pseudo_name, type: String
+   # Note if you add or change fields you may need to update the display and edit field order in /lib/freereg_options_constants
 
   attr_accessor :action, :message, :volunteer_induction_handbook, :code_of_conduct
   index({ email_address: 1 })
@@ -103,6 +109,24 @@ class UseridDetail
         where(new_transcription_agreement: new_transcription_agreement)
       end
     end
+
+    def can_we_acknowledge_the_transcriber(userid)
+      answer = false
+      transcribed_by = nil
+      if userid.present? && !(userid.do_not_acknowledge_me.present?)
+        answer = true
+        if userid.acknowledge_with_pseudo_name
+          transcribed_by = userid.pseudo_name
+        else
+          transcribed_by = userid.person_forename 
+          transcribed_by.nil? ? transcribed_by = userid.person_surname : transcribed_by = transcribed_by + ' ' + userid.person_surname
+        end
+      end
+      return answer, transcribed_by
+    end
+
+
+
   end
 
   def remove_checked_messages(msg_id)
@@ -273,6 +297,15 @@ class UseridDetail
     value = false
     value = true if Freereg1CsvFile.where(:userid => self.userid).exists?
     value
+  end
+
+  def json_of_my_profile
+    json_of_my_profile = Hash.new
+    fields = FreeregOptionsConstants::USERID_DETAILS_MYOWN_DISPLAY
+    fields.each do |field|
+      self[field].blank? ? json_of_my_profile[field.to_sym] = nil : json_of_my_profile[field.to_sym]  = self[field]
+    end 
+    json_of_my_profile
   end
 
   def need_to_confirm_email_address?

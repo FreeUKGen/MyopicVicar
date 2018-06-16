@@ -1,0 +1,10 @@
+<% title "#{RegisterType.display_name(@register.register_type)} #{@church_name} #{@place_name} #{@county} information" %>
+<%#= This is a view used by the showing of a register from the Search Details link %>
+<div class="container">
+  <section class="island ">
+    <div class="text--center">
+      <%= link_to 'Back to Search Record', :back, :class => "btn weight--light  btn--small"%>    
+    </div><br>
+     <%= render 'register_body' %>
+  </section>
+</div>

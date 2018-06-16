@@ -30,7 +30,7 @@ class Register
   has_many :freereg1_csv_files, dependent: :restrict
   belongs_to :church, index: true
 
-  has_many :sources # includes transcripts, printed editions, and microform, and digital versions of these
+  has_many :sources, dependent: :restrict # includes origin server of images
 
   index({ church_id: 1, register_name: 1})
   index({ register_name: 1})
@@ -69,7 +69,14 @@ class Register
       @@my_church.save
       register
     end
+    
+    def create_folder_url(chapman_code,folder_name,register)
+      URI.escape(Rails.application.config.image_server + 'manage_freereg_images/create_folder?chapman_code=' + chapman_code + '&folder_name=' + folder_name +  '&register=' + register + '&image_server_access=' + Rails.application.config.image_server_access)
+    end
 
+    def find_by_church_ids(id)
+      Register.where(:church_id => {'$in'=>id.keys})
+    end
 
     def find_register(args)
       @@my_church = Church.find_by_name_and_place(args[:chapman_code], args[:place_name], args[:church_name])
@@ -86,6 +93,61 @@ class Register
         register = nil
       end
       register
+    end
+
+    def image_transcriptions_calculation(register_id)
+      images = Hash.new()
+
+      source = Source.where(:register_id=>register_id).pluck(:id, :source_name)
+      return {} if source.empty? || source == [''] || source == [nil]
+
+      @source_name = Hash.new{|h,k| h[k]=[]}.tap{|h| source.each{|k,v| h[k] = v}}
+      source_ids = source.map {|k,v| k}
+      
+      image_server_group = ImageServerGroup.where(:source_id=>{'$in'=>source_ids}).pluck(:id, :group_name, :source_id, :number_of_images)
+      return {} if image_server_group.empty? || image_server_group == [''] || image_server_group == [nil]
+
+      image_server_group_ids = image_server_group.map {|k,v1,v2,v3| k}
+      group_name = Hash.new{|h,k| h[k]=[]}.tap{|h| image_server_group.each{|k,v1,v2,v3| h[k] = v1}}
+      group_in_source = Hash.new{|h,k| h[k]=[]}.tap{|h| image_server_group.each{|k,v1,v2,v3| h[k] = v2}}
+      total_images = Hash.new{|h,k| h[k]=[]}.tap{|h| image_server_group.each{|k,v1,v2,v3| h[k] = v3}}
+
+      image_server_image = ImageServerImage.where(:image_server_group_id=>{'$in'=>image_server_group_ids})
+
+      image_server_image.each do |x|
+        s_id = group_in_source[x.image_server_group_id]
+        g_name = group_name[x.image_server_group_id]
+
+        if ['u','a','bt','ts','br','rs'].include?(x.status)
+          images[s_id] = Hash.new() if images[s_id].nil?
+          images[s_id][g_name] = Hash.new() if images[s_id][g_name].nil?
+          images[s_id][g_name][:count] = total_images[x.image_server_group_id]
+        end
+
+        case x.status
+        when 'u'
+          images[s_id][g_name][:unallocated] = images[s_id][g_name][:unallocated].nil? ? 1 : images[s_id][g_name][:unallocated] + 1
+        when 'a'
+          images[s_id][g_name][:allocated] = images[s_id][g_name][:allocated].nil? ? 1 : images[s_id][g_name][:allocated] + 1
+        when 'bt'
+          images[s_id][g_name][:being_transcribed] = images[s_id][g_name][:being_transcribed].nil? ? 1 : images[s_id][g_name][:being_transcribed] + 1
+        when 'ts'
+          images[s_id][g_name][:transcription_submitted] = images[s_id][g_name][:transcription_submitted].nil? ? 1 : images[s_id][g_name][:transcription_submitted] + 1
+        when 'br'
+          images[s_id][g_name][:being_reviewed] = images[s_id][g_name][:being_reviewed].nil? ? 1 : images[s_id][g_name][:being_reviewed] + 1
+        when 'rs'
+          images[s_id][g_name][:review_submitted] = images[s_id][g_name][:review_submitted].nil? ? 1 : images[s_id][g_name][:review_submitted] + 1
+        end
+      end
+
+      images.each do |s_id,v1|
+        v1.each do |g_name,v2|
+          images[s_id][g_name][:in_progress] = (v2[:being_transcribed].nil? ? ''.to_i : v2[:being_transcribed]) + (v2[:transcription_submitted].nil? ? ''.to_i : v2[:transcription_submitted]) + (v2[:being_reviewed].nil? ? ''.to_i : v2[:being_reviewed]) + (v2[:review_submitted].nil? ? ''.to_i : v2[:review_submitted])
+          images[s_id][g_name][:available] = (v2[:unallocated].nil? ? ''.to_i : v2[:unallocated]) + (v2[:allocated].nil? ? ''.to_i : v2[:allocated])
+        end
+      end
+
+      return images
     end
 
     def update_or_create_register(freereg1_csv_file)
@@ -106,6 +168,22 @@ class Register
   end #self
 
   ######################################################################## instance methods
+  def add_source(folder_name)
+    proceed = true
+    message = ''
+    self.sources.each do |source|
+      if source.source_name == "Image Server"
+        proceed = false
+        message = 'Image Server already exists'
+      end
+    end
+    if proceed
+      source = Source.new(:source_name => "Image Server",:folder_name => folder_name)
+      self.sources << source
+      self.save
+    end
+    return proceed,message
+  end
 
   def calculate_register_numbers
 
@@ -136,6 +214,15 @@ class Register
     last_amended.to_datetime == DateTime.new(1998,1,1)? last_amended = '' : last_amended = last_amended.strftime("%d %b %Y")
     self.update_attributes(:records => records,:datemin => datemin, :datemax => datemax, :daterange => total_hash, :transcribers => transcriber_hash["transcriber"],
                            :contributors => transcriber_hash["contributor"], :last_amended => last_amended   )
+  end
+  
+  def can_create_image_source
+    proceed = true
+    if self.register_type.nil? || self.register_type == ' '
+      proceed = false
+      message = 'Cannot create source for unspecified register'
+    end
+    return proceed,message
   end
 
   def change_type(type)
@@ -169,6 +256,16 @@ class Register
     value = true if (self.status.present? || self.quality.present? || self.source.present? || self.copyright.present?|| self.register_notes.present? ||
                      self.minimum_year_for_register.present? || self.maximum_year_for_register.present? )
     value
+  end
+  
+  def image_server_exists?
+    image_server = false
+      unless self.sources.nil?
+        self.sources.each do |source|
+           image_server = true if source.source_name == "Image Server"  
+        end
+      end
+      image_server
   end
 
   def merge_registers

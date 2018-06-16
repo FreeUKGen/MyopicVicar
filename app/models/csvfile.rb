@@ -66,7 +66,8 @@ class Csvfile < CarrierWave::Uploader::Base
   end
 
   def estimate_time
-    place = File.join(Rails.application.config.datafiles,self.userid,self.file_name)
+    processing_time =
+    place = File.join(Rails.application.config.datafiles,self.userid,self.file_name) unless self.userid.nil? || self.file_name.nil?
     File.exists?(place) ? size = File.size(place) : size = 1
     unit = 0.001
     processing_time = (size.to_i*unit).to_i

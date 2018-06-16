@@ -84,11 +84,16 @@ class ManageSyndicatesController < ApplicationController
     all = true if  @user.person_role == 'volunteer_coordinator' || @user.person_role == 'data_manager' || @user.person_role == 'system_administrator' || @user.person_role == "SNDManager" ||  @user.person_role == 'documentation_coordinator'
     @syndicates = @user.syndicate_groups
     @syndicates = Syndicate.all.order_by(syndicate_code: 1) if all
-    synd = Array.new
-    @syndicates.each do |syn|
-      synd << syn unless all
-      synd << syn.syndicate_code if all
+    unless @syndicates.nil?
+      synd = Array.new
+      @syndicates.each do |syn|
+        synd << syn unless all
+        synd << syn.syndicate_code if all
+      end
       @syndicates = synd
+    else
+      logger.warn "FREEREG::USER #{@user.userid} has no syndicates and attempting to manage one"
+      logger.warn "FREEREG::USER #{@user.inspect}"
     end
   end
 
@@ -96,17 +101,73 @@ class ManageSyndicatesController < ApplicationController
     redirect_to :action => 'new'
   end
 
+  def list_fully_reviewed_group
+    get_user_info_from_userid
+
+    if session[:syndicate].nil?
+      flash[:notice] = 'Your other actions cleared the syndicate information, please select syndicate again'
+      redirect_to main_app.new_manage_resource_path
+      return
+    else
+      @source,@group_ids,@group_id = ImageServerGroup.group_ids_by_syndicate(session[:syndicate], 'r')
+
+      if @source.nil?
+        flash[:notice] = 'No Fully Reviewed Image Groups Under This Syndicate'
+        redirect_to :back
+      else
+        session.delete(:from_source)
+        session[:image_group_filter] = 'fully_reviewed'
+        render 'list_fully_reviewed_group'
+      end
+    end
+  end
+
+  def list_fully_transcribed_group
+    get_user_info_from_userid
+
+    if session[:syndicate].nil?
+      flash[:notice] = 'Your other actions cleared the syndicate information, please select syndicate again'
+      redirect_to main_app.new_manage_resource_path
+      return
+    else
+      @source,@group_ids,@group_id = ImageServerGroup.group_ids_by_syndicate(session[:syndicate], 't')
+
+      if @source.nil?
+        flash[:notice] = 'No Fully Transcribed Image Groups Under This Syndicate'
+        redirect_to :back
+      else
+        session.delete(:from_source)
+        session[:image_group_filter] = 'fully_transcribed'
+        render 'list_fully_transcribed_group'
+      end
+    end
+  end
+
+  def manage_image_group
+    get_user_info_from_userid
+    clean_session_for_managed_images
+
+    if session[:syndicate].nil?
+      redirect_to main_app.new_manage_resource_path
+      return
+    else
+      @source,@group_ids,@group_id = ImageServerGroup.group_ids_by_syndicate(session[:syndicate])
+
+      render 'image_server_group_by_syndicate'
+    end
+  end
+
   def member_by_email
-    redirect_to :controller => 'userid_details', :action => 'selection', :option =>"Select specific email"
+    redirect_to :controller => 'userid_details', :action => 'selection', :option =>"Select specific email", :syndicate => session[:syndicate]
     return
   end
 
   def member_by_userid
-    redirect_to :controller => 'userid_details', :action => 'selection', :option => "Select specific userid"
+    redirect_to :controller => 'userid_details', :action => 'selection', :option => "Select specific userid", :syndicate => session[:syndicate]
   end
 
   def member_by_name
-    redirect_to :controller => 'userid_details', :action => 'selection', :option =>"Select specific surname/forename"
+    redirect_to :controller => 'userid_details', :action => 'selection', :option =>"Select specific surname/forename", :syndicate => session[:syndicate]
   end
 
   def new
@@ -116,24 +177,29 @@ class ManageSyndicatesController < ApplicationController
     session.delete(:chapman_code)
     session.delete(:county)
     session[:page] = request.original_url
+
+    clean_session_for_images
+    session[:manage_user_origin] = 'manage syndicate'
+
     get_user_info_from_userid
     get_syndicates_for_selection
-    number_of_syndicates = @syndicates.length unless @syndicates.nil?
-    if number_of_syndicates == 0
-      flash[:notice] = 'You do not have any syndicates to manage'
-      redirect_to new_manage_resource_path
-      return
+    @syndicates.nil? ? number_of_syndicates = 0 : number_of_syndicates = @syndicates.length
+    case number_of_syndicates
+      when 0
+        flash[:notice] = 'You do not have any syndicates to manage'
+        redirect_to new_manage_resource_path
+        return 
+      when 1
+        @syndicate = @syndicates[0]
+        session[:syndicate] =  @syndicate
+        redirect_to :action => 'select_action'
+        return
+      else
+        @manage_syndicate = ManageSyndicate.new
+        @options = @syndicates
+        @prompt = 'You have access to multiple syndicates, please select one'
+        @location = 'location.href= "/manage_syndicates/" + this.value +/selected/'
     end
-    if number_of_syndicates == 1
-      @syndicate = @syndicates[0]
-      session[:syndicate] =  @syndicate
-      redirect_to :action => 'select_action'
-      return
-    end
-    @manage_syndicate = ManageSyndicate.new
-    @options = @syndicates
-    @prompt = 'You have access to multiple syndicates, please select one'
-    @location = 'location.href= "/manage_syndicates/" + this.value +/selected/'
   end
 
   def select_action

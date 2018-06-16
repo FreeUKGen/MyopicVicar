@@ -1,0 +1,30 @@
+<table  class=" table--bordered table--data push--bottom center50">
+  <colgroup >
+        <col class="t25">
+        <col class="t25 weight--semibold">
+  </colgroup>
+        <thead  >
+          <tr>
+            <th >Field</th>
+            <th >Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Place </td> <td > <%= @place.place_name %>  </td></tr>
+          <tr><td>County</td> <td ><%= @place.county %></td></tr>
+          <tr><td>Country</td> <td ><%= @place.country %></td></tr>
+          <% if @names%>
+            <%  @names.each do |name| %>
+              <tr><td>Other possible place names</td><td  ><%= name %>  </td></tr>
+            <%end%>
+          <%end%> 
+          <tr><td>Notes about the Place</td><td  > <%= @place.place_notes %> </td></tr>
+          <tr><td>Location on map</td><td  ><%= link_to('Location', @place.genuki_url, :class => "btn weight--light  btn--small", :target => "_blank")  unless @place.genuki_url.nil? || @place.genuki_url == "no url" %></td></tr>
+          <tr><td>Latest date a transcription file loaded</td><td  > <%= @place.last_amended %></td>
+              </tr>
+               <tr><td>Number of entries</td>  <td ><%= @place.records %></td></tr>
+        <tr><td>First actual year of entries</td>  <td ><%= @place.datemin %></td></tr>
+        <tr><td>Last actual year of entries</td>  <td ><%= @place.datemax %></td></tr>
+         <tr><td>Date place information changed</td>  <td ><%= @place.u_at.strftime("%d %b %Y") %></td></tr>
+        </tbody>
+      </table> 

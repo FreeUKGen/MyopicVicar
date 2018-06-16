@@ -1,6 +1,7 @@
 class SearchRecordsController < ApplicationController
   before_filter :viewed
   skip_before_filter :require_login
+  require 'csv'
   rescue_from Mongo::Error::OperationFailure, :with => :catch_error
   
   def catch_error
@@ -16,90 +17,100 @@ class SearchRecordsController < ApplicationController
   end
 
   def show
-    if params[:search_id].nil? || params[:id].nil?
-      flash[:notice] = "Prior records no longer exist, if this continues please let us know"
+     proceed = show_value_check
+    if !proceed
       redirect_to new_search_query_path
       return
+    else
+      @display_date = false
+      @entry.display_fields(@search_record)
+      @entry.acknowledge
+      @place_id,@church_id,@register_id = @entry.get_location_ids
+      @annotations = Annotation.find(@search_record[:annotation_ids]) if @search_record[:annotation_ids]
+      @search_result = @search_query.search_result
+      @viewed_records = @search_result.viewed_records
+      @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
+      @search_result.update_attribute(:viewed_records, @viewed_records)
+      @order,@array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type],@entry.freereg1_csv_file.def,current_authentication_devise_user.present?)  
+ #session[:viewed] << params[:id] unless  session[:viewed].length >= 10
     end
-    begin
-      @search_query = SearchQuery.find(params[:search_id])
-      if params[:ucf] == "true"
-        @search_record = SearchRecord.find(params[:id])
-      else
-        response, @next_record, @previous_record = @search_query.next_and_previous_records(params[:id])
-        response ? @search_record = @search_query.locate(params[:id]) : @search_record = nil
-      end
-      if @search_record.nil?
-        flash[:notice] = "Prior records no longer exist, if this continues please let us know"
-        redirect_to new_search_query_path
-        return
-      end
-      if @search_record[:freereg1_csv_entry_id].present? 
-        @entry = Freereg1CsvEntry.find(@search_record[:freereg1_csv_entry_id]) 
-      else
-       log_missing_document("entry for search record",@search_record[:id], @search_query.id)
-        flash[:notice] = "We encountered a problem locating that original entry, if this continues please let us know"
-        redirect_to new_search_query_path
-        return
-      end
-    rescue Mongoid::Errors::DocumentNotFound 
-      log_possible_host_change
-      redirect_to new_search_query_path
-      return
-    rescue Mongoid::Errors::InvalidFind
-       log_missing_document("entry for search record",@search_record[:id], @search_query.id)
-      flash[:notice] = "We encountered a problem locating that original entry, if this continues please let us know"
-      redirect_to new_search_query_path
-      return
-    end
-    @display_date = false
-    @entry.display_fields(@search_record)
-    @annotations = Annotation.find(@search_record[:annotation_ids]) if @search_record[:annotation_ids]
-    @search_result = @search_query.search_result
-    @viewed_records = @search_result.viewed_records
-    @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
-    @search_result.update_attribute(:viewed_records, @viewed_records)
-    #session[:viewed] << params[:id] unless  session[:viewed].length >= 10
   end
 
   def show_print_version
-    @printable_format = true;
-    if params[:search_id].nil? || params[:id].nil?
-      flash[:notice] = "Prior records no longer exist, if this continues please let us know"
+    proceed = show_value_check
+    if !proceed
       redirect_to new_search_query_path
       return
+    else
+      @printable_format = true
+      @display_date = true
+      @all_data = true
+      @entry.display_fields(@search_record)
+      @entry.acknowledge
+      @place_id,@church_id,@register_id = @entry.get_location_ids
+      @annotations = Annotation.find(@search_record[:annotation_ids]) if @search_record[:annotation_ids]
+      @search_result = @search_query.search_result
+      @all_data = true
+      @order,@array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type],@entry.freereg1_csv_file.def,current_authentication_devise_user.present?)  
+      respond_to do |format|
+        format.html {render "show", :layout => false}
+        format.json do
+          file_name = "search-record-#{@entry.id}.json"
+          send_data @json_of_entries.to_json, :type => 'application/json; header=present', :disposition => "attachment; filename=\"#{file_name}\""
+        end
+        format.csv do 
+          header_line = CSV.generate_line(@order,options = {:row_sep => "\r\n"})
+          data_line = CSV.generate_line(@array_of_entries, options = {:row_sep => "\r\n",:force_quotes => true})
+          file_name = "search-record-#{@entry.id}.csv"
+          send_data (header_line + data_line), :type => 'text/csv' , :disposition => "attachment; filename=\"#{file_name}\""
+        end   
+      end
     end
+  end
+
+  def show_value_check
+    proceed = true
     begin
-      @search_query = SearchQuery.find(params[:search_id])
-      @search_record = SearchRecord.find(params[:id])
-      if @search_record.nil?
-        response, @next_record, @previous_record = @search_query.next_and_previous_records(params[:id])
-        response ? @search_record = @search_query.locate(params[:id]) : @search_record = nil
-      end
-      if @search_record.nil?
+      if params[:search_id].nil? || params[:id].nil?
         flash[:notice] = "Prior records no longer exist, if this continues please let us know"
-        redirect_to new_search_query_path
-        return
+        proceed = false
+      else
+        @search_query = SearchQuery.find(params[:search_id])
+        if params[:ucf] == "true" 
+          @search_record = SearchRecord.find(params[:id])
+        else
+          response, @next_record, @previous_record = @search_query.next_and_previous_records(params[:id])
+          response ? @search_record = @search_query.locate(params[:id]) : @search_record = nil
+        end
+        if @search_record.nil?
+          flash[:notice] = "Prior records no longer exist, if this continues please let us know"
+          proceed = false
+        else
+          if @search_record[:freereg1_csv_entry_id].present? 
+            @entry = Freereg1CsvEntry.find(@search_record[:freereg1_csv_entry_id]) 
+          else
+            log_missing_document("entry for search record",@search_record[:id], @search_query.id)
+            flash[:notice] = "We encountered a problem retrieving that original entry, if this continues please let us know"
+            proceed = false
+          end
+          if  @entry.nil?
+            proceed = false
+            log_missing_document("entry for search record",@search_record[:id], @search_query.id)
+            flash[:notice] = "We encountered a problem retrieving that original entry, if this continues please let us know"
+          end
+        end
       end
-      @entry = Freereg1CsvEntry.find(@search_record[:freereg1_csv_entry_id])
-    rescue Mongoid::Errors::DocumentNotFound
-      log_possible_host_change
-      redirect_to new_search_query_path
-      return
-    rescue Mongoid::Errors::InvalidFind
-    log_missing_document("entry for search record",@search_record[:id], @search_query.id)
-      flash[:notice] = "We encountered a problem locating that original entry, if this continues please let us know"
-      redirect_to new_search_query_path
-      return
+      rescue Mongoid::Errors::DocumentNotFound 
+        log_possible_host_change
+        flash[:notice] = "We encountered a problem retrieving that search, if this continues please let us know"
+        proceed = false
+      rescue Mongoid::Errors::InvalidFind
+        log_missing_document("entry for search record",@search_record[:id], @search_query.id)
+        flash[:notice] = "We encountered a problem retrieving that original entry, if this continues please let us know"
+        proceed = false
+      ensure
+        return proceed
     end
-    @entry.display_fields(@search_record)
-    @annotations = Annotation.find(@search_record[:annotation_ids]) if @search_record[:annotation_ids]
-    @search_result = @search_query.search_result
-    @viewed_records = @search_result.viewed_records
-    @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
-    @search_result.update_attribute(:viewed_records, @viewed_records)
-    @display_date = true
-    render "show", :layout => false
   end
 
   def viewed

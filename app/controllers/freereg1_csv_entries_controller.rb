@@ -5,7 +5,6 @@ class Freereg1CsvEntriesController < ApplicationController
   skip_before_filter :require_login, only: [:show]
  
   def create
-    p "creating"
     get_user_info_from_userid
     @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
     params[:freereg1_csv_entry][:record_type] =  @freereg1_csv_file.record_type
@@ -205,6 +204,8 @@ class Freereg1CsvEntriesController < ApplicationController
   end
 
   def show
+    @get_zero_year_records = "true" if params[:zero_record]== "true"
+    @zero_year = "true" if params[:zero_listing] == "true"
     @freereg1_csv_entry = Freereg1CsvEntry.id(params[:id]).first
     if @freereg1_csv_entry.present?
       get_user_info_from_userid
@@ -212,6 +213,8 @@ class Freereg1CsvEntriesController < ApplicationController
       display_info
       @forenames = Array.new
       @surnames = Array.new
+      @all_data = true
+      @order,@array_of_entries, @json_of_entries = @freereg1_csv_entry.order_fields_for_record_type(@freereg1_csv_entry[:record_type],@freereg1_csv_file.def,current_authentication_devise_user.present?)  
     else
       go_back("entry",params[:id])
     end

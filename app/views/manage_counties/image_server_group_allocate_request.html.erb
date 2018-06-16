@@ -1,0 +1,8 @@
+<% breadcrumb :county_manage_images_selection, @county%>
+
+<% title "Manage County - allocate request group" %>
+<%= render partial: 'header' %>
+<%= render partial: 'flash_notice' %>
+
+<div style="clear:both;"> </div><br>
+<%= render partial: 'image_groups', :locals=>{:image_group_filter=>'allocate request'} %>

@@ -22,12 +22,54 @@ class Freereg1CsvEntry
   require 'multiple_witness'
   require 'chapman_code'
 
+  # IF your add or delete fields you MAY have to alter the freereg_options_constants fields for baptisms, burials and marriages to enable the 
+  # new_freereg_csv_update_processor to process them
+
 
   # Fields here represent those currently requested by FreeREG1 at
   # http://www.freereg.org.uk/howto/enterdata.htm
   # They have only been modified to replace hyphens with underscores.
+  #Common fields
+  field :county, type: String # note this is actually a chapman code in the records
+  field :place, type: String #every where else this is place_name
+  field :church_name, type: String
+  field :register_type, type: String 
+  field :register_entry_number, type: String
+  field :notes, type: String
+  field :notes_from_transcriber, type: String
+  field :file_line_number, type: Integer
+  field :film, type: String
+  field :film_number, type: String
+  #new commonf fields
+
+  #baptism fields
   field :baptism_date, type: String #actual date as written
   field :birth_date, type: String #actual date as written
+  field :person_forename, type: String
+  field :person_sex, type: String
+  field :father_forename, type: String
+  field :father_occupation, type: String
+  field :father_surname, type: String
+  field :mother_forename, type: String
+  field :mother_surname, type: String  
+  field :person_abode, type: String
+  #new baptism fields
+
+  #burial fields
+  field :burial_date, type: String #actual date as written
+  field :burial_person_forename, type: String
+  field :burial_person_surname, type: String
+  field :burial_person_abode, type: String
+  field :female_relative_forename, type: String
+  field :male_relative_forename, type: String
+  field :person_age, type: String
+  field :relationship, type: String
+  field :relative_surname, type: String
+  #new burial fields
+
+
+
+  #marriage fields
   field :bride_abode, type: String
   field :bride_age, type: String
   field :bride_condition, type: String
@@ -38,16 +80,6 @@ class Freereg1CsvEntry
   field :bride_occupation, type: String
   field :bride_parish, type: String
   field :bride_surname, type: String
-  field :burial_date, type: String #actual date as written
-  field :burial_person_forename, type: String
-  field :burial_person_surname, type: String
-  field :burial_person_abode, type: String
-  field :church_name, type: String
-  field :county, type: String # note this is actually a chapman code in the records
-  field :father_forename, type: String
-  field :father_occupation, type: String
-  field :father_surname, type: String
-  field :female_relative_forename, type: String
   field :groom_abode, type: String
   field :groom_age, type: String
   field :groom_condition, type: String
@@ -58,36 +90,26 @@ class Freereg1CsvEntry
   field :groom_occupation, type: String
   field :groom_parish, type: String
   field :groom_surname, type: String
-  field :male_relative_forename, type: String
   field :marriage_date, type: String #actual date as written
-  field :mother_forename, type: String
-  field :mother_surname, type: String
-  field :notes, type: String
-  field :notes_from_transcriber, type: String
-  field :person_abode, type: String
-  field :person_age, type: String
-  field :person_forename, type: String
-  field :person_sex, type: String
-  field :place, type: String #every where else this is place_name
-
-  field :register, type: String
-  field :register_entry_number, type: String
-  field :register_type, type: String
-  field :relationship, type: String
-  field :relative_surname, type: String
   field :witness1_forename, type: String
   field :witness1_surname, type: String
   field :witness2_forename, type: String
   field :witness2_surname, type: String
+  #new marriage fields
+
+
+  field :register, type: String
+  field :record_type, type: String
+
+  #calculated fields
   field :year, type: String
   field :line_id, type: String
   field :file_line_number, type: Integer
-  field :film, type: String
-  field :film_number, type: String
-  field :error_flag, type:String, default: 'false'
-  field :record_type, type: String
+  field :error_flag, type:String, default: 'false'  
   field :record_digest, type: String
   field :location, type: String
+  field :transcribed_by, type: String
+  field :credit, type: String
 
   belongs_to :freereg1_csv_file, index: true
 
@@ -120,18 +142,103 @@ class Freereg1CsvEntry
   index({burial_person_forename: 1})
   index({bride_forename: 1})
   index({bride_father_forename: 1})
-  index({"multiple_witnesses.witness_forename":1})
+  index({"multiple_witnesses.witness_forename": 1})
   
   validate :errors_in_fields
+
+
+
+
   class << self
     def id(id)
       where(:id => id)
     end
+
+    def compare_baptism_fields?(one, two)
+    #used in  task check_record_digest
+      if one.person_forename == two.person_forename &&
+        one.baptism_date == two.baptism_date &&
+        one.birth_date == two.birth_date &&
+        one.father_forename == two.father_forename &&
+        one.father_surname == two.father_surname &&
+        one.mother_forename == two.mother_forename &&
+        one.mother_surname == two.mother_surname &&
+        one.register_entry_number  == two.register_entry_number &&
+        one.person_sex == two.person_sex &&
+        one.father_occupation == two.father_occupation &&
+        one.person_abode == two.person_abode &&
+        one.notes == two.notes &&
+        one.film == two.film &&
+        one.film_number == two.film_number
+        equal = true
+      else
+        equal = false
+      end
+      equal
+    end
+
+    def compare_marriage_fields?(one, two)
+      #used in  task check_record_digest
+      if one.groom_forename  ==  two.groom_forename             &&
+        one.groom_surname  ==  two.groom_surname            &&
+        one.groom_age  ==            two.groom_age  &&
+        one.groom_occupation  ==          two.groom_occupation &&
+        one.groom_abode  ==    two.groom_abode &&
+        one.groom_condition  ==        two.groom_condition &&
+        one.groom_parish  ==             two.groom_parish  &&
+        one.bride_forename  ==   two.bride_forename &&
+        one.bride_surname  ==  two.bride_surname &&
+        one.bride_age  ==   two.bride_age  &&
+        one.bride_occupation  ==  two.bride_occupation &&
+        one.bride_abode  ==  two.bride_abode  &&
+        one.bride_condition  ==            two.bride_condition &&
+        one.bride_parish  ==      two.bride_parish &&
+        one.bride_father_forename  ==   two.bride_father_forename &&
+        one.bride_father_surname  ==  two.bride_father_surname &&
+        one.bride_father_occupation  == two.bride_father_occupation &&
+        one.marriage_date  ==  two.marriage_date &&
+        one.register_entry_number  ==         two.register_entry_number &&
+        one.witness1_forename  ==  two.witness1_forename &&
+        one.witness1_surname  ==          two.witness1_surname &&
+        one.witness2_forename  ==              two.witness2_forename &&
+        one.witness2_surname  ==   two.witness2_surname &&
+        one.notes == two.notes &&
+        one.film == two.film &&
+        one.film_number == two.film_number
+        equal = true
+      else
+        equal = false
+      end
+      equal
+    end
+
+    def compare_burial_fields?(one, two)
+      #used in  task check_record_digest
+      if one.burial_person_forename == two.burial_person_forename &&
+        one.burial_date == two.burial_date &&
+        one.burial_person_surname  == two.burial_person_surname &&
+        one.male_relative_forename == two.male_relative_forename &&
+        one.female_relative_forename ==  two.female_relative_forename &&
+        one.relative_surname == two.relative_surname &&
+        one.register_entry_number  == two.register_entry_number &&
+        one.person_sex == two.person_sex &&
+        one.burial_person_abode == one.burial_person_abode &&
+        one.notes == two.notes &&
+        one.film == two.film &&
+        one.film_number == two.film_number
+        equal = true
+      else
+        equal = false
+      end
+      equal
+    end
+
     def delete_entries_for_a_file(fileid)
       entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => fileid).all.no_timeout
       p "#{entries.length}" unless entries.nil?
       entries.destroy_all
     end
+
     def update_entries_userid(userid,batch)
       batch.freereg1_csv_entries.each do |entry|
         line = entry.line_id
@@ -146,15 +253,33 @@ class Freereg1CsvEntry
       end
       true
     end
-  end
-
-  def extract_year(date_string)
-    if date_string && md = date_string.match(/(\d\d\d\d)/)
-      md.captures.first.to_i
-    else
-      1 # assume illegible dates are old -- start with year 1
+    def update_parameters(params,entry)
+      #clean up old null entries
+      params = params.delete_if{|k,v| v == ''}
+      return params
     end
   end
+
+  #Instance methods
+
+  def acknowledge
+    file = self.freereg1_csv_file
+    if file.present?
+      transcriber = file.userid_detail
+      if transcriber.nil?
+        userid = file.userid
+        if userid.present?
+          transcriber = UseridDetail.userid(userid).first
+        end
+      end
+      show,transcribed_by = UseridDetail.can_we_acknowledge_the_transcriber(transcriber)
+      credit = file.credit_name 
+    else
+      transcribed_by = nil
+      credit = nil
+    end
+    self.update_attributes(:transcribed_by => transcribed_by, :credit => credit) 
+  end 
 
   def add_digest
     self.record_digest = self.cal_digest
@@ -190,23 +315,6 @@ class Freereg1CsvEntry
     self.relative_surname = self.relative_surname.upcase if self.relative_surname.present?
   end
 
-  def enough_name_fields?
-    process = false
-    case self.record_type
-    when "ba"
-      process = true if self.person_forename.present? || self.father_forename.present? || self.mother_forename.present? ||
-        self.father_surname.present? || self.mother_surname.present?
-    when "bu"
-      process = true if self.burial_person_forename.present? || self.male_relative_forename.present? || self.female_relative_forename.present? ||
-        self.relative_surname.present? || self.burial_person_surname.present?
-    when "ma"
-      process = true if self.groom_forename.present? || self.groom_surname.present? || self.bride_forename.present? ||
-        self.bride_surname.present? || self.groom_father_forename.present? || self.groom_father_surname.present? || self.bride_father_surname.present? ||
-        self.bride_father_forename.present? || self.multiple_witness_names?
-    end
-    return process
-  end
-
   def create_baptism_string
     string = ''
     string = string + self.person_forename.strip + "person" unless  self.person_forename.nil?
@@ -225,6 +333,24 @@ class Freereg1CsvEntry
     string = string + self.film_number.strip + "film_number" unless self.film_number.nil?
     return string
   end
+
+  def create_burial_string
+    string = ''
+    string = string + self.burial_person_forename.strip + "person" unless  self.burial_person_forename.nil?
+    string = string + self.burial_date.strip unless self.burial_date.nil?
+    string = string + self.burial_person_surname.strip + "personsurname" unless self.burial_person_surname.nil?
+    string = string + self.male_relative_forename.strip + "male" unless self.male_relative_forename.nil?
+    string = string + self.female_relative_forename.strip + "female" unless self.female_relative_forename.nil?
+    string = string + self.relative_surname.strip + "relative" unless self.relative_surname.nil?
+    string = string + self.register_entry_number.strip + "register" unless self.register_entry_number.nil?
+    string = string + self.person_sex.strip unless self.person_sex.nil?
+    string = string + self.burial_person_abode.strip + "abode" unless self.burial_person_abode.nil?
+    string = string + self.notes.strip + "notes" unless self.notes.nil?
+    string = string + self.film.strip + "film" unless self.film.nil?
+    string = string + self.film_number.strip + "film_number" unless self.film_number.nil?
+    return string
+  end
+
   def create_marriage_string
    
     string = ''
@@ -255,170 +381,30 @@ class Freereg1CsvEntry
     string = string + self.film.strip + "film" unless self.film.nil?
     string = string + self.film_number.strip + "film_number" unless self.film_number.nil?
     return string
-
-  end
-  def create_burial_string
-    string = ''
-    string = string + self.burial_person_forename.strip + "person" unless  self.burial_person_forename.nil?
-    string = string + self.burial_date.strip unless self.burial_date.nil?
-    string = string + self.burial_person_surname.strip + "personsurname" unless self.burial_person_surname.nil?
-    string = string + self.male_relative_forename.strip + "male" unless self.male_relative_forename.nil?
-    string = string + self.female_relative_forename.strip + "female" unless self.female_relative_forename.nil?
-    string = string + self.relative_surname.strip + "relative" unless self.relative_surname.nil?
-    string = string + self.register_entry_number.strip + "register" unless self.register_entry_number.nil?
-    string = string + self.person_sex.strip unless self.person_sex.nil?
-    string = string + self.burial_person_abode.strip + "abode" unless self.burial_person_abode.nil?
-    string = string + self.notes.strip + "notes" unless self.notes.nil?
-    string = string + self.film.strip + "film" unless self.film.nil?
-    string = string + self.film_number.strip + "film_number" unless self.film_number.nil?
-    return string
-  end
-  def hex_to_base64_digest(hexdigest)
-    [[hexdigest].pack("H*")].pack("m").strip
   end
 
-  def self.compare_baptism_fields?(one, two)
-    #used in  task check_record_digest
-    if one.person_forename == two.person_forename &&
-        one.baptism_date == two.baptism_date &&
-        one.birth_date == two.birth_date &&
-        one.father_forename == two.father_forename &&
-        one.father_surname == two.father_surname &&
-        one.mother_forename == two.mother_forename &&
-        one.mother_surname == two.mother_surname &&
-        one.register_entry_number  == two.register_entry_number &&
-        one.person_sex == two.person_sex &&
-        one.father_occupation == two.father_occupation &&
-        one.person_abode == two.person_abode &&
-        one.notes == two.notes &&
-        one.film == two.film &&
-        one.film_number == two.film_number
-      equal = true
-    else
-      equal = false
-    end
-    equal
-  end
-  def self.compare_marriage_fields?(one, two)
-      #used in  task check_record_digest
-    if one.groom_forename  ==  two.groom_forename             &&
-        one.groom_surname  ==  two.groom_surname            &&
-        one.groom_age  ==            two.groom_age  &&
-        one.groom_occupation  ==          two.groom_occupation &&
-        one.groom_abode  ==    two.groom_abode &&
-        one.groom_condition  ==        two.groom_condition &&
-        one.groom_parish  ==             two.groom_parish  &&
-        one.bride_forename  ==   two.bride_forename &&
-        one.bride_surname  ==  two.bride_surname &&
-        one.bride_age  ==   two.bride_age  &&
-        one.bride_occupation  ==  two.bride_occupation &&
-        one.bride_abode  ==  two.bride_abode  &&
-        one.bride_condition  ==            two.bride_condition &&
-        one.bride_parish  ==      two.bride_parish &&
-        one.bride_father_forename  ==   two.bride_father_forename &&
-        one.bride_father_surname  ==  two.bride_father_surname &&
-        one.bride_father_occupation  == two.bride_father_occupation &&
-        one.marriage_date  ==  two.marriage_date &&
-        one.register_entry_number  ==         two.register_entry_number &&
-        one.witness1_forename  ==  two.witness1_forename &&
-        one.witness1_surname  ==          two.witness1_surname &&
-        one.witness2_forename  ==              two.witness2_forename &&
-        one.witness2_surname  ==   two.witness2_surname &&
-        one.notes == two.notes &&
-        one.film == two.film &&
-        one.film_number == two.film_number
-      equal = true
-    else
-      equal = false
-    end
-    equal
-  end
-  def self.compare_burial_fields?(one, two)
-      #used in  task check_record_digest
-    if one.burial_person_forename == two.burial_person_forename &&
-        one.burial_date == two.burial_date &&
-        one.burial_person_surname  == two.burial_person_surname &&
-        one.male_relative_forename == two.male_relative_forename &&
-        one.female_relative_forename ==  two.female_relative_forename &&
-        one.relative_surname == two.relative_surname &&
-        one.register_entry_number  == two.register_entry_number &&
-        one.person_sex == two.person_sex &&
-        one.burial_person_abode == one.burial_person_abode &&
-        one.notes == two.notes &&
-        one.film == two.film &&
-        one.film_number == two.film_number
-      equal = true
-    else
-      equal = false
-    end
-    equal
-  end
-
-  def multiple_witness_names?
-    present = false
-    self.multiple_witnesses.each do |witness|
-      if  witness.witness_forename.present? || witness.witness_surname.present?
-        present = true
+  def get_location_ids
+    file = self.freereg1_csv_file
+    if file.present?
+      register = file.register
+      if register.present?
+        church = register.church
+        if church.present?
+          place = church.place
+          if place.present?
+            place_id = place.id
+            church_id = church.id
+            register_id = register.id
+          end
+        end
       end
     end
-    return present
+    return place_id, church_id, register_id 
   end
-
-  def self.update_parameters(params,entry)
-    #clean up old null entries
-    params = params.delete_if{|k,v| v == ''}
-    return params
-  end
-
-  def same_location(record,file)
-    success = true
-    record_id = record.freereg1_csv_file_id
-    file_id = file.id
-    #p "checking location"
-    #p record_id
-    #p file_id
-    if record_id == file_id
-      success = true
-    else
-      success = false
-    end
-    success
-  end
-  def update_location(record,file)
-    #p "updating location"
-    #p record
-    #p file
-    #p self
-    self.update_attributes(:freereg1_csv_file_id => file.id, :place => record[:place], :church_name => record[:church_name], :register_type => record[:register_type])
-    #p self
-  end
-
-
+    
   def date_beyond_cutoff?(date_string, cutoff)
     current_year = Time.now.year
-
     return (current_year - cutoff) < extract_year(date_string)
-  end
-
-  def embargoed?
-    case self.record_type
-    when RecordType::BAPTISM
-      date_beyond_cutoff?(self.baptism_date, 100)
-    when RecordType::MARRIAGE
-      date_beyond_cutoff?(self.marriage_date, 75)
-    when RecordType::BURIAL
-      date_beyond_cutoff?(self.burial_date, 5)
-    else
-      false
-    end
-  end
-
-  def embed_witness
-    #does not appear to be called
-    if self.record_type == 'ma'
-      self.multiple_witnesses_attributes = [{:witness_forename => self[:witness1_forename], :witness_surname => self[:witness1_surname]}] unless self[:witness1_forename].blank? &&  self[:witness1_surname].blank?
-      self.multiple_witnesses_attributes = [{:witness_forename => self[:witness2_forename], :witness_surname => self[:witness2_surname]}] unless self[:witness2_forename].blank? &&  self[:witness2_surname].blank?
-    end
   end
 
   def display_fields(search_record)
@@ -450,54 +436,187 @@ class Freereg1CsvEntry
     end
   end
 
+  def embargoed?
+    case self.record_type
+    when RecordType::BAPTISM
+      date_beyond_cutoff?(self.baptism_date, 100)
+    when RecordType::MARRIAGE
+      date_beyond_cutoff?(self.marriage_date, 75)
+    when RecordType::BURIAL
+      date_beyond_cutoff?(self.burial_date, 5)
+    else
+      false
+    end
+  end
 
+  def embed_witness
+    #does not appear to be called
+    if self.record_type == 'ma'
+      self.multiple_witnesses_attributes = [{:witness_forename => self[:witness1_forename], :witness_surname => self[:witness1_surname]}] unless self[:witness1_forename].blank? &&  self[:witness1_surname].blank?
+      self.multiple_witnesses_attributes = [{:witness_forename => self[:witness2_forename], :witness_surname => self[:witness2_surname]}] unless self[:witness2_forename].blank? &&  self[:witness2_surname].blank?
+    end
+  end
 
-  def ordered_display_fields
+  def enough_name_fields?
+    process = false
+    case self.record_type
+    when "ba"
+      process = true if self.person_forename.present? || self.father_forename.present? || self.mother_forename.present? ||
+        self.father_surname.present? || self.mother_surname.present?
+    when "bu"
+      process = true if self.burial_person_forename.present? || self.male_relative_forename.present? || self.female_relative_forename.present? ||
+        self.relative_surname.present? || self.burial_person_surname.present?
+    when "ma"
+      process = true if self.groom_forename.present? || self.groom_surname.present? || self.bride_forename.present? ||
+        self.bride_surname.present? || self.groom_father_forename.present? || self.groom_father_surname.present? || self.bride_father_surname.present? ||
+        self.bride_father_forename.present? || self.multiple_witness_names?
+    end
+    return process
+  end
+
+  def extract_year(date_string)
+    if date_string && md = date_string.match(/(\d\d\d\d)/)
+      md.captures.first.to_i
+    else
+      1 # assume illegible dates are old -- start with year 1
+    end
+  end
+
+ 
+  def hex_to_base64_digest(hexdigest)
+    [[hexdigest].pack("H*")].pack("m").strip
+  end 
+
+  def multiple_witness_names?
+    present = false
+    self.multiple_witnesses.each do |witness|
+      if  witness.witness_forename.present? || witness.witness_surname.present?
+        present = true
+      end
+    end
+    return present
+  end
+
+  def ordered_baptism_display_fields
     order = []
-    order << 'county'
-    order << 'place'
-    order << 'church_name'
-    order << 'register'
-    order << 'register_type'
-    order << 'register_entry_number'
-    order << 'baptism_date'
-    order << 'birth_date'
-    order << 'burial_date'
-    order << 'marriage_date'
-    [
-      # primary members of the record are displayed first
-      "person_",
-      "burial_person_",
-      "groom_",
-      "bride_",
-      # other family members show up next
-      "father_",
-      "mother_",
-      "husband_",
-      "wife_",
-      "groom_father_",
-      "bride_father_"
-    ].each do |prefix|
-      ["forename", "surname", "age", "sex", "condition", "abode", "parish", "occupation", ].each do |suffix|
-        order << "#{prefix}#{suffix}"
-      end
-    end
-    order << 'relationship'
-    [
-      "male_relative_",
-      "female_relative_",
-      "relative_",
-
-    ].each do |prefix|
-      ["forename", "surname", "age", "sex", "condition", "abode", "parish", "occupation", ].each do |suffix|
-        order << "#{prefix}#{suffix}"
-      end
-    end
-
+    order  = order + FreeregOptionsConstants::LOCATION_FIELDS
+    order = order + FreeregOptionsConstants::BAPTISM_FIELDS
+    order = order + FreeregOptionsConstants::END_FIELDS
+    order = order.uniq 
     order
   end
 
+  def ordered_burial_display_fields
+    order = []
+    order  = order + FreeregOptionsConstants::LOCATION_FIELDS
+    order = order + FreeregOptionsConstants::BURIAL_FIELDS
+    order = order + FreeregOptionsConstants::END_FIELDS
+    order = order.uniq 
+    order
+  end
 
+   def ordered_display_fields
+    order = []
+    order  = order + FreeregOptionsConstants::LOCATION_FIELDS
+    order = order + FreeregOptionsConstants::BAPTISM_FIELDS
+    order  = order + FreeregOptionsConstants::BURIAL_FIELDS
+    order  = order + FreeregOptionsConstants::MARRIAGE_FIELDS
+    order = order + FreeregOptionsConstants::END_FIELDS
+    order = order.uniq 
+    order
+  end
+
+  def ordered_marriage_display_fields
+    order = []
+    order  = order + FreeregOptionsConstants::LOCATION_FIELDS
+    order = order + FreeregOptionsConstants::MARRIAGE_FIELDS
+    order = order + FreeregOptionsConstants::END_FIELDS
+    order = order.uniq 
+    order
+  end
+
+  def order_fields_for_record_type(record_type,extended_def,member)
+    order = Array.new
+    array_of_entries = Array.new
+    json_of_entries = Hash.new
+    case record_type
+      when 'ba'
+        fields = ordered_baptism_display_fields
+      when 'ma'
+        fields = ordered_marriage_display_fields
+      when 'bu'
+        fields = ordered_burial_display_fields
+    end
+    fields.each do |field|
+      case field
+      when 'witness'
+        #this translate the embedded witness fields into specific line displays
+        increment = 1
+        self.multiple_witnesses.each do |witness| 
+          field_for_order = field + increment.to_s  
+          order << field_for_order
+          witness.witness_forename.present? ? actual_witness =  (witness.witness_forename + ' ' + witness.witness_surname) : actual_witness =  witness.witness_surname 
+          self[field_for_order] = actual_witness
+          array_of_entries << actual_witness
+          json_of_entries[field.to_sym]  = actual_witness
+          increment = increment + 1
+        end
+      when 'film' 
+          if member
+            order << field
+            self[field].blank? ? array_of_entries << nil : array_of_entries << self[field]
+            self[field].blank? ? json_of_entries[field.to_sym] = nil : json_of_entries[field.to_sym]  = self[field]
+          end
+      when 'film_number'
+        if member
+            order << field
+            self[field].blank? ? array_of_entries << nil : array_of_entries << self[field]
+            self[field].blank? ? json_of_entries[field.to_sym] = nil : json_of_entries[field.to_sym]  = self[field]
+        end
+      when 'line_id'
+        if member
+            order << field
+            self[field].blank? ? array_of_entries << nil : array_of_entries << self[field]
+            self[field].blank? ? json_of_entries[field.to_sym] = nil : json_of_entries[field.to_sym]  = self[field]
+        end
+      when 'error_flag'
+        if member
+            order << field
+            self[field].blank? ? array_of_entries << nil : array_of_entries << self[field]
+            self[field].blank? ? json_of_entries[field.to_sym] = nil : json_of_entries[field.to_sym]  = self[field]
+        end
+      else
+        order << field
+        self[field].blank? ? array_of_entries << nil : array_of_entries << self[field]
+        self[field].blank? ? json_of_entries[field.to_sym] = nil : json_of_entries[field.to_sym]  = self[field]
+      end
+    end 
+    return  order,array_of_entries, json_of_entries
+  end
+
+  def same_location(record,file)
+    success = true
+    record_id = record.freereg1_csv_file_id
+    file_id = file.id
+    #p "checking location"
+    #p record_id
+    #p file_id
+    if record_id == file_id
+      success = true
+    else
+      success = false
+    end
+    success
+  end
+  
+  def update_location(record,file)
+    #p "updating location"
+    #p record
+    #p file
+    #p self
+    self.update_attributes(:freereg1_csv_file_id => file.id, :place => record[:place], :church_name => record[:church_name], :register_type => record[:register_type])
+    #p self
+  end
 
   def errors_in_fields
 
@@ -517,8 +636,6 @@ class Freereg1CsvEntry
 
     case
     when self.record_type =='ma'
-
-
       unless FreeregValidations.cleanage(self.bride_age)
         errors.add(:bride_age, "Invalid age")
         self.error_flag = "true"
@@ -623,8 +740,8 @@ class Freereg1CsvEntry
         errors.add(:marriage_date, "Invalid date")
         self.error_flag = "true"
       end
-    when self.record_type =='ba'
 
+    when self.record_type =='ba'
       unless FreeregValidations.cleantext(self.person_forename)
         errors.add(:person_forename, "Invalid characters")
         self.error_flag = "true"
@@ -672,7 +789,6 @@ class Freereg1CsvEntry
       end
 
     when self.record_type =='bu'
-
       unless FreeregValidations.cleantext(self.person_age)
         errors.add(:person_age, "Invalid age")
         self.error_flag = "true"

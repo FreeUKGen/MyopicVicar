@@ -11,43 +11,14 @@
     <% end%>
     <%= link_to 'Place for this Church', show_place_freereg_content_path(@place_name), :class => "btn weight--light  btn--small" %> 
     </div><br>
-    <h1 class=" text--center">Transcriptions<h1> <h2 class=" text--center"><%=@church.church_name %> of <%= @place_name %> in <%= @county %> </h2>
-    <h3 class=" text--center">The Church has the following register(s):
+    <h2 class=" text--center">Transcriptions for <%=@church.church_name %> of <%= @place_name %> in <%= @county %> </h2>
+    <h3 class=" text--center">Information about this church  </h3>
+    <h4 class=" text--center">This church has the following <%= pluralize(@registers_count, 'register', 'registers') %>:
     <% @registers.each do |register| %>
       <%= link_to(RegisterType.display_name(register.register_type), show_register_freereg_content_path(register), :class => "btn weight--light  btn--small") %>
-    <% end %></h3>
-    <div class="table-wrapper">
-      <table  class=" table--bordered ">
-        <colgroup >
-          <col class="t20">
-          <col class="t30 weight--semibold">
-        </colgroup>
-        <thead  >
-          <tr>
-            <th >Field</th>
-            <th >Value</th>
-          </tr>
-        </thead>
-        <tbody>    
-          <% if @names%>
-            <%  @names.each do |name| %>
-              <% unless name == ''%>
-                <tr><td>Other possible church names :</td><td class="weight--semibold" ><%= name %>  </td>  </tr>
-              <%end%>
-            <%end%>
-          <%end%>      
-          <tr><td>Denomination of the Church</td><td class="weight--semibold" ><%= add_blank(@church.denomination) %></td></tr>
-          <tr><td>The Church Website </td><td class="weight--semibold"><%= add_blank(@church.website) %></td></tr>
-          <tr><td>Notes about the Church </td><td class="weight--semibold" > <%= add_blank(@church.church_notes) %> </td></tr>
-          <tr><td>Latest date a transcription file loaded</td><td class="weight--semibold" > <%= @church.last_amended %></td></tr>
-           <tr><td>Number of entries</td>  <td class="weight--semibold"><%= @church.records %></td></tr>
-        <tr><td>First actual year of entries</td>  <td class="weight--semibold"><%= @church.datemin %></td></tr>
-        <tr><td>Last actual year of entries</td>  <td class="weight--semibold"><%= @church.datemax %></td></tr>
-         <tr><td>Date church information changed</td>  <td class="weight--semibold"><%= @church.u_at.strftime("%d %b %Y") %></td></tr>
-        </tbody>
-      </table>
-    </div>
-     <h3 class=" text--center">Numbers of transcriptions. </h3>
+    <% end %></h4>
+     <%= render 'church' %>
+     <h3 class=" text--center">Numbers of transcriptions for this church </h3>
     <p class=" text--center">Those periods with zero data may span several decades. The first period may include pre 1530 records. </p> 
      <%= render 'decade' %>
   </section>

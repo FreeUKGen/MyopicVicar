@@ -102,6 +102,7 @@ class UseridDetailsController < ApplicationController
     session[:type] = "edit"
     get_user_info_from_userid
     @userid = @user if  session[:my_own]
+    @current_user = cookies.signed[:userid]
     load(params[:id])
     @syndicates = Syndicate.get_syndicates
   end
@@ -159,6 +160,13 @@ class UseridDetailsController < ApplicationController
     session[:my_own] = true
     get_user_info_from_userid
     @userid = @user
+    respond_to do |format|
+      format.html 
+      format.json do
+        json_of_my_profile = @userid.json_of_my_profile
+        send_data json_of_my_profile, :type => 'application/txt; header=present', :disposition => "attachment; filename=my_profile.txt"
+      end
+    end
   end
 
   def next_place_to_go_successful_create
@@ -334,15 +342,18 @@ class UseridDetailsController < ApplicationController
       redirect_to :action => 'new'
       return
     when params[:option] == "Select specific email"
-      @userids = UseridDetail.get_emails_for_selection(session[:syndicate])
+      params[:syndicate].present? ? @syndicate = params[:syndicate] : @syndicate = 'all'
+      @userids = UseridDetail.get_emails_for_selection(@syndicate)
       @location = 'location.href= "select?email=" + this.value'
       @prompt = "Please select an email address from the following list for #{session[:syndicate]}"
     when params[:option] == "Select specific userid"
-      @userids = UseridDetail.get_userids_for_selection(session[:syndicate])
+      params[:syndicate].present? ? @syndicate = params[:syndicate] : @syndicate = 'all'
+      @userids = UseridDetail.get_userids_for_selection(@syndicate)
       @location = 'location.href= "select?userid=" + this.value'
       @prompt = "Select userid for #{session[:syndicate]}"
     when params[:option] == "Select specific surname/forename"
-      @userids = UseridDetail.get_names_for_selection(session[:syndicate])
+       params[:syndicate].present? ? @syndicate = params[:syndicate] : @syndicate = 'all'
+      @userids = UseridDetail.get_names_for_selection(@syndicate)
       @location = 'location.href= "select?name=" + this.value'
       @prompt = "Select surname/forename for #{session[:syndicate]}"
     else
@@ -404,8 +415,6 @@ class UseridDetailsController < ApplicationController
 
   def update
     load(params[:id])
-    #raise (email_value_changed).inspect
-    #raise (userid_details_params[:email_address_valid].changed?).inspect
     changed_syndicate = @userid.changed_syndicate?(params[:userid_detail][:syndicate])
     changed_email_address = @userid.changed_email?(params[:userid_detail][:email_address])
     success = Array.new
@@ -419,19 +428,18 @@ class UseridDetailsController < ApplicationController
       params[:userid_detail][:previous_syndicate] =  @userid.syndicate unless params[:userid_detail][:syndicate] == @userid.syndicate
     when params[:commit] == "Confirm"
       if params[:userid_detail][:email_address_valid] == 'true'
-        @userid.update_attributes(email_address_valid: true, email_address_last_confirmned: Time.new)
+        @userid.update_attributes(email_address_valid: true, email_address_last_confirmned: Time.new, email_address_validity_change_message: Array.new)
         redirect_to '/manage_resources/new'
         return
       else
         session[:my_own] = true
-        redirect_to :action => 'edit'
+         redirect_to edit_userid_detail_path(@userid)
         return
       end
     end
     email_valid_change_message
     params[:userid_detail][:email_address_last_confirmned] = ['1', 'true'].include?(params[:userid_detail][:email_address_valid]) ? Time.now : ''
     #    params[:userid_detail][:email_address_valid]  = true
-    
     @userid.update_attributes(userid_details_params)
     @userid.write_userid_file
     @userid.save_to_refinery
@@ -444,7 +452,7 @@ class UseridDetailsController < ApplicationController
     else
       flash[:notice] = "The update of the profile was unsuccessful #{success[1]} #{@userid.errors.full_messages}"
       @syndicates = Syndicate.get_syndicates_open_for_transcription
-      render :action => 'edit', page_name: params[:page_name]
+       redirect_to edit_userid_detail_path(@userid)
       return
     end
   end
@@ -539,5 +547,6 @@ class UseridDetailsController < ApplicationController
   def email_valid_change
     @userid.email_address_valid == true ? "Valid" : "Invalid" 
   end
+
 
 end

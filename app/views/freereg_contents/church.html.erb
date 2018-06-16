@@ -1,0 +1,14 @@
+<% title "#{@church_name} #{@place_name} #{@county} transcriptions" %>
+<div class="container">
+  <section class="island ">
+    <div style="text-align: center"> 
+    <%= link_to 'Back to Search Record', :back, :class => "btn weight--light  btn--small"%>  
+    </div><br>
+    <h2 class=" text--center"><%=@church.church_name %> of <%= @place_name %> in <%= @county %> </h2>
+     <h3 class=" text--center">Information about the church  </h3>
+      <%= render 'church' %>  
+     <h3 class=" text--center">Numbers of transcriptions for the church </h3>
+    <p class=" text--center">Those periods with zero data may span several decades. The first period may include pre 1530 records. </p> 
+     <%= render 'decade' %>
+  </section>
+</div>

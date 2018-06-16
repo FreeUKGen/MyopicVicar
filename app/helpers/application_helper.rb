@@ -13,6 +13,11 @@
 # limitations under the License.
 #
 module ApplicationHelper
+  
+  def action_manage_image_server(role)
+    role == 'Manage Image Server' ? action = true : action = false
+    action
+  end
 
   def get_user_info_from_userid
     @user = cookies.signed[:userid]
@@ -117,7 +122,7 @@ module ApplicationHelper
       display_map["Place"] = place if search_query_places_size > 0
     end
     display_map["Include Family Members"] = "Yes" if search_query.inclusive
-    display_map["Include Winesses"] = "Yes" if search_query.witness
+    display_map["Include Witnesses"] = "Yes" if search_query.witness
     display_map
   end
 
@@ -125,26 +130,6 @@ module ApplicationHelper
     dist = Geocoder::Calculations.distance_between([first.latitude, first.longitude],[ last.latitude, last.longitude], {:units => :mi}) if units == Place::MeasurementSystem::ENGLISH
     dist = Geocoder::Calculations.distance_between([first.latitude, first.longitude],[ last.latitude, last.longitude],{:units => :km}) if units == Place::MeasurementSystem::SI
     dist
-  end
-
-  def display_banner
-    banner = <<-HTML
-    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <!-- banner 468x60, created 12/10/10 -->
-    <ins class="adsbygoogle"
-         style="display:inline-block;width:468px;height:60px"
-         data-ad-client="ca-pub-7825403497160061"
-         data-ad-slot="0816871891"></ins>
-    <script>
-    (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
-    HTML
-    if Rails.env.development?
-      banner = <<-HTML
-      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
-      HTML
-    end
-    banner.html_safe
   end
 
   def fullwidth_adsense
@@ -158,7 +143,8 @@ module ApplicationHelper
         <ins class="adsbygoogle adSenseBanner"
              style="display:block"
              data-ad-client="ca-pub-7825403497160061"
-             data-ad-slot="3235467631"></ins>
+             data-ad-slot="8870759291"
+             data-ad-format="auto"></ins>
       <script>
         $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})});
       </script>
@@ -232,4 +218,121 @@ module ApplicationHelper
       raise ArgumentError, "invalid value for Boolean(): \"#{value.inspect}\""
     end
   end
+  def church_name(file)
+    church_name = file.church_name
+    if church_name.blank?
+      register = get_register_object(file)
+      church = get_church_object(register)
+      church_name = church.church_name unless church.blank?
+    end
+    church_name
+  end
+  def userid(file)
+    userid = file.userid
+  end
+  def register_type(file)
+    register_type = file.register_type
+    if register_type.blank?
+      register = get_register_object(file)
+      register_type = RegisterType.display_name(register.register_type) unless register.blank?
+      file.update_attribute(:register_type, register_type) unless register.blank?
+    else
+      register_type = RegisterType.display_name(register_type)
+    end
+
+    register_type
+  end
+  def county_name(file)
+    county_name = file.county #note county has chapman in file and record)
+    case
+    when ChapmanCode.value?(county_name)
+      county_name = ChapmanCode.name_from_code(county_name)
+    when ChapmanCode.key?(county_name)
+    else
+      register = get_register_object(file)
+      church = get_church_object(register)
+      place = get_place_object(church)
+      county_name = place.county unless place.blank?
+    end
+    county_name
+  end
+  def chapman(file)
+    chapman = file.county
+    return chapman if  ChapmanCode.value?(chapman)
+    return ChapmanCode.value_at(chapman) if ChapmanCode.has_key?(chapman)
+    register = get_register_object(file)
+    church = get_church_object(register)
+    place = get_place_object(church)
+    chapman = place.chapman_code unless place.blank?
+    chapman
+  end
+  def place_name(file)
+    place_name = file.place
+    if place_name.blank?
+      register = get_register_object(file)
+      church = get_church_object(register)
+      place = get_place_object(church)
+      place_name = place.place_name unless place.blank?
+    end
+    place_name
+  end
+  def owner(file)
+    owner = file.userid
+  end
+  
+  
+  def system_administrator(user)
+    user.user_role == 'system_administrator' ? system_administerator = true : system_administerator = false
+    system_administrator
+  end
+  
+  
+  def get_register_object(file)
+    register = file.register unless file.blank?
+  end
+  def get_church_object(register)
+    church = register.church unless register.blank?
+  end
+  def get_place_object(church)
+    place = church.place unless church.blank?
+  end
+  def uploaded_date(file)
+    file.uploaded_date.strftime("%d %b %Y") unless file.uploaded_date.nil?
+  end
+  def file_name(file)
+    file.file_name[0..-5]  unless file.file_name.nil?
+  end
+  def locked_by_transcriber(file)
+    if file.locked_by_transcriber
+      value = "Y"
+    else
+      value = "N"
+    end
+    value
+  end
+  def locked_by_coordinator(file)
+    if file.locked_by_coordinator
+      value = "Y"
+    else
+      value = "N"
+    end
+    value
+  end
+  def base_uploaded_date(file)
+    file.base_uploaded_date.strftime("%d %b %Y") unless file.base_uploaded_date.nil?
+  end
+
+  def waiting_date(file)
+    file.waiting_date.strftime("%d %b %Y") unless file.waiting_date.nil?
+  end
+  def errors(file)
+    if file.error >= 0
+      errors = file.error
+    else
+      errors = 0
+    end
+    errors
+  end
+
+  
 end

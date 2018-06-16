@@ -112,10 +112,14 @@ MyopicVicar::Application.routes.draw do
   get  'manage_syndicates/selection',  :to => 'manage_syndicates#display_by_ascending_uploaded_date', constraints: ManageCountiesAscendingConstraint
   get  'manage_syndicates/selection',  :to => 'manage_syndicates#review_a_specific_batch', constraints: ManageCountiesReviewBatchConstraint
   get  'manage_syndicates/selection',  :to => 'manage_syndicates#change_recruiting_status', constraints: ManageSyndicatesChangeRecruitingStatusConstraint
+  get  'manage_syndicates/selection',  :to => 'manage_syndicates#manage_image_group', constraints: ManageSyndicatesManageImagesConstraint
   get  'manage_syndicates/select_action',  :to => 'manage_syndicates#select_action', :as => :select_action_manage_syndicates
   get  'manage_syndicates/display_files_not_processed',  :to => 'manage_syndicates#display_files_not_processed', :as => :display_files_not_processed_manage_syndicates
   get  'manage_syndicates/:id/selected(.:format)',  :to => 'manage_syndicates#selected', :as => :selected_manage_syndicates
   get  'manage_syndicates/display_files_waiting_to_be_processed',  :to => 'manage_syndicates#display_files_waiting_to_be_processed', :as => :display_files_waiting_to_be_processed_manage_syndicates
+  get 'manage_syndicates/manage_image_group', :to => 'manage_syndicates#manage_image_group', :as => :manage_image_group_manage_syndicate
+  get 'manage_syndicates/:id/list_fully_reviewed_group', :to => 'manage_syndicates#list_fully_reviewed_group', :as => :list_fully_reviewed_group_manage_syndicate
+  get 'manage_syndicatess/:id/list_fully_transcribed_group', :to => 'manage_syndicates#list_fully_transcribed_group', :as => :list_fully_transcribed_group_manage_syndicate
   resources :manage_syndicates
 
   resources :csvfiles
@@ -172,6 +176,14 @@ MyopicVicar::Application.routes.draw do
   get  'manage_counties/selection',  :to => 'manage_counties#display_by_descending_uploaded_date', constraints: ManageCountiesDescendingConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#display_by_ascending_uploaded_date', constraints: ManageCountiesAscendingConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#review_a_specific_batch', constraints: ManageCountiesReviewBatchConstraint
+  get  'manage_counties/selection',  :to => 'manage_counties#manage_sources', constraints:ManageCountiesManageImagesConstraint
+  get  'manage_counties/manage_image_group(.:format)', :to => 'manage_counties#manage_image_group', :as => :manage_image_group_manage_county
+  get  'manage_counties/manage_unallocated_image_group(.:format)', :to => 'manage_counties#manage_unallocated_image_group', :as => :manage_unallocated_image_group_manage_county
+  get  'manage_counties/manage_allocate_request_image_group(.:format)', :to => 'manage_counties#manage_allocate_request_image_group', :as => :manage_allocate_request_image_group_manage_county
+  get  'manage_counties/manage_completion_submitted_image_group(.:format)', :to => 'manage_counties#manage_completion_submitted_image_group', :as => :manage_completion_submitted_image_group_manage_county
+  get  'manage_counties/sort_image_group_by_syndicate(.:format)', :to => 'manage_counties#sort_image_group_by_syndicate', :as => :sort_image_group_by_syndicate
+  get  'manage_counties/sort_image_group_by_place(.:format)', :to => 'manage_counties#sort_image_group_by_place', :as => :sort_image_group_by_place
+  get 'manage_counties/uninitialized_source_list(.:format)', :to => 'manage_counties#uninitialized_source_list', :as => :uninitialized_source_list
   get  'manage_counties/select_file',  :to => 'manage_counties#select_file', :as => :select_file_manage_counties
   get  'manage_counties/select_action',  :to => 'manage_counties#select_action', :as => :select_action_manage_counties
   get  'manage_counties/:id/selected(.:format)',  :to => 'manage_counties#selected', :as => :selected_manage_counties
@@ -196,7 +208,10 @@ MyopicVicar::Application.routes.draw do
   get 'freereg_contents/:id/show_church(.:format)', :to => 'freereg_contents#show_church', :as => :show_church_freereg_content
   get 'freereg_contents/:id/show_register(.:format)', :to => 'freereg_contents#show_register', :as => :show_register_freereg_content
   get 'freereg_contents/:id/place(.:format)', :to => 'freereg_contents#place', :as => :place_freereg_content
+  get 'freereg_contents/:id/church(.:format)', :to => 'freereg_contents#church', :as => :church_freereg_content
+  get 'freereg_contents/:id/register(.:format)', :to => 'freereg_contents#register', :as => :register_freereg_content
   get 'freereg_contents/select_places(.:format)', :to => 'freereg_contents#select_places', :as => :select_places_freereg_content
+  post 'freereg_contents/send_request_email(.:format)', :to => 'freereg_contents#send_request_email', :as => :send_request_email_freereg_content
   resources :freereg_contents
 
 
@@ -208,6 +223,8 @@ MyopicVicar::Application.routes.draw do
   get 'registers/:id/rename', :to => 'registers#rename', :as => :rename_register
   get 'registers/:id/merge(.:format)', :to => 'registers#merge', :as => :merge_register
   get 'registers/:id/relocate', :to => 'registers#relocate', :as => :relocate_register
+  get 'registers/:id/create_image_server', :to => 'registers#create_image_server', :as => :create_image_server_register
+  get 'registers/create_image_server_return', :to => 'registers#create_image_server_return', :as => :create_image_server_return_register
   resources :registers
 
   resources :master_place_names
@@ -246,6 +263,7 @@ MyopicVicar::Application.routes.draw do
   get 'freereg1_csv_files/display_my_own_files_by_selection',  :to => 'freereg1_csv_files#display_my_own_files_by_selection', :as => :display_my_own_files_by_selection_freereg1_csv_file
   get 'freereg1_csv_files/display_my_own_files_waiting_to_be_processed',  :to => 'freereg1_csv_files#display_my_own_files_waiting_to_be_processed', :as => :display_my_own_files_waiting_to_be_processed_freereg1_csv_file
   get 'freereg1_csv_files/:id/download(.:format)', :to => 'freereg1_csv_files#download', :as => :download_freereg1_csv_file
+  get 'freereg1_csv_files/unique_names', :to => 'freereg1_csv_files#unique_names', :as => :unique_names_freereg1_csv_file
   get 'freereg1_csv_files/:id/zero_year', :to => 'freereg1_csv_files#zero_year', :as => :zero_year_freereg1_csv_file
   get 'freereg1_csv_files/:id/zero_year_entries', :to => 'freereg1_csv_files#show_zero_startyear_entries', :as => :show_zero_startyear_entries_freereg1_csv_file
   resources :freereg1_csv_files
@@ -284,6 +302,57 @@ MyopicVicar::Application.routes.draw do
   resources :asset_collections
 
   resources :assets
+
+  get 'sources/access_image_server', :to => 'sources#access_image_server', :as => :access_image_server_source
+  resources :sources
+  get 'sources/:id/flush(.:format)', :to => 'sources#flush', :as => :flush_source
+  get 'sources/:id/index(.:format)', :to => 'sources#index', :as => :index_source
+  get 'sources/:id/propagate(.:format)', :to => 'sources#propagate', :as => :propagate_source
+  get 'sources/:id/initialize_status(.:format)', :to => 'sources#initialize_status', :as => :initialize_status_source
+
+  
+  get 'image_server_images/download', :to => 'image_server_images#download', :as => :download_image_server_image
+  get 'image_server_images/view', :to => 'image_server_images#view', :as => :view_image_server_image
+  get 'image_server_images/:id/flush(.:format)', :to => 'image_server_images#flush', :as => :flush_image_server_image
+  get 'image_server_images/:id/index(.:format)', :to => 'image_server_images#index', :as => :index_image_server_image
+  get 'image_server_images/:id/move(.:format)', :to => 'image_server_images#move', :as => :move_image_server_image
+  get 'image_server_images/return_from_image_deletion', :to => 'image_server_images#return_from_image_deletion', :as => :return_from_image_deletion_image_server_image
+  resources :image_server_images
+
+  get 'image_server_groups/my_list_by_syndicate', :to => 'image_server_groups#my_list_by_syndicate', :as => :my_list_by_syndicate_image_server_group
+  get 'image_server_groups/:id/my_list_by_county(.:format)', :to => 'image_server_groups#my_list_by_county', :as => :my_list_by_county_image_server_group
+  get 'image_server_groups/:id/allocate(.:format)', :to => 'image_server_groups#allocate', :as => :allocate_image_server_group
+  get 'image_server_groups/:id/initialize_status(.:format)', :to => 'image_server_groups#initialize_status', :as => :initialize_status_image_server_group
+  get 'image_server_groups/:id/index(.:format)', :to => 'image_server_groups#index', :as => :index_image_server_group
+  get 'image_server_groups/:id/upload(.:format)', :to => 'image_server_groups#upload', :as => :upload_image_server_group
+  get 'image_server_groups/upload_return', :to => 'image_server_groups#upload_return', :as => :upload_return_image_server_group
+  get 'image_server_groups/:id/request_cc_image_server_group(.:format)', :to => 'image_server_groups#request_cc_image_server_group', :as => :request_cc_image_server_group
+  get 'image_server_groups/:id/request_sc_image_server_group(.:format)', :to => 'image_server_groups#request_sc_image_server_group', :as => :request_sc_image_server_group
+  get 'image_server_groups/:id/send_complete_to_cc(.:format)', :to => 'image_server_groups#send_complete_to_cc', :as => :send_complete_to_cc_image_server_group
+  resources :image_server_groups
+
+  get 'assignments/:id/assign(.:format)', :to => 'assignments#assign', :as => :assign_assignment
+  get 'assignments/:id/re_assign(.:format)', :to => 'assignments#re_assign', :as => :re_assign_assignment
+  get 'assignments/:id/select_user(.:format)', :to => 'assignments#select_user', :as => :select_user_assignment
+  get 'assignments/:id/list_assignments_by_syndicate_coordinator(.:format)', :to => 'assignments#list_assignments_by_syndicate_coordinator', :as => :list_assignments_by_syndicate_coordinator_assignment
+  get 'assignments/:id/list_assignments_of_myself(.:format)', :to => 'assignments#list_assignments_of_myself', :as => :list_assignments_of_myself_assignment
+  get 'assignments/:id/list_assignment_image(.:format)', :to => 'assignments#list_assignment_image', :as => :list_assignment_image_assignment
+  get 'assignments/:id/list_assignment_images(.:format)', :to => 'assignments#list_assignment_images', :as => :list_assignment_images_assignment
+  get 'assignments/:id/list_submitted_transcribe_assignments(.:format)', :to => 'assignments#list_submitted_transcribe_assignments', :as => :list_submitted_transcribe_assignments_assignment
+  get 'assignments/:id/list_submitted_review_assignments(.:format)', :to => 'assignments#list_submitted_review_assignments', :as => :list_submitted_review_assignments_assignment
+  get 'assignments/my_own', :to => 'assignments#my_own', :as => :my_own_assignment
+  get 'assignment/image_completed', :to => 'assignments#image_completed', :as => :user_complete_image_assignment
+  get 'assignments/select_county', :to => 'assignments#select_county', :as => :select_county_assignment
+  get 'assignments/:id/list_by_syndicate(.:format)', :to => 'assignments#list_by_syndicate', :as => :list_by_syndicate_assignment
+resources :assignments
+
+  get 'gaps/:id/index(.:format)', :to => 'gaps#index', :as => :index_gap
+resources :gaps
+
+  get 'gap_reasons/:id/index(.:format)', :to => 'gap_reasons#index', :as => :index_gap_reason
+resources :gap_reasons
+
+
 
   # This line mounts Refinery's routes at the root of your application.
   # This means, any requests to the root URL of your application will go to Refinery::PagesController#home.

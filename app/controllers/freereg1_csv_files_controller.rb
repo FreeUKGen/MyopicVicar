@@ -347,8 +347,13 @@ class Freereg1CsvFilesController < ApplicationController
       else
         flash[:notice] = message
       end
-      redirect_to register_path(@return_location)
-      return
+      if @return_location.nil?
+        redirect_to manage_resource_path(@user)
+        return
+      else
+        redirect_to register_path(@return_location) 
+        return
+      end
     else
       #no id
       go_back("batch",params[:id])
@@ -361,7 +366,7 @@ class Freereg1CsvFilesController < ApplicationController
     @role = session[:role]
     @freereg1_csv_file_name = file.file_name
     session[:freereg1_csv_file_id] =  file._id
-    @return_location  = file.register.id
+    @return_location  = file.register.id unless file.register.nil?
   end
 
   def set_locations
@@ -579,6 +584,16 @@ class Freereg1CsvFilesController < ApplicationController
       go_back("batch",params[:id])
     end
   end
+  
+  def unique_names
+     @freereg1_csv_file = Freereg1CsvFile.id(params[:object]).first
+    if @freereg1_csv_file.present?
+      set_controls(@freereg1_csv_file)
+    else
+      go_back("batch",params[:id])
+    end
+    @freereg1_csv_entries = @freereg1_csv_file.get_unique_names
+  end
 
   def zero_year
     #get the entries with a zero year
@@ -589,6 +604,8 @@ class Freereg1CsvFilesController < ApplicationController
       go_back("batch",params[:id])
     end
     @freereg1_csv_entries = @freereg1_csv_file.get_entries_zero_year
+    display_info
+    @zero_year = true
     render 'freereg1_csv_entries/index'
   end
 
@@ -597,6 +614,7 @@ class Freereg1CsvFilesController < ApplicationController
     @freereg1_csv_file = Freereg1CsvFile.where(id: file_id).first
     @freereg1_csv_entries = @freereg1_csv_file.get_zero_year_records
     display_info
+    @get_zero_year_records = true
     render 'freereg1_csv_entries/index'
   end
 

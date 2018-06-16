@@ -4,7 +4,10 @@ class PhysicalFilesController < ApplicationController
   def all_files
     get_user_info_from_userid
     @selection  = 'all'
-    @sorted_by = "; All files by userid then batch name"
+    @sorted_by = "All files by userid then batch name"
+    session[:sorted_by] =  @sorted_by
+    session[:who] = @selection
+    session[:by_userid] = false
     @batches = PhysicalFile.all.order_by(userid: 1,batch_name: 1).page(params[:page]).per(1000)
     @number =  @batches.length
     @number =  @batches.length
@@ -20,6 +23,7 @@ class PhysicalFilesController < ApplicationController
       if params[:physical_file][:type].present?
         session[:sorted_by] = params[:physical_file][:type]
         session[:who] = params[:physical_file][:userid]
+        session[:by_userid] = true
         redirect_to  :action => 'index'
         return
       else
@@ -69,10 +73,13 @@ class PhysicalFilesController < ApplicationController
   def file_not_processed
     @batches = PhysicalFile.uploaded_into_base.not_processed.all.order_by(base_uploaded_date: -1, userid: 1)
     @selection = 'all'
-    @sorted_by = '; Files not processed'
+    @sorted_by = 'Not processed'
+    session[:sorted_by] =  @sorted_by
     @number =  @batches.length
     @paginate = false
     @user = cookies.signed[:userid]
+    session[:by_userid] = false
+    session[:who] = @user 
     @has_access = ((@user.person_role == "data_manager") || (@user.person_role == "system_administrator"))
     render  'index'
   end
@@ -88,12 +95,36 @@ class PhysicalFilesController < ApplicationController
     if params[:page]
       session[:physical_index_page] = params[:page]
     end
-    @sorted_by = "(All files by userid then batch name)"
-    @sorted_by = session[:sorted_by] unless session[:sorted_by].nil?
+    session[:sorted_by].nil? ?  @sorted_by = "All files by userid then batch name" : @sorted_by = session[:sorted_by] 
     get_user_info_from_userid
     @has_access = ((@user.person_role == "data_manager") || (@user.person_role == "system_administrator"))
     case
-    when @sorted_by ==  "Not processed" && session[:who].present?
+     when @sorted_by ==  "All files by userid then batch name" && @has_access && !session[:by_userid]
+      @batches = PhysicalFile.all.order_by(userid: 1,file_name: 1 ).page(params[:page]).per(1000)
+      @number =  @batches.length
+      @selection = 'all'
+      @paginate = true
+     when @sorted_by ==  "Not processed" && @has_access && !session[:by_userid]
+      @batches = PhysicalFile.uploaded_into_base.not_processed.all.order_by(base_uploaded_date: -1, userid: 1).page(params[:page]).per(1000)
+      @number =  @batches.length
+      @selection = 'all'
+      @paginate = false
+    when   @sorted_by == 'All files' && @has_access && !session[:by_userid]
+      @batches = PhysicalFile.all.order_by(userid: 1,base_uploaded_date: 1).page(params[:page]).per(1000)
+      @number =  @batches.length
+      @selection = 'all'
+      @paginate = true
+    when   @sorted_by == "Processed but no file" && @has_access && !session[:by_userid]
+      @batches = PhysicalFile.processed.not_uploaded_into_base.all.order_by(userid: 1,file_processed_date: 1).page(params[:page]).per(1000)
+      @number =  @batches.length
+      @selection = 'all'
+      @paginate = false
+    when   @sorted_by == "Waiting to be processed" && @has_access && !session[:by_userid]
+      @batches = PhysicalFile.waiting.all.order_by(waiting_date: -1)
+      @number =  @batches.length
+      @selection = 'all'
+      @paginate = false 
+    when @sorted_by ==  "Not processed" && session[:who].present? 
       @batches = PhysicalFile.userid(session[:who]).uploaded_into_base.not_processed.all.order_by(base_uploaded_date: -1, userid: 1).page(params[:page]).per(1000)
       @number =  @batches.length
       @selection = session[:who]
@@ -103,12 +134,12 @@ class PhysicalFilesController < ApplicationController
       @number =  @batches.length
       @selection = session[:who]
       @paginate = true
-    when   @sorted_by == "Processed but no file" && session[:who].present?
+    when   @sorted_by == "Processed but no file" && session[:who].present? 
       @batches = PhysicalFile.userid(session[:who]).processed.not_uploaded_into_base.all.order_by(userid: 1,file_processed_date: 1).page(params[:page]).per(1000)
       @number =  @batches.length
       @selection = session[:who]
       @paginate = false
-    when   @sorted_by == "Waiting to be processed" && session[:who].present?
+    when   @sorted_by == "Waiting to be processed" && session[:who].present? 
       @batches = PhysicalFile.userid(session[:who]).waiting.all.order_by(waiting_date: -1)
       @number =  @batches.length
       @selection = session[:who]
@@ -129,10 +160,12 @@ class PhysicalFilesController < ApplicationController
   end
 
   def processed_but_no_file
-    @sorted_by = '; Processed but no file'
-    @batches = PhysicalFile.processed.not_uploaded_into_base.all.order_by(userid: 1,file_processed_date: 1)
-    @number =  @batches.length
+    @sorted_by = 'Processed but no file'
     @selection = 'all'
+    session[:by_userid] = false
+    session[:sorted_by] =  @sorted_by
+    @batches = PhysicalFile.processed.not_uploaded_into_base.order_by(userid: 1,file_processed_date: 1).all
+    @number =  @batches.length
     @paginate = false
     render  'index'
   end
@@ -150,7 +183,7 @@ class PhysicalFilesController < ApplicationController
     #we write a new copy of the file from current on-line contents
     ok_to_proceed = file.check_file
     if !ok_to_proceed[0]
-      flash[:notice] =  "There is a problem with the file you are attempting to reprocess; #{ok_to_proceed[1]}. Contact a system administrator if you are concerned."
+      flash[:notice] =  "There is a problem with the file you are attempting to reproces #{ok_to_proceed[1]}. Contact a system administrator if you are concerned."
       redirect_to :back and return
     end
     file.backup_file
@@ -215,8 +248,11 @@ class PhysicalFilesController < ApplicationController
   end
 
   def waiting_to_be_processed
-    @sorted_by = '; Waiting to be processed'
+    @sorted_by = 'Waiting to be processed'
+    session[:sorted_by] =  @sorted_by
     @selection = "all"
+    session[:by_userid] = false
+    session[:who] = @selection
     @batches = PhysicalFile.waiting.all.order_by(waiting_date: -1, userid: 1,)
     @number =  @batches.length
     @paginate = false

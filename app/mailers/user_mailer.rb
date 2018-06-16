@@ -183,6 +183,62 @@ class UserMailer < ActionMailer::Base
     mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeReg research registration") unless @coordinator.nil?
   end
 
+  def notify_cc_assignment_complete(user,group_id,chapman_code)
+    image_server_group = ImageServerGroup.find(group_id)
+
+    county_coordinator = County.where(:chapman_code=>chapman_code).first.county_coordinator
+    cc = UseridDetail.where(userid: county_coordinator, email_address_valid: true).first
+    return if cc.nil?
+
+    subject = "assignment completed"
+    email_body = "Transcription of image group " + image_server_group.group_name + " is completed"
+
+    mail(:from => user.email_address, :to => cc.email_address, :subject => subject, :body => email_body)
+  end
+
+  def notify_sc_allocate_request_rejection(user,group_name,syndicate,action_type)
+    syndicate = Syndicate.where(:syndicate_code=>syndicate).first
+    return if syndicate.nil?
+
+    sc = UseridDetail.where(:userid=>syndicate.syndicate_coordinator).first
+    return if sc.nil?
+
+    case action_type
+      when 'allocate'
+        subject = "allocate request accepted"
+        email_body = "Your request to have image group " + group_name + " be allocated is approved"
+      when 'reject'
+        subject = "allocate request rejected"
+        email_body = "Your request to have image group " + group_name + " be allocated is rejected"
+    end
+
+    mail(:from => user.email_address, :to => sc.email_address, :subject => subject, :body => email_body)
+  end
+
+  def notify_sc_assignment_complete(assignment_id)
+    assignment = Assignment.id(assignment_id).first
+    user = UseridDetail.id(assignment.userid_detail_id).first
+    @image_server_images = ImageServerImage.where(:assignment_id=>assignment_id).pluck(:image_file_name)
+
+    subject = "#{user.userid} completed the assignment"
+    email_body = "for following images:\r\n\r\n"
+
+    @image_server_images.each {|x| email_body = email_body + x + "\r\n" }
+
+    syndicate = Syndicate.where(:syndicate_code=>user.syndicate).first
+    if syndicate.present?
+      syndicate_coordinator = syndicate.syndicate_coordinator
+      sc = UseridDetail.where(userid: syndicate_coordinator, email_address_valid: true).first
+
+      if sc.present?
+        @sc_email_with_name =  sc.email_address
+        mail(:from => user.email_address, :to => @sc_email_with_name, :cc => user.email_address, :subject => subject, :body => email_body)
+      else
+        p "FREREG_PROCESSING: There was no syndicate coordinator"
+      end
+    end
+  end
+
   def publicity(contact,ccs)
     @ccs = ccs
     @contact = contact
@@ -223,6 +279,24 @@ class UserMailer < ActionMailer::Base
       p file_name
       p userid
     end
+  end
+
+  def request_cc_image_server_group(sc,cc_email,group)
+    subject = "SC request image group"
+    email_body = sc.userid+' at '+sc.syndicate+' requests to have '+group+' allocated'
+    mail(:from => sc.email_address, :to => cc_email, :subject => subject, :body => email_body)
+  end
+
+  def request_sc_image_server_group(transcriber,sc_email,group)
+    subject = "Transcriber request image group"
+    email_body = 'member '+transcriber.userid+' of your syndicate '+transcriber.syndicate+' requests to obtain images in '+group
+    mail(:from => transcriber.email_address, :to => sc_email, :subject => subject, :body => email_body)
+  end
+
+  def request_to_volunteer(coordinator,group_name,applier_name,applier_email)
+    subject = "Request to transcribe image group "+group_name
+    email_body = applier_name+' requests to transcribe '+group_name
+    mail(:from => applier_email, :to => coordinator.email_address, :subject => subject, :body => email_body)
   end
 
   def send_change_of_syndicate_notification_to_sc(user)
