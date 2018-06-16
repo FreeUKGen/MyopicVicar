@@ -1,0 +1,61 @@
+<% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
+<div class="table-wrapper" id="search-result">
+  <table class="table--bordered table--data">
+    <thead>
+      <tr>
+        <th>
+          Main participant(s)
+        </th>
+        <th>
+          Record type
+        </th>
+        <th>
+          Event date
+        </th>
+        <th>
+          County
+        </th>
+        <th>
+          Place : Church : Register type
+        </th>
+        <th>Detail</th>
+      </tr>
+    </thead>
+    <tbody>
+    <% n = 0 %>
+    <% search_results.each do |search_record| %>   
+       <% n = n + 1 %>
+        <tr id="<%=search_record[:_id]%>">
+          <td>
+          <% search_record[:transcript_names].uniq.each_with_index do |name, i| %>
+            <% if  name['type'] == 'primary' %>
+              <% if i > 0 %>
+              <br />
+              <% end%>
+            <%= "#{name['first_name']} #{name['last_name']} " %>
+            <% end %>
+          <% end%>
+          </td>
+          <td>
+            <%= RecordType::display_name(search_record.record_type) %>
+          </td>
+          <td>
+            <%= raw(search_record.transcript_dates.first.gsub(' ', '&nbsp;')) unless search_record.transcript_dates.empty? %>
+          </td>
+          <td>
+            <%= county(search_record) %>
+          </td>
+          <td>
+            <%= format_location(search_record) %>
+          </td>
+          <% unless print_friendly %>
+            <td>
+              <%= link_to("Row #{n}", friendly_search_record_path(search_record.id, search_record.friendly_url), :title => "As available for this record") %> 
+              <i><%= viewed(@search_query,search_record) %></i>
+            </td>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

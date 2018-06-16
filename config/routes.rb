@@ -14,7 +14,20 @@
 #
 MyopicVicar::Application.routes.draw do
 
+
   root :to => 'search_queries#new'
+
+  get 'open',:to => 'open#index'
+  get 'open/:county/places', :to => 'open#places_for_county', :as => :open_places_for_county
+  get 'open/:county/:place/surnames', :to => 'open#surnames_for_place', :as => :open_surnames_for_place
+  get 'open/:county/:place/:surname/:record_types', :to => 'open#records_for_place_surname', :as => :open_records_for_place_surname 
+  get 'open/places_for_county_surname'
+  get 'open/index'
+  get 'open/county'
+  get 'open/surname'
+  get 'open/place'
+  get 'open/place_surname_type'
+
 
   # Mikes winfreereg request
 

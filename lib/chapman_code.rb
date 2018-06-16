@@ -22,6 +22,11 @@ module ChapmanCode
     codes = merge_countries
     codes.invert[code]
   end
+  
+  def self.code_from_name(name)
+    codes = merge_countries
+    codes[name]
+  end
 
   def self.remove_codes(hash)
     hash = hash.each_pair do |key, value|

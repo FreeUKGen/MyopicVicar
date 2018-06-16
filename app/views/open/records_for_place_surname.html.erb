@@ -1,0 +1,19 @@
+<h1>Open <%= @record_types_display.titleize %> for <%= @surname %> in <%= @place.place_name %> (<%= @county %>)</h1>
+
+
+<h1>Open#records_for_place_surname</h1>
+<p>Find me in app/views/open/records_for_place_surname.html.erb</p>
+
+
+<%= render(:partial => "desktop",
+           :controller => :search_query, 
+           :locals => {
+             :search_results => @open_results, 
+             :inclusive => @search_query.inclusive, 
+             :witness =>@search_query.witness,
+              :first_name => @search_query.first_name,
+               :last_name => @search_query.last_name, 
+               :ucf_results => false}) %>
+
+
+<p>The site may contain records not yet released under open license.  Search for all records here.</p>

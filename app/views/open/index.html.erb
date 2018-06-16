@@ -1,0 +1,8 @@
+<h1>Open Data for UK Genealogy</h1>
+<p>FreeUKGenealogy supports free and open genealogy under our open data policy.  Currently we have open records for the following counties.</p>
+
+
+<% @open_counties.each do |county| %>
+   <%= link_to "#{county} #{@record_types_display}", open_places_for_county_path(county) %><br />
+
+<% end %>
