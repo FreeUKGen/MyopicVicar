@@ -65,11 +65,13 @@
                 <td ><%= field.gsub('_',' ').capitalize %></td>
                 <td ><%= @entry[field] %></td>
               </tr>
-             <% end %>
+            <% end %>
           <% end %>
         <% end %>
-      </tbody>
-    </table>
+        <td colspan=2><%= link_to "Report an Error in this Data", report_error_contact_path(@search_record[:_id], :query => @search_query), class: "btn weight--light btn--natural"%></td>
+      
+        </tbody>
+      </table>
   <% end %>
   <div class="read-length push--bottom" style="margin-left: auto; margin-right: auto;">
     <% unless defined?(@printable_format) && @printable_format %>
