@@ -319,8 +319,10 @@ crumb :userid_detail do |syndicate,userid_detail,page_name,option|
       parent :incomplete_registrations, syndicate
   when option
       parent :selection_user_id, option, syndicate
+  when session[:manage_user_origin] == 'manage syndicate'
+      parent :syndicate_options, syndicate
   when session[:edit_userid]
-      syndicate = session[:syndicate]
+      syndicate = syndicate
       syndicate = "all"  if  session[:role] == "system_administrator" || session[:role] == "technical"
       parent :userid_details_listing, syndicate,userid_detail
   else
