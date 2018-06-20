@@ -310,7 +310,6 @@ end
 
 #Profile
 crumb :userid_detail do |syndicate,userid_detail,page_name,option|
-  
   link "Profile:#{userid_detail.userid}", userid_detail_path(userid_detail.id)
   case 
   when session[:my_own]
@@ -331,8 +330,10 @@ crumb :userid_detail do |syndicate,userid_detail,page_name,option|
 end
 
 crumb :selection_user_id do |selection,syndicate|
-  link "#{selection}", selection_userid_details_path(option: selection)
+  link "#{selection}", selection_userid_details_path(option: selection,syndicate: syndicate)
   case
+  when session[:manage_user_origin] == 'manage syndicate'
+      parent :syndicate_options, syndicate
   when session[:edit_userid]
     if syndicate.nil? || syndicate == 'all'
       parent :regmanager_userid_options
