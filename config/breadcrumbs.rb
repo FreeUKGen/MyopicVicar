@@ -310,30 +310,32 @@ end
 
 #Profile
 crumb :userid_detail do |syndicate,userid_detail,page_name,option|
-  
   link "Profile:#{userid_detail.userid}", userid_detail_path(userid_detail.id)
-  if session[:my_own]
+  case 
+  when session[:my_own]
     parent :root
-  else
-    if page_name == 'incomplete_registrations'
+  when page_name == 'incomplete_registrations'
       parent :incomplete_registrations, syndicate
-    elsif option
+  when option
       parent :selection_user_id, option, syndicate
-    elsif session[:edit_userid]
-      syndicate = session[:syndicate]
+  when session[:manage_user_origin] == 'manage syndicate'
+      parent :syndicate_options, syndicate
+  when session[:edit_userid]
+      syndicate = syndicate
       syndicate = "all"  if  session[:role] == "system_administrator" || session[:role] == "technical"
       parent :userid_details_listing, syndicate,userid_detail
-    else
+  else
       parent :coordinator_userid_options
-    end
   end
 end
 
 crumb :selection_user_id do |selection,syndicate|
-  link "#{selection}", selection_userid_details_path(option: selection)
+  link "#{selection}", selection_userid_details_path(option: selection,syndicate: syndicate)
   case
+  when session[:manage_user_origin] == 'manage syndicate'
+      parent :syndicate_options, syndicate
   when session[:edit_userid]
-    if syndicate.nil? || @syndicate == 'all'
+    if syndicate.nil? || syndicate == 'all'
       parent :regmanager_userid_options
     else
       parent :syndicate_options, syndicate
@@ -696,13 +698,17 @@ end
 
 
 # from 'manage counties' => "Manage Images"
-crumb :county_manage_images do |county|
-  link "All Sources", selection_active_manage_counties_path(:option =>'Manage Images')
+crumb :county_manage_images do |county, browse_source|
+  if browse_source.nil?
+    link "All Sources", selection_active_manage_counties_path(:option =>'Manage Images')
+  else 
+    link "All Sources", selection_active_manage_counties_path(:option => 'Manage Images', :anchor => browse_source)
+  end
   parent :county_options, session[:county]
 end
 
       # from "manage counties" => "Manage Images" => "List All Image Groups"
-      crumb :county_manage_images_selection do |county|
+      crumb :county_manage_images_selection do |county, browse_source|
         case session[:image_group_filter]
           when 'all'
             link "List All Image Groups", manage_image_group_manage_county_path
@@ -719,7 +725,7 @@ end
           when 'uninitialized'
             link "List Unitialized Sources", uninitialized_source_list_path(county)
         end
-        parent :county_manage_images, session[:county]
+        parent :county_manage_images, session[:county], browse_source
       end
 
 
@@ -757,7 +763,7 @@ crumb :show_image_source do |register,source|
             parent :syndicate_manage_images, session[:syndicate]
         end
       else
-        parent :county_manage_images_selection, session[:county]
+        parent :county_manage_images_selection, session[:county], source.id.to_s
       end
     when 'Other Server1'
       link "Other Server1", source_path(source)
