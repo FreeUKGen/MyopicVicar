@@ -37,7 +37,7 @@ class GapsController < ApplicationController
     @chapman_code = @place.chapman_code
     session[:county] = @county
     session[:chapman_code] = @syndicate if session[:chapman_code].nil?
-    @user = cookies.signed[:userid]
+    @user = get_user
   end
 
   def destroy

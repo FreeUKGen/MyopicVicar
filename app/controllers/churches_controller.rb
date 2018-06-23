@@ -9,7 +9,7 @@ class ChurchesController < ApplicationController
     @county = session[:county]
     @place = Place.find(session[:place_id])
     @place_name = @place.place_name
-    @user = cookies.signed[:userid]
+    @user = get_user
     @first_name = @user.person_forename unless @user.blank?
     @church.alternatechurchnames.build
     denomination_list
@@ -105,7 +105,7 @@ class ChurchesController < ApplicationController
         @places << my_place.place_name
       end
       @county = session[:county]
-      @user = cookies.signed[:userid]
+      @user = get_user
       @first_name = @user.person_forename unless @user.blank?
       @records = @church.records
       max_records = get_max_records(@user)
@@ -124,7 +124,7 @@ class ChurchesController < ApplicationController
     else
       setup(params[:id])
       @county = session[:county]
-      @user = cookies.signed[:userid]
+      @user = get_user
       @first_name = @user.person_forename unless @user.blank?
       @records = @church.records
       max_records = get_max_records(@user)
@@ -147,7 +147,7 @@ class ChurchesController < ApplicationController
     session[:place_name] =  @place_name
     @county = ChapmanCode.has_key(@place.chapman_code)
     session[:county] = @county
-    @user = cookies.signed[:userid]
+    @user = get_user
     @first_name = @user.person_forename unless @user.blank?
   end
 

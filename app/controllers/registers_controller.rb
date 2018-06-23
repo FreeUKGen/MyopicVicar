@@ -173,9 +173,7 @@ class RegistersController < ApplicationController
       flash[:notice] = 'Trying to show a non-existent register'
       redirect_to :back and return
     end
-
-    @user = UseridDetail.where(userid: cookies.signed[:userid].userid).first
-
+    @user =  get_user
     @decade = @register.daterange
     @transcribers = @register.transcribers
     @contributors = @register.contributors  
