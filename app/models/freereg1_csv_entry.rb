@@ -191,7 +191,7 @@ class Freereg1CsvEntry
 
   belongs_to :freereg1_csv_file, index: true
 
-  before_save :add_digest, :captitalize_surnames
+  before_save :add_digest, :captitalize_surnames,:check_register_type
 
 
   before_destroy do |entry|
@@ -372,6 +372,11 @@ class Freereg1CsvEntry
       end
     end
   end
+  
+  def check_register_type
+    errors.add(:register_type, "Invalid register type") unless RegisterType::OPTIONS.values.include?(self.register_type)
+  end
+
 
   def create_baptism_string
     fields = FreeregOptionsConstants::ORIGINAL_BAPTISM_FIELDS + FreeregOptionsConstants::ADDITIONAL_BAPTISM_FIELDS + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS + FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS

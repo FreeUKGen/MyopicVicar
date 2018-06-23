@@ -83,7 +83,7 @@ class Freereg1CsvFile
   index({userid: 1, file_name: 1},{name: "userid_file_name"})
   index({county: 1, errors: 1},{name: "county_errors"})
 
-  before_save :add_lower_case_userid_to_file, :add_country_to_file
+  before_save :add_lower_case_userid_to_file, :add_country_to_file, :check_register_type
   after_save :recalculate_last_amended, :update_number_of_files
 
   before_destroy do |file|
@@ -555,6 +555,10 @@ class Freereg1CsvFile
     else
       self.update_attributes(:locked_by_coordinator => true)
     end
+  end
+  
+  def check_register_type
+    errors.add(:register_type, "Invalid register type") unless RegisterType::OPTIONS.values.include?(self.register_type)
   end
 
   def clean_up
