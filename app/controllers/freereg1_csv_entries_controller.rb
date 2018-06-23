@@ -102,7 +102,7 @@ class Freereg1CsvEntriesController < ApplicationController
       redirect_to main_app.new_manage_resource_path
       return
     end
-
+    @search_record = @freereg1_csv_entry.search_record
     @freereg1_csv_file_id =  @freereg1_csv_file.id
     @freereg1_csv_file_name =  @freereg1_csv_file.file_name
     @file_owner = @freereg1_csv_file.userid

@@ -2,6 +2,15 @@
   <section class="island ">
     <div class="grid__item ">
       <table class="table--bordered table--data push--bottom t100" >
+      <caption class="beta"><%= record_type(@entry) %> entry
+        <%case%>
+        <%when @display_date%>
+          <span class="additional"> search made on <%=Time.now.strftime("%d %b %Y") %></span><br>
+        <%when !current_authentication_devise_user.present?%>
+           <span class="additional">While we have made all efforts to correctly record the information in the original docucument there may be different interpretations of the written words. <b>If you have access to the original document</b> and believe we have made a mistake you are encouraged to report this to us.
+           <%= link_to "Report an Error in this Data", report_error_contact_path(@search_record[:_id], :query => @search_query), class: "btn weight--light btn--natural"%></span>
+        <% end%> 
+      </caption>
       <thead>
         <tr>
            <% if @all_data.present? %><th >Field </th><% else%><th >Field <br>(only fields with a value are shown)</th> <% end%>
@@ -91,6 +100,9 @@
               </tr>
              <% end %>
           <% end %>
+        <% end %>
+        <% if  !current_authentication_devise_user.present?%>
+          <td colspan=2><%= link_to "Report an Error in this Data", report_error_contact_path(@search_record[:_id], :query => @search_query), class: "btn weight--light btn--natural"%></td>
         <% end %>
       </tbody>
       </table>

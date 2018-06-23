@@ -7,72 +7,7 @@
     <% if @entry && @annotations && @annotations.length %>
       <h2>Offline Transcriptions</h2>
     <% end %>
-  
-     
-      <h3 style="text-align: center"> <%= record_type(@entry) %> entry
-        <%if @display_date%>
-          <span class="additional"> search made on <%=Time.now.strftime("%d %b %Y") %></span><br>
-        <% else%>
-           <span class="additional">While we have made all efforts to correctly record the information in the original docucument there may be different interpretations of the written words. <b>If you have access to the original document</b> and believe we have made a mistake you are encouraged to report this to us.
-  <%= link_to "Report an Error in this Data", report_error_contact_path(@search_record[:_id], :query => @search_query), class: "btn weight--light btn--natural"%></span>
-        <% end%> 
-      </caption>
-       <thead>
-        <tr>
-           <% if @all_data.present? %><th >Field </th><% else%><th >Field <br>(only fields with a value are shown)</th> <% end%>
-          <th >Value </th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @order.each do |field| %>
-          <% if @all_data.present? || @entry[field].present? %> 
-            <% case field %>    
-            <% when 'place' %>
-              <tr>
-                <td ><%= field.gsub('_',' ').capitalize %> (with link)</td>
-                <% if @place_id.present? %>
-                  <td ><%= link_to(@entry[field], place_freereg_content_path(@place_id)) %></td>
-                <% else %>
-                  <td ><%= @entry[field] %></td>
-                <% end %>  
-              </tr>
-            <% when 'church_name' %>
-              <tr>
-                <td><%= field.gsub('_',' ').capitalize %>  (with link)</td>
-                <% if @church_id.present? %>
-                  <td><%= link_to(@entry[field], church_freereg_content_path(@church_id)) %></td>
-                <% else %>
-                  <td><%= @entry[field] %></td>
-                <% end %>  
-              </tr>  
-            <% when 'register_type' %>
-              <tr>
-                <td><%= field.gsub('_',' ').capitalize%>  (with link)</td>
-                <% if @register_id.present? %>
-                  <td><%= link_to(@entry[field], register_freereg_content_path(@register_id)) %></td>
-                <% else %>
-                  <td><%= @entry[field] %></td>
-                <% end %>  
-              </tr>  
-            <% when 'witness' %>
-              <% @entry.multiple_witnesses.each do |witness| %>
-                <tr>
-                  <td>Witness </td>
-                  <td><%= witness.witness_forename %> <%= witness.witness_surname %></td>
-                </tr>
-              <% end%>
-            <%else%>
-              <tr>
-                <td ><%= field.gsub('_',' ').capitalize %></td>
-                <td ><%= @entry[field] %></td>
-              </tr>
-            <% end %>
-          <% end %>
-        <% end %>
-        <td colspan=2><%= link_to "Report an Error in this Data", report_error_contact_path(@search_record[:_id], :query => @search_query), class: "btn weight--light btn--natural"%></td>
-      
-        </tbody>
-      </table>
+    <%= render 'entry_detail' %>
   <% end %>
   <div class="read-length push--bottom" style="margin-left: auto; margin-right: auto;">
     <% unless defined?(@printable_format) && @printable_format %>
