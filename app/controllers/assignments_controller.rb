@@ -69,7 +69,7 @@ class AssignmentsController < ApplicationController
       @place = @church.place
       session[:place_name] = @place.place_name
       session[:county] = @county = @place.county
-      @user = cookies.signed[:userid]
+      @user = get_user
       @group = ImageServerGroup.find(:id=>image_server_group_id)
     end
   end
@@ -84,7 +84,7 @@ class AssignmentsController < ApplicationController
     @place = @church.place #id?
     @county =  @place.county
     @place_name = @place.place_name
-    @user = cookies.signed[:userid]
+    @user = get_user
     @source = Source.find(:id=>session[:source_id])
     @group = ImageServerGroup.find(:id=>session[:image_server_group_id])
   end
@@ -218,7 +218,7 @@ class AssignmentsController < ApplicationController
   end
 
   def select_county
-    @user = cookies.signed[:userid]
+    @user = get_user
     get_counties_for_selection
     
     if @counties.nil?

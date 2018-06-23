@@ -30,7 +30,7 @@ class MessagesController < ApplicationController
   def show_waitlist_msg
     get_user_info_from_userid
     @message = Message.id(params[:id]).first
-    @user = cookies.signed[:userid]
+    @user = get_user
     if @message.blank?
       go_back("message",params[:id])
     end
