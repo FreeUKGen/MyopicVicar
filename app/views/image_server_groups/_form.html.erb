@@ -22,7 +22,7 @@
       <% when 'new' %>
         <%= s.hidden_field :source_start_date, :value => @parent_source.start_date %>
         <%= s.hidden_field :source_end_date, :value => @parent_source.end_date %>
-        <%= s.hidden_field :source_id %>
+        <%= s.hidden_field :source_id, :value => @parent_source.id%>
       	<%= s.button :submit, 'Create', :onclick => 'return check_year_range()' %>
       <% when 'edit' %> 
         <%= s.hidden_field :source_start_date, :value => s.object.source.start_date %>

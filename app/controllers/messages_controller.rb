@@ -49,6 +49,7 @@ class MessagesController < ApplicationController
     @message = Message.id(params[:id]).first
     @reply_messages = Message.fetch_replies(params[:id])
     @sent_replies = Message.sent_messages(@reply_messages)
+    @user = get_user
     if @message.blank?
       go_back("message",params[:id])
     end

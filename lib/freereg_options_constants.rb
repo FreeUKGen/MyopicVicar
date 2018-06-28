@@ -128,7 +128,7 @@ module FreeregOptionsConstants
 
   DATERANGE_MINIMUM = 1530
 
-  END_FIELDS = ['transcribed_by', 'credit', 'file_line_number']
+  END_FIELDS = ['transcribed_by', 'credit', 'file_line_number','film','film_number','line_id']
 
   ENTRY_ORDER_DEFINITION = { "ba" => {
                                :chapman_code=> 1,

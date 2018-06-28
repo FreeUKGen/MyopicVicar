@@ -102,7 +102,7 @@ class UseridDetailsController < ApplicationController
     session[:type] = "edit"
     get_user_info_from_userid
     @userid = @user if  session[:my_own]
-    @current_user = cookies.signed[:userid]
+    @current_user = get_user
     load(params[:id])
     @syndicates = Syndicate.get_syndicates
   end
@@ -127,7 +127,7 @@ class UseridDetailsController < ApplicationController
   end #end method
 
   def load(userid_id)
-    @user = cookies.signed[:userid]
+    @user = get_user
     @first_name = @user.person_forename unless @user.blank?
     @userid = UseridDetail.id(userid_id).first
     if @userid.nil?
@@ -190,7 +190,7 @@ class UseridDetailsController < ApplicationController
   def next_place_to_go_unsuccessful_create
     case
     when  params[:commit] == "Submit"
-      @user = cookies.signed[:userid]
+      @user = get_user
       @first_name = @user.person_forename unless @user.blank?
       render :action => 'new' and return
     when params[:commit] == 'Register Researcher'
@@ -203,7 +203,7 @@ class UseridDetailsController < ApplicationController
     when params[:commit] == 'Technical Registration'
       render :action => 'technical_registration' and return
     else
-      @user = cookies.signed[:userid]
+      @user = get_user
       @first_name = @user.person_forename unless @user.blank?
       render :action => 'new' and return
     end
@@ -342,15 +342,18 @@ class UseridDetailsController < ApplicationController
       redirect_to :action => 'new'
       return
     when params[:option] == "Select specific email"
-      @userids = UseridDetail.get_emails_for_selection(session[:syndicate])
+      params[:syndicate].present? ? @syndicate = params[:syndicate] : @syndicate = 'all'
+      @userids = UseridDetail.get_emails_for_selection(@syndicate)
       @location = 'location.href= "select?email=" + this.value'
       @prompt = "Please select an email address from the following list for #{session[:syndicate]}"
     when params[:option] == "Select specific userid"
-      @userids = UseridDetail.get_userids_for_selection(session[:syndicate])
+      params[:syndicate].present? ? @syndicate = params[:syndicate] : @syndicate = 'all'
+      @userids = UseridDetail.get_userids_for_selection(@syndicate)
       @location = 'location.href= "select?userid=" + this.value'
       @prompt = "Select userid for #{session[:syndicate]}"
     when params[:option] == "Select specific surname/forename"
-      @userids = UseridDetail.get_names_for_selection(session[:syndicate])
+       params[:syndicate].present? ? @syndicate = params[:syndicate] : @syndicate = 'all'
+      @userids = UseridDetail.get_names_for_selection(@syndicate)
       @location = 'location.href= "select?name=" + this.value'
       @prompt = "Select surname/forename for #{session[:syndicate]}"
     else
@@ -456,7 +459,7 @@ class UseridDetailsController < ApplicationController
 
   def incomplete_registrations
     @current_syndicate = session[:syndicate]
-    @current_user = cookies.signed[:userid]
+    @current_user = get_user
     session[:edit_userid] = true
     user = UseridDetail.new
 
@@ -476,7 +479,8 @@ class UseridDetailsController < ApplicationController
   end
 
   def spam_check
-    return true if cookies.signed[:userid].present?
+    user = get_user
+    return true if user.present?
     honeypot_error = true
     diff = Time.now - Time.parse(params[:__TIME])
 

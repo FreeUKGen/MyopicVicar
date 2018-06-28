@@ -20,7 +20,7 @@ module ApplicationHelper
   end
 
   def get_user_info_from_userid
-    @user = cookies.signed[:userid]
+    @user = get_user
     unless @user.blank?
       @first_name = @user.person_forename
       @user_id = @user.id
@@ -28,6 +28,12 @@ module ApplicationHelper
       @manager = manager?(@user)
       @roles = UseridRole::OPTIONS.fetch(@user.person_role)
     end
+  end
+  
+  def get_user
+    user = cookies.signed[:userid]
+    user = UseridDetail.id(user).first
+    return user
   end
 
   def manager?(user)
@@ -122,7 +128,7 @@ module ApplicationHelper
       display_map["Place"] = place if search_query_places_size > 0
     end
     display_map["Include Family Members"] = "Yes" if search_query.inclusive
-    display_map["Include Winesses"] = "Yes" if search_query.witness
+    display_map["Include Witnesses"] = "Yes" if search_query.witness
     display_map
   end
 

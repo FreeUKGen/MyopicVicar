@@ -114,7 +114,7 @@ class Freereg1CsvEntriesController < ApplicationController
     @place = @church.place #id?
     @county =  @place.county
     @place_name = @place.place_name
-    @user = cookies.signed[:userid]
+    @user = get_user
     @first_name = @user.person_forename unless @user.blank?
   end
 
@@ -199,7 +199,7 @@ class Freereg1CsvEntriesController < ApplicationController
       @county =  @place.county
       @place_name = @place.place_name
     end
-    @user = cookies.signed[:userid]
+    @user = get_user
     @first_name = @user.person_forename unless @user.blank?
   end
 
@@ -213,6 +213,8 @@ class Freereg1CsvEntriesController < ApplicationController
       display_info
       @forenames = Array.new
       @surnames = Array.new
+      @all_data = true
+      @order,@array_of_entries, @json_of_entries = @freereg1_csv_entry.order_fields_for_record_type(@freereg1_csv_entry[:record_type],@freereg1_csv_file.def,current_authentication_devise_user.present?)  
     else
       go_back("entry",params[:id])
     end

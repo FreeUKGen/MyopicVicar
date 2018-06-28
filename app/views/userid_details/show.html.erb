@@ -34,22 +34,24 @@
       </tr> <tr>
         <td>Email address valid:</td><td > <%= @userid.email_address_valid   %> </td>
       </tr> <tr>
+        <% unless @userid.email_address_valid%>
         <td>Reason email address is invalid:</td><td > <%= @userid.email_address_validity_change_message  %></td>
+       <% end%>
       </tr> <tr>
         <td>Email address last confirmed:</td><td > <%= @userid.email_address_last_confirmned.strftime("%d %b %Y")  unless @userid.email_address_last_confirmned.nil? %> </td>
       </tr> <tr>
         <td>Alternate email address:</td><td > <%= @userid.alternate_email_address   %> </td>
       </tr> <tr>
-        <td>Adress or physical Location:</td><td > <%= @userid.address  %>  </td>
+        <td>Address or physical Location:</td><td > <%= @userid.address  %>  </td>
       </tr> <tr>
         <td>Telephone number:</td><td > <%= @userid.telephone_number %>   </td>
-      <% unless @userid.person_role == 'researcher'%>
+      </tr> <tr>
+          <td>Syndicate:</td><td > <%=@userid.syndicate %>  </td>
+      <% unless @userid.person_role == 'researcher' || !session[:edit_userid]%>
         </tr> <tr>
           <td>Role in FreeREG:</td><td > <%=@userid.person_role%>  </td>
         </tr> <tr>
           <td>Transcription agreement accepted:</td><td > <%= @userid.new_transcription_agreement%>  </td>
-        </tr> <tr>
-          <td>Syndicate:</td><td > <%=@userid.syndicate %>  </td>
         </tr> <tr>
           <td>Previous Syndicate:</td><td > <%= @userid.previous_syndicate%>  </td>
         </tr> <tr>
@@ -57,7 +59,7 @@
         </tr> <tr>
           <td>Just send my processing messages to my coordinator:</td><td > <%=@userid.no_processing_messages %>  </td>
         </tr> <tr>
-          <td>Do not ccknowledge my contributions:</td><td > <%= @userid.do_not_acknowledge_me%>  </td>
+          <td>Do not acknowledge my contributions:</td><td > <%= @userid.do_not_acknowledge_me%>  </td>
         </tr> <tr>
           <td>Use a pseudonym in place of my name:</td><td > <%=@userid.acknowledge_with_pseudo_name%>  </td>
           <% if @userid.acknowledge_with_pseudo_name %> 
@@ -83,7 +85,9 @@
         <% unless @userid.country_groups.nil? || @userid.country_groups.length == 0  %>
           </tr> <tr>
              <td>Counties managed as Country Coordinator:</td><td > <%= @userid.country_groups %>  </td>
-        <% end%> 
+        <% end%>
+        </tr> <tr>
+          <td>Active:</td><td > <%= @userid.active %>  </td>
         <% unless  @userid.active %>
           </tr> <tr>
           <% unless @userid.disabled_date.nil?%>
