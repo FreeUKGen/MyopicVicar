@@ -95,7 +95,11 @@ class SearchRecordsController < ApplicationController
           end
           if  @entry.nil?
             proceed = false
-            log_missing_document("entry for search record",@search_record[:id], @search_query.id)
+            log_missing_document("Missing entry for search record",@search_record[:id], @search_query.id)
+            flash[:notice] = "We encountered a problem retrieving that original entry, if this continues please let us know"
+          elsif !@entry.freereg1_csv_file.present?
+            proceed = false
+            log_missing_document("file missing for entry for search record",@search_record[:id], @search_query.id)
             flash[:notice] = "We encountered a problem retrieving that original entry, if this continues please let us know"
           end
         end
