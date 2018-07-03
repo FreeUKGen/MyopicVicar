@@ -1336,7 +1336,9 @@ class CsvRecords <  CsvFile
   def check_original_file_is_flexible_format?(batch,userid)
     file = Freereg1CsvFile.file_name(batch).userid(userid).first
     result = false
-    result = true if file.def
+    if file.present?
+      result = true if file.def
+    end
     return result 
   end
   
