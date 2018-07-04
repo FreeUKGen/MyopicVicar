@@ -1,5 +1,4 @@
-<% breadcrumb :messages %>
-<% breadcrumb :message_to_syndicate if session[:syndicate]%>
+<% index_breadcrumbs %>
 <% if params[:action] == "list_feedback_reply_message" %>
   <h2 class=" text--center">List of Feedback Reply messages</h2>
 <% else %>

@@ -99,4 +99,46 @@ module MessagesHelper
       link_to 'Reply', reply_messages_path(message.id),method: :get,:class => "btn weight--light  btn--small" if message.source_message_id.blank?
     end
   end
+
+  def show_links
+    if @message.source_feedback_id.present?
+      link_to 'Show Feedback', feedback_path(@message.source_feedback_id), :class => "btn weight--light  btn--small", method: :get
+    else
+      primary_links
+    end
+  end
+
+  def index_breadcrumbs
+    case
+    when session[:syndicate]
+      breadcrumb :message_to_syndicate
+    when params[:action] == "feedback_reply_messages"
+      breadcrumb :feedback_messages, @feedback
+    else
+      breadcrumb :messages
+    end
+  end
+
+  private
+  def primary_links
+    capture do
+      concat send_message_link
+      concat " "
+      concat edit_message_link
+      concat " "
+      concat view_replies_link
+    end
+  end
+
+  def send_message_link
+    link_to('Send this Message', send_message_messages_path(@message.id), :class => "btn weight--light  btn--small", method: :get, data: { confirm: 'Are you sure you want to send this message' })
+  end
+
+  def edit_message_link
+    link_to('Edit this Message', edit_message_path(@message.id),  :class => "btn weight--light  btn--small", method: :get)
+  end
+
+  def view_replies_link
+    link_to "View #{pluralize(@sent_replies.count, 'Reply') }", show_reply_messages_path(@message.id),  :class => "btn weight--light  btn--small", method: :get unless @sent_replies.count == 0
+  end
 end

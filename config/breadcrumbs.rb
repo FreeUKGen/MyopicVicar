@@ -455,8 +455,15 @@ crumb :messages do
 end
 crumb :show_message do |message|
   link "Show Message", message_path(message)
-  parent :messages
-  parent :message_to_syndicate if session[:syndicate]
+  case
+  when session[:syndicate]
+    parent :message_to_syndicate
+  when message.source_feedback_id.present?
+    feedback = Feedback.id(message.source_feedback_id).first
+    parent :feedback_messages, feedback
+  else
+    parent :messages
+  end
 end
 
 crumb :userid_messages do
@@ -487,6 +494,17 @@ crumb :show_reply_message do |message|
   source_message = Message.id(message.source_message_id).first
   link "Show Reply Message", show_waitlist_msg_path
   parent :reply_messages_list, source_message
+end
+
+crumb :feedback_messages do |message|
+  link "Feedback Messages", feedback_reply_messages_path(message.id)
+  parent :feedbacks
+end
+
+crumb :show_feedback_message do |message|
+  link "Show Feedback Message", message_path(message)
+  parent :messages
+  parent :message_to_syndicate if session[:syndicate]
 end
 
 crumb :edit_message do |message|

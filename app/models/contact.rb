@@ -110,8 +110,8 @@ class Contact
 
   def communicate_data_problem
     ccs = Array.new
-    #coordinator = self.get_coordinator if self.record_id.present?
-    #ccs << coordinator.email_address if self.record_id.present?
+    coordinator = self.get_coordinator if self.record_id.present?
+    ccs << coordinator.email_address if self.record_id.present?
     UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
       ccs << person.email_address
     end
