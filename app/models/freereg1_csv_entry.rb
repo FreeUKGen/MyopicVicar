@@ -535,7 +535,7 @@ class Freereg1CsvEntry
     order
   end
 
-  def order_fields_for_record_type(record_type)
+  def order_fields_for_record_type(record_type,extended_def,member)
     order = Array.new
     array_of_entries = Array.new
     json_of_entries = Hash.new
@@ -548,9 +548,48 @@ class Freereg1CsvEntry
         fields = ordered_burial_display_fields
     end
     fields.each do |field|
-      order << field
-      self[field].blank? ? array_of_entries << nil : array_of_entries << self[field]
-      self[field].blank? ? json_of_entries[field.to_sym] = nil : json_of_entries[field.to_sym]  = self[field]
+      case field
+      when 'witness'
+        #this translate the embedded witness fields into specific line displays
+        increment = 1
+        self.multiple_witnesses.each do |witness| 
+          field_for_order = field + increment.to_s  
+          order << field_for_order
+          witness.witness_forename.present? ? actual_witness =  (witness.witness_forename + ' ' + witness.witness_surname) : actual_witness =  witness.witness_surname 
+          self[field_for_order] = actual_witness
+          array_of_entries << actual_witness
+          json_of_entries[field.to_sym]  = actual_witness
+          increment = increment + 1
+        end
+      when 'film' 
+          if member
+            order << field
+            self[field].blank? ? array_of_entries << nil : array_of_entries << self[field]
+            self[field].blank? ? json_of_entries[field.to_sym] = nil : json_of_entries[field.to_sym]  = self[field]
+          end
+      when 'film_number'
+        if member
+            order << field
+            self[field].blank? ? array_of_entries << nil : array_of_entries << self[field]
+            self[field].blank? ? json_of_entries[field.to_sym] = nil : json_of_entries[field.to_sym]  = self[field]
+        end
+      when 'line_id'
+        if member
+            order << field
+            self[field].blank? ? array_of_entries << nil : array_of_entries << self[field]
+            self[field].blank? ? json_of_entries[field.to_sym] = nil : json_of_entries[field.to_sym]  = self[field]
+        end
+      when 'error_flag'
+        if member
+            order << field
+            self[field].blank? ? array_of_entries << nil : array_of_entries << self[field]
+            self[field].blank? ? json_of_entries[field.to_sym] = nil : json_of_entries[field.to_sym]  = self[field]
+        end
+      else
+        order << field
+        self[field].blank? ? array_of_entries << nil : array_of_entries << self[field]
+        self[field].blank? ? json_of_entries[field.to_sym] = nil : json_of_entries[field.to_sym]  = self[field]
+      end
     end 
     return  order,array_of_entries, json_of_entries
   end

@@ -1,4 +1,4 @@
-<% breadcrumb :selection_user_id, request.query_parameters[:option] %>
+<% breadcrumb :selection_user_id, request.query_parameters[:option],@syndicate  %>
 
 <div id="notice" style="color:red">
   <% if flash[:notice] %>

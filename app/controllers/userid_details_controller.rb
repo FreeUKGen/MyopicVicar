@@ -342,15 +342,18 @@ class UseridDetailsController < ApplicationController
       redirect_to :action => 'new'
       return
     when params[:option] == "Select specific email"
-      @userids = UseridDetail.get_emails_for_selection(session[:syndicate])
+      params[:syndicate].present? ? @syndicate = params[:syndicate] : @syndicate = 'all'
+      @userids = UseridDetail.get_emails_for_selection(@syndicate)
       @location = 'location.href= "select?email=" + this.value'
       @prompt = "Please select an email address from the following list for #{session[:syndicate]}"
     when params[:option] == "Select specific userid"
-      @userids = UseridDetail.get_userids_for_selection(session[:syndicate])
+      params[:syndicate].present? ? @syndicate = params[:syndicate] : @syndicate = 'all'
+      @userids = UseridDetail.get_userids_for_selection(@syndicate)
       @location = 'location.href= "select?userid=" + this.value'
       @prompt = "Select userid for #{session[:syndicate]}"
     when params[:option] == "Select specific surname/forename"
-      @userids = UseridDetail.get_names_for_selection(session[:syndicate])
+       params[:syndicate].present? ? @syndicate = params[:syndicate] : @syndicate = 'all'
+      @userids = UseridDetail.get_names_for_selection(@syndicate)
       @location = 'location.href= "select?name=" + this.value'
       @prompt = "Select surname/forename for #{session[:syndicate]}"
     else
