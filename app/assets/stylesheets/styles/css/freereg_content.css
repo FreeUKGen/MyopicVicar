@@ -341,6 +341,9 @@ label.collection_check_boxes {
     overflow: auto;
     max-height: 400px;  
 }
+.strong {
+  font-weight: bold;
+}
 .fixed-headers table { border-bottom: 1px solid #ccc; }
 .fixed-headers th:first-child { padding-left: 14px; }
 .fixed-headers th:last-child, 
