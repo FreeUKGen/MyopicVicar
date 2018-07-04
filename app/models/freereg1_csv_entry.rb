@@ -839,6 +839,10 @@ class Freereg1CsvEntry
         errors.add(:person_sex, "Invalid sex field")
         self.error_flag = "true"
       end
+      unless FreeregValidations.cleanage(self.person_age)
+        errors.add(:groom_age, "Invalid age")
+        self.error_flag = "true"
+      end
       unless FreeregValidations.cleandate(self.baptism_date)
         errors.add(:baptism_date, "Invalid date")
         self.error_flag = "true"
