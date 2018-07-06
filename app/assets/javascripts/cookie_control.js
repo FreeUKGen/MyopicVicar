@@ -102,7 +102,7 @@ $(document).ready(function() {
      update_third_party_cookies_user_preference('deny');
    };
 
-  $('#cookie_check_box').change(function() {
+  $('.cookie_check_box').change(function() {
     if($(this).is(":checked")) {
       acceptCookie();
     } else {
