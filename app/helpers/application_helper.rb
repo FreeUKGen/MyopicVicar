@@ -146,13 +146,24 @@ module ApplicationHelper
         @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
     </style>
       <script async="" src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+      <script>
+        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
+      </script>
         <ins class="adsbygoogle adSenseBanner"
              style="display:block"
              data-ad-client="ca-pub-7825403497160061"
              data-ad-slot="8870759291"
              data-ad-format="auto"></ins>
       <script>
+        window.update_personalized_google_adverts = function (preference) {
+          if(preference == 'accept') {
+            (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
+          } else if(preference == 'deny') {
+            (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
+          }
+        };
         $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})});
+        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
       </script>
     HTML
     if Rails.env.development?
