@@ -177,6 +177,9 @@ class AssignmentsController < ApplicationController
       return
     else
       @assignment, @count = Assignment.list_assignment_by_status(session[:syndicate], 'rs')
+
+      @assignment_ids = []
+      @assignment.each {|k1,v1| @assignment_ids << k1}
     end
   end
 
@@ -186,6 +189,9 @@ class AssignmentsController < ApplicationController
       return
     else
       @assignment, @count = Assignment.list_assignment_by_status(session[:syndicate], 'ts')
+
+      @assignment_ids = []
+      @assignment.each {|k1,v1| @assignment_ids << k1}
     end
   end
 
