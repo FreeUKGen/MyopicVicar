@@ -5,14 +5,14 @@ class OpenController < ApplicationController
   FREEREG_RECORD_TYPE_DESCRIPTION = "baptisms, marriages and burials"
 
   def index
-    @open_counties = ChapmanCode.keys
+    @open_counties = OpenCounty.all
     @record_types_display = FREEREG_RECORD_TYPE_DESCRIPTION
   end
 
   def places_for_county
     @county = params[:county]
     chapman_code = ChapmanCode.code_from_name(@county)
-    @open_places = Place.chapman_code(chapman_code).not_disabled.data_present
+    @open_places = Place.chapman_code(chapman_code).not_disabled.data_present.where(:open_record_count.gt => 1000).sort(:place_name => 1)
     @record_types_display = FREEREG_RECORD_TYPE_DESCRIPTION
   end
 
@@ -23,31 +23,7 @@ class OpenController < ApplicationController
     
     @place = Place.where(:place_name => place_name, :chapman_code => chapman_code).first
     @record_types_display = FREEREG_RECORD_TYPE_DESCRIPTION
-    
-    @open_surnames = {}
-    @place.search_records.each do |search_record|
-      search_record.transcript_names.each do |name|
-        if name && name["last_name"]
-          surname = @open_surnames[name["last_name"]] || {}
-          counter = surname[search_record.record_type] || {}
-          date = search_record.search_date
-          earliest = counter[:earliest] || date
-          latest = counter[:latest] || date
-          number = counter[:number] || 0
-          
-          number += 1
-          if earliest > date
-            earliest = date
-          end
-          if latest < date
-            latest = date
-          end
-          
-          surname[search_record.record_type] = { :number => number, :earliest => earliest, :latest => latest }
-          @open_surnames[name["last_name"]] = surname
-        end
-      end
-    end
+    @open_surnames = @place.open_names_per_place.where(:count.gt => 100)
 
   end
 
@@ -71,4 +47,6 @@ class OpenController < ApplicationController
 
   def places_for_county_surname
   end
+  
+  
 end

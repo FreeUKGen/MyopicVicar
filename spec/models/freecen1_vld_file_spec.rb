@@ -295,7 +295,8 @@ describe Freecen1VldFile do
       process_file(TEST_INC_VLD_FILE)
       dwelling = FreecenDwelling.last
       translator = Freecen::Freecen1VldTranslator.new
-      translator.translate_dwelling(dwelling, 'CON', dwelling.freecen1_vld_file.full_year)
+      # don't create duplicates
+#      translator.translate_dwelling(dwelling, 'CON', dwelling.freecen1_vld_file.full_year)
 
       inc_individual = dwelling.freecen_individuals[0]
       query_params = { :first_name => inc_individual.forenames,

@@ -9,29 +9,15 @@
     </tr>
   </thead>
   <tbody>
-    <% @open_surnames.keys.sort.each do |surname_key| %>
-      <% surname = @open_surnames[surname_key] %>
+    <% @open_surnames.each do |open_surname| %>
+      <% surname = open_surname.surname %>
       <tr>
         <td>
-          <%= surname_key %>
+          <%= surname %>
         </td>
         <td>
-          <% print_count = 0 %>
-          <% RecordType.all_types.each_with_index do |record_type| %>
-            <% if surname[record_type] && surname[record_type][:number] && surname[record_type][:number] > 0 %>
-              <% if print_count > 0 %>
-                <br />
-              <% end %>
-              <%= surname[record_type][:number] %>
-              <%= link_to("#{surname_key.titleize} #{RecordType.display_name(record_type).pluralize.downcase}", open_records_for_place_surname_path(@county, @place.place_name, surname_key, @record_types_display.gsub(/\W/,' ').gsub(/\s+/,'-').downcase)
+              <%= link_to(raw(open_surname.description), open_records_for_place_surname_path(@county, @place.place_name, surname, @record_types_display.gsub(/\W/,' ').gsub(/\s+/,'-').downcase)
 ) %>
-              from
-              <%= surname[record_type][:earliest] %>
-              to
-              <%= surname[record_type][:latest] %>
-              <% print_count += 1%>
-            <% end %>
-          <% end %>
         </td>
       </tr>
     <% end %>

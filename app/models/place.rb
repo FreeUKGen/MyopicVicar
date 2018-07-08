@@ -49,6 +49,7 @@ class Place
   field :daterange, type: Hash
   field :transcribers, type: Hash
   field :contributors, type: Hash
+  field :open_record_count, type: Integer, default: 0
 
   embeds_many :alternateplacenames
 
@@ -82,6 +83,7 @@ class Place
   has_many :sources
   has_many :gaps
 
+  has_many :open_names_per_place
   PLACE_BASE_URL = "http://www.genuki.org.uk"
 
   module MeasurementSystem
@@ -140,7 +142,7 @@ class Place
 
   def add_location_if_not_present
     self[:place_name] = self[:place_name].strip
-    self[:modified_place_name] = self[:modified_place_name].strip unless self[:modified_place_name].blank?
+    self[:modified_place_name] = self[:modified_place_name].strip if self[:modified_place_name]
     if self.location.blank?
       if self[:latitude].blank? || self[:longitude].blank? then
         my_location = self[:grid_reference].to_latlng.to_a
@@ -151,9 +153,39 @@ class Place
     end
   end
 
-  def update_places_cache
-    PlaceCache.refresh(self.chapman_code)
+
+  def aggregate_open_surnames
+    open_surnames = {}
+    self.search_records.each do |search_record|
+      search_record.transcript_names.each do |name|
+        if name && name["last_name"] && name["last_name"].match(/^[A-Za-z \.-]+$/)
+          surname = open_surnames[name["last_name"]] || {}
+          counter = surname[search_record.record_type] || {}
+          date = search_record.search_date
+          # records without dates are not useful to us
+          if date
+            earliest = counter[:earliest] || date
+            latest = counter[:latest] || date
+            number = counter[:number] || 0
+            
+            number += 1
+            if earliest > date
+              earliest = date
+            end
+            if latest < date
+              latest = date
+            end
+            
+            surname[search_record.record_type] = { :number => number, :earliest => earliest, :latest => latest }
+            open_surnames[name["last_name"]] = surname
+          end
+        end
+      end
+    end  
+        
+    open_surnames
   end
+
 
   def adjust_location_before_applying(params,session)
     self.chapman_code = ChapmanCode.name_from_code(params[:place][:county]) unless params[:place][:county].nil?
@@ -434,6 +466,38 @@ class Place
       end
     end
   end
+  
+  def rebuild_open_records
+    self.open_names_per_place.delete_all
+    open_records = aggregate_open_surnames
+    self.open_record_count = 0
+    open_records.keys.sort.each do |surname_key|
+      open = OpenNamesPerPlace.new
+      open.place_id = self.id
+      open.surname = surname_key.titleize
+      element = open_records[surname_key]
+      count=0
+      description = []
+      RecordType.all_types.each do |record_type|
+        stat = element[record_type]
+        if stat
+          count += stat[:number]
+          self.open_record_count += count
+          if stat[:number] > 1
+            display_type = RecordType.display_name(record_type).pluralize.downcase
+          else
+            display_type = RecordType.display_name(record_type).downcase
+          end
+          description << "#{stat[:number]} #{open.surname} #{display_type} from #{stat[:earliest]} to #{stat[:latest]}"
+        end
+      end
+      open.count = count
+      open.description = description.join("<br />")
+      self.open_names_per_place << open
+#      open.save!
+    end
+    self.save!   
+  end
 
   def recalculate_last_amended_date
     self.churches.each do |church|
@@ -498,9 +562,8 @@ class Place
     end
   end
 
-
   def update_places_cache
-    PlaceCache.refresh_cache(self)
+    PlaceCache.refresh(self.chapman_code)
   end
 
   def update_ucf_list(file)
