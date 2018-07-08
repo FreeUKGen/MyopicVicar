@@ -6,9 +6,11 @@
 <%= render partial: 'flash_notice' %>
 
 <div class="grid">
-  <div style="text-align: center">  
-		<%= link_to 'Accept All Assignments', assignment_path(@assignment_ids, :status=>'ts', :type=>'complete', :assignment_list_type=>''), :title=>'accept assignment', data: { confirm: 'All Submitted Transcription Assignments will be accepted, are you sure?' }, method: :put, :class => "btn weight--light btn--small" %>
-	</div>
+	<% if not @assignment_ids.empty? %>
+  	<div style="text-align: center">  
+			<%= link_to 'Accept All Assignments', assignment_path(@assignment_ids, :status=>'ts', :type=>'complete', :assignment_list_type=>''), :title=>'accept assignment', data: { confirm: 'All Submitted Transcription Assignments will be accepted, are you sure?' }, method: :put, :class => "btn weight--light btn--small" %>
+		</div>
+	<% end %>
 
   <section class="island">
   	<% if @count.length == 1 %>
