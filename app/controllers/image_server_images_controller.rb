@@ -29,7 +29,7 @@ class ImageServerImagesController < ApplicationController
     @county =  @place.county
     @place_name = @place.place_name
     @chapman_code = @place.chapman_code
-    @user = cookies.signed[:userid]
+    @user = get_user
     @source = Source.find(:id=>session[:source_id])
     @group = ImageServerGroup.find(:id=>session[:image_server_group_id])
   end
@@ -41,7 +41,7 @@ class ImageServerImagesController < ApplicationController
        flash[:notice] = 'There were problems with the lookup'
       redirect_to :back and return
     end
-    @user = cookies.signed[:userid]
+    @user = get_user
     website = ImageServerImage.create_url('download',params[:object],chapman_code,folder_name, image_file_name,@user.userid)  
     redirect_to website and return
    end
@@ -188,7 +188,7 @@ class ImageServerImagesController < ApplicationController
        flash[:notice] = 'There were problems with the lookup'
       redirect_to :back and return
     end
-    @user = cookies.signed[:userid]
+    @user = get_user
     website = ImageServerImage.create_url('view',params[:object],chapman_code,folder_name, image_file_name,@user.userid)
     redirect_to website and return
   end

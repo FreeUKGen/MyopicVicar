@@ -310,30 +310,32 @@ end
 
 #Profile
 crumb :userid_detail do |syndicate,userid_detail,page_name,option|
-  
   link "Profile:#{userid_detail.userid}", userid_detail_path(userid_detail.id)
-  if session[:my_own]
+  case 
+  when session[:my_own]
     parent :root
-  else
-    if page_name == 'incomplete_registrations'
+  when page_name == 'incomplete_registrations'
       parent :incomplete_registrations, syndicate
-    elsif option
+  when option
       parent :selection_user_id, option, syndicate
-    elsif session[:edit_userid]
-      syndicate = session[:syndicate]
+  when session[:manage_user_origin] == 'manage syndicate'
+      parent :syndicate_options, syndicate
+  when session[:edit_userid]
+      syndicate = syndicate
       syndicate = "all"  if  session[:role] == "system_administrator" || session[:role] == "technical"
       parent :userid_details_listing, syndicate,userid_detail
-    else
+  else
       parent :coordinator_userid_options
-    end
   end
 end
 
 crumb :selection_user_id do |selection,syndicate|
-  link "#{selection}", selection_userid_details_path(option: selection)
+  link "#{selection}", selection_userid_details_path(option: selection,syndicate: syndicate)
   case
+  when session[:manage_user_origin] == 'manage syndicate'
+      parent :syndicate_options, syndicate
   when session[:edit_userid]
-    if syndicate.nil? || @syndicate == 'all'
+    if syndicate.nil? || syndicate == 'all'
       parent :regmanager_userid_options
     else
       parent :syndicate_options, syndicate

@@ -85,17 +85,17 @@ class AliasPlaceChurchesController < InheritedResources::Base
       redirect_to new_alias_place_church_path
 
     else
-    @alias_place_church = AliasPlaceChurch.new if session[:edit] = "new"
-    @alias_place_church.chapman_code = session[:chapman_code]
-    @alias_place_church.place_name = session[:place]
-    @alias_place_church.church_name = session[:church]
-    @alias_place_church.alternate_church_name = params[:alias_place_church][:alternate_church_name]  
-    @alias_place_church.alternate_place_name = params[:alias_place_church][:alternate_place_name] 
-    @alias_place_church.alias_notes = params[:alias_place_church][:alias_notes] 
-    @alias_place_church.save!
-    
-    flash[:notice] = 'The addition of the Alias document was successful'    
-    redirect_to alias_place_church_path(@alias_place_church)
+      @alias_place_church = AliasPlaceChurch.new if session[:edit] = "new"
+      @alias_place_church.chapman_code = session[:chapman_code]
+      @alias_place_church.place_name = session[:place]
+      @alias_place_church.church_name = session[:church]
+      @alias_place_church.alternate_church_name = params[:alias_place_church][:alternate_church_name]  
+      @alias_place_church.alternate_place_name = params[:alias_place_church][:alternate_place_name] 
+      @alias_place_church.alias_notes = params[:alias_place_church][:alias_notes] 
+      @alias_place_church.save!
+      
+      flash[:notice] = 'The addition of the Alias document was successful'    
+      redirect_to alias_place_church_path(@alias_place_church)
     end
   end
 

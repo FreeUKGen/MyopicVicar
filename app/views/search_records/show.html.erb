@@ -13,7 +13,8 @@
         <%if @display_date%>
           <span class="additional"> search made on <%=Time.now.strftime("%d %b %Y") %></span><br>
         <% else%>
-           <span class="additional"><%= link_to "Report an Error in Transcription", report_error_contact_path(@search_record[:_id], :query => @search_query), class: "btn weight--light btn--natural"%></span>
+           <span class="additional">While we have made all efforts to correctly record the information in the original docucument there may be different interpretations of the written words. <b>If you have access to the original document</b> and believe we have made a mistake you are encouraged to report this to us.
+  <%= link_to "Report an Error in this Data", report_error_contact_path(@search_record[:_id], :query => @search_query), class: "btn weight--light btn--natural"%></span>
         <% end%> 
       </caption>
        <thead>
@@ -65,11 +66,13 @@
                 <td ><%= field.gsub('_',' ').capitalize %></td>
                 <td ><%= @entry[field] %></td>
               </tr>
-             <% end %>
+            <% end %>
           <% end %>
         <% end %>
-      </tbody>
-    </table>
+        <td colspan=2><%= link_to "Report an Error in this Data", report_error_contact_path(@search_record[:_id], :query => @search_query), class: "btn weight--light btn--natural"%></td>
+      
+        </tbody>
+      </table>
   <% end %>
   <div class="read-length push--bottom" style="margin-left: auto; margin-right: auto;">
     <% unless defined?(@printable_format) && @printable_format %>
