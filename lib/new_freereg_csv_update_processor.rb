@@ -1554,7 +1554,7 @@ class CsvRecord < CsvRecords
     @data_record[:file_line_number] = line
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:baptism_date])
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:birth_date]) if FreeregValidations.year_extract(@data_record[:baptism_date]).nil?
-    @data_record[:private_baptism] = true if FreeregOptionsConstants::PRIVATE_BAPTISM_OPTIONS.include?(@data_record[:private_baptism].downcase)
+    (@data_record[:private_baptism].present? && FreeregOptionsConstants::PRIVATE_BAPTISM_OPTIONS.include?(@data_record[:private_baptism].downcase)) ? @data_record[:private_baptism] = true : @data_record[:private_baptism] = false
     @data_record[:person_sex] = process_baptism_sex_field(@data_record[:person_sex])
     @data_record[:father_surname] = Unicode::upcase(@data_record[:father_surname] ) unless @data_record[:father_surname] .nil?
     @data_record[:mother_surname] = Unicode::upcase(@data_record[:mother_surname]) unless  @data_record[:mother_surname].nil?
@@ -1591,6 +1591,7 @@ class CsvRecord < CsvRecords
     @data_record[:burial_person_surname] = Unicode::upcase( @data_record[:burial_person_surname])  unless @data_record[:burial_person_surname].nil?
     @data_record[:female_relative_surname] = Unicode::upcase( @data_record[:female_relative_surname])  unless @data_record[:female_relative_surname].nil? && !csvfile.header[:def]
     csvfile.data[line] = data_record
+   
   end
 
   def process_marriage_data_fields(csvrecords,csvfile,project,line)
@@ -1620,10 +1621,11 @@ class CsvRecord < CsvRecords
     @data_record[:file_line_number] = line
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:marriage_date])
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:contract_date]) if FreeregValidations.year_extract(@data_record[:marriage_date]).nil? && csvfile.header[:def]
-    @data_record[:marriage_by_licence] = true if FreeregOptionsConstants::MARRIAGE_BY_LICENCE_OPTIONS.include?(@data_record[:marriage_by_licance].downcase)
-    @data_record[:groom_marked] = true if FreeregOptionsConstants::MARKED_OPTIONS.include?(@data_record[:groom_marked].downcase)
-    @data_record[:bride_marked] = true if FreeregOptionsConstants::MARKED_OPTIONS.include?(@data_record[:bride_marked].downcase)
+    (@data_record[:marriage_by_licence].present? && FreeregOptionsConstants::MARRIAGE_BY_LICENCE_OPTIONS.include?(@data_record[:marriage_by_licence].downcase)) ? @data_record[:marriage_by_licence] = true : @data_record[:marriage_by_licence] = false 
+    (@data_record[:groom_marked].present? && FreeregOptionsConstants::MARKED_OPTIONS.include?(@data_record[:groom_marked].downcase)) ? @data_record[:groom_marked] = true : @data_record[:groom_marked] = false
+    (@data_record[:bride_marked].present? && FreeregOptionsConstants::MARKED_OPTIONS.include?(@data_record[:bride_marked].downcase)) ? @data_record[:bride_marked] = true : @data_record[:bride_marked] = false
     csvfile.data[line] = data_record
+    # p @data_record
   end
   
   def  process_baptism_sex_field(field)
