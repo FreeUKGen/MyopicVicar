@@ -1554,12 +1554,7 @@ class CsvRecord < CsvRecords
     @data_record[:file_line_number] = line
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:baptism_date])
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:birth_date]) if FreeregValidations.year_extract(@data_record[:baptism_date]).nil?
-    if @data_record[:private_baptism].present? && (@data_record[:private_baptism].downcase == 'y' || @data_record[:private_baptism].downcase == 'yes' ||
-          @data_record[:private_baptism].downcase == 'by licence' ||  @data_record[:private_baptism].downcase == 'licence' ) 
-      @data_record[:private_baptism] = true
-    else
-      @data_record[:private_baptism] = false
-    end     
+    @data_record[:private_baptism] = true if FreeregOptionsConstants::PRIVATE_BAPTISM_OPTIONS.include?(@data_record[:private_baptism].downcase)
     @data_record[:person_sex] = process_baptism_sex_field(@data_record[:person_sex])
     @data_record[:father_surname] = Unicode::upcase(@data_record[:father_surname] ) unless @data_record[:father_surname] .nil?
     @data_record[:mother_surname] = Unicode::upcase(@data_record[:mother_surname]) unless  @data_record[:mother_surname].nil?
@@ -1625,24 +1620,9 @@ class CsvRecord < CsvRecords
     @data_record[:file_line_number] = line
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:marriage_date])
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:contract_date]) if FreeregValidations.year_extract(@data_record[:marriage_date]).nil? && csvfile.header[:def]
-    if @data_record[:marriage_by_licence].present? && (@data_record[:marriage_by_licence].downcase == 'y' || @data_record[:marriage_by_licence].downcase == 'yes' ||
-          @data_record[:marriage_by_licence].downcase == 'by licence' ||  @data_record[:marriage_by_licence].downcase == 'licence' )      
-      @data_record[:marriage_by_licence] = true 
-    else
-      @data_record[:marriage_by_licence] = false  
-    end
-    if @data_record[:groom_marked].present? && (@data_record[:groom_marked].downcase == 'y' || @data_record[:groom_marked].downcase == 'yes' ||
-          @data_record[:groom_marked].downcase == 'marked' ||  @data_record[:groom_marked].downcase == 'mark')
-      @data_record[:groom_marked] = true 
-    else
-      @data_record[:groom_marked] = false
-    end
-    if @data_record[:bride_marked].present? && (@data_record[:bride_marked].downcase == 'y' || @data_record[:bride_marked].downcase == 'yes' ||
-          @data_record[:bride_marked].downcase == 'marked' ||  @data_record[:bride_marked].downcase == 'mark')
-      @data_record[:bride_marked] = true 
-    else
-      @data_record[:bride_marked] = false
-    end
+    @data_record[:marriage_by_licence] = true if FreeregOptionsConstants::MARRIAGE_BY_LICENCE_OPTIONS.include?(@data_record[:marriage_by_licance].downcase)
+    @data_record[:groom_marked] = true if FreeregOptionsConstants::MARKED_OPTIONS.include?(@data_record[:groom_marked].downcase)
+    @data_record[:bride_marked] = true if FreeregOptionsConstants::MARKED_OPTIONS.include?(@data_record[:bride_marked].downcase)
     csvfile.data[line] = data_record
   end
   

@@ -244,6 +244,10 @@ module FreeregOptionsConstants
   
   LOCATION_FIELDS = ['county','place','church_name','register_type']
 
+  MARKED_OPTIONS = ['y', 'yes','marked','true']
+  
+  MARRIAGE_BY_LICENCE_OPTIONS = ['y', 'yes', 'licence', 'by licence', 'by_licence', 'marriage_by_licence','true']
+  
   MAXIMUM_NUMBER_OF_RESULTS = 250
 
   MAXIMUM_NUMBER_OF_SCANS = 500 
@@ -273,7 +277,8 @@ module FreeregOptionsConstants
                      'groom_father_surname','groom_father_occupation','bride_father_forename','bride_father_surname','bride_father_occupation','witness1_forename',
                      'witness1_surname','witness2_forename','witness2_surname'] 
 
-
+  PRIVATE_BAPTISM_OPTIONS = ['y','yes', 'private', 'true', 'private baptism']
+  
   RECORDS_PER_RANGE = 100000
 
   RECORD_TYPE_TRANSLATION = {
