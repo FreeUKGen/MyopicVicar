@@ -70,9 +70,9 @@ class UseridDetail
   validate :email_address_does_not_exist, on: :update
   validates :volunteer_induction_handbook, :code_of_conduct, acceptance: true
 
-  before_create :add_lower_case_userid,:capitalize_forename, :captilaize_surname, :transcription_agreement_value_change
+  before_create :add_lower_case_userid,:capitalize_forename, :captilaize_surname, :remove_secondary_role_blank_entries, :transcription_agreement_value_change
   after_create :save_to_refinery
-  before_save :capitalize_forename, :captilaize_surname
+  before_save :capitalize_forename, :captilaize_surname, :remove_secondary_role_blank_entries
   after_update :update_refinery
   before_destroy :delete_refinery_user_and_userid_folder
 
@@ -262,6 +262,13 @@ class UseridDetail
     self.email_address_valid= true
     self.email_address_last_confirmned = Time.new
     #self.new_transcription_agreement = "Unknown"
+  end
+
+  def remove_secondary_role_blank_entries
+    secondary_role = self.secondary_role
+    if secondary_role.include? ""
+      secondary_role.delete("")
+    end
   end
 
   def add_lower_case_userid
