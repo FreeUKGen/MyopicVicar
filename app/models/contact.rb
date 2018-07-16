@@ -108,7 +108,7 @@ class Contact
     UserMailer.datamanager_data_question(self,ccs).deliver_now
   end
 
-  def communicate_data_problem
+  def communicate_data_problem(message=nil,sender=nil)
     ccs = Array.new
     coordinator = self.get_coordinator if self.record_id.present?
     ccs << coordinator.email_address if self.record_id.present?
@@ -120,9 +120,13 @@ class Contact
         ccs << person.email_address
       end
     end
-    UserMailer.coordinator_data_problem(self,ccs).deliver_now
+    @message = message
+    unless @message.blank?
+      UserMailer.coordinator_reply_data_problem(self,ccs,@message,sender).deliver_now
+    else
+      UserMailer.coordinator_data_problem(self,ccs).deliver_now
+    end
   end
-
 
   def communicate_publicity
     ccs = Array.new

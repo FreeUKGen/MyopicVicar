@@ -104,6 +104,7 @@ MyopicVicar::Application.routes.draw do
   get 'contacts/list_by_identifier',  :to => 'contacts#list_by_identifier', :as => :list_by_identifier_contacts
   get 'contacts/select_by_identifier',  :to => 'contacts#select_by_identifier', :as => :select_by_identifier_contacts
   get  'contacts/:id(.:format)/report_error', :to => 'contacts#report_error', :as => :report_error_contact
+  get 'contacts/:source_contact_id/reply',  :to => 'contacts#reply_contact', :as => :reply_contact
   post 'contacts/:id/convert_to_issue(.:format)', :to => 'contacts#convert_to_issue', :as => :convert_contact_to_issue
   resources :contacts
 

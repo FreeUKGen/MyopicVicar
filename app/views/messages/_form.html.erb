@@ -1,10 +1,9 @@
 <% if @message.errors.any? %>
-
   <div id="error_explanation">
     <h2><%= pluralize(@message.errors.count, "error") %> prohibited your message from being submitted:</h2>
     <ul class="validation-list">
       <% @message.errors.full_messages.each do |msg| %>
-      <li class="validation-list__error"><%= msg %></li>
+        <li class="validation-list__error"><%= msg %></li>
       <% end %>
     </ul>
   </div>
@@ -21,25 +20,23 @@
       <%= f.hidden_field :userid %>
       <%= f.hidden_field :source_message_id, value: params[:id]  if params[:id]%>
       <%= f.hidden_field :source_feedback_id, value: params[:source_feedback_id]  if params[:source_feedback_id]%>
+      <%= f.hidden_field :source_contact_id, value: params[:source_contact_id]  if params[:source_contact_id]%>
       <ul>
         <li  class="grid__item  one-third  palm-one-whole  push--bottom" id="subject_input" >
           <label class="label" for="subject">Subject </label>
           <%= message_subject %>
         </li>
+
         <li class="grid__item  one-third  palm-one-whole push--bottom">
           <label>Textual Attachment<span  class="weight--normal"> (optional)</span><a href="#" class="right_tooltip"> <%= image_tag 'info.png', alt: 'Information', height: '16' %><span  >Please select the image you wish to upload (txt, html, htm, log, rtf, pdf only)</span></a></label>
           <input name="message[attachment]" type="file" >
         </li>
+
         <li class="grid__item  one-third  palm-one-whole push--bottom">
           <label>Image Attachment<span  class="weight--normal"> (optional)</span><a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span style="width: 900%" >Please select the image you wish to upload (jpg, gif)</span></a></label>
           <input name="message[images]" type="file" >
         </li>
-        <% unless params[:source_feedback_id].blank? %>
-          <li class="grid__item  one-whole  palm-one-whole push--bottom">
-            <label>To Email</label>
-            <%= text_field_tag 'email', "#{@respond_to_feedback.email_address}", :class => "text-input", readonly: true %>
-          </li>
-        <% end %>
+        <%= reply_message_email  %>
         <li class="grid__item  one-whole  palm-one-whole push--bottom">
           <label>Message<a href="#" class="right_tooltip"> <%= image_tag 'info.png', alt: 'Information', height: '16' %><span  >You should include a salutation at the start</span></a></label>
           <% if @message.body.nil? %>
@@ -49,14 +46,7 @@
           <% end%>
         </li>
       </ul>
-      <% case %>
-      <% when params[:id].present? %>
-        <%= f.action :submit, :as => :input,  :label => 'Save & Send' ,:button_html => { :class => "btn " },:wrapper_html => { :class => "grid__item  one-whole text--center" }  %>
-      <% when params[:source_feedback_id].present? %>
-        <%= f.action :submit, :as => :input,  :label => 'Reply Feedback' ,:button_html => { :class => "btn " },:wrapper_html => { :class => "grid__item  one-whole text--center" }  %>
-      <% else %>
-        <%= f.action :submit, :as => :input,  :label => 'Submit' ,:button_html => { :class => "btn " },:wrapper_html => { :class => "grid__item  one-whole text--center" }  %>
-      <% end %>
+      <%= commit_action(f,params.keys[2])%>
     <% end %>
   </section>
 </div>

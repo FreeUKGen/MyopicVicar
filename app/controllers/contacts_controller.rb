@@ -205,6 +205,14 @@ class ContactsController < ApplicationController
     end
   end
 
+  def reply_contact
+    get_user_info_from_userid; return if performed?
+    @respond_to_contact = Contact.id(params[:source_contact_id]).first
+    @message = Message.new
+    @message.message_time = Time.now
+    @message.userid = @user.userid
+  end
+
   private
   def contact_params
     params.require(:contact).permit!

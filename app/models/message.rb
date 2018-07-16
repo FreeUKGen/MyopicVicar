@@ -4,6 +4,7 @@ class Message
   field :subject, type: String
   field :source_message_id, type: String
   field :source_feedback_id, type: String
+  field :source_contact_id, type: String
   field :body, type: String
   field :message_time, type: DateTime
   field :message_sent_time, type: DateTime

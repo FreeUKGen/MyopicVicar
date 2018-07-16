@@ -1,0 +1,62 @@
+<h4 style="text-align: center"> 
+  Contact and its Replies
+</h4>
+<h4 style="text-align: center">Contact Details</h4>
+<div class= "grid">
+  <section class="island  island--light ">
+    <div class="scrollable" >
+      <div class="grid__item  one-whole  palm-one-whole push--bottom">
+        <%= content_tag :p, class: "strong" do %>
+          On <%= @respond_to_contact.contact_time.to_formatted_s(:long)%> Name of Contact Person: <strong><%= @respond_to_contact.name%></strong> gave a feedback:<br/>
+          <%= @respond_to_contact.body %><br/>
+        <% end %>
+        <p>Following are further details of feedback</p>
+        <div class="scrollable">
+          <table class= "table--bordered table--data push--bottom t100">
+          <tr>
+            <tr>
+              <th>Type of Contact :</th>
+              <th>Reference</th>
+              <th>Record</th>
+              <th>County</th> 
+            </tr>
+            </tr>
+            <tr>
+              <td>
+                <%= @respond_to_contact.contact_type %>
+              </td>
+              <td>
+                <%= @respond_to_contact.identifier %>
+              </td>
+              <td>
+                <%= @respond_to_contact.line_id %>
+              </td>
+              <td>
+                <%= @respond_to_contact.county %>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <p>Details of Contacted Person: </p>
+        <table class= "table--bordered table--data push--bottom t100">
+          <tr>
+            <th>Name</th>
+            <th>Email Address</th> 
+          </tr>
+          <tr>
+            <td>
+              <%= @respond_to_contact.name %>
+            </td>
+            <td>
+              <%= @respond_to_contact.email_address %>
+            </td>            
+          </tr>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>
+<h4 style="text-align: center">Create Your Reply for Contact</h4>
+<%= render 'messages/form' %>
+
+

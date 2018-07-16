@@ -153,15 +153,21 @@ class MessagesController < ApplicationController
         flash[:notice] = "Reply created"
         params[:id] = @message.id if @message
         send_message
-        redirect_to send_message_messages_path(@message.id)
+        redirect_to send_message_messages_path(@message.id) and return
       else
-        redirect_to reply_messages_path(@message.source_message_id)
+        redirect_to reply_messages_path(@message.source_message_id) and return
       end
     when "Reply Feedback"
       if @message.save
-      flash[:notice] = "Reply for feedback is created"
-      send_feedback_message
-      reply_for_feedback
+        flash[:notice] = "Reply for feedback is created"
+        send_feedback_message
+        reply_for_feedback; return if performed?
+      end
+    when "Reply Contact"
+      if @message.save
+        flash[:notice] = "Reply for Contact is created"
+        send_contact_message
+        reply_for_contact; return if performed?
       end
     end
   end
@@ -182,6 +188,23 @@ class MessagesController < ApplicationController
       @message.sent_messages <<  [ @sent_message ]
       @sent_message.save
     end
+  end
+
+  def send_contact_message
+    get_user_info_from_userid
+    if @message.present?
+      @sent_message = SentMessage.new(:message_id => @message.id,:sender => @user_userid, recipients: [params[:email]])
+      @message.sent_messages <<  [ @sent_message ]
+      @sent_message.save
+    end
+  end
+
+  def reply_for_contact
+    sender = UseridDetail.where(userid: @message.userid).first
+    sender_email = sender.email_address
+    @contact = Contact.id(@message.source_contact_id).first
+    @contact.communicate_data_problem(@message, sender_email)
+    redirect_to reply_contact_path(@message.source_contact_id)
   end
 
   def send_message

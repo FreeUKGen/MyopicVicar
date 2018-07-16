@@ -30,13 +30,14 @@ require 'reply_userid_role'
   end
 
   def feedback_reply_messages
-    get_user_info_from_userid
+    get_user_info_from_userid; return if performed?
     @feedback = Feedback.id(params[:id]).first
     if @feedback.present?
       @messages = Message.where(source_feedback_id: params[:id]).all
       render 'messages/index'
     end
   end
+
 
   def userid_feedbacks_with_replies
     get_user_info_from_userid

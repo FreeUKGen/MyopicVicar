@@ -54,6 +54,8 @@ module MessagesHelper
     case
     when !@respond_to_feedback.nil?
       text_field_tag 'message[subject]', "Re: Thank you for your feedback. Reference #{@respond_to_feedback.identifier}", :class => "text-input", readonly: true, title: "Re: Thank you for your feedback. Reference #{@respond_to_feedback.identifier}"
+    when !@respond_to_contact.nil?
+      text_field_tag 'message[subject]', "Re: Thank you for reporting a problem with our data. Reference #{@respond_to_contact.identifier}", :class => "text-input", readonly: true, title: "Re: Thank you for your feedback. Reference #{@respond_to_contact.identifier}"
     when !@respond_to_message.nil?
       text_field_tag 'message[subject]', "Re: #{@respond_to_message.subject}", :class => "text-input", readonly: true
     when @message.subject.nil? && @respond_to_message.nil? && @respond_to_feedback.nil?
@@ -102,9 +104,9 @@ module MessagesHelper
 
   def show_links
     if @message.source_feedback_id.present?
-      link_to 'Show Feedback', feedback_path(@message.source_feedback_id), :class => "btn weight--light  btn--small", method: :get
+      dynamic_link('Show Feedback', feedback_path(@message.source_feedback_id), {class: "btn weight--light  btn--small", method: :get})
     else
-      primary_links
+      primary_links(*default_links)
     end
   end
 
@@ -119,26 +121,51 @@ module MessagesHelper
     end
   end
 
-  private
-  def primary_links
-    capture do
-      concat send_message_link
-      concat " "
-      concat edit_message_link
-      concat " "
-      concat view_replies_link
+  def commit_action(f,key=nil)
+    case key
+    when "id"
+      f.action :submit, as: :input, label: 'Save & Send' , button_html: { class: "btn " }, wrapper_html: { class: "grid__item  one-whole text--center" }
+    when "source_feedback_id"
+      f.action :submit, as: :input,  label: 'Reply Feedback' , button_html: { :class => "btn " }, wrapper_html: { class: "grid__item  one-whole text--center" }
+    when "source_contact_id"
+      f.action :submit, as: :input,  label: 'Reply Contact' , button_html: { :class => "btn " }, wrapper_html: { class: "grid__item  one-whole text--center" }
+    else
+      f.action :submit, as: :input,  label: 'Submit' , button_html: { :class => "btn " }, wrapper_html: { class: "grid__item  one-whole text--center" }
     end
   end
 
-  def send_message_link
-    link_to('Send this Message', send_message_messages_path(@message.id), :class => "btn weight--light  btn--small", method: :get, data: { confirm: 'Are you sure you want to send this message' })
+  def reply_message_email
+    case
+    when params.has_key?(:source_feedback_id)
+      content_tag :li, class: "grid__item  one-whole  palm-one-whole push--bottom" do
+        label_tag 'To Email'
+        text_field_tag 'email', "#{@respond_to_feedback.email_address}", :class => "text-input", readonly: true
+      end
+    when params.has_key?(:source_contact_id)
+      content_tag :li, class: "grid__item  one-whole  palm-one-whole push--bottom" do
+        label_tag 'To Email'
+        text_field_tag 'email', "#{@respond_to_contact.email_address}", :class => "text-input", readonly: true
+      end
+    end
   end
 
-  def edit_message_link
-    link_to('Edit this Message', edit_message_path(@message.id),  :class => "btn weight--light  btn--small", method: :get)
+  private
+  def primary_links(link_1,link_2)
+    capture do
+      concat link_1
+      concat " "
+      concat link_2
+      concat " "
+      concat dynamic_link("View #{pluralize(@sent_replies.count, 'Reply') }", show_reply_messages_path(@message.id)) unless @sent_replies.count == 0
+    end
   end
 
-  def view_replies_link
-    link_to "View #{pluralize(@sent_replies.count, 'Reply') }", show_reply_messages_path(@message.id),  :class => "btn weight--light  btn--small", method: :get unless @sent_replies.count == 0
+  def default_links
+    [dynamic_link('Send this Message', send_message_messages_path(@message.id), data: { confirm: 'Are you sure you want to send this message'}, method: :get),
+    dynamic_link('Edit this Message', edit_message_path(@message.id), method: :get)]
+  end
+
+  def dynamic_link(name,path, options={})
+    link_to(name, path, class: "btn weight--light  btn--small", **options)
   end
 end
