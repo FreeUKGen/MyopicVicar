@@ -641,6 +641,7 @@ div#cookieAcceptButton {
 ==========================*/
 .toggle {
   -webkit-appearance: none;
+  -moz-appearance: none;
   appearance: none;
   width: 62px;
   height: 32px;
