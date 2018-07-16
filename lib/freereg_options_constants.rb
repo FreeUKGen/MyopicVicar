@@ -277,7 +277,7 @@ module FreeregOptionsConstants
                      'groom_father_surname','groom_father_occupation','bride_father_forename','bride_father_surname','bride_father_occupation','witness1_forename',
                      'witness1_surname','witness2_forename','witness2_surname'] 
 
-  PRIVATE_BAPTISM_OPTIONS = ['y','yes', 'private', 'true', 'private baptism']
+  PRIVATE_BAPTISM_OPTIONS = ['y','yes', 'private', 'true', 'private baptism',  'private_baptism']
   
   RECORDS_PER_RANGE = 100000
 

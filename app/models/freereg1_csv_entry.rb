@@ -80,22 +80,22 @@ class Freereg1CsvEntry
   field :mother_county_prior_to_marriage, type: String
   field :mother_occupation, type: String
   field :private_baptism, type: Boolean, default: false
-  field :witness1_forename, type: String
-  field :witness1_surname, type: String
-  field :witness2_forename, type: String
-  field :witness2_surname, type: String
-  field :witness3_forename, type: String
-  field :witness3_surname, type: String
-  field :witness4_forename, type: String
-  field :witness4_surname, type: String
-  field :witness5_forename, type: String
-  field :witness5_surname, type: String
-  field :witness6_forename, type: String
-  field :witness6_surname, type: String
-  field :witness7_forename, type: String
-  field :witness7_surname, type: String
-  field :witness8_forename, type: String
-  field :witness8_surname, type: String
+  #field :witness1_forename, type: String
+  #field :witness1_surname, type: String
+  #field :witness2_forename, type: String
+  #field :witness2_surname, type: String
+  #field :witness3_forename, type: String
+  #field :witness3_surname, type: String
+  #field :witness4_forename, type: String
+  #field :witness4_surname, type: String
+  #field :witness5_forename, type: String
+  #field :witness5_surname, type: String
+  #field :witness6_forename, type: String
+  #field :witness6_surname, type: String
+  #field :witness7_forename, type: String
+  #field :witness7_surname, type: String
+  #field :witness8_forename, type: String
+  #field :witness8_surname, type: String
   
 
   #original burial fields
@@ -704,7 +704,6 @@ class Freereg1CsvEntry
   end
 
   def errors_in_fields
-
     unless FreeregValidations.cleantext(self.register_entry_number)
       errors.add(:register_entry_number, "Invalid characters")
       self.error_flag = "true"
@@ -713,11 +712,22 @@ class Freereg1CsvEntry
       errors.add(:notes, "Invalid characters")
       self.error_flag = "true"
     end
-    #There seem to be many errors in notes characters
-    #unless FreeregValidations.cleantext(self.notes_from_register)
-    #errors.add(:notes_from_register, "Invalid characters")
-    #self.error_flag = "true"
-    #end
+    unless FreeregValidations.cleantext(self.notes_from_transcriber)
+      errors.add(:notes_from_transcriber, "Invalid characters")
+      self.error_flag = "true"
+    end
+    unless FreeregValidations.cleantext(self.image_file_name)
+      errors.add(:image_file_name, "Invalid characters")
+      self.error_flag = "true"
+    end
+    unless FreeregValidations.cleantext(self.film)
+      errors.add(:film, "Invalid characters")
+      self.error_flag = "true"
+    end
+    unless FreeregValidations.cleantext(self.film_number)
+      errors.add(:film_number, "Invalid characters")
+      self.error_flag = "true"
+    end
 
     case
     when self.record_type =='ma'
@@ -751,6 +761,18 @@ class Freereg1CsvEntry
       end
       unless FreeregValidations.cleantext(self.bride_father_surname)
         errors.add(:bride_father_surname, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.bride_mother_forename)
+        errors.add(:bride_mother_forename, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.bride_mother_surname)
+        errors.add(:bride_mother_surname, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.bride_mother_occupation)
+        errors.add(:bride_mother_occupation, "Invalid characters")
         self.error_flag = "true"
       end
       unless FreeregValidations.cleantext(self.bride_forename)
@@ -789,6 +811,18 @@ class Freereg1CsvEntry
         errors.add(:groom_father_surname, "Invalid characters")
         self.error_flag = "true"
       end
+      unless FreeregValidations.cleantext(self.groom_mother_forename)
+        errors.add(:groom_mother_forename, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.groom_mother_occupation)
+        errors.add(:groom_mother_occupation, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.groom_mother_surname)
+        errors.add(:groom_mother_surname, "Invalid characters")
+        self.error_flag = "true"
+      end
       unless FreeregValidations.cleantext(self.groom_forename)
         errors.add(:groom_forename, "Invalid characters")
         self.error_flag = "true"
@@ -821,18 +855,138 @@ class Freereg1CsvEntry
         errors.add(:witness2_surname, "Invalid characters")
         self.error_flag = "true"
       end
+      unless FreeregValidations.cleantext(self.witness3_forename)
+        errors.add(:witness3_forename, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.witness3_surname)
+        errors.add(:witness3_surname, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.witness4_forename)
+        errors.add(:witness4_forename, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.witness4_surname)
+        errors.add(:witness4_surname, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.witness5_forename)
+        errors.add(:witness5_forename, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.witness5_surname)
+        errors.add(:witness5_surname, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.witness6_forename)
+        errors.add(:witness6_forename, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.witness6_surname)
+        errors.add(:witness6_surname, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.witness7_forename)
+        errors.add(:witness7_forename, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.witness7_surname)
+        errors.add(:witness7_surname, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.witness8_forename)
+        errors.add(:witness8_forename, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.witness8_surname)
+        errors.add(:witness8_surname, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.bride_title)
+        errors.add(:bride_title, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.bride_mother_title)
+        errors.add(:bride_mother_title, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.bride_father_title)
+        errors.add(:bride_father_title, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.groom_title)
+        errors.add(:groom_title, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.groom_father_title)
+        errors.add(:groom_father_title, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.groom_mother_title)
+        errors.add(:groom_mother_title, "Invalid characters")
+        self.error_flag = "true"
+      end
       unless FreeregValidations.cleandate(self.marriage_date)
         errors.add(:marriage_date, "Invalid date")
         self.error_flag = "true"
       end
-
+      unless FreeregValidations.cleandate(self.contract_date)
+        errors.add(:contract_date, "Invalid date")
+        self.error_flag = "true"
+      end
+      
     when self.record_type =='ba'
+      unless FreeregValidations.cleandate(self.birth_date)
+        errors.add(:birth_date, "Invalid date")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleandate(self.baptism_date)
+        errors.add(:baptism_date, "Invalid date")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleandate(self.confirmation_date)
+        errors.add(:confirmation_date, "Invalid date")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleandate(self.received_into_church_date)
+        errors.add(:received_into_church_date, "Invalid date")
+        self.error_flag = "true"
+      end
       unless FreeregValidations.cleantext(self.person_forename)
         errors.add(:person_forename, "Invalid characters")
         self.error_flag = "true"
       end
-      unless FreeregValidations.cleandate(self.birth_date)
-        errors.add(:birth_date, "Invalid date")
+      unless FreeregValidations.cleantext(self.person_surname)
+        errors.add(:person_surname, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.person_title)
+        errors.add(:person_title, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.person_condition)
+        errors.add(:person_condition, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.person_status)
+        errors.add(:person_status, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.person_occupation)
+        errors.add(:person_occupation, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.person_place_birth)
+        errors.add(:person_place_birth, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.person_occupation)
+        errors.add(:person_occupation, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.person_relationship)
+        errors.add(:person_relationship, "Invalid characters")
         self.error_flag = "true"
       end
       unless FreeregValidations.cleansex(self.person_sex)
@@ -843,10 +997,7 @@ class Freereg1CsvEntry
         errors.add(:groom_age, "Invalid age")
         self.error_flag = "true"
       end
-      unless FreeregValidations.cleandate(self.baptism_date)
-        errors.add(:baptism_date, "Invalid date")
-        self.error_flag = "true"
-      end
+      
       #following is disabled until check is improved
       #unless FreeregValidations.birth_date_less_than_baptism_date(self.birth_date,self.baptism_date)
       #errors.add(:birth_date, "Birth date is more recent than baptism date")
@@ -860,20 +1011,124 @@ class Freereg1CsvEntry
         errors.add(:father_forename, "Invalid characters")
         self.error_flag = "true"
       end
-      unless FreeregValidations.cleantext(self.mother_forename)
-        errors.add(:mother_forename, "Invalid characters")
-        self.error_flag = "true"
-      end
       unless FreeregValidations.cleantext(self.father_surname)
         errors.add(:father_surname, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.father_title)
+        errors.add(:father_title, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.father_abode)
+        errors.add(:father_abode, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.father_place)
+        errors.add(:father_place, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.father_county)
+        errors.add(:father_county, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.father_occupation)
+        errors.add(:father_occupation, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.mother_forename)
+        errors.add(:mother_forename, "Invalid characters")
         self.error_flag = "true"
       end
       unless FreeregValidations.cleantext(self.mother_surname)
         errors.add(:mother_surname, "Invalid characters")
         self.error_flag = "true"
       end
-      unless FreeregValidations.cleantext(self.father_occupation)
-        errors.add(:father_occupation, "Invalid characters")
+      unless FreeregValidations.cleantext(self.mother_title)
+        errors.add(:mother_title, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.mother_abode)
+        errors.add(:mother_abode, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.mother_condition_prior_to_marriage)
+        errors.add(:mother_condition_prior_to_marriage, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.mother_place_prior_to_marriage)
+        errors.add(:mother_place_prior_to_marriage, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.mother_county_prior_to_marriage)
+        errors.add(:mother_county_prior_to_marriage, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.mother_occupation)
+        errors.add(:mother_county, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.witness1_forename)
+        errors.add(:witness1_forename, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.witness1_surname)
+        errors.add(:witness1_surname, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.witness2_forename)
+        errors.add(:witness2_forename, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.witness2_surname)
+        errors.add(:witness2_surname, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.witness3_forename)
+        errors.add(:witness3_forename, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.witness3_surname)
+        errors.add(:witness3_surname, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.witness4_forename)
+        errors.add(:witness4_forename, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.witness4_surname)
+        errors.add(:witness4_surname, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.witness5_forename)
+        errors.add(:witness5_forename, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.witness5_surname)
+        errors.add(:witness5_surname, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.witness6_forename)
+        errors.add(:witness6_forename, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.witness6_surname)
+        errors.add(:witness6_surname, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.witness7_forename)
+        errors.add(:witness7_forename, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.witness7_surname)
+        errors.add(:witness7_surname, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.witness8_forename)
+        errors.add(:witness8_forename, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.witness8_surname)
+        errors.add(:witness8_surname, "Invalid characters")
         self.error_flag = "true"
       end
 
@@ -886,8 +1141,24 @@ class Freereg1CsvEntry
         errors.add(:burial_date, "Invalid date")
         self.error_flag = "true"
       end
+      unless FreeregValidations.cleandate(self.death_date)
+        errors.add(:death_date, "Invalid date")
+        self.error_flag = "true"
+      end
       unless FreeregValidations.cleantext(self.burial_person_forename)
         errors.add(:burial_person_forename, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.burial_person_surname)
+        errors.add(:burial_person_surname, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.burial_person_title)
+        errors.add(:burial_person_title, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.burial_person_abode)
+        errors.add(:burial_person_abode, "Invalid characters")
         self.error_flag = "true"
       end
       unless FreeregValidations.cleantext(self.relationship)
@@ -898,20 +1169,40 @@ class Freereg1CsvEntry
         errors.add(:male_relative_forename, "Invalid characters")
         self.error_flag = "true"
       end
-      unless FreeregValidations.cleantext(self.female_relative_forename)
-        errors.add(:female_relative_forename, "Invalid characters")
-        self.error_flag = "true"
-      end
       unless FreeregValidations.cleantext(self.relative_surname)
         errors.add(:relative_surname, "Invalid characters")
         self.error_flag = "true"
       end
-      unless FreeregValidations.cleantext(self.burial_person_surname)
-        errors.add(:burial_person_surname, "Invalid characters")
+      unless FreeregValidations.cleantext(self.male_relative_title)
+        errors.add(:burial_person_title, "Invalid characters")
         self.error_flag = "true"
       end
-      unless FreeregValidations.cleantext(self.burial_person_abode)
-        errors.add(:burial_person_abode, "Invalid characters")
+      unless FreeregValidations.cleantext(self.female_relative_forename)
+        errors.add(:female_relative_forename, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.female_relative_surname)
+        errors.add(:female_relative_surname, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.female_relative_title)
+        errors.add(:female_relative_title, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.cause_of_death)
+        errors.add(:cause_of_death, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.burial_location_information)
+        errors.add(:burial_location_information, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.place_of_death)
+        errors.add(:place_of_death, "Invalid characters")
+        self.error_flag = "true"
+      end
+      unless FreeregValidations.cleantext(self.memorial_information)
+        errors.add(:memorial_information, "Invalid characters")
         self.error_flag = "true"
       end
     else
