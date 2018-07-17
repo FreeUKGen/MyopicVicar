@@ -172,7 +172,6 @@ class MessagesController < ApplicationController
     when "Reply Contact"
       if @message.save
         flash[:notice] = "Reply for Contact is created and sent"
-        #send_contact_message
         reply_for_contact; return if performed?
       end
     end
@@ -188,9 +187,9 @@ class MessagesController < ApplicationController
   end
 
   def send_feedback_message
-    get_user_info_from_userid
+    get_user_info_from_userid; return if performed?
     if @message.present?
-      @sent_message = SentMessage.new(:message_id => @message.id,:sender => @user_userid, recipients: ["website_coordinator"], other_recipient: params[:email])
+      @sent_message = SentMessage.new(:message_id => @message.id,:sender => @user_userid, recipients: ["website_coordinator"], other_recipient: params[:email], sent_time: Time.now)
       @message.sent_messages <<  [ @sent_message ]
       @sent_message.save
     end

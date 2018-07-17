@@ -518,6 +518,11 @@ crumb :list_contact_reply_messages do
   parent :contacts
 end
 
+crumb :list_feedback_reply_messages do
+  link "All Feedback Reply Messages", list_contact_reply_message_path
+  parent :feedbacks
+end
+
 crumb :show_feedback_message do |message|
   link "Show Feedback Message", message_path(message)
   parent :messages

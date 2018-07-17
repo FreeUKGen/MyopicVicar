@@ -88,6 +88,7 @@ class UserMailer < ActionMailer::Base
     @contact = contact
     get_attachment
     mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for reporting a problem with our data. Reference #{@contact.identifier}")
+    #mail(:from => "vinodhini.subbu@freeukgenealogy.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>", :subject => "Thank you for reporting a problem with our data. Reference #{@contact.identifier}")
   end
 
   def datamanager_data_question(contact,ccs)
@@ -330,6 +331,14 @@ class UserMailer < ActionMailer::Base
     get_attachment
     @reply_to_person = UseridDetail.where(email_address: recipient).first
     mail(:from => "#{sender}",:to => "#{@reply_to_person.person_forename} <#{recipient}>", :bcc => ccs, subject:"#{@message.subject}. Reference Message Identifier: #{@message.identifier}")
+  end
+
+  def coordinator_reply_data_problem(contact,ccs,message,sender)
+    @contact = contact
+    @message = message
+    @reply_messages = Message.where(source_contact_id: @message.source_contact_id).all
+    get_attachment
+    mail(from: sender.email_address, to:  "#{@contact.name} <#{@contact.email_address}>", bcc: ccs, subject: @message.subject)
   end
 
   def send_logs(file,ccs,body_message,subjects)
