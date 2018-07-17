@@ -208,9 +208,32 @@ class ContactsController < ApplicationController
   def reply_contact
     get_user_info_from_userid; return if performed?
     @respond_to_contact = Contact.id(params[:source_contact_id]).first
+    @contact_replies = Message.where(source_contact_id: params[:source_contact_id]).all
     @message = Message.new
     @message.message_time = Time.now
     @message.userid = @user.userid
+  end
+
+  def contact_reply_messages
+    get_user_info_from_userid; return if performed?
+    @contact = Contact.id(params[:id]).first
+    if @contact.present?
+      @messages = Message.where(source_contact_id: params[:id]).all
+      render 'messages/index'
+    end
+  end
+
+  def force_destroy
+    @contact = Contact.id(params[:id]).first
+    if @contact.present? && @contact.has_replies?(params[:id])
+      delete_reply_messages(params[:id])
+      @contact.delete
+      flash.notice = "Contact and all its replies are destroyed"
+      redirect_to :action => 'index'
+      return
+    else
+      go_back("feedback",params[:id])
+    end
   end
 
   private
@@ -218,4 +241,7 @@ class ContactsController < ApplicationController
     params.require(:contact).permit!
   end
 
+  def delete_reply_messages(contact_id)
+    Message.where(source_contact_id: contact_id).destroy
+  end
 end

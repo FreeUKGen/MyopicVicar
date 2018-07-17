@@ -38,7 +38,6 @@ require 'reply_userid_role'
     end
   end
 
-
   def userid_feedbacks_with_replies
     get_user_info_from_userid
     @user.reload

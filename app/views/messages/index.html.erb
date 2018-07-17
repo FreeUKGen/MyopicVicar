@@ -1,9 +1,5 @@
 <% index_breadcrumbs %>
-<% if params[:action] == "list_feedback_reply_message" %>
-  <h2 class=" text--center">List of Feedback Reply messages</h2>
-<% else %>
-  <h2 class=" text--center">List of all messages</h2>
-<% end %>
+<h2 class=" text--center"><%= index_header(params[:action])%></h2>
   <p style="text-align: center"><%= link_to 'Create New Message', new_message_path, method: :get , :class => "btn weight--light btn--small" %> <%= link_to 'List by Name', list_by_name_messages_path, method: :get , :class => "btn weight--light btn--small" %> <%= link_to 'List by Posted Date' , list_by_date_messages_path, method: :get , :class => "btn weight--light btn--small"%> <%= link_to 'List by Identifier' , list_by_identifier_messages_path, method: :get , :class => "btn weight--light btn--small" %>  <%= link_to 'Select by Identifier' , select_by_identifier_messages_path, method: :get , :class => "btn weight--light btn--small" %> <%= link_to 'List Unsent Messages' , list_unsent_messages_path, method: :get , :class => "btn weight--light btn--small" %> </p>
 <% if flash[:notice] %>
 <div id="notice" style="color:blue"><br>
@@ -27,7 +23,7 @@
               <th class="t20">Action</th>
             </tr>
             <% @messages.each do |message| %>
-                <tr>
+                <tr class="<%= sent(message) %>">
                   <td><%= message.subject %></td>
                   <td><%= message.userid %></td>
                   <td><%= message.message_time.strftime("%d %b %Y") unless message.message_time.nil?%></td>
@@ -36,7 +32,7 @@
                   <td><%= sent(message)  %></td>
                   <td>
                     <%= link_to 'SH', message_path(message.id),  :class => "btn weight--light  btn--small", method: :get%>
-                    <% if message.source_feedback_id.blank? %>
+                    <% if message.source_feedback_id.blank? && message.source_contact_id.blank? %>
                       <%= link_to 'ED', edit_message_path(message.id),  :class => "btn weight--light  btn--small", method: :get%>
                       <%= link_to 'SEND', send_message_messages_path(message.id), :class => "btn weight--light  btn--small", method: :get, data: { confirm: 'Are you sure you want to send this message' } %>
                     <% end%>

@@ -1,3 +1,4 @@
+<%# raise 'hi'%>
 <p> Dear <%= @contact.name %>;</p>
 <p><%= @message.body%></p>
 <% if @message.attachment.present?%>
@@ -16,7 +17,7 @@ There is an Image attachment
         <div class="grid__item  one-whole  palm-one-whole push--bottom">
         <h4>Original Contact Message</h4>
           <%= content_tag :p, class: "strong" do %>
-            On <%= @contact.contact_time.to_formatted_s(:long)%>, Userid: <%= @contact.name%> wrote:<br/>
+            On <%= @contact.contact_time.to_formatted_s(:long)%>, Name: <%= @contact.name%> wrote:<br/>
             <%= @contact.body %>
           <% end %>
           <br />

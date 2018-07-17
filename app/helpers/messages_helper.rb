@@ -55,7 +55,7 @@ module MessagesHelper
     when !@respond_to_feedback.nil?
       text_field_tag 'message[subject]', "Re: Thank you for your feedback. Reference #{@respond_to_feedback.identifier}", :class => "text-input", readonly: true, title: "Re: Thank you for your feedback. Reference #{@respond_to_feedback.identifier}"
     when !@respond_to_contact.nil?
-      text_field_tag 'message[subject]', "Re: Thank you for reporting a problem with our data. Reference #{@respond_to_contact.identifier}", :class => "text-input", readonly: true, title: "Re: Thank you for your feedback. Reference #{@respond_to_contact.identifier}"
+      text_field_tag 'message[subject]', contact_reply_subject(@respond_to_contact), :class => "text-input", readonly: true, title: contact_reply_subject(@respond_to_contact)
     when !@respond_to_message.nil?
       text_field_tag 'message[subject]', "Re: #{@respond_to_message.subject}", :class => "text-input", readonly: true
     when @message.subject.nil? && @respond_to_message.nil? && @respond_to_feedback.nil?
@@ -116,6 +116,10 @@ module MessagesHelper
       breadcrumb :message_to_syndicate
     when params[:action] == "feedback_reply_messages"
       breadcrumb :feedback_messages, @feedback
+    when params[:action] == "contact_reply_messages"
+      breadcrumb :contact_messages, @contact
+    when params[:action] == "list_contact_reply_message"
+      breadcrumb :list_contact_reply_messages
     else
       breadcrumb :messages
     end
@@ -147,6 +151,46 @@ module MessagesHelper
         text_field_tag 'email', "#{@respond_to_contact.email_address}", :class => "text-input", readonly: true
       end
     end
+  end
+
+  def contact_reply_subject(contact)
+    case contact.contact_type
+    when 'Website Problem'
+      @subject = "RE: Thank you for reporting a website problem. Reference #{contact.identifier}"
+    when 'Data Question'
+      @subject = "RE: Thank you for your data question. Reference #{contact.identifier}"
+    when 'Data Problem'
+      @subject = "RE: Thank you for reporting a problem with our data. Reference #{contact.identifier}"
+    when 'Volunteering Question'
+      @subject = "RE: Thank you for question about volunteering. Reference #{contact.identifier}"
+    when 'General Comment'
+      @subject = "RE: Thank you for the general comment. Reference #{contact.identifier}"
+    when "Thank you"
+      @subject = "RE: Thank you for your compliments. Reference #{contact.identifier}"
+    when 'Genealogical Question'
+      @subject = "RE: Thank you for a genealogical question. Reference #{contact.identifier}"
+    when 'Enhancement Suggestion'
+      @subject = "RE: Thank you for the suggested enhancement. Reference #{contact.identifier}"
+    else
+      @subject = "RE: Thank you for the general comment. Reference #{contact.identifier}"
+    end
+    return @subject
+  end
+
+  def index_header(action)
+    case action
+    when "list_feedback_reply_message"
+      header = "List of Feedback Reply messages"
+    when "feedback_reply_messages"
+      header = "List of Reply Message for feedback sent by #{@feedback.name}, reference: #{@feedback.identifier}"
+    when "list_contact_reply_message"
+      header = "List of Contact Reply messages"
+    when "contact_reply_messages"
+      header = "List of Reply Message for contact sent by #{@contact.name}, reference: #{@contact.identifier}"
+    else
+      header = "List of all messages"
+    end
+    return header
   end
 
   private

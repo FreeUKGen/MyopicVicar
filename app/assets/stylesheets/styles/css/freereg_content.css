@@ -685,3 +685,8 @@ div#cookieAcceptButton {
 .toggle:checked:before {
   left: 32px;
 }
+
+tr.No {
+  background-color: #fff6f6;
+  color: #a64846;
+}

@@ -440,7 +440,6 @@ crumb :contacts do
   link "Contacts", contacts_path
   parent :root
 end
-#manage contacts
 crumb :show_contact do |contact|
   link "Show Contact", contact_path(contact)
   parent :contacts
@@ -449,6 +448,11 @@ crumb :edit_contact do |contact|
   link "Edit Contact", edit_contact_path(contact)
   parent :show_contact, contact
 end
+crumb :create_contact_reply do |message|
+  link "Create Reply for Contact", reply_contact_path(message.id)
+  parent :contacts
+end
+
 crumb :messages do
   link "Messages", messages_path
   parent :root
@@ -461,6 +465,9 @@ crumb :show_message do |message|
   when message.source_feedback_id.present?
     feedback = Feedback.id(message.source_feedback_id).first
     parent :feedback_messages, feedback
+  when message.source_contact_id.present?
+    contact = Contact.id(message.source_contact_id).first
+    parent :contact_messages, contact
   else
     parent :messages
   end
@@ -499,6 +506,16 @@ end
 crumb :feedback_messages do |message|
   link "Feedback Messages", feedback_reply_messages_path(message.id)
   parent :feedbacks
+end
+
+crumb :contact_messages do |message|
+  link "Contact Messages", contact_reply_messages_path(message.id)
+  parent :contacts
+end
+
+crumb :list_contact_reply_messages do
+  link "All Contact Reply Messages", list_contact_reply_message_path
+  parent :contacts
 end
 
 crumb :show_feedback_message do |message|

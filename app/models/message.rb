@@ -21,11 +21,13 @@ class Message
 
   scope :fetch_replies, -> (id) { where(source_message_id: id) }
   scope :fetch_feedback_replies, -> (id) { where(source_feedback_id: id) }
-  scope :non_feedback_reply_messages, -> { where(source_feedback_id: nil) }
+  scope :non_feedback_contact_reply_messages, -> { where(source_feedback_id: nil, source_contact_id: nil) }
   scope :feedback_replies, -> { where({ :source_feedback_id.ne => nil })}
+  scope :contact_replies, -> { where({ :source_contact_id.ne => nil })}
   mount_uploader :attachment, AttachmentUploader
   mount_uploader :images, ScreenshotUploader
   before_create :add_identifier
+
   
   index({_id: 1, userid: 1},{name: "id_userid"})
   index({_id: 1, sent_time: 1},{name: "id_sent_time"})
@@ -117,17 +119,19 @@ class Message
   def self.list_messages(action)
     case action
     when "list_by_name"
-      @messages = Message.non_feedback_reply_messages.all.order_by(userid: 1)
+      @messages = Message.non_feedback_contact_reply_messages.all.order_by(userid: 1)
     when "list_by_date"
-      @messages = Message.non_feedback_reply_messages.all.order_by(message_time: 1)
+      @messages = Message.non_feedback_contact_reply_messages.all.order_by(message_time: 1)
     when "list_by_identifier"
-      @messages = Message.non_feedback_reply_messages.all.order_by(identifier: -1)
+      @messages = Message.non_feedback_contact_reply_messages.all.order_by(identifier: -1)
     when "list_unsent_messages"
-      @messages = Message.non_feedback_reply_messages.all.find_all do |message|
+      @messages = Message.non_feedback_contact_reply_messages.all.find_all do |message|
         !Message.sent?(message)
       end
     when "list_feedback_reply_message"
       @messages = Message.feedback_replies.order_by(message_time: -1)
+    when "list_contact_reply_message"
+      @messages = Message.contact_replies.order_by(message_time: -1)
     end
     return @messages
   end

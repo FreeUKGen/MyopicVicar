@@ -5,7 +5,7 @@ class MessagesController < ApplicationController
   require 'reply_userid_role'
   def index
     get_user_info_from_userid
-    @messages = Message.non_feedback_reply_messages.all.order_by(message_time: -1)
+    @messages = Message.non_feedback_contact_reply_messages.all.order_by(message_time: -1)
   end
 
   def userid_messages
@@ -95,6 +95,12 @@ class MessagesController < ApplicationController
     render :index
   end
 
+  def list_contact_reply_message
+    get_user_info_from_userid
+    @messages = Message.list_messages(params[:action])
+    render :index
+  end
+
   def list_by_identifier
     get_user_info_from_userid
     @messages = Message.list_messages(params[:action])
@@ -165,8 +171,8 @@ class MessagesController < ApplicationController
       end
     when "Reply Contact"
       if @message.save
-        flash[:notice] = "Reply for Contact is created"
-        send_contact_message
+        flash[:notice] = "Reply for Contact is created and sent"
+        #send_contact_message
         reply_for_contact; return if performed?
       end
     end
@@ -203,7 +209,7 @@ class MessagesController < ApplicationController
     sender = UseridDetail.where(userid: @message.userid).first
     sender_email = sender.email_address
     @contact = Contact.id(@message.source_contact_id).first
-    @contact.communicate_data_problem(@message, sender_email)
+    @contact.communicate(@message, sender)
     redirect_to reply_contact_path(@message.source_contact_id)
   end
 
@@ -277,6 +283,7 @@ class MessagesController < ApplicationController
       @message.destroy
       flash.notice = "Message destroyed"
       redirect_to list_feedback_reply_message_path and return if @message.source_feedback_id.present?
+      redirect_to list_contact_reply_message_path and return if @message.source_contact_id.present?
       redirect_to :action => 'index'
       return
     else
