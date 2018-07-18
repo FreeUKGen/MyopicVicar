@@ -1,6 +1,7 @@
 class ContactsController < ApplicationController
 
   require 'freereg_options_constants'
+  require 'contact_rules'
 
   skip_before_filter :require_login, only: [:new, :report_error, :create]
 
@@ -93,13 +94,40 @@ class ContactsController < ApplicationController
 
   def index
     get_user_info_from_userid
-    if @user.person_role == 'county_coordinator' || @user.person_role == 'country_coordinator'
-      @county = @user.county_groups
-      @contacts = Contact.in(:county => @county).all.order_by(contact_time: -1)
-    else
-      @contacts = Contact.all.order_by(contact_time: -1)
+    contact_set.result
+  end
+
+  def contact_set
+    ContactRules.new(@user)
+  end
+
+  def secondary_role_contacts
+    @user.secondary_role.each do |role|
+      contact_list(role)
     end
   end
+
+  def contact_list(secondary_role)
+    case
+    when "county_coordinator"
+      @county = @user.county_groups
+      Contact.in(county: @county).all.order_by(contact_time: -1)
+    when 'website_coordinator'
+      Contact.where(contact_type: { '$in': ["Website Problem", "Enhancement Suggestion"]}).all.order_by(contact_time: -1)
+    when 'contacts_coordinator'
+      Contact.where(contact_type: { '$in': ["Data Question", "Data Problem"]}).all.order_by(contact_time: -1)
+    when 'publicity_coordinator'
+      Contact.where(contact_type: { '$in': ["Thank you"]}).all.order_by(contact_time: -1)
+    when 'genealogy_coordinator'
+      Contact.where(contact_type: { '$in': ["Genealogical Question"]}).all.order_by(contact_time: -1)
+    when 'volunteer_coordinator'
+      Contact.where(contact_type: { '$in': ["Volunteering Question"]}).all.order_by(contact_time: -1)
+    when 'general_communication_coordinator'
+      Contact.where(contact_type: { '$in': ["General Comment"]}).all.order_by(contact_time: -1)
+    else
+      Contact.all.order_by(contact_time: -1)
+    end
+  end  
 
   def list_by_date
     get_user_info_from_userid
@@ -205,9 +233,13 @@ class ContactsController < ApplicationController
     end
   end
 
+
+
   private
   def contact_params
     params.require(:contact).permit!
   end
+
+  
 
 end
