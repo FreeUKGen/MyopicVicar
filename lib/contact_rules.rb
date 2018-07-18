@@ -1,79 +1,110 @@
 class ContactRules
-  attr_reader :user
+  attr_reader :user, :result_sets
+
+  COUNTY_COUNTRY_COORDINATORS = [
+    "county_coordinator", "country_coordinator"
+  ]
 
   def initialize user
     @user = user
-  end
-
-  def secondary_role?
-    user.secondary_role.any?
-  end
-
-  def primary_role?
-    user.person_role
-  end
-
-  def primary_contacts
-    contacts[]
-  end
-
-  def process_secondary_role_contacts
-    secondary_contacts = []   
-    return secondary_contacts unless secondary_role?
-
-    user.secondary_role.each do |role|
-      secondary_contacts << contacts[role]
-    end
+    @result_sets = []
   end
 
   def result
-    if contacts.has_key?(user_role)
-      process_secondary_role_contacts
-      contact_results = Contact.where(contact_field => { '$in': contacts[user_role]}).all.order_by(contact_time: -1)
-
-    else
-      contact_results = Contact.all.order_by(contact_time: -1)
-    end
-
-    contact_results
+    get_contacts_for_roles
   end
 
-  def contacts
+  private
+
+  # Get the user primary role => has one
+  def primary_role
+    return nil if user.person_role.blank?
+    user.person_role
+  end
+
+  # Get the user secondary roles => array
+  def secondary_roles
+    user.secondary_role
+  end
+
+  # Merge the user primary and secondary roles and remove duplicates
+  def merge_roles
+    combined_roles = secondary_roles << primary_role
+    combined_roles.uniq
+  end
+
+  # Get the contacts for each role
+  def get_contacts_for_roles
+    return all_contacts unless roles_in_contact_types?
+
+    unless county_and_country_coordinators?
+      county_and_country_contacts.each do |result|
+        result_sets << result
+      end
+    end
+
+    user_role_contacts.each do |contact|
+      result_sets << contact
+    end
+
+    result_sets
+  end
+
+  # Check user roles are not in contact types
+  def roles_in_contact_types?
+    (merge_roles - contact_types.keys).empty?
+  end
+
+  # remove role if county or country co ordinator
+  def remove_county_or_country_roles
+    merge_roles.reject { |role| 
+      COUNTY_COUNTRY_COORDINATORS.include? role 
+    }
+  end
+
+  # All contacts
+  def all_contacts
+    Contact.order_by(contact_time: -1)
+  end
+
+  # Get county and country co-ordinator contacts
+  def county_and_country_contacts
+    Contact.where(county: { '$in': county_groups }).all.order_by(contact_time: -1)
+  end
+
+  # Get contacts for the user roles
+  def user_role_contacts
+    remaining_roles = []
+    merge_roles = remove_county_or_country_roles
+
+    merge_roles.each do |role|
+      remaining_roles << contact_types[role]
+    end
+
+    remaining_roles = remaining_roles.flatten
+    contacts = Contact.where(contact_type: { '$in': remaining_roles }).all.order_by(contact_time: -1)
+    contacts
+  end
+
+  # Check the role has county or a country coordinator
+  def county_and_country_coordinators?
+    (merge_roles & COUNTY_COUNTRY_COORDINATORS).empty?
+  end
+
+  # Contacts by Roles
+  def contact_types
     {
     "website_coordinator" => ["Website Problem", "Enhancement Suggestion"],
     "contacts_coordinator" => ["Data Question", "Data Problem"],
     "publicity_coordinator" => ["Thank you"],
     "genealogy_coordinator" => ["Genealogical Question"],
     "volunteer_coordinator" => ["Volunteering Question"],
-    "general_communication_coordinator" => ["General Comment"],
-    "county_coordinator" => county_contacts,
-    "country_coordinator" => county_contacts
+    "general_communication_coordinator" => ["General Comment"]
     }
-  end
+  end  
 
-  def county_contacts
+  def county_groups
     user.county_groups
   end
 
-  def contact_field
-    if user_role == "county_coordinator" || user_role == "country_coordinator"
-      "county"
-    else
-      "contact_type"
-    end
-  end
-
-  def user_role
-    @user.person_role
-  end
-
-  private
-
-  def county_coordinator?
-    #user.person_role == "county_coordinator" || check_secondary_role? "county_coordinator"
-  end
-
-  def check_secondary_role? role
-    user.secondary_role.include? role
-  end
 end

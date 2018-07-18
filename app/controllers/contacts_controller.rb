@@ -94,40 +94,12 @@ class ContactsController < ApplicationController
 
   def index
     get_user_info_from_userid
-    contact_set.result
+    @contacts = get_contacts.result
   end
 
-  def contact_set
+  def get_contacts
     ContactRules.new(@user)
   end
-
-  def secondary_role_contacts
-    @user.secondary_role.each do |role|
-      contact_list(role)
-    end
-  end
-
-  def contact_list(secondary_role)
-    case
-    when "county_coordinator"
-      @county = @user.county_groups
-      Contact.in(county: @county).all.order_by(contact_time: -1)
-    when 'website_coordinator'
-      Contact.where(contact_type: { '$in': ["Website Problem", "Enhancement Suggestion"]}).all.order_by(contact_time: -1)
-    when 'contacts_coordinator'
-      Contact.where(contact_type: { '$in': ["Data Question", "Data Problem"]}).all.order_by(contact_time: -1)
-    when 'publicity_coordinator'
-      Contact.where(contact_type: { '$in': ["Thank you"]}).all.order_by(contact_time: -1)
-    when 'genealogy_coordinator'
-      Contact.where(contact_type: { '$in': ["Genealogical Question"]}).all.order_by(contact_time: -1)
-    when 'volunteer_coordinator'
-      Contact.where(contact_type: { '$in': ["Volunteering Question"]}).all.order_by(contact_time: -1)
-    when 'general_communication_coordinator'
-      Contact.where(contact_type: { '$in': ["General Comment"]}).all.order_by(contact_time: -1)
-    else
-      Contact.all.order_by(contact_time: -1)
-    end
-  end  
 
   def list_by_date
     get_user_info_from_userid
