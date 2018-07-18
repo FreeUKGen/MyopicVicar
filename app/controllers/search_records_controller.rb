@@ -31,8 +31,8 @@ class SearchRecordsController < ApplicationController
       @viewed_records = @search_result.viewed_records
       @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
       @search_result.update_attribute(:viewed_records, @viewed_records)
-      @order,@array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type])  
-      #session[:viewed] << params[:id] unless  session[:viewed].length >= 10
+      @order,@array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type],@entry.freereg1_csv_file.def,current_authentication_devise_user.present?)  
+ #session[:viewed] << params[:id] unless  session[:viewed].length >= 10
     end
   end
 
@@ -50,15 +50,19 @@ class SearchRecordsController < ApplicationController
       @place_id,@church_id,@register_id = @entry.get_location_ids
       @annotations = Annotation.find(@search_record[:annotation_ids]) if @search_record[:annotation_ids]
       @search_result = @search_query.search_result
-      @order,@array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type]) 
+      @all_data = true
+      @order,@array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type],@entry.freereg1_csv_file.def,current_authentication_devise_user.present?)  
       respond_to do |format|
         format.html {render "show", :layout => false}
         format.json do
-          send_data @json_of_entries.to_json, :type => 'application/json; header=present', :disposition => "attachment; filename=search_result.json"
+          file_name = "search-record-#{@entry.id}.json"
+          send_data @json_of_entries.to_json, :type => 'application/json; header=present', :disposition => "attachment; filename=\"#{file_name}\""
         end
         format.csv do 
-          headers['Content-Disposition'] = "attachment; filename=\"search-result.csv\""
-          headers['Content-Type'] ||= 'text/csv'   
+          header_line = CSV.generate_line(@order,options = {:row_sep => "\r\n"})
+          data_line = CSV.generate_line(@array_of_entries, options = {:row_sep => "\r\n",:force_quotes => true})
+          file_name = "search-record-#{@entry.id}.csv"
+          send_data (header_line + data_line), :type => 'text/csv' , :disposition => "attachment; filename=\"#{file_name}\""
         end   
       end
     end
@@ -91,7 +95,11 @@ class SearchRecordsController < ApplicationController
           end
           if  @entry.nil?
             proceed = false
-            log_missing_document("entry for search record",@search_record[:id], @search_query.id)
+            log_missing_document("Missing entry for search record",@search_record[:id], @search_query.id)
+            flash[:notice] = "We encountered a problem retrieving that original entry, if this continues please let us know"
+          elsif !@entry.freereg1_csv_file.present?
+            proceed = false
+            log_missing_document("file missing for entry for search record",@search_record[:id], @search_query.id)
             flash[:notice] = "We encountered a problem retrieving that original entry, if this continues please let us know"
           end
         end

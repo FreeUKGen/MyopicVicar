@@ -20,7 +20,7 @@ module ApplicationHelper
   end
 
   def get_user_info_from_userid
-    @user = cookies.signed[:userid]
+    @user = get_user
     unless @user.blank?
       @first_name = @user.person_forename
       @user_id = @user.id
@@ -28,6 +28,12 @@ module ApplicationHelper
       @manager = manager?(@user)
       @roles = UseridRole::OPTIONS.fetch(@user.person_role)
     end
+  end
+  
+  def get_user
+    user = cookies.signed[:userid]
+    user = UseridDetail.id(user).first
+    return user
   end
 
   def manager?(user)
@@ -122,7 +128,7 @@ module ApplicationHelper
       display_map["Place"] = place if search_query_places_size > 0
     end
     display_map["Include Family Members"] = "Yes" if search_query.inclusive
-    display_map["Include Winesses"] = "Yes" if search_query.witness
+    display_map["Include Witnesses"] = "Yes" if search_query.witness
     display_map
   end
 
@@ -140,13 +146,24 @@ module ApplicationHelper
         @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
     </style>
       <script async="" src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+      <script>
+        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
+      </script>
         <ins class="adsbygoogle adSenseBanner"
              style="display:block"
              data-ad-client="ca-pub-7825403497160061"
              data-ad-slot="8870759291"
              data-ad-format="auto"></ins>
       <script>
+        window.update_personalized_google_adverts = function (preference) {
+          if(preference == 'accept') {
+            (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
+          } else if(preference == 'deny') {
+            (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
+          }
+        };
         $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})});
+        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
       </script>
     HTML
     if Rails.env.development?

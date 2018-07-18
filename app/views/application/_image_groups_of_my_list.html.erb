@@ -74,9 +74,9 @@
           <td class="t25"><%= link_to(group_name, image_server_group_path(gid, :assignment_filter_list=>session[:assignment_filter_list])) %></td>
           <td class="t10"><center><%= number_of_images %></center>&nbsp;</td>
           <% if session[:manage_user_origin] == 'manage syndicate' %>
-            <td class="t10"><%= link_to 'Email CC', request_cc_image_server_group_path(gid, :county=>session[:chapman_code], :user=>cookies.signed[:userid]), :title=>'email county coordinator to request the allocation of this image group' %></td>
+            <td class="t10"><%= link_to 'Email CC', request_cc_image_server_group_path(gid, :county=>session[:chapman_code], :user=>get_user), :title=>'email county coordinator to request the allocation of this image group' %></td>
           <% elsif session[:my_own] %>
-            <td class="t10"><%= link_to 'Email SC', request_sc_image_server_group_path(gid, :syndicate=>session[:syndicate], :user=>cookies.signed[:userid]), :title=>'email Syndicate Coordinator to request the assignment of this image group' %></td>
+            <td class="t10"><%= link_to 'Email SC', request_sc_image_server_group_path(gid, :syndicate=>session[:syndicate], :user=>get_user), :title=>'email Syndicate Coordinator to request the assignment of this image group' %></td>
           <% end %>
 
           <% source_rows = source_rows - 1 unless source_rows == 0 %>

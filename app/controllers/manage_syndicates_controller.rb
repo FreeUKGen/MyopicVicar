@@ -158,16 +158,16 @@ class ManageSyndicatesController < ApplicationController
   end
 
   def member_by_email
-    redirect_to :controller => 'userid_details', :action => 'selection', :option =>"Select specific email"
+    redirect_to :controller => 'userid_details', :action => 'selection', :option =>"Select specific email", :syndicate => session[:syndicate]
     return
   end
 
   def member_by_userid
-    redirect_to :controller => 'userid_details', :action => 'selection', :option => "Select specific userid"
+    redirect_to :controller => 'userid_details', :action => 'selection', :option => "Select specific userid", :syndicate => session[:syndicate]
   end
 
   def member_by_name
-    redirect_to :controller => 'userid_details', :action => 'selection', :option =>"Select specific surname/forename"
+    redirect_to :controller => 'userid_details', :action => 'selection', :option =>"Select specific surname/forename", :syndicate => session[:syndicate]
   end
 
   def new

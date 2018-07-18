@@ -2,7 +2,13 @@
 <div class="grid">
 
 <%= simple_form_for @image_server_group do |s| %>
-  <%= s.input :group_name, :label => "Image Group Name", :input_html => {:class => "simple_form_bgcolour simple_form_position", :size => 70} %>
+  <% case controller.action_name %>
+    <% when 'edit' %> 
+      <%= s.input :group_name, :disabled=>true, :label => "Image Group Name", :input_html => {:class => "simple_form_uneditable simple_form_position", :size => 70} %>
+      <%= s.hidden_field :group_name %>
+    <% when 'new' %>
+      <%= s.input :group_name, :label => "Image Group Name", :input_html => {:class => "simple_form_bgcolour simple_form_position", :size => 70} %>
+  <% end %> 
   <%= s.input :start_date, :label => "Start Year", :input_html => {:class => "simple_form_bgcolour simple_form_position", :size => 10} %>
     <div id='ig_wrong_format_start_date' style='display:none; color:red; margin:2px 10px'>start date needs to be 4 digits</div>
     <div id='ig_wrong_range_start_date' style='display:none; color:red; margin:2px 10px'>start date can not be earlier than image source start date <%= @parent_source.start_date if !@parent_source.nil? %> or latter than current year</div>
@@ -16,7 +22,7 @@
       <% when 'new' %>
         <%= s.hidden_field :source_start_date, :value => @parent_source.start_date %>
         <%= s.hidden_field :source_end_date, :value => @parent_source.end_date %>
-        <%= s.hidden_field :source_id %>
+        <%= s.hidden_field :source_id, :value => @parent_source.id%>
       	<%= s.button :submit, 'Create', :onclick => 'return check_year_range()' %>
       <% when 'edit' %> 
         <%= s.hidden_field :source_start_date, :value => s.object.source.start_date %>

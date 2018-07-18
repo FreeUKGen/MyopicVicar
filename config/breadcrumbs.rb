@@ -50,7 +50,6 @@ crumb :files  do |file|
       link "List of Batches", freereg1_csv_files_path
     else
       link "List of Batches", freereg1_csv_files_path(:anchor => "#{file.id}",  :page => "#{session[:current_page]}")
-
     end
     case
     when session[:county].present? &&
@@ -81,7 +80,7 @@ crumb :files  do |file|
   end
 end
 crumb :show_file do |file|
-  link "Batch Information", freereg1_csv_file_path(file)
+  link "Batch Information", freereg1_csv_file_path(file.id)
   if session[:my_own]
     parent :files, file
   else
@@ -136,13 +135,17 @@ end
 
 
 #record or entry
-crumb :show_records do |file|
-  link "List of Records", freereg1_csv_entries_path(:anchor => "#{file.id}")
+crumb :show_records do |entry,file|
+  if entry.nil?
+    link "List of Records", freereg1_csv_entries_path
+  else
+    link "List of Records", freereg1_csv_entries_path(:anchor => "#{entry.id}")
+  end
   parent :show_file, file
 end
 crumb :new_record do |entry,file|
   link "Create New Record", new_freereg1_csv_entry_path
-  parent :show_records, file
+  parent :show_records, entry,file
 end
 crumb :error_records do |file|
   link "List of Errors", error_freereg1_csv_file_path(file)
@@ -150,7 +153,7 @@ crumb :error_records do |file|
 end
 crumb :show_record do |entry,file|
   link "Record Contents", freereg1_csv_entry_path(entry)
-  parent :show_records, file
+  parent :show_records, entry,file
 end
 crumb :edit_record do |entry,file|
   link "Edit Record", edit_freereg1_csv_entry_path(entry)
@@ -308,26 +311,39 @@ end
 #Profile
 crumb :userid_detail do |syndicate,userid_detail,page_name,option|
   link "Profile:#{userid_detail.userid}", userid_detail_path(userid_detail.id)
-  if session[:my_own]
+  case 
+  when session[:my_own]
     parent :root
-  else
-    if page_name == 'incomplete_registrations'
+  when page_name == 'incomplete_registrations'
       parent :incomplete_registrations, syndicate
-    elsif option
-      parent :selection_user_id, option
-    elsif session[:edit_userid]
-      syndicate = session[:syndicate]
+  when option
+      parent :selection_user_id, option, syndicate
+  when session[:manage_user_origin] == 'manage syndicate'
+      parent :syndicate_options, syndicate
+  when session[:edit_userid]
+      syndicate = syndicate
       syndicate = "all"  if  session[:role] == "system_administrator" || session[:role] == "technical"
       parent :userid_details_listing, syndicate,userid_detail
-    else
+  else
       parent :coordinator_userid_options
-    end
   end
 end
 
-crumb :selection_user_id do |selection|
-  link "#{selection}", selection_userid_details_path(option: selection)
-  parent :regmanager_userid_options
+crumb :selection_user_id do |selection,syndicate|
+  link "#{selection}", selection_userid_details_path(option: selection,syndicate: syndicate)
+  case
+  when session[:manage_user_origin] == 'manage syndicate'
+      parent :syndicate_options, syndicate
+  when session[:edit_userid]
+    if syndicate.nil? || syndicate == 'all'
+      parent :regmanager_userid_options
+    else
+      parent :syndicate_options, syndicate
+    end
+  else
+    parent :coordinator_userid_options
+  end
+    
 end
 
 #manage userids
@@ -682,13 +698,17 @@ end
 
 
 # from 'manage counties' => "Manage Images"
-crumb :county_manage_images do |county|
-  link "All Sources", selection_active_manage_counties_path(:option =>'Manage Images')
+crumb :county_manage_images do |county, browse_source|
+  if browse_source.nil?
+    link "All Sources", selection_active_manage_counties_path(:option =>'Manage Images')
+  else 
+    link "All Sources", selection_active_manage_counties_path(:option => 'Manage Images', :anchor => browse_source)
+  end
   parent :county_options, session[:county]
 end
 
       # from "manage counties" => "Manage Images" => "List All Image Groups"
-      crumb :county_manage_images_selection do |county|
+      crumb :county_manage_images_selection do |county, browse_source|
         case session[:image_group_filter]
           when 'all'
             link "List All Image Groups", manage_image_group_manage_county_path
@@ -705,7 +725,7 @@ end
           when 'uninitialized'
             link "List Unitialized Sources", uninitialized_source_list_path(county)
         end
-        parent :county_manage_images, session[:county]
+        parent :county_manage_images, session[:county], browse_source
       end
 
 
@@ -743,7 +763,7 @@ crumb :show_image_source do |register,source|
             parent :syndicate_manage_images, session[:syndicate]
         end
       else
-        parent :county_manage_images_selection, session[:county]
+        parent :county_manage_images_selection, session[:county], source.id.to_s
       end
     when 'Other Server1'
       link "Other Server1", source_path(source)
@@ -875,6 +895,48 @@ end
             end
 
 
+
+# breadcrumb for GAP
+crumb :gaps do |user,syndicate,county,register,source|
+  link "GAPs", index_gap_path(source)
+  parent :show_image_source, register,source
+end
+
+      crumb :show_gap do |user,syndicate,county,register,source|
+        link "GAP"
+        parent :gaps, user,syndicate,county,register,source
+      end
+
+      crumb :new_gap do |user,syndicate,county,register,source|
+        link "Create New GAP"
+        parent :gaps, user,syndicate,county,register,source
+      end
+
+      crumb :edit_gap do |user,syndicate,county,register,source|
+        link "Edit GAP"
+        parent :gaps, user,syndicate,county,register,source
+      end
+
+
+crumb :gap_reasons do
+  link "GAP Reasons", gap_reasons_path
+  parent :root
+end
+
+crumb :show_gap_reason do |gap_reason|
+  link "Show GAP Reason", gap_reason_path(gap_reason)
+  parent :gap_reasons
+end
+
+crumb :edit_gap_reason do |gap_reason|
+  link "Edit GAP Reason", edit_gap_reason_path(gap_reason)
+  parent :show_gap_reason, gap_reason
+end
+
+crumb :create_gap_reason do |gap_reason|
+  link "Create GAP Reason", new_gap_reason_path(gap_reason)
+  parent :gap_reasons
+end
 
 
 # crumb :projects do

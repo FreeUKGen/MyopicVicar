@@ -1,0 +1,26 @@
+<% breadcrumb :gap_reasons %>
+
+<h2 class="text--center"> List of GAP reasons</h2>
+<div style="text-align: center">
+  <%= link_to 'Create New GAP reason',new_gap_reason_path, method: :get , :class => "btn weight--light btn--small"  %>
+</div>
+<div style="clear:both;"> </div><br>
+
+<%= render partial: 'flash_notice' %>
+
+<div>
+  <table class=" table--bordered table--data">
+    <tr>
+      <th>GAP Reasons</th>
+      <th colspan="3">Actions</th>
+    </tr>
+    <% @gap_reasons.each do |gap_reason| %>
+      <tr>
+        <td><%= gap_reason.reason %></td>
+        <td><%= link_to 'Show', gap_reason_path(gap_reason) %></td>
+        <td><%= link_to 'Edit', edit_gap_reason_path(gap_reason) %></td>
+        <td><%= link_to 'Destroy', gap_reason, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </table>
+</div>

@@ -1,0 +1,41 @@
+<% unless session[:userid].nil?%>
+  <div style="text-align: center">  
+    <%= link_to 'Create New GAP', new_gap_path, method: :get, :class => "btn weight--light btn--small"  %> 
+  </div>
+  <div style="clear:both;"> </div><br>
+<% end %>
+
+<div style="overflow: hidden;">
+  <table class="my-width-min flush--bottom" >
+    <thead>
+      <tr>
+        <th class="t15">Start Date</th>
+        <th class="t15">End Date</th>
+        <th class="t15">Reason</th>
+        <th class="t30">Notes</th>
+        <th class="t10">Action</th>
+      </tr>
+    </thead>
+  </table>
+
+  <div class="scrollable">
+    <table class=" table--bordered my-width table--data just--left">
+      <tbody>  
+        <% @gap.each do |x| %>
+          <tr>
+            <td class="t15"><%= x.start_date %>&nbsp;</td>
+            <td class="t15"><%= x.end_date %>&nbsp;</td>
+            <td class="t15"><%= Gap::Reason::REASON[x.reason] %>&nbsp;</td>
+            <td class="t30"><%= x.note %>&nbsp;</td>
+            <td class="t10">
+              <%= link_to 'SH', gap_path(x), :title=>'show GAP properties' %>
+              <%= link_to 'ED', edit_gap_path(x), :title=>'edit image group properties' %> 
+              <%= link_to 'DE', gap_path(x), :title=>'delete gap', data: { confirm: 'Are you sure you want to delete?'}, method: :delete %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <div id="task-form" style="display:none;"></div>
+</div>

@@ -2,7 +2,7 @@ class SourcesController < ApplicationController
   require 'freereg_options_constants'
   
   def access_image_server
-    @user = cookies.signed[:userid]
+    @user = get_user
     (session[:manage_user_origin] != 'manage county' && session[:chapman_code].nil?) ? chapman_code = 'all': chapman_code = session[:chapman_code]
     website = Source.create_manage_image_server_url(@user.userid,@user.person_role,chapman_code)  
     redirect_to website and return
@@ -65,7 +65,7 @@ class SourcesController < ApplicationController
     @place = @church.place #id?
     @county =  @place.county
     @place_name = @place.place_name
-    @user = cookies.signed[:userid]
+    @user = get_user
   end
 
   def edit
@@ -138,7 +138,7 @@ class SourcesController < ApplicationController
       session[:place_name] = @place_name
       @county = @place.county
       session[:county] = @county
-      @user = cookies.signed[:userid]
+      @user = get_user
     end
   end
 

@@ -1,0 +1,11 @@
+<% breadcrumb :gaps, @user, @chapman_code, @county, @register, @source %>
+
+<% title "GAP - list" %>
+<%= render partial: 'header' %>
+<%= render partial: 'flash_notice' %>
+
+<div class="grid">
+  <section class="island">
+    <%= render 'gap_index' %>
+  </section>
+</div>

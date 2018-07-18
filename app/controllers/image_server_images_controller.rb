@@ -29,7 +29,7 @@ class ImageServerImagesController < ApplicationController
     @county =  @place.county
     @place_name = @place.place_name
     @chapman_code = @place.chapman_code
-    @user = cookies.signed[:userid]
+    @user = get_user
     @source = Source.find(:id=>session[:source_id])
     @group = ImageServerGroup.find(:id=>session[:image_server_group_id])
   end
@@ -41,7 +41,7 @@ class ImageServerImagesController < ApplicationController
        flash[:notice] = 'There were problems with the lookup'
       redirect_to :back and return
     end
-    @user = cookies.signed[:userid]
+    @user = get_user
     website = ImageServerImage.create_url('download',params[:object],chapman_code,folder_name, image_file_name,@user.userid)  
     redirect_to website and return
    end
@@ -52,6 +52,9 @@ class ImageServerImagesController < ApplicationController
     @image_server_image = ImageServerImage.id(params[:id]).first
     image_server_group = @image_server_image.image_server_group
     @group_name = ImageServerImage.get_sorted_group_name(image_server_group.source_id)
+
+    # leave for issue 1447 - Relicate image group, commit 9abecd5
+    # @group_name = ImageServerImage.get_sorted_group_name_under_source(image_server_group.source_id)
 
     redirect_to(:back, :notice => 'Attempted to edit a non_esxistent image file') and return if @image_server_image.nil?
   end
@@ -91,7 +94,7 @@ class ImageServerImagesController < ApplicationController
     display_info
 
     @image_server_group = ImageServerGroup.id(params[:id]).first
-    @group_name = ImageServerImage.get_sorted_group_name(@image_server_group[:source_id])
+    @group_name = ImageServerImage.get_sorted_group_name_under_church(@image_server_group[:church_id])
 
     @image_server_image = ImageServerImage.image_server_group_id(params[:id]).first
     redirect_to(:back, :notice => 'Attempted to edit a non_esxistent image file') and return if @image_server_image.nil?
@@ -99,7 +102,7 @@ class ImageServerImagesController < ApplicationController
     move_allowed_status = ['u','a']
     @images = ImageServerImage.get_image_list(params[:id],move_allowed_status)
 
-    redirect_to(:back, :notice => 'No image files can be moved') and return if @images.empty?
+    redirect_to(:back, :notice => 'Only Unallocated or Allocated images can be moved') and return if @images.empty?
   end
 
   def new      
@@ -185,7 +188,7 @@ class ImageServerImagesController < ApplicationController
        flash[:notice] = 'There were problems with the lookup'
       redirect_to :back and return
     end
-    @user = cookies.signed[:userid]
+    @user = get_user
     website = ImageServerImage.create_url('view',params[:object],chapman_code,folder_name, image_file_name,@user.userid)
     redirect_to website and return
   end
