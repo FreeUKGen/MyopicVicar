@@ -52,7 +52,12 @@ class ContactRules
 
   # Check user roles are not in contact types
   def roles_in_contact_types?
-    (merge_roles - contact_types.keys).empty?
+    (merge_roles - complete_contact_types.flatten).empty?
+  end
+
+  #Array of contact types
+  def complete_contact_types
+    contact_types.keys << COUNTY_COUNTRY_COORDINATORS
   end
 
   # remove role if county or country co ordinator
