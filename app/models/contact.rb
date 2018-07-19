@@ -135,7 +135,7 @@ class Contact
     @message = message
     unless @message.blank?
       reply_sent_messages(@message,sender)
-      UserMailer.coordinator_contact_reply(self,ccs,@message,sender.email_address).deliver_now
+      UserMailer.coordinator_contact_reply(self,ccs,@message,sender).deliver_now
     else
       UserMailer.coordinator_data_problem(self,ccs).deliver_now
     end
