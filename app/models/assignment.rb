@@ -285,10 +285,10 @@ class Assignment
     end
 
     def update_assignment_from_put_request(my_own,params)
-      if params[:id].include? "/"
-        assignment_id = params[:id].split("/")      # from 'Accept All Assignments' button
+      if params[:assignment_ids].nil?
+        assignment_id = params[:id]                 # from 'AC' / 'CM' link
       else
-        assignment_id = params[:id]               # from 'AC' / 'CM' link
+        assignment_id = params[:assignment_ids]     # from 'Accept All Assignments' button
       end
 
       action_type = params[:type]
