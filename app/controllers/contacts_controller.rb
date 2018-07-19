@@ -232,7 +232,9 @@ class ContactsController < ApplicationController
       redirect_to :action => 'index'
       return
     else
-      go_back("feedback",params[:id])
+      flash.notice = "Destruction of Contact was unsuccessful"
+      redirect_to :action => 'index'
+      return
     end
   end
 

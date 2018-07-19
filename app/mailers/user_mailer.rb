@@ -333,7 +333,7 @@ class UserMailer < ActionMailer::Base
     mail(:from => "#{sender}",:to => "#{@reply_to_person.person_forename} <#{recipient}>", :bcc => ccs, subject:"#{@message.subject}. Reference Message Identifier: #{@message.identifier}")
   end
 
-  def coordinator_reply_data_problem(contact,ccs,message,sender)
+  def coordinator_contact_reply(contact,ccs,message,sender)
     @contact = contact
     @message = message
     @reply_messages = Message.where(source_contact_id: @message.source_contact_id).all

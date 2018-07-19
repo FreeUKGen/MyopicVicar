@@ -1,4 +1,9 @@
 <% breadcrumb :create_contact_reply,  @respond_to_contact%>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+  </div>
+<% end %>
 <h4 style="text-align: center"> 
   Contact and its Replies
 </h4>
@@ -61,6 +66,7 @@
     </div>
   </section>
 </div>
+
 <% unless @contact_replies.count == 0 %>
   <h4 style="text-align: center">This Contact has
     <%= pluralize(@contact_replies.count, 'Reply Message')%>
@@ -69,7 +75,7 @@
     <section class="island  island--light ">
       <div class="scrollable" >
         <div class="grid__item  one-whole  palm-one-whole push--bottom">
-          <h4>Subject: <%= contact_reply_subject(@respond_to_contact)%> </h4>
+          <h4>Subject: <%= contact_subject(@respond_to_contact) %> </h4>
           <% @contact_replies.each do |reply| %>
             <div class="island island--bordered <%= session[:userid] == reply.userid ? 'text--right' : 'text--left' %>">
               <%= content_tag :p do %>

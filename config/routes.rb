@@ -107,6 +107,7 @@ MyopicVicar::Application.routes.draw do
   get  'contacts/:id(.:format)/report_error', :to => 'contacts#report_error', :as => :report_error_contact
   get 'contacts/:source_contact_id/reply',  :to => 'contacts#reply_contact', :as => :reply_contact
   get 'contacts/:id/contact_reply_messages', to: 'contacts#contact_reply_messages', as: :contact_reply_messages
+  get 'contacts/:id/force_destroy',  :to => 'contacts#force_destroy', :as => :force_destroy_contact
   post 'contacts/:id/convert_to_issue(.:format)', :to => 'contacts#convert_to_issue', :as => :convert_contact_to_issue  
   resources :contacts
 

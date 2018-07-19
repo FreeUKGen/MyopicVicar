@@ -1,8 +1,6 @@
-<%# raise 'hi'%>
 <p> Dear <%= @contact.name %>;</p>
 <p><%= @message.body%></p>
 <% if @message.attachment.present?%>
-
 There is an File attachment
 <% end%>
 <% if @message.images.present?%>

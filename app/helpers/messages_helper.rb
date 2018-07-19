@@ -50,22 +50,6 @@ module MessagesHelper
     end
   end
 
-  def message_subject
-    case
-    when !@respond_to_feedback.nil?
-      text_field_tag 'message[subject]', "Re: Thank you for your feedback. Reference #{@respond_to_feedback.identifier}", :class => "text-input", readonly: true, title: "Re: Thank you for your feedback. Reference #{@respond_to_feedback.identifier}"
-    when !@respond_to_contact.nil?
-      text_field_tag 'message[subject]', contact_reply_subject(@respond_to_contact), :class => "text-input", readonly: true, title: contact_reply_subject(@respond_to_contact)
-    when !@respond_to_message.nil?
-      text_field_tag 'message[subject]', "Re: #{@respond_to_message.subject}", :class => "text-input", readonly: true
-    when @message.subject.nil? && @respond_to_message.nil? && @respond_to_feedback.nil?
-      text_field_tag 'message[subject]', nil, :class => "text-input", placeholder: "Mandatory", required: true
-    when @message.subject.present? && @respond_to_message.nil? && @respond_to_feedback.nil?
-      text_field_tag 'message[subject]', "#{@message.subject}", :class => "text-input"
-    end
-  end
-
-
   def reply_messages_count(source_message)
     reply_messages = Message.fetch_replies(source_message.id).reject do |message|
       message.sent_messages.deliveries.count == 0
@@ -103,8 +87,11 @@ module MessagesHelper
   end
 
   def show_links
-    if @message.source_feedback_id.present?
+    case
+    when @message.source_feedback_id.present?
       dynamic_link('Show Feedback', feedback_path(@message.source_feedback_id), {class: "btn weight--light  btn--small", method: :get})
+    when @message.source_contact_id.present?
+      dynamic_link('Show Contact', contact_path(@message.source_contact_id), {class: "btn weight--light  btn--small", method: :get})
     else
       primary_links(*default_links)
     end
@@ -155,28 +142,19 @@ module MessagesHelper
     end
   end
 
-  def contact_reply_subject(contact)
-    case contact.contact_type
-    when 'Website Problem'
-      @subject = "RE: Thank you for reporting a website problem. Reference #{contact.identifier}"
-    when 'Data Question'
-      @subject = "RE: Thank you for your data question. Reference #{contact.identifier}"
-    when 'Data Problem'
-      @subject = "RE: Thank you for reporting a problem with our data. Reference #{contact.identifier}"
-    when 'Volunteering Question'
-      @subject = "RE: Thank you for question about volunteering. Reference #{contact.identifier}"
-    when 'General Comment'
-      @subject = "RE: Thank you for the general comment. Reference #{contact.identifier}"
-    when "Thank you"
-      @subject = "RE: Thank you for your compliments. Reference #{contact.identifier}"
-    when 'Genealogical Question'
-      @subject = "RE: Thank you for a genealogical question. Reference #{contact.identifier}"
-    when 'Enhancement Suggestion'
-      @subject = "RE: Thank you for the suggested enhancement. Reference #{contact.identifier}"
-    else
-      @subject = "RE: Thank you for the general comment. Reference #{contact.identifier}"
+  def message_subject
+    case
+    when !@respond_to_feedback.nil?
+      text_field_tag 'message[subject]', "Re: Thank you for your feedback. Reference #{@respond_to_feedback.identifier}", :class => "text-input", readonly: true, title: "Re: Thank you for your feedback. Reference #{@respond_to_feedback.identifier}"
+    when !@respond_to_contact.nil?
+      text_field_tag 'message[subject]', contact_subject(@respond_to_contact), :class => "text-input", readonly: true, title: contact_subject(@respond_to_contact)
+    when !@respond_to_message.nil?
+      text_field_tag 'message[subject]', "Re: #{@respond_to_message.subject}", :class => "text-input", readonly: true
+    when @message.subject.nil? && @respond_to_message.nil? && @respond_to_feedback.nil?
+      text_field_tag 'message[subject]', nil, :class => "text-input", placeholder: "Mandatory", required: true
+    when @message.subject.present? && @respond_to_message.nil? && @respond_to_feedback.nil?
+      text_field_tag 'message[subject]', "#{@message.subject}", :class => "text-input"
     end
-    return @subject
   end
 
   def index_header(action)
@@ -193,6 +171,15 @@ module MessagesHelper
       header = "List of all messages"
     end
     return header
+  end
+
+  def contact_subject(contact)
+    if contact_subject_hash.has_key?(contact.contact_type)
+       subject = contact_subject_hash[contact.contact_type]
+    else
+      subject = contact_subject_hash['General Comment']
+    end
+    return "#{subject}.Reference #{contact.identifier}"
   end
 
   private
@@ -214,4 +201,23 @@ module MessagesHelper
   def dynamic_link(name,path, options={})
     link_to(name, path, class: "btn weight--light  btn--small", **options)
   end
+
+  def contact_subject_hash
+    {
+      'Website Problem' => "RE: Thank you for reporting a website problem",
+      'Data Question' => "RE: Thank you for your data question",
+      'Data Problem' => "RE: Thank you for reporting a problem with our data",
+      'Volunteering Question' => "RE: Thank you for question about volunteering",
+      'General Comment' => "RE: Thank you for the general comment",
+      'Thank-you' => "RE: Thank you for your compliments",
+      'Genealogical Question' => "RE: Thank you for a genealogical question",
+      'Enhancement Suggestion' => "RE: Thank you for the suggested enhancement"
+    }
+  end
 end
+
+
+
+    
+    
+    

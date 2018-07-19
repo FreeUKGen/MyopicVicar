@@ -67,7 +67,7 @@ class Contact
       self.communicate_volunteering(message,sender)
     when self.contact_type == 'General Comment'
       self.communicate_general(message,sender)
-    when self.contact_type == "Thank you"
+    when self.contact_type == "Thank-you"
       self.communicate_publicity(message,sender)
     when self.contact_type == 'Genealogical Question'
       self.communicate_genealogical_question(message,sender)
@@ -95,9 +95,9 @@ class Contact
     @message = message
     unless @message.blank?
       reply_sent_messages(@message,sender)
-      UserMailer.coordinator_reply_data_problem(self,ccs,@message,sender).deliver_now
+      UserMailer.coordinator_contact_reply(self,ccs,@message,sender).deliver_now
     else
-      #UserMailer.website(self,ccs).deliver_now
+      UserMailer.website(self,ccs).deliver_now
     end
   end
 
@@ -114,9 +114,9 @@ class Contact
     @message = message
     unless @message.blank?
       reply_sent_messages(@message,sender)
-      UserMailer.coordinator_reply_data_problem(self,ccs,@message,sender).deliver_now
+      UserMailer.coordinator_contact_reply(self,ccs,@message,sender).deliver_now
     else
-      #UserMailer.datamanager_data_question(self,ccs).deliver_now
+      UserMailer.datamanager_data_question(self,ccs).deliver_now
     end
   end
 
@@ -135,9 +135,9 @@ class Contact
     @message = message
     unless @message.blank?
       reply_sent_messages(@message,sender)
-      UserMailer.coordinator_reply_data_problem(self,ccs,@message,sender.email_address).deliver_now
+      UserMailer.coordinator_contact_reply(self,ccs,@message,sender.email_address).deliver_now
     else
-      #UserMailer.coordinator_data_problem(self,ccs).deliver_now
+      UserMailer.coordinator_data_problem(self,ccs).deliver_now
     end
   end
 
@@ -157,9 +157,9 @@ class Contact
     @message = message
     unless @message.blank?
       reply_sent_messages(@message,sender)
-      UserMailer.coordinator_reply_data_problem(self,ccs,@message,sender).deliver_now
+      UserMailer.coordinator_contact_reply(self,ccs,@message,sender).deliver_now
     else
-      #UserMailer.publicity(self,ccs).deliver_now
+      UserMailer.publicity(self,ccs).deliver_now
     end
   end
 
@@ -179,9 +179,9 @@ class Contact
     @message = message
     unless @message.blank?
       reply_sent_messages(@message,sender)
-      UserMailer.coordinator_reply_data_problem(self,ccs,@message,sender).deliver_now
+      UserMailer.coordinator_contact_reply(self,ccs,@message,sender).deliver_now
     else
-      #UserMailer.genealogy(self,ccs).deliver_now
+      UserMailer.genealogy(self,ccs).deliver_now
     end
   end
 
@@ -201,9 +201,9 @@ class Contact
     @message = message
     unless @message.blank?
       reply_sent_messages(@message,sender)
-      UserMailer.coordinator_reply_data_problem(self,ccs,@message,sender).deliver_now
+      UserMailer.coordinator_contact_reply(self,ccs,@message,sender).deliver_now
     else
-      #UserMailer.enhancement(self,ccs).deliver_now
+      UserMailer.enhancement(self,ccs).deliver_now
     end
   end
 
@@ -223,9 +223,9 @@ class Contact
     @message = message
     unless @message.blank?
       reply_sent_messages(@message,sender)
-      UserMailer.coordinator_reply_data_problem(self,ccs,@message,sender).deliver_now
+      UserMailer.coordinator_contact_reply(self,ccs,@message,sender).deliver_now
     else
-      #UserMailer.volunteer(self,ccs).deliver_now
+      UserMailer.volunteer(self,ccs).deliver_now
     end
   end
 
@@ -245,9 +245,9 @@ class Contact
     @message = message
     unless @message.blank?
       reply_sent_messages(@message,sender)
-      UserMailer.coordinator_reply_data_problem(self,ccs,@message,sender).deliver_now
+      UserMailer.coordinator_contact_reply(self,ccs,@message,sender).deliver_now
     else
-      #UserMailer.general(self,ccs).deliver_now
+      UserMailer.general(self,ccs).deliver_now
     end
   end
 
@@ -299,6 +299,7 @@ class Contact
     Message.where(source_contact_id: contact_id).exists?
   end
 
+  private
   def contact_recipients
     recipients = Array.new
     case self.contact_type
