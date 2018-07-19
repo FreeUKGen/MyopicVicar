@@ -1,4 +1,0 @@
-The first step in development of the image allocation process is for the CC to be able to allocate a specific image group to a syndicate.
-Need to add an allocation action in the group index and show displays. ALL in list of actions in Index. "Allocate to Syndicate" as action in list of actions in header of show. Action brings up list of syndicates. Only 1 can be selected. Date assigned generated.
-Need to add 3 new fields to group. 1) Syndicate field (Syndicate has collection of available syndicates) and 2) Date assigned field. 3) Number of images. These 3 fields should be added to both group index and show displays, The Number of images should be loaded as part of the image server loading/creation process.
-Incomplete specification and story is not open for comment it is an internal requirement
