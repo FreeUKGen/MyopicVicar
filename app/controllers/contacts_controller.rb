@@ -1,6 +1,7 @@
 class ContactsController < ApplicationController
 
   require 'freereg_options_constants'
+  require 'contact_rules'
 
   skip_before_filter :require_login, only: [:new, :report_error, :create]
 
@@ -93,12 +94,11 @@ class ContactsController < ApplicationController
 
   def index
     get_user_info_from_userid
-    if @user.person_role == 'county_coordinator' || @user.person_role == 'country_coordinator'
-      @county = @user.county_groups
-      @contacts = Contact.in(:county => @county).all.order_by(contact_time: -1)
-    else
-      @contacts = Contact.all.order_by(contact_time: -1)
-    end
+    @contacts = get_contacts.result
+  end
+
+  def get_contacts
+    ContactRules.new(@user)
   end
 
   def list_by_date

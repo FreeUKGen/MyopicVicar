@@ -1,7 +1,7 @@
 <header class="site__header" >
   <div class="container">
     <% unless current_page?('/cms/refinery/login') || current_page?('/cms/freereg2/page-not-found') || current_page?('/cms/refinery/users/login')%>
-      <div class="banner-horz">
+      <div class="banner-horz reg_adsense">
         <% unless device_type == :mobile%>
           <%= fullwidth_adsense %>
         <% end %>
