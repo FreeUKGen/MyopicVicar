@@ -1,0 +1,51 @@
+<% breadcrumb :countries%>
+<h2 class=" text--center">Listing of all countries</h2>
+<% if flash[:notice] %>
+<div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %> <br>
+</div>
+<% end %>
+<div class="grid">
+  <section class="island  ">
+    <div class="grid__item one-whole" >
+      <table  class="table--bordered   table--data">
+        <tr>
+          <th style="width:50%"></th>
+          <th style="width:50%"></th>
+        </tr>
+        <tr>
+          <td >Total number of users</td>
+          <td ><%= @total_users %></td>
+        </tr>
+        <tr>
+          <td >Total number of users as transcribers</td>
+          <td ><%= @total_transcribers %></td>
+        </tr>
+        <tr>
+          <td >Total number of transcribers who accepted Transcription Agreement </td>
+          <td ><%= @total_transcribers_accepted_agreement %></td>
+        </tr>
+        <tr>
+          <td >Total number of Active transcribers </td>
+          <td ><%= @total_active_transcribers %></td>
+        </tr>
+        <tr>
+          <td >Users uploaded file </td>
+          <td ><%= @users_uploaded_file %></td>
+        </tr>
+        <tr>
+          <td >Users never uploaded file </td>
+          <td ><%= @users_never_uploaded_file %></td>
+        </tr>
+        <tr>
+          <td >Transcriber never uploaded file </td>
+          <td ><%= @transcribers_never_uploaded_file %></td>
+        </tr>
+        <tr>
+          <td >Transcribers uploaded file </td>
+          <td ><%= @transcriber_uploaded_file %></td>
+        </tr>
+      </table>
+    </div>
+  </section>
+</div>

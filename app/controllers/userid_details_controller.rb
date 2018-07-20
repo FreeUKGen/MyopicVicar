@@ -472,6 +472,17 @@ class UseridDetailsController < ApplicationController
     end
   end
 
+  def transcriber_statistics
+    @total_users = UseridDetail.count
+    @total_transcribers = UseridDetail.where(person_role: "transcriber").count
+    @total_transcribers_accepted_agreement = UseridDetail.where(person_role: "transcriber", new_transcription_agreement: "Accepted").count
+    @total_active_transcribers = UseridDetail.where(person_role: "transcriber", active: true).count
+    @users_never_uploaded_file = UseridDetail.where(number_of_files: 0).count
+    @users_uploaded_file = UseridDetail.where(number_of_files: {'$ne': 0}).count
+    @transcribers_never_uploaded_file = UseridDetail.where(person_role: "transcriber",number_of_files: 0).count
+    @transcriber_uploaded_file = UseridDetail.where(person_role: "transcriber",number_of_files: {'$ne': 0}).count
+  end
+
   private
 
   def userid_details_params

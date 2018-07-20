@@ -160,6 +160,7 @@ MyopicVicar::Application.routes.draw do
   get 'userid_details/options', :to =>'userid_details#options', :as => :options_userid_details
   get 'userid_details/display', :to =>'userid_details#display', :as => :display_userid_details
   get 'userid_details/incomplete_registrations', :to =>'userid_details#incomplete_registrations', :as => :incomplete_registrations_userid_details
+  get 'userid_details/transcriber_statistics', :to =>'userid_details#transcriber_statistics', :as => :transcriber_statistics_userid_details
   post 'userid_details/new', :to => 'userid_details#create'
   resources :userid_details
 

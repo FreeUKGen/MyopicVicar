@@ -22,7 +22,7 @@ module UseridRole
     'project_manager' =>[  "Assignments","Batches","Contacts", "Manage Userids",  "Feedback", "Profile",  "RefineryCMS","Roadmap" ,"Search Performance","Site Statistics",
                            "System Documentation"],
     'executive_director' =>[  "Assignments", "Batches", "Contacts", "County Coordinators","Country Coordinators", "Feedback","Profile","Manage Userids", "Message System","RefineryCMS","Roadmap","Site Statistics","Search Performance",
-                              "Syndicate Coordinators", "System Documentation" ],
+                              "Syndicate Coordinators", "System Documentation"],
     'publicity_coordinator'=> [ "Assignments", "Batches", "Contacts", "Profile","Roadmap","System Documentation" ],
     'genealogy_coordinator'=> [ "Assignments", "Batches", "Contacts","Profile", "Roadmap" ,"System Documentation" ],
     'documentation_coordinator' => [  "Assignments", "Batches",  "Contacts","Display Userids","Feedback", "Manage Syndicates", "Manage Counties", "Profile","RefineryCMS","Roadmap",
@@ -68,7 +68,7 @@ module UseridRole
     "Manage Images" => "/sources",
     "Assignments" => "/assignments/my_own"
   }
-  USERID_MANAGER_OPTIONS = ["Select specific userid","Select specific email","Select specific surname/forename","Browse userids","Select Role","Incomplete Registrations","Create userid"]
+  USERID_MANAGER_OPTIONS = ["Select specific userid","Select specific email","Select specific surname/forename","Browse userids","Select Role","Incomplete Registrations","Create userid", "Transcriber Statistics"]
   USERID_ACCESS_OPTIONS = ["Select specific userid","Select specific email", "Select specific surname/forename"]
 
   USERID_OPTIONS_TRANSLATION = {
@@ -79,7 +79,8 @@ module UseridRole
     "Select specific email" =>  "/userid_details/selection?option=Select specific email",
     "Select specific userid"=> "/userid_details/selection?option=Select specific userid",
     "Select specific surname/forename"=> "/userid_details/selection?option=Select specific surname/forename",
-    "Select Role" => "/userid_details/person_roles"
+    "Select Role" => "/userid_details/person_roles",
+    "Transcriber Statistics" => "/userid_details/transcriber_statistics"
   }
   FILE_MANAGEMENT_OPTIONS = ['Upload New Batch','List by Number of Errors then Filename', 'List by Filename',
                              'List by uploaded date (ascending)', 'List by uploaded date (descending)', 'List files waiting to be processed','Review Specific Batch' ]
