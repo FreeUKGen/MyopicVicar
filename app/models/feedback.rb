@@ -73,17 +73,39 @@ class Feedback
   def communicate
     ccs = Array.new
     UseridDetail.any_of({ person_role: 'website_coordinator', email_address_valid: true}, secondary_role: { '$in': ["website_coordinator"] }).all.each do |person|
+      add_feedback_to_userid(person)
       ccs << person.email_address
     end
+
+    user = UseridDetail.where(userid: self.user_id).first
+    add_feedback_to_userid(user)
     #UseridDetail.where(:person_role => 'contacts_coordinator').email_address_valid.all.each do |person|
      # ccs << person.email_address
     #end
     if ccs.blank?
       UseridDetail.where(:person_role => 'system_administrator').email_address_valid.all.each do |person|
+        add_feedback_to_userid(person)
         ccs << person.email_address
       end
     end
     UserMailer.feedback(self,ccs).deliver_now
+  end
+
+  def communicate_reply(message,recipient_email, sender_email)
+    ccs = Array.new
+    UseridDetail.any_of({ person_role: 'website_coordinator', email_address_valid: true}, secondary_role: { '$in': ["website_coordinator"] }).all.each do |person|
+     update_reply_for_feedback(person,message)
+     ccs << person.email_address
+    end
+    recipient = UseridDetail.where(email_address: recipient_email).first
+    update_reply_for_feedback(recipient,message)
+    if ccs.blank?
+      UseridDetail.where(:person_role => 'system_administrator').email_address_valid.all.each do |person|
+        update_reply_for_feedback(person,message)
+        ccs << person.email_address
+      end
+    end
+    UserMailer.feedback_reply(message,recipient_email,sender_email,ccs).deliver_now
   end
 
   def github_issue
@@ -116,4 +138,45 @@ class Feedback
     issue_body
   end
 
+  def has_replies?(feedback_id)
+    Message.where(source_feedback_id: feedback_id).exists?
+  end
+
+  def member_can_reply?(user)
+    @user = user
+    permitted_person_role || permitted_secondary_role
+  end
+
+  private
+
+  def add_reply_to_userid_feedbacks(person)
+    @reply_feedback_userid =  person.userid_feedback_replies
+    if !@reply_feedback_userid.include? self.id.to_s
+        @message_userid << self.id.to_s
+        person.update_attribute(:userid_messages, @message_userid)
+    end
+  end
+
+  def add_feedback_to_userid(person)
+    @feedback_userid = person.userid_feedback_replies
+    if !@feedback_userid.has_key?(self.id)
+      @feedback_userid.store(self.id.to_s, [])
+      person.update_attribute(:userid_feedback_replies, @feedback_userid)
+    end
+  end
+
+  def update_reply_for_feedback(person,message)
+    @feedback_userid = person.userid_feedback_replies
+    if @feedback_userid.has_key?(self.id.to_s)
+      @feedback_userid[self.id.to_s] << message.id.to_s unless @feedback_userid[self.id.to_s].include?(message.id.to_s)
+      person.update_attribute(:userid_feedback_replies, @feedback_userid)
+    end
+  end
+
+  def permitted_person_role
+    ReplyUseridRole::FEEDBACK_REPLY_ROLE.include?(@user.person_role)
+  end
+  def permitted_secondary_role
+    (@user.secondary_role & ReplyUseridRole::FEEDBACK_REPLY_ROLE).any?
+  end
 end

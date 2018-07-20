@@ -53,7 +53,14 @@ MyopicVicar::Application.routes.draw do
   get 'messages/list_by_name',  :to => 'messages#list_by_name', :as => :list_by_name_messages
   get 'messages/list_by_date',  :to => 'messages#list_by_date', :as => :list_by_date_messages
   get 'messages/list_by_identifier',  :to => 'messages#list_by_identifier', :as => :list_by_identifier_messages
+  get 'messages/list_feedback_reply_messages',  :to => 'messages#list_feedback_reply_message', :as => :list_feedback_reply_message
+  get 'messages/list_contact_reply_messages',  :to => 'messages#list_contact_reply_message', :as => :list_contact_reply_message
   get 'messages/select_by_identifier',  :to => 'messages#select_by_identifier', :as => :select_by_identifier_messages
+  get 'messages/:id/reply',  :to => 'messages#new', :as => :reply_messages
+  get 'messages/:id/show_reply_messages',:to => 'messages#show_reply_messages', :as => :show_reply_messages
+  get 'messages/:id/user_reply_messages',:to => 'messages#user_reply_messages', :as => :user_reply_messages
+  get 'messages/userid_reply_messages', :to => 'messages#userid_reply_messages', :as => :userid_reply_messages
+  get 'messages/list_unsent_messages',  :to => 'messages#list_unsent_messages', :as => :list_unsent_messages
   resources :messages
 
   get 'attic_files/select', :to =>'attic_files#select', :as => :select_attic_files
@@ -82,7 +89,12 @@ MyopicVicar::Application.routes.draw do
   get 'feedbacks/list_by_date',  :to => 'feedbacks#list_by_date', :as => :list_by_date_feedbacks
   get 'feedbacks/list_by_identifier',  :to => 'feedbacks#list_by_identifier', :as => :list_by_identifier_feedbacks
   get 'feedbacks/select_by_identifier',  :to => 'feedbacks#select_by_identifier', :as => :select_by_identifier_feedbacks
+  get 'feedbacks/:source_feedback_id/reply',  :to => 'feedbacks#new', :as => :reply_feedbacks
   post 'feedbacks/:id/convert_to_issue(.:format)', :to => 'feedbacks#convert_to_issue', :as => :convert_feedback_to_issue
+  get 'feedbacks/userid_feedbacks', :to => 'feedbacks#userid_feedbacks', :as => :userid_feedbacks
+  get 'feedbacks/userid_feedbacks_with_replies', :to => 'feedbacks#userid_feedbacks_with_replies', :as => :userid_feedbacks_with_replies
+  get 'feedbacks/:id/force_destroy',  :to => 'feedbacks#force_destroy', :as => :force_destroy
+  get 'feedbacks/:id/feedback_reply_messages', to: 'feedbacks#feedback_reply_messages', as: :feedback_reply_messages
   resources :feedbacks
 
 
@@ -93,7 +105,10 @@ MyopicVicar::Application.routes.draw do
   get 'contacts/list_by_identifier',  :to => 'contacts#list_by_identifier', :as => :list_by_identifier_contacts
   get 'contacts/select_by_identifier',  :to => 'contacts#select_by_identifier', :as => :select_by_identifier_contacts
   get  'contacts/:id(.:format)/report_error', :to => 'contacts#report_error', :as => :report_error_contact
-  post 'contacts/:id/convert_to_issue(.:format)', :to => 'contacts#convert_to_issue', :as => :convert_contact_to_issue
+  get 'contacts/:source_contact_id/reply',  :to => 'contacts#reply_contact', :as => :reply_contact
+  get 'contacts/:id/contact_reply_messages', to: 'contacts#contact_reply_messages', as: :contact_reply_messages
+  get 'contacts/:id/force_destroy',  :to => 'contacts#force_destroy', :as => :force_destroy_contact
+  post 'contacts/:id/convert_to_issue(.:format)', :to => 'contacts#convert_to_issue', :as => :convert_contact_to_issue  
   resources :contacts
 
   resources :place_caches
