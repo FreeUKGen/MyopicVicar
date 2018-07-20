@@ -155,13 +155,13 @@ module ApplicationHelper
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <!-- Pagelevel ad -->
     <script class="adSenseBanner">
-      window.update_personalized_page_adverts = function (preference) {
-          if(preference == 'accept') {
-            (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
-          } else if(preference == 'deny') {
-            (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
-          }
-        };
+      //window.update_personalized_page_adverts = function (preference) {
+        //  if(preference == 'accept') {
+          //  (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
+          //} else if(preference == 'deny') {
+            //(adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
+          //}
+        //};
       $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({ 
         google_ad_client: "ca-pub-1788116026113570",
         enable_page_level_ads: true
@@ -232,7 +232,7 @@ module ApplicationHelper
      data-ad-slot= "#{@data_ad_slot}"
      data-ad-format="auto"></ins>
     <script>
-      window.update_personalized_page_adverts = function (preference) {
+      window.update_personalized_adverts = function (preference) {
           if(preference == 'accept') {
             (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
           } else if(preference == 'deny') {
