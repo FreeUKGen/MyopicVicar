@@ -450,6 +450,16 @@ class UseridDetail
     puts "Total number of ids: #{user_lists.count}"
   end
 
+  def incomplete_user_registrations_count
+    @users = list_all_users
+    return filter_users.count
+  end
+
+  def incomplete_transcribers_registrations_count
+    @users = UseridDetail.where(person_role: "transcriber")
+    return filter_users.count
+  end
+
   private
 
   def filter_users
