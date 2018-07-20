@@ -481,6 +481,25 @@ class UseridDetailsController < ApplicationController
   send_file "#{Rails.root}/script/create_user.txt", type: "application/txt", x_sendfile: true
   end
 
+  def transcriber_statistics
+    @current_user = cookies.signed[:userid]
+    if stats_permitted_users?
+      @total_users = UseridDetail.count
+      @total_transcribers = UseridDetail.where(person_role: "transcriber").count
+      @total_transcribers_accepted_agreement = UseridDetail.where(person_role: "transcriber", new_transcription_agreement: "Accepted").count
+      @total_active_transcribers = UseridDetail.where(person_role: "transcriber", active: true).count
+      @users_never_uploaded_file = UseridDetail.where(number_of_files: 0).count
+      @users_uploaded_file = UseridDetail.where(number_of_files: {'$ne': 0}).count
+      @transcribers_never_uploaded_file = UseridDetail.where(person_role: "transcriber",number_of_files: 0).count
+      @transcriber_uploaded_file = UseridDetail.where(person_role: "transcriber",number_of_files: {'$ne': 0}).count
+      @incomplete_registrations = UseridDetail.new.incomplete_user_registrations_count
+      @incomplete_transcriber_registrations = UseridDetail.new.incomplete_transcribers_registrations_count
+    else
+      flash[:notice] = 'Sorry, You are not authorized for this action'
+      redirect_to '/manage_resources/new'
+    end
+  end
+
   private
 
   def userid_details_params
@@ -529,6 +548,10 @@ class UseridDetailsController < ApplicationController
 
   def permitted_users?
     ['system_administrator', 'syndicate_coordinator', 'county_coordinator', 'country_coordinator'].include? @current_user.person_role
+  end
+
+  def stats_permitted_users?
+    ['system_administrator', 'executive_director', 'project_manager'].include? @current_user.person_role
   end
 
   def get_option_parameter(option, location)

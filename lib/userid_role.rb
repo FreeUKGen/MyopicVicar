@@ -63,7 +63,7 @@ module UseridRole
     "Message System" => "/messages",
     "Manage Pieces" => "/freecen_coverage/edit"
   }
-  USERID_MANAGER_OPTIONS = ["Select specific userid","Select specific email","Select specific surname/forename","Browse userids","Select Role","Incomplete Registrations","Create userid", "Import Users"]
+  USERID_MANAGER_OPTIONS = ["Select specific userid","Select specific email","Select specific surname/forename","Browse userids","Select Role","Incomplete Registrations","Create userid", "Import Users", "Transcriber Statistics"]
   USERID_ACCESS_OPTIONS = ["Select specific userid","Select specific email", "Select specific surname/forename"]
 
   USERID_OPTIONS_TRANSLATION = {
@@ -74,7 +74,8 @@ module UseridRole
     "Select specific email" =>  "/userid_details/selection?option=Select specific email",
     "Select specific userid"=> "/userid_details/selection?option=Select specific userid",
     "Select specific surname/forename"=> "/userid_details/selection?option=Select specific surname/forename",
-    "Select Role" => "/userid_details/person_roles"
+    "Select Role" => "/userid_details/person_roles",
+    "Transcriber Statistics" => "/userid_details/transcriber_statistics"
   }
   FILE_MANAGEMENT_OPTIONS = ['Upload New Batch','List by Number of Errors then Filename', 'List by Filename',
                              'List by uploaded date (ascending)', 'List by uploaded date (descending)', 'List files waiting to be processed','Review Specific Batch' ]
