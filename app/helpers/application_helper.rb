@@ -180,6 +180,9 @@ module ApplicationHelper
       @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
     </style>
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
+      </script>
 <!-- FreeCEN2 Responsive Header -->
     <ins class="adsbygoogle adSenseBanner"
        style="display:block"
@@ -195,7 +198,8 @@ module ApplicationHelper
             (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
           }
         };
-      $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})})
+      $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})});
+      (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
     </script>
     HTML
     if Rails.env.development?
@@ -225,6 +229,9 @@ module ApplicationHelper
       @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
     </style>
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
+      </script>
     <!-- Responsive ad -->
     <ins class="adsbygoogle adSenseBanner"
      style="display:block"
@@ -239,7 +246,8 @@ module ApplicationHelper
             (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
           }
         };
-      $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})})
+      $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})});
+      (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
     </script>
     HTML
     if Rails.env.development?
@@ -258,6 +266,9 @@ module ApplicationHelper
       @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
     </style>
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
+      </script>
     <!-- Responsive ad -->
     <ins class="adsbygoogle adSenseBanner"
       style="display:block"
@@ -273,7 +284,8 @@ module ApplicationHelper
             (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
           }
         };
-      $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})})
+      $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})});
+      (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
     </script>
     HTML
     if Rails.env.development?
