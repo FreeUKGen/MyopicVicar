@@ -33,7 +33,8 @@ module ApplicationHelper
   end
 
   def get_user_info_from_userid
-    @user = cookies.signed[:userid]
+    @userid = cookies.signed[:userid]
+    @user = UseridDetail.id(@userid).first
     unless @user.blank?
       @first_name = @user.person_forename
       @user_id = @user.id
@@ -154,6 +155,13 @@ module ApplicationHelper
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <!-- Pagelevel ad -->
     <script class="adSenseBanner">
+      //window.update_personalized_page_adverts = function (preference) {
+        //  if(preference == 'accept') {
+          //  (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
+          //} else if(preference == 'deny') {
+            //(adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
+          //}
+        //};
       $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({ 
         google_ad_client: "ca-pub-1788116026113570",
         enable_page_level_ads: true
@@ -172,6 +180,9 @@ module ApplicationHelper
       @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
     </style>
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
+      </script>
 <!-- FreeCEN2 Responsive Header -->
     <ins class="adsbygoogle adSenseBanner"
        style="display:block"
@@ -180,7 +191,15 @@ module ApplicationHelper
        data-ad-format="auto">
     </ins>
     <script>
-      $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})})
+      window.update_personalized_header_adverts = function (preference) {
+          if(preference == 'accept') {
+            (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
+          } else if(preference == 'deny') {
+            (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
+          }
+        };
+      $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})});
+      (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
     </script>
     HTML
     if Rails.env.development?
@@ -210,14 +229,25 @@ module ApplicationHelper
       @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
     </style>
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
+      </script>
     <!-- Responsive ad -->
     <ins class="adsbygoogle adSenseBanner"
      style="display:block"
      data-ad-client="ca-pub-5379635334920389"
-     data-ad-slot= #{@data_ad_slot}
+     data-ad-slot= "#{@data_ad_slot}"
      data-ad-format="auto"></ins>
     <script>
-      $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})})
+      window.update_personalized_adverts = function (preference) {
+          if(preference == 'accept') {
+            (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
+          } else if(preference == 'deny') {
+            (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
+          }
+        };
+      $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})});
+      (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
     </script>
     HTML
     if Rails.env.development?
@@ -236,6 +266,9 @@ module ApplicationHelper
       @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
     </style>
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
+      </script>
     <!-- Responsive ad -->
     <ins class="adsbygoogle adSenseBanner"
       style="display:block"
@@ -244,7 +277,15 @@ module ApplicationHelper
       data-ad-format="auto">
     </ins>
     <script>
-      $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})})
+      window.update_personalized_fullwidth_adverts = function (preference) {
+          if(preference == 'accept') {
+            (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
+          } else if(preference == 'deny') {
+            (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
+          }
+        };
+      $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})});
+      (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
     </script>
     HTML
     if Rails.env.development?
