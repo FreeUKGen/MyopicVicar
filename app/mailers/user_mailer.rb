@@ -121,7 +121,7 @@ class UserMailer < ActionMailer::Base
 
   def feedback(contact,ccs)
     appname = MyopicVicar::Application.config.freexxx_display_name
-    @contact = contact 
+    @contact = contact
     @user = UseridDetail.userid(@contact.user_id).first
     get_attachment
     mail(:from => "#{appname.downcase}-feedback@#{appname.downcase}.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>",:cc => ccs, :subject => "Thank you for your feedback. Reference #{@contact.identifier}")
@@ -149,11 +149,16 @@ class UserMailer < ActionMailer::Base
   end
 
   def get_coordinator_name
+    p "--------------- RUNNING get_coordinator_name ------------------"
     @coordinator = nil
+    p "---------------#{@coordinator.inspect}------------------"
     coordinator = Syndicate.where(:syndicate_code => @user.syndicate).first
+    p "---------------#{coordinator.inspect}------------------"
     unless coordinator.nil?
       coordinator = coordinator.syndicate_coordinator
+      p "---------------#{coordinator.inspect}------------------"
       @coordinator = UseridDetail.where(:userid => coordinator, :email_address_valid => true).first unless coordinator.nil?
+      p "---------------#{@coordinator.inspect}------------------"
     end
   end
 
@@ -333,7 +338,7 @@ class UserMailer < ActionMailer::Base
 
   def website(contact,ccs)
     appname = MyopicVicar::Application.config.freexxx_display_name
-    @contact = contact 
+    @contact = contact
     get_attachment
     mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for reporting a website problem. Reference #{@contact.identifier}")
   end
