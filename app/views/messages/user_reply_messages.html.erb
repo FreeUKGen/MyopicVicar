@@ -1,0 +1,18 @@
+<%breadcrumb :user_reply_messages_list, @main_message %>
+<h3 class="text--center">
+  Your had sent <%= pluralize(@messages.count, 'Replies')%> for Main Message sent by <%= @main_message.userid%> on <%= @main_message.message_time.to_formatted_s(:long)%>
+</h3>
+<% if flash[:notice] %>
+<div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+</div>
+<% end %>
+<section class="island">
+  <div class="table-wrapper" style="height: 25em; overflow: scroll;">
+    <% if @messages.present? %>
+      <%= render 'list_messages'%>
+    <% else%>
+      <p>No Replies.</p>
+    <% end%>
+  </div>
+</section>

@@ -1,3 +1,8 @@
-<% breadcrumb :create_message,  @message%>
-<h4 style="text-align: center">Creating New Message</h4>
-<%= render 'form' %>
+<%if params[:id].present? %>
+  <% breadcrumb :create_reply,  @message%>
+  <%= render 'reply'%>
+<% else %>
+  <% breadcrumb :create_message,  @message%>
+  <h4 style="text-align: center">Creating New Message</h4>
+  <%= render 'form' %>
+<% end %>

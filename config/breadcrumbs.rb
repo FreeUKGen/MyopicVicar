@@ -440,7 +440,6 @@ crumb :contacts do
   link "Contacts", contacts_path
   parent :root
 end
-#manage contacts
 crumb :show_contact do |contact|
   link "Show Contact", contact_path(contact)
   parent :contacts
@@ -449,22 +448,85 @@ crumb :edit_contact do |contact|
   link "Edit Contact", edit_contact_path(contact)
   parent :show_contact, contact
 end
+crumb :create_contact_reply do |message|
+  link "Create Reply for Contact", reply_contact_path(message.id)
+  parent :contacts
+end
+
 crumb :messages do
   link "Messages", messages_path
   parent :root
 end
 crumb :show_message do |message|
   link "Show Message", message_path(message)
-  parent :messages
+  case
+  when session[:syndicate]
+    parent :message_to_syndicate
+  when message.source_feedback_id.present?
+    feedback = Feedback.id(message.source_feedback_id).first
+    parent :feedback_messages, feedback
+  when message.source_contact_id.present?
+    contact = Contact.id(message.source_contact_id).first
+    parent :contact_messages, contact
+  else
+    parent :messages
+  end
 end
 
 crumb :userid_messages do
   link "User Messages", userid_messages_path
 end
 
-crumb :show_messages_user do
-  link "Show User Messages", userid_messages_path
+crumb :userid_reply_messages do
+  link "Reply Messages Recieved", userid_reply_messages_path
   parent :userid_messages
+end
+
+crumb :reply_messages_list do |message|
+  link "Reply Messages List", show_reply_messages_path(message.id)
+  parent :show_messages_user, message
+end
+
+crumb :user_reply_messages_list do |message|
+  link "User Reply Messages List", user_reply_messages_path(message.id)
+  parent :reply_messages_list, message
+end
+
+crumb :show_messages_user do |message|
+  link "Show User Message", show_waitlist_msg_path(message.id)
+  parent :userid_messages
+end
+
+crumb :show_reply_message do |message|
+  source_message = Message.id(message.source_message_id).first
+  link "Show Reply Message", show_waitlist_msg_path
+  parent :reply_messages_list, source_message
+end
+
+crumb :feedback_messages do |message|
+  link "Feedback Messages", feedback_reply_messages_path(message.id)
+  parent :feedbacks
+end
+
+crumb :contact_messages do |message|
+  link "Contact Messages", contact_reply_messages_path(message.id)
+  parent :contacts
+end
+
+crumb :list_contact_reply_messages do
+  link "All Contact Reply Messages", list_contact_reply_message_path
+  parent :contacts
+end
+
+crumb :list_feedback_reply_messages do
+  link "All Feedback Reply Messages", list_contact_reply_message_path
+  parent :feedbacks
+end
+
+crumb :show_feedback_message do |message|
+  link "Show Feedback Message", message_path(message)
+  parent :messages
+  parent :message_to_syndicate if session[:syndicate]
 end
 
 crumb :edit_message do |message|
@@ -474,10 +536,29 @@ end
 crumb :create_message do |message|
   link "Create Message", new_message_path(message)
   parent :messages
+  parent :message_to_syndicate if session[:syndicate]
+end
+crumb :create_reply do |message|
+  link "Create Reply Message", reply_messages_path(message.id)
+  parent :userid_messages
+  parent :message_to_syndicate if session[:syndicate]
 end
 crumb :send_message do |message|
+  source_message = Message.id(message.source_message_id).first
   link "Send Message", send_message_messages_path(message)
+  parent :create_reply, source_message if request.referer.include?"/reply" unless request.referer.nil?
   parent :show_message, message
+  parent :messages if request.referer.include?"messages?" unless request.referer.nil?
+end
+crumb :send_reply_message do |message|
+  source_message = Message.id(message.source_message_id).first
+  link "Send Message", send_message_messages_path(message)
+  parent :create_reply, source_message
+  #parent :show_message, message #if message.source_message_id.blank?
+end
+crumb :message_to_syndicate do
+  link "Messages To Syndicate", messages_path
+  parent :syndicate_options, session[:syndicate]
 end
 crumb :denominations do
   link "Denominations", denominations_path

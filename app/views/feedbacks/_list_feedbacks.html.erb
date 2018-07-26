@@ -1,0 +1,29 @@
+<table class="table--bordered table--data">
+  <thead>
+    <tr>
+      <th class="t20">Title</th>
+      <th class="t10">Userid</th>
+      <th class="t10">Name</th>
+      <th class="t10">email</th>
+      <th class="t20">Date</th>
+      <th class="t10">Identifier</th>
+      <th class="t20">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @feedbacks.each do |feedback| %>
+      <tr>
+        <td><%= feedback.title %></td>
+        <td><%= feedback.user_id %></td>
+        <td><%= feedback.name %></td>
+        <td><%= feedback.email_address %></td>
+        <td><%= feedback.feedback_time.strftime("%d %b %Y") unless feedback.feedback_time.nil? %></td>
+        <td><%= feedback.identifier unless feedback.identifier.nil? %></td>
+        <td>
+        <%= link_to 'SH', feedback_path(feedback.id), :class => "btn weight--light  btn--small", method: :get%>
+        <%= link_to 'Reply', reply_feedbacks_path(source_feedback_id: feedback.id),:class => "btn weight--light  btn--small" %>
+      </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

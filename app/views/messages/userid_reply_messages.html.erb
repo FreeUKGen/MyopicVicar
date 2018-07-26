@@ -1,8 +1,7 @@
-<% breadcrumb :userid_messages,  @messages%>
-<h2 class="text--center"><%= pluralize(@messages.count, 'Main Message') %> for <%= @user.userid %></h2>
-<p style="text-align: center">
-  <%= link_to "View Reply Messages", userid_reply_messages_path, :class => "btn weight--light  btn--small" %>
-</p>
+<% breadcrumb :userid_reply_messages %>
+<h2 class="text--center">
+  <%= pluralize(@messages.count, 'Reply Message') %> for <%= @user.userid %>
+</h2>
 <% if flash[:notice] %>
 <div id="notice" style="color:blue"><br>
   <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
