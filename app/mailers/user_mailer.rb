@@ -149,16 +149,11 @@ class UserMailer < ActionMailer::Base
   end
 
   def get_coordinator_name
-    p "--------------- RUNNING get_coordinator_name ------------------"
     @coordinator = nil
-    p "---------------#{@coordinator.inspect}------------------"
     coordinator = Syndicate.where(:syndicate_code => @user.syndicate).first
-    p "---------------#{coordinator.inspect}------------------"
     unless coordinator.nil?
       coordinator = coordinator.syndicate_coordinator
-      p "---------------#{coordinator.inspect}------------------"
       @coordinator = UseridDetail.where(:userid => coordinator, :email_address_valid => true).first unless coordinator.nil?
-      p "---------------#{@coordinator.inspect}------------------"
     end
   end
 
