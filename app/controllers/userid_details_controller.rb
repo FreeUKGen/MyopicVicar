@@ -472,6 +472,25 @@ class UseridDetailsController < ApplicationController
     end
   end
 
+  def transcriber_statistics
+    @current_user = get_user
+    if stats_permitted_users?
+      @total_users = UseridDetail.count
+      @total_transcribers = UseridDetail.where(person_role: "transcriber").count
+      @total_transcribers_accepted_agreement = UseridDetail.where(person_role: "transcriber", new_transcription_agreement: "Accepted").count
+      @total_active_transcribers = UseridDetail.where(person_role: "transcriber", active: true).count
+      @users_never_uploaded_file = UseridDetail.where(number_of_files: 0).count
+      @users_uploaded_file = UseridDetail.where(number_of_files: {'$ne': 0}).count
+      @transcribers_never_uploaded_file = UseridDetail.where(person_role: "transcriber",number_of_files: 0).count
+      @transcriber_uploaded_file = UseridDetail.where(person_role: "transcriber",number_of_files: {'$ne': 0}).count
+      @incomplete_registrations = UseridDetail.new.incomplete_user_registrations_count
+      @incomplete_transcriber_registrations = UseridDetail.new.incomplete_transcribers_registrations_count
+    else
+      flash[:notice] = 'Sorry, You are not authorized for this action'
+      redirect_to '/manage_resources/new'
+    end
+  end
+
   private
 
   def userid_details_params
@@ -523,6 +542,10 @@ class UseridDetailsController < ApplicationController
     ['system_administrator', 'syndicate_coordinator', 'county_coordinator', 'country_coordinator'].include? @current_user.person_role
   end
 
+  def stats_permitted_users?
+    ['system_administrator', 'executive_director', 'project_manager'].include? @current_user.person_role
+  end
+
   def get_option_parameter(option, location)
     location += '+"&option=' + option +'"'
   end
@@ -548,6 +571,4 @@ class UseridDetailsController < ApplicationController
   def email_valid_change
     @userid.email_address_valid == true ? "Valid" : "Invalid" 
   end
-
-
 end

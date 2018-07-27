@@ -42,6 +42,7 @@ class UseridDetail
   field :email_address_last_confirmned, type: DateTime
   field :no_processing_messages, type: Boolean, default: false
   field :userid_messages,type: Array, default: []
+  field :userid_feedback_replies,type: Hash, default: {}
   field :reason_for_invalidating,type: String
   field :new_transcription_agreement, type: String, default: "Unknown"
   field :email_address_validity_change_message, type: Array, default: []
@@ -124,9 +125,6 @@ class UseridDetail
       end
       return answer, transcribed_by
     end
-
-
-
   end
 
   def remove_checked_messages(msg_id)
@@ -151,6 +149,49 @@ class UseridDetail
     self.userid_messages.length
   end
 
+  def update_userid_feedbacks
+    self.reload
+    update_feedback_replies
+    @userid_feedback_msgs = self.userid_feedback_replies
+    return {} if @userid_feedback_msgs.empty?
+    delete_feedback
+    self.userid_feedback_replies.replace(@userid_feedback_msgs) if @userid_feedback_msgs.length != self.userid_feedback_replies.length
+    self.update_attribute(:userid_feedback_replies, self.userid_feedback_replies)
+  end
+
+  def feedback_without_replies
+    self.update_userid_feedbacks
+    @feedbacks_with_no_reply = self.userid_feedback_replies.keys.select do |id|
+      self.userid_feedback_replies[id].blank?
+    end
+  end
+
+  def feedback_with_replies
+    self.update_userid_feedbacks
+    @feedbacks_with_no_reply = self.userid_feedback_replies.keys.reject do |id|
+      self.userid_feedback_replies[id].blank?
+    end
+  end
+
+  def delete_feedback
+    self.userid_feedback_replies.each do |feedback_id, message_id|
+      next unless message_id.empty?
+      feedback = Feedback.id(feedback_id).first
+      if feedback.nil?
+        @userid_feedback_msgs.except!(feedback_id)
+      end
+    end
+  end
+
+  def update_feedback_replies
+    self.userid_feedback_replies.each do |key, value|
+      next if value.blank?
+      @existing_messages = value.delete_if do |v|
+        Message.where(id: v).blank?
+      end
+      self.userid_feedback_replies.store(key, @existing_messages) if value.length != @existing_messages
+    end
+  end
 
   def self.get_active_userids_for_display(syndicate)
     @userids = UseridDetail.where(:active => true).all.order_by(userid_lower_case: 1) if syndicate == 'all'
@@ -448,6 +489,16 @@ class UseridDetail
     puts user_lists
     STDOUT.reopen(original_stdout)
     puts "Total number of ids: #{user_lists.count}"
+  end
+
+  def incomplete_user_registrations_count
+    @users = list_all_users
+    return filter_users.count
+  end
+
+  def incomplete_transcribers_registrations_count
+    @users = UseridDetail.where(person_role: "transcriber")
+    return filter_users.count
   end
 
   private

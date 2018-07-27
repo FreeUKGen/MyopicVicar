@@ -1,0 +1,45 @@
+<p> Dear <%= @contact.name %>;</p>
+<p><%= @message.body%></p>
+<% if @message.attachment.present?%>
+There is an File attachment
+<% end%>
+<% if @message.images.present?%>
+
+There is an Image attachment
+<% end%>
+<%= email_attachment_tag(@message) %>
+<% unless @reply_messages.count == 0 %>
+  <div class= "grid">
+    <section class="island  island--light ">
+      <div class="scrollable">
+        <div class="grid__item  one-whole  palm-one-whole push--bottom">
+        <h4>Original Contact Message</h4>
+          <%= content_tag :p, class: "strong" do %>
+            On <%= @contact.contact_time.to_formatted_s(:long)%>, Name: <%= @contact.name%> wrote:<br/>
+            <%= @contact.body %>
+          <% end %>
+          <br />
+          <h4>Reply Messages</h4>
+          <% @reply_messages.each do |reply| %>
+            <% next if reply == @message %>
+            <%= content_tag :p, class: "strong" do %>
+              On <%= reply.message_time.to_formatted_s(:long)%>, Userid: <%= reply.userid%> wrote:<br/>
+              <%= reply.body %>
+              <% if reply.attachment.present? || reply.images.present?%>
+                <br/>
+                <span>Attachment: </span>
+                <%= email_attachment_tag(reply) %>
+              <% end %>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </section>
+  </div>
+<% end %>
+<% if @contact.screenshot_url.present?%>
+ <p>An image is attached</p>
+<% end%>
+
+
+<p> The FreeREG Team</p>

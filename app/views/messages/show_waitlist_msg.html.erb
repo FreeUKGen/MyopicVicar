@@ -1,4 +1,8 @@
-<% breadcrumb :show_messages_user, @message %>
+<% if @message.source_message_id.blank? %>
+  <% breadcrumb :show_messages_user, @message%>
+<% else %>
+  <% breadcrumb :show_reply_message, @message%>
+<% end %>
 <div style="clear:both;"> </div>
 <% if flash[:notice] %>
 <div id="notice" style="color:blue"><br>
@@ -8,11 +12,8 @@
 <div class="grid">
   <section class="island ">
     <h4 >Message Details</h4>
-
-
     <div class="grid__item  ">
-      
-      <table class="table--bordered table--data " >
+      <table class="table--bordered table--data ">
         <colgroup >
         <col class=t40>
         <col class=t60>
@@ -22,45 +23,64 @@
           <th  class="caps">Value</th>
         </tr>
         <tr>
-          <td>subject :</td> <td class="weight--semibold"> <%= @message.subject %>  </td>
+          <td>subject :</td>
+          <td class="weight--semibold">
+            <%= @message.subject %>
+          </td>
         </tr>
         <tr>
-        <td>Originated by : </td> <td class="weight--semibold"> <%= @message.userid %>  </td>
+          <td>Originated by : </td>
+          <td class="weight--semibold">
+            <%= @message.userid %>
+          </td>
         </tr>
         <tr>
-          <td>Time and date of message:</td> <td class="weight--semibold">  <%= @message.message_time.strftime("%H:%M on %F") unless @message.message_time.nil? %></td>
-        </tr>
-        
+          <td>Time and date of message:</td>
+          <td class="weight--semibold">
+            <%= @message.message_time.strftime("%H:%M on %F") unless @message.message_time.nil? %>
+          </td>
+        </tr>  
         <tr>
-          <td>Identifier :</td><td class="weight--semibold"><%= @message.identifier %></td>
-        </tr>
-        <tr>
-          <td>Message :</td><td class="weight--semibold"><textarea style="width:90%;" rows="8" readonly="readonly">Dear <%= @user.person_forename%>,&#13;&#10;&#13;&#10;<%= @message.body %></textarea></td>
-        </tr>
-        <% if @message.sent_messages.present?%>
-          <% @message.sent_messages.order_by(sent_time: -1).each do |each_message| %>
-            <tr>
-              <td>Recipients :</td> <td class="weight--semibold"><%= active_field(each_message)%> <%= each_message.recipients%> <%= reason(each_message.inactive_reason) if !each_message.active%><%= formatted_date(each_message)%> Sent by: <%= each_message.sender%></td>
-            </tr>
-          <% end%>
-        <% end%>
-        <tr>
-        <% if @message.attachment.present?%>        
-            <td>Text Attachment :</td><td class="weight--semibold"> <%= link_to("#{@message[:attachment]}", @message.attachment_url, target: "_blank") %><a href="#" class="bottom_tooltip"> <%= image_tag 'info.png', alt: 'Information', height: '16' %><span>The link will open in a new tab</span></a> </td>
-        <% else %>
-          <td>Text Attachment :</td><td class="weight--semibold"> No text document attached.</td>
-        <% end %> 
+          <td>Identifier :</td>
+          <td class="weight--semibold">
+            <%= @message.identifier %>
+          </td>
         </tr>
         <tr>
-        <% if @message.images_url %>
-          <td>Image Attachment :</td><td class="weight--semibold"> <%= image_tag @message.images_url %></td>
-        <% else %>
-          <td>Image Attachment :</td><td class="weight--semibold"> No images attached.</td>
-        <% end %>       
-         </tr> 
+          <td>Message :</td>
+          <td class="weight--semibold">
+            <textarea style="width:90%;" rows="8" readonly="readonly">Dear <%= @user.person_forename%>,&#13;&#10;&#13;&#10;<%= @message.body %>
+            </textarea>
+          </td>
+        </tr>
+        <tr>
+          <td>Recipients :</td>
+          <td>
+            <div class="scrollable">
+              <% if @message.sent_messages.present?%>
+                <% @message.sent_messages.order_by(sent_time: -1).each do |each_message| %>
+                  <%= content_tag :p, class: "weight--semibold" do %>
+                    <% unless each_message.recipients.blank? %>
+                      <%= active_field(each_message)%> <%= each_message.recipients%> <%= reason(each_message.inactive_reason) if !each_message.active%><%= formatted_date(each_message)%> Sent by: <%= each_message.sender%>
+                    <% end %>
+                  <% end %>
+                <% end%>
+              <% end%>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>Attachment</td>
+          <%= message_attachment_tag(@message) %>
+        </tr>
+        <tr>
+          <td>Image Attachment</td>
+          <%= message_image_tag(@message) %>
+        </tr>
       </table>
-       <%= link_to 'Send this Message', send_message_messages_path(@message.id), :class => "btn weight--light  btn--small", method: :get, data: { confirm: 'Are you sure you want to send this message' } %>
-      
+      <%= show_links%>
+      <%#= link_to 'Send this Message', send_message_messages_path(@message.id), :class => "btn weight--light  btn--small", method: :get, data: { confirm: 'Are you sure you want to send this message' } %>
     </div>
   </section>
 </div>
+

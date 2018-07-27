@@ -341,6 +341,9 @@ label.collection_check_boxes {
     overflow: auto;
     max-height: 400px;  
 }
+.strong {
+  font-weight: bold;
+}
 .fixed-headers table { border-bottom: 1px solid #ccc; }
 .fixed-headers th:first-child { padding-left: 14px; }
 .fixed-headers th:last-child, 
@@ -595,6 +598,14 @@ table.center50 {
   border-radius: 5px;
 }
 
+.disabled_link {
+  cursor: text;
+  background: #a5a5a5;
+}
+
+.disabled_link:hover {
+  background: #a5a5a5;
+}
 /* For Cookie Consent notification bar */
 .cookieConsent {
   display: none;
@@ -611,7 +622,6 @@ table.center50 {
   text-align: center;
   z-index: 1000;
 }
-
 div#cookieText {
   position:relative;
   height:auto;
@@ -621,20 +631,17 @@ div#cookieText {
   margin-right:auto;
   color: rgb(40, 40, 40);
 }
-
 div#cookieAcceptButton {
   margin-top:5px;
 }
-
 .cookie_policy_link {
   color: #000080;
-
 }
-
 /* Switch Flat
 ==========================*/
 .toggle {
   -webkit-appearance: none;
+  -moz-appearance: none;
   appearance: none;
   width: 62px;
   height: 32px;
@@ -648,7 +655,6 @@ div#cookieAcceptButton {
   background-color: #707070;
   transition: background-color ease 0.3s;
 }
-
 .toggle:before {
   content: "Yes No";
   display: block;
@@ -679,4 +685,3 @@ div#cookieAcceptButton {
 .toggle:checked:before {
   left: 32px;
 }
-

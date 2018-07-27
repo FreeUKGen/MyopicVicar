@@ -191,7 +191,7 @@ class PhysicalFilesController < ApplicationController
     #add to processing queue and place in change
     success = @batch.add_file("reprocessing")
     if success[0]
-      flash[:notice] = "The file #{@batch.file_name} for #{@batch.userid} has been added to the overnight queue for processing" if success
+      flash[:notice] = "The file #{@batch.file_name} for #{@batch.userid} has been submitted for processing" if success
     else
       flash[:notice] = "There was a problem with the reprocessing: #{success[1]} "
     end

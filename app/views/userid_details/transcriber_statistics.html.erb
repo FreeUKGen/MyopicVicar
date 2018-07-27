@@ -1,0 +1,58 @@
+<h2 class=" text--center">Statistics</h2>
+<% if flash[:notice] %>
+<div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %> <br>
+</div>
+<% end %>
+<div class="grid">
+  <section class="island  ">
+    <div class="grid__item one-whole" >
+      <table  class="table--bordered   table--data">
+        <tr>
+          <th style="width:50%">Stats Description</th>
+          <th style="width:50%">Count</th>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">Total number of users</td>
+          <td ><%= @total_users %></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">Total number of users as transcribers</td>
+          <td ><%= @total_transcribers %></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">Total number of transcribers who accepted Transcription Agreement </td>
+          <td ><%= @total_transcribers_accepted_agreement %></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">Total number of Active transcribers </td>
+          <td ><%= @total_active_transcribers %></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">Total number of Users who uploaded file </td>
+          <td ><%= @users_uploaded_file %></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">Total number of Users who never uploaded file </td>
+          <td ><%= @users_never_uploaded_file %></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">Total number of Transcribers who never uploaded file </td>
+          <td ><%= @transcribers_never_uploaded_file %></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">Total number of Transcribers who uploaded file </td>
+          <td ><%= @transcriber_uploaded_file %></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">Total number of Users who had not completed the registrations </td>
+          <td ><%= @incomplete_registrations %></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">Total number of Transcribers who had not completed the registrations </td>
+          <td ><%= @incomplete_transcriber_registrations %></td>
+        </tr>
+      </table>
+    </div>
+  </section>
+</div>

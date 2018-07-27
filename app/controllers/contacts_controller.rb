@@ -1,6 +1,7 @@
 class ContactsController < ApplicationController
 
   require 'freereg_options_constants'
+  require 'contact_rules'
 
   skip_before_filter :require_login, only: [:new, :report_error, :create]
 
@@ -93,12 +94,11 @@ class ContactsController < ApplicationController
 
   def index
     get_user_info_from_userid
-    if @user.person_role == 'county_coordinator' || @user.person_role == 'country_coordinator'
-      @county = @user.county_groups
-      @contacts = Contact.in(:county => @county).all.order_by(contact_time: -1)
-    else
-      @contacts = Contact.all.order_by(contact_time: -1)
-    end
+    @contacts = get_contacts.result
+  end
+
+  def get_contacts
+    ContactRules.new(@user)
   end
 
   def list_by_date
@@ -205,9 +205,45 @@ class ContactsController < ApplicationController
     end
   end
 
+  def reply_contact
+    get_user_info_from_userid; return if performed?
+    @respond_to_contact = Contact.id(params[:source_contact_id]).first
+    @contact_replies = Message.where(source_contact_id: params[:source_contact_id]).all
+    @message = Message.new
+    @message.message_time = Time.now
+    @message.userid = @user.userid
+  end
+
+  def contact_reply_messages
+    get_user_info_from_userid; return if performed?
+    @contact = Contact.id(params[:id]).first
+    if @contact.present?
+      @messages = Message.where(source_contact_id: params[:id]).all
+      render 'messages/index'
+    end
+  end
+
+  def force_destroy
+    @contact = Contact.id(params[:id]).first
+    if @contact.present? && @contact.has_replies?(params[:id])
+      delete_reply_messages(params[:id])
+      @contact.delete
+      flash.notice = "Contact and all its replies are destroyed"
+      redirect_to :action => 'index'
+      return
+    else
+      flash.notice = "Destruction of Contact was unsuccessful"
+      redirect_to :action => 'index'
+      return
+    end
+  end
+
   private
   def contact_params
     params.require(:contact).permit!
   end
 
+  def delete_reply_messages(contact_id)
+    Message.where(source_contact_id: contact_id).destroy
+  end
 end

@@ -55,31 +55,31 @@ class Contact
     self.screenshot_location = "uploads/contact/screenshot/#{self.screenshot.model._id.to_s}/#{self.screenshot.filename}" if self.screenshot.filename.present?
   end
 
-  def communicate
+  def communicate(message=nil,sender=nil)
     case
     when  self.contact_type == 'Website Problem'
-      self.communicate_website_problem
+      self.communicate_website_problem(message,sender)
     when self.contact_type == 'Data Question'
-      self.communicate_data_question
+      self.communicate_data_question(message,sender)
     when self.contact_type == 'Data Problem'
-      self.communicate_data_problem
+      self.communicate_data_problem(message,sender)
     when self.contact_type == 'Volunteering Question'
-      self.communicate_volunteering
+      self.communicate_volunteering(message,sender)
     when self.contact_type == 'General Comment'
-      self.communicate_general
-    when self.contact_type == "Thank you"
-      self.communicate_publicity
+      self.communicate_general(message,sender)
+    when self.contact_type == "Thank-you"
+      self.communicate_publicity(message,sender)
     when self.contact_type == 'Genealogical Question'
-      self.communicate_genealogical_question
+      self.communicate_genealogical_question(message,sender)
     when self.contact_type == 'Enhancement Suggestion'
-      self.communicate_enhancement_suggestion
+      self.communicate_enhancement_suggestion(message,sender)
     else
-      self.communicate_general
+      self.communicate_general(message,sender)
     end
   end
 
 
-  def communicate_website_problem
+  def communicate_website_problem(message=nil,sender=nil)
     ccs = Array.new
     UseridDetail.any_of({ person_role: "website_coordinator", email_address_valid: true}, secondary_role: { '$in': ["website_coordinator"] }).all.each do |person|
       ccs << person.email_address
@@ -92,10 +92,16 @@ class Contact
         ccs << person.email_address
       end
     end
-    UserMailer.website(self,ccs).deliver_now
+    @message = message
+    unless @message.blank?
+      reply_sent_messages(@message,sender)
+      UserMailer.coordinator_contact_reply(self,ccs,@message,sender).deliver_now
+    else
+      UserMailer.website(self,ccs).deliver_now
+    end
   end
 
-  def communicate_data_question
+  def communicate_data_question(message=nil,sender=nil)
     ccs = Array.new
     UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
       ccs << person.email_address
@@ -105,26 +111,37 @@ class Contact
         ccs << person.email_address
       end
     end
-    UserMailer.datamanager_data_question(self,ccs).deliver_now
+    @message = message
+    unless @message.blank?
+      reply_sent_messages(@message,sender)
+      UserMailer.coordinator_contact_reply(self,ccs,@message,sender).deliver_now
+    else
+      UserMailer.datamanager_data_question(self,ccs).deliver_now
+    end
   end
 
-  def communicate_data_problem
+  def communicate_data_problem(message=nil,sender=nil)
     ccs = Array.new
-    #coordinator = self.get_coordinator if self.record_id.present?
-    #ccs << coordinator.email_address if self.record_id.present?
-    UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
+    coordinator = self.get_coordinator if self.record_id.present?
+    ccs << coordinator.email_address if self.record_id.present?
+    UseridDetail.where(person_role: 'contacts_coordinator', email_address_valid: true).all.each do |person|
       ccs << person.email_address
     end
     if ccs.blank?
-      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
+      UseridDetail.where(person_role: 'system_administrator', email_address_valid: true).all.each do |person|
         ccs << person.email_address
       end
     end
-    UserMailer.coordinator_data_problem(self,ccs).deliver_now
+    @message = message
+    unless @message.blank?
+      reply_sent_messages(@message,sender)
+      UserMailer.coordinator_contact_reply(self,ccs,@message,sender).deliver_now
+    else
+      UserMailer.coordinator_data_problem(self,ccs).deliver_now
+    end
   end
 
-
-  def communicate_publicity
+  def communicate_publicity(message=nil,sender=nil)
     ccs = Array.new
     UseridDetail.any_of({ person_role: "publicity_coordinator", email_address_valid: true}, secondary_role: { '$in': ["publicity_coordinator"] }).all.each do |person|
       ccs << person.email_address
@@ -137,10 +154,16 @@ class Contact
         ccs << person.email_address
       end
     end
-    UserMailer.publicity(self,ccs).deliver_now
+    @message = message
+    unless @message.blank?
+      reply_sent_messages(@message,sender)
+      UserMailer.coordinator_contact_reply(self,ccs,@message,sender).deliver_now
+    else
+      UserMailer.publicity(self,ccs).deliver_now
+    end
   end
 
-  def communicate_genealogical_question
+  def communicate_genealogical_question(message=nil,sender=nil)
     ccs = Array.new
     UseridDetail.any_of({ person_role: "genealogy_coordinator", email_address_valid: true}, secondary_role: { '$in': ["genealogy_coordinator"] }).all.each do |person|
       ccs << person.email_address
@@ -153,10 +176,16 @@ class Contact
         ccs << person.email_address
       end
     end
-    UserMailer.genealogy(self,ccs).deliver_now
+    @message = message
+    unless @message.blank?
+      reply_sent_messages(@message,sender)
+      UserMailer.coordinator_contact_reply(self,ccs,@message,sender).deliver_now
+    else
+      UserMailer.genealogy(self,ccs).deliver_now
+    end
   end
 
-  def communicate_enhancement_suggestion
+  def communicate_enhancement_suggestion(message=nil,sender=nil)
     ccs = Array.new
     UseridDetail.any_of({ person_role: 'website_coordinator', email_address_valid: true}, secondary_role: { '$in': ["website_coordinator"] }).all.each do |person|
       ccs << person.email_address
@@ -169,10 +198,16 @@ class Contact
         ccs << person.email_address
       end
     end
-    UserMailer.enhancement(self,ccs).deliver_now
+    @message = message
+    unless @message.blank?
+      reply_sent_messages(@message,sender)
+      UserMailer.coordinator_contact_reply(self,ccs,@message,sender).deliver_now
+    else
+      UserMailer.enhancement(self,ccs).deliver_now
+    end
   end
 
-  def communicate_volunteering
+  def communicate_volunteering(message=nil,sender=nil)
     ccs = Array.new
     UseridDetail.any_of({ person_role: "volunteer_coordinator", email_address_valid: true}, secondary_role: { '$in': ["volunteer_coordinator"] }).all.each do |person|
       ccs << person.email_address
@@ -185,10 +220,16 @@ class Contact
         ccs << person.email_address
       end
     end
-    UserMailer.volunteer(self,ccs).deliver_now
+    @message = message
+    unless @message.blank?
+      reply_sent_messages(@message,sender)
+      UserMailer.coordinator_contact_reply(self,ccs,@message,sender).deliver_now
+    else
+      UserMailer.volunteer(self,ccs).deliver_now
+    end
   end
 
-  def communicate_general
+  def communicate_general(message=nil,sender=nil)
     ccs = Array.new
     UseridDetail.any_of({ person_role: "general_communication_coordinator", email_address_valid: true}, secondary_role: { '$in': ["general_communication_coordinator"] }).all.each do |person|
       ccs << person.email_address
@@ -201,7 +242,13 @@ class Contact
         ccs << person.email_address
       end
     end
-    UserMailer.general(self,ccs).deliver_now
+    @message = message
+    unless @message.blank?
+      reply_sent_messages(@message,sender)
+      UserMailer.coordinator_contact_reply(self,ccs,@message,sender).deliver_now
+    else
+      UserMailer.general(self,ccs).deliver_now
+    end
   end
 
   def get_coordinator
@@ -248,5 +295,49 @@ class Contact
     self.previous_page_url = "unknown" if self.previous_page_url.nil?
   end
 
-  
+  def has_replies?(contact_id)
+    Message.where(source_contact_id: contact_id).exists?
+  end
+
+  private
+  def contact_recipients
+    recipients = Array.new
+    case self.contact_type
+    when 'Website Problem'
+      recipients << "website_coordinator"
+      recipients << "system_administrator" if UseridDetail.any_of({ person_role: "website_coordinator", email_address_valid: true}, secondary_role: { '$in': ["website_coordinator"] }).all.count == 0
+    when 'Data Question'
+      recipients << "contacts_coordinator"
+      recipients << "system_administrator" if UseridDetail.any_of({ person_role: "contacts_coordinator", email_address_valid: true}, secondary_role: { '$in': ["contacts_coordinator"] }).all.count == 0
+    when 'Data Problem'
+      recipients.push("county_coordinator","contact_coordinator")
+      recipients << "system_administrator" if UseridDetail.any_of({ person_role: "contacts_coordinator", email_address_valid: true}, secondary_role: { '$in': ["contacts_coordinator"] }).all.count == 0
+    when 'Volunteering Question'
+      recipients.push("volunteer_coordinator")
+      recipients << "system_administrator" if UseridDetail.any_of({ person_role: "volunteer_coordinator", email_address_valid: true}, secondary_role: { '$in': ["volunteer_coordinator"] }).all.count == 0
+    when 'General Comment'
+      recipients.push("general_communication_coordinator")
+      recipients << "system_administrator" if UseridDetail.any_of({ person_role: "general_communication_coordinator", email_address_valid: true}, secondary_role: { '$in': ["general_communication_coordinator"] }).all.count == 0
+    when "Thank you"
+      recipients.push("publicity_coordinator")
+      recipients << "system_administrator" if UseridDetail.any_of({ person_role: "publicity_coordinator", email_address_valid: true}, secondary_role: { '$in': ["publicity_coordinator"] }).all.count == 0
+    when 'Genealogical Question'
+      recipients.push("genealogy_coordinator")
+      recipients << "system_administrator" if UseridDetail.any_of({ person_role: "genealogy_coordinator", email_address_valid: true}, secondary_role: { '$in': ["genealogy_coordinator"] }).all.count == 0
+    when 'Enhancement Suggestion'
+      recipients.push("website_coordinator", "project_manager")
+      recipients << "system_administrator" if UseridDetail.any_of({ person_role: { '$in': ["website_coordinator", "project_manager"] }, email_address_valid: true}, secondary_role: { '$in': ["website_coordinator", "project_manager"] }).all.count == 0
+    else
+      recipients.push("general_communication_coordinator")
+      recipients << "system_administrator" if UseridDetail.any_of({ person_role: "general_communication_coordinator", email_address_valid: true}, secondary_role: { '$in': ["general_communication_coordinator"] }).all.count == 0
+    end
+    return recipients
+  end
+
+  def reply_sent_messages(message, sender)
+    @message = message
+    @sent_message = SentMessage.new(message_id: @message.id, sender: sender.userid, recipients: contact_recipients, other_recipient: self.email_address, sent_time: Time.now)
+    @message.sent_messages <<  [ @sent_message ]
+    @sent_message.save
+  end
 end

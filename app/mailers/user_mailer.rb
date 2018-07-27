@@ -1,4 +1,5 @@
 class UserMailer < ActionMailer::Base
+  add_template_helper(EmailHelper)
 
   default from: "freereg-contacts@freereg.org.uk"
 
@@ -87,6 +88,7 @@ class UserMailer < ActionMailer::Base
     @contact = contact
     get_attachment
     mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for reporting a problem with our data. Reference #{@contact.identifier}")
+    #mail(:from => "vinodhini.subbu@freeukgenealogy.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>", :subject => "Thank you for reporting a problem with our data. Reference #{@contact.identifier}")
   end
 
   def datamanager_data_question(contact,ccs)
@@ -106,6 +108,7 @@ class UserMailer < ActionMailer::Base
     @user = UseridDetail.userid(@contact.user_id).first
     get_attachment
     mail(:from => "freereg-feedback@freereg.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>",:cc => ccs, :subject => "Thank you for your feedback. Reference #{@contact.identifier}")
+    #mail(:from => "vinodhini.subbu@freeukgenealogy.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "Thank you for your feedback. Reference #{@contact.identifier}")
   end
 
   def genealogy(contact,ccs)
@@ -311,12 +314,31 @@ class UserMailer < ActionMailer::Base
     mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeReg change of email") unless @coordinator.blank?
   end
 
-
   def send_message(mymessage,ccs,from)
     @message = mymessage
-    from = "freereg-contacts@freereg.org.uk" if from.blank?
-    get_message_attachment if @message.attachment.present? ||  @message.images.present?
+    @reply_messages = Message.where(source_message_id: @message.source_message_id).all unless @message.source_message_id.blank?
+    @respond_to_message = Message.id(@message.source_message_id).first
+    from = "vinodhini.subbu@freeukgenealogy.org.uk" if from.blank?
+    #get_message_attachment if @message.attachment.present? ||  @message.images.present?
     mail(:from => from ,:to => "freereg-contacts@freereg.org.uk",  :bcc => ccs, :subject => "#{@message.subject}. Reference #{@message.identifier}")
+    #mail(:from => from ,:to => "vinodhini.subbu@freeukgenealogy.org.uk", :subject => "#{@message.subject}. Reference #{@message.identifier}")
+  end
+
+  def feedback_reply(message,recipient,sender,ccs)
+    @message = message
+    @reply_messages = Message.where(source_feedback_id: @message.source_feedback_id).all
+    @contact = Feedback.id(@message.source_feedback_id).first
+    get_attachment
+    @reply_to_person = UseridDetail.where(email_address: recipient).first
+    mail(:from => "#{sender}",:to => "#{@reply_to_person.person_forename} <#{recipient}>", :bcc => ccs, subject:"#{@message.subject}. Reference Message Identifier: #{@message.identifier}")
+  end
+
+  def coordinator_contact_reply(contact,ccs,message,sender)
+    @contact = contact
+    @message = message
+    @reply_messages = Message.where(source_contact_id: @message.source_contact_id).all
+    get_attachment
+    mail(from: sender.email_address, to:  "#{@contact.name} <#{@contact.email_address}>", bcc: ccs, subject: @message.subject)
   end
 
   def send_logs(file,ccs,body_message,subjects)
