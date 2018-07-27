@@ -1589,7 +1589,7 @@ class CsvRecord < CsvRecords
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:death_date]) if FreeregValidations.year_extract(@data_record[:burial_date]).nil? && csvfile.header[:def]
     @data_record[:relative_surname] = Unicode::upcase(@data_record[:relative_surname]) unless @data_record[:relative_surname].nil?
     @data_record[:burial_person_surname] = Unicode::upcase( @data_record[:burial_person_surname])  unless @data_record[:burial_person_surname].nil?
-    @data_record[:female_relative_surname] = Unicode::upcase( @data_record[:female_relative_surname])  unless @data_record[:female_relative_surname].nil? && !csvfile.header[:def]
+    @data_record[:female_relative_surname] = Unicode::upcase( @data_record[:female_relative_surname])  unless @data_record[:female_relative_surname].nil? 
     csvfile.data[line] = data_record
    
   end
