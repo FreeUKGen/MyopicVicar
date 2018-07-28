@@ -29,7 +29,7 @@ module ApplicationHelper
     app_specific_template = base_template.sub(/$/, "_search_records_#{template_set}")
     #raise app_specific_template.inspect
 
-    app_specific_template    
+    app_specific_template
   end
 
   def get_user_info_from_userid
@@ -162,7 +162,7 @@ module ApplicationHelper
             //(adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
           //}
         //};
-      $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({ 
+      $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({
         google_ad_client: "ca-pub-1788116026113570",
         enable_page_level_ads: true
       })
@@ -269,13 +269,13 @@ module ApplicationHelper
     <script>
         (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
       </script>
-    <!-- Responsive ad -->
-    <ins class="adsbygoogle adSenseBanner"
-      style="display:block"
-      data-ad-client="ca-pub-7825403497160061"
-      data-ad-slot="9011588433"
-      data-ad-format="auto">
-    </ins>
+      <!-- FreeCEN2 Transcriber Registration (Responsive) -->
+  <ins class="adsbygoogle adSenseBanner"
+       style="display:block"
+       data-ad-client="ca-pub-5379635334920389"
+       data-ad-slot="9391036375"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
     <script>
       window.update_personalized_fullwidth_adverts = function (preference) {
           if(preference == 'accept') {
