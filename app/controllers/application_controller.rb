@@ -78,11 +78,11 @@ class ApplicationController < ActionController::Base
     max_records
   end
 
-  def get_place_id_from_file(freereg1_csv_file)
+  def get_place_from_file(freereg1_csv_file)
     register = freereg1_csv_file.register
     church = register.church
     place = church.place
-    return place.id
+    return place
   end
 
   def get_places_for_menu_selection

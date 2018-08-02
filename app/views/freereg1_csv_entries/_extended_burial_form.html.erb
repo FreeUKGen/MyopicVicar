@@ -1,0 +1,30 @@
+<%= simple_form_for @freereg1_csv_entry, :html => { :class => "grid"}  do |f| %>
+    <%= f.input :register_entry_number,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%> 
+    <%= f.input :burial_date ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%> 
+    <%= f.input :death_date ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
+    <%= f.input :burial_person_forename ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%> 
+    <%= f.input :burial_person_surname ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
+    <%= f.input :burial_person_title ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
+    <%= f.input :relationship,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } %> 
+    <%= f.input :male_relative_forename,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } %>
+    <%= f.input :relative_surname,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } %> 
+    <%= f.input :male_relative_title,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } %>
+    <%= f.input :female_relative_forename,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } %>   
+    <%= f.input :female_relative_surname,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } %>   
+    <%= f.input :female_relative_title,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } %> 
+    <%= f.input :person_age ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
+    <%= f.input :burial_person_abode ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%> 
+    <%= f.input :cause_of_death ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>  
+    <%= f.input :burial_location_information ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>  
+    <%= f.input :place_of_death ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>  
+    <%= f.input :memorial_information ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>  
+    <%= f.input :notes, :label => 'Notes in register', :as => :text, :input_html => {:class => " simple_form_bgcolour  ",   :placeholder => "Enter notes from register",  :size => "29x5" }%> 
+    <%= f.input :notes_from_transcriber, :label => 'Transcriber Notes', :as => :text, :input_html => {:class => " simple_form_bgcolour  ",   :placeholder => "Enter your notes from and about entry",  :size => "29x5" }%> 
+    <%= f.input :film ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
+    <%= f.input :film_number,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } %>
+    <%= f.input :image_file_name,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 50 }%>
+    <%= f.input :record_type, :input_html => { :disabled => true  } %>  
+    <%= f.input :line_id, :input_html => { :disabled => true }%>
+    <%= f.input :file_line_number, :input_html => { :disabled => true } %> 
+    <%= f.button :submit, 'Submit'   %>
+<% end %>

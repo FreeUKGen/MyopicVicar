@@ -1,0 +1,111 @@
+<div class="grid">
+  <section class="island ">
+    <div class="grid__item ">
+      <table class="table--bordered table--data push--bottom t100" >
+      <caption class="beta"><%= record_type(@entry) %> entry
+        <%case%>
+        <%when @display_date%>
+          <span class="additional"> search made on <%=Time.now.strftime("%d %b %Y") %></span><br>
+        <%when !current_authentication_devise_user.present?%>
+           <span class="additional">While we have made all efforts to correctly record the information in the original docucument there may be different interpretations of the written words. <b>If you have access to the original document</b> and believe we have made a mistake you are encouraged to report this to us.
+           <%= link_to "Report an Error in this Data", report_error_contact_path(@search_record[:_id], :query => @search_query), class: "btn weight--light btn--natural"%></span>
+        <% end%> 
+      </caption>
+      <thead>
+        <tr>
+           <% if @all_data.present? %><th >Field </th><% else%><th >Field <br>(only fields with a value are shown)</th> <% end%>
+          <th >Value </th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @order.each do |field| %>
+          <% if @all_data.present? || @entry[field].present? %> 
+            <% case field %>    
+            <% when 'place' %>
+              <tr>
+                <td ><%= field.gsub('_',' ').capitalize %></td>
+                <% if @place_id.present? %>
+                  <td ><%= link_to(@entry[field], place_freereg_content_path(@place_id)) %></td>
+                <% else %>
+                  <td ><%= @entry[field] %></td>
+                <% end %>  
+              </tr>
+            <% when 'church_name' %>
+              <tr>
+                <td><%= field.gsub('_',' ').capitalize %></td>
+                <% if @church_id.present? %>
+                  <td><%= link_to(@entry[field], church_freereg_content_path(@church_id)) %></td>
+                <% else %>
+                  <td><%= @entry[field] %></td>
+                <% end %>  
+              </tr>  
+            <% when 'register_type' %>
+              <tr>
+                <td><%= field.gsub('_',' ').capitalize%></td>
+                <% if @register_id.present? %>
+                  <td><%= link_to(@entry[field], register_freereg_content_path(@register_id)) %></td>
+                <% else %>
+                  <td><%= @entry[field] %></td>
+                <% end %>  
+              </tr> 
+            <% when 'image_file_name' %>
+              <% if !@image_id.present?  %>
+                <tr>
+                  <td ><%= field.gsub('_',' ').capitalize %></td>
+                  <td ><%= @entry[field] %></td>
+                </tr>
+              <% else %>
+                <tr>
+                  <td ><%= field.gsub('_',' ').capitalize %></td>
+                  <td>  <%= link_to 'View image', view_image_server_image_path(:object => @image_id), method: :get,:target => "_blank" , :class => "btn weight--light btn--small" %></td>
+                </tr>
+              <% end %> 
+            <% when 'film' %>  
+              <% if  current_authentication_devise_user.present?%>
+                <tr>
+                  <td>Film</td>
+                  <td><%= @entry.film %></td>
+                </tr>
+              <% end%>  
+            <% when 'film_number' %>  
+              <% if  current_authentication_devise_user.present?%>
+                 <tr>
+                  <td>Film Number</td>
+                  <td><%= @entry.film_number %></td>
+                </tr>
+              <% end%>
+            <% when 'line_id' %>  
+              <% if  current_authentication_devise_user.present?%>
+                <tr>
+                  <td><%= field.gsub('_',' ').capitalize %></td>
+                  <td><%= @entry.line_id %></td>
+                </tr>
+              <% end%>
+            <% when 'error_flag'  %>
+              <% if  current_authentication_devise_user.present?%>
+                <% if @entry.error_flag == 'true' %>
+                  <tr style= "color:blue">
+                <% else%>
+                  <tr style= "color:black">
+                <% end%>
+                <td >Error in record</td><td >  <%= @entry.error_flag %> </td>
+                </tr>
+                <tr style= "color:black">
+                </tr>
+              <% end%>
+            <%else%>
+              <tr>
+                <td ><%= field.gsub('_',' ').capitalize %></td>
+                <td ><%= @entry[field] %></td>
+              </tr>
+             <% end %>
+          <% end %>
+        <% end %>
+        <% if  !current_authentication_devise_user.present?%>
+          <td colspan=2><%= link_to "Report an Error in this Data", report_error_contact_path(@search_record[:_id], :query => @search_query), class: "btn weight--light btn--natural"%></td>
+        <% end %>
+      </tbody>
+      </table>
+    </div>
+  </section>
+</div>

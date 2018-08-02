@@ -80,7 +80,7 @@ class CorrectMultipleWitnessRecords
                   register = file.register if file.present?
                   church = register.church if register.present?
                   place = church.place if church.present?
-                  result = SearchRecord.update_create_search_record(entry,search_version,place.id) if fix && place.present?
+                  result = SearchRecord.update_create_search_record(entry,search_version,place) if fix && place.present?
                   message_file.puts "result of update #{result}" unless result == 'updated'
                   sleep_time = (Rails.application.config.emmendation_sleep.to_f).to_f
                   sleep(sleep_time) if result == 'updated'
@@ -162,7 +162,7 @@ class CorrectMultipleWitnessRecords
                 register = file.register if file.present?
                 church = register.church if register.present?
                 place = church.place if church.present?
-                result = SearchRecord.update_create_search_record(entry,search_version,place.id) if fix && place.present?
+                result = SearchRecord.update_create_search_record(entry,search_version,place) if fix && place.present?
                 message_file.puts "result of update #{result}"
              end
            end

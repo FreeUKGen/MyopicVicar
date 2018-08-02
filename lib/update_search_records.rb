@@ -50,7 +50,7 @@ class UpdateSearchRecords
           file_created_records = 0
           if file.freereg1_csv_entries.count >= 1
             Freereg1CsvEntry.where(:freereg1_csv_file_id => file.id).all.no_timeout.each do |entry|
-              result = SearchRecord.update_create_search_record(entry,search_version,place.id) unless force
+              result = SearchRecord.update_create_search_record(entry,search_version,place) unless force
               result = SearchRecord.create_search_record(entry,search_version,place.id) if force
               #p result
               case result

@@ -442,7 +442,7 @@ namespace :foo do
             register = freereg1_csv_file.register
             church = register.church
             place = church.place
-            SearchRecord.update_create_search_record(entry,search_version,place.id)
+            SearchRecord.update_create_search_record(entry,search_version,place)
             record = entry.search_record
             p "Upadted"
             p record.search_date
