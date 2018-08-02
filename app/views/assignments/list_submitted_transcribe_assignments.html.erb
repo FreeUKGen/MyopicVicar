@@ -6,6 +6,12 @@
 <%= render partial: 'flash_notice' %>
 
 <div class="grid">
+	<% if not @assignment_ids.empty? %>
+  	<div style="text-align: center">  
+			<%= link_to 'Accept All Assignments', assignment_path(:status=>'ts', :type=>'complete', :assignment_list_type=>'', :assignment_ids=>@assignment_ids), :title=>'accept assignment', data: { confirm: 'All Submitted Transcription Assignments will be accepted, are you sure?' }, method: :put, :class => "btn weight--light btn--small" %>
+		</div>
+	<% end %>
+
   <section class="island">
   	<% if @count.length == 1 %>
   		<%= render 'assignment_list' %>
