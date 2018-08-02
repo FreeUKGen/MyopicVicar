@@ -34,7 +34,7 @@ gem 'formtastic', '~> 3.1'
 gem 'inherited_resources', '~> 1.6'
 gem "therubyracer", :platforms => :ruby # avoid loading on windows
 
-gem 'airbrake', '~> 3.1.14'
+gem 'airbrake', '~> 5.0'
 gem 'bcrypt', '>= 3.1.9'
 gem 'text'
 gem 'json'
