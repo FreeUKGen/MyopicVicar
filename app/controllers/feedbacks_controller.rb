@@ -1,6 +1,6 @@
 class FeedbacksController < ApplicationController
 require 'reply_userid_role'
-  skip_before_filter :require_login
+  #skip_before_filter :require_login, only: [:new]
 
   def convert_to_issue
     @feedback = Feedback.id(params[:id]).first
