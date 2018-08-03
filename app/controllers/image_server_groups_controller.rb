@@ -229,8 +229,13 @@ class ImageServerGroupsController < ApplicationController
     if params[:_method] =='put'
       image_server_group = ImageServerGroup.id(params[:id])
       user = get_user
-      flash[:notice] = ImageServerGroup.update_put_request(image_server_group, params[:type], user)
-      redirect_to index_image_server_group_path(image_server_group.first.source)
+      flash[:notice] = ImageServerGroup.update_put_request(params, user)
+
+      if params[:type] == 'complete'
+        redirect_to manage_completion_submitted_image_group_manage_county_path(session[:chapman_code])
+      else
+        redirect_to index_image_server_group_path(image_server_group.first.source)
+      end
     else
       if image_server_group_params[:origin] == 'allocate'
         image_server_group = ImageServerGroup.update_allocate_request(image_server_group_params)
