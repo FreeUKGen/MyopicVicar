@@ -40,6 +40,8 @@ module NameRole
     'Bride' => BRIDE,
     'Groom\'s Father' => GROOM_FATHER,
     'Bride\'s Father' => BRIDE_FATHER,
+    'Groom\'s Mother' => GROOM_MOTHER,
+    'Bride\'s Mother' => BRIDE_MOTHER,
     'Baptizee' => BAPTIZEE,
     'Deceased' => BURIED,
     'Female Relative' => FEMALE_RELATIVE,
