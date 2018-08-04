@@ -554,15 +554,19 @@ class CsvFile < CsvFiles
       data_record.delete(:chapman_code)
      entry = Freereg1CsvEntry.new(data_record)
      if data_record[:record_type] == "ma" || data_record[:record_type] == "ba"
-       entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness1_forename],:witness_surname => data_record[:witness1_surname].upcase) unless data_record[:witness1_forename].blank? && data_record[:witness1_surname].blank?
-       entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness2_forename],:witness_surname => data_record[:witness2_surname].upcase) unless data_record[:witness2_forename].blank? && data_record[:witness2_surname].blank?
-       entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness3_forename], :witness_surname => data_record[:witness3_surname].upcase) unless data_record[:witness3_forename].blank? &&  data_record[:witness3_surname].blank?
-       entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness4_forename], :witness_surname => data_record[:witness4_surname].upcase) unless data_record[:witness4_forename].blank? &&  data_record[:witness4_surname].blank?
-       entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness5_forename], :witness_surname => data_record[:witness5_surname].upcase) unless data_record[:witness5_forename].blank? &&  data_record[:witness5_surname].blank?
-       entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness6_forename], :witness_surname => data_record[:witness6_surname].upcase) unless data_record[:witness6_forename].blank? &&  data_record[:witness6_surname].blank?
-       entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness7_forename], :witness_surname => data_record[:witness7_surname].upcase) unless data_record[:witness7_forename].blank? &&  data_record[:witness7_surname].blank?
-       entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness8_forename], :witness_surname => data_record[:witness8_surname].upcase) unless data_record[:witness8_forename].blank? &&  data_record[:witness8_surname].blank?
+       entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness1_forename],:witness_surname => data_record[:witness1_surname]) unless data_record[:witness1_forename].blank? && data_record[:witness1_surname].blank?
+       entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness2_forename],:witness_surname => data_record[:witness2_surname]) unless data_record[:witness2_forename].blank? && data_record[:witness2_surname].blank?
+       entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness3_forename], :witness_surname => data_record[:witness3_surname]) unless data_record[:witness3_forename].blank? &&  data_record[:witness3_surname].blank?
+       entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness4_forename], :witness_surname => data_record[:witness4_surname]) unless data_record[:witness4_forename].blank? &&  data_record[:witness4_surname].blank?
+       entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness5_forename], :witness_surname => data_record[:witness5_surname]) unless data_record[:witness5_forename].blank? &&  data_record[:witness5_surname].blank?
+       entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness6_forename], :witness_surname => data_record[:witness6_surname]) unless data_record[:witness6_forename].blank? &&  data_record[:witness6_surname].blank?
+       entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness7_forename], :witness_surname => data_record[:witness7_surname]) unless data_record[:witness7_forename].blank? &&  data_record[:witness7_surname].blank?
+       entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness8_forename], :witness_surname => data_record[:witness8_surname]) unless data_record[:witness8_forename].blank? &&  data_record[:witness8_surname].blank?
      end
+     entry.multiple_witnesses.each do |witness|
+       witness.witness_surname = witness.witness_surname.upcase if witness.witness_surname.present?
+     end
+     
      entry.freereg1_csv_file = freereg1_csv_file
       #p "creating entry"
      entry.save
@@ -1376,6 +1380,7 @@ class CsvRecord < CsvRecords
 
   def extract_data_line(csvrecords,csvfile,project,line)
     #p "extracting data line"
+    #p "#{line}"
     begin
       success, register_location = self.extract_register_location(csvrecords,csvfile,project,line)
       return false unless success
@@ -1383,16 +1388,17 @@ class CsvRecord < CsvRecords
       type = csvfile.header[:record_type]
       case type
       when RecordType::BAPTISM
-        success, message = self.process_baptism_data_fields(csvrecords,csvfile,project,line)
+        self.process_baptism_data_fields(csvrecords,csvfile,project,line)
       when RecordType::BURIAL
-        success, message = self.process_burial_data_fields(csvrecords,csvfile,project,line)
+        self.process_burial_data_fields(csvrecords,csvfile,project,line)
       when RecordType::MARRIAGE
-        success, message = self.process_marriage_data_fields(csvrecords,csvfile,project,line)
+        self.process_marriage_data_fields(csvrecords,csvfile,project,line)
       end# end of case
-      return success, message
+      return success
     rescue  => e
       puts e.message
-      puts e.backtrace
+      puts "#{csvfile.userid}\t#{csvfile.file_name} line #{line} crashed the processor. <br>"
+      puts e.backtrace.inspect
       csvfile.header_error << "#{csvfile.userid}\t#{csvfile.file_name} line #{line} crashed the processor. <br>"
       csvfile.header_error << e.message
       csvfile.header_error << e.backtrace.inspect
@@ -1558,7 +1564,7 @@ class CsvRecord < CsvRecords
     @data_record[:person_sex] = process_baptism_sex_field(@data_record[:person_sex])
     @data_record[:father_surname] = Unicode::upcase(@data_record[:father_surname] ) unless @data_record[:father_surname] .nil?
     @data_record[:mother_surname] = Unicode::upcase(@data_record[:mother_surname]) unless  @data_record[:mother_surname].nil?
-    csvfile.data[line] = data_record
+    csvfile.data[line] = @data_record
   end
 
   def process_burial_data_fields(csvrecords,csvfile,project,line)
@@ -1590,7 +1596,7 @@ class CsvRecord < CsvRecords
     @data_record[:relative_surname] = Unicode::upcase(@data_record[:relative_surname]) unless @data_record[:relative_surname].nil?
     @data_record[:burial_person_surname] = Unicode::upcase( @data_record[:burial_person_surname])  unless @data_record[:burial_person_surname].nil?
     @data_record[:female_relative_surname] = Unicode::upcase( @data_record[:female_relative_surname])  unless @data_record[:female_relative_surname].nil? 
-    csvfile.data[line] = data_record
+    csvfile.data[line] = @data_record
    
   end
 
@@ -1616,7 +1622,6 @@ class CsvRecord < CsvRecords
         @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
       end
     end
-    
     @data_record[:line_id] = csvfile.header[:userid] + "." + csvfile.header[:file_name] + "." + line.to_s
     @data_record[:file_line_number] = line
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:marriage_date])
@@ -1624,8 +1629,7 @@ class CsvRecord < CsvRecords
     (@data_record[:marriage_by_licence].present? && FreeregOptionsConstants::MARRIAGE_BY_LICENCE_OPTIONS.include?(@data_record[:marriage_by_licence].downcase)) ? @data_record[:marriage_by_licence] = true : @data_record[:marriage_by_licence] = false 
     (@data_record[:groom_marked].present? && FreeregOptionsConstants::MARKED_OPTIONS.include?(@data_record[:groom_marked].downcase)) ? @data_record[:groom_marked] = true : @data_record[:groom_marked] = false
     (@data_record[:bride_marked].present? && FreeregOptionsConstants::MARKED_OPTIONS.include?(@data_record[:bride_marked].downcase)) ? @data_record[:bride_marked] = true : @data_record[:bride_marked] = false
-    csvfile.data[line] = data_record
-    # p @data_record
+    csvfile.data[line] = @data_record
   end
   
   def  process_baptism_sex_field(field)
