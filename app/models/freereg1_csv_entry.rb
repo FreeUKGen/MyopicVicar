@@ -573,6 +573,7 @@ class Freereg1CsvEntry
     else
       order  = order + FreeregOptionsConstants::LOCATION_FIELDS
       order = order + FreeregOptionsConstants::ORIGINAL_BAPTISM_FIELDS
+      order = order + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS
     end
     order = order + FreeregOptionsConstants::END_FIELDS
     order = order.uniq 
@@ -589,6 +590,7 @@ class Freereg1CsvEntry
     else
       order  = order + FreeregOptionsConstants::LOCATION_FIELDS
       order = order + FreeregOptionsConstants::ORIGINAL_BURIAL_FIELDS
+      order = order + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS
     end
     order = order + FreeregOptionsConstants::END_FIELDS
     order = order.uniq 
@@ -622,6 +624,7 @@ class Freereg1CsvEntry
     else
       order  = order + FreeregOptionsConstants::LOCATION_FIELDS
       order = order + FreeregOptionsConstants::ORIGINAL_MARRIAGE_FIELDS
+      order = order + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS
     end
     order = order + FreeregOptionsConstants::END_FIELDS
     order = order.uniq 
