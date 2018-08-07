@@ -354,8 +354,10 @@ class ImageServerGroup
       return flash_notice
     end
 
-    def update_put_request(image_server_group,put_request_type,userid)
-      case put_request_type
+    def update_put_request(params,userid)
+      image_server_group = ImageServerGroup.id(params[:id])
+
+      case params[:type]
         when 'allocate accept'
           flash_message = image_server_group.update_image_and_group_for_put_request('ar','a',userid)
         when 'allocate reject'
@@ -363,7 +365,15 @@ class ImageServerGroup
         when 'unallocate'
           flash_message = image_server_group.update_image_and_group_for_put_request('a','u')
         when 'complete'
-          flash_message = image_server_group.update_image_and_group_for_put_request('r','c')
+          if params[:completed_groups].nil?
+            flash_message = image_server_group.update_image_and_group_for_put_request('r','c')
+          else
+            completed_groups = params[:completed_groups]
+            completed_groups.each do |group_id|
+              image_server_group = ImageServerGroup.id(group_id)
+              flash_message = image_server_group.update_image_and_group_for_put_request('r','c')
+            end
+          end
       end
 
       return flash_message

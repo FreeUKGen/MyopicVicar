@@ -67,7 +67,7 @@ class Assignment
       else                  # from other update assginment status links
         update_result = bulk_update_assignment(my_own,assignment_ids,action_type,orig_status,new_status)
 
-        if update_result = true
+        if update_result == true
           UserMailer.notify_sc_assignment_complete(assignment_ids).deliver_now if my_own # from transcriber
         end
 
