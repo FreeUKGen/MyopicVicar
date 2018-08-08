@@ -1,0 +1,10 @@
+
+<section>
+  <p>
+      "<%=@census_database %>" database, FreeCEN (https://www.freecen.org.uk : viewed <%= @viewed_date %>),
+      <%=@searched_user_name %><% if !@is_family_head %> in household of <%= @family_head_name%><% end %>,
+      <%= @user_address%>;
+      from <%= @cen_year%> "England, Scotland and Wales census," database and images;
+      citing PRO RG9/<%=@piece%>, Folio <%=@folio%>, Page <%=@page%>, Schedule <%=@schedule%>, The National Archives, Kew, Surrey.
+  </p>
+</section>

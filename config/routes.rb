@@ -299,6 +299,9 @@ MyopicVicar::Application.routes.draw do
   get 'search_records/:id/show_print_version(.:format)', :to => 'search_records#show_print_version', :as => :show_print_version_search_record
   resources :search_records
 
+  # For generating the citations
+  get 'search_records/:id/show_citation', :to => 'search_records#show_citation', :as => :show_citation_record
+  resources :search_records
 
   get 'search_queries/:id/show_query', :to => 'search_queries#show_query', :as => :show_query_search_query
   get 'search_queries/:id/show_print_version', :to => 'search_queries#show_print_version', :as => :show_print_version_search_query

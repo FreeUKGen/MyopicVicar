@@ -1,0 +1,13 @@
+<section>
+  <p>
+    Source tite: <%=@census_database %> database
+    <br><br>
+    Repository: The National Archives, Kew, Surrey
+    <br><br>
+    Citation detail:  PRO RG 9
+    <br><br>
+    Citation text: <%=@searched_user_name %><% if !@is_family_head %> in household of <%= @family_head_name%><% end %>, <%= @user_address%>
+    <br><br>
+    Web address:  https://www.freecen.org.uk viewed <%= @viewed_date %>
+  </p>
+</section>
