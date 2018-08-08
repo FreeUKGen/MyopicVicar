@@ -1,5 +1,7 @@
 class ImageServerImagesController < ApplicationController
   require 'userid_role'
+  require 'source_property'
+  
   def destroy
     display_info
 
