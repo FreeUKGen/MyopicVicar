@@ -1,0 +1,5 @@
+<section>
+  <p>
+    <%unless @entry['register_type'].include? "Unspecified"%><%=@entry['register_type']%><% else %>Register of unspecified type<% end %>, <%=@entry['church_name']%>. "Parish Register" database. freereg.org.uk. Free UK Genealogy <%=@viewed_date%>.
+  </p>
+</section>

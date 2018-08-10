@@ -1,0 +1,17 @@
+<section>
+  <p>
+    Free UK Genealogy, “<%unless @entry['register_type'].include? "Unspecified"%><%=@entry['register_type']%><% else %>Register of unspecified type<% end %>, <%=@entry['church_name']%> Church, <%=@entry['place']%>, <%=@entry['county']%>” database,
+    FreeREG (https://www.freereg.org.uk) : accessed <%=@viewed_date%>), [data about
+    <%if record_type(@entry).downcase == "baptism"%>
+      <%=@entry['person_forename'].titleize%> <%=@entry['father_surname'].titleize%>
+      <%=@entry['baptism_date'].titleize%>
+    <%elsif record_type(@entry).downcase == "burial"%>
+      <%=@entry['burial_person_forename'].titleize%> <%=@entry['burial_person_surname'].titleize%>
+      <%=@entry['burial_date'].titleize%>
+    <%elsif record_type(@entry).downcase == "marriage"%>
+      <%=@entry['groom_forename'].titleize%> <%=@entry['groom_surname'].titleize%> to <%=@entry['bride_forename'].titleize%> <%=@entry['bride_surname'].titleize%>
+      <%=@entry['marriage_date'].titleize%>
+    <%end%>
+    ]; citing Register number <%=@entry['register_entry_number']%>
+  </p>
+</section>
