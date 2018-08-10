@@ -14,6 +14,7 @@ task :get_github_issues,[:repo]  => :environment do |t, args|
   nature = 'issue' if args.repo == "FreeUKRegProductIssues"
 
   issues.each do |issue|
+    p issue if issue[:number] == 1471 || issue[:number] == 1452
     if issue[:state] == 'open'
       number =  issue[:number]
       title = issue[:title]
