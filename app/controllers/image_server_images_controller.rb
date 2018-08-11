@@ -1,9 +1,18 @@
 class ImageServerImagesController < ApplicationController
   require 'userid_role'
+  require 'source_property'
+  
   def destroy
     display_info
 
-    image_server_image = ImageServerImage.where(:id=>params[:id]).first
+    imageserverimage = ImageServerImage.where(:id=>params[:id])
+
+    if imageserverimage.nil?
+      flash[:notice] = "can not find the image"
+      redirect_to :back and return
+    end
+    
+    image_server_image = imageserverimage.first
     if image_server_image.deletion_permitted?
       website =  image_server_image.url_for_delete_image_from_image_server
       redirect_to website
