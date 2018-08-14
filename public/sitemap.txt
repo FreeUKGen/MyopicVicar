@@ -1,0 +1,7 @@
+# Sitemap for freecen2.freecen.org.uk
+
+https://freecen2.freecen.org.uk/
+https://freecen2.freecen.org.uk/cms/about
+https://freecen2.freecen.org.uk/cms/opportunities-to-volunteer-with-freecen
+https://freecen2.freecen.org.uk/cms/help
+https://freecen2.freecen.org.uk/cms/about/cookie-policy

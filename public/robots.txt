@@ -1,4 +1,5 @@
 # robots.txt for freecen2.freecen.org.uk
+Sitemap: https://freecen2.freecen.org.uk/sitemap_location.txt
 
 User-agent: *
 Allow: /cms/about
@@ -6,8 +7,9 @@ Allow: /cms/donate
 Allow: /cms/help
 Allow: /search_queries
 Allow: /search_queries/new
+Allow: /search_queries/*
 Allow: /search_queries/*/about
-Allow: /search_records
+Allow: /search_records/*
 Allow: /freecen_coverage
 
 Disallow: /manage_resources
