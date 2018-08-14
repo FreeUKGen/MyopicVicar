@@ -1,17 +1,14 @@
 development:
-  api_key:
+  project_key: 
+  project_id:
   host:
-  port:
-  secure:
 
 test:
-  api_key:
+  project_key:
+  project_id:
   host:
-  port:
-  secure:
 
 production:
-  api_key:
+  project_key:
+  project_id:
   host:
-  port:
-  secure:
