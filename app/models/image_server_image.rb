@@ -113,7 +113,8 @@ class ImageServerImage
     end
 
     def image_detail_access_allowed?(user,manage_user_origin,image_server_group_id,chapman_code)
-      case user.person_role
+      if user.present?
+        case user.person_role
         when 'syndicate_coordinator'
           @image_server_group = ImageServerGroup.id(image_server_group_id).first
           return true if user.syndicate == @image_server_group.syndicate_code
@@ -128,6 +129,7 @@ class ImageServerImage
           end
         when 'system_administrator'
           return true
+        end
       end
 
       return false
