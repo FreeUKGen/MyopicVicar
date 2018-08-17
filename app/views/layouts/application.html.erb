@@ -119,11 +119,13 @@
         <% if  session[:userid_detail_id].present?%>
         <div  style="float:left;">
           <%= form_tag(problem_url, :method=>:get) do %>
-          <% problem_button_options.each_pair do |name, value| %>
-          <%= hidden_field_tag(name, value)%>
+            <% problem_button_options.each_pair do |name, value| %>
+              <%= hidden_field_tag(name, value)%>
+            <% end %>
           <% end %>
-          <input type="submit" value="Report a Problem"  class = "btn  btn--small"/>
-          <% end %>
+        </div>
+        <div  style="margin:400px;">
+        <input type="submit" value="Report a Problem"  class = "btn  btn--small"/>
         </div>
         <% end %>
       </div>

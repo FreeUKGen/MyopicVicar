@@ -15,18 +15,21 @@ module Freereg1CsvFilesHelper
   def userid(file)
     userid = file.userid
   end
+  
   def register_type(file)
     register_type = file.register_type
     if register_type.blank?
-      register = get_register_object(file)
-      register_type = RegisterType.display_name(register.register_type) unless register.blank?
-      file.update_attribute(:register_type, register_type) unless register.blank?
+      new_register = get_register_object(file)
+      new_register_type = ' '
+      new_register_type = new_register.register_type unless new_register.blank?
+      new_register_type = Register.check_and_correct_register_type(new_register_type)
     else
-      register_type = RegisterType.display_name(register_type)
+      new_register_type = Register.check_and_correct_register_type(register_type)
     end
-
+    file.update_attribute(:register_type, new_register_type) unless new_register_type == register_type
     register_type
   end
+  
   def county_name(file)
     county_name = file.county #note county has chapman in file and record)
     case
@@ -70,8 +73,8 @@ module Freereg1CsvFilesHelper
   def get_place_object(church)
     place = church.place unless church.blank?
   end
-  def uploaded_date(file)
-    file.uploaded_date.strftime("%d %b %Y") unless file.uploaded_date.nil?
+  def processed_date(file) 
+    file.processed_date.strftime("%d/%m/%Y") unless file.uploaded_date.nil?
   end
   def file_name(file)
     file.file_name[0..-5]  unless file.file_name.nil?
