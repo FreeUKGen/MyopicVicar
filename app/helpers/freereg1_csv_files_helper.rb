@@ -74,7 +74,7 @@ module Freereg1CsvFilesHelper
     place = church.place unless church.blank?
   end
   def processed_date(file) 
-    file.processed_date.strftime("%d/%m/%Y") unless file.uploaded_date.nil?
+    file.processed_date.strftime("%d/%m/%Y") unless file.processed_date.nil?
   end
   def file_name(file)
     file.file_name[0..-5]  unless file.file_name.nil?
