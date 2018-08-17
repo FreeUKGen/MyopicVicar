@@ -218,9 +218,9 @@ module ApplicationHelper
     when current_page?('/') || ('/search_queries') || current_page?(new_search_query_path) || current_page?(new_search_query_path(:search_id => @search_query))
       @data_ad_slot = "2003577939"
     when current_page?(search_query_path(@search_query))
-      @data_ad_slot = "3316180679"
+      @data_ad_slot = "2003577939"
     when current_page?(:action => 'show', :controller => 'search_records')
-      @data_ad_slot = "5173021979"
+      @data_ad_slot = "2003577939"
     end
     banner = <<-HTML
     <style>
