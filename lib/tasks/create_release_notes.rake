@@ -4,7 +4,9 @@ task :new_release_note do
   puts "Creating new release note"
   puts "..."
 
-
+  git_log = `git log --since="two weeks ago" --no-merges --format=%B`
+  git_log.gsub!(/^$\n/, '')
+  git_log.gsub!(/^/, "* ") 
   
   current_time = DateTime.now 
   current_date = current_time.strftime "%Y-%m-%d"
@@ -37,7 +39,8 @@ task :new_release_note do
 
   Detailed release notes below, listing all commit messages for this release.
 
-  *
+
+  #{git_log}
   "
 
   out_file = File.new("./doc/release_notes/release_notes-#{current_date}.md", "w")
