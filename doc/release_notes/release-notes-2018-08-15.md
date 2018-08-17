@@ -17,4 +17,4 @@ __Improvements__
 __Fixes__
 ---------
 
-* None
+* Added default Errbit parameters to config/errbit.config.yml to avoid Airbrake errors in local clones. 
