@@ -307,7 +307,7 @@ module ApplicationHelper
   def processed_date(file)
     if file.processed_date.nil?
       physical_file = PhysicalFile.file_name(file).first
-      if physical_file.exists? && physical_file.file_processed_date.exists?
+      if physical_file.present? && physical_file.file_processed_date.present?
         processed_date = physical_file.file_processed_date.strftime("%d/%m/%Y")
       else
         processed_date = ''
