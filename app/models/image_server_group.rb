@@ -355,8 +355,9 @@ class ImageServerGroup
     end
 
     def update_put_request(params,userid)
-      image_server_group = ImageServerGroup.id(params[:id])
-
+      image_server_group = ImageServerGroup.id(params[:id]).first
+      logger.info 'update put request'
+      logger.info image_server_group
       case params[:type]
         when 'allocate accept'
           flash_message = image_server_group.update_image_and_group_for_put_request('ar','a',userid)
