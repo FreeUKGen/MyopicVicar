@@ -305,22 +305,17 @@ module ApplicationHelper
   end
   
   def processed_date(file)
-   logger.info 'processing date'
-   logger.info file.processed_date
     if file.processed_date.nil?
       physical_file = PhysicalFile.file_name(file.file_name).userid(file.userid).first
-      logger.info physical_file
-      logger.info physical_file.file_processed_date unless physical_file.nil?
       if physical_file.present? && physical_file.file_processed_date.present?
-        logger.info 'formating'
         processed_date = physical_file.file_processed_date.strftime("%d/%m/%Y")
+        file.update_attribute(:processed_date, physical_file.file_processed_date) 
       else
         processed_date = ''
       end
     else
       processed_date = file.processed_date.strftime("%d/%m/%Y")
     end
-    p processed_date
     processed_date
   end
   
