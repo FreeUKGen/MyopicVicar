@@ -305,14 +305,14 @@ module ApplicationHelper
   end
   
   def processed_date(file)
-    p 'processing date'
-    p file.processed_date
+   logger.info 'processing date'
+   logger.info file.processed_date
     if file.processed_date.nil?
-      physical_file = PhysicalFile.file_name(file).userid(file.userid).first
-      p physical_file
-      p physical_file.file_processed_date unless physical_file.nil?
+      physical_file = PhysicalFile.file_name(file.file_name).userid(file.userid).first
+      logger.info physical_file
+      logger.info physical_file.file_processed_date unless physical_file.nil?
       if physical_file.present? && physical_file.file_processed_date.present?
-        p 'formating'
+        logger.info 'formating'
         processed_date = physical_file.file_processed_date.strftime("%d/%m/%Y")
       else
         processed_date = ''
