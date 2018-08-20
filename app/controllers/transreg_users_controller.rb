@@ -32,18 +32,17 @@ class TransregUsersController < ApplicationController
     @transcriber_id = params[:transcriberid]
     @transcriber_password = Devise::Encryptable::Encryptors::Freereg.digest(params[:transcriberpassword],nil,nil,nil)
     @user = UseridDetail.where(:userid => @transcriber_id).first
+    
+    #this is a cludge as it seems that WinFreeReg cannot currently handle the replies
+    
+    @user.userid_feedback_replies = Hash.new
     logger.warn "FREEREG::COMPUTER for user #{@transcriber_id}   #{@transcriber_password }"
-
     if @user.nil? then
-      p "Unknown User"
       render(:text => { "result" => "unknown_user" }.to_xml({:root => 'authentication'}))
     else
-      p "Known Transcriber"
       if @transcriber_password == @user.password then
-        p "Password matches"
         render(:text => {"result" => "success", :userid_detail => @user}.to_xml({:dasherize => false, :root => 'authentication'}))
       else
-        p "No match on Password"
         render(:text => { "result" => "no_match" }.to_xml({:root => 'authentication'}))
       end
     end
@@ -52,6 +51,9 @@ class TransregUsersController < ApplicationController
   def refreshuser
     @transcriber_id = params[:transcriberid]
     @user = UseridDetail.where(:userid => @transcriber_id).first
+    #this is a cludge as it seems that WinFreeReg cannot currently handle the replies
+    
+    @user.userid_feedback_replies = Hash.new
     logger.warn "FREEREG::COMPUTER refreshed user #{@transcriber_id} "
     if @user.nil? then
       render(:text => { "result" => "failure", "message" => "Invalid transcriber id"}.to_xml({:root => 'refresh'}))
@@ -67,17 +69,15 @@ class TransregUsersController < ApplicationController
     @transcriber_id = params[:transcriberid]
     @transcriber_password = Devise::Encryptable::Encryptors::Freereg.digest(params[:transcriberpassword],nil,nil,nil)
     @user = UseridDetail.where(:userid => @transcriber_id).first
+    #this is a cludge as it seems that WinFreeReg cannot currently handle the replies
+    
+    @user.userid_feedback_replies = Hash.new
     if @user.nil? then
-      p "Unknown User"
       render(:text => { "result" => "unknown_user" }.to_xml({:root => 'authentication'}))
     else
-      p "Known Transcriber"
       if @transcriber_password == @user.password then
-        p "Password matches"
         render(:text => {"result" => "success", :userid_detail => @user}.to_xml({:dasherize => false, :root => 'authentication'}))
-        p session[:userid_detail_id]
       else
-        p "No match on Password"
         render(:text => { "result" => "no_match" }.to_xml({:root => 'authentication'}))
       end
     end
