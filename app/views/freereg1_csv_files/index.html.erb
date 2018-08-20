@@ -11,21 +11,18 @@
         <thead >
           <tr>
             <th class="t12">File</th>
-            <th class="t8">Cty</th>
+            <th class="t4">Cty</th>
             <th class="t12">Place</th>
-            <% if session[:my_own]%>
-            <th class="t15">Church</th>
-            <% else%>
-            <th class="t15">Church</th>
-            <% end%>
-            <th class="t5">Reg</th>
-            <th class="t5">Entry Count</th>
-            <th class="t5">Entries with zero start year</th>
+            <th class="t12">Church</th>
+            <th class="t4">Reg</th>
+            <th class="t5">Entries</th>
+            <th class="t5">Start year</th>
+            <th class="t5">End year</th>
             <% unless session[:my_own]%>
             <th class="t8">User ID</th>
             <% end%>
-            <th class="t10" >Loaded</th>
-            <th colspan = "2" class="t10">Locked<br> TR SCC</th>
+            <th class="t8" >Proccessed</th>
+            <th colspan = "2" class="t8">Locked<br> TR SC</th>
             <th colspan="7" class="t30">Action <a href="#" class="left_tooltip" onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>SH: Show header; ED: Edit header; DL: Download batch; ER: Errors in batch; L: Lock batch; U: Unlock batch; DE: Delete batch;RL:Replace batch </span></a></th>
           </tr>
         </thead>
@@ -36,16 +33,17 @@
             <% @freereg1_csv_files.each do |freereg1_csv_file| %>
             <tr id="<%= freereg1_csv_file.id %>" style="<%=freereg1_csv_file.define_colour%>">
               <td class="t12"><%= file_name(freereg1_csv_file)%></td>
-              <td class="t5"><%= freereg1_csv_file.county %></td>
-              <td class="t8"><%= freereg1_csv_file.place %></td>
-              <td class="t8"><%= freereg1_csv_file.church_name %></td>
-              <td class="t8"><%= freereg1_csv_file.register_type %></td>
-              <td class="t8"><%= freereg1_csv_file.freereg1_csv_entries.count %></td>
-              <td><%= freereg1_csv_file.minimum_year_zero ? button_to("Zero Years",show_zero_startyear_entries_freereg1_csv_file_path(:id => freereg1_csv_file.id), :method=>:get, :class => "btn  weight--light btn--small ") : "None"%></td>
+              <td class="t4"><%= freereg1_csv_file.county %></td>
+              <td class="t12"><%= freereg1_csv_file.place %></td>
+              <td class="t12"><%= freereg1_csv_file.church_name %></td>
+              <td class="t4"><%= register_type(freereg1_csv_file) %></td>
+              <td class="t5"><%= freereg1_csv_file.freereg1_csv_entries.count %></td>
+              <td><%= freereg1_csv_file.datemin == "0" ? button_to("0",show_zero_startyear_entries_freereg1_csv_file_path(:id => freereg1_csv_file.id), :method=>:get, :class => "btn btn--soft") : freereg1_csv_file.datemin %></td>
+              <td class="t4"><%= freereg1_csv_file.datemax %></td>
               <% unless session[:my_own]%>
-              <td class="t10"><%= freereg1_csv_file.userid %></td>
+              <td class="t8"><%= freereg1_csv_file.userid %></td>
               <% end %>
-              <td class="t9"><%= uploaded_date(freereg1_csv_file)%></td>
+              <td class="t8"><%= processed_date(freereg1_csv_file)%></td>
               <td class="t3"><%= locked_by_transcriber(freereg1_csv_file)%></td>
               <td class="t3"><%= locked_by_coordinator(freereg1_csv_file)%></td>
               <td class="t4"><%= link_to 'SH', freereg1_csv_file, method: :get  %></td>
