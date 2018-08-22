@@ -20,6 +20,9 @@ class TransregUsersController < ApplicationController
 
   def computer
     @computer_id = params[:computerid]
+    logger.warn "FREEREG::COMPUTER logging in with #{@computer_id}   #{params[:computeridpassword]}"
+    #temp kludge as it appears that there are 2 package passwords
+    params[:computeridpassword] = 'temppasshoppe' if params[:computeridpassword] == 'temppasshope'  
     @computer_password =  Devise::Encryptable::Encryptors::Freereg.digest(params[:computeridpassword],nil,nil,nil)
     @computer = UseridDetail.userid(@computer_id).first
     unless @computer.present? && @computer_id == "transreg" && @computer_password == @computer.password
@@ -27,7 +30,7 @@ class TransregUsersController < ApplicationController
       render(:text => { "result" => "failure", "message" => "You are not authorised to use these facilities"}.to_xml({:root => 'login'}))
       return
     end
-    logger.warn "FREEREG::COMPUTER logged in with #{@computer_id}   #{@computer_password }"
+    logger.warn "FREEREG::COMPUTER logged in with #{@computer_id}   #{params[:computeridpassword]}"
     session[:userid_detail_id] = @computer.id
     @transcriber_id = params[:transcriberid]
     @transcriber_password = Devise::Encryptable::Encryptors::Freereg.digest(params[:transcriberpassword],nil,nil,nil)

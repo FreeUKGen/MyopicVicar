@@ -227,7 +227,9 @@ class ImageServerGroupsController < ApplicationController
 
   def update
     if params[:_method] =='put'
-      image_server_group = ImageServerGroup.id(params[:id])
+      image_server_group = ImageServerGroup.id(params[:id]).first
+      logger.info 'image_server_group update'
+      logger.info image_server_group
       user = get_user
       flash[:notice] = ImageServerGroup.update_put_request(params, user)
 
