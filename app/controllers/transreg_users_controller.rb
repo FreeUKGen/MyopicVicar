@@ -20,7 +20,7 @@ class TransregUsersController < ApplicationController
 
   def computer
     @computer_id = params[:computerid]
-   logger.warn "FREEREG::COMPUTER logging in with #{@computer_id}   #{params[:computeridpassword]}"
+    logger.warn "FREEREG::COMPUTER logging in with #{@computer_id}   #{params[:computeridpassword]}"
     #temp kludge as it appears that there are 2 package passwords
     params[:computeridpassword] = 'temppasshoppe' if params[:computeridpassword] == 'temppasshope'  
     @computer_password =  Devise::Encryptable::Encryptors::Freereg.digest(params[:computeridpassword],nil,nil,nil)
