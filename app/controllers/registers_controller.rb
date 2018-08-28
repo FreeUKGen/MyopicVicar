@@ -64,11 +64,6 @@ class RegistersController < ApplicationController
   def edit
     load(params[:id])
     get_user_info_from_userid
-    if @register.nil?
-      flash[:notice] = 'Attempting to edit a non_esxistent register'
-      redirect_to :back
-      return
-    end
   end
 
   def load(register_id)
@@ -128,13 +123,12 @@ class RegistersController < ApplicationController
 
   def record_cannot_be_deleted
     flash[:notice] = 'The deletion of the register was unsuccessful because there were dependent documents; please delete them first'
-
-    redirect_to register_path(@register)
+    redirect_to register_path(@register) and return
   end
 
   def record_validation_errors
     flash[:notice] = 'The update of the children to Register with a register name change failed'
-    redirect_to register_path(@register)
+    redirect_to register_path(@register) and return
   end
 
   def relocate
@@ -169,17 +163,13 @@ class RegistersController < ApplicationController
 
   def show
     load(params[:id])
-    if @register.nil?
-      flash[:notice] = 'Trying to show a non-existent register'
-      redirect_to :back and return
+    unless @register.nil?
+      @user =  get_user
+      @decade = @register.daterange
+      @transcribers = @register.transcribers
+      @contributors = @register.contributors  
+      @image_server = @register.image_server_exists?
     end
-
-    @user = UseridDetail.where(userid: cookies.signed[:userid].userid).first
-
-    @decade = @register.daterange
-    @transcribers = @register.transcribers
-    @contributors = @register.contributors  
-    @image_server = @register.image_server_exists?
   end
 
   def update

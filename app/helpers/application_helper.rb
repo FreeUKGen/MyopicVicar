@@ -20,7 +20,7 @@ module ApplicationHelper
   end
 
   def get_user_info_from_userid
-    @user = cookies.signed[:userid]
+    @user = get_user
     unless @user.blank?
       @first_name = @user.person_forename
       @user_id = @user.id
@@ -28,6 +28,12 @@ module ApplicationHelper
       @manager = manager?(@user)
       @roles = UseridRole::OPTIONS.fetch(@user.person_role)
     end
+  end
+  
+  def get_user
+    user = cookies.signed[:userid]
+    user = UseridDetail.id(user).first
+    return user
   end
 
   def manager?(user)
@@ -72,7 +78,7 @@ module ApplicationHelper
        :feedback_type => feedback_type }
   end
 
-
+  #Do not believe the following is used anywhere
   def freereg1_csv_file_for_display(freereg1_csv_file)
     display_map = {}
     display_map["Register Type"] = RegisterType.display_name(freereg1_csv_file.register.register_type)
@@ -140,13 +146,24 @@ module ApplicationHelper
         @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
     </style>
       <script async="" src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+      <script>
+        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
+      </script>
         <ins class="adsbygoogle adSenseBanner"
              style="display:block"
              data-ad-client="ca-pub-7825403497160061"
              data-ad-slot="8870759291"
              data-ad-format="auto"></ins>
       <script>
+        window.update_personalized_google_adverts = function (preference) {
+          if(preference == 'accept') {
+            (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
+          } else if(preference == 'deny') {
+            (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
+          }
+        };
         $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})});
+        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
       </script>
     HTML
     if Rails.env.development?
@@ -227,21 +244,25 @@ module ApplicationHelper
     end
     church_name
   end
+  
   def userid(file)
     userid = file.userid
   end
+  
   def register_type(file)
     register_type = file.register_type
     if register_type.blank?
-      register = get_register_object(file)
-      register_type = RegisterType.display_name(register.register_type) unless register.blank?
-      file.update_attribute(:register_type, register_type) unless register.blank?
+      new_register = get_register_object(file)
+      new_register_type = ' '
+      new_register_type = new_register.register_type unless new_register.blank?
+      new_register_type = Register.check_and_correct_register_type(new_register_type)
     else
-      register_type = RegisterType.display_name(register_type)
+      new_register_type = Register.check_and_correct_register_type(register_type)
     end
-
+    file.update_attribute(:register_type, new_register_type) unless new_register_type == register_type
     register_type
   end
+  
   def county_name(file)
     county_name = file.county #note county has chapman in file and record)
     case
@@ -256,6 +277,7 @@ module ApplicationHelper
     end
     county_name
   end
+  
   def chapman(file)
     chapman = file.county
     return chapman if  ChapmanCode.value?(chapman)
@@ -266,6 +288,7 @@ module ApplicationHelper
     chapman = place.chapman_code unless place.blank?
     chapman
   end
+  
   def place_name(file)
     place_name = file.place
     if place_name.blank?
@@ -276,17 +299,35 @@ module ApplicationHelper
     end
     place_name
   end
+  
   def owner(file)
     owner = file.userid
   end
   
+  def processed_date(file)
+    if file.processed_date.nil?
+      physical_file = PhysicalFile.file_name(file.file_name).userid(file.userid).first
+      if physical_file.present? && physical_file.file_processed_date.present?
+        processed_date = physical_file.file_processed_date.strftime("%d/%m/%Y")
+        file.update_attribute(:processed_date, physical_file.file_processed_date) 
+      else
+        processed_date = ''
+      end
+    else
+      processed_date = file.processed_date.strftime("%d/%m/%Y")
+    end
+    processed_date
+  end
+  
+  def uploaded_date(file)
+    file.uploaded_date.nil? ? uploaded_date = '' : uploaded_date = file.uploaded_date.strftime("%d/%m/%Y")
+  end
   
   def system_administrator(user)
     user.user_role == 'system_administrator' ? system_administerator = true : system_administerator = false
     system_administrator
   end
-  
-  
+ 
   def get_register_object(file)
     register = file.register unless file.blank?
   end

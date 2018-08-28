@@ -85,7 +85,7 @@ class ImageServerGroupsController < ApplicationController
     @chapman_code = @place.chapman_code
     session[:county] = @county
     session[:chapman_code] = @syndicate if session[:chapman_code].nil?
-    @user = cookies.signed[:userid]
+    @user = get_user
   end
 
   def edit
@@ -227,10 +227,17 @@ class ImageServerGroupsController < ApplicationController
 
   def update
     if params[:_method] =='put'
-      image_server_group = ImageServerGroup.id(params[:id])
+      image_server_group = ImageServerGroup.id(params[:id]).first
+      logger.info 'image_server_group update'
+      logger.info image_server_group
+      user = get_user
+      flash[:notice] = ImageServerGroup.update_put_request(params, user)
 
-      flash[:notice] = ImageServerGroup.update_put_request(image_server_group, params[:type], cookies.signed[:userid])
-      redirect_to index_image_server_group_path(image_server_group.first.source)
+      if params[:type] == 'complete'
+        redirect_to manage_completion_submitted_image_group_manage_county_path(session[:chapman_code])
+      else
+        redirect_to index_image_server_group_path(image_server_group.first.source)
+      end
     else
       if image_server_group_params[:origin] == 'allocate'
         image_server_group = ImageServerGroup.update_allocate_request(image_server_group_params)

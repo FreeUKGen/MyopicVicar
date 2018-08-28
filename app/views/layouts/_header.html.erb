@@ -1,7 +1,7 @@
 <header class="site__header" >
   <div class="container">
     <% unless current_page?('/cms/refinery/login') || current_page?('/cms/freereg2/page-not-found') || current_page?('/cms/refinery/users/login')%>
-      <div class="banner-horz">
+      <div class="banner-horz reg_adsense">
         <% unless device_type == :mobile%>
           <%= fullwidth_adsense %>
         <% end %>
@@ -17,7 +17,7 @@
   </div>
   <div class="cookieConsent">
     <div id="cookieText" >
-      We use cookies to ensure you get the best experience with our website. This includes carefully chosen third-party cookies for analysing traffic and advertising. Please select ‘Accept’ if you consent and wish to continue using the site. <strong><a tabindex = "1" href="/cms/about/cookie-policy" class="cookie_policy_link" id="cookie_policy">No, I want to find out more.</a></strong>
+      We use cookies to ensure you get the best experience with our website. This includes carefully chosen third-party cookies for analysing traffic and advertising. Please select ‘Accept Cookies’ if you consent and wish to continue using the site. <strong><a tabindex = "1" href="/cms/about/cookie-policy" class="cookie_policy_link" id="cookie_policy">More options and information.</a></strong>
     </div>
     <div class = "cookieAcceptButton">
       <input class="btn btn--small accept_cookies" tabindex="3" type="submit" name="accept_cookies" id="accept_cookies" value="Accept Cookies" />

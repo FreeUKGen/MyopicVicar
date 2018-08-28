@@ -1,0 +1,20 @@
+<% breadcrumb :userid_reply_messages %>
+<h2 class="text--center">
+  <%= pluralize(@messages.count, 'Reply Message') %> for <%= @user.userid %>
+</h2>
+<% if flash[:notice] %>
+<div id="notice" style="color:blue"><br>
+  <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+</div>
+<% end %>
+<section class="island">
+  <div class="scrollable">
+    <div class="table-wrapper">
+      <% if @messages.present? %>
+        <%= render 'list_messages'%>
+      <% else%>
+        <p>No messages.</p>
+      <% end%>
+    </div>
+  </div>
+</section>

@@ -77,7 +77,7 @@ class PhysicalFilesController < ApplicationController
     session[:sorted_by] =  @sorted_by
     @number =  @batches.length
     @paginate = false
-    @user = cookies.signed[:userid]
+    @user = get_user
     session[:by_userid] = false
     session[:who] = @user 
     @has_access = ((@user.person_role == "data_manager") || (@user.person_role == "system_administrator"))
@@ -191,7 +191,7 @@ class PhysicalFilesController < ApplicationController
     #add to processing queue and place in change
     success = @batch.add_file("reprocessing")
     if success[0]
-      flash[:notice] = "The file #{@batch.file_name} for #{@batch.userid} has been added to the overnight queue for processing" if success
+      flash[:notice] = "The file #{@batch.file_name} for #{@batch.userid} has been submitted for processing" if success
     else
       flash[:notice] = "There was a problem with the reprocessing: #{success[1]} "
     end
@@ -256,7 +256,7 @@ class PhysicalFilesController < ApplicationController
     @batches = PhysicalFile.waiting.all.order_by(waiting_date: -1, userid: 1,)
     @number =  @batches.length
     @paginate = false
-    @user = cookies.signed[:userid]
+    @user = get_user
     @has_access = ((@user.person_role == "data_manager") || (@user.person_role == "system_administrator"))
     render  'index'
   end

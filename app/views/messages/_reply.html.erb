@@ -1,0 +1,53 @@
+<h4 style="text-align: center">
+  List of Messages
+</h4>
+<div class= "grid">
+  <section class="island  island--light ">
+    <div class="scrollable" >
+      <div class="grid__item  one-whole  palm-one-whole push--bottom">
+        <h4>Original Message</h4>
+        <i><strong>Subject: </strong> <%= @respond_to_message.subject %></i>
+        <%= content_tag :p, class: "strong" do %>
+          On <%= Message.formatted_time(@respond_to_message) %>, Userid: <%= @respond_to_message.userid%> wrote:<br/>
+          <%= @respond_to_message.body %><br/>
+          <% if @respond_to_message.attachment.present?%>
+            <span>Attachment: </span>
+            <span>
+              <%= link_to("#{@respond_to_message[:attachment]}", @respond_to_message.attachment_url, target: "_blank", style:'color:black') %><a href="#" class="bottom_tooltip"> <%= image_tag 'info.png', alt: 'Information', height: '16' %><span>The link will open in a new tab</span></a>
+            </span>
+          <% end %>
+          <% if @respond_to_message.images.present? %><br />
+            <span>Image Attachment: </span>
+            <span><%= image_tag reply.images_url %></span>
+          <% end %>
+        <% end %>
+        <br />
+        <% unless @sent_replies.count == 0 %>
+          <h4>
+            <%= pluralize(@sent_replies.count, 'Reply Message')%>
+          </h4>
+          <% @sent_replies.each do |reply| %>
+            <i><strong>Subject: </strong> <%= reply.subject %></i>
+            <%= content_tag :p, class: "strong" do %>
+              On <%= Message.formatted_time(reply)%>, Userid: <%= reply.userid%> wrote:<br/>
+              <%= reply.body %>
+              <% if reply.attachment.present?%>
+                <br/>
+                <span>Attachment: </span>
+                <span><%= link_to("#{reply[:attachment]}", reply.attachment_url, target: "_blank", style:'color:black') %><a href="#" class="bottom_tooltip"> <%= image_tag 'info.png', alt: 'Information', height: '16' %><span>The link will open in a new tab</span></a></span>
+              <% end %>
+              <% if reply.images.present? %><br />
+                <span>Image Attachment: </span>
+                <span><%= image_tag reply.images_url %></span>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </section>
+</div>
+<h4 style="text-align: center">Creating Reply Message</h4>
+<%= render 'form' %>
+
+

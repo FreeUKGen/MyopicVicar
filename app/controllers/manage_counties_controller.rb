@@ -113,12 +113,13 @@ class ManageCountiesController < ApplicationController
     else
       @source,@group_ids,@group_id = ImageServerGroup.group_ids_sort_by_place(session[:chapman_code], 'completion_submitted')            # not sort by place, unallocated groups
       @county = session[:county]
+      # for 'Accept All Groups As Completed'
+      @completed_groups = []
+      @group_ids.each {|x| @completed_groups << x[0]}
+      @dummy = @completed_groups[0]
+      flash[:notice] = 'No Completion Submitted Image Group exists' if @source.nil? || @group_ids.empty? || @group_id.empty?
 
-      if @source.nil? || @group_ids.empty? || @group_id.empty?
-        redirect_to(:back, :notice => 'No Completion Submitted Image Groups exists') and return
-      else
-        render 'image_server_group_completion_submitted'
-      end
+      render 'image_server_group_completion_submitted'
     end
   end
 

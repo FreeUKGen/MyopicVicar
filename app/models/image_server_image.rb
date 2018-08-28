@@ -31,6 +31,7 @@ class ImageServerImage
   index({image_server_group_id:1,difficulty:1},{name: "image_server_group_id_difficulty"})
   index({image_server_group_id:1,transcriber:1},{name: "image_server_group_id_transcriber"})
   index({image_server_group_id:1,reviewer:1},{name: "image_server_group_id_reviewer"})
+  index({image_server_group_id:1,image_file_name:1},{name: "image_server_group_id_image_file_name"})
 
   class << self
 
@@ -112,7 +113,8 @@ class ImageServerImage
     end
 
     def image_detail_access_allowed?(user,manage_user_origin,image_server_group_id,chapman_code)
-      case user.person_role
+      if user.present?
+        case user.person_role
         when 'syndicate_coordinator'
           @image_server_group = ImageServerGroup.id(image_server_group_id).first
           return true if user.syndicate == @image_server_group.syndicate_code
@@ -127,6 +129,7 @@ class ImageServerImage
           end
         when 'system_administrator'
           return true
+        end
       end
 
       return false

@@ -102,7 +102,7 @@ class UseridDetailsController < ApplicationController
     session[:type] = "edit"
     get_user_info_from_userid
     @userid = @user if  session[:my_own]
-    @current_user = cookies.signed[:userid]
+    @current_user = get_user
     load(params[:id])
     @syndicates = Syndicate.get_syndicates
   end
@@ -127,7 +127,7 @@ class UseridDetailsController < ApplicationController
   end #end method
 
   def load(userid_id)
-    @user = cookies.signed[:userid]
+    @user = get_user
     @first_name = @user.person_forename unless @user.blank?
     @userid = UseridDetail.id(userid_id).first
     if @userid.nil?
@@ -190,7 +190,7 @@ class UseridDetailsController < ApplicationController
   def next_place_to_go_unsuccessful_create
     case
     when  params[:commit] == "Submit"
-      @user = cookies.signed[:userid]
+      @user = get_user
       @first_name = @user.person_forename unless @user.blank?
       render :action => 'new' and return
     when params[:commit] == 'Register Researcher'
@@ -203,7 +203,7 @@ class UseridDetailsController < ApplicationController
     when params[:commit] == 'Technical Registration'
       render :action => 'technical_registration' and return
     else
-      @user = cookies.signed[:userid]
+      @user = get_user
       @first_name = @user.person_forename unless @user.blank?
       render :action => 'new' and return
     end
@@ -459,13 +459,32 @@ class UseridDetailsController < ApplicationController
 
   def incomplete_registrations
     @current_syndicate = session[:syndicate]
-    @current_user = cookies.signed[:userid]
+    @current_user = get_user
     session[:edit_userid] = true
     user = UseridDetail.new
 
     if permitted_users?
       @incomplete_registrations = user.list_incomplete_registrations(@current_user, @current_syndicate)
       render :template => 'shared/incomplete_registrations'
+    else
+      flash[:notice] = 'Sorry, You are not authorized for this action'
+      redirect_to '/manage_resources/new'
+    end
+  end
+
+  def transcriber_statistics
+    @current_user = get_user
+    if stats_permitted_users?
+      @total_users = UseridDetail.count
+      @total_transcribers = UseridDetail.where(person_role: "transcriber").count
+      @total_transcribers_accepted_agreement = UseridDetail.where(person_role: "transcriber", new_transcription_agreement: "Accepted").count
+      @total_active_transcribers = UseridDetail.where(person_role: "transcriber", active: true).count
+      @users_never_uploaded_file = UseridDetail.where(number_of_files: 0).count
+      @users_uploaded_file = UseridDetail.where(number_of_files: {'$ne': 0}).count
+      @transcribers_never_uploaded_file = UseridDetail.where(person_role: "transcriber",number_of_files: 0).count
+      @transcriber_uploaded_file = UseridDetail.where(person_role: "transcriber",number_of_files: {'$ne': 0}).count
+      @incomplete_registrations = UseridDetail.new.incomplete_user_registrations_count
+      @incomplete_transcriber_registrations = UseridDetail.new.incomplete_transcribers_registrations_count
     else
       flash[:notice] = 'Sorry, You are not authorized for this action'
       redirect_to '/manage_resources/new'
@@ -479,7 +498,8 @@ class UseridDetailsController < ApplicationController
   end
 
   def spam_check
-    return true if cookies.signed[:userid].present?
+    user = get_user
+    return true if user.present?
     honeypot_error = true
     diff = Time.now - Time.parse(params[:__TIME])
 
@@ -522,6 +542,10 @@ class UseridDetailsController < ApplicationController
     ['system_administrator', 'syndicate_coordinator', 'county_coordinator', 'country_coordinator'].include? @current_user.person_role
   end
 
+  def stats_permitted_users?
+    ['system_administrator', 'executive_director', 'project_manager'].include? @current_user.person_role
+  end
+
   def get_option_parameter(option, location)
     location += '+"&option=' + option +'"'
   end
@@ -547,6 +571,4 @@ class UseridDetailsController < ApplicationController
   def email_valid_change
     @userid.email_address_valid == true ? "Valid" : "Invalid" 
   end
-
-
 end

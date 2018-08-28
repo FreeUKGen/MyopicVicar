@@ -354,8 +354,11 @@ class ImageServerGroup
       return flash_notice
     end
 
-    def update_put_request(image_server_group,put_request_type,userid)
-      case put_request_type
+    def update_put_request(params,userid)
+      image_server_group = ImageServerGroup.id(params[:id]).first
+      logger.info 'update put request'
+      logger.info image_server_group
+      case params[:type]
         when 'allocate accept'
           flash_message = image_server_group.update_image_and_group_for_put_request('ar','a',userid)
         when 'allocate reject'
@@ -363,7 +366,15 @@ class ImageServerGroup
         when 'unallocate'
           flash_message = image_server_group.update_image_and_group_for_put_request('a','u')
         when 'complete'
-          flash_message = image_server_group.update_image_and_group_for_put_request('r','c')
+          if params[:completed_groups].nil?
+            flash_message = image_server_group.update_image_and_group_for_put_request('r','c')
+          else
+            completed_groups = params[:completed_groups]
+            completed_groups.each do |group_id|
+              image_server_group = ImageServerGroup.id(group_id)
+              flash_message = image_server_group.update_image_and_group_for_put_request('r','c')
+            end
+          end
       end
 
       return flash_message
@@ -376,7 +387,7 @@ class ImageServerGroup
     register = source.register
     church = register.church
     place = self.place
-      URI.escape(Rails.application.config.image_server + 'manage_freereg_images/upload_images?chapman_code=' + place.chapman_code + '&place=' + place.place_name + '&church=' + church.church_name + '&register_type=' + register.register_type  + '&register=' + register.id + '&folder_name=' + source.folder_name + '&group_id=' + self.id + '&image_server_access=' + Rails.application.config.image_server_access)
+      URI.escape(Rails.application.config.image_server + 'manage_freereg_images/upload_images?chapman_code=' + place.chapman_code + '&place=' + place.place_name + '&church=' + church.church_name + '&register_type=' + register.register_type  + '&register=' + register.id + '&folder_name=' + source.folder_name + '&group_id=' + self.id + '&image_server_group_name=' + self.group_name + '&image_server_access=' + Rails.application.config.image_server_access)
   end
   
   def process_uploaded_images(param)

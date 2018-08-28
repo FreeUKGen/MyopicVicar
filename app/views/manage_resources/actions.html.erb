@@ -1,13 +1,26 @@
 <% title "Action Page" %>
+<%# raise @current_user.inspect %>
 <% if flash[:notice] %>
    <div class="push-half--bottom" id="notice" style="color:blue;">
-  <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
   </div>
 <% end %>
 <% count = @user.count_not_checked_messages %>
 <% if count != 0 %>
   <div class="islet islet--bordered push--bottom" style="border-color: #895f49; border-width: 2px; max-width: 20em;">
-  You have <b><%= link_to "#{pluralize(count, 'message')}", userid_messages_path %>.</b>
+    You have <b><%= link_to "#{pluralize(count, 'message')}", userid_messages_path %>.</b>
+  </div>
+<% end %>
+<% count_feedback = @user.feedback_without_replies.count %>
+<% count_feedback_with_replies = @user.feedback_with_replies.count %>
+<% if count_feedback != 0 %>
+  <div class="islet islet--bordered push--bottom" style="border-color: #895f49; border-width: 2px; max-width: 20em;">
+    You have <b><%= link_to "#{pluralize(count_feedback, 'new feedback')}", userid_feedbacks_path %>.</b>
+  </div>
+<% end %>
+<% if count_feedback_with_replies != 0 %>
+  <div class="islet islet--bordered push--bottom" style="border-color: #895f49; border-width: 2px; max-width: 20em;">
+    You have <b><%= link_to "#{pluralize(count_feedback_with_replies, 'feedback with reply')}", userid_feedbacks_with_replies_path %>.</b>
   </div>
 <% end %>
 <% if @user.new_transcription_agreement != "Accepted" %>

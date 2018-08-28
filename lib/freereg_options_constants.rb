@@ -1,6 +1,24 @@
 module FreeregOptionsConstants
   require 'record_type'
+  
+  ADDITIONAL_BAPTISM_FIELDS = ['confirmation_date','received_into_church_date','person_surname','person_title','person_age','person_condition',
+  'person_status','person_occupation','person_place_birth','person_county_birth','person_relationship','father_title','father_abode',
+  'father_place','father_county','mother_title','mother_abode','mother_condition_prior_to_marriage','mother_place_prior_to_marriage',
+  'mother_county_prior_to_marriage','mother_occupation','private_baptism','witness1_forename','witness1_surname','witness2_forename','witness2_surname',
+  'witness3_forename','witness3_surname','witness4_forename','witness4_surname','witness5_forename','witness5_surname','witness6_forename',
+  'witness6_surname','witness7_forename','witness7_surname','witness8_forename','witness8_surname']
 
+  ADDITIONAL_BURIAL_FIELDS = ['death_date','burial_person_title','male_relative_title','female_relative_surname','female_relative_title',
+                              'cause_of_death','burial_location_information','place_of_death','memorial_information'] 
+
+  ADDITIONAL_MARRIAGE_FIELDS = ['contract_date','bride_title','bride_marked','bride_father_title','bride_mother_forename',
+  'bride_mother_surname','bride_mother_title','bride_mother_occupation','groom_title','groom_marked','groom_father_title',
+  'groom_mother_forename','groom_mother_surname','groom_mother_title','groom_mother_occupation','marriage_by_licence',
+  'witness3_forename','witness3_surname','witness4_forename','witness4_surname','witness5_forename','witness5_surname',
+  'witness6_forename','witness6_surname','witness7_forename','witness7_surname','witness8_forename','witness8_surname'] 
+
+  ADDITIONAL_COMMON_FIELDS = ['notes_from_transcriber','image_file_name']
+  
   ALPHABET = ["A-C","D-F","G-I","J-L","M-N","O-Q","R-T","U-Z"]
   ALPHABET_SELECTION_LIST = ["CAM","CON","DUR","ESS","GLA","KEN","LAN","LIN","MDX","NBL","NFK","NTH","NTT","SOM","SRY","STS","WRY"]
   ALPHABETS = [
@@ -9,19 +27,12 @@ module FreeregOptionsConstants
                 ["A-B","C-D","E-F","G-H","I-J","K-L","M-N","O-P","Q-R","S-T","U-V","W-Z"],
                 ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q-R","S","T","U-V","W-X","Y-Z"]  ]
 
-  BAPTISM_FIELDS = ['register_entry_number','birth_date','baptism_date','person_forename','person_sex','father_forename','mother_forename','father_surname','mother_surname',
-                    'person_abode','father_occupation','notes','film','film_number']
-
-  BURIAL_FIELDS = ['register_entry_number','burial_date','burial_person_forename','relationship','male_relative_forename','female_relative_forename','relative_surname',
-                   'burial_person_surname','person_age','burial_person_abode','notes','film','film_number'] 
-
   CAPITALIZATION_WORD_EXCEPTIONS = [ "a", "ad" ,"an", "and", "at", "but", "by", "cum", "de", "en" ,"for", "has", "in", "la", "le", "near", "next", "nor", "nr",
                                      "or", "on", "of", "so",  "the", "to", "under","upon","von", "with", "yet", "y"   ]
 
   CHAPMAN_CODE_ELIMINATIONS = ['England', 'Scotland', 'Wales','Unknown', 'Clwyd','Dyfed','Gwent','Gwynedd','Powys','Mid Glamorgan',
                                'South Glamorgan','West Glamorgan','Borders','Central','Dumfries and Galloway','Grampian','Highland','Lothian','Orkney Isles',
                                'Shetland Isles','Strathclyde','Tayside','Western Isles', 'Northern Ireland']
-  
   CHURCH_WORD_EXPANSIONS =  {
     'Albans' => 'Alban',
     'Albright\'s' => 'Albright',
@@ -198,8 +209,27 @@ module FreeregOptionsConstants
                                :notes=> 14,
                                :film=> 15,
                                :film_number=> 16  }}
+                               
+  EXTENDED_BAPTISM_LAYOUT = ['register_entry_number','birth_date','baptism_date','confirmation_date','received_into_church_date',
+  'person_forename','person_surname','person_title','person_age','person_relationship','person_sex','person_abode','person_condition',
+  'person_status','person_occupation','person_place_birth','person_county_birth','father_forename','father_surname','father_title',
+  'father_abode','father_occupation','father_place','father_county','mother_forename','mother_surname','mother_title','mother_abode',
+  'mother_condition_prior_to_marriage','mother_place_prior_to_marriage','mother_county_prior_to_marriage','mother_occupation',
+  'private_baptism','witness']
+                               
+  EXTENDED_BURIAL_LAYOUT = ['register_entry_number','burial_date','death_date','burial_person_forename',
+  'burial_person_surname','burial_person_title','relationship','male_relative_forename','relative_surname',
+  'male_relative_title','female_relative_forename','female_relative_surname','female_relative_title','person_age',
+  'burial_person_abode','cause_of_death','burial_location_information','place_of_death','memorial_information',
+  'notes','notes_from_transcriber','film','film_number','image_file_name'] 
+  
+  EXTENDED_MARRIAGE_LAYOUT = ['register_entry_number','marriage_date','contract_date','marriage_by_licence','groom_forename','groom_surname','groom_title','groom_age',
+  'groom_parish','groom_condition','groom_occupation','groom_abode','groom_marked','groom_father_forename','groom_father_surname','groom_father_occupation',
+  'groom_mother_forename','groom_mother_surname','groom_mother_title','groom_mother_occupation','bride_forename','bride_surname','bride_title','bride_age',
+  'bride_parish','bride_condition','bride_occupation','bride_abode','bride_marked','bride_father_forename','bride_father_surname','bride_father_occupation',
+  'bride_father_title','bride_mother_forename','bride_mother_surname','bride_mother_title','bride_mother_occupation','witness']
 
-  FILES_PER_PAGE = 500
+  FILES_PER_PAGE = 250
 
   FORCE_SEARCH_RECORD_RECREATE = ["baptism_date","birth_date","bride_father_forename","bride_father_surname","bride_forename","bride_surname","burial_date",
                                   "burial_person_forename","burial_person_surname","father_forename","father_surname","female_relative_forename","groom_father_forename",
@@ -214,14 +244,15 @@ module FreeregOptionsConstants
   
   LOCATION_FIELDS = ['county','place','church_name','register_type']
 
-  MARRIAGE_FIELDS = ['register_entry_number','marriage_date','groom_forename','groom_surname','groom_age','groom_parish','groom_condition','groom_occupation','groom_abode',
-                     'bride_forename','bride_surname','bride_age','bride_parish','bride_condition','bride_occupation','bride_abode','groom_father_forename',
-                     'groom_father_surname','groom_father_occupation','bride_father_forename','bride_father_surname','bride_father_occupation','witness1_forename',
-                     'witness1_surname','witness2_forename','witness2_surname','notes','film','film_number'] 
-
+  MARKED_OPTIONS = ['y', 'yes','marked','true']
+  
+  MARRIAGE_BY_LICENCE_OPTIONS = ['y', 'yes', 'licence', 'by licence', 'by_licence', 'marriage_by_licence','true']
+  
   MAXIMUM_NUMBER_OF_RESULTS = 250
 
   MAXIMUM_NUMBER_OF_SCANS = 500 
+  
+  MAXIMUM_WINESSES = 8
 
   MAX_RECORDS_COORDINATOR = 4000
 
@@ -232,7 +263,22 @@ module FreeregOptionsConstants
   MESSAGE_RECIPIENTS = ['Myself to Review',"Active Transcribers",'Inactive Transcribers','Coordinators','Researchers', 'Managers', 'Coordinators and Managers']
 
   MINIMUM_NUMBER_OF_FIELDS = 3
+  
+  ORIGINAL_BAPTISM_FIELDS = ['register_entry_number','birth_date','baptism_date','person_forename','person_sex','father_forename','mother_forename','father_surname','mother_surname',
+                    'person_abode','father_occupation']
 
+  ORIGINAL_BURIAL_FIELDS = ['register_entry_number','burial_date','burial_person_forename','relationship','male_relative_forename','female_relative_forename','relative_surname',
+                   'burial_person_surname','person_age','burial_person_abode'] 
+
+  ORIGINAL_COMMON_FIELDS = ['notes','film','film_number']
+  
+  ORIGINAL_MARRIAGE_FIELDS = ['register_entry_number','marriage_date','groom_forename','groom_surname','groom_age','groom_parish','groom_condition','groom_occupation','groom_abode',
+                     'bride_forename','bride_surname','bride_age','bride_parish','bride_condition','bride_occupation','bride_abode','groom_father_forename',
+                     'groom_father_surname','groom_father_occupation','bride_father_forename','bride_father_surname','bride_father_occupation','witness1_forename',
+                     'witness1_surname','witness2_forename','witness2_surname'] 
+
+  PRIVATE_BAPTISM_OPTIONS = ['y','yes', 'private', 'true', 'private baptism',  'private_baptism']
+  
   RECORDS_PER_RANGE = 100000
 
   RECORD_TYPE_TRANSLATION = {
@@ -268,5 +314,18 @@ module FreeregOptionsConstants
   WORD_SPLITS = {
     "-" => /\-/,
     "&" => /\&/   }
+  
+  FLEXIBLE_CSV_FORMAT_BAPTISM = LOCATION_FIELDS + ORIGINAL_BAPTISM_FIELDS + ADDITIONAL_BAPTISM_FIELDS + ORIGINAL_COMMON_FIELDS + ADDITIONAL_COMMON_FIELDS
+
+  FLEXIBLE_CSV_FORMAT_BURIAL = LOCATION_FIELDS + ORIGINAL_BURIAL_FIELDS + ADDITIONAL_BURIAL_FIELDS + ORIGINAL_COMMON_FIELDS + ADDITIONAL_COMMON_FIELDS
+
+  
+  FLEXIBLE_CSV_FORMAT_MARRIAGE = LOCATION_FIELDS + ORIGINAL_MARRIAGE_FIELDS + ADDITIONAL_MARRIAGE_FIELDS + ORIGINAL_COMMON_FIELDS + ADDITIONAL_COMMON_FIELDS
+  
+  ORIGINAL_CSV_FORMAT_BAPTISM = LOCATION_FIELDS + ORIGINAL_BAPTISM_FIELDS + ORIGINAL_COMMON_FIELDS
+
+  ORIGINAL_CSV_FORMAT_BURIAL = LOCATION_FIELDS + ORIGINAL_BURIAL_FIELDS + ORIGINAL_COMMON_FIELDS
+
+  ORIGINAL_CSV_FORMAT_MARRIAGE = LOCATION_FIELDS + ORIGINAL_MARRIAGE_FIELDS + ORIGINAL_COMMON_FIELDS
 
 end

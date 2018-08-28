@@ -16,6 +16,15 @@ $(document).ready(function() {
     };
   };
 
+  // Switch Adsense checkbox value
+  var toggleAdsenseCheckbox = function() {
+    if (getCookie('userAdPersonalization') == 1) {
+      $('.adsense_check_box').prop('checked', true);
+    } else {
+      $('.adsense_check_box').prop('checked', false);
+    };
+  };
+
   // Create userAcceptance cookie if not exists
   var createUserAcceptance = function() {
     if ((getCookie('cookiesDirective') === null) || (getCookie('cookiesDirective') == 0)) {
@@ -23,8 +32,9 @@ $(document).ready(function() {
       setCookie('cookiesDirective', 1, 365);
     };
 
-    if ((getCookie('userAcceptance') === null) || (getCookie('userAcceptance') == 'unknown')){
+    if ((getCookie('userAcceptance') === null) || (getCookie('userAcceptance') == 'unknown') && (getCookie('userAdPersonalization') === null) || (getCookie('userAdPersonalization') == 'unknown')){
       setCookie('userAcceptance', 'unknown', 365);
+      setCookie('userAdPersonalization', 'unknown', 365);
       update_third_party_cookies_user_preference('deny');
       $('.cookieConsent').slideDown('3000');
     } else {
@@ -32,7 +42,7 @@ $(document).ready(function() {
     };
   };
 
-  // Accept Cookie
+  // Accept Analytics Cookie
   var acceptCookie = function() {
     if ((getCookie('userAcceptance') == 0) || (getCookie('userAcceptance') == 'unknown')) {
       delete_cookie('userAcceptance');
@@ -42,7 +52,7 @@ $(document).ready(function() {
     };
   }
 
-  // Deny Cookie
+  // Deny  Analytics Cookie
   var denyCookie = function() {
     if (getCookie('userAcceptance') == 1) {
       delete_cookie('userAcceptance');
@@ -54,10 +64,45 @@ $(document).ready(function() {
     };
   }
 
+  // Accept Personalized Adverts
+  var acceptPersonalizedAds = function() {
+    if ((getCookie('userAdPersonalization') == 0) || (getCookie('userAdPersonalization') == 'unknown')) {
+      delete_cookie('userAdPersonalization');
+      setCookie('userAdPersonalization', 1, 365);
+      location.reload();
+    };
+  }
+  
+  // Deny Personalized Adverts
+  var denyPersonalizedAds = function() {
+    if (getCookie('userAdPersonalization') == 1) {
+      delete_cookie('userAdPersonalization');
+      setCookie('userAdPersonalization', 0, 365);
+      location.reload();
+    } else {
+      setCookie('userAdPersonalization', 0, 365);
+    };
+  }
+
   // Close the CookieConsent div if user accepts the policy
   createUserAcceptance();
   toggleCookieCheckbox();
-  $('#cookie_check_box').change(function() {
+  toggleAdsenseCheckbox();
+//Default Deny analytics cookies
+ if ((getCookie('userAcceptance') === null) || (getCookie('userAcceptance') == 'unknown')) {
+     setCookie('userAcceptance', 'unknown', 365 );
+     update_third_party_cookies_user_preference('deny');
+   };
+// Accept Analytic Cookie
+  if (getCookie('userAcceptance') == 1) {
+     update_third_party_cookies_user_preference('accept');
+   };
+//Deny analytics cookies
+  if (getCookie('userAcceptance') == 0) {
+     update_third_party_cookies_user_preference('deny');
+   };
+
+  $('.cookie_check_box').change(function() {
     if($(this).is(":checked")) {
       acceptCookie();
     } else {
@@ -65,12 +110,22 @@ $(document).ready(function() {
     };
   });
 
+  $('.adsense_check_box').change(function() {
+  if($(this).is(":checked")) {
+      acceptPersonalizedAds();
+    } else {
+      denyPersonalizedAds();
+    };
+  });
+
   $('.accept_cookies').click(function() {
     acceptCookie();
+    acceptPersonalizedAds();
   });
 
   $('#cookie_policy').click(function() {
     setCookie('userAcceptance', 0, 365);
+    setCookie('userAdPersonalization', 0, 365);
     $('.cookieConsent').remove();
   });
 });

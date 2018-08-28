@@ -31,10 +31,11 @@ class Assignment
 
     def bulk_update_assignment(my_own,assignment_id,action_type,orig_status,new_status)
       assignment = Assignment.id(assignment_id)
-
       return false if assignment.first.nil?
 
       image_server_image = ImageServerImage.where(:assignment_id=>assignment_id, :status=>orig_status)
+      return false if image_server_image.first.nil? 
+
       image_server_group = ImageServerGroup.where(:id=>image_server_image.first.image_server_group.id)
       user = UseridDetail.where(:id=>assignment.first.userid_detail_id).first.userid
 
@@ -50,6 +51,28 @@ class Assignment
       ImageServerImage.refresh_src_dest_group_summary(image_server_group)
 
       return true
+    end
+
+    def bulk_update_assignments(my_own,assignment_ids,action_type,orig_status,new_status)
+      if assignment_ids.kind_of?(Array)             # from 'Accept All Assignments' button
+        assignment_ids.each do |x|
+          @update_result = bulk_update_assignment(my_own,x,action_type,orig_status,new_status)
+
+          if @update_result == true
+            UserMailer.notify_sc_assignment_complete(assignment_id).deliver_now if my_own # from transcriber
+          end
+        end
+
+        @update_result == true ? (return true) : (return false)
+      else                  # from other update assginment status links
+        update_result = bulk_update_assignment(my_own,assignment_ids,action_type,orig_status,new_status)
+
+        if update_result == true
+          UserMailer.notify_sc_assignment_complete(assignment_ids).deliver_now if my_own # from transcriber
+        end
+
+        update_result == true ? (return true) : (return false)
+      end
     end
 
   	def create_assignment(source_id,user_id,instructions,assign_list,image_status)
@@ -262,21 +285,21 @@ class Assignment
     end
 
     def update_assignment_from_put_request(my_own,params)
-      assignment_id = params[:id]
+      if params[:assignment_ids].nil?
+        assignment_id = params[:id]                 # from 'AC' / 'CM' link
+      else
+        assignment_id = params[:assignment_ids]     # from 'Accept All Assignments' button
+      end
+
       action_type = params[:type]
       orig_status = params[:status]
       assignment_list_type = params[:assignment_list_type]
+      update_result = false
 
       new_status = get_update_assignment_new_status(action_type, my_own, orig_status)
+      update_result = bulk_update_assignments(my_own,assignment_id,action_type,orig_status,new_status)
 
-      update_result = bulk_update_assignment(my_own,assignment_id,action_type,orig_status,new_status)
-
-      if update_result
-        UserMailer.notify_sc_assignment_complete(assignment_id).deliver_now if my_own # from transcriber
-        return true
-      else
-        return false
-      end
+      update_result == true ? (return true) : (return false)
     end
 
     def update_assignment_from_reassign(params)

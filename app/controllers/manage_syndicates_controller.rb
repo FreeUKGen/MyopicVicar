@@ -256,4 +256,9 @@ class ManageSyndicatesController < ApplicationController
   def upload_batch
     redirect_to new_csvfile_path
   end
+
+  def display_no_syndicate_message
+    flash[:notice] = 'You do not have any syndicates to manage'
+    redirect_to new_manage_resource_path
+  end
 end

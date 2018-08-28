@@ -1,9 +1,18 @@
 class ImageServerImagesController < ApplicationController
   require 'userid_role'
+  require 'source_property'
+  
   def destroy
     display_info
 
-    image_server_image = ImageServerImage.where(:id=>params[:id]).first
+    imageserverimage = ImageServerImage.where(:id=>params[:id])
+
+    if imageserverimage.nil?
+      flash[:notice] = "can not find the image"
+      redirect_to :back and return
+    end
+    
+    image_server_image = imageserverimage.first
     if image_server_image.deletion_permitted?
       website =  image_server_image.url_for_delete_image_from_image_server
       redirect_to website
@@ -29,7 +38,7 @@ class ImageServerImagesController < ApplicationController
     @county =  @place.county
     @place_name = @place.place_name
     @chapman_code = @place.chapman_code
-    @user = cookies.signed[:userid]
+    @user = get_user
     @source = Source.find(:id=>session[:source_id])
     @group = ImageServerGroup.find(:id=>session[:image_server_group_id])
   end
@@ -41,7 +50,7 @@ class ImageServerImagesController < ApplicationController
        flash[:notice] = 'There were problems with the lookup'
       redirect_to :back and return
     end
-    @user = cookies.signed[:userid]
+    @user = get_user
     website = ImageServerImage.create_url('download',params[:object],chapman_code,folder_name, image_file_name,@user.userid)  
     redirect_to website and return
    end
@@ -51,10 +60,7 @@ class ImageServerImagesController < ApplicationController
 
     @image_server_image = ImageServerImage.id(params[:id]).first
     image_server_group = @image_server_image.image_server_group
-    @group_name = ImageServerImage.get_sorted_group_name(image_server_group.source_id)
-
-    # leave for issue 1447 - Relicate image group, commit 9abecd5
-    # @group_name = ImageServerImage.get_sorted_group_name_under_source(image_server_group.source_id)
+    @group_name = ImageServerImage.get_sorted_group_name_under_source(image_server_group.source_id)
 
     redirect_to(:back, :notice => 'Attempted to edit a non_esxistent image file') and return if @image_server_image.nil?
   end
@@ -94,8 +100,11 @@ class ImageServerImagesController < ApplicationController
     display_info
 
     @image_server_group = ImageServerGroup.id(params[:id]).first
-    @group_name = ImageServerImage.get_sorted_group_name_under_church(@image_server_group[:church_id])
+    @group_name = ImageServerImage.get_sorted_group_name_under_source(@image_server_group[:source_id])
 
+    # leave for issue 1447 - Relicate image group, commit 9abecd5
+    #@group_name = ImageServerImage.get_sorted_group_name_under_church(@image_server_group[:church_id])
+ 
     @image_server_image = ImageServerImage.image_server_group_id(params[:id]).first
     redirect_to(:back, :notice => 'Attempted to edit a non_esxistent image file') and return if @image_server_image.nil?
 
@@ -188,7 +197,7 @@ class ImageServerImagesController < ApplicationController
        flash[:notice] = 'There were problems with the lookup'
       redirect_to :back and return
     end
-    @user = cookies.signed[:userid]
+    @user = get_user
     website = ImageServerImage.create_url('view',params[:object],chapman_code,folder_name, image_file_name,@user.userid)
     redirect_to website and return
   end
