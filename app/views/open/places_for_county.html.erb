@@ -1,5 +1,5 @@
-<h1>Open Data for <%= @county %> Genealogy</h1>
-<p>FreeUKGenealogy supports free and open genealogy under our open data policy.  Currently we have open records for these places in <%= @county %>.</p>
+<h1><%= @record_types_display.titleize %> for <%= @county %> Genealogy</h1>
+<p>FreeUKGenealogy provides free access to genealogy records for <%= @county %>.  Use our search feature to find even more records.</p>
 
 
 <% @open_places.each do |place| %>

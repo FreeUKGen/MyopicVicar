@@ -2,6 +2,8 @@
 Sitemap: https://freecen2.freecen.org.uk/sitemap.txt
 
 User-agent: *
+Allow: /open
+Allow: /assets
 Allow: /cms/about
 Allow: /cms/donate
 Allow: /cms/help
@@ -11,6 +13,9 @@ Allow: /search_queries/*
 Allow: /search_queries/*/about
 Allow: /search_records/*
 Allow: /freecen_coverage
+Allow: /search_statistics
+Allow: /freereg_contents
+Allow: /sitemap_location.txt
 
 Disallow: /manage_resources
 Disallow: /manage_syndicates

@@ -1,11 +1,12 @@
-<h1>Open Data for <%= @place.place_name %> <%= @county %> Genealogy</h1>
+<h1><%= @record_types_display.titleize %> for <%= @place.place_name %> (<%= @county %>) Genealogy</h1>
+<p>FreeUKGenealogy provides free access to genealogy records for <%= @place.place_name %> in <%= @county %>.  The most common surnames appearing in our records are below, but you can use our search feature to find even more records.</p>
 
 
 <table>
   <thead>
     <tr>
       <th>Surname</th>
-      <th>Open Records</th>
+      <th>Records</th>
     </tr>
   </thead>
   <tbody>

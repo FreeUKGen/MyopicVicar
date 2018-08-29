@@ -1,4 +1,4 @@
-<h1>Open <%= @record_types_display.titleize %> for <%= @surname %> in <%= @place.place_name %> (<%= @county %>)</h1>
+<h1><%= @record_types_display.titleize %> for <%= @surname %> in <%= @place.place_name %> (<%= @county %>)</h1>
 
 
 
@@ -12,5 +12,3 @@
                :last_name => @search_query.last_name, 
                :ucf_results => false}) %>
 
-
-<p>The site may contain records not yet released under open license.  Search for all records here.</p>
