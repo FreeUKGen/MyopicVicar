@@ -1,14 +1,29 @@
 namespace :myopic_vicar do
+  def rebuild_counties
+    OpenCounty::rebuild_open_counties    
+  end
+
+  def rebuild_places
+    Place.where(:data_present => 1).order(:chapman_code => 1, :place_name => 1).each do |place| 
+      print "#{place.chapman_code}\t#{place.place_name}\n"
+      place.rebuild_open_records  
+    end
+  end
+
   desc 'Rebuild open county list'
   task :rebuild_open_counties => :environment do
-    OpenCounty::rebuild_open_counties
+    rebuild_counties
   end
   
   desc 'Rebuild open place record list'
   task :rebuild_open_places => :environment do
-    Place.where(:data_present => 1).order(:chapman_code => 1, :place_name => 1).each do |place| 
-      print "#{place.chapman_code}\t#{place.id}\n"
-      place.rebuild_open_records  
-    end
+    rebuild_places
   end  
+  
+  desc 'Rebuild all open records'
+  task :rebuild_open => :environment do
+    rebuild_places
+    rebuild_counties
+  end  
+  
 end
