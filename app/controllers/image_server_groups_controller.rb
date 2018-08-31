@@ -203,12 +203,15 @@ class ImageServerGroupsController < ApplicationController
   def send_complete_to_cc
     display_info
 
-    image_server_group = ImageServerGroup.where(:id=>params[:id])
-    ImageServerImage.update_image_status(image_server_group,'cs')
+    if params[:completed_groups].nil?       # from 'Send Email to CC' under Image Group
+      ImageServerGroup.email_cc_completion(params[:id], @place[:chapman_code], @user)
+    else        # from 'email CC of all image groups' button under 'List Fully Transcribed/Reviewed Groups'
+      params[:completed_groups].each do |x|
+        ImageServerGroup.email_cc_completion(x, @place[:chapman_code], @user)
+      end
+    end
 
-    UserMailer.notify_cc_assignment_complete(@user,params[:id],@place[:chapman_code]).deliver_now
-
-    redirect_to(:back, :notice => 'Email sent to County Coordinator')
+    redirect_to(manage_image_group_manage_syndicate_path(session[:Syndicate]), :notice => 'Email is sent to County Coordinator')
   end
 
   def show
@@ -265,7 +268,7 @@ class ImageServerGroupsController < ApplicationController
       end
     end
   end
-  
+
   def upload
     image_server_group = ImageServerGroup.id(params[:id]).first
     website = image_server_group.create_upload_images_url

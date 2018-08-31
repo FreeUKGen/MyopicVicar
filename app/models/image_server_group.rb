@@ -68,6 +68,13 @@ class ImageServerGroup
       return image_server_group_params
     end
 
+    def email_cc_completion(group_id,chapman_code,user)
+      image_server_group = ImageServerGroup.where(:id=>group_id)
+      ImageServerImage.update_image_status(image_server_group,'cs')
+
+      UserMailer.notify_cc_assignment_complete(user,group_id,chapman_code).deliver_now
+    end
+  
     def find_by_source_ids(id)
       where(:source_id => {'$in'=>id.keys})
     end
