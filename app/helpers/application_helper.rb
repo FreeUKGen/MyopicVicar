@@ -263,6 +263,10 @@ module ApplicationHelper
     register_type
   end
   
+  def register_name(entry)
+   RegisterType::display_name(entry)
+  end 
+  
   def county_name(file)
     county_name = file.county #note county has chapman in file and record)
     case

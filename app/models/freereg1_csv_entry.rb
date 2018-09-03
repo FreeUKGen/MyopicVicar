@@ -314,7 +314,6 @@ class Freereg1CsvEntry
   end
   
   def adjust_parameters(param,entry_file)
-    param[:record_type] =  entry_file.record_type
     param[:year] = self.get_year(param)
     param[:person_sex] == self.person_sex ? sex_change = false : sex_change = true
     param["multiple_witnesses_attributes"].present? ? number_of_witnesses =  param["multiple_witnesses_attributes"].length : number_of_witnesses = 0
@@ -1260,6 +1259,8 @@ class Freereg1CsvEntry
   
   def updateable_search_date?(record)
      is_ok = true
+     return is_ok
+     #following code is likely NOT required but kept in case
     if record.search_date.present? && self.baptism_date.present? && DateParser::searchable(self.baptism_date)  != record.search_date
       is_ok = false
     elsif record.search_date.present? && self.confirmation_date.present? && DateParser::searchable(self.confirmation_date)  != record.search_date

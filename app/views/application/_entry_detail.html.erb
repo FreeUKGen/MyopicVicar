@@ -45,7 +45,7 @@
                 <% if @register_id.present? %>
                   <td><%= link_to(@entry[field], register_freereg_content_path(@register_id)) %></td>
                 <% else %>
-                  <td><%= @entry[field] %></td>
+                  <td><%= register_name(@entry[field]) %></td>
                 <% end %>  
               </tr> 
             <% when 'image_file_name' %>

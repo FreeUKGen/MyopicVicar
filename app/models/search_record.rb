@@ -368,6 +368,10 @@ class SearchRecord
           #add the search version and digest
           search_record.search_record_version = search_version
           search_record.digest = brand_new_digest
+          search_record.transcript_dates  = new_search_record.transcript_dates unless search_record.transcript_dates_equal?(new_search_record)
+          search_record.search_dates  = new_search_record.search_dates unless search_record.search_dates_equal?(new_search_record)
+          search_record.search_date  = new_search_record.search_date unless search_record.search_date_equal?(new_search_record)
+          search_record.secondary_search_date  = new_search_record.secondary_search_date unless search_record.secondary_search_date_equal?(new_search_record)
           #update the transcript names if it has changed
           search_record.transcript_names  = new_search_record.transcript_names unless search_record.transcript_names_equal?(new_search_record)
           #update the location if it has changed
@@ -411,14 +415,14 @@ class SearchRecord
   def add_search_dates_string
     string = ""
     self.search_dates.each do |date|
-      string = string + date if date.present?
+      string = string + "search_dates_string" + date if date.present?
     end
     return string
   end
 
   def add_search_date_string
     string = ""
-    string = string + self.search_date if self.search_date.present?
+    string = "search_date_string" + self.search_date if self.search_date.present?
     return string
   end
 
@@ -433,7 +437,7 @@ class SearchRecord
 
   def add_secondary_search_date_string
     string = ""
-    string = string + self.secondary_search_date if self.secondary_search_date.present?
+    string = "secondary_search_date_string" + self.secondary_search_date if self.secondary_search_date.present?
     return string
   end
 
@@ -590,6 +594,66 @@ class SearchRecord
     result
   end
 
+  def transcript_dates_equal?(new_search_record)
+    transcription_dates = self.transcript_dates
+    new_transcription_dates = new_search_record.transcript_dates
+    number_of_transcription_dates = transcription_dates.length
+    number_of_new_transcription_dates = new_transcription_dates.length
+    return false unless number_of_new_transcription_dates == number_of_transcription_dates
+    number_of_transcription_dates < number_of_new_transcription_dates ? use_index = number_of_new_transcription_dates : use_index = number_of_transcription_dates
+    n = 0
+    while n < use_index
+      if transcript_dates[n].present? && new_transcript_dates[n].present?
+        return false  if transcript_dates[n] != new_transcript_dates[n]
+      else 
+        return false 
+      end
+      n = n + 1
+    end
+    return true
+  end
+  
+  def search_dates_equal?(new_search_record)
+    search_dates = self.search_dates
+    new_search_dates = new_search_record.search_dates
+    number_of_search_dates = search_dates.length
+    number_of_new_search_dates = new_search_dates.length
+    return false unless number_of_new_search_dates == number_of_search_dates
+    number_of_search_dates < number_of_new_search_dates ? use_index = number_of_new_search_dates : use_index = number_of_search_dates
+    n = 0
+    while n < use_index
+      if search_dates[n].present? && new_search_dates[n].present?
+        return false  if search_dates[n] != new_search_dates[n]
+      else 
+        return false 
+      end
+      n = n + 1
+    end
+    return true
+  end
+  
+  def search_date_equal?(new_search_record)
+    search_date = self.search_dates
+    new_search_date = new_search_record.search_date
+    if search_date.present? && new_search_date.present?
+      return false  if search_date != new_search_date
+    else 
+      return false 
+    end
+    return true
+  end
+  
+  def secondary_search_date_equal?(new_search_record)
+    secondary_search_date = self.secondary_search_date
+    new_secondary_search_date = new_search_record.secondary_search_date
+    if secondary_search_date.present? && new_secondary_search_date.present?
+      return false  if secondary_search_date != new_secondary_search_date
+    else 
+      return false 
+    end
+    return true
+  end
+  
   def ordered_display_fields
     order = []
     order << 'record_type'
@@ -724,8 +788,56 @@ class SearchRecord
 
   def transform_date
     self.search_dates = transcript_dates.map { |t_date| DateParser::searchable(t_date) }
-    self.search_date = self.search_dates[0]
-    self.secondary_search_date = self.search_dates[1] if self.search_dates.size > 1
+    entry = self.freereg1_csv_entry
+    case entry.record_type
+    when "ba"
+      baptism_date = DateParser::searchable(entry.baptism_date)
+      birth_date = DateParser::searchable(entry.birth_date)
+      confirmation_date = DateParser::searchable(entry.confirmation_date)
+      received_into_church_date = DateParser::searchable(entry.received_into_church_date)
+      if baptism_date.present?
+        self.search_date = baptism_date
+        if birth_date.present?
+          self.secondary_search_date = birth_date if birth_date.present?
+        elsif confirmation_date.present?
+          self.secondary_search_date = confirmation_date if confirmation_date.present?
+        elsif received_into_church_date.present?
+          self.secondary_search_date = received_into_church_date if received_into_church_date.present?
+        end
+      elsif birth_date.present?
+          self.search_date = birth_date 
+          if confirmation_date.present?
+            self.secondary_search_date = confirmation_date if confirmation_date.present?
+          elsif received_into_church_date.present?
+            self.secondary_search_date = received_into_church_date if received_into_church_date.present?
+          end
+      elsif confirmation_date.present?
+          self.search_date = confirmation_date 
+          if received_into_church_date.present?
+            self.secondary_search_date = received_into_church_date if received_into_church_date.present?
+          end
+      elsif received_into_church_date.present? 
+         self.search_date = confirmation_date 
+      end
+    when "bu"
+      burial_date = DateParser::searchable(entry.burial_date)
+      death_date  = DateParser::searchable(entry.death_date)
+      if burial_date.present?
+        self.search_date = burial_date
+        self.secondary_search_date = death_date if death_date.present?
+      else
+        self.search_date = death_date if death_date.present?
+      end
+    when "ma"
+      marriage_date = DateParser::searchable(entry.marriage_date)
+      contract_date = DateParser::searchable(entry.contract_date)
+      if marriage_date.present?
+        self.search_date = marriage_date
+        self.secondary_search_date = contract_date if contract_date.present?
+      else
+        self.search_date = contract_date if contract_date.present?
+      end
+    end 
   end
 
   def transform_ucf

@@ -480,31 +480,26 @@ class SearchQuery
   def search
     @search_parameters = search_params
     @search_index = SearchRecord.index_hint(@search_parameters)
-   # p @search_parameters
    #@search_index = "place_rt_sd_ssd" if query_contains_wildcard?
     logger.warn("FREEREG:SEARCH_HINT: #{@search_index}")
     self.update_attribute(:search_index, @search_index)
 #    p @search_parameters
     records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     self.persist_results(records)
-    self.persist_additional_results(secondary_date_results) if secondary_date_query_required && self.result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+    self.persist_additional_results(secondary_date_results) if (self.result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     search_ucf  if can_query_ucf? && self.result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
     records
   end
-
+  
   def secondary_date_results
     @secondary_search_params = @search_parameters
     @secondary_search_params[:secondary_search_date] = @secondary_search_params[:search_date]
     @secondary_search_params.delete_if {|key, value| key == :search_date } 
-    @secondary_search_params[:record_type] = { '$in' => [RecordType::BAPTISM] }
+    #@secondary_search_params[:record_type] = { '$in' => [RecordType::BAPTISM] }
     @search_index = SearchRecord.index_hint(@search_parameters)
     logger.warn("FREEREG:SSD_SEARCH_HINT: #{@search_index}")
     secondary_records = SearchRecord.collection.find(@secondary_search_params).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     secondary_records
-  end
-
-  def secondary_date_query_required
-    @search_parameters[:search_date].present? && (self.record_type == nil || self.record_type==RecordType::BAPTISM)
   end
 
   def search_params
