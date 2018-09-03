@@ -156,7 +156,7 @@ class Place
 
   def aggregate_open_surnames
     open_surnames = {}
-    self.search_records.each do |search_record|
+    self.search_records.no_timeout.each do |search_record|
       search_record.transcript_names.each do |name|
         if name && name["last_name"] && name["last_name"].match(/^[A-Za-z \.-]+$/)
           surname = open_surnames[name["last_name"]] || {}
