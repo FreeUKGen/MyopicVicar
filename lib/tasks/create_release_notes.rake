@@ -43,7 +43,7 @@ task :new_release_note do
   #{git_log}
   "
 
-  out_file = File.new("./doc/release_notes/release_notes-#{current_date}.md", "w")
+  out_file = File.new("./doc/release_notes/release-notes-#{current_date}.md", "w")
   out_file.puts(template)
 
   if File.exist?(out_file) 
