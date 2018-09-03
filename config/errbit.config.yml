@@ -1,14 +1,14 @@
 development:
-  project_key: 
-  project_id:
-  host:
+  project_key: "1"
+  project_id: 1
+  host: ""
 
 test:
-  project_key:
-  project_id:
-  host:
+  project_key: "1"
+  project_id: 1
+  host: ""
 
 production:
-  project_key:
-  project_id:
-  host:
+  project_key: "1"
+  project_id: 1
+  host: ""
