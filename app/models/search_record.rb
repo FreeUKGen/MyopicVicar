@@ -340,37 +340,39 @@ class SearchRecord
     end
 
     def update_create_search_record(entry,search_version,place)
-     unless   entry.record_updateable?
-        search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
-        search_record = SearchRecord.new(search_record_parameters)
-        search_record.freereg1_csv_entry = entry
-        search_record.search_record_version = search_version
-        search_record.transform
-        search_record.place_id = place.id
-        search_record.digest = search_record.cal_digest
-        search_record.chapman_code = place.chapman_code
-        search_record.save
+      #create a temporary search record with the new information
+      logger.warn entry.inspect
+      search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
+      search_record = entry.search_record
+      new_search_record = SearchRecord.new(search_record_parameters)
+      new_search_record.freereg1_csv_entry = entry
+      new_search_record.transform
+      new_search_record.digest = new_search_record.cal_digest
+      unless   new_search_record.record_updateable?(search_record,entry)
+        logger.warn "creating"
+        new_search_record.search_record_version = search_version
+        new_search_record.place_id = place.id
+        new_search_record.chapman_code = place.chapman_code
+        new_search_record.save
+        logger.warn "created search record"
+        logger.warn new_search_record.inspect
         return "created"
       else
-        search_record = entry.search_record
+        logger.warn "updating"
         digest = search_record.digest
         digest = search_record.cal_digest if digest.blank?
-        #create a temporary search record with the new information; this will not be saved
-        search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
-        new_search_record = SearchRecord.new(search_record_parameters)
-        new_search_record.freereg1_csv_entry = entry
-        new_search_record.digest = search_record.cal_digest
-        new_search_record.chapman_code = place.chapman_code
-        new_search_record.transform
-        brand_new_digest = new_search_record.cal_digest
+        logger.warn digest.inspect
+        brand_new_digest = new_search_record.digest
+        logger.warn brand_new_digest.inspect
         if  brand_new_digest != digest
+          logger.warn "definitely updating"
+          logger.warn search_record.inspect
           #we have to update the current search record
           #add the search version and digest
           search_record.search_record_version = search_version
           search_record.digest = brand_new_digest
           search_record.transcript_dates  = new_search_record.transcript_dates unless search_record.transcript_dates_equal?(new_search_record)
           search_record.search_dates  = new_search_record.search_dates unless search_record.search_dates_equal?(new_search_record)
-          search_record.search_date  = new_search_record.search_date unless search_record.search_date_equal?(new_search_record)
           search_record.secondary_search_date  = new_search_record.secondary_search_date unless search_record.secondary_search_date_equal?(new_search_record)
           #update the transcript names if it has changed
           search_record.transcript_names  = new_search_record.transcript_names unless search_record.transcript_names_equal?(new_search_record)
@@ -383,6 +385,8 @@ class SearchRecord
           #create a hash of search names from the original search names
           #note adjust_search_names does a save of the search record
           search_record.adjust_search_names(new_search_record)
+          logger.warn "updated search record"
+          logger.warn search_record.inspect
           return "updated"
         else
           #unless search_record.search_record_version == search_version && search_record.digest == digest
@@ -393,7 +397,7 @@ class SearchRecord
           #end
           return "no update"
         end
-     end
+      end
     end
 
   end
@@ -611,6 +615,52 @@ class SearchRecord
       n = n + 1
     end
     return true
+  end
+  
+  def record_updateable?(search_record,entry)
+    p "upateable"
+    p self
+    p search_record
+    is_ok = true
+    return false if search_record.nil?
+    return false unless self.updateable_date?(search_record,entry)
+    return false unless self.updateable_county?(search_record,entry)
+    return is_ok
+  end
+  
+  def updateable_county?(search_record,entry)
+    p "county"
+    p self
+    p search_record
+    is_ok = true
+    if self.chapman_code.present? && search_record.chapman_code.present? && search_record.chapman_code  != self.chapman_code
+      is_ok = false
+    end
+    unless is_ok
+      search_record.destroy
+      entry.search_record = nil
+      entry.save
+    end
+    return is_ok
+  end
+  
+  def updateable_date?(search_record,entry)
+    #We cannot currently update a search date as it is a component of the sharding index
+    #We need to delete and then recreate the search record
+     p "date"
+     p self
+     p search_record
+     is_ok = true
+     #following code is likely NOT required but kept in case
+    if self.search_date.present? && search_record.search_date.present? && self.search_date != search_record.search_date
+      is_ok = false
+    end
+    unless is_ok
+      search_record.destroy
+      entry.search_record = nil
+      entry.save
+    end
+    return is_ok
   end
   
   def search_dates_equal?(new_search_record)

@@ -361,13 +361,15 @@ class Freereg1CsvEntry
   
   def check_and_correct_county
     search_record = self.search_record
-    place_id = search_record.place_id
-    place = Place.id(place_id).first
-    if self.county.blank?
-      self.update_attribute(:county,place.chapman_code) if place.present?
-    else
-      unless ChapmanCode.value?(self.county)
+    if search_record.present?
+      place_id = search_record.place_id
+      place = Place.id(place_id).first
+      if self.county.blank?
         self.update_attribute(:county,place.chapman_code) if place.present?
+      else
+        unless ChapmanCode.value?(self.county)
+          self.update_attribute(:county,place.chapman_code) if place.present?
+        end
       end
     end
   end
@@ -1234,59 +1236,4 @@ class Freereg1CsvEntry
     return false
   end
   
-  def record_updateable?
-    is_ok = true
-    record = self.search_record
-    return false if record.nil?
-    return false unless updateable_search_date?(record)
-    return false unless updateable_county?(record)
-    return is_ok
-  end
-  
-  def updateable_county?(record)
-    is_ok = true
-    if record.chapman_code? && self.county.present? && self.county  != record.chapman_code
-      is_ok = false
-    end
-    unless is_ok
-      record = self.search_record 
-      record.destroy
-      self.search_record = nil
-      self.search_record(true)
-    end
-    return is_ok
-  end
-  
-  def updateable_search_date?(record)
-     is_ok = true
-     return is_ok
-     #following code is likely NOT required but kept in case
-    if record.search_date.present? && self.baptism_date.present? && DateParser::searchable(self.baptism_date)  != record.search_date
-      is_ok = false
-    elsif record.search_date.present? && self.confirmation_date.present? && DateParser::searchable(self.confirmation_date)  != record.search_date
-      is_ok = false
-    elsif record.search_date.present? && self.burial_date.present? && DateParser::searchable(self.burial_date)  != record.search_date
-      is_ok = false
-    elsif record.search_date.present? && self.death_date.present? && DateParser::searchable(self.death_date)  != record.search_date
-      is_ok = false
-    elsif record.search_date.present? && self.marriage_date.present? && DateParser::searchable(self.marriage_date)  != record.search_date
-      is_ok = false
-    elsif record.search_date.present? && self.contract_date.present? && DateParser::searchable(self.contract_date)  != record.search_date
-      is_ok = false
-    elsif record.secondary_search_date.present? && self.birth_date.present? && DateParser::searchable(self.birth_date)  != record.secondary_search_date 
-      is_ok = false
-    else
-      is_ok = true
-    end
-    unless is_ok
-      record = self.search_record 
-      record.destroy
-      self.search_record = nil
-      self.search_record(true)
-    end
-    return is_ok
-  end
-
-
-
 end

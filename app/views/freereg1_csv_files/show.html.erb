@@ -23,7 +23,7 @@
           <td>Church name </td><td class="weight--semibold"><%= church_name(@freereg1_csv_file) %></td>
         </tr>
         <tr>
-          <td>Register type</td><td class="weight--semibold"><%= register_type(@freereg1_csv_file) %></td>
+          <td>Register type</td><td class="weight--semibold"><%= register_name_for_file(@freereg1_csv_file) %></td>
         </tr>
         <tr>
           <td>Record type </td><td class="weight--semibold">  <%= RecordType::display_name(@freereg1_csv_file.record_type) %> </td>

@@ -249,7 +249,7 @@ module ApplicationHelper
     userid = file.userid
   end
   
-  def register_type(file)
+  def register_type_for_file(file)
     register_type = file.register_type
     if register_type.blank?
       new_register = get_register_object(file)
@@ -263,8 +263,17 @@ module ApplicationHelper
     register_type
   end
   
-  def register_name(entry)
-   RegisterType::display_name(entry)
+  def register_name_for_entry(entry)
+    #expecting the field
+   register_name = RegisterType::display_name(entry)
+   register_name
+  end 
+  
+  def register_name_for_file(file)
+    #expecting the file
+   entry = file.register_type
+   register_name = RegisterType::display_name(entry)
+   register_name
   end 
   
   def county_name(file)
