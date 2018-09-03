@@ -603,8 +603,8 @@ class SearchRecord
     number_of_transcription_dates < number_of_new_transcription_dates ? use_index = number_of_new_transcription_dates : use_index = number_of_transcription_dates
     n = 0
     while n < use_index
-      if transcript_dates[n].present? && new_transcript_dates[n].present?
-        return false  if transcript_dates[n] != new_transcript_dates[n]
+      if transcription_dates[n].present? && new_transcription_dates[n].present?
+        return false  if transcription_dates[n] != new_transcription_dates[n]
       else 
         return false 
       end
