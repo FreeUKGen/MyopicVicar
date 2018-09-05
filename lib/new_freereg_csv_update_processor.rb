@@ -1265,12 +1265,12 @@ class CsvRecords <  CsvFile
     n = 0
     while n < header_fields.length 
       #need to verify fields
-      field = header_fields[n].downcase
-      if valid_field_definition?(field) 
+      header_fields[n].nil? ? field = nil : field = header_fields[n].downcase
+      if field.present? && valid_field_definition?(field) 
         @data_entry_order[field.to_sym] = n 
       else
         proceed = false
-        csvfile.header_error << "The field order definition contains an invalid field #{header_fields[n]}. <br>"
+        csvfile.header_error << "The field order definition at position #{n} contains an invalid field #{header_fields[n]}; (is it blank?)}. <br>"
       end 
       n = n + 1  
     end 
