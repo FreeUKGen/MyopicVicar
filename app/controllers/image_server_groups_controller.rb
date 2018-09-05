@@ -204,10 +204,10 @@ class ImageServerGroupsController < ApplicationController
     display_info
 
     if params[:completed_groups].nil?       # from 'Send Email to CC' under Image Group
-      ImageServerGroup.email_cc_completion(params[:id], @place[:chapman_code], @user)
+      ImageServerGroup.email_cc_completion(params[:id], @place.chapman_code, @user)
     else        # from 'email CC of all image groups' button under 'List Fully Transcribed/Reviewed Groups'
       params[:completed_groups].each do |x|
-        ImageServerGroup.email_cc_completion(x, @place[:chapman_code], @user)
+        ImageServerGroup.email_cc_completion(x, @place.chapman_code, @user)
       end
     end
 
