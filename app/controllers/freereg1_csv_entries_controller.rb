@@ -225,6 +225,7 @@ class Freereg1CsvEntriesController < ApplicationController
         return
       else
         @freereg1_csv_entry.check_and_correct_county
+        @freereg1_csv_entry.check_year
         #update search record if there is a change
         software_version = SoftwareVersion.control.first
         search_version = ''

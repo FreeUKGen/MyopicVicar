@@ -74,6 +74,13 @@
                   <td><%= @entry.film_number %></td>
                 </tr>
               <% end%>
+            <% when 'processed_date' %>
+              <% if  current_authentication_devise_user.present? && @entry.processed_date.present? %>
+                <tr>
+                  <td><%= field.gsub('_',' ').capitalize %></td>
+                  <td><%= @entry.processed_date.strftime("%d %b %Y") %></td>
+                </tr>
+              <% end%>
             <% when 'line_id' %>  
               <% if  current_authentication_devise_user.present?%>
                 <tr>

@@ -188,6 +188,7 @@ class Freereg1CsvEntry
   field :credit, type: String
   field :register, type: String
   field :record_type, type: String
+  field :processed_date, type: DateTime
 
   belongs_to :freereg1_csv_file, index: true
 
@@ -314,7 +315,7 @@ class Freereg1CsvEntry
   end
   
   def adjust_parameters(param,entry_file)
-    param[:year] = self.get_year(param)
+    param[:processed_date] = Time.now
     param[:person_sex] == self.person_sex ? sex_change = false : sex_change = true
     param["multiple_witnesses_attributes"].present? ? number_of_witnesses =  param["multiple_witnesses_attributes"].length : number_of_witnesses = 0
     while number_of_witnesses > FreeregOptionsConstants::MAXIMUM_WINESSES
@@ -372,6 +373,30 @@ class Freereg1CsvEntry
         end
       end
     end
+  end
+  
+  def check_year
+    old_year = self.year
+    case self.record_type
+    when 'ba'
+      new_year = FreeregValidations.year_extract(self.baptism_date)
+      new_year = FreeregValidations.year_extract(self.birth_date) if new_year.blank?
+      new_year = FreeregValidations.year_extract(self.confirmation_date) if new_year.blank?
+      new_year = FreeregValidations.year_extract(self.received_into_church_date) if new_year.blank?
+    when 'ma'
+      new_year = FreeregValidations.year_extract(self.marriage_date)
+      new_year = FreeregValidations.year_extract(self.contract_date) if new_year.blank?
+    when 'bu'
+      new_year = FreeregValidations.year_extract(self.burial_date)
+      new_year = FreeregValidations.year_extract(self.death_date) if new_year.blank?
+    end
+    return if new_year.blank? && old_year.blank?
+    if new_year.present? && old_year.present? && old_year == new_year
+      return 
+    else
+      self.update_attribute(:year,new_year) if new_year.present?
+    end
+    return 
   end
   
   def check_register_type

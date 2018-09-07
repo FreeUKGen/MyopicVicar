@@ -1566,6 +1566,7 @@ class CsvRecord < CsvRecords
     @data_record[:person_sex] = process_baptism_sex_field(@data_record[:person_sex])
     @data_record[:father_surname] = Unicode::upcase(@data_record[:father_surname] ) unless @data_record[:father_surname] .nil?
     @data_record[:mother_surname] = Unicode::upcase(@data_record[:mother_surname]) unless  @data_record[:mother_surname].nil?
+    @data_record[:processed_date] = Time.now
     csvfile.data[line] = @data_record
   end
 
@@ -1598,6 +1599,7 @@ class CsvRecord < CsvRecords
     @data_record[:relative_surname] = Unicode::upcase(@data_record[:relative_surname]) unless @data_record[:relative_surname].nil?
     @data_record[:burial_person_surname] = Unicode::upcase( @data_record[:burial_person_surname])  unless @data_record[:burial_person_surname].nil?
     @data_record[:female_relative_surname] = Unicode::upcase( @data_record[:female_relative_surname])  unless @data_record[:female_relative_surname].nil? 
+    @data_record[:processed_date] = Time.now
     csvfile.data[line] = @data_record
    
   end
@@ -1631,6 +1633,7 @@ class CsvRecord < CsvRecords
     (@data_record[:marriage_by_licence].present? && FreeregOptionsConstants::MARRIAGE_BY_LICENCE_OPTIONS.include?(@data_record[:marriage_by_licence].downcase)) ? @data_record[:marriage_by_licence] = true : @data_record[:marriage_by_licence] = false 
     (@data_record[:groom_marked].present? && FreeregOptionsConstants::MARKED_OPTIONS.include?(@data_record[:groom_marked].downcase)) ? @data_record[:groom_marked] = true : @data_record[:groom_marked] = false
     (@data_record[:bride_marked].present? && FreeregOptionsConstants::MARKED_OPTIONS.include?(@data_record[:bride_marked].downcase)) ? @data_record[:bride_marked] = true : @data_record[:bride_marked] = false
+    @data_record[:processed_date] = Time.now
     csvfile.data[line] = @data_record
   end
   
