@@ -674,6 +674,7 @@ end
       end
 
       # from 'assignments' => 'Image Groups Available for Allocation(By County)'
+      # from 'all allocated image groups' => 'Image Groups Available for Allocation(By County)'
       crumb :request_assignments_by_county do |user,county|
         link "Image Groups Available for Allocation(#{county})", my_list_by_county_image_server_group_path(county)
         parent :syndicate_available_groups_by_county_select_county, user
