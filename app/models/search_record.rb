@@ -351,6 +351,7 @@ class SearchRecord
       unless   new_search_record.record_updateable?(search_record,entry)
         logger.warn "creating"
         new_search_record.search_record_version = search_version
+        new_search_record.search_date = "" if new_search_record.search_date.nil?
         new_search_record.place_id = place.id
         new_search_record.chapman_code = place.chapman_code
         new_search_record.save

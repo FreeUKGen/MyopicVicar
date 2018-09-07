@@ -205,7 +205,8 @@ class Freereg1CsvEntriesController < ApplicationController
       @entry = @freereg1_csv_entry
       @image_id = @entry.get_the_image_id(@church,@user,session[:manage_user_origin],session[:image_server_group_id],session[:chapman_code])
       @all_data = true
-      @order,@array_of_entries, @json_of_entries = @freereg1_csv_entry.order_fields_for_record_type(@search_record[:record_type],@entry.freereg1_csv_file.def,current_authentication_devise_user.present?)  
+      record_type = @entry.get_record_type
+      @order,@array_of_entries, @json_of_entries = @freereg1_csv_entry.order_fields_for_record_type(record_type,@entry.freereg1_csv_file.def,current_authentication_devise_user.present?)  
     else
       go_back("entry",params[:id])
     end

@@ -454,6 +454,14 @@ class Freereg1CsvEntry
     end
     return place_id, church_id, register_id,extended_def 
   end
+  
+  def get_record_type
+    return self.record_type if RecordType::ALL_FREEREG_TYPES.include?(self.record_type)
+    if self.search_record.present?
+      return  self.search_record.record_type if RecordType::ALL_FREEREG_TYPES.include?(self.search_record.record_type)
+    end
+    return ""
+  end
     
   def date_beyond_cutoff?(date_string, cutoff)
     current_year = Time.now.year
