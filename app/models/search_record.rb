@@ -619,9 +619,6 @@ class SearchRecord
   end
   
   def record_updateable?(search_record,entry)
-    p "upateable"
-    p self
-    p search_record
     is_ok = true
     return false if search_record.nil?
     return false unless self.updateable_date?(search_record,entry)
@@ -630,9 +627,6 @@ class SearchRecord
   end
   
   def updateable_county?(search_record,entry)
-    p "county"
-    p self
-    p search_record
     is_ok = true
     if self.chapman_code.present? && search_record.chapman_code.present? && search_record.chapman_code  != self.chapman_code
       is_ok = false
@@ -648,12 +642,11 @@ class SearchRecord
   def updateable_date?(search_record,entry)
     #We cannot currently update a search date as it is a component of the sharding index
     #We need to delete and then recreate the search record
-     p "date"
-     p self
-     p search_record
-     is_ok = true
-     #following code is likely NOT required but kept in case
-    if self.search_date.present? && search_record.search_date.present? && self.search_date != search_record.search_date
+    is_ok = true
+    case
+    when self.search_date.blank?
+      is_ok = false
+    when search_record.search_date.present? && self.search_date != search_record.search_date
       is_ok = false
     end
     unless is_ok

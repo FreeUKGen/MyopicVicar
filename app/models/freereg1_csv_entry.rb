@@ -390,12 +390,9 @@ class Freereg1CsvEntry
       new_year = FreeregValidations.year_extract(self.burial_date)
       new_year = FreeregValidations.year_extract(self.death_date) if new_year.blank?
     end
+    return if  old_year == new_year
     return if new_year.blank? && old_year.blank?
-    if new_year.present? && old_year.present? && old_year == new_year
-      return 
-    else
-      self.update_attribute(:year,new_year) if new_year.present?
-    end
+    self.update_attribute(:year,new_year) 
     return 
   end
   
