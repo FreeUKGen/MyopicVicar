@@ -249,7 +249,7 @@ module ApplicationHelper
     userid = file.userid
   end
   
-  def register_type(file)
+  def register_type_for_file(file)
     register_type = file.register_type
     if register_type.blank?
       new_register = get_register_object(file)
@@ -262,6 +262,19 @@ module ApplicationHelper
     file.update_attribute(:register_type, new_register_type) unless new_register_type == register_type
     register_type
   end
+  
+  def register_name_for_entry(entry)
+    #expecting the field
+   register_name = RegisterType::display_name(entry)
+   register_name
+  end 
+  
+  def register_name_for_file(file)
+    #expecting the file
+   entry = file.register_type
+   register_name = RegisterType::display_name(entry)
+   register_name
+  end 
   
   def county_name(file)
     county_name = file.county #note county has chapman in file and record)

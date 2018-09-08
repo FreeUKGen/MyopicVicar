@@ -15,5 +15,9 @@
     <%= f.input :record_type, :input_html => { :disabled => true  } %>  
     <%= f.input :line_id, :input_html => { :disabled => true }%>
     <%= f.input :file_line_number, :input_html => { :disabled => true } %> 
+    <%= f.hidden_field :register_type, :value=>@register_type %>
+   <%= f.hidden_field :county, :value=>@chapman_code %>
+   <%= f.hidden_field :place, :value=>@place_name %>
+   <%= f.hidden_field :church_name, :value=>@church_name %>
     <%= f.button :submit, 'Submit'   %>
 <% end %>
