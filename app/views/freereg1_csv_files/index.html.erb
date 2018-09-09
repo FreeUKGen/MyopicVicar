@@ -58,10 +58,10 @@
           <% end %>
         </tbody>
       </table><br />
-<% else%>
-  <h3 style="text-align: center">  No files</h3>
-<% end%>
+      <%= paginate @freereg1_csv_files %>
       </div>      
   </section>
 </div>
-<%= paginate @freereg1_csv_files %>
+<% else%>
+  <h4 style="text-align: center">  No files</h4>
+<% end%>
