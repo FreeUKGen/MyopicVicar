@@ -644,7 +644,7 @@ class SearchRecord
     #We need to delete and then recreate the search record
     is_ok = true
     case
-    when self.search_date.blank?
+    when self.search_date.blank? || search_record.search_date.blank?
       is_ok = false
     when search_record.search_date.present? && self.search_date != search_record.search_date
       is_ok = false
