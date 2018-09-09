@@ -59,18 +59,14 @@ class ImageServerGroupsController < ApplicationController
 
   def display_info
     if session[:image_server_group_id].present?
-      p "here"
-      session[:image_server_group_id]
       image_server_group = ImageServerGroup.find(:id=>session[:image_server_group_id])
       @source = Source.find(image_server_group.source_id)
     elsif session[:source_id].present?
-    p 'there'
-    p session[:source_id]
       @source = Source.find(session[:source_id])
     else
-      p "flash"
       flash[:notice] = 'can not locate image group'
-      redirect_to main_app.new_manage_resource_path and return
+      redirect_to main_app.new_manage_resource_path
+      return
     end
 
     session[:source_id] = @source.id
@@ -206,7 +202,7 @@ class ImageServerGroupsController < ApplicationController
 
   def send_complete_to_cc
     display_info
-  p params
+
     if params[:completed_groups].nil?       # from 'Send Email to CC' under Image Group
       ImageServerGroup.email_cc_completion(params[:id], @place.chapman_code, @user)
     else        # from 'email CC of all image groups' button under 'List Fully Transcribed/Reviewed Groups'
