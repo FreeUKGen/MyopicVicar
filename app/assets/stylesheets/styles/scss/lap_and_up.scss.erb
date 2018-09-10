@@ -27,6 +27,7 @@
   }
 
   .bnner-horz {
+    background-image: url("../../images/png/728x90.png");
     float: right;
     position: relative;
     z-index: 3;
@@ -35,9 +36,12 @@
 
 
     @include manual-media-query(950px) {
-      display: none;
-    }
-
+      min-width: 468px;
+      height: 60px;
+      background-position: -60px;     }
+      
+    @include manual-media-query(700px) {
+      display: none;    }
   }
 
 }
