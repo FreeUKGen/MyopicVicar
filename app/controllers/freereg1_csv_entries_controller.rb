@@ -106,6 +106,7 @@ class Freereg1CsvEntriesController < ApplicationController
     @freereg1_csv_file_name =  @freereg1_csv_file.file_name
     @file_owner = @freereg1_csv_file.userid
     @register = @freereg1_csv_file.register
+    @register_type = @register.register_type
     #@register_name = @register.register_name
     #@register_name = @register.alternate_register_name if @register_name.nil?
     @register_name = RegisterType.display_name(@register.register_type)
@@ -113,6 +114,7 @@ class Freereg1CsvEntriesController < ApplicationController
     @church_name = @church.church_name
     @place = @church.place #id?
     @county =  @place.county
+    @chapman_code = @place.chapman_code
     @place_name = @place.place_name
     @user = get_user
     @first_name = @user.person_forename unless @user.blank?
@@ -203,7 +205,8 @@ class Freereg1CsvEntriesController < ApplicationController
       @entry = @freereg1_csv_entry
       @image_id = @entry.get_the_image_id(@church,@user,session[:manage_user_origin],session[:image_server_group_id],session[:chapman_code])
       @all_data = true
-      @order,@array_of_entries, @json_of_entries = @freereg1_csv_entry.order_fields_for_record_type(@search_record[:record_type],@entry.freereg1_csv_file.def,current_authentication_devise_user.present?)  
+      record_type = @entry.get_record_type
+      @order,@array_of_entries, @json_of_entries = @freereg1_csv_entry.order_fields_for_record_type(record_type,@entry.freereg1_csv_file.def,current_authentication_devise_user.present?)  
     else
       go_back("entry",params[:id])
     end
@@ -216,12 +219,14 @@ class Freereg1CsvEntriesController < ApplicationController
       @freereg1_csv_file.check_and_augment_def(params[:freereg1_csv_entry])
       params[:freereg1_csv_entry],sex_change = @freereg1_csv_entry.adjust_parameters(params[:freereg1_csv_entry], @freereg1_csv_file)
       @freereg1_csv_entry.update_attributes(freereg1_csv_entry_params)
-      @freereg1_csv_entry.check_and_correct_county
       if @freereg1_csv_entry.errors.any?
-        flash[:notice] = 'The update of the record was unsuccessful'
+        flash[:notice] = "The update of the record was unsuccessful #{@freereg1_csv_entry.errors.full_messages}"
+        display_info
         render :action => 'edit'
         return
       else
+        @freereg1_csv_entry.check_and_correct_county
+        @freereg1_csv_entry.check_year
         #update search record if there is a change
         software_version = SoftwareVersion.control.first
         search_version = ''
@@ -229,7 +234,9 @@ class Freereg1CsvEntriesController < ApplicationController
         place = get_place_from_file(@freereg1_csv_file)
         @freereg1_csv_entry.search_record.destroy  if sex_change # updating the search names is too complex on a sex change it is better to just recreate
         @freereg1_csv_entry.search_record(true)   if sex_change#this frefreshes the cache
+        record = SearchRecord.where(:freereg1_csv_entry_id => @freereg1_csv_entry.id).first
         SearchRecord.update_create_search_record(@freereg1_csv_entry,search_version,place)
+        record = SearchRecord.where(:freereg1_csv_entry_id => @freereg1_csv_entry.id).first
         # lock file and note modification date
         @freereg1_csv_file.locked_by_transcriber = true if session[:my_own]
         @freereg1_csv_file.locked_by_coordinator = true unless session[:my_own]
