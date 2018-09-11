@@ -145,33 +145,6 @@ module ApplicationHelper
     dist
   end
 
-  def display_banner
-    banner = <<-HTML
-    <style>
-      .adSenseBanner { width: 320px; height: 100px; }
-      @media(min-width: 500px) { .adSenseBanner { width: 468px; height: 60px; } }
-      @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; } }
-    </style>
-    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <!-- Pagelevel ad -->
-    <script class="adSenseBanner">
-      //window.update_personalized_page_adverts = function (preference) {
-        //  if(preference == 'accept') {
-          //  (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
-          //} else if(preference == 'deny') {
-            //(adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
-          //}
-        //};
-      $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({
-        google_ad_client: "ca-pub-1788116026113570",
-        enable_page_level_ads: true
-      })
-    })
-    </script>
-    HTML
-    banner.html_safe
-  end
-
   def banner_header
     banner = <<-HTML
     <style>
