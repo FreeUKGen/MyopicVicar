@@ -3,7 +3,6 @@
     <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found') || current_page?('/cms/refinery/users/login')%>
       <div class="bnner-horz cen_unit_header cen_unit">
         <% unless device_type == :mobile%>
-        <%= display_banner %>
           <%= banner_header %>
         <% end %>
       </div>
