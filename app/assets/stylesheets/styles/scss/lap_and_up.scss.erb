@@ -15,6 +15,50 @@
 /**
  * Site header
  */
+ 
+ .icon__<%= MyopicVicar::Application.config.template_set %> {
+  background-image: url('<%= path_to_image 'png/freecen.png'%>');
+  background-repeat: no-repeat;
+  width: 274px;
+  height: 87px;
+  display: inline-block;
+ *display: inline;
+  zoom: 1;
+  
+    @include manual-media-query(1090px) {
+      @include vendor(background-size, 100%);
+      width: 20%;
+      height: 0px;
+      overflow: hidden;
+      padding-bottom: 7%;
+      margin: 1% 0% 0% 0%;
+    }
+    @include manual-media-query(1010px) {
+      margin: 2% 0% 0% 0%;
+      width: 16%;
+    }
+
+  @include manual-media-query(950px) {
+      width: 266px;
+      height:87px;
+      padding-bottom: 0;
+      margin: 0px;
+    }
+
+  @include manual-media-query(800px) {
+      width: 25%;
+      max-height: 70px;
+      padding-bottom: 0;
+      margin: 13px 0px 0px 0px;
+    }
+  @include manual-media-query(710px) {
+      width: 266px;
+      height:87px;
+      max-height: 87px;
+      padding-bottom: 0;
+      margin: 0;
+    }
+}
 
 .site__header {
   padding-top: 40px;
@@ -28,7 +72,6 @@
 
   .bnner-horz {
     background-image: url(<%= asset_path 'header-donate.png' %>);
-
     float: right;
     position: relative;
     z-index: 3;
@@ -37,12 +80,15 @@
 
 
     @include manual-media-query(950px) {
-      min-width: 468px;
+      width: 468px;
       height: 60px;
-      background-position: -60px;     }
-      
-    @include manual-media-query(700px) {
-      display: none;    }
+      margin-top: 13px;
+      background-position: -60px; 
+    }
+      @include manual-media-query(710px) {
+    display: none; 
+  }
+
   }
 
 }
@@ -53,37 +99,8 @@
 
   .site__header__logo {
     float: left;
-    margin: 0;
     position: relative;
     z-index: 3;
-  }
-
-  @include manual-media-query(1090px) {
-    .icon__<%= MyopicVicar::Application.config.template_set %> {
-      @include vendor(background-size, 100%);
-      width: 20%;
-      height: 0px;
-      overflow: hidden;
-
-      padding-bottom: 7%;
-      margin-top: 1%;
-    }
-  }
-
-  @include manual-media-query(1010px) {
-    .icon__<%= MyopicVicar::Application.config.template_set %> {
-      margin-top: 2%;
-      width: 16%;
-    }
-  }
-
-  @include manual-media-query(950px) {
-    .icon__<%= MyopicVicar::Application.config.template_set %> {
-      width: 266px;
-      height: 87px;
-      padding-bottom: 0;
-      margin-top: 0;
-    }
   }
 
   .site__header__freeukgen-logo {
