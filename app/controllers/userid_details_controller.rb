@@ -494,6 +494,14 @@ class UseridDetailsController < ApplicationController
       @transcriber_uploaded_file = UseridDetail.where(person_role: "transcriber",number_of_files: {'$ne': 0}).count
       @incomplete_registrations = UseridDetail.new.incomplete_user_registrations_count
       @incomplete_transcriber_registrations = UseridDetail.new.incomplete_transcribers_registrations_count
+      # New Statistics
+      @total_records_transcribers = 1
+      @percentage_total_records_by_transcribers = 2
+      @total_transcribers_accepted_agreement_no_records = 3
+      @percentage_all_users_who_accepted_transcription_agreement = 4
+      @percentage_active_users_who_accepted_transcription_agreement = 5
+      @new_users_last_30_days = 6
+      @new_users_last_90_days = 7
     else
       flash[:notice] = 'Sorry, You are not authorized for this action'
       redirect_to '/manage_resources/new'
