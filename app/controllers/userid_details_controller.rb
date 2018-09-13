@@ -501,7 +501,7 @@ class UseridDetailsController < ApplicationController
       @percentage_all_users_who_accepted_transcription_agreement = 4
       @percentage_active_users_who_accepted_transcription_agreement = 5
       @new_users_last_30_days = 6
-      @new_users_last_90_days = 7
+      @new_users_last_90_days = UseridDetail.where(sign_up_date: {'$gt': DateTime.now - 90.days }).count
     else
       flash[:notice] = 'Sorry, You are not authorized for this action'
       redirect_to '/manage_resources/new'
