@@ -58,7 +58,7 @@
         </tr>
         <tr>
           <td style="font-weight: bold;">Percentage of total records opened by Transcribers </td>
-          <td ><%= @percentage_total_records_by_transcribers %></td>
+          <td ><%= @percentage_total_records_by_transcribers %> % </td>
         </tr>
         <tr>
           <td style="font-weight: bold;">Total number of transcribers who have accepted Transcription Agreement, but have no records </td>
@@ -66,11 +66,15 @@
         </tr>
         <tr>
           <td style="font-weight: bold;">Percentage of all users who accepted Transcription Agreement </td>
-          <td ><%= @percentage_all_users_who_accepted_transcription_agreement %></td>
+          <td ><%= @percentage_all_users_who_accepted_transcription_agreement %> % </td>
         </tr>
         <tr>
-          <td style="font-weight: bold;">Percentage of active users who accepted Transcription Agreement </td>
-          <td ><%= @percentage_active_users_who_accepted_transcription_agreement %></td>
+          <td style="font-weight: bold;">Percentage of (existing) users who accepted Transcription Agreement </td>
+          <td ><%= @percentage_existing_users_who_accepted_transcription_agreement %> % </td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">Percentage of active (existing) users who accepted Transcription Agreement </td>
+          <td ><%= @percentage_active_existing_users_who_accepted_transcription_agreement %> % </td>
         </tr>
         <tr>
           <td style="font-weight: bold;">New Registrations (last 30 days) </td>

@@ -480,6 +480,22 @@ class UseridDetailsController < ApplicationController
   def download_txt
   send_file "#{Rails.root}/script/create_user.txt", type: "application/txt", x_sendfile: true
   end
+  
+  def return_total_transcriber_records
+    total_records = 0
+    UseridDetail.where(person_role: "transcriber", number_of_records: {'$ne': 0}).each do |count|
+      total_records += count.number_of_records
+    end 
+    return total_records
+  end
+  
+  def return_total_records
+    total_records = 0
+    UseridDetail.where(number_of_records: {'$ne': 0}).each do |count|
+      total_records += count.number_of_records
+    end 
+    return total_records
+  end
 
   def transcriber_statistics
     @current_user = cookies.signed[:userid]
@@ -495,11 +511,12 @@ class UseridDetailsController < ApplicationController
       @incomplete_registrations = UseridDetail.new.incomplete_user_registrations_count
       @incomplete_transcriber_registrations = UseridDetail.new.incomplete_transcribers_registrations_count
       # New Statistics
-      @total_records_transcribers = 1
-      @percentage_total_records_by_transcribers = 2
-      @total_transcribers_accepted_agreement_no_records = 3
-      @percentage_all_users_who_accepted_transcription_agreement = 4
-      @percentage_active_users_who_accepted_transcription_agreement = 5
+      @total_records_transcribers = return_total_transcriber_records
+      @percentage_total_records_by_transcribers = (return_total_transcriber_records / return_total_records) * 100
+      @total_transcribers_accepted_agreement_no_records = UseridDetail.where(person_role: "transcriber", new_transcription_agreement: "Accepted", number_of_records: 0).count
+      @percentage_all_users_who_accepted_transcription_agreement = (UseridDetail.where(new_transcription_agreement: "Accepted").count / @total_users) * 100
+      @percentage_existing_users_who_accepted_transcription_agreement = UseridDetail.where(new_transcription_agreement: "Accepted", sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count
+      @percentage_active_existing_users_who_accepted_transcription_agreement = UseridDetail.where(new_transcription_agreement: "Accepted", active: true, sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count
       @new_users_last_30_days = UseridDetail.where(sign_up_date: {'$gt': DateTime.now - 30.days }).count
       @new_users_last_90_days = UseridDetail.where(sign_up_date: {'$gt': DateTime.now - 90.days }).count
     else
