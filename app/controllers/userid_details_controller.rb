@@ -520,7 +520,7 @@ class UseridDetailsController < ApplicationController
       @incomplete_transcriber_registrations = UseridDetail.new.incomplete_transcribers_registrations_count
       # New Statistics
       @total_records_transcribers = return_total_transcriber_records
-      @percentage_total_records_by_transcribers = return_percentage_total_records_by_transcribers
+      @percentage_total_records_by_transcribers = 0
       @total_transcribers_accepted_agreement_no_records = UseridDetail.where(person_role: "transcriber", new_transcription_agreement: "Accepted", number_of_records: 0).count
       @percentage_all_users_who_accepted_transcription_agreement = (UseridDetail.where(new_transcription_agreement: "Accepted").count / @total_users) * 100
       @percentage_existing_users_who_accepted_transcription_agreement = UseridDetail.where(new_transcription_agreement: "Accepted", sign_up_date: {'$gt': DateTime.new(2017, 10, 17)}).count
