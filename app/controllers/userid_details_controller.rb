@@ -525,7 +525,7 @@ class UseridDetailsController < ApplicationController
       @percentage_total_records_by_transcribers = return_percentage_total_records_by_transcribers
       @total_transcribers_accepted_agreement_no_records = UseridDetail.where(person_role: "transcriber", new_transcription_agreement: "Accepted", number_of_records: 0).count
       @percentage_all_users_who_accepted_transcription_agreement = (UseridDetail.where(new_transcription_agreement: "Accepted").count / @total_users) * 100
-      @percentage_existing_users_who_accepted_transcription_agreement = UseridDetail.where(new_transcription_agreement: "Accepted", sign_up_date: {'$gt': DateTime.new(2017, 10, 17)}).count
+      @percentage_existing_users_who_accepted_transcription_agreement = UseridDetail.where(new_transcription_agreement: "Accepted", sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count
       @percentage_active_existing_users_who_accepted_transcription_agreement = UseridDetail.where(new_transcription_agreement: "Accepted", active: true, sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count
       @new_users_last_30_days = UseridDetail.where(sign_up_date: {'$gt': DateTime.now - 30.days }).count
       @new_users_last_90_days = UseridDetail.where(sign_up_date: {'$gt': DateTime.now - 90.days }).count
