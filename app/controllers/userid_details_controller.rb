@@ -489,8 +489,8 @@ def return_total_records
 end
 
 def return_percentage_total_records_by_transcribers
-  total_records_all = return_total_records
-  total_records_open_transcribers = return_total_transcriber_records
+  total_records_all = return_total_records.to_f
+  total_records_open_transcribers = return_total_transcriber_records.to_f
   if total_records_all == 0 || total_records_open_transcribers == 0
     return 0
   else 
@@ -499,8 +499,8 @@ def return_percentage_total_records_by_transcribers
 end 
 
 def return_percentage_all_users_accepted_transcriber_agreement
-  total_users = UseridDetail.count
-  total_users_accepted = UseridDetail.where(new_transcription_agreement: "Accepted").count
+  total_users = UseridDetail.count.to_f
+  total_users_accepted = UseridDetail.where(new_transcription_agreement: "Accepted").count.to_f
   if total_users == 0 || total_users_accepted == 0 
     return 0
   else
@@ -509,8 +509,8 @@ def return_percentage_all_users_accepted_transcriber_agreement
 end 
 
 def return_percentage_all_existing_users_accepted_transcriber_agreement
-  total_existing_users = UseridDetail.where(sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count
-  total_existing_users_accepted = UseridDetail.where(new_transcription_agreement: "Accepted", sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count
+  total_existing_users = UseridDetail.where(sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
+  total_existing_users_accepted = UseridDetail.where(new_transcription_agreement: "Accepted", sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
   if total_existing_users == 0 || total_existing_users_accepted == 0 
     return 0
   else
@@ -519,8 +519,8 @@ def return_percentage_all_existing_users_accepted_transcriber_agreement
 end 
 
 def return_percentage_all_existing_active_users_accepted_transcriber_agreement
-  total_existing_active_users = UseridDetail.where(active: true, sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count
-  total_existing_active_users_accepted = UseridDetail.where(active: true, new_transcription_agreement: "Accepted", sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count
+  total_existing_active_users = UseridDetail.where(active: true, sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
+  total_existing_active_users_accepted = UseridDetail.where(active: true, new_transcription_agreement: "Accepted", sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
   if total_existing_active_users == 0 || total_existing_active_users_accepted == 0 
     return 0
   else
