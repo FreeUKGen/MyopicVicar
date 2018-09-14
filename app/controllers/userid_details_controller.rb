@@ -494,7 +494,7 @@ def return_percentage_total_records_by_transcribers
   if total_records_all == 0 || total_records_open_transcribers == 0
     return 0
   else 
-    return (total_records_open_transcribers / total_records_all) * 100
+    return ((total_records_open_transcribers / total_records_all) * 100).round(2)
   end   
 end 
 
@@ -504,7 +504,7 @@ def return_percentage_all_users_accepted_transcriber_agreement
   if total_users == 0 || total_users_accepted == 0 
     return 0
   else
-    return (total_users_accepted / total_users) * 100
+    return ((total_users_accepted / total_users) * 100).round(2)
   end
 end 
 
@@ -514,7 +514,7 @@ def return_percentage_all_existing_users_accepted_transcriber_agreement
   if total_existing_users == 0 || total_existing_users_accepted == 0 
     return 0
   else
-    return (total_existing_users_accepted / total_existing_users) * 100
+    return ((total_existing_users_accepted / total_existing_users) * 100).round(2)
   end
 end 
 
@@ -524,7 +524,7 @@ def return_percentage_all_existing_active_users_accepted_transcriber_agreement
   if total_existing_active_users == 0 || total_existing_active_users_accepted == 0 
     return 0
   else
-    return (total_existing_active_users_accepted / total_existing_active_users) * 100
+    return ((total_existing_active_users_accepted / total_existing_active_users) * 100).round(2)
   end
 end 
 
