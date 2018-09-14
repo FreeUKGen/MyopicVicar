@@ -201,12 +201,14 @@ class ImageServerGroupsController < ApplicationController
   end
 
   def send_complete_to_cc
-    display_info
-
     if params[:completed_groups].nil?       # from 'Send Email to CC' under Image Group
+      display_info
       ImageServerGroup.email_cc_completion(params[:id], @place.chapman_code, @user)
     else        # from 'email CC of all image groups' button under 'List Fully Transcribed/Reviewed Groups'
       params[:completed_groups].each do |x|
+        session[:image_server_group_id] = x
+        display_info
+
         ImageServerGroup.email_cc_completion(x, @place.chapman_code, @user)
       end
     end
@@ -239,7 +241,7 @@ class ImageServerGroupsController < ApplicationController
       if params[:type] == 'complete'
         redirect_to manage_completion_submitted_image_group_manage_county_path(session[:chapman_code])
       else
-        redirect_to index_image_server_group_path(image_server_group.first.source)
+        redirect_to index_image_server_group_path(image_server_group.source)
       end
     else
       if image_server_group_params[:origin] == 'allocate'

@@ -17,10 +17,10 @@ class Assignment
     def assign_image_server_image_to_assignment(assignment_id,user,image_list,image_status)
       assignment = Assignment.id(assignment_id).first
 
-      if image_status.nil?
+      if image_status.nil?        # re-assign
         ImageServerImage.where(:id=>{'$in'=>image_list}).update_all(:assignment_id=>assignment.id, :transcriber=>[user.userid])
       else
-        case image_status
+        case image_status         # assign
         when 'bt'
             ImageServerImage.where(:id=>{'$in'=>image_list}).update_all(:assignment_id=>assignment.id, :status=>image_status, :transcriber=>[user.userid])
         when 'br'
@@ -319,6 +319,7 @@ class Assignment
 
       create_assignment(source_id,user,instructions,reassign_list,image_status=nil)
       update_prev_assignment(assignment_id)
+      ImageServerImage.refresh_image_server_group_after_assignment(image_server_group_id)
 
       return true
     end

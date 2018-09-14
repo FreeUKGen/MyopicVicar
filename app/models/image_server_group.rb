@@ -362,19 +362,19 @@ class ImageServerGroup
     end
 
     def update_put_request(params,userid)
-      image_server_group = ImageServerGroup.id(params[:id]).first
+      image_server_group = ImageServerGroup.id(params[:id])
       logger.info 'update put request'
-      logger.info image_server_group
+      logger.info image_server_group.first
       case params[:type]
         when 'allocate accept'
-          flash_message = update_image_and_group_for_put_request('ar','a',userid)
+          flash_message = image_server_group.update_image_and_group_for_put_request('ar','a',userid)
         when 'allocate reject'
-          flash_message = update_image_and_group_for_put_request('ar','u',userid)
+          flash_message = image_server_group.update_image_and_group_for_put_request('ar','u',userid)
         when 'unallocate'
-          flash_message = update_image_and_group_for_put_request('a','u')
+          flash_message = image_server_group.update_image_and_group_for_put_request('a','u')
         when 'complete'
           if params[:completed_groups].nil?
-            flash_message = update_image_and_group_for_put_request('r','c')
+            flash_message = image_server_group.update_image_and_group_for_put_request('r','c')
           else
             completed_groups = params[:completed_groups]
             completed_groups.each do |group_id|
