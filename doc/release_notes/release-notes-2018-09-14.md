@@ -11,7 +11,8 @@ __FreeCEN2 | Release Notes__
   __Improvements__
   ----------------
 
-  * Added further statistics to our Transcriber Statistics page https://freecen2.freecen.org.uk/userid_details/transcriber_statistics (Management / Technical staff only), including New Registrations, and other percentage stats for transcriber activity. 
+  * Added further statistics to our Transcriber Statistics page https://freecen2.freecen.org.uk/userid_details/transcriber_statistics (Management / Technical staff only), including New Registrations, and other percentage stats for transcriber activity. (Issue 424)
+  * Added syndicate (name) details to email notification of user re-assignment (Issue 505)  
 
 
   __Fixes__
@@ -40,5 +41,6 @@ __FreeCEN2 | Release Notes__
 * Added new statistics instance variables to userid_details_controller and populated transcriber statistics view
 * Added release note for 30-08-2018
 * Updated Errbit to catch error if config file does not exist
+* Added new syndicate name to change of syndicate email notification
 
   
