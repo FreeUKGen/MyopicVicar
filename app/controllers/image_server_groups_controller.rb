@@ -120,7 +120,16 @@ class ImageServerGroupsController < ApplicationController
 
   def initialize_status
     display_info
-    @image_server_group = ImageServerGroup.id(params[:id]).first
+
+    if params[:type].nil?     # from 'initialize image group' (image group show)
+      @group_name = ImageServerGroup.group_list_by_status(params[:id], ['u',nil])
+      @groups = ImageServerGroup.where(:source_id=>params[:id], :"summary.status"=>{'$in'=>['u',nil]})
+      @image_server_group = @groups.first
+    else                      # from 'initialize image groups' (image groups index)
+      @image_server_group = ImageServerGroup.id(params[:id]).first
+    end
+
+    redirect_to(:back, :notice=> 'No Image Group Available for Initialization') and return if @image_server_group.nil?
   end
 
   def my_list_by_county
@@ -250,10 +259,9 @@ class ImageServerGroupsController < ApplicationController
         flash[:notice] = 'Allocate of Image Groups was successful'
         redirect_to index_image_server_group_path(image_server_group.first.source)
       elsif !image_server_group_params[:initialize_status].nil?           # to initialize Image Group
-        image_server_group = ImageServerGroup.id(params[:id]).first
-        ImageServerGroup.initialize_all_images_status_under_image_group(params[:id], image_server_group_params[:initialize_status])
+        image_server_group = ImageServerGroup.update_initialize_request(image_server_group_params)
 
-        flash[:notice] = 'Successfully initialized Image Group'
+        flash[:notice] = 'Successfully initialized Image Group(s)'
         redirect_to index_image_server_group_path(image_server_group.source)
       else
         image_server_group = ImageServerGroup.id(params[:id]).first
