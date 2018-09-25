@@ -159,6 +159,11 @@ module ApplicationHelper
        data-ad-format="auto">
     </ins>
     <script>
+      window.onload = setTimeout(function delayAdblockMessage(){
+        var headerDonate = document.querySelector('.bnner-horz')
+        headerDonate.setAttribute("style", "background: url(assets/images/png/header-donate.png)");
+      }, 2000)
+      
       window.update_personalized_header_adverts = function (preference) {
           if(preference == 'accept') {
             (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
