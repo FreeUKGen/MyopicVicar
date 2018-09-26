@@ -122,8 +122,8 @@ class ImageServerGroupsController < ApplicationController
     display_info
 
     if params[:type].nil?     # from 'initialize image group' (image group show)
-      @group_name = ImageServerGroup.group_list_by_status(params[:id], ['u',nil])
-      @groups = ImageServerGroup.where(:source_id=>params[:id], :"summary.status"=>{'$in'=>['u',nil]})
+      @group_name = ImageServerGroup.group_list_by_status(params[:id], ['u'])
+      @groups = ImageServerGroup.where(:source_id=>params[:id], :"summary.status"=>{'$in'=>['u']})
       @image_server_group = @groups.first
     else                      # from 'initialize image groups' (image groups index)
       @image_server_group = ImageServerGroup.id(params[:id]).first
