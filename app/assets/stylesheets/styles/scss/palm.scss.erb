@@ -79,6 +79,9 @@
 
   .site__header__logo {
     display: block !important;
+    @include manual-media-query(570px) {
+                  margin: ($base-spacing-unit * 2) auto $base-spacing-unit auto;
+            }    
   }
 
   .site__header__freeukgen-logo {
