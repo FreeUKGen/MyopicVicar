@@ -131,7 +131,35 @@
     }
 
   }
+/*** Adsense Banners ***/
 
+.bnner-horz-secondary {
+    width: 320px;
+    height: 50px;
+    background-position: -60px; 
+    
+    @include manual-media-query(448px) {
+    display: none;
+  }
+}
+
+.adblck-background {
+background-image: url(/assets/images/png/youtube.png) !important;
+}
+
+.adsense_center, .adsense_box {
+  margin: 0 auto;
+  font-weight: bold;
+  margin-bottom: 20px;
+  border: 1px solid #c0c0c0;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+      @include manual-media-query(448px) {
+    display: none;
+  }
+}
 
 
 /**
