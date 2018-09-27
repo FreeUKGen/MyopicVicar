@@ -196,11 +196,6 @@ module ApplicationHelper
       @data_ad_slot = "2003577939"
     end
     banner = <<-HTML
-    <style>
-      .adSenseBanner { width: 320px; height: 100px; text-align: center; margin: auto;}
-      @media(min-width: 500px) { .adSenseBanner { width: 468px; height: 60px; text-align: center; margin: auto; } }
-      @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
-    </style>
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <script>
         (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
@@ -233,11 +228,6 @@ module ApplicationHelper
 
   def fullwidth_adsense
     banner = <<-HTML
-    <style>
-      .adSenseBanner { width: 320px; height: 100px; text-align: center; margin: auto;}
-      @media(min-width: 500px) { .adSenseBanner { width: 468px; height: 60px; text-align: center; margin: auto; } }
-      @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
-    </style>
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <script>
         (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
