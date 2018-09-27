@@ -23,7 +23,7 @@
 .bnner-horz-secondary {
   width: 728px;
   height: 90px;
-  background: green;
+  background: transparent;
       @include manual-media-query(890px) {
       width: 468px;
       height: 60px;
