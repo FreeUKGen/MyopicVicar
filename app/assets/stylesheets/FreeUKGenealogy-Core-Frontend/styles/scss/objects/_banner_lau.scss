@@ -5,6 +5,13 @@
 /**
  * A horizontal banner
  */
+
+// This class gets dynamically added to containers with Adsense units, after 2 seconds.
+.adblck-background {
+ background-image: url(/assets/images/png/youtube.png) !important;
+}
+ 
+ 
 .bnner-horz {
   display: block;
   text-align: center;
