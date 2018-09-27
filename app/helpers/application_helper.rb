@@ -160,8 +160,8 @@ module ApplicationHelper
     </ins>
     <script>
       window.onload = setTimeout(function delayAdblockMessage(){
-        var headerDonate = document.querySelector('.bnner-horz')
-        headerDonate.setAttribute("style", "background: url(assets/images/png/header-donate.png)");
+        var bannerHeader = document.querySelector('.bnner-horz')
+        bannerHeader.classList.add("adblck-background")
       }, 2000)
       
       window.update_personalized_header_adverts = function (preference) {
