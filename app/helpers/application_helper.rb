@@ -161,8 +161,11 @@ module ApplicationHelper
     <script>
       window.onload = setTimeout(function delayAdblockMessage(){
         var bannerHeader = document.querySelector('.bnner-horz')
-        bannerHeader.classList.add("adblck-background")
-      }, 2000)
+        var bannerHeaderSecondary = document.querySelectorAll('.bnner-horz-secondary'), i;
+        for (i = 0; i < bannerHeaderSecondary.length; ++i) {
+          bannerHeaderSecondary[i].classList.add("adblck-background");
+        }
+    }, 2000)
       
       window.update_personalized_header_adverts = function (preference) {
           if(preference == 'accept') {
