@@ -513,7 +513,7 @@ class UseridDetailsController < ApplicationController
     if total_users == 0 || total_users_accepted == 0 
       return 0
     else
-      return (total_users_accepted / total_users) * 100
+      return ((total_users_accepted / total_users) * 100).round(2)
     end
   end 
   
@@ -523,7 +523,7 @@ class UseridDetailsController < ApplicationController
     if total_existing_users == 0 || total_existing_users_accepted == 0 
       return 0
     else
-      return (total_existing_users_accepted / total_existing_users) * 100
+      return ((total_existing_users_accepted / total_existing_users) * 100).round(2)
     end
   end 
   
@@ -533,7 +533,7 @@ class UseridDetailsController < ApplicationController
     if total_existing_active_users == 0 || total_existing_active_users_accepted == 0 
       return 0
     else
-      return (total_existing_active_users_accepted / total_existing_active_users) * 100
+      return ((total_existing_active_users_accepted / total_existing_active_users) * 100).round(2)
     end
   end 
   
