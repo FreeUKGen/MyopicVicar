@@ -6,21 +6,10 @@
 
 <section class="island  island--light">
 <div class="grid">
-
 <%= simple_form_for @image_server_group do |s| %>
   <%= s.input :initialize_status, :as=>:select, :collection=>[['Unallocated','u'], ['Transcribed','t'], ['Completed','c']], :label=>"Initialize Image Group to Status", :include_blank=>false, :selected=>false, :required=>false, :selected=>@image_server_group[:summary][:status], :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :style=>'width: 100%', :size=>3} %>
-
-	<% if not @groups.nil? %>
-  	<%= s.input :custom_field, :as=>:check_boxes, :collection=>@group_name.invert.sort_by{|x| x[0].downcase}.unshift(['select all', '0']), :label=>'Select Image Groups You Want to Initialize', :include_hidden=>false, :label_html=>{:style=>'margin-left:2px'}, :item_label_class=>"collection_check_boxes", :input_html=>{:class=>"simple_form_position", :checked=>false} %>
-  <% else %>
-  	<%= s.hidden_field :custom_field, :value=>@image_server_group.id %>
-	<% end %>
-
-	<%= s.button :submit, 'Submit' %>
+  
+  <%= s.button :submit, 'Submit' %>
 <% end %>
 </div>
 </section>
-
-<script type="text/javascript">
-  <%= render :partial => 'image_server_group.js' %>
-</script>

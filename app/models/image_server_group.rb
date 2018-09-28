@@ -361,17 +361,6 @@ class ImageServerGroup
       return flash_notice
     end
 
-    def update_initialize_request(params)
-      # params[:custom_field] = array of group ids from initialize image groups (image group index)
-      # params[:custom_field] = group id from initialize image group (image group show)
-      Array(params[:custom_field]).each do |x|          
-        @image_server_group = ImageServerGroup.id(x).first
-        ImageServerGroup.initialize_all_images_status_under_image_group(x, params[:initialize_status])
-      end
-
-      return @image_server_group
-    end
-
     def update_put_request(params,userid)
       image_server_group = ImageServerGroup.id(params[:id])
       logger.info 'update put request'
