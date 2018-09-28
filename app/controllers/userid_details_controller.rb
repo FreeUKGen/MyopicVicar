@@ -483,7 +483,7 @@ class UseridDetailsController < ApplicationController
   
   def return_total_transcriber_records
     total_records = 0
-    UseridDetail.where(person_role: "transcriber", new_transcription_agreement: "Accepted", number_of_records: {'$ne': 0}).each do |count|
+    UseridDetail.where(person_role: "transcriber", transcription_agreement: "Accepted", number_of_records: {'$ne': 0}).each do |count|
       total_records += count.number_of_records
     end 
     return total_records
@@ -509,7 +509,7 @@ class UseridDetailsController < ApplicationController
   
   def return_percentage_all_users_accepted_transcriber_agreement
     total_users = UseridDetail.count.to_f
-    total_users_accepted = UseridDetail.where(new_transcription_agreement: "Accepted").count.to_f
+    total_users_accepted = UseridDetail.where(transcription_agreement: "Accepted").count.to_f
     if total_users == 0 || total_users_accepted == 0 
       return 0
     else
@@ -519,7 +519,7 @@ class UseridDetailsController < ApplicationController
   
   def return_percentage_all_existing_users_accepted_transcriber_agreement
     total_existing_users = UseridDetail.where(sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
-    total_existing_users_accepted = UseridDetail.where(new_transcription_agreement: "Accepted", sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
+    total_existing_users_accepted = UseridDetail.where(transcription_agreement: "Accepted", sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
     if total_existing_users == 0 || total_existing_users_accepted == 0 
       return 0
     else
@@ -529,7 +529,7 @@ class UseridDetailsController < ApplicationController
   
   def return_percentage_all_existing_active_users_accepted_transcriber_agreement
     total_existing_active_users = UseridDetail.where(active: true, sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
-    total_existing_active_users_accepted = UseridDetail.where(active: true, new_transcription_agreement: "Accepted", sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
+    total_existing_active_users_accepted = UseridDetail.where(active: true, transcription_agreement: "Accepted", sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
     if total_existing_active_users == 0 || total_existing_active_users_accepted == 0 
       return 0
     else
@@ -543,7 +543,7 @@ class UseridDetailsController < ApplicationController
     if stats_permitted_users?
       @total_users = UseridDetail.count
       @total_transcribers = UseridDetail.where(person_role: "transcriber").count
-      @total_transcribers_accepted_agreement = UseridDetail.where(person_role: "transcriber", new_transcription_agreement: "Accepted").count
+      @total_transcribers_accepted_agreement = UseridDetail.where(person_role: "transcriber", transcription_agreement: "Accepted").count
       @total_active_transcribers = UseridDetail.where(person_role: "transcriber", active: true).count
       @users_never_uploaded_file = UseridDetail.where(number_of_files: 0).count
       @users_uploaded_file = UseridDetail.where(number_of_files: {'$ne': 0}).count
@@ -554,7 +554,7 @@ class UseridDetailsController < ApplicationController
       # New Statistics
       @total_records_transcribers = return_total_transcriber_records
       @percentage_total_records_by_transcribers = return_percentage_total_records_by_transcribers
-      @total_transcribers_accepted_agreement_no_records = UseridDetail.where(person_role: "transcriber", new_transcription_agreement: "Accepted", number_of_records: 0).count
+      @total_transcribers_accepted_agreement_no_records = UseridDetail.where(person_role: "transcriber", transcription_agreement: "Accepted", number_of_records: 0).count
       @percentage_all_users_who_accepted_transcription_agreement = return_percentage_all_users_accepted_transcriber_agreement
       @percentage_existing_users_who_accepted_transcription_agreement = return_percentage_all_existing_users_accepted_transcriber_agreement
       @percentage_active_existing_users_who_accepted_transcription_agreement = return_percentage_all_existing_active_users_accepted_transcriber_agreement
