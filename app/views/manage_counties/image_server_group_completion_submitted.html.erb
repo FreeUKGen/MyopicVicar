@@ -6,7 +6,7 @@
 
 <% if not @group_ids.empty? %>
 	 <div style="text-align: center">  
-		<%= link_to 'Accept All Groups as Completed', image_server_group_path(@group_id, :type=>'complete', :completed_groups=>@completed_groups), data: { confirm: 'Click Yes if you want to accept all groups as completed'}, method: :put, :class => "btn weight--light btn--small" %>
+		<%= link_to 'Accept All Groups as Completed', image_server_group_path(@dummy, :type=>'complete', :completed_groups=>@completed_groups), data: { confirm: 'Click OK if you want to accept all groups as completed'}, method: :put, :class => "btn weight--light btn--small" %>
 	</div>
 <% end %>
 

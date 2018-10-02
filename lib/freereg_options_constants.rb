@@ -139,7 +139,7 @@ module FreeregOptionsConstants
 
   DATERANGE_MINIMUM = 1530
 
-  END_FIELDS = ['transcribed_by', 'credit', 'file_line_number','film','film_number','line_id']
+  END_FIELDS = ['transcribed_by', 'credit', 'file_line_number','film','film_number','line_id','processed_date']
 
   ENTRY_ORDER_DEFINITION = { "ba" => {
                                :chapman_code=> 1,
@@ -229,7 +229,7 @@ module FreeregOptionsConstants
   'bride_parish','bride_condition','bride_occupation','bride_abode','bride_marked','bride_father_forename','bride_father_surname','bride_father_occupation',
   'bride_father_title','bride_mother_forename','bride_mother_surname','bride_mother_title','bride_mother_occupation','witness']
 
-  FILES_PER_PAGE = 500
+  FILES_PER_PAGE = 250
 
   FORCE_SEARCH_RECORD_RECREATE = ["baptism_date","birth_date","bride_father_forename","bride_father_surname","bride_forename","bride_surname","burial_date",
                                   "burial_person_forename","burial_person_surname","father_forename","father_surname","female_relative_forename","groom_father_forename",

@@ -41,6 +41,14 @@ class Register
     def id(id)
       where(:id => id)
     end
+    
+    def check_and_correct_register_type(register_type)
+      if !(RegisterType.approved_option_values.include?(register_type) || RegisterType.option_values.include?(register_type))
+        register_type = RegisterType::APPROVED_OPTIONS[register_type] if RegisterType.approved_option_keys.include?(register_type)
+        register_type = RegisterType::OPTIONS[register_type] if RegisterType.option_keys.include?(register_type)  
+      end
+      register_type
+    end
 
     def create_register_for_church(args,freereg1_csv_file)
       # look for the church

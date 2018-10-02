@@ -1265,12 +1265,12 @@ class CsvRecords <  CsvFile
     n = 0
     while n < header_fields.length 
       #need to verify fields
-      field = header_fields[n].downcase
-      if valid_field_definition?(field) 
+      header_fields[n].nil? ? field = nil : field = header_fields[n].downcase
+      if field.present? && valid_field_definition?(field) 
         @data_entry_order[field.to_sym] = n 
       else
         proceed = false
-        csvfile.header_error << "The field order definition contains an invalid field #{header_fields[n]}. <br>"
+        csvfile.header_error << "The field order definition at position #{n} contains an invalid field #{header_fields[n]}; (is it blank?)}. <br>"
       end 
       n = n + 1  
     end 
@@ -1559,11 +1559,14 @@ class CsvRecord < CsvRecords
     @data_record[:line_id] = csvfile.header[:userid] + "." + csvfile.header[:file_name] + "." + line.to_s
     @data_record[:file_line_number] = line
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:baptism_date])
-    @data_record[:year] = FreeregValidations.year_extract(@data_record[:birth_date]) if FreeregValidations.year_extract(@data_record[:baptism_date]).nil?
+    @data_record[:year] = FreeregValidations.year_extract(@data_record[:birth_date]) if @data_record[:year].blank?
+    @data_record[:year] = FreeregValidations.year_extract(@data_record[:confirmation_date]) if @data_record[:year].blank?
+    @data_record[:year] = FreeregValidations.year_extract(@data_record[:received_into_church_date]) if @data_record[:year].blank?
     (@data_record[:private_baptism].present? && FreeregOptionsConstants::PRIVATE_BAPTISM_OPTIONS.include?(@data_record[:private_baptism].downcase)) ? @data_record[:private_baptism] = true : @data_record[:private_baptism] = false
     @data_record[:person_sex] = process_baptism_sex_field(@data_record[:person_sex])
     @data_record[:father_surname] = Unicode::upcase(@data_record[:father_surname] ) unless @data_record[:father_surname] .nil?
     @data_record[:mother_surname] = Unicode::upcase(@data_record[:mother_surname]) unless  @data_record[:mother_surname].nil?
+    @data_record[:processed_date] = Time.now
     csvfile.data[line] = @data_record
   end
 
@@ -1592,10 +1595,11 @@ class CsvRecord < CsvRecords
     @data_record[:line_id] = csvfile.header[:userid] + "." + csvfile.header[:file_name] + "." + line.to_s
     @data_record[:file_line_number] = line
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:burial_date])
-    @data_record[:year] = FreeregValidations.year_extract(@data_record[:death_date]) if FreeregValidations.year_extract(@data_record[:burial_date]).nil? && csvfile.header[:def]
+    @data_record[:year] = FreeregValidations.year_extract(@data_record[:death_date]) if @data_record[:year].blank?
     @data_record[:relative_surname] = Unicode::upcase(@data_record[:relative_surname]) unless @data_record[:relative_surname].nil?
     @data_record[:burial_person_surname] = Unicode::upcase( @data_record[:burial_person_surname])  unless @data_record[:burial_person_surname].nil?
     @data_record[:female_relative_surname] = Unicode::upcase( @data_record[:female_relative_surname])  unless @data_record[:female_relative_surname].nil? 
+    @data_record[:processed_date] = Time.now
     csvfile.data[line] = @data_record
    
   end
@@ -1625,10 +1629,11 @@ class CsvRecord < CsvRecords
     @data_record[:line_id] = csvfile.header[:userid] + "." + csvfile.header[:file_name] + "." + line.to_s
     @data_record[:file_line_number] = line
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:marriage_date])
-    @data_record[:year] = FreeregValidations.year_extract(@data_record[:contract_date]) if FreeregValidations.year_extract(@data_record[:marriage_date]).nil? && csvfile.header[:def]
+    @data_record[:year] = FreeregValidations.year_extract(@data_record[:contract_date]) if @data_record[:year].blank?
     (@data_record[:marriage_by_licence].present? && FreeregOptionsConstants::MARRIAGE_BY_LICENCE_OPTIONS.include?(@data_record[:marriage_by_licence].downcase)) ? @data_record[:marriage_by_licence] = true : @data_record[:marriage_by_licence] = false 
     (@data_record[:groom_marked].present? && FreeregOptionsConstants::MARKED_OPTIONS.include?(@data_record[:groom_marked].downcase)) ? @data_record[:groom_marked] = true : @data_record[:groom_marked] = false
     (@data_record[:bride_marked].present? && FreeregOptionsConstants::MARKED_OPTIONS.include?(@data_record[:bride_marked].downcase)) ? @data_record[:bride_marked] = true : @data_record[:bride_marked] = false
+    @data_record[:processed_date] = Time.now
     csvfile.data[line] = @data_record
   end
   

@@ -84,7 +84,11 @@ class Source
         register_id = Hash.new{|h,k| h[k]=[]}.tap{|h| register.each{|k,v,w| h[k] << v << w}}
 
         source = Source.find_by_register_ids(register_id).pluck(:id, :register_id, :source_name)
-        x = Hash.new{|h,k| h[k]=[]}.tap{|h| source.each{|k,v,w| h[k] << v << w}}
+        if not (source.nil? or source.empty?) 
+          x = Hash.new{|h,k| h[k]=[]}.tap{|h| source.each{|k,v,w| h[k] << v << w}}
+        else
+          return nil, nil
+        end
 
         sid = []
         x.each do |k1,v1|
@@ -96,8 +100,13 @@ class Source
           place_name = place_id[church_id[register_id[v1[0]][0]][0]]
           sid << [k1, place_name, church_name, register_type, v1[1]]
         end
-        s_id = sid.sort_by {|a,b,c,d,e| [b,c,d,e]}
-        return s_id, source_id
+
+        if not sid.empty?
+          s_id = sid.sort_by {|a,b,c,d,e| [b,c,d,e]}
+          return s_id, source_id
+        else
+          return nil, nil
+        end
       end
     end
 

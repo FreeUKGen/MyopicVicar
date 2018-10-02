@@ -78,7 +78,7 @@ module ApplicationHelper
        :feedback_type => feedback_type }
   end
 
-
+  #Do not believe the following is used anywhere
   def freereg1_csv_file_for_display(freereg1_csv_file)
     display_map = {}
     display_map["Register Type"] = RegisterType.display_name(freereg1_csv_file.register.register_type)
@@ -244,21 +244,38 @@ module ApplicationHelper
     end
     church_name
   end
+  
   def userid(file)
     userid = file.userid
   end
-  def register_type(file)
+  
+  def register_type_for_file(file)
     register_type = file.register_type
     if register_type.blank?
-      register = get_register_object(file)
-      register_type = RegisterType.display_name(register.register_type) unless register.blank?
-      file.update_attribute(:register_type, register_type) unless register.blank?
+      new_register = get_register_object(file)
+      new_register_type = ' '
+      new_register_type = new_register.register_type unless new_register.blank?
+      new_register_type = Register.check_and_correct_register_type(new_register_type)
     else
-      register_type = RegisterType.display_name(register_type)
+      new_register_type = Register.check_and_correct_register_type(register_type)
     end
-
+    file.update_attribute(:register_type, new_register_type) unless new_register_type == register_type
     register_type
   end
+  
+  def register_name_for_entry(entry)
+    #expecting the field
+   register_name = RegisterType::display_name(entry)
+   register_name
+  end 
+  
+  def register_name_for_file(file)
+    #expecting the file
+   entry = file.register_type
+   register_name = RegisterType::display_name(entry)
+   register_name
+  end 
+  
   def county_name(file)
     county_name = file.county #note county has chapman in file and record)
     case
@@ -273,6 +290,7 @@ module ApplicationHelper
     end
     county_name
   end
+  
   def chapman(file)
     chapman = file.county
     return chapman if  ChapmanCode.value?(chapman)
@@ -283,6 +301,7 @@ module ApplicationHelper
     chapman = place.chapman_code unless place.blank?
     chapman
   end
+  
   def place_name(file)
     place_name = file.place
     if place_name.blank?
@@ -293,17 +312,35 @@ module ApplicationHelper
     end
     place_name
   end
+  
   def owner(file)
     owner = file.userid
   end
   
+  def processed_date(file)
+    if file.processed_date.nil?
+      physical_file = PhysicalFile.file_name(file.file_name).userid(file.userid).first
+      if physical_file.present? && physical_file.file_processed_date.present?
+        processed_date = physical_file.file_processed_date.strftime("%d/%m/%Y")
+        file.update_attribute(:processed_date, physical_file.file_processed_date) 
+      else
+        processed_date = ''
+      end
+    else
+      processed_date = file.processed_date.strftime("%d/%m/%Y")
+    end
+    processed_date
+  end
+  
+  def uploaded_date(file)
+    file.uploaded_date.nil? ? uploaded_date = '' : uploaded_date = file.uploaded_date.strftime("%d/%m/%Y")
+  end
   
   def system_administrator(user)
     user.user_role == 'system_administrator' ? system_administerator = true : system_administerator = false
     system_administrator
   end
-  
-  
+ 
   def get_register_object(file)
     register = file.register unless file.blank?
   end

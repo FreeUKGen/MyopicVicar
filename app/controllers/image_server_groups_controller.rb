@@ -120,7 +120,16 @@ class ImageServerGroupsController < ApplicationController
 
   def initialize_status
     display_info
-    @image_server_group = ImageServerGroup.id(params[:id]).first
+
+    if params[:type].nil?     # from 'initialize image group' (image group show)
+      @group_name = ImageServerGroup.group_list_by_status(params[:id], ['u'])
+      @groups = ImageServerGroup.where(:source_id=>params[:id], :"summary.status"=>{'$in'=>['u']})
+      @image_server_group = @groups.first
+    else                      # from 'initialize image groups' (image groups index)
+      @image_server_group = ImageServerGroup.id(params[:id]).first
+    end
+
+    redirect_to(:back, :notice=> 'No Image Group Available for Initialization') and return if @image_server_group.nil?
   end
 
   def my_list_by_county
@@ -201,14 +210,19 @@ class ImageServerGroupsController < ApplicationController
   end
 
   def send_complete_to_cc
-    display_info
+    if params[:completed_groups].nil?       # from 'Send Email to CC' under Image Group
+      display_info
+      ImageServerGroup.email_cc_completion(params[:id], @place.chapman_code, @user)
+    else        # from 'email CC of all image groups' button under 'List Fully Transcribed/Reviewed Groups'
+      params[:completed_groups].each do |x|
+        session[:image_server_group_id] = x
+        display_info
 
-    image_server_group = ImageServerGroup.where(:id=>params[:id])
-    ImageServerImage.update_image_status(image_server_group,'cs')
+        ImageServerGroup.email_cc_completion(x, @place.chapman_code, @user)
+      end
+    end
 
-    UserMailer.notify_cc_assignment_complete(@user,params[:id],@place[:chapman_code]).deliver_now
-
-    redirect_to(:back, :notice => 'Email sent to County Coordinator')
+    redirect_to(manage_image_group_manage_syndicate_path(session[:Syndicate]), :notice => 'Email is sent to County Coordinator')
   end
 
   def show
@@ -227,14 +241,16 @@ class ImageServerGroupsController < ApplicationController
 
   def update
     if params[:_method] =='put'
-      image_server_group = ImageServerGroup.id(params[:id])
+      image_server_group = ImageServerGroup.id(params[:id]).first
+      logger.info 'image_server_group update'
+      logger.info image_server_group
       user = get_user
       flash[:notice] = ImageServerGroup.update_put_request(params, user)
 
       if params[:type] == 'complete'
         redirect_to manage_completion_submitted_image_group_manage_county_path(session[:chapman_code])
       else
-        redirect_to index_image_server_group_path(image_server_group.first.source)
+        redirect_to index_image_server_group_path(image_server_group.source)
       end
     else
       if image_server_group_params[:origin] == 'allocate'
@@ -243,10 +259,9 @@ class ImageServerGroupsController < ApplicationController
         flash[:notice] = 'Allocate of Image Groups was successful'
         redirect_to index_image_server_group_path(image_server_group.first.source)
       elsif !image_server_group_params[:initialize_status].nil?           # to initialize Image Group
-        image_server_group = ImageServerGroup.id(params[:id]).first
-        ImageServerGroup.initialize_all_images_status_under_image_group(params[:id], image_server_group_params[:initialize_status])
+        image_server_group = ImageServerGroup.update_initialize_request(image_server_group_params)
 
-        flash[:notice] = 'Successfully initialized Image Group'
+        flash[:notice] = 'Successfully initialized Image Group(s)'
         redirect_to index_image_server_group_path(image_server_group.source)
       else
         image_server_group = ImageServerGroup.id(params[:id]).first
@@ -263,7 +278,7 @@ class ImageServerGroupsController < ApplicationController
       end
     end
   end
-  
+
   def upload
     image_server_group = ImageServerGroup.id(params[:id]).first
     website = image_server_group.create_upload_images_url
