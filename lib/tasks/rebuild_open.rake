@@ -6,14 +6,17 @@ namespace :myopic_vicar do
   def rebuild_places
     Place.where(:data_present => 1).order(:chapman_code => 1, :place_name => 1).each do |place| 
       print "#{place.chapman_code}\t#{place.place_name}\n"
+      STDOUT.flush
       begin
         place.rebuild_open_records  
       rescue 
         print "ERROR on #{place.chapman_code}\t#{place.place_name}\nretrying\n"        
+        STDOUT.flush
         begin
           place.rebuild_open_records  
         rescue 
           print "ERROR on #{place.chapman_code}\t#{place.place_name}\nretrying again\n"        
+          STDOUT.flush
           place.rebuild_open_records  
         end
       end
