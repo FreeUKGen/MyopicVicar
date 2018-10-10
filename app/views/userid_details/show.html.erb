@@ -7,9 +7,9 @@
       <%= link_to 'List Batches', by_userid_freereg1_csv_file_path(@userid), method: :get , :class => "btn weight--light  btn--small " %>
       <% if @user.person_role == 'system_administrator' || @user.person_role == 'syndicate_coordinator' || @user.person_role ==
       'volunteer_coordinator'  ||  @user.person_role == 'county_coordinator' || @user.person_role == 'country_coordinator'  %>
-      
+
       <%= link_to " Send password change request", change_password_userid_detail_path(@userid, page_name: @page_name), data: { confirm: 'You are sending a password reset email to the user. Do you wish to proceed?' }, method: :get, :class => "btn weight--light  btn--small " %> <%= link_to ' Destroy', userid_detail_path(@userid), data: { confirm: 'Are you absolutely sure?' }, method: :delete, :class => "btn  weight--light btn--small "  %>
-      <% end %>      
+      <% end %>
       <% end %>
     </div>
     <div style="clear:both;"> </div>
@@ -51,6 +51,13 @@
         </tr> <tr>
           <td>Role in FreeREG:</td><td > <%=@userid.person_role%>  </td>
         </tr> <tr>
+          <td>Secondary Role in FreeREG:</td>
+          <td>
+            <%@userid.secondary_role.each do |role| %>
+            <%=role%><%if(role != @userid.secondary_role.last)%>,<%end%>
+            <%end%>
+          </td>
+        </tr><tr>
           <td>Transcription agreement accepted:</td><td > <%= @userid.new_transcription_agreement%>  </td>
         </tr> <tr>
           <td>Previous Syndicate:</td><td > <%= @userid.previous_syndicate%>  </td>
@@ -62,8 +69,8 @@
           <td>Do not acknowledge my contributions:</td><td > <%= @userid.do_not_acknowledge_me%>  </td>
         </tr> <tr>
           <td>Use a pseudonym in place of my name:</td><td > <%=@userid.acknowledge_with_pseudo_name%>  </td>
-          <% if @userid.acknowledge_with_pseudo_name %> 
-            </tr><tr> 
+          <% if @userid.acknowledge_with_pseudo_name %>
+            </tr><tr>
               <td>Pseudonym to be used:</td><td > <%=@userid.pseudo_name%>  </td>
           <% end%>
           <% unless @userid.last_upload.nil?%>
@@ -99,7 +106,7 @@
             <td>Reason for making inactive (explanation):</td><td > <%=@userid.disabled_reason %>  </td>
           </tr>
         <% end%>
-      <% end%> 
+      <% end%>
     </table><br>
    </div>
   <div class="grid__item  one-third  palm-one-whole ">

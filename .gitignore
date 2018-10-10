@@ -33,6 +33,10 @@ mongo.log
 /public/assets/
 /test_data/warning/
 
+# Cloud9
+mongod
+start_dbs
+
 # Ignore RVM-related files
 .rvmrc
 
