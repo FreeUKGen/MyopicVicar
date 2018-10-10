@@ -588,9 +588,9 @@ class SearchRecord
     end
     # join and clean
     friendly = particles.join('-')
-    friendly.gsub(/\W/, '-')
-    friendly.gsub(/-+/, '-')
-    friendly.downcase
+    friendly.gsub!(/\W/, '-')
+    friendly.gsub!(/-+/, '-')
+    friendly.downcase!
   end
 
   def gender_from_role(role)
