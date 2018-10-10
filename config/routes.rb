@@ -160,7 +160,9 @@ MyopicVicar::Application.routes.draw do
 
   get 'userid_details/confirm_email_address', :to =>'userid_details#confirm_email_address', :as => :confirm_email_address_userid_details
   get 'userid_details/role', :to =>'userid_details#role', :as => :role_userid_detail
+  get 'userid_details/secondary', :to =>'userid_details#secondary', :as => :secondary_userid_detail
   get 'userid_details/person_roles', :to =>'userid_details#person_roles', :as => :person_roles_userid_detail
+  get 'userid_details/secondary_roles', :to =>'userid_details#secondary_roles', :as => :secondary_roles_userid_detail
   get 'userid_details/:id/change_password', :to =>'userid_details#change_password', :as => :change_password_userid_detail
   get 'userid_details/researcher_registration', :to =>'userid_details#researcher_registration', :as => :researcher_registration_userid_detail
   get 'userid_details/transcriber_registration', :to =>'userid_details#transcriber_registration', :as => :transcriber_registration_userid_detail
