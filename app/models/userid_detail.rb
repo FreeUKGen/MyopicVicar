@@ -44,7 +44,7 @@ class UseridDetail
   field :userid_messages,type: Array, default: []
   field :reason_for_invalidating,type: String
 
-  attr_accessor :action, :message, :volunteer_induction_handbook, :code_of_conduct
+  attr_accessor :action, :message, :volunteer_induction_handbook, :code_of_conduct, :volunteer_policy
   index({ email_address: 1 })
   index({ userid: 1, person_role: 1 })
   index({ person_surname: 1, person_forename: 1 })
@@ -60,7 +60,7 @@ class UseridDetail
   validates_format_of :email_address,:with => Devise::email_regexp
   validate :userid_and_email_address_does_not_exist, :transcription_agreement_must_accepted, on: :create
   validate :email_address_does_not_exist,  on: :update#:transcription_agreement_accept, on: :update
-  validates :volunteer_induction_handbook, :code_of_conduct, acceptance: true
+  validates :volunteer_induction_handbook, :code_of_conduct, :volunteer_policy, acceptance: true
 
   before_create :add_lower_case_userid,:capitalize_forename, :captilaize_surname, :transcription_agreement_value_change
   after_create :save_to_refinery

@@ -48,6 +48,10 @@
           <%= f.check_box :code_of_conduct %>
           I have read, and agree to abide by, the <em>Code of Conduct</em> (<%= link_to 'pdf', "http://www.freeukgenealogy.org.uk/files/Documents/Code-of-Conduct.pdf", title: "View or download the Code of Conduct (pdf)", target: '_blank' %>, <%= link_to 'docx', "http://www.freeukgenealogy.org.uk/files/Documents/Code-of-Conduct.docx", title: "Download the Code of Conduct (Word Document)" %>) <span class="weight--normal">(pdf opens in new tab)</span>
         </label>
+        <label for="userid_detail_volunteer_policy">
+        <%= f.check_box :volunteer_policy %>
+        I have read, and agree to abide by, the <em>Volunteer Policy</em> (<%= link_to 'pdf', "https://www.freeukgenealogy.org.uk/files/Volunteer-Policy.pdf", title: "View or download the Volunteer Policy (pdf)", target: '_blank' %>) <span class="weight--normal">(pdf opens in new tab)</span>
+        </label>
       </fieldset>
     </div>
   </div>

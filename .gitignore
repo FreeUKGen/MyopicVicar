@@ -78,6 +78,11 @@ index/**/*
 *.autobackupbyrefinery.*
 refinerycms-*.gem
 
+# Cloud9 Specific
+start_dbs
+setup_cloud9.rb
+mongod
+
 # Mac
 .DS_Store
 
