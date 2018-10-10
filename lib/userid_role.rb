@@ -68,7 +68,7 @@ module UseridRole
     "Manage Images" => "/sources",
     "Assignments" => "/assignments/my_own"
   }
-  USERID_MANAGER_OPTIONS = ["Select specific userid","Select specific email","Select specific surname/forename","Browse userids","Select Role","Incomplete Registrations","Create userid", "Transcriber Statistics"]
+  USERID_MANAGER_OPTIONS = ["Select specific userid","Select specific email","Select specific surname/forename","Browse userids","Select Role", "Select Secondary Role","Incomplete Registrations","Create userid", "Transcriber Statistics"]
   USERID_ACCESS_OPTIONS = ["Select specific userid","Select specific email", "Select specific surname/forename"]
 
   USERID_OPTIONS_TRANSLATION = {
@@ -80,6 +80,7 @@ module UseridRole
     "Select specific userid"=> "/userid_details/selection?option=Select specific userid",
     "Select specific surname/forename"=> "/userid_details/selection?option=Select specific surname/forename",
     "Select Role" => "/userid_details/person_roles",
+    "Select Secondary Role" => "/userid_details/secondary_roles",
     "Transcriber Statistics" => "/userid_details/transcriber_statistics"
   }
   FILE_MANAGEMENT_OPTIONS = ['Upload New Batch','List by Number of Errors then Filename', 'List by Filename',
