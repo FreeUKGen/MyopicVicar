@@ -89,6 +89,9 @@ class UseridDetail
     def role(role)
       where(:person_role => role)
     end
+    def secondary(role)
+      where(:secondary_role => role)
+    end
     def active(active)
       where(:active => active)
     end
