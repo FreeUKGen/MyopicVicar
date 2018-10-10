@@ -231,6 +231,15 @@ class UseridDetailsController < ApplicationController
     @location = 'location.href= "role?role=" + this.value'
   end
 
+  def secondary_roles
+    session[:return_to] = request.fullpath
+    get_user_info_from_userid
+    @userid = UseridDetail.new
+    @options = UseridRole::VALUES
+    @prompt = 'Select Secondary Role?'
+    @location = 'location.href= "secondary?role=" + this.value'
+  end
+
   def record_validation_errors(exception)
     flash[:notice] = "The registration was unsuccessful due to #{exception.record.errors.messages}"
     @userid.delete
@@ -263,6 +272,12 @@ class UseridDetailsController < ApplicationController
 
   def role
     @userids = UseridDetail.role(params[:role]).all.order_by(userid_lower_case: 1)
+    @syndicate = " #{params[:role]}"
+    @sorted_by = " lower case userid"
+  end
+  
+  def secondary
+    @userids = UseridDetail.secondary(params[:role]).all.order_by(userid_lower_case: 1)
     @syndicate = " #{params[:role]}"
     @sorted_by = " lower case userid"
   end
