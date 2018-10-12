@@ -85,14 +85,7 @@ class Source
 
         source = Source.find_by_register_ids(register_id).pluck(:id, :register_id, :source_name)
         if not (source.nil? or source.empty?) 
-puts "========================== source.rb log start ==========================="          
-#          x = Hash.new{|h,k| h[k]=[]}.tap{|h| source.each{|k,v,w| h[k] << v << w}}
-          x = Hash.new
-          source.each do |k,v,w|
-puts "source_id=" + k + ", register_id=" + v + ", source_name=" + w + "\r\n"
-            x[k] = [v, w]
-          end
-puts "========================== source.rb log end ==========================="          
+          x = Hash.new{|h,k| h[k]=[]}.tap{|h| source.each{|k,v,w| h[k] << v << w}}
         else
           return nil, nil
         end
