@@ -80,7 +80,7 @@ class RegistersController < ApplicationController
       session[:church_id] = @church.id
       @place = @church.place
       session[:place_id] = @place.id
-      @county =  session[:county]
+      @county =  @place.county
       @chapman_code = @place.chapman_code
       @place_name = @place.place_name
       session[:place_name] = @place_name
