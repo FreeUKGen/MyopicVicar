@@ -1,7 +1,7 @@
 class RegistersController < ApplicationController
   rescue_from Mongoid::Errors::DeleteRestriction, :with => :record_cannot_be_deleted
   rescue_from Mongoid::Errors::Validations, :with => :record_validation_errors
- 
+  skip_before_filter :require_login, only: [:create_image_server_return]
   def create
     get_user_info_from_userid
     @church_name = session[:church_name]
@@ -80,7 +80,7 @@ class RegistersController < ApplicationController
       session[:church_id] = @church.id
       @place = @church.place
       session[:place_id] = @place.id
-      @county =  session[:county]
+      @county =  @place.county
       @chapman_code = @place.chapman_code
       @place_name = @place.place_name
       session[:place_name] = @place_name
