@@ -1567,8 +1567,7 @@ class CsvRecord < CsvRecords
     (@data_record[:private_baptism].present? && FreeregOptionsConstants::PRIVATE_BAPTISM_OPTIONS.include?(@data_record[:private_baptism].downcase)) ? @data_record[:private_baptism] = true : @data_record[:private_baptism] = false
     @data_record[:person_sex] = process_baptism_sex_field(@data_record[:person_sex])
     @data_record[:father_surname] = Unicode::upcase(@data_record[:father_surname] ) unless @data_record[:father_surname] .nil?
-    @data_record[:mother_surname] = Unicode::upcase(nil) 
-    #@data_record[:mother_surname] = Unicode::upcase(@data_record[:mother_surname]) unless  @data_record[:mother_surname].nil?
+    @data_record[:mother_surname] = Unicode::upcase(@data_record[:mother_surname]) unless  @data_record[:mother_surname].nil?
     @data_record[:processed_date] = Time.now
     csvfile.data[line] = @data_record
   end
