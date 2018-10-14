@@ -1,6 +1,6 @@
 
 .icon__arrow-down--white {
-  background-image: url('../../images/png/arrow-down--white.png');
+  background-image: url('/assets/png/arrow-down--white.png');
   background-repeat: no-repeat;
   width: 24px;
   height: 18px;
@@ -12,7 +12,7 @@
 
 
 .icon__arrow-down {
-  background-image: url('../../images/png/arrow-down.png');
+  background-image: url('/assets/png/arrow-down.png');
   background-repeat: no-repeat;
   width: 24px;
   height: 18px;
@@ -24,7 +24,7 @@
 
 
 .icon__arrow-left--white {
-  background-image: url('../../images/png/arrow-left--white.png');
+  background-image: url('/assets/png/arrow-left--white.png');
   background-repeat: no-repeat;
   width: 18px;
   height: 24px;
@@ -36,7 +36,7 @@
 
 
 .icon__arrow-left {
-  background-image: url('../../images/png/arrow-left.png');
+  background-image: url('/assets/png/arrow-left.png');
   background-repeat: no-repeat;
   width: 18px;
   height: 24px;
@@ -48,7 +48,7 @@
 
 
 .icon__arrow-right--white {
-  background-image: url('../../images/png/arrow-right--white.png');
+  background-image: url('/assets/png/arrow-right--white.png');
   background-repeat: no-repeat;
   width: 18px;
   height: 24px;
@@ -60,7 +60,7 @@
 
 
 .icon__arrow-right {
-  background-image: url('../../images/png/arrow-right.png');
+  background-image: url('/assets/png/arrow-right.png');
   background-repeat: no-repeat;
   width: 18px;
   height: 24px;
@@ -72,7 +72,7 @@
 
 
 .icon__arrow-up--white {
-  background-image: url('../../images/png/arrow-up--white.png');
+  background-image: url('/assets/png/arrow-up--white.png');
   background-repeat: no-repeat;
   width: 24px;
   height: 18px;
@@ -84,7 +84,7 @@
 
 
 .icon__arrow-up {
-  background-image: url('../../images/png/arrow-up.png');
+  background-image: url('/assets/png/arrow-up.png');
   background-repeat: no-repeat;
   width: 24px;
   height: 18px;
@@ -96,7 +96,7 @@
 
 .icon__cancel:hover,.icon__cancel:active,
 .icon__cancel--brighter {
-  background-image: url('../../images/png/cancel--brighter.png');
+  background-image: url('/assets/png/cancel--brighter.png');
   background-repeat: no-repeat;
   width: 22px;
   height: 22px;
@@ -108,7 +108,7 @@
 
 
 .icon__cancel {
-  background-image: url('../../images/png/cancel.png');
+  background-image: url('/assets/png/cancel.png');
   background-repeat: no-repeat;
   width: 22px;
   height: 22px;
@@ -120,7 +120,7 @@
 
 
 .icon__chevron-down {
-  background-image: url('../../images/png/chevron-down.png');
+  background-image: url('/assets/png/chevron-down.png');
   background-repeat: no-repeat;
   width: 24px;
   height: 20px;
@@ -132,7 +132,7 @@
 
 
 .icon__chevron-left {
-  background-image: url('../../images/png/chevron-left.png');
+  background-image: url('/assets/png/chevron-left.png');
   background-repeat: no-repeat;
   width: 20px;
   height: 24px;
@@ -144,7 +144,7 @@
 
 
 .icon__chevron-right {
-  background-image: url('../../images/png/chevron-right.png');
+  background-image: url('/assets/png/chevron-right.png');
   background-repeat: no-repeat;
   width: 20px;
   height: 24px;
@@ -156,7 +156,7 @@
 
 
 .icon__chevron-up {
-  background-image: url('../../images/png/chevron-up.png');
+  background-image: url('/assets/png/chevron-up.png');
   background-repeat: no-repeat;
   width: 24px;
   height: 20px;
@@ -168,7 +168,7 @@
 
 
 .icon__error {
-  background-image: url('../../images/png/error.png');
+  background-image: url('/assets/png/error.png');
   background-repeat: no-repeat;
   width: 54px;
   height: 54px;
@@ -180,7 +180,7 @@
 
 
 .icon__eye {
-  background-image: url('../../images/png/eye.png');
+  background-image: url('/assets/png/eye.png');
   background-repeat: no-repeat;
   width: 33px;
   height: 18px;
@@ -192,7 +192,7 @@
 
 .icon__facebook:hover,.icon__facebook:active,
 .icon__facebook--dark {
-  background-image: url('../../images/png/facebook--dark.png');
+  background-image: url('/assets/png/facebook--dark.png');
   background-repeat: no-repeat;
   width: 46px;
   height: 46px;
@@ -204,7 +204,7 @@
 
 
 .icon__facebook {
-  background-image: url('../../images/png/facebook.png');
+  background-image: url('/assets/png/facebook.png');
   background-repeat: no-repeat;
   width: 46px;
   height: 46px;
@@ -216,7 +216,7 @@
 
 
 .icon__freebmd {
-  background-image: url('../../images/png/freebmd.png');
+  background-image: url('/assets/png/freebmd.png');
   background-repeat: no-repeat;
   width: 287px;
   height: 87px;
@@ -228,7 +228,7 @@
 
 
 .icon__freecen {
-  background-image: url('../../images/png/freecen.png');
+  background-image: url('/assets/png/freecen.png');
   background-repeat: no-repeat;
   width: 274px;
   height: 87px;
@@ -240,7 +240,7 @@
 
 
 .icon__freereg {
-  background-image: url('../../images/png/freereg.png');
+  background-image: url('/assets/png/freereg.png');
   background-repeat: no-repeat;
   width: 266px;
   height: 87px;
@@ -252,7 +252,7 @@
 
 
 .icon__freeukgen-strap {
-  background-image: url('../../images/png/freeukgen-strap.png');
+  background-image: url('/assets/png/freeukgen-strap.png');
   background-repeat: no-repeat;
   width: 486px;
   height: 98px;
@@ -264,7 +264,7 @@
 
 
 .icon__freeukgen {
-  background-image: url('../../images/png/freeukgen.png');
+  background-image: url('/assets/png/freeukgen.png');
   background-repeat: no-repeat;
   width: 486px;
   height: 87px;
@@ -276,7 +276,7 @@
 
 
 .icon__freeukgen__project--dark {
-  background-image: url('../../images/png/freeukgen__project--dark.png');
+  background-image: url('/assets/png/freeukgen__project--dark.png');
   background-repeat: no-repeat;
   width: 211px;
   height: 49px;
@@ -288,7 +288,7 @@
 
 
 .icon__freeukgen__project--light {
-  background-image: url('../../images/png/freeukgen__project--light.png');
+  background-image: url('/assets/png/freeukgen__project--light.png');
   background-repeat: no-repeat;
   width: 211px;
   height: 50px;
@@ -297,33 +297,10 @@
   zoom: 1;
 }
 
-.icon__twitter:hover,.icon__twitter:active,
-.icon__twitter--dark {
-  background-image: url('../../images/png/twitter--dark.png');
-  background-repeat: no-repeat;
-  width: 46px;
-  height: 46px;
-  display: inline-block;
- *display: inline;
-  zoom: 1;
-}
-
-
-
-.icon__twitter {
-  background-image: url('../../images/png/twitter.png');
-  background-repeat: no-repeat;
-  width: 46px;
-  height: 46px;
-  display: inline-block;
- *display: inline;
-  zoom: 1;
-}
-
 
 .icon__github:hover,.icon__github:active,
 .icon__github--dark {
-  background-image: url('../../images/png/github--dark.png');
+  background-image: url('/assets/png/github--dark.png');
   background-repeat: no-repeat;
   width: 46px;
   height: 46px;
@@ -335,7 +312,7 @@
 
 
 .icon__github {
-  background-image: url('../../images/png/github.png');
+  background-image: url('/assets/png/github.png');
   background-repeat: no-repeat;
   width: 46px;
   height: 46px;
@@ -347,7 +324,7 @@
 
 .icon__googleplus:hover,.icon__googleplus:active,
 .icon__googleplus--dark {
-  background-image: url('../../images/png/googleplus--dark.png');
+  background-image: url('/assets/png/googleplus--dark.png');
   background-repeat: no-repeat;
   width: 46px;
   height: 46px;
@@ -359,7 +336,7 @@
 
 
 .icon__googleplus {
-  background-image: url('../../images/png/googleplus.png');
+  background-image: url('/assets/png/googleplus.png');
   background-repeat: no-repeat;
   width: 46px;
   height: 46px;
@@ -371,7 +348,7 @@
 
 
 .icon__honeycomb--bottom-left {
-  background-image: url('../../images/png/honeycomb--bottom-left.png');
+  background-image: url('/assets/png/honeycomb--bottom-left.png');
   background-repeat: no-repeat;
   width: 455px;
   height: 178px;
@@ -383,7 +360,7 @@
 
 
 .icon__honeycomb--top-right {
-  background-image: url('../../images/png/honeycomb--top-right.png');
+  background-image: url('/assets/png/honeycomb--top-right.png');
   background-repeat: no-repeat;
   width: 551px;
   height: 286px;
@@ -395,7 +372,7 @@
 
 .icon__reply:hover,.icon__reply:active,
 .icon__reply--dark {
-  background-image: url('../../images/png/reply--dark.png');
+  background-image: url('/assets/png/reply--dark.png');
   background-repeat: no-repeat;
   width: 16px;
   height: 16px;
@@ -407,7 +384,7 @@
 
 
 .icon__reply {
-  background-image: url('../../images/png/reply.png');
+  background-image: url('/assets/png/reply.png');
   background-repeat: no-repeat;
   width: 16px;
   height: 16px;
@@ -419,7 +396,7 @@
 
 .icon__repost:hover,.icon__repost:active,
 .icon__repost--dark {
-  background-image: url('../../images/png/repost--dark.png');
+  background-image: url('/assets/png/repost--dark.png');
   background-repeat: no-repeat;
   width: 22px;
   height: 13px;
@@ -431,7 +408,7 @@
 
 
 .icon__repost {
-  background-image: url('../../images/png/repost.png');
+  background-image: url('/assets/png/repost.png');
   background-repeat: no-repeat;
   width: 22px;
   height: 13px;
@@ -443,7 +420,7 @@
 
 .icon__rss:hover,.icon__rss:active,
 .icon__rss--dark {
-  background-image: url('../../images/png/rss--dark.png');
+  background-image: url('/assets/png/rss--dark.png');
   background-repeat: no-repeat;
   width: 46px;
   height: 46px;
@@ -455,7 +432,7 @@
 
 
 .icon__rss {
-  background-image: url('../../images/png/rss.png');
+  background-image: url('/assets/png/rss.png');
   background-repeat: no-repeat;
   width: 46px;
   height: 46px;
@@ -467,7 +444,7 @@
 
 
 .icon__select-error {
-  background-image: url('../../images/png/select-error.png');
+  background-image: url('/assets/png/select-error.png');
   background-repeat: no-repeat;
   width: 54px;
   height: 54px;
@@ -479,7 +456,7 @@
 
 
 .icon__select-success {
-  background-image: url('../../images/png/select-success.png');
+  background-image: url('/assets/png/select-success.png');
   background-repeat: no-repeat;
   width: 54px;
   height: 54px;
@@ -491,7 +468,7 @@
 
 
 .icon__select {
-  background-image: url('../../images/png/select.png');
+  background-image: url('/assets/png/select.png');
   background-repeat: no-repeat;
   width: 54px;
   height: 54px;
@@ -503,7 +480,7 @@
 
 .icon__star:hover,.icon__star:active,
 .icon__star--dark {
-  background-image: url('../../images/png/star--dark.png');
+  background-image: url('/assets/png/star--dark.png');
   background-repeat: no-repeat;
   width: 17px;
   height: 16px;
@@ -515,7 +492,7 @@
 
 
 .icon__star {
-  background-image: url('../../images/png/star.png');
+  background-image: url('/assets/png/star.png');
   background-repeat: no-repeat;
   width: 17px;
   height: 16px;
@@ -527,7 +504,7 @@
 
 
 .icon__success {
-  background-image: url('../../images/png/success.png');
+  background-image: url('/assets/png/success.png');
   background-repeat: no-repeat;
   width: 54px;
   height: 54px;
@@ -539,7 +516,7 @@
 
 
 .icon__tick {
-  background-image: url('../../images/png/tick.png');
+  background-image: url('/assets/png/tick.png');
   background-repeat: no-repeat;
   width: 27px;
   height: 23px;
@@ -549,9 +526,9 @@
 }
 
 
-.icon__youtube:hover,.icon__youtube:active,
-.icon__youtube--dark {
-  background-image: url('../../images/png/youtube--dark.png');
+.icon__twitter:hover,.icon__twitter:active,
+.icon__twitter--dark {
+  background-image: url('/assets/png/twitter--dark.png');
   background-repeat: no-repeat;
   width: 46px;
   height: 46px;
@@ -562,8 +539,8 @@
 
 
 
-.icon__youtube {
-  background-image: url('../../images/png/youtube.png');
+.icon__twitter {
+  background-image: url('/assets/png/twitter.png');
   background-repeat: no-repeat;
   width: 46px;
   height: 46px;
@@ -571,3 +548,5 @@
  *display: inline;
   zoom: 1;
 }
+
+
