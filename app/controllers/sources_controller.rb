@@ -160,7 +160,7 @@ class SourcesController < ApplicationController
     session[:from_source] = true
 
     load(params[:id])
-    go_back("source#show", params[:id]) and return if @source.nil?
+    redirect_to :back and return if @source.nil?
   end
 
   def update
