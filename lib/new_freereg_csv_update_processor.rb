@@ -1399,9 +1399,11 @@ class CsvRecord < CsvRecords
       p "FREEREG:CSV_PROCESSOR_FAILURE: #{e.message}"
       p "FREEREG:CSV_PROCESSOR_FAILURE: #{csvfile.userid} #{csvfile.file_name} at line #{line} crashed the processor. <br>"
       p "FREEREG:CSV_PROCESSOR_FAILURE: #{e.backtrace.inspect}"
-      csvfile.header_error << "#{csvfile.userid}\t#{csvfile.file_name} line #{line} crashed the processor. <br>"
-      csvfile.header_error << e.message
-      csvfile.header_error << e.backtrace.inspect
+      project.write_messages_to_all("FREEREG:CSV_PROCESSOR_FAILURE: #{e.message}",false)
+      error_message = "FREEREG:CSV_PROCESSOR_FAILURE: #{csvfile.userid} #{csvfile.file_name} at line #{line} crashed the processor. <br>"
+      project.write_messages_to_all(error_message,true)
+      project.write_log_file("#{e.message}")
+      project.write_log_file("#{e.backtrace.inspect}")
       success = false
     end
     return success
