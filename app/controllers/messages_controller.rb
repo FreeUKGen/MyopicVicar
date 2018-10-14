@@ -253,20 +253,25 @@ class MessagesController < ApplicationController
         @message.update_attributes(message_params)
       when "Send"
         @respond_to_message = Message.id(@message.source_message_id).first
-        @syndicate = session[:syndicate] if params[:recipients].include?("Members of Syndicate")
-        sender = params[:sender]
-        @sent_message = @message.sent_messages.id(params[:message][:action]).first
-        reasons = Array.new
-        #params[:inactive_reasons].blank?  ? reasons << 'temporary' : reasons =  params[:inactive_reasons]
-        @sent_message.update_attributes(:recipients => params[:recipients], :active => params[:active], :inactive_reason => reasons, :sender => sender, open_data_status: params[:open_data_status], syndicate: @syndicate)
-        if @sent_message.recipients.nil? || @sent_message.open_data_status.nil?
-          flash[:notice] = "Invalid Send: Please select Recipients and Open Data Status"
-          redirect_to action:'send_message' and return
+        if params[:recipients].nil?
+          flash[:notice] = "You did not select any recipients"
+          redirect_to :back and return
         else
-         @message.communicate(params[:recipients],  params[:active], reasons,sender, params[:open_data_status], @syndicate)
-         @sent_message.update_attributes(sent_time: Time.now)
-         @message.update_attributes(message_sent_time: Time.now)
-         flash[:notice] = @message.reciever_notice(params)
+          @syndicate = session[:syndicate] if params[:recipients].include?("Members of Syndicate")
+          sender = params[:sender]
+          @sent_message = @message.sent_messages.id(params[:message][:action]).first
+          reasons = Array.new
+          #params[:inactive_reasons].blank?  ? reasons << 'temporary' : reasons =  params[:inactive_reasons]
+          @sent_message.update_attributes(:recipients => params[:recipients], :active => params[:active], :inactive_reason => reasons, :sender => sender, open_data_status: params[:open_data_status], syndicate: @syndicate)
+          if @sent_message.recipients.nil? || @sent_message.open_data_status.nil?
+            flash[:notice] = "Invalid Send: Please select Recipients and Open Data Status"
+            redirect_to action:'send_message' and return
+          else
+            @message.communicate(params[:recipients],  params[:active], reasons,sender, params[:open_data_status], @syndicate)
+            @sent_message.update_attributes(sent_time: Time.now)
+            @message.update_attributes(message_sent_time: Time.now)
+            flash[:notice] = @message.reciever_notice(params)
+          end
         end
       end
       redirect_to :action => 'show'
