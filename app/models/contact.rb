@@ -123,7 +123,7 @@ class Contact
   def communicate_data_problem(message=nil,sender=nil)
     ccs = Array.new
     coordinator = self.get_coordinator if self.record_id.present?
-    ccs << coordinator.email_address if self.record_id.present?
+    ccs << coordinator.email_address if self.record_id.present? && coordinator.present?
     UseridDetail.where(person_role: 'contacts_coordinator', email_address_valid: true).all.each do |person|
       ccs << person.email_address
     end
@@ -252,11 +252,31 @@ class Contact
   end
 
   def get_coordinator
-    entry = SearchRecord.find(self.record_id).freereg1_csv_entry
-    record = Freereg1CsvEntry.find(entry)
-    file = record.freereg1_csv_file
-    county = file.county #this is chapman code
-    coordinator = UseridDetail.where(:userid => County.where(:chapman_code => county).first.county_coordinator).first
+    search_record = SearchRecord.record_id(self.record_id).first
+    if search_record.present?
+      entry_id = search_record.freereg1_csv_entry
+      entry = Freereg1CsvEntry.id(entry_id).first
+      if entry.present?
+        file_id = entry.freereg1_csv_file
+        file = Freereg1CsvFile.id(file_id).first
+        if file.present?
+          chapman_code = file.county #this is chapman code
+          county = County.where(:chapman_code => chapman_code).first
+          if county.present?
+            county_coordinator = county.county_coordinator
+            coordinator = UseridDetail.where(:userid => county_coordinator).first
+          else
+            coordinator = nil
+          end
+        else 
+          coordinator = nil
+        end
+      else
+        coordinator = nil
+      end
+    else
+      coordinator = nil
+    end
     return coordinator
   end
 
