@@ -121,7 +121,7 @@ class SourcesController < ApplicationController
     @source = Source.id(source_id).first
 
     if @source.nil?
-      go_back("source", source_id)
+      redirect_to :back
     else
       session[:source_id] = @source.id
       @register = @source.register
