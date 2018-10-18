@@ -103,9 +103,10 @@ class Contact
   def contact_action_communication(message,sender)
     unless message.blank?
       self.add_sender_to_copies_of_contact_action_sent_to(sender)
+      self.add_contact_coordinator_to_copies_of_contact_action_sent_to
       copies = self.get_copies
       reply_sent_messages(message,sender,self.copies_of_contact_action_sent_to)
-      UserMailer.coordinator_contact_reply(self,ccs,message,sender).deliver_now
+      UserMailer.coordinator_contact_reply(self,copies,message,sender).deliver_now
     else
       send_to,copies_to = self.action_recipients
       UserMailer.contact_action_request(self,send_to,copies_to).deliver_now
@@ -142,7 +143,7 @@ class Contact
   end
 
   def get_manager
-    action_person = UseridDetail.role("contacts_coordinator").email_address_valid.first if action_person.blank?
+    action_person = UseridDetail.role("contacts_coordinator").email_address_valid.first
     action_person = UseridDetail.secondary("contacts_coordinator").email_address_valid.first if action_person.blank?
     action_person = UseridDetail.userid("REGManager").email_address_valid.first if action_person.blank?
     action_person = UseridDetail.role("system_administrator").first if action_person.blank?
@@ -214,6 +215,18 @@ class Contact
     p self.copies_of_contact_action_sent_to
     if !(sender.userid == self.contact_action_sent_to || self.copies_of_contact_action_sent_to.include?(sender.userid))
       self.copies_of_contact_action_sent_to.push(sender.userid)
+      self.update_attribute(:copies_of_contact_action_sent_to, self.copies_of_contact_action_sent_to)
+    end
+    p self.copies_of_contact_action_sent_to
+  end
+
+  def add_contact_coordinator_to_copies_of_contact_action_sent_to
+    p "add_contact cordinator_to_copies_of_contact_action_sent_to"
+    p self.copies_of_contact_action_sent_to
+    action_person = UseridDetail.role("contacts_coordinator").email_address_valid.first
+    action_person = UseridDetail.secondary("contacts_coordinator").email_address_valid.first if action_person.blank?
+    if action_person.present? && !(action_person.userid == self.contact_action_sent_to || self.copies_of_contact_action_sent_to.include?(action_person.userid))
+      self.copies_of_contact_action_sent_to.push(action_person.userid)
       self.update_attribute(:copies_of_contact_action_sent_to, self.copies_of_contact_action_sent_to)
     end
     p self.copies_of_contact_action_sent_to
