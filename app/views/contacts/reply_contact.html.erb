@@ -4,69 +4,22 @@
     <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
   </div>
 <% end %>
-<h4 style="text-align: center"> 
-  Contact and its Replies
-</h4>
-<h4 style="text-align: center">Contact Details</h4>
+<h4 style="text-align: center">Contact Reference <%= @respond_to_contact.identifier %></h4>
 <div class= "grid">
   <section class="island  island--light ">
     <div class="scrollable" >
       <div class="grid__item  one-whole  palm-one-whole push--bottom">
         <%= content_tag :p, class: "strong" do %>
-          On <%= @respond_to_contact.contact_time.to_formatted_s(:long)%> Name of Contact Person: <strong><%= @respond_to_contact.name%></strong> gave a feedback:<br/>
-          <%= @respond_to_contact.body %><br/>
+          On <%= @respond_to_contact.contact_time.to_formatted_s(:long)%> 
+          <strong><%= @respond_to_contact.name%> (<%= @respond_to_contact.email_address %>)</strong> submitted a <%= @respond_to_contact.contact_type %>.<br>
+          We sent the communication to <%= @respond_to_contact.contact_action_sent_to%> for action. We also sent copies to <%= @respond_to_contact.copies_of_contact_action_sent_to%> for information.<br>
+          The contact information was:<br><%= @respond_to_contact.body %><br>
         <% end %>
-        <p>Following are further details of contact</p>
-        <div class="scrollable">
-          <table class= "table--bordered table--data push--bottom t100">
-          <tr>
-            <tr>
-              <th>Type of Contact :</th>
-              <th>Reference</th>
-              <% if @respond_to_contact.contact_type == "Data Problem"%>
-                <th>Record</th>
-              <% end %>
-              <th>County</th> 
-            </tr>
-            </tr>
-            <tr>
-              <td>
-                <%= @respond_to_contact.contact_type %>
-              </td>
-              <td>
-                <%= @respond_to_contact.identifier %>
-              </td>
-              <% if @respond_to_contact.contact_type == "Data Problem"%>
-                <td>
-                  <%= @respond_to_contact.line_id %>
-                </td>
-              <% end %>
-              <td>
-                <%= @respond_to_contact.county %>
-              </td>
-            </tr>
-          </table>
-        </div>
-        <p>Details of Contacted Person: </p>
-        <table class= "table--bordered table--data push--bottom t100">
-          <tr>
-            <th>Name</th>
-            <th>Email Address</th> 
-          </tr>
-          <tr>
-            <td>
-              <%= @respond_to_contact.name %>
-            </td>
-            <td>
-              <%= @respond_to_contact.email_address %>
-            </td>            
-          </tr>
-        </table>
-      </div>
+      </div> 
     </div>
   </section>
 </div>
-
+    
 <% unless @contact_replies.count == 0 %>
   <h4 style="text-align: center">This Contact has
     <%= pluralize(@contact_replies.count, 'Reply Message')%>
@@ -77,7 +30,7 @@
         <div class="grid__item  one-whole  palm-one-whole push--bottom">
           <h4>Subject: <%= contact_subject(@respond_to_contact) %> </h4>
           <% @contact_replies.each do |reply| %>
-            <div class="island island--bordered <%= session[:userid] == reply.userid ? 'text--right' : 'text--left' %>">
+            <div class="island island--bordered  text--left ">
               <%= content_tag :p do %>
                 <strong>On <%= Message.formatted_time(reply)%>, Userid: <%= reply.userid%> wrote:<br/></strong>
                 <%= reply.body %>
@@ -98,7 +51,7 @@
     </section>
   </div>
 <% end %>
-<h4 style="text-align: center">Create Your Reply for Contact</h4>
-<%= render 'messages/form' %>
+<h4 style="text-align: center">Create Your Reply for this Contact</h4>
+<%= render 'messages/form_for_contact' %>
 
 

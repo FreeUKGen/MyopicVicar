@@ -2,6 +2,12 @@ class UserMailer < ActionMailer::Base
   add_template_helper(EmailHelper)
 
   default from: "freereg-contacts@freereg.org.uk"
+  
+  def acknowledge_communication(original)
+    @communication = original
+    p "Acknowledge #{@communication.inspect}"
+    mail(to: "#{@communication.email_address}", :subject => "Thank you #{@communication.name} for your communication. Reference #{@communication.identifier}")
+  end
 
   def batch_processing_failure(message,user,batch)
     @message = File.read(message)
@@ -83,24 +89,24 @@ class UserMailer < ActionMailer::Base
       end
     end
   end
-
-  def coordinator_data_problem(contact,ccs)
+  
+  def contact_action_request(contact,send_to,copies_to)
     @contact = contact
+    @send_to = send_to
+    @cc_email_addresses = Array.new
+    @cc_names = Array.new
+    @cc_userids = Array.new
+    copies_to.each do |copy|
+      @cc_email_addresses.push(copy.email_address) unless @cc_email_addresses.include?(copy.email_address)
+      name = copy.person_forename + " " + copy.person_surname + " " + copy.email_address unless @cc_email_addresses.include?(copy.email_address)
+      @cc_names.push(name)
+      @cc_userids.push(copy.userid) unless @cc_email_addresses.include?(copy.email_address) 
+    end
+    @contact.update_attributes(:contact_action_sent_to =>@send_to.userid,:copies_of_contact_action_sent_to => @cc_userids )
+    p @cc_email_addresses
+    p  @cc_names
     get_attachment
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for reporting a problem with our data. Reference #{@contact.identifier}")
-    #mail(:from => "vinodhini.subbu@freeukgenealogy.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>", :subject => "Thank you for reporting a problem with our data. Reference #{@contact.identifier}")
-  end
-
-  def datamanager_data_question(contact,ccs)
-    @contact = contact
-    get_attachment
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for your data question. Reference #{@contact.identifier}")
-  end
-
-  def enhancement(contact,ccs)
-    @contact = contact
-    get_attachment
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for the suggested enhancement. Reference #{@contact.identifier}")
+    mail(to: "#{@send_to.email_address}",cc: @cc_email_addresses, subject: "This is a contact action request for reference #{@contact.identifier}")
   end
 
   def feedback(contact,ccs)
@@ -109,18 +115,6 @@ class UserMailer < ActionMailer::Base
     get_attachment
     mail(:from => "freereg-feedback@freereg.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>",:cc => ccs, :subject => "Thank you for your feedback. Reference #{@contact.identifier}")
     #mail(:from => "vinodhini.subbu@freeukgenealogy.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "Thank you for your feedback. Reference #{@contact.identifier}")
-  end
-
-  def genealogy(contact,ccs)
-    @contact = contact
-    get_attachment
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for a genealogical question. Reference #{@contact.identifier}")
-  end
-
-  def general(contact,ccs)
-    @contact = contact
-    get_attachment
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for the general comment. Reference #{@contact.identifier}")
   end
 
   def get_attachment
@@ -242,13 +236,6 @@ class UserMailer < ActionMailer::Base
     end
   end
 
-  def publicity(contact,ccs)
-    @ccs = ccs
-    @contact = contact
-    get_attachment
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for your compliments. Reference #{@contact.identifier}")
-  end
-
   def report_to_data_manger_of_large_file(file_name,userid)
     @file = file_name
     @user = UseridDetail.userid(userid).first
@@ -334,6 +321,10 @@ class UserMailer < ActionMailer::Base
   end
 
   def coordinator_contact_reply(contact,ccs,message,sender)
+    p "coordinator_contact_reply"
+    p ccs
+    p sender
+    p message
     @contact = contact
     @message = message
     @reply_messages = Message.where(source_contact_id: @message.source_contact_id).all

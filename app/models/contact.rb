@@ -22,7 +22,9 @@ class Contact
   field :query, type: String
   field :identifier, type: String
   field :screenshot_location, type: String
-  attr_accessor :action
+  field :contact_action_sent_to, type: String, default: nil
+  field :copies_of_contact_action_sent_to, type: Array, default: nil
+ attr_accessor :action
 
   validates_presence_of :name, :email_address
   validates :email_address,:format => {:with => /\A[^@][\w\+.-]+@[\w.-]+[.][a-z]{2,4}\z/i}
@@ -37,6 +39,33 @@ class Contact
     end
   end
   ##########################################################################################
+
+  def acknowledge_communication(message=nil,sender=nil)
+    UserMailer.acknowledge_communication(self).deliver_now
+  end
+  
+  def action_recipients
+    copies = Array.new
+    if self.contact_type == 'Data Problem'
+      coordinator = self.get_coordinator if self.record_id.present?
+      coordinator.present? ? action_person = coordinator : action_person = self.get_manager
+    else
+      role = self.get_role_from_contact
+      person = UseridDetail.role(role).email_address_valid.first
+      person.present? ? action_person = person : action_person = self.get_manager
+    end
+    UseridDetail.role("contacts_coordinator").email_address_valid.all.each do |user|
+      copies.push(user) unless action_person.userid == user.userid
+    end
+    UseridDetail.secondary("contacts_coordinator").email_address_valid.each do |user|
+      copies.push(user) unless action_person.userid == user.userid
+    end
+    p " to whom"
+    p action_person
+    p copies
+    return action_person,copies
+  end
+  
 
   def add_identifier
     self.identifier = Time.now.to_i - Time.gm(2015).to_i
@@ -56,198 +85,30 @@ class Contact
   end
 
   def communicate(message=nil,sender=nil)
-    case
-    when  self.contact_type == 'Website Problem'
-      self.communicate_website_problem(message,sender)
-    when self.contact_type == 'Data Question'
-      self.communicate_data_question(message,sender)
-    when self.contact_type == 'Data Problem'
-      self.communicate_data_problem(message,sender)
-    when self.contact_type == 'Volunteering Question'
-      self.communicate_volunteering(message,sender)
-    when self.contact_type == 'General Comment'
-      self.communicate_general(message,sender)
-    when self.contact_type == "Thank-you"
-      self.communicate_publicity(message,sender)
-    when self.contact_type == 'Genealogical Question'
-      self.communicate_genealogical_question(message,sender)
-    when self.contact_type == 'Enhancement Suggestion'
-      self.communicate_enhancement_suggestion(message,sender)
-    else
-      self.communicate_general(message,sender)
-    end
+    p "communicating #{message} #{sender}"
+    self.acknowledge_communication(message,sender) unless message.present?
+    self.contact_action_communication(message,sender)
   end
-
-
-  def communicate_website_problem(message=nil,sender=nil)
-    ccs = Array.new
-    UseridDetail.any_of({ person_role: "website_coordinator", email_address_valid: true}, secondary_role: { '$in': ["website_coordinator"] }).all.each do |person|
-      ccs << person.email_address
-    end
-    #UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
-     # ccs << person.email_address
-    #end
-    if ccs.blank?
-      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
-        ccs << person.email_address
+  
+  def contact_action_communication(message,sender)
+    unless message.blank?
+      if !(sender.userid == self.contact_action_sent_to || self.copies_of_contact_action_sent_to.include?(sender.userid))
+        self.copies_of_contact_action_sent_to.push(sender.userid)
+        self.update_attribute(:copies_of_contact_action_sent_to, self.copies_of_contact_action_sent_to)
       end
-    end
-    @message = message
-    unless @message.blank?
-      reply_sent_messages(@message,sender)
-      UserMailer.coordinator_contact_reply(self,ccs,@message,sender).deliver_now
-    else
-      UserMailer.website(self,ccs).deliver_now
-    end
-  end
-
-  def communicate_data_question(message=nil,sender=nil)
-    ccs = Array.new
-    UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
-      ccs << person.email_address
-    end
-    if ccs.blank?
-      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
-        ccs << person.email_address
+      reply_sent_messages(message,sender,self.copies_of_contact_action_sent_to)
+      ccs = Array.new
+      action_person = UseridDetail.userid(self.contact_action_sent_to).first
+      ccs.push(action_person.email_address) if action_person.present?
+      ccs.push(sender.userid)
+      self.copies_of_contact_action_sent_to.each do |copy|
+        copy_person = UseridDetail.userid(copy).first
+        ccs.push(copy_person.email_address) if copy_person.present?
       end
-    end
-    @message = message
-    unless @message.blank?
-      reply_sent_messages(@message,sender)
-      UserMailer.coordinator_contact_reply(self,ccs,@message,sender).deliver_now
+      UserMailer.coordinator_contact_reply(self,ccs,message,sender).deliver_now
     else
-      UserMailer.datamanager_data_question(self,ccs).deliver_now
-    end
-  end
-
-  def communicate_data_problem(message=nil,sender=nil)
-    ccs = Array.new
-    coordinator = self.get_coordinator if self.record_id.present?
-    ccs << coordinator.email_address if self.record_id.present? && coordinator.present?
-    UseridDetail.where(person_role: 'contacts_coordinator', email_address_valid: true).all.each do |person|
-      ccs << person.email_address
-    end
-    if ccs.blank?
-      UseridDetail.where(person_role: 'system_administrator', email_address_valid: true).all.each do |person|
-        ccs << person.email_address
-      end
-    end
-    @message = message
-    unless @message.blank?
-      reply_sent_messages(@message,sender)
-      UserMailer.coordinator_contact_reply(self,ccs,@message,sender).deliver_now
-    else
-      UserMailer.coordinator_data_problem(self,ccs).deliver_now
-    end
-  end
-
-  def communicate_publicity(message=nil,sender=nil)
-    ccs = Array.new
-    UseridDetail.any_of({ person_role: "publicity_coordinator", email_address_valid: true}, secondary_role: { '$in': ["publicity_coordinator"] }).all.each do |person|
-      ccs << person.email_address
-    end
-    #UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
-     # ccs << person.email_address
-    #end
-    if ccs.blank?
-      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
-        ccs << person.email_address
-      end
-    end
-    @message = message
-    unless @message.blank?
-      reply_sent_messages(@message,sender)
-      UserMailer.coordinator_contact_reply(self,ccs,@message,sender).deliver_now
-    else
-      UserMailer.publicity(self,ccs).deliver_now
-    end
-  end
-
-  def communicate_genealogical_question(message=nil,sender=nil)
-    ccs = Array.new
-    UseridDetail.any_of({ person_role: "genealogy_coordinator", email_address_valid: true}, secondary_role: { '$in': ["genealogy_coordinator"] }).all.each do |person|
-      ccs << person.email_address
-    end
-    #UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
-    #  ccs << person.email_address
-    #end
-    if ccs.blank?
-      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
-        ccs << person.email_address
-      end
-    end
-    @message = message
-    unless @message.blank?
-      reply_sent_messages(@message,sender)
-      UserMailer.coordinator_contact_reply(self,ccs,@message,sender).deliver_now
-    else
-      UserMailer.genealogy(self,ccs).deliver_now
-    end
-  end
-
-  def communicate_enhancement_suggestion(message=nil,sender=nil)
-    ccs = Array.new
-    UseridDetail.any_of({ person_role: 'website_coordinator', email_address_valid: true}, secondary_role: { '$in': ["website_coordinator"] }).all.each do |person|
-      ccs << person.email_address
-    end
-    UseridDetail.where(:person_role => 'project_manager', :email_address_valid => true).all.each do |person|
-      ccs << person.email_address
-    end
-    if ccs.blank?
-      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
-        ccs << person.email_address
-      end
-    end
-    @message = message
-    unless @message.blank?
-      reply_sent_messages(@message,sender)
-      UserMailer.coordinator_contact_reply(self,ccs,@message,sender).deliver_now
-    else
-      UserMailer.enhancement(self,ccs).deliver_now
-    end
-  end
-
-  def communicate_volunteering(message=nil,sender=nil)
-    ccs = Array.new
-    UseridDetail.any_of({ person_role: "volunteer_coordinator", email_address_valid: true}, secondary_role: { '$in': ["volunteer_coordinator"] }).all.each do |person|
-      ccs << person.email_address
-    end
-    #UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
-     # ccs << person.email_address
-    #end
-    if ccs.blank?
-      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
-        ccs << person.email_address
-      end
-    end
-    @message = message
-    unless @message.blank?
-      reply_sent_messages(@message,sender)
-      UserMailer.coordinator_contact_reply(self,ccs,@message,sender).deliver_now
-    else
-      UserMailer.volunteer(self,ccs).deliver_now
-    end
-  end
-
-  def communicate_general(message=nil,sender=nil)
-    ccs = Array.new
-    UseridDetail.any_of({ person_role: "general_communication_coordinator", email_address_valid: true}, secondary_role: { '$in': ["general_communication_coordinator"] }).all.each do |person|
-      ccs << person.email_address
-    end
-    #UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
-      #ccs << person.email_address
-    #end
-    if ccs.blank?
-      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
-        ccs << person.email_address
-      end
-    end
-    @message = message
-    unless @message.blank?
-      reply_sent_messages(@message,sender)
-      UserMailer.coordinator_contact_reply(self,ccs,@message,sender).deliver_now
-    else
-      UserMailer.general(self,ccs).deliver_now
+      send_to,copies_to = self.action_recipients
+      UserMailer.contact_action_request(self,send_to,copies_to).deliver_now
     end
   end
 
@@ -278,6 +139,36 @@ class Contact
       coordinator = nil
     end
     return coordinator
+  end
+  
+  def get_manager
+    action_person = UseridDetail.role("contacts_coordinator").email_address_valid.first if action_person.blank?
+    action_person = UseridDetail.secondary("contacts_coordinator").email_address_valid.first if action_person.blank?
+    action_person = UseridDetail.userid("REGManager").email_address_valid.first if action_person.blank?
+    action_person = UseridDetail.role("system_administrator").first if action_person.blank?
+    action_person
+  end
+  
+  def get_role_from_contact
+    case self.contact_type
+      when 'Website Problem'
+        role = "website_coordinator"
+      when 'Data Question'
+        role = "contacts_coordinator"
+      when 'Volunteering Question'
+        role = "volunteer_coordinator"
+      when 'General Comment'
+        role = "general_communication_coordinator"
+      when "Thank you"
+        role = "publicity_coordinator"
+      when 'Genealogical Question'
+        role = "genealogy_coordinator"
+      when 'Enhancement Suggestion'
+        role =  "project_manager"
+      else
+        role = "general_communication_coordinator"
+    end
+    role
   end
 
   def github_issue
@@ -320,6 +211,7 @@ class Contact
   end
 
   private
+  
   def contact_recipients
     recipients = Array.new
     case self.contact_type
@@ -354,9 +246,9 @@ class Contact
     return recipients
   end
 
-  def reply_sent_messages(message, sender)
+  def reply_sent_messages(message, sender,contact_recipients)
     @message = message
-    @sent_message = SentMessage.new(message_id: @message.id, sender: sender.userid, recipients: contact_recipients, other_recipient: self.email_address, sent_time: Time.now)
+    @sent_message = SentMessage.new(message_id: @message.id, sender: sender.userid, recipients: contact_recipients, sent_time: Time.now)
     @message.sent_messages <<  [ @sent_message ]
     @sent_message.save
   end

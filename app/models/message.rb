@@ -14,6 +14,7 @@ class Message
   field :path, type: String
   field :file_name, type: String
   field :images, type: String
+  field :recipients, type: Array.new, default: nil
   attr_accessor :action, :inactive_reasons,:active
   embeds_many :sent_messages
   accepts_nested_attributes_for :sent_messages,allow_destroy: true,

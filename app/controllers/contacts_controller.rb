@@ -206,9 +206,13 @@ class ContactsController < ApplicationController
   end
 
   def reply_contact
+    p "reply contact ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
     get_user_info_from_userid; return if performed?
     @respond_to_contact = Contact.id(params[:source_contact_id]).first
     @contact_replies = Message.where(source_contact_id: params[:source_contact_id]).all
+    @contact_replies.each do |reply|
+      p reply
+    end
     @message = Message.new
     @message.message_time = Time.now
     @message.userid = @user.userid
