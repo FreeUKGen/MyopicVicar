@@ -5,6 +5,15 @@ class ContactsController < ApplicationController
 
   skip_before_filter :require_login, only: [:new, :report_error, :create]
 
+  def contact_reply_messages
+    get_user_info_from_userid; return if performed?
+    @contact = Contact.id(params[:id]).first
+    if @contact.present?
+      @messages = Message.where(source_contact_id: params[:id]).all
+      render 'messages/index'
+    end
+  end
+
   def convert_to_issue
     @contact = Contact.id(params[:id]).first
     if @contact.present?
@@ -92,13 +101,28 @@ class ContactsController < ApplicationController
     end
   end
 
-  def index
-    get_user_info_from_userid
-    @contacts = get_contacts.result
+  def force_destroy
+    @contact = Contact.id(params[:id]).first
+    if @contact.present? && @contact.has_replies?(params[:id])
+      delete_reply_messages(params[:id])
+      @contact.delete
+      flash.notice = "Contact and all its replies are destroyed"
+      redirect_to :action => 'index'
+      return
+    else
+      flash.notice = "Destruction of Contact was unsuccessful"
+      redirect_to :action => 'index'
+      return
+    end
   end
 
   def get_contacts
     ContactRules.new(@user)
+  end
+
+  def index
+    get_user_info_from_userid
+    @contacts = get_contacts.result
   end
 
   def list_by_date
@@ -194,17 +218,6 @@ class ContactsController < ApplicationController
     end
   end
 
-  def update
-    @contact = Contact.id(params[:id]).first
-    if @contact.present?
-      @contact.update_attributes(contact_params)
-      redirect_to :action => 'show'
-      return
-    else
-      go_back("contact",params[:id])
-    end
-  end
-
   def reply_contact
     p "reply contact ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
     get_user_info_from_userid; return if performed?
@@ -218,27 +231,14 @@ class ContactsController < ApplicationController
     @message.userid = @user.userid
   end
 
-  def contact_reply_messages
-    get_user_info_from_userid; return if performed?
+  def update
     @contact = Contact.id(params[:id]).first
     if @contact.present?
-      @messages = Message.where(source_contact_id: params[:id]).all
-      render 'messages/index'
-    end
-  end
-
-  def force_destroy
-    @contact = Contact.id(params[:id]).first
-    if @contact.present? && @contact.has_replies?(params[:id])
-      delete_reply_messages(params[:id])
-      @contact.delete
-      flash.notice = "Contact and all its replies are destroyed"
-      redirect_to :action => 'index'
+      @contact.update_attributes(contact_params)
+      redirect_to :action => 'show'
       return
     else
-      flash.notice = "Destruction of Contact was unsuccessful"
-      redirect_to :action => 'index'
-      return
+      go_back("contact",params[:id])
     end
   end
 

@@ -24,7 +24,9 @@ class Contact
   field :screenshot_location, type: String
   field :contact_action_sent_to, type: String, default: nil
   field :copies_of_contact_action_sent_to, type: Array, default: nil
- attr_accessor :action
+  field :archived, type: Boolean, default: false
+
+  attr_accessor :action
 
   validates_presence_of :name, :email_address
   validates :email_address,:format => {:with => /\A[^@][\w\+.-]+@[\w.-]+[.][a-z]{2,4}\z/i}
@@ -37,13 +39,21 @@ class Contact
     def id(id)
       where(:id => id)
     end
+
+    def archived
+      where(:archived => true)
+    end
+    def github_enabled
+      !Rails.application.config.github_issues_password.blank?
+    end
   end
+
   ##########################################################################################
 
   def acknowledge_communication(message=nil,sender=nil)
     UserMailer.acknowledge_communication(self).deliver_now
   end
-  
+
   def action_recipients
     copies = Array.new
     if self.contact_type == 'Data Problem'
@@ -65,7 +75,7 @@ class Contact
     p copies
     return action_person,copies
   end
-  
+
 
   def add_identifier
     self.identifier = Time.now.to_i - Time.gm(2015).to_i
@@ -89,22 +99,12 @@ class Contact
     self.acknowledge_communication(message,sender) unless message.present?
     self.contact_action_communication(message,sender)
   end
-  
+
   def contact_action_communication(message,sender)
     unless message.blank?
-      if !(sender.userid == self.contact_action_sent_to || self.copies_of_contact_action_sent_to.include?(sender.userid))
-        self.copies_of_contact_action_sent_to.push(sender.userid)
-        self.update_attribute(:copies_of_contact_action_sent_to, self.copies_of_contact_action_sent_to)
-      end
+      self.add_sender_to_copies_of_contact_action_sent_to(sender)
+      copies = self.get_copies
       reply_sent_messages(message,sender,self.copies_of_contact_action_sent_to)
-      ccs = Array.new
-      action_person = UseridDetail.userid(self.contact_action_sent_to).first
-      ccs.push(action_person.email_address) if action_person.present?
-      ccs.push(sender.userid)
-      self.copies_of_contact_action_sent_to.each do |copy|
-        copy_person = UseridDetail.userid(copy).first
-        ccs.push(copy_person.email_address) if copy_person.present?
-      end
       UserMailer.coordinator_contact_reply(self,ccs,message,sender).deliver_now
     else
       send_to,copies_to = self.action_recipients
@@ -129,7 +129,7 @@ class Contact
           else
             coordinator = nil
           end
-        else 
+        else
           coordinator = nil
         end
       else
@@ -140,7 +140,7 @@ class Contact
     end
     return coordinator
   end
-  
+
   def get_manager
     action_person = UseridDetail.role("contacts_coordinator").email_address_valid.first if action_person.blank?
     action_person = UseridDetail.secondary("contacts_coordinator").email_address_valid.first if action_person.blank?
@@ -148,25 +148,25 @@ class Contact
     action_person = UseridDetail.role("system_administrator").first if action_person.blank?
     action_person
   end
-  
+
   def get_role_from_contact
     case self.contact_type
-      when 'Website Problem'
-        role = "website_coordinator"
-      when 'Data Question'
-        role = "contacts_coordinator"
-      when 'Volunteering Question'
-        role = "volunteer_coordinator"
-      when 'General Comment'
-        role = "general_communication_coordinator"
-      when "Thank you"
-        role = "publicity_coordinator"
-      when 'Genealogical Question'
-        role = "genealogy_coordinator"
-      when 'Enhancement Suggestion'
-        role =  "project_manager"
-      else
-        role = "general_communication_coordinator"
+    when 'Website Problem'
+      role = "website_coordinator"
+    when 'Data Question'
+      role = "contacts_coordinator"
+    when 'Volunteering Question'
+      role = "volunteer_coordinator"
+    when 'General Comment'
+      role = "general_communication_coordinator"
+    when "Thank you"
+      role = "publicity_coordinator"
+    when 'Genealogical Question'
+      role = "genealogy_coordinator"
+    when 'Enhancement Suggestion'
+      role =  "project_manager"
+    else
+      role = "general_communication_coordinator"
     end
     role
   end
@@ -188,8 +188,8 @@ class Contact
     end
   end
 
-  def self.github_enabled
-    !Rails.application.config.github_issues_password.blank?
+  def has_replies?(contact_id)
+    Message.where(source_contact_id: contact_id).exists?
   end
 
   def issue_title
@@ -206,44 +206,30 @@ class Contact
     self.previous_page_url = "unknown" if self.previous_page_url.nil?
   end
 
-  def has_replies?(contact_id)
-    Message.where(source_contact_id: contact_id).exists?
-  end
 
   private
-  
-  def contact_recipients
-    recipients = Array.new
-    case self.contact_type
-    when 'Website Problem'
-      recipients << "website_coordinator"
-      recipients << "system_administrator" if UseridDetail.any_of({ person_role: "website_coordinator", email_address_valid: true}, secondary_role: { '$in': ["website_coordinator"] }).all.count == 0
-    when 'Data Question'
-      recipients << "contacts_coordinator"
-      recipients << "system_administrator" if UseridDetail.any_of({ person_role: "contacts_coordinator", email_address_valid: true}, secondary_role: { '$in': ["contacts_coordinator"] }).all.count == 0
-    when 'Data Problem'
-      recipients.push("county_coordinator","contact_coordinator")
-      recipients << "system_administrator" if UseridDetail.any_of({ person_role: "contacts_coordinator", email_address_valid: true}, secondary_role: { '$in': ["contacts_coordinator"] }).all.count == 0
-    when 'Volunteering Question'
-      recipients.push("volunteer_coordinator")
-      recipients << "system_administrator" if UseridDetail.any_of({ person_role: "volunteer_coordinator", email_address_valid: true}, secondary_role: { '$in': ["volunteer_coordinator"] }).all.count == 0
-    when 'General Comment'
-      recipients.push("general_communication_coordinator")
-      recipients << "system_administrator" if UseridDetail.any_of({ person_role: "general_communication_coordinator", email_address_valid: true}, secondary_role: { '$in': ["general_communication_coordinator"] }).all.count == 0
-    when "Thank you"
-      recipients.push("publicity_coordinator")
-      recipients << "system_administrator" if UseridDetail.any_of({ person_role: "publicity_coordinator", email_address_valid: true}, secondary_role: { '$in': ["publicity_coordinator"] }).all.count == 0
-    when 'Genealogical Question'
-      recipients.push("genealogy_coordinator")
-      recipients << "system_administrator" if UseridDetail.any_of({ person_role: "genealogy_coordinator", email_address_valid: true}, secondary_role: { '$in': ["genealogy_coordinator"] }).all.count == 0
-    when 'Enhancement Suggestion'
-      recipients.push("website_coordinator", "project_manager")
-      recipients << "system_administrator" if UseridDetail.any_of({ person_role: { '$in': ["website_coordinator", "project_manager"] }, email_address_valid: true}, secondary_role: { '$in': ["website_coordinator", "project_manager"] }).all.count == 0
-    else
-      recipients.push("general_communication_coordinator")
-      recipients << "system_administrator" if UseridDetail.any_of({ person_role: "general_communication_coordinator", email_address_valid: true}, secondary_role: { '$in': ["general_communication_coordinator"] }).all.count == 0
+
+  def add_sender_to_copies_of_contact_action_sent_to(sender)
+    p "add_sender_to_copies_of_contact_action_sent_to"
+    p self.copies_of_contact_action_sent_to
+    if !(sender.userid == self.contact_action_sent_to || self.copies_of_contact_action_sent_to.include?(sender.userid))
+      self.copies_of_contact_action_sent_to.push(sender.userid)
+      self.update_attribute(:copies_of_contact_action_sent_to, self.copies_of_contact_action_sent_to)
     end
-    return recipients
+    p self.copies_of_contact_action_sent_to
+  end
+
+  def get_copies
+    ccs = Array.new
+    action_person = UseridDetail.userid(self.contact_action_sent_to).first
+    ccs.push(action_person.email_address) if action_person.present?
+    self.copies_of_contact_action_sent_to.each do |copy|
+      copy_person = UseridDetail.userid(copy).first
+      ccs.push(copy_person.email_address) if copy_person.present?
+    end
+    p 'copies'
+    p ccs
+    ccs
   end
 
   def reply_sent_messages(message, sender,contact_recipients)
@@ -251,5 +237,8 @@ class Contact
     @sent_message = SentMessage.new(message_id: @message.id, sender: sender.userid, recipients: contact_recipients, sent_time: Time.now)
     @message.sent_messages <<  [ @sent_message ]
     @sent_message.save
+    p "sent message stored"
+    p @message
+    p @message.sent_message
   end
 end

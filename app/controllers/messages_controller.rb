@@ -1,145 +1,8 @@
 class MessagesController < ApplicationController
-  
+
   require 'freereg_options_constants'
   require 'userid_role'
   require 'reply_userid_role'
-  def index
-    get_user_info_from_userid
-    @messages = Message.non_feedback_contact_reply_messages.all.order_by(message_time: -1)
-  end
-
-  def userid_messages
-    get_user_info_from_userid
-    @user.reload
-    @main_messages = Message.in(id: @user.userid_messages, source_message_id: nil).all.order_by(message_sent_time: -1)
-    @messages = @main_messages
-    if session[:syndicate].present?
-      @syndicate_messages = @main_messages.reject do |msg|
-        msg.sent_messages.syndicate_messages(session[:syndicate]).blank?
-      end
-      @messages = @syndicate_messages
-    end
-  end
-
-  def userid_reply_messages
-    get_user_info_from_userid
-    @user.reload
-    @reply_messages = Message.in(id: @user.userid_messages).where(:source_message_id.ne => nil).all.order_by(message_sent_time: -1)
-    @messages = @reply_messages
-    if session[:syndicate].present?
-      @syndicate_reply_messages = @reply_messages.reject do |reply_msg|
-        reply_msg.sent_messages.syndicate_messages(session[:syndicate]).blank?
-      end
-      @messages = @syndicate_reply_messages
-    end
-  end
-
-  def remove_from_useriddetail_waitlist
-    get_user_info_from_userid
-    @user.remove_checked_messages(params[:id])
-    if @user.userid_messages.length > 0
-      redirect_to userid_messages_path
-    else
-      redirect_to new_manage_resource_path
-    end
-  end
-
-  def show_waitlist_msg
-    get_user_info_from_userid
-    @message = Message.id(params[:id]).first
-    @reply_messages = Message.fetch_replies(params[:id])
-    @sent_replies = Message.sent_messages(@reply_messages)
-    @user = get_user
-    if @message.blank?
-      go_back("message",params[:id])
-    end
-    @sent =   @message.sent_messages.order_by(sent_time: 1)
-  end
-
-  def user_reply_messages
-    get_user_info_from_userid
-    @main_message = Message.id(params[:id]).first
-    @reply_messages = Message.fetch_replies(params[:id])
-    @user_replies = @reply_messages.where(userid: @user.userid).all
-    @messages = Message.sent_messages(@user_replies)
-  end
-
-  def show_reply_messages
-    get_user_info_from_userid
-    @user_messages = UseridDetail.id(@user.id).first.userid_messages
-    @reply_messages = Message.fetch_replies(params[:id])
-    @messages = Message.sent_messages(@reply_messages)
-    @main_message = Message.id(params[:id]).first
-  end
-
-  def show
-    get_user_info_from_userid
-    @message = Message.id(params[:id]).first
-    @reply_messages = Message.fetch_replies(params[:id])
-    @sent_replies = Message.sent_messages(@reply_messages)
-    if @message.blank?
-      go_back("message",params[:id])
-    end
-    @sent =   @message.sent_messages.order_by(sent_time: 1)
-  end
-
-  def list_by_name
-    get_user_info_from_userid
-    @messages = Message.list_messages(params[:action])
-    render :index
-  end
-
-  def list_feedback_reply_message
-    get_user_info_from_userid
-    @messages = Message.list_messages(params[:action])
-    render :index
-  end
-
-  def list_contact_reply_message
-    get_user_info_from_userid
-    @messages = Message.list_messages(params[:action])
-    render :index
-  end
-
-  def list_by_identifier
-    get_user_info_from_userid
-    @messages = Message.list_messages(params[:action])
-    render :index
-  end
-
-  def list_by_date
-    get_user_info_from_userid
-    @messages = Message.list_messages(params[:action])
-    render :index
-  end
-
-  def select_by_identifier
-    get_user_info_from_userid
-    @options = Hash.new
-    @messages = Message.all.order_by(identifier: -1).each do |message|
-      @options[message.identifier] = message.id
-    end
-    @message = Message.new
-    @location = 'location.href= "/messages/" + this.value'
-    @prompt = 'Select Identifier'
-    render '_form_for_selection'
-  end
-
-  def list_unsent_messages
-    get_user_info_from_userid
-    @messages = Message.list_messages(params[:action])
-    render :index
-  end  
-
-  def new
-    get_user_info_from_userid
-    @message = Message.new
-    @message.message_time = Time.now
-    @message.userid = @user.userid
-    @respond_to_message = Message.id(params[:id]).first
-    @reply_messages = Message.fetch_replies(params[:id])
-    @sent_replies = Message.sent_messages(@reply_messages)
-  end
 
   def create
     @message = Message.new(message_params)
@@ -179,30 +42,87 @@ class MessagesController < ApplicationController
     end
   end
 
-  def reply_for_feedback
-    sender = UseridDetail.where(userid: @message.userid).first
-    sender_email = sender.email_address
-    @feedback = Feedback.id(@message.source_feedback_id).first
-    @reply_to_email = @feedback.email_address
-    @feedback.communicate_reply(@message,params[:email], sender_email)
-    redirect_to reply_feedbacks_path(@message.source_feedback_id)
-  end
-
-  def send_feedback_message
-    get_user_info_from_userid; return if performed?
+  def destroy
+    @message = Message.id(params[:id]).first
     if @message.present?
-      @sent_message = SentMessage.new(:message_id => @message.id,:sender => @user_userid, recipients: ["website_coordinator"], other_recipient: params[:email], sent_time: Time.now)
-      @message.sent_messages <<  [ @sent_message ]
-      @sent_message.save
+      @message.destroy
+      flash.notice = "Message destroyed"
+      redirect_to list_feedback_reply_message_path and return if @message.source_feedback_id.present?
+      redirect_to list_contact_reply_message_path and return if @message.source_contact_id.present?
+      redirect_to :action => 'index'
+      return
+    else
+      go_back("message",params[:id])
     end
   end
 
-  def send_contact_message
+  def edit
+    @message = Message.id(params[:id]).first
+    if @message.blank?
+      go_back("message",params[:id])
+    end
+  end
+
+
+  def index
     get_user_info_from_userid
-    if @message.present?
-      @sent_message = SentMessage.new(:message_id => @message.id,:sender => @user_userid, recipients: [params[:email]])
-      @message.sent_messages <<  [ @sent_message ]
-      @sent_message.save
+    @messages = Message.non_feedback_contact_reply_messages.all.order_by(message_time: -1)
+  end
+
+
+  def list_by_name
+    get_user_info_from_userid
+    @messages = Message.list_messages(params[:action])
+    render :index
+  end
+
+  def list_feedback_reply_message
+    get_user_info_from_userid
+    @messages = Message.list_messages(params[:action])
+    render :index
+  end
+
+  def list_contact_reply_message
+    get_user_info_from_userid
+    @messages = Message.list_messages(params[:action])
+    render :index
+  end
+
+  def list_by_identifier
+    get_user_info_from_userid
+    @messages = Message.list_messages(params[:action])
+    render :index
+  end
+
+  def list_by_date
+    get_user_info_from_userid
+    @messages = Message.list_messages(params[:action])
+    render :index
+  end
+
+  def list_unsent_messages
+    get_user_info_from_userid
+    @messages = Message.list_messages(params[:action])
+    render :index
+  end
+
+  def new
+    get_user_info_from_userid
+    @message = Message.new
+    @message.message_time = Time.now
+    @message.userid = @user.userid
+    @respond_to_message = Message.id(params[:id]).first
+    @reply_messages = Message.fetch_replies(params[:id])
+    @sent_replies = Message.sent_messages(@reply_messages)
+  end
+
+  def remove_from_useriddetail_waitlist
+    get_user_info_from_userid
+    @user.remove_checked_messages(params[:id])
+    if @user.userid_messages.length > 0
+      redirect_to userid_messages_path
+    else
+      redirect_to new_manage_resource_path
     end
   end
 
@@ -213,6 +133,27 @@ class MessagesController < ApplicationController
     p @message
     @contact.communicate(@message, sender)
     redirect_to reply_contact_path(@message.source_contact_id)
+  end
+
+  def reply_for_feedback
+    sender = UseridDetail.where(userid: @message.userid).first
+    sender_email = sender.email_address
+    @feedback = Feedback.id(@message.source_feedback_id).first
+    @reply_to_email = @feedback.email_address
+    @feedback.communicate_reply(@message,params[:email], sender_email)
+    redirect_to reply_feedbacks_path(@message.source_feedback_id)
+  end
+
+  def select_by_identifier
+    get_user_info_from_userid
+    @options = Hash.new
+    @messages = Message.all.order_by(identifier: -1).each do |message|
+      @options[message.identifier] = message.id
+    end
+    @message = Message.new
+    @location = 'location.href= "/messages/" + this.value'
+    @prompt = 'Select Identifier'
+    render '_form_for_selection'
   end
 
   def send_message
@@ -241,10 +182,86 @@ class MessagesController < ApplicationController
     end
   end
 
-  def edit
+  def send_feedback_message
+    get_user_info_from_userid; return if performed?
+    if @message.present?
+      @sent_message = SentMessage.new(:message_id => @message.id,:sender => @user_userid, recipients: ["website_coordinator"], other_recipient: params[:email], sent_time: Time.now)
+      @message.sent_messages <<  [ @sent_message ]
+      @sent_message.save
+    end
+  end
+
+  def send_contact_message
+    get_user_info_from_userid
+    if @message.present?
+      @sent_message = SentMessage.new(:message_id => @message.id,:sender => @user_userid, recipients: [params[:email]])
+      @message.sent_messages <<  [ @sent_message ]
+      @sent_message.save
+    end
+  end
+
+  def show
+    get_user_info_from_userid
     @message = Message.id(params[:id]).first
+    @reply_messages = Message.fetch_replies(params[:id])
+    @sent_replies = Message.sent_messages(@reply_messages)
     if @message.blank?
       go_back("message",params[:id])
+    end
+    @sent =   @message.sent_messages.order_by(sent_time: 1)
+  end
+
+  def show_reply_messages
+    get_user_info_from_userid
+    @user_messages = UseridDetail.id(@user.id).first.userid_messages
+    @reply_messages = Message.fetch_replies(params[:id])
+    @messages = Message.sent_messages(@reply_messages)
+    @main_message = Message.id(params[:id]).first
+  end
+
+  def show_waitlist_msg
+    get_user_info_from_userid
+    @message = Message.id(params[:id]).first
+    @reply_messages = Message.fetch_replies(params[:id])
+    @sent_replies = Message.sent_messages(@reply_messages)
+    @user = get_user
+    if @message.blank?
+      go_back("message",params[:id])
+    end
+    @sent =   @message.sent_messages.order_by(sent_time: 1)
+  end
+
+  def user_reply_messages
+    get_user_info_from_userid
+    @main_message = Message.id(params[:id]).first
+    @reply_messages = Message.fetch_replies(params[:id])
+    @user_replies = @reply_messages.where(userid: @user.userid).all
+    @messages = Message.sent_messages(@user_replies)
+  end
+
+  def userid_messages
+    get_user_info_from_userid
+    @user.reload
+    @main_messages = Message.in(id: @user.userid_messages, source_message_id: nil).all.order_by(message_sent_time: -1)
+    @messages = @main_messages
+    if session[:syndicate].present?
+      @syndicate_messages = @main_messages.reject do |msg|
+        msg.sent_messages.syndicate_messages(session[:syndicate]).blank?
+      end
+      @messages = @syndicate_messages
+    end
+  end
+
+  def userid_reply_messages
+    get_user_info_from_userid
+    @user.reload
+    @reply_messages = Message.in(id: @user.userid_messages).where(:source_message_id.ne => nil).all.order_by(message_sent_time: -1)
+    @messages = @reply_messages
+    if session[:syndicate].present?
+      @syndicate_reply_messages = @reply_messages.reject do |reply_msg|
+        reply_msg.sent_messages.syndicate_messages(session[:syndicate]).blank?
+      end
+      @messages = @syndicate_reply_messages
     end
   end
 
@@ -278,20 +295,6 @@ class MessagesController < ApplicationController
         end
       end
       redirect_to :action => 'show'
-      return
-    else
-      go_back("message",params[:id])
-    end
-  end
-
-  def destroy
-    @message = Message.id(params[:id]).first
-    if @message.present?
-      @message.destroy
-      flash.notice = "Message destroyed"
-      redirect_to list_feedback_reply_message_path and return if @message.source_feedback_id.present?
-      redirect_to list_contact_reply_message_path and return if @message.source_contact_id.present?
-      redirect_to :action => 'index'
       return
     else
       go_back("message",params[:id])
