@@ -1,5 +1,5 @@
 class ImageServerGroupsController < ApplicationController
- 
+  skip_before_filter :require_login, only: [:upload_return]
 
   def allocate
     display_info
