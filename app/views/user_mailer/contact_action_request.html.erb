@@ -1,4 +1,4 @@
-<p> Dear <%= @send_to.person_forename %>;</p>
+SentMessage<p> Dear <%= @send_to.person_forename %>;</p>
 <p>We have received correspondence <%= @contact.identifier %> from <%= @contact.name %> email <%= @contact.email_address %> at <%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil?%>. </p>
 <p>You are requested to take action on the correspondence preferably using the on-line contact system</p>
 <p>Copies of the action request were sent to the following. Please include them in any correspondence<br>

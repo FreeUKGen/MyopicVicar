@@ -105,7 +105,7 @@ class Contact
       self.add_sender_to_copies_of_contact_action_sent_to(sender)
       self.add_contact_coordinator_to_copies_of_contact_action_sent_to
       copies = self.get_copies
-      reply_sent_messages(message,sender,self.copies_of_contact_action_sent_to)
+      reply_sent_messages(message,sender,self.name,self.copies_of_contact_action_sent_to)
       UserMailer.coordinator_contact_reply(self,copies,message,sender).deliver_now
     else
       send_to,copies_to = self.action_recipients
@@ -245,9 +245,9 @@ class Contact
     ccs
   end
 
-  def reply_sent_messages(message, sender,contact_recipients)
+  def reply_sent_messages(message, sender,contact_recipients,other_recipients)
     @message = message
-    @sent_message = SentMessage.new(message_id: @message.id, sender: sender.userid, recipients: contact_recipients, sent_time: Time.now)
+    @sent_message = SentMessage.new(message_id: @message.id, sender: sender.userid, recipients: contact_recipients, other_recipients: other_recipients, sent_time: Time.now)
     @message.sent_messages <<  [ @sent_message ]
     @sent_message.save
     p "sent message stored"
