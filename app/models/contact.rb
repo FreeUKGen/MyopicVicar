@@ -63,7 +63,7 @@ class Contact
       person = UseridDetail.role(role).active.first
       person.present? ? action_person = person : action_person = self.get_manager
     end
-    self.update_attribute(contact_action_sent_to_userid:,action_person.userid)
+    self.update_attribute(:contact_action_sent_to_userid,action_person.userid)
     p " to whom"
     p action_person.userid
     return action_person.userid
@@ -79,7 +79,7 @@ class Contact
       action_recipient_copies_userids.push(person.userid) unless person.userid == action_person
     end
     action_recipient_copies_userids = action_recipient_copies_userids.uniq
-    self.update_attribute(copies_of_contact_action_sent_to_userids:,action_recipient_copies_userids)
+    self.update_attribute(:copies_of_contact_action_sent_to_userids,action_recipient_copies_userids)
     p "copies  to whom"
     p action_recipient_copies_userids
     return action_recipient_copies_userids
