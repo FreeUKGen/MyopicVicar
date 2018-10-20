@@ -95,10 +95,12 @@ class UserMailer < ActionMailer::Base
     @send_to = UseridDetail.userid(send_to).first
     @cc_email_addresses = Array.new
     @cc_names = Array.new
-    copies_to.each do |copy|
-      @cc_email_addresses.push(copy.email_address) unless @cc_email_addresses.include?(copy.email_address)
-      person_name = (copy.person_forename + " " + copy.person_surname + " " + copy.email_address) unless @cc_email_addresses.include?(copy.email_address)
-      @cc_names.push(person_name)
+    unless copies_to.blank?
+      copies_to.all.each do |copy|
+        @cc_email_addresses.push(copy.email_address) unless @cc_email_addresses.include?(copy.email_address)
+        person_name = (copy.person_forename + " " + copy.person_surname + " " + copy.email_address) unless @cc_email_addresses.include?(copy.email_address)
+        @cc_names.push(person_name)
+      end
     end
     p "sending contact_action_request"
     p @cc_email_addresses
@@ -326,8 +328,10 @@ class UserMailer < ActionMailer::Base
     @contact = contact
     @message = message
     @cc_email_addresses = Array.new
-    copies_to.each do |copy|
-      @cc_email_addresses.push(copy.email_address) unless @cc_email_addresses.include?(copy.email_address)
+    unless ccs.blank?
+      ccs.all.each do |copy|
+        @cc_email_addresses.push(copy.email_address) unless @cc_email_addresses.include?(copy.email_address)
+      end
     end
     @reply_messages = Message.where(source_contact_id: @message.source_contact_id).all
     get_attachment
