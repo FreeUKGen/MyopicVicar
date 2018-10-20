@@ -4,19 +4,24 @@ namespace :myopic_vicar do
   end
 
   def rebuild_places
-    Place.where(:data_present => 1).order(:chapman_code => 1, :place_name => 1).each do |place| 
-      print "#{place.chapman_code}\t#{place.place_name}\n"
+    places = Place.where(:data_present => 1).order(:chapman_code => 1, :place_name => 1).pluck(:id, :chapman_code, :place_name)
+    
+    places.each do |id, chapman_code, place_name| 
+      print "#{chapman_code}\t#{place_name}\n"
+      place = Place.find(id)
       STDOUT.flush
       begin
         place.rebuild_open_records  
       rescue 
-        print "ERROR on #{place.chapman_code}\t#{place.place_name}\nretrying\n"        
+        print "ERROR on #{place.chapman_code}\t#{place.place_name}\nretrying in 20s\n"        
         STDOUT.flush
+        sleep 20
         begin
           place.rebuild_open_records  
         rescue 
-          print "ERROR on #{place.chapman_code}\t#{place.place_name}\nretrying again\n"        
+          print "ERROR on #{place.chapman_code}\t#{place.place_name}\nretrying again in 40s\n"        
           STDOUT.flush
+          sleep 40
           place.rebuild_open_records  
         end
       end
