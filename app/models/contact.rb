@@ -61,12 +61,12 @@ class Contact
     else
       role = self.get_role_from_contact
       person = UseridDetail.role(role).active(true).first
-      person.present? ? action_person = person : action_person = self.get_manager
+      person.present? ? action_person = person.userid : action_person = self.get_manager
     end
-    self.update_attribute(:contact_action_sent_to_userid,action_person.userid)
+    self.update_attribute(:contact_action_sent_to_userid,action_person)
     p " to whom"
-    p action_person.userid
-    return action_person.userid
+    p action_person
+    return action_person
   end
 
   def action_recipient_copies_userids(action_person)
