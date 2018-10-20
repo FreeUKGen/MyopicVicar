@@ -91,10 +91,14 @@ class Contact
     p copies_of_contact_action_sent_to_userids
     action_person = UseridDetail.role("contacts_coordinator").active(true).first
     action_person = UseridDetail.secondary("contacts_coordinator").active(true).first if action_person.blank?
-    if action_person.present? && !(action_person.userid == self.contact_action_sent_to_userid || self.copies_of_contact_action_sent_to_userids.include?(action_person.userid))
-      copies_of_contact_action_sent_to_userids.push(action_person.userid)
-      self.update_attribute(:copies_of_contact_action_sent_to_userids, copies_of_contact_action_sent_to_userids)
+    if action_person.present? && !(action_person.userid == self.contact_action_sent_to_userid)
+      if copies_of_contact_action_sent_to_userids.blank?
+        copies_of_contact_action_sent_to_userids.push(action_person.userid)
+      else
+        copies_of_contact_action_sent_to_userids.push(action_person.userid) unless  copies_of_contact_action_sent_to_userids.include?(action_person.userid))
+      end
     end
+    self.update_attribute(:copies_of_contact_action_sent_to_userids, copies_of_contact_action_sent_to_userids)
     p copies_of_contact_action_sent_to_userids
   end
 
