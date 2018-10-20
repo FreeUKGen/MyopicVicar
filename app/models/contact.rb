@@ -85,6 +85,18 @@ class Contact
     return action_recipient_copies_userids
   end
 
+  def add_contact_coordinator_to_copies_of_contact_action_sent_to_userids
+    p "add_contact cordinator_to_copies_of_contact_action_sent_to_userids"
+    copies_of_contact_action_sent_to_userids = self.copies_of_contact_action_sent_to_userids
+    p copies_of_contact_action_sent_to_userids
+    action_person = UseridDetail.role("contacts_coordinator").active(true).first
+    action_person = UseridDetail.secondary("contacts_coordinator").active(true).first if action_person.blank?
+    if action_person.present? && !(action_person.userid == self.contact_action_sent_to_userid || self.copies_of_contact_action_sent_to_userids.include?(action_person.userid))
+      copies_of_contact_action_sent_to_userids.push(action_person.userid)
+      self.update_attribute(:copies_of_contact_action_sent_to_userids, copies_of_contact_action_sent_to_userids)
+    end
+    p copies_of_contact_action_sent_to_userids
+  end
 
   def add_identifier
     self.identifier = Time.now.to_i - Time.gm(2015).to_i
@@ -101,6 +113,17 @@ class Contact
 
   def add_screenshot_location
     self.screenshot_location = "uploads/contact/screenshot/#{self.screenshot.model._id.to_s}/#{self.screenshot.filename}" if self.screenshot.filename.present?
+  end
+
+  def add_sender_to_copies_of_contact_action_sent_to_userids(sender)
+    p "add_sender_to_copies_of_contact_action_sent_to_userids"
+    copies_of_contact_action_sent_to_userids = self.copies_of_contact_action_sent_to_userids
+    p copies_of_contact_action_sent_to_userids
+    if !(sender.userid == self.contact_action_sent_to_userid || self.copies_of_contact_action_sent_to_userids.include?(sender.userid))
+      copies_of_contact_action_sent_to_userids.push(sender.userid)
+      self.update_attribute(:copies_of_contact_action_sent_to_userids, copies_of_contact_action_sent_to_userids)
+    end
+    p self.copies_of_contact_action_sent_to_userids
   end
 
   def communicate_contact_reply(message,sender)
@@ -226,30 +249,6 @@ class Contact
 
 
   private
-
-  def add_sender_to_copies_of_contact_action_sent_to_userids(sender)
-    p "add_sender_to_copies_of_contact_action_sent_to_userids"
-    copies_of_contact_action_sent_to_userids = self.copies_of_contact_action_sent_to_userids
-    p copies_of_contact_action_sent_to_userids
-    if !(sender.userid == self.contact_action_sent_to_userid || self.copies_of_contact_action_sent_to_userids.include?(sender.userid))
-      copies_of_contact_action_sent_to_userids.push(sender.userid)
-      self.update_attribute(:copies_of_contact_action_sent_to_userids, copies_of_contact_action_sent_to_userids)
-    end
-    p self.copies_of_contact_action_sent_to_userids
-  end
-
-  def add_contact_coordinator_to_copies_of_contact_action_sent_to_userids
-    p "add_contact cordinator_to_copies_of_contact_action_sent_to_userids"
-    copies_of_contact_action_sent_to_userids = self.copies_of_contact_action_sent_to_userids
-    p copies_of_contact_action_sent_to_userids
-    action_person = UseridDetail.role("contacts_coordinator").active(true).first
-    action_person = UseridDetail.secondary("contacts_coordinator").active(true).first if action_person.blank?
-    if action_person.present? && !(action_person.userid == self.contact_action_sent_to_userid || self.copies_of_contact_action_sent_to_userids.include?(action_person.userid))
-      copies_of_contact_action_sent_to_userids.push(action_person.userid)
-      self.update_attribute(:copies_of_contact_action_sent_to_userids, copies_of_contact_action_sent_to_userids)
-    end
-    p copies_of_contact_action_sent_to_userids
-  end
 
   def reply_sent_messages(message, sender,contact_recipients,other_recipients)
     @message = message
