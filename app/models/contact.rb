@@ -60,7 +60,7 @@ class Contact
       coordinator.present? ? action_person = coordinator : action_person = self.get_manager
     else
       role = self.get_role_from_contact
-      person = UseridDetail.role(role).active.first
+      person = UseridDetail.role(role).active(true).first
       person.present? ? action_person = person : action_person = self.get_manager
     end
     self.update_attribute(:contact_action_sent_to_userid,action_person.userid)
@@ -72,10 +72,10 @@ class Contact
   def action_recipient_copies_userids(action_person)
     action_recipient_copies_userids = Array.new
     role = self.get_role_from_contact
-    UseridDetail.role(role).active.all.each do |person|
+    UseridDetail.role(role).active(true).all.each do |person|
       action_recipient_copies_userids.push(person.userid) unless person.userid == action_person
     end
-    UseridDetail.secondary(role).active.all.each do |person|
+    UseridDetail.secondary(role).active(true).all.each do |person|
       action_recipient_copies_userids.push(person.userid) unless person.userid == action_person
     end
     action_recipient_copies_userids = action_recipient_copies_userids.uniq
@@ -158,10 +158,10 @@ class Contact
   end
 
   def get_manager
-    action_person = UseridDetail.role("contacts_coordinator").active.first
-    action_person = UseridDetail.secondary("contacts_coordinator").active.first if action_person.blank?
-    action_person = UseridDetail.userid("REGManager").active.first if action_person.blank?
-    action_person = UseridDetail.role("system_administrator").active.first if action_person.blank?
+    action_person = UseridDetail.role("contacts_coordinator").active(true).first
+    action_person = UseridDetail.secondary("contacts_coordinator").active(true).first if action_person.blank?
+    action_person = UseridDetail.userid("REGManager").active(true).first if action_person.blank?
+    action_person = UseridDetail.role("system_administrator").active(true).first if action_person.blank?
     p "get_manager"
     p action_person.userid
     return action_person.userid
@@ -242,8 +242,8 @@ class Contact
     p "add_contact cordinator_to_copies_of_contact_action_sent_to_userids"
     copies_of_contact_action_sent_to_userids = self.copies_of_contact_action_sent_to_userids
     p copies_of_contact_action_sent_to_userids
-    action_person = UseridDetail.role("contacts_coordinator").active.first
-    action_person = UseridDetail.secondary("contacts_coordinator").active.first if action_person.blank?
+    action_person = UseridDetail.role("contacts_coordinator").active(true).first
+    action_person = UseridDetail.secondary("contacts_coordinator").active(true).first if action_person.blank?
     if action_person.present? && !(action_person.userid == self.contact_action_sent_to_userid || self.copies_of_contact_action_sent_to_userids.include?(action_person.userid))
       copies_of_contact_action_sent_to_userids.push(action_person.userid)
       self.update_attribute(:copies_of_contact_action_sent_to_userids, copies_of_contact_action_sent_to_userids)
