@@ -131,7 +131,7 @@ class MessagesController < ApplicationController
     sender_email = sender.email_address
     @contact = Contact.id(@message.source_contact_id).first
     p @message
-    @contact.communicate(@message, sender)
+    @contact.communicate_contact_reply(@message, sender)
     redirect_to reply_contact_path(@message.source_contact_id)
   end
 

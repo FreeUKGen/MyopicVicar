@@ -48,7 +48,7 @@ class ContactsController < ApplicationController
       @contact.save
       if !@contact.errors.any?
         flash[:notice] = "Thank you for contacting us!"
-        @contact.communicate
+        @contact.communicate_initial_contact
         if @contact.query
           redirect_to search_query_path(@contact.query)
           return

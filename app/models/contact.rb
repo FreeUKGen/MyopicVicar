@@ -22,8 +22,8 @@ class Contact
   field :query, type: String
   field :identifier, type: String
   field :screenshot_location, type: String
-  field :contact_action_sent_to, type: String, default: nil
-  field :copies_of_contact_action_sent_to, type: Array, default: nil
+  field :contact_action_sent_to_userid, type: String, default: nil
+  field :copies_of_contact_action_sent_to_userids, type: Array, default: nil
   field :archived, type: Boolean, default: false
 
   attr_accessor :action
@@ -50,30 +50,39 @@ class Contact
 
   ##########################################################################################
 
-  def acknowledge_communication(message=nil,sender=nil)
+  def acknowledge_communication
     UserMailer.acknowledge_communication(self).deliver_now
   end
 
-  def action_recipients
-    copies = Array.new
+  def action_recipient_userid
     if self.contact_type == 'Data Problem'
       coordinator = self.get_coordinator if self.record_id.present?
       coordinator.present? ? action_person = coordinator : action_person = self.get_manager
     else
       role = self.get_role_from_contact
-      person = UseridDetail.role(role).email_address_valid.first
+      person = UseridDetail.role(role).active.first
       person.present? ? action_person = person : action_person = self.get_manager
     end
-    UseridDetail.role("contacts_coordinator").email_address_valid.all.each do |user|
-      copies.push(user) unless action_person.userid == user.userid
-    end
-    UseridDetail.secondary("contacts_coordinator").email_address_valid.each do |user|
-      copies.push(user) unless action_person.userid == user.userid
-    end
+    self.update_attribute(contact_action_sent_to_userid:,action_person.userid)
     p " to whom"
-    p action_person
-    p copies
-    return action_person,copies
+    p action_person.userid
+    return action_person.userid
+  end
+
+  def action_recipient_copies_userids(action_person)
+    action_recipient_copies_userids = Array.new
+    role = self.get_role_from_contact
+    UseridDetail.role(role).active.all.each do |person|
+      action_recipient_copies_userids.push(person.userid) unless person.userid == action_person
+    end
+    UseridDetail.secondary(role).active.all.each do |person|
+      action_recipient_copies_userids.push(person.userid) unless person.userid == action_person
+    end
+    action_recipient_copies_userids = action_recipient_copies_userids.uniq
+    self.update_attribute(copies_of_contact_action_sent_to_userids:,action_recipient_copies_userids)
+    p "copies  to whom"
+    p action_recipient_copies_userids
+    return action_recipient_copies_userids
   end
 
 
@@ -94,23 +103,27 @@ class Contact
     self.screenshot_location = "uploads/contact/screenshot/#{self.screenshot.model._id.to_s}/#{self.screenshot.filename}" if self.screenshot.filename.present?
   end
 
-  def communicate(message=nil,sender=nil)
-    p "communicating #{message} #{sender}"
-    self.acknowledge_communication(message,sender) unless message.present?
-    self.contact_action_communication(message,sender)
+  def communicate_contact_reply(message,sender)
+    p 'reply'
+    copies = self.copies_of_contact_action_sent_to_userids
+    reply_sent_messages(message,sender,self.name,copies)
+    UserMailer.coordinator_contact_reply(self,copies,message,sender).deliver_now
+    copies = self.add_sender_to_copies_of_contact_action_sent_to_userids(sender)
   end
 
-  def contact_action_communication(message,sender)
-    unless message.blank?
-      self.add_sender_to_copies_of_contact_action_sent_to(sender)
-      self.add_contact_coordinator_to_copies_of_contact_action_sent_to
-      copies = self.get_copies
-      reply_sent_messages(message,sender,self.name,self.copies_of_contact_action_sent_to)
-      UserMailer.coordinator_contact_reply(self,copies,message,sender).deliver_now
-    else
-      send_to,copies_to = self.action_recipients
-      UserMailer.contact_action_request(self,send_to,copies_to).deliver_now
-    end
+  def communicate_initial_contact
+    p "communicating inial messages"
+    self.acknowledge_communication
+    self.contact_action_communication
+  end
+
+  def contact_action_communication
+    p "contact_action_communication"
+    send_to_userid = self.action_recipient_userid
+    #we are sending an action request
+    copies_of_contact_action_sent_to_userids =   self.add_contact_coordinator_to_copies_of_contact_action_sent_to_userids
+    p  'send action'
+    UserMailer.contact_action_request(self,send_to_userid,copies_of_contact_action_sent_to_userids).deliver_now
   end
 
   def get_coordinator
@@ -126,7 +139,7 @@ class Contact
           county = County.where(:chapman_code => chapman_code).first
           if county.present?
             county_coordinator = county.county_coordinator
-            coordinator = UseridDetail.where(:userid => county_coordinator).first
+            coordinator = UseridDetail.where(:userid => county_coordinator, :active => true).first
           else
             coordinator = nil
           end
@@ -139,15 +152,19 @@ class Contact
     else
       coordinator = nil
     end
-    return coordinator
+    p "coordinator"
+    p coordinator.userid
+    return coordinator.userid
   end
 
   def get_manager
-    action_person = UseridDetail.role("contacts_coordinator").email_address_valid.first
-    action_person = UseridDetail.secondary("contacts_coordinator").email_address_valid.first if action_person.blank?
-    action_person = UseridDetail.userid("REGManager").email_address_valid.first if action_person.blank?
-    action_person = UseridDetail.role("system_administrator").first if action_person.blank?
-    action_person
+    action_person = UseridDetail.role("contacts_coordinator").active.first
+    action_person = UseridDetail.secondary("contacts_coordinator").active.first if action_person.blank?
+    action_person = UseridDetail.userid("REGManager").active.first if action_person.blank?
+    action_person = UseridDetail.role("system_administrator").active.first if action_person.blank?
+    p "get_manager"
+    p action_person.userid
+    return action_person.userid
   end
 
   def get_role_from_contact
@@ -210,39 +227,28 @@ class Contact
 
   private
 
-  def add_sender_to_copies_of_contact_action_sent_to(sender)
-    p "add_sender_to_copies_of_contact_action_sent_to"
-    p self.copies_of_contact_action_sent_to
-    if !(sender.userid == self.contact_action_sent_to || self.copies_of_contact_action_sent_to.include?(sender.userid))
-      self.copies_of_contact_action_sent_to.push(sender.userid)
-      self.update_attribute(:copies_of_contact_action_sent_to, self.copies_of_contact_action_sent_to)
+  def add_sender_to_copies_of_contact_action_sent_to_userids(sender)
+    p "add_sender_to_copies_of_contact_action_sent_to_userids"
+    copies_of_contact_action_sent_to_userids = self.copies_of_contact_action_sent_to_userids
+    p copies_of_contact_action_sent_to_userids
+    if !(sender.userid == self.contact_action_sent_to_userid || self.copies_of_contact_action_sent_to_userids.include?(sender.userid))
+      copies_of_contact_action_sent_to_userids.push(sender.userid)
+      self.update_attribute(:copies_of_contact_action_sent_to_userids, copies_of_contact_action_sent_to_userids)
     end
-    p self.copies_of_contact_action_sent_to
+    p self.copies_of_contact_action_sent_to_userids
   end
 
-  def add_contact_coordinator_to_copies_of_contact_action_sent_to
-    p "add_contact cordinator_to_copies_of_contact_action_sent_to"
-    p self.copies_of_contact_action_sent_to
-    action_person = UseridDetail.role("contacts_coordinator").email_address_valid.first
-    action_person = UseridDetail.secondary("contacts_coordinator").email_address_valid.first if action_person.blank?
-    if action_person.present? && !(action_person.userid == self.contact_action_sent_to || self.copies_of_contact_action_sent_to.include?(action_person.userid))
-      self.copies_of_contact_action_sent_to.push(action_person.userid)
-      self.update_attribute(:copies_of_contact_action_sent_to, self.copies_of_contact_action_sent_to)
+  def add_contact_coordinator_to_copies_of_contact_action_sent_to_userids
+    p "add_contact cordinator_to_copies_of_contact_action_sent_to_userids"
+    copies_of_contact_action_sent_to_userids = self.copies_of_contact_action_sent_to_userids
+    p copies_of_contact_action_sent_to_userids
+    action_person = UseridDetail.role("contacts_coordinator").active.first
+    action_person = UseridDetail.secondary("contacts_coordinator").active.first if action_person.blank?
+    if action_person.present? && !(action_person.userid == self.contact_action_sent_to_userid || self.copies_of_contact_action_sent_to_userids.include?(action_person.userid))
+      copies_of_contact_action_sent_to_userids.push(action_person.userid)
+      self.update_attribute(:copies_of_contact_action_sent_to_userids, copies_of_contact_action_sent_to_userids)
     end
-    p self.copies_of_contact_action_sent_to
-  end
-
-  def get_copies
-    ccs = Array.new
-    action_person = UseridDetail.userid(self.contact_action_sent_to).first
-    ccs.push(action_person.email_address) if action_person.present?
-    self.copies_of_contact_action_sent_to.each do |copy|
-      copy_person = UseridDetail.userid(copy).first
-      ccs.push(copy_person.email_address) if copy_person.present?
-    end
-    p 'copies'
-    p ccs
-    ccs
+    p copies_of_contact_action_sent_to_userids
   end
 
   def reply_sent_messages(message, sender,contact_recipients,other_recipients)

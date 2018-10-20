@@ -2,7 +2,7 @@ class UserMailer < ActionMailer::Base
   add_template_helper(EmailHelper)
 
   default from: "freereg-contacts@freereg.org.uk"
-  
+
   def acknowledge_communication(original)
     @communication = original
     p "Acknowledge #{@communication.inspect}"
@@ -55,10 +55,10 @@ class UserMailer < ActionMailer::Base
     @userid = UseridDetail.where(userid: user).first
     if @userid.present?
       emails = Array.new
-        if @userid.present? &&  @userid.active && @userid.email_address_valid && @userid.registration_completed(@userid) && !@userid.no_processing_messages
-          user_email_with_name =  @userid.email_address
-          emails <<  user_email_with_name
-        end
+      if @userid.present? &&  @userid.active && @userid.email_address_valid && @userid.registration_completed(@userid) && !@userid.no_processing_messages
+        user_email_with_name =  @userid.email_address
+        emails <<  user_email_with_name
+      end
       syndicate_coordinator = nil
       syndicate_coordinator = Syndicate.where(syndicate_code: @userid.syndicate).first
       if syndicate_coordinator.present?
@@ -89,20 +89,18 @@ class UserMailer < ActionMailer::Base
       end
     end
   end
-  
+
   def contact_action_request(contact,send_to,copies_to)
     @contact = contact
-    @send_to = send_to
+    @send_to = UseridDetail.userid(send_to).first
     @cc_email_addresses = Array.new
     @cc_names = Array.new
-    @cc_userids = Array.new
     copies_to.each do |copy|
       @cc_email_addresses.push(copy.email_address) unless @cc_email_addresses.include?(copy.email_address)
-      name = copy.person_forename + " " + copy.person_surname + " " + copy.email_address unless @cc_email_addresses.include?(copy.email_address)
-      @cc_names.push(name)
-      @cc_userids.push(copy.userid) unless @cc_email_addresses.include?(copy.email_address) 
+      person_name = (copy.person_forename + " " + copy.person_surname + " " + copy.email_address) unless @cc_email_addresses.include?(copy.email_address)
+      @cc_names.push(person_name)
     end
-    @contact.update_attributes(:contact_action_sent_to =>@send_to.userid,:copies_of_contact_action_sent_to => @cc_userids )
+    p "sending contact_action_request"
     p @cc_email_addresses
     p  @cc_names
     get_attachment
@@ -201,12 +199,12 @@ class UserMailer < ActionMailer::Base
     return if sc.nil?
 
     case action_type
-      when 'allocate'
-        subject = "allocate request accepted"
-        email_body = "Your request to have image group " + group_name + " be allocated is approved"
-      when 'reject'
-        subject = "allocate request rejected"
-        email_body = "Your request to have image group " + group_name + " be allocated is rejected"
+    when 'allocate'
+      subject = "allocate request accepted"
+      email_body = "Your request to have image group " + group_name + " be allocated is approved"
+    when 'reject'
+      subject = "allocate request rejected"
+      email_body = "Your request to have image group " + group_name + " be allocated is rejected"
     end
 
     mail(:from => user.email_address, :to => sc.email_address, :subject => subject, :body => email_body)
@@ -327,9 +325,13 @@ class UserMailer < ActionMailer::Base
     p message
     @contact = contact
     @message = message
+    @cc_email_addresses = Array.new
+    copies_to.each do |copy|
+      @cc_email_addresses.push(copy.email_address) unless @cc_email_addresses.include?(copy.email_address)
+    end
     @reply_messages = Message.where(source_contact_id: @message.source_contact_id).all
     get_attachment
-    mail(from: sender.email_address, to:  "#{@contact.name} <#{@contact.email_address}>", bcc: ccs, subject: @message.subject)
+    mail(from: sender.email_address, to:  "#{@contact.name} <#{@contact.email_address}>", bcc: @cc_email_addresses, subject: @message.subject)
   end
 
   def send_logs(file,ccs,body_message,subjects)
