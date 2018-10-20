@@ -20,6 +20,7 @@
     <% if (@user.person_role == 'system_administrator' || @user.person_role == 'volunteer_coordinator') && !session[:my_own] %>
       <%= f.input :syndicate,:label => "Syndicate  (Required)",:include_blank => false, :collection => @syndicates, :input_html => {  :class => "text-input simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 }%>
       <%= f.input :person_role,  :collection => UseridRole::VALUES, :include_blank => false,:label => "Role in FreeREG (Required)", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 }%>
+      <%= f.input :secondary_role, :collection => UseridRole::VALUES, :include_blank => true,:label => "Secondary Role(s) in FreeREG :", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4, multiple: true }, include_hidden: false, :hint => "Hold Ctrl or Shift to select multiple roles" %>
     <% else%>
         <%= f.input :syndicate, :label => "Syndicate",:include_blank => false, :collection => @syndicates,:input_html => {:class => "  simple_form_position", :size => 2}, :hint => "You can only create a Userid in your own syndicate"%>
          <%= f.input :person_role,:label => "Role in Freereg",:include_blank => false,:collection => ["transcriber", "trainee"],:input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 2 },:selected => "trainee" %>
@@ -45,6 +46,7 @@
 
     <% if @user.person_role == 'system_administrator'  && !session[:my_own] %> 
       <%= f.input :person_role,  :collection => UseridRole::VALUES, :include_blank => false,:label => "Role in FreeREG :", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 } %>
+    <%= f.input :secondary_role, :collection => UseridRole::VALUES, :include_blank => true,:label => "Secondary Role(s) in FreeREG :", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4, multiple: true }, include_hidden: true, :hint => "Hold Ctrl or Shift to select multiple roles" %>
     <% end %>
 
     <% if (manager?(@user)) %>

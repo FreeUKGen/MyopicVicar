@@ -84,6 +84,7 @@ class AssignmentsController < ApplicationController
     @place = @church.place #id?
     @county =  @place.county
     @place_name = @place.place_name
+    @syndicate = @place.chapman_code
     @user = get_user
     @source = Source.find(:id=>session[:source_id])
     @group = ImageServerGroup.find(:id=>session[:image_server_group_id])

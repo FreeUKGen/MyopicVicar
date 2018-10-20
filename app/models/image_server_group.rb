@@ -68,6 +68,13 @@ class ImageServerGroup
       return image_server_group_params
     end
 
+    def email_cc_completion(group_id,chapman_code,user)
+      image_server_group = ImageServerGroup.where(:id=>group_id)
+      ImageServerImage.update_image_status(image_server_group,'cs')
+
+      UserMailer.notify_cc_assignment_complete(user,group_id,chapman_code).deliver_now
+    end
+  
     def find_by_source_ids(id)
       where(:source_id => {'$in'=>id.keys})
     end
@@ -354,10 +361,21 @@ class ImageServerGroup
       return flash_notice
     end
 
+    def update_initialize_request(params)
+      # params[:custom_field] = array of group ids from initialize image groups (image group index)
+      # params[:custom_field] = group id from initialize image group (image group show)
+      Array(params[:custom_field]).each do |x|          
+        @image_server_group = ImageServerGroup.id(x).first
+        ImageServerGroup.initialize_all_images_status_under_image_group(x, params[:initialize_status])
+      end
+
+      return @image_server_group
+    end
+
     def update_put_request(params,userid)
-      image_server_group = ImageServerGroup.id(params[:id]).first
+      image_server_group = ImageServerGroup.id(params[:id])
       logger.info 'update put request'
-      logger.info image_server_group
+      logger.info image_server_group.first
       case params[:type]
         when 'allocate accept'
           flash_message = image_server_group.update_image_and_group_for_put_request('ar','a',userid)

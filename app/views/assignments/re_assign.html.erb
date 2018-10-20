@@ -46,8 +46,8 @@
 
   <% if params[:assignment_list_type] == 'group' %>
     <%= s.hidden_field :source_id, :value=>@source.id %>
-    <%= s.hidden_field :image_server_group_id, :value=>params[:image_server_group_id] %>
   <% end %>
+  <%= s.hidden_field :image_server_group_id, :value=>params[:image_server_group_id] %>
   <%= s.hidden_field :assign_type, as: :fake, :value=>params[:assign_type] %>
   <%= s.hidden_field :assignment_list_type, as: :fake, :value=>params[:assignment_list_type] %>
   <%= s.button :submit, 'Submit', :onclick => 'return validate_selection()' %>
