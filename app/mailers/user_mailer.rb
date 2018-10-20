@@ -96,7 +96,7 @@ class UserMailer < ActionMailer::Base
     @cc_email_addresses = Array.new
     @cc_names = Array.new
     unless copies_to.blank?
-      copies_to.all.each do |copy|
+      copies_to.each do |copy|
         @cc_email_addresses.push(copy.email_address) unless @cc_email_addresses.include?(copy.email_address)
         person_name = (copy.person_forename + " " + copy.person_surname + " " + copy.email_address) unless @cc_email_addresses.include?(copy.email_address)
         @cc_names.push(person_name)
@@ -329,7 +329,7 @@ class UserMailer < ActionMailer::Base
     @message = message
     @cc_email_addresses = Array.new
     unless ccs.blank?
-      ccs.all.each do |copy|
+      ccs.each do |copy|
         @cc_email_addresses.push(copy.email_address) unless @cc_email_addresses.include?(copy.email_address)
       end
     end

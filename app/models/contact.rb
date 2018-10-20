@@ -23,7 +23,7 @@ class Contact
   field :identifier, type: String
   field :screenshot_location, type: String
   field :contact_action_sent_to_userid, type: String, default: nil
-  field :copies_of_contact_action_sent_to_userids, type: Array, default: nil
+  field :copies_of_contact_action_sent_to_userids, type: Array, default: Array.new
   field :archived, type: Boolean, default: false
 
   attr_accessor :action
@@ -93,7 +93,6 @@ class Contact
     action_person = UseridDetail.secondary("contacts_coordinator").active(true).first if action_person.blank?
     if action_person.present? && !(action_person.userid == self.contact_action_sent_to_userid)
       if copies_of_contact_action_sent_to_userids.blank?
-        copies_of_contact_action_sent_to_userids = Array.new if copies_of_contact_action_sent_to_userids.nil?
         copies_of_contact_action_sent_to_userids.push(action_person.userid)
       else
         copies_of_contact_action_sent_to_userids.push(action_person.userid) unless  copies_of_contact_action_sent_to_userids.include?(action_person.userid)
