@@ -270,6 +270,6 @@ class Contact
     @sent_message.save
     p "sent message stored"
     p @message
-    p @message.sent_message
+    p @message.sent_messages
   end
 end
