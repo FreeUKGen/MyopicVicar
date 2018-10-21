@@ -139,8 +139,9 @@ class Contact
     recipients = Array.new
     recipients.push(self.email_address)
     UserMailer.coordinator_contact_reply(self,copies,message,sender).deliver_now
-    reply_sent_messages(message,sender,recipients,copies)
     copies = self.add_sender_to_copies_of_contact_action_sent_to_userids(sender)
+    reply_sent_messages(message,sender,recipients,copies)
+
   end
 
   def communicate_initial_contact
