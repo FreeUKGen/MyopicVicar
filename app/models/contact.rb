@@ -133,8 +133,13 @@ class Contact
   def communicate_contact_reply(message,sender)
     p 'reply'
     copies = self.copies_of_contact_action_sent_to_userids
-    reply_sent_messages(message,sender,self.name,copies)
+    p sender
+    p message
+    p copies
+    recipients = Array.new
+    recipients.push(self.email_address)
     UserMailer.coordinator_contact_reply(self,copies,message,sender).deliver_now
+    reply_sent_messages(message,sender,recipients,copies)
     copies = self.add_sender_to_copies_of_contact_action_sent_to_userids(sender)
   end
 
@@ -256,6 +261,10 @@ class Contact
 
   def reply_sent_messages(message, sender,contact_recipients,other_recipients)
     @message = message
+    p 'sent message'
+    p sender
+    p contact_recipients
+    p other_recipients
     @sent_message = SentMessage.new(message_id: @message.id, sender: sender.userid, recipients: contact_recipients, other_recipients: other_recipients, sent_time: Time.now)
     @message.sent_messages <<  [ @sent_message ]
     @sent_message.save
