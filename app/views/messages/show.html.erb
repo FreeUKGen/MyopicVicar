@@ -58,8 +58,8 @@
               <% if @message.sent_messages.present?%>
                 <% @message.sent_messages.order_by(sent_time: -1).each do |each_message| %>
                   <%= content_tag :p, class: "weight--semibold" do %>
-                    <% unless each_message.additional_recipients.blank? %>
-                      <%= each_message.additional_recipients%> <%= formatted_date(each_message)%> Sent by: <%= each_message.sender%>
+                    <% unless each_message.other_recipients.blank? %>
+                      <%= each_message.other_recipients%> <%= formatted_date(each_message)%> Sent by: <%= each_message.sender%>
                     <% end %>
                   <% end %>
                 <% end%>
