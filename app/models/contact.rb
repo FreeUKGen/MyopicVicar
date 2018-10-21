@@ -141,7 +141,6 @@ class Contact
     UserMailer.coordinator_contact_reply(self,copies,message,sender).deliver_now
     copies = self.add_sender_to_copies_of_contact_action_sent_to_userids(sender)
     reply_sent_messages(message,sender,recipients,copies)
-
   end
 
   def communicate_initial_contact
