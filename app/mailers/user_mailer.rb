@@ -98,12 +98,13 @@ class UserMailer < ActionMailer::Base
     unless copies_to.blank?
       copies_to.each do |copy_userid|
         copy = UseridDetail.userid(copy_userid).first
-        @cc_email_addresses.push(copy.email_address) unless @cc_email_addresses.include?(copy.email_address)
         person_name = (copy.person_forename + " " + copy.person_surname + " " + copy.email_address) unless @cc_email_addresses.include?(copy.email_address)
-        @cc_names.push(person_name)
+        @cc_names.push(person_name) unless @cc_email_addresses.include?(copy.email_address)
+        @cc_email_addresses.push(copy.email_address) unless @cc_email_addresses.include?(copy.email_address)
       end
     end
     p "sending contact_action_request"
+    p @send_to
     p @cc_email_addresses
     p  @cc_names
     get_attachment
