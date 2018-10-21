@@ -32,7 +32,12 @@
           <% @contact_replies.each do |reply| %>
             <div class="island island--bordered  text--left ">
               <%= content_tag :p do %>
-                <strong>On <%= Message.formatted_time(reply)%>, Userid: <%= reply.userid%> sent the following to <%= reply.sent_messages[0].recipients%> with copies to <%= reply.sent_messages[0].recipients%> :<br/></strong>
+                <strong>On <%= Message.formatted_time(reply)%>, Userid: <%= reply.userid%> sent the following
+                <%if reply.sent_messages[0].present?%>
+                  to <%= reply.sent_messages[0].recipients%> with copies to <%= reply.sent_messages[0].other_recipients%> :<br/></strong>
+                <% else%>
+                  :<br/></strong>
+                <% end%>
                 <%= reply.body %>
                 <% if reply.attachment.present?%>
                   <br/>

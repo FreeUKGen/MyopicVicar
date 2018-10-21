@@ -224,7 +224,9 @@ class ContactsController < ApplicationController
     @respond_to_contact = Contact.id(params[:source_contact_id]).first
     @contact_replies = Message.where(source_contact_id: params[:source_contact_id]).all
     @contact_replies.each do |reply|
+      p "replymmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm"
       p reply
+      p reply.sent_messages
     end
     @message = Message.new
     @message.message_time = Time.now
