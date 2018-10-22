@@ -61,7 +61,7 @@ class Contact
     else
       role = self.get_role_from_contact
       person = UseridDetail.role(role).active(true).first
-      person = UseridDetail.secondary(role).active(true).first if person.blank
+      person = UseridDetail.secondary(role).active(true).first if person.blank?
       person.present? ? action_person = person.userid : action_person = self.get_manager
     end
     self.update_attribute(:contact_action_sent_to_userid,action_person)
