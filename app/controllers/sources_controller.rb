@@ -121,7 +121,7 @@ class SourcesController < ApplicationController
     @source = Source.id(source_id).first
 
     if @source.nil?
-      redirect_to :back
+      redirect_to :back and return
     else
       session[:source_id] = @source.id
       @register = @source.register
@@ -160,7 +160,6 @@ class SourcesController < ApplicationController
     session[:from_source] = true
 
     load(params[:id])
-    redirect_to :back and return if @source.nil?
   end
 
   def update
