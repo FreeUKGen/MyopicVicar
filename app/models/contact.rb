@@ -157,6 +157,7 @@ class Contact
     copies_of_contact_action_sent_to_userids =   self.add_contact_coordinator_to_copies_of_contact_action_sent_to_userids
     p  'send action'
     UserMailer.contact_action_request(self,send_to_userid,copies_of_contact_action_sent_to_userids).deliver_now
+    copies = self.add_sender_to_copies_of_contact_action_sent_to_userids(sender)
   end
 
   def get_coordinator
