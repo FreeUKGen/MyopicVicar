@@ -8,7 +8,7 @@
       <div class="grid__item  one-whole  palm-one-whole push--bottom">        
         <i><strong>Title: </strong><%= @respond_to_feedback.title %></i>
         <%= content_tag :p, class: "strong" do %>
-          On <%= @respond_to_feedback.feedback_time.to_formatted_s(:long)%> Userid: <strong><%= @respond_to_feedback.user_id%></strong> gave a feedback:<br/>
+          On <%= @respond_to_feedback.feedback_time.to_formatted_s(:long)%> Userid: <strong><%= @respond_to_feedback.user_id%></strong> a <%= @respond_to_feedback[:session_data][:role] %> gave a feedback:<br/>
           <%= @respond_to_feedback.body %><br/>
         <% end %>
         <p>Following are further details of feedback</p>
@@ -34,25 +34,6 @@
             </tr>
           </table>
         </div>
-        <p>Details of User: </p>
-        <table class= "table--bordered table--data push--bottom t100">
-          <tr>
-            <th>Userid</th>
-            <th>First Name</th> 
-            <th>Role in FreeREG</th>
-          </tr>
-          <tr>
-            <td>
-              <%= @respond_to_feedback.user_id %>
-            </td>
-            <td>
-              <%= @respond_to_feedback[:session_data][:first_name] %>
-            </td> 
-            <td>
-              <%= @respond_to_feedback[:session_data][:role] %>
-            </td>
-          </tr>
-        </table>
       </div>
     </div>
   </section>
@@ -89,6 +70,6 @@
   </div>
 <% end %>
 <h4 style="text-align: center">Create Your Reply for Feedback</h4>
-<%= render 'messages/form' %>
+<%= render 'messages/form_for_contact' %>
 
 

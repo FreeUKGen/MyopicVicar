@@ -138,9 +138,8 @@ class MessagesController < ApplicationController
 
   def reply_for_feedback
     sender = UseridDetail.where(userid: @message.userid).first
-    sender_email = sender.email_address
     @feedback = Feedback.id(@message.source_feedback_id).first
-    @feedback.communicate_feedback_reply(@message,params[:email], sender_email)
+    @feedback.communicate_feedback_reply(@message, sender)
     redirect_to reply_feedbacks_path(@message.source_feedback_id)
   end
 

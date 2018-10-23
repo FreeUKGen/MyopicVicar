@@ -137,7 +137,7 @@ class Feedback
     p copies
     recipients = Array.new
     recipients.push(self.email_address)
-    UserMailer.coordinator_feedback_reply(self,copies,message,sender).deliver_now
+    UserMailer.coordinator_contact_reply(self,copies,message,sender).deliver_now
     copies = self.add_sender_to_copies_of_contact_action_sent_to_userids(sender)
     reply_sent_messages(message,sender,recipients,copies)
   end
@@ -231,6 +231,20 @@ class Feedback
       person.update_attribute(:userid_feedback_replies, @feedback_userid)
     end
   end
+  def reply_sent_messages(message, sender,contact_recipients,other_recipients)
+    @message = message
+    p 'sent message'
+    p sender
+    p contact_recipients
+    p other_recipients
+    @sent_message = SentMessage.new(message_id: @message.id, sender: sender.userid, recipients: contact_recipients, other_recipients: other_recipients, sent_time: Time.now)
+    @message.sent_messages <<  [ @sent_message ]
+    @sent_message.save
+    p "sent message stored"
+    p @message
+    p @message.sent_messages
+  end
+  
 
 
 end
