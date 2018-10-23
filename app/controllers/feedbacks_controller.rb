@@ -1,5 +1,5 @@
 class FeedbacksController < ApplicationController
-require 'reply_userid_role'
+  require 'reply_userid_role'
   #skip_before_filter :require_login, only: [:new]
 
   def convert_to_issue
@@ -66,7 +66,7 @@ require 'reply_userid_role'
       return
     end
     flash.notice = "Thank you for your feedback!"
-    @feedback.communicate
+    @feedback.communicate_initial_contact
     if session[:return_to].present?
       redirect_to session.delete(:return_to)
     else

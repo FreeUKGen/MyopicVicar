@@ -140,8 +140,7 @@ class MessagesController < ApplicationController
     sender = UseridDetail.where(userid: @message.userid).first
     sender_email = sender.email_address
     @feedback = Feedback.id(@message.source_feedback_id).first
-    @reply_to_email = @feedback.email_address
-    @feedback.communicate_reply(@message,params[:email], sender_email)
+    @feedback.communicate_feedback_reply(@message,params[:email], sender_email)
     redirect_to reply_feedbacks_path(@message.source_feedback_id)
   end
 
