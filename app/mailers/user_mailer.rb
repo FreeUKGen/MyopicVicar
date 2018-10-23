@@ -8,6 +8,12 @@ class UserMailer < ActionMailer::Base
     p "Acknowledge #{@communication.inspect}"
     mail(to: "#{@communication.email_address}", :subject => "Thank you #{@communication.name} for your communication. Reference #{@communication.identifier}")
   end
+  
+  def acknowledge_feedback(original)
+    @communication = original
+    p "Acknowledge #{@communication.inspect}"
+    mail(to: "#{@communication.email_address}", :subject => "Thank you #{@communication.name} for your communication. Reference #{@communication.identifier}")
+  end
 
   def batch_processing_failure(message,user,batch)
     @message = File.read(message)
@@ -110,13 +116,26 @@ class UserMailer < ActionMailer::Base
     get_attachment
     mail(to: "#{@send_to.email_address}",cc: @cc_email_addresses, subject: "This is a contact action request for reference #{@contact.identifier}")
   end
-
-  def feedback(contact,ccs)
+  
+  def feedback_action_request(contact,send_to,copies_to)
     @contact = contact
-    @user = UseridDetail.userid(@contact.user_id).first
+    @send_to = UseridDetail.userid(send_to).first
+    @cc_email_addresses = Array.new
+    @cc_names = Array.new
+    unless copies_to.blank?
+      copies_to.each do |copy_userid|
+        copy = UseridDetail.userid(copy_userid).first
+        person_name = (copy.person_forename + " " + copy.person_surname + " " + copy.email_address) unless @cc_email_addresses.include?(copy.email_address)
+        @cc_names.push(person_name) unless @cc_email_addresses.include?(copy.email_address)
+        @cc_email_addresses.push(copy.email_address) unless @cc_email_addresses.include?(copy.email_address)
+      end
+    end
+    p "sending feedback_action_request"
+    p @send_to
+    p @cc_email_addresses
+    p  @cc_names
     get_attachment
-    mail(:from => "freereg-feedback@freereg.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>",:cc => ccs, :subject => "Thank you for your feedback. Reference #{@contact.identifier}")
-    #mail(:from => "vinodhini.subbu@freeukgenealogy.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "Thank you for your feedback. Reference #{@contact.identifier}")
+    mail(:from => "freereg-feedback@freereg.org.uk",to: "#{@send_to.email_address}",cc: @cc_email_addresses, subject: "This is a feedback action request for reference #{@contact.identifier}")
   end
 
   def get_attachment

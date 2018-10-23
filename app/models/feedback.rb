@@ -48,7 +48,7 @@ class Feedback
     errors.add(:title, "Either the Summary or Body must have content") if self.title.blank? && self.body.blank?
   end
   def acknowledge_communication
-    UserMailer.acknowledge_communication(self).deliver_now
+    UserMailer.acknowledge_feedback(self).deliver_now
   end
 
   def action_recipient_userid
@@ -117,6 +117,17 @@ class Feedback
   def add_screenshot_location
     self.screenshot_location = "uploads/feedback/screenshot/#{self.screenshot.model._id.to_s}/#{self.screenshot.filename}" if self.screenshot.filename.present?
   end
+  
+  def add_sender_to_copies_of_contact_action_sent_to_userids(sender)
+    p "add_sender_to_copies_of_contact_action_sent_to_userids"
+    copies_of_contact_action_sent_to_userids = self.copies_of_contact_action_sent_to_userids
+    p copies_of_contact_action_sent_to_userids
+    if !(sender.userid == self.contact_action_sent_to_userid || self.copies_of_contact_action_sent_to_userids.include?(sender.userid))
+      copies_of_contact_action_sent_to_userids.push(sender.userid)
+      self.update_attribute(:copies_of_contact_action_sent_to_userids, copies_of_contact_action_sent_to_userids)
+    end
+    p self.copies_of_contact_action_sent_to_userids
+  end
 
   def communicate_feedback_reply(message,sender)
     p 'reply'
@@ -126,7 +137,7 @@ class Feedback
     p copies
     recipients = Array.new
     recipients.push(self.email_address)
-    UserMailer.coordinator_contact_reply(self,copies,message,sender).deliver_now
+    UserMailer.coordinator_feedback_reply(self,copies,message,sender).deliver_now
     copies = self.add_sender_to_copies_of_contact_action_sent_to_userids(sender)
     reply_sent_messages(message,sender,recipients,copies)
   end
@@ -143,8 +154,19 @@ class Feedback
     #we are sending an action request
     copies_of_contact_action_sent_to_userids =   self.add_contact_coordinator_to_copies_of_contact_action_sent_to_userids
     p  'send action'
-    UserMailer.contact_action_request(self,send_to_userid,copies_of_contact_action_sent_to_userids).deliver_now
-    copies = self.add_sender_to_copies_of_contact_action_sent_to_userids(send_to_userid)
+    UserMailer.feedback_action_request(self,send_to_userid,copies_of_contact_action_sent_to_userids).deliver_now
+    sender = UseridDetail.userid(send_to_userid).first
+    copies = self.add_sender_to_copies_of_contact_action_sent_to_userids(sender)
+  end
+  
+  def get_manager
+    action_person = UseridDetail.role("contacts_coordinator").active(true).first
+    action_person = UseridDetail.secondary("contacts_coordinator").active(true).first if action_person.blank?
+    action_person = UseridDetail.userid("REGManager").active(true).first if action_person.blank?
+    action_person = UseridDetail.role("system_administrator").active(true).first if action_person.blank?
+    p "get_manager"
+    p action_person.userid
+    return action_person.userid
   end
 
   def github_issue
