@@ -9,7 +9,7 @@ class ContactsController < ApplicationController
     @contact = Contact.id(params[:id]).first
     if @contact.present?
       @contact.update_attribute(:archived, true)
-      redirect_to :action => "list_archived" and return
+      redirect_to :action => "index" and return
     else
       go_back("contact",params[:id])
     end
