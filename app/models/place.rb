@@ -482,7 +482,7 @@ class Place
         stat = element[record_type]
         if stat
           count += stat[:number]
-          self.open_record_count += count
+          self.open_record_count = count if count > self.open_record_count
           if stat[:number] > 1
             display_type = RecordType.display_name(record_type).pluralize.downcase
           else

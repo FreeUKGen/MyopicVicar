@@ -9,10 +9,12 @@ class OpenController < ApplicationController
     @record_types_display = FREEREG_RECORD_TYPE_DESCRIPTION
   end
 
+  MIN_SURNAMES_PER_PLACE = 100
+
   def places_for_county
     @county = params[:county]
     chapman_code = ChapmanCode.code_from_name(@county)
-    @open_places = Place.chapman_code(chapman_code).not_disabled.data_present.where(:open_record_count.gt => 1000).sort(:place_name => 1)
+    @open_places = Place.chapman_code(chapman_code).not_disabled.data_present.where(:open_record_count.gt => MIN_SURNAMES_PER_PLACE).sort(:place_name => 1)
     @record_types_display = FREEREG_RECORD_TYPE_DESCRIPTION
   end
 
@@ -23,7 +25,7 @@ class OpenController < ApplicationController
     
     @place = Place.where(:place_name => place_name, :chapman_code => chapman_code).first
     @record_types_display = FREEREG_RECORD_TYPE_DESCRIPTION
-    @open_surnames = @place.open_names_per_place.where(:count.gt => 100)
+    @open_surnames = @place.open_names_per_place.where(:count.gt => MIN_SURNAMES_PER_PLACE)
 
   end
 
