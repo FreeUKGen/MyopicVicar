@@ -103,12 +103,16 @@ MyopicVicar::Application.routes.draw do
   get 'contacts/list_by_name',  :to => 'contacts#list_by_name', :as => :list_by_name_contacts
   get 'contacts/list_by_date',  :to => 'contacts#list_by_date', :as => :list_by_date_contacts
   get 'contacts/list_by_identifier',  :to => 'contacts#list_by_identifier', :as => :list_by_identifier_contacts
+  get 'contacts/list_archived',  :to => 'contacts#list_archived', :as => :list_archived_contacts
   get 'contacts/select_by_identifier',  :to => 'contacts#select_by_identifier', :as => :select_by_identifier_contacts
   get  'contacts/:id(.:format)/report_error', :to => 'contacts#report_error', :as => :report_error_contact
   get 'contacts/:source_contact_id/reply',  :to => 'contacts#reply_contact', :as => :reply_contact
   get 'contacts/:id/contact_reply_messages', to: 'contacts#contact_reply_messages', as: :contact_reply_messages
   get 'contacts/:id/force_destroy',  :to => 'contacts#force_destroy', :as => :force_destroy_contact
+  get 'contacts/:id/archive',  :to => 'contacts#archive', :as => :archive_contact
+  get 'contacts/:id/restore',  :to => 'contacts#restore', :as => :restore_contact
   post 'contacts/:id/convert_to_issue(.:format)', :to => 'contacts#convert_to_issue', :as => :convert_contact_to_issue
+  
   resources :contacts
 
   resources :place_caches

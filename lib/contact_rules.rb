@@ -69,12 +69,12 @@ class ContactRules
 
   # All contacts
   def all_contacts
-    Contact.order_by(contact_time: -1)
+    Contact.archived(false).order_by(contact_time: -1)
   end
 
   # Get county and country co-ordinator contacts
   def county_and_country_contacts
-    Contact.where(county: { '$in': county_groups }).all.order_by(contact_time: -1)
+    Contact.where(county: { '$in': county_groups }).archived(false).all.order_by(contact_time: -1)
   end
 
   # Get contacts for the user roles

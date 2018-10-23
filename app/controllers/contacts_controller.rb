@@ -4,12 +4,23 @@ class ContactsController < ApplicationController
   require 'contact_rules'
 
   skip_before_filter :require_login, only: [:new, :report_error, :create]
-
+  
+  def archive
+    @contact = Contact.id(params[:id]).first
+    if @contact.present?
+      @contact.update_attribute(:archived, true)
+      redirect_to :action => "list_archived" and return
+    else
+      go_back("contact",params[:id])
+    end
+  end
+  
   def contact_reply_messages
     get_user_info_from_userid; return if performed?
     @contact = Contact.id(params[:id]).first
     if @contact.present?
       @messages = Message.where(source_contact_id: params[:id]).all
+      @links = false 
       render 'messages/index'
     end
   end
@@ -103,14 +114,14 @@ class ContactsController < ApplicationController
 
   def force_destroy
     @contact = Contact.id(params[:id]).first
-    if @contact.present? && @contact.has_replies?(params[:id])
-      delete_reply_messages(params[:id])
+    if @contact.present?  
+      delete_reply_messages(params[:id]) if @contact.has_replies?(params[:id])
       @contact.delete
       flash.notice = "Contact and all its replies are destroyed"
       redirect_to :action => 'index'
       return
     else
-      flash.notice = "Destruction of Contact was unsuccessful"
+      flash.notice = "Contact did not exist"
       redirect_to :action => 'index'
       return
     end
@@ -123,29 +134,42 @@ class ContactsController < ApplicationController
   def index
     get_user_info_from_userid
     @contacts = get_contacts.result
+    @archived = false
   end
+  
+  def list_archived
+    get_user_info_from_userid
+    @contacts = Contact.archived(true).order_by(identifier: -1)
+    @archived = true
+    render :index
+  end
+
 
   def list_by_date
     get_user_info_from_userid
-    @contacts = Contact.all.order_by(contact_time: 1)
+    @contacts = Contact.archived(params[:archived]).order_by(contact_time: 1)
+    @archived = params[:archived]
     render :index
   end
 
   def list_by_identifier
     get_user_info_from_userid
-    @contacts = Contact.all.order_by(identifier: -1)
+    @contacts = Contact.archived(params[:archived]).order_by(identifier: -1)
+    @archived = params[:archived]
     render :index
   end
-
+  
   def list_by_name
     get_user_info_from_userid
-    @contacts = Contact.all.order_by(name: 1)
+    @contacts = Contact.archived(params[:archived] ).order_by(name: 1) 
+    @archived = params[:archived]
     render :index
   end
-
+  
   def list_by_type
     get_user_info_from_userid
-    @contacts = Contact.all.order_by(contact_type: 1)
+    @contacts = Contact.archived(params[:archived]).order_by(contact_type: 1)
+    @archived = params[:archived]
     render :index
   end
 
@@ -167,8 +191,20 @@ class ContactsController < ApplicationController
     @contact.county = @freereg1_csv_entry.freereg1_csv_file.county
     @contact.line_id  = @freereg1_csv_entry.line_id
   end
-
+  
+  def restore
+    @contact = Contact.id(params[:id]).first
+    if @contact.present?
+      @contact.update_attribute(:archived, false)
+      redirect_to :action => "show" and return
+    else
+      go_back("contact",params[:id])
+    end
+  end
+  
   def select_by_identifier
+    p "select_by_identifier"
+    p params
     get_user_info_from_userid
     @options = Hash.new
     @contacts = Contact.all.order_by(identifier: -1).each do |contact|

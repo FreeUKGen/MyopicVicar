@@ -39,10 +39,11 @@ class Contact
     def id(id)
       where(:id => id)
     end
-
-    def archived
-      where(:archived => true)
+    
+    def archived(value)
+      where(:archived => value)
     end
+    
     def github_enabled
       !Rails.application.config.github_issues_password.blank?
     end
@@ -243,7 +244,11 @@ class Contact
   def has_replies?(contact_id)
     Message.where(source_contact_id: contact_id).exists?
   end
-
+  
+  def is_archived?
+    return self.archived 
+  end
+  
   def issue_title
     "#{identifier} #{contact_type} (#{name})"
   end

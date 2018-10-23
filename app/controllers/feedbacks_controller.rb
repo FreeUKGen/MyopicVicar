@@ -34,6 +34,7 @@ require 'reply_userid_role'
     @feedback = Feedback.id(params[:id]).first
     if @feedback.present?
       @messages = Message.where(source_feedback_id: params[:id]).all
+      @link = false
       render 'messages/index'
     end
   end
