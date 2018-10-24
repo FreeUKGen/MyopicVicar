@@ -132,44 +132,53 @@ class ContactsController < ApplicationController
   end
 
   def index
+    session[:archived_contacts] = false
     get_user_info_from_userid
-    @contacts = get_contacts.result
-    @archived = false
+    order = "contact_time ASC"
+    @contacts = get_contacts.result(session[:archived_contacts],order)
+    @archived = session[:archived_contacts]
   end
   
   def list_archived
+    session[:archived_contacts] = true
     get_user_info_from_userid
-    @contacts = Contact.archived(true).order_by(identifier: -1)
-    @archived = true
+    order = "contact_time  ASC"
+    @contacts = get_contacts.result(session[:archived_contacts],order)
+    @archived = session[:archived_contacts]
     render :index
   end
 
 
   def list_by_date
     get_user_info_from_userid
-    @contacts = Contact.archived(params[:archived]).order_by(contact_time: 1)
-    @archived = params[:archived]
+    my_order = "contact_time ASC"
+    @contacts = get_contacts.result(session[:archived_contacts],my_order)
+    @archived = session[:archived_contacts]
     render :index
   end
 
   def list_by_identifier
     get_user_info_from_userid
-    @contacts = Contact.archived(params[:archived]).order_by(identifier: -1)
-    @archived = params[:archived]
+    order = "identifier ASC"
+    @contacts = get_contacts.result(session[:archived_contacts],order)
+    @archived = session[:archived_contacts]
     render :index
   end
   
   def list_by_name
     get_user_info_from_userid
-    @contacts = Contact.archived(params[:archived] ).order_by(name: 1) 
-    @archived = params[:archived]
+    order = "name ASC"
+    @contacts = get_contacts.result(session[:archived_contacts],order)
+    @archived = session[:archived_contacts]
     render :index
   end
   
   def list_by_type
     get_user_info_from_userid
-    @contacts = Contact.archived(params[:archived]).order_by(contact_type: 1)
-    @archived = params[:archived]
+    order = "contact_type ASC"
+    @contacts = get_contacts.result(session[:archived_contacts],order)
+    p @contacts
+    @archived = session[:archived_contacts]
     render :index
   end
 
@@ -207,7 +216,8 @@ class ContactsController < ApplicationController
     p params
     get_user_info_from_userid
     @options = Hash.new
-    @contacts = Contact.all.order_by(identifier: -1).each do |contact|
+    order = "identifier ASC"
+    @contacts = get_contacts.result(session[:archived_contacts],order).each do |contact|
       @options[contact.identifier] = contact.id
     end
     @contact = Contact.new

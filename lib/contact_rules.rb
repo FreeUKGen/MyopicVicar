@@ -10,12 +10,8 @@ class ContactRules
     @result_sets = []
   end
 
-  def result
-    get_acive_contacts_for_roles
-  end
-
-  def archived_result
-    get_archived_contacts_for_roles
+  def result(achived,sort_order)
+    get_contacts_for_roles(achived,sort_order)
   end
 
   private
@@ -38,44 +34,19 @@ class ContactRules
   end
 
   # Get the contacts for each role
-  def get_active_contacts_for_roles
-    return all_active_contacts unless roles_in_contact_types?
+  def get_contacts_for_roles(achived,sort_order)
+    return all_contacts(achived,sort_order) unless roles_in_contact_types?
 
     unless county_and_country_coordinators?
-      county_and_country_active_contacts.each do |result|
-        result_sets << result
-      end
+      return county_and_country_contacts(achived,sort_order)
     end
 
-    user_role_active_contacts.each do |contact|
-      result_sets << contact
-    end
-
-    result_sets
+    return user_role_contacts(achived,sort_order)
   end
-
-  def get_archived_contacts_for_roles
-    return all_archived_contacts unless roles_in_contact_types?
-
-    unless county_and_country_coordinators?
-      county_and_country_archived_contacts.each do |result|
-        result_sets << result
-      end
-    end
-
-    user_role_archived_contacts.each do |contact|
-      result_sets << contact
-    end
-
-    result_sets
-  end
-
+  
   # Check user roles are not in contact types
   def roles_in_contact_types?
-    result = (merge_roles - complete_contact_types.flatten).empty?
-    p "roles_in_contact_types"
-    p result
-    result
+    (merge_roles - complete_contact_types.flatten).empty?
   end
 
   #Array of contact types
@@ -91,26 +62,18 @@ class ContactRules
   end
 
   # All contacts
-  def all_active_contacts
-    Contact.archived(false).order_by(contact_time: -1)
+  def all_contacts(achived,sort_order)
+    Contact.archived(achived).order_by(sort_order)
   end
 
-  def all_archived_contacts
-    Contact.archived(true).order_by(contact_time: -1)
-  end
-
-
-  # Get county and country co-ordinator contacts
-  def county_and_country_active_contacts
-    Contact.where(county: { '$in': county_groups }).archived(false).all.order_by(contact_time: -1)
-  end
-
-  def county_and_country_archived_contacts
-    Contact.where(county: { '$in': county_groups }).archived(true).all.order_by(contact_time: -1)
+   # Get county and country co-ordinator contacts
+  def county_and_country_contacts(achived,sort_order)
+    results = Contact.where(county: { '$in': county_groups }).archived(achived).all.order_by(sort_order)
+    results
   end
 
   # Get contacts for the user roles
-  def user_role_active_contacts
+  def user_role_contacts(achived,sort_order)
     remaining_roles = []
     merge_roles = remove_county_or_country_roles
 
@@ -119,20 +82,7 @@ class ContactRules
     end
 
     remaining_roles = remaining_roles.flatten
-    contacts = Contact.where(contact_type: { '$in': remaining_roles }).archived(false).all.order_by(contact_time: -1)
-    contacts
-  end
-
-  def user_role_archived_contacts
-    remaining_roles = []
-    merge_roles = remove_county_or_country_roles
-
-    merge_roles.each do |role|
-      remaining_roles << contact_types[role]
-    end
-
-    remaining_roles = remaining_roles.flatten
-    contacts = Contact.where(contact_type: { '$in': remaining_roles }).archived(true).all.order_by(contact_time: -1)
+    contacts = Contact.where(contact_type: { '$in': remaining_roles }).archived(achived).all.order_by(sort_order)
     contacts
   end
 
