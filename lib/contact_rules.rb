@@ -11,7 +11,11 @@ class ContactRules
   end
 
   def result
-    get_contacts_for_roles
+    get_acive_contacts_for_roles
+  end
+
+  def archived_result
+    get_archived_contacts_for_roles
   end
 
   private
@@ -34,16 +38,32 @@ class ContactRules
   end
 
   # Get the contacts for each role
-  def get_contacts_for_roles
-    return all_contacts unless roles_in_contact_types?
+  def get_active_contacts_for_roles
+    return all_active_contacts unless roles_in_contact_types?
 
     unless county_and_country_coordinators?
-      county_and_country_contacts.each do |result|
+      county_and_country_active_contacts.each do |result|
         result_sets << result
       end
     end
 
-    user_role_contacts.each do |contact|
+    user_role_active_contacts.each do |contact|
+      result_sets << contact
+    end
+
+    result_sets
+  end
+
+  def get_archived_contacts_for_roles
+    return all_archived_contacts unless roles_in_contact_types?
+
+    unless county_and_country_coordinators?
+      county_and_country_archived_contacts.each do |result|
+        result_sets << result
+      end
+    end
+
+    user_role_archived_contacts.each do |contact|
       result_sets << contact
     end
 
@@ -52,7 +72,10 @@ class ContactRules
 
   # Check user roles are not in contact types
   def roles_in_contact_types?
-    (merge_roles - complete_contact_types.flatten).empty?
+    result = (merge_roles - complete_contact_types.flatten).empty?
+    p "roles_in_contact_types"
+    p result
+    result
   end
 
   #Array of contact types
@@ -62,23 +85,32 @@ class ContactRules
 
   # remove role if county or country co ordinator
   def remove_county_or_country_roles
-    merge_roles.reject { |role| 
-      COUNTY_COUNTRY_COORDINATORS.include? role 
+    merge_roles.reject { |role|
+      COUNTY_COUNTRY_COORDINATORS.include? role
     }
   end
 
   # All contacts
-  def all_contacts
+  def all_active_contacts
     Contact.archived(false).order_by(contact_time: -1)
   end
 
+  def all_archived_contacts
+    Contact.archived(true).order_by(contact_time: -1)
+  end
+
+
   # Get county and country co-ordinator contacts
-  def county_and_country_contacts
+  def county_and_country_active_contacts
     Contact.where(county: { '$in': county_groups }).archived(false).all.order_by(contact_time: -1)
   end
 
+  def county_and_country_archived_contacts
+    Contact.where(county: { '$in': county_groups }).archived(true).all.order_by(contact_time: -1)
+  end
+
   # Get contacts for the user roles
-  def user_role_contacts
+  def user_role_active_contacts
     remaining_roles = []
     merge_roles = remove_county_or_country_roles
 
@@ -87,7 +119,20 @@ class ContactRules
     end
 
     remaining_roles = remaining_roles.flatten
-    contacts = Contact.where(contact_type: { '$in': remaining_roles }).all.order_by(contact_time: -1)
+    contacts = Contact.where(contact_type: { '$in': remaining_roles }).archived(false).all.order_by(contact_time: -1)
+    contacts
+  end
+
+  def user_role_archived_contacts
+    remaining_roles = []
+    merge_roles = remove_county_or_country_roles
+
+    merge_roles.each do |role|
+      remaining_roles << contact_types[role]
+    end
+
+    remaining_roles = remaining_roles.flatten
+    contacts = Contact.where(contact_type: { '$in': remaining_roles }).archived(true).all.order_by(contact_time: -1)
     contacts
   end
 
@@ -99,14 +144,14 @@ class ContactRules
   # Contacts by Roles
   def contact_types
     {
-    "website_coordinator" => ["Website Problem", "Enhancement Suggestion"],
-    "contacts_coordinator" => ["Data Question", "Data Problem"],
-    "publicity_coordinator" => ["Thank you"],
-    "genealogy_coordinator" => ["Genealogical Question"],
-    "volunteer_coordinator" => ["Volunteering Question"],
-    "general_communication_coordinator" => ["General Comment"]
+      "website_coordinator" => ["Website Problem", "Enhancement Suggestion"],
+      "contacts_coordinator" => ["Data Question", "Data Problem"],
+      "publicity_coordinator" => ["Thank you"],
+      "genealogy_coordinator" => ["Genealogical Question"],
+      "volunteer_coordinator" => ["Volunteering Question"],
+      "general_communication_coordinator" => ["General Comment"]
     }
-  end  
+  end
 
   def county_groups
     user.county_groups
