@@ -8,11 +8,11 @@ class UserMailer < ActionMailer::Base
     p "Acknowledge #{@communication.inspect}"
     mail(to: "#{@communication.email_address}", :subject => "Thank you #{@communication.name} for your communication. Reference #{@communication.identifier}")
   end
-  
+
   def acknowledge_feedback(original)
     @communication = original
     p "Acknowledge #{@communication.inspect}"
-    mail(to: "#{@communication.email_address}", :subject => "Thank you #{@communication.name} for your communication. Reference #{@communication.identifier}")
+    mail(to: "#{@communication.email_address}", :subject => "Thank you #{@communication.name} for your feedback. Reference #{@communication.identifier}")
   end
 
   def batch_processing_failure(message,user,batch)
@@ -116,7 +116,26 @@ class UserMailer < ActionMailer::Base
     get_attachment
     mail(to: "#{@send_to.email_address}",cc: @cc_email_addresses, subject: "This is a contact action request for reference #{@contact.identifier}")
   end
-  
+
+  def coordinator_contact_reply(contact,ccs,message,sender)
+    p "coordinator_contact_reply"
+    p ccs
+    p sender
+    p message
+    @contact = contact
+    @message = message
+    @cc_email_addresses = Array.new
+    unless ccs.blank?
+      ccs.each do |copy_userid|
+        copy = UseridDetail.userid(copy_userid).first
+        @cc_email_addresses.push(copy.email_address) unless @cc_email_addresses.include?(copy.email_address)
+      end
+    end
+    @reply_messages = Message.where(source_contact_id: @message.source_contact_id).all
+    get_attachment
+    mail(from: sender.email_address, to:  "#{@contact.name} <#{@contact.email_address}>", bcc: @cc_email_addresses, subject: @message.subject)
+  end
+
   def feedback_action_request(contact,send_to,copies_to)
     @contact = contact
     @send_to = UseridDetail.userid(send_to).first
@@ -332,34 +351,6 @@ class UserMailer < ActionMailer::Base
     #mail(:from => from ,:to => "vinodhini.subbu@freeukgenealogy.org.uk", :subject => "#{@message.subject}. Reference #{@message.identifier}")
   end
 
-  def feedback_reply(message,recipient,sender,ccs)
-    @message = message
-    @reply_messages = Message.where(source_feedback_id: @message.source_feedback_id).all
-    @contact = Feedback.id(@message.source_feedback_id).first
-    get_attachment
-    @reply_to_person = UseridDetail.where(email_address: recipient).first
-    mail(:from => "#{sender}",:to => "#{@reply_to_person.person_forename} <#{recipient}>", :bcc => ccs, subject:"#{@message.subject}. Reference Message Identifier: #{@message.identifier}")
-  end
-
-  def coordinator_contact_reply(contact,ccs,message,sender)
-    p "coordinator_contact_reply"
-    p ccs
-    p sender
-    p message
-    @contact = contact
-    @message = message
-    @cc_email_addresses = Array.new
-    unless ccs.blank?
-      ccs.each do |copy_userid|
-        copy = UseridDetail.userid(copy_userid).first
-        @cc_email_addresses.push(copy.email_address) unless @cc_email_addresses.include?(copy.email_address)
-      end
-    end
-    @reply_messages = Message.where(source_contact_id: @message.source_contact_id).all
-    get_attachment
-    mail(from: sender.email_address, to:  "#{@contact.name} <#{@contact.email_address}>", bcc: @cc_email_addresses, subject: @message.subject)
-  end
-
   def send_logs(file,ccs,body_message,subjects)
     from = "freereg-contacts@freereg.org.uk" if from.blank?
     unless file.nil?
@@ -374,18 +365,6 @@ class UserMailer < ActionMailer::Base
     # userid is REGManager, so no need to check email_address_valid
     @email_address = user.email_address
     mail(:from => "freereg-processing@freereg.org.uk",:to => "#{@person_forename} <#{@email_address}>", :subject => "FreeReg update processing report")
-  end
-
-  def volunteer(contact,ccs)
-    @contact = contact
-    get_attachment
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>", :cc => ccs, :subject => "Thank you for question about volunteering. Reference #{@contact.identifier}")
-  end
-
-  def website(contact,ccs)
-    @contact = contact
-    get_attachment
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for reporting a website problem. Reference #{@contact.identifier}")
   end
 
 end

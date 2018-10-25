@@ -42,12 +42,14 @@ class Feedback
     def archived(value)
       where(:archived => value)
     end
+
+    def github_enabled
+      !Rails.application.config.github_issues_password.blank?
+    end
   end
 
-  def title_or_body_exist
-    errors.add(:title, "Either the Summary or Body must have content") if self.title.blank? && self.body.blank?
-  end
-  def acknowledge_communication
+
+  def acknowledge_feedback
     UserMailer.acknowledge_feedback(self).deliver_now
   end
 
@@ -117,7 +119,7 @@ class Feedback
   def add_screenshot_location
     self.screenshot_location = "uploads/feedback/screenshot/#{self.screenshot.model._id.to_s}/#{self.screenshot.filename}" if self.screenshot.filename.present?
   end
-  
+
   def add_sender_to_copies_of_contact_action_sent_to_userids(sender)
     p "add_sender_to_copies_of_contact_action_sent_to_userids"
     copies_of_contact_action_sent_to_userids = self.copies_of_contact_action_sent_to_userids
@@ -144,7 +146,7 @@ class Feedback
 
   def communicate_initial_contact
     p "communicating inial messages"
-    self.acknowledge_communication
+    self.acknowledge_feedback
     self.feedback_action_communication
   end
 
@@ -158,7 +160,7 @@ class Feedback
     sender = UseridDetail.userid(send_to_userid).first
     copies = self.add_sender_to_copies_of_contact_action_sent_to_userids(sender)
   end
-  
+
   def get_manager
     action_person = UseridDetail.role("contacts_coordinator").active(true).first
     action_person = UseridDetail.secondary("contacts_coordinator").active(true).first if action_person.blank?
@@ -186,12 +188,8 @@ class Feedback
     end
   end
 
-  def self.github_enabled
-    !Rails.application.config.github_issues_password.blank?
-  end
-
-  def issue_title
-    "#{identifier} #{title} (#{name})"
+  def has_replies?(feedback_id)
+    Message.where(source_feedback_id: feedback_id).exists?
   end
 
   def issue_body
@@ -199,13 +197,21 @@ class Feedback
     issue_body
   end
 
-  def has_replies?(feedback_id)
-    Message.where(source_feedback_id: feedback_id).exists?
+  def issue_title
+    "#{identifier} #{title} (#{name})"
+  end
+
+  def is_archived?
+    return self.archived
   end
 
   def member_can_reply?(user)
     @user = user
     permitted_person_role || permitted_secondary_role
+  end
+
+  def title_or_body_exist
+    errors.add(:title, "Either the Summary or Body must have content") if self.title.blank? && self.body.blank?
   end
 
   def url_check
@@ -224,13 +230,6 @@ class Feedback
     (@user.secondary_role & ReplyUseridRole::FEEDBACK_REPLY_ROLE).any?
   end
 
-  def update_reply_for_feedback(person,message)
-    @feedback_userid = person.userid_feedback_replies
-    if @feedback_userid.has_key?(self.id.to_s)
-      @feedback_userid[self.id.to_s] << message.id.to_s unless @feedback_userid[self.id.to_s].include?(message.id.to_s)
-      person.update_attribute(:userid_feedback_replies, @feedback_userid)
-    end
-  end
   def reply_sent_messages(message, sender,contact_recipients,other_recipients)
     @message = message
     p 'sent message'
@@ -244,7 +243,16 @@ class Feedback
     p @message
     p @message.sent_messages
   end
-  
+
+
+  def update_reply_for_feedback(person,message)
+    @feedback_userid = person.userid_feedback_replies
+    if @feedback_userid.has_key?(self.id.to_s)
+      @feedback_userid[self.id.to_s] << message.id.to_s unless @feedback_userid[self.id.to_s].include?(message.id.to_s)
+      person.update_attribute(:userid_feedback_replies, @feedback_userid)
+    end
+  end
+
 
 
 end

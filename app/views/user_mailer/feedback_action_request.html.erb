@@ -1,0 +1,22 @@
+<p> Dear <%= @send_to.person_forename %>;</p>
+<p>We have received feedback <%= @contact.identifier %> from <%= @contact.name %> email <%= @contact.email_address %> at <%= @contact.feedback_time.strftime("%H:%M on %F") unless @contact.seedback_time.nil?%>. </p>
+<p>You are requested to take action on the feedback using the on-line feedback system. You are requested to review the feedback and make an assessment as to the need for further action by the team. If action is required you are asked to create an issue for consideration  by the project team. You are further requested to respond to the member as to the disposition of the feedback.</p>
+<% unless @cc_names.blank? %>
+  <p>Copies of the action request were sent to the following. Please include them in any correspondence<br>
+  <%  @cc_names.each do |copy| %>
+    <%= copy%>
+  <% end%>
+</p>
+<% end%>
+<p>The following is the information submitted.</p>
+<p>  <b><%= @contact.contact_type %>:</b></p>
+<p>  <%= @contact.body %></p>
+ 
+<% if @contact.contact_type == 'Data Problem' &&  @contact.entry_id.present?%>
+<p><a href="<%=Rails.application.config.website%>/freereg1_csv_entries/<%=@contact.entry_id%>"> <%=@contact.line_id %> </a></p>
+<% end%>
+<p>
+<% if @contact.screenshot_url.present?%>
+ <p>An image/attachment is provided</p>
+<% end%>
+<p> The FreeREG Team</p> %>;</p>

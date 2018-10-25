@@ -1,6 +1,15 @@
 class FeedbacksController < ApplicationController
   require 'reply_userid_role'
   #skip_before_filter :require_login, only: [:new]
+  def archive
+    @feedback = Contact.id(params[:id]).first
+    if @feedback.present?
+      @feedback.update_attribute(:archived, true)
+      redirect_to :action => "index" and return
+    else
+      go_back("feedback",params[:id])
+    end
+  end
 
   def convert_to_issue
     @feedback = Feedback.id(params[:id]).first
@@ -18,34 +27,6 @@ class FeedbacksController < ApplicationController
     else
       go_back("feedback",params[:id])
     end
-  end
-
-  def userid_feedbacks
-    get_user_info_from_userid
-    @user.reload
-    @feedbacks_without_reply = @user.userid_feedback_replies.keys.select do |feedback|
-      @user.userid_feedback_replies[feedback].blank?
-    end
-    @feedbacks = Feedback.in(id: @feedbacks_without_reply)
-  end
-
-  def feedback_reply_messages
-    get_user_info_from_userid; return if performed?
-    @feedback = Feedback.id(params[:id]).first
-    if @feedback.present?
-      @messages = Message.where(source_feedback_id: params[:id]).all
-      @link = false
-      render 'messages/index'
-    end
-  end
-
-  def userid_feedbacks_with_replies
-    get_user_info_from_userid
-    @user.reload
-    @feedbacks_with_reply = @user.userid_feedback_replies.keys.reject do |feedback|
-      @user.userid_feedback_replies[feedback].blank?
-    end
-    @feedbacks = Feedback.in(id: @feedbacks_with_reply)
   end
 
   def create
@@ -86,19 +67,6 @@ class FeedbacksController < ApplicationController
     end
   end
 
-  def force_destroy
-    @feedback = Feedback.id(params[:id]).first
-    if @feedback.present? && @feedback.has_replies?(params[:id])
-      delete_reply_messages(params[:id])
-      @feedback.delete
-      flash.notice = "Feedback and all its replies are destroyed"
-      redirect_to :action => 'index'
-      return
-    else
-      go_back("feedback",params[:id])
-    end
-  end
-
   def delete_reply_messages(feedback_id)
     Message.where(source_feedback_id: feedback_id).destroy
   end
@@ -117,34 +85,79 @@ class FeedbacksController < ApplicationController
     end
   end
 
+  def feedback_reply_messages
+    get_user_info_from_userid; return if performed?
+    @feedback = Feedback.id(params[:id]).first
+    if @feedback.present?
+      @messages = Message.where(source_feedback_id: params[:id]).all
+      @link = false
+      render 'messages/index'
+    end
+  end
+
+
+  def force_destroy
+    @feedback = Feedback.id(params[:id]).first
+    if @feedback.present? && @feedback.has_replies?(params[:id])
+      delete_reply_messages(params[:id])
+      @feedback.delete
+      flash.notice = "Feedback and all its replies are destroyed"
+      redirect_to :action => 'index'
+      return
+    else
+      go_back("feedback",params[:id])
+    end
+  end
+
   def index
+    session[:archived_contacts] = false
     get_user_info_from_userid
-    @feedbacks = Feedback.all.order_by(feedback_time: -1)
+    order = "feedback_time ASC"
+    @feedbacks = Feedback.archived(session[:archived_contacts],order)
+    @archived = session[:archived_contacts]
+  end
+
+  def list_archived
+    session[:archived_contacts] = true
+    get_user_info_from_userid
+    order = "feedback_time ASC"
+    @feedbacks = Feedback.archived(session[:archived_contacts],order)
+    @archived = session[:archived_contacts]
+    render :index
   end
 
   def list_by_date
     get_user_info_from_userid
-    @feedbacks = Feedback.all.order_by(feedback_time: 1)
+    order = "feedback_time ASC"
+    @feedbacks = Feedback.archived(session[:archived_contacts],order)
+    @archived = session[:archived_contacts]
     render :index
   end
 
   def list_by_identifier
     get_user_info_from_userid
-    @feedbacks = Feedback.all.order_by(identifier: -1)
+    order = "identifier ASC"
+    @feedbacks = Feedback.archived(session[:archived_contacts],order)
+    @archived = session[:archived_contacts]
     render :index
   end
 
   def list_by_name
     get_user_info_from_userid
-    @feedbacks = Feedback.all.order_by(name: 1)
+    order = "name ASC"
+    @feedbacks = Feedback.archived(session[:archived_contacts],order)
+    @archived = session[:archived_contacts]
     render :index
   end
 
-  def list_by_userid
+  def list_by_type
     get_user_info_from_userid
-    @feedbacks = Feedback.all.order_by(user_id: 1)
+    order = "feedback_type ASC"
+    @feedbacks = Feedback.archived(session[:archived_contacts],order)
+    @archived = session[:archived_contacts]
     render :index
   end
+
 
   def new
     session[:return_to] ||= request.referer
@@ -157,10 +170,22 @@ class FeedbacksController < ApplicationController
     @feedback_replies = Message.fetch_feedback_replies(params[:source_feedback_id])
   end
 
+  def restore
+    get_user_info_from_userid
+    @feedback = Feedback.id(params[:id]).first
+    if @feedback.present?
+      @feedback.update_attribute(:archived, false)
+      redirect_to :action => "index" and return
+    else
+      go_back("feedback",params[:id])
+    end
+  end
+
   def select_by_identifier
     get_user_info_from_userid
     @options = Hash.new
-    @feedbacks = Feedback.all.order_by(identifier: -1).each do |contact|
+    order = "identifier ASC"
+    @feedbacks = Feedback.archived(session[:archived_contacts],order).each do |contact|
       @options[contact.identifier] = contact.id
     end
     @feedback = Feedback.new
@@ -168,6 +193,8 @@ class FeedbacksController < ApplicationController
     @prompt = 'Select Identifier'
     render '_form_for_selection'
   end
+
+
 
   def show
     get_user_info_from_userid
@@ -189,6 +216,26 @@ class FeedbacksController < ApplicationController
       go_back("feedback",params[:id])
     end
   end
+
+  def userid_feedbacks
+    get_user_info_from_userid
+    @user.reload
+    @feedbacks_without_reply = @user.userid_feedback_replies.keys.select do |feedback|
+      @user.userid_feedback_replies[feedback].blank?
+    end
+    @feedbacks = Feedback.in(id: @feedbacks_without_reply)
+  end
+
+  def userid_feedbacks_with_replies
+    get_user_info_from_userid
+    @user.reload
+    @feedbacks_with_reply = @user.userid_feedback_replies.keys.reject do |feedback|
+      @user.userid_feedback_replies[feedback].blank?
+    end
+    @feedbacks = Feedback.in(id: @feedbacks_with_reply)
+  end
+
+
 
   private
   def feedback_params
