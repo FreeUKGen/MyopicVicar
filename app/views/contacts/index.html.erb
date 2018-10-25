@@ -4,10 +4,11 @@
   <p style="text-align: center"> <%= @county%></p>
 <%else%>
   <h2 class=" text--center"> <% if @archived %>List of archived contacts<% else%>List of active contacts<%end%> </h2>
-  <p style="text-align: center">
+ <%end%>
+<p style="text-align: center">
       <% if !@archived  %> <%= link_to 'List archived', list_archived_contacts_path, method: :get , :class => "btn weight--light btn--small" %> <% else%><%= link_to 'List active',contacts_path, method: :get , :class => "btn weight--light btn--small" %><%end%>
-      <%= link_to 'List by Name', list_by_name_contacts_path(:archived => @archived), method: :get , :class => "btn weight--light btn--small" %> <%= link_to 'List by Posted Date' , list_by_date_contacts_path(:archived => @archived), method: :get , :class => "btn weight--light btn--small"%> <%= link_to 'List by Identifier' , list_by_identifier_contacts_path(:archived => @archived), method: :get , :class => "btn weight--light btn--small" %> <%= link_to 'List by Contact Type' , list_by_type_contacts_path(:archived => @archived), method: :get , :class => "btn weight--light btn--small" %> <%= link_to 'Select by Identifier' , select_by_identifier_contacts_path(:archived => @archived), method: :get , :class => "btn weight--light btn--small" %> 
-  <%end%>
+      <%= link_to 'List by Name', list_by_name_contacts_path, method: :get , :class => "btn weight--light btn--small" %> <%= link_to 'List by Posted Date' , list_by_date_contacts_path, method: :get , :class => "btn weight--light btn--small"%> <%= link_to 'List by Identifier' , list_by_identifier_contacts_path, method: :get , :class => "btn weight--light btn--small" %> <%= link_to 'List by Contact Type' , list_by_type_contacts_path, method: :get , :class => "btn weight--light btn--small" %> <%= link_to 'Select by Identifier' , select_by_identifier_contacts_path, method: :get , :class => "btn weight--light btn--small" %> 
+</p>  
 <% unless Contact.github_enabled %>
 <div id="error_explanation">
   <h2>Github integration is not enabled</h2>

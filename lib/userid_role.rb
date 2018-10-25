@@ -25,9 +25,9 @@ module UseridRole
                               "Syndicate Coordinators", "System Documentation"],
     'publicity_coordinator'=> [ "Assignments", "Batches", "Contacts", "Profile","Roadmap","System Documentation" ],
     'genealogy_coordinator'=> [ "Assignments", "Batches", "Contacts","Profile", "Roadmap" ,"System Documentation" ],
-    'documentation_coordinator' => [  "Assignments", "Batches",  "Contacts","Display Userids","Feedback", "Manage Syndicates", "Manage Counties", "Profile","RefineryCMS","Roadmap",
+    'documentation_coordinator' => [  "Assignments", "Batches",  "Display Userids","Feedback", "Manage Syndicates", "Manage Counties", "Profile","RefineryCMS","Roadmap",
                                        "System Documentation" ],
-    'engagement_coordinator' => [  "Assignments", "Batches", "Contacts","Display Userids",  "Feedback", "Message System", "Profile", "RefineryCMS" ,"Roadmap", "System Documentation" ],
+    'engagement_coordinator' => [  "Assignments", "Batches", "Display Userids",  "Feedback", "Message System", "Profile", "RefineryCMS" ,"Roadmap", "System Documentation" ],
     'website_coordinator' => [ "Batches", "Contacts","Display Userids", "Feedback", "Message System", "Profile", "RefineryCMS" ,"Roadmap", "System Documentation" ],
     'general_communication_coordinator' => [ "Batches", "Contacts","Display Userids", "Feedback", "Message System", "Profile", "RefineryCMS" ,"Roadmap", "System Documentation" ],
   }
