@@ -120,8 +120,8 @@ class SourcesController < ApplicationController
   def load(source_id)
     @source = Source.id(source_id).first
 
-    if @source.nil?
-      redirect_to :back and return
+    if @source.nil?      
+      go_back("source", source_id)
     else
       session[:source_id] = @source.id
       @register = @source.register
