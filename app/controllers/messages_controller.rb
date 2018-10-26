@@ -28,8 +28,6 @@ class MessagesController < ApplicationController
       end
     when "Reply Feedback"
       if @message.save
-        flash[:notice] = "Reply for feedback is created"
-        send_feedback_message
         reply_for_feedback; return if performed?
       end
     when "Reply Contact"
@@ -140,7 +138,7 @@ class MessagesController < ApplicationController
     sender = UseridDetail.where(userid: @message.userid).first
     @feedback = Feedback.id(@message.source_feedback_id).first
     @feedback.communicate_feedback_reply(@message, sender)
-    redirect_to reply_feedbacks_path(@message.source_feedback_id)
+    redirect_to reply_feedback_path(@message.source_feedback_id)
   end
 
   def select_by_identifier
@@ -178,15 +176,6 @@ class MessagesController < ApplicationController
       end
     else
       go_back("message",params[:id])
-    end
-  end
-
-  def send_feedback_message
-    get_user_info_from_userid; return if performed?
-    if @message.present?
-      @sent_message = SentMessage.new(:message_id => @message.id,:sender => @user_userid, recipients: ["website_coordinator"], other_recipient: params[:email], sent_time: Time.now)
-      @message.sent_messages <<  [ @sent_message ]
-      @sent_message.save
     end
   end
 

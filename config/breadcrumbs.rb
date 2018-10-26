@@ -424,17 +424,47 @@ crumb :feedback_form do
   parent :root
 end
 crumb :feedbacks do
-  link "Feedbacks", feedbacks_path
+  if session[:archived_contacts]
+   link "Archived Feedbacks", list_archived_feedbacks_path
+  else
+    link "Active Feedbacks", feedbacks_path
+  end
+  
+  parent :root
+end
+crumb :archived_feedbacks do
+  link "Archived Feedbacks", list_archived_feedbacks_path
   parent :root
 end
 crumb :show_feedback do |feedback|
   link "Show Feedback", feedback_path(feedback)
-  parent :feedbacks
+  if session[:archived_contacts]
+    parent :archived_feedbacks
+  else
+    parent :feedbacks
+  end
 end
 crumb :edit_feedback do |feedback|
   link "Edit Feedback", edit_feedback_path(feedback)
+  if session[:archived]
+    parent :archived_feedbacks
+  else
+    parent :feedbacks
+  end
+end
+crumb :feedback_form_for_selection do ||
+  link "Form for Selection"
+  if session[:archived_contacts]
+    parent :archived_feedbacks
+  else
+    parent :feedbacks
+  end
+end
+crumb :create_feedback_reply do |feedback|
+  link "Create Feedback Reply"
   parent :show_feedback, feedback
 end
+
 #manage contacts
 crumb :contacts do
   link "Contacts", contacts_path

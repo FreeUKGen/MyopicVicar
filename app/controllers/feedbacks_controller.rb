@@ -2,10 +2,11 @@ class FeedbacksController < ApplicationController
   require 'reply_userid_role'
   #skip_before_filter :require_login, only: [:new]
   def archive
-    @feedback = Contact.id(params[:id]).first
+    @feedback = Feedback.id(params[:id]).first
     if @feedback.present?
       @feedback.update_attribute(:archived, true)
-      redirect_to :action => "index" and return
+       flash.notice = "Feedback archived"
+      redirect_to :action => "list_archived" and return
     else
       go_back("feedback",params[:id])
     end
@@ -86,6 +87,7 @@ class FeedbacksController < ApplicationController
   end
 
   def feedback_reply_messages
+    p "messages controller"
     get_user_info_from_userid; return if performed?
     @feedback = Feedback.id(params[:id]).first
     if @feedback.present?
@@ -112,16 +114,16 @@ class FeedbacksController < ApplicationController
   def index
     session[:archived_contacts] = false
     get_user_info_from_userid
-    order = "feedback_time ASC"
-    @feedbacks = Feedback.archived(session[:archived_contacts],order)
+    order = "feedback_time DESC"
+    @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order)
     @archived = session[:archived_contacts]
   end
 
   def list_archived
     session[:archived_contacts] = true
     get_user_info_from_userid
-    order = "feedback_time ASC"
-    @feedbacks = Feedback.archived(session[:archived_contacts],order)
+    order = "feedback_time DESC"
+    @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order)
     @archived = session[:archived_contacts]
     render :index
   end
@@ -129,7 +131,7 @@ class FeedbacksController < ApplicationController
   def list_by_date
     get_user_info_from_userid
     order = "feedback_time ASC"
-    @feedbacks = Feedback.archived(session[:archived_contacts],order)
+    @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order)
     @archived = session[:archived_contacts]
     render :index
   end
@@ -137,7 +139,7 @@ class FeedbacksController < ApplicationController
   def list_by_identifier
     get_user_info_from_userid
     order = "identifier ASC"
-    @feedbacks = Feedback.archived(session[:archived_contacts],order)
+    @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order)
     @archived = session[:archived_contacts]
     render :index
   end
@@ -145,7 +147,7 @@ class FeedbacksController < ApplicationController
   def list_by_name
     get_user_info_from_userid
     order = "name ASC"
-    @feedbacks = Feedback.archived(session[:archived_contacts],order)
+    @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order)
     @archived = session[:archived_contacts]
     render :index
   end
@@ -153,12 +155,19 @@ class FeedbacksController < ApplicationController
   def list_by_type
     get_user_info_from_userid
     order = "feedback_type ASC"
-    @feedbacks = Feedback.archived(session[:archived_contacts],order)
+    @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order)
     @archived = session[:archived_contacts]
     render :index
   end
-
-
+  
+  def list_by_userid
+    get_user_info_from_userid
+    order = "userid ASC"
+    @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order)
+    @archived = session[:archived_contacts]
+    render :index
+  end
+  
   def new
     session[:return_to] ||= request.referer
     get_user_info_from_userid
@@ -175,17 +184,34 @@ class FeedbacksController < ApplicationController
     @feedback = Feedback.id(params[:id]).first
     if @feedback.present?
       @feedback.update_attribute(:archived, false)
+       flash.notice = "Feedback restored"
       redirect_to :action => "index" and return
     else
       go_back("feedback",params[:id])
     end
   end
+  
+  def reply_feedback
+    p "reply feedback ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+    get_user_info_from_userid; return if performed?
+    @respond_to_feedback = Feedback.id(params[:source_feedback_id]).first
+    @feedback_replies = Message.where(source_feedback_id: params[:source_feedback_id]).all
+    @feedback_replies.each do |reply|
+      p "replymmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm"
+      p reply
+      p reply.sent_messages
+    end
+    @message = Message.new
+    @message.message_time = Time.now
+    @message.userid = @user.userid
+  end
+
 
   def select_by_identifier
     get_user_info_from_userid
     @options = Hash.new
     order = "identifier ASC"
-    @feedbacks = Feedback.archived(session[:archived_contacts],order).each do |contact|
+    @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order).each do |contact|
       @options[contact.identifier] = contact.id
     end
     @feedback = Feedback.new
