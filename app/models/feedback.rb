@@ -115,27 +115,18 @@ class Feedback
   end
 
   def add_sender_to_copies_of_contact_action_sent_to_userids(sender_userid)
-    p "adding sender"
-     p copies_of_contact_action_sent_to_userids
     copies_of_contact_action_sent_to_userids = self.copies_of_contact_action_sent_to_userids
     copies_of_contact_action_sent_to_userids.push(sender_userid) unless  copies_of_contact_action_sent_to_userids.include?(sender_userid)
     self.update_attribute(:copies_of_contact_action_sent_to_userids, copies_of_contact_action_sent_to_userids)
-     p copies_of_contact_action_sent_to_userids
     copies_of_contact_action_sent_to_userids
   end
 
   def communicate_feedback_reply(message,sender_userid)
     copies = self.copies_of_contact_action_sent_to_userids
-    p "Hello"
-    p sender_userid
     recipients = Array.new
     recipients.push(self.email_address)
     UserMailer.coordinator_feedback_reply(self,copies,message,sender_userid).deliver_now
-    p "sent"
-    
     copies = self.add_sender_to_copies_of_contact_action_sent_to_userids(sender_userid)
-    p "copies"
-    p copies
     reply_sent_messages(message,sender_userid,recipients,copies)
   end
 
@@ -219,8 +210,6 @@ class Feedback
   end
 
   def reply_sent_messages(message, sender_userid,contact_recipients,other_recipients)
-    p contact_recipients
-    p other_recipients
     @message = message
     @sent_message = SentMessage.new(message_id: @message.id, sender: sender_userid, recipients: contact_recipients, other_recipients: other_recipients, sent_time: Time.now)
     @message.sent_messages <<  [ @sent_message ]

@@ -5,13 +5,11 @@ class UserMailer < ActionMailer::Base
 
   def acknowledge_communication(original)
     @communication = original
-    p "Acknowledge #{@communication.inspect}"
     mail(to: "#{@communication.email_address}", :subject => "Thank you #{@communication.name} for your communication. Reference #{@communication.identifier}")
   end
 
   def acknowledge_feedback(original)
     @communication = original
-    p "Acknowledge #{@communication.inspect}"
     mail(to: "#{@communication.email_address}", :subject => "Thank you #{@communication.name} for your feedback. Reference #{@communication.identifier}")
   end
 
@@ -109,19 +107,11 @@ class UserMailer < ActionMailer::Base
         @cc_email_addresses.push(copy.email_address) unless @cc_email_addresses.include?(copy.email_address)
       end
     end
-    p "sending contact_action_request"
-    p @send_to
-    p @cc_email_addresses
-    p  @cc_names
     get_attachment(@contact)
     mail(to: "#{@send_to.email_address}",cc: @cc_email_addresses, subject: "This is a contact action request for reference #{@contact.identifier}")
   end
 
   def coordinator_contact_reply(contact,ccs,message,sender)
-    p "coordinator_contact_reply"
-    p ccs
-    p sender
-    p message
     @contact = contact
     @message = message
     @cc_email_addresses = Array.new
@@ -135,12 +125,8 @@ class UserMailer < ActionMailer::Base
     get_attachment(@contact)
     mail(from: sender.email_address, to:  "#{@contact.name} <#{@contact.email_address}>", bcc: @cc_email_addresses, subject: @message.subject)
   end
-  
+
   def coordinator_feedback_reply(feedback,ccs_userids,message,sender_userid)
-    p "coordinator_contact_reply"
-    p ccs_userids
-    p sender_userid
-    p message
     @feedback = feedback
     @message = message
     @cc_email_addresses = get_email_address_array_from_array_of_userids(ccs_userids)
@@ -163,10 +149,6 @@ class UserMailer < ActionMailer::Base
         @cc_email_addresses.push(copy.email_address) unless @cc_email_addresses.include?(copy.email_address)
       end
     end
-    p "sending feedback_action_request"
-    p @send_to
-    p @cc_email_addresses
-    p  @cc_names
     get_attachment(@contact)
     mail(:from => "freereg-feedback@freereg.org.uk",to: "#{@send_to.email_address}",cc: @cc_email_addresses, subject: "This is a feedback action request for reference #{@contact.identifier}")
   end
@@ -380,9 +362,9 @@ class UserMailer < ActionMailer::Base
     @email_address = user.email_address
     mail(:from => "freereg-processing@freereg.org.uk",:to => "#{@person_forename} <#{@email_address}>", :subject => "FreeReg update processing report")
   end
-  
+
   private
-  
+
   def get_email_address_array_from_array_of_userids(userids)
     array_of_email_addresses = Array.new
     unless userids.blank?
@@ -392,11 +374,11 @@ class UserMailer < ActionMailer::Base
           array_of_email_addresses.push(copy.email_address) unless array_of_email_addresses.include?(copy.email_address)
         end
       end
-     array_of_email_addresses = nil 
+      array_of_email_addresses = nil
     end
     array_of_email_addresses
   end
-  
+
   def get_email_address_from_userid(userid)
     userid_object = UseridDetail.userid(userid).first
     if userid_object.present?

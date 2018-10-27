@@ -5,7 +5,7 @@ class FeedbacksController < ApplicationController
     @feedback = Feedback.id(params[:id]).first
     if @feedback.present?
       @feedback.update_attribute(:archived, true)
-       flash.notice = "Feedback archived"
+      flash.notice = "Feedback archived"
       redirect_to :action => "list_archived" and return
     else
       go_back("feedback",params[:id])
@@ -87,7 +87,6 @@ class FeedbacksController < ApplicationController
   end
 
   def feedback_reply_messages
-    p "messages controller"
     get_user_info_from_userid; return if performed?
     @feedback = Feedback.id(params[:id]).first
     if @feedback.present?
@@ -135,7 +134,7 @@ class FeedbacksController < ApplicationController
     @archived = session[:archived_contacts]
     render :index
   end
-  
+
   def list_by_most_recent
     get_user_info_from_userid
     order = "feedback_time DESC"
@@ -167,7 +166,7 @@ class FeedbacksController < ApplicationController
     @archived = session[:archived_contacts]
     render :index
   end
-  
+
   def list_by_userid
     get_user_info_from_userid
     order = "user_id ASC"
@@ -175,7 +174,7 @@ class FeedbacksController < ApplicationController
     @archived = session[:archived_contacts]
     render :index
   end
-  
+
   def new
     session[:return_to] ||= request.referer
     get_user_info_from_userid
@@ -192,28 +191,23 @@ class FeedbacksController < ApplicationController
     @feedback = Feedback.id(params[:id]).first
     if @feedback.present?
       @feedback.update_attribute(:archived, false)
-       flash.notice = "Feedback restored"
+      flash.notice = "Feedback restored"
       redirect_to :action => "index" and return
     else
       go_back("feedback",params[:id])
     end
   end
-  
+
   def reply_feedback
-    p "reply feedback ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
     get_user_info_from_userid; return if performed?
     @respond_to_feedback = Feedback.id(params[:source_feedback_id]).first
     @feedback_replies = Message.where(source_feedback_id: params[:source_feedback_id]).all
     @feedback_replies.each do |reply|
-      p "replymmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm"
-      p reply
-      p reply.sent_messages
     end
     @message = Message.new
     @message.message_time = Time.now
     @message.userid = @user.userid
   end
-
 
   def select_by_identifier
     get_user_info_from_userid
@@ -227,8 +221,6 @@ class FeedbacksController < ApplicationController
     @prompt = 'Select Identifier'
     render '_form_for_selection'
   end
-
-
 
   def show
     get_user_info_from_userid
