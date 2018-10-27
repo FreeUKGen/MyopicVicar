@@ -135,6 +135,14 @@ class FeedbacksController < ApplicationController
     @archived = session[:archived_contacts]
     render :index
   end
+  
+  def list_by_most_recent
+    get_user_info_from_userid
+    order = "feedback_time DESC"
+    @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order)
+    @archived = session[:archived_contacts]
+    render :index
+  end
 
   def list_by_identifier
     get_user_info_from_userid
@@ -162,7 +170,7 @@ class FeedbacksController < ApplicationController
   
   def list_by_userid
     get_user_info_from_userid
-    order = "userid ASC"
+    order = "user_id ASC"
     @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order)
     @archived = session[:archived_contacts]
     render :index

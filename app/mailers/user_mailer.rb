@@ -113,7 +113,7 @@ class UserMailer < ActionMailer::Base
     p @send_to
     p @cc_email_addresses
     p  @cc_names
-    get_attachment
+    get_attachment(@contact)
     mail(to: "#{@send_to.email_address}",cc: @cc_email_addresses, subject: "This is a contact action request for reference #{@contact.identifier}")
   end
 
@@ -132,8 +132,22 @@ class UserMailer < ActionMailer::Base
       end
     end
     @reply_messages = Message.where(source_contact_id: @message.source_contact_id).all
-    get_attachment
+    get_attachment(@contact)
     mail(from: sender.email_address, to:  "#{@contact.name} <#{@contact.email_address}>", bcc: @cc_email_addresses, subject: @message.subject)
+  end
+  
+  def coordinator_feedback_reply(feedback,ccs_userids,message,sender_userid)
+    p "coordinator_contact_reply"
+    p ccs_userids
+    p sender_userid
+    p message
+    @feedback = feedback
+    @message = message
+    @cc_email_addresses = get_email_address_array_from_array_of_userids(ccs_userids)
+    sender_email_address = get_email_address_from_userid(sender_userid)
+    @reply_messages = Message.where(source_feedback_id: @message.source_feedback_id).all
+    get_attachment(@feedback)
+    mail(from: sender_email_address, to:  "#{@feedback.name} <#{@feedback.email_address}>", bcc: @cc_email_addresses, subject: @message.subject)
   end
 
   def feedback_action_request(contact,send_to,copies_to)
@@ -153,14 +167,14 @@ class UserMailer < ActionMailer::Base
     p @send_to
     p @cc_email_addresses
     p  @cc_names
-    get_attachment
+    get_attachment(@contact)
     mail(:from => "freereg-feedback@freereg.org.uk",to: "#{@send_to.email_address}",cc: @cc_email_addresses, subject: "This is a feedback action request for reference #{@contact.identifier}")
   end
 
-  def get_attachment
-    if @contact.screenshot_url.present?
-      @image = File.basename(@contact.screenshot.path)
-      attachments[@image] = File.binread(@contact.screenshot.path)
+  def get_attachment(contact)
+    if contact.screenshot_url.present?
+      @image = File.basename(contact.screenshot.path)
+      attachments[@image] = File.binread(contact.screenshot.path)
     end
   end
 
@@ -365,6 +379,32 @@ class UserMailer < ActionMailer::Base
     # userid is REGManager, so no need to check email_address_valid
     @email_address = user.email_address
     mail(:from => "freereg-processing@freereg.org.uk",:to => "#{@person_forename} <#{@email_address}>", :subject => "FreeReg update processing report")
+  end
+  
+  private
+  
+  def get_email_address_array_from_array_of_userids(userids)
+    array_of_email_addresses = Array.new
+    unless userids.blank?
+      userids.each do |copy_userid|
+        copy = UseridDetail.userid(copy_userid).first
+        if copy.present?
+          array_of_email_addresses.push(copy.email_address) unless array_of_email_addresses.include?(copy.email_address)
+        end
+      end
+     array_of_email_addresses = nil 
+    end
+    array_of_email_addresses
+  end
+  
+  def get_email_address_from_userid(userid)
+    userid_object = UseridDetail.userid(userid).first
+    if userid_object.present?
+      email_address = userid_object.email_address
+    else
+      email_address = "freereg-contacts@freereg.org.uk"
+    end
+    email_address
   end
 
 end

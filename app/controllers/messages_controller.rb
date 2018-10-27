@@ -137,8 +137,12 @@ class MessagesController < ApplicationController
   def reply_for_feedback
     sender = UseridDetail.where(userid: @message.userid).first
     @feedback = Feedback.id(@message.source_feedback_id).first
-    @feedback.communicate_feedback_reply(@message, sender)
-    redirect_to reply_feedback_path(@message.source_feedback_id)
+    if sender.present? && @feedback.present?
+      @feedback.communicate_feedback_reply(@message, sender.userid)
+      redirect_to reply_feedback_path(@message.source_feedback_id) and return
+    else
+      #need to add error handling
+    end
   end
 
   def select_by_identifier

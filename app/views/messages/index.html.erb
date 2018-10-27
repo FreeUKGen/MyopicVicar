@@ -1,7 +1,8 @@
 <% index_breadcrumbs %>
 <h2 class=" text--center"><%= index_header(params[:action])%></h2>
 <% if @links %> <p style="text-align: center"><%= link_to 'Create New Message', new_message_path, method: :get , :class => "btn weight--light btn--small" %> <%= link_to 'List by Name', list_by_name_messages_path, method: :get , :class => "btn weight--light btn--small" %> <%= link_to 'List by Posted Date' , list_by_date_messages_path, method: :get , :class => "btn weight--light btn--small"%> <%= link_to 'List by Identifier' , list_by_identifier_messages_path, method: :get , :class => "btn weight--light btn--small" %>  <%= link_to 'Select by Identifier' , select_by_identifier_messages_path, method: :get , :class => "btn weight--light btn--small" %> <%= link_to 'List Unsent Messages' , list_unsent_messages_path, method: :get , :class => "btn weight--light btn--small" %> </p>
-<%end%><% if flash[:notice] %>
+<%end%>
+<% if flash[:notice] %>
 <div id="notice" style="color:blue"><br>
   <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
 </div>
@@ -45,7 +46,7 @@
                 </tr>
               <% end %>
             <% else%>
-              No messages
+              <b>No messages</b>
             <% end%>
           </table>
         </div>
