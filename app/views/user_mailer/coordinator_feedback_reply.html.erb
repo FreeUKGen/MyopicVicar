@@ -1,0 +1,15 @@
+<p> Dear <%= @feedback.name %>;</p>
+<p><%= @message.body%></p>
+<% if @message.attachment.present?%>
+There is an File attachment
+<% end%>
+<% if @message.images.present?%>
+There is an Image attachment
+<% end%>
+<%= email_attachment_tag(@message) %>
+<% if @feedback.screenshot_url.present?%>
+ <p>An image is attached</p>
+<% end%>
+
+
+<p> The FreeREG Team</p>

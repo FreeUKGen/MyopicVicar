@@ -1,0 +1,84 @@
+<% breadcrumb :create_feedback_reply,  @respond_to_feedback%>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+  </div>
+<% end %>
+<h4 style="text-align: center"> 
+  Respond to Feedback Identifier <%= @respond_to_feedback.identifier %>
+</h4>
+<div class= "grid">
+  <section class="island  island--light ">
+    <div class="scrollable" >
+      <div class="grid__item  one-whole  palm-one-whole push--bottom">        
+        <i><strong>Title: </strong><%= @respond_to_feedback.title %></i>
+        <%= content_tag :p, class: "strong" do %>
+          On <%= @respond_to_feedback.feedback_time.to_formatted_s(:long)%> Userid: <strong><%= @respond_to_feedback.user_id%></strong> sent a feedback.
+          We sent it to <%= @respond_to_feedback.contact_action_sent_to_userid%> for action. 
+        <p>The contact information was:<br><%= @respond_to_feedback.body %></p>
+        <p>Further details of the feedback follow:</p>
+        <div class="scrollable">
+          <table class= "table--bordered table--data push--bottom t100">
+            <tr>
+            <tr>
+              <th>Identifier</th>
+              <th>Problem Page URL</th>
+              <th>Previous Page URL</th> 
+            </tr>
+            </tr>
+            <tr>
+              <td>
+                <%= @respond_to_feedback.identifier %>
+              </td>
+              <td>
+                <%= link_to(@respond_to_feedback.problem_page_url, @respond_to_feedback.problem_page_url,target: "_blank", style:'color:black') %>
+              </td>
+              <td>
+                <%= link_to(@respond_to_feedback.previous_page_url,@respond_to_feedback.previous_page_url,target: "_blank", style:'color:black') %>
+              </td> 
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<% unless @feedback_replies.count == 0 %>
+  <h4 style="text-align: center">This Feedback has <%= pluralize(@feedback_replies.count, 'Reply Message')%></h4>
+  <div class= "grid">
+    <section class="island  island--light ">
+      <div class="scrollable" >
+        <div class="grid__item  one-whole  palm-one-whole push--bottom">
+          <h4>Subject: <%= "Re: Thank you for your feedback. Reference #{@respond_to_feedback.identifier}" %></h4>
+          <% @feedback_replies.each do |reply| %>
+            <div class="island island--bordered text--left">
+              <%= content_tag :p do %>
+                <strong>On <%= Message.formatted_time(reply)%>, Userid: <%= reply.userid%> wrote:
+                <%if reply.sent_messages[0].present?%>
+                  to <%= reply.sent_messages[0].recipients%>:<br/></strong>
+                <% else%>
+                  :<br/></strong>
+                <% end%>
+                <% end%>
+                <%= reply.body %>
+                <% if reply.attachment.present?%>
+                  <br/>
+                  <span>Attachment: </span>
+                  <span><%= link_to("#{reply[:attachment]}", reply.attachment_url, target: "_blank", style:'color:black') %><a href="#" class="bottom_tooltip"> <%= image_tag 'info.png', alt: 'Information', height: '16' %><span>The link will open in a new tab</span></a></span>
+                <% end %>
+                <% if reply.images.present? %><br />
+                  <span>Image Attachment: </span>
+                  <span><%= image_tag reply.images_url %></span>
+                <% end %>
+              <% end %>
+            </div>
+          <% end %>       
+        </div>
+      </div>
+    </section>
+  </div>
+<% end %>
+<h4 style="text-align: center">Create Your Reply.<% if @respond_to_feedback.copies_of_contact_action_sent_to_userids.present?%> Blind copies will be sent to <%= @respond_to_feedback.copies_of_contact_action_sent_to_userids%><%end%></h4>
+<%= render 'messages/form_for_contact' %>
+
+
