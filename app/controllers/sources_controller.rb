@@ -120,7 +120,7 @@ class SourcesController < ApplicationController
   def load(source_id)
     @source = Source.id(source_id).first
 
-    if @source.nil?
+    if @source.nil?      
       go_back("source", source_id)
     else
       session[:source_id] = @source.id
@@ -160,7 +160,6 @@ class SourcesController < ApplicationController
     session[:from_source] = true
 
     load(params[:id])
-    go_back("source#show", params[:id]) and return if @source.nil?
   end
 
   def update
