@@ -93,6 +93,8 @@ class FeedbacksController < ApplicationController
       @messages = Message.where(source_feedback_id: params[:id]).all
       @link = false
       render 'messages/index'
+    else
+      go_back("feedback",params[:id])
     end
   end
 
@@ -201,6 +203,9 @@ class FeedbacksController < ApplicationController
   def reply_feedback
     get_user_info_from_userid; return if performed?
     @respond_to_feedback = Feedback.id(params[:source_feedback_id]).first
+    if @respond_to_feedback.blank?
+      go_back("feedback",params[:id])
+    end
     @feedback_replies = Message.where(source_feedback_id: params[:source_feedback_id]).all
     @feedback_replies.each do |reply|
     end
