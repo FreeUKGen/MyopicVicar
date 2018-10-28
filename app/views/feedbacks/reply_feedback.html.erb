@@ -14,9 +14,10 @@
         <%= content_tag :p, class: "strong" do %>
           On <%= @respond_to_feedback.feedback_time.to_formatted_s(:long)%> Userid: <%= @respond_to_feedback.user_id%> sent a feedback. <br>
           We sent it to <%= @respond_to_feedback.contact_action_sent_to_userid%> for action. 
-          <p>The contact information was:<br><%= @respond_to_feedback.body %></p>
+          The contact information was:<br>
         <% end %>
-        <p>Further details of the feedback follow:</p>
+        <%= @respond_to_feedback.body %><br><br>
+        <p><b>Further details of the feedback follow:</b></p>
         <div class="scrollable">
           <table class= "table--bordered table--data push--bottom t100">
             <tr>

@@ -150,8 +150,8 @@ class ContactsController < ApplicationController
 
   def list_by_date
     get_user_info_from_userid
-    my_order = "contact_time ASC"
-    @contacts = get_contacts.result(session[:archived_contacts],my_order)
+    order = "contact_time ASC"
+    @contacts = get_contacts.result(session[:archived_contacts],order)
     @archived = session[:archived_contacts]
     render :index
   end
@@ -159,7 +159,7 @@ class ContactsController < ApplicationController
   def list_by_most_recent
     get_user_info_from_userid
     order = "contact_time DESC"
-    @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order)
+    @contacts = get_contacts.result(session[:archived_contacts],order)
     @archived = session[:archived_contacts]
     render :index
   end

@@ -12,9 +12,10 @@
       <div class="grid__item  one-whole  palm-one-whole push--bottom">
         <%= content_tag :p, class: "strong" do %>
           On <%= @respond_to_contact.contact_time.to_formatted_s(:long)%> <%= @respond_to_contact.name%> (<%= @respond_to_contact.email_address %>) submitted a <%= @respond_to_contact.contact_type %>.<br>
-          We sent the communication to <%= @respond_to_contact.contact_action_sent_to_userid%> for action. We also sent copies to <%= @respond_to_contact.copies_of_contact_action_sent_to_userids%> for information.<br>
-          The contact information was:<br><%= @respond_to_contact.body %><br>
+          We sent the communication to <%= @respond_to_contact.contact_action_sent_to_userid%> for action.
+          The contact information was:<br>
         <% end %>
+        <%= @respond_to_contact.body %>
       </div> 
     </div>
   </section>
@@ -32,7 +33,7 @@
               <%= content_tag :p do %>
                 <strong>On <%= Message.formatted_time(reply)%>, Userid: <%= reply.userid%> sent the following
                 <%if reply.sent_messages[0].present?%>
-                  to <%= reply.sent_messages[0].recipients%> with copies to <%= reply.sent_messages[0].other_recipients%> :<br/></strong>
+                  to <%= reply.sent_messages[0].recipients%>:<br/></strong>
                 <% else%>
                   :<br/></strong>
                 <% end%>
