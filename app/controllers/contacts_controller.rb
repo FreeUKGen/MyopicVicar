@@ -273,6 +273,9 @@ class ContactsController < ApplicationController
   def reply_contact
     get_user_info_from_userid; return if performed?
     @respond_to_contact = Contact.id(params[:source_contact_id]).first
+    if @respond_to_contact.blank?
+      go_back("contact",params[:id])
+    end
     @contact_replies = Message.where(source_contact_id: params[:source_contact_id]).all
     @contact_replies.each do |reply|
     end
