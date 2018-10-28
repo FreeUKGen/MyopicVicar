@@ -5,11 +5,13 @@ class UserMailer < ActionMailer::Base
 
   def acknowledge_communication(original)
     @communication = original
+    get_attachment(@communication)
     mail(to: "#{@communication.email_address}", :subject => "Thank you #{@communication.name} for your communication. Reference #{@communication.identifier}")
   end
 
   def acknowledge_feedback(original)
     @communication = original
+    get_attachment(@communication)
     mail(to: "#{@communication.email_address}", :subject => "Thank you #{@communication.name} for your feedback. Reference #{@communication.identifier}")
   end
 
