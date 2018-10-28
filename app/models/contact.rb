@@ -39,11 +39,11 @@ class Contact
     def id(id)
       where(:id => id)
     end
-    
+
     def archived(value)
       where(:archived => value)
     end
-    
+
     def github_enabled
       !Rails.application.config.github_issues_password.blank?
     end
@@ -66,8 +66,6 @@ class Contact
       person.present? ? action_person = person.userid : action_person = self.get_manager
     end
     self.update_attribute(:contact_action_sent_to_userid,action_person)
-    p " to whom"
-    p action_person
     return action_person
   end
 
@@ -82,15 +80,11 @@ class Contact
     end
     action_recipient_copies_userids = action_recipient_copies_userids.uniq
     self.update_attribute(:copies_of_contact_action_sent_to_userids,action_recipient_copies_userids)
-    p "copies  to whom"
-    p action_recipient_copies_userids
     return action_recipient_copies_userids
   end
 
   def add_contact_coordinator_to_copies_of_contact_action_sent_to_userids
-    p "add_contact cordinator_to_copies_of_contact_action_sent_to_userids"
     copies_of_contact_action_sent_to_userids = self.copies_of_contact_action_sent_to_userids
-    p copies_of_contact_action_sent_to_userids
     action_person = UseridDetail.role("contacts_coordinator").active(true).first
     action_person = UseridDetail.secondary("contacts_coordinator").active(true).first if action_person.blank?
     if action_person.present? && !(action_person.userid == self.contact_action_sent_to_userid)
@@ -101,7 +95,7 @@ class Contact
       end
     end
     self.update_attribute(:copies_of_contact_action_sent_to_userids, copies_of_contact_action_sent_to_userids)
-    p copies_of_contact_action_sent_to_userids
+    copies_of_contact_action_sent_to_userids
   end
 
   def add_identifier
@@ -122,44 +116,32 @@ class Contact
   end
 
   def add_sender_to_copies_of_contact_action_sent_to_userids(sender)
-    p "add_sender_to_copies_of_contact_action_sent_to_userids"
     copies_of_contact_action_sent_to_userids = self.copies_of_contact_action_sent_to_userids
-    p copies_of_contact_action_sent_to_userids
-    if !(sender.userid == self.contact_action_sent_to_userid || self.copies_of_contact_action_sent_to_userids.include?(sender.userid))
-      copies_of_contact_action_sent_to_userids.push(sender.userid)
-      self.update_attribute(:copies_of_contact_action_sent_to_userids, copies_of_contact_action_sent_to_userids)
-    end
-    p self.copies_of_contact_action_sent_to_userids
+    copies_of_contact_action_sent_to_userids.push(sender_userid) unless  copies_of_contact_action_sent_to_userids.include?(sender_userid)
+    self.update_attribute(:copies_of_contact_action_sent_to_userids, copies_of_contact_action_sent_to_userids)
+    copies_of_contact_action_sent_to_userids
   end
 
-  def communicate_contact_reply(message,sender)
-    p 'reply'
+  def communicate_contact_reply(message,sender_userid)
     copies = self.copies_of_contact_action_sent_to_userids
-    p sender
-    p message
-    p copies
     recipients = Array.new
     recipients.push(self.email_address)
-    UserMailer.coordinator_contact_reply(self,copies,message,sender).deliver_now
-    copies = self.add_sender_to_copies_of_contact_action_sent_to_userids(sender)
-    reply_sent_messages(message,sender,recipients,copies)
+    UserMailer.coordinator_contact_reply(self,copies,message,sender_userid).deliver_now
+    copies = self.add_sender_to_copies_of_contact_action_sent_to_userids(sender_userid)
+    reply_sent_messages(message,sender_userid,recipients,copies)
   end
 
   def communicate_initial_contact
-    p "communicating inial messages"
     self.acknowledge_communication
     self.contact_action_communication
   end
 
   def contact_action_communication
-    p "contact_action_communication"
     send_to_userid = self.action_recipient_userid
     #we are sending an action request
     copies_of_contact_action_sent_to_userids =   self.add_contact_coordinator_to_copies_of_contact_action_sent_to_userids
-    p  'send action'
     UserMailer.contact_action_request(self,send_to_userid,copies_of_contact_action_sent_to_userids).deliver_now
-    sender = UseridDetail.userid(send_to_userid).first
-    copies = self.add_sender_to_copies_of_contact_action_sent_to_userids(sender)
+    #copies = self.add_sender_to_copies_of_contact_action_sent_to_userids(send_to_userid)
   end
 
   def get_coordinator
@@ -188,8 +170,6 @@ class Contact
     else
       coordinator = nil
     end
-    p "coordinator"
-    p coordinator.userid
     return coordinator.userid
   end
 
@@ -198,8 +178,6 @@ class Contact
     action_person = UseridDetail.secondary("contacts_coordinator").active(true).first if action_person.blank?
     action_person = UseridDetail.userid("REGManager").active(true).first if action_person.blank?
     action_person = UseridDetail.role("system_administrator").active(true).first if action_person.blank?
-    p "get_manager"
-    p action_person.userid
     return action_person.userid
   end
 
@@ -245,11 +223,11 @@ class Contact
   def has_replies?(contact_id)
     Message.where(source_contact_id: contact_id).exists?
   end
-  
+
   def is_archived?
-    return self.archived 
+    return self.archived
   end
-  
+
   def issue_title
     "#{identifier} #{contact_type} (#{name})"
   end
@@ -267,17 +245,10 @@ class Contact
 
   private
 
-  def reply_sent_messages(message, sender,contact_recipients,other_recipients)
+  def reply_sent_messages(message, sender_userid,contact_recipients,other_recipients)
     @message = message
-    p 'sent message'
-    p sender
-    p contact_recipients
-    p other_recipients
-    @sent_message = SentMessage.new(message_id: @message.id, sender: sender.userid, recipients: contact_recipients, other_recipients: other_recipients, sent_time: Time.now)
+    @sent_message = SentMessage.new(message_id: @message.id, sender: sender_userid, recipients: contact_recipients, other_recipients: other_recipients, sent_time: Time.now)
     @message.sent_messages <<  [ @sent_message ]
     @sent_message.save
-    p "sent message stored"
-    p @message
-    p @message.sent_messages
   end
 end

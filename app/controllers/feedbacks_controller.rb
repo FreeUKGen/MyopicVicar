@@ -1,6 +1,10 @@
 class FeedbacksController < ApplicationController
   require 'reply_userid_role'
   #skip_before_filter :require_login, only: [:new]
+
+
+
+
   def archive
     @feedback = Feedback.id(params[:id]).first
     if @feedback.present?
@@ -66,10 +70,6 @@ class FeedbacksController < ApplicationController
     else
       go_back("feedback",params[:id])
     end
-  end
-
-  def delete_reply_messages(feedback_id)
-    Message.where(source_feedback_id: feedback_id).destroy
   end
 
   def edit
@@ -264,13 +264,21 @@ class FeedbacksController < ApplicationController
 
 
   private
+
   def feedback_params
     params.require(:feedback).permit!
   end
+
   def new_params
     params.delete('utf8')
     params.delete('controller')
     params.delete('action')
     params.permit!
   end
+
+  def delete_reply_messages(feedback_id)
+    Message.where(source_feedback_id: feedback_id).destroy
+  end
+
+
 end

@@ -106,6 +106,7 @@ MyopicVicar::Application.routes.draw do
   get 'contacts/list_by_type',  :to => 'contacts#list_by_type', :as => :list_by_type_contacts
   get 'contacts/list_by_name',  :to => 'contacts#list_by_name', :as => :list_by_name_contacts
   get 'contacts/list_by_date',  :to => 'contacts#list_by_date', :as => :list_by_date_contacts
+  get 'contacts/list_by_most_recent',  :to => 'contacts#list_by_most_recent', :as => :list_by_most_recent_contacts
   get 'contacts/list_by_identifier',  :to => 'contacts#list_by_identifier', :as => :list_by_identifier_contacts
   get 'contacts/list_archived',  :to => 'contacts#list_archived', :as => :list_archived_contacts
   get 'contacts/select_by_identifier',  :to => 'contacts#select_by_identifier', :as => :select_by_identifier_contacts
@@ -116,7 +117,7 @@ MyopicVicar::Application.routes.draw do
   get 'contacts/:id/archive',  :to => 'contacts#archive', :as => :archive_contact
   get 'contacts/:id/restore',  :to => 'contacts#restore', :as => :restore_contact
   post 'contacts/:id/convert_to_issue(.:format)', :to => 'contacts#convert_to_issue', :as => :convert_contact_to_issue
-  
+
   resources :contacts
 
   resources :place_caches
@@ -373,13 +374,13 @@ MyopicVicar::Application.routes.draw do
   get 'assignment/image_completed', :to => 'assignments#image_completed', :as => :user_complete_image_assignment
   get 'assignments/select_county', :to => 'assignments#select_county', :as => :select_county_assignment
   get 'assignments/:id/list_by_syndicate(.:format)', :to => 'assignments#list_by_syndicate', :as => :list_by_syndicate_assignment
-resources :assignments
+  resources :assignments
 
   get 'gaps/:id/index(.:format)', :to => 'gaps#index', :as => :index_gap
-resources :gaps
+  resources :gaps
 
   get 'gap_reasons/:id/index(.:format)', :to => 'gap_reasons#index', :as => :index_gap_reason
-resources :gap_reasons
+  resources :gap_reasons
 
 
 

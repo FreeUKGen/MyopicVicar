@@ -216,12 +216,4 @@ class Feedback
     @sent_message.save
   end
 
-  def update_reply_for_feedback(person,message)
-    @feedback_userid = person.userid_feedback_replies
-    if @feedback_userid.has_key?(self.id.to_s)
-      @feedback_userid[self.id.to_s] << message.id.to_s unless @feedback_userid[self.id.to_s].include?(message.id.to_s)
-      person.update_attribute(:userid_feedback_replies, @feedback_userid)
-    end
-  end
-
 end

@@ -4,23 +4,24 @@ class ContactsController < ApplicationController
   require 'contact_rules'
 
   skip_before_filter :require_login, only: [:new, :report_error, :create]
-  
+
   def archive
     @contact = Contact.id(params[:id]).first
     if @contact.present?
       @contact.update_attribute(:archived, true)
-      redirect_to :action => "index" and return
+      flash.notice = "Feedback archived"
+      redirect_to :action => "list_archived" and return
     else
       go_back("contact",params[:id])
     end
   end
-  
+
   def contact_reply_messages
     get_user_info_from_userid; return if performed?
     @contact = Contact.id(params[:id]).first
     if @contact.present?
       @messages = Message.where(source_contact_id: params[:id]).all
-      @links = false 
+      @links = false
       render 'messages/index'
     end
   end
@@ -114,16 +115,14 @@ class ContactsController < ApplicationController
 
   def force_destroy
     @contact = Contact.id(params[:id]).first
-    if @contact.present?  
+    if @contact.present?
       delete_reply_messages(params[:id]) if @contact.has_replies?(params[:id])
       @contact.delete
       flash.notice = "Contact and all its replies are destroyed"
       redirect_to :action => 'index'
       return
     else
-      flash.notice = "Contact did not exist"
-      redirect_to :action => 'index'
-      return
+      go_back("contact",params[:id])
     end
   end
 
@@ -134,15 +133,15 @@ class ContactsController < ApplicationController
   def index
     session[:archived_contacts] = false
     get_user_info_from_userid
-    order = "contact_time ASC"
+    order = "contact_time DESC"
     @contacts = get_contacts.result(session[:archived_contacts],order)
     @archived = session[:archived_contacts]
   end
-  
+
   def list_archived
     session[:archived_contacts] = true
     get_user_info_from_userid
-    order = "contact_time  ASC"
+    order = "contact_time  DESC"
     @contacts = get_contacts.result(session[:archived_contacts],order)
     @archived = session[:archived_contacts]
     render :index
@@ -157,6 +156,14 @@ class ContactsController < ApplicationController
     render :index
   end
 
+  def list_by_most_recent
+    get_user_info_from_userid
+    order = "contact_time DESC"
+    @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order)
+    @archived = session[:archived_contacts]
+    render :index
+  end
+
   def list_by_identifier
     get_user_info_from_userid
     order = "identifier ASC"
@@ -164,7 +171,7 @@ class ContactsController < ApplicationController
     @archived = session[:archived_contacts]
     render :index
   end
-  
+
   def list_by_name
     get_user_info_from_userid
     order = "name ASC"
@@ -172,7 +179,7 @@ class ContactsController < ApplicationController
     @archived = session[:archived_contacts]
     render :index
   end
-  
+
   def list_by_type
     get_user_info_from_userid
     order = "contact_type ASC"
@@ -200,20 +207,19 @@ class ContactsController < ApplicationController
     @contact.county = @freereg1_csv_entry.freereg1_csv_file.county
     @contact.line_id  = @freereg1_csv_entry.line_id
   end
-  
+
   def restore
     @contact = Contact.id(params[:id]).first
     if @contact.present?
       @contact.update_attribute(:archived, false)
-      redirect_to :action => "show" and return
+      flash.notice = "Contact restored"
+      redirect_to :action => "index" and return
     else
       go_back("contact",params[:id])
     end
   end
-  
+
   def select_by_identifier
-    p "select_by_identifier"
-    p params
     get_user_info_from_userid
     @options = Hash.new
     order = "identifier ASC"
@@ -265,14 +271,10 @@ class ContactsController < ApplicationController
   end
 
   def reply_contact
-    p "reply contact ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
     get_user_info_from_userid; return if performed?
     @respond_to_contact = Contact.id(params[:source_contact_id]).first
     @contact_replies = Message.where(source_contact_id: params[:source_contact_id]).all
     @contact_replies.each do |reply|
-      p "replymmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm"
-      p reply
-      p reply.sent_messages
     end
     @message = Message.new
     @message.message_time = Time.now

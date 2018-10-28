@@ -5,13 +5,13 @@
   </div>
 <% end %>
 <h4 style="text-align: center">Contact Reference <%= @respond_to_contact.identifier %></h4>
+
 <div class= "grid">
   <section class="island  island--light ">
     <div class="scrollable" >
       <div class="grid__item  one-whole  palm-one-whole push--bottom">
         <%= content_tag :p, class: "strong" do %>
-          On <%= @respond_to_contact.contact_time.to_formatted_s(:long)%> 
-          <strong><%= @respond_to_contact.name%> (<%= @respond_to_contact.email_address %>)</strong> submitted a <%= @respond_to_contact.contact_type %>.<br>
+          On <%= @respond_to_contact.contact_time.to_formatted_s(:long)%> <%= @respond_to_contact.name%> (<%= @respond_to_contact.email_address %>) submitted a <%= @respond_to_contact.contact_type %>.<br>
           We sent the communication to <%= @respond_to_contact.contact_action_sent_to_userid%> for action. We also sent copies to <%= @respond_to_contact.copies_of_contact_action_sent_to_userids%> for information.<br>
           The contact information was:<br><%= @respond_to_contact.body %><br>
         <% end %>
@@ -21,9 +21,7 @@
 </div>
     
 <% unless @contact_replies.count == 0 %>
-  <h4 style="text-align: center">This Contact has
-    <%= pluralize(@contact_replies.count, 'Reply Message')%>
-  </h4>
+  <h4 style="text-align: center">This Contact has <%= pluralize(@contact_replies.count, 'Reply Message')%>  </h4>
   <div class= "grid">
     <section class="island  island--light ">
       <div class="scrollable" >
@@ -38,17 +36,17 @@
                 <% else%>
                   :<br/></strong>
                 <% end%>
-                <%= reply.body %>
-                <% if reply.attachment.present?%>
-                  <br/>
-                  <span>Attachment: </span>
-                  <span><%= link_to("#{reply[:attachment]}", reply.attachment_url, target: "_blank", style:'color:black') %><a href="#" class="bottom_tooltip"> <%= image_tag 'info.png', alt: 'Information', height: '16' %><span>The link will open in a new tab</span></a></span>
-                <% end %>
-                <% if reply.images.present? %><br />
-                  <span>Image Attachment: </span>
-                  <span><%= image_tag reply.images_url %></span>
-                <% end %>
               <% end %>
+              <%= reply.body %>
+              <% if reply.attachment.present?%>
+                <br/>
+                <span>Attachment: </span>
+                <span><%= link_to("#{reply[:attachment]}", reply.attachment_url, target: "_blank", style:'color:black') %><a href="#" class="bottom_tooltip"> <%= image_tag 'info.png', alt: 'Information', height: '16' %><span>The link will open in a new tab</span></a></span>
+              <% end %>
+              <% if reply.images.present? %><br />
+                <span>Image Attachment: </span>
+                <span><%= image_tag reply.images_url %></span>
+              <% end %>  
             </div>
           <% end %>
         </div>
@@ -56,7 +54,7 @@
     </section>
   </div>
 <% end %>
-<h4 style="text-align: center">Create Your Reply for this Contact</h4>
+<h4 style="text-align: center">Create Your Reply.<% if @respond_to_contact.copies_of_contact_action_sent_to_userids.present?%> Blind copies will be sent to <%= @respond_to_contact.copies_of_contact_action_sent_to_userids%><%end%></h4>
 <%= render 'messages/form_for_contact' %>
 
 
