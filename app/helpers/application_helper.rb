@@ -251,7 +251,11 @@ module ApplicationHelper
   
   def register_name_for_entry(entry)
     #expecting the field
-   register_name = RegisterType::display_name(entry)
+    if RegisterType.approved_option_values.include?(entry)
+      register_name = RegisterType::display_name(entry)
+    else
+      register_name = entry
+    end
    register_name
   end 
   
