@@ -32,8 +32,6 @@ class MessagesController < ApplicationController
       end
     when "Reply Contact"
       if @message.save
-        p "reply to contact"
-        p @message
         flash[:notice] = "Reply for Contact is created and sent"
         reply_for_contact; return if performed?
       end
@@ -127,10 +125,13 @@ class MessagesController < ApplicationController
 
   def reply_for_contact
     sender = UseridDetail.where(userid: @message.userid).first
-    sender_email = sender.email_address
     @contact = Contact.id(@message.source_contact_id).first
-    p @message
-    @contact.communicate_contact_reply(@message, sender)
+    if sender.present? && @contact.present?
+      @contact.communicate_contact_reply(@message, sender.userid)
+      redirect_to reply_contact_path(@message.source_contact_id) and return
+    else
+      #need to add error handling
+    end
     redirect_to reply_contact_path(@message.source_contact_id)
   end
 
