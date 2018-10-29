@@ -18,6 +18,9 @@ class Feedback
   field :screenshot_location, type: String
   field :screenshot, type: String
   field :identifier, type: String
+  field :contact_action_sent_to_userid, type: String, default: nil
+  field :copies_of_contact_action_sent_to_userids, type: Array, default: Array.new
+  field :archived, type: Boolean, default: false
   attr_accessor :action
 
   mount_uploader :screenshot, ScreenshotUploader
@@ -26,20 +29,66 @@ class Feedback
 
   before_create :url_check, :add_identifier, :add_email, :add_screenshot_location
 
+  module FeedbackType
+    ISSUE='issue' #log a GitHub issue
+    # To be added: contact form and other problems
+  end
+
   class << self
     def id(id)
       where(:id => id)
     end
+
+    def archived(value)
+      where(:archived => value)
+    end
+
+    def github_enabled
+      !Rails.application.config.github_issues_password.blank?
+    end
   end
 
-  def title_or_body_exist
-    errors.add(:title, "Either the Summary or Body must have content") if self.title.blank? && self.body.blank?
+
+  def acknowledge_feedback
+    UserMailer.acknowledge_feedback(self).deliver_now
   end
 
-  def url_check
+  def action_recipient_userid
+    role = 'website_coordinator'
+    person = UseridDetail.role(role).active(true).first
+    person = UseridDetail.secondary(role).active(true).first if person.blank?
+    person.present? ? action_person = person.userid : action_person = self.get_manager
+    self.update_attribute(:contact_action_sent_to_userid,action_person)
+    return action_person
+  end
 
-    self.problem_page_url = "unknown" if self.problem_page_url.nil?
-    self.previous_page_url = "unknown" if self.previous_page_url.nil?
+  def action_recipient_copies_userids(action_person)
+    action_recipient_copies_userids = Array.new
+    role = 'website_coordinator'
+    UseridDetail.role(role).active(true).all.each do |person|
+      action_recipient_copies_userids.push(person.userid) unless person.userid == action_person
+    end
+    UseridDetail.secondary(role).active(true).all.each do |person|
+      action_recipient_copies_userids.push(person.userid) unless person.userid == action_person
+    end
+    action_recipient_copies_userids = action_recipient_copies_userids.uniq
+    self.update_attribute(:copies_of_contact_action_sent_to_userids,action_recipient_copies_userids)
+    return action_recipient_copies_userids
+  end
+
+  def add_contact_coordinator_to_copies_of_contact_action_sent_to_userids
+    copies_of_contact_action_sent_to_userids = self.copies_of_contact_action_sent_to_userids
+    action_person = UseridDetail.role("contacts_coordinator").active(true).first
+    action_person = UseridDetail.secondary("contacts_coordinator").active(true).first if action_person.blank?
+    if action_person.present? && !(action_person.userid == self.contact_action_sent_to_userid)
+      if copies_of_contact_action_sent_to_userids.blank?
+        copies_of_contact_action_sent_to_userids.push(action_person.userid)
+      else
+        copies_of_contact_action_sent_to_userids.push(action_person.userid) unless  copies_of_contact_action_sent_to_userids.include?(action_person.userid)
+      end
+    end
+    self.update_attribute(:copies_of_contact_action_sent_to_userids, copies_of_contact_action_sent_to_userids)
+    copies_of_contact_action_sent_to_userids
   end
 
   def add_identifier
@@ -65,47 +114,40 @@ class Feedback
     self.screenshot_location = "uploads/feedback/screenshot/#{self.screenshot.model._id.to_s}/#{self.screenshot.filename}" if self.screenshot.filename.present?
   end
 
-  module FeedbackType
-    ISSUE='issue' #log a GitHub issue
-    # To be added: contact form and other problems
+  def add_sender_to_copies_of_contact_action_sent_to_userids(sender_userid)
+    copies_of_contact_action_sent_to_userids = self.copies_of_contact_action_sent_to_userids
+    copies_of_contact_action_sent_to_userids.push(sender_userid) unless  copies_of_contact_action_sent_to_userids.include?(sender_userid)
+    self.update_attribute(:copies_of_contact_action_sent_to_userids, copies_of_contact_action_sent_to_userids)
+    copies_of_contact_action_sent_to_userids
   end
 
-  def communicate
-    ccs = Array.new
-    UseridDetail.any_of({ person_role: 'website_coordinator', email_address_valid: true}, secondary_role: { '$in': ["website_coordinator"] }).all.each do |person|
-      add_feedback_to_userid(person)
-      ccs << person.email_address
-    end
-
-    user = UseridDetail.where(userid: self.user_id).first
-    add_feedback_to_userid(user)
-    #UseridDetail.where(:person_role => 'contacts_coordinator').email_address_valid.all.each do |person|
-     # ccs << person.email_address
-    #end
-    if ccs.blank?
-      UseridDetail.where(:person_role => 'system_administrator').email_address_valid.all.each do |person|
-        add_feedback_to_userid(person)
-        ccs << person.email_address
-      end
-    end
-    UserMailer.feedback(self,ccs).deliver_now
+  def communicate_feedback_reply(message,sender_userid)
+    copies = self.copies_of_contact_action_sent_to_userids
+    recipients = Array.new
+    recipients.push(self.email_address)
+    UserMailer.coordinator_feedback_reply(self,copies,message,sender_userid).deliver_now
+    copies = self.add_sender_to_copies_of_contact_action_sent_to_userids(sender_userid)
+    reply_sent_messages(message,sender_userid,recipients,copies)
   end
 
-  def communicate_reply(message,recipient_email, sender_email)
-    ccs = Array.new
-    UseridDetail.any_of({ person_role: 'website_coordinator', email_address_valid: true}, secondary_role: { '$in': ["website_coordinator"] }).all.each do |person|
-     update_reply_for_feedback(person,message)
-     ccs << person.email_address
-    end
-    recipient = UseridDetail.where(email_address: recipient_email).first
-    update_reply_for_feedback(recipient,message)
-    if ccs.blank?
-      UseridDetail.where(:person_role => 'system_administrator').email_address_valid.all.each do |person|
-        update_reply_for_feedback(person,message)
-        ccs << person.email_address
-      end
-    end
-    UserMailer.feedback_reply(message,recipient_email,sender_email,ccs).deliver_now
+  def communicate_initial_contact
+    self.acknowledge_feedback
+    self.feedback_action_communication
+  end
+
+  def feedback_action_communication
+    send_to_userid = self.action_recipient_userid
+    #copies_of_contact_action_sent_to_userids = self.add_contact_coordinator_to_copies_of_contact_action_sent_to_userids
+    UserMailer.feedback_action_request(self,send_to_userid,copies_of_contact_action_sent_to_userids).deliver_now
+    #copies = self.add_sender_to_copies_of_contact_action_sent_to_userids(send_to_userid)
+  end
+
+  def get_manager
+    action_person = UseridDetail.role("contacts_coordinator").active(true).first
+    action_person = UseridDetail.secondary("contacts_coordinator").active(true).first if action_person.blank?
+    action_person = UseridDetail.userid("REGManager").active(true).first if action_person.blank?
+    action_person = UseridDetail.role("system_administrator").active(true).first if action_person.blank?
+    return action_person.userid
   end
 
   def github_issue
@@ -125,12 +167,8 @@ class Feedback
     end
   end
 
-  def self.github_enabled
-    !Rails.application.config.github_issues_password.blank?
-  end
-
-  def issue_title
-    "#{identifier} #{title} (#{name})"
+  def has_replies?(feedback_id)
+    Message.where(source_feedback_id: feedback_id).exists?
   end
 
   def issue_body
@@ -138,8 +176,12 @@ class Feedback
     issue_body
   end
 
-  def has_replies?(feedback_id)
-    Message.where(source_feedback_id: feedback_id).exists?
+  def issue_title
+    "#{identifier} #{title} (#{name})"
+  end
+
+  def is_archived?
+    return self.archived
   end
 
   def member_can_reply?(user)
@@ -147,36 +189,31 @@ class Feedback
     permitted_person_role || permitted_secondary_role
   end
 
+  def title_or_body_exist
+    errors.add(:title, "Either the Summary or Body must have content") if self.title.blank? && self.body.blank?
+  end
+
+  def url_check
+    self.problem_page_url = "unknown" if self.problem_page_url.nil?
+    self.previous_page_url = "unknown" if self.previous_page_url.nil?
+  end
+
+
   private
-
-  def add_reply_to_userid_feedbacks(person)
-    @reply_feedback_userid =  person.userid_feedback_replies
-    if !@reply_feedback_userid.include? self.id.to_s
-        @message_userid << self.id.to_s
-        person.update_attribute(:userid_messages, @message_userid)
-    end
-  end
-
-  def add_feedback_to_userid(person)
-    @feedback_userid = person.userid_feedback_replies
-    if !@feedback_userid.has_key?(self.id)
-      @feedback_userid.store(self.id.to_s, [])
-      person.update_attribute(:userid_feedback_replies, @feedback_userid)
-    end
-  end
-
-  def update_reply_for_feedback(person,message)
-    @feedback_userid = person.userid_feedback_replies
-    if @feedback_userid.has_key?(self.id.to_s)
-      @feedback_userid[self.id.to_s] << message.id.to_s unless @feedback_userid[self.id.to_s].include?(message.id.to_s)
-      person.update_attribute(:userid_feedback_replies, @feedback_userid)
-    end
-  end
 
   def permitted_person_role
     ReplyUseridRole::FEEDBACK_REPLY_ROLE.include?(@user.person_role)
   end
+
   def permitted_secondary_role
     (@user.secondary_role & ReplyUseridRole::FEEDBACK_REPLY_ROLE).any?
   end
+
+  def reply_sent_messages(message, sender_userid,contact_recipients,other_recipients)
+    @message = message
+    @sent_message = SentMessage.new(message_id: @message.id, sender: sender_userid, recipients: contact_recipients, other_recipients: other_recipients, sent_time: Time.now)
+    @message.sent_messages <<  [ @sent_message ]
+    @sent_message.save
+  end
+
 end

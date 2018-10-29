@@ -3,6 +3,7 @@ class SentMessage
   field :sent_time, type: DateTime
   field :recipients, type: Array
   field :other_recipient, type: String
+  field :other_recipients, type: Array
   field :active, type: Boolean, default: true
   field :message_id, type: String
   field :sender, type: String
