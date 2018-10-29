@@ -164,14 +164,6 @@ class ContactsController < ApplicationController
     render :index
   end
 
-  def list_by_identifier
-    get_user_info_from_userid
-    order = "identifier ASC"
-    @contacts = get_contacts.result(session[:archived_contacts],order)
-    @archived = session[:archived_contacts]
-    render :index
-  end
-
   def list_by_name
     get_user_info_from_userid
     order = "name ASC"
