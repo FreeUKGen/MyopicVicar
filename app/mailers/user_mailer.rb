@@ -113,7 +113,7 @@ class UserMailer < ActionMailer::Base
     mail(to: "#{@send_to.email_address}",cc: @cc_email_addresses, subject: "This is a contact action request for reference #{@contact.identifier}")
   end
 
-  def coordinator_contact_reply(contact,ccs_userids,message,sender)
+  def coordinator_contact_reply(contact,ccs_userids,message,sender_userid)
     @contact = contact
     @message = message
     @cc_email_addresses = get_email_address_array_from_array_of_userids(ccs_userids)
