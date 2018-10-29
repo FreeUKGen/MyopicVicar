@@ -145,14 +145,6 @@ class FeedbacksController < ApplicationController
     render :index
   end
 
-  def list_by_identifier
-    get_user_info_from_userid
-    order = "identifier ASC"
-    @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order)
-    @archived = session[:archived_contacts]
-    render :index
-  end
-
   def list_by_name
     get_user_info_from_userid
     order = "name ASC"
