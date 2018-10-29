@@ -115,7 +115,7 @@ class Contact
     self.screenshot_location = "uploads/contact/screenshot/#{self.screenshot.model._id.to_s}/#{self.screenshot.filename}" if self.screenshot.filename.present?
   end
 
-  def add_sender_to_copies_of_contact_action_sent_to_userids(sender)
+  def add_sender_to_copies_of_contact_action_sent_to_userids(sender_userid)
     copies_of_contact_action_sent_to_userids = self.copies_of_contact_action_sent_to_userids
     copies_of_contact_action_sent_to_userids.push(sender_userid) unless  copies_of_contact_action_sent_to_userids.include?(sender_userid)
     self.update_attribute(:copies_of_contact_action_sent_to_userids, copies_of_contact_action_sent_to_userids)
