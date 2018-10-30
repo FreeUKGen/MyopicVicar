@@ -1,4 +1,6 @@
 <p> Dear <%= @contact.name %>;</p>
+<p>You contacted FreeREG on the matter of <b><%= @contact.title%></b> with a reference @contact.contact_type %> at <%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil?%></p>
+<p>A team member has replied as follows:</p>
 <p><%= @message.body%></p>
 <% if @message.attachment.present?%>
 There is an File attachment
@@ -6,10 +8,4 @@ There is an File attachment
 <% if @message.images.present?%>
 There is an Image attachment
 <% end%>
-<%= email_attachment_tag(@message) %>
-<% if @contact.screenshot_url.present?%>
- <p>An image is attached</p>
-<% end%>
-
-
 <p> The FreeREG Team</p>
