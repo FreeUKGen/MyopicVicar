@@ -1,5 +1,5 @@
 <p> Dear <%= @contact.name %>;</p>
-<p>You contacted FreeREG on the matter of <b><%= @contact.title%></b> with a reference @contact.contact_type %> at <%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil?%></p>
+<p>You contacted FreeREG on the matter of <b><%= @contact.contact_type%></b> with a reference @contact.identifier %> at <%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil?%></p>
 <p>A team member has replied as follows:</p>
 <p><%= @message.body%></p>
 <% if @message.attachment.present?%>
