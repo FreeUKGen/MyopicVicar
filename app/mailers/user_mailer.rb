@@ -151,9 +151,9 @@ class UserMailer < ActionMailer::Base
   end
 
   def get_attachment(contact)
-    if contact.screenshot_url.present?
-      @image = File.basename(contact.screenshot.path)
-      attachments[@image] = File.binread(contact.screenshot.path)
+    if contact.screenshot_location.present?
+      @file_name = File.basename(contact.screenshot_location)
+      attachments[@file_name] = File.read(contact.screenshot.path)
     end
   end
 
