@@ -1,6 +1,6 @@
 class FeedbacksController < ApplicationController
   require 'reply_userid_role'
-  skip_before_filter :require_login, only: [:show]
+  skip_before_filter :require_login, only: [:show, :feedback_reply_messages]
 
 
 
@@ -87,7 +87,7 @@ class FeedbacksController < ApplicationController
   end
 
   def feedback_reply_messages
-    get_user_info_from_userid; return if performed?
+    #get_user_info_from_userid; return if performed?
     @feedback = Feedback.id(params[:id]).first
     if @feedback.present?
       @messages = Message.where(source_feedback_id: params[:id]).all
@@ -220,7 +220,7 @@ class FeedbacksController < ApplicationController
   end
 
   def show
-    get_user_info_from_userid
+    #get_user_info_from_userid
     @feedback = Feedback.id(params[:id]).first
     if @feedback.present?
       @feedback

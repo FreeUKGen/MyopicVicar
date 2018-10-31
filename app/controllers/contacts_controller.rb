@@ -3,7 +3,7 @@ class ContactsController < ApplicationController
   require 'freereg_options_constants'
   require 'contact_rules'
 
-  skip_before_filter :require_login, only: [:new, :report_error, :create, :show]
+  skip_before_filter :require_login, only: [:new, :report_error, :create, :show, :contact_reply_messages]
 
   def archive
     @contact = Contact.id(params[:id]).first
@@ -17,7 +17,7 @@ class ContactsController < ApplicationController
   end
 
   def contact_reply_messages
-    get_user_info_from_userid; return if performed?
+    #get_user_info_from_userid; return if performed?
     @contact = Contact.id(params[:id]).first
     if @contact.present?
       @messages = Message.where(source_contact_id: params[:id]).all

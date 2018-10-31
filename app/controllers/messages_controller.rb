@@ -196,7 +196,7 @@ class MessagesController < ApplicationController
   end
 
   def show
-    get_user_info_from_userid
+    #get_user_info_from_userid
     @message = Message.id(params[:id]).first
     @reply_messages = Message.fetch_replies(params[:id])
     @sent_replies = Message.sent_messages(@reply_messages)
