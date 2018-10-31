@@ -3,7 +3,7 @@ class ContactsController < ApplicationController
   require 'freereg_options_constants'
   require 'contact_rules'
 
-  skip_before_filter :require_login, only: [:new, :report_error, :create]
+  skip_before_filter :require_login, only: [:new, :report_error, :create, :show]
 
   def archive
     @contact = Contact.id(params[:id]).first

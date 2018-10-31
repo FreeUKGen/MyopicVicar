@@ -3,6 +3,8 @@ class MessagesController < ApplicationController
   require 'freereg_options_constants'
   require 'userid_role'
   require 'reply_userid_role'
+  
+  skip_before_filter :require_login, only: [:show]
 
   def create
     @message = Message.new(message_params)

@@ -1,6 +1,6 @@
 class FeedbacksController < ApplicationController
   require 'reply_userid_role'
-  #skip_before_filter :require_login, only: [:new]
+  skip_before_filter :require_login, only: [:show]
 
 
 
