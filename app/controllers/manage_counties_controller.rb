@@ -196,7 +196,10 @@ class ManageCountiesController < ApplicationController
       @source_ids,@source_id = Source.get_source_ids(session[:chapman_code])
       @county = session[:county]
 
-      if @source_ids.empty? || @source_id.empty?
+      if @source_ids.nil? || @source_id.nil? 
+        flash[:notice] = 'No requested Sources exists'
+        redirect_to :back
+      elsif @source_ids.empty? || @source_id.empty?
         flash[:notice] = 'No requested Sources exists'
         redirect_to :back
       else
