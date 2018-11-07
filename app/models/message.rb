@@ -14,6 +14,7 @@ class Message
   field :path, type: String
   field :file_name, type: String
   field :images, type: String
+  field :recipients, type: Array.new, default: nil
   attr_accessor :action, :inactive_reasons,:active
   embeds_many :sent_messages
   accepts_nested_attributes_for :sent_messages,allow_destroy: true,
@@ -28,12 +29,12 @@ class Message
   mount_uploader :images, ScreenshotUploader
   before_create :add_identifier
 
-  
+
   index({_id: 1, userid: 1},{name: "id_userid"})
   index({_id: 1, sent_time: 1},{name: "id_sent_time"})
   index({_id: 1, identifier: 1},{name: "id_indentifier"})
   index({_id: 1, message_time: 1},{name: "id_message_time"})
-  
+
   class << self
     def id(id)
       where(:id => id)
@@ -94,17 +95,13 @@ class Message
   def add_message_to_userid_messages(person)
     @message_userid =  person.userid_messages
     if !@message_userid.include? self.id.to_s
-        @message_userid << self.id.to_s
-        person.update_attribute(:userid_messages, @message_userid)
+      @message_userid << self.id.to_s
+      person.update_attribute(:userid_messages, @message_userid)
     end
   end
 
   def open_data_status_value status
     status.join("") unless status.nil?
-  end
-
-  def user_status status
-    status == "true"
   end
 
   def recipient_users(recipients, syndicate=nil)
@@ -114,6 +111,18 @@ class Message
       users = UseridDetail.role(recipients)
     end
     users
+  end
+
+  def user_status status
+    status == "true"
+  end
+
+  def self.formatted_time(message)
+    unless message.message_sent_time.blank?
+      message.message_sent_time.to_formatted_s(:long) unless message.message_sent_time.blank?
+    else
+      message.message_time.to_formatted_s(:long)
+    end
   end
 
   def self.list_messages(action)
@@ -134,14 +143,6 @@ class Message
       @messages = Message.contact_replies.order_by(message_time: -1)
     end
     return @messages
-  end
-
-  def self.formatted_time(message)
-    unless message.message_sent_time.blank?
-      message.message_sent_time.to_formatted_s(:long) unless message.message_sent_time.blank?
-    else
-      message.message_time.to_formatted_s(:long)
-    end
   end
 
   def self.sent_messages(messages)

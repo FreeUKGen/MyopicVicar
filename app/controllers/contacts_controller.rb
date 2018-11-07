@@ -3,7 +3,28 @@ class ContactsController < ApplicationController
   require 'freereg_options_constants'
   require 'contact_rules'
 
-  skip_before_filter :require_login, only: [:new, :report_error, :create]
+  skip_before_filter :require_login, only: [:new, :report_error, :create, :show, :contact_reply_messages]
+
+  def archive
+    @contact = Contact.id(params[:id]).first
+    if @contact.present?
+      @contact.update_attribute(:archived, true)
+      flash.notice = "Feedback archived"
+      redirect_to :action => "list_archived" and return
+    else
+      go_back("contact",params[:id])
+    end
+  end
+
+  def contact_reply_messages
+    #get_user_info_from_userid; return if performed?
+    @contact = Contact.id(params[:id]).first
+    if @contact.present?
+      @messages = Message.where(source_contact_id: params[:id]).all
+      @links = false
+      render 'messages/index'
+    end
+  end
 
   def convert_to_issue
     @contact = Contact.id(params[:id]).first
@@ -39,7 +60,7 @@ class ContactsController < ApplicationController
       @contact.save
       if !@contact.errors.any?
         flash[:notice] = "Thank you for contacting us!"
-        @contact.communicate
+        @contact.communicate_initial_contact
         if @contact.query
           redirect_to search_query_path(@contact.query)
           return
@@ -92,36 +113,71 @@ class ContactsController < ApplicationController
     end
   end
 
-  def index
-    get_user_info_from_userid
-    @contacts = get_contacts.result
+  def force_destroy
+    @contact = Contact.id(params[:id]).first
+    if @contact.present?
+      delete_reply_messages(params[:id]) if @contact.has_replies?(params[:id])
+      @contact.delete
+      flash.notice = "Contact and all its replies are destroyed"
+      redirect_to :action => 'index'
+      return
+    else
+      go_back("contact",params[:id])
+    end
   end
 
   def get_contacts
     ContactRules.new(@user)
   end
 
-  def list_by_date
+  def index
+    session[:archived_contacts] = false
     get_user_info_from_userid
-    @contacts = Contact.all.order_by(contact_time: 1)
+    order = "contact_time DESC"
+    @contacts = get_contacts.result(session[:archived_contacts],order)
+    @archived = session[:archived_contacts]
+  end
+
+  def list_archived
+    session[:archived_contacts] = true
+    get_user_info_from_userid
+    order = "contact_time  DESC"
+    @contacts = get_contacts.result(session[:archived_contacts],order)
+    @archived = session[:archived_contacts]
     render :index
   end
 
-  def list_by_identifier
+
+  def list_by_date
     get_user_info_from_userid
-    @contacts = Contact.all.order_by(identifier: -1)
+    order = "contact_time ASC"
+    @contacts = get_contacts.result(session[:archived_contacts],order)
+    @archived = session[:archived_contacts]
+    render :index
+  end
+
+  def list_by_most_recent
+    get_user_info_from_userid
+    order = "contact_time DESC"
+    @contacts = get_contacts.result(session[:archived_contacts],order)
+    @archived = session[:archived_contacts]
     render :index
   end
 
   def list_by_name
     get_user_info_from_userid
-    @contacts = Contact.all.order_by(name: 1)
+    order = "name ASC"
+    @contacts = get_contacts.result(session[:archived_contacts],order)
+    @archived = session[:archived_contacts]
     render :index
   end
 
   def list_by_type
     get_user_info_from_userid
-    @contacts = Contact.all.order_by(contact_type: 1)
+    order = "contact_type ASC"
+    @contacts = get_contacts.result(session[:archived_contacts],order)
+    p @contacts
+    @archived = session[:archived_contacts]
     render :index
   end
 
@@ -144,10 +200,22 @@ class ContactsController < ApplicationController
     @contact.line_id  = @freereg1_csv_entry.line_id
   end
 
+  def restore
+    @contact = Contact.id(params[:id]).first
+    if @contact.present?
+      @contact.update_attribute(:archived, false)
+      flash.notice = "Contact restored"
+      redirect_to :action => "index" and return
+    else
+      go_back("contact",params[:id])
+    end
+  end
+
   def select_by_identifier
     get_user_info_from_userid
     @options = Hash.new
-    @contacts = Contact.all.order_by(identifier: -1).each do |contact|
+    order = "identifier ASC"
+    @contacts = get_contacts.result(session[:archived_contacts],order).each do |contact|
       @options[contact.identifier] = contact.id
     end
     @contact = Contact.new
@@ -194,6 +262,20 @@ class ContactsController < ApplicationController
     end
   end
 
+  def reply_contact
+    get_user_info_from_userid; return if performed?
+    @respond_to_contact = Contact.id(params[:source_contact_id]).first
+    if @respond_to_contact.blank?
+      go_back("contact",params[:id])
+    end
+    @contact_replies = Message.where(source_contact_id: params[:source_contact_id]).all
+    @contact_replies.each do |reply|
+    end
+    @message = Message.new
+    @message.message_time = Time.now
+    @message.userid = @user.userid
+  end
+
   def update
     @contact = Contact.id(params[:id]).first
     if @contact.present?
@@ -202,39 +284,6 @@ class ContactsController < ApplicationController
       return
     else
       go_back("contact",params[:id])
-    end
-  end
-
-  def reply_contact
-    get_user_info_from_userid; return if performed?
-    @respond_to_contact = Contact.id(params[:source_contact_id]).first
-    @contact_replies = Message.where(source_contact_id: params[:source_contact_id]).all
-    @message = Message.new
-    @message.message_time = Time.now
-    @message.userid = @user.userid
-  end
-
-  def contact_reply_messages
-    get_user_info_from_userid; return if performed?
-    @contact = Contact.id(params[:id]).first
-    if @contact.present?
-      @messages = Message.where(source_contact_id: params[:id]).all
-      render 'messages/index'
-    end
-  end
-
-  def force_destroy
-    @contact = Contact.id(params[:id]).first
-    if @contact.present? && @contact.has_replies?(params[:id])
-      delete_reply_messages(params[:id])
-      @contact.delete
-      flash.notice = "Contact and all its replies are destroyed"
-      redirect_to :action => 'index'
-      return
-    else
-      flash.notice = "Destruction of Contact was unsuccessful"
-      redirect_to :action => 'index'
-      return
     end
   end
 

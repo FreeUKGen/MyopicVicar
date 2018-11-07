@@ -50,7 +50,7 @@ class UseridDetail
   field :do_not_acknowledge_me, type: Boolean
   field :acknowledge_with_pseudo_name, type: Boolean
   field :pseudo_name, type: String
-   # Note if you add or change fields you may need to update the display and edit field order in /lib/freereg_options_constants
+  # Note if you add or change fields you may need to update the display and edit field order in /lib/freereg_options_constants
 
   attr_accessor :action, :message, :volunteer_induction_handbook, :code_of_conduct, :volunteer_policy
   index({ email_address: 1 })
@@ -122,7 +122,7 @@ class UseridDetail
         if userid.acknowledge_with_pseudo_name
           transcribed_by = userid.pseudo_name
         else
-          transcribed_by = userid.person_forename 
+          transcribed_by = userid.person_forename
           transcribed_by.nil? ? transcribed_by = userid.person_surname : transcribed_by = transcribed_by + ' ' + userid.person_surname
         end
       end
@@ -130,12 +130,29 @@ class UseridDetail
     end
   end
 
-  def remove_checked_messages(msg_id)
-    self.reload
-    return if !(self.userid_messages.include? msg_id)
-    userid_msgs = self.userid_messages
-    userid_msgs = userid_msgs - [msg_id]
-    self.update_attribute(:userid_messages, userid_msgs) if userid_msgs.length != self.userid_messages.length
+  def add_fields(type,syndicate)
+    self.syndicate = syndicate if self.syndicate.nil?
+    self.userid = self.userid.strip unless self.userid.nil?
+    self.sign_up_date =  DateTime.now
+    self.active = true
+    case
+    when type == 'Register Researcher'
+      self.person_role = 'researcher'
+      self.syndicate = 'Researcher'
+    when type == 'Register as Transcriber'
+      self.person_role = 'transcriber'
+    when type == 'Technical Registration'
+      self.active  = false
+      self.person_role = 'technical'
+      self.syndicate = 'Technical'
+    end
+    password = Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil)
+    self.password = password
+    self.password_confirmation = password
+    self.email_address_last_confirmned = self.sign_up_date
+    self.email_address_valid= true
+    self.email_address_last_confirmned = Time.new
+    #self.new_transcription_agreement = "Unknown"
   end
 
   def count_not_checked_messages
@@ -152,14 +169,14 @@ class UseridDetail
     self.userid_messages.length
   end
 
-  def update_userid_feedbacks
-    self.reload
-    update_feedback_replies
-    @userid_feedback_msgs = self.userid_feedback_replies
-    return {} if @userid_feedback_msgs.empty?
-    delete_feedback
-    self.userid_feedback_replies.replace(@userid_feedback_msgs) if @userid_feedback_msgs.length != self.userid_feedback_replies.length
-    self.update_attribute(:userid_feedback_replies, self.userid_feedback_replies)
+  def delete_feedback
+    self.userid_feedback_replies.each do |feedback_id, message_id|
+      next unless message_id.empty?
+      feedback = Feedback.id(feedback_id).first
+      if feedback.nil?
+        @userid_feedback_msgs.except!(feedback_id)
+      end
+    end
   end
 
   def feedback_without_replies
@@ -176,14 +193,25 @@ class UseridDetail
     end
   end
 
-  def delete_feedback
-    self.userid_feedback_replies.each do |feedback_id, message_id|
-      next unless message_id.empty?
-      feedback = Feedback.id(feedback_id).first
-      if feedback.nil?
-        @userid_feedback_msgs.except!(feedback_id)
-      end
-    end
+
+  def remove_checked_messages(msg_id)
+    self.reload
+    return if !(self.userid_messages.include? msg_id)
+    userid_msgs = self.userid_messages
+    userid_msgs = userid_msgs - [msg_id]
+    self.update_attribute(:userid_messages, userid_msgs) if userid_msgs.length != self.userid_messages.length
+  end
+
+
+
+  def update_userid_feedbacks
+    self.reload
+    update_feedback_replies
+    @userid_feedback_msgs = self.userid_feedback_replies
+    return {} if @userid_feedback_msgs.empty?
+    delete_feedback
+    self.userid_feedback_replies.replace(@userid_feedback_msgs) if @userid_feedback_msgs.length != self.userid_feedback_replies.length
+    self.update_attribute(:userid_feedback_replies, self.userid_feedback_replies)
   end
 
   def update_feedback_replies
@@ -242,30 +270,7 @@ class UseridDetail
     return userids
   end
 
-  def add_fields(type,syndicate)
-    self.syndicate = syndicate if self.syndicate.nil?
-    self.userid = self.userid.strip unless self.userid.nil?
-    self.sign_up_date =  DateTime.now
-    self.active = true
-    case
-    when type == 'Register Researcher'
-      self.person_role = 'researcher'
-      self.syndicate = 'Researcher'
-    when type == 'Register as Transcriber'
-      self.person_role = 'transcriber'
-    when type == 'Technical Registration'
-      self.active  = false
-      self.person_role = 'technical'
-      self.syndicate = 'Technical'
-    end
-    password = Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil)
-    self.password = password
-    self.password_confirmation = password
-    self.email_address_last_confirmned = self.sign_up_date
-    self.email_address_valid= true
-    self.email_address_last_confirmned = Time.new
-    #self.new_transcription_agreement = "Unknown"
-  end
+
 
   def remove_secondary_role_blank_entries
     secondary_role = self.secondary_role
@@ -355,7 +360,7 @@ class UseridDetail
     fields = FreeregOptionsConstants::USERID_DETAILS_MYOWN_DISPLAY
     fields.each do |field|
       self[field].blank? ? json_of_my_profile[field.to_sym] = nil : json_of_my_profile[field.to_sym]  = self[field]
-    end 
+    end
     json_of_my_profile
   end
 
@@ -464,7 +469,7 @@ class UseridDetail
   def full_name
     "#{self.person_forename} #{self.person_surname}"
   end
-  
+
   def registration_completed user
     user.password != registered_password
   end

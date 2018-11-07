@@ -43,7 +43,23 @@
                 <% @message.sent_messages.order_by(sent_time: -1).each do |each_message| %>
                   <%= content_tag :p, class: "weight--semibold" do %>
                     <% unless each_message.recipients.blank? %>
-                      <%= active_field(each_message)%> <%= each_message.recipients%> <%= reason(each_message.inactive_reason) if !each_message.active%><%= formatted_date(each_message)%> Sent by: <%= each_message.sender%>
+                      <%= each_message.recipients%> <%= formatted_date(each_message)%> Sent by: <%= each_message.sender%>
+                    <% end %>
+                  <% end %>
+                <% end%>
+              <% end%>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>Additional Recipients :</td>
+          <td>
+            <div class="scrollable">
+              <% if @message.sent_messages.present?%>
+                <% @message.sent_messages.order_by(sent_time: -1).each do |each_message| %>
+                  <%= content_tag :p, class: "weight--semibold" do %>
+                    <% unless each_message.other_recipients.blank? %>
+                      <%= each_message.other_recipients%> <%= formatted_date(each_message)%> Sent by: <%= each_message.sender%>
                     <% end %>
                   <% end %>
                 <% end%>

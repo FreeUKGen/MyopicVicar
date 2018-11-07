@@ -109,6 +109,7 @@ MyopicVicar::Application.configure do
   config.our_secret_key = MyopicVicar::MongoConfig['our_secret_key']
   config.secret_key_base = MyopicVicar::MongoConfig['secret_key_base']
   config.sendgrid_api_key = MyopicVicar::MongoConfig['sendgrid_api_key']
+  config.citation = MyopicVicar::MongoConfig['citation']
   #rails 4 changes
   config.eager_load = true
 end

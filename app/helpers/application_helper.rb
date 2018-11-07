@@ -249,31 +249,29 @@ module ApplicationHelper
     userid = file.userid
   end
   
-  def register_type_for_file(file)
+  def register_name_for_entry(entry)
+    #expecting the field
+    if RegisterType.approved_option_values.include?(entry)
+      register_name = RegisterType::display_name(entry)
+    else
+      register_name = entry
+    end
+   register_name
+  end 
+  
+  def register_name_for_file(file)
     register_type = file.register_type
     if register_type.blank?
       new_register = get_register_object(file)
       new_register_type = ' '
-      new_register_type = new_register.register_type unless new_register.blank?
+      new_register_type = new_register.register_type 
       new_register_type = Register.check_and_correct_register_type(new_register_type)
     else
       new_register_type = Register.check_and_correct_register_type(register_type)
     end
     file.update_attribute(:register_type, new_register_type) unless new_register_type == register_type
-    register_type
-  end
-  
-  def register_name_for_entry(entry)
-    #expecting the field
-   register_name = RegisterType::display_name(entry)
-   register_name
-  end 
-  
-  def register_name_for_file(file)
-    #expecting the file
-   entry = file.register_type
-   register_name = RegisterType::display_name(entry)
-   register_name
+    register_name = RegisterType::display_name(new_register_type)
+    register_name
   end 
   
   def county_name(file)

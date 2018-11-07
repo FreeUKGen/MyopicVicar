@@ -87,13 +87,17 @@ MyopicVicar::Application.routes.draw do
   get 'feedbacks/list_by_userid',  :to => 'feedbacks#list_by_userid', :as => :list_by_userid_feedbacks
   get 'feedbacks/list_by_name',  :to => 'feedbacks#list_by_name', :as => :list_by_name_feedbacks
   get 'feedbacks/list_by_date',  :to => 'feedbacks#list_by_date', :as => :list_by_date_feedbacks
+  get 'feedbacks/list_by_most_recent',  :to => 'feedbacks#list_by_most_recent', :as => :list_by_most_recent_feedbacks
   get 'feedbacks/list_by_identifier',  :to => 'feedbacks#list_by_identifier', :as => :list_by_identifier_feedbacks
+  get 'feedbacks/list_archived',  :to => 'feedbacks#list_archived', :as => :list_archived_feedbacks
   get 'feedbacks/select_by_identifier',  :to => 'feedbacks#select_by_identifier', :as => :select_by_identifier_feedbacks
-  get 'feedbacks/:source_feedback_id/reply',  :to => 'feedbacks#new', :as => :reply_feedbacks
   post 'feedbacks/:id/convert_to_issue(.:format)', :to => 'feedbacks#convert_to_issue', :as => :convert_feedback_to_issue
   get 'feedbacks/userid_feedbacks', :to => 'feedbacks#userid_feedbacks', :as => :userid_feedbacks
   get 'feedbacks/userid_feedbacks_with_replies', :to => 'feedbacks#userid_feedbacks_with_replies', :as => :userid_feedbacks_with_replies
-  get 'feedbacks/:id/force_destroy',  :to => 'feedbacks#force_destroy', :as => :force_destroy
+  get 'feedbacks/:id/force_destroy',  :to => 'feedbacks#force_destroy', :as => :force_destroy_feedback
+  get 'feedbacks/:id/archive',  :to => 'feedbacks#archive', :as => :archive_feedback
+  get 'feedbacks/:id/restore',  :to => 'feedbacks#restore', :as => :restore_feedback
+  get 'feedbacks/:source_feedback_id/reply',  :to => 'feedbacks#reply_feedback', :as => :reply_feedback
   get 'feedbacks/:id/feedback_reply_messages', to: 'feedbacks#feedback_reply_messages', as: :feedback_reply_messages
   resources :feedbacks
 
@@ -102,13 +106,18 @@ MyopicVicar::Application.routes.draw do
   get 'contacts/list_by_type',  :to => 'contacts#list_by_type', :as => :list_by_type_contacts
   get 'contacts/list_by_name',  :to => 'contacts#list_by_name', :as => :list_by_name_contacts
   get 'contacts/list_by_date',  :to => 'contacts#list_by_date', :as => :list_by_date_contacts
+  get 'contacts/list_by_most_recent',  :to => 'contacts#list_by_most_recent', :as => :list_by_most_recent_contacts
   get 'contacts/list_by_identifier',  :to => 'contacts#list_by_identifier', :as => :list_by_identifier_contacts
+  get 'contacts/list_archived',  :to => 'contacts#list_archived', :as => :list_archived_contacts
   get 'contacts/select_by_identifier',  :to => 'contacts#select_by_identifier', :as => :select_by_identifier_contacts
   get  'contacts/:id(.:format)/report_error', :to => 'contacts#report_error', :as => :report_error_contact
   get 'contacts/:source_contact_id/reply',  :to => 'contacts#reply_contact', :as => :reply_contact
   get 'contacts/:id/contact_reply_messages', to: 'contacts#contact_reply_messages', as: :contact_reply_messages
   get 'contacts/:id/force_destroy',  :to => 'contacts#force_destroy', :as => :force_destroy_contact
-  post 'contacts/:id/convert_to_issue(.:format)', :to => 'contacts#convert_to_issue', :as => :convert_contact_to_issue  
+  get 'contacts/:id/archive',  :to => 'contacts#archive', :as => :archive_contact
+  get 'contacts/:id/restore',  :to => 'contacts#restore', :as => :restore_contact
+  post 'contacts/:id/convert_to_issue(.:format)', :to => 'contacts#convert_to_issue', :as => :convert_contact_to_issue
+
   resources :contacts
 
   resources :place_caches
@@ -296,6 +305,9 @@ MyopicVicar::Application.routes.draw do
   get 'search_records/:id/show_print_version(.:format)', :to => 'search_records#show_print_version', :as => :show_print_version_search_record
   resources :search_records
 
+  # For generating the citations
+  get 'search_records/:id/show_citation', :to => 'search_records#show_citation', :as => :show_citation_record
+  resources :search_records
 
   get 'search_queries/:id/show_query', :to => 'search_queries#show_query', :as => :show_query_search_query
   get 'search_queries/:id/show_print_version', :to => 'search_queries#show_print_version', :as => :show_print_version_search_query
@@ -328,7 +340,7 @@ MyopicVicar::Application.routes.draw do
   get 'sources/:id/propagate(.:format)', :to => 'sources#propagate', :as => :propagate_source
   get 'sources/:id/initialize_status(.:format)', :to => 'sources#initialize_status', :as => :initialize_status_source
 
-  
+
   get 'image_server_images/download', :to => 'image_server_images#download', :as => :download_image_server_image
   get 'image_server_images/view', :to => 'image_server_images#view', :as => :view_image_server_image
   get 'image_server_images/:id/flush(.:format)', :to => 'image_server_images#flush', :as => :flush_image_server_image
@@ -362,13 +374,13 @@ MyopicVicar::Application.routes.draw do
   get 'assignment/image_completed', :to => 'assignments#image_completed', :as => :user_complete_image_assignment
   get 'assignments/select_county', :to => 'assignments#select_county', :as => :select_county_assignment
   get 'assignments/:id/list_by_syndicate(.:format)', :to => 'assignments#list_by_syndicate', :as => :list_by_syndicate_assignment
-resources :assignments
+  resources :assignments
 
   get 'gaps/:id/index(.:format)', :to => 'gaps#index', :as => :index_gap
-resources :gaps
+  resources :gaps
 
   get 'gap_reasons/:id/index(.:format)', :to => 'gap_reasons#index', :as => :index_gap_reason
-resources :gap_reasons
+  resources :gap_reasons
 
 
 

@@ -3,6 +3,18 @@ class UserMailer < ActionMailer::Base
 
   default from: "freereg-contacts@freereg.org.uk"
 
+  def acknowledge_communication(original)
+    @communication = original
+    get_attachment(@communication)
+    mail(to: "#{@communication.email_address}", :subject => "Thank you #{@communication.name} for your communication. Reference #{@communication.identifier}")
+  end
+
+  def acknowledge_feedback(original)
+    @communication = original
+    get_attachment(@communication)
+    mail(to: "#{@communication.email_address}", :subject => "Thank you #{@communication.name} for your feedback. Reference #{@communication.identifier}")
+  end
+
   def batch_processing_failure(message,user,batch)
     @message = File.read(message)
     @userid = UseridDetail.where(userid: user).first
@@ -49,10 +61,10 @@ class UserMailer < ActionMailer::Base
     @userid = UseridDetail.where(userid: user).first
     if @userid.present?
       emails = Array.new
-        if @userid.present? &&  @userid.active && @userid.email_address_valid && @userid.registration_completed(@userid) && !@userid.no_processing_messages
-          user_email_with_name =  @userid.email_address
-          emails <<  user_email_with_name
-        end
+      if @userid.present? &&  @userid.active && @userid.email_address_valid && @userid.registration_completed(@userid) && !@userid.no_processing_messages
+        user_email_with_name =  @userid.email_address
+        emails <<  user_email_with_name
+      end
       syndicate_coordinator = nil
       syndicate_coordinator = Syndicate.where(syndicate_code: @userid.syndicate).first
       if syndicate_coordinator.present?
@@ -84,49 +96,64 @@ class UserMailer < ActionMailer::Base
     end
   end
 
-  def coordinator_data_problem(contact,ccs)
+  def contact_action_request(contact,send_to,copies_to)
     @contact = contact
-    get_attachment
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for reporting a problem with our data. Reference #{@contact.identifier}")
-    #mail(:from => "vinodhini.subbu@freeukgenealogy.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>", :subject => "Thank you for reporting a problem with our data. Reference #{@contact.identifier}")
+    @send_to = UseridDetail.userid(send_to).first
+    @cc_email_addresses = Array.new
+    @cc_names = Array.new
+    unless copies_to.blank?
+      copies_to.each do |copy_userid|
+        copy = UseridDetail.userid(copy_userid).first
+        person_name = (copy.person_forename + " " + copy.person_surname + " " + copy.email_address) unless @cc_email_addresses.include?(copy.email_address)
+        @cc_names.push(person_name) unless @cc_email_addresses.include?(copy.email_address)
+        @cc_email_addresses.push(copy.email_address) unless @cc_email_addresses.include?(copy.email_address)
+      end
+    end
+    get_attachment(@contact)
+    mail(to: "#{@send_to.email_address}",cc: @cc_email_addresses, subject: "This is a contact action request for reference #{@contact.identifier}")
   end
 
-  def datamanager_data_question(contact,ccs)
+  def coordinator_contact_reply(contact,ccs_userids,message,sender_userid)
     @contact = contact
-    get_attachment
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for your data question. Reference #{@contact.identifier}")
+    @message = message
+    @cc_email_addresses = get_email_address_array_from_array_of_userids(ccs_userids)
+    sender_email_address = get_email_address_from_userid(sender_userid)
+    @reply_messages = Message.where(source_contact_id: @message.source_contact_id).all
+    get_attachment(@contact)
+    mail(from: sender_email_address, to:  "#{@contact.name} <#{@contact.email_address}>", bcc: @cc_email_addresses, subject: @message.subject)
   end
 
-  def enhancement(contact,ccs)
-    @contact = contact
-    get_attachment
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for the suggested enhancement. Reference #{@contact.identifier}")
+  def coordinator_feedback_reply(feedback,ccs_userids,message,sender_userid)
+    @feedback = feedback
+    @message = message
+    @cc_email_addresses = get_email_address_array_from_array_of_userids(ccs_userids)
+    sender_email_address = get_email_address_from_userid(sender_userid)
+    @reply_messages = Message.where(source_feedback_id: @message.source_feedback_id).all
+    get_attachment(@feedback)
+    mail(from: sender_email_address, to:  "#{@feedback.name} <#{@feedback.email_address}>", bcc: @cc_email_addresses, subject: @message.subject)
   end
 
-  def feedback(contact,ccs)
+  def feedback_action_request(contact,send_to,copies_to)
     @contact = contact
-    @user = UseridDetail.userid(@contact.user_id).first
-    get_attachment
-    mail(:from => "freereg-feedback@freereg.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>",:cc => ccs, :subject => "Thank you for your feedback. Reference #{@contact.identifier}")
-    #mail(:from => "vinodhini.subbu@freeukgenealogy.org.uk",:to => "#{@user.person_forename} <#{@user.email_address}>", :subject => "Thank you for your feedback. Reference #{@contact.identifier}")
+    @send_to = UseridDetail.userid(send_to).first
+    @cc_email_addresses = Array.new
+    @cc_names = Array.new
+    unless copies_to.blank?
+      copies_to.each do |copy_userid|
+        copy = UseridDetail.userid(copy_userid).first
+        person_name = (copy.person_forename + " " + copy.person_surname + " " + copy.email_address) unless @cc_email_addresses.include?(copy.email_address)
+        @cc_names.push(person_name) unless @cc_email_addresses.include?(copy.email_address)
+        @cc_email_addresses.push(copy.email_address) unless @cc_email_addresses.include?(copy.email_address)
+      end
+    end
+    get_attachment(@contact)
+    mail(:from => "freereg-feedback@freereg.org.uk",to: "#{@send_to.email_address}",cc: @cc_email_addresses, subject: "This is a feedback action request for reference #{@contact.identifier}")
   end
 
-  def genealogy(contact,ccs)
-    @contact = contact
-    get_attachment
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for a genealogical question. Reference #{@contact.identifier}")
-  end
-
-  def general(contact,ccs)
-    @contact = contact
-    get_attachment
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",  :cc => ccs, :subject => "Thank you for the general comment. Reference #{@contact.identifier}")
-  end
-
-  def get_attachment
-    if @contact.screenshot_url.present?
-      @image = File.basename(@contact.screenshot.path)
-      attachments[@image] = File.binread(@contact.screenshot.path)
+  def get_attachment(contact)
+    if contact.screenshot_location.present?
+      @file_name = File.basename(contact.screenshot_location)
+      attachments[@file_name] = File.read(contact.screenshot.path)
     end
   end
 
@@ -207,12 +234,12 @@ class UserMailer < ActionMailer::Base
     return if sc.nil?
 
     case action_type
-      when 'allocate'
-        subject = "allocate request accepted"
-        email_body = "Your request to have image group " + group_name + " be allocated is approved"
-      when 'reject'
-        subject = "allocate request rejected"
-        email_body = "Your request to have image group " + group_name + " be allocated is rejected"
+    when 'allocate'
+      subject = "allocate request accepted"
+      email_body = "Your request to have image group " + group_name + " be allocated is approved"
+    when 'reject'
+      subject = "allocate request rejected"
+      email_body = "Your request to have image group " + group_name + " be allocated is rejected"
     end
 
     mail(:from => user.email_address, :to => sc.email_address, :subject => subject, :body => email_body)
@@ -240,13 +267,6 @@ class UserMailer < ActionMailer::Base
         p "FREREG_PROCESSING: There was no syndicate coordinator"
       end
     end
-  end
-
-  def publicity(contact,ccs)
-    @ccs = ccs
-    @contact = contact
-    get_attachment
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for your compliments. Reference #{@contact.identifier}")
   end
 
   def report_to_data_manger_of_large_file(file_name,userid)
@@ -324,23 +344,6 @@ class UserMailer < ActionMailer::Base
     #mail(:from => from ,:to => "vinodhini.subbu@freeukgenealogy.org.uk", :subject => "#{@message.subject}. Reference #{@message.identifier}")
   end
 
-  def feedback_reply(message,recipient,sender,ccs)
-    @message = message
-    @reply_messages = Message.where(source_feedback_id: @message.source_feedback_id).all
-    @contact = Feedback.id(@message.source_feedback_id).first
-    get_attachment
-    @reply_to_person = UseridDetail.where(email_address: recipient).first
-    mail(:from => "#{sender}",:to => "#{@reply_to_person.person_forename} <#{recipient}>", :bcc => ccs, subject:"#{@message.subject}. Reference Message Identifier: #{@message.identifier}")
-  end
-
-  def coordinator_contact_reply(contact,ccs,message,sender)
-    @contact = contact
-    @message = message
-    @reply_messages = Message.where(source_contact_id: @message.source_contact_id).all
-    get_attachment
-    mail(from: sender.email_address, to:  "#{@contact.name} <#{@contact.email_address}>", bcc: ccs, subject: @message.subject)
-  end
-
   def send_logs(file,ccs,body_message,subjects)
     from = "freereg-contacts@freereg.org.uk" if from.blank?
     unless file.nil?
@@ -357,16 +360,30 @@ class UserMailer < ActionMailer::Base
     mail(:from => "freereg-processing@freereg.org.uk",:to => "#{@person_forename} <#{@email_address}>", :subject => "FreeReg update processing report")
   end
 
-  def volunteer(contact,ccs)
-    @contact = contact
-    get_attachment
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>", :cc => ccs, :subject => "Thank you for question about volunteering. Reference #{@contact.identifier}")
+  private
+
+  def get_email_address_array_from_array_of_userids(userids)
+    array_of_email_addresses = Array.new
+    unless userids.blank?
+      userids.each do |copy_userid|
+        copy = UseridDetail.userid(copy_userid).first
+        if copy.present?
+          array_of_email_addresses.push(copy.email_address) unless array_of_email_addresses.include?(copy.email_address)
+        end
+      end
+      array_of_email_addresses = nil
+    end
+    array_of_email_addresses
   end
 
-  def website(contact,ccs)
-    @contact = contact
-    get_attachment
-    mail(:from => "freereg-contacts@freereg.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for reporting a website problem. Reference #{@contact.identifier}")
+  def get_email_address_from_userid(userid)
+    userid_object = UseridDetail.userid(userid).first
+    if userid_object.present?
+      email_address = userid_object.email_address
+    else
+      email_address = "freereg-contacts@freereg.org.uk"
+    end
+    email_address
   end
 
 end
