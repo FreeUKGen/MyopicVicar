@@ -505,11 +505,39 @@ crumb :create_contact_reply do |message|
   link "Create Reply for Contact", reply_contact_path(message.id)
   parent :contacts
 end
+# .....................Nessages...............................
 
 crumb :messages do
-  link "Messages", messages_path
-  parent :root
+  if session[:archived_contacts]
+    link "Archived Messages", list_archived_messages_path
+  else
+    link "Active Messages", list_messages_path
+  end
+  if session[:syndicate].present?
+    parent :syndicate_options, session[:syndicate]
+  else
+    parent :root
+  end
 end
+
+crumb :message_to_syndicate do
+  if session[:archived_contacts]
+    link "Archived Syndicate Messages", list_archived_syndicate_messages_path
+  else
+    link "Active Syndicate Messages", list_syndicate_messages_path
+  end
+  parent :syndicate_options, session[:syndicate]
+end
+
+crumb :message_form_for_selection do ||
+    link "Form for Selection"
+  if session[:syndicate].present?
+      parent :message_to_syndicate
+  else
+       parent :messages
+  end
+end
+
 crumb :show_message do |message|
   link "Show Message", message_path(message)
   case
@@ -609,10 +637,9 @@ crumb :send_reply_message do |message|
   parent :create_reply, source_message
   #parent :show_message, message #if message.source_message_id.blank?
 end
-crumb :message_to_syndicate do
-  link "Messages To Syndicate", messages_path
-  parent :syndicate_options, session[:syndicate]
-end
+
+
+
 crumb :denominations do
   link "Denominations", denominations_path
   parent :root

@@ -1,0 +1,58 @@
+<section class="island   " >
+  <div class="scrollable">
+    <div class="table-wrapper">
+      <div class="grid">
+        <div class="grid__item one-whole" >
+          <table class="table--bordered table--data ">
+          <%if @messages.present?%>
+            <tr>
+              <th class="t20">Subject</th>
+              <th class="t20">Sent by</th>
+              <th class="t10">Posted</th>
+              <th class="t10">Attachment</th>
+              <th class="t10">Identification</th>
+              <th class="t5">Sent</th>
+              <th class="t5">Replies</th>
+              <th class="t20">Action</th>
+            </tr>
+            <% @messages.each do |message| %>
+                <tr class="<%= sent(message) %>">
+                  <td><%= message.subject %></td>
+                  <td><%= message.userid %></td>
+                  <td><%= message.message_time.strftime("%d %b %Y") unless message.message_time.nil?%></td>
+                  <td><%= attachment(message)%></td>
+                  <td><%= message.identifier  %></td>
+                  <td><%= sent(message)  %></td>
+                  <% unless reply_messages_count(message) == 0 %>
+                    <td><%= reply_messages_count(message) %></td>
+                  <% else %>
+                    <td> No replies</td>
+                  <% end %>
+                  <td>
+                    <%= link_to 'Show', message_path(message.id,:source => params[:action]),  :class => "btn weight--light  btn--small", method: :get%>
+                    <% if message.source_feedback_id.blank? && message.source_contact_id.blank? && message.source_message_id.blank? %>
+                      <%= link_to 'Edit', edit_message_path(message.id,:source => params[:action]),  :class => "btn weight--light  btn--small", method: :get%>
+                      <% end%>
+                      <%= link_to 'View Replies', show_reply_messages_path(message.id,:source => params[:action]), class: "btn weight--light  btn--small", method: :get  unless reply_messages_count(message) == 0%> 
+                    <%= link_to 'Archive', archive_message_path(message.id,:source => params[:action]), :class => "btn weight--light  btn--small",  data: { confirm: 'Are you sure you want archive this message' } unless message.is_archived?%>
+                    <%= link_to 'Restore', restore_message_path(message.id,:source => params[:action]), :class => "btn weight--light  btn--small",  data: { confirm: 'Are you sure you want archive this message' } if message.is_archived?%>
+                  </td>
+                </tr>
+              <% end %>
+            <% else%>
+              <b>No messages</b>
+            <% end%>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<br />
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('.link_disabled').click(function(event){
+        event.preventDefault(); // Prevent link from following its href
+    });
+}); 
+</script>

@@ -99,6 +99,8 @@ module MessagesHelper
 
   def index_breadcrumbs
     case
+    when params[:action] ==  "list_incoming_syndicate_messages" || params[:action] == "list_archived_incoming_syndicate_messages"
+      breadcrumb :incoming_syndicate_messages
     when session[:syndicate]
       breadcrumb :message_to_syndicate
     when params[:action] == "feedback_reply_messages"
@@ -111,6 +113,55 @@ module MessagesHelper
       breadcrumb :list_contact_reply_messages
     else
       breadcrumb :messages
+    end
+  end
+  
+  def index_header(action,syndicate,archived)
+    header = "#{action}"
+    case action
+    when "list_feedback_reply_message"
+      header = header + "List of Feedback Reply messages"
+    when "feedback_reply_messages"
+      header = header + "List of Reply Message for feedback sent by #{@feedback.name}, reference: #{@feedback.identifier}"
+    when "list_contact_reply_message"
+      header = header + "List of Contact Reply messages"
+    when "contact_reply_messages"
+      header = header + "List of Reply Message for contact sent by #{@contact.name}, reference: #{@contact.identifier}"
+    else 
+      header = header + "List of "
+      if archived
+        header = header + "Archived "
+      else
+        header = header + "Active "
+      end
+      syndicate.present? ? header = header + "Syndicate Messages for " + syndicate : header = header + "Messages"
+    end
+    return header
+  end
+  
+  def index_sort_links
+    case
+    when params[:replies].present?
+      index_sort_links = false
+    when params[:source] == "list_syndicate_messages" || params[:source] == "list_archived_syndicate_messages"
+      index_sort_links = false
+    when params[:source] == "show_reply_messages" || params[:source] == "user_reply_messages" || params[:source] == "userid_reply_messages"
+      index_sort_links = false
+    else
+      index_sort_links = true
+    end
+  end
+  
+  def index_active_links
+    case
+    when params[:replies].present?
+      index_active_links = false
+    when params[:source] == "list_syndicate_messages" || params[:source] == "list_archived_syndicate_messages"
+      index_active_links = true
+    when params[:source] == "show_reply_messages" || params[:source] == "user_reply_messages" || params[:source] == "userid_reply_messages"
+      index_active_links = false
+    else
+      index_active_links = false
     end
   end
 
@@ -157,21 +208,7 @@ module MessagesHelper
     end
   end
 
-  def index_header(action)
-    case action
-    when "list_feedback_reply_message"
-      header = "List of Feedback Reply messages"
-    when "feedback_reply_messages"
-      header = "List of Reply Message for feedback sent by #{@feedback.name}, reference: #{@feedback.identifier}"
-    when "list_contact_reply_message"
-      header = "List of Contact Reply messages"
-    when "contact_reply_messages"
-      header = "List of Reply Message for contact sent by #{@contact.name}, reference: #{@contact.identifier}"
-    else
-      header = "List of all messages"
-    end
-    return header
-  end
+  
 
   def contact_subject(contact)
     if contact_subject_hash.has_key?(contact.contact_type)

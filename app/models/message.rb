@@ -15,6 +15,8 @@ class Message
   field :file_name, type: String
   field :images, type: String
   field :recipients, type: Array.new, default: nil
+  field :archived, type: Boolean, default: false
+  field :syndicate, type: String
   attr_accessor :action, :inactive_reasons,:active
   embeds_many :sent_messages
   accepts_nested_attributes_for :sent_messages,allow_destroy: true,
@@ -38,6 +40,42 @@ class Message
   class << self
     def id(id)
       where(:id => id)
+    end
+    
+    def not_message_reply(status)
+      if status
+        where(source_message_id: nil)
+      else
+        where(:source_message_id.ne => nil)
+      end
+    end
+    
+    def syndicate(syndicate)
+      where(:syndicate => syndicate)
+    end
+    
+    def archived(archived)
+      where(:archived => archived)
+    end
+    
+    def message_replies(id)
+      where(:source_message_id => id)
+    end
+    
+    def userid(userid)
+      where(:userid => userid)
+    end
+    
+    def can_be_destroyed?message
+      message.source_message_id.present? || Message.fetch_replies(message.id).count == 0
+    end
+    
+  end
+  
+  def archive
+    self.update_attribute(:archived, true)
+    Message.message_replies(self.id).each do |message|
+      message.update_attribute(:archived, true)
     end
   end
 
@@ -77,6 +115,25 @@ class Message
     ccs = ccs.uniq
     UserMailer.send_message(self,ccs,sender_email).deliver_now
   end
+  
+  def communicate_message_reply(original_message)
+    p self
+    p original_message
+    sender_userid = self.userid
+    p sender_userid
+    to_userid = original_message.userid
+    p to_userid
+    UserMailer.message_reply(self,to_userid,original_message,sender_userid).deliver_now
+    recipients = Array.new
+    recipients << to_userid
+    copies = Array.new
+    reply_sent_messages(self,sender_userid,recipients,copies)
+  end
+  
+  def is_archived?
+    return self.archived
+  end
+  
 
   def reciever_notice params
     active_user = user_status(params[:active])
@@ -86,9 +143,12 @@ class Message
       return "Message sent to Recipients: #{params[:recipients]}; Open Data Status: #{open_data_status_value(params[:open_data_status])}; Active : #{active_user} #{reasons}"
     end
   end
-
-  def self.can_be_destroyed?message
-    message.source_message_id.present? || Message.fetch_replies(message.id).count == 0
+  
+  def restore
+    self.update_attribute(:archived, false)
+    Message.message_replies(self.id).each do |message|
+      message.update_attribute(:archived, false)
+    end
   end
 
   private
@@ -125,22 +185,20 @@ class Message
     end
   end
 
-  def self.list_messages(action)
+  def self.list_messages(action,syndicate,archived,order)
     case action
-    when "list_by_name"
-      @messages = Message.non_feedback_contact_reply_messages.all.order_by(userid: 1)
-    when "list_by_date"
-      @messages = Message.non_feedback_contact_reply_messages.all.order_by(message_time: 1)
-    when "list_by_identifier"
-      @messages = Message.non_feedback_contact_reply_messages.all.order_by(identifier: -1)
     when "list_unsent_messages"
       @messages = Message.non_feedback_contact_reply_messages.all.find_all do |message|
         !Message.sent?(message)
       end
     when "list_feedback_reply_message"
-      @messages = Message.feedback_replies.order_by(message_time: -1)
+      @messages = Message.feedback_replies.archived(archived).order_by(order)
     when "list_contact_reply_message"
-      @messages = Message.contact_replies.order_by(message_time: -1)
+      @messages = Message.contact_replies.archived(archived).order_by(order)
+    when "list_syndicate_messages" || "list_archived_syndicate_messages"
+       @messages = Message.non_feedback_contact_reply_messages.syndicate(syndicate).archived(archived).not_message_reply(true).all.order_by(order)
+    else
+        @messages = Message.non_feedback_contact_reply_messages.archived(archived).not_message_reply(true).all.order_by(order)
     end
     return @messages
   end
@@ -153,5 +211,12 @@ class Message
 
   def self.sent?(message)
     message.sent_messages.deliveries.count != 0
+  end
+  
+  def reply_sent_messages(message, sender_userid,contact_recipients,other_recipients)
+    @message = message
+    @sent_message = SentMessage.new(message_id: @message.id, sender: sender_userid, recipients: contact_recipients, other_recipients: other_recipients, sent_time: Time.now)
+    @message.sent_messages <<  [ @sent_message ]
+    @sent_message.save
   end
 end

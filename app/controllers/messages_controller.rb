@@ -5,6 +5,17 @@ class MessagesController < ApplicationController
   require 'reply_userid_role'
   
   skip_before_filter :require_login, only: [:show]
+  
+  def archive
+    @message = Message.id(params[:id]).first
+    if @message.present?
+      @message.archive
+      flash.notice = "Message archived"
+      redirect_to :action => params[:source] and return
+    else
+      go_back("message",params[:id])
+    end
+  end
 
   def create
     @message = Message.new(message_params)
@@ -37,10 +48,15 @@ class MessagesController < ApplicationController
         flash[:notice] = "Reply for Contact is created and sent"
         reply_for_contact; return if performed?
       end
+    when "Reply Message"
+      if @message.save
+        flash[:notice] = "Reply for Message is created and sent"
+        reply_for_message(@message); return if performed?
+      end
     end
   end
 
-  def destroy
+  def force_destroy
     @message = Message.id(params[:id]).first
     if @message.present?
       @message.destroy
@@ -69,42 +85,90 @@ class MessagesController < ApplicationController
   end
 
 
-  def list_by_name
+ def index
     get_user_info_from_userid
-    @messages = Message.list_messages(params[:action])
+    session[:archived_contacts] = false
+    @syndicate = session[:syndicate]
+    order = "message_time DESC"
+    @messages = Message.list_messages(params[:action],@syndicate,session[:archived_contacts],order)
+    @archived = session[:archived_contacts]
+  end
+
+  def list_archived
+    session[:archived_contacts] = true
+    @syndicate = session[:syndicate]
+    order = "message_time DESC"
+    @messages = Message.list_messages(params[:action],@syndicate,session[:archived_contacts],order)
+    @archived = session[:archived_contacts]
+    render :index
+  end
+
+  def list_by_name
+    @syndicate = session[:syndicate]
+    order = "name ASC"
+    @messages = Message.list_messages(params[:action],session[:syndicate],session[:archived_contacts],order)
+    @archived = session[:archived_contacts]
     render :index
   end
 
   def list_feedback_reply_message
     get_user_info_from_userid
-    @messages = Message.list_messages(params[:action])
+    order = "message_time DESC"
+    @messages = Message.list_messages(params[:action],session[:syndicate],session[:archived_contacts],order)
+    @archived = session[:archived_contacts]
     render :index
   end
 
   def list_contact_reply_message
     get_user_info_from_userid
-    @messages = Message.list_messages(params[:action])
-    render :index
-  end
-
-  def list_by_identifier
-    get_user_info_from_userid
-    @messages = Message.list_messages(params[:action])
+    order = "message_time DESC"
+    @messages = Message.list_messages(params[:action],session[:syndicate],session[:archived_contacts],order)
+    @archived = session[:archived_contacts]
     render :index
   end
 
   def list_by_date
-    get_user_info_from_userid
-    @messages = Message.list_messages(params[:action])
+    @syndicate = session[:syndicate]
+    order = "message_time ASC"
+    @messages = Message.list_messages(params[:action],session[:syndicate],session[:archived_contacts],order)
+    @archived = session[:archived_contacts]
     render :index
   end
-
+  
+  def list_by_most_recent
+    @syndicate = session[:syndicate]
+    order = "message_time DESC"
+    @messages = Message.list_messages(params[:action],session[:syndicate],session[:archived_contacts],order)
+    @archived = session[:archived_contacts]
+    render :index
+  end
+  
+  def list_syndicate_messages
+    session[:archived_contacts] = false
+    @syndicate = session[:syndicate]
+    order = "message_time DESC"
+    @messages = Message.list_messages(params[:action],session[:syndicate],session[:archived_contacts],order)
+    @archived = session[:archived_contacts]
+    render :index
+  end
+  
+  def list_archived_syndicate_messages
+    session[:archived_contacts] = true
+    @syndicate = session[:syndicate]
+    order = "message_time DESC"
+    @messages = Message.list_messages(params[:action],session[:syndicate],session[:archived_contacts],order)
+    @archived = session[:archived_contacts]
+    render :index
+  end
+  
   def list_unsent_messages
-    get_user_info_from_userid
-    @messages = Message.list_messages(params[:action])
+    @syndicate = session[:syndicate]
+    order = "message_time DESC"
+    @messages = Message.list_messages(params[:action],session[:syndicate],session[:archived_contacts],order)
+    @archived = session[:archived_contacts]
     render :index
   end
-
+  
   def new
     get_user_info_from_userid
     @message = Message.new
@@ -113,6 +177,12 @@ class MessagesController < ApplicationController
     @respond_to_message = Message.id(params[:id]).first
     @reply_messages = Message.fetch_replies(params[:id])
     @sent_replies = Message.sent_messages(@reply_messages)
+    @respond_to_message.syndicate
+    if @respond_to_message.syndicate.present? 
+      @message.syndicate = @respond_to_message.syndicate 
+    else
+      session[:syndicate].present? ? @message.syndicate =  session[:syndicate] : @message.syndicate = nil
+    end
   end
 
   def remove_from_useriddetail_waitlist
@@ -147,11 +217,30 @@ class MessagesController < ApplicationController
       #need to add error handling
     end
   end
+  
+  def reply_for_message(reply)
+    original_message = Message.id(reply.source_message_id).first
+    reply.communicate_message_reply(original_message)
+    redirect_to userid_messages_path and return
+  end
+  
+  def restore
+    @message = Message.id(params[:id]).first
+    if @message.present?
+      @message.restore
+      flash.notice = "Message restored"
+      redirect_to :action => params[:source] and return
+    else
+      go_back("message",params[:id])
+    end
+  end
 
   def select_by_identifier
     get_user_info_from_userid
     @options = Hash.new
-    @messages = Message.all.order_by(identifier: -1).each do |message|
+    order = "identifier ASC"
+    @messages = Message.list_messages(params[:action],session[:syndicate],session[:archived_contacts],order)
+    @messages.each do |message|
       @options[message.identifier] = message.id
     end
     @message = Message.new
@@ -178,8 +267,13 @@ class MessagesController < ApplicationController
       @open_data_status = SentMessage::ALL_STATUS_MESSAGES
       @senders = Array.new
       @senders << ''
-      UseridDetail.active(true).all.order_by(userid_lower_case: 1).each do |sender|
-        @senders << sender.userid
+      if @syndicate.present?
+        @senders << @user.userid
+        @senders << Syndicate.syndicate_code(@syndicate).first.syndicate_coordinator if Syndicate.is_syndicate(@syndicate)
+      else
+        UseridDetail.active(true).all.order_by(userid_lower_case: 1).each do |sender|
+          @senders << sender.userid
+        end
       end
     else
       go_back("message",params[:id])
@@ -237,19 +331,7 @@ class MessagesController < ApplicationController
   def userid_messages
     get_user_info_from_userid
     @user.reload
-    @main_messages = Message.in(id: @user.userid_messages, source_message_id: nil).all.order_by(message_sent_time: -1)
-    @messages = @main_messages
-    if session[:syndicate].present?
-      @syndicate_messages = @main_messages.reject do |msg|
-        msg.sent_messages.syndicate_messages(session[:syndicate]).blank?
-      end
-      @messages = @syndicate_messages
-    end
-  end
-
-  def userid_reply_messages
-    get_user_info_from_userid
-    @user.reload
+    p @user
     @reply_messages = Message.in(id: @user.userid_messages).where(:source_message_id.ne => nil).all.order_by(message_sent_time: -1)
     @messages = @reply_messages
     if session[:syndicate].present?
@@ -257,6 +339,20 @@ class MessagesController < ApplicationController
         reply_msg.sent_messages.syndicate_messages(session[:syndicate]).blank?
       end
       @messages = @syndicate_reply_messages
+    end
+  end
+
+  def userid_reply_messages
+    get_user_info_from_userid
+    @user.reload
+    p @user
+    @main_messages = Message.in(id: @user.userid_messages, source_message_id: nil).all.order_by(message_sent_time: -1)
+    @messages = @main_messages
+    if session[:syndicate].present?
+      @syndicate_messages = @main_messages.reject do |msg|
+        msg.sent_messages.syndicate_messages(session[:syndicate]).blank?
+      end
+      @messages = @syndicate_messages
     end
   end
 
@@ -268,11 +364,15 @@ class MessagesController < ApplicationController
         @message.update_attributes(message_params)
       when "Send"
         @respond_to_message = Message.id(@message.source_message_id).first
-        if params[:recipients].nil?
+        if session[:syndicate].present?
+          params[:recipients] =Array.new
+          params[:recipients] << "Members of Syndicate"
+          @syndicate = session[:syndicate]
+        end
+        if params[:recipients].empty?
           flash[:notice] = "You did not select any recipients"
           redirect_to :back and return
         else
-          @syndicate = session[:syndicate] if params[:recipients].include?("Members of Syndicate")
           sender = params[:sender]
           @sent_message = @message.sent_messages.id(params[:message][:action]).first
           reasons = Array.new
