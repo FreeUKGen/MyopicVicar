@@ -64,7 +64,7 @@ class MessagesController < ApplicationController
 
   def index
     get_user_info_from_userid
-    @link = true
+    @links = true
     @messages = Message.non_feedback_contact_reply_messages.all.order_by(message_time: -1)
   end
 
