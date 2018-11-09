@@ -7,14 +7,5 @@
   <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
 </div>
 <% end %>
-<section class="island">
-  <div class="scrollable">
-    <div class="table-wrapper">
-      <% if @messages.present? %>
-        <%= render 'list_messages'%>
-      <% else%>
-        <p>No messages.</p>
-      <% end%>
-    </div>
-  </div>
-</section>
+<br>
+<%= render 'index_table' %>

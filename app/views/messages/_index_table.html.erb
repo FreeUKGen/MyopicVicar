@@ -6,13 +6,14 @@
           <table class="table--bordered table--data ">
           <%if @messages.present?%>
             <tr>
-              <th class="t20">Subject</th>
-              <th class="t20">Sent by</th>
-              <th class="t10">Posted</th>
-              <th class="t10">Attachment</th>
-              <th class="t10">Identification</th>
+              <th class="t15">Subject</th>
+              <th class="t10">Sent by</th>
+              <th class="t10">Created</th>
+              <th class="t5">Attach</th>          
               <th class="t5">Sent</th>
               <th class="t5">Replies</th>
+              <th class="t10">Identification</th>
+              <th class="t20">Message begins</th>
               <th class="t20">Action</th>
             </tr>
             <% @messages.each do |message| %>
@@ -20,16 +21,17 @@
                   <td><%= message.subject %></td>
                   <td><%= message.userid %></td>
                   <td><%= message.message_time.strftime("%d %b %Y") unless message.message_time.nil?%></td>
-                  <td><%= attachment(message)%></td>
-                  <td><%= message.identifier  %></td>
+                  <td><%= attachment(message)%></td> 
                   <td><%= sent(message)  %></td>
                   <% unless reply_messages_count(message) == 0 %>
                     <td><%= reply_messages_count(message) %></td>
                   <% else %>
-                    <td> No replies</td>
+                    <td> None</td>
                   <% end %>
+                  <td><%= message.identifier  %></td>
+                  <td><%= message.body[0,100] %>&hellip;</td>
                   <td>
-                    <%= link_to 'Show', message_path(message.id,:source => params[:action]),  :class => "btn weight--light  btn--small", method: :get%>
+                    <%= index_show_link%>
                     <% if message.source_feedback_id.blank? && message.source_contact_id.blank? && message.source_message_id.blank? %>
                       <%= link_to 'Edit', edit_message_path(message.id,:source => params[:action]),  :class => "btn weight--light  btn--small", method: :get%>
                       <% end%>
@@ -39,8 +41,6 @@
                   </td>
                 </tr>
               <% end %>
-            <% else%>
-              <b>No messages</b>
             <% end%>
           </table>
         </div>

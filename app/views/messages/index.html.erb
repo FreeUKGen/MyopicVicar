@@ -8,9 +8,8 @@
 <% end %>
 
 <p style="text-align: center">
-
+  
   <% if index_sort_links %> 
-    <%= link_to 'Create New Message', new_message_path, method: :get , :class => "btn weight--light btn--small" %> 
     <%= link_to 'List by Name', list_by_name_messages_path, method: :get , :class => "btn weight--light btn--small" %> 
     <%= link_to 'Most Recent Date' , list_by_most_recent_messages_path, method: :get , :class => "btn weight--light btn--small"%> 
     <%= link_to 'Earliest Date' , list_by_date_messages_path, method: :get , :class => "btn weight--light btn--small"%> 
@@ -18,10 +17,11 @@
     <%= link_to 'List Unsent Messages' , list_unsent_messages_path, method: :get , :class => "btn weight--light btn--small" %>
   <%end%>
   <% if index_active_links %> 
+    <%= link_to 'Create New Message', new_message_path(:source => params[:action]), method: :get , :class => "btn weight--light btn--small" %> 
     <% if !@archived  %>
-      <%= link_to 'List archived', list_archived_syndicate_messages_path(:source => "list_archived_syndicate_messages") , method: :get , :class => "btn weight--light btn--small" %>
+      <%= link_to 'List archived', list_archived_syndicate_messages_path(:source => params[:action]) , method: :get , :class => "btn weight--light btn--small" %>
     <% else%>
-      <%= link_to 'List active',list_syndicate_messages_path(:source => "list_syndicate_messages"), method: :get , :class => "btn weight--light btn--small" %>
+      <%= link_to 'List active',list_syndicate_messages_path(:source => params[:action]), method: :get , :class => "btn weight--light btn--small" %>
     <%end%>
   <%end%>
 </p>

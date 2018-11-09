@@ -11,7 +11,12 @@ class MessagesController < ApplicationController
     if @message.present?
       @message.archive
       flash.notice = "Message archived"
-      redirect_to :action => params[:source] and return
+      case
+        when params[:source] ==  "list_syndicate_messages"  
+          redirect_to list_archived_syndicate_messages_path(:source => "list_syndicate_messages") and return
+        else
+          redirect_to 'messages_path' and return
+      end
     else
       go_back("message",params[:id])
     end
@@ -85,7 +90,7 @@ class MessagesController < ApplicationController
   end
 
 
- def index
+  def index
     get_user_info_from_userid
     session[:archived_contacts] = false
     @syndicate = session[:syndicate]
@@ -229,7 +234,12 @@ class MessagesController < ApplicationController
     if @message.present?
       @message.restore
       flash.notice = "Message restored"
-      redirect_to :action => params[:source] and return
+      case
+        when params[:source] ==  "list_archived_syndicate_messages"  
+          redirect_to list_syndicate_messages_path(:source => "list_syndicate_messages") and return
+        else
+          redirect_to 'messages_path' and return
+      end
     else
       go_back("message",params[:id])
     end

@@ -1,21 +1,12 @@
-<%breadcrumb :reply_messages_list, @main_message %>
+<% show_replies_breadcrumbs %>
+<br>
 <h2 class="text--center">
-  All Replies for Main Message sent by <%= @main_message.userid%> on <%= @main_message.message_time.to_formatted_s(:long)%>
+  <%= show_replies_title%>
 </h2>
-<p style="text-align: center">
-  <%= link_to "View Your Replies", user_reply_messages_path(@main_message.id), :class => "btn weight--light  btn--small" %>
-</p>
 <% if flash[:notice] %>
 <div id="notice" style="color:blue"><br>
   <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
 </div>
 <% end %>
-<section class="island">
-  <div class="table-wrapper" style="height: 25em; overflow: scroll;">
-    <% if @messages.present? %>
-      <%= render 'list_messages'%>
-    <% else%>
-      <p>No Replies.</p>
-    <% end%>
-  </div>
-</section>
+<br>
+<%= render 'index_table' %>

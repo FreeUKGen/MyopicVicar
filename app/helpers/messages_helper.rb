@@ -85,6 +85,20 @@ module MessagesHelper
       link_to 'Reply', reply_messages_path(message.id),method: :get,:class => "btn weight--light  btn--small" if message.source_message_id.blank?
     end
   end
+  
+  def index_show_link
+    case
+    when params[:replies].present?
+      index_show_link('Show', message_path(message.id,:replies => params[:action],:source => params[:source] ), :class => "btn weight--light  btn--small")
+    when params[:source] == "list_syndicate_messages" || params[:source] == "list_archived_syndicate_messages"
+      index_show_link('Show', message_path(message.id,:source => params[:source] ), :class => "btn weight--light  btn--small")
+    when params[:source] == "show_reply_messages" || params[:source] == "user_reply_messages" || params[:source] == "userid_reply_messages"
+      index_show_link('Show', message_path(message.id), :class => "btn weight--light  btn--small")
+    else
+      show_links = true
+    end
+  
+  end
 
   def show_links
     case
@@ -96,6 +110,72 @@ module MessagesHelper
       primary_links(*default_links)
     end
   end
+  
+  def show_breadcrumb
+    case
+    when params[:source] == "list_syndicate_messages" || params[:source] == "list_archived_syndicate_messages"
+      breadcrumb :show_list_syndicate_messages , @message
+    else
+      breadcrumb :show_message , @message
+    end
+  end
+  
+  def show_title
+    case
+    when params[:replies].present?
+      session[:syndicate] ?  show_title = "Reply Syndicate Message Reference" : show_title = "Reply Message Reference"
+    else
+      session[:syndicate] ? show_title = "Syndicate Message Reference" : show_title = "Message Reference"
+    end
+  end
+  
+  def show_display_links
+    case
+    when params[:replies].present?
+      show_links = false
+    when params[:source] == "list_syndicate_messages" || params[:source] == "list_archived_syndicate_messages"
+      show_links = true
+    when params[:source] == "show_reply_messages" || params[:source] == "user_reply_messages" || params[:source] == "userid_reply_messages"
+      show_links = false
+    else
+      show_links = true
+    end
+  end
+  
+  def show_reply_action
+    get_user_info_from_userid
+    show_reply_action = true
+    show_reply_action = false if @user.syndicate_groups.include?(session[:syndicate])
+  end
+
+  def show_replies_action
+    show_replies_action = true
+    show_replies_action = false if reply_messages_count(@message) == 0
+    show_replies_action
+  end
+  
+  def edit_title
+    session[:syndicate] ? edit_title = "Edit Syndicate Message Reference" : edit_title = "Edit Message Reference"
+  end
+  
+  def show_replies_breadcrumbs
+    case
+    when params[:source] == "list_syndicate_messages" || params[:source] == "list_archived_syndicate_messages"
+      breadcrumb :replies_list_syndicate_messages , @main_message
+    else
+      breadcrumb :reply_messages_list, @main_message
+    end
+  end
+  
+  def show_replies_title
+    case
+    when params[:source] == "list_syndicate_messages" || params[:source] == "list_archived_syndicate_messages"
+      replies_title = "All Replies for Syndicate Message #{@main_message.identifier}"
+    else
+      replies_title = "All Replies for Message sent by #{@main_message.userid} on #{@main_message.message_time.to_formatted_s(:long)}"
+    end
+  end
+  
 
   def index_breadcrumbs
     case

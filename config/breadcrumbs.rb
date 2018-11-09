@@ -522,9 +522,10 @@ end
 
 crumb :message_to_syndicate do
   if session[:archived_contacts]
-    link "Archived Syndicate Messages", list_archived_syndicate_messages_path
+    link "Archived Syndicate Messages", list_archived_syndicate_messages_path(:source => params[:source])
   else
-    link "Active Syndicate Messages", list_syndicate_messages_path
+    link "Active Syndicate Messages", list_syndicate_messages_path(:source => params[:source])
+    
   end
   parent :syndicate_options, session[:syndicate]
 end
@@ -539,8 +540,17 @@ crumb :message_form_for_selection do ||
 end
 
 crumb :show_message do |message|
-  link "Show Message", message_path(message)
+  p "show message................................................................................."
+  p params[:action]
+  p params[:source]
+  p params[:replies]
+  link "Show Message", message_path(message,:source => params[:source])
   case
+  when params[:replies] == "show_reply_messages"
+    parent :reply_messages_list, message
+  when params[:replies] == "show"
+    source_message = Message.id(message.source_message_id).first
+    parent :show_message, source_message 
   when session[:syndicate]
     parent :message_to_syndicate
   when message.source_feedback_id.present?
@@ -553,6 +563,26 @@ crumb :show_message do |message|
     parent :messages
   end
 end
+crumb :show_list_syndicate_messages do |message|
+  p "show list message................................................................................."
+  p params[:action]
+  p params[:source]
+  p params[:replies]
+  
+  link "Show Syndicate Message", message_path(message,:source => params[:source])
+  case
+  when params[:replies] == "show_reply_messages" && params[:source] == "list_syndicate_messages"
+    parent :replies_list_syndicate_messages, Message.id(message.source_message_id).first
+  else
+   parent :message_to_syndicate
+  end
+end
+
+crumb :replies_list_syndicate_messages do |message|
+  link "Replies to Syndicate Message", show_reply_messages_path(message, :source => params[:source] )
+  parent :message_to_syndicate
+end
+
 
 crumb :userid_messages do
   link "User Messages", userid_messages_path
@@ -612,8 +642,16 @@ end
 
 crumb :edit_message do |message|
   link "Edit Message", edit_message_path(message)
-  parent :show_message, message
+  p "Edit Message"
+  p params[:source]
+  case
+  when params[:source] == "list_syndicate_messages"
+    parent :show_list_syndicate_messages, message
+  else
+    parent :show_message, message
+  end
 end
+
 crumb :create_message do |message|
   link "Create Message", new_message_path(message)
   parent :messages
