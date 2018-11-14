@@ -40,7 +40,7 @@ class Country
       @old_userid = UseridDetail.userid(previous_country_coordinator).first
       if @old_userid.present? then #make sure that
         parameters[:previous_country_coordinator] = @old_userid.userid
-        if @old_userid.country_groups.length == 1
+        if @old_userid.country_groups.present?
           unless  @old_userid.person_role.nil?
             @old_userid.person_role = 'transcriber'  unless (@old_userid.person_role == 'syndicate_coordinator' || @old_userid.person_role == 'country_coordinator' || @old_userid.person_role == 'system_adminstrator' || @old_userid.person_role == 'volunteer_coordinator')
           end
