@@ -49,7 +49,7 @@ class Country
         @old_userid.save(:validate => false)  unless @old_userid.nil?
       end
       if @new_userid.present? then # make sure there is a new coordinator to upgrade
-        if @new_userid.country_groups.blank? || @new_userid.country_groups.length == 0 then
+        if @new_userid.country_groups.blank? then
           @new_userid.person_role = 'country_coordinator' if (@new_userid.person_role == 'transcriber' || @new_userid.person_role == 'syndicate_coordinator' || @new_userid.person_role == 'researcher' || @new_userid.person_role == 'county_coordinator' )
         end
         @new_userid.country_groups = self.counties_included
