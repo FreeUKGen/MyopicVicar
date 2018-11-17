@@ -280,8 +280,9 @@ class ImageServerGroupsController < ApplicationController
   end
 
   def upload
+    @user = UseridDetail.where(:userid=>session[:userid]).first
     image_server_group = ImageServerGroup.id(params[:id]).first
-    website = image_server_group.create_upload_images_url
+    website = image_server_group.create_upload_images_url(@user.id)
     redirect_to website and return
   end
 
@@ -302,8 +303,8 @@ class ImageServerGroupsController < ApplicationController
     @church = @image_server_group.church
     @church_name = @church.church_name
     @county = @place.county
-    get_user_info_from_userid
-    @syndicate = @user.syndicate
+    @user = UseridDetail.id(params[:userid]).first
+    @syndicate = @user.syndicate unless @user.blank?
  end
 
   private
