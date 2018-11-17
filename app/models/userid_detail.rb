@@ -80,24 +80,31 @@ class UseridDetail
     def syndicate(syndicate)
       where(:syndicate => syndicate)
     end
+
     def userid(userid)
       where(:userid => userid)
     end
+
     def id(userid)
       where(:id => userid)
     end
+
     def role(role)
       where(:person_role => role)
     end
+
     def secondary(role)
       where(:secondary_role => role)
     end
+
     def active(active)
       where(:active => active)
     end
+
     def reason(reason)
       where(:disabled_reason_standard => reason)
     end
+
     def email_address_valid
       where(:email_address_valid => true)
     end
@@ -107,10 +114,12 @@ class UseridDetail
     end
 
     def new_transcription_agreement(new_transcription_agreement)
-      if new_transcription_agreement == "All"
-        where(new_transcription_agreement: { '$in': SentMessage::ACTUAL_STATUS_MESSAGES } )
+      if new_transcription_agreement[0] == 'All'
+        where(new_transcription_agreement: { '$in': SentMessage::ACTUAL_STATUS_MESSAGES })
+      elsif new_transcription_agreement.length == 1
+        where(new_transcription_agreement: new_transcription_agreement[0])
       else
-        where(new_transcription_agreement: new_transcription_agreement)
+        where(new_transcription_agreement: { '$in': new_transcription_agreement })
       end
     end
 

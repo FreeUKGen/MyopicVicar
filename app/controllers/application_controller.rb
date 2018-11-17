@@ -26,7 +26,7 @@ class ApplicationController < ActionController::Base
   require 'chapman_code'
   require 'userid_role'
   require 'register_type'
- 
+
   def load_last_stat
     if session[:site_stats].blank?
       time = Time.now
@@ -92,7 +92,7 @@ class ApplicationController < ActionController::Base
       @placenames << placename.place_name
     end
   end
-  
+
   def get_user
     user = cookies.signed[:userid]
     user = UseridDetail.id(user).first
@@ -132,12 +132,12 @@ class ApplicationController < ActionController::Base
     logger.info "FREEREG:ACCESS ISSUE: The #{type} document #{record} being accessed does not exist."
     redirect_to main_app.new_manage_resource_path and return
   end
-  
+
   def log_messenger(message)
     log_message = message
     logger.warn(log_message)
   end
-  
+
   def log_missing_document(message,doc1,doc2)
     log_message = "FREEREG:PHC WARNING: aunable to find a document #{message}\n"
     log_message += "FREEREG:PHC Time.now=\t\t#{Time.now}\n"
@@ -209,7 +209,7 @@ class ApplicationController < ActionController::Base
   end
 
   def clean_session
-    
+
     session.delete(:manage_user_origin)
     session.delete(:freereg1_csv_file_id)
     session.delete(:freereg1_csv_file_name)
@@ -230,6 +230,7 @@ class ApplicationController < ActionController::Base
     session.delete(:redirect_to)
     session.delete(:site_stats)
     session.delete(:message)
+    session.delete(:message_base)
   end
 
   def clean_session_for_county

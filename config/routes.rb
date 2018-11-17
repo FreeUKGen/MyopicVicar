@@ -45,8 +45,8 @@ MyopicVicar::Application.routes.draw do
 
   resources :denominations
 
-  get 'messages/:id/show_waitlist_msg',:to => 'messages#show_waitlist_msg', :as => :show_waitlist_msg
-  delete 'messages/:id/remove_from_useriddetail_waitlist(.:format)',:to => 'messages#remove_from_useriddetail_waitlist', :as => :remove_from_useriddetail_waitlist
+
+  delete 'messages/:id/remove_from_userid_detail(.:format)', :to => 'messages#remove_from_userid_detail', :as => :remove_from_userid_detail
   get 'messages/userid_messages', :to => 'messages#userid_messages', :as => :userid_messages
   get 'messages/list_by_type',  :to => 'messages#list_by_type', :as => :list_by_type_messages
   get 'messages/:id/send_message(.:format)',  :to => 'messages#send_message', :as => :send_message_messages
@@ -65,7 +65,8 @@ MyopicVicar::Application.routes.draw do
   get 'messages/list_archived_syndicate_messages',  :to => 'messages#list_archived_syndicate_messages', :as => :list_archived_syndicate_messages
   get 'messages/:id/archive',  :to => 'messages#archive', :as => :archive_message
   get 'messages/:id/restore',  :to => 'messages#restore', :as => :restore_message
-  
+  get 'messages/:id/force_destroy',  :to => 'messages#force_destroy', :as => :force_destroy_messages
+
   resources :messages
 
   get 'attic_files/select', :to =>'attic_files#select', :as => :select_attic_files

@@ -1,8 +1,15 @@
 <%if params[:id].present? %>
-  <% breadcrumb :create_reply,  @message%>
+  <% breadcrumb :create_reply,  @message, params[:id]%>
+  <br>
+  <% if @message.syndicate.present? %>
+    <h4 style="text-align: center">Creating Reply to Syndicate Message</h4>
+  <% else%>
+    <h4 style="text-align: center">Creating Reply to General Message</h4>
+  <% end%>
   <%= render 'reply'%>
 <% else %>
   <% breadcrumb :create_message,  @message%>
+  <br>
   <h4 style="text-align: center">Creating New Message</h4>
   <%= render 'form' %>
 <% end %>

@@ -133,6 +133,15 @@ class UserMailer < ActionMailer::Base
     mail(from: sender_email_address, to:  "#{@feedback.name} <#{@feedback.email_address}>", bcc: @cc_email_addresses, subject: @message.subject)
   end
 
+  def message_reply(reply, to_userid, copy_to, original_message, sender_userid)
+    @reply = reply
+    @original_message = original_message
+    sender_email_address = get_email_address_from_userid(sender_userid)
+    copy_to_mail_address = get_email_address_from_userid(copy_to) if copy_to.present?
+    to_email_address = get_email_address_from_userid(to_userid)
+    mail(from: sender_email_address, to: to_email_address, cc: copy_to_mail_address, subject: "#{@reply.subject} reference #{@original_message.identifier}")
+  end
+
   def feedback_action_request(contact,send_to,copies_to)
     @contact = contact
     @send_to = UseridDetail.userid(send_to).first

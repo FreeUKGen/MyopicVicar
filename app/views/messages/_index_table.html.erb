@@ -3,25 +3,27 @@
     <div class="table-wrapper">
       <div class="grid">
         <div class="grid__item one-whole" >
-          <table class="table--bordered table--data ">
           <%if @messages.present?%>
-            <tr>
-              <th class="t15">Subject</th>
-              <th class="t10">Sent by</th>
-              <th class="t10">Created</th>
-              <th class="t5">Attach</th>          
-              <th class="t5">Sent</th>
-              <th class="t5">Replies</th>
-              <th class="t10">Identification</th>
-              <th class="t20">Message begins</th>
-              <th class="t20">Action</th>
-            </tr>
-            <% @messages.each do |message| %>
+            <table class="table--bordered table--data ">
+              <tr>
+                <th class="t5">Source</th>
+                <th class="t15">Subject</th>
+                <th class="t10">Sent by</th>
+                <th class="t10">Received</th>
+                <th class="t5">Attach</th>
+                <th class="t5">Sent</th>
+                <th class="t5">Replies</th>
+                <th class="t10">Identification</th>
+                <th class="t20">Message begins</th>
+                <th class="t20">Action</th>
+              </tr>
+              <% @messages.each do |message| %>
                 <tr class="<%= sent(message) %>">
+                  <td><%= source(message) %></td>
                   <td><%= message.subject %></td>
                   <td><%= message.userid %></td>
                   <td><%= message.message_time.strftime("%d %b %Y") unless message.message_time.nil?%></td>
-                  <td><%= attachment(message)%></td> 
+                  <td><%= attachment(message)%></td>
                   <td><%= sent(message)  %></td>
                   <% unless reply_messages_count(message) == 0 %>
                     <td><%= reply_messages_count(message) %></td>
@@ -31,18 +33,19 @@
                   <td><%= message.identifier  %></td>
                   <td><%= message.body[0,100] %>&hellip;</td>
                   <td>
-                    <%= index_show_link%>
-                    <% if message.source_feedback_id.blank? && message.source_contact_id.blank? && message.source_message_id.blank? %>
-                      <%= link_to 'Edit', edit_message_path(message.id,:source => params[:action]),  :class => "btn weight--light  btn--small", method: :get%>
-                      <% end%>
-                      <%= link_to 'View Replies', show_reply_messages_path(message.id,:source => params[:action]), class: "btn weight--light  btn--small", method: :get  unless reply_messages_count(message) == 0%> 
-                    <%= link_to 'Archive', archive_message_path(message.id,:source => params[:action]), :class => "btn weight--light  btn--small",  data: { confirm: 'Are you sure you want archive this message' } unless message.is_archived?%>
-                    <%= link_to 'Restore', restore_message_path(message.id,:source => params[:action]), :class => "btn weight--light  btn--small",  data: { confirm: 'Are you sure you want archive this message' } if message.is_archived?%>
+                    <%= link_to 'Edit', edit_message_path(message.id, source: params[:action]),  :class => "btn weight--light  btn--small", method: :get if do_we_permit_an_edit(message)  %>
+                    <%= link_to 'Show', message_path(message.id, source: params[:action]),  :class => "btn weight--light  btn--small", method: :get%>
+                    <%= link_to 'View Replies', show_reply_messages_path(message.id, source: params[:action]), class: "btn weight--light  btn--small", method: :get  if do_we_show_replies_action(message)%>
+                    <%= link_to 'Archive', archive_message_path(message.id, source: params[:action]), :class => "btn weight--light  btn--small",  data: { confirm: 'Are you sure you want archive this message' } if do_we_show_archive_action(message)%>
+                    <%= link_to 'Restore', restore_message_path(message.id, source: params[:action]), :class => "btn weight--light  btn--small",  data: { confirm: 'Are you sure you want archive this message' } if do_we_show_restore_action(message)%>
+                    <%= link_to 'Remove', remove_from_userid_detail_path(message.id, source: params[:action]), :class => "btn weight--light  btn--small",  data: { confirm: 'Are you sure you want archive this message' } if do_we_show_remove_action(message)%>
                   </td>
                 </tr>
               <% end %>
-            <% end%>
-          </table>
+            </table>
+          <% else%>
+            <h4 class="text--center"> No Messages</h4>
+          <% end%>
         </div>
       </div>
     </div>
@@ -54,5 +57,5 @@
     $('.link_disabled').click(function(event){
         event.preventDefault(); // Prevent link from following its href
     });
-}); 
+  });
 </script>
