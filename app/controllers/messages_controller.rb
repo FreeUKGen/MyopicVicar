@@ -27,10 +27,11 @@ class MessagesController < ApplicationController
     @message = Message.new(message_params)
     @message.file_name = @message.attachment_identifier
     case params[:commit]
-    when "Submit"
+    when 'Submit'
+      session[:syndicate].present? ? @message.syndicate = session[:syndicate] : @message.syndicate = nil
       if @message.save
-        flash[:notice] = "Message created"
-        redirect_to action: 'index'
+        flash[:notice] = 'Message created'
+        return_for_create
       else
         redirect_to :new
       end
@@ -55,7 +56,7 @@ class MessagesController < ApplicationController
       end
     when "Reply Message"
       get_user_info_from_userid
-      @message.syndicate =  @user.syndicate
+      @message.syndicate =  @user.syndicate if @message.add_syndicate?
       if @message.save
         flash[:notice] = "Reply for Message is created and sent"
         reply_for_message(@message); return if performed?
@@ -185,6 +186,7 @@ class MessagesController < ApplicationController
   def remove_from_userid_detail
     get_user_info_from_userid
     @user.remove_checked_messages(params[:id])
+    flash[:notice] = 'Message removed'
     if @user.userid_messages.length > 0
       redirect_to userid_messages_path
     else
@@ -221,6 +223,17 @@ class MessagesController < ApplicationController
     source = session[:hold_source]
     session.delete(:hold_source) if session[:hold_source].present?
     redirect_to reply_messages_path(@message.source_message_id, source: source) and return
+  end
+
+  def return_for_create
+    case session[:message_base]
+    when 'user_messages'
+      redirect_to action: 'user_messages'
+    when 'syndicate'
+      redirect_to action: 'list_syndicate_messages'
+    when 'general'
+      redirect_to action: 'index'
+    end
   end
 
   def restore
@@ -261,8 +274,8 @@ class MessagesController < ApplicationController
     @syndicate = session[:syndicate]
     if @message.present?
       @options = UseridRole::VALUES
-      @sent_message = SentMessage.new(:message_id => @message.id,:sender => @user_userid)
-      @message.sent_messages <<  [ @sent_message ]
+      @sent_message = SentMessage.new(:message_id => @message.id, :sender => @user_userid)
+      @message.sent_messages << [@sent_message]
       @sent_message.save
       @sent_message.active = true
       @message.action =  @sent_message.id
@@ -290,7 +303,7 @@ class MessagesController < ApplicationController
     get_user_info_from_userid
     if @message.present?
       @sent_message = SentMessage.new(:message_id => @message.id,:sender => @user_userid, recipients: [params[:email]])
-      @message.sent_messages <<  [ @sent_message ]
+      @message.sent_messages << [@sent_message]
       @sent_message.save
     end
   end
@@ -338,11 +351,14 @@ class MessagesController < ApplicationController
   end
 
   def userid_messages
+    session[:message_base] = 'userid_messages'
     get_user_info_from_userid
     @user.reload
+    session[:manager] = @manager
     p "Messages for #{@user.userid}"
-    @main_messages = Message.in(id: @user.userid_messages, source_message_id: nil).all.order_by(message_sent_time: -1)
-    session[:syndicate].blank? ? @messages = @main_messages :  @messages = syndicate_messages(@main_messages, session[:syndicate])
+    #@main_messages = Message.in(id: @user.userid_messages, source_message_id: nil).all.order_by(message_sent_time: -1)
+    @main_messages = Message.in(id: @user.userid_messages).all.order_by(message_sent_time: -1)
+    session[:syndicate].blank? ? @messages = @main_messages : @messages = syndicate_messages(@main_messages, session[:syndicate])
   end
 
   def update
@@ -399,10 +415,10 @@ class MessagesController < ApplicationController
       if @respond_to_message.syndicate.present?
         @message.syndicate = @respond_to_message.syndicate
       else
-        session[:syndicate].present? ? @message.syndicate =  session[:syndicate] : @message.syndicate = nil
+        session[:syndicate].present? ? @message.syndicate = session[:syndicate] : @message.syndicate = nil
       end
     else
-      session[:syndicate].present? ? @message.syndicate =  session[:syndicate] : @message.syndicate = nil
+      session[:syndicate].present? ? @message.syndicate = session[:syndicate] : @message.syndicate = nil
     end
   end
 

@@ -1,11 +1,14 @@
+Dear Colleague:
+<br>
+<%= @sender.person_forename%> <%= @sender.person_surname%>, <%= @sender.person_role%> with FreeREG has requested we send you the following message.
+<br>
 <%= @message.body %><br />
+The FreeREG Team<br>
 <% if @message.attachment.present?%>
-
-There is an File attachment
+  There is an File attachment
 <% end%>
 <% if @message.images.present?%>
-
-There is an Image attachment
+  There is an Image attachment
 <% end%>
 <%= email_attachment_tag(@message) %>
 <% unless @message.source_message_id.blank? %>
@@ -14,14 +17,14 @@ There is an Image attachment
       <section class="island  island--light ">
         <div class="scrollable">
           <div class="grid__item  one-whole  palm-one-whole push--bottom">
-          <h4>Original Message</h4>
+            <h4>Original Message</h4>
             <%= content_tag :p, class: "strong" do %>
               On <%= @respond_to_message.message_time.to_formatted_s(:long)%>, Userid: <%= @respond_to_message.userid%> wrote:<br/>
               <%= @respond_to_message.body %>
               <% if @respond_to_message.attachment.present?%>
-                  <br/>
-                  <span>Attachment: </span>
-                  <span><%= link_to("#{@respond_to_message[:attachment]}", @respond_to_message.attachment_url, target: "_blank", style:'color:black') %><a href="#" class="bottom_tooltip"> <%= image_tag 'info.png', alt: 'Information', height: '16' %><span>The link will open in a new tab</span></a></span>
+                <br/>
+                <span>Attachment: </span>
+                <span><%= link_to("#{@respond_to_message[:attachment]}", @respond_to_message.attachment_url, target: "_blank", style:'color:black') %><a href="#" class="bottom_tooltip"> <%= image_tag 'info.png', alt: 'Information', height: '16' %><span>The link will open in a new tab</span></a></span>
               <% end %>
             <% end %>
             <br />

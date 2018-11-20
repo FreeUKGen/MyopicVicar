@@ -343,13 +343,14 @@ class UserMailer < ActionMailer::Base
     mail(:from => "freereg-registration@freereg.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "FreeReg change of email") unless @coordinator.blank?
   end
 
-  def send_message(mymessage,ccs,from)
+  def send_message(mymessage, ccs, from, sender)
     @message = mymessage
+    @sender = sender
     @reply_messages = Message.where(source_message_id: @message.source_message_id).all unless @message.source_message_id.blank?
     @respond_to_message = Message.id(@message.source_message_id).first
     from = "vinodhini.subbu@freeukgenealogy.org.uk" if from.blank?
     #get_message_attachment if @message.attachment.present? ||  @message.images.present?
-    mail(:from => from ,:to => "freereg-contacts@freereg.org.uk",  :bcc => ccs, :subject => "#{@message.subject}. Reference #{@message.identifier}")
+    mail(:from => from, :to => "freereg-contacts@freereg.org.uk", :bcc => ccs, :subject => "#{@message.subject} from #{@sender.person_forename} #{@sender.person_surname} of FreeREG. Reference #{@message.identifier}")
     #mail(:from => from ,:to => "vinodhini.subbu@freeukgenealogy.org.uk", :subject => "#{@message.subject}. Reference #{@message.identifier}")
   end
 

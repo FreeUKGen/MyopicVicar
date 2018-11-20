@@ -39,6 +39,15 @@ class Message
   index({_id: 1, message_time: 1},{name: "id_message_time"})
 
   class << self
+
+    def archived(archived)
+      where(:archived => archived)
+    end
+
+    def can_be_destroyed?(message)
+      message.source_message_id.present? || Message.fetch_replies(message.id).count == 0
+    end
+
     def id(id)
       where(:id => id)
     end
@@ -55,10 +64,6 @@ class Message
       where(:syndicate => syndicate)
     end
 
-    def archived(archived)
-      where(:archived => archived)
-    end
-
     def message_replies(id)
       where(:source_message_id => id)
     end
@@ -66,13 +71,8 @@ class Message
     def userid(userid)
       where(:userid => userid)
     end
-
-    def can_be_destroyed?message
-      message.source_message_id.present? || Message.fetch_replies(message.id).count == 0
-    end
-
   end
-
+  #....................................................................Instance Methods...............................
   def archive
     self.update_attribute(:archived, true)
     Message.message_replies(self.id).each do |message|
@@ -84,8 +84,15 @@ class Message
     self.identifier = Time.now.to_i - Time.gm(2015).to_i
   end
 
+  def add_syndicate?
+    original_message = Message.find(source_message_id)
+    original_message.present? && original_message.syndicate.present? ? answer = true : answer = false
+    answer
+  end
+
   def communicate(recipients, active, reasons, sender, open_data_status, syndicate = nil)
-    sender_email = UseridDetail.userid(sender).first.email_address unless sender.blank?
+    sending = UseridDetail.userid(sender).first
+    sender_email = sending.email_address unless sending.blank?
     sender_email = "freereg-contacts@freereg.org.uk" if sender_email.blank?
     ccs = Array.new
     active_user = user_status(active)
@@ -100,26 +107,21 @@ class Message
         get_inactive_users_without_reasons(recipient_user, open_data_status, active_user, ccs)
       end
     end
-    p "users/////////////////////////////////////////////////////"
-    p ccs
+    ccs << sender_email unless sender_email == 'freereg-contacts@freereg.org.uk'
     ccs = ccs.uniq
-    UserMailer.send_message(self, ccs, sender_email).deliver_now
+    UserMailer.send_message(self, ccs, sender_email, sending).deliver_now
   end
 
   def communicate_message_reply(original_message)
-    p 'comm of message reply'
-    p self
-    p original_message
     sender_userid = userid
-    p sender_userid
     to_userid = original_message.userid
     copy_to = syndicate_coordinator if syndicate.present?
-    p copy_to
-    p to_userid
     UserMailer.message_reply(self, to_userid, copy_to, original_message, sender_userid).deliver_now
+    add_message_to_userid_messages(UseridDetail.look_up_id(to_userid)) unless to_userid.blank?
+    add_message_to_userid_messages(UseridDetail.look_up_id(copy_to)) unless copy_to.blank?
     recipients = Array.new
     recipients << to_userid
-    recipients << copy_to unless copy_to == to_userid
+    recipients << copy_to unless copy_to.present? && copy_to == to_userid
     copies = Array.new
     reply_sent_messages(self, sender_userid, recipients, copies)
   end
@@ -130,7 +132,7 @@ class Message
 
   def is_a_reply?
     result = false
-    result = true if source_message_id.present? || source_feedback_id.present? || cource_contact_id.present?
+    result = true if source_message_id.present? || source_feedback_id.present? || source_contact_id.present?
     result
   end
 
@@ -159,14 +161,58 @@ class Message
   def syndicate_coordinator
     synd = Syndicate.syndicate_code(syndicate).first
     coordinator = synd.syndicate_coordinator if syndicate.present?
+    coordinator
   end
 
   private
 
+  class << self
+
+    def formatted_time(message)
+      if message.message_sent_time.blank?
+        message.message_time.to_formatted_s(:long)
+      else
+        message.message_sent_time.to_formatted_s(:long) unless message.message_sent_time.blank?
+      end
+    end
+
+    def list_messages(action, syndicate, archived, order)
+      case action
+      when 'list_unsent_messages'
+        @messages = Message.non_feedback_contact_reply_messages.all.find_all do |message|
+          !Message.sent?(message)
+        end
+      when 'list_feedback_reply_message'
+        @messages = Message.feedback_replies.archived(archived).order_by(order)
+      when 'list_contact_reply_message'
+        @messages = Message.contact_replies.archived(archived).order_by(order)
+      when 'list_syndicate_messages" || "list_archived_syndicate_messages'
+        @messages = Message.non_feedback_contact_reply_messages.syndicate(syndicate).archived(archived).not_message_reply(true).all.order_by(order)
+      else
+        @messages = Message.non_feedback_contact_reply_messages.archived(archived).not_message_reply(true).all.order_by(order)
+      end
+      @messages
+    end
+
+    def sent_messages(messages)
+      messages.order(message_sent_time: :asc).find_all do |message|
+        Message.sent?(message)
+      end
+    end
+
+    def sent?(message)
+      message.sent_messages.deliveries.count != 0
+    end
+  end
+
+  #..............................................................Instance Methods
+
   def add_message_to_userid_messages(person)
-    @message_userid =  person.userid_messages
-    if !@message_userid.include? self.id.to_s
-      @message_userid << self.id.to_s
+    return if person.blank?
+
+    @message_userid = person.userid_messages
+    if !@message_userid.include? id.to_s
+      @message_userid << id.to_s
       person.update_attribute(:userid_messages, @message_userid)
     end
   end
@@ -194,8 +240,8 @@ class Message
     end
   end
 
-  def open_data_status_value status
-    status.join("") unless status.nil?
+  def open_data_status_value(status)
+    status.join('') unless status.nil?
     status
   end
 
@@ -208,53 +254,15 @@ class Message
     users
   end
 
-  def user_status status
-    status == "true"
-  end
-
-  def self.formatted_time(message)
-    unless message.message_sent_time.blank?
-      message.message_sent_time.to_formatted_s(:long) unless message.message_sent_time.blank?
-    else
-      message.message_time.to_formatted_s(:long)
-    end
-  end
-
-  def self.list_messages(action,syndicate,archived,order)
-    case action
-    when "list_unsent_messages"
-      @messages = Message.non_feedback_contact_reply_messages.all.find_all do |message|
-        !Message.sent?(message)
-      end
-    when "list_feedback_reply_message"
-      @messages = Message.feedback_replies.archived(archived).order_by(order)
-    when "list_contact_reply_message"
-      @messages = Message.contact_replies.archived(archived).order_by(order)
-    when "list_syndicate_messages" || "list_archived_syndicate_messages"
-      @messages = Message.non_feedback_contact_reply_messages.syndicate(syndicate).archived(archived).not_message_reply(true).all.order_by(order)
-    else
-      @messages = Message.non_feedback_contact_reply_messages.archived(archived).not_message_reply(true).all.order_by(order)
-    end
-    return @messages
-  end
-
-  def self.sent_messages(messages)
-    messages.order(message_sent_time: :asc).find_all do |message|
-      Message.sent?(message)
-    end
-  end
-
-  def self.sent?(message)
-    message.sent_messages.deliveries.count != 0
-  end
-
   def reply_sent_messages(message, sender_userid, contact_recipients, other_recipients)
-    p 'saving'
     @message = message
+    contact_recipients = contact_recipients.reject(&:blank?)
     @sent_message = SentMessage.new(message_id: @message.id, sender: sender_userid, recipients: contact_recipients, other_recipients: other_recipients, sent_time: Time.now)
     @message.sent_messages << [@sent_message]
     @sent_message.save
   end
 
-
+  def user_status(status)
+    status == 'true'
+  end
 end

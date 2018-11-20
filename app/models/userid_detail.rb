@@ -202,6 +202,9 @@ class UseridDetail
     end
   end
 
+  def self.look_up_id(userid)
+    user = UseridDetail.userid(userid).first
+  end
 
   def remove_checked_messages(msg_id)
     self.reload

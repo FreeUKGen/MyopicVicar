@@ -551,7 +551,7 @@ crumb :show_message do |message|
   p message
   p session[:message_id]
   p session[:original_message_id]
-
+  p session[:message_base]
   link 'Show Message', message_path(message, source: params[:source])
   case
   when session[:message_base] == 'userid_messages' && params[:source] == 'show_reply_messages'
@@ -563,11 +563,24 @@ crumb :show_message do |message|
   when session[:message_base] == 'userid_messages' && params[:source] == 'show'
     p 's3'
     parent :userid_messages
-  when params[:source] == 'show'
-    source_message = Message.id(message.source_message_id).first
-    parent :show_message, source_message
-  when session[:syndicate]
-    parent :message_to_syndicate
+  when session[:message_base] == 'syndicate' && params[:source] == 'show_reply_messages'
+    p 'ss1'
+    parent :replies_list_syndicate_messages, Message.id(session[:original_message_id]).first, :source => params[:source]
+  when session[:message_base] == 'syndicate' && params[:source] == 'userid_messages'
+    p 'ss2'
+    parent :show_list_syndicate_messages
+  when session[:message_base] == 'syndicate' && params[:source] == 'show'
+    p 'ss3'
+    parent :show_list_syndicate_messages, message, :source => params[:source]
+  when session[:message_base] == 'general' && params[:source] == 'show_reply_messages'
+    p 'sg1'
+    parent :reply_messages_list, Message.id(session[:original_message_id]).first, :source => params[:source]
+  when session[:message_base] == 'general' && params[:source] == 'userid_messages'
+    p 'sg2'
+    parent :messages
+  when session[:message_base] == 'general' && params[:source] == 'show'
+    p 'sg3'
+    parent :messages, message, :source => params[:source]
   when message.source_feedback_id.present?
     feedback = Feedback.id(message.source_feedback_id).first
     parent :feedback_messages, feedback
@@ -706,11 +719,23 @@ crumb :create_reply do |message, original_message_id|
 end
 
 crumb :send_message do |message|
-  source_message = Message.id(message.source_message_id).first
-  link 'Send Message', send_message_messages_path(message)
-  parent :create_reply, source_message if request.referer.include?'/reply' unless request.referer.nil?
-  parent :show_message, message
-  parent :messages if request.referer.include?'messages?' unless request.referer.nil?
+  p 'send_message'
+  p request.referer
+  p params[:source]
+  p session[:message_base]
+  p message
+  link 'Send Message', send_message_messages_path(message, source: params[:source])
+  case session[:message_base]
+  when 'syndicate'
+    p 'sse1'
+    parent :show_list_syndicate_messages, message, source: params[:source]
+  when 'general'
+    p 'sse2'
+    parent :show_message, message, source: params[:source]
+  else
+    p 'sse3'
+    parent :show_message, message, source: params[:source]
+  end
 end
 
 crumb :send_reply_message do |message|

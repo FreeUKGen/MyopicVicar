@@ -7,6 +7,7 @@
   </div>
 <% end %>
 <p style="text-align: center">
+  <%= link_to 'Create New Message', new_message_path(:source => params[:source]), method: :get , :class => "btn weight--light btn--small" if index_create_option?%>
   <% if index_sort_links %>
     <%= link_to 'List by Name', list_by_name_messages_path, method: :get , :class => "btn weight--light btn--small" %>
     <%= link_to 'Most Recent Date' , list_by_most_recent_messages_path, method: :get , :class => "btn weight--light btn--small"%>
