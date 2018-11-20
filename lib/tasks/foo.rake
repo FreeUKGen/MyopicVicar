@@ -4,7 +4,11 @@ namespace :foo do
   # rake foo:update_search_records[number of files, record type,software version, force creation, order files are processed]
   #eg f2rake  foo:update_search_records[0,bu,"2016-05-27T19:23:31+00:00", true, 1]
   #number of files of 0 is all, force creation is true or false, order files processed is 1 or -1
-
+  task :correct_image_server_group, [:limit, :fix] => :environment do |t, args|
+    require 'correct_image_server_group'
+    CorrectImageServerGroup.process(args.limit, args.fix)
+  end
+  
   task :update_search_records,[:limit,:record_type,:version,:force, :order] => [:environment] do |t,args|
     #limit is number of files to process 0 is all
     require 'update_search_records'
