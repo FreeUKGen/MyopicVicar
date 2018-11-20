@@ -7,6 +7,13 @@
 <html lang="en">
   <!--<![endif]-->
   <head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-TRMFBNL');</script>
+<!-- End Google Tag Manager -->
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <meta charset="utf-8"/>
 <% if MyopicVicar::Application.config.template_set == 'freereg' %>
@@ -101,26 +108,20 @@
     <% end %>
 
     <script>
-      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
       window.update_third_party_cookies_user_preference = function (preference) {
         if(preference == 'accept') {
-          ga('create', '<%= google_analytics_tracking_id %>', 'auto');
+          console.log("Third party cookies allowed!");
         } else if(preference == 'deny') {
-          delete_cookie('_ga');
-          delete_cookie('_gid');
-          delete_cookie('_gat');
-          ga('create', '<%= google_analytics_tracking_id %>', {'storage': 'none', 'cookieExpires': 0 });
+          console.log("Third party cookies denied!");
         };
-        ga('send', 'pageview');
       };
     </script>
   </head>
   <body ontouchstart class="offcanvas  offcanvas--rev">
-    
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TRMFBNL"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
     <%= render "layouts/main_nav" %>
     
     <div class="offcanvas__primary">
