@@ -40,16 +40,16 @@ class Country
       @old_userid = UseridDetail.userid(previous_country_coordinator).first
       if @old_userid.present? then #make sure that
         parameters[:previous_country_coordinator] = @old_userid.userid
-        if @old_userid.country_groups.length == 1
+        if @old_userid.country_groups.present?
           unless  @old_userid.person_role.nil?
-            @old_userid.person_role = 'transcriber'  unless (@old_userid.person_role == 'syndicate_coordinator' || @old_userid.person_role == 'country_coordinator' || @old_userid.person_role == 'system_adminstrator' || @old_userid.person_role == 'volunteer_coordinator')
+            @old_userid.person_role = 'transcriber' unless (@old_userid.person_role == 'syndicate_coordinator' || @old_userid.person_role == 'country_coordinator' || @old_userid.person_role == 'system_administrator' || @old_userid.person_role == 'volunteer_coordinator')
           end
         end
-        @old_userid.country_groups.delete_if {|code| code == self.country_code}
+        @old_userid.country_groups.delete_if {|code| code == self.country_code} unless @old_userid.country_groups.blank?
         @old_userid.save(:validate => false)  unless @old_userid.nil?
       end
       if @new_userid.present? then # make sure there is a new coordinator to upgrade
-        if @new_userid.country_groups.empty? || @new_userid.country_groups.length == 0 then
+        if @new_userid.country_groups.blank? then
           @new_userid.person_role = 'country_coordinator' if (@new_userid.person_role == 'transcriber' || @new_userid.person_role == 'syndicate_coordinator' || @new_userid.person_role == 'researcher' || @new_userid.person_role == 'county_coordinator' )
         end
         @new_userid.country_groups = self.counties_included

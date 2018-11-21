@@ -82,6 +82,7 @@ refinerycms-*.gem
 start_dbs
 setup_cloud9.rb
 mongod
+.byebug_history
 
 # Mac
 .DS_Store
