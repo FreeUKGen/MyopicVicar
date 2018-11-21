@@ -85,7 +85,7 @@ class PhysicalFile
           header <<  column_name unless  row == 0
           row = row + 1
         end
-        explanation = "This was a selection based on " 
+        explanation = "This was a selection based on "
         explanation = explanation + sorted
         explanation = explanation + " for " + who if who.respond_to?(:to_str)
         explanation = explanation + " in " + county if county.present?
@@ -155,14 +155,14 @@ class PhysicalFile
     end
     return[success,message]
   end
+
   def file_and_entries_delete
-    p "physical files delete"
-    file =   Freereg1CsvFile.where(:file_name => self.file_name, :userid => self.userid).first
+    file = Freereg1CsvFile.where(file_name: file_name, userid: userid).first
     file.save_to_attic unless file.blank?
-    Freereg1CsvFile.where(:file_name => self.file_name, :userid => self.userid).destroy_all unless file.blank?
-    unless self.file_name.nil?
-      base_file_location = File.join(Rails.application.config.datafiles,self.userid,self.file_name)
-      change_file_location = File.join(Rails.application.config.datafiles_changeset,self.userid,self.file_name)
+    Freereg1CsvFile.where(file_name: file_name, userid: userid).destroy_all unless file.blank?
+    if file_name.present?
+      base_file_location = File.join(Rails.application.config.datafiles, userid, file_name)
+      change_file_location = File.join(Rails.application.config.datafiles_changeset, userid, file_name)
       File.delete(base_file_location) if File.file?(base_file_location)
       File.delete(change_file_location) if File.file?(change_file_location)
     end
