@@ -11,7 +11,7 @@ class CorrectImageServerGroup
     message_file.puts "Correcting #{limit} image server groups"
     p "Correcting #{limit} image server groups"
     process_image_server_group = 0
-    ImageServerGroup.each do |group|
+    ImageServerGroup.no_timeout.each do |group|
       process_image_server_group = process_image_server_group  + 1
       p process_image_server_group if (process_image_server_group/100)*100 == process_image_server_group
       break if process_image_server_group == limit
