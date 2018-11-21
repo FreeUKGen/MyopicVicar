@@ -78,8 +78,10 @@
 
 
   .site__header__logo {
-    margin: ($base-spacing-unit * 2) auto $base-spacing-unit auto;
     display: block !important;
+    @include manual-media-query(570px) {
+                  margin: ($base-spacing-unit * 2) auto $base-spacing-unit auto;
+            }    
   }
 
   .site__header__freeukgen-logo {
@@ -129,7 +131,36 @@
     }
 
   }
+/*** Adsense Banners ***/
 
+.bnner-horz-secondary {
+    width: 320px;
+    height: 50px;
+    background-position: -60px; 
+    background-size: 170%;
+    
+    @include manual-media-query(448px) {
+    display: none;
+  }
+}
+
+.adblck-background {
+  background-image: url(image-path('header-donate.png')) !important;
+}
+
+.adsense_center, .adsense_box {
+  margin: 0 auto;
+  font-weight: bold;
+  margin-bottom: 20px;
+  border: 1px solid #c0c0c0;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+      @include manual-media-query(448px) {
+    display: none;
+  }
+}
 
 
 /**

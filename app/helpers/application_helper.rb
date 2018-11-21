@@ -145,40 +145,8 @@ module ApplicationHelper
     dist
   end
 
-  def display_banner
-    banner = <<-HTML
-    <style>
-      .adSenseBanner { width: 320px; height: 100px; }
-      @media(min-width: 500px) { .adSenseBanner { width: 468px; height: 60px; } }
-      @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; } }
-    </style>
-    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <!-- Pagelevel ad -->
-    <script class="adSenseBanner">
-      //window.update_personalized_page_adverts = function (preference) {
-        //  if(preference == 'accept') {
-          //  (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
-          //} else if(preference == 'deny') {
-            //(adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
-          //}
-        //};
-      $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({
-        google_ad_client: "ca-pub-1788116026113570",
-        enable_page_level_ads: true
-      })
-    })
-    </script>
-    HTML
-    banner.html_safe
-  end
-
   def banner_header
     banner = <<-HTML
-    <style>
-      .adSenseBanner { width: 320px; height: 100px; text-align: center; margin: auto;}
-      @media(min-width: 500px) { .adSenseBanner { width: 468px; height: 60px; text-align: center; margin: auto; } }
-      @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
-    </style>
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <script>
         (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
@@ -191,6 +159,15 @@ module ApplicationHelper
        data-ad-format="auto">
     </ins>
     <script>
+      window.onload = setTimeout(function delayAdblockMessage(){
+        var bannerHeader = document.querySelector('.bnner-horz')
+        bannerHeader.classList.add("adblck-background");
+        var bannerHeaderSecondary = document.querySelectorAll('.bnner-horz-secondary'), i;
+        for (i = 0; i < bannerHeaderSecondary.length; i++) {
+          bannerHeaderSecondary[i].classList.add("adblck-background");
+        }
+    }, 2000)
+      
       window.update_personalized_header_adverts = function (preference) {
           if(preference == 'accept') {
             (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
@@ -223,11 +200,6 @@ module ApplicationHelper
       @data_ad_slot = "2003577939"
     end
     banner = <<-HTML
-    <style>
-      .adSenseBanner { width: 320px; height: 100px; text-align: center; margin: auto;}
-      @media(min-width: 500px) { .adSenseBanner { width: 468px; height: 60px; text-align: center; margin: auto; } }
-      @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
-    </style>
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <script>
         (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
@@ -260,11 +232,6 @@ module ApplicationHelper
 
   def fullwidth_adsense
     banner = <<-HTML
-    <style>
-      .adSenseBanner { width: 320px; height: 100px; text-align: center; margin: auto;}
-      @media(min-width: 500px) { .adSenseBanner { width: 468px; height: 60px; text-align: center; margin: auto; } }
-      @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
-    </style>
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <script>
         (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
