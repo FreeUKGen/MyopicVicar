@@ -85,4 +85,5 @@ MyopicVicar::Application.configure do
   config.sendgrid_api_key = MyopicVicar::MongoConfig['sendgrid_api_key']
   config.citation = MyopicVicar::MongoConfig['citation']
   config.eager_load = false
+  config.dragonfly_secret_code = MyopicVicar::MongoConfig['dragonfly_secret_code']
 end
