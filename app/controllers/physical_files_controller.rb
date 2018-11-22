@@ -1,6 +1,5 @@
 class PhysicalFilesController < ApplicationController
-  
-  
+
   def all_files
     get_user_info_from_userid
     @selection  = 'all'
@@ -36,9 +35,13 @@ class PhysicalFilesController < ApplicationController
 
   def destroy
     load(params[:id])
-    @batch.file_and_entries_delete
-    @batch.delete
-    flash[:notice] = 'The destruction of the physical files and all its entries and search records was successful'
+    if  @batch.present?
+      @batch.file_and_entries_delete
+      @batch.delete
+      flash[:notice] = 'The destruction of the physical files and all its entries and search records was successful'
+    else
+      flash[:notice] = 'The physical file does not exist'
+    end
     redirect_to :back
   end
 
@@ -79,7 +82,7 @@ class PhysicalFilesController < ApplicationController
     @paginate = false
     @user = get_user
     session[:by_userid] = false
-    session[:who] = @user 
+    session[:who] = @user
     @has_access = ((@user.person_role == "data_manager") || (@user.person_role == "system_administrator"))
     render  'index'
   end
@@ -95,16 +98,16 @@ class PhysicalFilesController < ApplicationController
     if params[:page]
       session[:physical_index_page] = params[:page]
     end
-    session[:sorted_by].nil? ?  @sorted_by = "All files by userid then batch name" : @sorted_by = session[:sorted_by] 
+    session[:sorted_by].nil? ?  @sorted_by = "All files by userid then batch name" : @sorted_by = session[:sorted_by]
     get_user_info_from_userid
     @has_access = ((@user.person_role == "data_manager") || (@user.person_role == "system_administrator"))
     case
-     when @sorted_by ==  "All files by userid then batch name" && @has_access && !session[:by_userid]
+    when @sorted_by ==  "All files by userid then batch name" && @has_access && !session[:by_userid]
       @batches = PhysicalFile.all.order_by(userid: 1,file_name: 1 ).page(params[:page]).per(1000)
       @number =  @batches.length
       @selection = 'all'
       @paginate = true
-     when @sorted_by ==  "Not processed" && @has_access && !session[:by_userid]
+    when @sorted_by ==  "Not processed" && @has_access && !session[:by_userid]
       @batches = PhysicalFile.uploaded_into_base.not_processed.all.order_by(base_uploaded_date: -1, userid: 1).page(params[:page]).per(1000)
       @number =  @batches.length
       @selection = 'all'
@@ -123,8 +126,8 @@ class PhysicalFilesController < ApplicationController
       @batches = PhysicalFile.waiting.all.order_by(waiting_date: -1)
       @number =  @batches.length
       @selection = 'all'
-      @paginate = false 
-    when @sorted_by ==  "Not processed" && session[:who].present? 
+      @paginate = false
+    when @sorted_by ==  "Not processed" && session[:who].present?
       @batches = PhysicalFile.userid(session[:who]).uploaded_into_base.not_processed.all.order_by(base_uploaded_date: -1, userid: 1).page(params[:page]).per(1000)
       @number =  @batches.length
       @selection = session[:who]
@@ -134,12 +137,12 @@ class PhysicalFilesController < ApplicationController
       @number =  @batches.length
       @selection = session[:who]
       @paginate = true
-    when   @sorted_by == "Processed but no file" && session[:who].present? 
+    when   @sorted_by == "Processed but no file" && session[:who].present?
       @batches = PhysicalFile.userid(session[:who]).processed.not_uploaded_into_base.all.order_by(userid: 1,file_processed_date: 1).page(params[:page]).per(1000)
       @number =  @batches.length
       @selection = session[:who]
       @paginate = false
-    when   @sorted_by == "Waiting to be processed" && session[:who].present? 
+    when   @sorted_by == "Waiting to be processed" && session[:who].present?
       @batches = PhysicalFile.userid(session[:who]).waiting.all.order_by(waiting_date: -1)
       @number =  @batches.length
       @selection = session[:who]
@@ -154,9 +157,6 @@ class PhysicalFilesController < ApplicationController
 
   def load(batch)
     @batch = PhysicalFile.id(batch).first
-    if @batch.nil?
-      go_back("physical file",batch)
-    end
   end
 
   def processed_but_no_file
@@ -172,9 +172,13 @@ class PhysicalFilesController < ApplicationController
 
   def remove
     load(params[:id])
-    @batch.file_delete
-    @batch.delete
-    flash[:notice] = 'The file and physical files entry was removed'
+    if @batch.present?
+      @batch.file_delete
+      @batch.delete
+      flash[:notice] = 'The file and physical files entry was removed'
+    else
+      flash[:notice] = 'The file does not exists'
+    end
     redirect_to :back
   end
 
@@ -214,6 +218,10 @@ class PhysicalFilesController < ApplicationController
     #show an individual batch
     get_user_info_from_userid
     load(params[:id])
+    if @batch.blank?
+      flash[:notice] = 'File does not exist'
+      redirect_to :back
+    end
   end
 
   def sorted_by_base_uploaded_date(batches)
@@ -242,9 +250,14 @@ class PhysicalFilesController < ApplicationController
 
   def submit_for_processing
     load(params[:id])
-    success = @batch.add_file(params[:loc])
-    flash[:notice] = success[1]
-    redirect_to physical_files_path(:anchor => "#{@batch.id}", :page => "#{ session[:physical_index_page] }")
+    if  @batch.present?
+      success = @batch.add_file(params[:loc])
+      flash[:notice] = success[1]
+      redirect_to physical_files_path(:anchor => "#{@batch.id}", :page => "#{ session[:physical_index_page] }")
+    else
+      flash[:notice] = 'The file does not exist'
+      redirect_to :back
+    end
   end
 
   def waiting_to_be_processed
@@ -260,5 +273,4 @@ class PhysicalFilesController < ApplicationController
     @has_access = ((@user.person_role == "data_manager") || (@user.person_role == "system_administrator"))
     render  'index'
   end
-
 end

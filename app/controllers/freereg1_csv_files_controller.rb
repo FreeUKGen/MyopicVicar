@@ -40,26 +40,30 @@ class Freereg1CsvFilesController < ApplicationController
     @freereg1_csv_file = Freereg1CsvFile.id(params[:id]).first
     if @freereg1_csv_file.present?
       set_controls(@freereg1_csv_file)
-      if @freereg1_csv_file.locked_by_transcriber ||  @freereg1_csv_file.locked_by_coordinator
+      if @freereg1_csv_file.locked_by_transcriber || @freereg1_csv_file.locked_by_coordinator
         flash[:notice] = 'The deletion of the batch was unsuccessful; the batch is locked'
         redirect_to :back
         return
       end
-      @freereg1_csv_file.update_freereg_contents_after_processing
-      #save a copy to attic and delete all batches
+      if @physical_file.blank?
+        flash[:notice] = 'The physical file entry no longer exists. Perhaps you have already deleted it.'
+        redirect_to :back
+        return
+      end
+      # save a copy to attic and delete all batches
       @physical_file.file_and_entries_delete
+      @freereg1_csv_file.update_freereg_contents_after_processing
       @physical_file.delete
-      session[:type] = "edit"
+      session[:type] = 'edit'
       flash[:notice] = 'The deletion of the batches was successful'
       if session[:my_own]
         redirect_to my_own_freereg1_csv_file_path
-        return
       else
         redirect_to register_path(@return_location)
-        return
       end
+      return
     else
-      go_back("batch",params[:id])
+      go_back('batch', params[:id])
     end
   end
 
@@ -351,7 +355,7 @@ class Freereg1CsvFilesController < ApplicationController
         redirect_to manage_resource_path(@user)
         return
       else
-        redirect_to register_path(@return_location) 
+        redirect_to register_path(@return_location)
         return
       end
     else
@@ -584,9 +588,9 @@ class Freereg1CsvFilesController < ApplicationController
       go_back("batch",params[:id])
     end
   end
-  
+
   def unique_names
-     @freereg1_csv_file = Freereg1CsvFile.id(params[:object]).first
+    @freereg1_csv_file = Freereg1CsvFile.id(params[:object]).first
     if @freereg1_csv_file.present?
       set_controls(@freereg1_csv_file)
     else

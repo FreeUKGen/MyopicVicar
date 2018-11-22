@@ -88,12 +88,7 @@ class Freereg1CsvFile
 
   before_destroy do |file|
     file.save_to_attic
-    entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).all.no_timeout
-    entries.each do |entry|
-      entry.destroy
-      #sleep_time = 2*(Rails.application.config.sleep.to_f)
-      #sleep(sleep_time)
-    end
+    Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).delete_all
   end
 
   after_destroy :clean_up
