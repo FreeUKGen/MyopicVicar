@@ -18,8 +18,8 @@ Refinery::Resources.configure do |config|
   # config.s3_region = ENV['S3_REGION']
 
   # Configure Dragonfly
-  config.dragonfly_verify_urls = false
-  # config.dragonfly_secret = "2fc1ff00f06e0e6634d3155e87cf28b546ab51934ba1a351"
+  #config.dragonfly_verify_urls = false
+  config.dragonfly_secret = "2fc1ff00f06e0e6634d3155e87cf28b546ab51934ba1a351"
   # config.dragonfly_url_format = "/system/resources/:job/:basename.:ext"
   # config.dragonfly_url_host = ""
   # config.datastore_root_path = "/home/benwbrum/dev/clients/freeukgen/scratch/test_for_refinery/public/system/refinery/resources"
