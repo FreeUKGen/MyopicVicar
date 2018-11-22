@@ -110,6 +110,7 @@ class ImageServerGroupsController < ApplicationController
   end
 
   def index
+    session.delete(:upload_return)
     session[:source_id] = params[:id]
     display_info
 
@@ -226,6 +227,7 @@ class ImageServerGroupsController < ApplicationController
   end
 
   def show
+    session.delete(:upload_return)
     session[:image_server_group_id] = params[:id]
     session[:assignment_filter_list] = params[:assignment_filter_list] if !params[:assignment_filter_list].nil?
     display_info
@@ -288,9 +290,18 @@ class ImageServerGroupsController < ApplicationController
 
  def upload_return
     @image_server_group = ImageServerGroup.id(params[:image_server_group]).first
-    proceed, message = @image_server_group.process_uploaded_images(params)
-    if !proceed
+    if session[:upload_return].blank?
+      session[:upload_return] = 'once'
+      # the session[:upload_return] is used to stop a refresh of the upload return action
+      proceed, message = @image_server_group.process_uploaded_images(params) unless params[:files_uploaded].blank?
+      proceed = true if params[:files_uploaded].blank?
+      if !proceed
        flash[:notice] = "We encountered issues with the processing of the upload of images; #{message}"
+       redirect_to image_server_group_path(@image_server_group)   and return
+      end
+    else
+      session.delete(:upload_return)
+      flash[:notice] = "You have refreshed the upload return page and that is not permitted"
        redirect_to image_server_group_path(@image_server_group)   and return
     end
     @uploaded =  params[:files_uploaded]
@@ -305,6 +316,8 @@ class ImageServerGroupsController < ApplicationController
     @county = @place.county
     @user = UseridDetail.id(params[:userid]).first
     @syndicate = @user.syndicate unless @user.blank?
+    params[:files_uploaded] = nil
+    params[:files_exist] = nil
  end
 
   private
