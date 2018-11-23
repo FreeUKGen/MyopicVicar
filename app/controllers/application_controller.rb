@@ -26,7 +26,7 @@ class ApplicationController < ActionController::Base
   require 'chapman_code'
   require 'userid_role'
   require 'register_type'
- 
+
   def load_last_stat
     if session[:site_stats].blank?
       time = Time.now
@@ -85,6 +85,14 @@ class ApplicationController < ActionController::Base
     return place
   end
 
+  def get_location_from_file(freereg1_csv_file)
+    register = freereg1_csv_file.register
+    church = register.church
+    place = church.place
+    return place, church, register
+
+  end
+
   def get_places_for_menu_selection
     placenames =  Place.where(:chapman_code => session[:chapman_code],:disabled => 'false',:error_flag.ne => "Place name is not approved").all.order_by(place_name: 1)
     @placenames = Array.new
@@ -92,7 +100,7 @@ class ApplicationController < ActionController::Base
       @placenames << placename.place_name
     end
   end
-  
+
   def get_user
     user = cookies.signed[:userid]
     user = UseridDetail.id(user).first
@@ -132,12 +140,12 @@ class ApplicationController < ActionController::Base
     logger.info "FREEREG:ACCESS ISSUE: The #{type} document #{record} being accessed does not exist."
     redirect_to main_app.new_manage_resource_path and return
   end
-  
+
   def log_messenger(message)
     log_message = message
     logger.warn(log_message)
   end
-  
+
   def log_missing_document(message,doc1,doc2)
     log_message = "FREEREG:PHC WARNING: aunable to find a document #{message}\n"
     log_message += "FREEREG:PHC Time.now=\t\t#{Time.now}\n"
@@ -209,7 +217,7 @@ class ApplicationController < ActionController::Base
   end
 
   def clean_session
-    
+
     session.delete(:manage_user_origin)
     session.delete(:freereg1_csv_file_id)
     session.delete(:freereg1_csv_file_name)
