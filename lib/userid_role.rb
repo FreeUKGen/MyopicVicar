@@ -26,7 +26,7 @@ module UseridRole
     'publicity_coordinator'=> [ "Assignments", "Batches", "Contacts", "Profile","Roadmap","System Documentation" ],
     'genealogy_coordinator'=> [ "Assignments", "Batches", "Contacts","Profile", "Roadmap" ,"System Documentation" ],
     'documentation_coordinator' => [  "Assignments", "Batches",  "Display Userids","Feedback", "Manage Syndicates", "Manage Counties", "Profile","RefineryCMS","Roadmap",
-                                       "System Documentation" ],
+                                      "System Documentation" ],
     'engagement_coordinator' => [  "Assignments", "Batches", "Display Userids",  "Feedback", "Message System", "Profile", "RefineryCMS" ,"Roadmap", "System Documentation" ],
     'website_coordinator' => [ "Batches", "Contacts","Display Userids", "Feedback", "Message System", "Profile", "RefineryCMS" ,"Roadmap", "System Documentation" ],
     'general_communication_coordinator' => [ "Batches", "Contacts","Display Userids", "Feedback", "Message System", "Profile", "RefineryCMS" ,"Roadmap", "System Documentation" ],
@@ -34,7 +34,7 @@ module UseridRole
 
   OPTIONS_TRANSLATION = {
     "Denominations" => "/denominations",
-    "GAP Reasons" => "/gap_reasons", 
+    "GAP Reasons" => "/gap_reasons",
     "Saved Searches" => "/my_saved_searches",
     "Profile" => "/userid_details/my_own" ,
     "Batches" => "/freereg1_csv_files/my_own" ,
@@ -64,7 +64,7 @@ module UseridRole
     "System Documentation" => "/cms/system-documents",
     "Roadmap" => "/cms/system-documents/development-roadmap",
     "Logout" => "/refinery/logout",
-    "Message System" => "/messages", 
+    "Message System" => "/messages",
     "Manage Images" => "/sources",
     "Assignments" => "/assignments/my_own"
   }
@@ -83,11 +83,12 @@ module UseridRole
     "Select Secondary Role" => "/userid_details/secondary_roles",
     "Transcriber Statistics" => "/userid_details/transcriber_statistics"
   }
-  FILE_MANAGEMENT_OPTIONS = ['Upload New Batch','List by Number of Errors then Filename', 'List by Filename',
+  FILE_MANAGEMENT_OPTIONS = ['Upload New Batch', 'List by Number of Errors then Filename', 'List those with Zero Dates', 'List by Filename',
                              'List by uploaded date (ascending)', 'List by uploaded date (descending)', 'List files waiting to be processed','Review Specific Batch' ]
   FILE_OPTIONS_TRANSLATION ={
     'Upload New Batch' =>  "/csvfiles/new",
     'List by Number of Errors then Filename' =>  "/freereg1_csv_files/selection?option=List by Number of Errors then Filename",
+    'List those with Zero Dates' =>  "/freereg1_csv_files/selection?option=Review Batches with Zero Dates",
     'List by Filename' =>  "/freereg1_csv_files/selection?option=List by Filename",
     'List by uploaded date (ascending)' =>  "/freereg1_csv_files/selection?option=List by uploaded date (ascending)",
     'List by uploaded date (descending)'  =>  "/freereg1_csv_files/selection?option=List by uploaded date (descending)",
@@ -95,7 +96,7 @@ module UseridRole
     'Review Specific Batch' => "/freereg1_csv_files/selection?option=Review Specific Batch"
   }
   COUNTY_MANAGEMENT_OPTIONS = ['All Places', 'Active Places', 'Specific Place','Places with Unapproved Names', 'Review Batches with Errors',
-                               'Review Batches by Filename', 'Review Batches by Userid then Filename',
+                               'Review Batches with Zero Dates', 'Review Batches by Filename', 'Review Batches by Userid then Filename',
                                'Review Batches by Most Recent Date of Change',  'Review Batches by Oldest Date of Change','Review Specific Batch',
                                "Upload New Batch",'Manage Images']
   COUNTY_OPTIONS_TRANSLATION = {
@@ -104,6 +105,7 @@ module UseridRole
     'Specific Place' => "/manage_counties/selection?option=Work with Specific Place",
     'Places with Unapproved Names' => "/manage_counties/selection?option=Places with Unapproved Names",
     'Review Batches with Errors' => "/manage_counties/selection?option=Review Batches with Errors",
+    'Review Batches with Zero Dates'=> "/manage_counties/selection?option=Review Batches with Zero Dates",
     'Review Batches by Filename' => "/manage_counties/selection?option=Review Batches by Filename",
     'Review Batches by Userid then Filename' => "/manage_counties/selection?option=Review Batches by Userid then Filename",
     'Review Batches by Most Recent Date of Change' => "/manage_counties/selection?option=Review Batches by Most Recent Date of Change",
@@ -113,7 +115,9 @@ module UseridRole
     'Manage Images' => '/manage_counties/selection?option=Manage Images'
   }
   SYNDICATE_MANAGEMENT_OPTIONS =  ['Review Active Members' ,'Review All Members', 'Select Specific Member by Userid',
-                                   'Select Specific Member by Email Address','Select Specific Member by Surname/Forename',"Incomplete Registrations","Create userid","Message To Syndicate",'View your Messages','Review Batches with Errors','Review Batches by Filename',
+                                   'Select Specific Member by Email Address','Select Specific Member by Surname/Forename',"Incomplete Registrations","Create userid",
+                                   "Message To Syndicate",'View your Messages','Review Batches with Errors', 'Review Batches with Zero Dates',
+                                   'Review Batches by Filename',
                                    'Review Batches by Userid then Filename', 'Review Batches by Most Recent Date of Change','Review Batches by Oldest Date of Change',
                                    'Review Specific Batch','List files waiting to be processed','List files NOT processed',"Upload New Batch",'Change Recruiting Status','Manage Images']
   SYNDICATE_OPTIONS_TRANSLATION = {
@@ -127,6 +131,7 @@ module UseridRole
     "Message To Syndicate" => "/messages",
     'View your Messages' => "/messages/userid_messages",
     'Review Batches with Errors'=> "/manage_syndicates/selection?option=Review Batches with Errors",
+    'Review Batches with Zero Dates'=> "/manage_syndicates/selection?option=Review Batches with Zero Dates",
     'Review Batches by Filename' => "/manage_syndicates/selection?option=Review Batches by Filename",
     'Review Batches by Userid then Filename' => "/manage_syndicates/selection?option=Review Batches by Userid then Filename",
     'Review Batches by Most Recent Date of Change' => "/manage_syndicates/selection?option=Review Batches by Most Recent Date of Change",

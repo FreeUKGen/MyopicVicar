@@ -1,5 +1,5 @@
 class ManageSyndicatesController < ApplicationController
- 
+
   def batches_with_errors
     get_user_info_from_userid
     @county = session[:syndicate]
@@ -79,6 +79,18 @@ class ManageSyndicatesController < ApplicationController
     @sorted_by = "; not processed "
     render 'physical_files/index'
   end
+
+  def display_by_zero_date
+    get_user_info_from_userid
+    @county = session[:syndicate]
+    @who = @user.person_forename
+    @sorted_by = '; selects files with zero date records then alphabetically by userid and file name'
+    session[:sorted_by] = @sorted_by
+    session[:sort] = "userid_lower_case ASC, file_name ASC"
+    @freereg1_csv_files = Freereg1CsvFile.syndicate(session[:syndicate]).datemin('0').no_timeout.order_by(session[:sort]).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
+    render 'freereg1_csv_files/index'
+  end
+
 
   def get_syndicates_for_selection
     all = true if  @user.person_role == 'volunteer_coordinator' || @user.person_role == 'data_manager' || @user.person_role == 'system_administrator' || @user.person_role == "SNDManager" ||  @user.person_role == 'documentation_coordinator'
@@ -193,20 +205,20 @@ class ManageSyndicatesController < ApplicationController
     get_syndicates_for_selection
     @syndicates.nil? ? number_of_syndicates = 0 : number_of_syndicates = @syndicates.length
     case number_of_syndicates
-      when 0
-        flash[:notice] = 'You do not have any syndicates to manage'
-        redirect_to new_manage_resource_path
-        return 
-      when 1
-        @syndicate = @syndicates[0]
-        session[:syndicate] =  @syndicate
-        redirect_to :action => 'select_action'
-        return
-      else
-        @manage_syndicate = ManageSyndicate.new
-        @options = @syndicates
-        @prompt = 'You have access to multiple syndicates, please select one'
-        @location = 'location.href= "/manage_syndicates/" + this.value +/selected/'
+    when 0
+      flash[:notice] = 'You do not have any syndicates to manage'
+      redirect_to new_manage_resource_path
+      return
+    when 1
+      @syndicate = @syndicates[0]
+      session[:syndicate] =  @syndicate
+      redirect_to :action => 'select_action'
+      return
+    else
+      @manage_syndicate = ManageSyndicate.new
+      @options = @syndicates
+      @prompt = 'You have access to multiple syndicates, please select one'
+      @location = 'location.href= "/manage_syndicates/" + this.value +/selected/'
     end
   end
 

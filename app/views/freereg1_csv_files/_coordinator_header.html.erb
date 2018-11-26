@@ -1,4 +1,4 @@
-<% breadcrumb :files %>
+<% coordinator_index_breadcrumbs %>
 <% if session[:syndicate].present? %>
   <h3 style="text-align: center"> Syndicate Files for  <%= session[:syndicate]%><%=@sorted_by%></h3>
 <% elsif session[:county].present? %>
@@ -6,6 +6,6 @@
 <% end%>
 <% if flash[:notice] %>
   <div id="notice" style="color:blue"><br>
-  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
   </div>
 <% end %>
