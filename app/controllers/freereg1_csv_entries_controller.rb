@@ -62,14 +62,12 @@ class Freereg1CsvEntriesController < ApplicationController
   def destroy
     @freereg1_csv_entry = Freereg1CsvEntry.id(params[:id]).first
     if @freereg1_csv_entry.present?
-      freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
-      freereg1_csv_file.freereg1_csv_entries.delete(@freereg1_csv_entry)
+      @freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
+      @freereg1_csv_file.freereg1_csv_entries.delete(@freereg1_csv_entry)
       @freereg1_csv_entry.destroy
-      freereg1_csv_file.calculate_distribution
-      freereg1_csv_file.recalculate_last_amended
-      freereg1_csv_file.update_number_of_files
-      flash[:notice] = 'The deletion of the record was successful'
-      redirect_to freereg1_csv_file_path(freereg1_csv_file)
+      @freereg1_csv_file.update_statistics_and_access(session[:my_own])
+      flash[:notice] = 'The deletion of the entry was successful and the files is locked'
+      redirect_to freereg1_csv_file_path(@freereg1_csv_file)
       return
     else
       go_back("entry",params[:id])
