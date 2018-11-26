@@ -110,6 +110,7 @@ class Freereg1CsvEntriesController < ApplicationController
     @freereg1_csv_entry = Freereg1CsvEntry.id(params[:id]).first
     if @freereg1_csv_entry.present?
       session[:freereg1_csv_entry_id] = @freereg1_csv_entry._id
+      session[:zero_listing] = true if params[:zero_listing].present?
       display_info
       @freereg1_csv_entry.multiple_witnesses.build
     else
@@ -227,10 +228,15 @@ class Freereg1CsvEntriesController < ApplicationController
         church.calculate_church_numbers
         place.calculate_place_numbers
         flash[:notice] = 'The change in entry contents was successful, the file is now locked against replacement until it has been downloaded.'
-        redirect_to freereg1_csv_entry_path(@freereg1_csv_entry)
+        if session[:zero_listing]
+          session.delete(:zero_listing)
+          redirect_to freereg1_csv_entry_path(@freereg1_csv_entry, zero_listing: 'true')
+        else
+          redirect_to freereg1_csv_entry_path(@freereg1_csv_entry)
+        end
       end
     else
-      go_back('entry',params[:id])
+      go_back('entry', params[:id])
     end
   end
 
@@ -239,5 +245,4 @@ class Freereg1CsvEntriesController < ApplicationController
   def freereg1_csv_entry_params
     params.require(:freereg1_csv_entry).permit!
   end
-
 end
