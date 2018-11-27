@@ -1,7 +1,7 @@
 class ImageServerImagesController < ApplicationController
   require 'userid_role'
   require 'source_property'
-  
+
   def destroy
     display_info
 
@@ -11,12 +11,12 @@ class ImageServerImagesController < ApplicationController
       flash[:notice] = "can not find the image"
       redirect_to :back and return
     end
-    
+
     image_server_image = imageserverimage.first
     if image_server_image.deletion_permitted?
       website =  image_server_image.url_for_delete_image_from_image_server
       redirect_to website
-    else 
+    else
 
       flash[:notice] = "Deletion of #{image_server_image.image_file_name} is not permitted due to its status of  #{SourceProperty::STATUS[image_server_image.status]}"
       redirect_to :back and return
@@ -43,18 +43,18 @@ class ImageServerImagesController < ApplicationController
     @source = Source.find(:id=>session[:source_id])
     @group = ImageServerGroup.find(:id=>session[:image_server_group_id])
   end
-  
+
   def download
     image = ImageServerImage.id(params[:object]).first
     process,chapman_code,folder_name,image_file_name = image.file_location
     if !process
-       flash[:notice] = 'There were problems with the lookup'
+      flash[:notice] = 'There were problems with the lookup'
       redirect_to :back and return
     end
     @user = get_user
-    website = ImageServerImage.create_url('download',params[:object],chapman_code,folder_name, image_file_name,@user.userid)  
+    website = ImageServerImage.create_url('download',params[:object],chapman_code,folder_name, image_file_name,@user.userid)
     redirect_to website and return
-   end
+  end
 
   def edit
     display_info
@@ -70,13 +70,13 @@ class ImageServerImagesController < ApplicationController
     display_info
 
     case params[:propagate_choice]
-      when 'status'
-        @image_server_image = ImageServerImage.where(:image_server_group_id=>params[:id], :status=>'u').first
-        status_list = ['u']
-      else
-        @image_server_image = ImageServerImage.image_server_group_id(params[:id]).first
-        status_list = SourceProperty::STATUS_ARRAY
-    end        
+    when 'status'
+      @image_server_image = ImageServerImage.where(:image_server_group_id=>params[:id], :status=>'u').first
+      status_list = ['u']
+    else
+      @image_server_image = ImageServerImage.image_server_group_id(params[:id]).first
+      status_list = SourceProperty::STATUS_ARRAY
+    end
     @images = ImageServerImage.get_image_list(params[:id],status_list)
     @propagate_choice = params[:propagate_choice]
 
@@ -87,7 +87,7 @@ class ImageServerImagesController < ApplicationController
     session[:image_server_group_id] = params[:id]
     display_info
 
-    @image_server_image = ImageServerImage.image_server_group_id(params[:id])
+    @image_server_image = ImageServerImage.image_server_group_id(params[:id]).order_by(image_file_name: 1)
     @image_server_group = ImageServerGroup.id(session[:image_server_group_id]).first
     @image_detail_access_allowed = ImageServerImage.image_detail_access_allowed?(@user,session[:manage_user_origin],session[:image_server_group_id],session[:chapman_code])
 
@@ -105,7 +105,7 @@ class ImageServerImagesController < ApplicationController
 
     # leave for issue 1447 - Relicate image group, commit 9abecd5
     #@group_name = ImageServerImage.get_sorted_group_name_under_church(@image_server_group[:church_id])
- 
+
     @image_server_image = ImageServerImage.image_server_group_id(params[:id]).first
     redirect_to(:back, :notice => 'Attempted to edit a non_esxistent image file') and return if @image_server_image.nil?
 
@@ -115,7 +115,7 @@ class ImageServerImagesController < ApplicationController
     redirect_to(:back, :notice => 'Only Unallocated or Allocated images can be moved') and return if @images.empty?
   end
 
-  def new      
+  def new
   end
 
   def show
@@ -124,12 +124,12 @@ class ImageServerImagesController < ApplicationController
     @image_detail_access_allowed = ImageServerImage.image_detail_access_allowed?(@user,session[:manage_user_origin],session[:image_server_group_id],session[:chapman_code])
 
     @image_server_image = ImageServerImage.collection.aggregate([
-                {'$match'=>{"_id"=>BSON::ObjectId.from_string(params[:id])}},
-                {'$lookup'=>{from: "image_server_groups", localField: "image_server_group_id", foreignField: "_id", as: "image_group"}}, 
-                {'$unwind'=>"$image_group"}
-             ]).first
+                                                                  {'$match'=>{"_id"=>BSON::ObjectId.from_string(params[:id])}},
+                                                                  {'$lookup'=>{from: "image_server_groups", localField: "image_server_group_id", foreignField: "_id", as: "image_group"}},
+                                                                  {'$unwind'=>"$image_group"}
+    ]).first
   end
-  
+
   def return_from_image_deletion
     return_location = ImageServerGroup.id(params[:image_server_group_id]).first
     image_server_image = ImageServerImage.where(:image_server_group_id => params[:image_server_group_id], :image_file_name =>  params[:image_file_name])
@@ -152,50 +152,50 @@ class ImageServerImagesController < ApplicationController
     redirect_to(:back, :notice => 'Image "'+image_server_image_params[:image_file_name]+' does not exist') and return if image_server_image.nil?
 
     case image_server_image_params[:origin]
-      when 'edit'
-        edit_image = src_image_server_image.where(:id=>image_id).first
+    when 'edit'
+      edit_image = src_image_server_image.where(:id=>image_id).first
 
-        image_server_image_params.delete :orig_image_server_group_id
-        image_server_image_params.delete :origin
+      image_server_image_params.delete :orig_image_server_group_id
+      image_server_image_params.delete :origin
 
-        edit_image.update_attributes(image_server_image_params)
+      edit_image.update_attributes(image_server_image_params)
 
-        src_image_server_image.refresh_src_dest_group_summary(src_image_server_group)
-        image_server_image.refresh_src_dest_group_summary(image_server_group)
+      src_image_server_image.refresh_src_dest_group_summary(src_image_server_group)
+      image_server_image.refresh_src_dest_group_summary(image_server_group)
 
-        redirect_to image_server_image_path(edit_image) and return
-      when 'move'
-        image_server_image.where(:id=>{'$in': image_id}, :image_server_group_id=>src_group_id)
-                          .update_all(:image_server_group_id=>group_id)
+      redirect_to image_server_image_path(edit_image) and return
+    when 'move'
+      image_server_image.where(:id=>{'$in': image_id}, :image_server_group_id=>src_group_id)
+      .update_all(:image_server_group_id=>group_id)
 
-        src_image_server_image.refresh_src_dest_group_summary(src_image_server_group)
-        image_server_image.refresh_src_dest_group_summary(image_server_group)
+      src_image_server_image.refresh_src_dest_group_summary(src_image_server_group)
+      image_server_image.refresh_src_dest_group_summary(image_server_group)
 
-      when 'propagate_difficulty'
-        image_server_image.where(:id=>{'$in': image_id}, :image_server_group_id=>group_id)
-                          .update_all(:difficulty=>image_server_image_params[:difficulty])
+    when 'propagate_difficulty'
+      image_server_image.where(:id=>{'$in': image_id}, :image_server_group_id=>group_id)
+      .update_all(:difficulty=>image_server_image_params[:difficulty])
 
-        image_server_image.refresh_src_dest_group_summary(image_server_group)
+      image_server_image.refresh_src_dest_group_summary(image_server_group)
 
-      when 'propagate_status'
-        image_server_image.where(:id=>{'$in': image_id}, :image_server_group_id=>group_id)
-                          .update_all(:status=>image_server_image_params[:status])
+    when 'propagate_status'
+      image_server_image.where(:id=>{'$in': image_id}, :image_server_group_id=>group_id)
+      .update_all(:status=>image_server_image_params[:status])
 
-        image_server_image.refresh_src_dest_group_summary(image_server_group)
+      image_server_image.refresh_src_dest_group_summary(image_server_group)
 
-      else
-        flash[:notice] = 'Something wrong at ImageServerImage#update, please contact developer'
-        redirect_to :back and return
+    else
+      flash[:notice] = 'Something wrong at ImageServerImage#update, please contact developer'
+      redirect_to :back and return
     end
     flash[:notice] = 'Update of the Image file(s) was successful'
     redirect_to index_image_server_image_path(image_server_group.first)
   end
-  
+
   def view
     image = ImageServerImage.id(params[:object]).first
     process,chapman_code,folder_name,image_file_name = image.file_location
     if !process
-       flash[:notice] = 'There were problems with the lookup'
+      flash[:notice] = 'There were problems with the lookup'
       redirect_to :back and return
     end
     @user = get_user
