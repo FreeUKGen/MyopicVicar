@@ -191,13 +191,14 @@ class ImageServerImagesController < ApplicationController
 
   def view
     image = ImageServerImage.id(params[:object]).first
-    process,chapman_code,folder_name,image_file_name = image.file_location
+    image.present? ? process = true : process = false
+    process, chapman_code, folder_name, image_file_name = image.file_location if process
     if !process
       flash[:notice] = 'There were problems with the lookup'
       redirect_to :back and return
     end
     @user = get_user
-    website = ImageServerImage.create_url('view',params[:object],chapman_code,folder_name, image_file_name,@user.userid)
+    website = ImageServerImage.create_url('view', params[:object], chapman_code, folder_name, image_file_name, @user.userid)
     redirect_to website and return
   end
 
