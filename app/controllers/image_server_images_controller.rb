@@ -5,19 +5,17 @@ class ImageServerImagesController < ApplicationController
   def destroy
     display_info
 
-    imageserverimage = ImageServerImage.where(:id=>params[:id])
+    imageserverimage = ImageServerImage.where(id: params[:id]).first
 
     if imageserverimage.nil?
-      flash[:notice] = "can not find the image"
+      flash[:notice] = 'can not find the image'
       redirect_to :back and return
     end
 
-    image_server_image = imageserverimage.first
     if image_server_image.deletion_permitted?
-      website =  image_server_image.url_for_delete_image_from_image_server
+      website = image_server_image.url_for_delete_image_from_image_server
       redirect_to website
     else
-
       flash[:notice] = "Deletion of #{image_server_image.image_file_name} is not permitted due to its status of  #{SourceProperty::STATUS[image_server_image.status]}"
       redirect_to :back and return
     end
