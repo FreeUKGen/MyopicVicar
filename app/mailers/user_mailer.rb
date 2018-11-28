@@ -1,7 +1,7 @@
 class UserMailer < ActionMailer::Base
   add_template_helper(EmailHelper)
 
-  default from: "freereg-contacts@freereg.org.uk"
+  default from: ' FreeREG <freereg-contacts@freereg.org.uk>'
 
   def acknowledge_communication(original)
     @communication = original

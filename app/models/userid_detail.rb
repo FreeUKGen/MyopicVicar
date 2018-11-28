@@ -164,6 +164,10 @@ class UseridDetail
     #self.new_transcription_agreement = "Unknown"
   end
 
+  def create_friendly_from_email
+    friendly_email = "#{person_forename} #{person_surname} <#{email_address}>"
+  end
+
   def count_not_checked_messages
     self.reload
     userid_msgs = self.userid_messages

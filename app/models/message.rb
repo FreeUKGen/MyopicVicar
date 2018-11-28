@@ -92,8 +92,8 @@ class Message
 
   def communicate(recipients, active, reasons, sender, open_data_status, syndicate = nil)
     sending = UseridDetail.userid(sender).first
-    sender_email = sending.email_address unless sending.blank?
-    sender_email = "freereg-contacts@freereg.org.uk" if sender_email.blank?
+    sender_email = sending.create_friendly_from_email unless sending.blank?
+    sender_email = 'FreeREG <freereg-contacts@freereg.org.uk>' if sender_email.blank?
     ccs = Array.new
     active_user = user_status(active)
     recipients.each do |recip|
@@ -107,7 +107,7 @@ class Message
         get_inactive_users_without_reasons(recipient_user, open_data_status, active_user, ccs)
       end
     end
-    ccs << sender_email unless sender_email == 'freereg-contacts@freereg.org.uk'
+    ccs << sender_email unless sender_email == 'FreeREG <freereg-contacts@freereg.org.uk>'
     ccs = ccs.uniq
     UserMailer.send_message(self, ccs, sender_email, sending).deliver_now
   end
@@ -220,7 +220,7 @@ class Message
   def get_active_users(recipient_user, open_data_status, active_user, ccs)
     recipient_user.new_transcription_agreement(open_data_status_value(open_data_status)).active(active_user).email_address_valid.each do |person|
       add_message_to_userid_messages(person)
-      ccs << person.email_address
+      ccs << person.create_friendly_from_email
     end
   end
 
@@ -228,7 +228,7 @@ class Message
     reasons.each do |reason|
       recipient_user.new_transcription_agreement(open_data_status_value(open_data_status)).active(active_user).reason(reason).email_address_valid.each do |person|
         add_message_to_userid_messages(person)
-        ccs << person.email_address
+        ccs << person.create_friendly_from_email
       end
     end
   end
@@ -236,7 +236,7 @@ class Message
   def get_inactive_users_without_reasons(recipient_user, open_data_status, active_user, ccs)
     recipient_user.new_transcription_agreement(open_data_status_value(open_data_status)).active(active_user).reason("temporary").email_address_valid.each do |person|
       add_message_to_userid_messages(person)
-      ccs << person.email_address
+      ccs << person.create_friendly_from_email
     end
   end
 

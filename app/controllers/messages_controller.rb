@@ -314,8 +314,6 @@ class MessagesController < ApplicationController
     @message = Message.id(params[:id]).first
     session[:message_id] = @message.id if @message.present?
     session[:original_message_id] = @message.original_message_id
-    p session[:message_id]
-    p session[:original_message_id]
     @reply_messages = Message.fetch_replies(params[:id])
     @sent_replies = Message.sent_messages(@reply_messages)
     if @message.blank?
@@ -335,7 +333,6 @@ class MessagesController < ApplicationController
   def user_reply_messages
     get_user_info_from_userid
     @user.reload
-    p "All reply messages for #{@user.userid}"
     @main_message = Message.id(params[:id]).first
     @reply_messages = Message.fetch_replies(params[:id])
     @user_replies = @reply_messages.where(userid: @user.userid).all
@@ -345,7 +342,6 @@ class MessagesController < ApplicationController
   def userid_reply_messages
     get_user_info_from_userid
     @user.reload
-    p "Reply syndicate messages for #{@user.userid}"
     @reply_messages = Message.in(id: @user.userid_messages).where(:source_message_id.ne => nil).all.order_by(message_sent_time: -1)
     session[:syndicate].blank? ? @messages = @reply_messages : @messages = syndicate_messages(@reply_messages, session[:syndicate])
   end
@@ -355,7 +351,6 @@ class MessagesController < ApplicationController
     get_user_info_from_userid
     @user.reload
     session[:manager] = @manager
-    p "Messages for #{@user.userid}"
     #@main_messages = Message.in(id: @user.userid_messages, source_message_id: nil).all.order_by(message_sent_time: -1)
     @main_messages = Message.in(id: @user.userid_messages).all.order_by(message_sent_time: -1)
     session[:syndicate].blank? ? @messages = @main_messages : @messages = syndicate_messages(@main_messages, session[:syndicate])
