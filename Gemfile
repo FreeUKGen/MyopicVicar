@@ -35,7 +35,7 @@ gem 'inherited_resources', '~> 1.6'
 gem "therubyracer", :platforms => :ruby # avoid loading on windows
 
 gem 'airbrake', '~> 3.1.14'
-gem 'bcrypt', '>= 3.1.9'
+gem 'bcrypt', '>= 3.1.9', platforms: :ruby
 gem 'text'
 gem 'json'
 gem 'pry'
