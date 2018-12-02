@@ -363,8 +363,8 @@ class MessagesController < ApplicationController
   end
 
   def show
-    session[:message_id] = @message.id if @message.present?
-    #get_user_info_from_userid
+    get_user_info_from_userid
+    @user.reload
     @message = Message.id(params[:id]).first
     session[:message_id] = @message.id if @message.present?
     session[:original_message_id] = @message.original_message_id if @message.present?
@@ -378,6 +378,7 @@ class MessagesController < ApplicationController
 
   def show_reply_messages
     get_user_info_from_userid
+    @user.reload
     @user_messages = UseridDetail.id(@user.id).first.userid_messages
     @reply_messages = Message.fetch_replies(params[:id])
     @messages = Message.sent_messages(@reply_messages)
