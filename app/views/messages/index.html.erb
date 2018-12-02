@@ -8,16 +8,16 @@
 <% end %>
 <p style='text-align: center'>
   <%= link_to 'Create New Message', new_message_path(:source => params[:source]), method: :get , :class => 'btn weight--light btn--small' if index_create_option?%>
-  <% if index_sort_links %>
+  <% if index_sort_links? %>
     <%= link_to 'List by Name', list_by_name_messages_path, method: :get , :class => 'btn weight--light btn--small' %>
     <%= link_to 'Most Recent Date' , list_by_most_recent_messages_path, method: :get , :class => 'btn weight--light btn--small'%>
     <%= link_to 'Earliest Date' , list_by_date_messages_path, method: :get , :class => 'btn weight--light btn--small'%>
     <%= link_to 'Select by Identifier' , select_by_identifier_messages_path, method: :get , :class => 'btn weight--light btn--small' %>
     <%= link_to 'List Unsent Messages' , list_unsent_messages_path, method: :get , :class => 'btn weight--light btn--small' %>
   <% end%>
-  <%= link_to 'List archived syndicate', list_archived_syndicate_messages_path(:source => params[:action]) , method: :get , :class => 'btn weight--light btn--small' if do_we_index_list_index_syndicate %>
-  <%= link_to 'List active syndicate',list_syndicate_messages_path(:source => params[:action]), method: :get , :class => 'btn weight--light btn--small' if do_we_index_list_index_syndicate%>
-  <%= link_to 'List archived', list_archived_messages_path(:source => params[:action]) , method: :get , :class => 'btn weight--light btn--small' if do_we_index_list_archived %>
-  <%= link_to 'List active', messages_path(:source => params[:action]), method: :get , :class => 'btn weight--light btn--small' if do_we_index_list_index %>
+  <%= link_to 'List archived syndicate', list_archived_syndicate_messages_path(:source => params[:action]) , method: :get , :class => 'btn weight--light btn--small' if do_we_index_list_index_syndicate? %>
+  <%= link_to 'List active syndicate',list_syndicate_messages_path(:source => params[:action]), method: :get , :class => 'btn weight--light btn--small' if do_we_index_list_index_syndicate?%>
+  <%= link_to 'List archived', list_archived_messages_path(:source => params[:action]) , method: :get , :class => 'btn weight--light btn--small' if do_we_index_list_archived? %>
+  <%= link_to 'List active', messages_path(:source => params[:action]), method: :get , :class => 'btn weight--light btn--small' if do_we_index_list_index? %>
 </p>
 <%= render 'index_table' %>

@@ -34,21 +34,21 @@
                   <td><%= message.body[0,100] %>&hellip;</td>
                   <td>
                     <%= link_to 'Edit', edit_message_path(message.id, source: params[:action]),
-                    :class => 'btn weight--light  btn--small', method: :get if do_we_permit_an_edit(message)  %>
+                    :class => 'btn weight--light  btn--small', method: :get if do_we_permit_an_edit?(message)  %>
                     <%= link_to 'Show', message_path(message.id, source: params[:action]),
                     :class => 'btn weight--light  btn--small', method: :get%>
                     <%= link_to 'View Replies', show_reply_messages_path(message.id, source: params[:action]),
-                     class: 'btn weight--light  btn--small', method: :get  if do_we_show_replies_action(message)%>
+                     class: 'btn weight--light  btn--small', method: :get  if do_we_show_replies_action?(message)%>
                     <%= link_to 'Archive', archive_message_path(message.id, source: params[:action]),
                      :class => 'btn weight--light  btn--small',
-                      data: { confirm: 'Are you sure you want archive this message'} if do_we_show_archive_action(message)%>
+                      data: { confirm: 'Are you sure you want archive this message'} if do_we_show_archive_action?(message)%>
                     <%= link_to 'Restore', restore_message_path(message.id, source: params[:action]),
                      :class => 'btn weight--light  btn--small',
-                       data: { confirm: 'Are you sure you want archive this message' } if do_we_show_restore_action(message)%>
+                       data: { confirm: 'Are you sure you want archive this message' } if do_we_show_restore_action?(message)%>
                     <%= link_to 'Remove', remove_from_userid_detail_path(message.id, source: params[:action]),
                      :class => 'btn weight--light  btn--small',
                       data: { confirm: 'Are you sure you want archive this message' },
-                     method: :delete if do_we_show_remove_action(message)%>
+                     method: :delete if do_we_show_remove_action?(message)%>
                   </td>
                 </tr>
               <% end %>

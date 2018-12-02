@@ -192,6 +192,11 @@ class UseridDetail
     end
   end
 
+  def does_not_have_original_message?(message)
+    userid_messages.include?(message.source_message_id) ? answer = false : answer = true
+    answer
+  end
+
   def feedback_without_replies
     self.update_userid_feedbacks
     @feedbacks_with_no_reply = self.userid_feedback_replies.keys.select do |id|
@@ -204,6 +209,11 @@ class UseridDetail
     @feedbacks_with_no_reply = self.userid_feedback_replies.keys.reject do |id|
       self.userid_feedback_replies[id].blank?
     end
+  end
+
+  def has_original_message?(message)
+    userid_messages.include?(message.source_message_id) ? answer = true : answer = false
+    answer
   end
 
   def self.look_up_id(userid)

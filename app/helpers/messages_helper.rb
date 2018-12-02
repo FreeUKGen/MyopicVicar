@@ -43,12 +43,12 @@ module MessagesHelper
     "#{subject}.Reference #{contact.identifier}"
   end
 
-  def do_we_permit_an_edit(message)
+  def do_we_permit_an_edit?(message)
     do_we_permit = false
     if session[:message_base] == 'userid_messages'
-      do_we_permit = false
+      do_we_permit = true if message.mine?(@user) && !Message.sent?(message)
     elsif session[:message_base] == 'syndicate' || session[:message_base] == 'general'
-      do_we_permit = true unless message.source_message_id.present?
+      do_we_permit = true if message.source_message_id.blank? && message.mine?(@user)
     else
       if message.source_feedback_id.blank?
         if message.source_contact_id.blank?
@@ -61,108 +61,107 @@ module MessagesHelper
     do_we_permit
   end
 
-  def do_we_show_archive_action(message)
+  def do_we_show_archive_action?(message)
     do_we_permit = false
     if session[:message_base] == 'userid_messages'
       do_we_permit = false
     elsif session[:message_base] == 'syndicate' || session[:message_base] == 'general'
-      do_we_permit = true if !message.is_archived? && !message.a_reply?
+      do_we_permit = true if message.not_archived? && message.not_a_reply?
     else
-      do_we_permit = true if !message.is_archived? && !message.a_reply?
+      do_we_permit = true if message.not_archived? && message.not_a_reply?
     end
     do_we_permit
   end
 
-  def do_we_show_destroy_action(message)
+  def do_we_show_destroy_action?(message)
     do_we_permit = false
     if session[:message_base] == 'userid_messages'
       do_we_permit = false
     elsif session[:message_base] == 'syndicate' || session[:message_base] == 'general'
-      do_we_permit = true if message.is_archived? && message.keep.blank? && !message.a_reply?
+      do_we_permit = true if message.archived? && message.not_being_kept? && message.not_a_reply?
     else
-      do_we_permit = true if message.is_archived? && message.keep.blank? && !message.a_reply?
+      do_we_permit = true if message.archived? && message.not_being_kept? && message.not_a_reply?
     end
     do_we_permit
   end
 
-  def do_we_index_list_archived
+  def do_we_index_list_archived?
     session[:message_base] == 'general' && !session[:archived_contacts] ? do_we_permit = true :  do_we_permit = false
     do_we_permit
   end
 
-  def do_we_index_list_index
+  def do_we_index_list_index?
     session[:message_base] == 'general' && session[:archived_contacts] ? do_we_permit = true :  do_we_permit = false
     do_we_permit
   end
 
-  def do_we_index_list_archived_syndicate
+  def do_we_index_list_archived_syndicate?
     session[:message_base] == 'syndicate' && !session[:archived_contacts] ? do_we_permit = true :  do_we_permit = false
   end
 
-  def do_we_index_list_index_syndicate
+  def do_we_index_list_index_syndicate?
     session[:message_base] == 'syndicate' && session[:archived_contacts] ? do_we_permit = true :  do_we_permit = false
   end
 
-  def do_we_show_keep_action(message)
+  def do_we_show_keep_action?(message)
     (session[:message_base] == 'syndicate' || session[:message_base] == 'general') && message.keep.blank? && !message.a_reply? ? do_we_permit = true : do_we_permit = false
     do_we_permit
   end
 
-  def do_we_show_unkeep_action(message)
+  def do_we_show_unkeep_action?(message)
     (session[:message_base] == 'syndicate' || session[:message_base] == 'general') && message.keep.present? && !message.a_reply? ? do_we_permit = true :  do_we_permit = false
     do_we_permit
   end
 
-  def do_we_show_restore_action(message)
+  def do_we_show_restore_action?(message)
     do_we_permit = false
     if session[:message_base] == 'userid_messages'
       do_we_permit = false
     elsif session[:message_base] == 'syndicate' || session[:message_base] == 'general'
-      do_we_permit = true if message.is_archived? && message.keep.blank? && !message.a_reply?
+      do_we_permit = true if message.not_archived? && message.not_being_kept? && message.not_a_reply?
     else
-      do_we_permit = true if message.is_archived? && message.keep.blank? && !message.a_reply?
+      do_we_permit = true if message.not_archived? && message.not_being_kept? && message.not_a_reply?
     end
     do_we_permit
   end
 
-  def do_we_show_replies_action(message)
-    do_we_permit = false
-    do_we_permit = true unless reply_messages_count(message) == 0
+  def do_we_show_replies_action?(message)
+    message.there_are_reply_messages? ? do_we_permit = true : do_we_permit = false
     do_we_permit
   end
 
-  def do_we_show_remove_action(message)
+  def do_we_show_remove_action?(message)
     do_we_permit = false
     if session[:message_base] == 'userid_messages'
-      do_we_permit = true unless message.a_reply? && !@user.userid_messages.include?(message.source_message_id)
+      do_we_permit = true if message.not_a_reply? || (message.a_reply? && @user.does_not_have_original_message?(message))
     end
     do_we_permit
   end
 
-  def do_we_show_reply_action(message)
+  def do_we_show_reply_action?(message)
     do_we_permit = false
     if session[:message_base] == 'userid_messages' || session[:message_base] == 'general' || session[:message_base] == 'syndicate'
-      do_we_permit = true unless message.a_reply?
+      do_we_permit = true if message.not_a_reply? ||  (message.a_reply? && @user.does_not_have_original_message?(message))
     end
     do_we_permit
   end
 
-  def do_we_show_resend_action(message)
+  def do_we_show_resend_action?(message)
     do_we_permit = false
     if session[:message_base] == 'userid_messages'
       do_we_permit = false
     else
-      do_we_permit = true if message.sent_messages.present? && !message.is_archived? && !message.a_reply?
+      do_we_permit = true if message.sent_messages.present? && message.not_a_reply?
     end
     do_we_permit
   end
 
-  def do_we_show_send_action(message)
+  def do_we_show_send_action?(message)
     do_we_permit = false
     if session[:message_base] == 'userid_messages'
       do_we_permit = false
     else
-      do_we_permit = true if !message.sent_messages.present? && !message.is_archived? && !message.a_reply?
+      do_we_permit = true if !message.sent_messages.present? && message.not_a_reply?
     end
     do_we_permit
   end
@@ -218,7 +217,7 @@ module MessagesHelper
     header
   end
 
-  def index_sort_links
+  def index_sort_links?
     case
     when params[:source].present?
       index_sort_links = false
@@ -347,17 +346,6 @@ module MessagesHelper
     sent_messages
   end
 
-  def show_links
-    case
-    when @message.source_feedback_id.present?
-      dynamic_link('Show Feedback', feedback_path(@message.source_feedback_id), {class: 'btn weight--light  btn--small', method: :get})
-    when @message.source_contact_id.present?
-      dynamic_link('Show Contact', contact_path(@message.source_contact_id), {class: 'btn weight--light  btn--small', method: :get})
-    else
-      primary_links(*default_links)
-    end
-  end
-
   def show_breadcrumb
     case
     when session[:message_base] == 'syndicate'
@@ -367,26 +355,6 @@ module MessagesHelper
     when session[:message_base] == 'general'
       breadcrumb :show_message, @message
     end
-  end
-
-  def show_display_links
-    case
-    when params[:source] == 'list_syndicate_messages' || params[:source] == 'list_archived_syndicate_messages'
-      show_links = true
-    when params[:source] == 'show_reply_messages' || params[:source] == 'user_reply_messages' || params[:source] == 'userid_reply_messages'
-      show_links = false
-    when params[:source].present?
-      show_links = false
-    else
-      show_links = true
-    end
-    show_links
-  end
-
-  def show_replies_action
-    show_replies_action = true
-    show_replies_action = false if reply_messages_count(@message) == 0
-    show_replies_action
   end
 
   def show_replies_breadcrumbs
@@ -416,13 +384,6 @@ module MessagesHelper
       replies_title = "All Replies for Message sent by #{@main_message.userid} '#{@main_message.subject}'"
     end
     replies_title
-  end
-
-  def show_reply_action
-    get_user_info_from_userid
-    show_reply_action = true
-    show_reply_action = false if @user.syndicate_groups.include?(session[:syndicate])
-    show_reply_action
   end
 
   def show_title

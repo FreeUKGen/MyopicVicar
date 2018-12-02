@@ -79,9 +79,8 @@ class Message
   end
   #....................................................................Instance Methods...............................
   def a_reply?
-    result = false
-    result = true if source_message_id.present? || source_feedback_id.present? || source_contact_id.present?
-    result
+    source_message_id.present? || source_feedback_id.present? || source_contact_id.present? ? answer = true : answer = false
+    answer
   end
 
   def archive
@@ -91,6 +90,10 @@ class Message
     end
   end
 
+  def archived?
+    archived
+  end
+
   def add_identifier
     self.identifier = Time.now.to_i - Time.gm(2015).to_i
   end
@@ -98,6 +101,11 @@ class Message
   def add_syndicate?
     original_message = Message.find(source_message_id)
     original_message.present? && original_message.syndicate.present? ? answer = true : answer = false
+    answer
+  end
+
+  def being_kept?
+    self.keep.blank? ? answer = true : answer = false
     answer
   end
 
@@ -137,8 +145,23 @@ class Message
     reply_sent_messages(self, sender_userid, recipients, copies)
   end
 
-  def is_archived?
-    archived
+  def mine?(user)
+    userid == user.userid ? answer = true : answer = false
+    answer
+  end
+
+  def not_archived?
+    !archived
+  end
+
+  def not_a_reply?
+    source_message_id.present? || source_feedback_id.present? || source_contact_id.present? ? answer = false : answer = true
+    answer
+  end
+
+  def not_being_kept?
+    self.keep.present? ? answer = true : answer = false
+    answer
   end
 
   def original_message_id
@@ -169,13 +192,20 @@ class Message
     coordinator
   end
 
+  def there_are_no_reply_messages?
+    Message.fetch_replies(id).count == 0 ? answer = true : answer = false
+    answer
+  end
+
+  def there_are_reply_messages?
+    Message.fetch_replies(id).count >= 1 ? answer = true : answer = false
+    answer
+  end
+
   def update_keep
-    p 'we are updating keep'
-    p self
-    self.update_attributes(:archived => true, :keep => true)
-    p self
+    update_attributes(archived: true, keep: true)
     Message.message_replies(id).each do |message|
-      message.update_attributes(:archived => true, :keep => true)
+      message.update_attributes(archived: true, keep: true)
     end
   end
 
