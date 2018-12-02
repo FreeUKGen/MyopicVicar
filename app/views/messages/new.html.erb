@@ -6,6 +6,11 @@
   <% else%>
     <h4 style="text-align: center">Creating Reply to General Message</h4>
   <% end%>
+  <% if session[:message_base] == 'general' || session[:message_base] == 'syndicate' %>
+    <p style="text-align: center">This reply will go to all recipients of the original message and stored in the list of message replies</p>
+  <% else %>
+    <p style="text-align: center">This reply will go to the originator of the original message and stored in the list of message replies</p>
+  <% end%>
   <%= render 'reply'%>
 <% else %>
   <% breadcrumb :create_message,  @message%>

@@ -16,6 +16,7 @@ class Message
   field :images, type: String
   field :recipients, type: Array.new, default: nil
   field :archived, type: Boolean, default: false
+  field :keep, type: Boolean, default: false
   field :syndicate, type: String
   attr_accessor :action, :inactive_reasons,:active
   embeds_many :sent_messages
@@ -33,10 +34,10 @@ class Message
   before_create :add_identifier
 
 
-  index({_id: 1, userid: 1},{name: "id_userid"})
-  index({_id: 1, sent_time: 1},{name: "id_sent_time"})
-  index({_id: 1, identifier: 1},{name: "id_indentifier"})
-  index({_id: 1, message_time: 1},{name: "id_message_time"})
+  index({_id: 1, userid: 1},{name: 'id_userid'})
+  index({_id: 1, sent_time: 1},{name: 'id_sent_time'})
+  index({_id: 1, identifier: 1},{name: 'id_indentifier'})
+  index({_id: 1, message_time: 1},{name: 'id_message_time'})
 
   class << self
 
@@ -45,11 +46,15 @@ class Message
     end
 
     def can_be_destroyed?(message)
-      message.source_message_id.present? || Message.fetch_replies(message.id).count == 0
+      message.source_message_id.present? || Message.fetch_replies(message.id).count == 0 || message.keep.blank?
     end
 
     def id(id)
       where(:id => id)
+    end
+
+    def keep(status)
+      where(keep: status)
     end
 
     def not_message_reply(status)
@@ -73,9 +78,15 @@ class Message
     end
   end
   #....................................................................Instance Methods...............................
+  def a_reply?
+    result = false
+    result = true if source_message_id.present? || source_feedback_id.present? || source_contact_id.present?
+    result
+  end
+
   def archive
-    self.update_attribute(:archived, true)
-    Message.message_replies(self.id).each do |message|
+    update_attribute(:archived, true)
+    Message.message_replies(id).each do |message|
       message.update_attribute(:archived, true)
     end
   end
@@ -130,12 +141,6 @@ class Message
     archived
   end
 
-  def is_a_reply?
-    result = false
-    result = true if source_message_id.present? || source_feedback_id.present? || source_contact_id.present?
-    result
-  end
-
   def original_message_id
     original_message = Message.id(source_message_id).first if source_message_id.present?
     original_message = original_message.id if original_message.present?
@@ -164,6 +169,23 @@ class Message
     coordinator
   end
 
+  def update_keep
+    p 'we are updating keep'
+    p self
+    self.update_attributes(:archived => true, :keep => true)
+    p self
+    Message.message_replies(id).each do |message|
+      message.update_attributes(:archived => true, :keep => true)
+    end
+  end
+
+  def update_unkeep
+    update_attributes(archived: true, keep: false)
+    Message.message_replies(id).each do |message|
+      message.update_attributes(archived: true, keep: false)
+    end
+  end
+
   private
 
   class << self
@@ -186,7 +208,7 @@ class Message
         @messages = Message.feedback_replies.archived(archived).order_by(order)
       when 'list_contact_reply_message'
         @messages = Message.contact_replies.archived(archived).order_by(order)
-      when 'list_syndicate_messages" || "list_archived_syndicate_messages'
+      when 'list_syndicate_messages' || 'list_archived_syndicate_messages'
         @messages = Message.non_feedback_contact_reply_messages.syndicate(syndicate).archived(archived).not_message_reply(true).all.order_by(order)
       else
         @messages = Message.non_feedback_contact_reply_messages.archived(archived).not_message_reply(true).all.order_by(order)
@@ -234,7 +256,7 @@ class Message
   end
 
   def get_inactive_users_without_reasons(recipient_user, open_data_status, active_user, ccs)
-    recipient_user.new_transcription_agreement(open_data_status_value(open_data_status)).active(active_user).reason("temporary").email_address_valid.each do |person|
+    recipient_user.new_transcription_agreement(open_data_status_value(open_data_status)).active(active_user).reason('temporary').email_address_valid.each do |person|
       add_message_to_userid_messages(person)
       ccs << person.create_friendly_from_email
     end

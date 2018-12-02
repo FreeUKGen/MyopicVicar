@@ -61,10 +61,13 @@ MyopicVicar::Application.routes.draw do
   get 'messages/:id/user_reply_messages',:to => 'messages#user_reply_messages', :as => :user_reply_messages
   get 'messages/userid_reply_messages', :to => 'messages#userid_reply_messages', :as => :userid_reply_messages
   get 'messages/list_unsent_messages',  :to => 'messages#list_unsent_messages', :as => :list_unsent_messages
+  get 'messages/list_archived',  :to => 'messages#list_archived', :as => :list_archived_messages
   get 'messages/list_syndicate_messages',  :to => 'messages#list_syndicate_messages', :as => :list_syndicate_messages
   get 'messages/list_archived_syndicate_messages',  :to => 'messages#list_archived_syndicate_messages', :as => :list_archived_syndicate_messages
   get 'messages/:id/archive',  :to => 'messages#archive', :as => :archive_message
   get 'messages/:id/restore',  :to => 'messages#restore', :as => :restore_message
+  get 'messages/:id/keep',  :to => 'messages#keep', :as => :keep_message
+  get 'messages/:id/unkeep',  :to => 'messages#unkeep', :as => :unkeep_message
   get 'messages/:id/force_destroy',  :to => 'messages#force_destroy', :as => :force_destroy_messages
 
   resources :messages

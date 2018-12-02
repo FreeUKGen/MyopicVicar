@@ -1,20 +1,22 @@
 <% show_breadcrumb%>
-<div style="clear:both;"> </div>
+<div style='clear:both;'> </div>
 <% if flash[:notice] %>
-  <div id="notice" style="color:blue"><br>
+  <div id='notice' style='color:blue'><br>
     <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
   </div>
 <% end %>
 <br>
-<h4 class=" text--center push--bottom"><%= show_title %> <%= @message.identifier %></h4>
-<div  class=" text--center push--bottom">
-  <%= link_to 'Resend this Message', send_message_messages_path(@message.id, source: params[:action]), :class => "btn weight--light  btn--small" , data: { confirm: 'Are you sure you want to resend this message'}, method: :get if do_we_show_resend_action(@message) %>
-  <%= link_to 'Send this Message', send_message_messages_path(@message.id, source: params[:action]), :class => "btn weight--light  btn--small" , data: { confirm: 'Are you sure you want to send this message'}, method: :get if do_we_show_send_action(@message) %>
-  <%= link_to 'View Replies', show_reply_messages_path(@message.id, source: params[:action]), class: "btn weight--light  btn--small", method: :get if show_replies_action %>
-  <%= link_to 'Create Reply', reply_messages_path(@message.id, source: params[:action]),method: :get,:class => "btn weight--light  btn--small" if do_we_show_reply_action(@message) %>
-  <%= link_to 'Archive', archive_message_path(@message.id,:source => params[:action]), :class => "btn weight--light  btn--small", data: { confirm: 'Are you sure you want to Archive this message?' } if do_we_show_archive_action(@message) %>
-  <%= link_to 'Restore', restore_message_path(@message.id,:source => params[:action]), :class => "btn weight--light  btn--small", data: { confirm: 'Are you sure you want to Restore this message?' } if do_we_show_restore_action(@message) %>
-  <%= link_to 'Destroy', force_destroy_messages_path(@message.id,:source => params[:action]), :class => "btn weight--light  btn--small", title: "This message may have replies which and will also be destroyed with this action", data: { confirm: 'This message may have replies. Are you sure you want to delete this message and all its replies' } if do_we_show_destroy_action(@message) %>
-  <%= link_to 'Remove from my list', remove_from_userid_detail_path(@message.id,:source => params[:action]), :class => "btn weight--light  btn--small",  data: { confirm: 'Are you sure you want remove this message' }, method: :delete if do_we_show_remove_action(@message) %>
+<h4 class=' text--center push--bottom'><%= show_title %> <%= @message.identifier %></h4>
+<div  class=' text--center push--bottom'>
+  <%= link_to 'Resend this Message', send_message_messages_path(@message.id, source: params[:action]), :class => 'btn weight--light  btn--small' , data: { confirm: 'Are you sure you want to resend this message'}, method: :get if do_we_show_resend_action(@message) %>
+  <%= link_to 'Send this Message', send_message_messages_path(@message.id, source: params[:action]), :class => 'btn weight--light  btn--small' , data: { confirm: 'Are you sure you want to send this message'}, method: :get if do_we_show_send_action(@message) %>
+  <%= link_to 'View Replies', show_reply_messages_path(@message.id, source: params[:action]), class: 'btn weight--light  btn--small', method: :get if show_replies_action %>
+  <%= link_to 'Create Reply', reply_messages_path(@message.id, source: params[:action]),method: :get,:class => 'btn weight--light  btn--small' if do_we_show_reply_action(@message) %>
+  <%= link_to 'Archive', archive_message_path(@message.id,:source => params[:action]), :class => 'btn weight--light  btn--small', data: { confirm: 'Are you sure you want to Archive this message?' } if do_we_show_archive_action(@message) %>
+  <%= link_to 'Restore', restore_message_path(@message.id,:source => params[:action]), :class => 'btn weight--light  btn--small', data: { confirm: 'Are you sure you want to Restore this message?' } if do_we_show_restore_action(@message) %>
+  <%= link_to 'Destroy', force_destroy_messages_path(@message.id,:source => params[:action]), :class => 'btn weight--light  btn--small', title: 'This message may have replies which and will also be destroyed with this action', data: { confirm: 'This message may have replies. Are you sure you want to delete this message and all its replies' } if do_we_show_destroy_action(@message) %>
+  <%= link_to 'Remove from my list', remove_from_userid_detail_path(@message.id, :source => params[:action]), :class => 'btn weight--light  btn--small',  data: { confirm: 'Are you sure you want remove this message' }, method: :delete if do_we_show_remove_action(@message) %>
+  <%= link_to 'Keep until I say so', keep_message_path(@message.id,:source => params[:action]), :class => 'btn weight--light  btn--small',  data: { confirm: 'Are you sure you want keep this message' } if do_we_show_keep_action(@message) %>
+  <%= link_to 'Remove Keep Designation', unkeep_message_path(@message.id,:source => params[:action]), :class => 'btn weight--light  btn--small',  data: { confirm: 'Are you sure you want remove the keep designation for this message' } if do_we_show_unkeep_action(@message) %>
 </div>
 <%= render 'message_detail'%>

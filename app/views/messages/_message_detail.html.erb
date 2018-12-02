@@ -1,39 +1,52 @@
-<div class="grid">
-  <section class="island ">
-    <div class="grid__item  ">
-      <table class="table--bordered table--data " >
+<div class='grid'>
+  <section class='island '>
+    <div class='grid__item  '>
+      <table class='table--bordered table--data ' >
         <colgroup >
-        <col class=t40>
-        <col class=t60>
+          <col class=t40>
+          <col class=t60>
         </colgroup>
         <tr>
-          <th class="caps">Field</th>
-          <th  class="caps">Value</th>
+          <th class='caps'>Field</th>
+          <th  class='caps'>Value</th>
         </tr>
         <tr>
-          <td>subject :</td> <td class="weight--semibold"> <%= @message.subject %>  </td>
+          <td>subject :</td>
+          <td class='weight--semibold'> <%= @message.subject %>  </td>
         </tr>
         <tr>
-        <td>Originated by : </td> <td class="weight--semibold"> <%= @message.userid %>  </td>
+          <td>Originated by : </td>
+          <td class='weight--semibold'> <%= @message.userid %>  </td>
         </tr>
         <tr>
-          <td>Time and date of message:</td> <td class="weight--semibold">  <%= @message.message_time.strftime("%H:%M on %F") unless @message.message_time.nil? %></td>
+          <td>Time and date of message:</td>
+          <td class='weight--semibold'>  <%= @message.message_time.strftime('%H:%M on %F') unless @message.message_time.nil? %></td>
         </tr>
-        
         <tr>
-          <td>Identifier :</td><td class="weight--semibold"><%= @message.identifier %></td>
+          <td>Archived : </td>
+          <td class='weight--semibold'> <%= archived(@message) %>  </td>
         </tr>
-        
         <tr>
-          <td>Message :</td><td class="weight--semibold"><textarea style="width:90%;" rows="8" readonly="readonly"><%= @message.body %></textarea></td>
+          <td>To be Kept : </td>
+          <td class='weight--semibold'> <%= kept(@message) %>  </td>
+        </tr>
+        <tr>
+          <td>Identifier :</td>
+          <td class='weight--semibold'><%= @message.identifier %></td>
+        </tr>
+        <tr>
+          <td>Message :</td>
+          <td class='weight--semibold'>
+            <textarea style='width:90%;' rows='8' readonly='readonly'><%= @message.body %></textarea>
+          </td>
         </tr>
         <tr>
           <td>Recipients :</td>
           <td>
-            <div class="scrollable">
+            <div class='scrollable'>
               <% if @message.sent_messages.present?%>
                 <% @message.sent_messages.order_by(sent_time: -1).each do |each_message| %>
-                  <%= content_tag :p, class: "weight--semibold" do %>
+                  <%= content_tag :p, class: 'weight--semibold' do %>
                     <% unless each_message.recipients.blank? %>
                       <%= each_message.recipients%> <%= formatted_date(each_message)%> Sent by: <%= each_message.sender%>
                     <% end %>
@@ -46,10 +59,10 @@
         <tr>
           <td>Additional Recipients :</td>
           <td>
-            <div class="scrollable">
+            <div class='scrollable'>
               <% if @message.sent_messages.present?%>
                 <% @message.sent_messages.order_by(sent_time: -1).each do |each_message| %>
-                  <%= content_tag :p, class: "weight--semibold" do %>
+                  <%= content_tag :p, class: 'weight--semibold' do %>
                     <% unless each_message.other_recipients.blank? %>
                       <%= each_message.other_recipients%> <%= formatted_date(each_message)%> Sent by: <%= each_message.sender%>
                     <% end %>

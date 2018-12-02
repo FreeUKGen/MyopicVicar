@@ -5,6 +5,11 @@ module MessagesHelper
     response
   end
 
+  def archived(message)
+    message.archived.present? ? archived = 'Yes' : archived = 'No'
+    archived
+  end
+
   def attachment(message)
     message.attachment.present? || message.images.present? ? attachment = 'Yes' : attachment = 'No'
     attachment
@@ -13,17 +18,19 @@ module MessagesHelper
   def commit_action(f, params=nil)
     case
     when session[:message_base] == 'userid_messages'
-      f.action :submit, as: :input,  label: 'Reply Message', button_html: {class: 'btn'}, wrapper_html: { class: "grid__item  one-whole text--center" }
-    when session[:message_base] == 'syndicate' || session[:message_base] == 'general'
-      f.action :submit, as: :input,  label: 'Submit', button_html: {class: 'btn'}, wrapper_html: { class: "grid__item  one-whole text--center" }
+      f.action :submit, as: :input,  label: 'Reply Message', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
+    when (session[:message_base] == 'syndicate' || session[:message_base] == 'general') && !params[:id].present?
+      f.action :submit, as: :input,  label: 'Submit', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
+    when (session[:message_base] == 'syndicate' || session[:message_base] == 'general') && params[:id].present?
+      f.action :submit, as: :input,  label: 'Reply Message', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
     when params[:source_feedback_id].present?
-      f.action :submit, as: :input,  label: 'Reply Feedback', button_html: {class: 'btn'}, wrapper_html: { class: "grid__item  one-whole text--center" }
+      f.action :submit, as: :input,  label: 'Reply Feedback', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
     when params[:source_contact].present?
-      f.action :submit, as: :input,  label: 'Reply Contact', button_html: {class: 'btn'}, wrapper_html: { class: "grid__item  one-whole text--center" }
+      f.action :submit, as: :input,  label: 'Reply Contact', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
     when params[:id].present?
-      f.action :submit, as: :input, label: 'Save & Send', button_html: { class: "btn " }, wrapper_html: { class: "grid__item  one-whole text--center" }
+      f.action :submit, as: :input, label: 'Save & Send', button_html: { class: 'btn ' }, wrapper_html: { class: 'grid__item  one-whole text--center' }
     else
-      f.action :submit, as: :input,  label: 'Submit' , button_html: {class: 'btn'}, wrapper_html: { class: "grid__item  one-whole text--center" }
+      f.action :submit, as: :input,  label: 'Submit' , button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
     end
   end
 
@@ -59,9 +66,9 @@ module MessagesHelper
     if session[:message_base] == 'userid_messages'
       do_we_permit = false
     elsif session[:message_base] == 'syndicate' || session[:message_base] == 'general'
-      do_we_permit = true unless message.is_archived?
+      do_we_permit = true if !message.is_archived? && !message.a_reply?
     else
-      do_we_permit = true unless message.is_archived?
+      do_we_permit = true if !message.is_archived? && !message.a_reply?
     end
     do_we_permit
   end
@@ -71,10 +78,38 @@ module MessagesHelper
     if session[:message_base] == 'userid_messages'
       do_we_permit = false
     elsif session[:message_base] == 'syndicate' || session[:message_base] == 'general'
-      do_we_permit = true if message.is_archived?
+      do_we_permit = true if message.is_archived? && message.keep.blank? && !message.a_reply?
     else
-      do_we_permit = true if message.is_archived?
+      do_we_permit = true if message.is_archived? && message.keep.blank? && !message.a_reply?
     end
+    do_we_permit
+  end
+
+  def do_we_index_list_archived
+    session[:message_base] == 'general' && !session[:archived_contacts] ? do_we_permit = true :  do_we_permit = false
+    do_we_permit
+  end
+
+  def do_we_index_list_index
+    session[:message_base] == 'general' && session[:archived_contacts] ? do_we_permit = true :  do_we_permit = false
+    do_we_permit
+  end
+
+  def do_we_index_list_archived_syndicate
+    session[:message_base] == 'syndicate' && !session[:archived_contacts] ? do_we_permit = true :  do_we_permit = false
+  end
+
+  def do_we_index_list_index_syndicate
+    session[:message_base] == 'syndicate' && session[:archived_contacts] ? do_we_permit = true :  do_we_permit = false
+  end
+
+  def do_we_show_keep_action(message)
+    (session[:message_base] == 'syndicate' || session[:message_base] == 'general') && message.keep.blank? && !message.a_reply? ? do_we_permit = true : do_we_permit = false
+    do_we_permit
+  end
+
+  def do_we_show_unkeep_action(message)
+    (session[:message_base] == 'syndicate' || session[:message_base] == 'general') && message.keep.present? && !message.a_reply? ? do_we_permit = true :  do_we_permit = false
     do_we_permit
   end
 
@@ -83,9 +118,9 @@ module MessagesHelper
     if session[:message_base] == 'userid_messages'
       do_we_permit = false
     elsif session[:message_base] == 'syndicate' || session[:message_base] == 'general'
-      do_we_permit = true if message.is_archived?
+      do_we_permit = true if message.is_archived? && message.keep.blank? && !message.a_reply?
     else
-      do_we_permit = true if message.is_archived?
+      do_we_permit = true if message.is_archived? && message.keep.blank? && !message.a_reply?
     end
     do_we_permit
   end
@@ -99,20 +134,15 @@ module MessagesHelper
   def do_we_show_remove_action(message)
     do_we_permit = false
     if session[:message_base] == 'userid_messages'
-      if session[:manager]
-        do_we_permit = true
-      else
-        do_we_permit = true unless message.is_a_reply?
-      end
-
+      do_we_permit = true unless message.a_reply? && !@user.userid_messages.include?(message.source_message_id)
     end
     do_we_permit
   end
 
   def do_we_show_reply_action(message)
     do_we_permit = false
-    if session[:message_base] == 'userid_messages'
-      do_we_permit = true unless message.is_a_reply?
+    if session[:message_base] == 'userid_messages' || session[:message_base] == 'general' || session[:message_base] == 'syndicate'
+      do_we_permit = true unless message.a_reply?
     end
     do_we_permit
   end
@@ -122,7 +152,7 @@ module MessagesHelper
     if session[:message_base] == 'userid_messages'
       do_we_permit = false
     else
-      do_we_permit = true if message.sent_messages.present? && !message.is_archived?
+      do_we_permit = true if message.sent_messages.present? && !message.is_archived? && !message.a_reply?
     end
     do_we_permit
   end
@@ -132,58 +162,58 @@ module MessagesHelper
     if session[:message_base] == 'userid_messages'
       do_we_permit = false
     else
-      do_we_permit = true if !message.sent_messages.present? && !message.is_archived?
+      do_we_permit = true if !message.sent_messages.present? && !message.is_archived? && !message.a_reply?
     end
     do_we_permit
   end
 
   def edit_title
-    session[:syndicate] ? edit_title = "Edit Syndicate Message Reference" : edit_title = "Edit Message Reference"
+    session[:syndicate] ? edit_title = 'Edit Syndicate Message Reference' : edit_title = 'Edit Message Reference'
   end
 
   def formatted_date(message)
-    message.sent_time.blank? ? response = '' : response = message.sent_time.strftime("Sent at %H:%M on %e %b %Y")
+    message.sent_time.blank? ? response = '' : response = message.sent_time.strftime('Sent at %H:%M on %e %b %Y')
     response
   end
 
   def index_breadcrumbs
     case
-    when params[:action] ==  "list_incoming_syndicate_messages" || params[:action] == "list_archived_incoming_syndicate_messages"
+    when params[:action] ==  'list_incoming_syndicate_messages' || params[:action] == 'list_archived_incoming_syndicate_messages'
       breadcrumb :incoming_syndicate_messages
     when session[:syndicate]
       breadcrumb :message_to_syndicate
-    when params[:action] == "feedback_reply_messages"
+    when params[:action] == 'feedback_reply_messages'
       breadcrumb :feedback_messages, @feedback
-    when params[:action] == "list_feedback_reply_message"
+    when params[:action] == 'list_feedback_reply_message'
       breadcrumb :list_feedback_reply_messages
-    when params[:action] == "contact_reply_messages"
+    when params[:action] == 'contact_reply_messages'
       breadcrumb :contact_messages, @contact
-    when params[:action] == "list_contact_reply_message"
+    when params[:action] == 'list_contact_reply_message'
       breadcrumb :list_contact_reply_messages
     else
       breadcrumb :messages
     end
   end
 
-  def index_header(action,syndicate,archived)
-    header = "#{action}"
+  def index_header(action, syndicate)
+    header = ''
     case action
-    when "list_feedback_reply_message"
-      header = header + "List of Feedback Reply messages"
-    when "feedback_reply_messages"
+    when 'list_feedback_reply_message'
+      header = header + 'List of Feedback Reply messages'
+    when 'feedback_reply_messages'
       header = header + "List of Reply Message for feedback sent by #{@feedback.name}, reference: #{@feedback.identifier}"
-    when "list_contact_reply_message"
-      header = header + "List of Contact Reply messages"
-    when "contact_reply_messages"
+    when 'list_contact_reply_message'
+      header = header + 'List of Contact Reply messages'
+    when 'contact_reply_messages'
       header = header + "List of Reply Message for contact sent by #{@contact.name}, reference: #{@contact.identifier}"
     else
-      header = header + "List of "
-      if archived
-        header = header + "Archived "
+      header = header + 'List of '
+      if session[:archived_contacts]
+        header = header + 'Archived '
       else
-        header = header + "Active "
+        header = header + 'Active '
       end
-      syndicate.present? ? header = header + "Syndicate Messages for " + syndicate : header = header + "Messages"
+      syndicate.present? ? header = header + 'Syndicate Messages for ' + syndicate : header = header + 'Messages'
     end
     header
   end
@@ -192,9 +222,9 @@ module MessagesHelper
     case
     when params[:source].present?
       index_sort_links = false
-    when params[:source] == "list_syndicate_messages" || params[:source] == "list_archived_syndicate_messages"
+    when params[:source] == 'list_syndicate_messages' || params[:source] == 'list_archived_syndicate_messages'
       index_sort_links = false
-    when params[:source] == "show_reply_messages" || params[:source] == "user_reply_messages" || params[:source] == "userid_reply_messages"
+    when params[:source] == 'show_reply_messages' || params[:source] == 'user_reply_messages' || params[:source] == 'userid_reply_messages'
       index_sort_links = false
     else
       index_sort_links = true
@@ -214,9 +244,9 @@ module MessagesHelper
     case
     when params[:source].present?
       index_active_links = false
-    when params[:source] == "list_syndicate_messages" || params[:source] == "list_archived_syndicate_messages"
+    when params[:source] == 'list_syndicate_messages' || params[:source] == 'list_archived_syndicate_messages'
       index_active_links = true
-    when params[:source] == "show_reply_messages" || params[:source] == "user_reply_messages" || params[:source] == "userid_reply_messages"
+    when params[:source] == 'show_reply_messages' || params[:source] == 'user_reply_messages' || params[:source] == 'userid_reply_messages'
       index_active_links = false
     else
       index_active_links = false
@@ -227,47 +257,52 @@ module MessagesHelper
   def index_show_link
     case
     when params[:source].present?
-      index_show_link('Show', message_path(message.id,:source => params[:action] ), :class => "btn weight--light  btn--small")
-    when params[:source] == "list_syndicate_messages" || params[:source] == "list_archived_syndicate_messages"
-      index_show_link('Show', message_path(message.id,:source => params[:source] ), :class => "btn weight--light  btn--small")
-    when params[:source] == "show_reply_messages" || params[:source] == "user_reply_messages" || params[:source] == "userid_reply_messages"
-      index_show_link('Show', message_path(message.id), :class => "btn weight--light  btn--small")
+      index_show_link('Show', message_path(message.id,:source => params[:action] ), :class => 'btn weight--light  btn--small')
+    when params[:source] == 'list_syndicate_messages' || params[:source] == 'list_archived_syndicate_messages'
+      index_show_link('Show', message_path(message.id,:source => params[:source] ), :class => 'btn weight--light  btn--small')
+    when params[:source] == 'show_reply_messages' || params[:source] == 'user_reply_messages' || params[:source] == 'userid_reply_messages'
+      index_show_link('Show', message_path(message.id), :class => 'btn weight--light  btn--small')
     else
     end
   end
 
+  def kept(message)
+    message.keep.present? ? keep = 'Yes' : keep = 'No'
+    keep
+  end
+
   def message_attachment_tag(message)
     if message.attachment.present?
-      content_tag :td, :class => "weight--semibold" do
-        link_to("#{@message[:attachment]}", @message.attachment_url, target: "_blank", title: 'The link will open in a new tab')
+      content_tag :td, :class => 'weight--semibold' do
+        link_to('#{@message[:attachment]}', @message.attachment_url, target: '_blank', title: 'The link will open in a new tab')
       end
     else
-      content_tag(:td, "No text document attached.", :class => "weight--semibold")
+      content_tag(:td, 'No text document attached.', :class => 'weight--semibold')
     end
   end
 
   def message_image_tag(message)
     if message.images.present?
-      content_tag :td, :class => "weight--semibold" do
+      content_tag :td, :class => 'weight--semibold' do
         image_tag message.images_url
       end
     else
-      content_tag :td, 'No images attached', :class => "weight--semibold"
+      content_tag :td, 'No images attached', :class => 'weight--semibold'
     end
   end
 
   def message_subject
     case
     when !@respond_to_feedback.nil?
-      text_field_tag 'message[subject]', "Re: Thank you for your feedback. Reference #{@respond_to_feedback.identifier}", :class => "text-input", readonly: true, title: "Re: Thank you for your feedback. Reference #{@respond_to_feedback.identifier}"
+      text_field_tag 'message[subject]', "Re: Thank you for your feedback. Reference #{@respond_to_feedback.identifier}", :class => 'text-input', readonly: true, title: "Re: Thank you for your feedback. Reference #{@respond_to_feedback.identifier}"
     when !@respond_to_contact.nil?
-      text_field_tag 'message[subject]', contact_subject(@respond_to_contact), :class => "text-input", readonly: true, title: contact_subject(@respond_to_contact)
+      text_field_tag 'message[subject]', contact_subject(@respond_to_contact), :class => 'text-input', readonly: true, title: contact_subject(@respond_to_contact)
     when !@respond_to_message.nil?
-      text_field_tag 'message[subject]', "Re: #{@respond_to_message.subject}", :class => "text-input", readonly: true
+      text_field_tag 'message[subject]', "Re: #{@respond_to_message.subject}", :class => 'text-input', readonly: true
     when @message.subject.nil? && @respond_to_message.nil? && @respond_to_feedback.nil?
-      text_field_tag 'message[subject]', nil, :class => "text-input", placeholder: "Mandatory", required: true
+      text_field_tag 'message[subject]', nil, :class => 'text-input', placeholder: 'Mandatory', required: true
     when @message.subject.present? && @respond_to_message.nil? && @respond_to_feedback.nil?
-      text_field_tag 'message[subject]', "#{@message.subject}", :class => "text-input"
+      text_field_tag 'message[subject]', "#{@message.subject}", :class => 'text-input'
     end
   end
 
@@ -285,7 +320,7 @@ module MessagesHelper
 
   def recipients_list
     if @syndicate
-      options_for_select(["Members of Syndicate"])
+      options_for_select(['Members of Syndicate'])
     else
       options_for_select(@options,@sent_message.recipients)
     end
@@ -294,9 +329,9 @@ module MessagesHelper
   def reply_action(message)
     case
     when ReplyUseridRole::GENERAL_REPLY_ROLES.include?(@user.person_role)
-      link_to 'Reply', reply_messages_path(message.id),method: :get,:class => "btn weight--light  btn--small" if message.source_message_id.blank?
+      link_to 'Reply', reply_messages_path(message.id),method: :get,:class => 'btn weight--light  btn--small' if message.source_message_id.blank?
     when session[:syndicate].present? &&  ReplyUseridRole::COORDINATOR_ROLES.include?(@user.person_role)
-      link_to 'Reply', reply_messages_path(message.id),method: :get,:class => "btn weight--light  btn--small" if message.source_message_id.blank?
+      link_to 'Reply', reply_messages_path(message.id),method: :get,:class => 'btn weight--light  btn--small' if message.source_message_id.blank?
     end
   end
 
@@ -315,9 +350,9 @@ module MessagesHelper
   def show_links
     case
     when @message.source_feedback_id.present?
-      dynamic_link('Show Feedback', feedback_path(@message.source_feedback_id), {class: "btn weight--light  btn--small", method: :get})
+      dynamic_link('Show Feedback', feedback_path(@message.source_feedback_id), {class: 'btn weight--light  btn--small', method: :get})
     when @message.source_contact_id.present?
-      dynamic_link('Show Contact', contact_path(@message.source_contact_id), {class: "btn weight--light  btn--small", method: :get})
+      dynamic_link('Show Contact', contact_path(@message.source_contact_id), {class: 'btn weight--light  btn--small', method: :get})
     else
       primary_links(*default_links)
     end
@@ -336,9 +371,9 @@ module MessagesHelper
 
   def show_display_links
     case
-    when params[:source] == "list_syndicate_messages" || params[:source] == "list_archived_syndicate_messages"
+    when params[:source] == 'list_syndicate_messages' || params[:source] == 'list_archived_syndicate_messages'
       show_links = true
-    when params[:source] == "show_reply_messages" || params[:source] == "user_reply_messages" || params[:source] == "userid_reply_messages"
+    when params[:source] == 'show_reply_messages' || params[:source] == 'user_reply_messages' || params[:source] == 'userid_reply_messages'
       show_links = false
     when params[:source].present?
       show_links = false
@@ -357,7 +392,9 @@ module MessagesHelper
   def show_replies_breadcrumbs
     case
     when session[:message_base] == 'syndicate'
-      breadcrumb :source_list_syndicate_messages , @main_message
+      breadcrumb :replies_list_syndicate_messages, @main_message
+    when session[:message_base] == 'general'
+      breadcrumb :reply_messages_list, @main_message
     else
       breadcrumb :reply_messages_list, @main_message
     end
@@ -366,15 +403,17 @@ module MessagesHelper
   def show_replies_title
     case
     when session[:message_base] == 'syndicate'
-      replies_title = "All Replies for Syndicate Message #{@main_message.identifier}"
+      replies_title = "All Replies for Syndicate Message #{@main_message.identifier} '#{@main_message.subject}'"
     when session[:message_base] == 'userid_messages'
       if @main_message.syndicate.present?
-        replies_title = "All My Replies for Syndicate Message #{@main_message.identifier}"
+        replies_title = "All My Replies for Syndicate Message #{@main_message.identifier} '#{@main_message.subject}'"
       else
-        replies_title = "All My Replies for General Message #{@main_message.identifier}"
+        replies_title = "All My Replies for General Message #{@main_message.identifier} '#{@main_message.subject}'"
       end
+    when session[:message_base] == 'general'
+      replies_title = "All Replies for Message #{@main_message.identifier} '#{@main_message.subject}'"
     else
-      replies_title = "All Replies for Message sent by #{@main_message.userid} on #{@main_message.message_time.to_formatted_s(:long)}"
+      replies_title = "All Replies for Message sent by #{@main_message.userid} '#{@main_message.subject}'"
     end
     replies_title
   end
@@ -389,15 +428,19 @@ module MessagesHelper
   def show_title
     case
     when session[:message_base] == 'syndicate'
-      @message.source_message_id.present? ? show_title = "Reply Syndicate Message Reference" : show_title = "Syndicate Message Reference"
+      @message.source_message_id.present? ? show_title = 'Reply Syndicate Message Reference' : show_title = 'Syndicate Message Reference'
     when session[:message_base] == 'userid_messages'
       if @message.syndicate.present?
-        @message.source_message_id.present? ? show_title = "My Syndicate Reply Message Reference" : show_title = "Syndicate Message Reference"
+        @message.source_message_id.present? ? show_title = 'My Syndicate Reply Message Reference' : show_title = 'Syndicate Message Reference'
       else
-        @message.source_message_id.present? ? show_title = "Reply Message Reference" : show_title = "Message Reference"
+        @message.source_message_id.present? ? show_title = 'Reply Message Reference' : show_title = 'Message Reference'
       end
     when session[:message_base] == 'general'
-      @message.source_message_id.present? ? show_title = "Reply Message Reference" : show_title = "Message Reference"
+      if @message.syndicate.present?
+        @message.source_message_id.present? ? show_title = 'Reply to Syndicate Message Reference' : show_title = 'Syndicate Message Reference'
+      else
+        @message.source_message_id.present? ? show_title = 'Reply Message Reference' : show_title = 'Message Reference'
+      end
     end
   end
 
@@ -410,14 +453,14 @@ module MessagesHelper
   def reply_message_email
     case
     when params.has_key?(:source_feedback_id)
-      content_tag :li, class: "grid__item  one-whole  palm-one-whole push--bottom" do
+      content_tag :li, class: 'grid__item  one-whole  palm-one-whole push--bottom' do
         label_tag 'To Email'
-        text_field_tag 'email', "#{@respond_to_feedback.email_address}", :class => "text-input", readonly: true
+        text_field_tag 'email', "#{@respond_to_feedback.email_address}", :class => 'text-input', readonly: true
       end
     when params.has_key?(:source_contact_id)
-      content_tag :li, class: "grid__item  one-whole  palm-one-whole push--bottom" do
+      content_tag :li, class: 'grid__item  one-whole  palm-one-whole push--bottom' do
         label_tag 'To Email'
-        text_field_tag 'email', "#{@respond_to_contact.email_address}", :class => "text-input", readonly: true
+        text_field_tag 'email', "#{@respond_to_contact.email_address}", :class => 'text-input', readonly: true
       end
     end
   end
@@ -426,14 +469,14 @@ module MessagesHelper
 
   def contact_subject_hash
     {
-      'Website Problem' => "RE: Thank you for reporting a website problem",
-      'Data Question' => "RE: Thank you for your data question",
-      'Data Problem' => "RE: Thank you for reporting a problem with our data",
-      'Volunteering Question' => "RE: Thank you for question about volunteering",
-      'General Comment' => "RE: Thank you for the general comment",
-      'Thank-you' => "RE: Thank you for your compliments",
-      'Genealogical Question' => "RE: Thank you for a genealogical question",
-      'Enhancement Suggestion' => "RE: Thank you for the suggested enhancement"
+      'Website Problem' => 'RE: Thank you for reporting a website problem',
+      'Data Question' => 'RE: Thank you for your data question',
+      'Data Problem' => 'RE: Thank you for reporting a problem with our data',
+      'Volunteering Question' => 'RE: Thank you for question about volunteering',
+      'General Comment' => 'RE: Thank you for the general comment',
+      'Thank-you' => 'RE: Thank you for your compliments',
+      'Genealogical Question' => 'RE: Thank you for a genealogical question',
+      'Enhancement Suggestion' => 'RE: Thank you for the suggested enhancement'
     }
   end
 
@@ -449,9 +492,9 @@ module MessagesHelper
   def primary_links(link_1, link_2)
     capture do
       concat link_1
-      concat " "
+      concat ' '
       concat link_2
-      concat " "
+      concat ' '
       concat dynamic_link("View #{pluralize(@sent_replies.count, 'Reply') }", show_reply_messages_path(@message.id)) unless @sent_replies.count == 0
     end
   end

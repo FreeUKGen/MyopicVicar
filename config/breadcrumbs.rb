@@ -549,22 +549,16 @@ crumb :show_message do |message|
   case
   when session[:message_base] == 'userid_messages' && params[:source] == 'show_reply_messages'
     parent :reply_messages_list, Message.id(session[:original_message_id]).first, :source => params[:source]
-  when session[:message_base] == 'userid_messages' && params[:source] == 'userid_messages'
-    parent :userid_messages
-  when session[:message_base] == 'userid_messages' && params[:source] == 'show'
+  when session[:message_base] == 'userid_messages' && (params[:source] == 'userid_messages' || params[:source] == 'show')
     parent :userid_messages
   when session[:message_base] == 'syndicate' && params[:source] == 'show_reply_messages'
     parent :replies_list_syndicate_messages, Message.id(session[:original_message_id]).first, :source => params[:source]
-  when session[:message_base] == 'syndicate' && params[:source] == 'userid_messages'
+  when session[:message_base] == 'syndicate' && (params[:source] == 'userid_messages' || params[:source] == 'show')
     parent :show_list_syndicate_messages
-  when session[:message_base] == 'syndicate' && params[:source] == 'show'
-    parent :show_list_syndicate_messages, message, :source => params[:source]
   when session[:message_base] == 'general' && params[:source] == 'show_reply_messages'
     parent :reply_messages_list, Message.id(session[:original_message_id]).first, :source => params[:source]
-  when session[:message_base] == 'general' && params[:source] == 'userid_messages'
+  when session[:message_base] == 'general' && (params[:source] == 'userid_messages' || params[:source] == 'show')
     parent :messages
-  when session[:message_base] == 'general' && params[:source] == 'show'
-    parent :messages, message, :source => params[:source]
   when message.source_feedback_id.present?
     feedback = Feedback.id(message.source_feedback_id).first
     parent :feedback_messages, feedback
@@ -578,7 +572,7 @@ end
 crumb :show_list_syndicate_messages do |message|
   link 'Show Syndicate Message', message_path(message, :source => params[:source])
   case
-  when params[:source] == 'show_reply_messages' && params[:source] == 'list_syndicate_messages'
+  when session[:message_base] == 'syndicate' && (params[:source] == 'show_reply_messages' || params[:source] == 'list_syndicate_messages')
     parent :replies_list_syndicate_messages, Message.id(message.source_message_id).first
   else
     parent :message_to_syndicate
@@ -611,6 +605,8 @@ crumb :reply_messages_list do |message|
     parent :userid_messages
   when session[:message_base] == 'userid_messages' && params[:source] == 'show'
     parent :show_message, message, source: params[:source]
+  when session[:message_base] == 'general'
+    parent :messages
   else
     parent :root
   end
@@ -806,7 +802,6 @@ crumb :edit_zero_year_entry do |entry,file|
 end
 
 
-
 # breadcrumbs from 'assignments'
 crumb :my_own_assignments do |user|
   link "#{user.userid} Assignments", my_own_assignment_path(user)
@@ -815,7 +810,7 @@ end
 
 # from 'assignments' => 'list image groups under my syndicate'
 crumb :request_assignments_by_syndicate do |user|
-  link "Image Groups Under My Syndicate", my_list_by_syndicate_image_server_group_path(user)
+  link 'Image Groups Under My Syndicate', my_list_by_syndicate_image_server_group_path(user)
   parent :my_own_assignments, user
 end
 
