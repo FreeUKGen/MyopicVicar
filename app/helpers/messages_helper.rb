@@ -46,9 +46,9 @@ module MessagesHelper
   def do_we_permit_an_edit?(message)
     do_we_permit = false
     if session[:message_base] == 'userid_messages'
-      do_we_permit = true if message.mine?(@user) && !Message.sent?(message)
+      do_we_permit = true if message.mine?(@user) && !message.sent?
     elsif session[:message_base] == 'syndicate' || session[:message_base] == 'general'
-      do_we_permit = true if message.source_message_id.blank? && message.mine?(@user)
+      do_we_permit = true if message.source_message_id.blank? && message.mine?(@user) && !message.sent?
     else
       if message.source_feedback_id.blank?
         if message.source_contact_id.blank?
@@ -78,7 +78,7 @@ module MessagesHelper
     if session[:message_base] == 'userid_messages'
       do_we_permit = false
     elsif session[:message_base] == 'syndicate' || session[:message_base] == 'general'
-      do_we_permit = true if message.archived? && message.not_being_kept? && message.not_a_reply?
+      do_we_permit = true if message.not_being_kept? && message.not_a_reply?
     else
       do_we_permit = true if message.archived? && message.not_being_kept? && message.not_a_reply?
     end

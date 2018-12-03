@@ -182,6 +182,10 @@ class Message
     end
   end
 
+  def sent?
+    sent_messages.deliveries.count != 0
+  end
+
   def syndicate_coordinator
     synd = Syndicate.syndicate_code(syndicate).first
     coordinator = synd.syndicate_coordinator if syndicate.present?
@@ -228,7 +232,7 @@ class Message
       case action
       when 'list_unsent_messages'
         @messages = Message.non_feedback_contact_reply_messages.all.find_all do |message|
-          !Message.sent?(message)
+          !message.sent?
         end
       when 'list_feedback_reply_message'
         @messages = Message.feedback_replies.archived(archived).order_by(order)
@@ -244,12 +248,8 @@ class Message
 
     def sent_messages(messages)
       messages.order(message_sent_time: :asc).find_all do |message|
-        Message.sent?(message)
+        message.sent?
       end
-    end
-
-    def sent?(message)
-      message.sent_messages.deliveries.count != 0
     end
   end
 
