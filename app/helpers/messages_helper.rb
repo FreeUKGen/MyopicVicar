@@ -131,6 +131,11 @@ module MessagesHelper
   end
 
   def do_we_show_remove_action?(message)
+    p message
+    p message.not_a_reply?
+    p message.a_reply?
+    p @user.does_not_have_original_message?(message)
+    p @user
     do_we_permit = false
     if session[:message_base] == 'userid_messages'
       do_we_permit = true if message.not_a_reply? || (message.a_reply? && @user.does_not_have_original_message?(message))
@@ -275,8 +280,6 @@ module MessagesHelper
       content_tag :td, :class => 'weight--semibold' do
         link_to('#{@message[:attachment]}', @message.attachment_url, target: '_blank', title: 'The link will open in a new tab')
       end
-    else
-      content_tag(:td, 'No text document attached.', :class => 'weight--semibold')
     end
   end
 
@@ -285,8 +288,6 @@ module MessagesHelper
       content_tag :td, :class => 'weight--semibold' do
         image_tag message.images_url
       end
-    else
-      content_tag :td, 'No images attached', :class => 'weight--semibold'
     end
   end
 
@@ -369,40 +370,54 @@ module MessagesHelper
   end
 
   def show_replies_title
-    case
-    when session[:message_base] == 'syndicate'
-      replies_title = "All Replies for Syndicate Message #{@main_message.identifier} '#{@main_message.subject}'"
-    when session[:message_base] == 'userid_messages'
-      if @main_message.syndicate.present?
-        replies_title = "All My Replies for Syndicate Message #{@main_message.identifier} '#{@main_message.subject}'"
-      else
-        replies_title = "All My Replies for General Message #{@main_message.identifier} '#{@main_message.subject}'"
-      end
-    when session[:message_base] == 'general'
-      replies_title = "All Replies for Message #{@main_message.identifier} '#{@main_message.subject}'"
+    if @main_message.syndicate.present?
+      replies_title = 'All Replies for Syndicate Message'
     else
-      replies_title = "All Replies for Message sent by #{@main_message.userid} '#{@main_message.subject}'"
+      replies_title = 'All Replies for Message'
     end
+    replies_title = replies_title + " created by #{@main_message.userid} on #{@main_message.created_at.strftime('%F')} and sent #{@main_message.message_time.strftime('%F')}"
     replies_title
   end
 
-  def show_title
+  def show_status_title
     case
-    when session[:message_base] == 'syndicate'
-      @message.source_message_id.present? ? show_title = 'Reply Syndicate Message Reference' : show_title = 'Syndicate Message Reference'
-    when session[:message_base] == 'userid_messages'
-      if @message.syndicate.present?
-        @message.source_message_id.present? ? show_title = 'My Syndicate Reply Message Reference' : show_title = 'Syndicate Message Reference'
-      else
-        @message.source_message_id.present? ? show_title = 'Reply Message Reference' : show_title = 'Message Reference'
-      end
-    when session[:message_base] == 'general'
-      if @message.syndicate.present?
-        @message.source_message_id.present? ? show_title = 'Reply to Syndicate Message Reference' : show_title = 'Syndicate Message Reference'
-      else
-        @message.source_message_id.present? ? show_title = 'Reply Message Reference' : show_title = 'Message Reference'
-      end
+    when @message.archived? && @message.being_kept?
+      the_show_title = 'The message is both archived and being kept. '
+    when @message.archived?
+      the_show_title = 'The message is archived. '
+    when @message.being_kept?
+      the_show_title = 'The message is archived. '
+    else
+      the_show_title = nil
     end
+    the_show_title
+  end
+
+  def show_attachment_title
+    case
+    when @message.attachment.blank? && @message.images.blank?
+      the_show_title = 'There are no attachments or images.'
+    when @message.attachment.present? && @message.images.present?
+      the_show_title = 'There are both an attachment and an image.'
+    when @message.attachment.blank?
+      the_show_title = 'There is an image with the message.'
+    else
+      the_show_title = 'There is an attachment with the message.'
+    end
+    the_show_title
+  end
+
+  def show_title
+    @message.a_reply? ? the_show_title = "A reply created by #{@message.userid} on #{@message.created_at.strftime('%F')} in response to a " : the_show_title = ''
+    if @message.syndicate.present?
+      the_show_title = the_show_title + 'Syndicate Message'
+    else
+      the_show_title = the_show_title + 'Message'
+    end
+    message = Message.id(@message.source_message_id).first
+    @message.a_reply? ? the_show_title = the_show_title + " created by #{message.userid} on #{message.created_at.strftime('%F')}" :
+      the_show_title = the_show_title + " created by #{@message.userid} on #{@message.created_at.strftime('%F')}"
+    the_show_title
   end
 
   def source(message)

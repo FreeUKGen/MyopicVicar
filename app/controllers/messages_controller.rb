@@ -417,8 +417,7 @@ class MessagesController < ApplicationController
     get_user_info_from_userid
     @user.reload
     session[:manager] = @manager
-    #@main_messages = Message.in(id: @user.userid_messages, source_message_id: nil).all.order_by(message_sent_time: -1)
-    @main_messages = Message.in(id: @user.userid_messages).all.order_by(message_sent_time: -1)
+    @main_messages = Message.in(id: @user.userid_messages).order_by(message_sent_time: -1)
     session[:syndicate].blank? ? @messages = @main_messages : @messages = syndicate_messages(@main_messages, session[:syndicate])
   end
 

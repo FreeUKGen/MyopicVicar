@@ -6,7 +6,8 @@
   </div>
 <% end %>
 <br>
-<h4 class=' text--center push--bottom'><%= show_title %> <%= @message.identifier %></h4>
+<h4 class=' text--center push--bottom'><%= show_title %></h4>
+<h4 class=' text--center push--bottom'><%= show_status_title if show_status_title.present? %> <%= show_attachment_title if show_attachment_title.present? %></h4>
 <div  class=' text--center push--bottom'>
   <%= link_to 'Edit', edit_message_path(@message.id, source: params[:action]),:class => 'btn weight--light  btn--small',
    method: :get if do_we_permit_an_edit?(@message)  %>
@@ -21,4 +22,5 @@
   <%= link_to 'Keep until I say so', keep_message_path(@message.id,:source => params[:action]), :class => 'btn weight--light  btn--small',  data: { confirm: 'Are you sure you want keep this message' } if do_we_show_keep_action?(@message) %>
   <%= link_to 'Remove Keep Designation', unkeep_message_path(@message.id,:source => params[:action]), :class => 'btn weight--light  btn--small',  data: { confirm: 'Are you sure you want remove the keep designation for this message' } if do_we_show_unkeep_action?(@message) %>
 </div>
+<h4 class=' text--center push--bottom'> Subject: <%= @message.subject %></h4>
 <%= render 'message_detail'%>
