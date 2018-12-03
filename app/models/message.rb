@@ -91,7 +91,7 @@ class Message
   end
 
   def archived?
-    archived
+    archived.present?
   end
 
   def add_identifier

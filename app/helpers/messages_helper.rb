@@ -131,14 +131,9 @@ module MessagesHelper
   end
 
   def do_we_show_remove_action?(message)
-    p message
-    p message.not_a_reply?
-    p message.a_reply?
-    p @user.does_not_have_original_message?(message)
-    p @user
     do_we_permit = false
     if session[:message_base] == 'userid_messages'
-      do_we_permit = true if message.not_a_reply? || (message.a_reply? && @user.does_not_have_original_message?(message))
+      do_we_permit = true if message.not_a_reply? || (message.a_reply? && @user.has_original_message?(message))
     end
     do_we_permit
   end

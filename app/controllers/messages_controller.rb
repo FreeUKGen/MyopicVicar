@@ -50,7 +50,7 @@ class MessagesController < ApplicationController
       end
     when 'Reply Message'
       get_user_info_from_userid
-      @message.syndicate =  @user.syndicate if @message.add_syndicate?
+      @message.syndicate = @user.syndicate if @message.add_syndicate?
       if @message.save
         flash[:notice] = 'Reply for Message is created and sent'
         reply_for_message(@message); return if performed?
@@ -227,7 +227,7 @@ class MessagesController < ApplicationController
 
   def return_for_create
     case session[:message_base]
-    when 'user_messages'
+    when 'userid_messages'
       redirect_to action: 'user_messages'
     when 'syndicate'
       redirect_to action: 'list_syndicate_messages'
