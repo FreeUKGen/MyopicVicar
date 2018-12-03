@@ -1,11 +1,11 @@
 <% breadcrumb :userid_reply_messages %>
-<h2 class="text--center">
+<h3 class="text--center">
   <%= pluralize(@messages.count, 'Reply Message') %> for <%= @user.userid %>
-</h2>
+</h3>
 <% if flash[:notice] %>
-<div id="notice" style="color:blue"><br>
-  <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
-</div>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+  </div>
 <% end %>
 <br>
 <%= render 'index_table' %>

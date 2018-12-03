@@ -23,4 +23,13 @@
   <%= link_to 'Remove Keep Designation', unkeep_message_path(@message.id,:source => params[:action]), :class => 'btn weight--light  btn--small',  data: { confirm: 'Are you sure you want remove the keep designation for this message' } if do_we_show_unkeep_action?(@message) %>
 </div>
 <h4 class=' text--center push--bottom'> Subject: <%= @message.subject %></h4>
+<% if @message.sent_messages.present?%>
+  <% @message.sent_messages.order_by(sent_time: -1).each do |each_message| %>
+    <%= content_tag :p, class: "text--center weight--semibold" do %>
+      <% unless each_message.recipients.blank? %>
+        Sent by: <%= each_message.sender%> to <%= each_message.recipients%> on <%= each_message.sent_time.strftime("%H:%M on %F")      unless each_message.sent_time.blank? %>
+      <% end %>
+    <% end %>
+  <% end%>
+<% end%>
 <%= render 'message_detail'%>

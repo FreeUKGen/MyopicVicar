@@ -105,14 +105,11 @@ class Message
   end
 
   def being_kept?
-    self.keep.blank? ? answer = true : answer = false
+    self.keep.present? ? answer = true : answer = false
     answer
   end
 
   def communicate(recipients, active, reasons, sender, open_data_status, syndicate = nil)
-    sending = UseridDetail.userid(sender).first
-    sender_email = sending.create_friendly_from_email unless sending.blank?
-    sender_email = 'FreeREG <freereg-contacts@freereg.org.uk>' if sender_email.blank?
     ccs = Array.new
     active_user = user_status(active)
     recipients.each do |recip|
@@ -126,23 +123,22 @@ class Message
         get_inactive_users_without_reasons(recipient_user, open_data_status, active_user, ccs)
       end
     end
-    ccs << sender_email unless sender_email == 'FreeREG <freereg-contacts@freereg.org.uk>'
+    ccs << sender
     ccs = ccs.uniq
-    UserMailer.send_message(self, ccs, sender_email, sending).deliver_now
+    UserMailer.send_message(self, ccs, sender).deliver_now
   end
 
   def communicate_message_reply(original_message)
-    sender_userid = userid
     to_userid = original_message.userid
     copy_to = syndicate_coordinator if syndicate.present?
-    UserMailer.message_reply(self, to_userid, copy_to, original_message, sender_userid).deliver_now
+    UserMailer.message_reply(self, to_userid, copy_to, original_message, userid).deliver_now
     add_message_to_userid_messages(UseridDetail.look_up_id(to_userid)) unless to_userid.blank?
     add_message_to_userid_messages(UseridDetail.look_up_id(copy_to)) unless copy_to.blank?
     recipients = Array.new
     recipients << to_userid
     recipients << copy_to unless copy_to.present? && copy_to == to_userid
     copies = Array.new
-    reply_sent_messages(self, sender_userid, recipients, copies)
+    reply_sent_messages(self, userid, recipients, copies)
   end
 
   def mine?(user)
@@ -151,7 +147,7 @@ class Message
   end
 
   def not_archived?
-    !archived
+    archived.blank?
   end
 
   def not_a_reply?
@@ -160,7 +156,7 @@ class Message
   end
 
   def not_being_kept?
-    self.keep.present? ? answer = true : answer = false
+    self.keep.blank? ? answer = true : answer = false
     answer
   end
 
@@ -272,7 +268,7 @@ class Message
   def get_active_users(recipient_user, open_data_status, active_user, ccs)
     recipient_user.new_transcription_agreement(open_data_status_value(open_data_status)).active(active_user).email_address_valid.each do |person|
       add_message_to_userid_messages(person)
-      ccs << person.create_friendly_from_email
+      ccs << person.userid
     end
   end
 
@@ -280,7 +276,7 @@ class Message
     reasons.each do |reason|
       recipient_user.new_transcription_agreement(open_data_status_value(open_data_status)).active(active_user).reason(reason).email_address_valid.each do |person|
         add_message_to_userid_messages(person)
-        ccs << person.create_friendly_from_email
+        ccs << person.userid
       end
     end
   end
@@ -288,7 +284,7 @@ class Message
   def get_inactive_users_without_reasons(recipient_user, open_data_status, active_user, ccs)
     recipient_user.new_transcription_agreement(open_data_status_value(open_data_status)).active(active_user).reason('temporary').email_address_valid.each do |person|
       add_message_to_userid_messages(person)
-      ccs << person.create_friendly_from_email
+      ccs << person.userid
     end
   end
 

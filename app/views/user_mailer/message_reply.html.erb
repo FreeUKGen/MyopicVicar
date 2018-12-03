@@ -1,13 +1,8 @@
 <p> Dear <%= @original_message.userid %>;</p>
-<p>A reply to message reference 
-  <a href="<%=Rails.application.config.website%>/messages/<%=@original_message.id%>"><%= @original_message.identifier %>
-    was sent to us by <%= @reply.userid %> at <%= @reply.message_time.strftime("%H:%M on %F") unless @reply.message_time.nil?%>.</p>
-  <p>As follows:</p>
-  <p><%= @reply.body%></p>
-  <% if @reply.attachment.present?%>
-    There is an File attachment
-  <% end%>
-  <% if @reply.images.present?%>
-    There is an Image attachment
-  <% end%>
-  <p> The FreeREG Team</p>
+<p>A reply to message reference <%= @original_message.identifier %> with a subject <%= @original_message.subject %>
+  was sent to you by <%= @reply.userid %> at <%= @reply.message_time unless @reply.message_time.nil?%>.
+</p>
+<p>
+  You are requested to log into the Members website (if not already logged in) and to review the message there. <br>
+  On the initial landing page after the log in; select the "Messages" button and on the list of messages select the "Show" for message identification <%=@reply.identifier%></p>
+<p> The FreeREG Team</p>

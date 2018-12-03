@@ -137,7 +137,16 @@ class UseridDetail
       end
       return answer, transcribed_by
     end
+
+    def create_friendly_from_email(userid)
+      user = UseridDetail.userid(userid).first
+      user.present? ? friendly_email = "#{user.person_forename} #{user.person_surname} <#{user.email_address}>" :
+        friendly_email = 'FreeREG Servant <freereg-contacts@freereg.org.uk>'
+      friendly_email
+    end
   end
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Instance Methods
 
   def add_fields(type,syndicate)
     self.syndicate = syndicate if self.syndicate.nil?
@@ -164,9 +173,7 @@ class UseridDetail
     #self.new_transcription_agreement = "Unknown"
   end
 
-  def create_friendly_from_email
-    friendly_email = "#{person_forename} #{person_surname} <#{email_address}>"
-  end
+
 
   def count_not_checked_messages
     self.reload

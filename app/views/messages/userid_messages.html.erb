@@ -1,6 +1,6 @@
 <% breadcrumb :userid_messages,  @messages%>
 <br>
-<h2 class="text--center"><%= pluralize(@messages.count, 'Message') %> for <%= @user.userid %></h2>
+<h3 class="text--center"><%= pluralize(@messages.count, 'Message') %> for <%= @user.userid %></h3>
 <% if flash[:notice] %>
   <div id="notice" style="color:blue"><br>
     <%= flash[:notice] %>  <% flash[:notice] = nil%><br>

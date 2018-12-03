@@ -1,7 +1,7 @@
 class UserMailer < ActionMailer::Base
   add_template_helper(EmailHelper)
 
-  default from: ' FreeREG <freereg-contacts@freereg.org.uk>'
+  default from: ' FreeREG Servant <freereg-contacts@freereg.org.uk>'
 
   def acknowledge_communication(original)
     @communication = original
@@ -13,6 +13,14 @@ class UserMailer < ActionMailer::Base
     @communication = original
     get_attachment(@communication)
     mail(to: "#{@communication.email_address}", :subject => "Thank you #{@communication.name} for your feedback. Reference #{@communication.identifier}")
+  end
+
+  def add_emails(ccs)
+    ccs_emails = Array.new
+    ccs.each do |cc|
+      ccs_emails << UseridDetail.create_friendly_from_email(cc)
+    end
+    ccs_emails
   end
 
   def batch_processing_failure(message,user,batch)
@@ -133,13 +141,14 @@ class UserMailer < ActionMailer::Base
     mail(from: sender_email_address, to:  "#{@feedback.name} <#{@feedback.email_address}>", bcc: @cc_email_addresses, subject: @message.subject)
   end
 
-  def message_reply(reply, to_userid, copy_to, original_message, sender_userid)
+  def message_reply(reply, to_userid, copy_to_userid, original_message, sender_userid)
     @reply = reply
     @original_message = original_message
-    sender_email_address = get_email_address_from_userid(sender_userid)
-    copy_to_mail_address = get_email_address_from_userid(copy_to) if copy_to.present?
-    to_email_address = get_email_address_from_userid(to_userid)
-    mail(from: sender_email_address, to: to_email_address, cc: copy_to_mail_address, subject: "#{@reply.subject} reference #{@original_message.identifier}")
+    @sending = UseridDetail.userid(sender_userid).first
+    sender_email = UseridDetail.create_friendly_from_email(sender_userid)
+    to_email = UseridDetail.create_friendly_from_email(to_userid)
+    copy_to_email = UseridDetail.create_friendly_from_email(copy_to_userid)
+    mail(from: sender_email, to: to_email, cc: copy_to_email, subject: "#{@sending.person_forename} #{@sending.person_surname} of FreeREG sent a message #{@reply.subject} in response to reference #{@original_message.identifier}")
   end
 
   def feedback_action_request(contact,send_to,copies_to)
@@ -343,15 +352,15 @@ class UserMailer < ActionMailer::Base
     mail(:from => 'freereg-registration@freereg.org.uk',:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => 'FreeReg change of email') unless @coordinator.blank?
   end
 
-  def send_message(mymessage, ccs, from, sender)
+  def send_message(mymessage, ccs, from)
     @message = mymessage
-    @sender = sender
+    @sender = UseridDetail.userid(from).first
     @reply_messages = Message.where(source_message_id: @message.source_message_id).all unless @message.source_message_id.blank?
     @respond_to_message = Message.id(@message.source_message_id).first
-    from = 'vinodhini.subbu@freeukgenealogy.org.uk' if from.blank?
-    #get_message_attachment if @message.attachment.present? ||  @message.images.present?
-    mail(:from => from, :to => 'freereg-contacts@freereg.org.uk', :bcc => ccs, :subject => "#{@message.subject} from #{@sender.person_forename} #{@sender.person_surname} of FreeREG. Reference #{@message.identifier}")
-    #mail(:from => from ,:to => 'vinodhini.subbu@freeukgenealogy.org.uk', :subject => "#{@message.subject}. Reference #{@message.identifier}")
+    from_email = UseridDetail.create_friendly_from_email(from)
+    from_email = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>' if from_email.blank?
+    ccs_emails = add_emails(ccs)
+    mail(from: from_email, to: 'FreeREG Servant <freereg-contacts@freereg.org.uk>', bcc: ccs_emails, subject: "#{@message.subject} from #{@sender.person_forename} #{@sender.person_surname} of FreeREG. Reference #{@message.identifier}")
   end
 
   def send_logs(file,ccs,body_message,subjects)

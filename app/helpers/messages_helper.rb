@@ -118,7 +118,7 @@ module MessagesHelper
     if session[:message_base] == 'userid_messages'
       do_we_permit = false
     elsif session[:message_base] == 'syndicate' || session[:message_base] == 'general'
-      do_we_permit = true if message.not_archived? && message.not_being_kept? && message.not_a_reply?
+      do_we_permit = true if message.archived? && message.not_being_kept? && message.not_a_reply?
     else
       do_we_permit = true if message.not_archived? && message.not_being_kept? && message.not_a_reply?
     end
@@ -131,10 +131,7 @@ module MessagesHelper
   end
 
   def do_we_show_remove_action?(message)
-    do_we_permit = false
-    if session[:message_base] == 'userid_messages'
-      do_we_permit = true if message.not_a_reply? || (message.a_reply? && @user.has_original_message?(message))
-    end
+    session[:message_base] == 'userid_messages' ? do_we_permit = true : do_we_permit = false
     do_we_permit
   end
 
@@ -381,7 +378,7 @@ module MessagesHelper
     when @message.archived?
       the_show_title = 'The message is archived. '
     when @message.being_kept?
-      the_show_title = 'The message is archived. '
+      the_show_title = 'The message is being kept. '
     else
       the_show_title = nil
     end
