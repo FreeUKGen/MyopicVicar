@@ -78,7 +78,7 @@ module MessagesHelper
     if session[:message_base] == 'userid_messages'
       do_we_permit = false
     elsif session[:message_base] == 'syndicate' || session[:message_base] == 'general'
-      do_we_permit = true if message.not_being_kept? && message.not_a_reply?
+      do_we_permit = true if !message.sent? && message.mine?(@user)
     else
       do_we_permit = true if message.archived? && message.not_being_kept? && message.not_a_reply?
     end
