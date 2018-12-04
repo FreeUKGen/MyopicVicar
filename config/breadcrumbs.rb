@@ -572,8 +572,10 @@ end
 crumb :show_list_syndicate_messages do |message|
   link 'Show Syndicate Message', message_path(message, :source => params[:source])
   case
-  when session[:message_base] == 'syndicate' && (params[:source] == 'show_reply_messages' || params[:source] == 'list_syndicate_messages')
+  when session[:message_base] == 'syndicate' && params[:source] == 'show_reply_messages'
     parent :replies_list_syndicate_messages, Message.id(message.source_message_id).first
+  when session[:message_base] == 'syndicate' && params[:source] == 'list_syndicate_messages'
+    parent :message_to_syndicate
   else
     parent :message_to_syndicate
   end
