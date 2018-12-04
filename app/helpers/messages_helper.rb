@@ -138,7 +138,7 @@ module MessagesHelper
   def do_we_show_reply_action?(message)
     do_we_permit = false
     if session[:message_base] == 'userid_messages' || session[:message_base] == 'general' || session[:message_base] == 'syndicate'
-      do_we_permit = true if message.not_a_reply? ||  (message.a_reply? && @user.does_not_have_original_message?(message))
+      do_we_permit = true if message.sent? && (message.not_a_reply? ||  (message.a_reply? && @user.does_not_have_original_message?(message)))
     end
     do_we_permit
   end
