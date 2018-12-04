@@ -125,7 +125,7 @@ MyopicVicar::Application.routes.draw do
   get 'contacts/:id/force_destroy',  :to => 'contacts#force_destroy', :as => :force_destroy_contact
   get 'contacts/:id/archive',  :to => 'contacts#archive', :as => :archive_contact
   get 'contacts/:id/restore',  :to => 'contacts#restore', :as => :restore_contact
-  post 'contacts/:id/convert_to_issue(.:format)', :to => 'contacts#convert_to_issue', :as => :convert_contact_to_issue
+  get 'contacts/:id/convert_to_issue(.:format)', :to => 'contacts#convert_to_issue', :as => :convert_contact_to_issue
 
   resources :contacts
 
