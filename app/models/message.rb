@@ -123,6 +123,7 @@ class Message
         get_inactive_users_without_reasons(recipient_user, open_data_status, active_user, ccs)
       end
     end
+    add_message_to_userid_messages(UseridDetail.look_up_id(sender)) unless sender.blank? || ccs.include?(sender)
     ccs << sender
     ccs = ccs.uniq
     UserMailer.send_message(self, ccs, sender).deliver_now
