@@ -3,7 +3,7 @@ class MessagesController < ApplicationController
   require 'userid_role'
   require 'reply_userid_role'
 
-  skip_before_filter :require_login, only: [:show]
+  #skip_before_filter :require_login, only: [:show]
 
   def archive
     @message = Message.id(params[:id]).first
