@@ -45,14 +45,14 @@ MyopicVicar::Application.routes.draw do
 
   resources :denominations
 
-  get 'messages/:id/show_waitlist_msg',:to => 'messages#show_waitlist_msg', :as => :show_waitlist_msg
-  delete 'messages/:id/remove_from_useriddetail_waitlist(.:format)',:to => 'messages#remove_from_useriddetail_waitlist', :as => :remove_from_useriddetail_waitlist
+
+  delete 'messages/:id/remove_from_userid_detail(.:format)', :to => 'messages#remove_from_userid_detail', :as => :remove_from_userid_detail
   get 'messages/userid_messages', :to => 'messages#userid_messages', :as => :userid_messages
   get 'messages/list_by_type',  :to => 'messages#list_by_type', :as => :list_by_type_messages
   get 'messages/:id/send_message(.:format)',  :to => 'messages#send_message', :as => :send_message_messages
   get 'messages/list_by_name',  :to => 'messages#list_by_name', :as => :list_by_name_messages
   get 'messages/list_by_date',  :to => 'messages#list_by_date', :as => :list_by_date_messages
-  get 'messages/list_by_identifier',  :to => 'messages#list_by_identifier', :as => :list_by_identifier_messages
+  get 'messages/list_by_most_recent',  :to => 'messages#list_by_most_recent', :as => :list_by_most_recent_messages
   get 'messages/list_feedback_reply_messages',  :to => 'messages#list_feedback_reply_message', :as => :list_feedback_reply_message
   get 'messages/list_contact_reply_messages',  :to => 'messages#list_contact_reply_message', :as => :list_contact_reply_message
   get 'messages/select_by_identifier',  :to => 'messages#select_by_identifier', :as => :select_by_identifier_messages
@@ -61,6 +61,15 @@ MyopicVicar::Application.routes.draw do
   get 'messages/:id/user_reply_messages',:to => 'messages#user_reply_messages', :as => :user_reply_messages
   get 'messages/userid_reply_messages', :to => 'messages#userid_reply_messages', :as => :userid_reply_messages
   get 'messages/list_unsent_messages',  :to => 'messages#list_unsent_messages', :as => :list_unsent_messages
+  get 'messages/list_archived',  :to => 'messages#list_archived', :as => :list_archived_messages
+  get 'messages/list_syndicate_messages',  :to => 'messages#list_syndicate_messages', :as => :list_syndicate_messages
+  get 'messages/list_archived_syndicate_messages',  :to => 'messages#list_archived_syndicate_messages', :as => :list_archived_syndicate_messages
+  get 'messages/:id/archive',  :to => 'messages#archive', :as => :archive_message
+  get 'messages/:id/restore',  :to => 'messages#restore', :as => :restore_message
+  get 'messages/:id/keep',  :to => 'messages#keep', :as => :keep_message
+  get 'messages/:id/unkeep',  :to => 'messages#unkeep', :as => :unkeep_message
+  get 'messages/:id/force_destroy',  :to => 'messages#force_destroy', :as => :force_destroy_messages
+
   resources :messages
 
   get 'attic_files/select', :to =>'attic_files#select', :as => :select_attic_files
@@ -116,7 +125,7 @@ MyopicVicar::Application.routes.draw do
   get 'contacts/:id/force_destroy',  :to => 'contacts#force_destroy', :as => :force_destroy_contact
   get 'contacts/:id/archive',  :to => 'contacts#archive', :as => :archive_contact
   get 'contacts/:id/restore',  :to => 'contacts#restore', :as => :restore_contact
-  post 'contacts/:id/convert_to_issue(.:format)', :to => 'contacts#convert_to_issue', :as => :convert_contact_to_issue
+  get 'contacts/:id/convert_to_issue(.:format)', :to => 'contacts#convert_to_issue', :as => :convert_contact_to_issue
 
   resources :contacts
 

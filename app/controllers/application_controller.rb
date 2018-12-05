@@ -238,6 +238,7 @@ class ApplicationController < ActionController::Base
     session.delete(:redirect_to)
     session.delete(:site_stats)
     session.delete(:message)
+    session.delete(:message_base)
   end
 
   def clean_session_for_county

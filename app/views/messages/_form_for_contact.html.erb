@@ -11,12 +11,10 @@
           <label class="label" for="subject">Subject </label>
           <%= message_subject %>
         </li>
-
         <li class="grid__item  one-third  palm-one-whole push--bottom">
           <label>Textual Attachment<span  class="weight--normal"> (optional)</span><a href="#" class="right_tooltip"> <%= image_tag 'info.png', alt: 'Information', height: '16' %><span  >Please select the image you wish to upload (txt, html, htm, log, rtf, pdf only)</span></a></label>
           <input name="message[attachment]" type="file" >
         </li>
-
         <li class="grid__item  one-third  palm-one-whole push--bottom">
           <label>Image Attachment<span  class="weight--normal"> (optional)</span><a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span style="width: 900%" >Please select the image you wish to upload (jpg, gif)</span></a></label>
           <input name="message[images]" type="file" >
@@ -30,7 +28,7 @@
           <% end%>
         </li>
       </ul>
-      <%= commit_action(f,params.keys[2])%>
+      <%= commit_action(f,params)%>
     <% end %>
   </section>
 </div>

@@ -1,5 +1,5 @@
 <% breadcrumb :edit_message,  @message%>
-<h4 style="text-align: center">Editing message <%= @message.identifier %> for <%= @message.userid %></h4>
+<h4 style="text-align: center"><%= edit_title %> <%= @message.identifier %> for <%= @message.userid %></h4>
 
 <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>

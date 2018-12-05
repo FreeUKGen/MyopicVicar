@@ -1,21 +1,10 @@
 <% breadcrumb :userid_messages,  @messages%>
-<h2 class="text--center"><%= pluralize(@messages.count, 'Main Message') %> for <%= @user.userid %></h2>
-<p style="text-align: center">
-  <%= link_to "View Reply Messages", userid_reply_messages_path, :class => "btn weight--light  btn--small" %>
-</p>
+<br>
+<h3 class="text--center"><%= pluralize(@messages.count, 'Message') %> for <%= @user.userid %></h3>
 <% if flash[:notice] %>
-<div id="notice" style="color:blue"><br>
-  <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
-</div>
-<% end %>
-<section class="island">
-  <div class="scrollable">
-    <div class="table-wrapper">
-      <% if @messages.present? %>
-        <%= render 'list_messages'%>
-      <% else%>
-        <p>No messages.</p>
-      <% end%>
-    </div>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
   </div>
-</section>
+<% end %>
+<br>
+<%= render 'index_table' %>

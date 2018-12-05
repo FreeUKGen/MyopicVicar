@@ -176,7 +176,6 @@ class ContactsController < ApplicationController
     get_user_info_from_userid
     order = "contact_type ASC"
     @contacts = get_contacts.result(session[:archived_contacts],order)
-    p @contacts
     @archived = session[:archived_contacts]
     render :index
   end

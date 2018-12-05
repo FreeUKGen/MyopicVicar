@@ -15,7 +15,7 @@ class Syndicate
   before_save :add_lower_case_and_change_userid_fields
   after_save :propagate_change_in_code
   validate :syndicate_code_does_not_exist_on_change, on: :update
-  
+
   has_many :assignments
 
   index ({ syndicate_code: 1, syndicate_coordinator: 1 })
@@ -30,6 +30,7 @@ class Syndicate
     def coordinator(userid)
       where(:syndicate_coordinator => userid)
     end
+
     def syndicate_code(code)
       where(:syndicate_code => code)
     end

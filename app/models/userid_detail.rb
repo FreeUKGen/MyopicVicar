@@ -80,24 +80,31 @@ class UseridDetail
     def syndicate(syndicate)
       where(:syndicate => syndicate)
     end
+
     def userid(userid)
       where(:userid => userid)
     end
+
     def id(userid)
       where(:id => userid)
     end
+
     def role(role)
       where(:person_role => role)
     end
+
     def secondary(role)
       where(:secondary_role => role)
     end
+
     def active(active)
       where(:active => active)
     end
+
     def reason(reason)
       where(:disabled_reason_standard => reason)
     end
+
     def email_address_valid
       where(:email_address_valid => true)
     end
@@ -107,10 +114,12 @@ class UseridDetail
     end
 
     def new_transcription_agreement(new_transcription_agreement)
-      if new_transcription_agreement == "All"
-        where(new_transcription_agreement: { '$in': SentMessage::ACTUAL_STATUS_MESSAGES } )
+      if new_transcription_agreement[0] == 'All'
+        where(new_transcription_agreement: { '$in': SentMessage::ACTUAL_STATUS_MESSAGES })
+      elsif new_transcription_agreement.length == 1
+        where(new_transcription_agreement: new_transcription_agreement[0])
       else
-        where(new_transcription_agreement: new_transcription_agreement)
+        where(new_transcription_agreement: { '$in': new_transcription_agreement })
       end
     end
 
@@ -128,7 +137,16 @@ class UseridDetail
       end
       return answer, transcribed_by
     end
+
+    def create_friendly_from_email(userid)
+      user = UseridDetail.userid(userid).first
+      user.present? ? friendly_email = "#{user.person_forename} #{user.person_surname} <#{user.email_address}>" :
+        friendly_email = 'FreeREG Servant <freereg-contacts@freereg.org.uk>'
+      friendly_email
+    end
   end
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Instance Methods
 
   def add_fields(type,syndicate)
     self.syndicate = syndicate if self.syndicate.nil?
@@ -155,6 +173,8 @@ class UseridDetail
     #self.new_transcription_agreement = "Unknown"
   end
 
+
+
   def count_not_checked_messages
     self.reload
     userid_msgs = self.userid_messages
@@ -179,6 +199,11 @@ class UseridDetail
     end
   end
 
+  def does_not_have_original_message?(message)
+    userid_messages.include?(message.source_message_id) ? answer = false : answer = true
+    answer
+  end
+
   def feedback_without_replies
     self.update_userid_feedbacks
     @feedbacks_with_no_reply = self.userid_feedback_replies.keys.select do |id|
@@ -193,6 +218,14 @@ class UseridDetail
     end
   end
 
+  def has_original_message?(message)
+    userid_messages.include?(message.source_message_id) ? answer = true : answer = false
+    answer
+  end
+
+  def self.look_up_id(userid)
+    user = UseridDetail.userid(userid).first
+  end
 
   def remove_checked_messages(msg_id)
     self.reload

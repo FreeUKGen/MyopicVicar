@@ -20,7 +20,6 @@ class ManageResourcesController < ApplicationController
   def is_ok_to_render_actions?
     continue = true
     @user = get_user
-    p @user
     if @user.present?
       if @user.blank?
         logger.warn "FREEREG::USER userid not found in session #{session[:userid_detail_id]}"
@@ -83,7 +82,6 @@ class ManageResourcesController < ApplicationController
         @page = ""
       end
       @manage_resources = ManageResource.new
-      p 
       render 'actions'
       return
     end

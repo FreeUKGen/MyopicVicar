@@ -1,0 +1,12 @@
+<div class='grid'>
+  <section class='island '>
+    <div class='grid__item  '>
+      <p>
+        <textarea style='width:100%;' rows='15' readonly='readonly'><%= @message.body %></textarea>
+      </p>
+      <br>
+      <p><%= message_attachment_tag(@message) %></p>
+      <p><%= message_image_tag(@message) %></p>
+    </div>
+  </section>
+</div>
