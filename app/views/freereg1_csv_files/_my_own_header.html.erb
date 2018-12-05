@@ -1,17 +1,22 @@
-<% breadcrumb :my_own_files %>
-
+<% my_own_files_breadcrumbs %>
 <h2 class=" text--center"> <%=@who%> these are your files
 </h2>
-
 <% if flash[:notice] %>
   <div id="notice" style="color:blue"><br>
-  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
   </div>
 <% end %>
 <p class=" text--center"> <%=@sorted_by%>: select a link below to change the order of display
 </p>
 <div  class=" text--center push--bottom">
- <%= link_to 'Alphabetical file name', display_my_own_files_freereg1_csv_file_path, method: :get , :class => "btn weight--light btn--small" %> <%= link_to 'Oldest' , display_my_own_files_by_ascending_uploaded_date_freereg1_csv_file_path, method: :get , :class => "btn weight--light btn--small"%> <%= link_to 'Most Recent' , display_my_own_files_by_descending_uploaded_date_freereg1_csv_file_path, method: :get , :class => "btn weight--light btn--small" %> <%= link_to 'Files with errors' , display_my_error_files_path, method: :get , :class => "btn weight--light btn--small" %> <%= link_to 'Waiting for processing' , display_my_own_files_waiting_to_be_processed_freereg1_csv_file_path, method: :get , :class => "btn weight--light btn--small" %> <%= link_to 'Select Specific File' , display_my_own_files_by_selection_freereg1_csv_file_path, method: :get , :class => "btn weight--light btn--small" %>
+  <%= link_to 'Alphabetical file name', display_my_own_files_freereg1_csv_file_path, method: :get , :class => "btn weight--light btn--small" %>
+  <%= link_to 'Oldest' , display_my_own_files_by_ascending_uploaded_date_freereg1_csv_file_path, method: :get , :class => "btn weight--light btn--small"%>
+  <%= link_to 'Most Recent' , display_my_own_files_by_descending_uploaded_date_freereg1_csv_file_path, method: :get , :class => "btn weight--light btn--small" %>
+  <%= link_to 'Files with errors' , display_my_error_files_path, method: :get , :class => "btn weight--light btn--small" %>
+  <%= link_to 'Files with zero years' ,display_my_own_zero_years_files_path, method: :get , :class => "btn weight--light btn--small" %>
+  <%= link_to 'Waiting for processing' , display_my_own_files_waiting_to_be_processed_freereg1_csv_file_path, method: :get , :class => "btn weight--light btn--small" %>
+  <%= link_to 'Select Specific File' , display_my_own_files_by_selection_freereg1_csv_file_path, method: :get , :class => "btn weight--light btn--small" %>
 </div>
-<p class="text--center"> To replace a file: find the file in the list below and select (click) its RL option. </p><p class="text--center">To upload a brand new file: use this button ... <%= link_to 'Upload new file', new_csvfile_path, method: :get , :class => "btn weight--light btn--small"%>
+<p class="text--center"> To replace a file: find the file in the list below and select (click) its RL option. </p>
+<p class="text--center">To upload a brand new file: use this button ... <%= link_to 'Upload new file', new_csvfile_path, method: :get , :class => "btn weight--light btn--small"%>
 </p>

@@ -21,7 +21,7 @@
         <td><%= feedback.identifier unless feedback.identifier.nil? %></td>
         <td>
         <%= link_to 'SH', feedback_path(feedback.id), :class => "btn weight--light  btn--small", method: :get%>
-        <%= link_to 'Reply', reply_feedbacks_path(source_feedback_id: feedback.id),:class => "btn weight--light  btn--small" %>
+        <%= link_to 'Reply', reply_feedback_path(source_feedback_id: feedback.id),:class => "btn weight--light  btn--small" %>
       </td>
       </tr>
     <% end %>

@@ -40,26 +40,30 @@ class Freereg1CsvFilesController < ApplicationController
     @freereg1_csv_file = Freereg1CsvFile.id(params[:id]).first
     if @freereg1_csv_file.present?
       set_controls(@freereg1_csv_file)
-      if @freereg1_csv_file.locked_by_transcriber ||  @freereg1_csv_file.locked_by_coordinator
+      if @freereg1_csv_file.locked_by_transcriber || @freereg1_csv_file.locked_by_coordinator
         flash[:notice] = 'The deletion of the batch was unsuccessful; the batch is locked'
         redirect_to :back
         return
       end
-      @freereg1_csv_file.update_freereg_contents_after_processing
-      #save a copy to attic and delete all batches
+      if @physical_file.blank?
+        flash[:notice] = 'The physical file entry no longer exists. Perhaps you have already deleted it.'
+        redirect_to :back
+        return
+      end
+      # save a copy to attic and delete all batches
       @physical_file.file_and_entries_delete
+      @freereg1_csv_file.update_freereg_contents_after_processing
       @physical_file.delete
-      session[:type] = "edit"
+      session[:type] = 'edit'
       flash[:notice] = 'The deletion of the batches was successful'
       if session[:my_own]
         redirect_to my_own_freereg1_csv_file_path
-        return
       else
         redirect_to register_path(@return_location)
-        return
       end
+      return
     else
-      go_back("batch",params[:id])
+      go_back('batch', params[:id])
     end
   end
 
@@ -94,15 +98,17 @@ class Freereg1CsvFilesController < ApplicationController
     render "index"
   end
 
-  def display_my_own_files_by_ascending_uploaded_date
+  def display_my_own_zero_years
     get_user_info_from_userid
-    @who =  @first_name
-    @sorted_by = 'Ordered by oldest'
+    @who = @first_name
+    @sorted_by = 'Zero years'
     session[:sort] = "uploaded_date ASC"
     session[:sorted_by] = @sorted_by
-    @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(session[:sort]).all.page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
+    @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).datemin('0').order_by(session[:sort]).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
     render "index"
   end
+
+
 
   def display_my_own_files_by_selection
     get_user_info_from_userid
@@ -351,7 +357,7 @@ class Freereg1CsvFilesController < ApplicationController
         redirect_to manage_resource_path(@user)
         return
       else
-        redirect_to register_path(@return_location) 
+        redirect_to register_path(@return_location)
         return
       end
     else
@@ -584,9 +590,9 @@ class Freereg1CsvFilesController < ApplicationController
       go_back("batch",params[:id])
     end
   end
-  
+
   def unique_names
-     @freereg1_csv_file = Freereg1CsvFile.id(params[:object]).first
+    @freereg1_csv_file = Freereg1CsvFile.id(params[:object]).first
     if @freereg1_csv_file.present?
       set_controls(@freereg1_csv_file)
     else
@@ -596,14 +602,20 @@ class Freereg1CsvFilesController < ApplicationController
   end
 
   def zero_year
-    #get the entries with a zero year
+
+
+
+
+    #                    Not sure it is used
+
+    # get the entries with a zero year
     @freereg1_csv_file = Freereg1CsvFile.id(params[:id]).first
     if @freereg1_csv_file.present?
       set_controls(@freereg1_csv_file)
     else
-      go_back("batch",params[:id])
+      go_back('batch', params[:id])
     end
-    @freereg1_csv_entries = @freereg1_csv_file.get_entries_zero_year
+    @freereg1_csv_entries = @freereg1_csv_file.zero_year_entries
     display_info
     @zero_year = true
     render 'freereg1_csv_entries/index'

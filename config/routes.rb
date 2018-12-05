@@ -139,6 +139,7 @@ MyopicVicar::Application.routes.draw do
   get  'manage_syndicates/selection',  :to => 'manage_syndicates#member_by_name', constraints: ManageSyndicatesMemberByNameConstraint
   get  'manage_syndicates/selection',  :to => 'manage_syndicates#batches_with_errors', constraints: ManageCountiesErrorBatchConstraint
   get  'manage_syndicates/selection',  :to => 'manage_syndicates#display_by_filename', constraints: ManageCountiesDisplayByFilenameConstraint
+  get  'manage_syndicates/selection',  :to => 'manage_syndicates#display_by_zero_date', constraints: ManageCountiesDisplayByZeroDateConstraint, :as => :zero_selection_manage_syndicates
   get  'manage_syndicates/selection',  :to => 'manage_syndicates#upload_batch', constraints: ManageCountiesUploadBatchConstraint
   get  'manage_syndicates/selection',  :to => 'manage_syndicates#display_by_userid_filename', constraints: ManageCountiesUseridFilenameConstraint
   get  'manage_syndicates/selection',  :to => 'manage_syndicates#display_by_descending_uploaded_date', constraints: ManageCountiesDescendingConstraint
@@ -206,7 +207,7 @@ MyopicVicar::Application.routes.draw do
   get  'manage_counties/selection',  :to => 'manage_counties#places_with_unapproved_names', constraints: ManageCountiesUnapprovedNamesConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#batches_with_errors', constraints: ManageCountiesErrorBatchConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#display_by_filename', constraints: ManageCountiesDisplayByFilenameConstraint
-  get  'manage_counties/selection',  :to => 'manage_counties#upload_batch', constraints: ManageCountiesUploadBatchConstraint
+  get  'manage_counties/selection',  :to => 'manage_counties#display_by_zero_date', constraints: ManageCountiesDisplayByZeroDateConstraint, :as => :zero_selection_manage_counties
   get  'manage_counties/selection',  :to => 'manage_counties#upload_batch', constraints: ManageCountiesUploadBatchConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#display_by_userid_filename', constraints: ManageCountiesUseridFilenameConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#display_by_descending_uploaded_date', constraints: ManageCountiesDescendingConstraint
@@ -298,6 +299,7 @@ MyopicVicar::Application.routes.draw do
   get 'freereg1_csv_files/display_my_own_files_by_ascending_uploaded_date',  :to => 'freereg1_csv_files#display_my_own_files_by_ascending_uploaded_date', :as => :display_my_own_files_by_ascending_uploaded_date_freereg1_csv_file
   get 'freereg1_csv_files/display_my_own_files_by_selection',  :to => 'freereg1_csv_files#display_my_own_files_by_selection', :as => :display_my_own_files_by_selection_freereg1_csv_file
   get 'freereg1_csv_files/display_my_own_files_waiting_to_be_processed',  :to => 'freereg1_csv_files#display_my_own_files_waiting_to_be_processed', :as => :display_my_own_files_waiting_to_be_processed_freereg1_csv_file
+  get 'freereg1_csv_files/display_my_own_zero_years', :to => 'freereg1_csv_files#display_my_own_zero_years', :as => :display_my_own_zero_years_files
   get 'freereg1_csv_files/:id/download(.:format)', :to => 'freereg1_csv_files#download', :as => :download_freereg1_csv_file
   get 'freereg1_csv_files/unique_names', :to => 'freereg1_csv_files#unique_names', :as => :unique_names_freereg1_csv_file
   get 'freereg1_csv_files/:id/zero_year', :to => 'freereg1_csv_files#zero_year', :as => :zero_year_freereg1_csv_file

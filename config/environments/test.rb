@@ -82,5 +82,6 @@ MyopicVicar::Application.configure do
   config.assets.compress = false
   config.assets.debug = false
   config.assets.digest = false
+  config.dragonfly_secret_code = MyopicVicar::MongoConfig['dragonfly_secret_code']
 
 end

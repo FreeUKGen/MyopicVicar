@@ -110,6 +110,7 @@ class ImageServerGroupsController < ApplicationController
   end
 
   def index
+    session.delete(:upload_return)
     session[:source_id] = params[:id]
     display_info
 
@@ -139,9 +140,9 @@ class ImageServerGroupsController < ApplicationController
     @user = UseridDetail.where(:userid=>session[:userid]).first
     @source,@group_ids,@group_id = ImageServerGroup.group_ids_for_available_assignment_by_county(session[:chapman_code])
 
-    if @group_id.empty?
+    if @group_id.empty? || @source.nil?
       flash[:notice] = 'No Image Groups for Allocation under County ' + params[:id]
-      redirect_to :back
+      redirect_to select_county_assignment_path
     else
       session[:source_id] = @source[0][0]
       display_info
@@ -226,6 +227,7 @@ class ImageServerGroupsController < ApplicationController
   end
 
   def show
+    session.delete(:upload_return)
     session[:image_server_group_id] = params[:id]
     session[:assignment_filter_list] = params[:assignment_filter_list] if !params[:assignment_filter_list].nil?
     display_info
@@ -280,16 +282,26 @@ class ImageServerGroupsController < ApplicationController
   end
 
   def upload
+    @user = UseridDetail.where(:userid=>session[:userid]).first
     image_server_group = ImageServerGroup.id(params[:id]).first
-    website = image_server_group.create_upload_images_url
+    website = image_server_group.create_upload_images_url(@user.id)
     redirect_to website and return
   end
 
  def upload_return
     @image_server_group = ImageServerGroup.id(params[:image_server_group]).first
-    proceed, message = @image_server_group.process_uploaded_images(params)
-    if !proceed
+    if session[:upload_return].blank?
+      session[:upload_return] = 'once'
+      # the session[:upload_return] is used to stop a refresh of the upload return action
+      proceed, message = @image_server_group.process_uploaded_images(params) unless params[:files_uploaded].blank?
+      proceed = true if params[:files_uploaded].blank?
+      if !proceed
        flash[:notice] = "We encountered issues with the processing of the upload of images; #{message}"
+       redirect_to image_server_group_path(@image_server_group)   and return
+      end
+    else
+      session.delete(:upload_return)
+      flash[:notice] = "You have refreshed the upload return page and that is not permitted"
        redirect_to image_server_group_path(@image_server_group)   and return
     end
     @uploaded =  params[:files_uploaded]
@@ -302,8 +314,10 @@ class ImageServerGroupsController < ApplicationController
     @church = @image_server_group.church
     @church_name = @church.church_name
     @county = @place.county
-    get_user_info_from_userid
-    @syndicate = @user.syndicate
+    @user = UseridDetail.id(params[:userid]).first
+    @syndicate = @user.syndicate unless @user.blank?
+    params[:files_uploaded] = nil
+    params[:files_exist] = nil
  end
 
   private

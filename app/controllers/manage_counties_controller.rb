@@ -1,5 +1,5 @@
 class ManageCountiesController < ApplicationController
- 
+
   def batches_with_errors
     get_user_info_from_userid
     @county = session[:county]
@@ -66,7 +66,6 @@ class ManageCountiesController < ApplicationController
     redirect_to freereg1_csv_files_path
   end
 
-
   def display_by_userid_filename
     get_user_info_from_userid
     @county = session[:county]
@@ -75,6 +74,17 @@ class ManageCountiesController < ApplicationController
     session[:sorted_by] = @sorted_by
     session[:sort] = "userid_lower_case ASC, file_name ASC"
     redirect_to freereg1_csv_files_path
+  end
+
+  def display_by_zero_date
+    get_user_info_from_userid
+    @county = session[:county]
+    @who = @user.person_forename
+    @sorted_by = '; selects files with zero date records then alphabetically by userid and file name'
+    session[:sorted_by] = @sorted_by
+    session[:sort] = "userid_lower_case ASC, file_name ASC"
+    @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).datemin('0').no_timeout.order_by(session[:sort]).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
+    render 'freereg1_csv_files/index'
   end
 
   def get_counties_for_selection
@@ -187,7 +197,7 @@ class ManageCountiesController < ApplicationController
     get_user_info_from_userid
     clean_session_for_images
     session[:manage_user_origin] = 'manage county'
-    
+
     if session[:chapman_code].nil?
       flash[:notice] = 'Your other actions cleared the county information, please select county again'
       redirect_to main_app.new_manage_resource_path
@@ -196,7 +206,7 @@ class ManageCountiesController < ApplicationController
       @source_ids,@source_id = Source.get_source_ids(session[:chapman_code])
       @county = session[:county]
 
-      if @source_ids.nil? || @source_id.nil? 
+      if @source_ids.nil? || @source_id.nil?
         flash[:notice] = 'No requested Sources exists'
         redirect_to :back
       elsif @source_ids.empty? || @source_id.empty?

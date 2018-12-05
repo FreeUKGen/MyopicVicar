@@ -1,19 +1,18 @@
 <% breadcrumb :show_records,@freereg1_csv_entry,  @freereg1_csv_file%>
-<% breadcrumb :zero_year_records, @freereg1_csv_file if @get_zero_year_records %>
 <% breadcrumb :listing_of_zero_year_entries, @freereg1_csv_file if @zero_year %>
-
 <% file = @freereg1_csv_file %>
-<h3 style="text-align: center"><b><%= file_name(file) %></b> (<%= owner(file) %>) in <b><%= register_name_for_file(file) %></b> of <b> <%= church_name(file)%></b> in <b><%= place_name(file) %> </b> of <b><%= county(file) %></b><br></h3>
+<h3 style="text-align: center"><b><%= file_name(file) %></b> (<%= owner(file) %>) in <b><%= register_name_for_file(file) %></b> of <b> <%= church_name(file)%></b> in <b><%= place_name(file) %> </b> of <b><%= county(file) %></b><br>
+</h3>
 <h4 style="text-align: center"> There are more fields in the record than shown here</h4>
 <% unless @get_zero_year_records || @zero_year%>
   <div  style="text-align: center"> <%= link_to 'Create new entry', new_freereg1_csv_entry_path, method: :get , :class => "btn weight--light  btn--small"  %> <%= link_to 'Listing of all Error Records in this Batch', error_freereg1_csv_file_path(@freereg1_csv_file), method: :get , :class => "btn weight--light  btn--small" %>
   </div>
- <% else %>
- <div  style="text-align: center"> These are the records with a zero year. If you get no recordsin this display and you are being told there are. It is likely because 1 or more records has a UCF in the date
-  </div> 
+<% else %>
+  <div  style="text-align: center"> These are the records with a zero year. If you get no recordsin this display and you are being told there are. It is likely because 1 or more records has a UCF in the date
+  </div>
 <% end %>
-
-<div style="clear:both;"> </div><br>
+<div style="clear:both;"> </div>
+<br>
 <% if flash[:notice] %>
   <div id="notice" style="color:blue"><br>
     <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
@@ -23,14 +22,14 @@
   <section class="island  ">
     <% case %>
     <% when @freereg1_csv_entries.blank? %>
-      <%= render 'freereg1_csv_entries/blank_index' %>
+    <%= render 'freereg1_csv_entries/blank_index' %>
     <% when @freereg1_csv_file.record_type == "ba" %>
-      <%= render 'freereg1_csv_entries/baptism_index' %>
+    <%= render 'freereg1_csv_entries/baptism_index' %>
     <% when @freereg1_csv_file.record_type == "bu" %>
-      <%= render 'freereg1_csv_entries/burial_index' %>
+    <%= render 'freereg1_csv_entries/burial_index' %>
     <% when @freereg1_csv_file.record_type == "ma" %>
-      <%= render 'freereg1_csv_entries/marriage_index' %>
-    <% end %>
-  </section>
+    <%= render 'freereg1_csv_entries/marriage_index' %>
+  <% end %>
+</section>
 </div>
 <br>
