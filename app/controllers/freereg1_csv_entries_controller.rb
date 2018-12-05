@@ -62,14 +62,12 @@ class Freereg1CsvEntriesController < ApplicationController
   def destroy
     @freereg1_csv_entry = Freereg1CsvEntry.id(params[:id]).first
     if @freereg1_csv_entry.present?
-      freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
-      freereg1_csv_file.freereg1_csv_entries.delete(@freereg1_csv_entry)
+      @freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
+      @freereg1_csv_file.freereg1_csv_entries.delete(@freereg1_csv_entry)
       @freereg1_csv_entry.destroy
-      freereg1_csv_file.calculate_distribution
-      freereg1_csv_file.recalculate_last_amended
-      freereg1_csv_file.update_number_of_files
-      flash[:notice] = 'The deletion of the record was successful'
-      redirect_to freereg1_csv_file_path(freereg1_csv_file)
+      @freereg1_csv_file.update_statistics_and_access(session[:my_own])
+      flash[:notice] = 'The deletion of the entry was successful and the files is locked'
+      redirect_to freereg1_csv_file_path(@freereg1_csv_file)
       return
     else
       go_back("entry",params[:id])
@@ -218,15 +216,7 @@ class Freereg1CsvEntriesController < ApplicationController
         @freereg1_csv_entry.search_record.destroy  if sex_change # updating the search names is too complex on a sex change it is better to just recreate
         @freereg1_csv_entry.search_record(true)   if sex_change#this frefreshes the cache
         SearchRecord.update_create_search_record(@freereg1_csv_entry,search_version,place)
-        # lock file and note modification date
-        @freereg1_csv_file.locked_by_transcriber = true if session[:my_own]
-        @freereg1_csv_file.locked_by_coordinator = true unless session[:my_own]
-        @freereg1_csv_file.modification_date = Time.now.strftime("%d %b %Y")
-        @freereg1_csv_file.calculate_distribution
-        @freereg1_csv_file.save
-        register.calculate_register_numbers
-        church.calculate_church_numbers
-        place.calculate_place_numbers
+        @freereg1_csv_file.update_statistics_and_access(session[:my_own])
         flash[:notice] = 'The change in entry contents was successful, the file is now locked against replacement until it has been downloaded.'
         if session[:zero_listing]
           session.delete(:zero_listing)
