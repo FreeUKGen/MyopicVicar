@@ -3,91 +3,112 @@
   <b><%= @place_name %></b> of <b><%= @county %></b>
 </p>
 <% unless @user.person_role == "contacts_coordinator" %>
-  <div style="text-align: center"> 
-  <%= link_to 'Edit Register Fields', edit_register_path(@register), method: :get, :class => "btn weight--light  btn--small" %>
-  <%= link_to  'Destroy Register', register_path(@register), method: :delete, data: { confirm: 'Are you sure you want to destroy this Register.? It will not happen if there are dependants!'}, :class => "btn weight--light  btn--small " %>
-  <%= link_to 'Change Register Type', rename_register_path(@register), method: :get, data: { confirm: 'Are you really really sure that you to change the Register Type?'}, :class => "btn weight--light  btn--small" %> 
-  <%= link_to 'Merge Identical Register Types into this one', merge_register_path(@register), method: :get, data: { confirm: 'Are you really really sure that this is the Register Type into which you want all similar Register Types in this church to be merged? The action will be taken on selecting OK and cannot be recovered!!!!'}, :class => "btn weight--light  btn--small " %>
-  <%= link_to 'Create Image Server', create_image_server_register_path(@register), method: :get, :class => "btn weight--light  btn--small" unless @image_server %>
+  <div style="text-align: center">
+    <%= link_to 'Edit Register Fields', edit_register_path(@register), method: :get, :class => "btn weight--light  btn--small" %>
+    <%= link_to  'Destroy Register', register_path(@register), method: :delete, data: { confirm: 'Are you sure you want to destroy this Register.? It will not happen if there are dependants!'}, :class => "btn weight--light  btn--small " %>
+    <%= link_to 'Change Register Type', rename_register_path(@register), method: :get, data: { confirm: 'Are you really really sure that you to change the Register Type?'}, :class => "btn weight--light  btn--small" %>
+    <%= link_to 'Merge Identical Register Types into this one', merge_register_path(@register), method: :get, data: { confirm: 'Are you really really sure that this is the Register Type into which you want all similar Register Types in this church to be merged? The action will be taken on selecting OK and cannot be recovered!!!!'}, :class => "btn weight--light  btn--small " %>
+    <%= link_to 'Create Image Server', create_image_server_register_path(@register), method: :get, :class => "btn weight--light  btn--small" unless @image_server %>
   </div>
 <% end%>
-<div style="clear:both;"> </div><br>
+<div style="clear:both;"> </div>
+<br>
 <% if flash[:notice] %>
   <div id="notice" style="color:blue"><br>
     <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
   </div>
 <% end %>
 <%if @register.nil? %>
- <p> There is no register with that document number.</p>
+  <p> There is no register with that document number.</p>
 <% else%>
   <div class="grid">
     <section class="island ">
       <h5 style="text-align: center">The Register has the following Batches:<br>
-      <% if @register.freereg1_csv_files.record_type("ba").count >= 1%> Baptisms:<br>
-          <% @register.freereg1_csv_files.record_type("ba").order_by(record_type: 1,datemin: 1).each do |file_name| %>  
-            <%= link_to("#{file_name.get_min_year}-#{file_name.datemax} #{file_name.userid} (#{file_name.file_name})",freereg1_csv_file_path(file_name), :class => "btn weight--light  btn--small") %>
+        <% if @register.freereg1_csv_files.record_type("ba").count >= 1%> Baptisms:<br>
+          <% @register.freereg1_csv_files.record_type("ba").order_by(record_type: 1,datemin: 1).each do |file_name| %>
+            <%= link_to("#{file_name.datemin}-#{file_name.datemax} #{file_name.userid} (#{file_name.file_name})",freereg1_csv_file_path(file_name), :class => "btn weight--light  btn--small") %>
           <% end %>
-      <% end %><br>
-      <% if @register.freereg1_csv_files.record_type("bu").count >= 1%>Burials:<br>
-          <% @register.freereg1_csv_files.record_type("bu").order_by(record_type: 1,datemin: 1).each do |file_name| %>     
-            <%= link_to("#{file_name.get_min_year}-#{file_name.datemax} #{file_name.userid} (#{file_name.file_name})",freereg1_csv_file_path(file_name), :class => "btn weight--light  btn--small") %>
+        <% end %><br>
+        <% if @register.freereg1_csv_files.record_type("bu").count >= 1%>Burials:<br>
+          <% @register.freereg1_csv_files.record_type("bu").order_by(record_type: 1,datemin: 1).each do |file_name| %>
+            <%= link_to("#{file_name.datemin}-#{file_name.datemax} #{file_name.userid} (#{file_name.file_name})",freereg1_csv_file_path(file_name), :class => "btn weight--light  btn--small") %>
           <% end %>
-      <% end %><br>
-      <% if @register.freereg1_csv_files.record_type("ma").count >= 1%>Marriages:<br>
-        <% @register.freereg1_csv_files.record_type("ma").order_by(record_type: 1,datemin: 1).each do |file_name| %>
-           <%= link_to("#{file_name.get_min_year}-#{file_name.datemax} #{file_name.userid} (#{file_name.file_name})",freereg1_csv_file_path(file_name), :class => "btn weight--light  btn--small") %>
+        <% end %><br>
+        <% if @register.freereg1_csv_files.record_type("ma").count >= 1%>Marriages:<br>
+          <% @register.freereg1_csv_files.record_type("ma").order_by(record_type: 1,datemin: 1).each do |file_name| %>
+            <%= link_to("#{file_name.datemin}-#{file_name.datemax} #{file_name.userid} (#{file_name.file_name})",freereg1_csv_file_path(file_name), :class => "btn weight--light  btn--small") %>
+          <% end %>
         <% end %>
-      <% end %>
       </h5>
       <div class="grid__item ">
         <table   class="table--bordered  table--data">
           <colgroup >
-          <col class=t40>
-          <col class=t60>
+            <col class=t40>
+            <col class=t60>
           </colgroup>
           <tr>
             <th class="caps">Field</th>
             <th  class="caps">Value</th>
           </tr>
           <tr>
-            <td>Register Type :</td><td class="weight--semibold"><%= RegisterType.display_name(@register.register_type) %></td>
+            <td>Register Type :</td>
+            <td class="weight--semibold"><%= RegisterType.display_name(@register.register_type) %></td>
           </tr>
           <tr>
-            <td>Quality :</td><td class="weight--semibold"> <%= @register.quality%></td>
+            <td>Quality :</td>
+            <td class="weight--semibold"> <%= @register.quality%></td>
           </tr>
           <tr>
-            <td>Source :</td><td class="weight--semibold"> <%= @register.source %> </td>
+            <td>Source :</td>
+            <td class="weight--semibold"> <%= @register.source %> </td>
           </tr>
           <tr>
-            <td>Copyright :</td><td class="weight--semibold"> <%= @register.copyright %>  </td>
+            <td>Copyright :</td>
+            <td class="weight--semibold"> <%= @register.copyright %>  </td>
           </tr>
           <tr>
-            <td>Credit :</td><td class="weight--semibold"> <%= @register.credit %>  </td>
+            <td>Credit :</td>
+            <td class="weight--semibold"> <%= @register.credit %>  </td>
           </tr>
           <tr>
-            <td>Register notes :</td><td class="weight--semibold"> <%= @register.register_notes %>  </td>
+            <td>Register notes :</td>
+            <td class="weight--semibold"> <%= @register.register_notes %>  </td>
           </tr>
           <tr>
-            <td>Status of the transcriptions :</td><td class="weight--semibold"><%= @register.status %> </td>
+            <td>Status of the transcriptions :</td>
+            <td class="weight--semibold"><%= @register.status %> </td>
           </tr>
-            <td>Latest date a transcription changed:</td><td class="weight--semibold"> <%= @register.last_amended %></td>
+          <td>Latest date a transcription changed:</td>
+          <td class="weight--semibold"> <%= @register.last_amended %></td>
         </tr>
-                <tr><td>Number of entries</td>  <td class="weight--semibold"><%= @register.records %></td></tr>
-        <tr><td>First actual year of entries</td>  <td class="weight--semibold"><%= @register.datemin %></td></tr>
-        <tr><td>Last actual year of entries</td>  <td class="weight--semibold"><%= @register.datemax %></td></tr>
-
-          <tr>
-            <td>First permitted year :</td><td class="weight--semibold"><%= @register.minimum_year_for_register%> </td>
-          </tr>
-          <tr>
-            <td>Last permitted year :</td><td class="weight--semibold"><%= @register.maximum_year_for_register %> </td>
-          </tr>
-        </table>   
-      </div>
-
-       <h3 class=" text--center">Numbers of transcriptions </h4>
-    <p class=" text--center">Those periods with zero data may span several decades. The first period may include pre 1530 records. </p> 
+        <tr>
+          <td>Number of entries</td>
+            
+          <td class="weight--semibold"><%= @register.records %></td>
+        </tr>
+        <tr>
+          <td>First actual year of entries</td>
+            
+          <td class="weight--semibold"><%= @register.datemin %></td>
+        </tr>
+        <tr>
+          <td>Last actual year of entries</td>
+            
+          <td class="weight--semibold"><%= @register.datemax %></td>
+        </tr>
+        <tr>
+          <td>First permitted year :</td>
+          <td class="weight--semibold"><%= @register.minimum_year_for_register%> </td>
+        </tr>
+        <tr>
+          <td>Last permitted year :</td>
+          <td class="weight--semibold"><%= @register.maximum_year_for_register %> </td>
+        </tr>
+      </table>
+    </div>
+    <h3 class=" text--center">Numbers of transcriptions </h4>
+    <p class=" text--center">Those periods with zero data may span several decades. The first period may include pre 1530 records. </p>
     <%= render :partial => '/freereg_contents/decade' %>
-    </section>
-  </div>
+  </section>
+</div>
 <% end%>

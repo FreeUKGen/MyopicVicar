@@ -389,6 +389,7 @@ class Freereg1CsvFile
     end
     success
   end
+
       def calculate_distribution
         entries = self.freereg1_csv_entries
         datemin =Freereg1CsvFile.calculate_min_year(entries)
@@ -1119,64 +1120,12 @@ class Freereg1CsvFile
                    entries
                  end
 
-                 def get_entries_zero_year
+                 def zero_year_entries
                    freereg1_csv_entries = Array.new
-                   get_entries.each do |entry|
-                     freereg1_csv_entries << entry if entry.year.to_i == 0 #nil? ||  entry.year == '0'
+                   Freereg1CsvEntry.freereg1_csv_file(id).year(nil).each do |entry|
+                     freereg1_csv_entries << entry
                    end
                    freereg1_csv_entries
                  end
 
-                 def get_zero_year
-                   freereg1_csv_entry = Array.new
-                   case self.record_type
-                   when "ba"
-                     blank_baptism_records
-                   when "ma"
-                     blank_marriage_date_records
-                   when "bu"
-                     blank_burial_date_records
-                   end
-                 end
-
-                 def get_zero_year_records
-                   freereg1_csv_entry = Array.new
-                   case self.record_type
-                   when "ba"
-                     include_csv_entries.zero_baptism_records.each{|entry| freereg1_csv_entry << entry} if blank_baptism_records
-                   when "ma"
-                     include_csv_entries.zero_marriage_records.each{|entry| freereg1_csv_entry << entry} if blank_marriage_date_records
-                   when "bu"
-                     include_csv_entries.zero_burial_records.each{|entry| freereg1_csv_entry << entry}   if blank_burial_date_records
-                   end
-                   freereg1_csv_entry
-                 end
-
-                 def get_min_year
-                   Freereg1CsvFile.calculate_min_year(get_entries)
-                 end
-
-                 def get_entries
-                   self.freereg1_csv_entries
-                 end
-
-                 def minimum_year_zero
-                   self.get_zero_year == true
-                 end
-
-                 def blank_burial_date_records
-                   include_csv_entries.zero_burial_records.count != 0
-                 end
-
-                 def blank_marriage_date_records
-                   include_csv_entries.zero_marriage_records.count != 0
-                 end
-
-                 def blank_baptism_records
-                   include_csv_entries.zero_baptism_records.count != 0
-                 end
-
-                 def include_csv_entries
-                   self.freereg1_csv_entries
-                 end
                  end

@@ -209,7 +209,7 @@ class Freereg1CsvEntry
   embeds_many :multiple_witnesses, cascade_callbacks: true
   accepts_nested_attributes_for :multiple_witnesses,allow_destroy: true,
     reject_if: :all_blank
-
+  index({ freereg1_csv_file_id: 1, year: 1 }, { name: 'freereg1_csv_file_id_year' })
   index({freereg1_csv_file_id: 1,file_line_number:1})
   index({freereg1_csv_file_id: 1, record_digest:1})
   index({person_forename: 1})
@@ -225,16 +225,21 @@ class Freereg1CsvEntry
 
   validate :errors_in_fields
 
-
-
-
   class << self
     def id(id)
-      where(:id => id)
+      where(id: id)
+    end
+
+    def freereg1_csv_file(id)
+      where(freereg1_csv_file_id: id)
+    end
+
+    def year(year)
+      where(year: year)
     end
 
     def compare_baptism_fields?(one, two)
-      #used in  task check_record_digest
+      # used in  task check_record_digest
       fields = FreeregOptionsConstants::ORIGINAL_BAPTISM_FIELDS + FreeregOptionsConstants::ADDITIONAL_BAPTISM_FIELDS + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS + FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS
       equal = true
       fields.each do |field|
@@ -244,7 +249,7 @@ class Freereg1CsvEntry
     end
 
     def compare_marriage_fields?(one, two)
-      #used in  task check_record_digest
+      # used in  task check_record_digest
       fields = FreeregOptionsConstants::ORIGINAL_MARRIAGE_FIELDS + FreeregOptionsConstants::ADDITIONAL_MARRIAGE_FIELDS + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS + FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS
       equal = true
       fields.each do |field|
@@ -254,7 +259,7 @@ class Freereg1CsvEntry
     end
 
     def compare_burial_fields?(one, two)
-      #used in  task check_record_digest
+      # used in  task check_record_digest
       fields = FreeregOptionsConstants::ORIGINAL_BURIAL_FIELDS + FreeregOptionsConstants::ADDITIONAL_BURIAL_FIELDS + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS + FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS
       equal = true
       fields.each do |field|
@@ -264,11 +269,11 @@ class Freereg1CsvEntry
     end
 
     def delete_entries_for_a_file(fileid)
-      entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => fileid).all.no_timeout
+      entries = Freereg1CsvEntry.where(freereg1_csv_file_id: fileid).all.no_timeout
       entries.destroy_all
     end
 
-    def update_entries_userid(userid,batch)
+    def update_entries_userid(userid, batch)
       batch.freereg1_csv_entries.each do |entry|
         line = entry.line_id
         if line.present?
@@ -282,14 +287,15 @@ class Freereg1CsvEntry
       end
       true
     end
-    def update_parameters(params,entry)
+
+    def update_parameters(params, entry)
       #clean up old null entries
-      params = params.delete_if{|k,v| v == ''}
+      params = params.delete_if { |k, v| v == '' }
       return params
     end
   end
 
-  #Instance methods
+  # ...........................................................................Instance methods
 
   def acknowledge
     file = self.freereg1_csv_file
