@@ -678,9 +678,22 @@ crumb :create_syndicate do |syndicate|
   parent :syndicates
 end
 
+crumb :listing_of_zero_year_files do
+  if session[:syndicate].present?
+    link "Listing of Zero Year files", zero_selection_manage_syndicates_path(option: 'Review Batches with Zero Dates')
+    parent :syndicate_options, session[:syndicate]
+  elsif session[:county].present?
+    link "Listing of Zero Year files", zero_selection_manage_counties_path(option: 'Review Batches with Zero Dates')
+    parent :county_options, session[:county]
+  else
+    link "Listing of Zero Year files", display_my_own_zero_years_files_path
+    parent :files, file
+  end
+end
+
 crumb :listing_of_zero_year_entries do |file|
   link "Listing of Zero Year Entries", zero_year_freereg1_csv_file_path(id: "#{file.id}")
-  parent :show_file, file
+  parent :listing_of_zero_year_files
 end
 
 crumb :show_zero_year_entry do |entry, file|

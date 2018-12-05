@@ -82,6 +82,7 @@ class Freereg1CsvFile
   index({userid: 1, uploaded_date: 1},{name: "userid_uploaded_date"})
   index({userid: 1, file_name: 1},{name: "userid_file_name"})
   index({county: 1, errors: 1},{name: "county_errors"})
+  #index({county: 1, datemin: 1}, {name: 'county_datemin'})
 
   before_save :add_lower_case_userid_to_file, :add_country_to_file, :check_register_type
   after_save :recalculate_last_amended, :update_number_of_files
@@ -140,6 +141,10 @@ class Freereg1CsvFile
 
     def county(name)
       where(:county => name)
+    end
+
+    def datemin(date)
+      where(datemin: date)
     end
 
     def errors

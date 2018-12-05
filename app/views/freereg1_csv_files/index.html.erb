@@ -1,5 +1,5 @@
-<%= render 'my_own_header' if session[:my_own]%>
-<%= render 'coordinator_header' unless session[:my_own]%>
+<%= render 'freereg1_csv_files/my_own_header' if session[:my_own]%>
+<%= render 'freereg1_csv_files/coordinator_header' unless session[:my_own]%>
 <% unless @freereg1_csv_files.nil? || @freereg1_csv_files.length == 0%>
   <%= paginate @freereg1_csv_files %>
   <div style="text-align: center">Batches are colour coded. <FONT COLOR="green">Teal: OK;</FONT><FONT color='red'> Red: Errors;</FONT><FONT color='blue'> Blue: Locked and OK;</FONT><FONT color="maroon"> Maroon: Locked with errors,</FONT><FONT color='orange'> Orange: Just Verified</FONT></div>
@@ -22,7 +22,7 @@
               <% end%>
               <th class="t8" >Processed</th>
               <th colspan = "2" class="t8">Locked<br>
-                 TR SC</th>
+                TR SC</th>
               <th colspan="7" class="t30">Action <a href="#" class="left_tooltip" onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span>SH: Show header; ED: Edit header; DL: Download batch; ER: Errors in batch; L: Lock batch; U: Unlock batch; DE: Delete batch;RL:Replace batch </span></a></th>
             </tr>
           </thead>
