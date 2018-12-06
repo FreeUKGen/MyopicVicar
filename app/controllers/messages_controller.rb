@@ -222,7 +222,7 @@ class MessagesController < ApplicationController
     reply.communicate_message_reply(original_message)
     source = session[:hold_source]
     session.delete(:hold_source) if session[:hold_source].present?
-    redirect_to reply_messages_path(@message.source_message_id, source: source) and return
+    redirect_to message_path(reply.id, source: source) and return
   end
 
   def return_for_create

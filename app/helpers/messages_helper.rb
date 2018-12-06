@@ -58,6 +58,7 @@ module MessagesHelper
         end
       end
     end
+
     do_we_permit
   end
 
@@ -76,7 +77,7 @@ module MessagesHelper
   def do_we_show_destroy_action?(message)
     do_we_permit = false
     if session[:message_base] == 'userid_messages'
-      do_we_permit = false
+      do_we_permit = true if !message.sent? && message.mine?(@user)
     elsif session[:message_base] == 'syndicate' || session[:message_base] == 'general'
       do_we_permit = true if !message.sent? && message.mine?(@user)
     else
@@ -126,6 +127,7 @@ module MessagesHelper
   end
 
   def do_we_show_replies_action?(message)
+
     message.there_are_reply_messages? ? do_we_permit = true : do_we_permit = false
     do_we_permit
   end
@@ -138,7 +140,7 @@ module MessagesHelper
   def do_we_show_reply_action?(message)
     do_we_permit = false
     if session[:message_base] == 'userid_messages' || session[:message_base] == 'general' || session[:message_base] == 'syndicate'
-      do_we_permit = true if message.sent? && (message.not_a_reply? || (message.a_reply? && @user.does_not_have_original_message?(message)))
+      do_we_permit = true if message.sent?
     end
     do_we_permit
   end
