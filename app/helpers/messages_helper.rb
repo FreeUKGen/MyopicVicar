@@ -16,7 +16,10 @@ module MessagesHelper
   end
 
   def commit_action(f, params=nil)
+    p params
     case
+    when params[:source] == 'communicate'
+      f.action :submit, as: :input,  label: 'Send Communication', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
     when session[:message_base] == 'userid_messages'
       f.action :submit, as: :input,  label: 'Reply Message', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
     when (session[:message_base] == 'syndicate' || session[:message_base] == 'general') && !params[:id].present?

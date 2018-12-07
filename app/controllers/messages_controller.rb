@@ -16,6 +16,27 @@ class MessagesController < ApplicationController
       go_back('message', params[:id])
     end
   end
+  def communicate
+    get_user_info_from_userid
+    @message = Message.new
+    p params
+    recipients = UseridDetail.role(params[:role])
+    p recipients
+    @message.recipients = Array.new
+    p  @message
+    if recipients.count >= 1
+      #@message.recipients = Array.new
+      recipients.each do |recipient|
+        @message.recipients << recipient.userid
+      end
+      @message.message_time = Time.now
+      @message.userid = @user.userid
+      p @message
+    else
+      #deal with no person available currently a bail out
+      go_back('communicate', params[:id])
+    end
+  end
 
   def create
     @message = Message.new(message_params)
@@ -54,6 +75,12 @@ class MessagesController < ApplicationController
       if @message.save
         flash[:notice] = 'Reply for Message is created and sent'
         reply_for_message(@message); return if performed?
+      end
+    when 'Send Communication'
+      if @message.save
+        flash[:notice] = 'Communication is created and sent'
+        send_communication(@message); return if performed?
+        redirect_to new_manage_resource_path
       end
     end
   end
@@ -304,7 +331,7 @@ class MessagesController < ApplicationController
       flash.notice = 'Message restored'
       return_after_restore(params[:source], params[:id])
     else
-      go_back('message',params[:id])
+      go_back('message', params[:id])
     end
   end
 
@@ -320,6 +347,16 @@ class MessagesController < ApplicationController
     @location = 'location.href= "/messages/" + this.value'
     @prompt = 'Select Identifier'
     render '_form_for_selection'
+  end
+
+  def select_by_role
+    p 'select_role'
+    get_user_info_from_userid
+    @options = FreeregOptionsConstants::COMMUNICATION_ROLES
+    @options = @user.remove_myself(@options)
+    @message = Message.new
+    @location = 'location.href= "/messages/communicate?source=communicate&role=" + this.value'
+    @prompt = 'Select Role'
   end
 
   def send_message
@@ -350,6 +387,16 @@ class MessagesController < ApplicationController
       end
     else
       go_back('message',params[:id])
+    end
+  end
+
+  def send_communication(message)
+    if message.present?
+      get_user_info_from_userid
+      sent_message = SentMessage.new(message_id: message.id, sender: @user.userid, recipients: message.recipients)
+      message.sent_messages << [sent_message]
+      message.add_message_to_userid_messages(@user)
+      sent_message.save
     end
   end
 

@@ -505,6 +505,17 @@ crumb :create_contact_reply do |message|
 end
 # .....................Nessages...............................
 
+
+crumb :select_role do
+  link 'Form for Selection'
+  parent :root
+end
+
+crumb :create_communication do |message|
+  link 'Create Communication'
+  parent :select_role
+end
+
 crumb :messages do
   case
   when session[:message_base] == 'general' && session[:archived_contacts]
@@ -533,6 +544,11 @@ crumb :message_to_syndicate do
 
   end
   parent :syndicate_options, session[:syndicate]
+end
+
+crumb :select_role do
+  link 'Form for Selection'
+  parent :root
 end
 
 crumb :message_form_for_selection do

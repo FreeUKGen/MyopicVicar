@@ -14,11 +14,11 @@ class Message
   field :path, type: String
   field :file_name, type: String
   field :images, type: String
-  field :recipients, type: Array.new, default: nil
+  field :recipients, type: Array
   field :archived, type: Boolean, default: false
   field :keep, type: Boolean, default: false
   field :syndicate, type: String
-  attr_accessor :action, :inactive_reasons,:active
+  attr_accessor :action, :inactive_reasons, :active
   embeds_many :sent_messages
   accepts_nested_attributes_for :sent_messages,allow_destroy: true,
     reject_if: :all_blank
@@ -78,6 +78,16 @@ class Message
     end
   end
   #....................................................................Instance Methods...............................
+  def add_message_to_userid_messages(person)
+    return if person.blank?
+
+    userid_messages_list = person.userid_messages
+    if !userid_messages_list.include? id.to_s
+      userid_messages_list << id.to_s
+      person.update_attribute(:userid_messages, userid_messages_list)
+    end
+  end
+
   def a_reply?
     source_message_id.present? || source_feedback_id.present? || source_contact_id.present? ? answer = true : answer = false
     answer
@@ -386,17 +396,8 @@ class Message
     end
   end
 
-  #..............................................................Instance Methods
+  #..............................................................Private Instance Methods
 
-  def add_message_to_userid_messages(person)
-    return if person.blank?
-
-    @message_userid = person.userid_messages
-    if !@message_userid.include? id.to_s
-      @message_userid << id.to_s
-      person.update_attribute(:userid_messages, @message_userid)
-    end
-  end
 
   def get_active_users(recipient_user, open_data_status, active_user, ccs)
     recipient_user.new_transcription_agreement(open_data_status_value(open_data_status)).active(active_user).email_address_valid.each do |person|

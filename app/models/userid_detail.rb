@@ -227,6 +227,8 @@ class UseridDetail
     user = UseridDetail.userid(userid).first
   end
 
+
+
   def remove_checked_messages(msg_id)
     self.reload
     return if !(self.userid_messages.include? msg_id)
@@ -235,7 +237,13 @@ class UseridDetail
     self.update_attribute(:userid_messages, userid_msgs) if userid_msgs.length != self.userid_messages.length
   end
 
-
+  def remove_myself(list)
+    p 'remove_myself'
+    p self
+    list = list.delete_if { |role| role == person_role }
+    p list
+    list
+  end
 
   def update_userid_feedbacks
     self.reload
