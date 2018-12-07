@@ -52,6 +52,7 @@ module MessagesHelper
       do_we_permit = true if message.mine?(@user) && !message.sent?
     elsif session[:message_base] == 'syndicate' || session[:message_base] == 'general'
       do_we_permit = true if message.source_message_id.blank? && message.mine?(@user) && !message.sent?
+    elsif session[:message_base] == 'communication'
     else
       if message.source_feedback_id.blank?
         if message.source_contact_id.blank?
