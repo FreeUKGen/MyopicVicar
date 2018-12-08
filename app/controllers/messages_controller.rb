@@ -228,7 +228,7 @@ class MessagesController < ApplicationController
   def return_for_create
     case session[:message_base]
     when 'userid_messages'
-      redirect_to action: 'user_messages'
+      redirect_to action: 'userid_messages'
     when 'syndicate'
       redirect_to action: 'list_syndicate_messages'
     when 'general'
