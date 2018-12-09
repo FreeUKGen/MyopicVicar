@@ -1,9 +1,8 @@
 class MessagesController < ApplicationController
+  # Looks after the management of messages sent between members of the organization
   require 'freereg_options_constants'
   require 'userid_role'
   require 'reply_userid_role'
-
-  #skip_before_filter :require_login, only: [:show]
 
   def archive
     @message = Message.id(params[:id]).first
@@ -16,6 +15,7 @@ class MessagesController < ApplicationController
       go_back('message', params[:id])
     end
   end
+
   def communicate
     get_user_info_from_userid
     @message = Message.new
@@ -43,45 +43,70 @@ class MessagesController < ApplicationController
     @message.file_name = @message.attachment_identifier
     case params[:commit]
     when 'Submit'
-      session[:syndicate].present? ? @message.syndicate = session[:syndicate] : @message.syndicate = nil
-      if @message.save
-        flash[:notice] = 'Message created'
-        return_for_create
-      else
-        redirect_to :new
-      end
-      return
+      create_for submit
     when 'Save & Send'
-      if @message.save
-        flash[:notice] = 'Reply created'
-        params[:id] = @message.id if @message
-        send_message
-        redirect_to send_message_messages_path(@message.id) and return
-      else
-        redirect_to reply_messages_path(@message.source_message_id) and return
-      end
+      create_for_submit_and_send
     when 'Reply Feedback'
-      if @message.save
-        reply_for_feedback; return if performed?
-      end
+      create_for_feedback_reply
     when 'Reply Contact'
-      if @message.save
-        flash[:notice] = 'Reply for Contact is created and sent'
-        reply_for_contact; return if performed?
-      end
+      create_for_contact_reply
     when 'Reply Message'
-      get_user_info_from_userid
-      @message.syndicate = @user.syndicate if @message.add_syndicate?
-      if @message.save
-        flash[:notice] = 'Reply for Message is created and sent'
-        reply_for_message(@message); return if performed?
-      end
+      create_for_message_reply
     when 'Send Communication'
-      if @message.save
-        flash[:notice] = 'Communication is created and sent'
-        send_communication(@message); return if performed?
-        redirect_to new_manage_resource_path
-      end
+      create_for_communication
+    end
+  end
+
+  def create_for_communication
+    if @message.save
+      flash[:notice] = 'Communication was created and sent'
+      send_communication(@message); return if performed?
+      redirect_to new_manage_resource_path
+    end
+  end
+
+  def create_for_contact_reply
+    if @message.save
+      flash[:notice] = 'Reply for Contact was created and sent'
+      reply_for_contact; return if performed?
+    end
+  end
+
+  def create_for_feedbak_reply
+    if @message.save
+      flash[:notice] = 'Reply for Feedback was created and sent'
+      reply_for_feedback; return if performed?
+    end
+  end
+
+  def create_for_message_reply
+    get_user_info_from_userid
+    @message.syndicate = @user.syndicate if @message.add_syndicate?
+    if @message.save
+      flash[:notice] = 'Reply for Message was created and sent'
+      reply_for_message(@message); return if performed?
+    end
+  end
+
+  def create_for_submit
+    session[:syndicate].present? ? @message.syndicate = session[:syndicate] : @message.syndicate = nil
+    if @message.save
+      flash[:notice] = 'Message created'
+      return_for_create
+    else
+      redirect_to :new
+    end
+    return
+  end
+
+  def create_for_submit_and_send
+    if @message.save
+      flash[:notice] = 'Reply created'
+      params[:id] = @message.id if @message
+      send_message
+      redirect_to send_message_messages_path(@message.id) and return
+    else
+      redirect_to reply_messages_path(@message.source_message_id) and return
     end
   end
 
@@ -352,6 +377,7 @@ class MessagesController < ApplicationController
   def select_by_role
     p 'select_role'
     get_user_info_from_userid
+    session[:message_base] = 'communication'
     @options = FreeregOptionsConstants::COMMUNICATION_ROLES
     @options = @user.remove_myself(@options)
     @message = Message.new

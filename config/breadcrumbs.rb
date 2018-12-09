@@ -1,7 +1,9 @@
 crumb :root do
   link 'Your Actions:', main_app.new_manage_resource_path
 end
-#
+
+# userid details .................................................
+
 crumb :my_own_userid_detail do |userid_detail|
   link "Profile:#{userid_detail.userid}", my_own_userid_detail_path
   parent :root
@@ -15,25 +17,27 @@ crumb :edit_userid_detail do |syndicate, userid_detail, page_name|
     parent :userid_detail, syndicate, userid_detail, page_name
   end
 end
+
 crumb :disable_userid_detail do |userid_detail|
   link "Disable Profile:#{userid_detail.userid}", userid_detail_path
   parent :userid_detail, session[:syndicate], userid_detail
 end
+
 crumb :create_userid_detail do |userid_detail|
   link 'Create New Profile', new_userid_detail_path
 
   if session[:role] == 'syndicate_coordinator' || session[:role] == 'county_coordinator' ||
       session[:role] == 'country_coordinator' || session[:role] == 'volunteer_coordinator' ||
       session[:role] == 'data_manager'
-
     parent :userid_details_listing, session[:syndicate], userid_detail
   end
   if session[:role] == 'system_administrator' || session[:role] == 'technical'
-
     parent :userid_details_listing, 'all', userid_detail
   end
 end
+
 #................................................File....................................................
+
 crumb :my_own_files do
   link 'Your Batches', my_own_freereg1_csv_file_path
 end
@@ -49,9 +53,9 @@ crumb :files do |file|
       link 'List of Batches', freereg1_csv_files_path(:anchor => "#{file.id}", :page => "#{session[:current_page]}")
     end
     case
-    when session[:county].present? &&
-        (session[:role] == 'county_coordinator' || session[:role] == 'system_administrator' || session[:role] == 'technical' || session[:role] == 'data_manager' )
-
+    when session[:county].present? && (session[:role] == 'county_coordinator' ||
+                                       session[:role] == 'system_administrator' || session[:role] == 'technical' ||
+                                       session[:role] == 'data_manager')
       if session[:place_name].present?
         place = Place.where(:chapman_code => session[:chapman_code], :place_name => session[:place_name]).first
         unless place.nil?
@@ -72,11 +76,10 @@ crumb :files do |file|
       end
     when session[:role] == 'system_administrator' || session[:role] == 'technical'
       parent :regmanager_userid_options
-    else
-
     end
   end
 end
+
 crumb :show_file do |file|
   link 'Batch Information', freereg1_csv_file_path(file.id)
   if session[:my_own]
@@ -491,7 +494,7 @@ crumb :edit_contact do |contact|
     parent :contacts
   end
 end
-crumb :contact_form_for_selection do ||
+crumb :contact__for_selection do ||
     link 'Form for Selection'
   if session[:archived_contacts]
     parent :archived_contacts

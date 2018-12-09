@@ -18,7 +18,7 @@ module MessagesHelper
   def commit_action(f, params=nil)
     p params
     case
-    when params[:source] == 'communicate'
+    when session[:message_base] == 'communication'
       f.action :submit, as: :input,  label: 'Send Communication', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
     when session[:message_base] == 'userid_messages'
       f.action :submit, as: :input,  label: 'Reply Message', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
