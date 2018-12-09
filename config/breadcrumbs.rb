@@ -545,636 +545,636 @@ crumb :message_form_for_selection do
 end
 
 crumb :show_message do |message|
-  link 'Show Message', message_path(message, source: params[:source])
-  case
-  when session[:message_base] == 'userid_messages' && params[:source] == 'show_reply_messages'
-    parent :reply_messages_list, Message.id(session[:original_message_id]).first, :source => params[:source]
-  when session[:message_base] == 'userid_messages' && (params[:source] == 'userid_messages' || params[:source] == 'show')
-    parent :userid_messages
-  when session[:message_base] == 'syndicate' && params[:source] == 'show_reply_messages'
-    parent :replies_list_syndicate_messages, Message.id(session[:original_message_id]).first, :source => params[:source]
-  when session[:message_base] == 'syndicate' && (params[:source] == 'userid_messages' || params[:source] == 'show')
-    parent :show_list_syndicate_messages
-  when session[:message_base] == 'general' && params[:source] == 'show_reply_messages'
-    parent :reply_messages_list, Message.id(session[:original_message_id]).first, :source => params[:source]
-  when session[:message_base] == 'general' && (params[:source] == 'userid_messages' || params[:source] == 'show')
-    parent :messages
-  when message.source_feedback_id.present?
-    feedback = Feedback.id(message.source_feedback_id).first
-    parent :feedback_messages, feedback
-  when message.source_contact_id.present?
-    contact = Contact.id(message.source_contact_id).first
-    parent :contact_messages, contact
-  else
-    parent :messages
-  end
-end
-crumb :show_list_syndicate_messages do |message|
-  link 'Show Syndicate Message', message_path(message, :source => params[:source])
-  case
-  when session[:message_base] == 'syndicate' && params[:source] == 'show_reply_messages'
-    parent :replies_list_syndicate_messages, Message.id(message.source_message_id).first
-  when session[:message_base] == 'syndicate' && params[:source] == 'list_syndicate_messages'
-    parent :message_to_syndicate
-  else
-    parent :message_to_syndicate
-  end
-end
-
-crumb :replies_list_syndicate_messages do |message|
-  link 'Replies to Syndicate Message', show_reply_messages_path(message, :source => params[:source] )
-  parent :message_to_syndicate
-end
-
-
-crumb :userid_messages do
-  link 'User Messages', userid_messages_path
-end
-
-crumb :userid_reply_messages do
-  link 'Reply Messages Recieved', userid_reply_messages_path
-  parent :userid_messages
-end
-
-crumb :reply_messages_list do |message|
-  link 'Reply Messages List', show_reply_messages_path(message.id, source: params[:source])
-  case
-  when session[:message_base] == 'syndicate' && params[:source].present?
-    parent :replies_list_syndicate_messages, message
-  when session[:message_base] == 'syndicate' && params[:source].blank?
-    parent :replies_list_syndicate_messages, message
-  when session[:message_base] == 'userid_messages' && (params[:source] == 'userid_messages' || params[:source] == 'show_reply_messages')
-    parent :userid_messages
-  when session[:message_base] == 'userid_messages' && params[:source] == 'show'
-    parent :show_message, message, source: params[:source]
-  when session[:message_base] == 'general'
-    parent :messages
-  else
-    parent :root
-  end
-end
-
-crumb :user_reply_messages_list do |message|
-  link 'User Reply Messages List', user_reply_messages_path(message.id)
-  parent :reply_messages_list, message
-end
-
-crumb :show_messages_user do |message|
-  link 'Show User Message', message_path(message.id)
-  parent :userid_messages
-end
-
-crumb :show_reply_message do |message|
-  source_message = Message.id(message.source_message_id).first
-  link 'Show Reply Message', message_path(message.id)
-  parent :reply_messages_list, source_message
-end
-
-crumb :feedback_messages do |message|
-  link 'Feedback Messages', feedback_reply_messages_path(message.id)
-  parent :feedbacks
-end
-
-crumb :contact_messages do |message|
-  link 'Contact Messages', contact_reply_messages_path(message.id)
-  parent :contacts
-end
-
-crumb :list_contact_reply_messages do
-  link 'All Contact Reply Messages', list_contact_reply_message_path
-  parent :contacts
-end
-
-crumb :list_feedback_reply_messages do
-  link 'All Feedback Reply Messages', list_contact_reply_message_path
-  parent :feedbacks
-end
-
-crumb :show_feedback_message do |message|
-  link 'Show Feedback Message', message_path(message)
-  parent :messages
-  parent :message_to_syndicate if session[:syndicate]
-end
-
-crumb :edit_message do |message|
-  link 'Edit Message', edit_message_path(message)
-  case
-  when params[:source] == 'list_syndicate_messages'
-    parent :show_list_syndicate_messages, message
-  else
-    parent :show_message, message
-  end
-end
-
-crumb :create_message do |message|
-  link 'Create Message', new_message_path(message)
-  if session[:syndicate]
-    parent :message_to_syndicate
-  else
-    parent :messages
-  end
-end
-
-crumb :create_reply do |message, original_message_id|
-  link 'Create Reply Message', reply_messages_path(message.id, source: params[:source])
-  if session[:message_base] == 'syndicate'
-    parent :message_to_syndicate
-  else
-    parent :show_message, original_message_id, source: params[:source]
-  end
-end
-
-crumb :send_message do |message|
-  link 'Send Message', send_message_messages_path(message, source: params[:source])
-  case session[:message_base]
-  when 'syndicate'
-    parent :show_list_syndicate_messages, message, source: params[:source]
-  when 'general'
-    parent :show_message, message, source: params[:source]
-  else
-    parent :show_message, message, source: params[:source]
-  end
-end
-
-crumb :send_reply_message do |message|
-  source_message = Message.id(message.source_message_id).first
-  link 'Send Message', send_message_messages_path(message)
-  parent :create_reply, source_message
-  #parent :show_message, message #if message.source_message_id.blank?
-end
-
-#............................................................Denominations......................................
-crumb :denominations do
-  link 'Denominations', denominations_path
-  parent :root
-end
-crumb :show_denomination do |denomination|
-  link 'Show Denomination', denomination_path(denomination)
-  parent :denominations
-end
-crumb :edit_denomination do |denomination|
-  link 'Edit Denomination', edit_denomination_path(denomination)
-  parent :show_denomination, denomination
-end
-crumb :create_denomination do |denomination|
-  link 'Create Denomination', new_denomination_path(denomination)
-  parent :denominations
-end
-crumb :select_attic_files do
-  link 'Select Userid', select_attic_files_path
-  parent :root
-end
-crumb :show_attic_files do |user|
-  link 'Listing of Attic Files', attic_files_path(user)
-  parent :select_attic_files
-end
-crumb :countries do
-  link 'Countries', countries_path
-  parent :root
-end
-crumb :show_countries do |country|
-  link 'Show Country', country_path(country)
-  parent :countries
-end
-crumb :edit_country do |country|
-  link 'Edit Country', edit_country_path(country)
-  parent :show_countries, country
-end
-crumb :counties do
-  link 'Counties', counties_path
-  parent :root
-end
-crumb :show_counties do |county|
-  link 'Show County', county_path(county)
-  parent :counties
-end
-crumb :edit_county do |county|
-  link 'Edit County', edit_county_path(county)
-  parent :show_counties, county
-end
-crumb :syndicates do
-  link 'Syndicates', syndicates_path
-  parent :root
-end
-crumb :show_syndicate do |syndicate|
-  link 'Show Syndicate', syndicate_path(syndicate)
-  parent :syndicates
-end
-crumb :edit_syndicate do |syndicate|
-  link 'Edit Syndicate', edit_syndicate_path(syndicate)
-  parent :show_syndicate, syndicate
-end
-crumb :create_syndicate do |syndicate|
-  link 'Create Syndicate', new_syndicate_path(syndicate)
-  parent :syndicates
-end
-
-crumb :listing_of_zero_year_files do
-  if session[:syndicate].present?
-    link "Listing of Zero Year files", zero_selection_manage_syndicates_path(option: 'Review Batches with Zero Dates')
-    parent :syndicate_options, session[:syndicate]
-  elsif session[:county].present?
-    link "Listing of Zero Year files", zero_selection_manage_counties_path(option: 'Review Batches with Zero Dates')
-    parent :county_options, session[:county]
-  else
-    link "Listing of Zero Year files", display_my_own_zero_years_files_path
-    parent :files, file
-  end
-end
-
-crumb :listing_of_zero_year_entries do |file|
-  link "Listing of Zero Year Entries", zero_year_freereg1_csv_file_path(id: "#{file.id}")
-  parent :listing_of_zero_year_files
-end
-
-crumb :show_zero_year_entry do |entry, file|
-  @zero_year = 'true'
-  link 'Show Zero Year Entry', freereg1_csv_entry_path(entry, 'zero_listing' => @zero_year)
-  parent :listing_of_zero_year_entries, file
-end
-
-crumb :edit_zero_year_entry do |entry,file|
-  link 'Edit Zero Year Entry', edit_freereg1_csv_entry_path(entry)
-  parent :show_zero_year_entry, entry,file
-  parent :listing_of_zero_year_entries, file if request.referer.match(/zero_year/) unless request.referer.nil?
-end
-
-
-# breadcrumbs from 'assignments'
-crumb :my_own_assignments do |user|
-  link "#{user.userid} Assignments", my_own_assignment_path(user)
-  parent :root
-end
-
-# from 'assignments' => 'list image groups under my syndicate'
-crumb :request_assignments_by_syndicate do |user|
-  link 'Image Groups Under My Syndicate', my_list_by_syndicate_image_server_group_path(user)
-  parent :my_own_assignments, user
-end
-
-# from 'assignments' => 'Image Groups Available for Allocation(By County)'
-# from 'all allocated image groups' => 'Image Groups Available for Allocation(By County)'
-crumb :request_assignments_by_county do |user,county|
-  link "Image Groups Available for Allocation(#{county})", my_list_by_county_image_server_group_path(county)
-  parent :syndicate_available_groups_by_county_select_county, user
-end
-
-# from 'assignments' => 'LS'
-crumb :my_own_assignment do |user|
-  link 'Assignment'
-  parent :my_own_assignments, user
-end
-
-
-
-
-# breadcrumbs from 'manage syndicates' => 'manage images'
-crumb :syndicate_manage_images do |syndicate|
-  link 'All Allocated Image Groups', manage_image_group_manage_syndicate_path(syndicate)
-  parent :syndicate_options, session[:syndicate]
-end
-
-# from 'manage syndicates' => 'manage images' => 'image groups available for allocation'
-crumb :syndicate_available_groups_by_county_select_county do |user|
-  link 'Select County', select_county_assignment_path
-
-  if session[:my_own]
-    parent :my_own_assignments, user
-  else
-    parent :syndicate_manage_images, session[:syndicate]
-  end
-end
-
-# from 'manage syndicates' => 'manage images' => 'list assignment by userid'
-crumb :syndicate_all_assignments_select_user do |syndicate|
-  link 'Select User', select_user_assignment_path(session[:syndicate], :assignment_list_type=>'all')
-  parent :syndicate_manage_images, session[:syndicate]
-end
-
-crumb :syndicate_all_assignments do |syndicate|
-  link 'List User Assignments', list_assignments_by_syndicate_coordinator_assignment_path(session[:syndicate], :assignment_list_type=>'all')
-  if session[:list_user_assignments] == true
-    parent :syndicate_all_assignments_select_user, session[:syndicate]
-  else
-    parent :syndicate_manage_images, session[:syndicate]
-  end
-end
-
-crumb :syndicate_all_assignment do |syndicate|
-  link 'List User Assignment'
-  if session[:list_user_assignments] == true
-    parent :syndicate_all_assignments, session[:syndicate]
-  else
-    parent :syndicate_manage_images, session[:syndicate]
-  end
-end
-
-crumb :syndicate_all_reassign do |syndicate|
-  link 'Re_assign Assignment'
-  parent :syndicate_all_assignments, session[:syndicate]
-end
-
-# from 'manage syndicate' => 'manage images' => 'list fully transcribed groups'
-crumb :fully_transcribed_groups do |syndicate|
-  link 'List Fully Transcribed Groups', list_fully_transcribed_group_manage_syndicate_path(session[:syndicate])
-  parent :syndicate_manage_images, session[:syndicate]
-end
-
-# from 'manage syndicate' => 'manage images' => 'list fully reviewed groups'
-crumb :fully_reviewed_groups do |syndicate|
-  link 'List Fully Reviewed Groups', list_fully_reviewed_group_manage_syndicate_path(session[:syndicate])
-  parent :syndicate_manage_images, session[:syndicate]
-end
-
-# from 'manage syndicates' => 'manage images' => 'List Submitted Transcribe assignment'
-crumb :submitted_transcribe_assignments do |syndicate|
-  link 'List Submitted_Transcription Assignments', list_submitted_transcribe_assignments_assignment_path(session[:syndicate])
-  parent :syndicate_manage_images, session[:syndicate]
-end
-
-# from 'manage syndicates' => 'manage images' => 'List Submitted Review Assignment'
-crumb :submitted_review_assignments do |syndicate|
-  link 'List Submitted_Review Assignments', list_submitted_review_assignments_assignment_path(session[:syndicate])
-  parent :syndicate_manage_images, session[:syndicate]
-end
-
-crumb :syndicate_image_group_assignments do |user,syndicate,county,register,source,group|
-  link 'User Assignments', assignment_path(group)
-  parent :image_server_images, user,syndicate,county,register,source,group
-end
-
-crumb :syndicate_image_group_assignment do |user,syndicate,county,register,source,group|
-  link 'User Assignment'
-  parent :syndicate_image_group_assignments, user,syndicate,county,register,source,group
-end
-
-
-
-
-
-# from 'manage counties' => 'Manage Images'
-crumb :county_manage_images do |county, browse_source|
-  if browse_source.nil?
-    link 'All Sources', selection_active_manage_counties_path(:option =>'Manage Images')
-  else
-    link 'All Sources', selection_active_manage_counties_path(:option => 'Manage Images', :anchor => browse_source)
-  end
-  parent :county_options, session[:county]
-end
-
-# from 'manage counties' => 'Manage Images' => 'List All Image Groups'
-crumb :county_manage_images_selection do |county, browse_source|
-  case session[:image_group_filter]
-  when 'all'
-    link 'List All Image Groups', manage_image_group_manage_county_path
-  when 'unallocate'
-    link 'List Unallocated Image Groups', manage_unallocated_image_group_manage_county_path
-  when 'allocate request'
-    link 'List Allocate Request Image Groups', manage_allocate_request_image_group_manage_county_path
-  when 'completion_submitted'
-    link 'List Completion Submitted Allocations', manage_completion_submitted_image_group_manage_county_path
-  when 'syndicate'
-    link 'Image Groups Allocated by Syndicate', sort_image_group_by_syndicate_path(county)
-  when 'place'
-    link 'Image Groups Allocated by Place', sort_image_group_by_place_path
-  when 'uninitialized'
-    link 'List Unitialized Sources', uninitialized_source_list_path(county)
-  end
-  parent :county_manage_images, session[:county], browse_source
-end
-
-
-
-
-
-# from 'register' => Sources        (is taken out right now)
-crumb :image_sources do |register|
-  link 'Sources', index_source_path(register)
-  parent :county_manage_images
-end
-
-crumb :new_image_source do |register,source|
-  link 'Create New Source'
-  parent :image_sources, register
-end
-
-
-
-
-
-# breadcrumb for image_source
-crumb :show_image_source do |register,source|
-  case source.source_name
-  when 'Image Server'
-    link 'Image Server', source_path(source)
-    if session[:manage_user_origin] == 'manage syndicate'
-      # from 'manage syndicates' => 'Manage Images' => 'List Fully Reviewed/Transcribed Groups'
-      case session[:image_group_filter]
-      when 'fully_transcribed'
-        parent :fully_transcribed_groups, session[:syndicate]
-      when 'fully_reviewed'
-        parent :fully_reviewed_groups, session[:syndicate]
-      else
-        parent :syndicate_manage_images, session[:syndicate]
-      end
-    else
-      parent :county_manage_images_selection, session[:county], source.id.to_s
-    end
-  when 'Other Server1'
-    link 'Other Server1', source_path(source)
-    parent :image_sources, register
-  when 'Other Server2'
-    link 'Other Server2', source_path(source)
-    parent :images_sources, register
-  when 'Other Server3'
-    link 'Other Server3', source_path(source)
-    parent :image_sources, register
-  end
-end
-
-crumb :edit_image_source do |register,source|
-  link 'Edit Image Server'
-  parent :show_image_source, register,source
-end
-
-crumb :initialize_image_source do |register,source|
-  link 'Initialize Image Server'
-  parent :show_image_source, register,source
-end
-
-crumb :propagate_image_source do |register,source|
-  link 'Propagate Image Server'
-  parent :show_image_source, register,source
-end
-
-
-
-
-
-# breadcrumb for Image Server Groups
-crumb :image_server_groups do |user,syndicate,county,register,source|
-  link 'Image Groups', index_image_server_group_path(source)
-  parent :show_image_source, register,source
-end
-
-crumb :allocate_image_server_group do |user,syndicate,county,register,source,group|
-  link 'Allocate Image Group'
-  parent :image_server_groups, user,syndicate,county,register,source
-end
-
-crumb :new_image_server_group do |user,syndicate,county,register,source,group|
-  link 'Create Image Group'
-  parent :image_server_groups, user,syndicate,county,register,source
-end
-
-crumb :initialize_image_server_group do |user,syndicate,county,register,source,group|
-  link 'Initialize Image Group'
-  parent :image_server_groups, user,syndicate,county,register,source
-end
-
-
-crumb :show_image_server_group do |user,syndicate,county,register,source,group|
-  link 'Image Group', image_server_group_path(group)
-
-  if session[:from_source] == true
-    parent :image_server_groups, user,syndicate,county,register,source
-  else
-    # image group from list assignments result
-    if !session[:assignment_filter_list].nil? && !session[:assignment_filter_list].empty?
-      case session[:assignment_filter_list]
-      when 'syndicate'        # from Assignments => 'List Image Groups Under My Syndicate'
-        parent :request_assignments_by_syndicate, user
-      when 'county'           # from 'Image Groups Available for Allocation(county)'
-        parent :request_assignments_by_county, user,syndicate
-      end
-      # image groups from list groups result
-    else
-      if session[:manage_user_origin] == 'manage syndicate'
-        case session[:image_group_filter]
-        when 'fully_transcribed'
-          parent :fully_transcribed_groups
-        when 'fully_reviewed'
-          parent :fully_reviewed_groups
-        else
-          parent :syndicate_manage_images
-        end
-      elsif session[:manage_user_origin] == 'manage county'
-        parent :county_manage_images_selection, register, source
-      end
-    end
-  end
-end
-
-crumb :edit_image_server_group do |user,syndicate,county,register,source,group|
-  link 'Edit Image Group'
-  parent :show_image_server_group, user,syndicate,county,register,source,group
-end
-
-crumb :upload_image_server_group do |user,syndicate,county,register,source,group|
-  link 'Upload Images Report'
-  parent :show_image_server_group, user,syndicate,county,register,source,group
-end
-
-
-
-
-# breadcrumb for Image Server Images
-crumb :image_server_images do |user,syndicate,county,register,source,group|
-  link 'Images', index_image_server_image_path(group)
-  parent :show_image_server_group, user,syndicate,county,register,source,group
-end
-
-crumb :move_image_server_image do |user,syndicate,county,register,source,group,image|
-  link 'Move Images'
-  parent :image_server_images, user,syndicate,county,register,source,group
-end
-
-crumb :propagate_image_server_image do |user,syndicate,county,register,source,group,image|
-  link 'Propagate Images'
-  parent :image_server_images, user,syndicate,county,register,source,group
-end
-
-crumb :reassign_image_server_image do |user,syndicate,county,register,source,group,image|
-  link 'Reassign Images'
-  parent :image_server_images, user,syndicate,county,register,source,group
-end
-
-crumb :show_image_server_image do |user,syndicate,county,register,source,group,image|
-  link 'Image', image_server_image_path(image)
-  parent :image_server_images, user,syndicate,county,register,source,group
-end
-
-crumb :edit_image_server_image do |user,syndicate,county,register,source,group,image|
-  link 'Edit Image'
-  parent :show_image_server_image, user,syndicate,county,register,source,group,image
-end
-
-
-
-# breadcrumb for GAP
-crumb :gaps do |user,syndicate,county,register,source|
-  link 'GAPs', index_gap_path(source)
-  parent :show_image_source, register,source
-end
-
-crumb :show_gap do |user,syndicate,county,register,source|
-  link 'GAP'
-  parent :gaps, user,syndicate,county,register,source
-end
-
-crumb :new_gap do |user,syndicate,county,register,source|
-  link 'Create New GAP'
-  parent :gaps, user,syndicate,county,register,source
-end
-
-crumb :edit_gap do |user,syndicate,county,register,source|
-  link 'Edit GAP'
-  parent :gaps, user,syndicate,county,register,source
-end
-
-
-crumb :gap_reasons do
-  link 'GAP Reasons', gap_reasons_path
-  parent :root
-end
-
-crumb :show_gap_reason do |gap_reason|
-  link 'Show GAP Reason', gap_reason_path(gap_reason)
-  parent :gap_reasons
-end
-
-crumb :edit_gap_reason do |gap_reason|
-  link 'Edit GAP Reason', edit_gap_reason_path(gap_reason)
-  parent :show_gap_reason, gap_reason
-end
-
-crumb :create_gap_reason do |gap_reason|
-  link 'Create GAP Reason', new_gap_reason_path(gap_reason)
-  parent :gap_reasons
-end
-
-
-# crumb :projects do
-#   link 'Projects', projects_path
-# end
-
-# crumb :project do |project|
-#   link project.name, project_path(project)
-#   parent :projects
-# end
-
-# crumb :project_issues do |project|
-#   link 'Issues', project_issues_path(project)
-#   parent :project, project
-# end
-
-# crumb :issue do |issue|
-#   link issue.title, issue_path(issue)
-#   parent :project_issues, issue.project
-# end
-
-# If you want to split your breadcrumbs configuration over multiple files, you
-# can create a folder named `config/breadcrumbs` and put your configuration
-# files there. All *.rb files (e.g. `frontend.rb` or `products.rb`) in that
-# folder are loaded and reloaded automatically when you change them, just like
-# this file (`config/breadcrumbs.rb`).
+  link 'Show Message', message_path(message, source: params[:source]
+                                    case
+                                    when session[:message_base] == 'userid_messages' && params[:source] == 'show_reply_messages'
+                                      parent :reply_messages_list, Message.id(session[:original_message_id]).first, :source => params[:source]
+                                    when session[:message_base] == 'userid_messages' && (params[:source] == 'userid_messages' || params[:source] == 'show')
+                                      parent :userid_messages
+                                    when session[:message_base] == 'syndicate' && params[:source] == 'show_reply_messages'
+                                      parent :replies_list_syndicate_messages, Message.id(session[:original_message_id]).first, :source => params[:source]
+                                    when session[:message_base] == 'syndicate' && (params[:source] == 'userid_messages' || params[:source] == 'show')
+                                      parent :show_list_syndicate_messages
+                                    when session[:message_base] == 'general' && params[:source] == 'show_reply_messages'
+                                      parent :reply_messages_list, Message.id(session[:original_message_id]).first, :source => params[:source]
+                                    when session[:message_base] == 'general' && (params[:source] == 'userid_messages' || params[:source] == 'show')
+                                      parent :messages
+                                    when message.source_feedback_id.present?
+                                      feedback = Feedback.id(message.source_feedback_id).first
+                                      parent :feedback_messages, feedback
+                                    when message.source_contact_id.present?
+                                      contact = Contact.id(message.source_contact_id).first
+                                      parent :contact_messages, contact
+                                    else
+                                      parent :messages
+                                    end
+                                    end
+                                    crumb :show_list_syndicate_messages do |message|
+                                      link 'Show Syndicate Message', message_path(message, :source => params[:source])
+                                      case
+                                      when session[:message_base] == 'syndicate' && params[:source] == 'show_reply_messages'
+                                        parent :replies_list_syndicate_messages, Message.id(message.source_message_id).first
+                                      when session[:message_base] == 'syndicate' && params[:source] == 'list_syndicate_messages'
+                                        parent :message_to_syndicate
+                                      else
+                                        parent :message_to_syndicate
+                                      end
+                                    end
+
+                                    crumb :replies_list_syndicate_messages do |message|
+                                      link 'Replies to Syndicate Message', show_reply_messages_path(message, :source => params[:source] )
+                                      parent :message_to_syndicate
+                                    end
+
+
+                                    crumb :userid_messages do
+                                      link 'User Messages', userid_messages_path
+                                    end
+
+                                    crumb :userid_reply_messages do
+                                      link 'Reply Messages Recieved', userid_reply_messages_path
+                                      parent :userid_messages
+                                    end
+
+                                    crumb :reply_messages_list do |message|
+                                      link 'Reply Messages List', show_reply_messages_path(message.id, source: params[:source])
+                                      case
+                                      when session[:message_base] == 'syndicate' && params[:source].present?
+                                        parent :replies_list_syndicate_messages, message
+                                      when session[:message_base] == 'syndicate' && params[:source].blank?
+                                        parent :replies_list_syndicate_messages, message
+                                      when session[:message_base] == 'userid_messages' && (params[:source] == 'userid_messages' || params[:source] == 'show_reply_messages')
+                                        parent :userid_messages
+                                      when session[:message_base] == 'userid_messages' && params[:source] == 'show'
+                                        parent :show_message, message, source: params[:source]
+                                      when session[:message_base] == 'general'
+                                        parent :messages
+                                      else
+                                        parent :root
+                                      end
+                                    end
+
+                                    crumb :user_reply_messages_list do |message|
+                                      link 'User Reply Messages List', user_reply_messages_path(message.id)
+                                      parent :reply_messages_list, message
+                                    end
+
+                                    crumb :show_messages_user do |message|
+                                      link 'Show User Message', message_path(message.id)
+                                      parent :userid_messages
+                                    end
+
+                                    crumb :show_reply_message do |message|
+                                      source_message = Message.id(message.source_message_id).first
+                                      link 'Show Reply Message', message_path(message.id)
+                                      parent :reply_messages_list, source_message
+                                    end
+
+                                    crumb :feedback_messages do |message|
+                                      link 'Feedback Messages', feedback_reply_messages_path(message.id)
+                                      parent :feedbacks
+                                    end
+
+                                    crumb :contact_messages do |message|
+                                      link 'Contact Replies', contact_reply_messages_path(message.id)
+                                      parent :contacts
+                                    end
+
+                                    crumb :list_contact_reply_messages do
+                                      link 'All Contact Reply Messages', list_contact_reply_message_path
+                                      parent :contacts
+                                    end
+
+                                    crumb :list_feedback_reply_messages do
+                                      link 'All Feedback Reply Messages', list_contact_reply_message_path
+                                      parent :feedbacks
+                                    end
+
+                                    crumb :show_feedback_message do |message|
+                                      link 'Show Feedback Message', message_path(message)
+                                      parent :messages
+                                      parent :message_to_syndicate if session[:syndicate]
+                                    end
+
+                                    crumb :edit_message do |message|
+                                      link 'Edit Message', edit_message_path(message)
+                                      case
+                                      when params[:source] == 'list_syndicate_messages'
+                                        parent :show_list_syndicate_messages, message
+                                      else
+                                        parent :show_message, message
+                                      end
+                                    end
+
+                                    crumb :create_message do |message|
+                                      link 'Create Message', new_message_path(message)
+                                      if session[:syndicate]
+                                        parent :message_to_syndicate
+                                      else
+                                        parent :messages
+                                      end
+                                    end
+
+                                    crumb :create_reply do |message, original_message_id|
+                                      link 'Create Reply Message', reply_messages_path(message.id, source: params[:source])
+                                      if session[:message_base] == 'syndicate'
+                                        parent :message_to_syndicate
+                                      else
+                                        parent :show_message, original_message_id, source: params[:source]
+                                      end
+                                    end
+
+                                    crumb :send_message do |message|
+                                      link 'Send Message', send_message_messages_path(message, source: params[:source])
+                                      case session[:message_base]
+                                      when 'syndicate'
+                                        parent :show_list_syndicate_messages, message, source: params[:source]
+                                      when 'general'
+                                        parent :show_message, message, source: params[:source]
+                                      else
+                                        parent :show_message, message, source: params[:source]
+                                      end
+                                    end
+
+                                    crumb :send_reply_message do |message|
+                                      source_message = Message.id(message.source_message_id).first
+                                      link 'Send Message', send_message_messages_path(message)
+                                      parent :create_reply, source_message
+                                      #parent :show_message, message #if message.source_message_id.blank?
+                                    end
+
+                                    #............................................................Denominations......................................
+                                    crumb :denominations do
+                                      link 'Denominations', denominations_path
+                                      parent :root
+                                    end
+                                    crumb :show_denomination do |denomination|
+                                      link 'Show Denomination', denomination_path(denomination)
+                                      parent :denominations
+                                    end
+                                    crumb :edit_denomination do |denomination|
+                                      link 'Edit Denomination', edit_denomination_path(denomination)
+                                      parent :show_denomination, denomination
+                                    end
+                                    crumb :create_denomination do |denomination|
+                                      link 'Create Denomination', new_denomination_path(denomination)
+                                      parent :denominations
+                                    end
+                                    crumb :select_attic_files do
+                                      link 'Select Userid', select_attic_files_path
+                                      parent :root
+                                    end
+                                    crumb :show_attic_files do |user|
+                                      link 'Listing of Attic Files', attic_files_path(user)
+                                      parent :select_attic_files
+                                    end
+                                    crumb :countries do
+                                      link 'Countries', countries_path
+                                      parent :root
+                                    end
+                                    crumb :show_countries do |country|
+                                      link 'Show Country', country_path(country)
+                                      parent :countries
+                                    end
+                                    crumb :edit_country do |country|
+                                      link 'Edit Country', edit_country_path(country)
+                                      parent :show_countries, country
+                                    end
+                                    crumb :counties do
+                                      link 'Counties', counties_path
+                                      parent :root
+                                    end
+                                    crumb :show_counties do |county|
+                                      link 'Show County', county_path(county)
+                                      parent :counties
+                                    end
+                                    crumb :edit_county do |county|
+                                      link 'Edit County', edit_county_path(county)
+                                      parent :show_counties, county
+                                    end
+                                    crumb :syndicates do
+                                      link 'Syndicates', syndicates_path
+                                      parent :root
+                                    end
+                                    crumb :show_syndicate do |syndicate|
+                                      link 'Show Syndicate', syndicate_path(syndicate)
+                                      parent :syndicates
+                                    end
+                                    crumb :edit_syndicate do |syndicate|
+                                      link 'Edit Syndicate', edit_syndicate_path(syndicate)
+                                      parent :show_syndicate, syndicate
+                                    end
+                                    crumb :create_syndicate do |syndicate|
+                                      link 'Create Syndicate', new_syndicate_path(syndicate)
+                                      parent :syndicates
+                                    end
+
+                                    crumb :listing_of_zero_year_files do
+                                      if session[:syndicate].present?
+                                        link "Listing of Zero Year files", zero_selection_manage_syndicates_path(option: 'Review Batches with Zero Dates')
+                                        parent :syndicate_options, session[:syndicate]
+                                      elsif session[:county].present?
+                                        link "Listing of Zero Year files", zero_selection_manage_counties_path(option: 'Review Batches with Zero Dates')
+                                        parent :county_options, session[:county]
+                                      else
+                                        link "Listing of Zero Year files", display_my_own_zero_years_files_path
+                                        parent :files, file
+                                      end
+                                    end
+
+                                    crumb :listing_of_zero_year_entries do |file|
+                                      link "Listing of Zero Year Entries", zero_year_freereg1_csv_file_path(id: "#{file.id}")
+                                      parent :listing_of_zero_year_files
+                                    end
+
+                                    crumb :show_zero_year_entry do |entry, file|
+                                      @zero_year = 'true'
+                                      link 'Show Zero Year Entry', freereg1_csv_entry_path(entry, 'zero_listing' => @zero_year)
+                                      parent :listing_of_zero_year_entries, file
+                                    end
+
+                                    crumb :edit_zero_year_entry do |entry,file|
+                                      link 'Edit Zero Year Entry', edit_freereg1_csv_entry_path(entry)
+                                      parent :show_zero_year_entry, entry,file
+                                      parent :listing_of_zero_year_entries, file if request.referer.match(/zero_year/) unless request.referer.nil?
+                                    end
+
+
+                                    # breadcrumbs from 'assignments'
+                                    crumb :my_own_assignments do |user|
+                                      link "#{user.userid} Assignments", my_own_assignment_path(user)
+                                      parent :root
+                                    end
+
+                                    # from 'assignments' => 'list image groups under my syndicate'
+                                    crumb :request_assignments_by_syndicate do |user|
+                                      link 'Image Groups Under My Syndicate', my_list_by_syndicate_image_server_group_path(user)
+                                      parent :my_own_assignments, user
+                                    end
+
+                                    # from 'assignments' => 'Image Groups Available for Allocation(By County)'
+                                    # from 'all allocated image groups' => 'Image Groups Available for Allocation(By County)'
+                                    crumb :request_assignments_by_county do |user,county|
+                                      link "Image Groups Available for Allocation(#{county})", my_list_by_county_image_server_group_path(county)
+                                      parent :syndicate_available_groups_by_county_select_county, user
+                                    end
+
+                                    # from 'assignments' => 'LS'
+                                    crumb :my_own_assignment do |user|
+                                      link 'Assignment'
+                                      parent :my_own_assignments, user
+                                    end
+
+
+
+
+                                    # breadcrumbs from 'manage syndicates' => 'manage images'
+                                    crumb :syndicate_manage_images do |syndicate|
+                                      link 'All Allocated Image Groups', manage_image_group_manage_syndicate_path(syndicate)
+                                      parent :syndicate_options, session[:syndicate]
+                                    end
+
+                                    # from 'manage syndicates' => 'manage images' => 'image groups available for allocation'
+                                    crumb :syndicate_available_groups_by_county_select_county do |user|
+                                      link 'Select County', select_county_assignment_path
+
+                                      if session[:my_own]
+                                        parent :my_own_assignments, user
+                                      else
+                                        parent :syndicate_manage_images, session[:syndicate]
+                                      end
+                                    end
+
+                                    # from 'manage syndicates' => 'manage images' => 'list assignment by userid'
+                                    crumb :syndicate_all_assignments_select_user do |syndicate|
+                                      link 'Select User', select_user_assignment_path(session[:syndicate], :assignment_list_type=>'all')
+                                      parent :syndicate_manage_images, session[:syndicate]
+                                    end
+
+                                    crumb :syndicate_all_assignments do |syndicate|
+                                      link 'List User Assignments', list_assignments_by_syndicate_coordinator_assignment_path(session[:syndicate], :assignment_list_type=>'all')
+                                      if session[:list_user_assignments] == true
+                                        parent :syndicate_all_assignments_select_user, session[:syndicate]
+                                      else
+                                        parent :syndicate_manage_images, session[:syndicate]
+                                      end
+                                    end
+
+                                    crumb :syndicate_all_assignment do |syndicate|
+                                      link 'List User Assignment'
+                                      if session[:list_user_assignments] == true
+                                        parent :syndicate_all_assignments, session[:syndicate]
+                                      else
+                                        parent :syndicate_manage_images, session[:syndicate]
+                                      end
+                                    end
+
+                                    crumb :syndicate_all_reassign do |syndicate|
+                                      link 'Re_assign Assignment'
+                                      parent :syndicate_all_assignments, session[:syndicate]
+                                    end
+
+                                    # from 'manage syndicate' => 'manage images' => 'list fully transcribed groups'
+                                    crumb :fully_transcribed_groups do |syndicate|
+                                      link 'List Fully Transcribed Groups', list_fully_transcribed_group_manage_syndicate_path(session[:syndicate])
+                                      parent :syndicate_manage_images, session[:syndicate]
+                                    end
+
+                                    # from 'manage syndicate' => 'manage images' => 'list fully reviewed groups'
+                                    crumb :fully_reviewed_groups do |syndicate|
+                                      link 'List Fully Reviewed Groups', list_fully_reviewed_group_manage_syndicate_path(session[:syndicate])
+                                      parent :syndicate_manage_images, session[:syndicate]
+                                    end
+
+                                    # from 'manage syndicates' => 'manage images' => 'List Submitted Transcribe assignment'
+                                    crumb :submitted_transcribe_assignments do |syndicate|
+                                      link 'List Submitted_Transcription Assignments', list_submitted_transcribe_assignments_assignment_path(session[:syndicate])
+                                      parent :syndicate_manage_images, session[:syndicate]
+                                    end
+
+                                    # from 'manage syndicates' => 'manage images' => 'List Submitted Review Assignment'
+                                    crumb :submitted_review_assignments do |syndicate|
+                                      link 'List Submitted_Review Assignments', list_submitted_review_assignments_assignment_path(session[:syndicate])
+                                      parent :syndicate_manage_images, session[:syndicate]
+                                    end
+
+                                    crumb :syndicate_image_group_assignments do |user,syndicate,county,register,source,group|
+                                      link 'User Assignments', assignment_path(group)
+                                      parent :image_server_images, user,syndicate,county,register,source,group
+                                    end
+
+                                    crumb :syndicate_image_group_assignment do |user,syndicate,county,register,source,group|
+                                      link 'User Assignment'
+                                      parent :syndicate_image_group_assignments, user,syndicate,county,register,source,group
+                                    end
+
+
+
+
+
+                                    # from 'manage counties' => 'Manage Images'
+                                    crumb :county_manage_images do |county, browse_source|
+                                      if browse_source.nil?
+                                        link 'All Sources', selection_active_manage_counties_path(:option =>'Manage Images')
+                                      else
+                                        link 'All Sources', selection_active_manage_counties_path(:option => 'Manage Images', :anchor => browse_source)
+                                      end
+                                      parent :county_options, session[:county]
+                                    end
+
+                                    # from 'manage counties' => 'Manage Images' => 'List All Image Groups'
+                                    crumb :county_manage_images_selection do |county, browse_source|
+                                      case session[:image_group_filter]
+                                      when 'all'
+                                        link 'List All Image Groups', manage_image_group_manage_county_path
+                                      when 'unallocate'
+                                        link 'List Unallocated Image Groups', manage_unallocated_image_group_manage_county_path
+                                      when 'allocate request'
+                                        link 'List Allocate Request Image Groups', manage_allocate_request_image_group_manage_county_path
+                                      when 'completion_submitted'
+                                        link 'List Completion Submitted Allocations', manage_completion_submitted_image_group_manage_county_path
+                                      when 'syndicate'
+                                        link 'Image Groups Allocated by Syndicate', sort_image_group_by_syndicate_path(county)
+                                      when 'place'
+                                        link 'Image Groups Allocated by Place', sort_image_group_by_place_path
+                                      when 'uninitialized'
+                                        link 'List Unitialized Sources', uninitialized_source_list_path(county)
+                                      end
+                                      parent :county_manage_images, session[:county], browse_source
+                                    end
+
+
+
+
+
+                                    # from 'register' => Sources        (is taken out right now)
+                                    crumb :image_sources do |register|
+                                      link 'Sources', index_source_path(register)
+                                      parent :county_manage_images
+                                    end
+
+                                    crumb :new_image_source do |register,source|
+                                      link 'Create New Source'
+                                      parent :image_sources, register
+                                    end
+
+
+
+
+
+                                    # breadcrumb for image_source
+                                    crumb :show_image_source do |register,source|
+                                      case source.source_name
+                                      when 'Image Server'
+                                        link 'Image Server', source_path(source)
+                                        if session[:manage_user_origin] == 'manage syndicate'
+                                          # from 'manage syndicates' => 'Manage Images' => 'List Fully Reviewed/Transcribed Groups'
+                                          case session[:image_group_filter]
+                                          when 'fully_transcribed'
+                                            parent :fully_transcribed_groups, session[:syndicate]
+                                          when 'fully_reviewed'
+                                            parent :fully_reviewed_groups, session[:syndicate]
+                                          else
+                                            parent :syndicate_manage_images, session[:syndicate]
+                                          end
+                                        else
+                                          parent :county_manage_images_selection, session[:county], source.id.to_s
+                                        end
+                                      when 'Other Server1'
+                                        link 'Other Server1', source_path(source)
+                                        parent :image_sources, register
+                                      when 'Other Server2'
+                                        link 'Other Server2', source_path(source)
+                                        parent :images_sources, register
+                                      when 'Other Server3'
+                                        link 'Other Server3', source_path(source)
+                                        parent :image_sources, register
+                                      end
+                                    end
+
+                                    crumb :edit_image_source do |register,source|
+                                      link 'Edit Image Server'
+                                      parent :show_image_source, register,source
+                                    end
+
+                                    crumb :initialize_image_source do |register,source|
+                                      link 'Initialize Image Server'
+                                      parent :show_image_source, register,source
+                                    end
+
+                                    crumb :propagate_image_source do |register,source|
+                                      link 'Propagate Image Server'
+                                      parent :show_image_source, register,source
+                                    end
+
+
+
+
+
+                                    # breadcrumb for Image Server Groups
+                                    crumb :image_server_groups do |user,syndicate,county,register,source|
+                                      link 'Image Groups', index_image_server_group_path(source)
+                                      parent :show_image_source, register,source
+                                    end
+
+                                    crumb :allocate_image_server_group do |user,syndicate,county,register,source,group|
+                                      link 'Allocate Image Group'
+                                      parent :image_server_groups, user,syndicate,county,register,source
+                                    end
+
+                                    crumb :new_image_server_group do |user,syndicate,county,register,source,group|
+                                      link 'Create Image Group'
+                                      parent :image_server_groups, user,syndicate,county,register,source
+                                    end
+
+                                    crumb :initialize_image_server_group do |user,syndicate,county,register,source,group|
+                                      link 'Initialize Image Group'
+                                      parent :image_server_groups, user,syndicate,county,register,source
+                                    end
+
+
+                                    crumb :show_image_server_group do |user,syndicate,county,register,source,group|
+                                      link 'Image Group', image_server_group_path(group)
+
+                                      if session[:from_source] == true
+                                        parent :image_server_groups, user,syndicate,county,register,source
+                                      else
+                                        # image group from list assignments result
+                                        if !session[:assignment_filter_list].nil? && !session[:assignment_filter_list].empty?
+                                          case session[:assignment_filter_list]
+                                          when 'syndicate'        # from Assignments => 'List Image Groups Under My Syndicate'
+                                            parent :request_assignments_by_syndicate, user
+                                          when 'county'           # from 'Image Groups Available for Allocation(county)'
+                                            parent :request_assignments_by_county, user,syndicate
+                                          end
+                                          # image groups from list groups result
+                                        else
+                                          if session[:manage_user_origin] == 'manage syndicate'
+                                            case session[:image_group_filter]
+                                            when 'fully_transcribed'
+                                              parent :fully_transcribed_groups
+                                            when 'fully_reviewed'
+                                              parent :fully_reviewed_groups
+                                            else
+                                              parent :syndicate_manage_images
+                                            end
+                                          elsif session[:manage_user_origin] == 'manage county'
+                                            parent :county_manage_images_selection, register, source
+                                          end
+                                        end
+                                      end
+                                    end
+
+                                    crumb :edit_image_server_group do |user,syndicate,county,register,source,group|
+                                      link 'Edit Image Group'
+                                      parent :show_image_server_group, user,syndicate,county,register,source,group
+                                    end
+
+                                    crumb :upload_image_server_group do |user,syndicate,county,register,source,group|
+                                      link 'Upload Images Report'
+                                      parent :show_image_server_group, user,syndicate,county,register,source,group
+                                    end
+
+
+
+
+                                    # breadcrumb for Image Server Images
+                                    crumb :image_server_images do |user,syndicate,county,register,source,group|
+                                      link 'Images', index_image_server_image_path(group)
+                                      parent :show_image_server_group, user,syndicate,county,register,source,group
+                                    end
+
+                                    crumb :move_image_server_image do |user,syndicate,county,register,source,group,image|
+                                      link 'Move Images'
+                                      parent :image_server_images, user,syndicate,county,register,source,group
+                                    end
+
+                                    crumb :propagate_image_server_image do |user,syndicate,county,register,source,group,image|
+                                      link 'Propagate Images'
+                                      parent :image_server_images, user,syndicate,county,register,source,group
+                                    end
+
+                                    crumb :reassign_image_server_image do |user,syndicate,county,register,source,group,image|
+                                      link 'Reassign Images'
+                                      parent :image_server_images, user,syndicate,county,register,source,group
+                                    end
+
+                                    crumb :show_image_server_image do |user,syndicate,county,register,source,group,image|
+                                      link 'Image', image_server_image_path(image)
+                                      parent :image_server_images, user,syndicate,county,register,source,group
+                                    end
+
+                                    crumb :edit_image_server_image do |user,syndicate,county,register,source,group,image|
+                                      link 'Edit Image'
+                                      parent :show_image_server_image, user,syndicate,county,register,source,group,image
+                                    end
+
+
+
+                                    # breadcrumb for GAP
+                                    crumb :gaps do |user,syndicate,county,register,source|
+                                      link 'GAPs', index_gap_path(source)
+                                      parent :show_image_source, register,source
+                                    end
+
+                                    crumb :show_gap do |user,syndicate,county,register,source|
+                                      link 'GAP'
+                                      parent :gaps, user,syndicate,county,register,source
+                                    end
+
+                                    crumb :new_gap do |user,syndicate,county,register,source|
+                                      link 'Create New GAP'
+                                      parent :gaps, user,syndicate,county,register,source
+                                    end
+
+                                    crumb :edit_gap do |user,syndicate,county,register,source|
+                                      link 'Edit GAP'
+                                      parent :gaps, user,syndicate,county,register,source
+                                    end
+
+
+                                    crumb :gap_reasons do
+                                      link 'GAP Reasons', gap_reasons_path
+                                      parent :root
+                                    end
+
+                                    crumb :show_gap_reason do |gap_reason|
+                                      link 'Show GAP Reason', gap_reason_path(gap_reason)
+                                      parent :gap_reasons
+                                    end
+
+                                    crumb :edit_gap_reason do |gap_reason|
+                                      link 'Edit GAP Reason', edit_gap_reason_path(gap_reason)
+                                      parent :show_gap_reason, gap_reason
+                                    end
+
+                                    crumb :create_gap_reason do |gap_reason|
+                                      link 'Create GAP Reason', new_gap_reason_path(gap_reason)
+                                      parent :gap_reasons
+                                    end
+
+
+                                    # crumb :projects do
+                                    #   link 'Projects', projects_path
+                                    # end
+
+                                    # crumb :project do |project|
+                                    #   link project.name, project_path(project)
+                                    #   parent :projects
+                                    # end
+
+                                    # crumb :project_issues do |project|
+                                    #   link 'Issues', project_issues_path(project)
+                                    #   parent :project, project
+                                    # end
+
+                                    # crumb :issue do |issue|
+                                    #   link issue.title, issue_path(issue)
+                                    #   parent :project_issues, issue.project
+                                    # end
+
+                                    # If you want to split your breadcrumbs configuration over multiple files, you
+                                    # can create a folder named `config/breadcrumbs` and put your configuration
+                                    # files there. All *.rb files (e.g. `frontend.rb` or `products.rb`) in that
+                                    # folder are loaded and reloaded automatically when you change them, just like
+                                    # this file (`config/breadcrumbs.rb`).
