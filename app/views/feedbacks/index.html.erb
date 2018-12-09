@@ -1,5 +1,7 @@
 <% breadcrumb :feedbacks%>
-<h2 class=" text--center"><h2 class=" text--center"> <% if @archived %>List of archived feedbacks<% else%>List of active feedbacks<%end%> </h2></h2>
+<h2 class=" text--center">
+  <h2 class=" text--center"> <% if @archived %>List of archived feedbacks<% else%>List of active feedbacks<%end%> </h2>
+</h2>
 <p style="text-align: center">
   <% if !@archived  %> <%= link_to 'List archived', list_archived_feedbacks_path, method: :get , :class => "btn weight--light btn--small" %> <% else%><%= link_to 'List active',feedbacks_path, method: :get , :class => "btn weight--light btn--small" %><%end%>
   <%= link_to 'List by Name', list_by_name_feedbacks_path, method: :get , :class => "btn weight--light btn--small" %> <%= link_to 'Most Recent Date' , list_by_most_recent_feedbacks_path, method: :get , :class => "btn weight--light btn--small"%> <%= link_to 'Earliest Date' , list_by_date_feedbacks_path, method: :get , :class => "btn weight--light btn--small"%>  <%= link_to 'List by Userid' , list_by_userid_feedbacks_path, method: :get , :class => "btn weight--light btn--small" %> <%= link_to 'Select by Identifier' , select_by_identifier_feedbacks_path, method: :get , :class => "btn weight--light btn--small" %>   </p>
@@ -28,21 +30,21 @@
             <th class="t20">Action</th>
           </tr>
           <% @feedbacks.each do |feedback| %>
-          <tr>
-            <td><%= feedback.title %></td>
-            <td><%= feedback.user_id %></td>
-            <td><%= feedback.name %></td>
-            <td><%= feedback.email_address %></td>
-            <td><%= feedback.feedback_time.strftime("%d %b %Y") unless feedback.feedback_time.nil? %></td>
-            <td><%= feedback.identifier unless feedback.identifier.nil? %></td>
-            <td>
-              <%= link_to 'SH', feedback_path(feedback.id),  :class => "btn weight--light  btn--small", method: :get%>
-              <%= link_to 'Reply', reply_feedback_path(source_feedback_id:feedback.id) ,:class => "btn weight--light  btn--small" %>
-              <%= link_to 'View Replies', feedback_reply_messages_path(feedback.id), class: "btn weight--light  btn--small", method: :get if feedback.has_replies?(feedback.id.to_s)%>
-              <%= link_to 'Archive', archive_feedback_path(feedback.id), :class => "btn weight--light  btn--small",  data: { confirm: 'Are you sure you want archive this feedback' } unless feedback.is_archived?%>
-              <%= link_to 'Restore', restore_feedback_path(feedback.id), :class => "btn weight--light  btn--small",  data: { confirm: 'Are you sure you want archive this feedback' } if feedback.is_archived?%>
-            </td>
-          </tr>
+            <tr>
+              <td><%= feedback.title %></td>
+              <td><%= feedback.user_id %></td>
+              <td><%= feedback.name %></td>
+              <td><%= feedback.email_address %></td>
+              <td><%= feedback.feedback_time.strftime("%d %b %Y") unless feedback.feedback_time.nil? %></td>
+              <td><%= feedback.identifier unless feedback.identifier.nil? %></td>
+              <td>
+                <%= link_to 'Show', feedback_path(feedback.id),  :class => "btn weight--light  btn--small", method: :get%>
+                <%= link_to 'Reply', reply_feedback_path(source_feedback_id:feedback.id) ,:class => "btn weight--light  btn--small" %>
+                <%= link_to 'View Replies', feedback_reply_messages_path(feedback.id), class: "btn weight--light  btn--small", method: :get if feedback.has_replies?(feedback.id.to_s)%>
+                <%= link_to 'Archive', archive_feedback_path(feedback.id), :class => "btn weight--light  btn--small",  data: { confirm: 'Are you sure you want archive this feedback' } unless feedback.is_archived?%>
+                <%= link_to 'Restore', restore_feedback_path(feedback.id), :class => "btn weight--light  btn--small",  data: { confirm: 'Are you sure you want archive this feedback' } if feedback.is_archived?%>
+              </td>
+            </tr>
           <% end %>
         </table>
       </div>

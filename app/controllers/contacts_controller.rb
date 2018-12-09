@@ -17,7 +17,7 @@ class ContactsController < ApplicationController
   end
 
   def contact_reply_messages
-    #get_user_info_from_userid; return if performed?
+    get_user_info_from_userid; return if performed?
     @contact = Contact.id(params[:id]).first
     if @contact.present?
       @messages = Message.where(source_contact_id: params[:id]).all

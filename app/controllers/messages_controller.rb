@@ -446,7 +446,7 @@ class MessagesController < ApplicationController
     if @message.blank?
       go_back('message', params[:id])
     end
-    @sent =   @message.sent_messages.order_by(sent_time: 1) unless @message.sent_messages.blank?
+    @sent = @message.sent_messages.order_by(sent_time: 1) unless @message.sent_messages.blank?
   end
 
   def show_reply_messages
