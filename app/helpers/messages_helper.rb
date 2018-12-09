@@ -216,6 +216,15 @@ module MessagesHelper
     header
   end
 
+  def index_partial_render
+    controller.controller_name
+    if controller.controller_name == 'contacts' || controller.controller_name == 'feedbacks'
+      render 'messages/index_table'
+    else
+      render 'index_table'
+    end
+  end
+
   def index_sort_links?
     case
     when params[:source].present?
@@ -349,6 +358,10 @@ module MessagesHelper
       breadcrumb :show_message, @message
     when session[:message_base] == 'general'
       breadcrumb :show_message, @message
+    when params[:source] == 'contact_reply_messages'
+      breadcrumb :show_message, @message
+    when params[:source] == 'feedback_reply_messages'
+      breadcrumb :show_message, @message
     end
   end
 
@@ -405,12 +418,24 @@ module MessagesHelper
     @message.a_reply? ? the_show_title = "A reply created by #{@message.userid} on #{@message.created_at.strftime('%F')} in response to a " : the_show_title = ''
     if @message.syndicate.present?
       the_show_title = the_show_title + 'Syndicate Message'
+    elsif params[:source] == 'contact_reply_messages'
+      the_show_title = the_show_title + 'Contact'
+    elsif params[:source] == 'feedback_reply_messages'
+      the_show_title = the_show_title + 'Feedback'
     else
       the_show_title = the_show_title + 'Message'
     end
-    message = Message.id(@message.source_message_id).first
-    @message.a_reply? ? the_show_title = the_show_title + " created by #{message.userid} on #{message.created_at.strftime('%F')}" :
-      the_show_title = the_show_title + " created by #{@message.userid} on #{@message.created_at.strftime('%F')}"
+    if params[:source] == 'contact_reply_messages'
+      message = Contact.id(@message.source_contact_id).first
+      the_show_title = the_show_title + " created by #{message.name} on #{message.created_at.strftime('%F')}"
+    elsif params[:source] == 'feedback_reply_messages'
+      message = Feedback.id(@message.source_feedback_id).first
+      the_show_title = the_show_title + " created by #{message.name} on #{message.created_at.strftime('%F')}"
+    else
+      message = Message.id(@message.source_message_id).first
+      @message.a_reply? ? the_show_title = the_show_title + " created by #{message.userid} on #{message.created_at.strftime('%F')}" :
+        the_show_title = the_show_title + " created by #{@message.userid} on #{@message.created_at.strftime('%F')}"
+    end
     the_show_title
   end
 

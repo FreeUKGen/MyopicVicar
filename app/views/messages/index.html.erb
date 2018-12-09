@@ -20,4 +20,4 @@
   <%= link_to 'List archived', list_archived_messages_path(:source => params[:action]) , method: :get , :class => 'btn weight--light btn--small' if do_we_index_list_archived? %>
   <%= link_to 'List active', messages_path(:source => params[:action]), method: :get , :class => 'btn weight--light btn--small' if do_we_index_list_index? %>
 </p>
-<%= render 'index_table' %>
+<%= index_partial_render %>
