@@ -20,8 +20,7 @@ class Message
   field :syndicate, type: String
   attr_accessor :action, :inactive_reasons,:active
   embeds_many :sent_messages
-  accepts_nested_attributes_for :sent_messages,allow_destroy: true,
-    reject_if: :all_blank
+  accepts_nested_attributes_for :sent_messages,allow_destroy: true, reject_if: :all_blank
 
   scope :fetch_replies, -> (id) { where(source_message_id: id) }
   scope :fetch_feedback_replies, -> (id) { where(source_feedback_id: id) }
@@ -32,7 +31,6 @@ class Message
   mount_uploader :attachment, AttachmentUploader
   mount_uploader :images, ScreenshotUploader
   before_create :add_identifier
-
 
   index({_id: 1, userid: 1},{name: 'id_userid'})
   index({_id: 1, sent_time: 1},{name: 'id_sent_time'})
@@ -272,29 +270,29 @@ class Message
   def update_keep
     update_attributes(archived: true, keep: true)
     Message.message_replies(id).each do |message_rl1|
-      message_rl1.update_attribute(archived: true, keep: true)
+      message_rl1.update_attributes(archived: true, keep: true)
       Message.message_replies(message_rl1.id).each do |message_rl2|
-        message_rl2.update_attribute(archived: true, keep: true)
+        message_rl2.update_attributes(archived: true, keep: true)
         Message.message_replies(message_rl2.id).each do |message_rl3|
-          message_rl3.update_attribute(archived: true, keep: true)
+          message_rl3.update_attributes(archived: true, keep: true)
           Message.message_replies(message_rl3.id).each do |message_rl4|
-            message_rl4.update_attribute(archived: true, keep: true)
+            message_rl4.update_attributes(archived: true, keep: true)
             Message.message_replies(message_rl4.id).each do |message_rl5|
-              message_rl5.update_attribute(archived: true, keep: true)
+              message_rl5.update_attributes(archived: true, keep: true)
               Message.message_replies(message_rl5.id).each do |message_rl6|
-                message_rl6.update_attribute(archived: true, keep: true)
+                message_rl6.update_attributes(archived: true, keep: true)
                 Message.message_replies(message_rl6.id).each do |message_rl7|
-                  message_rl7.update_attribute(archived: true, keep: true)
+                  message_rl7.update_attributes(archived: true, keep: true)
                   Message.message_replies(message_rl7.id).each do |message_rl8|
-                    message_rl8.update_attribute(archived: true, keep: true)
+                    message_rl8.update_attributes(archived: true, keep: true)
                     Message.message_replies(message_rl8.id).each do |message_rl9|
-                      message_rl9.update_attribute(archived: true, keep: true)
+                      message_rl9.update_attributes(archived: true, keep: true)
                       Message.message_replies(message_rl9.id).each do |message_rl10|
-                        message_rl10.update_attribute(archived: true, keep: true)
+                        message_rl10.update_attributes(archived: true, keep: true)
                         Message.message_replies(message_rl10.id).each do |message_rl11|
-                          message_rl11.update_attribute(archived: true, keep: true)
+                          message_rl11.update_attributes(archived: true, keep: true)
                           Message.message_replies(message_rl11.id).each do |message_rl12|
-                            message_rl12.update_attribute(archived: true, keep: true)
+                            message_rl12.update_attributes(archived: true, keep: true)
                           end
                         end
                       end
@@ -312,29 +310,29 @@ class Message
   def update_unkeep
     update_attributes(archived: true, keep: false)
     Message.message_replies(id).each do |message_rl1|
-      message_rl1.update_attribute(archived: true, keep: false)
+      message_rl1.update_attributes(archived: true, keep: false)
       Message.message_replies(message_rl1.id).each do |message_rl2|
-        message_rl2.update_attribute(archived: true, keep: false)
+        message_rl2.update_attributes(archived: true, keep: false)
         Message.message_replies(message_rl2.id).each do |message_rl3|
-          message_rl3.update_attribute(archived: true, keep: false)
+          message_rl3.update_attributes(archived: true, keep: false)
           Message.message_replies(message_rl3.id).each do |message_rl4|
-            message_rl4.update_attribute(archived: true, keep: false)
+            message_rl4.update_attributes(archived: true, keep: false)
             Message.message_replies(message_rl4.id).each do |message_rl5|
-              message_rl5.update_attribute(archived: true, keep: false)
+              message_rl5.update_attributes(archived: true, keep: false)
               Message.message_replies(message_rl5.id).each do |message_rl6|
-                message_rl6.update_attribute(archived: true, keep: false)
+                message_rl6.update_attributes(archived: true, keep: false)
                 Message.message_replies(message_rl6.id).each do |message_rl7|
-                  message_rl7.update_attribute(archived: true, keep: false)
+                  message_rl7.update_attributes(archived: true, keep: false)
                   Message.message_replies(message_rl7.id).each do |message_rl8|
-                    message_rl8.update_attribute(archived: true, keep: false)
+                    message_rl8.update_attributes(archived: true, keep: false)
                     Message.message_replies(message_rl8.id).each do |message_rl9|
-                      message_rl9.update_attribute(archived: true, keep: false)
+                      message_rl9.update_attributes(archived: true, keep: false)
                       Message.message_replies(message_rl9.id).each do |message_rl10|
-                        message_rl10.update_attribute(archived: true, keep: false)
+                        message_rl10.update_attributes(archived: true, keep: false)
                         Message.message_replies(message_rl10.id).each do |message_rl11|
-                          message_rl11.update_attribute(archived: true, keep: false)
+                          message_rl11.update_attributes(archived: true, keep: false)
                           Message.message_replies(message_rl11.id).each do |message_rl12|
-                            message_rl12.update_attribute(archived: true, keep: false)
+                            message_rl12.update_attributes(archived: true, keep: false)
                           end
                         end
                       end
