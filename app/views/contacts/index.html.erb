@@ -3,23 +3,25 @@
   <h2 class=" text--center">List of your data problem reports</h2>
   <p style="text-align: center"> <%= @county%></p>
 <%else%>
-  <h2 class=" text--center"> <% if @archived %>List of archived contacts<% else%>List of active contacts<%end%> </h2>
+  <h2 class=" text--center"> <% if @archived %>List of archived contacts<% else%>List of active contacts<% end%> </h2>
 <%end%>
-<p style="text-align: center">
-  <% if !@archived  %> <%= link_to 'List archived', list_archived_contacts_path, method: :get , :class => "btn weight--light btn--small" %> <% else%><%= link_to 'List active',contacts_path, method: :get , :class => "btn weight--light btn--small" %><%end%>
-  <%= link_to 'List by Name', list_by_name_contacts_path, method: :get , :class => "btn weight--light btn--small" %> <%= link_to 'Most Recent Date' , list_by_most_recent_contacts_path, method: :get , :class => "btn weight--light btn--small"%> <%= link_to 'Earliest Date' , list_by_date_contacts_path, method: :get , :class => "btn weight--light btn--small"%>  <%= link_to 'List by Contact Type' , list_by_type_contacts_path, method: :get , :class => "btn weight--light btn--small" %> <%= link_to 'Select by Identifier' , select_by_identifier_contacts_path, method: :get , :class => "btn weight--light btn--small" %>
-</p>
-<% unless Contact.github_enabled %>
-  <div id="error_explanation">
-    <h2>Github integration is not enabled</h2>
-  </div>
-<% end %>
 <% if flash[:notice] %>
   <div id="notice" style="color:blue"><br>
     <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
   </div>
 <% end %>
-<%= @activated %>
+<p style="text-align: center">
+  <%= link_to 'List by Name', list_by_name_contacts_path, method: :get , :class => "btn weight--light btn--small" %>
+  <%= link_to 'Most Recent Date' , list_by_most_recent_contacts_path, method: :get , :class => "btn weight--light btn--small"%>
+  <%= link_to 'Earliest Date' , list_by_date_contacts_path, method: :get , :class => "btn weight--light btn--small"%>
+  <%= link_to 'List by Contact Type' , list_by_type_contacts_path, method: :get , :class => "btn weight--light btn--small" %>
+  <%= link_to 'Select by Identifier' , select_by_identifier_contacts_path, method: :get , :class => "btn weight--light btn--small" %>
+  <% if !@archived  %>
+    <%= link_to 'List archived', list_archived_contacts_path, method: :get , :class => "btn weight--light btn--small" %>
+  <% else%>
+    <%= link_to 'List active',contacts_path, method: :get , :class => "btn weight--light btn--small" %>
+  <% end%>
+</p>
 <section class="island   " >
   <div class="table-wrapper">
     <div class="grid">
@@ -43,11 +45,11 @@
                 <td><%= feedback.contact_time.strftime("%d %b %Y") unless feedback.contact_time.nil?%></td>
                 <td><%= feedback.identifier  %>
                   <td>
-                    <%= link_to 'Show', contact_path(feedback.id),  :class => "btn weight--light  btn--small", method: :get%>
+                    <%= link_to 'Show', contact_path(feedback.id, source: params[:action]),  :class => "btn weight--light  btn--small", method: :get%>
                     <%= link_to 'Reply', reply_contact_path(source_contact_id:feedback.id) ,:class => "btn weight--light  btn--small" %>
                     <%= link_to 'View Replies', contact_reply_messages_path(feedback.id), class: "btn weight--light  btn--small", method: :get if feedback.has_replies?(feedback.id.to_s)%>
-                    <%= link_to 'Archive', archive_contact_path(feedback.id), :class => "btn weight--light  btn--small",  data: { confirm: 'Are you sure you want archive this contact' } unless feedback.is_archived?%>
-                    <%= link_to 'Restore', restore_contact_path(feedback.id), :class => "btn weight--light  btn--small",  data: { confirm: 'Are you sure you want archive this contact' } if feedback.is_archived?%>
+                    <%= link_to 'Archive', archive_contact_path(feedback.id, source: params[:action]), :class => "btn weight--light  btn--small",  data: { confirm: 'Are you sure you want archive this contact' } unless feedback.is_archived?%>
+                    <%= link_to 'Restore', restore_contact_path(feedback.id, source: params[:action]), :class => "btn weight--light  btn--small",  data: { confirm: 'Are you sure you want archive this contact' } if feedback.is_archived?%>
                   </td>
                 </tr>
               <% end %>

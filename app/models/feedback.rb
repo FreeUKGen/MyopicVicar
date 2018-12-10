@@ -21,6 +21,7 @@ class Feedback
   field :contact_action_sent_to_userid, type: String, default: nil
   field :copies_of_contact_action_sent_to_userids, type: Array, default: Array.new
   field :archived, type: Boolean, default: false
+  field :keep, type: Boolean, default: false
   attr_accessor :action
 
   mount_uploader :screenshot, ScreenshotUploader
@@ -43,11 +44,23 @@ class Feedback
       where(:archived => value)
     end
 
+    def keep(status)
+      where(keep: status)
+    end
+
+    def message_replies(id)
+      where(:source_feedback_id => id)
+    end
+
     def github_enabled
       !Rails.application.config.github_issues_password.blank?
     end
   end
 
+  def a_reply?
+    source_message_id.present? || source_feedback_id.present? || source_contact_id.present? ? answer = true : answer = false
+    answer
+  end
 
   def acknowledge_feedback
     UserMailer.acknowledge_feedback(self).deliver_now
@@ -121,6 +134,51 @@ class Feedback
     copies_of_contact_action_sent_to_userids
   end
 
+  def archive
+    update_attribute(:archived, true)
+    Feedback.message_replies(id).each do |message_rl1|
+      message_rl1.update_attribute(:archived, true)
+      Feedback.message_replies(message_rl1.id).each do |message_rl2|
+        message_rl2.update_attribute(:archived, true)
+        Feedback.message_replies(message_rl2.id).each do |message_rl3|
+          message_rl3.update_attribute(:archived, true)
+          Feedback.message_replies(message_rl3.id).each do |message_rl4|
+            message_rl4.update_attribute(:archived, true)
+            Feedback.message_replies(message_rl4.id).each do |message_rl5|
+              message_rl5.update_attribute(:archived, true)
+              Feedback.message_replies(message_rl5.id).each do |message_rl6|
+                message_rl6.update_attribute(:archived, true)
+                Feedback.message_replies(message_rl6.id).each do |message_rl7|
+                  message_rl7.update_attribute(:archived, true)
+                  Feedback.message_replies(message_rl7.id).each do |message_rl8|
+                    message_rl8.update_attribute(:archived, true)
+                    Feedback.message_replies(message_rl8.id).each do |message_rl9|
+                      message_rl9.update_attribute(:archived, true)
+                      Feedback.message_replies(message_rl9.id).each do |message_rl10|
+                        message_rl10.update_attribute(:archived, true)
+                        Feedback.message_replies(message_rl10.id).each do |message_rl11|
+                          message_rl11.update_attribute(:archived, true)
+                          Feedback.message_replies(message_rl11.id).each do |message_rl12|
+                            message_rl12.update_attribute(:archived, true)
+                          end
+                        end
+                      end
+                    end
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+
+  def being_kept?
+    self.keep.present? ? answer = true : answer = false
+    answer
+  end
+
   def communicate_feedback_reply(message,sender_userid)
     copies = self.copies_of_contact_action_sent_to_userids
     recipients = Array.new
@@ -189,8 +247,134 @@ class Feedback
     permitted_person_role || permitted_secondary_role
   end
 
+  def not_being_kept?
+    self.keep.blank? ? answer = true : answer = false
+    answer
+  end
+
+  def restore
+    update_attribute(:archived, false)
+    Feedback.message_replies(id).each do |message_rl1|
+      message_rl1.update_attribute(:archived, false)
+      Feedback.message_replies(message_rl1.id).each do |message_rl2|
+        message_rl2.update_attribute(:archived, false)
+        Feedback.message_replies(message_rl2.id).each do |message_rl3|
+          message_rl3.update_attribute(:archived, false)
+          Feedback.message_replies(message_rl3.id).each do |message_rl4|
+            message_rl4.update_attribute(:archived, false)
+            Feedback.message_replies(message_rl4.id).each do |message_rl5|
+              message_rl5.update_attribute(:archived, false)
+              Feedback.message_replies(message_rl5.id).each do |message_rl6|
+                message_rl6.update_attribute(:archived, false)
+                Feedback.message_replies(message_rl6.id).each do |message_rl7|
+                  message_rl7.update_attribute(:archived, false)
+                  Feedback.message_replies(message_rl7.id).each do |message_rl8|
+                    message_rl8.update_attribute(:archived, false)
+                    Feedback.message_replies(message_rl8.id).each do |message_rl9|
+                      message_rl9.update_attribute(:archived, false)
+                      Feedback.message_replies(message_rl9.id).each do |message_rl10|
+                        message_rl10.update_attribute(:archived, false)
+                        Feedback.message_replies(message_rl10.id).each do |message_rl11|
+                          message_rl11.update_attribute(:archived, false)
+                          Feedback.message_replies(message_rl11.id).each do |message_rl12|
+                            message_rl12.update_attribute(:archived, false)
+                          end
+                        end
+                      end
+                    end
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+
+
   def title_or_body_exist
     errors.add(:title, "Either the Summary or Body must have content") if self.title.blank? && self.body.blank?
+  end
+
+  def update_keep
+    update_attributes(archived: true, keep: true)
+    Feedback.message_replies(id).each do |message_rl1|
+      message_rl1.update_attribute(archived: true, keep: true)
+      Feedback.message_replies(message_rl1.id).each do |message_rl2|
+        message_rl2.update_attribute(archived: true, keep: true)
+        Feedback.message_replies(message_rl2.id).each do |message_rl3|
+          message_rl3.update_attribute(archived: true, keep: true)
+          Feedback.message_replies(message_rl3.id).each do |message_rl4|
+            message_rl4.update_attribute(archived: true, keep: true)
+            Feedback.message_replies(message_rl4.id).each do |message_rl5|
+              message_rl5.update_attribute(archived: true, keep: true)
+              Feedback.message_replies(message_rl5.id).each do |message_rl6|
+                message_rl6.update_attribute(archived: true, keep: true)
+                Feedback.message_replies(message_rl6.id).each do |message_rl7|
+                  message_rl7.update_attribute(archived: true, keep: true)
+                  Feedback.message_replies(message_rl7.id).each do |message_rl8|
+                    message_rl8.update_attribute(archived: true, keep: true)
+                    Feedback.message_replies(message_rl8.id).each do |message_rl9|
+                      message_rl9.update_attribute(archived: true, keep: true)
+                      Feedback.message_replies(message_rl9.id).each do |message_rl10|
+                        message_rl10.update_attribute(archived: true, keep: true)
+                        Feedback.message_replies(message_rl10.id).each do |message_rl11|
+                          message_rl11.update_attribute(archived: true, keep: true)
+                          Feedback.message_replies(message_rl11.id).each do |message_rl12|
+                            message_rl12.update_attribute(archived: true, keep: true)
+                          end
+                        end
+                      end
+                    end
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+
+  def update_unkeep
+    update_attributes(archived: true, keep: false)
+    Feedback.message_replies(id).each do |message_rl1|
+      message_rl1.update_attribute(archived: true, keep: false)
+      Feedback.message_replies(message_rl1.id).each do |message_rl2|
+        message_rl2.update_attribute(archived: true, keep: false)
+        Feedback.message_replies(message_rl2.id).each do |message_rl3|
+          message_rl3.update_attribute(archived: true, keep: false)
+          Feedback.message_replies(message_rl3.id).each do |message_rl4|
+            message_rl4.update_attribute(archived: true, keep: false)
+            Feedback.message_replies(message_rl4.id).each do |message_rl5|
+              message_rl5.update_attribute(archived: true, keep: false)
+              Feedback.message_replies(message_rl5.id).each do |message_rl6|
+                message_rl6.update_attribute(archived: true, keep: false)
+                Feedback.message_replies(message_rl6.id).each do |message_rl7|
+                  message_rl7.update_attribute(archived: true, keep: false)
+                  Feedback.message_replies(message_rl7.id).each do |message_rl8|
+                    message_rl8.update_attribute(archived: true, keep: false)
+                    Feedback.message_replies(message_rl8.id).each do |message_rl9|
+                      message_rl9.update_attribute(archived: true, keep: false)
+                      Feedback.message_replies(message_rl9.id).each do |message_rl10|
+                        message_rl10.update_attribute(archived: true, keep: false)
+                        Feedback.message_replies(message_rl10.id).each do |message_rl11|
+                          message_rl11.update_attribute(archived: true, keep: false)
+                          Feedback.message_replies(message_rl11.id).each do |message_rl12|
+                            message_rl12.update_attribute(archived: true, keep: false)
+                          end
+                        end
+                      end
+                    end
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
+    end
   end
 
   def url_check

@@ -108,6 +108,9 @@ MyopicVicar::Application.routes.draw do
   get 'feedbacks/:id/restore',  :to => 'feedbacks#restore', :as => :restore_feedback
   get 'feedbacks/:source_feedback_id/reply',  :to => 'feedbacks#reply_feedback', :as => :reply_feedback
   get 'feedbacks/:id/feedback_reply_messages', to: 'feedbacks#feedback_reply_messages', as: :feedback_reply_messages
+  get 'feedbacks/:id/keep',  :to => 'feedbacks#keep', :as => :keep_feedback
+  get 'feedbacks/:id/unkeep',  :to => 'feedbacks#unkeep', :as => :unkeep_feedback
+
   resources :feedbacks
 
 
@@ -126,6 +129,8 @@ MyopicVicar::Application.routes.draw do
   get 'contacts/:id/archive',  :to => 'contacts#archive', :as => :archive_contact
   get 'contacts/:id/restore',  :to => 'contacts#restore', :as => :restore_contact
   get 'contacts/:id/convert_to_issue(.:format)', :to => 'contacts#convert_to_issue', :as => :convert_contact_to_issue
+  get 'contacts/:id/keep',  :to => 'contacts#keep', :as => :keep_contact
+  get 'contacts/:id/unkeep',  :to => 'contacts#unkeep', :as => :unkeep_contact
 
   resources :contacts
 
