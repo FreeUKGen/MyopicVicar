@@ -22,12 +22,16 @@ class MessagesController < ApplicationController
     @message.file_name = @message.attachment_identifier
     case params[:commit]
     when 'Submit'
-      session[:syndicate].present? ? @message.syndicate = session[:syndicate] : @message.syndicate = nil
-      if @message.save
+      if @message.subject.blank?
+        @message.subject = '...'
+        flash[:notice] = 'There was no subject for your message. You will have to reattach any file or image'
+        render :new
+      elsif @message.save
         flash[:notice] = 'Message created'
         return_for_create
       else
-        redirect_to :new
+        flash[:notice] = 'There was a problem with your message, possibly you attached a file with an incorrect file type or an image as a file'
+        redirect_to action: :new
       end
       return
     when 'Save & Send'
@@ -239,11 +243,11 @@ class MessagesController < ApplicationController
   def return_after_archive(source, id)
     case
     when session[:message_base] == 'syndicate' && source == 'list_syndicate_messages'
-      redirect_to action: 'list_archived_syndicate_messages', source: 'list_syndicate_messages'
+      redirect_to action: 'list_syndicate_messages', source: 'list_syndicate_messages'
     when session[:message_base] == 'syndicate' && source == 'show'
       redirect_to action: 'show', id: id
     when session[:message_base] == 'general' && source == 'index'
-      redirect_to action: 'list_archived', source: 'list_archived'
+      redirect_to action: 'index', source: 'index'
     when session[:message_base] == 'general' && source == 'show'
       redirect_to action: 'show', id: id
     else
@@ -254,11 +258,11 @@ class MessagesController < ApplicationController
   def return_after_keep(source, id)
     case
     when session[:message_base] == 'syndicate' && source == 'list_syndicate_messages'
-      redirect_to action: 'list_archived_syndicate_messages', source: 'list_syndicate_messages'
+      redirect_to action: 'list_syndicate_messages', source: 'list_syndicate_messages'
     when session[:message_base] == 'syndicate' && source == 'show'
       redirect_to action: 'show', id: id
     when session[:message_base] == 'general' && source == 'index'
-      redirect_to action: 'index', source: 'index'
+      redirect_to action: 'list_archived', source: 'list_archived'
     when session[:message_base] == 'general' && source == 'show'
       redirect_to action: 'show', id: id
     else
@@ -269,11 +273,11 @@ class MessagesController < ApplicationController
   def return_after_restore(source, id)
     case
     when session[:message_base] == 'syndicate' && source == 'list_archived_syndicate_messages'
-      redirect_to action: 'list_syndicate_messages', source: 'list_syndicate_messages'
+      redirect_to action: 'list_archived_syndicate_messages', source: 'list_syndicate_messages'
     when session[:message_base] == 'syndicate' && source == 'show'
       redirect_to action: 'show', id: id
     when session[:message_base] == 'general' && source == 'list_archived'
-      redirect_to action: 'index', source: 'index'
+      redirect_to action: 'list_archived', source: 'list_archived'
     when session[:message_base] == 'general' && source == 'show'
       redirect_to action: 'show', id: id
     else
@@ -284,11 +288,11 @@ class MessagesController < ApplicationController
   def return_after_unkeep(source, id)
     case
     when session[:message_base] == 'syndicate' && source == 'list_syndicate_messages'
-      redirect_to action: 'list_archived_syndicate_messages', source: 'list_syndicate_messages'
+      redirect_to action: 'list_syndicate_messages', source: 'list_syndicate_messages'
     when session[:message_base] == 'syndicate' && source == 'show'
       redirect_to action: 'show', id: id
     when session[:message_base] == 'general' && source == 'index'
-      redirect_to action: 'list_archived', source: 'list_archived'
+      redirect_to action: 'index', source: 'index'
     when session[:message_base] == 'general' && source == 'show'
       redirect_to action: 'show', id: id
     else
