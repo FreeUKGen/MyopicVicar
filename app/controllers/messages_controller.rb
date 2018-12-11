@@ -67,9 +67,7 @@ class MessagesController < ApplicationController
     if @message.present?
       @message.destroy
       flash.notice = 'Message destroyed'
-      redirect_to list_feedback_reply_message_path and return if @message.source_feedback_id.present?
-      redirect_to list_contact_reply_message_path and return if @message.source_contact_id.present?
-      redirect_to :action => 'index'
+      return_after_destroy
       return
     else
       go_back('message',params[:id])
@@ -138,7 +136,7 @@ class MessagesController < ApplicationController
     get_user_info_from_userid
     @syndicate = session[:syndicate]
     order = 'message_time ASC'
-    @messages = Message.list_messages(params[:action],session[:syndicate],session[:archived_contacts],order)
+    @messages = Message.list_messages(params[:action], session[:syndicate], session[:archived_contacts], order)
     render :index
   end
 
@@ -146,7 +144,7 @@ class MessagesController < ApplicationController
     get_user_info_from_userid
     @syndicate = session[:syndicate]
     order = 'message_time DESC'
-    @messages = Message.list_messages(params[:action],session[:syndicate],session[:archived_contacts],order)
+    @messages = Message.list_messages(params[:action], session[:syndicate], session[:archived_contacts], order)
     render :index
   end
 
@@ -156,7 +154,7 @@ class MessagesController < ApplicationController
     session[:message_base] = 'syndicate'
     @syndicate = session[:syndicate]
     order = 'message_time DESC'
-    @messages = Message.list_messages(params[:action],session[:syndicate],session[:archived_contacts],order)
+    @messages = Message.list_messages(params[:action], session[:syndicate], session[:archived_contacts], order)
     render :index
   end
 
@@ -252,6 +250,20 @@ class MessagesController < ApplicationController
       redirect_to action: 'show', id: id
     else
       redirect_to action: 'list_archived'
+    end
+  end
+
+  def return_after_destroy
+    if @message.source_feedback_id.present?
+      redirect_to list_feedback_reply_message_path
+    elsif @message.source_contact_id.present?
+      redirect_to list_contact_reply_message_path
+    elsif @message.source_message_id.present?
+      redirect_to show_reply_messages_path
+    elsif session[:message_base] == 'syndicate'
+      redirect_to list_syndicate_messages_path
+    elsif session[:message_base] == 'general'
+      redirect_to action: 'index'
     end
   end
 
@@ -484,6 +496,7 @@ class MessagesController < ApplicationController
     else
       session[:syndicate].present? ? @message.syndicate = session[:syndicate] : @message.syndicate = nil
     end
+    @message.syndicate
   end
 
   def syndicate_messages(messages, syndicate)
