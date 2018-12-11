@@ -25,7 +25,7 @@ module MessagesHelper
       f.action :submit, as: :input,  label: 'Reply Message', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
     when params[:source_feedback_id].present?
       f.action :submit, as: :input,  label: 'Reply Feedback', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
-    when params[:source_contact].present?
+    when params[:source_contact_id].present?
       f.action :submit, as: :input,  label: 'Reply Contact', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
     when params[:id].present?
       f.action :submit, as: :input, label: 'Save & Send', button_html: { class: 'btn ' }, wrapper_html: { class: 'grid__item  one-whole text--center' }
@@ -58,7 +58,6 @@ module MessagesHelper
         end
       end
     end
-
     do_we_permit
   end
 
@@ -127,7 +126,6 @@ module MessagesHelper
   end
 
   def do_we_show_replies_action?(message)
-
     message.there_are_reply_messages? ? do_we_permit = true : do_we_permit = false
     do_we_permit
   end
@@ -150,7 +148,7 @@ module MessagesHelper
     if session[:message_base] == 'userid_messages'
       do_we_permit = false
     else
-      do_we_permit = true if message.sent_messages.present? && message.not_a_reply?
+      do_we_permit = true if message.sent? && message.not_a_reply?
     end
     do_we_permit
   end
@@ -160,7 +158,7 @@ module MessagesHelper
     if session[:message_base] == 'userid_messages'
       do_we_permit = false
     else
-      do_we_permit = true if message.sent_messages.blank? && message.not_a_reply?
+      do_we_permit = true if !message.sent? && message.not_a_reply?
     end
     do_we_permit
   end
@@ -226,16 +224,7 @@ module MessagesHelper
   end
 
   def index_sort_links?
-    case
-    when params[:source].present?
-      index_sort_links = false
-    when params[:source] == 'list_syndicate_messages' || params[:source] == 'list_archived_syndicate_messages'
-      index_sort_links = false
-    when params[:source] == 'show_reply_messages' || params[:source] == 'user_reply_messages' || params[:source] == 'userid_reply_messages'
-      index_sort_links = false
-    else
-      index_sort_links = true
-    end
+    index_sort_links = true
     index_sort_links
   end
 

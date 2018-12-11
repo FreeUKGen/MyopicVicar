@@ -18,6 +18,7 @@
     <%= semantic_form_for(@message, :html => {:multipart => true } ) do |f| %>
       <%= f.hidden_field :message_time %>
       <%= f.hidden_field :userid %>
+      <%= f.hidden_field :syndicate %>
       <%= f.hidden_field :source_message_id, value: params[:id]  if params[:id]%>
       <%= f.hidden_field :source_feedback_id, value: params[:source_feedback_id]  if params[:source_feedback_id]%>
       <%= f.hidden_field :source_contact_id, value: params[:source_contact_id]  if params[:source_contact_id]%>
