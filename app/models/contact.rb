@@ -175,6 +175,10 @@ class Contact
     end
   end
 
+  def archived?
+    archived.present?
+  end
+
   def being_kept?
     self.keep.present? ? answer = true : answer = false
     answer
@@ -283,7 +287,7 @@ class Contact
   end
 
   def is_archived?
-    return self.archived
+    archived.present?
   end
 
   def issue_title
@@ -293,6 +297,11 @@ class Contact
   def issue_body
     issue_body = ApplicationController.new.render_to_string(:partial => 'contacts/github_issue_body.txt', :locals => {:feedback => self})
     issue_body
+  end
+
+  def not_a_reply?
+    source_contact_id.present?  ? answer = false : answer = true
+    answer
   end
 
   def not_being_kept?
@@ -340,32 +349,36 @@ class Contact
     end
   end
 
+  def sent?
+    sent_messages.deliveries.count != 0
+  end
+
   def update_keep
     update_attributes(archived: true, keep: true)
     Contact.message_replies(id).each do |message_rl1|
-      message_rl1.update_attribute(archived: true, keep: true)
+      message_rl1.update_attributes(archived: true, keep: true)
       Contact.message_replies(message_rl1.id).each do |message_rl2|
-        message_rl2.update_attribute(archived: true, keep: true)
+        message_rl2.update_attributes(archived: true, keep: true)
         Contact.message_replies(message_rl2.id).each do |message_rl3|
-          message_rl3.update_attribute(archived: true, keep: true)
+          message_rl3.update_attributes(archived: true, keep: true)
           Contact.message_replies(message_rl3.id).each do |message_rl4|
-            message_rl4.update_attribute(archived: true, keep: true)
+            message_rl4.update_attributes(archived: true, keep: true)
             Contact.message_replies(message_rl4.id).each do |message_rl5|
-              message_rl5.update_attribute(archived: true, keep: true)
+              message_rl5.update_attributes(archived: true, keep: true)
               Contact.message_replies(message_rl5.id).each do |message_rl6|
-                message_rl6.update_attribute(archived: true, keep: true)
+                message_rl6.update_attributes(archived: true, keep: true)
                 Contact.message_replies(message_rl6.id).each do |message_rl7|
-                  message_rl7.update_attribute(archived: true, keep: true)
+                  message_rl7.update_attributes(archived: true, keep: true)
                   Contact.message_replies(message_rl7.id).each do |message_rl8|
-                    message_rl8.update_attribute(archived: true, keep: true)
+                    message_rl8.update_attributes(archived: true, keep: true)
                     Contact.message_replies(message_rl8.id).each do |message_rl9|
-                      message_rl9.update_attribute(archived: true, keep: true)
+                      message_rl9.update_attributes(archived: true, keep: true)
                       Contact.message_replies(message_rl9.id).each do |message_rl10|
-                        message_rl10.update_attribute(archived: true, keep: true)
+                        message_rl10.update_attributes(archived: true, keep: true)
                         Contact.message_replies(message_rl10.id).each do |message_rl11|
-                          message_rl11.update_attribute(archived: true, keep: true)
+                          message_rl11.update_attributes(archived: true, keep: true)
                           Contact.message_replies(message_rl11.id).each do |message_rl12|
-                            message_rl12.update_attribute(archived: true, keep: true)
+                            message_rl12.update_attributes(archived: true, keep: true)
                           end
                         end
                       end
@@ -383,29 +396,29 @@ class Contact
   def update_unkeep
     update_attributes(archived: true, keep: false)
     Contact.message_replies(id).each do |message_rl1|
-      message_rl1.update_attribute(archived: true, keep: false)
+      message_rl1.update_attributes(archived: true, keep: false)
       Contact.message_replies(message_rl1.id).each do |message_rl2|
-        message_rl2.update_attribute(archived: true, keep: false)
+        message_rl2.update_attributes(archived: true, keep: false)
         Contact.message_replies(message_rl2.id).each do |message_rl3|
-          message_rl3.update_attribute(archived: true, keep: false)
+          message_rl3.update_attributes(archived: true, keep: false)
           Contact.message_replies(message_rl3.id).each do |message_rl4|
-            message_rl4.update_attribute(archived: true, keep: false)
+            message_rl4.update_attributes(archived: true, keep: false)
             Contact.message_replies(message_rl4.id).each do |message_rl5|
-              message_rl5.update_attribute(archived: true, keep: false)
+              message_rl5.update_attributes(archived: true, keep: false)
               Contact.message_replies(message_rl5.id).each do |message_rl6|
-                message_rl6.update_attribute(archived: true, keep: false)
+                message_rl6.update_attributes(archived: true, keep: false)
                 Contact.message_replies(message_rl6.id).each do |message_rl7|
-                  message_rl7.update_attribute(archived: true, keep: false)
+                  message_rl7.update_attributes(archived: true, keep: false)
                   Contact.message_replies(message_rl7.id).each do |message_rl8|
-                    message_rl8.update_attribute(archived: true, keep: false)
+                    message_rl8.update_attributes(archived: true, keep: false)
                     Contact.message_replies(message_rl8.id).each do |message_rl9|
-                      message_rl9.update_attribute(archived: true, keep: false)
+                      message_rl9.update_attributes(archived: true, keep: false)
                       Contact.message_replies(message_rl9.id).each do |message_rl10|
-                        message_rl10.update_attribute(archived: true, keep: false)
+                        message_rl10.update_attributes(archived: true, keep: false)
                         Contact.message_replies(message_rl10.id).each do |message_rl11|
-                          message_rl11.update_attribute(archived: true, keep: false)
+                          message_rl11.update_attributes(archived: true, keep: false)
                           Contact.message_replies(message_rl11.id).each do |message_rl12|
-                            message_rl12.update_attribute(archived: true, keep: false)
+                            message_rl12.update_attributes(archived: true, keep: false)
                           end
                         end
                       end

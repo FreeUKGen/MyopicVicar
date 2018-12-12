@@ -2,9 +2,6 @@ class FeedbacksController < ApplicationController
   require 'reply_userid_role'
   skip_before_filter :require_login, only: [:show, :feedback_reply_messages]
 
-
-
-
   def archive
     @feedback = Feedback.id(params[:id]).first
     if @feedback.present?
@@ -94,7 +91,7 @@ class FeedbacksController < ApplicationController
       @link = false
       render 'messages/index'
     else
-      go_back("feedback",params[:id])
+      go_back('feedback', params[:id])
     end
   end
 

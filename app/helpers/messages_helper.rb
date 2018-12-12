@@ -180,12 +180,8 @@ module MessagesHelper
       breadcrumb :message_to_syndicate
     when params[:action] == 'feedback_reply_messages'
       breadcrumb :feedback_messages, @feedback
-    when params[:action] == 'list_feedback_reply_message'
-      breadcrumb :list_feedback_reply_messages
     when params[:action] == 'contact_reply_messages'
       breadcrumb :contact_messages, @contact
-    when params[:action] == 'list_contact_reply_message'
-      breadcrumb :list_contact_reply_messages
     else
       breadcrumb :messages
     end
@@ -224,7 +220,8 @@ module MessagesHelper
   end
 
   def index_sort_links?
-    index_sort_links = true
+    index_sort_links = false
+    index_sort_links = true if session[:message_base].present?
     index_sort_links
   end
 

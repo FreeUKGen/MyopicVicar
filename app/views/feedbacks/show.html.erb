@@ -4,75 +4,70 @@
     <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
   </div>
 <% end %>
-<h2 class=" text--center">Feedback Identifier: <%= @feedback.identifier %>  </h2>
+<h4 class=" text--center push--bottom" ><%= show_feedback_title(@feedback) %></h4>
+<h4 class=" text--center push--bottom" ><%= show_feedback_title_line_two(@feedback) %></h4>
+<% if !Contact.github_enabled %>
+  <h4 class=" text--center">GitHub integration is not activated </h4>
+<% end%>
 <div  class=" text--center push--bottom">
   <%= link_to 'Create Reply', reply_feedback_path(source_feedback_id:@feedback.id) ,:class => "btn weight--light  btn--small" %>
   <%= link_to 'View Replies', feedback_reply_messages_path(@feedback.id), class: "btn weight--light  btn--small", method: :get %>
-  <%= link_to 'Archive', archive_feedback_path(@feedback.id), :class => "btn weight--light  btn--small", data: { confirm: 'Are you sure you want to Archive this contact?' } unless @feedback.is_archived?%>
-  <%= link_to 'Restore', restore_feedback_path(@feedback.id), :class => "btn weight--light  btn--small", data: { confirm: 'Are you sure you want to Archive this contact?' } if @feedback.is_archived?%>
-  <%= link_to 'Destroy', force_destroy_feedback_path(@feedback.id), :class => "btn weight--light  btn--small", title: "This contact has replies and will be destroyed with this action", data: { confirm: 'This contact has replies. Are you sure you want to delete this contact and all its replies' } if @feedback.is_archived?%>
+  <%= link_to 'Archive', archive_feedback_path(@feedback.id), :class => "btn weight--light  btn--small", data: { confirm: 'Are you sure you want to Archive this contact?' }if do_we_show_archive_feedback_action?(@feedback)%>
+  <%= link_to 'Restore', restore_feedback_path(@feedback.id), :class => "btn weight--light  btn--small", data: { confirm: 'Are you sure you want to Archive this contact?' } if do_we_show_restore_feedback_action?(@feedback)%>
   <%= link_to 'Keep until I say so', keep_feedback_path(@feedback.id,:source => params[:action]), :class => 'btn weight--light  btn--small',  data: { confirm: 'Are you sure you want keep this feedback' } unless @feedback.keep.present?%>
   <%= link_to 'Remove Keep Designation', unkeep_feedback_path(@feedback.id,:source => params[:action]), :class => 'btn weight--light  btn--small',  data: { confirm: 'Are you sure you want remove the keep designation for this feedback' } if @feedback.keep.present? %>
+  <%= link_to "Convert to Issue", convert_feedback_to_issue_path(@feedback),:class => "btn weight--light  btn--small" if do_we_show_github_create_feedback_action?(@feedback) %>
 </div>
-<p>
-  <b>Title:</b>
-  <%= @feedback.title %>
-</p>
-<p>
-  <b>Body:</b>
-  <%= @feedback.body %>
-</p>
-<p>
-  <b>Time:</b>
-  <%= @feedback.feedback_time.strftime("%H:%M on %F") unless @feedback.feedback_time.nil? %>
-</p>
-<p>
-  <b>User:</b>
-  <%= @feedback.user_id %>
-</p>
-<p>
-  <b>Email address:</b>
-  <%= @feedback.email_address %>
-</p>
-<p>
-  <b>Session ID:</b>
-  <%= @feedback.session_id %>
-  (View <%= link_to("search queries for this session", search_query_report_path(:feedback_id => @feedback, :session_id => @feedback.session_id)) %>.)
-</p>
-<p>
-  <b>Problem page url:</b>
-  <%= link_to @feedback.problem_page_url, @feedback.problem_page_url %>
-</p>
-<p>
-  <b>Previous page url:</b>
-  <%= link_to @feedback.previous_page_url, @feedback.previous_page_url %>
-</p>
-<p>
-  <b>Type:</b>
-  <%= @feedback.feedback_type %>
-</p>
-<% if  @feedback.github_issue_url %>
-  <p>Github Issue: <%= link_to  @feedback.github_issue_url,  @feedback.github_issue_url  %></p>
-  <p>Github Number: <%=  @feedback.github_number  %></p>
-  <p>Make Github Comment: <%= link_to  @feedback.github_comment_url,  @feedback.github_comment_url  %></p>
-<% else %>
-  <% if Contact.github_enabled %>
-    <p><span  style="float:left;">
-        <%= button_to "Convert to Issue", convert_feedback_to_issue_path( @feedback)  %>
-      </span></p>
-  <% else %>
-    <p>Github integration is not set up on this site yet.</p>
-  <% end %>
-<% end %>
-<p>
-  <b>Screenshot:</b>
-  <% if @feedback.screenshot_url %>
-    <%= image_tag @feedback.screenshot_url %>
-  <% else %>
-    No screenshot attached.
-  <% end %>
-</p>
-<p>
-  <b>Session Data:</b>
-  <%= debug @feedback.session_data %>
-</p>
+<div class="grid">
+  <section class="island ">
+    <div class="grid__item text--left ">
+      <table class="table--bordered table--data " >
+        <colgroup >
+          <col class=t20>
+          <col class=t80>
+        </colgroup>
+        <tr>
+          <th class="caps">Field</th>
+          <th  class="caps">Value</th>
+        </tr>
+        <tr>
+          <td>The explanation was:</td>
+          <td class="weight--semibold"><%= @feedback.body %></td>
+        </tr>
+        <tr>
+          <td>Session Data:</td>
+          <td class="weight--semibold"> <%= @feedback.session_data %> </td>
+        </tr>
+        <% if @feedback.github_issue_url %>
+          <tr>
+            <td>Github Issue:</td>
+            <td class="weight--semibold"> <%= link_to @feedback.github_issue_url, @feedback.github_issue_url  %></td>
+          </tr>
+          <tr>
+            <td>Github Number:</td>
+            <td class="weight--semibold"> <%= @feedback.github_number  %></td>
+          </tr>
+          <tr>
+            <td>Make Github Comment:</td>
+            <td class="weight--semibold"> <%= link_to @feedback.github_comment_url, @feedback.github_comment_url  %></td>
+          </tr>
+        <% end %>
+        <tr>
+          <td>Searches:</td>
+          <td class="weight--semibold"><%= link_to("View search queries for this session", search_query_report_path(:feedback_id => @feedback, :session_id => @feedback.session_id)) %></td>
+        </tr>
+        <tr>
+          <td>Problem page url:</td>
+          <td class="weight--semibold">  <%= link_to @feedback.problem_page_url, @feedback.problem_page_url %></td>
+        </tr>
+        <tr>
+          <td>Previous page url:</td>
+          <td class="weight--semibold"> <%= link_to @feedback.previous_page_url, @feedback.previous_page_url %></td>
+        </tr>
+      </table>
+      <% if @feedback.screenshot_url %>
+        <%= image_tag @feedback.screenshot_url %>
+      <% end %>
+    </div>
+  </section>
+</div>

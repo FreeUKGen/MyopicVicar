@@ -71,7 +71,7 @@ class Feedback
     person = UseridDetail.role(role).active(true).first
     person = UseridDetail.secondary(role).active(true).first if person.blank?
     person.present? ? action_person = person.userid : action_person = self.get_manager
-    self.update_attribute(:contact_action_sent_to_userid,action_person)
+    self.update_attribute(:contact_action_sent_to_userid, action_person)
     return action_person
   end
 
@@ -85,7 +85,7 @@ class Feedback
       action_recipient_copies_userids.push(person.userid) unless person.userid == action_person
     end
     action_recipient_copies_userids = action_recipient_copies_userids.uniq
-    self.update_attribute(:copies_of_contact_action_sent_to_userids,action_recipient_copies_userids)
+    self.update_attribute(:copies_of_contact_action_sent_to_userids, action_recipient_copies_userids)
     return action_recipient_copies_userids
   end
 
@@ -120,7 +120,7 @@ class Feedback
     website  = website.sub("www","www13") if website == "http://www.freereg.org.uk"
     go_to = "#{website}/#{self.screenshot_location}"
     body = self.body + "\n" + go_to
-    self.update_attribute(:body,body)
+    self.update_attribute(:body, body)
   end
 
   def add_screenshot_location
@@ -172,6 +172,10 @@ class Feedback
         end
       end
     end
+  end
+
+  def archived?
+    archived.present?
   end
 
   def being_kept?
@@ -239,12 +243,18 @@ class Feedback
   end
 
   def is_archived?
-    return self.archived
+    archived.present?
   end
+
 
   def member_can_reply?(user)
     @user = user
     permitted_person_role || permitted_secondary_role
+  end
+
+  def not_a_reply?
+    source_feedback_id.present? ? answer = false : answer = true
+    answer
   end
 
   def not_being_kept?
@@ -292,6 +302,9 @@ class Feedback
     end
   end
 
+  def sent?
+    sent_messages.deliveries.count != 0
+  end
 
   def title_or_body_exist
     errors.add(:title, "Either the Summary or Body must have content") if self.title.blank? && self.body.blank?
@@ -300,29 +313,29 @@ class Feedback
   def update_keep
     update_attributes(archived: true, keep: true)
     Feedback.message_replies(id).each do |message_rl1|
-      message_rl1.update_attribute(archived: true, keep: true)
+      message_rl1.update_attributes(archived: true, keep: true)
       Feedback.message_replies(message_rl1.id).each do |message_rl2|
-        message_rl2.update_attribute(archived: true, keep: true)
+        message_rl2.update_attributes(archived: true, keep: true)
         Feedback.message_replies(message_rl2.id).each do |message_rl3|
-          message_rl3.update_attribute(archived: true, keep: true)
+          message_rl3.update_attributes(archived: true, keep: true)
           Feedback.message_replies(message_rl3.id).each do |message_rl4|
-            message_rl4.update_attribute(archived: true, keep: true)
+            message_rl4.update_attributes(archived: true, keep: true)
             Feedback.message_replies(message_rl4.id).each do |message_rl5|
-              message_rl5.update_attribute(archived: true, keep: true)
+              message_rl5.update_attributes(archived: true, keep: true)
               Feedback.message_replies(message_rl5.id).each do |message_rl6|
-                message_rl6.update_attribute(archived: true, keep: true)
+                message_rl6.update_attributes(archived: true, keep: true)
                 Feedback.message_replies(message_rl6.id).each do |message_rl7|
-                  message_rl7.update_attribute(archived: true, keep: true)
+                  message_rl7.update_attributes(archived: true, keep: true)
                   Feedback.message_replies(message_rl7.id).each do |message_rl8|
-                    message_rl8.update_attribute(archived: true, keep: true)
+                    message_rl8.update_attributes(archived: true, keep: true)
                     Feedback.message_replies(message_rl8.id).each do |message_rl9|
-                      message_rl9.update_attribute(archived: true, keep: true)
+                      message_rl9.update_attributes(archived: true, keep: true)
                       Feedback.message_replies(message_rl9.id).each do |message_rl10|
-                        message_rl10.update_attribute(archived: true, keep: true)
+                        message_rl10.update_attributes(archived: true, keep: true)
                         Feedback.message_replies(message_rl10.id).each do |message_rl11|
-                          message_rl11.update_attribute(archived: true, keep: true)
+                          message_rl11.update_attributes(archived: true, keep: true)
                           Feedback.message_replies(message_rl11.id).each do |message_rl12|
-                            message_rl12.update_attribute(archived: true, keep: true)
+                            message_rl12.update_attributes(archived: true, keep: true)
                           end
                         end
                       end
@@ -340,29 +353,29 @@ class Feedback
   def update_unkeep
     update_attributes(archived: true, keep: false)
     Feedback.message_replies(id).each do |message_rl1|
-      message_rl1.update_attribute(archived: true, keep: false)
+      message_rl1.update_attributes(archived: true, keep: false)
       Feedback.message_replies(message_rl1.id).each do |message_rl2|
-        message_rl2.update_attribute(archived: true, keep: false)
+        message_rl2.update_attributes(archived: true, keep: false)
         Feedback.message_replies(message_rl2.id).each do |message_rl3|
-          message_rl3.update_attribute(archived: true, keep: false)
+          message_rl3.update_attributes(archived: true, keep: false)
           Feedback.message_replies(message_rl3.id).each do |message_rl4|
-            message_rl4.update_attribute(archived: true, keep: false)
+            message_rl4.update_attributes(archived: true, keep: false)
             Feedback.message_replies(message_rl4.id).each do |message_rl5|
-              message_rl5.update_attribute(archived: true, keep: false)
+              message_rl5.update_attributes(archived: true, keep: false)
               Feedback.message_replies(message_rl5.id).each do |message_rl6|
-                message_rl6.update_attribute(archived: true, keep: false)
+                message_rl6.update_attributes(archived: true, keep: false)
                 Feedback.message_replies(message_rl6.id).each do |message_rl7|
-                  message_rl7.update_attribute(archived: true, keep: false)
+                  message_rl7.update_attributes(archived: true, keep: false)
                   Feedback.message_replies(message_rl7.id).each do |message_rl8|
-                    message_rl8.update_attribute(archived: true, keep: false)
+                    message_rl8.update_attributes(archived: true, keep: false)
                     Feedback.message_replies(message_rl8.id).each do |message_rl9|
-                      message_rl9.update_attribute(archived: true, keep: false)
+                      message_rl9.update_attributes(archived: true, keep: false)
                       Feedback.message_replies(message_rl9.id).each do |message_rl10|
-                        message_rl10.update_attribute(archived: true, keep: false)
+                        message_rl10.update_attributes(archived: true, keep: false)
                         Feedback.message_replies(message_rl10.id).each do |message_rl11|
-                          message_rl11.update_attribute(archived: true, keep: false)
+                          message_rl11.update_attributes(archived: true, keep: false)
                           Feedback.message_replies(message_rl11.id).each do |message_rl12|
-                            message_rl12.update_attribute(archived: true, keep: false)
+                            message_rl12.update_attributes(archived: true, keep: false)
                           end
                         end
                       end

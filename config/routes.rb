@@ -53,8 +53,6 @@ MyopicVicar::Application.routes.draw do
   get 'messages/list_by_name',  :to => 'messages#list_by_name', :as => :list_by_name_messages
   get 'messages/list_by_date',  :to => 'messages#list_by_date', :as => :list_by_date_messages
   get 'messages/list_by_most_recent',  :to => 'messages#list_by_most_recent', :as => :list_by_most_recent_messages
-  get 'messages/list_feedback_reply_messages',  :to => 'messages#list_feedback_reply_message', :as => :list_feedback_reply_message
-  get 'messages/list_contact_reply_messages',  :to => 'messages#list_contact_reply_message', :as => :list_contact_reply_message
   get 'messages/select_by_identifier',  :to => 'messages#select_by_identifier', :as => :select_by_identifier_messages
   get 'messages/:id/reply',  :to => 'messages#new', :as => :reply_messages
   get 'messages/:id/show_reply_messages',:to => 'messages#show_reply_messages', :as => :show_reply_messages
