@@ -90,13 +90,17 @@ class MessagesController < ApplicationController
 
   def create_for_submit
     session[:syndicate].present? ? @message.syndicate = session[:syndicate] : @message.syndicate = nil
-    if @message.save
+    if @message.subject.blank?
+      @message.subject = '...'
+      flash[:notice] = 'There was no subject for your message. You will have to reattach any file or image'
+      render :new
+    elsif @message.save
       flash[:notice] = 'Message created'
       return_for_create
     else
-      redirect_to :new
+      flash[:notice] = 'There was a problem with your message, possibly you attached a file with an incorrect file type or an image as a file'
+      redirect_to action: :new
     end
-    return
   end
 
   def create_for_submit_and_send
@@ -115,9 +119,7 @@ class MessagesController < ApplicationController
     if @message.present?
       @message.destroy
       flash.notice = 'Message destroyed'
-      redirect_to list_feedback_reply_message_path and return if @message.source_feedback_id.present?
-      redirect_to list_contact_reply_message_path and return if @message.source_contact_id.present?
-      redirect_to :action => 'index'
+      return_after_destroy
       return
     else
       go_back('message',params[:id])
@@ -186,7 +188,7 @@ class MessagesController < ApplicationController
     get_user_info_from_userid
     @syndicate = session[:syndicate]
     order = 'message_time ASC'
-    @messages = Message.list_messages(params[:action],session[:syndicate],session[:archived_contacts],order)
+    @messages = Message.list_messages(params[:action], session[:syndicate], session[:archived_contacts], order)
     render :index
   end
 
@@ -194,7 +196,7 @@ class MessagesController < ApplicationController
     get_user_info_from_userid
     @syndicate = session[:syndicate]
     order = 'message_time DESC'
-    @messages = Message.list_messages(params[:action],session[:syndicate],session[:archived_contacts],order)
+    @messages = Message.list_messages(params[:action], session[:syndicate], session[:archived_contacts], order)
     render :index
   end
 
@@ -204,7 +206,7 @@ class MessagesController < ApplicationController
     session[:message_base] = 'syndicate'
     @syndicate = session[:syndicate]
     order = 'message_time DESC'
-    @messages = Message.list_messages(params[:action],session[:syndicate],session[:archived_contacts],order)
+    @messages = Message.list_messages(params[:action], session[:syndicate], session[:archived_contacts], order)
     render :index
   end
 
@@ -291,11 +293,11 @@ class MessagesController < ApplicationController
   def return_after_archive(source, id)
     case
     when session[:message_base] == 'syndicate' && source == 'list_syndicate_messages'
-      redirect_to action: 'list_archived_syndicate_messages', source: 'list_syndicate_messages'
+      redirect_to action: 'list_syndicate_messages', source: 'list_syndicate_messages'
     when session[:message_base] == 'syndicate' && source == 'show'
       redirect_to action: 'show', id: id
     when session[:message_base] == 'general' && source == 'index'
-      redirect_to action: 'list_archived', source: 'list_archived'
+      redirect_to action: 'index', source: 'index'
     when session[:message_base] == 'general' && source == 'show'
       redirect_to action: 'show', id: id
     else
@@ -303,14 +305,28 @@ class MessagesController < ApplicationController
     end
   end
 
+  def return_after_destroy
+    if @message.source_feedback_id.present?
+      redirect_to list_feedback_reply_message_path
+    elsif @message.source_contact_id.present?
+      redirect_to list_contact_reply_message_path
+    elsif @message.source_message_id.present?
+      redirect_to show_reply_messages_path
+    elsif session[:message_base] == 'syndicate'
+      redirect_to list_syndicate_messages_path
+    elsif session[:message_base] == 'general'
+      redirect_to action: 'index'
+    end
+  end
+
   def return_after_keep(source, id)
     case
     when session[:message_base] == 'syndicate' && source == 'list_syndicate_messages'
-      redirect_to action: 'list_archived_syndicate_messages', source: 'list_syndicate_messages'
+      redirect_to action: 'list_syndicate_messages', source: 'list_syndicate_messages'
     when session[:message_base] == 'syndicate' && source == 'show'
       redirect_to action: 'show', id: id
     when session[:message_base] == 'general' && source == 'index'
-      redirect_to action: 'index', source: 'index'
+      redirect_to action: 'list_archived', source: 'list_archived'
     when session[:message_base] == 'general' && source == 'show'
       redirect_to action: 'show', id: id
     else
@@ -321,11 +337,11 @@ class MessagesController < ApplicationController
   def return_after_restore(source, id)
     case
     when session[:message_base] == 'syndicate' && source == 'list_archived_syndicate_messages'
-      redirect_to action: 'list_syndicate_messages', source: 'list_syndicate_messages'
+      redirect_to action: 'list_archived_syndicate_messages', source: 'list_syndicate_messages'
     when session[:message_base] == 'syndicate' && source == 'show'
       redirect_to action: 'show', id: id
     when session[:message_base] == 'general' && source == 'list_archived'
-      redirect_to action: 'index', source: 'index'
+      redirect_to action: 'list_archived', source: 'list_archived'
     when session[:message_base] == 'general' && source == 'show'
       redirect_to action: 'show', id: id
     else
@@ -336,11 +352,11 @@ class MessagesController < ApplicationController
   def return_after_unkeep(source, id)
     case
     when session[:message_base] == 'syndicate' && source == 'list_syndicate_messages'
-      redirect_to action: 'list_archived_syndicate_messages', source: 'list_syndicate_messages'
+      redirect_to action: 'list_syndicate_messages', source: 'list_syndicate_messages'
     when session[:message_base] == 'syndicate' && source == 'show'
       redirect_to action: 'show', id: id
     when session[:message_base] == 'general' && source == 'index'
-      redirect_to action: 'list_archived', source: 'list_archived'
+      redirect_to action: 'index', source: 'index'
     when session[:message_base] == 'general' && source == 'show'
       redirect_to action: 'show', id: id
     else
@@ -553,6 +569,7 @@ class MessagesController < ApplicationController
     else
       session[:syndicate].present? ? @message.syndicate = session[:syndicate] : @message.syndicate = nil
     end
+    @message.syndicate
   end
 
   def syndicate_messages(messages, syndicate)

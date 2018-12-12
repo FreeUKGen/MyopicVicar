@@ -239,6 +239,10 @@ class ApplicationController < ActionController::Base
     session.delete(:site_stats)
     session.delete(:message)
     session.delete(:message_base)
+    session.delete(:syndicate)
+    session.delete(:archived_contacts)
+    session.delete(:message_id)
+    session.delete(:original_message_id)
   end
 
   def clean_session_for_county
@@ -253,7 +257,6 @@ class ApplicationController < ActionController::Base
     session.delete(:edit)
     session.delete(:sort)
     session.delete(:sorted_by)
-    session.delete(:syndicate)
     session.delete(:viewed)
     session.delete(:active_place)
     session.delete(:page)
