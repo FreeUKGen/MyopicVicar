@@ -4,21 +4,23 @@ class ImageServerImagesController < ApplicationController
 
   def destroy
     display_info
-
-    imageserverimage = ImageServerImage.where(id: params[:id]).first
-
-    if imageserverimage.nil?
-      flash[:notice] = 'can not find the image'
-      redirect_to :back and return
-    end
-
-    if image_server_image.deletion_permitted?
-      website = image_server_image.url_for_delete_image_from_image_server
-      redirect_to website
+    image_server_image = ImageServerImage.id(params[:id]).first
+    if image_server_image.present?
+      if image_server_image.deletion_permitted?
+        website = image_server_image.url_for_delete_image_from_image_server
+        logger.warn "FREEREG::IMAGE deleting #{image_server_image.image_file_name}"
+        redirect_to website
+      else
+        flash[:notice] = "Deletion of #{image_server_image.image_file_name} is not permitted due to its status of  #{SourceProperty::STATUS[image_server_image.status]}"
+        logger.warn "FREEREG::IMAGE Deletion of #{image_server_image.image_file_name} is not permitted due to its status of  #{SourceProperty::STATUS[image_server_image.status]}"
+        redirect_to :back
+      end
     else
-      flash[:notice] = "Deletion of #{image_server_image.image_file_name} is not permitted due to its status of  #{SourceProperty::STATUS[image_server_image.status]}"
-      redirect_to :back and return
+      flash[:notice] = 'Can not find the image'
+      logger.warn 'FREEREG::IMAGE Can not find the image'
+      redirect_to :back
     end
+    return
   end
 
   def display_info
@@ -50,7 +52,7 @@ class ImageServerImagesController < ApplicationController
       redirect_to :back and return
     end
     @user = get_user
-    website = ImageServerImage.create_url('download',params[:object],chapman_code,folder_name, image_file_name,@user.userid)
+    website = ImageServerImage.create_url('download', params[:object], chapman_code, folder_name, image_file_name, @user.userid)
     redirect_to website and return
   end
 
