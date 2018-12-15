@@ -37,7 +37,7 @@ class CorrectImageServerGroup
     p "Processed #{process_image_server_group} groups"
   end
 
-  def core_deletion(group, message_file)
+  def self.core_deletion(group, message_file)
     p "core deletion #{group.id}"
     group_images = ImageServerImage.image_server_group_id(group.id).all
     number_of_images_in_group = group_images.length
