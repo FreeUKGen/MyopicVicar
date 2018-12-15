@@ -7,13 +7,12 @@ class CorrectImageServerGroup
     file_for_warning_messages = "log/image_server_group_count.log"
     FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )
     message_file = File.new(file_for_warning_messages, "w")
+    process_image_server_group = 0
     limits = len.split('/')
-    p limits
     if limits.length == 1
       limit = len.to_i
       message_file.puts "Correcting #{limit} image server groups"
       p "Correcting #{limit} image server groups"
-      process_image_server_group = 0
       ImageServerGroup.no_timeout.each do |group|
         p "image group #{group.id}"
         process_image_server_group = process_image_server_group  + 1
@@ -22,9 +21,7 @@ class CorrectImageServerGroup
         core_deletion(group, message_file, fix)
       end
     else
-      p    "#{limits[1]}"
       groupid = limits[1]
-      p groupid
       group = ImageServerGroup.where(id: groupid).first
       if group.present?
         process_image_server_group = process_image_server_group + 1
@@ -38,7 +35,6 @@ class CorrectImageServerGroup
   end
 
   def self.core_deletion(group, message_file, fix)
-    p "core deletion #{group.id}"
     group_images = ImageServerImage.image_server_group_id(group.id).all
     number_of_images_in_group = group_images.length
     new_number_of_images_in_group = number_of_images_in_group
