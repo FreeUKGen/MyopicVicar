@@ -18,7 +18,7 @@ class MessagesController < ApplicationController
 
   def communicate
     get_user_info_from_userid
-    @message = Message.new
+    @message = Message.id(params[:id]).first
     p params
     recipients = UseridDetail.role(params[:role])
     p recipients
@@ -396,8 +396,9 @@ class MessagesController < ApplicationController
     session[:message_base] = 'communication'
     @options = FreeregOptionsConstants::COMMUNICATION_ROLES
     @options = @user.remove_myself(@options)
-    @message = Message.new
-    @location = 'location.href= "/messages/communicate?source=communicate&role=" + this.value'
+    message = Message.new
+    message.nature = 'Communication'
+    @location = 'location.href= "/messages/communicate/#{message.id}?source=communicate&role=" + this.value'
     @prompt = 'Select Role'
   end
 

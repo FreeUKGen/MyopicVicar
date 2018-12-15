@@ -69,7 +69,7 @@ MyopicVicar::Application.routes.draw do
   get 'messages/:id/keep', :to => 'messages#keep', :as => :keep_message
   get 'messages/:id/unkeep', :to => 'messages#unkeep', :as => :unkeep_message
   get 'messages/:id/force_destroy', :to => 'messages#force_destroy', :as => :force_destroy_messages
-  get 'messages/communicate', to: 'messages#communicate', as: :communicate_message
+  get 'messages/:id/communicate', to: 'messages#communicate', as: :communicate_message
   get 'messages/select_role', to: 'messages#select_by_role', as: :select_by_role_message
   resources :messages
 

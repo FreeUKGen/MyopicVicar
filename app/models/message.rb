@@ -1,6 +1,7 @@
 class Message
   include Mongoid::Document
   include Mongoid::Timestamps
+  require 'freereg_options_constants'
   field :subject, type: String
   field :source_message_id, type: String
   field :source_feedback_id, type: String
@@ -18,9 +19,10 @@ class Message
   field :archived, type: Boolean, default: false
   field :keep, type: Boolean, default: false
   field :syndicate, type: String
+  field :nature, type: String
   attr_accessor :action, :inactive_reasons, :active
   embeds_many :sent_messages
-  accepts_nested_attributes_for :sent_messages,allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :sent_messages, allow_destroy: true, reject_if: :all_blank
 
   scope :fetch_replies, -> (id) { where(source_message_id: id) }
   scope :fetch_feedback_replies, -> (id) { where(source_feedback_id: id) }

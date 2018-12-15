@@ -131,7 +131,16 @@ module FreeregOptionsConstants
     'LT.' => 'Little',
     '&' => "and",
     'NR' => 'near',
-  'nr' => 'near'  }
+    'nr' => 'near'
+  }
+
+  COMMUNICATION_TYPES = {
+    'Communication' => 'Personal communication',
+    'Message' => 'General message',
+    'Syndicate' => 'Syndicate message',
+    'Feedback' => 'Feedback report',
+    'Contact' => 'Research contact'
+  }
 
   COMMUNICATION_ROLES = ['contacts_coordinator', 'county_coordinator', 'country_coordinator', 'documentation_coordinator', 'engagement_coordinator', 'executive_director', 'genealogy_coordinator',
                          'general_communication_coordinator', 'project_manager', 'publicity_coordinator', 'syndicate_coordinator',   'website_coordinator', 'volunteer_coordinator']
