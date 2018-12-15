@@ -98,6 +98,16 @@ class Freereg1CsvFilesController < ApplicationController
     render "index"
   end
 
+  def display_my_own_files_by_ascending_uploaded_date
+    get_user_info_from_userid
+    @who =  @first_name
+    @sorted_by = 'Ordered by oldest'
+    session[:sort] = "uploaded_date ASC"
+    session[:sorted_by] = @sorted_by
+    @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(session[:sort]).all.page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
+    render "index"
+  end
+
   def display_my_own_zero_years
     get_user_info_from_userid
     @who = @first_name
