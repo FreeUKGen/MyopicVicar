@@ -25,7 +25,7 @@ class CorrectImageServerGroup
       group = ImageServerGroup.where(id: groupid).first
       if group.present?
         process_image_server_group = process_image_server_group + 1
-        core_deletion(group, message_file)
+        core_deletion(group, message_file, fix)
       else
         p "Image server group #{groupid} does not exist"
       end
