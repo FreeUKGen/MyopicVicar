@@ -148,7 +148,7 @@ class UseridDetail
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Instance Methods
 
-  def add_fields(type,syndicate)
+  def add_fields(type, syndicate)
     self.syndicate = syndicate if self.syndicate.nil?
     self.userid = self.userid.strip unless self.userid.nil?
     self.sign_up_date =  DateTime.now
