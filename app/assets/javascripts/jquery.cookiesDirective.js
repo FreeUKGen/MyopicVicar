@@ -11,7 +11,7 @@
 		var settings = $.extend({
 			//Options
 			explicitConsent: false,
-			position: 'top',
+			position: 'bottom',
 			duration: 10,
 			limit: 0,
 			message: null,				
