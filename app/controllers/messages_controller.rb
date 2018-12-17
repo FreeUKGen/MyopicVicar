@@ -253,7 +253,8 @@ class MessagesController < ApplicationController
     @contact = Contact.id(@message.source_contact_id).first
     if sender.present? && @contact.present?
       @contact.communicate_contact_reply(@message, sender.userid)
-      redirect_to reply_contact_path(@message.source_contact_id) and return
+      contact = Contact.id(@message.source_contact_id).first
+      redirect_to contact_path(contact) and return
     else
       #need to add error handling
     end
@@ -265,7 +266,8 @@ class MessagesController < ApplicationController
     @feedback = Feedback.id(@message.source_feedback_id).first
     if sender.present? && @feedback.present?
       @feedback.communicate_feedback_reply(@message, sender.userid)
-      redirect_to reply_feedback_path(@message.source_feedback_id) and return
+      feedback = Feedback.id(@message.source_feedback_id).first
+      redirect_to feedback_path(feedback) and return
     else
       #need to add error handling
     end

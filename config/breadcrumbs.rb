@@ -650,23 +650,13 @@ crumb :show_reply_message do |message|
 end
 
 crumb :feedback_messages do |message|
-  link 'Feedback Messages', feedback_reply_messages_path(message.id)
+  link 'Feedback Reply Messages', feedback_reply_messages_path(message.id)
   parent :feedbacks
 end
 
 crumb :contact_messages do |message|
-  link 'Contact Messages', contact_reply_messages_path(message.id)
+  link 'Contact Reply Messages', contact_reply_messages_path(message.id)
   parent :contacts
-end
-
-crumb :list_contact_reply_messages do
-  link 'All Contact Reply Messages', list_contact_reply_message_path
-  parent :contacts
-end
-
-crumb :list_feedback_reply_messages do
-  link 'All Feedback Reply Messages', list_contact_reply_message_path
-  parent :feedbacks
 end
 
 crumb :show_feedback_message do |message|

@@ -48,17 +48,15 @@ MyopicVicar::Application.routes.draw do
 
   delete 'messages/:id/remove_from_userid_detail(.:format)', :to => 'messages#remove_from_userid_detail', :as => :remove_from_userid_detail
   get 'messages/userid_messages', :to => 'messages#userid_messages', :as => :userid_messages
-  get 'messages/list_by_type', :to => 'messages#list_by_type', :as => :list_by_type_messages
-  get 'messages/:id/send_message(.:format)', :to => 'messages#send_message', :as => :send_message_messages
-  get 'messages/list_by_name', :to => 'messages#list_by_name', :as => :list_by_name_messages
-  get 'messages/list_by_date', :to => 'messages#list_by_date', :as => :list_by_date_messages
-  get 'messages/list_by_most_recent', :to => 'messages#list_by_most_recent', :as => :list_by_most_recent_messages
-  get 'messages/list_feedback_reply_messages', :to => 'messages#list_feedback_reply_message', :as => :list_feedback_reply_message
-  get 'messages/list_contact_reply_messages', :to => 'messages#list_contact_reply_message', :as => :list_contact_reply_message
-  get 'messages/select_by_identifier', :to => 'messages#select_by_identifier', :as => :select_by_identifier_messages
-  get 'messages/:id/reply', to: 'messages#new', as: :reply_messages
-  get 'messages/:id/show_reply_messages', :to => 'messages#show_reply_messages', :as => :show_reply_messages
-  get 'messages/:id/user_reply_messages', :to => 'messages#user_reply_messages', :as => :user_reply_messages
+  get 'messages/list_by_type',  :to => 'messages#list_by_type', :as => :list_by_type_messages
+  get 'messages/:id/send_message(.:format)',  :to => 'messages#send_message', :as => :send_message_messages
+  get 'messages/list_by_name',  :to => 'messages#list_by_name', :as => :list_by_name_messages
+  get 'messages/list_by_date',  :to => 'messages#list_by_date', :as => :list_by_date_messages
+  get 'messages/list_by_most_recent',  :to => 'messages#list_by_most_recent', :as => :list_by_most_recent_messages
+  get 'messages/select_by_identifier',  :to => 'messages#select_by_identifier', :as => :select_by_identifier_messages
+  get 'messages/:id/reply',  :to => 'messages#new', :as => :reply_messages
+  get 'messages/:id/show_reply_messages',:to => 'messages#show_reply_messages', :as => :show_reply_messages
+  get 'messages/:id/user_reply_messages',:to => 'messages#user_reply_messages', :as => :user_reply_messages
   get 'messages/userid_reply_messages', :to => 'messages#userid_reply_messages', :as => :userid_reply_messages
   get 'messages/list_unsent_messages', :to => 'messages#list_unsent_messages', :as => :list_unsent_messages
   get 'messages/list_archived', :to => 'messages#list_archived', :as => :list_archived_messages
@@ -109,6 +107,9 @@ MyopicVicar::Application.routes.draw do
   get 'feedbacks/:id/restore',  :to => 'feedbacks#restore', :as => :restore_feedback
   get 'feedbacks/:source_feedback_id/reply',  :to => 'feedbacks#reply_feedback', :as => :reply_feedback
   get 'feedbacks/:id/feedback_reply_messages', to: 'feedbacks#feedback_reply_messages', as: :feedback_reply_messages
+  get 'feedbacks/:id/keep',  :to => 'feedbacks#keep', :as => :keep_feedback
+  get 'feedbacks/:id/unkeep',  :to => 'feedbacks#unkeep', :as => :unkeep_feedback
+
   resources :feedbacks
 
 
@@ -127,6 +128,8 @@ MyopicVicar::Application.routes.draw do
   get 'contacts/:id/archive',  :to => 'contacts#archive', :as => :archive_contact
   get 'contacts/:id/restore',  :to => 'contacts#restore', :as => :restore_contact
   get 'contacts/:id/convert_to_issue(.:format)', :to => 'contacts#convert_to_issue', :as => :convert_contact_to_issue
+  get 'contacts/:id/keep',  :to => 'contacts#keep', :as => :keep_contact
+  get 'contacts/:id/unkeep',  :to => 'contacts#unkeep', :as => :unkeep_contact
 
   resources :contacts
 

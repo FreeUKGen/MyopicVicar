@@ -8,9 +8,9 @@ class ContactsController < ApplicationController
   def archive
     @contact = Contact.id(params[:id]).first
     if @contact.present?
-      @contact.update_attribute(:archived, true)
-      flash.notice = "Feedback archived"
-      redirect_to :action => "list_archived" and return
+      @contact.archive
+      flash.notice = "Contact archived"
+      return_after_archive(params[:source], params[:id])
     else
       go_back("contact",params[:id])
     end
@@ -138,6 +138,15 @@ class ContactsController < ApplicationController
     @archived = session[:archived_contacts]
   end
 
+  def keep
+    @contact = Contact.id(params[:id]).first
+    go_back('contact', params[:id])  if @contact.blank?
+    session[:archived_contacts] = true
+    @contact.update_keep
+    flash.notice = 'Contact to be retained'
+    return_after_keep(params[:source], params[:id])
+  end
+
   def list_archived
     session[:archived_contacts] = true
     get_user_info_from_userid
@@ -202,9 +211,9 @@ class ContactsController < ApplicationController
   def restore
     @contact = Contact.id(params[:id]).first
     if @contact.present?
-      @contact.update_attribute(:archived, false)
+      @contact.restore
       flash.notice = "Contact restored"
-      redirect_to :action => "index" and return
+      return_after_restore(params[:source], params[:id])
     else
       go_back("contact",params[:id])
     end
@@ -214,7 +223,7 @@ class ContactsController < ApplicationController
     get_user_info_from_userid
     @options = Hash.new
     order = "identifier ASC"
-    @contacts = get_contacts.result(session[:archived_contacts],order).each do |contact|
+    @contacts = get_contacts.result(session[:archived_contacts], order).each do |contact|
       @options[contact.identifier] = contact.id
     end
     @contact = Contact.new
@@ -273,6 +282,48 @@ class ContactsController < ApplicationController
     @message = Message.new
     @message.message_time = Time.now
     @message.userid = @user.userid
+  end
+
+  def return_after_archive(source, id)
+    if source == 'show'
+      redirect_to action: 'show', id: id
+    else
+      redirect_to action: 'list_archived'
+    end
+  end
+
+  def return_after_keep(source, id)
+    if source == 'show'
+      redirect_to action: 'show', id: id
+    else
+      redirect_to action: 'index'
+    end
+  end
+
+  def return_after_restore(source, id)
+    if source == 'show'
+      redirect_to action: 'show', id: id
+    else
+      redirect_to action: 'index'
+    end
+  end
+
+  def return_after_unkeep(source, id)
+    if source == 'show'
+      redirect_to action: 'show', id: id
+    else
+      redirect_to action: 'list_archived'
+    end
+  end
+
+
+  def unkeep
+    get_user_info_from_userid
+    @contact = Contact.id(params[:id]).first
+    go_back('contact', params[:id]) if @contact.blank?
+    @contact.update_unkeep
+    flash.notice = 'Contact no longer being kept'
+    return_after_unkeep(params[:source], params[:id])
   end
 
   def update
