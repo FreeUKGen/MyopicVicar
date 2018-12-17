@@ -140,23 +140,22 @@ class Message
     answer
   end
 
-  def communicate(recipients, active, reasons, sender, open_data_status, syndicate = nil)
+  def communicate(recipient_roles, active, reasons, sender, open_data_status, syndicate = nil)
+    p 'communicate'
+    p recipient_roles
+    p active
+    p reasons
+    p open_data_status
     ccs = Array.new
-    active_user = user_status(active)
-    recipients.each do |recip|
-      recipient_user = recipient_users(recip, syndicate)
-      case
-      when active_user
-        get_active_users(recipient_user, open_data_status, active_user, ccs)
-      when reasons.present? && !active_user
-        get_inactive_users_with_reasons(recipient_user, open_data_status, active_user, reasons, ccs)
-      when reasons.blank? && !active_user
-        get_inactive_users_without_reasons(recipient_user, open_data_status, active_user, ccs)
-      end
+    recipient_roles.each do |recipient_role|
+      p recipient_role
+      ccs = get_actual_recipients(recipient_role, syndicate, active, open_data_status, reasons )
     end
     add_message_to_userid_messages(UseridDetail.look_up_id(sender)) unless sender.blank? || ccs.include?(sender)
     ccs << sender
     ccs = ccs.uniq
+    p 'to whom'
+    p ccs
     UserMailer.send_message(self, ccs, sender).deliver_now
   end
 
@@ -171,6 +170,20 @@ class Message
     recipients << copy_to unless copy_to.present? && copy_to == to_userid
     copies = Array.new
     reply_sent_messages(self, userid, recipients, copies)
+  end
+
+  def get_actual_recipients(recipient_role, syndicate, active, open_data_status, reasons)
+    ccs = Array.new
+    active_user = user_status(active)
+    recipients = recipient_users(recipient_role, syndicate)
+    if active_user
+      get_active_users(recipients, open_data_status, active_user, ccs)
+    elsif reasons.present? && !active_user
+      get_inactive_users_with_reasons(recipients, open_data_status, active_user, reasons, ccs)
+    elsif reasons.blank? && !active_user
+      get_inactive_users_without_reasons(recipients, open_data_status, active_user, ccs)
+    end
+    ccs
   end
 
   def mine?(user)
@@ -390,32 +403,54 @@ class Message
     return if person.blank?
 
     @message_userid = person.userid_messages
-    if !@message_userid.include? id.to_s
+    unless @message_userid.include? id.to_s
       @message_userid << id.to_s
       person.update_attribute(:userid_messages, @message_userid)
     end
   end
 
-  def get_active_users(recipient_user, open_data_status, active_user, ccs)
-    recipient_user.new_transcription_agreement(open_data_status_value(open_data_status)).active(active_user).email_address_valid.each do |person|
-      add_message_to_userid_messages(person)
-      ccs << person.userid
-    end
-  end
-
-  def get_inactive_users_with_reasons(recipient_user, open_data_status, active_user, reasons, ccs)
-    reasons.each do |reason|
-      recipient_user.new_transcription_agreement(open_data_status_value(open_data_status)).active(active_user).reason(reason).email_address_valid.each do |person|
-        add_message_to_userid_messages(person)
-        ccs << person.userid
+  def get_active_users(recipients, open_data_status, active_user, ccs)
+    recipients.each do |person|
+      if person.present? && person.email_address_valid?
+        if person.active?
+          if person.meets_open_status_requirement?(open_data_status)
+            add_message_to_userid_messages(person)
+            ccs << person.userid
+          end
+        end
+      else
+        p 'nil person'
+        p person
       end
     end
   end
 
-  def get_inactive_users_without_reasons(recipient_user, open_data_status, active_user, ccs)
-    recipient_user.new_transcription_agreement(open_data_status_value(open_data_status)).active(active_user).reason('temporary').email_address_valid.each do |person|
-      add_message_to_userid_messages(person)
-      ccs << person.userid
+
+  def get_inactive_users_with_reasons(recipients, open_data_status, active_user, reasons, ccs)
+    recipients.each do |person|
+      if person.present? && person.email_address_valid?
+        unless person.active?
+          if person.meets_open_status_requirement?(open_data_status)
+            if person.meets_reasons?(reasons)
+              add_message_to_userid_messages(person)
+              ccs << person.userid
+            end
+          end
+        end
+      end
+    end
+  end
+
+  def get_inactive_users_without_reasons(recipients, open_data_status, active_user, ccs)
+    recipients.each do |person|
+      if person.present? && person.email_address_valid?
+        unless person.active?
+          if person.meets_open_status_requirement?(open_data_status)
+            add_message_to_userid_messages(person)
+            ccs << person.userid
+          end
+        end
+      end
     end
   end
 
@@ -425,10 +460,40 @@ class Message
   end
 
   def recipient_users(recipients, syndicate = nil)
-    if recipients == 'Members of Syndicate'
-      users = UseridDetail.syndicate(syndicate).all
+    users = Array.new
+    case recipients
+    when 'Members of Syndicate'
+      UseridDetail.syndicate(syndicate).each do |user|
+        users << user
+      end
+    when 'syndicate_coordinator'
+      Syndicate.each do |syndicate|
+        users << UseridDetail.look_up_id(syndicate.syndicate_coordinator)
+      end
+      UseridDetail.role(recipients).each do |user|
+        users << user
+      end
+      UseridDetail.secondary(recipients).each do |user|
+        users << user
+      end
+
+    when 'county_coordinator'
+      County.each do |county|
+        users << UseridDetail.look_up_id(county.county_coordinator)
+      end
+      UseridDetail.role(recipients).each do |user|
+        users << user
+      end
+      UseridDetail.secondary(recipients).each do |user|
+        users << user
+      end
     else
-      users = UseridDetail.role(recipients).all
+      UseridDetail.role(recipients).each do |user|
+        users << user
+      end
+      UseridDetail.secondary(recipients).each do |user|
+        users << user
+      end
     end
     users
   end

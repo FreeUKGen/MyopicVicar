@@ -223,6 +223,22 @@ class UseridDetail
     answer
   end
 
+  def meets_open_status_requirement?(open_data_status)
+    return true if open_data_status[0] == 'All'
+
+    open_data_status.each do |status|
+      return true if new_transcription_agreement == status
+    end
+    false
+  end
+
+  def meets_reasons?(reasons)
+    reasons.each do |reason|
+      return true if disabled_reason == reason || disabled_reason_standard == reason
+    end
+    false
+  end
+
   def self.look_up_id(userid)
     user = UseridDetail.userid(userid).first
   end
