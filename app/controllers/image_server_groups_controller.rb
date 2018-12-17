@@ -48,13 +48,13 @@ class ImageServerGroupsController < ApplicationController
       session.delete(:image_server_group_id)
 
       flash[:notice] = 'Deletion of Image Group "'+image_server_group[:group_name]+'" was successful'
-      redirect_to index_image_server_group_path(image_server_group.source)  
+      redirect_to index_image_server_group_path(image_server_group.source)
 
     rescue Mongoid::Errors::DeleteRestriction
       logger.info "Logged Error for Image Server Group Delete"
       logger.debug image_server_group.group_name+' is not empty'
       redirect_to(:back, :notice => image_server_group.group_name+' IS NOT EMPTY, CAN NOT BE DELETED') and return
-    end     
+    end
   end
 
   def display_info
@@ -164,7 +164,7 @@ class ImageServerGroupsController < ApplicationController
     end
   end
 
-  def new 
+  def new
     display_info
 
     @image_server_group = ImageServerGroup.new
@@ -201,7 +201,7 @@ class ImageServerGroupsController < ApplicationController
 
     syndicate = Syndicate.where(syndicate_code: transcriber.syndicate).first
     redirect_to(:back, :notice => 'Syndicate does not exist') and return if syndicate.nil?
-    
+
     sc = UseridDetail.where(:userid=>syndicate.syndicate_coordinator).first
     redirect_to(:back, :notice => 'SC does not exist, please contact administrator') and return if sc.nil?
 
@@ -288,37 +288,38 @@ class ImageServerGroupsController < ApplicationController
     redirect_to website and return
   end
 
- def upload_return
+  def upload_return
     @image_server_group = ImageServerGroup.id(params[:image_server_group]).first
     if session[:upload_return].blank?
       session[:upload_return] = 'once'
       # the session[:upload_return] is used to stop a refresh of the upload return action
       proceed, message = @image_server_group.process_uploaded_images(params) unless params[:files_uploaded].blank?
       proceed = true if params[:files_uploaded].blank?
-      if !proceed
-       flash[:notice] = "We encountered issues with the processing of the upload of images; #{message}"
-       redirect_to image_server_group_path(@image_server_group)   and return
+      if proceed
+        @uploaded =  params[:files_uploaded]
+        @not_uploaded = params[:files_exist]
+        @source = @image_server_group.source
+        @register = @source.register
+        @register_type = @register.register_type
+        @place =  @image_server_group.place
+        @place_name = @place.place_name
+        @church = @image_server_group.church
+        @church_name = @church.church_name
+        @county = @place.county
+        @user = UseridDetail.id(params[:userid]).first
+        @syndicate = @user.syndicate unless @user.blank?
+        params[:files_uploaded] = nil
+        params[:files_exist] = nil
+      else
+        flash[:notice] = "We encountered issues with the processing of the upload of images; #{message}"
+        redirect_to image_server_group_path(@image_server_group)   and return
       end
     else
       session.delete(:upload_return)
       flash[:notice] = "You have refreshed the upload return page and that is not permitted"
-       redirect_to image_server_group_path(@image_server_group)   and return
+      redirect_to image_server_group_path(@image_server_group)   and return
     end
-    @uploaded =  params[:files_uploaded]
-    @not_uploaded = params[:files_exist]
-    @source = @image_server_group.source
-    @register = @source.register
-    @register_type = @register.register_type
-    @place =  @image_server_group.place
-    @place_name = @place.place_name
-    @church = @image_server_group.church
-    @church_name = @church.church_name
-    @county = @place.county
-    @user = UseridDetail.id(params[:userid]).first
-    @syndicate = @user.syndicate unless @user.blank?
-    params[:files_uploaded] = nil
-    params[:files_exist] = nil
- end
+  end
 
   private
   def image_server_group_params

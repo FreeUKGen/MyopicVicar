@@ -5,12 +5,14 @@ namespace :foo do
   #eg f2rake  foo:update_search_records[0,bu,"2016-05-27T19:23:31+00:00", true, 1]
   #number of files of 0 is all, force creation is true or false, order files processed is 1 or -1
 
-task :correct_image_server_group, [:limit, :fix] => :environment do |t, args|
+  task :correct_image_server_group, [:limit, :fix] => :environment do |t, args|
+    # limit of an integer does that number of groups. "image_server_groups/5c10fe8af493fdac0a29d7fd3" does that one only
+    # enter something in the fix field and it fixes what is found wrong otherwise no correction Allows for a dry run
     require 'correct_image_server_group'
     CorrectImageServerGroup.process(args.limit, args.fix)
   end
 
-task :update_search_records,[:limit,:record_type,:version,:force, :order] => [:environment] do |t,args|
+  task :update_search_records,[:limit,:record_type,:version,:force, :order] => [:environment] do |t,args|
     #limit is number of files to process 0 is all
     require 'update_search_records'
     UpdateSearchRecords.process(args.limit,args.record_type,args.version,args.force,args.order)
