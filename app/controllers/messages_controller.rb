@@ -487,12 +487,7 @@ class MessagesController < ApplicationController
       @respond_to_message = Message.id(params[:id]).first
       @reply_messages = Message.fetch_replies(params[:id])
       @sent_replies = Message.sent_messages(@reply_messages)
-      @respond_to_message.syndicate
-      if @respond_to_message.syndicate.present?
-        @message.syndicate = @respond_to_message.syndicate
-      else
-        session[:syndicate].present? ? @message.syndicate = session[:syndicate] : @message.syndicate = nil
-      end
+      @message.syndicate = @respond_to_message.syndicate
     else
       session[:syndicate].present? ? @message.syndicate = session[:syndicate] : @message.syndicate = nil
     end
