@@ -1,74 +1,68 @@
 <div class='grid'>
-<%= simple_form_for @userid, :defaults => {:required => false} do |f| %>
-  <%= f.input :person_forename,:label => "Forename (Required)",  :input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
-  <%= f.input :person_surname,:label => "Surname (Required)", :input_html => { :class => "simple_form_bgcolour",:size => 40 }%>
-  <%= f.input :email_address,:label => "Email address (Required)", :input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
-  <%= f.input :alternate_email_address,:label => "Alternate email address (Desirable)", :input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
-  <%= f.input :address,:label => "Physical location",:hint => "Just a country will do",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
-
-  <% unless @user.person_role == 'researcher' %>
-     <%= f.input :telephone_number,:label => "Telephone number (Desirable)",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
-     <%= f.input :fiche_reader, :as => :boolean,:label => " Have a Fiche Reader"%>
-     <%= f.input :do_not_acknowledge_me,  :as => :boolean,:label => "Do not acknowledge my contributions"%>
-     <%= f.input :acknowledge_with_pseudo_name, :as => :boolean,:label => "Use a pseudonym instead of my name"%>
-     <%= f.input :pseudo_name,:label => "Use this pseudonym for acknowledgements", :input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
-     <%= f.input :no_processing_messages, :collection => [['Yes', 'true'], ['No', 'false']], :selected => @userid.no_processing_messages, :label => " SC uploads my data", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 2, "data-tooltip" => true, :title => "no email to transcriber if SC upload data"} %>
-  <% end%>
-
-  <% if controller.action_name == 'new' || controller.action_name == 'create'%>
-    <%= f.input :userid,:label => "UserID (Required)",:input_html => { :class => "simple_form_bgcolour",:size => 40 }%>
-    <% if (@user.person_role == 'system_administrator' || @user.person_role == 'volunteer_coordinator') && !session[:my_own] %>
-      <%= f.input :syndicate,:label => "Syndicate  (Required)",:include_blank => false, :collection => @syndicates, :input_html => {  :class => "text-input simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 }%>
-      <%= f.input :person_role,  :collection => UseridRole::VALUES, :include_blank => false,:label => "Role in FreeREG (Required)", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 }%>
-      <%= f.input :secondary_role, :collection => UseridRole::VALUES, :include_blank => true,:label => "Secondary Role(s) in FreeREG :", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4, multiple: true }, include_hidden: false, :hint => "Hold Ctrl or Shift to select multiple roles" %>
-    <% else%>
-        <%= f.input :syndicate, :label => "Syndicate",:include_blank => false, :collection => @syndicates,:input_html => {:class => "  simple_form_position", :size => 2}, :hint => "You can only create a Userid in your own syndicate"%>
-         <%= f.input :person_role,:label => "Role in Freereg",:include_blank => false,:collection => ["transcriber", "trainee"],:input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 2 },:selected => "trainee" %>
+  <%= simple_form_for @userid, :defaults => {:required => false} do |f| %>
+    <%= f.input :person_forename,:label => "Forename (Required)",  :input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+    <%= f.input :person_surname,:label => "Surname (Required)", :input_html => { :class => "simple_form_bgcolour",:size => 40 }%>
+    <%= f.input :email_address,:label => "Email address (Required)", :input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+    <%= f.input :alternate_email_address,:label => "Alternate email address (Desirable)", :input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+    <%= f.input :address,:label => "Physical location",:hint => "Just a country will do",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+    <% unless @user.person_role == 'researcher' %>
+      <%= f.input :telephone_number,:label => "Telephone number (Desirable)",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+      <%= f.input :fiche_reader, :as => :boolean,:label => " Have a Fiche Reader"%>
+      <%= f.input :do_not_acknowledge_me,  :as => :boolean,:label => "Do not acknowledge my contributions"%>
+      <%= f.input :acknowledge_with_pseudo_name, :as => :boolean,:label => "Use a pseudonym instead of my name"%>
+      <%= f.input :pseudo_name,:label => "Use this pseudonym for acknowledgements", :input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+      <%= f.input :no_processing_messages, :collection => [['Yes', 'true'], ['No', 'false']], :selected => @userid.no_processing_messages, :label => " SC uploads my data", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 2, "data-tooltip" => true, :title => "no email to transcriber if SC upload data"} %>
     <% end%>
-  <% else %>
-     <%= f.hidden_field :userid, :value => @userid.userid%>
-     <% if  (@current_user.userid == @userid.userid) && !(@userid.new_transcription_agreement == "Accepted")%>
+    <% if controller.action_name == 'new' || controller.action_name == 'create'%>
+      <%= f.input :userid,:label => "UserID (Required)",:input_html => { :class => "simple_form_bgcolour",:size => 40 }%>
+      <% if (@user.person_role == 'system_administrator' || @user.person_role == 'volunteer_coordinator') && !session[:my_own] %>
+        <%= f.input :syndicate,:label => "Syndicate  (Required)",:include_blank => false, :collection => @syndicates, :input_html => {  :class => "text-input simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 }%>
+        <%= f.input :person_role,  :collection => UseridRole::VALUES, :include_blank => false,:label => "Role in FreeREG (Required)", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 }%>
+        <%= f.input :secondary_role, :collection => UseridRole::VALUES, :include_blank => true,:label => "Secondary Role(s) in FreeREG :", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4, multiple: true }, include_hidden: false, :hint => "Hold Ctrl or Shift to select multiple roles" %>
+      <% else%>
+        <%= f.input :syndicate, :label => "Syndicate",:include_blank => false, :collection => @syndicates,:input_html => {:class => "  simple_form_position", :size => 2}, :hint => "You can only create a Userid in your own syndicate"%>
+        <%= f.input :person_role,:label => "Role in Freereg",:include_blank => false,:collection => ["transcriber", "trainee"],:input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 2 },:selected => "trainee" %>
+      <% end%>
+    <% else %>
+      <%= f.hidden_field :userid, :value => @userid.userid%>
+      <% if  (@current_user.userid == @userid.userid) && !(@userid.new_transcription_agreement == "Accepted")%>
         <div class="input select optional userid_detail_transcription_agreement" style="text-align: center;">
           <span><b>Please sign the agreement to keep your transcriptions Open.</b></span><br />
           <label class="select optional control-label" for="userid_detail_transcription_agreement">Transcription Agreement</label>
-          
-            <%= f.radio_button(:new_transcription_agreement, "Accepted") %>
-              <span class="simple_form_bgcolour">I have read and hereby sign, the <%= link_to 'Transcription Agreement(pdf)', "http://www.freeukgenealogy.org.uk/files/Documents/FreeUKGenealogyTranscriptionAgreement.pdf", 
-              target: '_blank', title: "Click here to view or download the Agreement" %></span><br><br>
-            <%#= f.radio_button(:transcription_agreement, "Declined") %>
-              <!--span>I hereby prefer not to sign, the <%#= link_to 'Transcription Agreement(pdf)', "http://www.freeukgenealogy.org.uk/files/Documents/FreeUKGenealogyTranscriptionAgreement.pdf", target: '_blank', title: "Click here to view or download the Agreement" %></span><br /><br /-->
+          <%= f.radio_button(:new_transcription_agreement, "Accepted") %>
+          <span class="simple_form_bgcolour">I have read and hereby sign, the <%= link_to 'Transcription Agreement(pdf)', "http://www.freeukgenealogy.org.uk/files/Documents/FreeUKGenealogyTranscriptionAgreement.pdf",
+              target: '_blank', title: "Click here to view or download the Agreement" %></span><br>
+          <br>
+          <%#= f.radio_button(:transcription_agreement, "Declined") %>
+          <!--span>I hereby prefer not to sign, the <%#= link_to 'Transcription Agreement(pdf)', "http://www.freeukgenealogy.org.uk/files/Documents/FreeUKGenealogyTranscriptionAgreement.pdf", target: '_blank', title: "Click here to view or download the Agreement" %></span><br /><br /-->
         </div>
-    <% end %>
-
-    <% if (@user.person_role == 'system_administrator' || @user.person_role == 'volunteer_coordinator') && !session[:my_own] %>
-      <%= f.input :syndicate,:label => "Syndicate",:include_blank => false,  :collection => @syndicates,:input_html => {  :class => "text-input simple_form_bgcolour simple_form_position", :size => 4 }, :hint => "The syndicate MUST be selected"%>
-    <% end%> 
-
-    <% if @user.person_role == 'system_administrator'  && !session[:my_own] %> 
-      <%= f.input :person_role,  :collection => UseridRole::VALUES, :include_blank => false,:label => "Role in FreeREG :", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 } %>
-    <%= f.input :secondary_role, :collection => UseridRole::VALUES, :include_blank => true,:label => "Secondary Role(s) in FreeREG :", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4, multiple: true }, include_hidden: true, :hint => "Hold Ctrl or Shift to select multiple roles" %>
-    <% end %>
-
-    <% if (manager?(@user)) %>
-          <%= f.input :email_address_valid, :collection => [['Yes', 'true'], ['No', 'false']], :selected => @userid.email_address_valid, :label => @userid.userid+"'s email address is valid", :input_html => { :class => "simple_form_bgcolour  overide_selection_field_width", :size => 2, "data-tooltip" => true, :title => "Set to No if you want "+@userid.userid+" to validate the registered email address at next log in"} %>
-          <%= f.input :email_address_last_confirmned,:label => "Last email confirmation", :input_html => {  :disabled => true }%>
-          <%= f.input :reason_for_invalidating, :collection => UseridRole::REASONS_FOR_MAKING_EMAIL_INVALID,  :include_blank => false,:label => "Reason for making email invalid",:label_html=> {style:"#{'display:none' if f.object.email_address_valid}"},:input_html => {  :class => "text-input simple_form_bgcolour 
-           overide_selection_field_width form_control",  :size => 4, style:"#{'display:none' if f.object.email_address_valid}"}%>  
-          <% unless session[:my_own] %>           
-             <%= f.input :skill_level, :collection => UseridRole::SKILLS,  :include_blank => false,:label => "Transcription level skill",:input_html => {  :class => "text-input simple_form_bgcolour  overide_selection_field_width",  :size => 4},:selected => "Learning" %>
-             <%= f.input :active, :as => :boolean,boolean_style: :inline,:label => "Active" %>
-             <%= f.hint "If you are changing to inactive, specify the reason below. Put additional explanation (if any) in the text field after the selection." %>
-             <%= f.input :disabled_reason_standard,  :collection => UseridRole::REASONS_FOR_INACTIVATING, :include_blank => true,:label => "Reason for making inactive :", :input_html => {  :class => " simple_form_bgcolour  overide_selection_field_width", :size => 4 }%>
-             <%= f.input :disabled_reason,:hint => "If you selected 'Other' or need to add information, explain here.",:label => "Reason for making inactive (explanation)",:input_html => {:class => "simple_form_bgcolour", :size => 40}%>
-          <% end%>
-    <% end %>
-  <% end%>
-    <%= hidden_field_tag(:page_name, params[:page_name]) %> 
+      <% end %>
+      <% if (@user.person_role == 'system_administrator' || @user.person_role == 'volunteer_coordinator') && !session[:my_own] %>
+        <%= f.input :syndicate,:label => "Syndicate",:include_blank => false,  :collection => @syndicates,:input_html => {  :class => "text-input simple_form_bgcolour simple_form_position", :size => 4 }, :hint => "The syndicate MUST be selected"%>
+      <% end%>
+      <% if @user.person_role == 'system_administrator'  && !session[:my_own] %>
+        <%= f.input :person_role,  :collection => UseridRole::VALUES, :include_blank => false,:label => "Role in FreeREG :", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 } %>
+        <%= f.input :secondary_role, :collection => UseridRole::VALUES, :include_blank => true,:label => "Secondary Role(s) in FreeREG :", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4, multiple: true }, include_hidden: true, :hint => "Hold Ctrl or Shift to select multiple roles" %>
+      <% end %>
+      <% if (manager?(@user)) %>
+        <%= f.input :email_address_valid, :collection => [['Yes', 'true'], ['No', 'false']], :selected => @userid.email_address_valid, :label => @userid.userid+"'s email address is valid", :input_html => { :class => "simple_form_bgcolour  overide_selection_field_width", :size => 2, "data-tooltip" => true, :title => "Set to No if you want "+@userid.userid+" to validate the registered email address at next log in"} %>
+        <%= f.input :email_address_last_confirmned,:label => "Last email confirmation", :input_html => {  :disabled => true }%>
+        <%= f.input :reason_for_invalidating, :collection => UseridRole::REASONS_FOR_MAKING_EMAIL_INVALID,  :include_blank => false,:label => "Reason for making email invalid",:label_html=> {style:"#{'display:none' if f.object.email_address_valid}"},:input_html => {  :class => "text-input simple_form_bgcolour
+           overide_selection_field_width form_control",  :size => 4, style:"#{'display:none' if f.object.email_address_valid}"}%>
+        <% unless session[:my_own] %>
+          <%= f.input :skill_level, :collection => UseridRole::SKILLS,  :include_blank => false,:label => "Transcription level skill",:input_html => {  :class => "text-input simple_form_bgcolour  overide_selection_field_width",  :size => 4},:selected => "Learning" %>
+          <%= f.input :active, :as => :boolean,boolean_style: :inline,:label => "Active" %>
+          <%= f.hint "If you are changing to inactive, specify the reason below. Put additional explanation (if any) in the text field after the selection." %>
+          <%= f.input :disabled_reason_standard,  :collection => UseridRole::REASONS_FOR_INACTIVATING, :include_blank => true,:label => "Reason for making inactive :", :input_html => {  :class => " simple_form_bgcolour  overide_selection_field_width", :size => 4 }%>
+          <%= f.input :disabled_reason,:hint => "If you selected 'Other' or need to add information, explain here.",:label => "Reason for making inactive (explanation)",:input_html => {:class => "simple_form_bgcolour", :size => 40}%>
+        <% end%>
+      <% end %>
+    <% end%>
+    <%= hidden_field_tag(:page_name, params[:page_name]) %>
     <%= f.button :submit, 'Update' %>
-<% end %>
+  <% end %>
 </div>
-
-  <script type="text/javascript">
+<script type="text/javascript">
   $(function () {
     $("#form_control_id").change(function () {
         var category = $(this).val();
@@ -78,6 +72,6 @@
           $("#form_control").hide();
         }
     });
-
+  
   });
 </script>
