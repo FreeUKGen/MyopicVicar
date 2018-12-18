@@ -236,8 +236,7 @@ module MessagesHelper
   end
 
   def index_sort_links?
-    index_sort_links = false
-    index_sort_links = true if session[:message_base] == 'general'
+    session[:message_base] == 'general' ? index_sort_links = true : index_sort_links = false
     index_sort_links
   end
 
