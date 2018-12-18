@@ -384,6 +384,8 @@ class Message
         @messages = Message.contact_replies.archived(archived).order_by(order)
       when 'list_syndicate_messages' || 'list_archived_syndicate_messages'
         @messages = Message.non_feedback_contact_reply_messages.syndicate(syndicate).archived(archived).not_message_reply(true).all.order_by(order)
+      when 'list_archived_syndicate_messages'
+        @messages = Message.non_feedback_contact_reply_messages.syndicate(syndicate).archived(archived).not_message_reply(true).all.order_by(order)
       else
         @messages = Message.non_feedback_contact_reply_messages.archived(archived).not_message_reply(true).all.order_by(order)
       end
