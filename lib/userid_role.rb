@@ -35,7 +35,7 @@ module UseridRole
   }
 
   OPTIONS_TRANSLATION = {
-    'Communicate' => '/messages/select_role',
+    'Communicate' => '/messages/communications',
     'Denominations' => '/denominations',
     'GAP Reasons' => '/gap_reasons',
     'Saved Searches' => '/my_saved_searches',

@@ -16,26 +16,14 @@ class MessagesController < ApplicationController
     end
   end
 
-  def communicate
+  def communications
+    p 'communications'
     get_user_info_from_userid
-    @message = Message.id(params[:id]).first
-    p params
-    recipients = UseridDetail.role(params[:role])
-    p recipients
-    @message.recipients = Array.new
-    p  @message
-    if recipients.count >= 1
-      #@message.recipients = Array.new
-      recipients.each do |recipient|
-        @message.recipients << recipient.userid
-      end
-      @message.message_time = Time.now
-      @message.userid = @user.userid
-      p @message
-    else
-      #deal with no person available currently a bail out
-      go_back('communicate', params[:id])
-    end
+    session[:message_base] = 'communication'
+    session[:archived_contacts] = false
+    order = 'message_time DESC'
+    @messages = Message.list_communications(params[:action], session[:archived_contacts], order)
+    render :index
   end
 
   def create
@@ -398,10 +386,9 @@ class MessagesController < ApplicationController
     session[:message_base] = 'communication'
     @options = FreeregOptionsConstants::COMMUNICATION_ROLES
     @options = @user.remove_myself(@options)
-    message = Message.new
-    message.nature = 'Communication'
-    @location = 'location.href= "/messages/communicate/#{message.id}?source=communicate&role=" + this.value'
-    @prompt = 'Select Role'
+    @message = Message.new
+    @message.nature = 'Communication'
+    p @message
   end
 
   def send_message

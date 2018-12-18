@@ -48,7 +48,7 @@ module MessagesHelper
 
   def do_we_permit_an_edit?(message)
     do_we_permit = false
-    if session[:message_base] == 'userid_messages'
+    if session[:message_base] == 'userid_messages' || session[:message_base] == 'communication'
       do_we_permit = true if message.mine?(@user) && !message.sent?
     elsif session[:message_base] == 'syndicate' || session[:message_base] == 'general'
       do_we_permit = true if message.source_message_id.blank? && message.mine?(@user) && !message.sent?
@@ -67,7 +67,7 @@ module MessagesHelper
 
   def do_we_show_archive_action?(message)
     do_we_permit = false
-    if session[:message_base] == 'userid_messages'
+    if session[:message_base] == 'userid_messages' || session[:message_base] == 'communication'
       do_we_permit = false
     elsif session[:message_base] == 'syndicate' || session[:message_base] == 'general'
       do_we_permit = true if message.not_archived? && message.not_a_reply?
@@ -79,7 +79,7 @@ module MessagesHelper
 
   def do_we_show_destroy_action?(message)
     do_we_permit = false
-    if session[:message_base] == 'userid_messages'
+    if session[:message_base] == 'userid_messages' || session[:message_base] == 'communication'
       do_we_permit = true if !message.sent? && message.mine?(@user)
     elsif session[:message_base] == 'syndicate' || session[:message_base] == 'general'
       do_we_permit = true if !message.sent? && message.mine?(@user)
@@ -119,7 +119,7 @@ module MessagesHelper
 
   def do_we_show_restore_action?(message)
     do_we_permit = false
-    if session[:message_base] == 'userid_messages'
+    if session[:message_base] == 'userid_messages' || session[:message_base] == 'communication'
       do_we_permit = false
     elsif session[:message_base] == 'syndicate' || session[:message_base] == 'general'
       do_we_permit = true if message.archived? && message.not_being_kept? && message.not_a_reply?
@@ -135,13 +135,13 @@ module MessagesHelper
   end
 
   def do_we_show_remove_action?(message)
-    session[:message_base] == 'userid_messages' ? do_we_permit = true : do_we_permit = false
+    session[:message_base] == 'userid_messages' || session[:message_base] == 'communication' ? do_we_permit = true : do_we_permit = false
     do_we_permit
   end
 
   def do_we_show_reply_action?(message)
     do_we_permit = false
-    if session[:message_base] == 'userid_messages' || session[:message_base] == 'general' || session[:message_base] == 'syndicate'
+    if session[:message_base] == 'userid_messages' || session[:message_base] == 'communication' || session[:message_base] == 'general' || session[:message_base] == 'syndicate'
       do_we_permit = true if message.sent?
     end
     do_we_permit
@@ -177,6 +177,8 @@ module MessagesHelper
   end
 
   def index_breadcrumbs
+    p 'index_breadcrumbs'
+    p session[:message_base]
     case
     when params[:action] ==  'list_incoming_syndicate_messages' || params[:action] == 'list_archived_incoming_syndicate_messages'
       breadcrumb :incoming_syndicate_messages
@@ -186,12 +188,16 @@ module MessagesHelper
       breadcrumb :feedback_messages, @feedback
     when params[:action] == 'contact_reply_messages'
       breadcrumb :contact_messages, @contact
+    when session[:message_base] == 'communication'
+      breadcrumb :communication
     else
       breadcrumb :messages
     end
   end
 
   def index_header(action, syndicate)
+    p 'index_header'
+    p session[:message_base]
     header = ''
     case action
     when 'list_feedback_reply_message'
@@ -209,7 +215,13 @@ module MessagesHelper
       else
         header = header + 'Active '
       end
-      syndicate.present? ? header = header + 'Syndicate Messages for ' + syndicate : header = header + 'Messages'
+      if syndicate.present?
+        header = header + 'Syndicate Messages for ' + syndicate
+      elsif session[:message_base] == 'communication'
+        header = header + 'Communications'
+      else
+        header = header + 'Messages'
+      end
     end
     header
   end
@@ -225,13 +237,15 @@ module MessagesHelper
 
   def index_sort_links?
     index_sort_links = false
-    index_sort_links = true if session[:message_base].present?
+    index_sort_links = true if session[:message_base] == 'general'
     index_sort_links
   end
 
   def index_create_option?
+    p 'index_create_option'
+    p  session[:message_base]
     create_option = false
-    if session[:message_base] == 'syndicate' || session[:message_base] == 'general'
+    if session[:message_base] == 'syndicate' || session[:message_base] == 'general' || session[:message_base] == 'communication'
       create_option = true
     end
     create_option

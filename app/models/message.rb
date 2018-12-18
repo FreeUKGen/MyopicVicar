@@ -49,6 +49,10 @@ class Message
       message.source_message_id.present? || Message.fetch_replies(message.id).count == 0 || message.keep.blank?
     end
 
+    def communications
+      where(nature: 'Communication')
+    end
+
     def id(id)
       where(:id => id)
     end
@@ -383,6 +387,11 @@ class Message
         message.message_sent_time.to_formatted_s(:long) unless message.message_sent_time.blank?
       end
     end
+
+    def list_communications(action, archived, order)
+      @messages = Message.communications.archived(archived).not_message_reply(true).all.order_by(order)
+    end
+
 
     def list_messages(action, syndicate, archived, order)
       case action

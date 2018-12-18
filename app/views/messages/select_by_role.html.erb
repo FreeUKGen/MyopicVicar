@@ -1,8 +1,20 @@
 <% breadcrumb :select_role%>
-<h4 style="text-align: center">Selection of Role of the person with Whom you wish to communicate</h4>
+<h4 style="text-align: center">Selection the role of the person with whom you wish to communicate</h4>
 <% if flash[:notice] %>
   <div id="notice" style="color:blue"><br>
     <%= flash[:notice] %> <br>
   </div>
 <% end %>
-<%= render 'form_for_selection' %>
+<div class= "grid">
+  <section class="island  island--light ">
+    <%= semantic_form_for(@message, :html => {:multipart => true}) do |f| %>
+      <li  class="grid__item  one-third  palm-one-whole push--bottom " id="message_recipients">
+        <label class="ttip" for="recipients" tabindex="0"> Recipients  <%= image_tag 'info.png', alt: 'Info', height: '16' %><span  class=" ttip__text">You may select multiple roles for recipients</span></a></label>
+      <select id="recipients" name="recipients[]"  multiple="multiple" class="select" required="required" size="4">
+        <%= options_for_select(@options)%>
+      </select>
+    </li>
+    <%= f.action :submit, :as => :input,  :label => 'Select Role' ,:button_html => { :class => "btn " },:wrapper_html => { :class => "grid__item  one-third text--center push--bottom" }  %> <br>
+  <% end%>
+</section>
+</div>
