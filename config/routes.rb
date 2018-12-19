@@ -53,8 +53,6 @@ MyopicVicar::Application.routes.draw do
   get 'messages/list_by_name',  :to => 'messages#list_by_name', :as => :list_by_name_messages
   get 'messages/list_by_date',  :to => 'messages#list_by_date', :as => :list_by_date_messages
   get 'messages/list_by_most_recent',  :to => 'messages#list_by_most_recent', :as => :list_by_most_recent_messages
-  get 'messages/list_feedback_reply_messages',  :to => 'messages#list_feedback_reply_message', :as => :list_feedback_reply_message
-  get 'messages/list_contact_reply_messages',  :to => 'messages#list_contact_reply_message', :as => :list_contact_reply_message
   get 'messages/select_by_identifier',  :to => 'messages#select_by_identifier', :as => :select_by_identifier_messages
   get 'messages/:id/reply',  :to => 'messages#new', :as => :reply_messages
   get 'messages/:id/show_reply_messages',:to => 'messages#show_reply_messages', :as => :show_reply_messages
@@ -108,6 +106,9 @@ MyopicVicar::Application.routes.draw do
   get 'feedbacks/:id/restore',  :to => 'feedbacks#restore', :as => :restore_feedback
   get 'feedbacks/:source_feedback_id/reply',  :to => 'feedbacks#reply_feedback', :as => :reply_feedback
   get 'feedbacks/:id/feedback_reply_messages', to: 'feedbacks#feedback_reply_messages', as: :feedback_reply_messages
+  get 'feedbacks/:id/keep',  :to => 'feedbacks#keep', :as => :keep_feedback
+  get 'feedbacks/:id/unkeep',  :to => 'feedbacks#unkeep', :as => :unkeep_feedback
+
   resources :feedbacks
 
 
@@ -126,6 +127,8 @@ MyopicVicar::Application.routes.draw do
   get 'contacts/:id/archive',  :to => 'contacts#archive', :as => :archive_contact
   get 'contacts/:id/restore',  :to => 'contacts#restore', :as => :restore_contact
   get 'contacts/:id/convert_to_issue(.:format)', :to => 'contacts#convert_to_issue', :as => :convert_contact_to_issue
+  get 'contacts/:id/keep',  :to => 'contacts#keep', :as => :keep_contact
+  get 'contacts/:id/unkeep',  :to => 'contacts#unkeep', :as => :unkeep_contact
 
   resources :contacts
 

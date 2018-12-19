@@ -2,15 +2,12 @@ class FeedbacksController < ApplicationController
   require 'reply_userid_role'
   skip_before_filter :require_login, only: [:show, :feedback_reply_messages]
 
-
-
-
   def archive
     @feedback = Feedback.id(params[:id]).first
     if @feedback.present?
-      @feedback.update_attribute(:archived, true)
+      @feedback.archive
       flash.notice = "Feedback archived"
-      redirect_to :action => "list_archived" and return
+      return_after_archive(params[:source], params[:id])
     else
       go_back("feedback",params[:id])
     end
@@ -94,7 +91,7 @@ class FeedbacksController < ApplicationController
       @link = false
       render 'messages/index'
     else
-      go_back("feedback",params[:id])
+      go_back('feedback', params[:id])
     end
   end
 
@@ -118,6 +115,15 @@ class FeedbacksController < ApplicationController
     order = "feedback_time DESC"
     @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order)
     @archived = session[:archived_contacts]
+  end
+
+  def keep
+    @feedback = Feedback.id(params[:id]).first
+    go_back('feedback', params[:id])  if @feedback.blank?
+    session[:archived_contacts] = true
+    @feedback.update_keep
+    flash.notice = 'Feedback to be retained'
+    return_after_keep(params[:source], params[:id])
   end
 
   def list_archived
@@ -184,13 +190,46 @@ class FeedbacksController < ApplicationController
     get_user_info_from_userid
     @feedback = Feedback.id(params[:id]).first
     if @feedback.present?
-      @feedback.update_attribute(:archived, false)
+      @feedback.restore
       flash.notice = "Feedback restored"
-      redirect_to :action => "index" and return
+      return_after_restore(params[:source], params[:id])
     else
       go_back("feedback",params[:id])
     end
   end
+
+  def return_after_archive(source, id)
+    if source == 'show'
+      redirect_to action: 'show', id: id
+    else
+      redirect_to action: 'list_archived'
+    end
+  end
+
+  def return_after_keep(source, id)
+    if source == 'show'
+      redirect_to action: 'show', id: id
+    else
+      redirect_to action: 'index'
+    end
+  end
+
+  def return_after_restore(source, id)
+    if source == 'show'
+      redirect_to action: 'show', id: id
+    else
+      redirect_to action: 'index'
+    end
+  end
+
+  def return_after_unkeep(source, id)
+    if source == 'show'
+      redirect_to action: 'show', id: id
+    else
+      redirect_to action: 'list_archived'
+    end
+  end
+
 
   def reply_feedback
     get_user_info_from_userid; return if performed?
@@ -227,6 +266,15 @@ class FeedbacksController < ApplicationController
     else
       go_back("feedback",params[:id])
     end
+  end
+
+  def unkeep
+    get_user_info_from_userid
+    @feedback = Feedback.id(params[:id]).first
+    go_back('feedback', params[:id]) if @feedback.blank?
+    @feedback.update_unkeep
+    flash.notice = 'Feedback no longer being kept'
+    return_after_unkeep(params[:source], params[:id])
   end
 
   def update
