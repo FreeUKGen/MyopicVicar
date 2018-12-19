@@ -44,7 +44,7 @@ class UseridDetailsController < ApplicationController
   def create
     if spam_check
       @userid = UseridDetail.new(userid_details_params)
-      @userid.add_fields(params[:commit],session[:syndicate])
+      @userid.add_fields(params[:commit], session[:syndicate])
       @userid.save
       if @userid.save
         refinery_user = Refinery::Authentication::Devise::User.where(:username => @userid.userid).first
@@ -144,10 +144,14 @@ class UseridDetailsController < ApplicationController
     session[:type] = "add"
     get_user_info_from_userid
     @role = session[:role]
-    @syndicates = Syndicate.get_syndicates_open_for_transcription
-    @syndicates = session[:syndicate] if @user.person_role == "syndicate_coordinator" || @user.person_role == "volunteer_coordinator" ||
-      @user.person_role == "data_manager"
-    @syndicates = Syndicate.get_syndicates if ['system_administrator', 'executive_director', 'project_manager', 'volunteer_coordinator'].include?(@user.person_role)
+    if @user.person_role == "syndicate_coordinator"
+      @syndicates = Array.new
+      @syndicates[0] = session[:syndicate]
+    elsif ['system_administrator', 'executive_director', 'project_manager', 'volunteer_coordinator'].include?(@user.person_role)
+      @syndicates = Syndicate.get_syndicates
+    else
+      @syndicates = Syndicate.get_syndicates_open_for_transcription
+    end
     @userid = UseridDetail.new
   end
 
@@ -161,7 +165,7 @@ class UseridDetailsController < ApplicationController
     get_user_info_from_userid
     @userid = @user
     respond_to do |format|
-      format.html 
+      format.html
       format.json do
         json_of_my_profile = @userid.json_of_my_profile
         send_data json_of_my_profile, :type => 'application/txt; header=present', :disposition => "attachment; filename=my_profile.txt"
@@ -275,7 +279,7 @@ class UseridDetailsController < ApplicationController
     @syndicate = " #{params[:role]}"
     @sorted_by = " lower case userid"
   end
-  
+
   def secondary
     @userids = UseridDetail.secondary(params[:role]).all.order_by(userid_lower_case: 1)
     @syndicate = " #{params[:role]}"
@@ -367,7 +371,7 @@ class UseridDetailsController < ApplicationController
       @location = 'location.href= "select?userid=" + this.value'
       @prompt = "Select userid for #{session[:syndicate]}"
     when params[:option] == "Select specific surname/forename"
-       params[:syndicate].present? ? @syndicate = params[:syndicate] : @syndicate = 'all'
+      params[:syndicate].present? ? @syndicate = params[:syndicate] : @syndicate = 'all'
       @userids = UseridDetail.get_names_for_selection(@syndicate)
       @location = 'location.href= "select?name=" + this.value'
       @prompt = "Select surname/forename for #{session[:syndicate]}"
@@ -448,7 +452,7 @@ class UseridDetailsController < ApplicationController
         return
       else
         session[:my_own] = true
-         redirect_to edit_userid_detail_path(@userid)
+        redirect_to edit_userid_detail_path(@userid)
         return
       end
     end
@@ -467,7 +471,7 @@ class UseridDetailsController < ApplicationController
     else
       flash[:notice] = "The update of the profile was unsuccessful #{success[1]} #{@userid.errors.full_messages}"
       @syndicates = Syndicate.get_syndicates_open_for_transcription
-       redirect_to edit_userid_detail_path(@userid)
+      redirect_to edit_userid_detail_path(@userid)
       return
     end
   end
@@ -486,62 +490,62 @@ class UseridDetailsController < ApplicationController
       redirect_to '/manage_resources/new'
     end
   end
-  
+
   def return_total_transcriber_records
-  total_records = 0
-  UseridDetail.where(person_role: "transcriber", new_transcription_agreement: "Accepted", number_of_records: {'$ne': 0}).each do |count|
-    total_records += count.number_of_records
-  end 
-  return total_records
-end
-
-def return_total_records
-  total_records = 0
-  UseridDetail.where(number_of_records: {'$ne': 0}).each do |count|
-    total_records += count.number_of_records
-  end 
-  return total_records
-end
-
-def return_percentage_total_records_by_transcribers
-  total_records_all = return_total_records.to_f
-  total_records_open_transcribers = return_total_transcriber_records.to_f
-  if total_records_all == 0 || total_records_open_transcribers == 0
-    return 0
-  else 
-    return ((total_records_open_transcribers / total_records_all) * 100).round(2)
-  end   
-end 
-
-def return_percentage_all_users_accepted_transcriber_agreement
-  total_users = UseridDetail.count.to_f
-  total_users_accepted = UseridDetail.where(new_transcription_agreement: "Accepted").count.to_f
-  if total_users == 0 || total_users_accepted == 0 
-    return 0
-  else
-    return ((total_users_accepted / total_users) * 100).round(2)
+    total_records = 0
+    UseridDetail.where(person_role: "transcriber", new_transcription_agreement: "Accepted", number_of_records: {'$ne': 0}).each do |count|
+      total_records += count.number_of_records
+    end
+    return total_records
   end
-end 
 
-def return_percentage_all_existing_users_accepted_transcriber_agreement
-  total_existing_users = UseridDetail.where(sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
-  total_existing_users_accepted = UseridDetail.where(new_transcription_agreement: "Accepted", sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
-  if total_existing_users == 0 || total_existing_users_accepted == 0 
-    return 0
-  else
-    return ((total_existing_users_accepted / total_existing_users) * 100).round(2)
+  def return_total_records
+    total_records = 0
+    UseridDetail.where(number_of_records: {'$ne': 0}).each do |count|
+      total_records += count.number_of_records
+    end
+    return total_records
   end
-end 
 
-def return_percentage_all_existing_active_users_accepted_transcriber_agreement
-  total_existing_active_users = UseridDetail.where(active: true, sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
-  total_existing_active_users_accepted = UseridDetail.where(active: true, new_transcription_agreement: "Accepted", sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
-  if total_existing_active_users == 0 || total_existing_active_users_accepted == 0 
-    return 0
-  else
-    return ((total_existing_active_users_accepted / total_existing_active_users) * 100).round(2)
+  def return_percentage_total_records_by_transcribers
+    total_records_all = return_total_records.to_f
+    total_records_open_transcribers = return_total_transcriber_records.to_f
+    if total_records_all == 0 || total_records_open_transcribers == 0
+      return 0
+    else
+      return ((total_records_open_transcribers / total_records_all) * 100).round(2)
+    end
   end
-end 
+
+  def return_percentage_all_users_accepted_transcriber_agreement
+    total_users = UseridDetail.count.to_f
+    total_users_accepted = UseridDetail.where(new_transcription_agreement: "Accepted").count.to_f
+    if total_users == 0 || total_users_accepted == 0
+      return 0
+    else
+      return ((total_users_accepted / total_users) * 100).round(2)
+    end
+  end
+
+  def return_percentage_all_existing_users_accepted_transcriber_agreement
+    total_existing_users = UseridDetail.where(sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
+    total_existing_users_accepted = UseridDetail.where(new_transcription_agreement: "Accepted", sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
+    if total_existing_users == 0 || total_existing_users_accepted == 0
+      return 0
+    else
+      return ((total_existing_users_accepted / total_existing_users) * 100).round(2)
+    end
+  end
+
+  def return_percentage_all_existing_active_users_accepted_transcriber_agreement
+    total_existing_active_users = UseridDetail.where(active: true, sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
+    total_existing_active_users_accepted = UseridDetail.where(active: true, new_transcription_agreement: "Accepted", sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
+    if total_existing_active_users == 0 || total_existing_active_users_accepted == 0
+      return 0
+    else
+      return ((total_existing_active_users_accepted / total_existing_active_users) * 100).round(2)
+    end
+  end
 
 
   def transcriber_statistics
@@ -650,6 +654,6 @@ end
   end
 
   def email_valid_change
-    @userid.email_address_valid == true ? "Valid" : "Invalid" 
+    @userid.email_address_valid == true ? "Valid" : "Invalid"
   end
 end
