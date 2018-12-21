@@ -5,7 +5,7 @@ __FreeREG | Release Notes__
   __New Features__
   ----------------
 
-  * -
+  * None
 
 
   __Improvements__

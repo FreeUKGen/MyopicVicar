@@ -19,25 +19,25 @@ task :new_release_note do
   __New Features__
   ----------------
 
-  * -
+  * None
 
 
   __Improvements__
   ----------------
 
-  * -
+  * None
 
 
   __Fixes__
   ---------
 
-  * -
+  * None
 
 
   __Change Log__
   ----------------
 
-  Detailed release notes below, listing all commit messages for this release.
+  Change log listing all commit messages for this release.
 
 
   #{git_log}
