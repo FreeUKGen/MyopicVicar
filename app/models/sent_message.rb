@@ -22,4 +22,5 @@ class SentMessage
       where(id: id)
     end
   end
+
 end

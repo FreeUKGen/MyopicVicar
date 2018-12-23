@@ -1,4 +1,4 @@
-<% breadcrumb :userid_reply_messages %>
+<% breadcrumb :userid_reply_messages, @messages%>
 <h3 class="text--center">
   <%= pluralize(@messages.count, 'Reply Message') %> for <%= @user.userid %>
 </h3>

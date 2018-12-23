@@ -17,10 +17,11 @@ class MessagesController < ApplicationController
   end
 
   def communications
-    p 'communications'
     get_user_info_from_userid
     session[:message_base] = 'communication'
     session[:archived_contacts] = false
+    session.delete(:original_message_id)
+    session.delete(:message_id)
     order = 'message_time DESC'
     @messages = Message.list_communications(params[:action], session[:archived_contacts], order)
     render :index
@@ -31,7 +32,7 @@ class MessagesController < ApplicationController
     @message.file_name = @message.attachment_identifier
     case params[:commit]
     when 'Submit'
-      create_for submit
+      create_for_submit
     when 'Save & Send'
       create_for_submit_and_send
     when 'Reply Feedback'
@@ -40,16 +41,18 @@ class MessagesController < ApplicationController
       create_for_contact_reply
     when 'Reply Message'
       create_for_message_reply
-    when 'Send Communication'
+    when 'Save Communication'
       create_for_communication
     end
   end
 
   def create_for_communication
+    @message.nature = 'Communication'
     if @message.save
-      flash[:notice] = 'Communication was created and sent'
-      send_communication(@message); return if performed?
-      redirect_to new_manage_resource_path
+      flash[:notice] = 'Communication saved'
+      redirect_to action: 'communications'
+    else
+      # add
     end
   end
 
@@ -126,6 +129,8 @@ class MessagesController < ApplicationController
     get_user_info_from_userid
     session[:message_base] = 'general'
     session[:archived_contacts] = false
+    session.delete(:original_message_id)
+    session.delete(:message_id)
     @syndicate = session[:syndicate]
     order = 'message_time DESC'
     @messages = Message.list_messages(params[:action], @syndicate, session[:archived_contacts], order)
@@ -145,6 +150,8 @@ class MessagesController < ApplicationController
     session[:message_base] = 'general'
     session[:archived_contacts] = true
     @syndicate = session[:syndicate]
+    session.delete(:original_message_id)
+    session.delete(:message_id)
     order = 'message_time DESC'
     @messages = Message.list_messages(params[:action], @syndicate, session[:archived_contacts], order)
     render :index
@@ -192,6 +199,8 @@ class MessagesController < ApplicationController
     get_user_info_from_userid
     session[:archived_contacts] = false
     session[:message_base] = 'syndicate'
+    session.delete(:original_message_id)
+    session.delete(:message_id)
     @syndicate = session[:syndicate]
     order = 'message_time DESC'
     @messages = Message.list_messages(params[:action], session[:syndicate], session[:archived_contacts], order)
@@ -202,6 +211,8 @@ class MessagesController < ApplicationController
     get_user_info_from_userid
     session[:archived_contacts] = true
     session[:message_base] = 'syndicate'
+    session.delete(:original_message_id)
+    session.delete(:message_id)
     @syndicate = session[:syndicate]
     order = 'message_time DESC'
     @messages = Message.list_messages(params[:action], session[:syndicate], session[:archived_contacts], order)
@@ -223,6 +234,34 @@ class MessagesController < ApplicationController
     @message.message_time = Time.now
     @message.userid = @user.userid
     set_message_syndicate
+  end
+
+  def really_send_message
+    @respond_to_message = Message.id(@message.source_message_id).first
+    if session[:syndicate].present?
+      params[:recipients] = Array.new
+      params[:recipients] << 'Members of Syndicate'
+      @syndicate = session[:syndicate]
+    end
+    if params[:recipients].blank?
+      flash[:notice] = 'You did not select any recipients'
+      redirect_to :back and return
+    else
+      sender = params[:sender]
+      reasons = []
+      @sent_message = @message.sent_messages.id(params[:message][:action]).first
+      reasons = params[:inactive_reason] if !params[:active]
+      @sent_message.update_attributes(recipients: params[:recipients], active: params[:active], inactive_reason: reasons, sender: sender, open_data_status: params[:open_data_status], syndicate: @syndicate)
+      if @sent_message.recipients.nil? || @sent_message.open_data_status.nil?
+        flash[:notice] = 'Invalid Send: Please select Recipients and Open Data Status'
+        redirect_to action:'send_message' and return
+      else
+        @message.communicate(params[:recipients],  params[:active], reasons, sender, params[:open_data_status], @syndicate)
+        @sent_message.update_attributes(sent_time: Time.now)
+        @message.update_attributes(message_sent_time: Time.now)
+        flash[:notice] = @message.reciever_notice(params)
+      end
+    end
   end
 
   def remove_from_userid_detail
@@ -266,7 +305,14 @@ class MessagesController < ApplicationController
     reply.communicate_message_reply(original_message)
     source = session[:hold_source]
     session.delete(:hold_source) if session[:hold_source].present?
-    redirect_to message_path(reply.id, source: source) and return
+    p 'reply_for_message'
+    p session[:original_message_id]
+    @reply_messages = Message.fetch_replies(params[:id]) #
+    @sent_replies = Message.sent_messages(@reply_messages) #
+    @sent = @message.sent_messages.order_by(sent_time: 1) #
+    params[:source] = 'show_reply_messages' #
+    #  redirect_to message_path(reply.id, source: source) and return
+    render 'show'  #
   end
 
   def return_for_create
@@ -380,15 +426,21 @@ class MessagesController < ApplicationController
     render '_form_for_selection'
   end
 
-  def select_by_role
-    p 'select_role'
-    get_user_info_from_userid
-    session[:message_base] = 'communication'
-    @options = FreeregOptionsConstants::COMMUNICATION_ROLES
-    @options = @user.remove_myself(@options)
-    @message = Message.new
-    @message.nature = 'Communication'
-    p @message
+  def select_role
+    @message = Message.id(params[:id]).first
+    if @message.present?
+      session[:com_role] = params[:message][:action]
+      @people = @message.select_the_list_of_individuals(params[:message][:action])
+      if @people.present?
+        render 'select_individual' and return
+      else
+        flash[:notice] = 'There is no one associated with that role'
+        redirect_to action: 'send_message' and return
+      end
+    else
+      go_back('message', params[:id])
+    end
+
   end
 
   def send_message
@@ -396,40 +448,34 @@ class MessagesController < ApplicationController
     @message = Message.id(params[:id]).first
     @syndicate = session[:syndicate]
     if @message.present?
-      @options = UseridRole::VALUES
-      @sent_message = SentMessage.new(:message_id => @message.id, :sender => @user_userid)
+      @sent_message = SentMessage.new(message_id: @message.id, sender: @user_userid, inactive_reason: ['temporary'])
       @message.sent_messages << [@sent_message]
+      @message.update_attributes(message_sent_time: Time.now, action: @sent_message.id)
       @sent_message.save
-      @sent_message.active = true
-      @message.action =  @sent_message.id
-      @inactive_reasons = Array.new
-      UseridRole::REASONS_FOR_INACTIVATING.each_pair do |key,value|
-        @inactive_reasons << value
-      end
-      @open_data_status = SentMessage::ALL_STATUS_MESSAGES
-      @senders = Array.new
-      @senders << ''
-      if @syndicate.present?
-        @senders << @user.userid
-        @senders << Syndicate.syndicate_code(@syndicate).first.syndicate_coordinator if Syndicate.is_syndicate(@syndicate)
+      if @message.nature == 'Communication'
+        send_message_for_communication
       else
-        UseridDetail.active(true).all.order_by(userid_lower_case: 1).each do |sender|
-          @senders << sender.userid
-        end
+        send_message_for_message
       end
     else
-      go_back('message',params[:id])
+      go_back('message', params[:id])
     end
   end
 
-  def send_communication(message)
-    if message.present?
-      get_user_info_from_userid
-      sent_message = SentMessage.new(message_id: message.id, sender: @user.userid, recipients: message.recipients)
-      message.sent_messages << [sent_message]
-      message.add_message_to_userid_messages(@user)
-      sent_message.save
+  def send_communication
+    get_user_info_from_userid
+    acutal_recipients = @message.extract_actual_recipients(params[:recipients], session[:com_role])
+    session.delete(:com_role)
+    @sent_message = SentMessage.new(message_id: @message.id, sender: @user_userid, recipients: acutal_recipients)
+    @message.sent_messages << [@sent_message]
+    @message.update_attributes(message_sent_time: Time.now, action: @sent_message.id)
+    @sent_message.save
+    UserMailer.send_message(@message, acutal_recipients, @user_userid).deliver_now
+    @message.add_message_to_userid_messages(UseridDetail.look_up_id(@user_userid)) unless @user_userid.blank?
+    acutal_recipients.each do |recipient|
+      @message.add_message_to_userid_messages(UseridDetail.look_up_id(recipient))
     end
+    flash[:notice] = 'Communication sent'
   end
 
   def send_contact_message
@@ -441,12 +487,42 @@ class MessagesController < ApplicationController
     end
   end
 
+  def send_message_for_communication
+    @options = FreeregOptionsConstants::COMMUNICATION_ROLES
+    @options = @user.remove_myself(@options)
+    @prompt = 'Select Role?'
+    render 'select_by_role'
+  end
+
+  def send_message_for_message
+    @options = UseridRole::VALUES
+    @inactive_reason = []
+    UseridRole::REASONS_FOR_INACTIVATING.each_pair do |key, value|
+      @inactive_reason << value
+    end
+    @open_data_status = SentMessage::ALL_STATUS_MESSAGES
+    @senders = []
+    if @syndicate.present?
+      @senders << @user.userid
+      @senders << Syndicate.syndicate_code(@syndicate).first.syndicate_coordinator if Syndicate.is_syndicate(@syndicate)
+    else
+      UseridDetail.active(true).all.order_by(userid_lower_case: 1).each do |sender|
+        @senders << sender.userid
+      end
+    end
+    render 'send_message'
+  end
+
   def show
     get_user_info_from_userid
     @user.reload
     @message = Message.id(params[:id]).first
     session[:message_id] = @message.id if @message.present?
-    session[:original_message_id] = @message.original_message_id if @message.present?
+    p 'show'
+    p @message.present?
+    p !@message.original_message_id.present?
+    session[:original_message_id] = @message.original_message_id if @message.present? && !@message.original_message_id.present?
+
     @reply_messages = Message.fetch_replies(params[:id])
     @sent_replies = Message.sent_messages(@reply_messages)
     if @message.blank?
@@ -458,6 +534,11 @@ class MessagesController < ApplicationController
   def show_reply_messages
     get_user_info_from_userid
     @user.reload
+    p 'show_reply_messages'
+    p params[:id]
+    p session[:original_message_id]
+    session[:original_message_id] = params[:id] unless session[:original_message_id].present?
+    p session[:original_message_id]
     @user_messages = UseridDetail.id(@user.id).first.userid_messages
     @reply_messages = Message.fetch_replies(params[:id])
     @messages = Message.sent_messages(@reply_messages)
@@ -487,6 +568,8 @@ class MessagesController < ApplicationController
   def userid_reply_messages
     get_user_info_from_userid
     @user.reload
+    p 'userid_reply_messages'
+    p params
     @reply_messages = Message.in(id: @user.userid_messages).where(:source_message_id.ne => nil).all.order_by(message_sent_time: -1)
     session[:syndicate].blank? ? @messages = @reply_messages : @messages = syndicate_messages(@reply_messages, session[:syndicate])
   end
@@ -506,32 +589,13 @@ class MessagesController < ApplicationController
       case params[:commit]
       when 'Submit'
         @message.update_attributes(message_params)
+      when 'Select Role'
+        select_role
+        return
+      when 'Send Communication'
+        send_communication
       when 'Send'
-        @respond_to_message = Message.id(@message.source_message_id).first
-        if session[:syndicate].present?
-          params[:recipients] = Array.new
-          params[:recipients] << 'Members of Syndicate'
-          @syndicate = session[:syndicate]
-        end
-        if params[:recipients].blank?
-          flash[:notice] = 'You did not select any recipients'
-          redirect_to :back and return
-        else
-          sender = params[:sender]
-          @sent_message = @message.sent_messages.id(params[:message][:action]).first
-          reasons = Array.new
-          params[:inactive_reasons].blank? ? reasons << 'temporary' : reasons = params[:inactive_reasons]
-          @sent_message.update_attributes(:recipients => params[:recipients], :active => params[:active], :inactive_reason => reasons, :sender => sender, open_data_status: params[:open_data_status], syndicate: @syndicate)
-          if @sent_message.recipients.nil? || @sent_message.open_data_status.nil?
-            flash[:notice] = 'Invalid Send: Please select Recipients and Open Data Status'
-            redirect_to action:'send_message' and return
-          else
-            @message.communicate(params[:recipients],  params[:active], reasons, sender, params[:open_data_status], @syndicate)
-            @sent_message.update_attributes(sent_time: Time.now)
-            @message.update_attributes(message_sent_time: Time.now)
-            flash[:notice] = @message.reciever_notice(params)
-          end
-        end
+        really_send_message
       end
       redirect_to :action => 'show'
       return

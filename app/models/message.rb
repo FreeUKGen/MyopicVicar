@@ -85,10 +85,10 @@ class Message
   def add_message_to_userid_messages(person)
     return if person.blank?
 
-    userid_messages_list = person.userid_messages
-    if !userid_messages_list.include? id.to_s
-      userid_messages_list << id.to_s
-      person.update_attribute(:userid_messages, userid_messages_list)
+    @message_userid = person.userid_messages
+    unless @message_userid.include? id.to_s
+      @message_userid << id.to_s
+      person.update_attribute(:userid_messages, @message_userid)
     end
   end
 
@@ -157,21 +157,13 @@ class Message
   end
 
   def communicate(recipient_roles, active, reasons, sender, open_data_status, syndicate = nil)
-    p 'communicate'
-    p recipient_roles
-    p active
-    p reasons
-    p open_data_status
     ccs = Array.new
     recipient_roles.each do |recipient_role|
-      p recipient_role
       ccs = get_actual_recipients(recipient_role, syndicate, active, open_data_status, reasons )
     end
     add_message_to_userid_messages(UseridDetail.look_up_id(sender)) unless sender.blank? || ccs.include?(sender)
     ccs << sender
     ccs = ccs.uniq
-    p 'to whom'
-    p ccs
     UserMailer.send_message(self, ccs, sender).deliver_now
   end
 
@@ -200,6 +192,32 @@ class Message
       get_inactive_users_without_reasons(recipients, open_data_status, active_user, ccs)
     end
     ccs
+  end
+
+  def extract_actual_recipients(recipients, role)
+    case role
+    when 'county_coordinator'
+      recipients = self.extract_coordinators(recipients)
+    when 'syndicate_coordinator'
+      recipients = self.extract_coordinators(recipients)
+    when 'country_coordinator'
+      recipients = self.extract_coordinators(recipients)
+    end
+    recipients
+  end
+
+  def extract_coordinators(recipients)
+    individuals = Array.new
+    recipients.each do |single|
+      single_parts = single.split('(')
+      individual = single_parts[-1].gsub(')', '')
+      individuals << individual
+    end
+    individuals
+  end
+
+  def message_sent?
+    sent_messages.deliveries.count != 0
   end
 
   def mine?(user)
@@ -232,7 +250,7 @@ class Message
     if active_user
       return "Message sent to Recipients: #{params[:recipients]}; Open Data Status: #{open_data_status_value(params[:open_data_status])}; Active : #{active_user} "
     else
-      return "Message sent to Recipients: #{params[:recipients]}; Open Data Status: #{open_data_status_value(params[:open_data_status])}; Active : #{active_user} #{params[:inactive_reasons]}"
+      return "Message sent to Recipients: #{params[:recipients]}; Open Data Status: #{open_data_status_value(params[:open_data_status])}; Active : #{active_user} #{params[:inactive_reason]}"
     end
   end
 
@@ -276,8 +294,50 @@ class Message
     end
   end
 
-  def sent?
-    sent_messages.deliveries.count != 0
+  def select_the_list_of_individuals(role)
+    primary_people = UseridDetail.role(role)
+    secondary_people = UseridDetail.secondary(role)
+    number_of_individuals = primary_people.count + secondary_people.count
+    people = Array.new
+    case number_of_individuals
+    when 0
+    when 1
+      if primary_people.count == 1
+        person = primary_people.first.userid
+      else
+        person = secondary_people.first.userid
+      end
+      people << person
+    else
+      case role
+      when 'county_coordinator'
+        County.all.order_by(chapman_code: 1).each do |single|
+          chapman_code = single.chapman_code
+          coordinator = single.county_coordinator
+          people << "#{ChapmanCode.name_from_code(chapman_code)} (#{coordinator})" unless ChapmanCode.name_from_code(chapman_code).blank?
+        end
+      when 'syndicate_coordinator'
+        Syndicate.all.order_by(syndicate_code: 1).each do |single|
+          syndicate = single.syndicate_code
+          coordinator = single.syndicate_coordinator
+          people << "#{syndicate} (#{coordinator})"
+        end
+      when 'country_coordinator'
+        Country.all.order_by(country_code: 1).each do |single|
+          chapman_code = single.country_code
+          coordinator = single.country_coordinator
+          people << "#{ChapmanCode.name_from_code(chapman_code)} (#{coordinator})" unless ChapmanCode.name_from_code(chapman_code).blank?
+        end
+      else
+        primary_people.each do |user|
+          people <<  user.userid
+        end
+        secondary_people.each do |user|
+          people <<  user.userid
+        end
+      end
+    end
+    people
   end
 
   def syndicate_coordinator
@@ -415,22 +475,12 @@ class Message
 
     def sent_messages(messages)
       messages.order(message_sent_time: :asc).find_all do |message|
-        message.sent?
+        message.message_sent?
       end
     end
   end
 
   #..............................................................Private Instance Methods
-
-  def add_message_to_userid_messages(person)
-    return if person.blank?
-
-    @message_userid = person.userid_messages
-    unless @message_userid.include? id.to_s
-      @message_userid << id.to_s
-      person.update_attribute(:userid_messages, @message_userid)
-    end
-  end
 
   def get_active_users(recipients, open_data_status, active_user, ccs)
     recipients.each do |person|

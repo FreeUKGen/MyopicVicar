@@ -16,10 +16,9 @@ module MessagesHelper
   end
 
   def commit_action(f, params=nil)
-    p params
     case
     when session[:message_base] == 'communication'
-      f.action :submit, as: :input,  label: 'Send Communication', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
+      f.action :submit, as: :input,  label: 'Save Communication', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
     when session[:message_base] == 'userid_messages'
       f.action :submit, as: :input,  label: 'Reply Message', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
     when (session[:message_base] == 'syndicate' || session[:message_base] == 'general') && !params[:id].present?
@@ -49,10 +48,9 @@ module MessagesHelper
   def do_we_permit_an_edit?(message)
     do_we_permit = false
     if session[:message_base] == 'userid_messages' || session[:message_base] == 'communication'
-      do_we_permit = true if message.mine?(@user) && !message.sent?
+      do_we_permit = true if message.mine?(@user) && !message.message_sent?
     elsif session[:message_base] == 'syndicate' || session[:message_base] == 'general'
-      do_we_permit = true if message.source_message_id.blank? && message.mine?(@user) && !message.sent?
-    elsif session[:message_base] == 'communication'
+      do_we_permit = true if message.source_message_id.blank? && message.mine?(@user) && !message.message_sent?
     else
       if message.source_feedback_id.blank?
         if message.source_contact_id.blank?
@@ -80,9 +78,9 @@ module MessagesHelper
   def do_we_show_destroy_action?(message)
     do_we_permit = false
     if session[:message_base] == 'userid_messages' || session[:message_base] == 'communication'
-      do_we_permit = true if !message.sent? && message.mine?(@user)
+      do_we_permit = true if !message.message_sent? && message.mine?(@user)
     elsif session[:message_base] == 'syndicate' || session[:message_base] == 'general'
-      do_we_permit = true if !message.sent? && message.mine?(@user)
+      do_we_permit = true if !message.message_sent? && message.mine?(@user)
     else
       do_we_permit = true if message.archived? && message.not_being_kept? && message.not_a_reply?
     end
@@ -142,7 +140,7 @@ module MessagesHelper
   def do_we_show_reply_action?(message)
     do_we_permit = false
     if session[:message_base] == 'userid_messages' || session[:message_base] == 'communication' || session[:message_base] == 'general' || session[:message_base] == 'syndicate'
-      do_we_permit = true if message.sent?
+      do_we_permit = true if message.message_sent?
     end
     do_we_permit
   end
@@ -152,7 +150,7 @@ module MessagesHelper
     if session[:message_base] == 'userid_messages'
       do_we_permit = false
     else
-      do_we_permit = true if message.sent? && message.not_a_reply?
+      do_we_permit = true if message.message_sent? && message.not_a_reply?
     end
     do_we_permit
   end
@@ -162,13 +160,36 @@ module MessagesHelper
     if session[:message_base] == 'userid_messages'
       do_we_permit = false
     else
-      do_we_permit = true if !message.sent? && message.not_a_reply?
+      do_we_permit = true if !message.message_sent? && message.not_a_reply?
     end
     do_we_permit
   end
 
+  def edit_breadcrumb(message)
+    case session[:message_base]
+    when 'communication'
+      breadcrumb :edit_communication, message
+    when 'syndicate'
+      breadcrumb :edit_syndicate_message, message
+    when 'general'
+      breadcrumb :edit_message, message
+    when 'userid_messages'
+      breadcrumb :edit_userid_message, message
+    else
+      breadcrumb :edit_message, message
+    end
+  end
+
   def edit_title
-    session[:syndicate] ? edit_title = 'Edit Syndicate Message Reference' : edit_title = 'Edit Message Reference'
+    case session[:message_base]
+    when 'communication'
+      edit_title = 'Edit Communication Reference'
+    when 'syndicate'
+      edit_title = 'Edit Syndicate Message Reference'
+    else
+      edit_title = 'Edit Message Reference'
+    end
+    edit_title
   end
 
   def formatted_date(message)
@@ -177,27 +198,25 @@ module MessagesHelper
   end
 
   def index_breadcrumbs
-    p 'index_breadcrumbs'
-    p session[:message_base]
     case
-    when params[:action] ==  'list_incoming_syndicate_messages' || params[:action] == 'list_archived_incoming_syndicate_messages'
-      breadcrumb :incoming_syndicate_messages
-    when session[:syndicate]
-      breadcrumb :message_to_syndicate
+    when session[:message_base] == 'syndicate'
+      breadcrumb :syndicate_messages
+    when session[:message_base] == 'userid_message'
+      breadcrumb :userid_messages
+    when session[:message_base] == 'communication'
+      breadcrumb :communications
+    when session[:message_base] == 'general'
+      breadcrumb :messages
     when params[:action] == 'feedback_reply_messages'
       breadcrumb :feedback_messages, @feedback
     when params[:action] == 'contact_reply_messages'
       breadcrumb :contact_messages, @contact
-    when session[:message_base] == 'communication'
-      breadcrumb :communication
     else
       breadcrumb :messages
     end
   end
 
   def index_header(action, syndicate)
-    p 'index_header'
-    p session[:message_base]
     header = ''
     case action
     when 'list_feedback_reply_message'
@@ -241,8 +260,6 @@ module MessagesHelper
   end
 
   def index_create_option?
-    p 'index_create_option'
-    p  session[:message_base]
     create_option = false
     if session[:message_base] == 'syndicate' || session[:message_base] == 'general' || session[:message_base] == 'communication'
       create_option = true
@@ -312,12 +329,64 @@ module MessagesHelper
     end
   end
 
+  def new_breadcrumb(message, id)
+    if session[:message_base] == 'communication'
+      if id.present?
+        breadcrumb :create_reply_communication, message, id
+      else
+        breadcrumb :create_communication, message
+      end
+    elsif session[:message_base] == 'syndicate'
+      if id.present?
+        breadcrumb :create_syndicate_reply, message, id
+      else
+        breadcrumb :create_syndicate_message, message
+      end
+    elsif session[:message_base] == 'general'
+      if id.present?
+        breadcrumb :create_message_reply, message, id
+      else
+        breadcrumb :create_message, message
+      end
+    elsif session[:message_base] == 'userid_messages'
+      breadcrumb :create_userid_message_reply, message, id
+    else
+      breadcrumb :create_message, message
+    end
+  end
+
+  def new_title(message, id)
+    case
+    when session[:message_base] == 'communication'
+      if id.present?
+        new_title = 'Creating Reply to Communication'
+      else
+        new_title = 'Creating New Communication'
+      end
+    when id.present?
+      if message.syndicate.present?
+        new_title = 'Creating Reply to Syndicate Message'
+      else
+        new_title = 'Creating Reply to General Message'
+      end
+    else
+      new_title = 'Creating General Message'
+    end
+    new_title
+  end
+
+  def open_status(message)
+    field = message.open_data_status
+  end
+
   def reason(list)
+    p list
     if list.blank?
       response = ''
     else
       response = Array.new
       list.each do |l|
+        p l
         response << l
       end
     end
@@ -325,10 +394,12 @@ module MessagesHelper
   end
 
   def recipients_list
-    if @syndicate
+    if @message.nature == 'Communication'
+      options_for_select(@people)
+    elsif @syndicate
       options_for_select(['Members of Syndicate'])
     else
-      options_for_select(@options,@sent_message.recipients)
+      options_for_select(@options, @sent_message.recipients)
     end
   end
 
@@ -355,12 +426,30 @@ module MessagesHelper
 
   def show_breadcrumb
     case
+    when session[:message_base] == 'communication'
+      if params[:source] == 'show_reply_messages'
+        breadcrumb :show_reply_communication, @message
+      else
+        breadcrumb :show_communication, @message
+      end
     when session[:message_base] == 'syndicate'
-      breadcrumb :show_list_syndicate_messages , @message
+      if params[:source] == 'show_reply_messages'
+        breadcrumb :show_syndicate_reply_message, @message
+      else
+        breadcrumb :show_syndicate_message, @message
+      end
     when session[:message_base] == 'userid_messages'
-      breadcrumb :show_message, @message
+      if params[:source] == 'show_reply_messages'
+        breadcrumb :show_userid_reply_message, @message
+      else
+        breadcrumb :show_userid_message, @message
+      end
     when session[:message_base] == 'general'
-      breadcrumb :show_message, @message
+      if params[:source] == 'show_reply_messages'
+        breadcrumb :show_reply_message, @message
+      else
+        breadcrumb :show_message, @message
+      end
     when params[:source] == 'contact_reply_messages'
       breadcrumb :show_message, @message
     when params[:source] == 'feedback_reply_messages'
@@ -370,10 +459,14 @@ module MessagesHelper
 
   def show_replies_breadcrumbs
     case
+    when session[:message_base] == 'userid_messages'
+      breadcrumb :userid_reply_messages, @main_message
     when session[:message_base] == 'syndicate'
-      breadcrumb :replies_list_syndicate_messages, @main_message
+      breadcrumb :list_replies_to_syndicate_message, @main_message
     when session[:message_base] == 'general'
       breadcrumb :reply_messages_list, @main_message
+    when session[:message_base] == 'communication'
+      breadcrumb :list_replies_communications
     else
       breadcrumb :reply_messages_list, @main_message
     end
@@ -496,5 +589,4 @@ module MessagesHelper
       concat dynamic_link("View #{pluralize(@sent_replies.count, 'Reply') }", show_reply_messages_path(@message.id)) unless @sent_replies.count == 0
     end
   end
-
 end
