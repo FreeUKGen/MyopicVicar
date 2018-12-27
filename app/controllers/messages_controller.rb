@@ -16,7 +16,7 @@ class MessagesController < ApplicationController
     end
   end
 
-  def communications
+   def communications
     get_user_info_from_userid
     session[:message_base] = 'communication'
     session[:archived_contacts] = false
@@ -26,6 +26,7 @@ class MessagesController < ApplicationController
     @messages = Message.list_communications(params[:action], session[:archived_contacts], order)
     render :index
   end
+  
 
   def create
     @message = Message.new(message_params)
@@ -43,6 +44,8 @@ class MessagesController < ApplicationController
       create_for_message_reply
     when 'Save Communication'
       create_for_communication
+     when 'Reply Communication'
+      create_for_communication_reply 
     end
   end
 
@@ -55,7 +58,13 @@ class MessagesController < ApplicationController
       # add
     end
   end
-
+  def create_for_communication_reply
+    @message.nature = 'Communication'
+    if @message.save
+      flash[:notice] = 'Reply for Communication was created and sent'
+      reply_for_communication; return if performed?
+    end
+  end
   def create_for_contact_reply
     if @message.save
       flash[:notice] = 'Reply for Contact was created and sent'
@@ -80,7 +89,13 @@ class MessagesController < ApplicationController
   end
 
   def create_for_submit
-    session[:syndicate].present? ? @message.syndicate = session[:syndicate] : @message.syndicate = nil
+    if session[:syndicate].present?
+      @message.syndicate = session[:syndicate]
+      @message.nature = 'syndicate'
+    else
+      @message.syndicate = nil
+      @message.nature = 'general'
+    end
     if @message.subject.blank?
       @message.subject = '...'
       flash[:notice] = 'There was no subject for your message. You will have to reattach any file or image'
@@ -143,6 +158,28 @@ class MessagesController < ApplicationController
     @message.update_keep
     flash.notice = 'Message to be retained'
     return_after_keep(params[:source], params[:id])
+  end
+  
+   def list_active_communications
+    get_user_info_from_userid
+    session[:message_base] = 'communication'
+    session[:archived_contacts] = false
+    session.delete(:original_message_id)
+    session.delete(:message_id)
+    order = 'message_time DESC'
+    @messages = Message.list_communications(params[:action], session[:archived_contacts], order)
+    render :index
+  end
+  
+ def list_archived_communications
+    get_user_info_from_userid
+    session[:message_base] = 'communication'
+    session[:archived_contacts] = true
+    session.delete(:original_message_id)
+    session.delete(:message_id)
+    order = 'message_time DESC'
+    @messages = Message.list_communications(params[:action], session[:archived_contacts], order)
+    render :index
   end
 
   def list_archived
@@ -323,6 +360,8 @@ class MessagesController < ApplicationController
       redirect_to action: 'list_syndicate_messages'
     when 'general'
       redirect_to action: 'index'
+      when 'communication'
+       redirect_to action: 'vommunicaions' 
     end
   end
 
@@ -336,6 +375,10 @@ class MessagesController < ApplicationController
       redirect_to action: 'index', source: 'index'
     when session[:message_base] == 'general' && source == 'show'
       redirect_to action: 'show', id: id
+     when session[:message_base] == 'comunication' && source == 'communications'
+      redirect_to action: 'communications', source: 'communications'
+    when session[:message_base] == 'communication' && source == 'show'
+      redirect_to action: 'show', id: id 
     else
       redirect_to action: 'list_archived'
     end
@@ -352,6 +395,8 @@ class MessagesController < ApplicationController
       redirect_to list_syndicate_messages_path
     elsif session[:message_base] == 'general'
       redirect_to action: 'index'
+    elsif session[:message_base] == 'communication'
+      redirect_to action: 'communications' 
     end
   end
 
@@ -364,6 +409,10 @@ class MessagesController < ApplicationController
     when session[:message_base] == 'general' && source == 'index'
       redirect_to action: 'list_archived', source: 'list_archived'
     when session[:message_base] == 'general' && source == 'show'
+      redirect_to action: 'show', id: id
+      when session[:message_base] == 'communication' && source == 'index'
+      redirect_to action: 'list_archived_communication', source: 'list_archived_communication'
+    when session[:message_base] == 'communication' && source == 'show'
       redirect_to action: 'show', id: id
     else
       redirect_to action: 'index'
@@ -380,6 +429,10 @@ class MessagesController < ApplicationController
       redirect_to action: 'list_archived', source: 'list_archived'
     when session[:message_base] == 'general' && source == 'show'
       redirect_to action: 'show', id: id
+       when session[:message_base] == 'communication' && source == 'list_archived'
+      redirect_to action: 'list_archived_communication', source: 'list_archived'
+    when session[:message_base] == 'communication' && source == 'show'
+      redirect_to action: 'show', id: id
     else
       redirect_to action: 'index'
     end
@@ -394,6 +447,10 @@ class MessagesController < ApplicationController
     when session[:message_base] == 'general' && source == 'index'
       redirect_to action: 'index', source: 'index'
     when session[:message_base] == 'general' && source == 'show'
+      redirect_to action: 'show', id: id
+      when session[:message_base] == 'communication' && source == 'index'
+      redirect_to action: 'coomunications', source: 'index'
+    when session[:message_base] == 'communication' && source == 'show'
       redirect_to action: 'show', id: id
     else
       redirect_to action: 'list_archived'
@@ -468,9 +525,9 @@ class MessagesController < ApplicationController
     session.delete(:com_role)
     @sent_message = SentMessage.new(message_id: @message.id, sender: @user_userid, recipients: acutal_recipients)
     @message.sent_messages << [@sent_message]
-    @message.update_attributes(message_sent_time: Time.now, action: @sent_message.id)
     @sent_message.save
     UserMailer.send_message(@message, acutal_recipients, @user_userid).deliver_now
+    @sent_message.update_attributes(sent_time: Time.now)
     @message.add_message_to_userid_messages(UseridDetail.look_up_id(@user_userid)) unless @user_userid.blank?
     acutal_recipients.each do |recipient|
       @message.add_message_to_userid_messages(UseridDetail.look_up_id(recipient))
@@ -518,11 +575,7 @@ class MessagesController < ApplicationController
     @user.reload
     @message = Message.id(params[:id]).first
     session[:message_id] = @message.id if @message.present?
-    p 'show'
-    p @message.present?
-    p !@message.original_message_id.present?
     session[:original_message_id] = @message.original_message_id if @message.present? && !@message.original_message_id.present?
-
     @reply_messages = Message.fetch_replies(params[:id])
     @sent_replies = Message.sent_messages(@reply_messages)
     if @message.blank?
@@ -534,11 +587,7 @@ class MessagesController < ApplicationController
   def show_reply_messages
     get_user_info_from_userid
     @user.reload
-    p 'show_reply_messages'
-    p params[:id]
-    p session[:original_message_id]
     session[:original_message_id] = params[:id] unless session[:original_message_id].present?
-    p session[:original_message_id]
     @user_messages = UseridDetail.id(@user.id).first.userid_messages
     @reply_messages = Message.fetch_replies(params[:id])
     @messages = Message.sent_messages(@reply_messages)
@@ -568,9 +617,8 @@ class MessagesController < ApplicationController
   def userid_reply_messages
     get_user_info_from_userid
     @user.reload
-    p 'userid_reply_messages'
-    p params
-    @reply_messages = Message.in(id: @user.userid_messages).where(:source_message_id.ne => nil).all.order_by(message_sent_time: -1)
+    @reply_messages = Message.fetch_replies(params[:id])
+    @reply_messages = Message.sent_messages(@reply_messages)
     session[:syndicate].blank? ? @messages = @reply_messages : @messages = syndicate_messages(@reply_messages, session[:syndicate])
   end
 

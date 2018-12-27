@@ -47,6 +47,8 @@ MyopicVicar::Application.routes.draw do
 
 
   delete 'messages/:id/remove_from_userid_detail(.:format)', :to => 'messages#remove_from_userid_detail', :as => :remove_from_userid_detail
+  get 'messages/communications', to: 'messages#communications', as: :communications_messages
+  get 'messages/list_inactive_comminications', to: 'messages#list_archived_communications', as: :list_archived_communications_messages
   get 'messages/userid_messages', :to => 'messages#userid_messages', :as => :userid_messages
   get 'messages/list_by_type',  :to => 'messages#list_by_type', :as => :list_by_type_messages
   get 'messages/:id/send_message(.:format)',  :to => 'messages#send_message', :as => :send_message_messages
@@ -57,7 +59,7 @@ MyopicVicar::Application.routes.draw do
   get 'messages/:id/reply',  :to => 'messages#new', :as => :reply_messages
   get 'messages/:id/show_reply_messages',:to => 'messages#show_reply_messages', :as => :show_reply_messages
   get 'messages/:id/user_reply_messages',:to => 'messages#user_reply_messages', :as => :user_reply_messages
-  get 'messages/userid_reply_messages', :to => 'messages#userid_reply_messages', :as => :userid_reply_messages
+  get 'messages/:id/userid_reply_messages', :to => 'messages#userid_reply_messages', :as => :userid_reply_messages
   get 'messages/list_unsent_messages', :to => 'messages#list_unsent_messages', :as => :list_unsent_messages
   get 'messages/list_archived', :to => 'messages#list_archived', :as => :list_archived_messages
   get 'messages/list_syndicate_messages', :to => 'messages#list_syndicate_messages', :as => :list_syndicate_messages
@@ -67,7 +69,6 @@ MyopicVicar::Application.routes.draw do
   get 'messages/:id/keep', :to => 'messages#keep', :as => :keep_message
   get 'messages/:id/unkeep', :to => 'messages#unkeep', :as => :unkeep_message
   get 'messages/:id/force_destroy', :to => 'messages#force_destroy', :as => :force_destroy_messages
-  get 'messages/communications', to: 'messages#communications', as: :communications_messages
   get 'messages/:id/select_role', to: 'messages#select_role', as: :select_role_message
   get 'messages/select_individual', to: 'messages#select_individual', as: :select_individual_messages
   resources :messages

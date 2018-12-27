@@ -17,7 +17,9 @@ module MessagesHelper
 
   def commit_action(f, params=nil)
     case
-    when session[:message_base] == 'communication'
+    when session[:message_base] == 'communication'  && params[:id].present?
+      f.action :submit, as: :input,  label: 'Reply Communication', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
+     when session[:message_base] == 'communication'  
       f.action :submit, as: :input,  label: 'Save Communication', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
     when session[:message_base] == 'userid_messages'
       f.action :submit, as: :input,  label: 'Reply Message', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
@@ -65,10 +67,14 @@ module MessagesHelper
 
   def do_we_show_archive_action?(message)
     do_we_permit = false
-    if session[:message_base] == 'userid_messages' || session[:message_base] == 'communication'
+    if session[:message_base] == 'userid_messages' 
       do_we_permit = false
-    elsif session[:message_base] == 'syndicate' || session[:message_base] == 'general'
-      do_we_permit = true if message.not_archived? && message.not_a_reply?
+    elsif session[:message_base] == 'syndicate' || session[:message_base] == 'general'|| session[:message_base] == 'communication'
+      if !message.message_sent?
+        do_we_permit = false
+      else
+        do_we_permit = true if message.not_archived? && message.not_a_reply?
+      end
     else
       do_we_permit = true if message.not_archived? && message.not_a_reply?
     end
@@ -104,23 +110,35 @@ module MessagesHelper
   def do_we_index_list_index_syndicate?
     session[:message_base] == 'syndicate' && session[:archived_contacts] ? do_we_permit = true :  do_we_permit = false
   end
+  
+  def do_we_index_list_archived_communications?
+    session[:message_base] == 'communication' && !session[:archived_contacts] ? do_we_permit = true :  do_we_permit = false
+  end
+
+  def do_we_index_list_active_communications?
+    session[:message_base] == 'communication' && session[:archived_contacts] ? do_we_permit = true :  do_we_permit = false
+  end
 
   def do_we_show_keep_action?(message)
-    (session[:message_base] == 'syndicate' || session[:message_base] == 'general') && message.keep.blank? && !message.a_reply? ? do_we_permit = true : do_we_permit = false
+    (session[:message_base] == 'communication' || session[:message_base] == 'syndicate' || session[:message_base] == 'general' ) && message.message_sent?   && message.keep.blank? && !message.a_reply? ? do_we_permit = true : do_we_permit = false
     do_we_permit
   end
 
   def do_we_show_unkeep_action?(message)
-    (session[:message_base] == 'syndicate' || session[:message_base] == 'general') && message.keep.present? && !message.a_reply? ? do_we_permit = true :  do_we_permit = false
+    (session[:message_base] == 'communication' || session[:message_base] == 'syndicate' || session[:message_base] == 'general' ) && message.message_sent?  && message.keep.present? && !message.a_reply? ? do_we_permit = true :  do_we_permit = false
     do_we_permit
   end
 
   def do_we_show_restore_action?(message)
     do_we_permit = false
-    if session[:message_base] == 'userid_messages' || session[:message_base] == 'communication'
+    if session[:message_base] == 'userid_messages' 
       do_we_permit = false
-    elsif session[:message_base] == 'syndicate' || session[:message_base] == 'general'
-      do_we_permit = true if message.archived? && message.not_being_kept? && message.not_a_reply?
+    elsif session[:message_base] == 'syndicate' || session[:message_base] == 'general' || session[:message_base] == 'communication'
+      if !message.message_sent?
+        do_we_permit = false
+      else
+        do_we_permit = true if message.archived? && message.not_being_kept? && message.not_a_reply?
+      end
     else
       do_we_permit = true if message.not_archived? && message.not_being_kept? && message.not_a_reply?
     end
@@ -133,7 +151,7 @@ module MessagesHelper
   end
 
   def do_we_show_remove_action?(message)
-    session[:message_base] == 'userid_messages' || session[:message_base] == 'communication' ? do_we_permit = true : do_we_permit = false
+    session[:message_base] == 'userid_messages' ? do_we_permit = true : do_we_permit = false
     do_we_permit
   end
 
@@ -146,22 +164,32 @@ module MessagesHelper
   end
 
   def do_we_show_resend_action?(message)
+    p 'do_we_show_resend_action'
+    p message
+    p message.message_sent?
+    p message.not_a_reply?
     do_we_permit = false
     if session[:message_base] == 'userid_messages'
       do_we_permit = false
     else
       do_we_permit = true if message.message_sent? && message.not_a_reply?
     end
+    p do_we_permit
     do_we_permit
   end
 
   def do_we_show_send_action?(message)
+    p 'do_we_show_send_action'
+    p message
+    p message.message_sent?
+    p message.not_a_reply?
     do_we_permit = false
     if session[:message_base] == 'userid_messages'
       do_we_permit = false
     else
       do_we_permit = true if !message.message_sent? && message.not_a_reply?
     end
+       p do_we_permit
     do_we_permit
   end
 

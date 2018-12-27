@@ -19,5 +19,7 @@
   <%= link_to 'List active syndicate',list_syndicate_messages_path(:source => params[:action]), method: :get , :class => 'btn weight--light btn--small' if do_we_index_list_index_syndicate?%>
   <%= link_to 'List archived', list_archived_messages_path(:source => params[:action]) , method: :get , :class => 'btn weight--light btn--small' if do_we_index_list_archived? %>
   <%= link_to 'List active', messages_path(:source => params[:action]), method: :get , :class => 'btn weight--light btn--small' if do_we_index_list_index? %>
+  <%= link_to 'Archived Communications', list_archived_communications_messages_path(:source => params[:action]) , method: :get , :class => 'btn weight--light btn--small' if do_we_index_list_archived_communications? %>
+  <%= link_to 'Active Communications', communications_messages_path(:source => params[:action]), method: :get , :class => 'btn weight--light btn--small' if do_we_index_list_active_communications? %>
 </p>
 <%= index_partial_render %>

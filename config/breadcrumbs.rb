@@ -576,7 +576,7 @@ end
 
 crumb :list_replies_to_syndicate_message do |message|
   link 'Replies to Syndicate Message', show_reply_messages_path(message, source: params[:source])
-  if params[:source] == 'show_reply_messages' || 'show'
+  if params[:source] == 'show_reply_messages' || params[:source] =='show'
     params[:source] = 'list_syndicate_messages'
     parent :show_syndicate_message, session[:original_message_id], params[:source]
   else
@@ -592,6 +592,7 @@ end
 # ....................................................Userid Messages
 
 crumb :userid_messages do
+  p 'userid_messages'
   link 'User Messages', userid_messages_path
   parent :root
 end
@@ -606,6 +607,8 @@ crumb :create_userid_messages do |message|
 end
 
 crumb :show_userid_message do |message|
+  p 'show_userid_message'
+  p params[:source]
   link 'Show User Message', message_path(message, source: params[:source])
   if params[:source] == 'userid_messages' || params[:source] == 'index'
     parent :userid_messages
@@ -634,10 +637,9 @@ crumb :create_reply_userid_message do |message, original_message_id|
 end
 
 crumb :userid_reply_messages do |message|
-  p 'userid_reply_messages'
-  p
   link 'Replies to Messages', userid_reply_messages_path(message, source: params[:source])
-  if params[:source] == 'userid_messages'
+  if params[:source] == 'show' || params[:source] == 'show_reply_messages' 
+     params[:source] = 'userid_messages'
     parent :show_userid_message, session[:original_message_id], params[:source]
   else
     parent :userid_messages
@@ -646,8 +648,6 @@ end
 
 crumb :show_userid_reply_message do |message|
   link 'Show Reply Message', message_path(message, source: params[:source])
-  p 'kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk'
-  p
   parent :userid_reply_messages, session[:original_message_id], :source => params[:source]
 end
 
@@ -677,10 +677,6 @@ crumb :message_form_for_selection do
 end
 
 crumb :show_message do |message|
-  p 'show_message'
-  p params[:source]
-  p message
-
   link 'Show Message', message_path(message, source: params[:source])
   if params[:source] == 'show' || params[:source] == 'index'
     parent :messages
@@ -726,10 +722,6 @@ crumb :create_message_reply do |message, original_message_id|
 end
 
 crumb :reply_messages_list do |message|
-  p 'reply_messages_list'
-  p session[:message_base]
-  p session[:original_message_id]
-  p  params[:source]
   link 'Reply Messages List', show_reply_messages_path(message, source: params[:source])
   if session[:message_base] == 'userid_messages'
     if params[:source] == 'show_reply_messages'
@@ -746,9 +738,6 @@ crumb :reply_messages_list do |message|
 end
 
 crumb :show_reply_message do |message|
-  p 'show_reply_message'
-  p session[:original_message_id]
-  p  params[:source]
   link 'Show Reply Message', message_path(message, source: params[:source])
   parent :reply_messages_list, Message.id(session[:original_message_id]).first, :source => params[:source]
 end
@@ -768,7 +757,11 @@ end
 # ...........................................................Communications
 
 crumb  :communications do
-  link 'My communications', communications_messages_path
+   if session[:archived_contacts]
+    link 'My Archived Communications', list_archived_communications_messages_path
+  else
+    link 'My Active Comminications', communications_messages_path
+  end
   parent :root
 end
 
