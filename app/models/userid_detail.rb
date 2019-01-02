@@ -254,10 +254,7 @@ class UseridDetail
   end
 
   def remove_myself(list)
-    p 'remove_myself'
-    p self
     list = list.delete_if { |role| role == person_role }
-    p list
     list
   end
 

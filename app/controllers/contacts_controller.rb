@@ -285,6 +285,7 @@ class ContactsController < ApplicationController
   end
 
   def return_after_archive(source, id)
+
     if source == 'show'
       redirect_to action: 'show', id: id
     else

@@ -142,8 +142,10 @@ module FreeregOptionsConstants
     'Contact' => 'Research contact'
   }
 
-  COMMUNICATION_ROLES = ['contacts_coordinator', 'county_coordinator', 'country_coordinator', 'documentation_coordinator', 'engagement_coordinator', 'executive_director', 'genealogy_coordinator',
-                         'general_communication_coordinator', 'project_manager', 'publicity_coordinator', 'syndicate_coordinator',   'website_coordinator', 'volunteer_coordinator']
+  COMMUNICATION_ROLES = ['contacts_coordinator', 'county_coordinator', 'country_coordinator', 'data_manager', 'documentation_coordinator',
+                         'engagement_coordinator', 'executive_director', 'genealogy_coordinator', 'general_communication_coordinator',
+                         'project_manager', 'publicity_coordinator', 'system_administrator', 'syndicate_coordinator',
+                         'website_coordinator', 'volunteer_coordinator']
 
   CONFIRM_EMAIL_ADDRESS = 120
 

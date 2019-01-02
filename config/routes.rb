@@ -51,13 +51,14 @@ MyopicVicar::Application.routes.draw do
   get 'messages/list_inactive_comminications', to: 'messages#list_archived_communications', as: :list_archived_communications_messages
   get 'messages/userid_messages', :to => 'messages#userid_messages', :as => :userid_messages
   get 'messages/list_by_type',  :to => 'messages#list_by_type', :as => :list_by_type_messages
-  get 'messages/:id/send_message(.:format)',  :to => 'messages#send_message', :as => :send_message_messages
+  get 'messages/:id/select_recipients(.:format)',  :to => 'messages#select_recipients', :as => :select_recipients_messages
   get 'messages/list_by_name',  :to => 'messages#list_by_name', :as => :list_by_name_messages
   get 'messages/list_by_date',  :to => 'messages#list_by_date', :as => :list_by_date_messages
   get 'messages/list_by_most_recent',  :to => 'messages#list_by_most_recent', :as => :list_by_most_recent_messages
   get 'messages/select_by_identifier',  :to => 'messages#select_by_identifier', :as => :select_by_identifier_messages
-  get 'messages/:id/reply',  :to => 'messages#new', :as => :reply_messages
-  get 'messages/:id/show_reply_messages',:to => 'messages#show_reply_messages', :as => :show_reply_messages
+  get 'messages/:id/reply', :to => 'messages#new', :as => :new_reply_messages
+  get 'messages/:id/reply_messages',:to => 'messages#reply_messages', :as => :reply_messages
+  get 'messages/:id/show_reply_message',:to => 'messages#show_reply_message', :as => :show_reply_message
   get 'messages/:id/user_reply_messages',:to => 'messages#user_reply_messages', :as => :user_reply_messages
   get 'messages/:id/userid_reply_messages', :to => 'messages#userid_reply_messages', :as => :userid_reply_messages
   get 'messages/list_unsent_messages', :to => 'messages#list_unsent_messages', :as => :list_unsent_messages

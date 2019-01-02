@@ -1,4 +1,4 @@
-<% breadcrumb :send_message,  @message%>
+<% breadcrumb :select_recipients,  @message%>
 <% if flash[:notice] %>
   <div id="notice" style="color:blue"><br>
     <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
@@ -8,7 +8,6 @@
   <section class="island  island--light ">
     <%= semantic_form_for(@message, :html => {:multipart => true}) do |f| %>
       <%= f.fields_for :sent_message do |multiple| %>
-        <%= f.hidden_field :action %>
         <% unless session[:syndicate].present?%>
           <li  class="grid__item  one-quarter  palm-one-whole push--bottom " id="message_recipients">
             <label class="ttip" for="recipients" tabindex="0"> Recipients  <%= image_tag 'info.png', alt: 'Info', height: '16' %><span  class=" ttip__text">You may select multiple roles for recipients</span></a></label>
@@ -63,7 +62,7 @@
   </select>
 </li>
 <% end %>
-<%= f.action :submit, :as => :input,  :label => 'Send' ,:button_html => { :class => "btn " },:wrapper_html => { :class => "grid__item  one-whole text--center" }  %> <br>
+<%= f.action :submit, :as => :input,  :label => 'Send Message' ,:button_html => { :class => "btn " },:wrapper_html => { :class => "grid__item  one-whole text--center" }  %> <br>
 <% end%>
 </section>
 </div>

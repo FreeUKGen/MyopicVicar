@@ -50,7 +50,11 @@ class Message
     end
 
     def communications
-      where(nature: 'Communication')
+      where(nature: 'communication')
+    end
+
+    def general
+      where(nature: 'general')
     end
 
     def id(id)
@@ -61,6 +65,10 @@ class Message
       where(keep: status)
     end
 
+    def mine(userid)
+      where(userid: userid)
+    end
+
     def not_message_reply(status)
       if status
         where(source_message_id: nil)
@@ -68,6 +76,15 @@ class Message
         where(:source_message_id.ne => nil)
       end
     end
+
+    def not_communications
+      where(:nature.ne => 'communication')
+    end
+
+    def not_syndicate
+      where(:nature.ne => 'syndicate')
+    end
+
 
     def syndicate(syndicate)
       where(:syndicate => syndicate)
@@ -448,15 +465,15 @@ class Message
       end
     end
 
-    def list_communications(action, archived, order)
-      @messages = Message.communications.archived(archived).not_message_reply(true).all.order_by(order)
+    def list_communications(action, archived, order, userid)
+      @messages = Message.communications.archived(archived).not_message_reply(true).mine(userid).all.order_by(order)
     end
 
 
     def list_messages(action, syndicate, archived, order)
       case action
       when 'list_unsent_messages'
-        @messages = Message.non_feedback_contact_reply_messages.all.find_all do |message|
+        @messages = Message.non_feedback_contact_reply_messages.not_communications.all.find_all do |message|
           !message.sent?
         end
       when 'list_feedback_reply_message'
@@ -464,11 +481,12 @@ class Message
       when 'list_contact_reply_message'
         @messages = Message.contact_replies.archived(archived).order_by(order)
       when 'list_syndicate_messages'
-        @messages = Message.non_feedback_contact_reply_messages.syndicate(syndicate).archived(archived).not_message_reply(true).all.order_by(order)
+        @messages = Message.non_feedback_contact_reply_messages.syndicate(syndicate).archived(archived).not_message_reply(true).not_communications.all.order_by(order)
       when 'list_archived_syndicate_messages'
-        @messages = Message.non_feedback_contact_reply_messages.syndicate(syndicate).archived(archived).not_message_reply(true).all.order_by(order)
+        @messages = Message.non_feedback_contact_reply_messages.syndicate(syndicate).archived(archived).not_message_reply(true).not_communications.all.order_by(order)
       else
-        @messages = Message.non_feedback_contact_reply_messages.archived(archived).not_message_reply(true).all.order_by(order)
+
+        @messages = Message.non_feedback_contact_reply_messages.archived(archived).not_message_reply(true).general.all.order_by(order)
       end
       @messages
     end

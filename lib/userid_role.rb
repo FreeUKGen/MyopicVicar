@@ -33,9 +33,9 @@ module UseridRole
     'website_coordinator' => ['Batches', 'Contacts', 'Communicate', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation'],
     'general_communication_coordinator' => ['Batches', 'Contacts', 'Communicate', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation']
   }
-
+  #'/messages/communications?source=original',
   OPTIONS_TRANSLATION = {
-    'Communicate' => '/messages/communications',
+    'Communicate' => '/messages/communications?source=original',
     'Denominations' => '/denominations',
     'GAP Reasons' => '/gap_reasons',
     'Saved Searches' => '/my_saved_searches',
