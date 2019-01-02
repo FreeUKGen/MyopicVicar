@@ -183,14 +183,16 @@ class Feedback
     answer
   end
 
-  def communicate_feedback_reply(message,sender_userid)
+  def communicate_feedback_reply(message, sender_userid)
     copies = self.copies_of_contact_action_sent_to_userids
     recipients = Array.new
-    recipients.push(self.email_address)
+    recipients.push(self.user_id)
     UserMailer.coordinator_feedback_reply(self,copies,message,sender_userid).deliver_now
     copies = self.add_sender_to_copies_of_contact_action_sent_to_userids(sender_userid)
     reply_sent_messages(message,sender_userid,recipients,copies)
   end
+
+
 
   def communicate_initial_contact
     self.acknowledge_feedback
