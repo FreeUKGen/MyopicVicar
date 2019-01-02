@@ -88,8 +88,9 @@ class MessagesController < ApplicationController
 
   def create_for_message_reply
     get_user_info_from_userid
-    @message.syndicate = @user.syndicate if @message.add_syndicate?
-    @message.syndicate.present? ? @message.nature = 'syndicate' : @message.nature = 'general'
+    original_message = Message.id(@message.source_message_id).first
+    @message.syndicate = original_message.syndicate
+    @message.nature = original_message.nature
     if @message.save
       reply_for_message(@message); return if performed?
     end
@@ -325,6 +326,7 @@ class MessagesController < ApplicationController
   end
 
   def reply_for_feedback
+
     sender = UseridDetail.where(userid: @message.userid).first
     @feedback = Feedback.id(@message.source_feedback_id).first
     if sender.present? && @feedback.present?

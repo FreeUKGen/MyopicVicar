@@ -24,7 +24,7 @@ module MessagesHelper
       f.action :submit, as: :input,  label: 'Save Communication', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
     when (message.nature == 'syndicate' || message.nature == 'general') && !params[:id].present?
       f.action :submit, as: :input,  label: 'Save Message', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
-    when (message.nature == 'syndicate' || message.nature == 'general') && params[:id].present?
+    when (message.nature == 'syndicate' || message.nature == 'general' || message.nature == 'feedback' || message.nature == 'contact') && params[:id].present?
       f.action :submit, as: :input,  label: 'Reply Message', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
     when params[:source_feedback_id].present?
       f.action :submit, as: :input,  label: 'Reply Feedback', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
@@ -378,7 +378,7 @@ module MessagesHelper
       else
         new_title = 'Create a General Message'
       end
-    when session[:message_base] == 'userid_message'
+    when session[:message_base] == 'userid_messages'
       if id.present?
         new_title = 'Reply for a Message'
       else
@@ -608,10 +608,20 @@ module MessagesHelper
         the_show_title = "Syndicate Message created by #{message.userid} on #{message.created_at.strftime('%F')}"
     when 'feedback'
       message = Feedback.id(@message.source_feedback_id).first
-      the_show_title = "Feedback reply created by #{message.name} on #{message.created_at.strftime('%F')}"
+      if message.present?
+        the_show_title = "Feedback reply created by #{message.name} on #{message.created_at.strftime('%F')}"
+      else
+        message = Message.id(@message.source_message_id).first
+        the_show_title = "Feedback reply created by #{message.userid} on #{message.created_at.strftime('%F')}"
+      end
     when 'contact'
       message = Contact.id(@message.source_contact_id).first
-      the_show_title = "Contact reply created by #{message.name} on #{message.created_at.strftime('%F')}"
+      if message.present?
+        the_show_title = "Contact reply created by #{message.name} on #{message.created_at.strftime('%F')}"
+      else
+        message = Message.id(@message.source_message_id).first
+        the_show_title = "Contact reply created by #{message.userid} on #{message.created_at.strftime('%F')}"
+      end
     end
     the_show_title
   end
