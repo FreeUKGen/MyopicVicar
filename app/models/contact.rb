@@ -238,7 +238,8 @@ class Contact
     else
       coordinator = nil
     end
-    return coordinator.userid
+    coordinator.present? ? userid = coordinator.userid : userid = 'REGManager'
+    userid
   end
 
   def get_manager
