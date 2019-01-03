@@ -471,6 +471,20 @@ crumb :create_feedback_reply do |feedback|
   parent :show_feedback, feedback
 end
 
+crumb :feedback_messages do |message|
+  link 'Feedback Replies', feedback_reply_messages_path(message.id, source: params[:source])
+  parent :feedbacks
+end
+
+crumb :show_reply_feedback_message do |message|
+  link 'Feedback Reply', show_reply_message_path(message.id, source: params[:source])
+  if session[:message_base] == 'userid_messages'
+    parent :userid_messages, source: params[:source]
+  else
+    parent :feedback_messages, Feedback.find(message.source_feedback_id), source: params[:source]
+  end
+end
+
 # ..........................................................................manage contacts
 crumb :contacts do
   if session[:archived_contacts]
@@ -500,7 +514,7 @@ crumb :edit_contact do |contact|
     parent :contacts
   end
 end
-crumb :contact__for_selection do ||
+crumb :contact_for_selection do ||
     link 'Form for Selection'
   if session[:archived_contacts]
     parent :archived_contacts
@@ -514,8 +528,17 @@ crumb :create_contact_reply do |message|
 end
 
 crumb :contact_messages do |message|
-  link 'Contact Reply Messages', contact_reply_messages_path(message.id)
+  link 'Contact Replies', contact_reply_messages_path(message.id, source: params[:source])
   parent :contacts
+end
+
+crumb :show_reply_contact_message do |message|
+  link 'Contact Reply', show_reply_message_path(message.id, source: params[:source])
+  if session[:message_base] == 'userid_messages'
+    parent :userid_messages, source: params[:source]
+  else
+    parent :contact_messages, Contact.find(message.source_contact_id), source: params[:source]
+  end
 end
 
 # ...........................................................Communications
