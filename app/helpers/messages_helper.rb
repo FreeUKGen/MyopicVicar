@@ -174,7 +174,13 @@ module MessagesHelper
   end
 
   def index_action_show(message, index_action)
-    if params[:source].blank? || params[:source] == 'original'
+    if message.nature == 'contact'
+      params[:source] = 'reply'
+      link_to 'Show', show_reply_message_path(message.id, source: 'reply'), :class => 'btn weight--light  btn--small', method: :get
+    elsif message.nature == 'feedback'
+      params[:source] = 'reply'
+      link_to 'Show', show_reply_message_path(message.id, source: 'reply'), :class => 'btn weight--light  btn--small', method: :get
+    elsif params[:source].blank? || params[:source] == 'original'
       params[:source] = 'original'
       link_to 'Show', message_path(message.id, source: 'original'), :class => 'btn weight--light  btn--small', method: :get
     else
@@ -184,7 +190,10 @@ module MessagesHelper
   end
 
   def index_action_view_replies(message, index_action)
-    if params[:source].blank? || params[:source] == 'original'
+    if (message.nature == 'feedback'|| message.nature == 'contact') && message.there_are_reply_messages?
+      params[:source] = 'reply'
+      link_to 'View Replies', reply_messages_path(message.id, source: 'reply'), :class => 'btn weight--light  btn--small', method: :get
+    elsif params[:source].blank? || params[:source] == 'original'
       params[:source] = 'original'
       link_to 'View Replies', reply_messages_path(message.id, source: 'original'), :class => 'btn weight--light  btn--small', method: :get  if do_we_show_replies_action?(message)
     else
@@ -480,7 +489,11 @@ module MessagesHelper
         breadcrumb :show_syndicate_message, @message
       end
     when session[:message_base] == 'userid_messages'
-      if params[:source] == 'reply'
+      if @message.nature == 'contact' && params[:source] == 'reply'
+        breadcrumb :show_reply_contact_message, @message
+      elsif @message.nature == 'feedback' && params[:source] == 'reply'
+        breadcrumb :show_reply_feedback_message, @message
+      elsif params[:source] == 'reply'
         breadcrumb :show_userid_reply_message, @message
       else
         breadcrumb :show_userid_message, @message
@@ -491,16 +504,22 @@ module MessagesHelper
       else
         breadcrumb :show_message, @message
       end
-    when params[:source] == 'contact_reply_messages'
-      breadcrumb :show_message, @message
-    when params[:source] == 'feedback_reply_messages'
-
-      breadcrumb :show_message, @message
+    when @message.nature == 'contact' && params[:source] == 'reply'
+      breadcrumb :show_reply_contact_message, @message
+    when @message.nature == 'feedback' && params[:source] == 'reply'
+      breadcrumb :show_reply_feedback_message, @message
     end
   end
 
   def show_create_reply_link(message, action)
-    link_to 'Reply', new_reply_messages_path(message.id, source: action), :class => 'btn weight--light  btn--small'
+    if message.nature == 'contact' && !session[:message_base] == 'userid_messages'
+      link_to 'Reply', reply_contact_path(source_contact_id: message.source_contact_id), :class => "btn weight--light  btn--small"
+    elsif message.nature == 'feedback' && !session[:message_base] == 'userid_messages'
+      link_to 'Reply', reply_feedback_path(source_feedback_id: message.source_feedback_id), :class => "btn weight--light  btn--small"
+    else
+      link_to 'Reply', new_reply_messages_path(message.id, source: action), :class => 'btn weight--light  btn--small' unless session[:message_base] == 'userid_messages' && (message.nature == 'contact' || message.nature == 'feedback')
+    end
+
   end
 
   def show_destroy_link(message, action)
@@ -528,7 +547,7 @@ module MessagesHelper
   end
 
   def show_remove_link(message, action)
-    if session[:message_base] == 'userid_messages' && action == 'original'
+    if session[:message_base] == 'userid_messages' && (action == 'original' || message.nature == 'contact' || message.nature == 'feedback')
       link_to 'Remove', remove_from_userid_detail_path(message.id, source: 'original'),
         :class => 'btn weight--light  btn--small',
         data: { confirm: 'Are you sure you want to remove this message' },
@@ -639,7 +658,7 @@ module MessagesHelper
     when 'contact'
       source = 'Contact'
     end
-    source = source + ' Reply' if message.source_message_id.present?
+    source = source + ' Reply' if message.source_message_id.present? || message.source_contact_id.present? || message.source_feedback_id.present?
     source
   end
 

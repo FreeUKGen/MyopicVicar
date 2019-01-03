@@ -317,8 +317,9 @@ class MessagesController < ApplicationController
     @contact = Contact.id(@message.source_contact_id).first
     if sender.present? && @contact.present?
       @contact.communicate_contact_reply(@message, sender.userid)
-      contact = Contact.id(@message.source_contact_id).first
-      redirect_to contact_path(contact) and return
+      @message.add_message_to_userid_messages(sender)
+      @contact.add_message_to_userid_messages_for_contact(@message)
+      redirect_to contact_path(@contact) and return
     else
       #need to add error handling
     end
@@ -326,14 +327,13 @@ class MessagesController < ApplicationController
   end
 
   def reply_for_feedback
-
     sender = UseridDetail.where(userid: @message.userid).first
     @feedback = Feedback.id(@message.source_feedback_id).first
     if sender.present? && @feedback.present?
       @feedback.communicate_feedback_reply(@message, sender.userid)
-      @message.add_message_to_userid_messages(UseridDetail.look_up_id(@feedback.user_id)) if @feedback.user_id.present?
-      feedback = Feedback.id(@message.source_feedback_id).first
-      redirect_to feedback_path(feedback) and return
+      @message.add_message_to_userid_messages(sender)
+      @feedback.add_message_to_userid_messages_for_contact(@message)
+      redirect_to feedback_path(@feedback) and return
     else
       #need to add error handling
     end

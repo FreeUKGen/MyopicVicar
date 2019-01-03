@@ -132,6 +132,8 @@ class ContactsController < ApplicationController
 
   def index
     session[:archived_contacts] = false
+    session[:message_base] = 'contact'
+    params[:source] = 'original'
     get_user_info_from_userid
     order = "contact_time DESC"
     @contacts = get_contacts.result(session[:archived_contacts],order)
@@ -149,6 +151,8 @@ class ContactsController < ApplicationController
 
   def list_archived
     session[:archived_contacts] = true
+    session[:message_base] = 'contact'
+    params[:source] = 'original'
     get_user_info_from_userid
     order = "contact_time  DESC"
     @contacts = get_contacts.result(session[:archived_contacts],order)

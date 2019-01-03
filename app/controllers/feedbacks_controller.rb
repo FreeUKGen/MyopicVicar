@@ -111,6 +111,8 @@ class FeedbacksController < ApplicationController
 
   def index
     session[:archived_contacts] = false
+    session[:message_base] = 'feedback'
+    params[:source] = 'original'
     get_user_info_from_userid
     order = "feedback_time DESC"
     @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order)
@@ -128,6 +130,8 @@ class FeedbacksController < ApplicationController
 
   def list_archived
     session[:archived_contacts] = true
+    session[:message_base] = 'feedback'
+    params[:source] = 'original'
     get_user_info_from_userid
     order = "feedback_time DESC"
     @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order)
