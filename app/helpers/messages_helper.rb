@@ -236,8 +236,6 @@ module MessagesHelper
   end
 
   def index_explanation
-    p 'index_explanation'
-    p session[:message_base]
     case
     when session[:message_base] == 'syndicate'
       explanation = 'These are the messages created and sent to you syndicate'
