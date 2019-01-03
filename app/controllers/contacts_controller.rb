@@ -245,12 +245,17 @@ class ContactsController < ApplicationController
   end
 
   def set_session_parameters_for_record(file)
+    return false if file.blank?
+
     register = file.register
     return false if register.blank?
+
     church = register.church
     return false if church.blank?
+
     place = church.place
     return false if place.blank?
+
     session[:freereg1_csv_file_id] = file._id
     session[:freereg1_csv_file_name] = file.file_name
     session[:place_name] = place.place_name
