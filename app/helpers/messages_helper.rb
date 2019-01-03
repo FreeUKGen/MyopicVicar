@@ -313,7 +313,7 @@ module MessagesHelper
   def message_attachment_tag(message)
     if message.attachment.present?
       content_tag :td, :class => 'weight--semibold' do
-        link_to("#{@message[:attachment]}", @message.attachment_url, target: '_blank', title: 'The link will open in a new tab')
+        link_to("Attachment named #{@message[:attachment]}", @message.attachment_url, :class => 'btn weight--light  btn--small', target: '_blank', title: 'The link will open in a new tab')
       end
     end
   end
@@ -456,9 +456,9 @@ module MessagesHelper
   def reply_action(message)
     case
     when ReplyUseridRole::GENERAL_REPLY_ROLES.include?(@user.person_role)
-      link_to 'Reply', reply_messages_path(message.id),method: :get,:class => 'btn weight--light  btn--small' if message.source_message_id.blank?
+      link_to 'Reply', reply_messages_path(message.id), method: :get, :class => 'btn weight--light  btn--small' if message.source_message_id.blank?
     when session[:syndicate].present? &&  ReplyUseridRole::COORDINATOR_ROLES.include?(@user.person_role)
-      link_to 'Reply', reply_messages_path(message.id),method: :get,:class => 'btn weight--light  btn--small' if message.source_message_id.blank?
+      link_to 'Reply', reply_messages_path(message.id), method: :get, :class => 'btn weight--light  btn--small' if message.source_message_id.blank?
     end
   end
 
