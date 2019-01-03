@@ -220,7 +220,7 @@ module MessagesHelper
     case
     when session[:message_base] == 'syndicate'
       breadcrumb :syndicate_messages
-    when session[:message_base] == 'userid_message'
+    when session[:message_base] == 's'
       breadcrumb :userid_messages
     when session[:message_base] == 'communication'
       breadcrumb :communications
@@ -233,6 +233,25 @@ module MessagesHelper
     else
       breadcrumb :messages
     end
+  end
+
+  def index_explanation
+    case
+    when session[:message_base] == 'syndicate'
+      explanation = 'These are the messages created and sent to you syndicate'
+    when session[:message_base] == 'userid_messages'
+      explanation = 'These are the messages that have been sent to you. Select the SHOW button to see the full message. The message can be removed from the list by selecting the REMOVE button on the SHOW page.'
+    when session[:message_base] == 'communication'
+      explanation = 'These are the communications you have written for a member of the team. Select the SHOW button to see the full message and options for SENDing it.'
+    when session[:message_base] == 'general'
+      explanation = 'These are the general messages written and sent to selected groups of individuals'
+    when params[:action] == 'feedback_reply_messages'
+      explanation = 'These are replies written and sent in response to a specific feedback'
+    when params[:action] == 'contact_reply_messages'
+      explanation = 'These are replies written and sent in response to a specific contact'
+    end
+    p explanation
+    explanation
   end
 
   def index_header_create_link
