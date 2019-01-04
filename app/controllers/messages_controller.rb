@@ -51,6 +51,8 @@ class MessagesController < ApplicationController
       create_for_communication
     when 'Reply Communication'
       create_for_communication_reply
+    when 'Communication Comment'
+      create_for_communication_comment
     end
   end
 
@@ -66,6 +68,18 @@ class MessagesController < ApplicationController
     else
       flash[:notice] = 'There was a problem with your communication, possibly you attached a file with an incorrect file type or an image as a file'
       redirect_to action: :new
+    end
+  end
+
+  def create_for_communication_comment
+    get_user_info_from_userid
+    @message.nature = 'communication'
+    original_message = Message.id(@message.source_message_id).first
+    @sent_message = SentMessage.new(message_id: @message.id, sender: @user.userid, recipients: ['system'], sent_time: Time.now)
+    @message.sent_messages << [@sent_message]
+    @sent_message.save
+    if @message.save
+      redirect_to show_reply_message_path(original_message, source: params[:source]) and return
     end
   end
 
@@ -116,7 +130,7 @@ class MessagesController < ApplicationController
     original_message = Message.id(@message.source_message_id).first
     @message.syndicate = original_message.syndicate
     @message.nature = original_message.nature
-    @sent_message = SentMessage.new(message_id: @message.id, sender: @userid, recipients: ['system'], sent_time: Time.now)
+    @sent_message = SentMessage.new(message_id: @message.id, sender: @user.userid, recipients: ['system'], sent_time: Time.now)
     @message.sent_messages << [@sent_message]
     @sent_message.save
     if @message.save

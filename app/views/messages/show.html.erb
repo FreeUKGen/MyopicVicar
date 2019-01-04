@@ -22,7 +22,7 @@
 <% if @message.sent_messages.present?%>
   <% @message.sent_messages.order_by(sent_time: -1).each do |each_message| %>
     <%= content_tag :p, class: "text--center weight--semibold" do %>
-      <% unless each_message.recipients.blank? %>
+      <% if each_message.recipients.present?%>
         Sent by: <%= each_message.sender%> to <%= each_message.recipients%> on <%= each_message.sent_time.strftime("%H:%M on %F")      unless each_message.sent_time.blank? %>
         <br>
         (selection <%= active_field(each_message)%><%=  reason(each_message.inactive_reason) unless each_message.active %>;  Open Data Status of <%= open_status(each_message) %>)
