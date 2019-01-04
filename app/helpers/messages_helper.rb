@@ -18,8 +18,10 @@ module MessagesHelper
   def commit_action(f, message, params = nil)
 
     case
-    when message.nature == 'communication' && params[:id].present?
+    when message.nature == 'communication' && params[:id].present? && !params[:source] == 'comment'
       f.action :submit, as: :input,  label: 'Reply Communication', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
+    when message.nature == 'communication' && params[:id].present? && params[:source] == 'comment'
+      f.action :submit, as: :input,  label: 'Communication Comment', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
     when message.nature == 'communication'
       f.action :submit, as: :input,  label: 'Save Communication', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
     when (message.nature == 'syndicate' || message.nature == 'general') && !params[:id].present?
@@ -650,29 +652,29 @@ module MessagesHelper
   def show_title(message)
     case message.nature
     when 'communication'
-      message.a_reply? ? the_show_title = "A reply created by #{message.userid} on #{message.created_at.strftime('%F')} in response to a Communication" :
+      message.a_reply? ? the_show_title = "A response created by #{message.userid} on #{message.created_at.strftime('%F')} in response to a Communication" :
         the_show_title = "Communication created by #{message.userid} on #{message.created_at.strftime('%F')}"
     when 'general'
-      message.a_reply? ? the_show_title = "A reply created by #{message.userid} on #{message.created_at.strftime('%F')} in response to a Message" :
+      message.a_reply? ? the_show_title = "A response created by #{message.userid} on #{message.created_at.strftime('%F')} in response to a Message" :
         the_show_title = "Message created by #{message.userid} on #{message.created_at.strftime('%F')}"
     when 'syndicate'
-      message.a_reply? ? the_show_title = "A reply created by #{message.userid} on #{message.created_at.strftime('%F')} in response to a Syndicate Message" :
+      message.a_reply? ? the_show_title = "A response created by #{message.userid} on #{message.created_at.strftime('%F')} in response to a Syndicate Message" :
         the_show_title = "Syndicate Message created by #{message.userid} on #{message.created_at.strftime('%F')}"
     when 'feedback'
       message = Feedback.id(@message.source_feedback_id).first
       if message.present?
-        the_show_title = "Feedback reply created by #{message.name} on #{message.created_at.strftime('%F')}"
+        the_show_title = "Feedback response created by #{message.name} on #{message.created_at.strftime('%F')}"
       else
         message = Message.id(@message.source_message_id).first
-        the_show_title = "Feedback reply created by #{message.userid} on #{message.created_at.strftime('%F')}"
+        the_show_title = "Feedback response created by #{message.userid} on #{message.created_at.strftime('%F')}"
       end
     when 'contact'
       message = Contact.id(@message.source_contact_id).first
       if message.present?
-        the_show_title = "Contact reply created by #{message.name} on #{message.created_at.strftime('%F')}"
+        the_show_title = "Contact response created by #{message.name} on #{message.created_at.strftime('%F')}"
       else
         message = Message.id(@message.source_message_id).first
-        the_show_title = "Contact reply created by #{message.userid} on #{message.created_at.strftime('%F')}"
+        the_show_title = "Contact response created by #{message.userid} on #{message.created_at.strftime('%F')}"
       end
     end
     the_show_title
