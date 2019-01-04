@@ -37,10 +37,16 @@ class MessagesController < ApplicationController
       create_for_submit_and_send
     when 'Reply Feedback'
       create_for_feedback_reply
+    when 'Feedback Comment'
+      create_for_feedback_comment
     when 'Reply Contact'
       create_for_contact_reply
+    when 'Contact Comment'
+      create_for_contact_comment
     when 'Reply Message'
       create_for_message_reply
+    when 'Message Comment'
+      create_for_message_comment
     when 'Save Communication'
       create_for_communication
     when 'Reply Communication'
@@ -70,6 +76,16 @@ class MessagesController < ApplicationController
       reply_for_communication(@message); return if performed?
     end
   end
+
+  def create_for_contact_comment
+    @message.nature = 'contact'
+    @contact = Contact.id(@message.source_contact_id).first
+    if @message.save
+      flash[:notice] = 'Contact comment was saved'
+      redirect_to contact_path(@contact) and return
+    end
+  end
+
   def create_for_contact_reply
     @message.nature = 'contact'
     if @message.save
@@ -78,11 +94,34 @@ class MessagesController < ApplicationController
     end
   end
 
+  def create_for_feedback_comment
+    @message.nature = 'feedback'
+    @feedback = Feedback.id(@message.source_feedback_id).first
+    if @message.save
+      flash[:notice] = 'Feedback comment was saved'
+      redirect_to feedback_path(@feedback) and return
+    end
+  end
+
   def create_for_feedback_reply
     @message.nature = 'feedback'
     if @message.save
       flash[:notice] = 'Reply for Feedback was created and sent'
       reply_for_feedback; return if performed?
+    end
+  end
+
+  def create_for_message_comment
+    get_user_info_from_userid
+    original_message = Message.id(@message.source_message_id).first
+    @message.syndicate = original_message.syndicate
+    @message.nature = original_message.nature
+    @sent_message = SentMessage.new(message_id: @message.id, sender: @userid, recipients: ['system'], sent_time: Time.now)
+    @message.sent_messages << [@sent_message]
+    @sent_message.save
+    if @message.save
+      flash[:notice] = 'Message comment was saved'
+      redirect_to show_reply_message_path(original_message) and return
     end
   end
 
@@ -365,8 +404,6 @@ class MessagesController < ApplicationController
     @reply_messages = Message.fetch_replies(params[:id])
     @messages = Message.sent_messages(@reply_messages)
     @main_message = Message.id(params[:id]).first
-    @reply_messages.each do |reply|
-    end
   end
 
   def return_for_create
