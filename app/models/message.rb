@@ -509,9 +509,6 @@ class Message
             ccs << person.userid
           end
         end
-      else
-        p 'nil person'
-        p person
       end
     end
   end

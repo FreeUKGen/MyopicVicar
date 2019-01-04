@@ -24,12 +24,18 @@ module MessagesHelper
       f.action :submit, as: :input,  label: 'Save Communication', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
     when (message.nature == 'syndicate' || message.nature == 'general') && !params[:id].present?
       f.action :submit, as: :input,  label: 'Save Message', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
-    when (message.nature == 'syndicate' || message.nature == 'general' || message.nature == 'feedback' || message.nature == 'contact') && params[:id].present?
+    when (message.nature == 'syndicate' || message.nature == 'general' || message.nature == 'feedback' || message.nature == 'contact') && params[:id].present? && !params[:source] == 'comment'
       f.action :submit, as: :input,  label: 'Reply Message', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
-    when params[:source_feedback_id].present?
+    when (message.nature == 'syndicate' || message.nature == 'general' || message.nature == 'feedback' || message.nature == 'contact') && params[:id].present? && params[:source] == 'comment'
+      f.action :submit, as: :input,  label: 'Message Comment', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
+    when params[:source_feedback_id].present? && params[:source].blank?
       f.action :submit, as: :input,  label: 'Reply Feedback', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
-    when params[:source_contact_id].present?
+    when params[:source_feedback_id].present? && params[:source].present?
+      f.action :submit, as: :input,  label: 'Feedback Comment', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
+    when params[:source_contact_id].present? && params[:source].blank?
       f.action :submit, as: :input,  label: 'Reply Contact', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
+    when params[:source_contact_id].present? && params[:source].present?
+      f.action :submit, as: :input,  label: 'Contact Comment', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
     when params[:id].present?
       f.action :submit, as: :input, label: 'Save & Send', button_html: { class: 'btn ' }, wrapper_html: { class: 'grid__item  one-whole text--center' }
     else
@@ -250,7 +256,6 @@ module MessagesHelper
     when params[:action] == 'contact_reply_messages'
       explanation = 'These are replies written and sent in response to a specific contact'
     end
-    p explanation
     explanation
   end
 
@@ -538,7 +543,16 @@ module MessagesHelper
     elsif message.message_sent?
       link_to 'Reply', new_reply_messages_path(message.id, source: action), :class => 'btn weight--light  btn--small' unless session[:message_base] == 'userid_messages' && (message.nature == 'contact' || message.nature == 'feedback')
     end
+  end
 
+  def show_add_comment_link(message, action)
+    if message.nature == 'contact' && !session[:message_base] == 'userid_messages'
+      #link_to 'Comment', reply_contact_path(source_contact_id: message.source_contact_id, source: 'comment'), :class => "btn weight--light  btn--small"
+    elsif message.nature == 'feedback' && !session[:message_base] == 'userid_messages'
+      #link_to 'Reply', reply_feedback_path(source_feedback_id: message.source_feedback_id), :class => "btn weight--light  btn--small"
+    elsif message.message_sent?
+      link_to 'Comment', new_reply_messages_path(message.id, source: 'comment'), :class => "btn weight--light  btn--small"
+    end
   end
 
   def show_destroy_link(message, action)

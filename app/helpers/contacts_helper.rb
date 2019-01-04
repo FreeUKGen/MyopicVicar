@@ -34,4 +34,8 @@ module ContactsHelper
     contact.archived? ? show_title = show_title + 'archived ' : show_title = show_title + 'active '
     contact.screenshot_url.present? ?  show_title = show_title + 'and a screenshot was provided' : show_title = show_title + ' and no screenshot is available'
   end
+
+  def show_contact_add_comment_link(message, action)
+    link_to 'Comment', reply_contact_path(source_contact_id: message.id, source: 'comment'), :class => "btn weight--light  btn--small"
+  end
 end
