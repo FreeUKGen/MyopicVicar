@@ -541,9 +541,6 @@ module MessagesHelper
 
   end
 
-
-
-
   def show_destroy_link(message, action)
     if do_we_show_destroy_action?(message)
       link_to 'Destroy', force_destroy_messages_path(message.id, :source => action),
