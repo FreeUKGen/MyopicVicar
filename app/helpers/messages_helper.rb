@@ -535,11 +535,14 @@ module MessagesHelper
       link_to 'Reply', reply_contact_path(source_contact_id: message.source_contact_id), :class => "btn weight--light  btn--small"
     elsif message.nature == 'feedback' && !session[:message_base] == 'userid_messages'
       link_to 'Reply', reply_feedback_path(source_feedback_id: message.source_feedback_id), :class => "btn weight--light  btn--small"
-    else
+    elsif message.message_sent?
       link_to 'Reply', new_reply_messages_path(message.id, source: action), :class => 'btn weight--light  btn--small' unless session[:message_base] == 'userid_messages' && (message.nature == 'contact' || message.nature == 'feedback')
     end
 
   end
+
+
+
 
   def show_destroy_link(message, action)
     if do_we_show_destroy_action?(message)
