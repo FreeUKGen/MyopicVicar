@@ -7,13 +7,14 @@ class CheckAndDeleteOrphanRecords
     file_for_warning_messages = "log/check_and_delete_orphan_records.log"
     FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )
     message_file = File.new(file_for_warning_messages, "w")
+    p "#{limit}, #{sleep_time}, #{fix}"
     records = 0
     orphans = 0
     time_start = Time.now
     SearchRecord.no_timeout.each do |record|
       records = records + 1
-      break if records == limit
-      if records == (records/100000)*10000
+      break if records == limit.to_i
+      if records == (records/100000)*100000
         p records
         time_diff = Time.now - time_start
         average = time_diff * 1000 / records
