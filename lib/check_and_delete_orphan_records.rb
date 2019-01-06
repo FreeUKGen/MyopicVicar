@@ -20,6 +20,7 @@ class CheckAndDeleteOrphanRecords
         average = time_diff * 1000 / records
         p average
         sleep(sleep_time.to_i)
+        p orphans
       end
       entry_id = record.freereg1_csv_entry_id
       entry = Freereg1CsvEntry.find(entry_id) unless entry_id.nil?
