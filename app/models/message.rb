@@ -176,11 +176,14 @@ class Message
   def communicate(recipient_roles, active, reasons, sender, open_data_status, syndicate = nil)
     ccs = Array.new
     recipient_roles.each do |recipient_role|
-      ccs = get_actual_recipients(recipient_role, syndicate, active, open_data_status, reasons )
+      ccs << get_actual_recipients(recipient_role, syndicate, active, open_data_status, reasons )
+      ccs.flatten!
     end
-    add_message_to_userid_messages(UseridDetail.look_up_id(sender)) unless sender.blank? || ccs.include?(sender)
     ccs << sender
     ccs = ccs.uniq
+    ccs.each do |copy|
+      add_message_to_userid_messages(UseridDetail.look_up_id(copy))
+    end
     UserMailer.send_message(self, ccs, sender).deliver_now
   end
 
