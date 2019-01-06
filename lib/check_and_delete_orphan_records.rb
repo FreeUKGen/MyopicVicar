@@ -22,8 +22,8 @@ class CheckAndDeleteOrphanRecords
         sleep(sleep_time.to_i)
       end
       entry_id = record.freereg1_csv_entry_id
-      entry = Freereg1CsvEntry.find(entry_id)
-      if entry.nil?
+      entry = Freereg1CsvEntry.find(entry_id) unless entry_id.nil?
+      if entry.nil? || entry_id.nil?
         orphans = orphans + 1
         record.delete if fix.present?
       end
