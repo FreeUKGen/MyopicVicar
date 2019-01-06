@@ -1,7 +1,7 @@
 class UserMailer < ActionMailer::Base
   add_template_helper(EmailHelper)
 
-  default from: ' FreeREG Servant <freereg-processing@freereg.org.uk>'
+  default from: ' FreeREG Servant <freereg-contacts@freereg.org.uk>'
 
   def acknowledge_communication(original)
     @communication = original
@@ -54,12 +54,12 @@ class UserMailer < ActionMailer::Base
       end
 
       if emails.length == 1
-        mail(:to => emails[0],  :subject => "#{@userid.userid}/#{batch} processing encountered serious problem at #{Time.now}")
+        mail(:from => 'freereg-processing@freereg.org.uk',:to => emails[0],  :subject => "#{@userid.userid}/#{batch} processing encountered serious problem at #{Time.now}")
       elsif emails.length == 2
-        mail(:to => emails[0], :cc => emails[1], :subject => "#{@userid.userid}/#{batch} processing encountered serious problem at at #{Time.now}")
+        mail(:from => 'freereg-processing@freereg.org.uk',:to => emails[0], :cc => emails[1], :subject => "#{@userid.userid}/#{batch} processing encountered serious problem at at #{Time.now}")
       elsif emails.length == 3
         first_mail = emails.shift
-        mail(:to => first_mail, :cc => emails, :subject => "#{@userid.userid}/#{batch} processing encountered serious problem a #{Time.now}")
+        mail(:from => 'freereg-processing@freereg.org.uk',:to => first_mail, :cc => emails, :subject => "#{@userid.userid}/#{batch} processing encountered serious problem a #{Time.now}")
       end
     end
   end
@@ -94,12 +94,12 @@ class UserMailer < ActionMailer::Base
         end
       end
       if emails.length == 1
-        mail(:to => emails[0], :subject => "#{@userid.userid}/#{batch} processed at #{Time.now} with #{@batch.error unless @batch.nil?} errors over period #{@batch.datemin unless @batch.nil?}-#{@batch.datemax unless @batch.nil?}")
+        mail(:from => 'freereg-processing@freereg.org.uk', :to => emails[0],  :subject => "#{@userid.userid}/#{batch} processed at #{Time.now} with #{@batch.error unless @batch.nil?} errors over period #{@batch.datemin unless @batch.nil?}-#{@batch.datemax unless @batch.nil?}")
       elsif emails.length == 2
-        mail(:to => emails[0], :cc => emails[1], :subject => "#{@userid.userid}/#{batch} processed at #{Time.now} with #{@batch.error unless @batch.nil?} errors over period #{@batch.datemin unless @batch.nil?}-#{@batch.datemax unless @batch.nil?}")
+        mail(:from => 'freereg-processing@freereg.org.uk',:to => emails[0], :cc => emails[1], :subject => "#{@userid.userid}/#{batch} processed at #{Time.now} with #{@batch.error unless @batch.nil?} errors over period #{@batch.datemin unless @batch.nil?}-#{@batch.datemax unless @batch.nil?}")
       elsif emails.length == 3
         first_mail = emails.shift
-        mail(:to => first_mail, :cc => emails, :subject =>"#{@userid.userid}/#{batch} processed at #{Time.now} with #{@batch.error unless @batch.nil?} errors over period #{@batch.datemin unless @batch.nil?}-#{@batch.datemax unless @batch.nil?}")
+        mail(:from => 'freereg-processing@freereg.org.uk',:to => first_mail, :cc => emails, :subject =>"#{@userid.userid}/#{batch} processed at #{Time.now} with #{@batch.error unless @batch.nil?} errors over period #{@batch.datemin unless @batch.nil?}-#{@batch.datemax unless @batch.nil?}")
       end
     end
   end
@@ -165,7 +165,7 @@ class UserMailer < ActionMailer::Base
       end
     end
     get_attachment(@contact)
-    mail(to: "#{@send_to.email_address}", cc: @cc_email_addresses, subject: "This is a feedback action request for reference #{@contact.identifier}")
+    mail(:from => 'freereg-feedback@freereg.org.uk',to: "#{@send_to.email_address}",cc: @cc_email_addresses, subject: "This is a feedback action request for reference #{@contact.identifier}")
   end
 
   def get_attachment(contact)
@@ -202,27 +202,27 @@ class UserMailer < ActionMailer::Base
     reg_manager = UseridDetail.userid('REGManager').first
     get_coordinator_name
     if Time.now - 5.days <= @user.c_at
-      mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{reg_manager.person_forename} <#{reg_manager.email_address}>", :subject => 'FreeReg registration completion') unless @coordinator.nil?
+      mail(:from => 'freereg-registration@freereg.org.uk',:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{reg_manager.person_forename} <#{reg_manager.email_address}>", :subject => 'FreeReg registration completion') unless @coordinator.nil?
     end
   end
   def notification_of_technical_registration(user)
     @user = user
     reg_manager = UseridDetail.userid('REGManager').first
     get_coordinator_name
-    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{reg_manager.person_forename} <#{reg_manager.email_address}>", :subject => 'FreeReg technical registration notification') unless @coordinator.nil?
+    mail(:from => 'freereg-registration@freereg.org.uk',:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{reg_manager.person_forename} <#{reg_manager.email_address}>", :subject => 'FreeReg technical registration notification') unless @coordinator.nil?
   end
 
   def notification_of_transcriber_creation(user)
     @user = user
     get_coordinator_name
-    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => 'FreeReg userid creation') unless @coordinator.nil?
+    mail(:from => 'freereg-registration@freereg.org.uk',:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => 'FreeReg userid creation') unless @coordinator.nil?
   end
 
   def notification_of_transcriber_registration(user)
     @user = user
     reg_manager = UseridDetail.userid('REGManager').first
     get_coordinator_name
-    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{reg_manager.person_forename} <#{reg_manager.email_address}>", :subject => 'FreeReg transcriber registration') unless @coordinator.nil?
+    mail(:from => 'freereg-registration@freereg.org.uk',:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{reg_manager.person_forename} <#{reg_manager.email_address}>", :subject => 'FreeReg transcriber registration') unless @coordinator.nil?
   end
 
   def notification_of_researcher_registration(user)
@@ -360,7 +360,7 @@ class UserMailer < ActionMailer::Base
     from_email = UseridDetail.create_friendly_from_email(from)
     from_email = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>' if from_email.blank?
     ccs_emails = add_emails(ccs)
-    mail(from: from_email, bcc: ccs_emails, subject: "#{@message.subject} from #{@sender.person_forename} #{@sender.person_surname} of FreeREG. Reference #{@message.identifier}")
+    mail(from: from_email, to: 'FreeREG Servant <freereg-contacts@freereg.org.uk>', bcc: ccs_emails, subject: "#{@message.subject} from #{@sender.person_forename} #{@sender.person_surname} of FreeREG. Reference #{@message.identifier}")
   end
 
   def send_logs(file,ccs,body_message,subjects)
@@ -368,7 +368,7 @@ class UserMailer < ActionMailer::Base
     unless file.nil?
       attachments["log_#{Date.today.strftime('%Y_%m_%d')}.txt"] = File.read(file)
     end
-    mail(:from => from, :bcc => ccs, :subject => subjects, :body => body_message)
+    mail(:from => from ,:to => 'freereg-contacts@freereg.org.uk',  :bcc => ccs, :subject => subjects,:body => body_message)
   end
 
   def update_report_to_freereg_manager(file,user)
@@ -376,7 +376,7 @@ class UserMailer < ActionMailer::Base
     @person_forename = user.person_forename
     # userid is REGManager, so no need to check email_address_valid
     @email_address = user.email_address
-    mail(:from => 'freereg-processing@freereg.org.uk', :to => "#{@person_forename} <#{@email_address}>", :subject => 'FreeReg update processing report')
+    mail(:from => 'freereg-processing@freereg.org.uk',:to => "#{@person_forename} <#{@email_address}>", :subject => 'FreeReg update processing report')
   end
 
   private
