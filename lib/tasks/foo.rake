@@ -6,9 +6,17 @@ namespace :foo do
   #number of files of 0 is all, force creation is true or false, order files processed is 1 or -1
 
 
+
   task :update_message_nature_field => [:environment] do
     require 'update_message_nature_field'
     UpdateMessageNatureField.process
+  end
+
+  task :check_image_availability, [:limit] =>  :environment do |t, args|
+    require 'check_image_availability'
+
+    CheckImageAvailability.process(args.limit)
+
   end
 
   task :check_and_delete_orphan_records, [:limit, :sleep_time, :fix] =>  :environment do |t, args|
