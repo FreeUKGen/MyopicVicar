@@ -97,7 +97,7 @@ class ImageServerGroupsController < ApplicationController
     @image_server_group = @group.first
     @parent_source = Source.id(session[:source_id]).first
 
-    redirect_to(:back, :notice => 'Attempted to edit a non_esxistent Image Group') and return if @image_server_group.nil?
+    redirect_to(:back, :notice => 'Attempted to edit a non_existent Image Group') and return if @image_server_group.nil?
   end
 
   def error
