@@ -16,9 +16,8 @@ module MessagesHelper
   end
 
   def commit_action(f, message, params = nil)
-
     case
-    when message.nature == 'communication' && params[:id].present? && !params[:source] == 'comment'
+    when message.nature == 'communication' && params[:id].present? && !(params[:source] == 'comment')
       f.action :submit, as: :input,  label: 'Reply Communication', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
     when message.nature == 'communication' && params[:id].present? && params[:source] == 'comment'
       f.action :submit, as: :input,  label: 'Communication Comment', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
@@ -26,7 +25,7 @@ module MessagesHelper
       f.action :submit, as: :input,  label: 'Save Communication', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
     when (message.nature == 'syndicate' || message.nature == 'general') && !params[:id].present?
       f.action :submit, as: :input,  label: 'Save Message', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
-    when (message.nature == 'syndicate' || message.nature == 'general' || message.nature == 'feedback' || message.nature == 'contact') && params[:id].present? && !params[:source] == 'comment'
+    when (message.nature == 'syndicate' || message.nature == 'general' || message.nature == 'feedback' || message.nature == 'contact') && params[:id].present? && !(params[:source] == 'comment')
       f.action :submit, as: :input,  label: 'Reply Message', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
     when (message.nature == 'syndicate' || message.nature == 'general' || message.nature == 'feedback' || message.nature == 'contact') && params[:id].present? && params[:source] == 'comment'
       f.action :submit, as: :input,  label: 'Message Comment', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
@@ -354,15 +353,15 @@ module MessagesHelper
 
   def message_subject
     case
-    when !@respond_to_feedback.nil?
+    when !@respond_to_feedback.blank?
       text_field_tag 'message[subject]', "Re: Thank you for your feedback. Reference #{@respond_to_feedback.identifier}", :class => 'text-input', readonly: true, title: "Re: Thank you for your feedback. Reference #{@respond_to_feedback.identifier}"
-    when !@respond_to_contact.nil?
+    when !@respond_to_contact.blank?
       text_field_tag 'message[subject]', contact_subject(@respond_to_contact), :class => 'text-input', readonly: true, title: contact_subject(@respond_to_contact)
-    when !@respond_to_message.nil?
+    when !@respond_to_message.blank?
       text_field_tag 'message[subject]', "Re: #{@respond_to_message.subject}", :class => 'text-input', readonly: true
-    when @message.subject.nil? && @respond_to_message.nil? && @respond_to_feedback.nil?
+    when @message.subject.blank? && @respond_to_message.blank? && @respond_to_feedback.blank?
       text_field_tag 'message[subject]', nil, :class => 'text-input', placeholder: 'Mandatory', required: true
-    when @message.subject.present? && @respond_to_message.nil? && @respond_to_feedback.nil?
+    when @message.subject.present? && @respond_to_message.blank? && @respond_to_feedback.blank?
       text_field_tag 'message[subject]', "#{@message.subject}", :class => 'text-input'
     end
   end
@@ -538,9 +537,9 @@ module MessagesHelper
   end
 
   def show_create_reply_link(message, action)
-    if message.nature == 'contact' && !session[:message_base] == 'userid_messages'
+    if message.nature == 'contact' && !(session[:message_base] == 'userid_messages')
       link_to 'Reply', reply_contact_path(source_contact_id: message.source_contact_id), :class => "btn weight--light  btn--small"
-    elsif message.nature == 'feedback' && !session[:message_base] == 'userid_messages'
+    elsif message.nature == 'feedback' && !(session[:message_base] == 'userid_messages')
       link_to 'Reply', reply_feedback_path(source_feedback_id: message.source_feedback_id), :class => "btn weight--light  btn--small"
     elsif message.message_sent?
       link_to 'Reply', new_reply_messages_path(message.id, source: action), :class => 'btn weight--light  btn--small' unless session[:message_base] == 'userid_messages' && (message.nature == 'contact' || message.nature == 'feedback')
@@ -548,9 +547,9 @@ module MessagesHelper
   end
 
   def show_add_comment_link(message, action)
-    if message.nature == 'contact' && !session[:message_base] == 'userid_messages'
+    if message.nature == 'contact' && !(session[:message_base] == 'userid_messages')
       #link_to 'Comment', reply_contact_path(source_contact_id: message.source_contact_id, source: 'comment'), :class => "btn weight--light  btn--small"
-    elsif message.nature == 'feedback' && !session[:message_base] == 'userid_messages'
+    elsif message.nature == 'feedback' && !(session[:message_base] == 'userid_messages')
       #link_to 'Reply', reply_feedback_path(source_feedback_id: message.source_feedback_id), :class => "btn weight--light  btn--small"
     elsif message.message_sent?
       link_to 'Comment', new_reply_messages_path(message.id, source: 'comment'), :class => "btn weight--light  btn--small"
