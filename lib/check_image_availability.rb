@@ -5,7 +5,7 @@ class CheckImageAvailability
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
 
     file_for_warning_messages = "log/check_image_availability.log"
-    FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )
+    FileUtils.mkdir_p(File.dirname(file_for_warning_messages))
     message_file = File.new(file_for_warning_messages, "w")
 
     p "#{limit}"
@@ -32,7 +32,7 @@ class CheckImageAvailability
               source_name = source.source_name
               source_total = { "u" => 0, "ar" => 0, "a" => 0, "ts" => 0, "t" => 0, "br" => 0, "rs" => 0, "r" => 0, "cs" => 0, "c" => 0, "blank" => 0}
               source.image_server_groups.each do |group|
-                status = group.status
+                status = group.summary[:status][0]
                 status = 'blank' if status.blank?
                 images = group.number_of_images
                 source_total[status] = source_total[status] + images
