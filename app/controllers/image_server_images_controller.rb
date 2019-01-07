@@ -86,33 +86,32 @@ class ImageServerImagesController < ApplicationController
   def index
     session[:image_server_group_id] = params[:id]
     display_info
-
     @image_server_image = ImageServerImage.image_server_group_id(params[:id]).order_by(image_file_name: 1)
+    redirect_to(:back, :notice => 'No images') and return if @image_server_image.blank?
     @image_server_group = ImageServerGroup.id(session[:image_server_group_id]).first
+    redirect_to(:back, :notice => 'No group for images') and return if @image_server_group.blank?
     @image_detail_access_allowed = ImageServerImage.image_detail_access_allowed?(@user,session[:manage_user_origin],session[:image_server_group_id],session[:chapman_code])
-
-    if @image_server_image.empty?
-      flash[:notice] = 'No Images under Image Group "'+@image_server_group.group_name.to_s+'"'
-      redirect_to index_image_server_group_path(@image_server_group.source)
-    end
   end
 
   def move
     display_info
 
     @image_server_group = ImageServerGroup.id(params[:id]).first
+
+    redirect_to(:back, :notice => 'There is no group') and return if @image_server_group.blank?
+
     @group_name = ImageServerImage.get_sorted_group_name_under_source(@image_server_group[:source_id])
 
     # leave for issue 1447 - Relicate image group, commit 9abecd5
     #@group_name = ImageServerImage.get_sorted_group_name_under_church(@image_server_group[:church_id])
 
     @image_server_image = ImageServerImage.image_server_group_id(params[:id]).first
-    redirect_to(:back, :notice => 'Attempted to edit a non_esxistent image file') and return if @image_server_image.nil?
+    redirect_to(:back, :notice => 'Attempted to edit a non_existent image file') and return if @image_server_image.blank?
 
     move_allowed_status = ['u','a']
     @images = ImageServerImage.get_image_list(params[:id],move_allowed_status)
 
-    redirect_to(:back, :notice => 'Only Unallocated or Allocated images can be moved') and return if @images.empty?
+    redirect_to(:back, :notice => 'Only Unallocated or Allocated images can be moved') and return if @images.blank?
   end
 
   def new
