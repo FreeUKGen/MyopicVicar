@@ -381,7 +381,7 @@ class Freereg1CsvFilesController < ApplicationController
     @physical_file = PhysicalFile.userid(file.userid).file_name(file.file_name).first
     @role = session[:role]
     @freereg1_csv_file_name = file.file_name
-    session[:freereg1_csv_file_id] =  file._id
+    session[:freereg1_csv_file_id] = file._id
     @return_location  = file.register.id unless file.register.nil?
   end
 
