@@ -7,7 +7,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
     file_for_warning_messages = "log/delete_old_messages_feedbacks_and_contacts.log"
     FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )
     message_file = File.new(file_for_warning_messages, "w")
-    days_until_delete = Rails.application.config.days_to_retain_search_queries
+    days_until_delete = Rails.application.config.days_to_retain_message
     delete_records_less_than = DateTime.now - Rails.application.config.days_to_retain_search_queries.days
     report_records_less_than = DateTime.now - (Rails.application.config.days_to_retain_search_queries + 10).days
     p days_until_delete
