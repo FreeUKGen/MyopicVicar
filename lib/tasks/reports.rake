@@ -1,5 +1,13 @@
 namespace :reports do
 
+
+  task :check_image_availability, [:limit] => :environment do |t, args|
+    require 'check_image_availability'
+
+    CheckImageAvailability.process(args.limit)
+
+  end
+
   desc "Unapproved_place_names list"
   task :unapproved_place_names, [:limit] => [:environment] do |t, args|
     require 'unapproved_place_names'
