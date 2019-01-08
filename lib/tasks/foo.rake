@@ -5,13 +5,6 @@ namespace :foo do
   #eg f2rake  foo:update_search_records[0,bu,"2016-05-27T19:23:31+00:00", true, 1]
   #number of files of 0 is all, force creation is true or false, order files processed is 1 or -1
 
-  task :check_image_availability, [:limit] =>  :environment do |t, args|
-    require 'check_image_availability'
-
-    CheckImageAvailability.process(args.limit)
-
-  end
-
   task :check_and_delete_orphan_records, [:limit, :sleep_time, :fix] =>  :environment do |t, args|
     require 'check_and_delete_orphan_records'
 
