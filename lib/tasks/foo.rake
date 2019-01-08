@@ -5,7 +5,10 @@ namespace :foo do
   #eg f2rake  foo:update_search_records[0,bu,"2016-05-27T19:23:31+00:00", true, 1]
   #number of files of 0 is all, force creation is true or false, order files processed is 1 or -1
 
-
+  task :delete_or_archive_old_messages_feedbacks_and_contacts => [:environment] do
+    require 'delete_or_archive_old_messages_feedbacks_and_contacts'
+    DeleteOrArchiveOldMessagesFeedbacksAndContacts.process
+  end
 
   task :update_message_nature_field => [:environment] do
     require 'update_message_nature_field'
