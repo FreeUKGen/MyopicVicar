@@ -32,7 +32,7 @@ class CheckImageAvailability
               source_name = source.source_name
               source_total = { "u" => 0, "ar" => 0, "a" => 0, "ts" => 0, "t" => 0, "br" => 0, "rs" => 0, "r" => 0, "cs" => 0, "c" => 0, "blank" => 0}
               source.image_server_groups.each do |group|
-                status = group.summary[:status][0]
+                status = group.summary[:status][0] if group.summary[:status].present?
                 status = 'blank' if status.blank?
                 images = group.number_of_images
                 source_total[status] = source_total[status] + images
