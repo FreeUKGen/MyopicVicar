@@ -6,7 +6,7 @@ class SearchRecordsController < ApplicationController
 
   def catch_error
     logger.warn("FREEREG:RECORD: Record encountered a problem #{params}")
-    flash[:notice] = "We are sorry but the record you requested no longer exists. You will unfortunately will need to redo the search with the original criteria."
+    flash[:notice] = 'We are sorry but the record you requested no longer exists; possibly as a result of some data being edited. You will need to redo the search with the original criteria to obtain the updated version.'
     redirect_to new_search_query_path
   end
 
@@ -73,7 +73,7 @@ class SearchRecordsController < ApplicationController
     proceed = true
     begin
       if params[:search_id].nil? || params[:id].nil?
-        flash[:notice] = "We are sorry but the record you requested no longer exists. You will unfortunately will need to redo the search with the original criteria."
+        flash[:notice] = 'We are sorry but the record you requested no longer exists; possibly as a result of some data being edited. You will need to redo the search with the original criteria to obtain the updated version.'
         proceed = false
       else
         @search_query = SearchQuery.find(params[:search_id])
@@ -84,34 +84,34 @@ class SearchRecordsController < ApplicationController
           response ? @search_record = @search_query.locate(params[:id]) : @search_record = nil
         end
         if @search_record.nil?
-          flash[:notice] = "We are sorry but the record you requested no longer exists. You will unfortunately will need to redo the search with the original criteria."
+          flash[:notice] = 'We are sorry but the record you requested no longer exists; possibly as a result of some data being edited. You will need to redo the search with the original criteria to obtain the updated version.'
           proceed = false
         else
           if @search_record[:freereg1_csv_entry_id].present?
             @entry = Freereg1CsvEntry.find(@search_record[:freereg1_csv_entry_id])
           else
             log_missing_document("entry for search record",@search_record[:id], @search_query.id)
-            flash[:notice] = "We are sorry but the record you requested no longer exists. You will unfortunately will need to redo the search with the original criteria."
+            flash[:notice] = 'We are sorry but the record you requested no longer exists; possibly as a result of some data being edited. You will need to redo the search with the original criteria to obtain the updated version.'
             proceed = false
           end
           if  @entry.nil?
             proceed = false
             log_missing_document("Missing entry for search record",@search_record[:id], @search_query.id)
-            flash[:notice] = "We are sorry but the record you requested no longer exists. You will unfortunately will need to redo the search with the original criteria."
+            flash[:notice] = 'We are sorry but the record you requested no longer exists; possibly as a result of some data being edited. You will need to redo the search with the original criteria to obtain the updated version.'
           elsif !@entry.freereg1_csv_file.present?
             proceed = false
             log_missing_document("file missing for entry for search record",@search_record[:id], @search_query.id)
-            flash[:notice] = "We are sorry but the record you requested no longer exists. You will unfortunately will need to redo the search with the original criteria."
+            flash[:notice] = 'We are sorry but the record you requested no longer exists; possibly as a result of some data being edited. You will need to redo the search with the original criteria to obtain the updated version.'
           end
         end
       end
     rescue Mongoid::Errors::DocumentNotFound
       log_possible_host_change
-      flash[:notice] = "We are sorry but the record you requested no longer exists. You will unfortunately will need to redo the search with the original criteria."
+      flash[:notice] = 'We are sorry but the record you requested no longer exists; possibly as a result of some data being edited. You will need to redo the search with the original criteria to obtain the updated version.'
       proceed = false
     rescue Mongoid::Errors::InvalidFind
       log_missing_document("entry for search record", @search_record[:id])
-      flash[:notice] = "We are sorry but the record you requested no longer exists. You will unfortunately will need to redo the search with the original criteria."
+      flash[:notice] = 'We are sorry but the record you requested no longer exists; possibly as a result of some data being edited. You will need to redo the search with the original criteria to obtain the updated version.'
       proceed = false
     ensure
       return proceed
