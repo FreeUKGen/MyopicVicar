@@ -18,7 +18,7 @@ class SourcesController < ApplicationController
     source.save
 
     if source.errors.any?
-      flash[:notice] = 'Addition of Source was unsuccessful'
+      flash[:notice] = "Addition of Source was unsuccessful because #{source.errors.messages}"
       redirect_to :back
     else
       register.sources << source
