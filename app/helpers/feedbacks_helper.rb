@@ -33,4 +33,8 @@ module FeedbacksHelper
     feedback.archived? ? show_title = show_title + 'archived ' : show_title = show_title + 'active '
     feedback.screenshot_url.present? ?  show_title = show_title + 'and a screenshot was provided' : show_title = show_title + ' and no screenshot is available'
   end
+
+  def show_feedback_add_comment_link(message, action)
+    link_to 'Comment', reply_feedback_path(source_feedback_id: message.id, source: 'comment'), :class => "btn weight--light  btn--small"
+  end
 end

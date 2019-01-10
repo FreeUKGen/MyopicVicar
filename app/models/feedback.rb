@@ -104,6 +104,12 @@ class Feedback
     copies_of_contact_action_sent_to_userids
   end
 
+  def add_message_to_userid_messages_for_contact(message)
+    copies_of_contact_action_sent_to_userids.each do |userid|
+      message.add_message_to_userid_messages(UseridDetail.look_up_id(userid))
+    end
+  end
+
   def add_identifier
     self.identifier = Time.now.to_i - Time.gm(2015).to_i
   end
@@ -183,10 +189,10 @@ class Feedback
     answer
   end
 
-  def communicate_feedback_reply(message,sender_userid)
+  def communicate_feedback_reply(message, sender_userid)
     copies = self.copies_of_contact_action_sent_to_userids
     recipients = Array.new
-    recipients.push(self.email_address)
+    recipients.push(self.user_id)
     UserMailer.coordinator_feedback_reply(self,copies,message,sender_userid).deliver_now
     copies = self.add_sender_to_copies_of_contact_action_sent_to_userids(sender_userid)
     reply_sent_messages(message,sender_userid,recipients,copies)
@@ -406,10 +412,10 @@ class Feedback
     (@user.secondary_role & ReplyUseridRole::FEEDBACK_REPLY_ROLE).any?
   end
 
-  def reply_sent_messages(message, sender_userid,contact_recipients,other_recipients)
+  def reply_sent_messages(message, sender_userid, contact_recipients, other_recipients)
     @message = message
     @sent_message = SentMessage.new(message_id: @message.id, sender: sender_userid, recipients: contact_recipients, other_recipients: other_recipients, sent_time: Time.now)
-    @message.sent_messages <<  [ @sent_message ]
+    @message.sent_messages << [@sent_message]
     @sent_message.save
   end
 

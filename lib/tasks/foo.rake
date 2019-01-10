@@ -5,6 +5,23 @@ namespace :foo do
   #eg f2rake  foo:update_search_records[0,bu,"2016-05-27T19:23:31+00:00", true, 1]
   #number of files of 0 is all, force creation is true or false, order files processed is 1 or -1
 
+  task :delete_or_archive_old_messages_feedbacks_and_contacts => [:environment] do
+    require 'delete_or_archive_old_messages_feedbacks_and_contacts'
+    DeleteOrArchiveOldMessagesFeedbacksAndContacts.process
+  end
+
+  task :update_message_nature_field => [:environment] do
+    require 'update_message_nature_field'
+    UpdateMessageNatureField.process
+  end
+
+  task :check_and_delete_orphan_records, [:limit, :sleep_time, :fix] =>  :environment do |t, args|
+    require 'check_and_delete_orphan_records'
+
+    CheckAndDeleteOrphanRecords.process(args.limit, args.sleep_time, args.fix)
+
+  end
+
   task :correct_image_server_group, [:limit, :fix] => :environment do |t, args|
     # limit of an integer does that number of groups. "image_server_groups/5c10fe8af493fdac0a29d7fd3" does that one only
     # enter something in the fix field and it fixes what is found wrong otherwise no correction Allows for a dry run

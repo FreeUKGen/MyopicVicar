@@ -132,6 +132,8 @@ class ContactsController < ApplicationController
 
   def index
     session[:archived_contacts] = false
+    session[:message_base] = 'contact'
+    params[:source] = 'original'
     get_user_info_from_userid
     order = "contact_time DESC"
     @contacts = get_contacts.result(session[:archived_contacts],order)
@@ -149,6 +151,8 @@ class ContactsController < ApplicationController
 
   def list_archived
     session[:archived_contacts] = true
+    session[:message_base] = 'contact'
+    params[:source] = 'original'
     get_user_info_from_userid
     order = "contact_time  DESC"
     @contacts = get_contacts.result(session[:archived_contacts],order)
@@ -241,12 +245,17 @@ class ContactsController < ApplicationController
   end
 
   def set_session_parameters_for_record(file)
+    return false if file.blank?
+
     register = file.register
     return false if register.blank?
+
     church = register.church
     return false if church.blank?
+
     place = church.place
     return false if place.blank?
+
     session[:freereg1_csv_file_id] = file._id
     session[:freereg1_csv_file_name] = file.file_name
     session[:place_name] = place.place_name
@@ -285,6 +294,7 @@ class ContactsController < ApplicationController
   end
 
   def return_after_archive(source, id)
+
     if source == 'show'
       redirect_to action: 'show', id: id
     else

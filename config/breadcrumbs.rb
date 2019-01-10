@@ -1,7 +1,9 @@
 crumb :root do
   link 'Your Actions:', main_app.new_manage_resource_path
 end
-#
+
+# userid details .................................................
+
 crumb :my_own_userid_detail do |userid_detail|
   link "Profile:#{userid_detail.userid}", my_own_userid_detail_path
   parent :root
@@ -15,25 +17,27 @@ crumb :edit_userid_detail do |syndicate, userid_detail, page_name|
     parent :userid_detail, syndicate, userid_detail, page_name
   end
 end
+
 crumb :disable_userid_detail do |userid_detail|
   link "Disable Profile:#{userid_detail.userid}", userid_detail_path
   parent :userid_detail, session[:syndicate], userid_detail
 end
+
 crumb :create_userid_detail do |userid_detail|
   link 'Create New Profile', new_userid_detail_path
 
   if session[:role] == 'syndicate_coordinator' || session[:role] == 'county_coordinator' ||
       session[:role] == 'country_coordinator' || session[:role] == 'volunteer_coordinator' ||
       session[:role] == 'data_manager'
-
     parent :userid_details_listing, session[:syndicate], userid_detail
   end
   if session[:role] == 'system_administrator' || session[:role] == 'technical'
-
     parent :userid_details_listing, 'all', userid_detail
   end
 end
+
 #................................................File....................................................
+
 crumb :my_own_files do
   link 'Your Batches', my_own_freereg1_csv_file_path
 end
@@ -49,9 +53,9 @@ crumb :files do |file|
       link 'List of Batches', freereg1_csv_files_path(:anchor => "#{file.id}", :page => "#{session[:current_page]}")
     end
     case
-    when session[:county].present? &&
-        (session[:role] == 'county_coordinator' || session[:role] == 'system_administrator' || session[:role] == 'technical' || session[:role] == 'data_manager' )
-
+    when session[:county].present? && (session[:role] == 'county_coordinator' ||
+                                       session[:role] == 'system_administrator' || session[:role] == 'technical' ||
+                                       session[:role] == 'data_manager')
       if session[:place_name].present?
         place = Place.where(:chapman_code => session[:chapman_code], :place_name => session[:place_name]).first
         unless place.nil?
@@ -72,11 +76,10 @@ crumb :files do |file|
       end
     when session[:role] == 'system_administrator' || session[:role] == 'technical'
       parent :regmanager_userid_options
-    else
-
     end
   end
 end
+
 crumb :show_file do |file|
   link 'Batch Information', freereg1_csv_file_path(file.id)
   if session[:my_own]
@@ -416,7 +419,7 @@ crumb :edit_csvfile do |csvfile, file|
     parent :syndicate_options, session[:syndicate]
   end
 end
-#Feedback
+# ................................................................. Feedback
 
 crumb :feedback_form do
   parent :root
@@ -441,6 +444,12 @@ crumb :show_feedback do |feedback|
     parent :feedbacks
   end
 end
+
+crumb :feedback_messages do |message|
+  link 'Feedback Reply Messages', feedback_reply_messages_path(message.id)
+  parent :feedbacks
+end
+
 crumb :edit_feedback do |feedback|
   link 'Edit Feedback', edit_feedback_path(feedback)
   if session[:archived]
@@ -462,7 +471,21 @@ crumb :create_feedback_reply do |feedback|
   parent :show_feedback, feedback
 end
 
-#manage contacts
+crumb :feedback_messages do |message|
+  link 'Feedback Replies', feedback_reply_messages_path(message.id, source: params[:source])
+  parent :feedbacks
+end
+
+crumb :show_reply_feedback_message do |message|
+  link 'Feedback Reply', show_reply_message_path(message.id, source: params[:source])
+  if session[:message_base] == 'userid_messages'
+    parent :userid_messages, source: params[:source]
+  else
+    parent :feedback_messages, Feedback.find(message.source_feedback_id), source: params[:source]
+  end
+end
+
+# ..........................................................................manage contacts
 crumb :contacts do
   if session[:archived_contacts]
     link 'Archived Contacts', list_archived_contacts_path
@@ -491,7 +514,7 @@ crumb :edit_contact do |contact|
     parent :contacts
   end
 end
-crumb :contact_form_for_selection do ||
+crumb :contact_for_selection do ||
     link 'Form for Selection'
   if session[:archived_contacts]
     parent :archived_contacts
@@ -503,36 +526,167 @@ crumb :create_contact_reply do |message|
   link 'Create Reply for Contact', reply_contact_path(message.id)
   parent :contacts
 end
-# .....................Nessages...............................
 
-crumb :messages do
-  case
-  when session[:message_base] == 'general' && session[:archived_contacts]
-    link 'Archived Messages', list_archived_messages_path
-  when session[:message_base] == 'general' && !session[:archived_contacts]
-    link 'Active Messages', messages_path
-  when session[:message_base] == 'syndicate' && session[:archived_contacts]
-    link 'Archived Syndicate Messages', list_archived_syndicate_messages_path
-  when session[:message_base] == 'syndicate' && !session[:archived_contacts]
-    link 'Active Syndicate Messages', list_archived_syndicate_messages_path
-  when session[:message_base] == 'userid_messages'
-    link 'User Messages', userid_messages_path
-  end
-  if session[:message_base] == 'syndicate'
-    parent :syndicate_options, session[:syndicate]
+crumb :contact_messages do |message|
+  link 'Contact Replies', contact_reply_messages_path(message.id, source: params[:source])
+  parent :contacts
+end
+
+crumb :show_reply_contact_message do |message|
+  link 'Contact Reply', show_reply_message_path(message.id, source: params[:source])
+  if session[:message_base] == 'userid_messages'
+    parent :userid_messages, source: params[:source]
   else
-    parent :root
+    parent :contact_messages, Contact.find(message.source_contact_id), source: params[:source]
   end
 end
 
-crumb :message_to_syndicate do
-  if session[:archived_contacts]
-    link 'Archived Syndicate Messages', list_archived_syndicate_messages_path(:source => params[:source])
-  else
-    link 'Active Syndicate Messages', list_syndicate_messages_path(:source => params[:source])
+# ...........................................................Communications
 
+crumb :communications do
+  if session[:archived_contacts]
+    link 'My Archived Communications', list_archived_communications_messages_path(source: params[:source])
+  else
+    link 'My Active Communications', communications_messages_path(source: params[:source])
   end
-  parent :syndicate_options, session[:syndicate]
+  parent :root
+end
+
+crumb :create_communication do |message|
+  link 'Create Communication', new_message_path(message)
+  if params[:source] == 'original'
+    parent :show_communication, message, source: params[:source]
+  else
+    parent :communications
+  end
+end
+
+crumb :show_communication do |message|
+  link 'Original Communication', message_path(message.id, source: params[:source])
+  parent :communications
+end
+
+crumb :edit_communication do |message|
+  link 'Edit Communication', edit_message_path(message, source: params[:source])
+  if params[:source] == 'original'
+    parent :show_communication, message, source: params[:source]
+  else
+    parent :communications
+  end
+end
+
+crumb :select_role do |message|
+  link 'Select Role'
+  parent :show_communication, message, source: params[:source]
+end
+
+crumb :select_individual do |message|
+  link 'Select Individual'
+  parent :select_role, message, source: params[:source]
+end
+
+crumb :create_reply_communication do |message, id|
+  link 'Create Reply for Communication', reply_messages_path(message.id, source: 'reply')
+  if params[:source] == 'reply'
+    parent :show_reply_communication, Message.find(id), source: params[:source]
+  elsif params[:source] == 'original'
+    parent :show_communication, Message.find(session[:original_message_id]), source: params[:source]
+  else
+    parent :communications, source: params[:source]
+  end
+end
+
+crumb :list_reply_communications do |message|
+  link 'Communication Replies', reply_messages_path(message, source: params[:source])
+  if params[:source] == 'original'
+    parent :show_communication, message, source: params[:source]
+  elsif params[:source] == 'reply'
+    params[:source] = 'original'
+    parent :show_communication, Message.find(session[:original_message_id]), source: params[:source]
+  else
+    oarent :communications
+  end
+end
+
+crumb :show_reply_communication do |message|
+  link 'Communication Reply', show_reply_message_path(message.id, source: params[:source])
+  parent :list_reply_communications, message.source_message_id, source: params[:source]
+end
+#                                      .....................Messages...............................
+crumb :messages do
+  if session[:archived_contacts]
+    link 'Archived Messages', list_archived_messages_path(source: params[:source])
+  else
+    link 'Active Messages', messages_path(source: params[:source])
+  end
+  parent :root
+end
+
+crumb :show_message do |message|
+  link 'Original Message', message_path(message.id, source: params[:source])
+  if params[:source] == 'original' || params[:source] == 'reply'
+    parent :messages
+  elsif message.source_feedback_id.present?
+    feedback = Feedback.id(message.source_feedback_id).first
+    parent :feedback_messages, feedback
+  elsif message.source_contact_id.present?
+    contact = Contact.id(message.source_contact_id).first
+    parent :contact_messages, contact
+  else
+    parent :messages
+  end
+end
+
+crumb :create_message do |message|
+  link 'Create Message', new_message_path(message)
+  if params[:source] == 'original'
+    parent :show_message, message, source: params[:source]
+  else
+    parent :messages
+  end
+end
+
+crumb :edit_message do |message|
+  link 'Edit Message', edit_message_path(message, source: params[:source])
+  if params[:source] == 'original'
+    parent :show_message, message, source: params[:source]
+  else
+    parent :messages
+  end
+end
+
+crumb :create_message_reply do |message, id|
+  link 'Create Reply', reply_messages_path(message.id, source: 'reply')
+  if params[:source] == 'reply'
+    parent :show_reply_message, Message.find(id), source: params[:source]
+  elsif params[:source] == 'original'
+    parent :show_message, Message.find(session[:original_message_id]), source: params[:source]
+  else
+    parent :messages, source: params[:source]
+  end
+end
+
+crumb :reply_messages_list do |message|
+  link 'Reply Messages', reply_messages_path(message, source: params[:source])
+  if session[:message_base] == 'userid_messages'
+    if params[:source] == 'original'
+      parent :show_userid_message, Message.find(session[:original_message_id]), source: params[:source]
+    else
+      parent :userid_messages
+    end
+  elsif params[:source] == 'original'
+    parent :show_message, message, source: params[:source]
+  elsif params[:source] == 'reply'
+    params[:source] = 'original'
+    parent :show_message, Message.find(session[:original_message_id]), source: params[:source]
+  else
+    parent :messages
+  end
+end
+
+crumb :show_reply_message do |message|
+  link 'Reply Message', show_reply_message_path(message.id, source: params[:source])
+  parent :reply_messages_list, message.source_message_id, source: params[:source]
 end
 
 crumb :message_form_for_selection do
@@ -544,155 +698,125 @@ crumb :message_form_for_selection do
   end
 end
 
-crumb :show_message do |message|
-  link 'Show Message', message_path(message, source: params[:source])
-  case
-  when session[:message_base] == 'userid_messages' && params[:source] == 'show_reply_messages'
-    parent :reply_messages_list, Message.id(session[:original_message_id]).first, :source => params[:source]
-  when session[:message_base] == 'userid_messages' && (params[:source] == 'userid_messages' || params[:source] == 'show')
-    parent :userid_messages
-  when session[:message_base] == 'syndicate' && params[:source] == 'show_reply_messages'
-    parent :replies_list_syndicate_messages, Message.id(session[:original_message_id]).first, :source => params[:source]
-  when session[:message_base] == 'syndicate' && (params[:source] == 'userid_messages' || params[:source] == 'show')
-    parent :show_list_syndicate_messages
-  when session[:message_base] == 'general' && params[:source] == 'show_reply_messages'
-    parent :reply_messages_list, Message.id(session[:original_message_id]).first, :source => params[:source]
-  when session[:message_base] == 'general' && (params[:source] == 'userid_messages' || params[:source] == 'show')
-    parent :messages
-  when message.source_feedback_id.present?
-    feedback = Feedback.id(message.source_feedback_id).first
-    parent :feedback_messages, feedback
-  when message.source_contact_id.present?
-    contact = Contact.id(message.source_contact_id).first
-    parent :contact_messages, contact
-  else
-    parent :messages
-  end
-end
-crumb :show_list_syndicate_messages do |message|
-  link 'Show Syndicate Message', message_path(message, :source => params[:source])
-  case
-  when session[:message_base] == 'syndicate' && params[:source] == 'show_reply_messages'
-    parent :replies_list_syndicate_messages, Message.id(message.source_message_id).first
-  when session[:message_base] == 'syndicate' && params[:source] == 'list_syndicate_messages'
-    parent :message_to_syndicate
-  else
-    parent :message_to_syndicate
-  end
-end
-
-crumb :replies_list_syndicate_messages do |message|
-  link 'Replies to Syndicate Message', show_reply_messages_path(message, :source => params[:source] )
-  parent :message_to_syndicate
-end
-
-
-crumb :userid_messages do
-  link 'User Messages', userid_messages_path
-end
-
-crumb :userid_reply_messages do
-  link 'Reply Messages Recieved', userid_reply_messages_path
-  parent :userid_messages
-end
-
-crumb :reply_messages_list do |message|
-  link 'Reply Messages List', show_reply_messages_path(message.id, source: params[:source])
-  case
-  when session[:message_base] == 'syndicate' && params[:source].present?
-    parent :replies_list_syndicate_messages, message
-  when session[:message_base] == 'syndicate' && params[:source].blank?
-    parent :replies_list_syndicate_messages, message
-  when session[:message_base] == 'userid_messages' && (params[:source] == 'userid_messages' || params[:source] == 'show_reply_messages')
-    parent :userid_messages
-  when session[:message_base] == 'userid_messages' && params[:source] == 'show'
-    parent :show_message, message, source: params[:source]
-  when session[:message_base] == 'general'
-    parent :messages
-  else
-    parent :root
-  end
-end
-
-crumb :user_reply_messages_list do |message|
-  link 'User Reply Messages List', user_reply_messages_path(message.id)
-  parent :reply_messages_list, message
-end
-
-crumb :show_messages_user do |message|
-  link 'Show User Message', message_path(message.id)
-  parent :userid_messages
-end
-
-crumb :show_reply_message do |message|
-  source_message = Message.id(message.source_message_id).first
-  link 'Show Reply Message', message_path(message.id)
-  parent :reply_messages_list, source_message
-end
-
-crumb :feedback_messages do |message|
-  link 'Feedback Reply Messages', feedback_reply_messages_path(message.id)
-  parent :feedbacks
-end
-
-crumb :contact_messages do |message|
-  link 'Contact Reply Messages', contact_reply_messages_path(message.id)
-  parent :contacts
-end
-
-crumb :show_feedback_message do |message|
-  link 'Show Feedback Message', message_path(message)
-  parent :messages
-  parent :message_to_syndicate if session[:syndicate]
-end
-
-crumb :edit_message do |message|
-  link 'Edit Message', edit_message_path(message)
-  case
-  when params[:source] == 'list_syndicate_messages'
-    parent :show_list_syndicate_messages, message
-  else
-    parent :show_message, message
-  end
-end
-
-crumb :create_message do |message|
-  link 'Create Message', new_message_path(message)
-  if session[:syndicate]
-    parent :message_to_syndicate
-  else
-    parent :messages
-  end
-end
-
-crumb :create_reply do |message, original_message_id|
-  link 'Create Reply Message', reply_messages_path(message.id, source: params[:source])
-  if session[:message_base] == 'syndicate'
-    parent :message_to_syndicate
-  else
-    parent :show_message, original_message_id, source: params[:source]
-  end
-end
-
-crumb :send_message do |message|
-  link 'Send Message', send_message_messages_path(message, source: params[:source])
+crumb :select_recipients do |message|
+  link 'Select Recipients', select_recipients_messages_path(message, source: params[:source])
   case session[:message_base]
   when 'syndicate'
-    parent :show_list_syndicate_messages, message, source: params[:source]
+    parent :show_syndicate_message, message, source: params[:source]
   when 'general'
     parent :show_message, message, source: params[:source]
   else
     parent :show_message, message, source: params[:source]
   end
 end
-
-crumb :send_reply_message do |message|
-  source_message = Message.id(message.source_message_id).first
-  link 'Send Message', send_message_messages_path(message)
-  parent :create_reply, source_message
-  #parent :show_message, message #if message.source_message_id.blank?
+# .........................................................................Syndicate messages
+crumb :syndicate_messages do
+  if session[:archived_contacts]
+    link 'Archived Syndicate Messages', list_archived_syndicate_messages_path(source: params[:source])
+  else
+    link 'Active Syndicate Messages', list_syndicate_messages_path(source: params[:source])
+  end
+  parent :syndicate_options, session[:syndicate]
 end
 
+crumb :create_syndicate_message do |message|
+  link 'Create Syndicate Message', new_message_path(message)
+  if params[:source] == 'original'
+    parent :show_syndicate_message, message, source: params[:source]
+  else
+    parent :syndicate_messages
+  end
+end
+
+crumb :show_syndicate_message do |message|
+  link 'Original Syndicate Message', message_path(message.id, source: params[:source])
+  parent :syndicate_messages
+end
+
+crumb :edit_syndicate_message do |message|
+  link 'Edit Syndicate Message', edit_message_path(message, source: params[:source])
+  if params[:source] == 'original'
+    parent :show_syndicate_message, message, source: params[:source]
+  else
+    parent :syndicate_messages
+  end
+end
+
+crumb :select_syndicate_role do |message|
+  link 'Form for Role Selection'
+  parent :show_syndicate_message, message, source: params[:source]
+end
+
+crumb :select_syndicate_individual do |message|
+  link 'Form for Individual Selection'
+  parent :select_syndicate_role, message, source: params[:source]
+end
+
+crumb :create_reply_syndicate_message do |message, id|
+  link 'Create Reply for Syndicate Message', reply_messages_path(message.id, source: 'reply')
+  if params[:source] == 'reply'
+    parent :show_syndicate_reply_message,  Message.find(id), source: params[:source]
+  elsif params[:source] == 'original'
+    parent :show_syndicate_message, Message.find(session[:original_message_id]), source: params[:source]
+  else
+    parent :syndicate_messages, source: params[:source]
+  end
+end
+
+crumb :list_replies_to_syndicate_message do |message|
+  link 'Replies to Syndicate Message', reply_messages_path(message, source: params[:source])
+  if params[:source] == 'original'
+    parent :show_syndicate_message, message, source: params[:source]
+  elsif params[:source] == 'reply'
+    params[:source] = 'original'
+    parent :show_syndicate_message, Message.find(session[:original_message_id]), source: params[:source]
+  else
+    parent :syndicate_messages
+  end
+end
+
+crumb :show_syndicate_reply_message do |message|
+  link 'Syndicate Reply Message', show_reply_message_path(message.id, source: params[:source])
+  parent :list_replies_to_syndicate_message, message.source_message_id, source: params[:source]
+end
+# ....................................................Userid Messages
+crumb :userid_messages do
+  link 'My Messages', userid_messages_path(source: params[:source])
+  parent :root
+end
+
+crumb :show_userid_message do |message|
+  link 'Original Message', message_path(message, source: params[:source])
+  parent :userid_messages
+end
+
+crumb :create_reply_userid_message do |message, id|
+  link 'Create Reply for a Message', reply_messages_path(message.id, source: 'reply')
+  if params[:source] == 'reply'
+    parent :show_userid_reply_message, Message.find(id), source: params[:source]
+  elsif params[:source] == 'original'
+    parent :show_userid_message, Message.find(session[:original_message_id]), source: params[:source]
+  else
+    parent :userid_messages, source: params[:source]
+  end
+end
+
+crumb :userid_reply_messages do |message|
+  link 'Replies to Messages', userid_reply_messages_path(message, source: params[:source])
+  if params[:source] == 'original'
+    parent :show_userid_message, message, source: params[:source]
+  elsif params[:source] == 'reply'
+    params[:source] = 'original'
+    parent :show_userid_message, Message.find(session[:original_message_id]), source: params[:source]
+  else
+    parent :userid_messages
+  end
+end
+
+crumb :show_userid_reply_message do |message|
+  link 'Message Reply', show_reply_message_path(message.id, source: params[:source])
+  parent :userid_reply_messages, message.source_message_id, source: params[:source]
+end
 #............................................................Denominations......................................
 crumb :denominations do
   link 'Denominations', denominations_path

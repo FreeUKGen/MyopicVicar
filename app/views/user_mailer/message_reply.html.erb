@@ -1,8 +1,6 @@
 <p> Dear <%= @original_message.userid %>;</p>
-<p>A reply to message reference <%= @original_message.identifier %> with a subject <%= @original_message.subject %>
-  was sent to you by <%= @reply.userid %> at <%= @reply.message_time unless @reply.message_time.nil?%>.
-</p>
-<p>
-  You are requested to log into the Members website (if not already logged in) and to review the message there. <br>
-  On the initial landing page after the log in; select the "Messages" button and on the list of messages select the "Show" for message identification <%=@reply.identifier%></p>
-<p> The FreeREG Team</p>
+<p>A reply to message with subject <%= @original_message.subject %> and reference number <%= @original_message.identifier %> was sent to you by <%= @reply.userid %> at <%= @reply.message_time unless @reply.message_time.nil?%>.</p>
+<p>You are requested to log into the Members website (if not already logged in) to review the message there. </p>
+<p>On the initial landing page after the log in; select the "Messages" button and on the list of messages select the "Show" for specific message identification <%=@reply.identifier%>.</p>
+<p>In many cases you will be able reply to the originator of the message by selecting the "Reply" button at the top of the message being displayed.</p>
+<p>The FreeREG Servant</p>

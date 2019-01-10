@@ -1,3 +1,4 @@
+<p style='text-align: center'><%= index_explanation %></p>
 <section class='island   ' >
   <div class='scrollable'>
     <div class='table-wrapper'>
@@ -33,22 +34,10 @@
                   <td><%= message.identifier  %></td>
                   <td><%= message.body[0,100] %>&hellip;</td>
                   <td>
-                    <%= link_to 'Edit', edit_message_path(message.id, source: params[:action]),
-                    :class => 'btn weight--light  btn--small', method: :get if do_we_permit_an_edit?(message)  %>
-                    <%= link_to 'Show', message_path(message.id, source: params[:action]),
-                    :class => 'btn weight--light  btn--small', method: :get%>
-                    <%= link_to 'View Replies', show_reply_messages_path(message.id, source: params[:action]),
-                     class: 'btn weight--light  btn--small', method: :get  if do_we_show_replies_action?(message)%>
-                    <%= link_to 'Archive', archive_message_path(message.id, source: params[:action]),
-                     :class => 'btn weight--light  btn--small',
-                      data: { confirm: 'Are you sure you want archive this message'} if do_we_show_archive_action?(message)%>
-                    <%= link_to 'Restore', restore_message_path(message.id, source: params[:action]),
-                     :class => 'btn weight--light  btn--small',
-                       data: { confirm: 'Are you sure you want archive this message' } if do_we_show_restore_action?(message)%>
-                    <%= link_to 'Remove', remove_from_userid_detail_path(message.id, source: params[:action]),
-                     :class => 'btn weight--light  btn--small',
-                      data: { confirm: 'Are you sure you want archive this message' },
-                     method: :delete if do_we_show_remove_action?(message)%>
+                    <%= index_action_edit(message, params[:source])%>
+                    <%= index_action_show(message, params[:source])%>
+                    <%= index_action_view_replies(message, params[:source])%>
+                    <%= index_action_archive(message, params[:source])%>
                   </td>
                 </tr>
               <% end %>

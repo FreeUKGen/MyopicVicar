@@ -1,4 +1,4 @@
-<% breadcrumb :send_message,  @message%>
+<% breadcrumb :select_recipients,  @message%>
 <% if flash[:notice] %>
   <div id="notice" style="color:blue"><br>
     <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
@@ -8,7 +8,6 @@
   <section class="island  island--light ">
     <%= semantic_form_for(@message, :html => {:multipart => true}) do |f| %>
       <%= f.fields_for :sent_message do |multiple| %>
-        <%= f.hidden_field :action %>
         <% unless session[:syndicate].present?%>
           <li  class="grid__item  one-quarter  palm-one-whole push--bottom " id="message_recipients">
             <label class="ttip" for="recipients" tabindex="0"> Recipients  <%= image_tag 'info.png', alt: 'Info', height: '16' %><span  class=" ttip__text">You may select multiple roles for recipients</span></a></label>
@@ -16,9 +15,9 @@
             <%= recipients_list %>
           </select>
         </li>
-      <%end%>
+      <% end%>
       <li  class="grid__item  one-quarter  palm-one-whole push--bottom " id="message_recipients">
-        <label class="ttip" for="open_data_status" tabindex="0"> Open Data Status <%= image_tag 'info.png', alt: 'Info', height: '16' %><span  class="ttip__text">Select recipients based on the Open Data status</span></label>
+        <label class="ttip" for="open_data_status" tabindex="0"> Open Data Status <%= image_tag 'info.png', alt: 'Info', height: '16' %><span  class="ttip__text">Select recipients based on their Open Data status</span></label>
         <select id="open_data_status" name="open_data_status[]"  multiple="multiple" class="select" required="required" size="4">
           <% @open_data_status.each do |value| %>
             <% if value == @sent_message.open_data_status %>
@@ -30,7 +29,7 @@
         </select>
       </li>
       <li class="grid__item  one-fifth lap-one-whole palm-one-whole">
-        <label class="ttip" for="active" tabindex="0" > Active Member <%= image_tag 'info.png', alt: 'Info', height: '16' %><span  class="ttip__text">Uncheck to select inactive members</span></a></label>
+        <label class="ttip" for="active" tabindex="0" > Active Member <%= image_tag 'info.png', alt: 'Info', height: '16' %><span  class="ttip__text">Remove check to select inactive members</span></a></label>
       <%if @sent_message.active %>
         <input type="checkbox" name="active" value= "true" checked >
       <%else%>
@@ -39,18 +38,19 @@
     </li>
     <li  class="grid__item  one-quarter  palm-one-whole push--bottom " id="message_recipients">
       <label class="ttip" for="inactive_reason" tabindex="0"> Reason inactive  <%= image_tag 'info.png', alt: 'Info', height: '16' %><span  class="ttip__text">These use ONLY the standard reason. You may select multiple reasons. If unselected then temporary will be assumed</span></a></label>
-    <select id="inactive_reason" name="inactive_reasons[]"  multiple="multiple" class="select" required="required" size="4">
-      <% @inactive_reasons.each do |value| %>
-        <% if value == @sent_message.inactive_reason %>
-          <option value="<%=value%>" selected="selected" ><%=value%></option>
+    <select id="inactive_reason" name="inactive_reason[]"  multiple="multiple" class="select" required="required" size="4">
+      <% @inactive_reason.each do |reason| %>
+        <% if reason == @sent_message.inactive_reason[0] %>
+          <option value="<%=reason%>" selected="selected" ><%=reason%></option>
         <% else %>
-          <option value="<%=value%>" ><%=value%></option>
+          <%= reason %>
+          <option value="<%=reason%>" ><%=reason%></option>
         <% end %>
       <% end %>
     </select>
   </li>
   <li  class="grid__item  one-quarter  palm-one-whole push--bottom " id="message_recipients">
-    <label class="ttip" for="sender" tabindex="0"> Sender  <%= image_tag 'info.png', alt: 'Info', height: '16' %><span  class="ttip__text">Select who is to receiver responses. Your addess has been preselected. A blank will system freereg_contacts address.</span></a></label>
+    <label class="ttip" for="sender" tabindex="0"> Sender  <%= image_tag 'info.png', alt: 'Info', height: '16' %><span  class="ttip__text">Select who is to receive responses. Your userid has been preselected. A blank will use freereg_contacts.</span></a></label>
   <select id="sender" name="sender" class="select" size="4">
     <% @senders.each do |sender| %>
       <% if sender == @sent_message.sender %>
@@ -62,7 +62,7 @@
   </select>
 </li>
 <% end %>
-<%= f.action :submit, :as => :input,  :label => 'Send' ,:button_html => { :class => "btn " },:wrapper_html => { :class => "grid__item  one-whole text--center" }  %> <br>
+<%= f.action :submit, :as => :input,  :label => 'Send Message' ,:button_html => { :class => "btn " },:wrapper_html => { :class => "grid__item  one-whole text--center" }  %> <br>
 <% end%>
 </section>
 </div>

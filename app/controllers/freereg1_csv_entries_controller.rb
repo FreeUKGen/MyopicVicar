@@ -12,49 +12,54 @@ class Freereg1CsvEntriesController < ApplicationController
 
   def create
     get_user_info_from_userid
-    @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
-    @freereg1_csv_entry = Freereg1CsvEntry.new(freereg1_csv_entry_params)
-    @freereg1_csv_file.check_and_augment_def(params[:freereg1_csv_entry])
-    params[:freereg1_csv_entry][:record_type] = @freereg1_csv_file.record_type
-    year = @freereg1_csv_entry.get_year(params[:freereg1_csv_entry])
-    if session[:error_id].nil?
-      file_line_number, line_id = @freereg1_csv_file.augment_record_number_on_creation
+    if session[:freereg1_csv_file_id].blank?
+      flash[:notice] = 'Somehow we are missing a vital piece of information. Please have you coordinator contact System Administration with this message'
+      redirect_to new_manage_resource_path and return
     else
-      file_line_number, line_id = @freereg1_csv_file.determine_line_information(session[:error_id])
-    end
-    @freereg1_csv_entry.update_attributes(:register_type => @freereg1_csv_file.register_type, :year => year, :line_id => line_id,:record_type  => @freereg1_csv_file.record_type, :file_line_number => file_line_number)
-    # need to deal with change in place
-    place, church, register = @freereg1_csv_entry.add_additional_location_fields(@freereg1_csv_file)
-    @freereg1_csv_file.freereg1_csv_entries << @freereg1_csv_entry
-    @freereg1_csv_entry.save
-    if @freereg1_csv_entry.errors.any?
-      flash[:notice] = 'The creation of the record was unsuccessful'
-      display_info
-      render action: 'error' and return
-    else
-      @freereg1_csv_file.calculate_distribution
-      search_version = calculate_software_version
-      SearchRecord.update_create_search_record(@freereg1_csv_entry, search_version, place)
-      @freereg1_csv_file.backup_file
-      @freereg1_csv_file.lock_all(session[:my_own])
-      @freereg1_csv_file.modification_date = Time.now.strftime("%d %b %Y")
-      if session[:error_id].present?
-        @freereg1_csv_file.error = @freereg1_csv_file.error - 1
-        error = @freereg1_csv_file.batch_errors.find(session[:error_id])
-        @freereg1_csv_file.batch_errors.delete(error) if error.present?
-      end
-      display_info
-      @freereg1_csv_file.save
-      register.calculate_register_numbers
-      church.calculate_church_numbers
-      place.calculate_place_numbers
-      if @freereg1_csv_file.errors.any?
-        flash[:notice] = 'The update in entry data distribution contents was unsuccessful'
-        redirect_to :action => 'error' and return
+      @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
+      @freereg1_csv_entry = Freereg1CsvEntry.new(freereg1_csv_entry_params)
+      @freereg1_csv_file.check_and_augment_def(params[:freereg1_csv_entry])
+      params[:freereg1_csv_entry][:record_type] = @freereg1_csv_file.record_type
+      year = @freereg1_csv_entry.get_year(params[:freereg1_csv_entry])
+      if session[:error_id].nil?
+        file_line_number, line_id = @freereg1_csv_file.augment_record_number_on_creation
       else
-        session[:error_id] = nil
-        flash[:notice] = 'The creation/update in entry contents was successful, a backup of file made and locked'
-        redirect_to freereg1_csv_entry_path(@freereg1_csv_entry) and return
+        file_line_number, line_id = @freereg1_csv_file.determine_line_information(session[:error_id])
+      end
+      @freereg1_csv_entry.update_attributes(:register_type => @freereg1_csv_file.register_type, :year => year, :line_id => line_id,:record_type  => @freereg1_csv_file.record_type, :file_line_number => file_line_number)
+      # need to deal with change in place
+      place, church, register = @freereg1_csv_entry.add_additional_location_fields(@freereg1_csv_file)
+      @freereg1_csv_file.freereg1_csv_entries << @freereg1_csv_entry
+      @freereg1_csv_entry.save
+      if @freereg1_csv_entry.errors.any?
+        flash[:notice] = 'The creation of the record was unsuccessful'
+        display_info
+        render action: 'error' and return
+      else
+        @freereg1_csv_file.calculate_distribution
+        search_version = calculate_software_version
+        SearchRecord.update_create_search_record(@freereg1_csv_entry, search_version, place)
+        @freereg1_csv_file.backup_file
+        @freereg1_csv_file.lock_all(session[:my_own])
+        @freereg1_csv_file.modification_date = Time.now.strftime("%d %b %Y")
+        if session[:error_id].present?
+          @freereg1_csv_file.error = @freereg1_csv_file.error - 1
+          error = @freereg1_csv_file.batch_errors.find(session[:error_id])
+          @freereg1_csv_file.batch_errors.delete(error) if error.present?
+        end
+        display_info
+        @freereg1_csv_file.save
+        register.calculate_register_numbers
+        church.calculate_church_numbers
+        place.calculate_place_numbers
+        if @freereg1_csv_file.errors.any?
+          flash[:notice] = 'The update in entry data distribution contents was unsuccessful'
+          redirect_to :action => 'error' and return
+        else
+          session[:error_id] = nil
+          flash[:notice] = 'The creation/update in entry contents was successful, a backup of file made and locked'
+          redirect_to freereg1_csv_entry_path(@freereg1_csv_entry) and return
+        end
       end
     end
   end
