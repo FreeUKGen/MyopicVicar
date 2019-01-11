@@ -1,31 +1,31 @@
 class SourcesController < ApplicationController
   require 'freereg_options_constants'
-  
+
   def access_image_server
     @user = get_user
-    (session[:manage_user_origin] != 'manage county' && session[:chapman_code].nil?) ? chapman_code = 'all': chapman_code = session[:chapman_code]
-    website = Source.create_manage_image_server_url(@user.userid,@user.person_role,chapman_code)  
+    (session[:manage_user_origin] != 'manage county' && session[:chapman_code].blank?) ? chapman_code = 'all' : chapman_code = session[:chapman_code]
+    website = Source.create_manage_image_server_url(@user.userid, @user.person_role, chapman_code)
     redirect_to website and return
   end
 
   def create
     display_info
 
-    source = Source.where(:register_id=>params[:source][:register_id]).first
+    source = Source.where(register_id: params[:source][:register_id]).first
     register = source.register
 
     source = Source.new(source_params)
     source.save
 
-    if source.errors.any? then
-      flash[:notice] = 'Addition of Source "'+params[:source][:source_name]+'" was unsuccessful'
+    if source.errors.any?
+      flash[:notice] = "Addition of Source was unsuccessful because #{source.errors.messages}"
       redirect_to :back
     else
       register.sources << source
       register.save
 
-      flash[:notice] = 'Addition of Source "'+params[:source][:source_name]+'" was successful'
-      redirect_to index_source_path(source.register)     
+      flash[:notice] = 'Addition of Source was successful'
+      redirect_to index_source_path(source.register)
     end
   end
 
@@ -38,15 +38,15 @@ class SourcesController < ApplicationController
 
       begin
         source.destroy
-        flash[:notice] = 'Deletion of "'+source[:source_name]+'" was successful'
+        flash[:notice] = 'Deletion of source was successful'
         session.delete(:source_id)
-        redirect_to index_source_path(source.register)      
+        redirect_to index_source_path(source.register)
 
       rescue Mongoid::Errors::DeleteRestriction
-        logger.info "Logged Error for Source Delete"
-        logger.debug source.source_name+' is not empty'
+        logger.info 'Logged Error for Source Delete'
+        logger.debug source.source_name + ' is not empty'
         redirect_to(:back, :notice=> source.source_name+' IS NOT EMPTY, CAN NOT BE DELETED')
-      end 
+      end
 
     else
       flash[:notice] = 'Only system_administrator and data_manager is allowed to delete source'
@@ -55,25 +55,30 @@ class SourcesController < ApplicationController
   end
 
   def display_info
-    @source = Source.find(:id=>session[:source_id]) if !session[:source_id].nil?
-    @register = Register.find(:id=>session[:register_id])
+    @source = Source.find(session[:source_id]) if session[:source_id].present?
+    @register = Register.find(session[:register_id]) if session[:register_id].present?
+    return if @register.blank? || @source.blank?
+
     @register_type = RegisterType.display_name(@register.register_type)
-    @church = Church.find(session[:church_id])
+    @church = Church.find(session[:church_id]) if session[:church_id].present?
+    return if @church.blank?
+
     @church_name = session[:church_name]
-    @county =  session[:county]
+    @county = session[:county]
     @place_name = session[:place_name]
     @place = @church.place #id?
-    @county =  @place.county
+    return if @place.blank?
+
+    @county = @place.county
     @place_name = @place.place_name
     @user = get_user
   end
 
   def edit
     display_info
-
     @source = Source.id(params[:id]).first
-
-    redirect_to(:back, :notice => 'Attempted to edit a non_existent Source') and return if @source.nil?
+    redirect_to :back, notice: 'Attempting to edit an incomplete source' and
+    return if @register.blank? || @church.blank? || @place.blank? ||  @source.blank?
   end
 
   def flush
@@ -93,19 +98,19 @@ class SourcesController < ApplicationController
     go_back("source#index",params[:id]) and return if @source.nil?
 
     case @source.count
-      when 0
-        redirect_to(:back, :notice => 'No Source under this register')
-      when 1
-        case @source.first.source_name
-          when 'Image Server'
-            redirect_to source_path(:id=>@source.first.id)
-          when 'other server1'
-            redirect_to :controller=>'server1', :action=>'show', :source_name=>'other server1'
-          when 'other server2'
-#            redirect_to :controller=>'server2', :action=>'show', :source_name=>'other server1'
-          else
-            redirect_to(:back, :notice => 'Something wrong')
-        end
+    when 0
+      redirect_to(:back, :notice => 'No Source under this register')
+    when 1
+      case @source.first.source_name
+      when 'Image Server'
+        redirect_to source_path(:id=>@source.first.id)
+      when 'other server1'
+        redirect_to :controller=>'server1', :action=>'show', :source_name=>'other server1'
+      when 'other server2'
+        #            redirect_to :controller=>'server2', :action=>'show', :source_name=>'other server1'
+      else
+        redirect_to(:back, :notice => 'Something wrong')
+      end
     end
   end
 
@@ -120,7 +125,7 @@ class SourcesController < ApplicationController
   def load(source_id)
     @source = Source.id(source_id).first
 
-    if @source.nil?      
+    if @source.nil?
       go_back("source", source_id)
     else
       session[:source_id] = @source.id
@@ -142,7 +147,7 @@ class SourcesController < ApplicationController
     end
   end
 
-  def new 
+  def new
     display_info
 
     @source_new = Source.new
