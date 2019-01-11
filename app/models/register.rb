@@ -30,7 +30,7 @@ class Register
   has_many :freereg1_csv_files, dependent: :restrict
   belongs_to :church, index: true
 
-  has_many :sources # includes origin server of images
+  has_many :sources, dependent: :restrict # includes origin server of images
 
   index({ church_id: 1, register_name: 1})
   index({ register_name: 1})
@@ -40,6 +40,14 @@ class Register
   class << self
     def id(id)
       where(:id => id)
+    end
+    
+    def check_and_correct_register_type(register_type)
+      if !(RegisterType.approved_option_values.include?(register_type) || RegisterType.option_values.include?(register_type))
+        register_type = RegisterType::OPTIONS[register_type] if RegisterType.option_keys.include?(register_type)  
+        register_type = RegisterType::APPROVED_OPTIONS[register_type] if RegisterType.approved_option_keys.include?(register_type)
+      end
+      register_type
     end
 
     def create_register_for_church(args,freereg1_csv_file)
@@ -215,6 +223,15 @@ class Register
     self.update_attributes(:records => records,:datemin => datemin, :datemax => datemax, :daterange => total_hash, :transcribers => transcriber_hash["transcriber"],
                            :contributors => transcriber_hash["contributor"], :last_amended => last_amended   )
   end
+  
+  def can_create_image_source
+    proceed = true
+    if self.register_type.nil? || self.register_type == ' '
+      proceed = false
+      message = 'Cannot create source for unspecified register'
+    end
+    return proceed,message
+  end
 
   def change_type(type)
     old_type = self.register_type
@@ -238,7 +255,7 @@ class Register
     @place = @church.place
     @county =  @place.county
     @place_name = @place.place_name
-    @user = cookies.signed[:userid]
+    @user = get_user
     @first_name = @user.person_forename unless @user.blank?
   end
 

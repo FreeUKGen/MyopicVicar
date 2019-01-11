@@ -1,5 +1,5 @@
 class ManageSyndicatesController < ApplicationController
- 
+
   def batches_with_errors
     get_user_info_from_userid
     @county = session[:syndicate]
@@ -80,15 +80,32 @@ class ManageSyndicatesController < ApplicationController
     render 'physical_files/index'
   end
 
+  def display_by_zero_date
+    get_user_info_from_userid
+    @county = session[:syndicate]
+    @who = @user.person_forename
+    @sorted_by = '; selects files with zero date records then alphabetically by userid and file name'
+    session[:sorted_by] = @sorted_by
+    session[:sort] = "userid_lower_case ASC, file_name ASC"
+    @freereg1_csv_files = Freereg1CsvFile.syndicate(session[:syndicate]).datemin('0').no_timeout.order_by(session[:sort]).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
+    render 'freereg1_csv_files/index'
+  end
+
+
   def get_syndicates_for_selection
     all = true if  @user.person_role == 'volunteer_coordinator' || @user.person_role == 'data_manager' || @user.person_role == 'system_administrator' || @user.person_role == "SNDManager" ||  @user.person_role == 'documentation_coordinator'
     @syndicates = @user.syndicate_groups
     @syndicates = Syndicate.all.order_by(syndicate_code: 1) if all
-    synd = Array.new
-    @syndicates.each do |syn|
-      synd << syn unless all
-      synd << syn.syndicate_code if all
+    unless @syndicates.nil?
+      synd = Array.new
+      @syndicates.each do |syn|
+        synd << syn unless all
+        synd << syn.syndicate_code if all
+      end
       @syndicates = synd
+    else
+      logger.warn "FREEREG::USER #{@user.userid} has no syndicates and attempting to manage one"
+      logger.warn "FREEREG::USER #{@user.inspect}"
     end
   end
 
@@ -106,9 +123,13 @@ class ManageSyndicatesController < ApplicationController
     else
       @source,@group_ids,@group_id = ImageServerGroup.group_ids_by_syndicate(session[:syndicate], 'r')
 
-      if @source.nil?
+      # added for 'email CC of all image groups' button under 'List Fully Reviewed Groups'
+      @completed_groups = []
+      @group_ids.each {|x| @completed_groups  << x[0] }
+
+      if @source.blank?
         flash[:notice] = 'No Fully Reviewed Image Groups Under This Syndicate'
-        redirect_back(fallback_location: root_path)
+        redirect_to manage_image_group_manage_syndicate_path(session[:Syndicate])
       else
         session.delete(:from_source)
         session[:image_group_filter] = 'fully_reviewed'
@@ -127,9 +148,13 @@ class ManageSyndicatesController < ApplicationController
     else
       @source,@group_ids,@group_id = ImageServerGroup.group_ids_by_syndicate(session[:syndicate], 't')
 
-      if @source.nil?
+      # added for 'email CC of all image groups' button under 'List Fully Transcribed Groups'
+      @completed_groups = []
+      @group_ids.each {|x| @completed_groups  << x[0] }
+
+      if @source.blank?
         flash[:notice] = 'No Fully Transcribed Image Groups Under This Syndicate'
-        redirect_back(fallback_location: root_path)
+        redirect_to manage_image_group_manage_syndicate_path(session[:Syndicate])
       else
         session.delete(:from_source)
         session[:image_group_filter] = 'fully_transcribed'
@@ -153,16 +178,16 @@ class ManageSyndicatesController < ApplicationController
   end
 
   def member_by_email
-    redirect_to :controller => 'userid_details', :action => 'selection', :option =>"Select specific email"
+    redirect_to :controller => 'userid_details', :action => 'selection', :option =>"Select specific email", :syndicate => session[:syndicate]
     return
   end
 
   def member_by_userid
-    redirect_to :controller => 'userid_details', :action => 'selection', :option => "Select specific userid"
+    redirect_to :controller => 'userid_details', :action => 'selection', :option => "Select specific userid", :syndicate => session[:syndicate]
   end
 
   def member_by_name
-    redirect_to :controller => 'userid_details', :action => 'selection', :option =>"Select specific surname/forename"
+    redirect_to :controller => 'userid_details', :action => 'selection', :option =>"Select specific surname/forename", :syndicate => session[:syndicate]
   end
 
   def new
@@ -178,22 +203,23 @@ class ManageSyndicatesController < ApplicationController
 
     get_user_info_from_userid
     get_syndicates_for_selection
-    number_of_syndicates = @syndicates.length unless @syndicates.nil?
-    if number_of_syndicates == 0
+    @syndicates.nil? ? number_of_syndicates = 0 : number_of_syndicates = @syndicates.length
+    case number_of_syndicates
+    when 0
       flash[:notice] = 'You do not have any syndicates to manage'
       redirect_to new_manage_resource_path
       return
-    end
-    if number_of_syndicates == 1
+    when 1
       @syndicate = @syndicates[0]
       session[:syndicate] =  @syndicate
       redirect_to :action => 'select_action'
       return
+    else
+      @manage_syndicate = ManageSyndicate.new
+      @options = @syndicates
+      @prompt = 'You have access to multiple syndicates, please select one'
+      @location = 'location.href= "/manage_syndicates/" + this.value +/selected/'
     end
-    @manage_syndicate = ManageSyndicate.new
-    @options = @syndicates
-    @prompt = 'You have access to multiple syndicates, please select one'
-    @location = 'location.href= "/manage_syndicates/" + this.value +/selected/'
   end
 
   def select_action
@@ -249,5 +275,10 @@ class ManageSyndicatesController < ApplicationController
 
   def upload_batch
     redirect_to new_csvfile_path
+  end
+
+  def display_no_syndicate_message
+    flash[:notice] = 'You do not have any syndicates to manage'
+    redirect_to new_manage_resource_path
   end
 end

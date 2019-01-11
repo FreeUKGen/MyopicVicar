@@ -1,5 +1,5 @@
 class ManageCountiesController < ApplicationController
- 
+
   def batches_with_errors
     get_user_info_from_userid
     @county = session[:county]
@@ -66,7 +66,6 @@ class ManageCountiesController < ApplicationController
     redirect_to freereg1_csv_files_path
   end
 
-
   def display_by_userid_filename
     get_user_info_from_userid
     @county = session[:county]
@@ -75,6 +74,17 @@ class ManageCountiesController < ApplicationController
     session[:sorted_by] = @sorted_by
     session[:sort] = "userid_lower_case ASC, file_name ASC"
     redirect_to freereg1_csv_files_path
+  end
+
+  def display_by_zero_date
+    get_user_info_from_userid
+    @county = session[:county]
+    @who = @user.person_forename
+    @sorted_by = '; selects files with zero date records then alphabetically by userid and file name'
+    session[:sorted_by] = @sorted_by
+    session[:sort] = "userid_lower_case ASC, file_name ASC"
+    @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).datemin('0').no_timeout.order_by(session[:sort]).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
+    render 'freereg1_csv_files/index'
   end
 
   def get_counties_for_selection
@@ -113,8 +123,11 @@ class ManageCountiesController < ApplicationController
     else
       @source,@group_ids,@group_id = ImageServerGroup.group_ids_sort_by_place(session[:chapman_code], 'completion_submitted')            # not sort by place, unallocated groups
       @county = session[:county]
-
-      if @source.nil? || @group_ids.empty? || @group_id.empty?
+      # for 'Accept All Groups As Completed'
+      @completed_groups = []
+      @group_ids.each {|x| @completed_groups << x[0]}
+      @dummy = @completed_groups[0]
+      if @source.blank? || @group_ids.blank? || @group_id.blank?
         redirect_back(fallback_location: root_path, :notice => 'No Completion Submitted Image Groups exists') and return
       else
         render 'image_server_group_completion_submitted'
@@ -186,7 +199,7 @@ class ManageCountiesController < ApplicationController
     get_user_info_from_userid
     clean_session_for_images
     session[:manage_user_origin] = 'manage county'
-    
+
     if session[:chapman_code].nil?
       flash[:notice] = 'Your other actions cleared the county information, please select county again'
       redirect_to main_app.new_manage_resource_path
@@ -195,7 +208,10 @@ class ManageCountiesController < ApplicationController
       @source_ids,@source_id = Source.get_source_ids(session[:chapman_code])
       @county = session[:county]
 
-      if @source_ids.empty? || @source_id.empty?
+      if @source_ids.nil? || @source_id.nil?
+        flash[:notice] = 'No requested Sources exists'
+        redirect_to :back
+      elsif @source_ids.empty? || @source_id.empty?
         flash[:notice] = 'No requested Sources exists'
         redirect_back(fallback_location: root_path)
       else
@@ -210,6 +226,7 @@ class ManageCountiesController < ApplicationController
     clean_session_for_images
     session.delete(:county)
     session.delete(:chapman_code)
+    session[:manage_user_origin] = 'manage county'
     get_user_info_from_userid
     get_counties_for_selection
     number_of_counties = 0

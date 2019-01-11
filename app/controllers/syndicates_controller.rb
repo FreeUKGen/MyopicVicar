@@ -43,7 +43,7 @@ class SyndicatesController < ApplicationController
   end
 
   def get_userids_and_transcribers
-    @user = cookies.signed[:userid]
+    @user = get_user
     @first_name = @user.person_forename unless @user.blank?
     case
     when @user.person_role == 'system_administrator' ||  @user.person_role == 'volunteer_coordinator'

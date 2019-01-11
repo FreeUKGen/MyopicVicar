@@ -1,6 +1,19 @@
 class FeedbacksController < ApplicationController
+  require 'reply_userid_role'
 
-  skip_before_action :require_login
+  skip_before_action :require_login, only: [:show, :feedback_reply_messages]
+
+  def archive
+    @feedback = Feedback.id(params[:id]).first
+    if @feedback.present?
+      @feedback.archive
+      flash.notice = "Feedback archived"
+      return_after_archive(params[:source], params[:id])
+    else
+      redirect_back(fallback_location: root_path, notice: 'Feedback is not there') and return
+    end
+  end
+
 
   def convert_to_issue
     @feedback = Feedback.id(params[:id]).first
@@ -16,7 +29,7 @@ class FeedbacksController < ApplicationController
         return
       end
     else
-      go_back("feedback",params[:id])
+      redirect_back(fallback_location: root_path, notice: 'Feedback is not there') and return
     end
   end
 
@@ -38,7 +51,7 @@ class FeedbacksController < ApplicationController
       return
     end
     flash.notice = "Thank you for your feedback!"
-    @feedback.communicate
+    @feedback.communicate_initial_contact
     if session[:return_to].present?
       redirect_to session.delete(:return_to)
     else
@@ -54,7 +67,7 @@ class FeedbacksController < ApplicationController
       redirect_to :action => 'index'
       return
     else
-      go_back("feedback",params[:id])
+      redirect_back(fallback_location: root_path, notice: 'Feedback is not there') and return
     end
   end
 
@@ -68,48 +81,181 @@ class FeedbacksController < ApplicationController
         return
       end
     else
-      go_back("feedback",params[:id])
+      redirect_back(fallback_location: root_path, notice: 'Feedback is not there') and return
+    end
+  end
+
+  def feedback_reply_messages
+    #get_user_info_from_userid; return if performed?
+    @feedback = Feedback.id(params[:id]).first
+    if @feedback.present?
+      @messages = Message.where(source_feedback_id: params[:id]).all
+      @link = false
+      render 'messages/index'
+    else
+      redirect_back(fallback_location: root_path, notice: 'Feedback is not there') and return
+    end
+  end
+
+
+  def force_destroy
+    @feedback = Feedback.id(params[:id]).first
+    if @feedback.present? && @feedback.has_replies?(params[:id])
+      delete_reply_messages(params[:id])
+      @feedback.delete
+      flash.notice = "Feedback and all its replies are destroyed"
+      redirect_to :action => 'index'
+      return
+    else
+      redirect_back(fallback_location: root_path, notice: 'Feedback is not there') and return
     end
   end
 
   def index
-    @feedbacks = Feedback.all.order_by(feedback_time: -1)
+    session[:archived_contacts] = false
+    session[:message_base] = 'feedback'
+    params[:source] = 'original'
+    get_user_info_from_userid
+    order = "feedback_time DESC"
+    @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order)
+    @archived = session[:archived_contacts]
+  end
+
+  def keep
+    @feedback = Feedback.id(params[:id]).first
+    go_back('feedback', params[:id])  if @feedback.blank?
+    session[:archived_contacts] = true
+    @feedback.update_keep
+    flash.notice = 'Feedback to be retained'
+    return_after_keep(params[:source], params[:id])
+  end
+
+  def list_archived
+    session[:archived_contacts] = true
+    session[:message_base] = 'feedback'
+    params[:source] = 'original'
+    get_user_info_from_userid
+    order = "feedback_time DESC"
+    @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order)
+    @archived = session[:archived_contacts]
+    render :index
   end
 
   def list_by_date
     get_user_info_from_userid
-    @feedbacks = Feedback.all.order_by(feedback_time: 1)
+    order = "feedback_time ASC"
+    @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order)
+    @archived = session[:archived_contacts]
     render :index
   end
 
-  def list_by_identifier
+  def list_by_most_recent
     get_user_info_from_userid
-    @feedbacks = Feedback.all.order_by(identifier: -1)
+    order = "feedback_time DESC"
+    @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order)
+    @archived = session[:archived_contacts]
     render :index
   end
 
   def list_by_name
     get_user_info_from_userid
-    @feedbacks = Feedback.all.order_by(name: 1)
+    order = "name ASC"
+    @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order)
+    @archived = session[:archived_contacts]
+    render :index
+  end
+
+  def list_by_type
+    get_user_info_from_userid
+    order = "feedback_type ASC"
+    @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order)
+    @archived = session[:archived_contacts]
     render :index
   end
 
   def list_by_userid
     get_user_info_from_userid
-    @feedbacks = Feedback.all.order_by(user_id: 1)
+    order = "user_id ASC"
+    @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order)
+    @archived = session[:archived_contacts]
     render :index
   end
 
   def new
     session[:return_to] ||= request.referer
     get_user_info_from_userid
-    @feedback = Feedback.new(new_params)
+    @feedback = Feedback.new(new_params) if params[:source_feedback_id].nil?
+    @message = Message.new
+    @message.message_time = Time.now
+    @message.userid = @user.userid
+    @respond_to_feedback = Feedback.id(params[:source_feedback_id]).first
+    @feedback_replies = Message.fetch_feedback_replies(params[:source_feedback_id])
+  end
+
+  def restore
+    get_user_info_from_userid
+    @feedback = Feedback.id(params[:id]).first
+    if @feedback.present?
+      @feedback.restore
+      flash.notice = "Feedback restored"
+      return_after_restore(params[:source], params[:id])
+    else
+      redirect_back(fallback_location: root_path, notice: 'Feedback is not there') and return
+    end
+  end
+
+  def return_after_archive(source, id)
+    if source == 'show'
+      redirect_to action: 'show', id: id
+    else
+      redirect_to action: 'list_archived'
+    end
+  end
+
+  def return_after_keep(source, id)
+    if source == 'show'
+      redirect_to action: 'show', id: id
+    else
+      redirect_to action: 'index'
+    end
+  end
+
+  def return_after_restore(source, id)
+    if source == 'show'
+      redirect_to action: 'show', id: id
+    else
+      redirect_to action: 'index'
+    end
+  end
+
+  def return_after_unkeep(source, id)
+    if source == 'show'
+      redirect_to action: 'show', id: id
+    else
+      redirect_to action: 'list_archived'
+    end
+  end
+
+
+  def reply_feedback
+    get_user_info_from_userid; return if performed?
+    @respond_to_feedback = Feedback.id(params[:source_feedback_id]).first
+    if @respond_to_feedback.blank?
+      redirect_back(fallback_location: root_path, notice: 'Feedback is not there') and return
+    end
+    @feedback_replies = Message.where(source_feedback_id: params[:source_feedback_id]).all
+    @feedback_replies.each do |reply|
+    end
+    @message = Message.new
+    @message.message_time = Time.now
+    @message.userid = @user.userid
   end
 
   def select_by_identifier
     get_user_info_from_userid
     @options = Hash.new
-    @feedbacks = Feedback.all.order_by(identifier: -1).each do |contact|
+    order = "identifier ASC"
+    @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order).each do |contact|
       @options[contact.identifier] = contact.id
     end
     @feedback = Feedback.new
@@ -119,13 +265,22 @@ class FeedbacksController < ApplicationController
   end
 
   def show
-    get_user_info_from_userid
+    #get_user_info_from_userid
     @feedback = Feedback.id(params[:id]).first
     if @feedback.present?
       @feedback
     else
-      go_back("feedback",params[:id])
+      redirect_back(fallback_location: root_path, notice: 'Feedback is not there') and return
     end
+  end
+
+  def unkeep
+    get_user_info_from_userid
+    @feedback = Feedback.id(params[:id]).first
+    go_back('feedback', params[:id]) if @feedback.blank?
+    @feedback.update_unkeep
+    flash.notice = 'Feedback no longer being kept'
+    return_after_unkeep(params[:source], params[:id])
   end
 
   def update
@@ -135,18 +290,46 @@ class FeedbacksController < ApplicationController
       redirect_to :action => 'show'
       return
     else
-      go_back("feedback",params[:id])
+      redirect_back(fallback_location: root_path, notice: 'Feedback is not there') and return
     end
   end
 
+  def userid_feedbacks
+    get_user_info_from_userid
+    @user.reload
+    @feedbacks_without_reply = @user.userid_feedback_replies.keys.select do |feedback|
+      @user.userid_feedback_replies[feedback].blank?
+    end
+    @feedbacks = Feedback.in(id: @feedbacks_without_reply)
+  end
+
+  def userid_feedbacks_with_replies
+    get_user_info_from_userid
+    @user.reload
+    @feedbacks_with_reply = @user.userid_feedback_replies.keys.reject do |feedback|
+      @user.userid_feedback_replies[feedback].blank?
+    end
+    @feedbacks = Feedback.in(id: @feedbacks_with_reply)
+  end
+
+
+
   private
+
   def feedback_params
     params.require(:feedback).permit!
   end
+
   def new_params
     params.delete('utf8')
     params.delete('controller')
     params.delete('action')
     params.permit!
   end
+
+  def delete_reply_messages(feedback_id)
+    Message.where(source_feedback_id: feedback_id).destroy
+  end
+
+
 end

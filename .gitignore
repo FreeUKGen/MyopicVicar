@@ -33,6 +33,10 @@ mongo.log
 /public/assets/
 /test_data/warning/
 
+# Cloud9
+mongod
+start_dbs
+
 # Ignore RVM-related files
 .rvmrc
 
@@ -125,6 +129,7 @@ vendor/extensions/**/spec/dummy
 
 
 # Ignore application configuration
+config/initializers/development_mail_interceptor.rb
 config/application.yml
 config/database.yml
 config/errbit.yml
@@ -133,5 +138,5 @@ config/mongoid.yml
 config/secrets.yml
 config/initializers/setup_mail.rb
 data/*
-
+.robocop.yml
 app/assets/copy_of_assets_freecen/

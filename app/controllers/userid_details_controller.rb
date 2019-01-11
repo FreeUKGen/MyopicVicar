@@ -44,7 +44,7 @@ class UseridDetailsController < ApplicationController
   def create
     if spam_check
       @userid = UseridDetail.new(userid_details_params)
-      @userid.add_fields(params[:commit],session[:syndicate])
+      @userid.add_fields(params[:commit], session[:syndicate])
       @userid.save
       if @userid.save
         refinery_user = Refinery::Authentication::Devise::User.where(:username => @userid.userid).first
@@ -102,7 +102,7 @@ class UseridDetailsController < ApplicationController
     session[:type] = "edit"
     get_user_info_from_userid
     @userid = @user if  session[:my_own]
-    @current_user = cookies.signed[:userid]
+    @current_user = get_user
     load(params[:id])
     @syndicates = Syndicate.get_syndicates
   end
@@ -127,7 +127,7 @@ class UseridDetailsController < ApplicationController
   end #end method
 
   def load(userid_id)
-    @user = cookies.signed[:userid]
+    @user = get_user
     @first_name = @user.person_forename unless @user.blank?
     @userid = UseridDetail.id(userid_id).first
     if @userid.nil?
@@ -145,10 +145,14 @@ class UseridDetailsController < ApplicationController
     session[:type] = "add"
     get_user_info_from_userid
     @role = session[:role]
-    @syndicates = Syndicate.get_syndicates_open_for_transcription
-    @syndicates = session[:syndicate] if @user.person_role == "syndicate_coordinator" || @user.person_role == "volunteer_coordinator" ||
-      @user.person_role == "data_manager"
-    @syndicates = Syndicate.get_syndicates if ['system_administrator', 'executive_director', 'project_manager', 'volunteer_coordinator'].include?(@user.person_role)
+    if @user.person_role == "syndicate_coordinator"
+      @syndicates = Array.new
+      @syndicates[0] = session[:syndicate]
+    elsif ['system_administrator', 'executive_director', 'project_manager', 'volunteer_coordinator'].include?(@user.person_role)
+      @syndicates = Syndicate.get_syndicates
+    else
+      @syndicates = Syndicate.get_syndicates_open_for_transcription
+    end
     @userid = UseridDetail.new
   end
 
@@ -162,7 +166,7 @@ class UseridDetailsController < ApplicationController
     get_user_info_from_userid
     @userid = @user
     respond_to do |format|
-      format.html 
+      format.html
       format.json do
         json_of_my_profile = @userid.json_of_my_profile
         send_data json_of_my_profile, :type => 'application/txt; header=present', :disposition => "attachment; filename=my_profile.txt"
@@ -191,7 +195,7 @@ class UseridDetailsController < ApplicationController
   def next_place_to_go_unsuccessful_create
     case
     when  params[:commit] == "Submit"
-      @user = cookies.signed[:userid]
+      @user = get_user
       @first_name = @user.person_forename unless @user.blank?
       render :action => 'new' and return
     when params[:commit] == 'Register Researcher'
@@ -204,7 +208,7 @@ class UseridDetailsController < ApplicationController
     when params[:commit] == 'Technical Registration'
       render :action => 'technical_registration' and return
     else
-      @user = cookies.signed[:userid]
+      @user = get_user
       @first_name = @user.person_forename unless @user.blank?
       render :action => 'new' and return
     end
@@ -230,6 +234,15 @@ class UseridDetailsController < ApplicationController
     @options = UseridRole::VALUES
     @prompt = 'Select Role?'
     @location = 'location.href= "role?role=" + this.value'
+  end
+
+  def secondary_roles
+    session[:return_to] = request.fullpath
+    get_user_info_from_userid
+    @userid = UseridDetail.new
+    @options = UseridRole::VALUES
+    @prompt = 'Select Secondary Role?'
+    @location = 'location.href= "secondary?role=" + this.value'
   end
 
   def record_validation_errors(exception)
@@ -264,6 +277,12 @@ class UseridDetailsController < ApplicationController
 
   def role
     @userids = UseridDetail.role(params[:role]).all.order_by(userid_lower_case: 1)
+    @syndicate = " #{params[:role]}"
+    @sorted_by = " lower case userid"
+  end
+
+  def secondary
+    @userids = UseridDetail.secondary(params[:role]).all.order_by(userid_lower_case: 1)
     @syndicate = " #{params[:role]}"
     @sorted_by = " lower case userid"
   end
@@ -339,15 +358,18 @@ class UseridDetailsController < ApplicationController
       redirect_to :action => 'new'
       return
     when params[:option] == "Select specific email"
-      @userids = UseridDetail.get_emails_for_selection(session[:syndicate])
+      params[:syndicate].present? ? @syndicate = params[:syndicate] : @syndicate = 'all'
+      @userids = UseridDetail.get_emails_for_selection(@syndicate)
       @location = 'location.href= "select?email=" + this.value'
       @prompt = "Please select an email address from the following list for #{session[:syndicate]}"
     when params[:option] == "Select specific userid"
-      @userids = UseridDetail.get_userids_for_selection(session[:syndicate])
+      params[:syndicate].present? ? @syndicate = params[:syndicate] : @syndicate = 'all'
+      @userids = UseridDetail.get_userids_for_selection(@syndicate)
       @location = 'location.href= "select?userid=" + this.value'
       @prompt = "Select userid for #{session[:syndicate]}"
     when params[:option] == "Select specific surname/forename"
-      @userids = UseridDetail.get_names_for_selection(session[:syndicate])
+      params[:syndicate].present? ? @syndicate = params[:syndicate] : @syndicate = 'all'
+      @userids = UseridDetail.get_names_for_selection(@syndicate)
       @location = 'location.href= "select?name=" + this.value'
       @prompt = "Select surname/forename for #{session[:syndicate]}"
     else
@@ -426,7 +448,7 @@ class UseridDetailsController < ApplicationController
         return
       else
         session[:my_own] = true
-         redirect_to edit_userid_detail_path(@userid)
+        redirect_to edit_userid_detail_path(@userid)
         return
       end
     end
@@ -445,20 +467,105 @@ class UseridDetailsController < ApplicationController
     else
       flash[:notice] = "The update of the profile was unsuccessful #{success[1]} #{@userid.errors.full_messages}"
       @syndicates = Syndicate.get_syndicates_open_for_transcription
-       redirect_to edit_userid_detail_path(@userid)
+      redirect_to edit_userid_detail_path(@userid)
       return
     end
   end
 
   def incomplete_registrations
     @current_syndicate = session[:syndicate]
-    @current_user = cookies.signed[:userid]
+    @current_user = get_user
     session[:edit_userid] = true
     user = UseridDetail.new
 
     if permitted_users?
       @incomplete_registrations = user.list_incomplete_registrations(@current_user, @current_syndicate)
       render :template => 'shared/incomplete_registrations'
+    else
+      flash[:notice] = 'Sorry, You are not authorized for this action'
+      redirect_to '/manage_resources/new'
+    end
+  end
+
+  def return_total_transcriber_records
+    total_records = 0
+    UseridDetail.where(person_role: "transcriber", new_transcription_agreement: "Accepted", number_of_records: {'$ne': 0}).each do |count|
+      total_records += count.number_of_records
+    end
+    return total_records
+  end
+
+  def return_total_records
+    total_records = 0
+    UseridDetail.where(number_of_records: {'$ne': 0}).each do |count|
+      total_records += count.number_of_records
+    end
+    return total_records
+  end
+
+  def return_percentage_total_records_by_transcribers
+    total_records_all = return_total_records.to_f
+    total_records_open_transcribers = return_total_transcriber_records.to_f
+    if total_records_all == 0 || total_records_open_transcribers == 0
+      return 0
+    else
+      return ((total_records_open_transcribers / total_records_all) * 100).round(2)
+    end
+  end
+
+  def return_percentage_all_users_accepted_transcriber_agreement
+    total_users = UseridDetail.count.to_f
+    total_users_accepted = UseridDetail.where(new_transcription_agreement: "Accepted").count.to_f
+    if total_users == 0 || total_users_accepted == 0
+      return 0
+    else
+      return ((total_users_accepted / total_users) * 100).round(2)
+    end
+  end
+
+  def return_percentage_all_existing_users_accepted_transcriber_agreement
+    total_existing_users = UseridDetail.where(sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
+    total_existing_users_accepted = UseridDetail.where(new_transcription_agreement: "Accepted", sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
+    if total_existing_users == 0 || total_existing_users_accepted == 0
+      return 0
+    else
+      return ((total_existing_users_accepted / total_existing_users) * 100).round(2)
+    end
+  end
+
+  def return_percentage_all_existing_active_users_accepted_transcriber_agreement
+    total_existing_active_users = UseridDetail.where(active: true, sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
+    total_existing_active_users_accepted = UseridDetail.where(active: true, new_transcription_agreement: "Accepted", sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
+    if total_existing_active_users == 0 || total_existing_active_users_accepted == 0
+      return 0
+    else
+      return ((total_existing_active_users_accepted / total_existing_active_users) * 100).round(2)
+    end
+  end
+
+
+  def transcriber_statistics
+    @current_user = get_user
+    if stats_permitted_users?
+      @total_users = UseridDetail.count
+      @total_transcribers = UseridDetail.where(person_role: "transcriber").count
+      @total_transcribers_accepted_agreement = UseridDetail.where(person_role: "transcriber", new_transcription_agreement: "Accepted").count
+      @total_active_transcribers = UseridDetail.where(person_role: "transcriber", active: true).count
+      @users_never_uploaded_file = UseridDetail.where(number_of_files: 0).count
+      @users_uploaded_file = UseridDetail.where(number_of_files: {'$ne': 0}).count
+      @transcribers_never_uploaded_file = UseridDetail.where(person_role: "transcriber",number_of_files: 0).count
+      @transcriber_uploaded_file = UseridDetail.where(person_role: "transcriber",number_of_files: {'$ne': 0}).count
+      @incomplete_registrations = UseridDetail.new.incomplete_user_registrations_count
+      @incomplete_transcriber_registrations = UseridDetail.new.incomplete_transcribers_registrations_count
+      # New statistics
+      @total_records_transcribers = return_total_transcriber_records
+      @percentage_total_records_by_transcribers = return_percentage_total_records_by_transcribers
+      @total_transcribers_accepted_agreement_no_records = UseridDetail.where(person_role: "transcriber", new_transcription_agreement: "Accepted", number_of_records: 0).count
+      @percentage_all_users_who_accepted_transcription_agreement = return_percentage_all_users_accepted_transcriber_agreement
+      @percentage_existing_users_who_accepted_transcription_agreement = return_percentage_all_existing_users_accepted_transcriber_agreement
+      @percentage_active_existing_users_who_accepted_transcription_agreement = return_percentage_all_existing_active_users_accepted_transcriber_agreement
+      @new_users_last_30_days = UseridDetail.where(sign_up_date: {'$gt': DateTime.now - 30.days }).count
+      @new_users_last_90_days = UseridDetail.where(sign_up_date: {'$gt': DateTime.now - 90.days }).count
     else
       flash[:notice] = 'Sorry, You are not authorized for this action'
       redirect_to '/manage_resources/new'
@@ -472,7 +579,8 @@ class UseridDetailsController < ApplicationController
   end
 
   def spam_check
-    return true if cookies.signed[:userid].present?
+    user = get_user
+    return true if user.present?
     honeypot_error = true
     diff = Time.now - Time.parse(params[:__TIME])
 
@@ -515,6 +623,10 @@ class UseridDetailsController < ApplicationController
     ['system_administrator', 'syndicate_coordinator', 'county_coordinator', 'country_coordinator'].include? @current_user.person_role
   end
 
+  def stats_permitted_users?
+    ['system_administrator', 'executive_director', 'project_manager'].include? @current_user.person_role
+  end
+
   def get_option_parameter(option, location)
     location += '+"&option=' + option +'"'
   end
@@ -538,8 +650,6 @@ class UseridDetailsController < ApplicationController
   end
 
   def email_valid_change
-    @userid.email_address_valid == true ? "Valid" : "Invalid" 
+    @userid.email_address_valid == true ? "Valid" : "Invalid"
   end
-
-
 end

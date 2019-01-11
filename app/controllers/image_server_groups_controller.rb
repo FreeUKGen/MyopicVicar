@@ -1,5 +1,5 @@
 class ImageServerGroupsController < ApplicationController
- 
+  skip_before_filter :require_login, only: [:upload_return]
 
   def allocate
     display_info
@@ -14,8 +14,7 @@ class ImageServerGroupsController < ApplicationController
 
   def create
     display_info
-    group_list = ImageServerGroup.source_id(session[:source_id]).pluck(:group_name)
-
+    group_list = ImageServerGroup.source_id(params[:image_server_group][:source_id]).pluck(:group_name)
     if not group_list.include? params[:image_server_group][:group_name]
       params[:image_server_group].delete(:source_start_date)
       params[:image_server_group].delete(:source_end_date)
@@ -28,6 +27,7 @@ class ImageServerGroupsController < ApplicationController
       if image_server_group.errors.any? then
         flash[:notice] = 'Addition of Image Group "'+image_server_group_params[:group_name]+'" was unsuccessful'
         redirect_back(fallback_location: root_path)
+
       else
         image_server_group.update_attributes(:source_id=>@source.id, :church_id=>@church.id, :place_id=>@place.id)
 
@@ -35,6 +35,7 @@ class ImageServerGroupsController < ApplicationController
         redirect_to index_image_server_group_path(@source)
       end
     else
+
       flash[:notice] = 'Image Group "'+image_server_group_params[:group_name]+'" already exist'
       redirect_back(fallback_location: root_path)
     end
@@ -49,13 +50,14 @@ class ImageServerGroupsController < ApplicationController
       session.delete(:image_server_group_id)
 
       flash[:notice] = 'Deletion of Image Group "'+image_server_group[:group_name]+'" was successful'
-      redirect_to index_image_server_group_path(image_server_group.source)  
+      redirect_to index_image_server_group_path(image_server_group.source)
 
     rescue Mongoid::Errors::DeleteRestriction
       logger.info "Logged Error for Image Server Group Delete"
       logger.debug image_server_group.group_name+' is not empty'
+
       redirect_back(fallback_location: root_path, :notice => image_server_group.group_name+' IS NOT EMPTY, CAN NOT BE DELETED') and return
-    end     
+    end
   end
 
   def display_info
@@ -86,7 +88,7 @@ class ImageServerGroupsController < ApplicationController
     @chapman_code = @place.chapman_code
     session[:county] = @county
     session[:chapman_code] = @syndicate if session[:chapman_code].nil?
-    @user = cookies.signed[:userid]
+    @user = get_user
   end
 
   def edit
@@ -98,7 +100,9 @@ class ImageServerGroupsController < ApplicationController
     @image_server_group = @group.first
     @parent_source = Source.id(session[:source_id]).first
 
+
     redirect_back(fallback_location: root_path, :notice => 'Attempted to edit a non_esxistent Image Group') and return if @image_server_group.nil?
+
   end
 
   def error
@@ -111,6 +115,7 @@ class ImageServerGroupsController < ApplicationController
   end
 
   def index
+    session.delete(:upload_return)
     session[:source_id] = params[:id]
     display_info
 
@@ -121,7 +126,16 @@ class ImageServerGroupsController < ApplicationController
 
   def initialize_status
     display_info
-    @image_server_group = ImageServerGroup.id(params[:id]).first
+
+    if params[:type].nil?     # from 'initialize image group' (image group show)
+      @group_name = ImageServerGroup.group_list_by_status(params[:id], ['u'])
+      @groups = ImageServerGroup.where(:source_id=>params[:id], :"summary.status"=>{'$in'=>['u']})
+      @image_server_group = @groups.first
+    else                      # from 'initialize image groups' (image groups index)
+      @image_server_group = ImageServerGroup.id(params[:id]).first
+    end
+
+    redirect_to(:back, :notice=> 'No Image Group Available for Initialization') and return if @image_server_group.nil?
   end
 
   def my_list_by_county
@@ -131,9 +145,11 @@ class ImageServerGroupsController < ApplicationController
     @user = UseridDetail.where(:userid=>session[:userid]).first
     @source,@group_ids,@group_id = ImageServerGroup.group_ids_for_available_assignment_by_county(session[:chapman_code])
 
-    if @group_id.empty?
+    if @group_id.empty? || @source.nil?
       flash[:notice] = 'No Image Groups for Allocation under County ' + params[:id]
+
       redirect_back(fallback_location: root_path)
+
     else
       session[:source_id] = @source[0][0]
       display_info
@@ -155,7 +171,7 @@ class ImageServerGroupsController < ApplicationController
     end
   end
 
-  def new 
+  def new
     display_info
 
     @image_server_group = ImageServerGroup.new
@@ -191,8 +207,10 @@ class ImageServerGroupsController < ApplicationController
     redirect_back(fallback_location: root_path, :notice => 'Transcriber does not exist') and return if transcriber.nil?
 
     syndicate = Syndicate.where(syndicate_code: transcriber.syndicate).first
+
     redirect_back(fallback_location: root_path, :notice => 'Syndicate does not exist') and return if syndicate.nil?
-    
+
+
     sc = UseridDetail.where(:userid=>syndicate.syndicate_coordinator).first
     redirect_back(fallback_location: root_path, :notice => 'SC does not exist, please contact administrator') and return if sc.nil?
 
@@ -202,17 +220,24 @@ class ImageServerGroupsController < ApplicationController
   end
 
   def send_complete_to_cc
-    display_info
+    if params[:completed_groups].nil?       # from 'Send Email to CC' under Image Group
+      display_info
+      ImageServerGroup.email_cc_completion(params[:id], @place.chapman_code, @user)
+    else        # from 'email CC of all image groups' button under 'List Fully Transcribed/Reviewed Groups'
+      params[:completed_groups].each do |x|
+        session[:image_server_group_id] = x
+        display_info
 
-    image_server_group = ImageServerGroup.where(:id=>params[:id])
-    ImageServerImage.update_image_status(image_server_group,'cs')
-
-    UserMailer.notify_cc_assignment_complete(@user,params[:id],@place[:chapman_code]).deliver_now
+        ImageServerGroup.email_cc_completion(x, @place.chapman_code, @user)
+      end
+    end
 
     redirect_back(fallback_location: root_path, :notice => 'Email sent to County Coordinator')
+
   end
 
   def show
+    session.delete(:upload_return)
     session[:image_server_group_id] = params[:id]
     session[:assignment_filter_list] = params[:assignment_filter_list] if !params[:assignment_filter_list].nil?
     display_info
@@ -228,10 +253,17 @@ class ImageServerGroupsController < ApplicationController
 
   def update
     if params[:_method] =='put'
-      image_server_group = ImageServerGroup.id(params[:id])
+      image_server_group = ImageServerGroup.id(params[:id]).first
+      logger.info 'image_server_group update'
+      logger.info image_server_group
+      user = get_user
+      flash[:notice] = ImageServerGroup.update_put_request(params, user)
 
-      flash[:notice] = ImageServerGroup.update_put_request(image_server_group, params[:type], cookies.signed[:userid])
-      redirect_to index_image_server_group_path(image_server_group.first.source)
+      if params[:type] == 'complete'
+        redirect_to manage_completion_submitted_image_group_manage_county_path(session[:chapman_code])
+      else
+        redirect_to index_image_server_group_path(image_server_group.source)
+      end
     else
       if image_server_group_params[:origin] == 'allocate'
         image_server_group = ImageServerGroup.update_allocate_request(image_server_group_params)
@@ -239,10 +271,9 @@ class ImageServerGroupsController < ApplicationController
         flash[:notice] = 'Allocate of Image Groups was successful'
         redirect_to index_image_server_group_path(image_server_group.first.source)
       elsif !image_server_group_params[:initialize_status].nil?           # to initialize Image Group
-        image_server_group = ImageServerGroup.id(params[:id]).first
-        ImageServerGroup.initialize_all_images_status_under_image_group(params[:id], image_server_group_params[:initialize_status])
+        image_server_group = ImageServerGroup.update_initialize_request(image_server_group_params)
 
-        flash[:notice] = 'Successfully initialized Image Group'
+        flash[:notice] = 'Successfully initialized Image Group(s)'
         redirect_to index_image_server_group_path(image_server_group.source)
       else
         image_server_group = ImageServerGroup.id(params[:id]).first
@@ -259,33 +290,46 @@ class ImageServerGroupsController < ApplicationController
       end
     end
   end
-  
+
   def upload
+    @user = UseridDetail.where(:userid=>session[:userid]).first
     image_server_group = ImageServerGroup.id(params[:id]).first
-    website = image_server_group.create_upload_images_url
+    website = image_server_group.create_upload_images_url(@user.id)
     redirect_to website and return
   end
 
- def upload_return
+  def upload_return
     @image_server_group = ImageServerGroup.id(params[:image_server_group]).first
-    proceed, message = @image_server_group.process_uploaded_images(params)
-    if !proceed
-       flash[:notice] = "We encountered issues with the processing of the upload of images; #{message}"
-       redirect_to image_server_group_path(@image_server_group)   and return
+    if session[:upload_return].blank?
+      session[:upload_return] = 'once'
+      # the session[:upload_return] is used to stop a refresh of the upload return action
+      proceed, message = @image_server_group.process_uploaded_images(params) unless params[:files_uploaded].blank?
+      proceed = true if params[:files_uploaded].blank?
+      if proceed
+        @uploaded =  params[:files_uploaded]
+        @not_uploaded = params[:files_exist]
+        @source = @image_server_group.source
+        @register = @source.register
+        @register_type = @register.register_type
+        @place =  @image_server_group.place
+        @place_name = @place.place_name
+        @church = @image_server_group.church
+        @church_name = @church.church_name
+        @county = @place.county
+        @user = UseridDetail.id(params[:userid]).first
+        @syndicate = @user.syndicate unless @user.blank?
+        params[:files_uploaded] = nil
+        params[:files_exist] = nil
+      else
+        flash[:notice] = "We encountered issues with the processing of the upload of images; #{message}"
+        redirect_to image_server_group_path(@image_server_group)   and return
+      end
+    else
+      session.delete(:upload_return)
+      flash[:notice] = "You have refreshed the upload return page and that is not permitted"
+      redirect_to image_server_group_path(@image_server_group)   and return
     end
-    @uploaded =  params[:files_uploaded]
-    @not_uploaded = params[:files_exist]
-    @source = @image_server_group.source
-    @register = @source.register
-    @register_type = @register.register_type
-    @place =  @image_server_group.place
-    @place_name = @place.place_name
-    @church = @image_server_group.church
-    @church_name = @church.church_name
-    @county = @place.county
-    get_user_info_from_userid
-    @syndicate = @user.syndicate
- end
+  end
 
   private
   def image_server_group_params

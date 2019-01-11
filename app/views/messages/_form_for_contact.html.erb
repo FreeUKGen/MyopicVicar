@@ -1,0 +1,34 @@
+<div class= "grid">
+  <section class="island  island--light ">
+    <%= semantic_form_for(@message, :html => {:multipart => true } ) do |f| %>
+      <%= f.hidden_field :message_time %>
+      <%= f.hidden_field :userid %>
+      <%= f.hidden_field :source_message_id, value: params[:id]  if params[:id]%>
+      <%= f.hidden_field :source_feedback_id, value: params[:source_feedback_id]  if params[:source_feedback_id]%>
+      <%= f.hidden_field :source_contact_id, value: params[:source_contact_id]  if params[:source_contact_id]%>
+      <ul>
+        <li  class="grid__item  one-third  palm-one-whole  push--bottom" id="subject_input" >
+          <label class="label" for="subject">Subject </label>
+          <%= message_subject %>
+        </li>
+        <li class="grid__item  one-third  palm-one-whole push--bottom">
+          <label>Textual Attachment<span  class="weight--normal"> (optional)</span><a href="#" class="right_tooltip"> <%= image_tag 'info.png', alt: 'Information', height: '16' %><span  >Please select the image you wish to upload (txt, html, htm, log, rtf, pdf only)</span></a></label>
+          <input name="message[attachment]" type="file" >
+        </li>
+        <li class="grid__item  one-third  palm-one-whole push--bottom">
+          <label>Image Attachment<span  class="weight--normal"> (optional)</span><a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span style="width: 900%" >Please select the image you wish to upload (jpg, gif)</span></a></label>
+          <input name="message[images]" type="file" >
+        </li>
+        <li class="grid__item  one-whole  palm-one-whole push--bottom">
+          <label>Message<a href="#" class="right_tooltip"> <%= image_tag 'info.png', alt: 'Information', height: '16' %><span  >You should include a salutation at the start</span></a></label>
+          <% if @message.body.nil? %>
+            <textarea name="message[body]"  style="width: 100%;"  rows="8" ></textarea>
+          <% else%>
+            <textarea name="message[body]"  style="width: 100%;"  rows="8" ><%=@message.body%></textarea>
+          <% end%>
+        </li>
+      </ul>
+      <%= commit_action(f, @message, params)%>
+    <% end %>
+  </section>
+</div>

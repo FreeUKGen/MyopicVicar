@@ -31,6 +31,7 @@ class ImageServerImage
   index({image_server_group_id:1,difficulty:1},{name: "image_server_group_id_difficulty"})
   index({image_server_group_id:1,transcriber:1},{name: "image_server_group_id_transcriber"})
   index({image_server_group_id:1,reviewer:1},{name: "image_server_group_id_reviewer"})
+  index({image_server_group_id:1,image_file_name:1},{name: "image_server_group_id_image_file_name"})
 
   class << self
 
@@ -80,7 +81,15 @@ class ImageServerImage
       image_list
     end
 
-    def get_sorted_group_name(source_id)    # get hash key=image_server_group_id, val=ig, sorted by ig
+    def get_sorted_group_name_under_church(church_id)    # get hash key=image_server_group_id, val=ig, sorted by ig
+      ig_array = ImageServerGroup.where(:church_id=>church_id).pluck(:id, :group_name)
+      group_name = Hash[ig_array.map {|key,value| [key,value]}]
+      group_name = group_name.sort_by{|key,value| value.downcase}.to_h
+
+      group_name
+    end
+
+    def get_sorted_group_name_under_source(source_id)    # get hash key=image_server_group_id, val=ig, sorted by ig
       ig_array = ImageServerGroup.where(:source_id=>source_id).pluck(:id, :group_name)
       group_name = Hash[ig_array.map {|key,value| [key,value]}]
       group_name = group_name.sort_by{|key,value| value.downcase}.to_h
@@ -104,7 +113,8 @@ class ImageServerImage
     end
 
     def image_detail_access_allowed?(user,manage_user_origin,image_server_group_id,chapman_code)
-      case user.person_role
+      if user.present?
+        case user.person_role
         when 'syndicate_coordinator'
           @image_server_group = ImageServerGroup.id(image_server_group_id).first
           return true if user.syndicate == @image_server_group.syndicate_code
@@ -119,6 +129,7 @@ class ImageServerImage
           end
         when 'system_administrator'
           return true
+        end
       end
 
       return false

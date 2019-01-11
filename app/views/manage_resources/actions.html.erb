@@ -1,13 +1,14 @@
 <% title "Action Page" %>
+<%# raise @current_user.inspect %>
 <% if flash[:notice] %>
-   <div class="push-half--bottom" id="notice" style="color:blue;">
-  <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+  <div class="push-half--bottom" id="notice" style="color:blue;">
+    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
   </div>
 <% end %>
 <% count = @user.count_not_checked_messages %>
 <% if count != 0 %>
   <div class="islet islet--bordered push--bottom" style="border-color: #895f49; border-width: 2px; max-width: 20em;">
-  You have <b><%= link_to "#{pluralize(count, 'message')}", userid_messages_path %>.</b>
+    You have <b><%= link_to "#{pluralize(count, 'message')}", userid_messages_path %>.</b>
   </div>
 <% end %>
 <% if @user.new_transcription_agreement != "Accepted" %>
@@ -15,6 +16,5 @@
   <p>If you have any questions about transcribing or the documents linked below, <%= link_to "please ask us","https://groups.google.com/a/freeukgenealogy.org.uk/forum/#!forum/transcription-agreenment--open-data", target: "_blank" %>. We are sorry that this is a google group, as we know some of you would prefer not to use this tool. If you are aware of an alternative, or prefer not to sign into the group, please let us know (info@freeukgenealogy.org.uk).</p>
 <% end %>
 <% breadcrumb :root %>
-<%= @page %> 
-
+<%= @page %>
 <%= render "resource_sidebar" %>

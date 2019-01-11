@@ -69,7 +69,7 @@ class AssignmentsController < ApplicationController
       @place = @church.place
       session[:place_name] = @place.place_name
       session[:county] = @county = @place.county
-      @user = cookies.signed[:userid]
+      @user = get_user
       @group = ImageServerGroup.find(:id=>image_server_group_id)
     end
   end
@@ -84,7 +84,8 @@ class AssignmentsController < ApplicationController
     @place = @church.place #id?
     @county =  @place.county
     @place_name = @place.place_name
-    @user = cookies.signed[:userid]
+    @syndicate = @place.chapman_code
+    @user = get_user
     @source = Source.find(:id=>session[:source_id])
     @group = ImageServerGroup.find(:id=>session[:image_server_group_id])
   end
@@ -94,9 +95,8 @@ class AssignmentsController < ApplicationController
 
   def get_counties_for_selection
     @counties = Array.new
-    counties = County.all.order_by(chapman_code: 1)
 
-    counties.each {|county| @counties << county.chapman_code }
+    @counties = County.county_with_unallocated_image_groups
 
     @counties.compact unless @counties.nil?
     @counties.delete("nil") unless @counties.nil?
@@ -178,6 +178,9 @@ class AssignmentsController < ApplicationController
       return
     else
       @assignment, @count = Assignment.list_assignment_by_status(session[:syndicate], 'rs')
+
+      @assignment_ids = []
+      @assignment.each {|k1,v1| @assignment_ids << k1}
     end
   end
 
@@ -187,6 +190,9 @@ class AssignmentsController < ApplicationController
       return
     else
       @assignment, @count = Assignment.list_assignment_by_status(session[:syndicate], 'ts')
+
+      @assignment_ids = []
+      @assignment.each {|k1,v1| @assignment_ids << k1}
     end
   end
 
@@ -219,7 +225,7 @@ class AssignmentsController < ApplicationController
   end
 
   def select_county
-    @user = cookies.signed[:userid]
+    @user = get_user
     get_counties_for_selection
     
     if @counties.nil?

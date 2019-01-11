@@ -1,0 +1,14 @@
+<p> Dear <%= @contact.name %>;</p>
+<p>You contacted FreeREG on the matter of <b><%= @contact.contact_type%></b> with a reference
+  <a href="<%=Rails.application.config.website%>/contacts/<%=@contact.id%>"><%= @contact.identifier %>
+  at <%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil?%></p>
+
+<p>A team member has replied as follows:</p>
+<p><%= @message.body%></p>
+<% if @message.attachment.present?%>
+There is an File attachment
+<% end%>
+<% if @message.images.present?%>
+There is an Image attachment
+<% end%>
+<p> The FreeREG Team</p>

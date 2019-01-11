@@ -1,176 +1,190 @@
 class SourcesController < ApplicationController
   require 'freereg_options_constants'
-  
+
   def access_image_server
-    @user = cookies.signed[:userid]
-    (session[:manage_user_origin] != 'manage county' && session[:chapman_code].nil?) ? chapman_code = 'all': chapman_code = session[:chapman_code]
-    website = Source.create_manage_image_server_url(@user.userid,@user.person_role,chapman_code)  
+    @user = get_user
+    (session[:manage_user_origin] != 'manage county' && session[:chapman_code].blank?) ? chapman_code = 'all' : chapman_code = session[:chapman_code]
+    website = Source.create_manage_image_server_url(@user.userid, @user.person_role, chapman_code)
     redirect_to website and return
   end
 
   def create
     display_info
+    redirect_back(fallback_location: root_path, notice: 'Attempting to create with an incomplete source') and
+    return if @register.blank? || @church.blank? || @place.blank? || @source.blank?
 
-    source = Source.where(:register_id=>params[:source][:register_id]).first
+    source = Source.where(register_id: params[:source][:register_id]).first
+    redirect_back(fallback_location: root_path, notice: 'Attempting to create without the required parameters') and
+    return if source.blank?
+
     register = source.register
+    redirect_back(fallback_location: root_path, notice: 'Attempting to create without the required parameters') and
+    return if register.blank?
 
     source = Source.new(source_params)
     source.save
+    redirect_back(fallback_location: root_path, notice: "Addition of Source was unsuccessful because #{source.errors.messages}") and
+    return if source.errors.any?
 
-    if source.errors.any? then
-      flash[:notice] = 'Addition of Source "'+params[:source][:source_name]+'" was unsuccessful'
-      redirect_back(fallback_location: root_path)
-    else
-      register.sources << source
-      register.save
-
-      flash[:notice] = 'Addition of Source "'+params[:source][:source_name]+'" was successful'
-      redirect_to index_source_path(source.register)     
-    end
+    register.sources << source
+    register.save
+    flash[:notice] = 'Addition of Source was successful'
+    redirect_to index_source_path(source.register)
   end
 
   def destroy
     display_info
-    get_user_info(session[:userid],session[:first_name])
+    redirect_back(fallback_location: root_path, notice: 'Attempting to edit an incomplete source') and
+    return if @register.blank? || @church.blank? || @place.blank? || @source.blank?
 
-    if ['system_administrator', 'data_managers'].include? @user.person_role
-      source = Source.id(params[:id]).first
+    get_user_info(session[:userid], session[:first_name])
+    redirect_back(fallback_location: root_path, notice: 'Only system_administrator and data_manager is allowed to delete source')
+    return unless ['system_administrator', 'data_managers'].include? @user.person_role
 
-      begin
-        source.destroy
-        flash[:notice] = 'Deletion of "'+source[:source_name]+'" was successful'
-        session.delete(:source_id)
-        redirect_to index_source_path(source.register)      
-
-      rescue Mongoid::Errors::DeleteRestriction
-        logger.info "Logged Error for Source Delete"
-        logger.debug source.source_name+' is not empty'
-        redirect_back(fallback_location: root_path, :notice=> source.source_name+' IS NOT EMPTY, CAN NOT BE DELETED')
-      end 
-
-    else
-      flash[:notice] = 'Only system_administrator and data_manager is allowed to delete source'
-      redirect_back(fallback_location: root_path)
+    source = Source.id(params[:id]).first
+    begin
+      source.destroy
+      flash[:notice] = 'Deletion of source was successful'
+      session.delete(:source_id)
+      redirect_to index_source_path(source.register)
+    rescue Mongoid::Errors::DeleteRestriction
+      logger.info 'Logged Error for Source Delete'
+      logger.debug source.source_name + ' is not empty'
+      redirect_back(fallback_location: root_path, notice: source.source_name + ' IS NOT EMPTY, CAN NOT BE DELETED')
     end
   end
 
   def display_info
-    @source = Source.find(:id=>session[:source_id]) if !session[:source_id].nil?
-    @register = Register.find(:id=>session[:register_id])
+    @source = Source.find(session[:source_id]) if session[:source_id].present?
+    @register = Register.find(session[:register_id]) if session[:register_id].present?
+    return if @register.blank? || @source.blank?
+
     @register_type = RegisterType.display_name(@register.register_type)
-    @church = Church.find(session[:church_id])
+    @church = Church.find(session[:church_id]) if session[:church_id].present?
+    return if @church.blank?
+
     @church_name = session[:church_name]
-    @county =  session[:county]
+    @county = session[:county]
     @place_name = session[:place_name]
-    @place = @church.place #id?
-    @county =  @place.county
+    @place = @church.place
+    return if @place.blank?
+
+    @county = @place.county
     @place_name = @place.place_name
-    @user = cookies.signed[:userid]
+    @user = get_user
   end
 
   def edit
     display_info
-
     @source = Source.id(params[:id]).first
+    redirect_back(fallback_location: root_path, notice: 'Attempting to edit an incomplete source') and
+    return if @register.blank? || @church.blank? || @place.blank? || @source.blank?
 
-    redirect_back(fallback_location: root_path, :notice => 'Attempted to edit a non_existent Source') and return if @source.nil?
   end
 
   def flush
     display_info
-
     @source = Source.id(params[:id]).first
-    go_back("source#flush", params[:id]) and return if @source.nil?
+    redirect_back(fallback_location: root_path, notice: 'Attempting to flush an incomplete source') and
+    return if @register.blank? || @church.blank? || @place.blank? || @source.blank?
 
     @source_id = Source.get_propagate_source_list(@source)
   end
 
   def index
     display_info
-    params[:id] = session[:register_id] if params[:id].nil?
-
-    @source = Source.where(:register_id=>params[:id]).all
-    go_back("source#index",params[:id]) and return if @source.nil?
+    params[:id] = session[:register_id] if params[:id].blank?
+    @source = Source.where(register_id: params[:id]).all
+    redirect_back(fallback_location: root_path, notice: 'Attempting to display an incomplete source') and
+    return if @register.blank? || @church.blank? || @place.blank? || @source.blank?
 
     case @source.count
-      when 0
-        redirect_back(fallback_location: root_path, :notice => 'No Source under this register')
-      when 1
-        case @source.first.source_name
-          when 'Image Server'
-            redirect_to source_path(:id=>@source.first.id)
-          when 'other server1'
-            redirect_to :controller=>'server1', :action=>'show', :source_name=>'other server1'
-          when 'other server2'
-#            redirect_to :controller=>'server2', :action=>'show', :source_name=>'other server1'
-          else
-            redirect_back(fallback_location: root_path, :notice => 'Something wrong')
-        end
+    when 0
+      redirect_back(fallback_location: root_path, notice: 'No Source under this register')
+    when 1
+      case @source.first.source_name
+      when 'Image Server'
+        redirect_to source_path(id: @source.first.id)
+      when 'other server1'
+        redirect_to controller: 'server1', action: 'show', source_name: 'other server1'
+      when 'other server2'
+        #            redirect_to :controller=>'server2', :action=>'show', :source_name=>'other server1'
+      else
+        redirect_back(fallback_location: root_path, notice: 'Something wrong')
+      end
     end
   end
 
   def initialize_status
     display_info
+    redirect_back(fallback_location: root_path, notice: 'Attempting to initialize an incomplete source') and
+    return if @register.blank? || @church.blank? || @place.blank? || @source.blank?
 
     allow_initialize = ImageServerGroup.check_all_images_status_before_initialize_source(params[:id])
-
-    redirect_back(fallback_location: root_path, :notice=>'Source can be initialized only when all image groups status is unset') and return if not allow_initialize
+    redirect_back(fallback_location: root_path, notice: 'Source can be initialized only when all image groups status is unset') and
+    return unless allow_initialize
   end
 
   def load(source_id)
     @source = Source.id(source_id).first
+    return if @source.blank?
 
-    if @source.nil?
-      go_back("source", source_id)
-    else
-      session[:source_id] = @source.id
-      @register = @source.register
-      @register_type = RegisterType.display_name(@register.register_type)
-      session[:register_id] = @register.id
-      session[:register_name] = @register_type
-      @church = @register.church
-      @church_name = @church.church_name
-      session[:church_name] = @church_name
-      session[:church_id] = @church.id
-      @place = @church.place
-      session[:place_id] = @place.id
-      @place_name = @place.place_name
-      session[:place_name] = @place_name
-      @county = @place.county
-      session[:county] = @county
-      @user = cookies.signed[:userid]
-    end
+    session[:source_id] = @source.id
+    @register = @source.register
+    return if @register.blank?
+
+    @register_type = RegisterType.display_name(@register.register_type)
+    session[:register_id] = @register.id
+    session[:register_name] = @register_type
+    @church = @register.church
+    return if @church.blank?
+
+    @church_name = @church.church_name
+    session[:church_name] = @church_name
+    session[:church_id] = @church.id
+    @place = @church.place
+    return if @church.place?
+
+    session[:place_id] = @place.id
+    @place_name = @place.place_name
+    session[:place_name] = @place_name
+    @county = @place.county
+    session[:county] = @county
+    @user = get_user
   end
 
-  def new 
+  def new
     display_info
+    redirect_back(fallback_location: root_path, notice: 'Attempting to show an incomplete source') and
+    return if @register.blank? || @church.blank? || @place.blank? || @source.blank?
 
     @source_new = Source.new
-    name_array = Source.where(:register_id=>session[:register_id]).pluck(:source_name)
-    go_back("source#new", params[:id]) and return if name_array.nil?
+    name_array = Source.where(register_id: session[:register_id]).pluck(:source_name)
+    redirect_back(fallback_location: root_path) and return if name_array.blank?
 
     @list = FreeregOptionsConstants::SOURCE_NAME - name_array
   end
 
   def show
+    load(params[:id])
+    redirect_back(fallback_location: root_path, notice: 'Attempting to show an incomplete source') and
+    return if @register.blank? || @church.blank? || @place.blank? || @source.blank?
+
     # sessions used for breadcrumb
     session[:image_group_filter] = params[:image_group_filter] if !params[:image_group_filter].nil?
     session[:assignment_filter_list] = params[:assignment_filter_list] if !params[:assignment_filter_list].nil?
     # indicate image group display comes from Source or filters under 'All Sources' directly
     session[:from_source] = true
-
-    load(params[:id])
-    go_back("source#show", params[:id]) and return if @source.nil?
   end
 
   def update
-    source = Source.where(:id=>params[:id]).first
-    go_back("source#update", params[:id]) and return if source.nil?
+    source = Source.where(id: params[:id]).first
+    redirect_back(fallback_location: root_path, notice: 'Attempting to update an incomplete source') and return if source.blank?
 
     if source_params[:choice] == '1'                        # to propagate Source
       Source.update_for_propagate(params)
       flash[:notice] = 'Update of source was successful'
-    elsif !source_params[:initialize_status].nil?           # to initialize Source
+    elsif source_params[:initialize_status].present?        # to initialize Source
       ImageServerGroup.initialize_all_images_status_under_source(params[:id], source_params[:initialize_status])
       flash[:notice] = 'Successfully initialized source'
     else                                                    # to edit Source
@@ -178,7 +192,6 @@ class SourcesController < ApplicationController
       source.update_attributes(source_params)
       flash[:notice] = 'Update of source was successful'
     end
-
     flash.keep(:notice)
     redirect_to index_source_path(source.register)
   end

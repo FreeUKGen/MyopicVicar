@@ -3,8 +3,8 @@
   <div class="grid">
     <div style="text-align: center">
       <%= link_to 'Edit', edit_userid_detail_path(@userid), method: :get, :class => "btn  weight--light btn--small "%>
-      <%= link_to " Send password change request", change_password_userid_detail_path(@userid), data: { confirm: 'You are about to reset your own password; if you proceed an email will be sent to you and you will be logged out. Do you wish to proceed?' }, method: :get, :class => "btn weight--light  btn--small " %> 
-      <%= link_to 'Download My Profile', my_own_userid_detail_path(@userid,format: :json ), method: :get, :class => "btn  weight--light btn--small "%>    
+      <%= link_to " Send password change request", change_password_userid_detail_path(@userid), data: { confirm: 'You are about to reset your own password; if you proceed an email will be sent to you and you will be logged out. Do you wish to proceed?' }, method: :get, :class => "btn weight--light  btn--small " %>
+      <%= link_to 'Download My Profile', my_own_userid_detail_path(@userid,format: :json ), method: :get, :class => "btn  weight--light btn--small "%>
     </div>
     <div style="clear:both;"> </div>
     <% if flash[:notice] %>
@@ -34,12 +34,19 @@
       </tr> <tr>
         <td>Alternate email address:</td><td > <%= @userid.alternate_email_address   %> </td>
       </tr> <tr>
-        <td>Adress or physical Location:</td><td > <%= @userid.address  %>  </td>
+        <td>Address or physical Location:</td><td > <%= @userid.address  %>  </td>
       </tr> <tr>
         <td>Telephone number:</td><td > <%= @userid.telephone_number %>   </td>
       <% unless @userid.person_role == 'researcher'%>
         </tr> <tr>
           <td>Role in FreeREG:</td><td > <%=@userid.person_role%>  </td>
+        </tr><tr>
+          <td>Secondary Role in FreeREG:</td>
+          <td>
+            <%@userid.secondary_role.each do |role| %>
+            <%=role%><%if(role != @userid.secondary_role.last)%>,<%end%>
+            <%end%>
+          </td>
         </tr> <tr>
           <td>Transcription agreement accepted:</td><td > <%= @userid.new_transcription_agreement%>  </td>
         </tr> <tr>
@@ -54,8 +61,8 @@
           <td>Do not acknowledge my contributions:</td><td > <%= @userid.do_not_acknowledge_me%>  </td>
         </tr> <tr>
           <td>Use a pseudonym in place of my name:</td><td > <%=@userid.acknowledge_with_pseudo_name%>  </td>
-          <% if @userid.acknowledge_with_pseudo_name %> 
-            </tr><tr> 
+          <% if @userid.acknowledge_with_pseudo_name %>
+            </tr><tr>
               <td>Pseudonym to be used:</td><td > <%=@userid.pseudo_name%>  </td>
           <% end%>
           <% unless @userid.last_upload.nil?%>
@@ -77,8 +84,8 @@
         <% unless @userid.country_groups.nil? || @userid.country_groups.length == 0  %>
           </tr> <tr>
              <td>Counties managed as Country Coordinator:</td><td > <%= @userid.country_groups %>  </td>
-        <% end%> 
-      <% end%> 
+        <% end%>
+      <% end%>
     </table><br>
    </div>
   <div class="grid__item  one-third  palm-one-whole ">

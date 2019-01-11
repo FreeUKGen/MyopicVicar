@@ -45,15 +45,33 @@ MyopicVicar::Application.routes.draw do
 
   resources :denominations
 
-  get 'messages/:id/show_waitlist_msg',:to => 'messages#show_waitlist_msg', :as => :show_waitlist_msg
-  delete 'messages/:id/remove_from_useriddetail_waitlist(.:format)',:to => 'messages#remove_from_useriddetail_waitlist', :as => :remove_from_useriddetail_waitlist
+
+  delete 'messages/:id/remove_from_userid_detail(.:format)', :to => 'messages#remove_from_userid_detail', :as => :remove_from_userid_detail
+  get 'messages/communications', to: 'messages#communications', as: :communications_messages
+  get 'messages/list_inactive_comminications', to: 'messages#list_archived_communications', as: :list_archived_communications_messages
   get 'messages/userid_messages', :to => 'messages#userid_messages', :as => :userid_messages
   get 'messages/list_by_type',  :to => 'messages#list_by_type', :as => :list_by_type_messages
-  get 'messages/:id/send_message(.:format)',  :to => 'messages#send_message', :as => :send_message_messages
+  get 'messages/:id/select_recipients(.:format)',  :to => 'messages#select_recipients', :as => :select_recipients_messages
   get 'messages/list_by_name',  :to => 'messages#list_by_name', :as => :list_by_name_messages
   get 'messages/list_by_date',  :to => 'messages#list_by_date', :as => :list_by_date_messages
-  get 'messages/list_by_identifier',  :to => 'messages#list_by_identifier', :as => :list_by_identifier_messages
+  get 'messages/list_by_most_recent',  :to => 'messages#list_by_most_recent', :as => :list_by_most_recent_messages
   get 'messages/select_by_identifier',  :to => 'messages#select_by_identifier', :as => :select_by_identifier_messages
+  get 'messages/:id/reply', :to => 'messages#new', :as => :new_reply_messages
+  get 'messages/:id/reply_messages',:to => 'messages#reply_messages', :as => :reply_messages
+  get 'messages/:id/show_reply_message',:to => 'messages#show_reply_message', :as => :show_reply_message
+  get 'messages/:id/user_reply_messages',:to => 'messages#user_reply_messages', :as => :user_reply_messages
+  get 'messages/:id/userid_reply_messages', :to => 'messages#userid_reply_messages', :as => :userid_reply_messages
+  get 'messages/list_unsent_messages', :to => 'messages#list_unsent_messages', :as => :list_unsent_messages
+  get 'messages/list_archived', :to => 'messages#list_archived', :as => :list_archived_messages
+  get 'messages/list_syndicate_messages', :to => 'messages#list_syndicate_messages', :as => :list_syndicate_messages
+  get 'messages/list_archived_syndicate_messages', :to => 'messages#list_archived_syndicate_messages', :as => :list_archived_syndicate_messages
+  get 'messages/:id/archive', :to => 'messages#archive', :as => :archive_message
+  get 'messages/:id/restore', :to => 'messages#restore', :as => :restore_message
+  get 'messages/:id/keep', :to => 'messages#keep', :as => :keep_message
+  get 'messages/:id/unkeep', :to => 'messages#unkeep', :as => :unkeep_message
+  get 'messages/:id/force_destroy', :to => 'messages#force_destroy', :as => :force_destroy_messages
+  get 'messages/:id/select_role', to: 'messages#select_role', as: :select_role_message
+  get 'messages/select_individual', to: 'messages#select_individual', as: :select_individual_messages
   resources :messages
 
   get 'attic_files/select', :to =>'attic_files#select', :as => :select_attic_files
@@ -80,9 +98,21 @@ MyopicVicar::Application.routes.draw do
   get 'feedbacks/list_by_userid',  :to => 'feedbacks#list_by_userid', :as => :list_by_userid_feedbacks
   get 'feedbacks/list_by_name',  :to => 'feedbacks#list_by_name', :as => :list_by_name_feedbacks
   get 'feedbacks/list_by_date',  :to => 'feedbacks#list_by_date', :as => :list_by_date_feedbacks
+  get 'feedbacks/list_by_most_recent',  :to => 'feedbacks#list_by_most_recent', :as => :list_by_most_recent_feedbacks
   get 'feedbacks/list_by_identifier',  :to => 'feedbacks#list_by_identifier', :as => :list_by_identifier_feedbacks
+  get 'feedbacks/list_archived',  :to => 'feedbacks#list_archived', :as => :list_archived_feedbacks
   get 'feedbacks/select_by_identifier',  :to => 'feedbacks#select_by_identifier', :as => :select_by_identifier_feedbacks
   post 'feedbacks/:id/convert_to_issue(.:format)', :to => 'feedbacks#convert_to_issue', :as => :convert_feedback_to_issue
+  get 'feedbacks/userid_feedbacks', :to => 'feedbacks#userid_feedbacks', :as => :userid_feedbacks
+  get 'feedbacks/userid_feedbacks_with_replies', :to => 'feedbacks#userid_feedbacks_with_replies', :as => :userid_feedbacks_with_replies
+  get 'feedbacks/:id/force_destroy',  :to => 'feedbacks#force_destroy', :as => :force_destroy_feedback
+  get 'feedbacks/:id/archive',  :to => 'feedbacks#archive', :as => :archive_feedback
+  get 'feedbacks/:id/restore',  :to => 'feedbacks#restore', :as => :restore_feedback
+  get 'feedbacks/:source_feedback_id/reply',  :to => 'feedbacks#reply_feedback', :as => :reply_feedback
+  get 'feedbacks/:id/feedback_reply_messages', to: 'feedbacks#feedback_reply_messages', as: :feedback_reply_messages
+  get 'feedbacks/:id/keep',  :to => 'feedbacks#keep', :as => :keep_feedback
+  get 'feedbacks/:id/unkeep',  :to => 'feedbacks#unkeep', :as => :unkeep_feedback
+
   resources :feedbacks
 
 
@@ -90,10 +120,20 @@ MyopicVicar::Application.routes.draw do
   get 'contacts/list_by_type',  :to => 'contacts#list_by_type', :as => :list_by_type_contacts
   get 'contacts/list_by_name',  :to => 'contacts#list_by_name', :as => :list_by_name_contacts
   get 'contacts/list_by_date',  :to => 'contacts#list_by_date', :as => :list_by_date_contacts
+  get 'contacts/list_by_most_recent',  :to => 'contacts#list_by_most_recent', :as => :list_by_most_recent_contacts
   get 'contacts/list_by_identifier',  :to => 'contacts#list_by_identifier', :as => :list_by_identifier_contacts
+  get 'contacts/list_archived',  :to => 'contacts#list_archived', :as => :list_archived_contacts
   get 'contacts/select_by_identifier',  :to => 'contacts#select_by_identifier', :as => :select_by_identifier_contacts
   get  'contacts/:id(.:format)/report_error', :to => 'contacts#report_error', :as => :report_error_contact
-  post 'contacts/:id/convert_to_issue(.:format)', :to => 'contacts#convert_to_issue', :as => :convert_contact_to_issue
+  get 'contacts/:source_contact_id/reply',  :to => 'contacts#reply_contact', :as => :reply_contact
+  get 'contacts/:id/contact_reply_messages', to: 'contacts#contact_reply_messages', as: :contact_reply_messages
+  get 'contacts/:id/force_destroy',  :to => 'contacts#force_destroy', :as => :force_destroy_contact
+  get 'contacts/:id/archive',  :to => 'contacts#archive', :as => :archive_contact
+  get 'contacts/:id/restore',  :to => 'contacts#restore', :as => :restore_contact
+  get 'contacts/:id/convert_to_issue(.:format)', :to => 'contacts#convert_to_issue', :as => :convert_contact_to_issue
+  get 'contacts/:id/keep',  :to => 'contacts#keep', :as => :keep_contact
+  get 'contacts/:id/unkeep',  :to => 'contacts#unkeep', :as => :unkeep_contact
+
   resources :contacts
 
   resources :place_caches
@@ -106,6 +146,7 @@ MyopicVicar::Application.routes.draw do
   get  'manage_syndicates/selection',  :to => 'manage_syndicates#member_by_name', constraints: ManageSyndicatesMemberByNameConstraint
   get  'manage_syndicates/selection',  :to => 'manage_syndicates#batches_with_errors', constraints: ManageCountiesErrorBatchConstraint
   get  'manage_syndicates/selection',  :to => 'manage_syndicates#display_by_filename', constraints: ManageCountiesDisplayByFilenameConstraint
+  get  'manage_syndicates/selection',  :to => 'manage_syndicates#display_by_zero_date', constraints: ManageCountiesDisplayByZeroDateConstraint, :as => :zero_selection_manage_syndicates
   get  'manage_syndicates/selection',  :to => 'manage_syndicates#upload_batch', constraints: ManageCountiesUploadBatchConstraint
   get  'manage_syndicates/selection',  :to => 'manage_syndicates#display_by_userid_filename', constraints: ManageCountiesUseridFilenameConstraint
   get  'manage_syndicates/selection',  :to => 'manage_syndicates#display_by_descending_uploaded_date', constraints: ManageCountiesDescendingConstraint
@@ -137,7 +178,7 @@ MyopicVicar::Application.routes.draw do
   resources :my_saved_searches
 
 
-  get 'manage_resources/pages', :to =>'manage_resources#pages', :as => :pages_manage_resources
+  get 'manage_resources/pages', :to => 'manage_resources#pages', :as => :pages_manage_resources
   get 'manage_resources/logout', :to =>'manage_resources#logout', :as => :logout_manage_resources
   get 'manage_resources/selection', :to =>'manage_resources#selection', :as => :selection_manage_resources
   resources :manage_resources
@@ -145,7 +186,9 @@ MyopicVicar::Application.routes.draw do
 
   get 'userid_details/confirm_email_address', :to =>'userid_details#confirm_email_address', :as => :confirm_email_address_userid_details
   get 'userid_details/role', :to =>'userid_details#role', :as => :role_userid_detail
+  get 'userid_details/secondary', :to =>'userid_details#secondary', :as => :secondary_userid_detail
   get 'userid_details/person_roles', :to =>'userid_details#person_roles', :as => :person_roles_userid_detail
+  get 'userid_details/secondary_roles', :to =>'userid_details#secondary_roles', :as => :secondary_roles_userid_detail
   get 'userid_details/:id/change_password', :to =>'userid_details#change_password', :as => :change_password_userid_detail
   get 'userid_details/researcher_registration', :to =>'userid_details#researcher_registration', :as => :researcher_registration_userid_detail
   get 'userid_details/transcriber_registration', :to =>'userid_details#transcriber_registration', :as => :transcriber_registration_userid_detail
@@ -160,6 +203,7 @@ MyopicVicar::Application.routes.draw do
   get 'userid_details/options', :to =>'userid_details#options', :as => :options_userid_details
   get 'userid_details/display', :to =>'userid_details#display', :as => :display_userid_details
   get 'userid_details/incomplete_registrations', :to =>'userid_details#incomplete_registrations', :as => :incomplete_registrations_userid_details
+  get 'userid_details/transcriber_statistics', :to =>'userid_details#transcriber_statistics', :as => :transcriber_statistics_userid_details
   post 'userid_details/new', :to => 'userid_details#create'
   resources :userid_details
 
@@ -170,7 +214,7 @@ MyopicVicar::Application.routes.draw do
   get  'manage_counties/selection',  :to => 'manage_counties#places_with_unapproved_names', constraints: ManageCountiesUnapprovedNamesConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#batches_with_errors', constraints: ManageCountiesErrorBatchConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#display_by_filename', constraints: ManageCountiesDisplayByFilenameConstraint
-  get  'manage_counties/selection',  :to => 'manage_counties#upload_batch', constraints: ManageCountiesUploadBatchConstraint
+  get  'manage_counties/selection',  :to => 'manage_counties#display_by_zero_date', constraints: ManageCountiesDisplayByZeroDateConstraint, :as => :zero_selection_manage_counties
   get  'manage_counties/selection',  :to => 'manage_counties#upload_batch', constraints: ManageCountiesUploadBatchConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#display_by_userid_filename', constraints: ManageCountiesUseridFilenameConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#display_by_descending_uploaded_date', constraints: ManageCountiesDescendingConstraint
@@ -262,6 +306,7 @@ MyopicVicar::Application.routes.draw do
   get 'freereg1_csv_files/display_my_own_files_by_ascending_uploaded_date',  :to => 'freereg1_csv_files#display_my_own_files_by_ascending_uploaded_date', :as => :display_my_own_files_by_ascending_uploaded_date_freereg1_csv_file
   get 'freereg1_csv_files/display_my_own_files_by_selection',  :to => 'freereg1_csv_files#display_my_own_files_by_selection', :as => :display_my_own_files_by_selection_freereg1_csv_file
   get 'freereg1_csv_files/display_my_own_files_waiting_to_be_processed',  :to => 'freereg1_csv_files#display_my_own_files_waiting_to_be_processed', :as => :display_my_own_files_waiting_to_be_processed_freereg1_csv_file
+  get 'freereg1_csv_files/display_my_own_zero_years', :to => 'freereg1_csv_files#display_my_own_zero_years', :as => :display_my_own_zero_years_files
   get 'freereg1_csv_files/:id/download(.:format)', :to => 'freereg1_csv_files#download', :as => :download_freereg1_csv_file
   get 'freereg1_csv_files/unique_names', :to => 'freereg1_csv_files#unique_names', :as => :unique_names_freereg1_csv_file
   get 'freereg1_csv_files/:id/zero_year', :to => 'freereg1_csv_files#zero_year', :as => :zero_year_freereg1_csv_file
@@ -278,6 +323,9 @@ MyopicVicar::Application.routes.draw do
   get 'search_records/:id/show_print_version(.:format)', :to => 'search_records#show_print_version', :as => :show_print_version_search_record
   resources :search_records
 
+  # For generating the citations
+  get 'search_records/:id/show_citation', :to => 'search_records#show_citation', :as => :show_citation_record
+  resources :search_records
 
   get 'search_queries/:id/show_query', :to => 'search_queries#show_query', :as => :show_query_search_query
   get 'search_queries/:id/show_print_version', :to => 'search_queries#show_print_version', :as => :show_print_version_search_query
@@ -310,7 +358,7 @@ MyopicVicar::Application.routes.draw do
   get 'sources/:id/propagate(.:format)', :to => 'sources#propagate', :as => :propagate_source
   get 'sources/:id/initialize_status(.:format)', :to => 'sources#initialize_status', :as => :initialize_status_source
 
-  
+
   get 'image_server_images/download', :to => 'image_server_images#download', :as => :download_image_server_image
   get 'image_server_images/view', :to => 'image_server_images#view', :as => :view_image_server_image
   get 'image_server_images/:id/flush(.:format)', :to => 'image_server_images#flush', :as => :flush_image_server_image
@@ -344,7 +392,14 @@ MyopicVicar::Application.routes.draw do
   get 'assignment/image_completed', :to => 'assignments#image_completed', :as => :user_complete_image_assignment
   get 'assignments/select_county', :to => 'assignments#select_county', :as => :select_county_assignment
   get 'assignments/:id/list_by_syndicate(.:format)', :to => 'assignments#list_by_syndicate', :as => :list_by_syndicate_assignment
-resources :assignments
+  resources :assignments
+
+  get 'gaps/:id/index(.:format)', :to => 'gaps#index', :as => :index_gap
+  resources :gaps
+
+  get 'gap_reasons/:id/index(.:format)', :to => 'gap_reasons#index', :as => :index_gap_reason
+  resources :gap_reasons
+
 
 
   # This line mounts Refinery's routes at the root of your application.

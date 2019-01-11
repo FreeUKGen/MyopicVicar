@@ -36,7 +36,7 @@ gem 'formtastic'#, '~> 3.1'
 gem "therubyracer", :platforms => :ruby # avoid loading on windows
 
 gem 'airbrake'
-gem 'bcrypt'
+gem 'bcrypt', platforms: :ruby
 gem 'text'
 gem 'json'
 gem 'pry'

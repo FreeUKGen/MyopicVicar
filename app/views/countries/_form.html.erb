@@ -1,8 +1,6 @@
 <%= simple_form_for @country , :html => { :class => "grid"}  do |f| %>
-
-<%= f.input :country_coordinator,  { :as => :select,  :collection => @userids,:label_method => :userid, :value_method => :id,  :include_blank => true, :label => "Select coordinator :", :input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 5}}%>
-<%= f.input :country_description,:label => "Country description :",:input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
-<%= f.input :country_notes,:label => "Country notes :",:input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
-
-<%= f.button :submit, "Update" %>
+  <%= f.input :country_coordinator,  { :as => :select,  :collection => @userids,:label_method => :userid, :value_method => :id,  :include_blank => true, :label => "Select coordinator :", :input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 5}}%>
+  <%= f.input :country_description, { :as => :string, :label => "Country description :", :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }}%>
+  <%= f.input :country_notes, { :as => :string, :label => "Country notes :",:input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }}%>
+  <%= f.button :submit, "Update" %>
 <% end %>

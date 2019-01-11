@@ -3,6 +3,7 @@
   <% if session[:manage_user_origin] == 'manage county' %>
     <%= link_to 'Allocate Image Groups', allocate_image_server_group_path, method: :get, :class => "btn weight--light btn--small" %> 
     <%= link_to 'Create new Image Group', new_image_server_group_path, method: :get, :class => "btn weight--light btn--small" %> 
+    <%= link_to 'Initialize Image Groups', initialize_status_image_server_group_path, method: :get, :class => "btn weight--light btn--small" %> 
   <% end %>
   </div>
 <% end %>

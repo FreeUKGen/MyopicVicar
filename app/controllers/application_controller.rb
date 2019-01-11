@@ -26,7 +26,7 @@ class ApplicationController < ActionController::Base
   require 'chapman_code'
   require 'userid_role'
   require 'register_type'
- 
+
   def load_last_stat
     if session[:site_stats].blank?
       time = Time.now
@@ -54,7 +54,7 @@ class ApplicationController < ActionController::Base
   end
 
   private
-  
+
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(:sign_in) do |user_params|
       user_params.permit(:login, :userid_detail_id, :reset_password_token, :reset_password_sent_at, :username, :password, :email)
@@ -69,7 +69,9 @@ class ApplicationController < ActionController::Base
 
   def after_sign_in_path_for(resource_or_scope)
     cookies.signed[:Administrator] = Rails.application.config.github_issues_password
-    cookies.signed[:userid] = UseridDetail.id(current_authentication_devise_user[:userid_detail_id]).first
+
+    cookies.signed[:userid] = current_authentication_devise_user.userid_detail_id
+
     session[:userid_detail_id] = current_authentication_devise_user.userid_detail_id
     session[:devise] = current_authentication_devise_user.id
     logger.warn "FREEREG::USER current  #{current_authentication_devise_user.username}"
@@ -89,11 +91,19 @@ class ApplicationController < ActionController::Base
     max_records
   end
 
-  def get_place_id_from_file(freereg1_csv_file)
+  def get_place_from_file(freereg1_csv_file)
     register = freereg1_csv_file.register
     church = register.church
     place = church.place
-    return place.id
+    return place
+  end
+
+  def get_location_from_file(freereg1_csv_file)
+    register = freereg1_csv_file.register
+    church = register.church
+    place = church.place
+    return place, church, register
+
   end
 
   def get_places_for_menu_selection
@@ -104,14 +114,21 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def get_user
+    user = cookies.signed[:userid]
+    user = UseridDetail.id(user).first
+    return user
+  end
+
   def get_user_info_from_userid
-    @user = cookies.signed[:userid]
+    @user = get_user
     unless @user.present?
       flash[:notice] = "You must be logged in to access that action"
       redirect_to new_search_query_path # halts request cycle
     else
       @user_id = @user.id
       @userid = @user.id
+      @user_userid = @user.userid
       @first_name = @user.person_forename
       @manager = manager?(@user)
       @roles = UseridRole::OPTIONS.fetch(@user.person_role)
@@ -120,29 +137,28 @@ class ApplicationController < ActionController::Base
 
   def  get_user_info(userid,name)
     #old version for compatibility
-    @user = cookies.signed[:userid]
+    @user = get_user
     @first_name = @user.person_forename unless @user.blank?
     @userid = @user.id
     @roles = UseridRole::OPTIONS.fetch(@user.person_role)
   end
 
   def get_userids_and_transcribers
-    @user = cookies.signed[:userid]
+    @user = get_user
     @userids = UseridDetail.all.order_by(userid_lower_case: 1)
   end
 
   def go_back(type,record)
     flash[:notice] = "The #{type} document you are trying to access does not exist."
     logger.info "FREEREG:ACCESS ISSUE: The #{type} document #{record} being accessed does not exist."
-    redirect_to main_app.new_manage_resource_path
-    return
+    redirect_to main_app.new_manage_resource_path and return
   end
-  
+
   def log_messenger(message)
     log_message = message
     logger.warn(log_message)
   end
-  
+
   def log_missing_document(message,doc1,doc2)
     log_message = "FREEREG:PHC WARNING: aunable to find a document #{message}\n"
     log_message += "FREEREG:PHC Time.now=\t\t#{Time.now}\n"
@@ -206,7 +222,7 @@ class ApplicationController < ActionController::Base
   end
 
   def clean_session
-    
+
     session.delete(:manage_user_origin)
     session.delete(:freereg1_csv_file_id)
     session.delete(:freereg1_csv_file_name)
@@ -227,6 +243,11 @@ class ApplicationController < ActionController::Base
     session.delete(:redirect_to)
     session.delete(:site_stats)
     session.delete(:message)
+    session.delete(:message_base)
+    session.delete(:syndicate)
+    session.delete(:archived_contacts)
+    session.delete(:message_id)
+    session.delete(:original_message_id)
   end
 
   def clean_session_for_county
@@ -241,7 +262,6 @@ class ApplicationController < ActionController::Base
     session.delete(:edit)
     session.delete(:sort)
     session.delete(:sorted_by)
-    session.delete(:syndicate)
     session.delete(:viewed)
     session.delete(:active_place)
     session.delete(:page)

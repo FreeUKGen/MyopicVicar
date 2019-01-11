@@ -1,0 +1,13 @@
+<p> Dear <%= @feedback.name %>;</p>
+<p>You submitted some feedback to FreeREG reference 
+<a href="<%=Rails.application.config.website%>/feedbacks/<%=@feedback.id%>"><%= @feedback.identifier %>
+ to us with the title <b><%= @feedback.title%></b> at <%= @feedback.feedback_time.strftime("%H:%M on %F") unless @feedback.feedback_time.nil?%></p>
+<p>A team member has replied as follows:</p>
+<p><%= @message.body%></p>
+<% if @message.attachment.present?%>
+There is an File attachment
+<% end%>
+<% if @message.images.present?%>
+There is an Image attachment
+<% end%>
+<p> The FreeREG Team</p>

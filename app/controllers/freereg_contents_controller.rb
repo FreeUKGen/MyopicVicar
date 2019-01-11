@@ -69,16 +69,24 @@ class FreeregContentsController < ApplicationController
     @options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES))
   end
 
-  
-  
+
+
   def register
     #this is the search details entry for a register
     @register = Register.id(params[:id]).first
-    if @register.present?
-      get_variables_for_register_show
-    else
+
+    if @register.blank?
       flash[:notice] = "Non existent register has been selected."
+
       redirect_back fallback_location: {action: "new"} and return
+
+    else
+      get_variables_for_register_show
+      unless @proceed
+        flash[:notice] = "Non existent register has been selected."
+        redirect_to action: :new and return
+      end
+
     end
   end
 
@@ -97,10 +105,10 @@ class FreeregContentsController < ApplicationController
 
       if !syndicate.nil?
         syndicate_coordinator = syndicate.syndicate_coordinator
-        
+
         if !(syndicate_coordinator.nil? and syndicate_coordinator.empty?)
           sc = UseridDetail.where(:userid=>syndicate_coordinator).first
-          
+
           if !sc.nil?
             UserMailer.request_to_volunteer(sc,group_name,applier_name,applier_email).deliver_now
 
@@ -128,69 +136,76 @@ class FreeregContentsController < ApplicationController
   def show_register
     # this is the Transcription entry for a register
     @register = Register.id(params[:id]).first
-    if @register.nil?
+    if @register.blank?
       flash[:notice] = "No register was selected while reviewing the content; you will need to start again"
-      if session[:county].present?
-        redirect_to :action => :alphabet and return
-      else
-        redirect_to :action => :new and return
-      end
+      redirect_to action: :new and return
     end
     @images = Register.image_transcriptions_calculation(params[:id])
-    @church  = @register.church
-    if  @church.present?
-      get_variables_for_register_show
-    else
+    @church = @register.church
+    if @church.blank?
       flash[:notice] = "The register has no church; you will need to start again"
       redirect_to :action => :new and return
+    else
+      get_variables_for_register_show
+      unless @proceed
+        flash[:notice] = "The register has no place; you will need to start again"
+        redirect_to action: :new and return
+      end
+      @character = session[:character]
+      @county = session[:county]
+      @chapman_code = session[:chapman_code]
     end
-    @character =  session[:character]
-    @county = session[:county]
-    @chapman_code = session[:chapman_code]
   end
 
   def get_variables_for_register_show
+    @proceed = true
     @church = @register.church
-    @place = @church.place
-    @county = @place.county
-    @chapman_code = @place.chapman_code
-    @place_name = @place.place_name
-    @register_name = @register.register_name
-    @register_name = @register.alternate_register_name if @register_name.nil?
-    @church_name = @church.church_name
-    @register_type = RegisterType.display_name(@register.register_type)
-    @decade = @register.daterange
-    @transcribers = @register.transcribers
-    @contributors = @register.contributors
+    if @church.blank?
+      @proceed = false
+    else
+      @place = @church.place
+      if @place.blank?
+        @proceed = false
+      else
+        @county = @place.county
+        @chapman_code = @place.chapman_code
+        @place_name = @place.place_name
+        @register_name = @register.register_name
+        @register_name = @register.alternate_register_name if @register_name.nil?
+        @church_name = @church.church_name
+        @register_type = RegisterType.display_name(@register.register_type)
+        @decade = @register.daterange
+        @transcribers = @register.transcribers
+        @contributors = @register.contributors
+      end
+    end
   end
 
   def church
     @church = Church.id(params[:id]).first
-    if @church.present?
-      get_variables_for_church_show
-    else
+    if @church.blank?
       flash[:notice] = "Non existent church has been selected."
+
       redirect_back fallback_location: { action: "new"} and return
+    else
+      get_variables_for_church_show
+      unless @proceed
+        flash[:notice] = "Non existent place for this church."
+        redirect_to action: :new and return
+      end
     end
   end
 
   def show_church
     @church = Church.id(params[:id]).first
-    if @church.nil?
+    if @church.blank?
       flash[:notice] = "No church was selected while reviewing the content; you will need to start again"
-      if session[:county].present?
-        redirect_to :index
-        return
-      else
-        redirect_to :action => :new
-        return
-      end
+      redirect_to action: :new and return
     end
-    if  @church.present?
-      get_variables_for_church_show
-    else
-      flash[:notice] = "Non existent place has been selected."
-      redirect_to :action => 'new' and return
+    get_variables_for_church_show
+    unless @proceed
+      flash[:notice] = "Non existent place for this church."
+      redirect_to action: :new and return
     end
     @character =  session[:character]
     @county = session[:county]
@@ -199,19 +214,28 @@ class FreeregContentsController < ApplicationController
 
 
   def get_variables_for_church_show
-      @character =  nil
-      @place = @church.place
-      @county = @place.county
-      @registers_count = @church.registers.count
+    @proceed = true
+    @character =  nil
+    @place = @church.place
+    if @place.blank?
+      @proceed = false
+    else
       @chapman_code = @place.chapman_code
-      @coordinator = County.coordinator_name(@chapman_code)
-      @place_name = @place.place_name
-      @names = @church.get_alternate_church_names
-      @church_name = @church.church_name
-      @decade = @church.daterange
-      @transcribers = @church.transcribers
-      @contributors = @church.contributors
-      @registers = Register.where(:church_id => params[:id]).order_by(:record_types.asc, :register_type.asc, :start_year.asc).all
+      @county = @place.county
+      if @county.blank? || @chapman_code.blank?
+        @proceed = false
+      else
+        @registers_count = @church.registers.count
+        @coordinator = County.coordinator_name(@chapman_code)
+        @place_name = @place.place_name
+        @names = @church.get_alternate_church_names
+        @church_name = @church.church_name
+        @decade = @church.daterange
+        @transcribers = @church.transcribers
+        @contributors = @church.contributors
+        @registers = Register.where(:church_id => params[:id]).order_by(:record_types.asc, :register_type.asc, :start_year.asc).all
+      end
+    end
   end
 
   def place
@@ -220,7 +244,9 @@ class FreeregContentsController < ApplicationController
       get_variables_for_place_show
     else
       flash[:notice] = "Non existent place has been selected."
+
       redirect_back fallback_location: { action: "new"} and return
+
     end
   end
 
@@ -229,27 +255,27 @@ class FreeregContentsController < ApplicationController
     @chapman_code = session[:chapman_code]
     @place = Place.chapman_code(@chapman_code).place(params[:id]).not_disabled.data_present.first
     if @place.present?
-       get_variables_for_place_show
+      get_variables_for_place_show
     else
       flash[:notice] = "Non existent place has been selected."
       redirect_to :action => 'new' and return
     end
-     @character =  session[:character]
-     @county = session[:county]
-     @chapman_code = session[:chapman_code]
+    @character =  session[:character]
+    @county = session[:county]
+    @chapman_code = session[:chapman_code]
   end
 
   def get_variables_for_place_show
     @character =  nil
-      @county = @place.place_name
-      @chapman_code = @place.chapman_code
-      @coordinator = County.coordinator_name(@chapman_code)
-      @place_name = @place.place_name
-      @churches_count = @place.churches.count
-      @names = @place.get_alternate_place_names
-      @decade = @place.daterange
-      @transcribers = @place.transcribers
-      @contributors = @place.contributors
+    @county = @place.place_name
+    @chapman_code = @place.chapman_code
+    @coordinator = County.coordinator_name(@chapman_code)
+    @place_name = @place.place_name
+    @churches_count = @place.churches.count
+    @names = @place.get_alternate_place_names
+    @decade = @place.daterange
+    @transcribers = @place.transcribers
+    @contributors = @place.contributors
   end
 
   def select_places
@@ -270,9 +296,8 @@ class FreeregContentsController < ApplicationController
       return
     else
       flash[:notice] = "Problem with your selection."
-      redirect_to :action => 'new' and return
+      redirect_to action: :new and return
     end
-
   end
 
   def show

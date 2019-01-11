@@ -1,8 +1,31 @@
 class ContactsController < ApplicationController
 
   require 'freereg_options_constants'
+  require 'contact_rules'
 
-  skip_before_action :require_login, only: [:new, :report_error, :create]
+  skip_before_action :require_login, only: [:new, :report_error, :create, :show, :contact_reply_messages]
+
+  def archive
+    @contact = Contact.id(params[:id]).first
+    if @contact.present?
+      @contact.archive
+      flash.notice = "Contact archived"
+      return_after_archive(params[:source], params[:id])
+    else
+      go_back("contact",params[:id])
+    end
+  end
+
+  def contact_reply_messages
+    get_user_info_from_userid; return if performed?
+    @contact = Contact.id(params[:id]).first
+    if @contact.present?
+      @messages = Message.where(source_contact_id: params[:id]).all
+      @links = false
+      render 'messages/index'
+    end
+  end
+
 
   def convert_to_issue
     @contact = Contact.id(params[:id]).first
@@ -18,7 +41,7 @@ class ContactsController < ApplicationController
         return
       end
     else
-      go_back("contact",params[:id])
+      redirect_back(fallback_location: root_path, notice: 'Contact is not there') and return
     end
   end
 
@@ -38,7 +61,7 @@ class ContactsController < ApplicationController
       @contact.save
       if !@contact.errors.any?
         flash[:notice] = "Thank you for contacting us!"
-        @contact.communicate
+        @contact.communicate_initial_contact
         if @contact.query
           redirect_to search_query_path(@contact.query)
           return
@@ -74,7 +97,7 @@ class ContactsController < ApplicationController
       redirect_to :action => 'index'
       return
     else
-      go_back("contact",params[:id])
+      redirect_back(fallback_location: root_path, notice: 'Contact is not there') and return
     end
   end
 
@@ -87,41 +110,87 @@ class ContactsController < ApplicationController
         return
       end
     else
-      go_back("contact",params[:id])
+      redirect_back(fallback_location: root_path, notice: 'Contact is not there') and return
     end
+  end
+
+  def force_destroy
+    @contact = Contact.id(params[:id]).first
+    if @contact.present?
+      delete_reply_messages(params[:id]) if @contact.has_replies?(params[:id])
+      @contact.delete
+      flash.notice = "Contact and all its replies are destroyed"
+      redirect_to :action => 'index'
+      return
+    else
+      redirect_back(fallback_location: root_path, notice: 'Contact is not there') and return
+    end
+  end
+
+  def get_contacts
+    ContactRules.new(@user)
   end
 
   def index
+    session[:archived_contacts] = false
+    session[:message_base] = 'contact'
+    params[:source] = 'original'
     get_user_info_from_userid
-    if @user.person_role == 'county_coordinator' || @user.person_role == 'country_coordinator'
-      @county = @user.county_groups
-      @contacts = Contact.in(:county => @county).all.order_by(contact_time: -1)
-    else
-      @contacts = Contact.all.order_by(contact_time: -1)
-    end
+    order = "contact_time DESC"
+    @contacts = get_contacts.result(session[:archived_contacts],order)
+    @archived = session[:archived_contacts]
   end
 
-  def list_by_date
+  def keep
+    @contact = Contact.id(params[:id]).first
+    go_back('contact', params[:id])  if @contact.blank?
+    session[:archived_contacts] = true
+    @contact.update_keep
+    flash.notice = 'Contact to be retained'
+    return_after_keep(params[:source], params[:id])
+  end
+
+  def list_archived
+    session[:archived_contacts] = true
+    session[:message_base] = 'contact'
+    params[:source] = 'original'
     get_user_info_from_userid
-    @contacts = Contact.all.order_by(contact_time: 1)
+    order = "contact_time  DESC"
+    @contacts = get_contacts.result(session[:archived_contacts],order)
+    @archived = session[:archived_contacts]
     render :index
   end
 
-  def list_by_identifier
+
+  def list_by_date
     get_user_info_from_userid
-    @contacts = Contact.all.order_by(identifier: -1)
+    order = "contact_time ASC"
+    @contacts = get_contacts.result(session[:archived_contacts],order)
+    @archived = session[:archived_contacts]
+    render :index
+  end
+
+  def list_by_most_recent
+    get_user_info_from_userid
+    order = "contact_time DESC"
+    @contacts = get_contacts.result(session[:archived_contacts],order)
+    @archived = session[:archived_contacts]
     render :index
   end
 
   def list_by_name
     get_user_info_from_userid
-    @contacts = Contact.all.order_by(name: 1)
+    order = "name ASC"
+    @contacts = get_contacts.result(session[:archived_contacts],order)
+    @archived = session[:archived_contacts]
     render :index
   end
 
   def list_by_type
     get_user_info_from_userid
-    @contacts = Contact.all.order_by(contact_type: 1)
+    order = "contact_type ASC"
+    @contacts = get_contacts.result(session[:archived_contacts],order)
+    @archived = session[:archived_contacts]
     render :index
   end
 
@@ -144,10 +213,22 @@ class ContactsController < ApplicationController
     @contact.line_id  = @freereg1_csv_entry.line_id
   end
 
+  def restore
+    @contact = Contact.id(params[:id]).first
+    if @contact.present?
+      @contact.restore
+      flash.notice = "Contact restored"
+      return_after_restore(params[:source], params[:id])
+    else
+      redirect_back(fallback_location: root_path, notice: 'Contact is not there') and return
+    end
+  end
+
   def select_by_identifier
     get_user_info_from_userid
     @options = Hash.new
-    @contacts = Contact.all.order_by(identifier: -1).each do |contact|
+    order = "identifier ASC"
+    @contacts = get_contacts.result(session[:archived_contacts], order).each do |contact|
       @options[contact.identifier] = contact.id
     end
     @contact = Contact.new
@@ -165,12 +246,17 @@ class ContactsController < ApplicationController
   end
 
   def set_session_parameters_for_record(file)
+    return false if file.blank?
+
     register = file.register
     return false if register.blank?
+
     church = register.church
     return false if church.blank?
+
     place = church.place
     return false if place.blank?
+
     session[:freereg1_csv_file_id] = file._id
     session[:freereg1_csv_file_name] = file.file_name
     session[:place_name] = place.place_name
@@ -190,8 +276,65 @@ class ContactsController < ApplicationController
         set_nil_session_parameters
       end
     else
-      go_back("contact",params[:id])
+      redirect_back(fallback_location: root_path, notice: 'Contact is not there') and return
     end
+  end
+
+  def reply_contact
+    get_user_info_from_userid; return if performed?
+    @respond_to_contact = Contact.id(params[:source_contact_id]).first
+    if @respond_to_contact.blank?
+      redirect_back(fallback_location: root_path, notice: 'Contact is not there') and return
+    end
+    @contact_replies = Message.where(source_contact_id: params[:source_contact_id]).all
+    @contact_replies.each do |reply|
+    end
+    @message = Message.new
+    @message.message_time = Time.now
+    @message.userid = @user.userid
+  end
+
+  def return_after_archive(source, id)
+
+    if source == 'show'
+      redirect_to action: 'show', id: id
+    else
+      redirect_to action: 'list_archived'
+    end
+  end
+
+  def return_after_keep(source, id)
+    if source == 'show'
+      redirect_to action: 'show', id: id
+    else
+      redirect_to action: 'index'
+    end
+  end
+
+  def return_after_restore(source, id)
+    if source == 'show'
+      redirect_to action: 'show', id: id
+    else
+      redirect_to action: 'index'
+    end
+  end
+
+  def return_after_unkeep(source, id)
+    if source == 'show'
+      redirect_to action: 'show', id: id
+    else
+      redirect_to action: 'list_archived'
+    end
+  end
+
+
+  def unkeep
+    get_user_info_from_userid
+    @contact = Contact.id(params[:id]).first
+    go_back('contact', params[:id]) if @contact.blank?
+    @contact.update_unkeep
+    flash.notice = 'Contact no longer being kept'
+    return_after_unkeep(params[:source], params[:id])
   end
 
   def update
@@ -201,7 +344,7 @@ class ContactsController < ApplicationController
       redirect_to :action => 'show'
       return
     else
-      go_back("contact",params[:id])
+      redirect_back(fallback_location: root_path, notice: 'Contact is not there') and return
     end
   end
 
@@ -210,4 +353,7 @@ class ContactsController < ApplicationController
     params.require(:contact).permit!
   end
 
+  def delete_reply_messages(contact_id)
+    Message.where(source_contact_id: contact_id).destroy
+  end
 end

@@ -40,6 +40,7 @@
         <% end %>
     <% end %>
   <% end %>
+  <%= link_to 'List GAPs', index_gap_path(@source), method: :get, :class => "btn weight--light btn--small" %>   
   </div>
   <div style="clear:both;"> </div><br>
 <% end %>
@@ -58,8 +59,8 @@
       </tr>
       <tr><td>Image Source Name</td><td class="weight--semibold"><%= @source[:source_name] %></td></tr>
       <tr><td>Image Source Notes</td><td class="t15"><%= @source[:notes] %>&nbsp;</td></tr>
-      <tr><td>Start Date</td><td class="t30"><%= @source[:start_date] %>&nbsp;</td></tr>
-      <tr><td>End Date</td><td class="t15"><%= @source[:end_date] %>&nbsp;</td></tr>
+      <tr><td>Start Year</td><td class="t30"><%= @source[:start_date] %>&nbsp;</td></tr>
+      <tr><td>End Year</td><td class="t15"><%= @source[:end_date] %>&nbsp;</td></tr>
       <tr><td>Original Form</td><td class="t15"><%= @source[:original_form][:type] %>
         <% if @source[:original_form][:type] == 'other' %>
           : <%= @source[:original_form][:name]  %>
