@@ -14,7 +14,7 @@ gem 'tzinfo-data' #needed by windows
 #gem 'rails_12factor', group: :production
 
 #gem 'actionpack-xml_parser', '~> 2.0'
-gem 'mysql2', '0.3.20'
+gem 'mysql2'
 
 gem 'refinerycms'
 gem 'refinerycms-authentication-devise'
