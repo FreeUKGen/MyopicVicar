@@ -31,26 +31,23 @@ class SourcesController < ApplicationController
 
   def destroy
     display_info
+    redirect_to :back, notice: 'Only system_administrator and data_manager is allowed to delete source' and
+    return  unless ['system_administrator', 'data_managers'].include? @user.person_role
+
+    source = Source.id(params[:id]).first
+    redirect_to :back, notice: 'Attempting to edit an incomplete source' and
+    return if @register.blank? || @church.blank? || @place.blank? || @source.blank? || source.blank?
+
     get_user_info(session[:userid],session[:first_name])
-
-    if ['system_administrator', 'data_managers'].include? @user.person_role
-      source = Source.id(params[:id]).first
-
-      begin
-        source.destroy
-        flash[:notice] = 'Deletion of source was successful'
-        session.delete(:source_id)
-        redirect_to index_source_path(source.register)
-
-      rescue Mongoid::Errors::DeleteRestriction
-        logger.info 'Logged Error for Source Delete'
-        logger.debug source.source_name + ' is not empty'
-        redirect_to(:back, :notice=> source.source_name+' IS NOT EMPTY, CAN NOT BE DELETED')
-      end
-
-    else
-      flash[:notice] = 'Only system_administrator and data_manager is allowed to delete source'
-      redirect_to :back
+    begin
+      source.destroy
+      flash[:notice] = 'Deletion of source was successful'
+      session.delete(:source_id)
+      redirect_to index_source_path(source.register)
+    rescue Mongoid::Errors::DeleteRestriction
+      logger.info 'Logged Error for Source Delete'
+      logger.debug source.source_name + ' is not empty'
+      redirect_to(:back, notice: source.source_name + ' IS NOT EMPTY, CAN NOT BE DELETED')
     end
   end
 
@@ -85,17 +82,19 @@ class SourcesController < ApplicationController
     display_info
 
     @source = Source.id(params[:id]).first
-    go_back("source#flush", params[:id]) and return if @source.nil?
+    redirect_to :back, notice: 'Attempting to propagate an incomplete source' and
+    return if @register.blank? || @church.blank? || @place.blank? || @source.blank?
 
     @source_id = Source.get_propagate_source_list(@source)
   end
 
   def index
     display_info
-    params[:id] = session[:register_id] if params[:id].nil?
+    params[:id] = session[:register_id] if params[:id].blank?
 
-    @source = Source.where(:register_id=>params[:id]).all
-    go_back("source#index",params[:id]) and return if @source.nil?
+    @source = Source.where(register_id: params[:id]).all
+    redirect_to :back, notice: 'Attempting to display an incomplete source' and
+    return if @register.blank? || @church.blank? || @place.blank? || @source.blank?
 
     case @source.count
     when 0
@@ -116,10 +115,12 @@ class SourcesController < ApplicationController
 
   def initialize_status
     display_info
+    redirect_to :back, notice: 'Attempting to initialize an incomplete source' and
+    return if @register.blank? || @church.blank? || @place.blank? || @source.blank?
 
     allow_initialize = ImageServerGroup.check_all_images_status_before_initialize_source(params[:id])
+    redirect_to(:back, notice: 'Source can be initialized only when all image groups status is unset') and return unless allow_initialize
 
-    redirect_to(:back, :notice=>'Source can be initialized only when all image groups status is unset') and return if not allow_initialize
   end
 
   def load(source_id)
@@ -150,6 +151,7 @@ class SourcesController < ApplicationController
   def new
     display_info
 
+
     @source_new = Source.new
     name_array = Source.where(:register_id=>session[:register_id]).pluck(:source_name)
     go_back("source#new", params[:id]) and return if name_array.nil?
@@ -168,8 +170,8 @@ class SourcesController < ApplicationController
   end
 
   def update
-    source = Source.where(:id=>params[:id]).first
-    go_back("source#update", params[:id]) and return if source.nil?
+    source = Source.where(id: params[:id]).first
+    go_back("source#update", params[:id]) and return if source.blank?
 
     if source_params[:choice] == '1'                        # to propagate Source
       Source.update_for_propagate(params)
@@ -179,8 +181,10 @@ class SourcesController < ApplicationController
       flash[:notice] = 'Successfully initialized source'
     else                                                    # to edit Source
       params[:source].delete(:choice)
-      source.update_attributes(source_params)
-      flash[:notice] = 'Update of source was successful'
+      result = source.update_attributes(source_params)
+      flash[:notice] = 'Update of source was successful' if result
+      flash[:notice] = "Update failed a validation test #{source.errors.messages}" unless result
+      redirect_to edit_source_path(source) and return unless result
     end
 
     flash.keep(:notice)
