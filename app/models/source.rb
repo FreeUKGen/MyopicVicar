@@ -184,11 +184,9 @@ class Source
   end
 
   def errors_in_fields
-    p self
     errors.add(:source_name, 'Source name not selected') if source_name.blank?
     errors.add(:start_date, 'Invalid start year') if start_date.present? && (start_date.to_i <= 1 || start_date.to_i > Time.now.year)
     errors.add(:end_date, 'Invalid end year') if end_date.present? && (end_date.to_i <= 1 || end_date.to_i > Time.now.year)
-    errors.add(:end_date, 'Start year greater than end year') if end_date.present? && start_date.present? && end_date.to_i > start_date.to_i
-    p self
+    errors.add(:end_date, 'Start year greater than end year') if end_date.present? && start_date.present? && start_date.to_i > end_date.to_i
   end
 end
