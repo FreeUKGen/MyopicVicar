@@ -79,6 +79,7 @@ class SourcesController < ApplicationController
     @source = Source.id(params[:id]).first
     redirect_to :back, notice: 'Attempting to edit an incomplete source' and
     return if @register.blank? || @church.blank? || @place.blank? ||  @source.blank?
+    p 'edit proceeding'
   end
 
   def flush
@@ -168,8 +169,10 @@ class SourcesController < ApplicationController
   end
 
   def update
-    source = Source.where(:id=>params[:id]).first
-    go_back("source#update", params[:id]) and return if source.nil?
+    p 'update params'
+    p params
+    source = Source.where(id: params[:id]).first
+    go_back("source#update", params[:id]) and return if source.blank?
 
     if source_params[:choice] == '1'                        # to propagate Source
       Source.update_for_propagate(params)
@@ -179,7 +182,11 @@ class SourcesController < ApplicationController
       flash[:notice] = 'Successfully initialized source'
     else                                                    # to edit Source
       params[:source].delete(:choice)
+      p 'before'
+      p source
       source.update_attributes(source_params)
+      p 'after'
+      p source
       flash[:notice] = 'Update of source was successful'
     end
 
