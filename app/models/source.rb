@@ -21,8 +21,8 @@ class Source
   attr_accessor :initialize_status
 
   belongs_to :register, index: true
-  has_many :image_server_groups, foreign_key: :source_id, :dependent=>:restrict # includes transcripts, printed editions, and microform, and digital versions of these
-  has_many :assignments, :dependent=>:restrict
+  has_many :image_server_groups, foreign_key: :source_id, dependent: :restrict_with_error # includes transcripts, printed editions, and microform, and digital versions of these
+  has_many :assignments, dependent: :restrict_with_error
 
   accepts_nested_attributes_for :image_server_groups, :reject_if => :all_blank
   attr_accessor :propagate

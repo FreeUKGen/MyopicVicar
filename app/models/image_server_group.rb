@@ -28,7 +28,7 @@ class ImageServerGroup
   belongs_to :source, index: true
   belongs_to :place, index: true
   belongs_to :church, index: true
-  has_many :image_server_images, foreign_key: :image_server_group_id, :dependent=>:restrict # includes images
+  has_many :image_server_images, foreign_key: :image_server_group_id, dependent: :restrict_with_error # includes images
   has_many :gaps
 
   accepts_nested_attributes_for :image_server_images, :reject_if => :all_blank

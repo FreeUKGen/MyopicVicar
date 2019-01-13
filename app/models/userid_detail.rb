@@ -59,8 +59,8 @@ class UseridDetail
   index({syndicate: 1, active: 1}, {name: "syndicate_active"})
   index({person_role: 1}, {name: "person_role"})
 
-  has_many :freereg1_csv_files, dependent: :restrict
-  has_many :attic_files, dependent: :restrict
+  has_many :freereg1_csv_files, dependent: :restrict_with_error
+  has_many :attic_files, dependent: :restrict_with_error
   has_many :assignments
 
   validates_presence_of :userid,:syndicate,:email_address, :person_role, :person_surname, :person_forename,

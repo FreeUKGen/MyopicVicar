@@ -74,7 +74,7 @@ class Place
   index({ chapman_code: 1, _id: 1, disabled: 1, data_present: 1}, {name: "chapman_place_disabled_data_present"})
   index({ location: "2dsphere" }, { min: -200, max: 200 })
 
-  has_many :churches, dependent: :restrict
+  has_many :churches, dependent: :restrict_with_error
   has_many :search_records
   has_many :image_server_groups
   has_many :gaps

@@ -30,7 +30,7 @@ class Register
   has_many :freereg1_csv_files, dependent: :restrict
   belongs_to :church, index: true
 
-  has_many :sources, dependent: :restrict # includes origin server of images
+  has_many :sources, dependent: :restrict_with_error # includes origin server of images
 
   index({ church_id: 1, register_name: 1})
   index({ register_name: 1})
@@ -41,10 +41,10 @@ class Register
     def id(id)
       where(:id => id)
     end
-    
+
     def check_and_correct_register_type(register_type)
       if !(RegisterType.approved_option_values.include?(register_type) || RegisterType.option_values.include?(register_type))
-        register_type = RegisterType::OPTIONS[register_type] if RegisterType.option_keys.include?(register_type)  
+        register_type = RegisterType::OPTIONS[register_type] if RegisterType.option_keys.include?(register_type)
         register_type = RegisterType::APPROVED_OPTIONS[register_type] if RegisterType.approved_option_keys.include?(register_type)
       end
       register_type
@@ -77,7 +77,7 @@ class Register
       @@my_church.save
       register
     end
-    
+
     def create_folder_url(chapman_code,folder_name,register)
       URI.escape(Rails.application.config.image_server + 'manage_freereg_images/create_folder?chapman_code=' + chapman_code + '&folder_name=' + folder_name +  '&register=' + register + '&image_server_access=' + Rails.application.config.image_server_access)
     end
@@ -111,7 +111,7 @@ class Register
 
       @source_name = Hash.new{|h,k| h[k]=[]}.tap{|h| source.each{|k,v| h[k] = v}}
       source_ids = source.map {|k,v| k}
-      
+
       image_server_group = ImageServerGroup.where(:source_id=>{'$in'=>source_ids}).pluck(:id, :group_name, :source_id, :number_of_images)
       return {} if image_server_group.empty? || image_server_group == [''] || image_server_group == [nil]
 
@@ -223,7 +223,7 @@ class Register
     self.update_attributes(:records => records,:datemin => datemin, :datemax => datemax, :daterange => total_hash, :transcribers => transcriber_hash["transcriber"],
                            :contributors => transcriber_hash["contributor"], :last_amended => last_amended   )
   end
-  
+
   def can_create_image_source
     proceed = true
     if self.register_type.nil? || self.register_type == ' '
@@ -265,15 +265,15 @@ class Register
                      self.minimum_year_for_register.present? || self.maximum_year_for_register.present? )
     value
   end
-  
+
   def image_server_exists?
     image_server = false
-      unless self.sources.nil?
-        self.sources.each do |source|
-           image_server = true if source.source_name == "Image Server"  
-        end
+    unless self.sources.nil?
+      self.sources.each do |source|
+        image_server = true if source.source_name == "Image Server"
       end
-      image_server
+    end
+    image_server
   end
 
   def merge_registers
