@@ -1,8 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '5.1.5'
-
-
+gem 'rails'
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 #changes demanded by rails 4
@@ -33,10 +31,10 @@ gem 'libv8'
 gem 'mobvious'
 gem 'formtastic'#, '~> 3.1'
 #gem 'inherited_resources', '~> 1.6'
-gem "therubyracer", :platforms => :ruby # avoid loading on windows
+gem 'therubyracer', platforms: :ruby # avoid loading on windows
 
 gem 'airbrake'
-gem 'bcrypt', platforms: :ruby
+gem 'bcrypt', platforms: :ruby  #avoid loading on windows
 gem 'text'
 gem 'json'
 gem 'pry'
@@ -56,7 +54,7 @@ gem 'mail-logger'
 gem 'devise'
 gem 'devise-encryptable'
 gem 'nokogiri'
-gem "osgb", :git => 'git://github.com/FreeUKGen/osgb.git'
+gem 'osgb', git: 'https://github.com/FreeUKGen/osgb.git'
 
 #gem 'rmagick', "2.13.2", require: false   #version added by kirk as windows requires this version
 gem 'rubyzip', "~> 1.2"
