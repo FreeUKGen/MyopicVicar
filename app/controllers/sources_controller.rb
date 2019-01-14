@@ -34,14 +34,14 @@ class SourcesController < ApplicationController
 
   def destroy
     display_info
-    redirect_back(fallback_location: root_path, notice: 'Attempting to edit an incomplete source') and
-    return if @register.blank? || @church.blank? || @place.blank? || @source.blank?
+    source = Source.id(params[:id]).first
+    redirect_to :back, notice: 'Attempting to edit an incomplete source' and
+    return if @register.blank? || @church.blank? || @place.blank? || @source.blank? || source.blank?
 
-    get_user_info(session[:userid], session[:first_name])
     redirect_back(fallback_location: root_path, notice: 'Only system_administrator and data_manager is allowed to delete source')
     return unless ['system_administrator', 'data_managers'].include? @user.person_role
 
-    source = Source.id(params[:id]).first
+    get_user_info(session[:userid], session[:first_name])
     begin
       source.destroy
       flash[:notice] = 'Deletion of source was successful'
@@ -51,6 +51,7 @@ class SourcesController < ApplicationController
       logger.info 'Logged Error for Source Delete'
       logger.debug source.source_name + ' is not empty'
       redirect_back(fallback_location: root_path, notice: source.source_name + ' IS NOT EMPTY, CAN NOT BE DELETED')
+
     end
   end
 
@@ -101,16 +102,20 @@ class SourcesController < ApplicationController
     case @source.count
     when 0
       redirect_back(fallback_location: root_path, notice: 'No Source under this register')
+
     when 1
       case @source.first.source_name
       when 'Image Server'
         redirect_to source_path(id: @source.first.id)
+
       when 'other server1'
         redirect_to controller: 'server1', action: 'show', source_name: 'other server1'
+
       when 'other server2'
         #            redirect_to :controller=>'server2', :action=>'show', :source_name=>'other server1'
       else
         redirect_back(fallback_location: root_path, notice: 'Something wrong')
+
       end
     end
   end
@@ -123,6 +128,7 @@ class SourcesController < ApplicationController
     allow_initialize = ImageServerGroup.check_all_images_status_before_initialize_source(params[:id])
     redirect_back(fallback_location: root_path, notice: 'Source can be initialized only when all image groups status is unset') and
     return unless allow_initialize
+
   end
 
   def load(source_id)
@@ -189,16 +195,18 @@ class SourcesController < ApplicationController
       flash[:notice] = 'Successfully initialized source'
     else                                                    # to edit Source
       params[:source].delete(:choice)
-      source.update_attributes(source_params)
-      flash[:notice] = 'Update of source was successful'
+      result = source.update_attributes(source_params)
+      flash[:notice] = 'Update of source was successful' if result
+      flash[:notice] = "Update failed a validation test #{source.errors.messages}" unless result
+      redirect_to edit_source_path(source) and return unless result
     end
     flash.keep(:notice)
     redirect_to index_source_path(source.register)
   end
 
   private
+
   def source_params
     params.require(:source).permit!
   end
-
 end

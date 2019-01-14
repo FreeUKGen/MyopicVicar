@@ -1,7 +1,4 @@
-# encoding: utf-8
-
 class CsvfileUploader < CarrierWave::Uploader::Base
-
   # Include RMagick or MiniMagick support:
   # include CarrierWave::RMagick
   # include CarrierWave::MiniMagick
@@ -13,12 +10,12 @@ class CsvfileUploader < CarrierWave::Uploader::Base
   # Override the directory where uploaded files will be stored.
   # This is a sensible default for uploaders that are meant to be mounted:
   def store_dir
-        # "#{Rails.application.config.datafiles}/#{mounted_as}/#{model.userid}/"
-   if Rails.application.config.datafiles == '/raid/freereg2/users'
-          "#{Rails.application.config.datafiles}/#{model.userid}/"
-   else
-          "#{Rails.root}/#{Rails.application.config.datafiles}/#{model.userid}/"
-   end
+    # "#{Rails.application.config.datafiles}/#{mounted_as}/#{model.userid}/"
+    if Rails.application.config.datafiles == '/raid/freereg2/users'
+      "#{Rails.application.config.datafiles}/#{model.userid}/"
+    else
+      "#{Rails.root}/#{Rails.application.config.datafiles}/#{model.userid}/"
+    end
     #{ }"#{Rails.application.config.datafiles}/#{mounted_as}/#{model.userid}/"
     #{}"uploads/#{model.class.to_s.underscore}/#{mounted_as}/#{model.id}"
   end
@@ -49,7 +46,7 @@ class CsvfileUploader < CarrierWave::Uploader::Base
   # For images you might use something like this:
   # def extension_white_list
   def extension_white_list
-   %w(csv)
+    %w(csv)
   end
   # end
 
