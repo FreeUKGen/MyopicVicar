@@ -39,7 +39,7 @@ class Csvfile < CarrierWave::Uploader::Base
   end
 
   def create_batch_unless_exists
-    batch = PhysicalFile.where(userid: userid, file_name: file_name).present?
+    batch = PhysicalFile.where(userid: userid, file_name: file_name).first
     if batch.present?
       batch.update_attributes(base: true, base_uploaded_date: Time.now, file_processed: false)
     else
