@@ -265,7 +265,7 @@ class Freereg1CsvFile
 
     def delete_userid_folder(userid)
       folder_location = File.join(Rails.application.config.datafiles,userid)
-      FileUtils.rm_rf(folder_location) if Dir.exist?(folder_location) 
+      FileUtils.rm_rf(folder_location) if Dir.exist?(folder_location)
     end
 
     def file_update_location(file,param,session)
@@ -584,7 +584,7 @@ class Freereg1CsvFile
      color = "color:black"
     end
     color
-  end 
+  end
 
   def determine_line_information(error_id)
    error_file = batch_errors.find(error_id)
@@ -817,14 +817,15 @@ class Freereg1CsvFile
                  end
 
                  def update_statistics_and_access(who_actioned)
-                   locked_by_transcriber = true if who_actioned
-                   locked_by_coordinator = true unless who_actioned
-                   modification_date = Time.now.strftime("%d %b %Y")
+                   p 'update_statistics_and_access'
+                   self.locked_by_transcriber = true if who_actioned
+                   self.locked_by_coordinator = true unless who_actioned
+                   self.modification_date = Time.now.strftime("%d %b %Y")
                    calculate_distribution
                    recalculate_last_amended
                    update_number_of_files
                    save
-                   place, church, register = self.location_from_file
+                   place, church, register = location_from_file
                    register.calculate_register_numbers
                    church.calculate_church_numbers
                    place.calculate_place_numbers
