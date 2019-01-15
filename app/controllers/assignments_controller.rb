@@ -1,3 +1,16 @@
+# Copyright 2012 Trustees of FreeBMD
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+#
 class AssignmentsController < ApplicationController
   require 'userid_role'
 
@@ -108,7 +121,7 @@ class AssignmentsController < ApplicationController
     @people = Array.new
     @userids.each { |ids| @people << ids.userid }
   end
-  
+
   def image_completed
     assignment = Assignment.where(:id=>params[:assignment_id]).first
     UserMailer.notify_sc_assignment_complete(assignment).deliver_now
@@ -118,7 +131,7 @@ class AssignmentsController < ApplicationController
   end
 
   def index
-    
+
   end
 
   def list_assignments_by_syndicate_coordinator
@@ -207,7 +220,7 @@ class AssignmentsController < ApplicationController
     redirect_to list_assignments_of_myself_assignment_path(session[:user_id])
   end
 
-  def new      
+  def new
   end
 
   def re_assign
@@ -227,7 +240,7 @@ class AssignmentsController < ApplicationController
   def select_county
     @user = get_user
     get_counties_for_selection
-    
+
     if @counties.nil?
       flash[:notice] = 'You do not have any counties to manage'
       redirect_to new_manage_resource_path
@@ -258,12 +271,12 @@ class AssignmentsController < ApplicationController
 
   def update
     case params[:_method]
-      when 'put'
-        update_result = Assignment.update_assignment_from_put_request(session[:my_own], params)
-        flash[:notice] = Assignment.get_flash_message(params[:type], session[:my_own])
-      else                                          # re_assign
-        update_result = Assignment.update_assignment_from_reassign(params)
-        flash[:notice] = 'Re_assignment was successful'
+    when 'put'
+      update_result = Assignment.update_assignment_from_put_request(session[:my_own], params)
+      flash[:notice] = Assignment.get_flash_message(params[:type], session[:my_own])
+    else                                          # re_assign
+      update_result = Assignment.update_assignment_from_reassign(params)
+      flash[:notice] = 'Re_assignment was successful'
     end
 
     flash[:notice] = 'Assignment information was changed, please try again' if update_result == false

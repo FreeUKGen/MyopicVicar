@@ -3,36 +3,48 @@ class CsvfilesController < ApplicationController
 
   def create
     # Initial guards
-    redirect_to action: :new, notice: 'You must select a file' and return if params[:csvfile].blank? || params[:csvfile][:csvfile].blank?
+    redirect_back(fallback_location: new_csvfile_path, notice: 'You must select a file') && return if params[:csvfile].blank? || params[:csvfile][:csvfile].blank?
 
     get_user_info_from_userid
     @csvfile = Csvfile.new(csvfile_params)
     # if the process does not have a userid then the process has been initiated by the user on his own batches
     @csvfile.userid = session[:userid] if params[:csvfile][:userid].blank?
-    redirect_to action: :new, notice: 'There was no userid' and return if @csvfile.userid.blank?
+    redirect_back(fallback_location: new_csvfile_path, notice: 'There was no userid') && return if @csvfile.userid.blank?
 
     @csvfile.file_name = @csvfile.csvfile.identifier
-    redirect_to action: :new, notice: 'There was no file name' and return if @csvfile.file_name.blank?
+    redirect_back(fallback_location: new_csvfile_path, notice: 'There was no file name') && return if @csvfile.file_name.blank?
 
     case params[:csvfile][:action]
     when 'Replace'
-      proceed, message = @csvfile.file_replace_can_proceed(session[:file_name])
+      proceed, message = @csvfile.setup_batch_on_replace(session[:file_name])
     when 'Upload'
       proceed, message = @csvfile.setup_batch_on_upload
     end
+
     session.delete(:file_name) unless proceed
-    redirect_to action: :new, notice: message and return unless proceed
+    unless proceed
+      logger.warn('FREEREG:CSV_PROCESSING: ' + message)
+      flash[:notice] = message
+      redirect_back(fallback_location: new_csvfile_path, notice: message) && return
+
+    end
 
     proceed, message = @csvfile.process_the_batch(@user)
-    logger.warn('FREEREG:CSV_PROCESSING: ' + message)
     @csvfile.delete
-    redirect_to action: :new, notice: message and return unless proceed
+    unless proceed
+      logger.warn('FREEREG:CSV_PROCESSING: ' + message)
+      redirect_back(fallback_location: new_csvfile_path, notice: message) && return
 
-    redirect_to my_own_freereg1_csv_file_path and return if session[:my_own]
-
-    redirect_to freereg1_csv_files_path(anchor: "#{session[:freereg1_csv_file_id]}") and return if session[:freereg1_csv_file_id].present?
-
-    redirect_to freereg1_csv_files_path
+    end
+    flash[:notice] = message
+    flash.keep
+    if session[:my_own]
+      redirect_to(my_own_freereg1_csv_file_path) && return
+    elsif session[:freereg1_csv_file_id].present?
+      redirect_to(freereg1_csv_files_path(anchor: "#{session[:freereg1_csv_file_id]}")) && return
+    else
+      redirect_to(freereg1_csv_files_path) && return
+    end
   end
 
   def delete
@@ -43,13 +55,14 @@ class CsvfilesController < ApplicationController
     @csvfile.freereg1_csv_file_id = freefile._id
     @csvfile.save_to_attic
     @csvfile.delete
-    redirect_to my_own_freereg1_csv_file_path(anchor: "#{session[:freereg1_csv_file_id]}"), notice: "The csv file #{freefile.file_name} has been deleted."
+    flash[:notice] = "The csv file #{freefile.file_name} has been deleted."
+    redirect_to(my_own_freereg1_csv_file_path(anchor: "#{session[:freereg1_csv_file_id]}"))
   end
 
   def edit
     # code to move existing file to attic
     @file = Freereg1CsvFile.id(params[:id]).first
-    redirect_to action: :new, notice: 'There was no file to replace' and return if @file.blank?
+    redirect_back(fallback_location: new_csvfile_path, notice: 'There was no file to replace') && return if @file.blank?
 
     get_user_info_from_userid
     @person = @file.userid
@@ -57,7 +70,7 @@ class CsvfilesController < ApplicationController
     # there can be multiple batches only one of which might be locked
     Freereg1CsvFile.where(userid: @person, file_name: @file_name).each do |file|
       message = 'The replacement of the file is not permitted as it has been locked due to on-line changes; download the updated copy and remove the lock'
-      redirect_to action: :new, notice: message and return if file.locked_by_transcriber || file.locked_by_coordinator
+      redirect_back(fallback_location: new_csvfile_path, notice: message) and return if file.locked_by_transcriber || file.locked_by_coordinator
 
     end
     @csvfile = Csvfile.new(userid: @person, file_name: @file_name)

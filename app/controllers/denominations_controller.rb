@@ -1,5 +1,18 @@
+# Copyright 2012 Trustees of FreeBMD
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+#
 class DenominationsController < ApplicationController
- 
+
   def create
     if params[:denomination].blank?
       flash[:notice] = 'You must enter a field '
@@ -20,7 +33,7 @@ class DenominationsController < ApplicationController
   def destroy
     @denomination = Denomination.id(params[:id]).first
     if @denomination.blank?
-       redirect_back fallback_location: { action: "index" } and return
+      redirect_back fallback_location: { action: "index" } and return
     else
       @denomination.delete
       flash[:notice] = 'The destruction of the denomination was successful'
@@ -31,7 +44,7 @@ class DenominationsController < ApplicationController
 
   def edit
     get_user_info_from_userid
-    reject_assess(@user,"Denomination") unless @user.person_role == 'data_manager' || @user.person_role == 'system_administrator'
+    reject_access(@user,"Denomination") unless @user.person_role == 'data_manager' || @user.person_role == 'system_administrator'
     @denomination = Denomination.id(params[:id]).first
     if @denomination.blank?
       redirect_back fallback_location: { action: "index" } and return
@@ -45,7 +58,7 @@ class DenominationsController < ApplicationController
 
   def new
     get_user_info_from_userid
-    reject_assess(@user,"Denomination") unless @user.person_role == 'data_manager' || @user.person_role == 'system_administrator'
+    reject_access(@user,"Denomination") unless @user.person_role == 'data_manager' || @user.person_role == 'system_administrator'
     @denomination = Denomination.new
   end
   def show

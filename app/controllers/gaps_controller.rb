@@ -1,3 +1,16 @@
+# Copyright 2012 Trustees of FreeBMD
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+#
 class GapsController < ApplicationController
 
   def create
@@ -12,7 +25,7 @@ class GapsController < ApplicationController
       redirect_to :back
     else
       flash[:notice] = 'Addition of Gap was successful'
-      redirect_to index_gap_path(source)     
+      redirect_to index_gap_path(source)
     end
   end
 
@@ -49,7 +62,7 @@ class GapsController < ApplicationController
     gap.destroy
 
     flash[:notice] = 'Deletion of GAP was successful'
-    redirect_to index_gap_path(source)  
+    redirect_to index_gap_path(source)
   end
 
   def edit
@@ -70,7 +83,7 @@ class GapsController < ApplicationController
     redirect_to gap_path(:id=>@gap.first.id) if @gap.count == 1
   end
 
-  def new 
+  def new
     display_info
     @reason = GapReason.all.pluck(:reason).sort_by{|x| x}
 

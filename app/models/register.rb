@@ -27,7 +27,7 @@ class Register
   field :daterange, type: Hash
   field :transcribers, type: Hash
   field :contributors, type: Hash
-  has_many :freereg1_csv_files, dependent: :restrict
+  has_many :freereg1_csv_files, dependent: :restrict_with_error
   belongs_to :church, index: true
 
   has_many :sources, dependent: :restrict_with_error # includes origin server of images
