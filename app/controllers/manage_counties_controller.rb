@@ -348,7 +348,7 @@ class ManageCountiesController < ApplicationController
   end
 
   def work_places_core
-    show_alphabet = ManageCounty.records(session[:chapman_code],session[:show_alphabet])
+    show_alphabet = ManageCounty.records(session[:chapman_code], session[:show_alphabet])
     session[:show_alphabet] = show_alphabet
     if show_alphabet == 0
       redirect_to places_path
