@@ -57,7 +57,7 @@ module UseridRole
     'Country Coordinators' => '/countries',
     'Upload New Batch' => '/csvfiles/new',
     'RefineryCMS' => '/manage_resources/pages',
-    'Access Attic' => '/attic_files/select',
+    'Access Attic' => '/attic_files/select_userid',
     'Physical Files' => '/physical_files/select_action',
     'Site Statistics' => '/site_statistics',
     'Search Performance' => '/search_queries/report',
@@ -119,7 +119,7 @@ module UseridRole
     'Manage Images' => '/manage_counties/selection?option=Manage Images'
   }
   SYNDICATE_MANAGEMENT_OPTIONS =  ['Review Active Members', 'Review All Members', 'Select Specific Member by Userid',
-                                   'Select Specific Member by Email Address', 'Select Specific Member by Surname/Forename', 'Incomplete Registrations', 'Create userid',
+                                   'Select Specific Member by Email Address', 'Select Specific Member by Surname/Forename', 'Incomplete Registrations', 'Create Userid',
                                    'Syndicate Messages', 'Review Batches with Errors', 'Review Batches with Zero Dates', 'Review Batches by Filename',
                                    'Review Batches by Userid then Filename', 'Review Batches by Most Recent Date of Change', 'Review Batches by Oldest Date of Change',
                                    'Review Specific Batch', 'List files waiting to be processed', 'List files NOT processed', 'Upload New Batch', 'Change Recruiting Status', 'Manage Images']

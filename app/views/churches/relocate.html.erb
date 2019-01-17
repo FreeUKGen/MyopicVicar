@@ -1,24 +1,18 @@
 <% breadcrumb :relocate_church,  @county, @place, @church%>
 <p style="text-align: center"><b><%= @church_name %></b>  from  <b><%= @place_name %></b> in <b><%= @county %></b></p>
-
-
 <% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
+  <div id="notice" style="color:blue"><br>
     <%= flash[:notice] %> <br>
-    </div>
-   <% end %>
+  </div>
+<% end %>
 <section class="island  island--light">
-<%= semantic_form_for  @church do |f| %>
-
-<% if @user.person_role == 'data_manager' || @user.person_role == 'system_administrator' %>
- <b> Please be sure to select the correct Place from the following list. </b>
-<p>
-   <%= f.input :place_name, {:as => :select,  :collection => @places, :include_blank => false,:label => "Select Place in which Church is to be located :", :required => true, :size => 15}%>
- <% end %>
-
- 
- <%= f.action :submit, :as => :input, :label => 'Relocate' %>
- <% end %>
- <p style="color:red">Please note you are changing the name in a large number of records (<%=@records%>) the processing time could be several minutes depending upon the number of batches affected. <b>Please wait for the process to complete.</b></p>
- </section>
-  
+  <%= simple_form_for  @church do |f| %>
+    <% if @user.person_role == 'data_manager' || @user.person_role == 'system_administrator' %>
+      <b> Please be sure to select the correct Place from the following list. </b>
+      <p>
+        <%= f.input :place_name, { :as => :select,  :collection => @places, :label => "Select Place in which Church is to be located :", :required => true,:input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 10 } }%>
+      <% end %>
+      <%= f.button :submit,  'Relocate' %>
+    <% end %>
+    <p style="color:red">Please note you are changing the name in a large number of records (<%=@records%>) the processing time could be several minutes depending upon the number of batches affected. <b>Please wait for the process to complete.</b></p>
+  </section>

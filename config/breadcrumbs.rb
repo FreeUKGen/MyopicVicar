@@ -2,6 +2,8 @@ crumb :root do
   link 'Your Actions:', main_app.new_manage_resource_path
 end
 
+
+
 # userid details .................................................
 
 crumb :my_own_userid_detail do |userid_detail|
@@ -165,18 +167,28 @@ crumb :correct_error_record do |entry, file|
   parent :error_records, file
 end
 
+# manage county
+crumb :county_selection do
+  link 'Select County'
+  parent :root
+end
 
-#manage county
 crumb :county_options do |county|
   link "County Options(#{county})", select_action_manage_counties_path(:county => "#{county}")
   parent :root
 end
+
 crumb :place_range_options do |county, active|
   if session[:active_place]
     link 'Range Selection', selection_active_manage_counties_path(:option =>'Work with Active Places')
   else
     link 'Range Selection', selection_all_manage_counties_path(:option =>'Work with All Places')
   end
+  parent :county_options, county
+end
+
+crumb :manage_county_selection do |county|
+  link 'Selection'
   parent :county_options, county
 end
 
@@ -275,10 +287,20 @@ crumb :rename_register do |county, place, church, register|
   parent :show_register, county, place, church, register
 end
 
-#manage syndicate
+# manage syndicate
+crumb :syndicate_selection do
+  link 'Select Syndicate'
+  parent :root
+end
+
 crumb :syndicate_options do |syndicate|
   link "Syndicate Options(#{syndicate})", select_action_manage_syndicates_path("?syndicate=#{syndicate}")
   parent :root
+end
+
+crumb :manage_syndicate_selection do |syndicate|
+  link 'Selection'
+  parent :syndicate_options, syndicate
 end
 
 crumb :userid_details_listing do |syndicate, user|
@@ -514,8 +536,8 @@ crumb :edit_contact do |contact|
     parent :contacts
   end
 end
-crumb :contact_for_selection do ||
-    link 'Form for Selection'
+crumb :contact_form_for_selection do
+  link 'Form for Selection'
   if session[:archived_contacts]
     parent :archived_contacts
   else
@@ -835,7 +857,7 @@ crumb :create_denomination do |denomination|
   parent :denominations
 end
 crumb :select_attic_files do
-  link 'Select Userid', select_attic_files_path
+  link 'Select Userid', select_userid_attic_files_path
   parent :root
 end
 crumb :show_attic_files do |user|

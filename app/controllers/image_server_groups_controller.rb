@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 #
 class ImageServerGroupsController < ApplicationController
-  skip_before_filter :require_login, only: [:upload_return]
+  skip_before_action :require_login, only: [:upload_return]
 
   def allocate
     display_info

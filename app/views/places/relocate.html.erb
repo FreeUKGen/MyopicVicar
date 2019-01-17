@@ -1,23 +1,18 @@
 <% breadcrumb :relocate_place,  @county, @place%>
-<p style="text-align: center"> <b><%= @place_name %></b> of <b><%= @county %></b><br></p>
-
+<p style="text-align: center"> <b><%= @place_name %></b> of <b><%= @county %></b><br>
+</p>
 <% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
+  <div id="notice" style="color:blue"><br>
     <%= flash[:notice] %> <% flash[:notice] = nil%>  <br>
-    </div>
-   <% end %>
+  </div>
+<% end %>
 <section class="island  island--light">
-<%= semantic_form_for  @place, :html => { :class => "grid"}  do |f| %>
-
-<%= f.input :county,{ :as => :select,:label => "Select the County",:include_blank => false,
-      :required => true, :collection => @counties,:size => 15 } %>
-      <%= f.input :country,{ :as => :select,:label => "Select the Country",:include_blank => false,
-      :required => true, :collection => @countries,:size => 15 } %>
-   
-
- 
- <%= f.action :submit, :as => :input, :label => 'Relocate' %>
- <% end %>
- <p style="color:red">Please note you are changing the location of a large number of records (<%=@records%>) the processing time could be several minutes depending upon the number of batches affected. <b>Please wait for the process to complete.</b></p>
- </section>
-      
+  <%= simple_form_for  @place, :html => { :class => "grid"}  do |f| %>
+    <%= f.input :country,{ :as => :select,:label => "Select the Country",
+      :required => true, :collection => @countries,:size => 10 ,:input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width"}}%>
+    <%= f.input :county,{ :as => :select,:label => "Select the County",
+      :required => true, :collection => @counties,:size => 10 ,:input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width"}}%>
+    <%= f.button :submit, 'Relocate' %>
+  <% end %>
+  <p style="color:red">Please note you are changing the location of a large number of records (<%=@records%>) the processing time could be several minutes depending upon the number of batches affected. <b>Please wait for the process to complete.</b></p>
+</section>

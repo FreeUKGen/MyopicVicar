@@ -183,7 +183,7 @@ class ManageCountiesController < ApplicationController
     clean_session_for_images
     session[:manage_user_origin] = 'manage county'
     @source_ids, @source_id = Source.get_source_ids(session[:chapman_code])
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'No requested Sources exists') && return if @source_ids.blank? || @source_id.blank?
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No Sources exist') && return if @source_ids.blank? || @source_id.blank?
 
     @county = session[:county]
     render 'sources_list_all'
@@ -207,17 +207,18 @@ class ManageCountiesController < ApplicationController
       @county = ChapmanCode.has_key(@counties[0])
       session[:county] = @county
       redirect_to(action: 'select_action') && return
+    else
+      @options = @counties
+      @prompt = 'Please select one'
+      @manage_county = ManageCounty.new
+      @location = 'location.href= "/manage_counties/" + this.value +/selected/'
     end
-    @options = @counties
-    @prompt = 'Please select one'
-    @manage_county = ManageCounty.new
-    @location = 'location.href= "/manage_counties/" + this.value +/selected/'
   end
 
   def place_range
+    session[:character] = params[:params] if params[:params].present?
     redirect_back(fallback_location: new_manage_resource_path, notice: 'You did not make a range selection') && return if params[:params].blank? || session[:character].blank?
 
-    session[:character] = params[:params] if params[:params].present?
     @character = session[:character]
     @county = session[:county]
     get_user_info_from_userid
@@ -255,6 +256,8 @@ class ManageCountiesController < ApplicationController
     Place.where(chapman_code: session[:chapman_code], disabled: 'false', error_flag: 'Place name is not approved').order_by(place_name: 1).each do |place|
       @places << place.place_name
     end
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'There are no such places') && return if @places.blank?
+
     @options = @places
     @location = 'location.href= "/manage_counties/places?params=" + this.value'
     @prompt = 'Select Place'
@@ -294,6 +297,7 @@ class ManageCountiesController < ApplicationController
     @options = UseridRole::COUNTY_MANAGEMENT_OPTIONS
     @prompt = 'Select Action?'
   end
+
   def show
     redirect_to action: 'new'
   end
@@ -349,20 +353,17 @@ class ManageCountiesController < ApplicationController
 
   def work_places_core
     show_alphabet = ManageCounty.records(session[:chapman_code], session[:show_alphabet])
+    redirect_to(places_path) && return if show_alphabet.zero?
+
     session[:show_alphabet] = show_alphabet
-    if show_alphabet == 0
-      redirect_to places_path
-    else
-      @active = session[:active_place]
-      @manage_county = ManageCounty.new
-      @county = session[:county]
-      session[:show_alphabet] = show_alphabet
-      @options = FreeregOptionsConstants::ALPHABETS[show_alphabet]
-      @location = 'location.href= "/manage_counties/place_range?params=" + this.value'
-      @prompt = 'Select Place Range'
-      render '_form_for_range_selection'
-    end
-    return
+    @active = session[:active_place]
+    @manage_county = ManageCounty.new
+    @county = session[:county]
+    session[:show_alphabet] = show_alphabet
+    @options = FreeregOptionsConstants::ALPHABETS[show_alphabet]
+    @location = 'location.href= "/manage_counties/place_range?params=" + this.value'
+    @prompt = 'Select Place Range'
+    render '_form_for_range_selection'
   end
 
   def work_with_active_places

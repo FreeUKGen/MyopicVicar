@@ -151,9 +151,9 @@ class Place
     end
   end
 
-  def adjust_location_before_applying(params,session)
+  def adjust_location_before_applying(params, chapman)
     self.chapman_code = ChapmanCode.name_from_code(params[:place][:county]) unless params[:place][:county].nil?
-    self.chapman_code = session[:chapman_code] if self.chapman_code.nil?
+    self.chapman_code = chapman if self.chapman_code.nil?
     #We use the lat/lon if provided and the grid reference if  lat/lon not available
     self.change_grid_reference(params[:place][:grid_reference])
     self.change_lat_lon(params[:place][:latitude],params[:place][:longitude]) if params[:place][:grid_reference].blank?
@@ -222,17 +222,17 @@ class Place
   def change_name(param)
     place_name = param[:place_name]
     old_place_name = self.place_name
-    return [true, "That place name is already in use"] if Place.place(place_name).exists?
+    return [false, "That place name is already in use"] if Place.place(place_name).exists?
     unless old_place_name == place_name
       self.save_to_original
       self.update_attributes(:place_name => place_name, :modified_place_name => place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase )
-      return [true, "Error in save of place; contact the webmaster"] if self.errors.any?
+      return [false, "Error in save of place; contact the webmaster"] if self.errors.any?
       self.propogate_place_name_change(old_place_name)
       self.propogate_batch_lock
       self.recalculate_last_amended_date
       PlaceCache.refresh_cache(self)
     end
-    return [false, ""]
+    [true, '']
   end
 
   def check_and_set(param)
@@ -445,11 +445,11 @@ class Place
     country = param[:country] if param[:country].present?
     self.update_attributes(:county => county, :chapman_code => chapman_code, :country => country)
     if self.errors.any?
-      return [true, "Error in save of place; contact the webmaster"]
+      return [false, "Error in save of place; contact the webmaster"]
     end
     self.propogate_county_change
     PlaceCache.refresh_cache(self)
-    return [false, ""]
+    [true, '']
   end
 
   def save_to_original

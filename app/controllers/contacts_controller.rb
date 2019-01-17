@@ -19,42 +19,35 @@ class ContactsController < ApplicationController
   skip_before_action :require_login, only: [:new, :report_error, :create, :show, :contact_reply_messages]
 
   def archive
-    @contact = Contact.id(params[:id]).first
-    if @contact.present?
-      @contact.archive
-      flash.notice = "Contact archived"
-      return_after_archive(params[:source], params[:id])
-    else
-      go_back("contact",params[:id])
-    end
+    @contact = Contact.find(params[:id])
+    redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @contact.blank?
+
+    @contact.archive
+    flash.notice = 'Contact archived'
+    return_after_archive(params[:source], params[:id])
   end
 
   def contact_reply_messages
-    get_user_info_from_userid; return if performed?
-    @contact = Contact.id(params[:id]).first
-    if @contact.present?
-      @messages = Message.where(source_contact_id: params[:id]).all
-      @links = false
-      render 'messages/index'
-    end
+    @contact = Contact.find(params[:id])
+    redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @contact.blank?
+
+    get_user_info_from_userid
+    @messages = Message.where(source_contact_id: params[:id]).all
+    @links = false
+    render 'messages/index'
   end
 
-
   def convert_to_issue
-    @contact = Contact.id(params[:id]).first
-    if @contact.present?
-      if @contact.github_issue_url.blank?
-        @contact.github_issue
-        flash.notice = "Issue created on Github."
-        redirect_to contact_path(@contact.id)
-        return
-      else
-        flash.notice = "Issue has already been created on Github."
-        redirect_to :action => "show"
-        return
-      end
+    @contact = Contact.find(params[:id])
+    redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @contact.blank?
+
+    if @contact.github_issue_url.blank?
+      @contact.github_issue
+      flash.notice = 'Issue created on Github.'
+      redirect_to(contact_path(@contact.id)) && return
     else
-      redirect_back(fallback_location: root_path, notice: 'Contact is not there') and return
+      flash.notice = 'Issue had already been created on Github.'
+      redirect_to(action: 'show') && return
     end
   end
 
@@ -72,72 +65,55 @@ class ContactsController < ApplicationController
       @contact.session_id = session.to_hash["session_id"]
       @contact.previous_page_url= request.env['HTTP_REFERER']
       @contact.save
-      if !@contact.errors.any?
-        flash[:notice] = "Thank you for contacting us!"
-        @contact.communicate_initial_contact
-        if @contact.query
-          redirect_to search_query_path(@contact.query)
-          return
-        else
-          redirect_to @contact.previous_page_url
-          return
-        end
-      else
-        flash[:notice] = "There was a problem with your submission please review"
+      if @contact.errors.any?
+        flash[:notice] = 'There was a problem with your submission please review'
         if @contact.contact_type == 'Data Problem'
-          redirect_to @contact.previous_page_url
-          return
+          redirect_to(@contact.previous_page_url) && return
         else
           @options = FreeregOptionsConstants::ISSUES
           @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
-          render :new
-          return
+          redirect_back(fallback_location: new_contact_path, notice: 'There was a problem with your submission please review') && return
+
+        end
+      else
+        flash[:notice] = 'Thank you for contacting us!'
+        @contact.communicate_initial_contact
+        if @contact.query
+          redirect_to(search_query_path(@contact.query)) && return
+        else
+          redirect_to(@contact.previous_page_url) && return
         end
       end
-    else
-      @options = FreeregOptionsConstants::ISSUES
-      @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
-      render :new
-      return
     end
   end
 
   def destroy
-    @contact = Contact.id(params[:id]).first
-    if @contact.present?
-      @contact.delete
-      flash.notice = "Contact destroyed"
-      redirect_to :action => 'index'
-      return
-    else
-      redirect_back(fallback_location: root_path, notice: 'Contact is not there') and return
-    end
+    @contact = Contact.find(params[:id])
+    redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @contact.blank?
+
+    @contact.delete
+    flash.notice = 'Contact destroyed'
+    redirect_to action: 'index'
   end
 
   def edit
-    @contact = Contact.id(params[:id]).first
-    if @contact.present?
-      if @contact.github_issue_url.present?
-        flash[:notice] = "Issue cannot be edited as it is already committed to GitHub. Please edit there"
-        redirect_to :action => 'show'
-        return
-      end
-    else
-      redirect_back(fallback_location: root_path, notice: 'Contact is not there') and return
+    @contact = Contact.find(params[:id])
+    redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @contact.blank?
+
+    if @contact.github_issue_url.present?
+      flash[:notice] = 'Issue cannot be edited as it is already committed to GitHub. Please edit there'
+      redirect_to(action: 'show') && return
     end
   end
 
   def force_destroy
-    @contact = Contact.id(params[:id]).first
-    if @contact.present?
-      delete_reply_messages(params[:id]) if @contact.has_replies?(params[:id])
-      @contact.delete
-      flash.notice = "Contact and all its replies are destroyed"
-      redirect_to :action => 'index'
-      return
-    else
-      redirect_back(fallback_location: root_path, notice: 'Contact is not there') and return
-    end
+    @contact = Contact.find(params[:id])
+    redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @contact.blank?
+
+    delete_reply_messages(params[:id]) if @contact.has_replies?(params[:id])
+    @contact.delete
+    flash.notice = 'Contact and all its replies are destroyed'
+    redirect_to(action: 'index') && return
   end
 
   def get_contacts
@@ -149,14 +125,15 @@ class ContactsController < ApplicationController
     session[:message_base] = 'contact'
     params[:source] = 'original'
     get_user_info_from_userid
-    order = "contact_time DESC"
-    @contacts = get_contacts.result(session[:archived_contacts],order)
+    order = 'contact_time DESC'
+    @contacts = get_contacts.result(session[:archived_contacts], order)
     @archived = session[:archived_contacts]
   end
 
   def keep
-    @contact = Contact.id(params[:id]).first
-    go_back('contact', params[:id])  if @contact.blank?
+    @contact = Contact.find(params[:id])
+    redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @contact.blank?
+
     session[:archived_contacts] = true
     @contact.update_keep
     flash.notice = 'Contact to be retained'
@@ -168,16 +145,15 @@ class ContactsController < ApplicationController
     session[:message_base] = 'contact'
     params[:source] = 'original'
     get_user_info_from_userid
-    order = "contact_time  DESC"
+    order = 'contact_time  DESC'
     @contacts = get_contacts.result(session[:archived_contacts],order)
     @archived = session[:archived_contacts]
     render :index
   end
 
-
   def list_by_date
     get_user_info_from_userid
-    order = "contact_time ASC"
+    order = 'contact_time ASC'
     @contacts = get_contacts.result(session[:archived_contacts],order)
     @archived = session[:archived_contacts]
     render :index
@@ -185,7 +161,7 @@ class ContactsController < ApplicationController
 
   def list_by_most_recent
     get_user_info_from_userid
-    order = "contact_time DESC"
+    order = 'contact_time DESC'
     @contacts = get_contacts.result(session[:archived_contacts],order)
     @archived = session[:archived_contacts]
     render :index
@@ -193,7 +169,7 @@ class ContactsController < ApplicationController
 
   def list_by_name
     get_user_info_from_userid
-    order = "name ASC"
+    order = 'name ASC'
     @contacts = get_contacts.result(session[:archived_contacts],order)
     @archived = session[:archived_contacts]
     render :index
@@ -201,7 +177,7 @@ class ContactsController < ApplicationController
 
   def list_by_type
     get_user_info_from_userid
-    order = "contact_type ASC"
+    order = 'contact_type ASC'
     @contacts = get_contacts.result(session[:archived_contacts],order)
     @archived = session[:archived_contacts]
     render :index
@@ -223,24 +199,22 @@ class ContactsController < ApplicationController
     @contact.entry_id = SearchRecord.find(params[:id]).freereg1_csv_entry._id
     @freereg1_csv_entry = Freereg1CsvEntry.find( @contact.entry_id)
     @contact.county = @freereg1_csv_entry.freereg1_csv_file.county
-    @contact.line_id  = @freereg1_csv_entry.line_id
+    @contact.line_id = @freereg1_csv_entry.line_id
   end
 
   def restore
-    @contact = Contact.id(params[:id]).first
-    if @contact.present?
-      @contact.restore
-      flash.notice = "Contact restored"
-      return_after_restore(params[:source], params[:id])
-    else
-      redirect_back(fallback_location: root_path, notice: 'Contact is not there') and return
-    end
+    @contact = Contact.find(params[:id])
+    redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @contact.blank?
+
+    @contact.restore
+    flash.notice = 'Contact restored'
+    return_after_restore(params[:source], params[:id])
   end
 
   def select_by_identifier
     get_user_info_from_userid
-    @options = Hash.new
-    order = "identifier ASC"
+    @options = {}
+    order = 'identifier ASC'
     @contacts = get_contacts.result(session[:archived_contacts], order).each do |contact|
       @options[contact.identifier] = contact.id
     end
@@ -275,30 +249,27 @@ class ContactsController < ApplicationController
     session[:place_name] = place.place_name
     session[:church_name] = church.church_name
     session[:county] = place.county
-    return true
+    true
   end
 
   def show
-    @contact = Contact.id(params[:id]).first
-    if @contact.present?
-      if @contact.entry_id.present? && Freereg1CsvEntry.id(@contact.entry_id).present?
-        file = Freereg1CsvEntry.id(@contact.entry_id).first.freereg1_csv_file
-        result = set_session_parameters_for_record(file)
-        go_back("contact",params[:id]) unless result
-      else
-        set_nil_session_parameters
-      end
+    @contact = Contact.find(params[:id])
+    redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @contact.blank?
+
+    if @contact.entry_id.present? && Freereg1CsvEntry.id(@contact.entry_id).present?
+      file = Freereg1CsvEntry.id(@contact.entry_id).first.freereg1_csv_file
+      result = set_session_parameters_for_record(file)
+      redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return unless result
     else
-      redirect_back(fallback_location: root_path, notice: 'Contact is not there') and return
+      set_nil_session_parameters
     end
   end
 
   def reply_contact
     get_user_info_from_userid; return if performed?
-    @respond_to_contact = Contact.id(params[:source_contact_id]).first
-    if @respond_to_contact.blank?
-      redirect_back(fallback_location: root_path, notice: 'Contact is not there') and return
-    end
+    @respond_to_contact = Contact.find(params[:source_contact_id])
+    redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @respond_to_contact.blank?
+
     @contact_replies = Message.where(source_contact_id: params[:source_contact_id]).all
     @contact_replies.each do |reply|
     end
@@ -308,7 +279,6 @@ class ContactsController < ApplicationController
   end
 
   def return_after_archive(source, id)
-
     if source == 'show'
       redirect_to action: 'show', id: id
     else
@@ -340,28 +310,26 @@ class ContactsController < ApplicationController
     end
   end
 
-
   def unkeep
+    @contact = Contact.find(params[:id])
+    redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @contact.blank?
+
     get_user_info_from_userid
-    @contact = Contact.id(params[:id]).first
-    go_back('contact', params[:id]) if @contact.blank?
     @contact.update_unkeep
     flash.notice = 'Contact no longer being kept'
     return_after_unkeep(params[:source], params[:id])
   end
 
   def update
-    @contact = Contact.id(params[:id]).first
-    if @contact.present?
-      @contact.update_attributes(contact_params)
-      redirect_to :action => 'show'
-      return
-    else
-      redirect_back(fallback_location: root_path, notice: 'Contact is not there') and return
-    end
+    @contact = Contact.find(params[:id])
+    redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @contact.blank?
+
+    @contact.update_attributes(contact_params)
+    redirect_to(action: 'show') && return
   end
 
   private
+
   def contact_params
     params.require(:contact).permit!
   end
