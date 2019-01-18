@@ -17,111 +17,89 @@ class FeedbacksController < ApplicationController
   skip_before_action :require_login, only: [:show, :feedback_reply_messages]
 
   def archive
-    @feedback = Feedback.id(params[:id]).first
-    if @feedback.present?
-      @feedback.archive
-      flash.notice = "Feedback archived"
-      return_after_archive(params[:source], params[:id])
-    else
-      redirect_back(fallback_location: root_path, notice: 'Feedback is not there') and return
-    end
+    @feedback = Feedback.find(params[:id])
+    redirect_back(fallback_location: feedbacks_path, notice: 'The feedback was not found') && return if @feedback.blank?
+
+    @feedback.archive
+    flash.notice = 'Feedback archived'
+    flash.keep
+    return_after_archive(params[:source], params[:id])
   end
 
-
   def convert_to_issue
-    @feedback = Feedback.id(params[:id]).first
-    if @feedback.present?
-      if @feedback.github_issue_url.blank?
-        @feedback.github_issue
-        flash.notice = "Issue created on Github."
-        redirect_to feedback_path(@feedback.id)
-        return
-      else
-        flash.notice = "Issue has already been created on Github."
-        redirect_to :action => "show"
-        return
-      end
+    @feedback = Feedback.find(params[:id])
+    redirect_back(fallback_location: feedbacks_path, notice: 'The feedback was not found') && return if @feedback.blank?
+
+    if @feedback.github_issue_url.blank?
+      @feedback.github_issue
+      flash.notice = 'Issue created on Github.'
+      redirect_to(feedback_path(@feedback.id)) && return
     else
-      redirect_back(fallback_location: root_path, notice: 'Feedback is not there') and return
+      flash.notice = 'Issue had already been created on Github.'
+      redirect_to(action: 'show') && return
     end
   end
 
   def create
+    session[:return_to] ||= request.referer
     @feedback = Feedback.new(feedback_params)
     #eliminate any flash message as the conversion to bson fails
     session.delete(:flash)
     @feedback.session_data = session.to_hash
-    @feedback.session_data["warden_user_authentication_devise_user_key_key"] = @feedback.session_data["warden.user.authentication_devise_user.key"][0].to_s.gsub(/\W/, "") unless @feedback.session_data["warden.user.authentication_devise_user.key"].blank?
-    @feedback.session_data["warden_user_authentication_devise_user_key_value"] = @feedback.session_data["warden.user.authentication_devise_user.key"][1] unless @feedback.session_data["warden.user.authentication_devise_user.key"].blank?
-    @feedback.session_data.delete("warden.user.authentication_devise_user.key") unless @feedback.session_data["warden.user.authentication_devise_user.key"].blank?
-    @feedback.session_data["warden_user_authentication_devise_user_key_session"] = @feedback.session_data["warden.user.authentication_devise_user.session"]
-    @feedback.session_data.delete("warden.user.authentication_devise_user.session") unless @feedback.session_data["warden.user.authentication_devise_user.session"].blank?
-    @feedback.session_id = session.to_hash["session_id"]
+    @feedback.session_data['warden_user_authentication_devise_user_key_key'] = @feedback.session_data['warden.user.authentication_devise_user.key'][0].to_s.gsub(/\W/, '') if @feedback.session_data['warden.user.authentication_devise_user.key'].present?
+    @feedback.session_data['warden_user_authentication_devise_user_key_value'] = @feedback.session_data['warden.user.authentication_devise_user.key'][1] if @feedback.session_data['warden.user.authentication_devise_user.key'].present?
+    @feedback.session_data.delete('warden.user.authentication_devise_user.key') if @feedback.session_data['warden.user.authentication_devise_user.key'].present?
+    @feedback.session_data['warden_user_authentication_devise_user_key_session'] = @feedback.session_data['warden.user.authentication_devise_user.session']
+    @feedback.session_data.delete('warden.user.authentication_devise_user.session') if @feedback.session_data['warden.user.authentication_devise_user.session'].present?
+    @feedback.session_id = session.to_hash['session_id']
     @feedback.save
-    if @feedback.errors.any?
-      flash.notice = "There was a problem reporting your feedback!"
-      render :action => 'new'
-      return
-    end
-    flash.notice = "Thank you for your feedback!"
+    redirect_back(fallback_location: new_feedback_path, notice: 'There was a problem creating your feedback!') && return if @feedback.errors.any?
+
+    flash.notice = 'Thank you for your feedback!'
     @feedback.communicate_initial_contact
     if session[:return_to].present?
       redirect_to session.delete(:return_to)
     else
-      redirect_to :action => 'new'
+      redirect_to action: 'new'
     end
   end
 
   def destroy
-    @feedback = Feedback.id(params[:id]).first
-    if @feedback.present?
-      @feedback.delete
-      flash.notice = "Feedback destroyed"
-      redirect_to :action => 'index'
-      return
-    else
-      redirect_back(fallback_location: root_path, notice: 'Feedback is not there') and return
-    end
+    @feedback = Feedback.find(params[:id])
+    redirect_back(fallback_location: feedbacks_path, notice: 'The feedback was not found') && return if @feedback.blank?
+
+    @feedback.delete
+    flash.notice = 'Feedback destroyed'
+    redirect_to action: 'index'
   end
 
   def edit
     session[:return_to] ||= request.referer
-    @feedback = Feedback.id(params[:id]).first
-    if @feedback.present?
-      if @feedback.github_issue_url.present?
-        flash[:notice] = "Issue cannot be edited as it is already committed to GitHub. Please edit there"
-        redirect_to :action => 'show'
-        return
-      end
-    else
-      redirect_back(fallback_location: root_path, notice: 'Feedback is not there') and return
-    end
+    @feedback = Feedback.find(params[:id])
+    redirect_back(fallback_location: feedbacks_path, notice: 'The feedback was not found') && return if @feedback.blank?
+
+    redirect_back(fallback_location: feedbacks_path, notice: 'Issue cannot be edited as it is already committed to GitHub. Please edit there') && return if @feedback.github_issue_url.present?
+
   end
 
   def feedback_reply_messages
-    #get_user_info_from_userid; return if performed?
-    @feedback = Feedback.id(params[:id]).first
-    if @feedback.present?
-      @messages = Message.where(source_feedback_id: params[:id]).all
-      @link = false
-      render 'messages/index'
-    else
-      redirect_back(fallback_location: root_path, notice: 'Feedback is not there') and return
-    end
+    @feedback = Feedback.find(params[:id])
+    redirect_back(fallback_location: feedbacks_path, notice: 'The feedback was not found') && return if @feedback.blank?
+
+    get_user_info_from_userid
+    @messages = Message.where(source_feedback_id: params[:id]).all
+    @link = false
+    render 'messages/index'
   end
 
-
   def force_destroy
-    @feedback = Feedback.id(params[:id]).first
-    if @feedback.present? && @feedback.has_replies?(params[:id])
-      delete_reply_messages(params[:id])
-      @feedback.delete
-      flash.notice = "Feedback and all its replies are destroyed"
-      redirect_to :action => 'index'
-      return
-    else
-      redirect_back(fallback_location: root_path, notice: 'Feedback is not there') and return
-    end
+    @feedback = Feedback.find(params[:id])
+    redirect_back(fallback_location: feedbacks_path, notice: 'The feedback was not found') && return if @feedback.blank?
+
+    delete_reply_messages(params[:id])
+    @feedback.delete
+    flash.notice = 'Feedback and all its replies are destroyed'
+    redirect_to action: 'index'
   end
 
   def index
@@ -129,17 +107,19 @@ class FeedbacksController < ApplicationController
     session[:message_base] = 'feedback'
     params[:source] = 'original'
     get_user_info_from_userid
-    order = "feedback_time DESC"
+    order = 'feedback_time DESC'
     @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order)
     @archived = session[:archived_contacts]
   end
 
   def keep
-    @feedback = Feedback.id(params[:id]).first
-    go_back('feedback', params[:id])  if @feedback.blank?
+    @feedback = Feedback.find(params[:id])
+    redirect_back(fallback_location: feedbacks_path, notice: 'The feedback was not found') && return if @feedback.blank?
+
     session[:archived_contacts] = true
     @feedback.update_keep
     flash.notice = 'Feedback to be retained'
+    flash.keep
     return_after_keep(params[:source], params[:id])
   end
 
@@ -148,7 +128,7 @@ class FeedbacksController < ApplicationController
     session[:message_base] = 'feedback'
     params[:source] = 'original'
     get_user_info_from_userid
-    order = "feedback_time DESC"
+    order = 'feedback_time DESC'
     @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order)
     @archived = session[:archived_contacts]
     render :index
@@ -156,7 +136,7 @@ class FeedbacksController < ApplicationController
 
   def list_by_date
     get_user_info_from_userid
-    order = "feedback_time ASC"
+    order = 'feedback_time ASC'
     @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order)
     @archived = session[:archived_contacts]
     render :index
@@ -164,7 +144,7 @@ class FeedbacksController < ApplicationController
 
   def list_by_most_recent
     get_user_info_from_userid
-    order = "feedback_time DESC"
+    order = 'feedback_time DESC'
     @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order)
     @archived = session[:archived_contacts]
     render :index
@@ -172,7 +152,7 @@ class FeedbacksController < ApplicationController
 
   def list_by_name
     get_user_info_from_userid
-    order = "name ASC"
+    order = 'name ASC'
     @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order)
     @archived = session[:archived_contacts]
     render :index
@@ -180,7 +160,7 @@ class FeedbacksController < ApplicationController
 
   def list_by_type
     get_user_info_from_userid
-    order = "feedback_type ASC"
+    order = 'feedback_type ASC'
     @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order)
     @archived = session[:archived_contacts]
     render :index
@@ -188,7 +168,7 @@ class FeedbacksController < ApplicationController
 
   def list_by_userid
     get_user_info_from_userid
-    order = "user_id ASC"
+    order = 'user_id ASC'
     @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order)
     @archived = session[:archived_contacts]
     render :index
@@ -197,7 +177,7 @@ class FeedbacksController < ApplicationController
   def new
     session[:return_to] ||= request.referer
     get_user_info_from_userid
-    @feedback = Feedback.new(new_params) if params[:source_feedback_id].nil?
+    @feedback = Feedback.new(new_params) if params[:source_feedback_id].blank?
     @message = Message.new
     @message.message_time = Time.now
     @message.userid = @user.userid
@@ -206,15 +186,14 @@ class FeedbacksController < ApplicationController
   end
 
   def restore
+    @feedback = Feedback.find(params[:id])
+    redirect_back(fallback_location: feedbacks_path, notice: 'The feedback was not found') && return if @feedback.blank?
+
     get_user_info_from_userid
-    @feedback = Feedback.id(params[:id]).first
-    if @feedback.present?
-      @feedback.restore
-      flash.notice = "Feedback restored"
-      return_after_restore(params[:source], params[:id])
-    else
-      redirect_back(fallback_location: root_path, notice: 'Feedback is not there') and return
-    end
+    @feedback.restore
+    flash.notice = 'Feedback restored'
+    flash.keep
+    return_after_restore(params[:source], params[:id])
   end
 
   def return_after_archive(source, id)
@@ -249,13 +228,12 @@ class FeedbacksController < ApplicationController
     end
   end
 
-
   def reply_feedback
     get_user_info_from_userid; return if performed?
-    @respond_to_feedback = Feedback.id(params[:source_feedback_id]).first
-    if @respond_to_feedback.blank?
-      redirect_back(fallback_location: root_path, notice: 'Feedback is not there') and return
-    end
+    @respond_to_feedback = Feedback.find(params[:source_feedback_id])
+    redirect_back(fallback_location: feedbacks_path, notice: 'The feedback was not found') && return if @respond_to_feedback.blank?
+
+    get_user_info_from_userid
     @feedback_replies = Message.where(source_feedback_id: params[:source_feedback_id]).all
     @feedback_replies.each do |reply|
     end
@@ -266,8 +244,8 @@ class FeedbacksController < ApplicationController
 
   def select_by_identifier
     get_user_info_from_userid
-    @options = Hash.new
-    order = "identifier ASC"
+    @options = {}
+    order = 'identifier ASC'
     @feedbacks = Feedback.archived(session[:archived_contacts]).order_by(order).each do |contact|
       @options[contact.identifier] = contact.id
     end
@@ -279,32 +257,29 @@ class FeedbacksController < ApplicationController
 
   def show
     #get_user_info_from_userid
-    @feedback = Feedback.id(params[:id]).first
-    if @feedback.present?
-      @feedback
-    else
-      redirect_back(fallback_location: root_path, notice: 'Feedback is not there') and return
-    end
+    @feedback = Feedback.find(params[:id])
+    redirect_back(fallback_location: feedbacks_path, notice: 'The feedback was not found') && return if @feedback.blank?
+
   end
 
   def unkeep
+    @feedback = Feedback.find(params[:id])
+    redirect_back(fallback_location: feedbacks_path, notice: 'The feedback was not found') && return if @feedback.blank?
+
     get_user_info_from_userid
-    @feedback = Feedback.id(params[:id]).first
-    go_back('feedback', params[:id]) if @feedback.blank?
     @feedback.update_unkeep
     flash.notice = 'Feedback no longer being kept'
     return_after_unkeep(params[:source], params[:id])
   end
 
   def update
-    @feedback = Feedback.id(params[:id]).first
-    if @feedback.present?
-      @feedback.update_attributes(feedback_params)
-      redirect_to :action => 'show'
-      return
-    else
-      redirect_back(fallback_location: root_path, notice: 'Feedback is not there') and return
-    end
+    @feedback = Feedback.find(params[:id])
+    redirect_back(fallback_location: feedbacks_path, notice: 'The feedback was not found') && return if @feedback.blank?
+
+    proceed = @feedback.update_attributes(feedback_params)
+    redirect_back(fallback_location: edit_feedback_path(@feedback), notice: 'The edit of the feedback failed') && return unless proceed
+
+    redirect_to(action: 'show') && return if proceed
   end
 
   def userid_feedbacks
@@ -325,8 +300,6 @@ class FeedbacksController < ApplicationController
     @feedbacks = Feedback.in(id: @feedbacks_with_reply)
   end
 
-
-
   private
 
   def feedback_params
@@ -343,6 +316,4 @@ class FeedbacksController < ApplicationController
   def delete_reply_messages(feedback_id)
     Message.where(source_feedback_id: feedback_id).destroy
   end
-
-
 end

@@ -57,12 +57,12 @@ class ContactsController < ApplicationController
       session.delete(:flash)
       @contact.session_data = session.to_hash
       #avoid invalid character in warden.user.authentication_devise_user.key key
-      @contact.session_data["warden_user_authentication_devise_user_key_key"] = @contact.session_data["warden.user.authentication_devise_user.key"][0].to_s.gsub(/\W/, "") unless @contact.session_data["warden.user.authentication_devise_user.key"].blank?
-      @contact.session_data["warden_user_authentication_devise_user_key_value"] = @contact.session_data["warden.user.authentication_devise_user.key"][1] unless @contact.session_data["warden.user.authentication_devise_user.key"].blank?
-      @contact.session_data.delete("warden.user.authentication_devise_user.key")  unless @contact.session_data["warden.user.authentication_devise_user.key"].blank?
-      @contact.session_data["warden_user_authentication_devise_user_key_session"] = @contact.session_data["warden.user.authentication_devise_user.session"]
-      @contact.session_data.delete("warden.user.authentication_devise_user.session") unless @contact.session_data["warden.user.authentication_devise_user.session"].blank?
-      @contact.session_id = session.to_hash["session_id"]
+      @contact.session_data['warden_user_authentication_devise_user_key_key'] = @contact.session_data['warden.user.authentication_devise_user.key'][0].to_s.gsub(/\W/, '') if @contact.session_data['warden.user.authentication_devise_user.key'].present?
+      @contact.session_data['warden_user_authentication_devise_user_key_value'] = @contact.session_data['warden.user.authentication_devise_user.key'][1] if @contact.session_data['warden.user.authentication_devise_user.key'].present?
+      @contact.session_data.delete('warden.user.authentication_devise_user.key')  if @contact.session_data['warden.user.authentication_devise_user.key'].present?
+      @contact.session_data['warden_user_authentication_devise_user_key_session'] = @contact.session_data['warden.user.authentication_devise_user.session']
+      @contact.session_data.delete('warden.user.authentication_devise_user.session') if @contact.session_data['warden.user.authentication_devise_user.session'].present?
+      @contact.session_id = session.to_hash['session_id']
       @contact.previous_page_url= request.env['HTTP_REFERER']
       @contact.save
       if @contact.errors.any?
@@ -211,6 +211,51 @@ class ContactsController < ApplicationController
     return_after_restore(params[:source], params[:id])
   end
 
+  def reply_contact
+    @respond_to_contact = Contact.find(params[:source_contact_id])
+    redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @respond_to_contact.blank?
+
+    get_user_info_from_userid
+    @contact_replies = Message.where(source_contact_id: params[:source_contact_id]).all
+    @contact_replies.each do |reply|
+    end
+    @message = Message.new
+    @message.message_time = Time.now
+    @message.userid = @user.userid
+  end
+
+  def return_after_archive(source, id)
+    if source == 'show'
+      redirect_to action: 'show', id: id
+    else
+      redirect_to action: 'list_archived'
+    end
+  end
+
+  def return_after_keep(source, id)
+    if source == 'show'
+      redirect_to action: 'show', id: id
+    else
+      redirect_to action: 'index'
+    end
+  end
+
+  def return_after_restore(source, id)
+    if source == 'show'
+      redirect_to action: 'show', id: id
+    else
+      redirect_to action: 'index'
+    end
+  end
+
+  def return_after_unkeep(source, id)
+    if source == 'show'
+      redirect_to action: 'show', id: id
+    else
+      redirect_to action: 'list_archived'
+    end
+  end
+
   def select_by_identifier
     get_user_info_from_userid
     @options = {}
@@ -262,51 +307,6 @@ class ContactsController < ApplicationController
       redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return unless result
     else
       set_nil_session_parameters
-    end
-  end
-
-  def reply_contact
-    get_user_info_from_userid; return if performed?
-    @respond_to_contact = Contact.find(params[:source_contact_id])
-    redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @respond_to_contact.blank?
-
-    @contact_replies = Message.where(source_contact_id: params[:source_contact_id]).all
-    @contact_replies.each do |reply|
-    end
-    @message = Message.new
-    @message.message_time = Time.now
-    @message.userid = @user.userid
-  end
-
-  def return_after_archive(source, id)
-    if source == 'show'
-      redirect_to action: 'show', id: id
-    else
-      redirect_to action: 'list_archived'
-    end
-  end
-
-  def return_after_keep(source, id)
-    if source == 'show'
-      redirect_to action: 'show', id: id
-    else
-      redirect_to action: 'index'
-    end
-  end
-
-  def return_after_restore(source, id)
-    if source == 'show'
-      redirect_to action: 'show', id: id
-    else
-      redirect_to action: 'index'
-    end
-  end
-
-  def return_after_unkeep(source, id)
-    if source == 'show'
-      redirect_to action: 'show', id: id
-    else
-      redirect_to action: 'list_archived'
     end
   end
 

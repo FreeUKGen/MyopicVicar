@@ -206,7 +206,7 @@ class PlacesController < ApplicationController
   def relocate
     load(params[:id])
     redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'That place does not exist') && return if @place.blank?
-    p 'relocate'
+
     get_user_info_from_userid
     @county = session[:county]
     places_counties_and_countries
@@ -270,10 +270,8 @@ class PlacesController < ApplicationController
       end
       return
     when params[:commit] == 'Relocate'
-      p "Relocate"
+
       proceed, message = @place.relocate_place(params[:place])
-      p proceed
-      p message
       if proceed
         flash[:notice] = 'Place relocation/filling was successful.'
         redirect_to place_path(@place)

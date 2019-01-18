@@ -12,67 +12,67 @@
 # See the License for the specific language governing permissions and
 #
 class CountiesController < ApplicationController
-
   require 'county'
 
   def display
     get_user_info_from_userid
     @counties = County.all.order_by(chapman_code: 1)
-    render :action => :index
+    render action: :index
   end
 
   def edit
     load(params[:id])
+    redirect_back(fallback_location: counties_path, notice: 'The county was not found') && return if @county.blank?
+
     get_userids_and_transcribers
   end
 
   def index
     @user = get_user
-    @first_name = @user.person_forename unless @user.blank?
+    @first_name = @user.person_forename if @user.present?
     @counties = County.all.order_by(chapman_code: 1)
   end
 
   def load(id)
-    @county = County.id(id).first
-    if @county.nil?
-      go_back("county",id)
-    end
+    @county = County.find(id)
   end
 
   def new
-    @first_name = session[:first_name]
+    @user = get_user
+    @first_name = @user.person_forename if @user.present?
     @county = County.new
     get_userids_and_transcribers
   end
 
   def selection
-    get_user_info(session[:userid],session[:first_name])
+    @user = get_user
+    @first_name = @user.person_forename if @user.present?
     session[:county] = 'all' if @user.person_role == 'system_administrator'
-    case
-    when params[:county] == "Browse counties"
+    case params[:county]
+    when 'Browse counties'
       @counties = County.all.order_by(chapman_code: 1)
-      render "index"
+      render 'index'
       return
-    when params[:county] == "Create county"
-      redirect_to :action => 'new'
+    when 'Create county'
+      redirect_to action: 'new'
       return
-    when params[:county] == "Edit specific county"
+    when 'Edit specific county'
       counties = County.all.order_by(chapman_code: 1)
-      @counties = Array.new
+      @counties = []
       counties.each do |county|
         @counties << county.chapman_code
       end
       @location = 'location.href= "select?act=edit&county=" + this.value'
-    when params[:county] == "Show specific county"
+    when 'Show specific county'
       counties = County.all.order_by(chapman_code: 1)
-      @counties = Array.new
+      @counties = []
       counties.each do |county|
         @counties << county.chapman_code
       end
       @location = 'location.href= "select?act=show&county=" + this.value'
     else
       flash[:notice] = 'Invalid option'
-      redirect_back fallback_location: { action: "show" } and return
+      redirect_back(fallback_location: { action: 'show' }) && return
       return
     end
     @prompt = 'Select county'
@@ -81,59 +81,47 @@ class CountiesController < ApplicationController
   end
 
   def select
-    get_user_info(session[:userid],session[:first_name])
-    case
-    when !params[:county].nil?
-      if params[:county] == ""
-        flash[:notice] = 'Blank cannot be selected'
-        redirect_back fallback_location: { action: "show" } and return
-        return
-      else
-        county = County.where(:chapman_code => params[:county]).first
-        if params[:act] == "show"
-          redirect_to county_path(county)
-          return
-        else
-          redirect_to edit_county_path(county)
-          return
-        end
-      end
+    @user = get_user
+    @first_name = @user.person_forename if @user.present?
+    redirect_back(fallback_location: { action: 'show' }, notice: 'Blank cannot be selected') && return if params[:county].blank?
+
+    county = County.where(chapman_code: params[:county]).first
+    redirect_back(fallback_location: { action: 'show' }, notice: 'Invalid county selected') && return if county.blank?
+
+    if params[:act] == 'show'
+      redirect_to county_path(county)
     else
-      flash[:notice] = 'Invalid option'
-      redirect_back fallback_location: { action: "show" } and return
-      return
+      redirect_to edit_county_path(county)
     end
   end
 
   def show
     load(params[:id])
+    redirect_back(fallback_location: counties_path, notice: 'The county was not found') && return if @county.blank?
+
     person = UseridDetail.userid(@county.county_coordinator).first
-    @person = person.person_forename + ' ' + person.person_surname unless person.nil?
+    @person = person.person_forename + ' ' + person.person_surname if person.present? && person.person_forename.present?
     person = UseridDetail.userid(@county.previous_county_coordinator).first
-    @previous_person = person.person_forename + ' ' + person.person_surname unless person.nil? || person.person_forename.nil?
+    @previous_person = person.person_forename + ' ' + person.person_surname if person.present? && person.person_forename.present?
     @user = get_user
-    @first_name = @user.person_forename unless @user.blank?
+    @first_name = @user.person_forename if @user.present?
   end
 
   def update
     load(params[:id])
-    my_params = params[:county]
-    params[:county] = @county.update_fields_before_applying(my_params)
+    redirect_back(fallback_location: counties_path, notice: 'The county was not found') && return if @county.blank?
+
+    params[:county] = @county.update_fields_before_applying(params[:county])
     @county.update_attributes(county_params)
-    if @county.errors.any?
-      flash[:notice] = "The change to the county was unsuccessful"
-      render :action => 'edit'
-      return
-    else
-      flash[:notice] = "The change to the county was successful"
-      redirect_to counties_path
-    end
+    redirect_back(fallback_location: edit_counties_path, notice: 'The change to the county was unsuccessful') && return if @county.errors.any?
+
+    flash[:notice] = 'The change to the county was successful'
+    redirect_to counties_path
   end
 
   private
+
   def county_params
     params.require(:county).permit!
   end
-
-
 end

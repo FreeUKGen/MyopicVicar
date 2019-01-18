@@ -70,16 +70,29 @@ class CsvfilesController < ApplicationController
     # there can be multiple batches only one of which might be locked
     Freereg1CsvFile.where(userid: @person, file_name: @file_name).each do |file|
       message = 'The replacement of the file is not permitted as it has been locked due to on-line changes; download the updated copy and remove the lock'
-      redirect_back(fallback_location: new_csvfile_path, notice: message) and return if file.locked_by_transcriber || file.locked_by_coordinator
+      redirect_back(fallback_location: new_csvfile_path, notice: message) && return if file.locked_by_transcriber || file.locked_by_coordinator
 
     end
     @csvfile = Csvfile.new(userid: @person, file_name: @file_name)
     session[:file_name] = @file_name
-    get_userids_and_transcribers
+    userids_and_transcribers
     @action = 'Replace'
   end
 
-  def get_userids_and_transcribers
+  def load_people(userids)
+    userids.each do |ids|
+      @people << ids.userid
+    end
+  end
+
+  def new
+    get_user_info_from_userid
+    @csvfile = Csvfile.new(userid: session[:userid])
+    userids_and_transcribers
+    @action = 'Upload'
+  end
+
+  def userids_and_transcribers
     syndicate = @user.syndicate
     syndicate = session[:syndicate] unless session[:syndicate].nil?
     @people = []
@@ -93,19 +106,6 @@ class CsvfilesController < ApplicationController
     else
       @userids = @user
     end
-  end
-
-  def load_people(userids)
-    userids.each do |ids|
-      @people << ids.userid
-    end
-  end
-
-  def new
-    get_user_info_from_userid
-    @csvfile = Csvfile.new(userid: session[:userid])
-    get_userids_and_transcribers
-    @action = 'Upload'
   end
 
   private

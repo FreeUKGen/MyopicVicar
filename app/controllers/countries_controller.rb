@@ -12,83 +12,72 @@
 # See the License for the specific language governing permissions and
 #
 class CountriesController < ApplicationController
-
   def create
     @country = Country.new(country_params)
     @country.save
     if @country.errors.any?
-      flash[:notice] = "The addition of the Country was unsuccessful"
-      render :action => 'edit'
+      flash[:notice] = 'The addition of the Country was unsuccessful'
+      render action: 'edit'
       return
     else
-      flash[:notice] = "The addition of the Country was successful"
-      #Syndicate.change_userid_fields(params)
+      flash[:notice] = 'The addition of the Country was successful'
       redirect_to countries_path
     end
   end
 
   def edit
     load(params[:id])
+    redirect_back(fallback_location: countries_path, notice: 'The country was not found') && return if @country.blank?
+
+    @user = get_user
+    @first_name = @user.person_forename if @user.present?
     get_userids_and_transcribers
   end
 
-
   def index
     @user = get_user
-    @first_name = @user.person_forename unless @user.blank?
+    @first_name = @user.person_forename if @user.present?
     @countries = Country.all.order_by(country_code: 1)
   end
 
   def load(id)
-    @first_name = session[:first_name]
-    @country = Country.id(id).first
-    if @country.nil?
-      go_back("country",id)
-    end
+    @country = Country.find(id)
   end
 
   def new
-    @first_name = session[:first_name]
+    @user = get_user
+    @first_name = @user.person_forename if @user.present?
     @country = Country.new
     get_userids_and_transcribers
   end
 
   def show
     load(params[:id])
-    person = UseridDetail.where(:userid => @country.country_coordinator).first
-    @person = person.person_forename + ' ' + person.person_surname unless person.nil?
-    person = UseridDetail.where(:userid => @country.previous_country_coordinator).first
-    @previous_person = person.person_forename + ' ' + person.person_surname unless person.nil? || person.person_forename.nil?
+    redirect_back(fallback_location: countries_path, notice: 'The country was not found') && return if @country.blank?
+
+    person = UseridDetail.where(userid: @country.country_coordinator).first
+    @person = person.person_forename + ' ' + person.person_surname if person.present? && person.person_forename.present?
+    person = UseridDetail.where(userid: @country.previous_country_coordinator).first
+    @previous_person = person.person_forename + ' ' + person.person_surname if person.present? && person.person_forename.present?
     @user = get_user
-    @first_name = @user.person_forename unless @user.blank?
+    @first_name = @user.person_forename if @user.present?
   end
 
   def update
     load(params[:id])
-    my_params = params[:country]
-    params[:country] = @country.update_fields_before_applying(my_params)
+    redirect_back(fallback_location: countries_path, notice: 'The country was not found') && return if @country.blank?
+
+    params[:country] = @country.update_fields_before_applying(params[:country])
     @country.update_attributes(country_params)
-    if @country.errors.any?
+    redirect_back(fallback_location: edit_countries_path, notice: 'The change to the country was unsuccessful') && return if @country.errors.any?
 
-      flash[:notice] = "The change to the country was unsuccessful"
-      render :action => 'edit'
-      return
-    else
-      flash[:notice] = "The change to the country was successful"
-
-      redirect_to countries_path
-    end
-
+    flash[:notice] = 'The change to the country was successful'
+    redirect_to countries_path
   end
 
-
-
-
   private
+
   def country_params
     params.require(:country).permit!
   end
-
-
-
 end

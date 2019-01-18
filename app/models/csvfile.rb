@@ -68,9 +68,7 @@ class Csvfile < CarrierWave::Uploader::Base
   end
 
   def process_the_batch(user)
-    p 'process_the_batch'
     proceed = check_for_existing_file_and_save
-    p proceed
     save if proceed
     message = "The upload with file name #{file_name} was unsuccessful because #{errors.messages}" if errors.any?
     return [false, message] if errors.any?
@@ -109,7 +107,6 @@ class Csvfile < CarrierWave::Uploader::Base
   end
 
   def setup_batch_on_replace(original_file_name)
-    p 'setup_batch_on_replace'
     return false, 'The file you are replacing must have the same name' unless check_name(original_file_name)
 
     proceed = true
@@ -139,8 +136,6 @@ class Csvfile < CarrierWave::Uploader::Base
       message = 'A situation has occurred that should not have. Please have your coordinator contact system administration.'
       proceed = false
     end
-    p proceed
-    p message
     [proceed, message]
   end
 
