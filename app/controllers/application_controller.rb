@@ -119,7 +119,7 @@ class ApplicationController < ActionController::Base
 
   def get_user_info_from_userid
     @user = get_user
-    unless @user.present?
+    if @user.blank?
       flash[:notice] = 'You must be logged in to access that action'
       redirect_to(new_search_query_path) && return # halts request cycle
     else
@@ -135,7 +135,7 @@ class ApplicationController < ActionController::Base
   def get_user_info(userid, name)
     # old version for compatibility
     @user = get_user
-    @first_name = @user.person_forename unless @user.blank?
+    @first_name = @user.person_forename if @user.present?
     @userid = @user.id
     @roles = UseridRole::OPTIONS.fetch(@user.person_role)
   end
