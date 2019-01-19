@@ -16,24 +16,20 @@ class ImageServerImagesController < ApplicationController
   require 'source_property'
 
   def destroy
+    redirect_back(fallback_location: new_manage_resource_path) && return if session[:register_id].blank? || session[:source_id].blank? || session[:image_server_group_id].blank?
+
     display_info
     image_server_image = ImageServerImage.where(:id=>params[:id]).first
     if image_server_image.deletion_permitted?
-      website =  image_server_image.url_for_delete_image_from_image_server
+      website = image_server_image.url_for_delete_image_from_image_server
       redirect_to website
     else
       flash[:notice] = "Deletion of #{image_server_image.image_file_name} is not permitted due to its status of #{SourceProperty::Status[image_server_image.status]}"
-      redirect_back(fallback_location: root_path) and return
+      redirect_back(fallback_location: new_manage_resource_path) && return
     end
-    return
   end
 
   def display_info
-    if session[:register_id].nil? || session[:source_id].nil? || session[:image_server_group_id].nil?
-      redirect_to main_app.new_manage_resource_path
-      return
-    end
-
     @register = Register.find(:id=>session[:register_id])
     @register_type = RegisterType.display_name(@register.register_type)
     @church = Church.find(session[:church_id])
@@ -54,24 +50,28 @@ class ImageServerImagesController < ApplicationController
     process,chapman_code,folder_name,image_file_name = image.file_location
     if !process
       flash[:notice] = 'There were problems with the lookup'
-      redirect_back(fallback_location: root_path) and return
+      redirect_back(fallback_location: new_manage_resource_path) && return
     end
     @user = get_user
     website = ImageServerImage.create_url('download', params[:object], chapman_code, folder_name, image_file_name, @user.userid)
-    redirect_to website and return
+    redirect_to(website) && return
   end
 
   def edit
+    redirect_back(fallback_location: new_manage_resource_path) && return if session[:register_id].blank? || session[:source_id].blank? || session[:image_server_group_id].blank?
+
     display_info
 
     @image_server_image = ImageServerImage.id(params[:id]).first
     image_server_group = @image_server_image.image_server_group
     @group_name = ImageServerImage.get_sorted_group_name_under_source(image_server_group.source_id)
 
-    redirect_back(fallback_location: root_path, :notice => 'Attempted to edit a non_esxistent image file') and return if @image_server_image.nil?
+    redirect_back(fallback_location: new_manage_resource_path, :notice => 'Attempted to edit a non_esxistent image file') && return if @image_server_image.blank?
   end
 
   def flush
+    redirect_back(fallback_location: new_manage_resource_path) && return if session[:register_id].blank? || session[:source_id].blank? || session[:image_server_group_id].blank?
+
     display_info
 
     case params[:propagate_choice]
@@ -85,25 +85,29 @@ class ImageServerImagesController < ApplicationController
     @images = ImageServerImage.get_image_list(params[:id],status_list)
     @propagate_choice = params[:propagate_choice]
 
-    redirect_back(fallback_location: root_path, :notice => 'No Unallocated images to be propagated') and return if @image_server_image.nil?
+    redirect_back(fallback_location: new_manage_resource_path, :notice => 'No Unallocated images to be propagated') && return if @image_server_image.blank?
   end
 
   def index
     session[:image_server_group_id] = params[:id]
+    redirect_back(fallback_location: new_manage_resource_path) && return if session[:register_id].blank? || session[:source_id].blank? || session[:image_server_group_id].blank?
+
     display_info
     @image_server_image = ImageServerImage.image_server_group_id(params[:id]).order_by(image_file_name: 1)
-    redirect_to(:back, :notice => 'No images') and return if @image_server_image.blank?
+    redirect_back(fallback_location: new_manage_resource_path, :notice => 'No images') && return if @image_server_image.blank?
     @image_server_group = ImageServerGroup.id(session[:image_server_group_id]).first
-    redirect_to(:back, :notice => 'No group for images') and return if @image_server_group.blank?
+    redirect_back(fallback_location: new_manage_resource_path, :notice => 'No group for images') && return if @image_server_group.blank?
     @image_detail_access_allowed = ImageServerImage.image_detail_access_allowed?(@user,session[:manage_user_origin],session[:image_server_group_id],session[:chapman_code])
   end
 
   def move
+    redirect_back(fallback_location: new_manage_resource_path) && return if session[:register_id].blank? || session[:source_id].blank? || session[:image_server_group_id].blank?
+
     display_info
 
     @image_server_group = ImageServerGroup.id(params[:id]).first
 
-    redirect_to(:back, :notice => 'There is no group') and return if @image_server_group.blank?
+    redirect_back(fallback_location: new_manage_resource_path, :notice => 'There is no group') && return if @image_server_group.blank?
 
     @group_name = ImageServerImage.get_sorted_group_name_under_source(@image_server_group[:source_id])
 
@@ -111,18 +115,19 @@ class ImageServerImagesController < ApplicationController
     #@group_name = ImageServerImage.get_sorted_group_name_under_church(@image_server_group[:church_id])
 
     @image_server_image = ImageServerImage.image_server_group_id(params[:id]).first
-    redirect_back(fallback_location: root_path, :notice => 'Attempted to edit a non_esxistent image file') and return if @image_server_image.nil?
+    redirect_back(fallback_location: new_manage_resource_path, :notice => 'Attempted to edit a non_esxistent image file') && return if @image_server_image.blank?
 
     move_allowed_status = ['u','a']
     @images = ImageServerImage.get_image_list(params[:id],move_allowed_status)
-    redirect_back(fallback_location: root_path, :notice => 'No image files can be moved') and return if @images.blank?
-
+    redirect_back(fallback_location: new_manage_resource_path, :notice => 'No image files can be moved') && return if @images.blank?
   end
 
   def new
   end
 
   def show
+    redirect_back(fallback_location: new_manage_resource_path) && return if session[:register_id].blank? || session[:source_id].blank? || session[:image_server_group_id].blank?
+
     display_info
 
     @image_detail_access_allowed = ImageServerImage.image_detail_access_allowed?(@user,session[:manage_user_origin],session[:image_server_group_id],session[:chapman_code])
@@ -153,7 +158,7 @@ class ImageServerImagesController < ApplicationController
 
     image_server_group, image_server_image = ImageServerImage.get_group_and_image_from_group_id(group_id)
 
-    redirect_back(fallback_location: root_path, :notice => 'Image "'+image_server_image_params[:image_file_name]+' does not exist') and return if image_server_image.nil?
+    redirect_back(fallback_location: new_manage_resource_path, :notice => 'Image "'+image_server_image_params[:image_file_name]+' does not exist') && return if image_server_image.blank?
 
     case image_server_image_params[:origin]
     when 'edit'
@@ -167,7 +172,7 @@ class ImageServerImagesController < ApplicationController
       src_image_server_image.refresh_src_dest_group_summary(src_image_server_group)
       image_server_image.refresh_src_dest_group_summary(image_server_group)
 
-      redirect_to image_server_image_path(edit_image) and return
+      redirect_to(image_server_image_path(edit_image)) && return
     when 'move'
       image_server_image.where(:id=>{'$in': image_id}, :image_server_group_id=>src_group_id)
       .update_all(:image_server_group_id=>group_id)
@@ -186,11 +191,9 @@ class ImageServerImagesController < ApplicationController
       .update_all(:status=>image_server_image_params[:status])
 
       image_server_image.refresh_src_dest_group_summary(image_server_group)
-
-
     else
       flash[:notice] = 'Something wrong at ImageServerImage#update, please contact developer'
-      redirect_back(fallback_location: root_path) and return
+      redirect_back(fallback_location: new_manage_resource_path) && return
     end
     flash[:notice] = 'Update of the Image file(s) was successful'
     redirect_to index_image_server_image_path(image_server_group.first)
@@ -200,18 +203,18 @@ class ImageServerImagesController < ApplicationController
     image = ImageServerImage.id(params[:object]).first
     image.present? ? process = true : process = false
     process, chapman_code, folder_name, image_file_name = image.file_location if process
-    if !process
+    unless process
       flash[:notice] = 'There were problems with the lookup'
-      redirect_back(fallback_location: root_path) and return
+      redirect_back(fallback_location: new_manage_resource_path) && return
     end
     @user = get_user
     website = ImageServerImage.create_url('view', params[:object], chapman_code, folder_name, image_file_name, @user.userid)
-    redirect_to website and return
+    redirect_to(website) && return
   end
 
   private
+
   def image_server_image_params
     params.require(:image_server_image).permit!
   end
-
 end
