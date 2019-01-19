@@ -413,15 +413,15 @@ class ImageServerGroup
     message = ''
     uploaded_file_names = param[:files_uploaded].split('/ ')
     uploaded_file_names.each do |file_name|
-      image = ImageServerImage.create(image_server_group_id: self.id, image_file_name: file_name) if ImageServerImage.where(image_server_group_id: self.id, image_file_name: file_name).first.blank?
-      if image.present? && image.errors.any?
+      image = ImageServerImage.create(image_server_group_id: id, image_file_name: file_name) if ImageServerImage.where(image_server_group_id: id, image_file_name: file_name).first.blank?
+      if image.present?
         process = false
-        message = image.errors.messages
-        break
+        message = 'Failed to create an image'
+        next
       end
     end
     number_of_images = self.image_server_images.count
-    self.update_attribute(:number_of_images, number_of_images )
-    return process, message
+    self.update_attribute(:number_of_images, number_of_images)
+    [process, message]
   end
 end

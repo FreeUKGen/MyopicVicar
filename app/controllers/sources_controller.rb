@@ -156,7 +156,7 @@ class SourcesController < ApplicationController
     session[:church_name] = @church_name
     session[:church_id] = @church.id
     @place = @church.place
-    return if @church.place?
+    return if @place.blank?
 
     session[:place_id] = @place.id
     @place_name = @place.place_name
