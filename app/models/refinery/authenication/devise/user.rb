@@ -4,7 +4,7 @@ require 'friendly_id'
 module Refinery
   module Authentication
     module Devise
-      class User < ApplicationRecord
+      class User < Refinery::Core::BaseModel
         attribute :userid_detail_id, :string
         extend FriendlyId
 
@@ -12,7 +12,7 @@ module Refinery
         has_many :roles, through: :roles_users, class_name: 'Refinery::Authentication::Devise::Role'
 
         has_many :plugins, -> { order('position ASC') },
-                           class_name: "Refinery::Authentication::Devise::UserPlugin", dependent: :destroy
+          class_name: "Refinery::Authentication::Devise::UserPlugin", dependent: :destroy
 
         friendly_id :username, use: [:slugged]
 
@@ -20,13 +20,13 @@ module Refinery
         # :token_authenticatable, :confirmable, :lockable and :timeoutable
         if self.respond_to?(:devise)
           devise :database_authenticatable, :registerable, :recoverable, :rememberable,
-                 :trackable, :validatable, authentication_keys: [:login]
+            :trackable, :validatable, authentication_keys: [:login]
         end
 
         # Setup accessible (or protected) attributes for your model
         # :login is a virtual attribute for authenticating by either username or email
         # This is in addition to a real persisted field like 'username'
-        attr_accessor :login,:userid_detail_id, :reset_password_token, :reset_password_sent_at, :username, :password, :email
+        attr_accessor :login, :userid_detail_id, :reset_password_token, :reset_password_sent_at, :username, :password, :email
 
         validates :username, presence: true, uniqueness: true
         before_validation :downcase_username, :strip_username
