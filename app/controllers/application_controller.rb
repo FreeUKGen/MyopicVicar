@@ -205,6 +205,10 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def require_cookie_directive
+    #p "cookie"
+  end
+
   helper_method :mobile_device?
   def mobile_device?
     # Season this regexp to taste. I prefer to treat iPad as non-mobile.
