@@ -166,7 +166,7 @@ class SearchQueriesController < ApplicationController
   end
 
   def report_for_day
-    if day_param == params[:day]
+    if day_param = params[:day]
       @start_day = DateTime.parse(day_param).strftime('%F')
     else
       @start_day = DateTime.now.strftime('%F')
@@ -202,7 +202,7 @@ class SearchQueriesController < ApplicationController
   end
 
   def selection
-    @start_day = day_param == params[:day] ? DateTime.parse(day_param).strftime('%F') : DateTime.now.strftime('%F')
+    @start_day = day_param = params[:day] ? DateTime.parse(day_param).strftime('%F') : DateTime.now.strftime('%F')
     @search_queries = SearchQuery.where(day: @start_day).order_by('_id ASC')
     @searches = {}
     @search_queries.each do |search|
