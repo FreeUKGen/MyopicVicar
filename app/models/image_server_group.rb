@@ -372,7 +372,7 @@ class ImageServerGroup
       return @image_server_group
     end
 
-    def update_put_request(params,userid)
+    def update_put_request(params, userid)
       image_server_group = ImageServerGroup.id(params[:id])
       logger.info 'update put request'
       logger.info image_server_group.first
@@ -413,9 +413,10 @@ class ImageServerGroup
     message = ''
     uploaded_file_names = param[:files_uploaded].split('/ ')
     uploaded_file_names.each do |file_name|
-      image = ImageServerImage.create(image_server_group_id: id, image_file_name: file_name) if ImageServerImage.where(image_server_group_id: id, image_file_name: file_name).first.blank?
-      if image.present?
-        process = false
+      image = ImageServerImage.create(image_server_group_id: id, image_file_name: file_name, status: 'u', assignment_id: '5a34124050d37090d7d1ec3e') if ImageServerImage.where(image_server_group_id: id, image_file_name: file_name).first.blank?
+      p 'process_uploaded_images'
+      p image
+      if image.blank?
         message = 'Failed to create an image'
         next
       end
