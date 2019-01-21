@@ -22,3 +22,8 @@ Myopic Vicar uses MongoDB to allow researchers to search heterogeneous records. 
 
 
 Please see <a href="https://docs.google.com/document/d/11n5F9WB9WA9BgZwj1QDJf2OdZOPO1-jkdY1cXOU-AHE/edit#heading=h.acid0fo1ifql">Installation Instructions</a> for more information.
+
+# Release Notes 
+
+* FreeREG - [master/doc/release_notes](https://github.com/FreeUKGen/MyopicVicar/tree/master/doc/release_notes)
+* FreeCEN - [freecen_parsing/doc/release_notes](https://github.com/FreeUKGen/MyopicVicar/tree/freecen_parsing/doc/release_notes)
