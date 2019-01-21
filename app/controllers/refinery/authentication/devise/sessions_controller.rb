@@ -10,6 +10,19 @@ module Refinery
         skip_before_action :detect_authentication_devise_user!, only: [:create], raise: false
         after_action :detect_authentication_devise_user!, only: [:create]
 
+        # GET /resource/sign_in
+        def new
+          p "::::::::::::::::::::::::::::::::::::::::::::::"
+          self.resource = resource_class.new(sign_in_params)
+          clean_up_passwords(resource)
+          yield resource if block_given?
+          respond_with(resource, serialize_options(resource))
+        end
+
+
+
+
+
         def create
           super
         rescue ::BCrypt::Errors::InvalidSalt, ::BCrypt::Errors::InvalidHash
