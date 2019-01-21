@@ -44,4 +44,28 @@ gem 'sass-rails' #,   '~> 3.2.3'
 gem 'coffee-rails'#, '~> 3.2.1'
 gem 'uglifier'#, '>= 1.0.3'
 gem 'jquery-rails'
+<<<<<<< HEAD
 gem 'refinerycms-county_pages', :path => 'vendor/extensions'
+=======
+
+# To use ActiveModel has_secure_password
+# gem 'bcrypt-ruby', '~> 3.0.0'
+
+# To use Jbuilder templates for JSON
+# gem 'jbuilder'
+
+# Use unicorn as the app server
+# gem 'unicorn'
+
+# Deploy with Capistrano
+# gem 'capistrano'
+
+# To use debugger
+# gem 'ruby-debug'
+
+group :development, :test do
+  # Rubocop is a Ruby static code analyzer (a.k.a. linter) and code formatter
+  gem 'rubocop', '~> 0.62.0', require: false
+end
+gem 'refinerycms-county_pages', :path => 'vendor/extensions'
+>>>>>>> Remove whitespace
