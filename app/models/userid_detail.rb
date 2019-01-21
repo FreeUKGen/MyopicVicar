@@ -73,7 +73,7 @@ class UseridDetail
   before_create :add_lower_case_userid,:capitalize_forename, :captilaize_surname, :remove_secondary_role_blank_entries, :transcription_agreement_value_change
   after_create :save_to_refinery
   before_save :capitalize_forename, :captilaize_surname, :remove_secondary_role_blank_entries
-  after_update :update_refinery
+  #after_update :update_refinery
   before_destroy :delete_refinery_user_and_userid_folder
 
   class << self
