@@ -121,13 +121,13 @@ class UserMailer < ActionMailer::Base
     mail(to: "#{@send_to.email_address}",cc: @cc_email_addresses, subject: "This is a contact action request for reference #{@contact.identifier}")
   end
 
-  def coordinator_contact_reply(contact,ccs_userids,message,sender_userid)
+  def coordinator_contact_reply(contact, ccs_userids, message, sender_userid)
     @contact = contact
     @message = message
     @cc_email_addresses = get_email_address_array_from_array_of_userids(ccs_userids)
     sender_email_address = get_email_address_from_userid(sender_userid)
     @reply_messages = Message.where(source_contact_id: @message.source_contact_id).all
-    get_attachment(@contact)
+    get_message_attachment
     mail(from: sender_email_address, to:  "#{@contact.name} <#{@contact.email_address}>", bcc: @cc_email_addresses, subject: @message.subject)
   end
 
@@ -137,7 +137,7 @@ class UserMailer < ActionMailer::Base
     @cc_email_addresses = get_email_address_array_from_array_of_userids(ccs_userids)
     sender_email_address = get_email_address_from_userid(sender_userid)
     @reply_messages = Message.where(source_feedback_id: @message.source_feedback_id).all
-    get_attachment(@feedback)
+    get_message_attachment
     mail(from: sender_email_address, to:  "#{@feedback.name} <#{@feedback.email_address}>", bcc: @cc_email_addresses, subject: @message.subject)
   end
 
