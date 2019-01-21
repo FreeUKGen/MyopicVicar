@@ -1,6 +1,6 @@
 MyopicVicar is an open-source genealogical record database and search engine.  It is the 
 software that powers the [FreeREG](https://www.freereg.org.uk) database of parish register 
-entries and the [FreeCEN](https://freecen2.freecen.org.uk) database of UK census records.
+entries and the [FreeCEN](https://www.freecen.org.uk) database of UK census records.
 
 The tool has been developed by [Free UK Genealogy](https://www.freeukgenealogy.org.uk/), a 
 registered charity dedicated to making genealogical information freely available online.
