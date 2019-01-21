@@ -610,7 +610,7 @@ table.center50 {
 .cookieConsent {
   display: none;
   position: fixed;
-  top: 0px;
+  bottom: 0px;
   left: 0px;
   width: 100%;
   height: auto;
