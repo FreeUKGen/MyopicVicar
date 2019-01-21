@@ -103,8 +103,8 @@ gem 'jquery-rails'
 # To use debugger
 # gem 'ruby-debug'
 
-group :development, :test do 
+group :development, :test do
   # Rubocop is a Ruby static code analyzer (a.k.a. linter) and code formatter
   gem 'rubocop', '~> 0.62.0', require: false
-end 
+end
 gem 'refinerycms-county_pages', :path => 'vendor/extensions'
