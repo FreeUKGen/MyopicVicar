@@ -621,6 +621,7 @@ table.center50 {
   font-size: 0.8125rem;
   text-align: center;
   z-index: 1000;
+  padding: 25px 0px 25px 0px;
 }
 div#cookieText {
   position:relative;
