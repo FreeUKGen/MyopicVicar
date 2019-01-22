@@ -14,8 +14,6 @@
 class FeedbacksController < ApplicationController
   require 'reply_userid_role'
 
-  skip_before_action :require_login, only: [:show, :feedback_reply_messages]
-
   def archive
     @feedback = Feedback.find(params[:id])
     redirect_back(fallback_location: feedbacks_path, notice: 'The feedback was not found') && return if @feedback.blank?
