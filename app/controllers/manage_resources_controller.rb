@@ -119,7 +119,6 @@ class ManageResourcesController < ApplicationController
     session[:manager] = manager?(@user)
     session[:role] = @user.person_role
     logger.warn "FREEREG::USER user #{@user.userid}"
-    logger.warn "FREEREG::USER  manager #{@manager}"
   end
 
   def show

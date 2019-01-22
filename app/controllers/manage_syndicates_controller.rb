@@ -118,7 +118,6 @@ class ManageSyndicatesController < ApplicationController
       @syndicates = synd
     else
       logger.warn "FREEREG::USER #{@user.userid} has no syndicates and attempting to manage one"
-      logger.warn "FREEREG::USER #{@user.inspect}"
       redirect_back(fallback_location: new_manage_syndicate_path, notice: 'You do not have any syndicates') && return
     end
   end
