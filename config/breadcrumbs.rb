@@ -514,7 +514,7 @@ crumb :edit_contact do |contact|
     parent :contacts
   end
 end
-crumb :contact_for_selection do ||
+crumb :contact_form_for_selection do ||
     link 'Form for Selection'
   if session[:archived_contacts]
     parent :archived_contacts
