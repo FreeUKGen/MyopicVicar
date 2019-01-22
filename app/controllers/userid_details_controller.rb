@@ -105,7 +105,7 @@ class UseridDetailsController < ApplicationController
     get_user_info_from_userid
     @syndicate = 'all'
     session[:syndicate] = @syndicate
-    @option = UseridRole::USERID_ACCESS_OPTIONS
+    @options = UseridRole::USERID_ACCESS_OPTIONS
     session[:edit_userid] = false
     render action: :options
   end
@@ -233,7 +233,7 @@ class UseridDetailsController < ApplicationController
     if @user.person_role == 'system_administrator' || @user.person_role == 'volunteer_coordinator'
       @options = UseridRole::USERID_MANAGER_OPTIONS
     else
-      @option = UseridRole::USERID_ACCESS_OPTIONS
+      @options = UseridRole::USERID_ACCESS_OPTIONS
     end
   end
 
