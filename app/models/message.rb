@@ -325,33 +325,45 @@ class Message
       else
         person = secondary_people.first.userid
       end
-      people << person
+      coord = UseridDetail.find_by(userid: person)
+      forename = coord.person_forename
+      surname = coord.person_surname
+      people << "#{person} (#{forename} #{surname})"
     else
       case role
       when 'county_coordinator'
         County.all.order_by(chapman_code: 1).each do |single|
           chapman_code = single.chapman_code
           coordinator = single.county_coordinator
-          people << "#{ChapmanCode.name_from_code(chapman_code)} (#{coordinator})" unless ChapmanCode.name_from_code(chapman_code).blank?
+          coord = UseridDetail.find_by(userid: coordinator)
+          forename = coord.person_forename
+          surname = coord.person_surname
+          people << "#{ChapmanCode.name_from_code(chapman_code)} (#{coordinator}) [#{forename} #{surname}]" unless ChapmanCode.name_from_code(chapman_code).blank?
         end
       when 'syndicate_coordinator'
         Syndicate.all.order_by(syndicate_code: 1).each do |single|
           syndicate = single.syndicate_code
           coordinator = single.syndicate_coordinator
-          people << "#{syndicate} (#{coordinator})"
+          coord = UseridDetail.find_by(userid: coordinator)
+          forename = coord.person_forename
+          surname = coord.person_surname
+          people << "#{syndicate} (#{coordinator}) [#{forename} #{surname}]"
         end
       when 'country_coordinator'
         Country.all.order_by(country_code: 1).each do |single|
           chapman_code = single.country_code
           coordinator = single.country_coordinator
-          people << "#{ChapmanCode.name_from_code(chapman_code)} (#{coordinator})" unless ChapmanCode.name_from_code(chapman_code).blank?
+          coord = UseridDetail.find_by(userid: coordinator)
+          forename = coord.person_forename
+          surname = coord.person_surname
+          people << "#{ChapmanCode.name_from_code(chapman_code)} (#{coordinator}) [#{forename} #{surname}]" unless ChapmanCode.name_from_code(chapman_code).blank?
         end
       else
         primary_people.each do |user|
-          people <<  user.userid
+          people << "#{user.userid} (#{user.person_forename} #{user.person_surname})"
         end
         secondary_people.each do |user|
-          people <<  user.userid
+          people << "#{user.userid} (#{user.person_forename} #{user.person_surname})"
         end
       end
     end
