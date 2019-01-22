@@ -594,7 +594,6 @@ class MessagesController < ApplicationController
 
     get_user_info_from_userid
     @options = FreeregOptionsConstants::COMMUNICATION_ROLES
-    @options = @user.remove_myself(@options)
     @prompt = 'Select Role?'
   end
 

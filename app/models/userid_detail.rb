@@ -253,11 +253,6 @@ class UseridDetail
     self.update_attribute(:userid_messages, userid_msgs) if userid_msgs.length != self.userid_messages.length
   end
 
-  def remove_myself(list)
-    list = list.delete_if { |role| role == person_role }
-    list
-  end
-
   def update_userid_feedbacks
     self.reload
     update_feedback_replies
