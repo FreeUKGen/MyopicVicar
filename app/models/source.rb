@@ -136,12 +136,9 @@ class Source
           initialized_source[image_server_group_id[group_id]] = 1
         end
       end
-      p 'get_unitialized_source_list'
-      p initialized_source
-      p initialized_source.empty?
-      sourceid.each do |k1, v1|
 
-        sourceid.delete(k1) if !initialized_source.empty? && initialized_source.keys?(k1)
+      sourceid.each do |k1, v1|
+        sourceid.delete(k1) if !initialized_source.empty? && initialized_source.key?(k1)
       end
 
       sid = []
