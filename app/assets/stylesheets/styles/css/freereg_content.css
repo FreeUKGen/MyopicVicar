@@ -473,10 +473,11 @@ dl.table-display dd { width: calc(100% - 4em); }
 .cookieConsent {
   display: none;
   position: fixed;
-  top: 0px;
+  bottom: 0px;
   left: 0px;
   width: 100%;
-  height: auto;
+  height: 200px;
+  padding-top: 35px;
   background: rgb(74, 153, 62);
   opacity: 0.99;
   color: rgb(255, 255, 255);
