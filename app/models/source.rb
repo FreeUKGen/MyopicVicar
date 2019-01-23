@@ -138,7 +138,7 @@ class Source
       end
 
       sourceid.each do |k1, v1|
-        sourceid.delete(k1) if initialized_source.keys?(k1)
+        sourceid.delete(k1) if initialized_source.present? && initialized_source.keys?(k1)
       end
 
       sid = []
