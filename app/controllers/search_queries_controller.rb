@@ -58,6 +58,21 @@ class SearchQueriesController < ApplicationController
   def create
     if params[:search_query].present? && params[:search_query][:region].blank?
       @search_query = SearchQuery.new(search_params.delete_if { |k, v| v.blank? })
+      p params
+      p params[:search_query][:start_year]
+      p params[:search_query][:start_year].present?
+      p !params[:search_query][:start_year].to_i.bson_int32? if params[:search_query][:start_year].present?
+      p params[:search_query][:end_year]
+      p params[:search_query][:end_year].present?
+      p !params[:search_query][:end_year].to_i.bson_int32? if  params[:search_query][:end_year].present?
+      if params[:search_query][:start_year].present? && !params[:search_query][:start_year].to_i.bson_int32?
+        p "a"
+        redirect_back(fallback_location: new_search_query_path, notice: 'The start year makes no sense') && return
+      elsif params[:search_query][:end_year].present? && !params[:search_query][:end_year].to_i.bson_int32?
+        p 'b'
+        redirect_back(fallback_location: new_search_query_path, notice: 'The end year makes no sense') && return
+      end
+      @search_query = SearchQuery.new(search_params.delete_if { |k, v| v.blank? })
       @search_query['first_name'] = @search_query['first_name'].strip if @search_query['first_name'].present?
       @search_query['last_name'] = @search_query['last_name'].strip if @search_query['last_name'].present?
       if @search_query['chapman_codes'][1].eql?('YKS')
