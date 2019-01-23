@@ -170,7 +170,7 @@ class ManageCountiesController < ApplicationController
     session.delete(:from_source)
     session[:image_group_filter] = 'allocate request'
     @source, @group_ids, @group_id = ImageServerGroup.group_ids_sort_by_place(session[:chapman_code], 'allocate request')            # not sort by place, unallocated groups
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'No Allocate Request Image Groups exists') && return if @source.blank? || @group_ids.eblank? || @group_id.blank?
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No Allocate Request Image Groups exists') && return if @source.blank? || @group_ids.blank? || @group_id.blank?
 
     @county = session[:county]
     render 'image_server_group_allocate_request'
@@ -321,10 +321,10 @@ class ManageCountiesController < ApplicationController
     get_user_info_from_userid
     session.delete(:from_source)
     session[:image_group_filter] = 'syndicate'
+    @county = session[:county]
     @source, @group_ids, @syndicate = ImageServerGroup.group_ids_sort_by_syndicate(session[:chapman_code])
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No Image Groups Allocated by Syndicate for County ' + @county) && return if @source_ids.blank? || @source_id.blank? || @group_id.blank?
 
-    @county = session[:county]
     render 'image_server_group_by_syndicate'
   end
 

@@ -16,7 +16,7 @@ class ContactsController < ApplicationController
   require 'freereg_options_constants'
   require 'contact_rules'
 
-  skip_before_action :require_login, only: [:new, :report_error, :create, :show, :contact_reply_messages]
+  skip_before_action :require_login, only: [:new, :report_error, :create, :show]
 
   def archive
     @contact = Contact.find(params[:id])
