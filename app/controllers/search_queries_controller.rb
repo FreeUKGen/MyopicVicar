@@ -57,6 +57,11 @@ class SearchQueriesController < ApplicationController
 
   def create
     if params[:search_query].present? && params[:search_query][:region].blank?
+      if params[:search_query][:start_year].present? && !params[:search_query][:start_year].to_i.bson_int32?
+        redirect_back(fallback_location: new_search_query_path, notice: 'The start year makes no sense') && return
+      elsif params[:search_query][:end_year].present? && !params[:search_query][:end_year].to_i.bson_int32?
+        redirect_back(fallback_location: new_search_query_path, notice: 'The end year makes no sense') && return
+      end
       @search_query = SearchQuery.new(search_params.delete_if { |k, v| v.blank? })
       @search_query['first_name'] = @search_query['first_name'].strip if @search_query['first_name'].present?
       @search_query['last_name'] = @search_query['last_name'].strip if @search_query['last_name'].present?
