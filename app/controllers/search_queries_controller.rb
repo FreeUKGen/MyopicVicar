@@ -56,31 +56,22 @@ class SearchQueriesController < ApplicationController
   end
 
   def create
-    if params[:search_query].present? && params[:search_query][:region].blank?
-      if params[:search_query][:start_year].present? && !params[:search_query][:start_year].to_i.bson_int32?
-        redirect_back(fallback_location: new_search_query_path, notice: 'The start year makes no sense') && return
-      elsif params[:search_query][:end_year].present? && !params[:search_query][:end_year].to_i.bson_int32?
-        redirect_back(fallback_location: new_search_query_path, notice: 'The end year makes no sense') && return
-      end
-      @search_query = SearchQuery.new(search_params.delete_if { |k, v| v.blank? })
-      @search_query['first_name'] = @search_query['first_name'].strip if @search_query['first_name'].present?
-      @search_query['last_name'] = @search_query['last_name'].strip if @search_query['last_name'].present?
-      if @search_query['chapman_codes'][1].eql?('YKS')
-        @search_query['chapman_codes'] = ['', 'ERY', 'NRY', 'WRY']
-      end
-      if @search_query['chapman_codes'][1].eql?('CHI')
-        @search_query['chapman_codes'] = ['', 'ALD', 'GSY', 'JSY', 'SRK']
-      end
-      @search_query.session_id = request.session_options[:id]
-      if @search_query.save
-        session[:query] = @search_query.id
-        @search_results = @search_query.search
-        redirect_to search_query_path(@search_query)
-      else
-        render :new
-      end
+    redirect_back(fallback_location: new_search_query_path, notice: 'Invalid Search') && return unless params[:search_query].present? && params[:search_query][:region].blank?
+
+    do_not_proceed, message = SearchQuery.invalid_integer(params[:search_query])
+    redirect_back(fallback_location: new_search_query_path, notice: message) && return if do_not_proceed
+
+    @search_query = SearchQuery.new(search_params.delete_if { |k, v| v.blank? })
+    @search_query['first_name'] = @search_query['first_name'].strip if @search_query['first_name'].present?
+    @search_query['last_name'] = @search_query['last_name'].strip if @search_query['last_name'].present?
+    @search_query['chapman_codes'] = ['', 'ERY', 'NRY', 'WRY'] if @search_query['chapman_codes'][1].eql?('YKS')
+    @search_query['chapman_codes'] = ['', 'ALD', 'GSY', 'JSY', 'SRK'] if @search_query['chapman_codes'][1].eql?('CHI')
+    @search_query.session_id = request.session_options[:id]
+    if @search_query.save
+      session[:query] = @search_query.id
+      @search_results = @search_query.search
+      redirect_to search_query_path(@search_query)
     else
-      logger.warn('FREEREG:SEARCH: Search was initiated by a bot')
       render :new
     end
   end
