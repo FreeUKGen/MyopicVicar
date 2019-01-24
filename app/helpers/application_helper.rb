@@ -188,17 +188,12 @@ module ApplicationHelper
   end
 
   def google_advert
-    @data_ad_slot = ""
-    case
-    when current_page?(freecen_coverage_path)
-      @data_ad_slot = "9056426667"
-    when current_page?('/') || ('/search_queries') || current_page?(new_search_query_path) || current_page?(new_search_query_path(:search_id => @search_query))
-      @data_ad_slot = "2003577939"
-    when current_page?(search_query_path(@search_query))
-      @data_ad_slot = "2003577939"
-    when current_page?(:action => 'show', :controller => 'search_records')
-      @data_ad_slot = "2003577939"
-    end
+    @data_ad_slot = ''
+    @data_ad_slot = if current_page?(freecen_coverage_path)
+                      '9056426667'
+                    else
+                      '2003577939'
+                    end
     banner = <<-HTML
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <script>
