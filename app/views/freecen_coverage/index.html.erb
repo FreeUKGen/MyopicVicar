@@ -12,7 +12,16 @@
 <% end %>
 
 <section class="island" >
-  <p style="margin-top:-40px;">* You can still visit the <a href="http://www.freecen.org.uk" target="_blank">old FreeCEN site</a> if you wish.</p>
+  <p style="margin-top:-40px;text-align:left;">
+    * You can still visit the <a href="http://www.freecen.org.uk" target="_blank">old FreeCEN site</a> if you wish.
+    <% if FreecenUtility.display_date_and_time %>
+      <span style="float:right;">
+        <em>
+          This database coverage last updated on <b><%= FreecenUtility.display_date_and_time %></b>
+        </em>
+      </span>
+    <% end %>
+  </p>
 
   <% Freecen::CENSUS_YEARS_ARRAY.each_slice(3) do |census_array_of_3_years| %>
     <% census_array_of_3_years.each do |yy| %>
@@ -83,7 +92,6 @@
   <% end %>
 
   <center><h3>All Years</h3></center>
-  
   <div class="table-wrapper" style="margin-top:-20px;">
     <table class="table--bordered table--data" >
       <colgroup >
