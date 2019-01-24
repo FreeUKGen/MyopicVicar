@@ -58,14 +58,6 @@ class Csvfile < CarrierWave::Uploader::Base
     processing_time
   end
 
-  def file_replace_can_proceed(original_file_name)
-    return false, 'The file you are replacing must have the same name' unless check_name(original_file_name)
-
-    setup, message = setup_batch_on_replace
-
-    [setup, message]
-  end
-
   def physical_file_for_user_exists
     place = File.join(Rails.application.config.datafiles, userid, file_name)
     return false if place.blank?
@@ -114,35 +106,37 @@ class Csvfile < CarrierWave::Uploader::Base
     [process, message]
   end
 
-  def setup_batch_on_replace
+  def setup_batch_on_replace(original_file_name)
+    return false, 'The file you are replacing must have the same name' unless check_name(original_file_name)
+
     proceed = true
     proceed = physical_file_for_user_exists
     #lets check that the file has indeed been processed previously.
     PhysicalFile.where(userid: userid, file_name: file_name).exists? ? batch_entries_present = true : batch_entries_present = false
     if !proceed
-      batch = 'You are attempting to replace a file you do not have. Likely you are a coordinator replacing a file belonging to someone else. You must replace into their userid.'
+      message = 'You are attempting to replace a file you do not have. Likely you are a coordinator replacing a file belonging to someone else. You must replace into their userid.'
 
     elsif Freereg1CsvFile.userid(userid).file_name(file_name).transcriber_lock.exists?
-      batch = 'You have done on-line edits to the file, so it is locked against replacement until you have downloaded and edited the file.'
+      message = 'You have done on-line edits to the file, so it is locked against replacement until you have downloaded and edited the file.'
       proceed = false
 
     elsif Freereg1CsvFile.userid(userid).file_name(file_name).coordinator_lock.exists?
-      batch =   'The file you are trying to replace has been locked by your coordinator.'
+      message = 'The file you are trying to replace has been locked by your coordinator.'
       proceed = false
 
     elsif !batch_entries_present
       batch = PhysicalFile.new(base: true, base_uploaded_date: Time.now, file_processed: false, userid: userid , file_name: file_name)
       batch.save
-
+      message = ''
     elsif batch_entries_present
       batch = PhysicalFile.find_by(userid: userid, file_name: file_name)
       batch.update_attributes(base: true, base_uploaded_date: Time.now, file_processed: false)
-
+      message = ''
     else
-      batch =   'A situation has occurred that should not have. Please have your coordinator contact system administration.'
+      message = 'A situation has occurred that should not have. Please have your coordinator contact system administration.'
       proceed = false
     end
-    [proceed, batch]
+    [proceed, message]
   end
 
   def setup_batch_on_upload

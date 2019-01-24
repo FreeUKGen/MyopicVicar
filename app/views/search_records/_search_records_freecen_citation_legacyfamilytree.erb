@@ -4,11 +4,11 @@
     <br>
     Free UK Genealogy, "Parish Register" database, FreeREG.org.uk (https://www.freereg.org.uk: viewed <%=@viewed_date%>), <%=record_type(@entry).downcase%>
     <%if record_type(@entry).downcase == "baptism"%>
-      <%=@entry['person_forename'].titleize%> <%=@entry['father_surname'].titleize%>, <%=@entry['place']%>, <%=@entry['county']%>, UK <%=@entry['baptism_date'].titleize%>; citing  <%unless @entry['register_type'].include? "Unspecified"%><%=@entry['register_type']%><% else %>Register of unspecified type<% end %>, <%=@entry['church_name']%>
+      <%=entitle(@entry['person_forename'])%> <%=entitle(@entry['father_surname'])%>, <%=@entry['place']%>, <%=@entry['county']%>, UK <%=entitle(@entry['baptism_date'])%>; citing  <%unless @entry['register_type'].include? "Unspecified"%><%=@entry['register_type']%><% else %>Register of unspecified type<% end %>, <%=@entry['church_name']%>
     <%elsif record_type(@entry).downcase == "burial"%>
-      <%=@entry['burial_person_forename'].titleize%> <%=@entry['burial_person_surname'].titleize%>, <%=@entry['place']%>, <%=@entry['county']%>, UK <%=@entry['burial_date'].titleize%>; citing  <%unless @entry['register_type'].include? "Unspecified"%><%=@entry['register_type']%><% else %>Register of unspecified type<% end %>, <%=@entry['church_name']%>
+      <%=entitle(@entry['burial_person_forename'])%> <%=entitle(@entry['burial_person_surname'])%>, <%=@entry['place']%>, <%=@entry['county']%>, UK <%=entitle(@entry['burial_date'])%>; citing  <%unless @entry['register_type'].include? "Unspecified"%><%=@entry['register_type']%><% else %>Register of unspecified type<% end %>, <%=@entry['church_name']%>
     <%elsif record_type(@entry).downcase == "marriage"%>
-      <%=@entry['groom_forename'].titleize%> <%=@entry['groom_surname'].titleize%> to <%=@entry['bride_forename'].titleize%> <%=@entry['bride_surname'].titleize%>, <%=@entry['place']%>, <%=@entry['county']%>, UK <%=@entry['marriage_date'].titleize%>; citing  <%unless @entry['register_type'].include? "Unspecified"%><%=@entry['register_type']%><% else %>Register of unspecified type<% end %>, <%=@entry['church_name']%>
+      <%=entitle(@entry['groom_forename'])%> <%=entitle(@entry['groom_surname'])%> to <%=entitle(@entry['bride_forename'])%> <%=entitle(@entry['bride_surname'])%>, <%=@entry['place']%>, <%=@entry['county']%>, UK <%=entitle(@entry['marriage_date'])%>; citing  <%unless @entry['register_type'].include? "Unspecified"%><%=@entry['register_type']%><% else %>Register of unspecified type<% end %>, <%=@entry['church_name']%>
     <%end%><br>
     <br><br>
 
@@ -16,11 +16,11 @@
     <br>
     Free UK Genealogy, "Parish Register" database entry for <%=record_type(@entry).titleize%>
     <%if record_type(@entry).downcase == "baptism"%>
-      <%=@entry['person_forename'].titleize%> <%=@entry['father_surname'].titleize%>
+      <%=entitle(@entry['person_forename'])%> <%=entitle(@entry['father_surname'])%>
     <%elsif record_type(@entry).downcase == "burial"%>
-      <%=@entry['burial_person_forename'].titleize%> <%=@entry['burial_person_surname'].titleize%>
+      <%=entitle(@entry['burial_person_forename'])%> <%=entitle(@entry['burial_person_surname'])%>
     <%elsif record_type(@entry).downcase == "marriage"%>
-      <%=@entry['groom_forename'].titleize%> <%=@entry['groom_surname'].titleize%> to <%=@entry['bride_forename'].titleize%> <%=@entry['bride_surname'].titleize%>
+      <%=entitle(@entry['groom_forename'])%> <%=entitle(@entry['groom_surname'])%> to <%=entitle(@entry['bride_forename'])%> <%=entitle(@entry['bride_surname'])%>
     <%end%>
     <br><br>
 

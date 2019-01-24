@@ -192,7 +192,7 @@ class Freereg1CsvEntry
 
   belongs_to :freereg1_csv_file, index: true
 
-  before_save :add_digest, :captitalize_surnames,:check_register_type
+  before_save :add_digest, :captitalize_surnames, :check_register_type
 
 
   before_destroy do |entry|

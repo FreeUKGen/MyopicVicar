@@ -1,3 +1,16 @@
+# Copyright 2012 Trustees of FreeBMD
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+#
 class MessagesController < ApplicationController
   # Looks after the management of messages sent between members of the organization
   require 'freereg_options_constants'
@@ -5,15 +18,13 @@ class MessagesController < ApplicationController
   require 'reply_userid_role'
 
   def archive
-    @message = Message.id(params[:id]).first
-    if @message.present?
-      @message.archive
-      session[:archived_contacts] = true
-      flash.notice = 'Message archived'
-      return_after_archive(params[:source], params[:id], params[:action])
-    else
-      go_back('message', params[:id])
-    end
+    @message = Message.find(params[:id])
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'The message was not found') && return if @message.blank?
+
+    @message.archive
+    session[:archived_contacts] = true
+    flash.notice = 'Message archived'
+    return_after_archive(params[:source], params[:id], params[:action])
   end
 
   def communications
@@ -78,51 +89,63 @@ class MessagesController < ApplicationController
     @sent_message = SentMessage.new(message_id: @message.id, sender: @user.userid, recipients: ['system'], sent_time: Time.now)
     @message.sent_messages << [@sent_message]
     @sent_message.save
-    if @message.save
-      redirect_to show_reply_message_path(original_message, source: params[:source]) and return
-    end
+    @message.save
+    redirect_back(fallback_location: message_path(original_message), notice: "The message was not created #{@message.errors.full_messages}") && return if @message.errors.any?
+
+    flash[:notice] = 'Message created'
+    redirect_to(show_reply_message_path(original_message), source: params[:source]) && return
   end
 
   def create_for_communication_reply
     get_user_info_from_userid
     @message.nature = 'communication'
-    if @message.save
-      reply_for_communication(@message); return if performed?
-    end
+    @message.save
+    redirect_back(fallback_location: new_manage_resource_path, notice: "The message was not created #{@message.errors.full_messages}") && return if @message.errors.any?
+
+    flash[:notice] = 'Message created'
+    reply_for_communication(@message); return if performed?
   end
 
   def create_for_contact_comment
     @message.nature = 'contact'
     @contact = Contact.id(@message.source_contact_id).first
-    if @message.save
-      flash[:notice] = 'Contact comment was saved'
-      redirect_to contact_path(@contact) and return
-    end
+    @message.save
+    redirect_back(fallback_location: contact_path(@contact), notice: "The message was not created #{@message.errors.full_messages}") && return if @message.errors.any?
+
+    flash[:notice] = 'Contact comment was saved'
+    flash.keep
+    redirect_to(contact_path(@contact)) && return
   end
 
   def create_for_contact_reply
     @message.nature = 'contact'
-    if @message.save
-      flash[:notice] = 'Reply for Contact was created and sent'
-      reply_for_contact; return if performed?
-    end
+    @message.save
+    redirect_back(fallback_location: message_path(@message), notice: "The message was not created #{@message.errors.full_messages}") && return if @message.errors.any?
+
+    flash[:notice] = 'Reply for Contact was created and sent'
+    flash.keep
+    reply_for_contact; return if performed?
   end
 
   def create_for_feedback_comment
     @message.nature = 'feedback'
     @feedback = Feedback.id(@message.source_feedback_id).first
-    if @message.save
-      flash[:notice] = 'Feedback comment was saved'
-      redirect_to feedback_path(@feedback) and return
-    end
+    @message.save
+    redirect_back(fallback_location: feedback_path(@feedback), notice: "The message was not created #{@message.errors.full_messages}") && return if @message.errors.any?
+
+    flash[:notice] = 'Feedback comment was saved'
+    flash.keep
+    redirect_to(feedback_path(@feedback)) && return
   end
 
   def create_for_feedback_reply
     @message.nature = 'feedback'
-    if @message.save
-      flash[:notice] = 'Reply for Feedback was created and sent'
-      reply_for_feedback; return if performed?
-    end
+    @message.save
+    redirect_back(fallback_location: message_path(@message), notice: "The message was not created #{@message.errors.full_messages}") && return if @message.errors.any?
+
+    flash[:notice] = 'Reply for Feedback was created and sent'
+    flash.keep
+    reply_for_feedback; return if performed?
   end
 
   def create_for_message_comment
@@ -133,20 +156,27 @@ class MessagesController < ApplicationController
     @sent_message = SentMessage.new(message_id: @message.id, sender: @user.userid, recipients: ['system'], sent_time: Time.now)
     @message.sent_messages << [@sent_message]
     @sent_message.save
-    if @message.save
-      flash[:notice] = 'Message comment was saved'
-      redirect_to show_reply_message_path(original_message) and return
-    end
+    @message.save
+    redirect_back(fallback_location: message_path(original_message), notice: "The message was not created #{@message.errors.full_messages}") && return if @message.errors.any?
+
+    flash[:notice] = 'Message comment was saved'
+    flash.keep
+    redirect_to(show_reply_message_path(original_message)) && return
   end
 
   def create_for_message_reply
     get_user_info_from_userid
-    original_message = Message.id(@message.source_message_id).first
+    original_message = Message.find(@message.source_message_id)
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'The message was not found') && return if original_message.blank?
+
     @message.syndicate = original_message.syndicate
     @message.nature = original_message.nature
-    if @message.save
-      reply_for_message(@message); return if performed?
-    end
+    @message.save
+    redirect_back(fallback_location: message_path(original_message), notice: "The message was not created #{@message.errors.full_messages}") && return if @message.errors.any?
+
+    flash[:notice] = 'Reply for Message was created and sent'
+    flash.keep
+    reply_for_message(@message); return if performed?
   end
 
   def create_for_submit
@@ -166,6 +196,7 @@ class MessagesController < ApplicationController
       return_for_create
     else
       flash[:notice] = 'There was a problem with your message, possibly you attached a file with an incorrect file type or an image as a file'
+      flash.keep
       redirect_to action: :new
     end
   end
@@ -177,29 +208,24 @@ class MessagesController < ApplicationController
       send_message
     else
       flash[:notice] = 'Reply not created'
-      redirect_to reply_messages_path(@message.source_message_id) and return
+      flash.keep
+      redirect_to(reply_messages_path(@message.source_message_id)) && return
     end
   end
 
   def force_destroy
-    @message = Message.id(params[:id]).first
-    if @message.present?
-      @message.destroy
-      flash.notice = 'Message destroyed'
-      return_after_destroy
-      return
-    else
-      go_back('message',params[:id])
-    end
+    @message = Message.find(params[:id])
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'The message was not found') && return if @message.blank?
+
+    @message.destroy
+    flash.notice = 'Message destroyed'
+    return_after_destroy
   end
 
   def edit
-    @message = Message.id(params[:id]).first
-    if @message.blank?
-      go_back('message',params[:id])
-    end
+    @message = Message.find(params[:id])
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'The message was not found') && return if @message.blank?
   end
-
 
   def index
     get_user_info_from_userid
@@ -214,8 +240,9 @@ class MessagesController < ApplicationController
   end
 
   def keep
-    @message = Message.id(params[:id]).first
-    go_back('message', params[:id])  if @message.blank?
+    @message = Message.find(params[:id])
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'The message was not found') && return if @message.blank?
+
     session[:archived_contacts] = true
     @message.update_keep
     flash.notice = 'Message to be retained'
@@ -327,7 +354,7 @@ class MessagesController < ApplicationController
     get_user_info_from_userid
     @syndicate = session[:syndicate]
     order = 'message_time DESC'
-    @messages = Message.list_messages(params[:action],session[:syndicate],session[:archived_contacts],order)
+    @messages = Message.list_messages(params[:action], session[:syndicate], session[:archived_contacts], order)
     render :index
   end
 
@@ -336,11 +363,9 @@ class MessagesController < ApplicationController
     session[:hold_source] = params[:source]
     if params[:id].present?
       # reply
-      @respond_to_message = Message.id(params[:id]).first
-      if @respond_to_message.blank?
-        go_back('message', params[:id])
-        return
-      end
+      @respond_to_message = Message.find(params[:id])
+      redirect_back(fallback_location: new_manage_resource_path, notice: 'The message was not found') && return if @respond_to_message.blank?
+
       get_user_info_from_userid
       @reply_messages = Message.fetch_replies(params[:id])
       @sent_replies = Message.sent_messages(@reply_messages)
@@ -367,46 +392,45 @@ class MessagesController < ApplicationController
 
   def reply_for_contact
     sender = UseridDetail.where(userid: @message.userid).first
-    @contact = Contact.id(@message.source_contact_id).first
-    if sender.present? && @contact.present?
-      @contact.communicate_contact_reply(@message, sender.userid)
-      @message.add_message_to_userid_messages(sender)
-      @contact.add_message_to_userid_messages_for_contact(@message)
-      redirect_to contact_path(@contact) and return
-    else
-      #need to add error handling
-    end
-    redirect_to reply_contact_path(@message.source_contact_id)
+    @contact = Contact.find(@message.source_contact_id)
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'The message was not found') && return if sender.blank? || @contact.blank?
+
+    @contact.communicate_contact_reply(@message, sender.userid)
+    @message.add_message_to_userid_messages(sender)
+    @contact.add_message_to_userid_messages_for_contact(@message)
+    redirect_to(contact_path(@contact)) && return
   end
 
   def reply_for_feedback
     sender = UseridDetail.where(userid: @message.userid).first
-    @feedback = Feedback.id(@message.source_feedback_id).first
-    if sender.present? && @feedback.present?
-      @feedback.communicate_feedback_reply(@message, sender.userid)
-      @message.add_message_to_userid_messages(sender)
-      @feedback.add_message_to_userid_messages_for_contact(@message)
-      redirect_to feedback_path(@feedback) and return
-    else
-      #need to add error handling
-    end
+    @feedback = Feedback.find(@message.source_feedback_id)
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'The message was not found') && return if sender.blank? || @feedback.blank?
+
+    @feedback.communicate_feedback_reply(@message, sender.userid)
+    @message.add_message_to_userid_messages(sender)
+    @feedback.add_message_to_userid_messages_for_contact(@message)
+    redirect_to(feedback_path(@feedback)) && return
   end
 
   def reply_for_message(reply)
-    original_message = Message.id(reply.source_message_id).first
+    original_message = Message.find(reply.source_message_id)
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'The message was not found') && return if original_message.blank?
+
     reply.communicate_message_reply(original_message)
     flash[:notice] = 'Reply for Message was created and sent'
     params[:source] = 'reply'
-    redirect_to show_reply_message_path(reply.id, source: 'reply') and return
+    redirect_to(show_reply_message_path(reply.id, source: 'reply')) && return
   end
 
   def reply_for_communication(reply)
-    original_message = Message.id(reply.source_message_id).first
+    original_message = Message.find(reply.source_message_id)
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'The message was not found') && return if original_message.blank?
+
     reply.communicate_message_reply(original_message)
     flash[:notice] = 'Reply for Communication was created and sent'
     params[:source] = 'reply' #
     #  redirect_to message_path(reply.id, source: source) and return
-    redirect_to show_reply_message_path(reply.id, source: params[:source]) and return
+    redirect_to(show_reply_message_path(reply.id, source: params[:source])) && return
   end
 
   def reply_messages
@@ -502,20 +526,18 @@ class MessagesController < ApplicationController
   end
 
   def restore
-    @message = Message.id(params[:id]).first
-    if @message.present?
-      @message.restore
-      session[:archived_contacts] = false
-      flash.notice = 'Message restored'
-      return_after_restore(params[:source], params[:id])
-    else
-      go_back('message', params[:id])
-    end
+    @message = Message.find(params[:id])
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'The message was not found') && return if @message.blank?
+
+    @message.restore
+    session[:archived_contacts] = false
+    flash.notice = 'Message restored'
+    return_after_restore(params[:source], params[:id])
   end
 
   def select_by_identifier
     get_user_info_from_userid
-    @options = Hash.new
+    @options = {}
     order = 'identifier ASC'
     @messages = Message.list_messages(params[:action],session[:syndicate],session[:archived_contacts],order)
     @messages.each do |message|
@@ -528,23 +550,19 @@ class MessagesController < ApplicationController
   end
 
   def select_individual
-    @message = Message.id(params[:id]).first
-    if @message.present?
-      session[:com_role] = params[:role]
-      @people = @message.select_the_list_of_individuals(params[:role])
-      unless @people.present?
-        flash[:notice] = 'There is no one associated with that role'
-        redirect_to select_role_message_path(@message.id, source: params[:action])
-        return
-      end
-    else
-      go_back('message', params[:id])
-    end
+    @message = Message.find(params[:id])
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'The message was not found') && return if @message.blank?
+
+    session[:com_role] = params[:role]
+    @people = @message.select_the_list_of_individuals(params[:role])
+    redirect_to(select_role_message_path(@message.id, source: params[:action]), notice: 'There is no one associated with that role') && return if @people.blank?
   end
 
   def select_recipients
+    @message = Message.find(params[:id])
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'The message was not found') && return if @message.blank?
+
     get_user_info_from_userid
-    @message = Message.id(params[:id]).first
     @sent_message = SentMessage.new(message_id: @message.id, sender: @user_userid, inactive_reason: ['temporary'])
     @message.sent_messages << [@sent_message]
     session[:sent_message_id] = @sent_message.id
@@ -567,15 +585,12 @@ class MessagesController < ApplicationController
   end
 
   def select_role
+    @message = Message.find(params[:id])
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'The message was not found') && return if @message.blank?
+
     get_user_info_from_userid
-    @message = Message.id(params[:id]).first
-    if @message.present?
-      @options = FreeregOptionsConstants::COMMUNICATION_ROLES
-      @options = @user.remove_myself(@options)
-      @prompt = 'Select Role?'
-    else
-      go_back('message', params[:id])
-    end
+    @options = FreeregOptionsConstants::COMMUNICATION_ROLES
+    @prompt = 'Select Role?'
   end
 
   def send_communication
@@ -595,11 +610,10 @@ class MessagesController < ApplicationController
   end
 
   def send_message
+    @message = Message.find(params[:id])
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'The message was not found') && return if @message.blank?
+
     get_user_info_from_userid
-    @message = Message.id(params[:id]).first
-    if !@message.present?
-      go_back('message', params[:id])
-    end
     if session[:syndicate].present?
       params[:recipients] = Array.new
       params[:recipients] << 'Members of Syndicate'
@@ -607,7 +621,7 @@ class MessagesController < ApplicationController
     end
     if params[:recipients].blank?
       flash[:notice] = 'You did not select any recipients'
-      redirect_to action: 'select_recipients' and return
+      redirect_to(action: 'select_recipients') && return
     else
       sender = params[:sender]
       reasons = []
@@ -633,44 +647,46 @@ class MessagesController < ApplicationController
   end
 
   def show
+    @message = Message.find(params[:id])
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'The message was not found') && return if @message.blank?
+
     get_user_info_from_userid
     @user.reload
-    @message = Message.id(params[:id]).first
     session[:message_id] = @message.id if @message.present?
     session[:original_message_id] = @message.id if params[:source] == 'original'
     @reply_messages = Message.fetch_replies(params[:id])
     @sent_replies = Message.sent_messages(@reply_messages)
-    if @message.blank?
-      go_back('message', params[:id])
-    end
     @sent = @message.sent_messages.order_by(sent_time: 1) unless @message.sent_messages.blank?
   end
+
   def show_reply_message
+    @message = Message.find(params[:id])
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'The message was not found') && return if @message.blank?
+
     get_user_info_from_userid
     @user.reload
-    @message = Message.id(params[:id]).first
     @reply_messages = Message.fetch_replies(params[:id])
     @sent_replies = Message.sent_messages(@reply_messages)
-    if @message.blank?
-      go_back('message', params[:id])
-    end
     @sent = @message.sent_messages.order_by(sent_time: 1) unless @message.sent_messages.blank?
     render 'show'
   end
 
   def unkeep
+    @message = Message.find(params[:id])
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'The message was not found') && return if @message.blank?
+
     get_user_info_from_userid
-    @message = Message.id(params[:id]).first
-    go_back('message', params[:id]) if @message.blank?
     @message.update_unkeep
     flash.notice = 'Message no longer being kept'
     return_after_unkeep(params[:source], params[:id])
   end
 
   def user_reply_messages
+    @main_message = Message.find(params[:id])
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'The message was not found') && return if @main_message.blank?
+
     get_user_info_from_userid
     @user.reload
-    @main_message = Message.id(params[:id]).first
     @reply_messages = Message.fetch_replies(params[:id])
     @user_replies = @reply_messages.where(userid: @user.userid).all
     @messages = Message.sent_messages(@user_replies)
@@ -695,27 +711,25 @@ class MessagesController < ApplicationController
   end
 
   def update
-    @message = Message.id(params[:id]).first
-    if @message.present?
-      case params[:commit]
-      when 'Save'
-        @message.update_attributes(message_params)
-      when 'Select Role'
-        redirect_to action: 'select_individual', id: params[:id], role: params[:message][:action]
-        return
-      when 'Send Communication'
-        send_communication
-      when 'Send Message'
-        send_message
-      end
-      redirect_to message_path(@message.id, source: 'original')
+    @message = Message.find(params[:id])
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'The message was not found') && return if @message.blank?
+
+    case params[:commit]
+    when 'Save'
+      @message.update_attributes(message_params)
+    when 'Select Role'
+      redirect_to action: 'select_individual', id: params[:id], role: params[:message][:action]
       return
-    else
-      go_back('message',params[:id])
+    when 'Send Communication'
+      send_communication
+    when 'Send Message'
+      send_message
     end
+    redirect_to message_path(@message.id, source: 'original')
   end
 
   private
+
   def message_params
     params.require(:message).permit!
   end

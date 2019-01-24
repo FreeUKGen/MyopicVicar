@@ -17,10 +17,10 @@
 class ApplicationController < ActionController::Base
 
   protect_from_forgery :with => :reset_session
-  before_filter :require_login
-  #before_filter :require_cookie_directive
-  before_filter :load_last_stat
-  before_filter :load_message_flag
+  before_action :configure_permitted_parameters, if: :devise_controller?
+  before_action :require_login
+  before_action :load_last_stat
+  before_action :load_message_flag
   require 'record_type'
   require 'name_role'
   require 'chapman_code'
@@ -30,13 +30,13 @@ class ApplicationController < ActionController::Base
   def load_last_stat
     if session[:site_stats].blank?
       time = Time.now
-      last_midnight = Time.new(time.year,time.month,time.day)
-      #last_midnight = Time.new(2015,10,13)
-      @site_stat = SiteStatistic.collection.find({:interval_end => last_midnight}, { 'projection' => { :interval_end => 0, :year => 0, :month => 0, :day => 0, "_id" => 0  }}).first
-      if  @site_stat.blank?
-        time =  1.day.ago
-        last_midnight = Time.new(time.year,time.month,time.day)
-        @site_stat = SiteStatistic.collection.find({:interval_end => last_midnight}, { 'projection' => { :interval_end => 0, :year => 0, :month => 0, :day => 0, "_id" => 0  }}).first
+      last_midnight = Time.new(time.year, time.month, time.day)
+      # last_midnight = Time.new(2015,10,13)
+      @site_stat = SiteStatistic.collection.find({ interval_end: last_midnight }, 'projection' => { interval_end: 0, year: 0, month: 0, day: 0, _id: 0 }).first
+      if @site_stat.blank?
+        time = 1.day.ago
+        last_midnight = Time.new(time.year, time.month, time.day)
+        @site_stat = SiteStatistic.collection.find({ interval_end: last_midnight }, 'projection' => { interval_end: 0, year: 0, month: 0, day: 0, _id: 0 }).first
       end
       session[:site_stats] = @site_stat
     else
@@ -48,20 +48,19 @@ class ApplicationController < ActionController::Base
   def load_message_flag
     # This tells system there is a message to display
     if session[:message].blank?
-      session[:message] = "no"
-      session[:message]  = "load" if Refinery::Page.where(:slug => 'message').exists?
+      session[:message] = 'no'
+      session[:message] = 'load' if Refinery::Page.where(slug: 'message').exists?
     end
   end
 
   private
 
   def after_sign_in_path_for(resource_or_scope)
-    #empty current session
     cookies.signed[:Administrator] = Rails.application.config.github_issues_password
-    cookies.signed[:userid] = current_authentication_devise_user.userid_detail_id
-    session[:userid_detail_id] = current_authentication_devise_user.userid_detail_id
+    cookies.signed[:userid] = current_authentication_devise_user[:userid_detail_id]
+    session[:userid_detail_id] = current_authentication_devise_user[:userid_detail_id]
     session[:devise] = current_authentication_devise_user.id
-    logger.warn "FREEREG::USER current  #{current_authentication_devise_user.userid_detail_id}"
+    logger.warn "FREEREG::USER current  #{current_authentication_devise_user[:username]}"
     scope = Devise::Mapping.find_scope!(resource_or_scope)
     home_path = "#{scope}_root_path"
     respond_to?(home_path, true) ? refinery.send(home_path) : main_app.new_manage_resource_path
@@ -71,10 +70,29 @@ class ApplicationController < ActionController::Base
     session[:mobile_override] = true if mobile_device?
   end
 
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.permit(:sign_in) do |user_params|
+      user_params.permit(:login, :userid_detail_id, :reset_password_token, :reset_password_sent_at, :username, :password, :email)
+    end
+    devise_parameter_sanitizer.permit(:account_update) do |user_params|
+      user_params.permit(:login, :userid_detail_id, :reset_password_token, :reset_password_sent_at, :username, :password, :email)
+    end
+    devise_parameter_sanitizer.permit(:sign_up) do |user_params|
+      user_params.permit(:login, :userid_detail_id, :reset_password_token, :reset_password_sent_at, :username, :password, :email)
+    end
+  end
+
+  def get_location_from_file(freereg1_csv_file)
+    register = freereg1_csv_file.register
+    church = register.church
+    place = church.place
+    [place, church, register]
+  end
+
   def get_max_records(user)
     max_records = FreeregOptionsConstants::MAX_RECORDS_COORDINATOR
-    max_records = FreeregOptionsConstants::MAX_RECORDS_DATA_MANAGER if user.person_role == "data_manager"
-    max_records = FreeregOptionsConstants::MAX_RECORDS_SYSTEM_ADMINISTRATOR if  user.person_role == "system_administrator"
+    max_records = FreeregOptionsConstants::MAX_RECORDS_DATA_MANAGER if user.person_role == 'data_manager'
+    max_records = FreeregOptionsConstants::MAX_RECORDS_SYSTEM_ADMINISTRATOR if user.person_role == 'system_administrator'
     max_records
   end
 
@@ -82,20 +100,12 @@ class ApplicationController < ActionController::Base
     register = freereg1_csv_file.register
     church = register.church
     place = church.place
-    return place
-  end
-
-  def get_location_from_file(freereg1_csv_file)
-    register = freereg1_csv_file.register
-    church = register.church
-    place = church.place
-    return place, church, register
-
+    place
   end
 
   def get_places_for_menu_selection
-    placenames =  Place.where(:chapman_code => session[:chapman_code],:disabled => 'false',:error_flag.ne => "Place name is not approved").all.order_by(place_name: 1)
-    @placenames = Array.new
+    placenames =  Place.where(chapman_code: session[:chapman_code], disabled: 'false', :error_flag.ne => 'Place name is not approved').all.order_by(place_name: 1)
+    @placenames = []
     placenames.each do |placename|
       @placenames << placename.place_name
     end
@@ -104,14 +114,14 @@ class ApplicationController < ActionController::Base
   def get_user
     user = cookies.signed[:userid]
     user = UseridDetail.id(user).first
-    return user
+    user
   end
 
   def get_user_info_from_userid
     @user = get_user
-    unless @user.present?
-      flash[:notice] = "You must be logged in to access that action"
-      redirect_to new_search_query_path # halts request cycle
+    if @user.blank?
+      flash[:notice] = 'You must be logged in to access that action'
+      redirect_to(new_search_query_path) && return # halts request cycle
     else
       @user_id = @user.id
       @userid = @user.id
@@ -122,10 +132,10 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def  get_user_info(userid,name)
-    #old version for compatibility
+  def get_user_info(userid, name)
+    # old version for compatibility
     @user = get_user
-    @first_name = @user.person_forename unless @user.blank?
+    @first_name = @user.person_forename if @user.present?
     @userid = @user.id
     @roles = UseridRole::OPTIONS.fetch(@user.person_role)
   end
@@ -135,10 +145,10 @@ class ApplicationController < ActionController::Base
     @userids = UseridDetail.all.order_by(userid_lower_case: 1)
   end
 
-  def go_back(type,record)
+  def go_back(type, record)
     flash[:notice] = "The #{type} document you are trying to access does not exist."
     logger.info "FREEREG:ACCESS ISSUE: The #{type} document #{record} being accessed does not exist."
-    redirect_to main_app.new_manage_resource_path and return
+    redirect_to(main_app.new_manage_resource_path) && return
   end
 
   def log_messenger(message)
@@ -146,7 +156,7 @@ class ApplicationController < ActionController::Base
     logger.warn(log_message)
   end
 
-  def log_missing_document(message,doc1,doc2)
+  def log_missing_document(message, doc1, doc2)
     log_message = "FREEREG:PHC WARNING: aunable to find a document #{message}\n"
     log_message += "FREEREG:PHC Time.now=\t\t#{Time.now}\n"
     log_message += "FREEREG:PHC #{doc1}\n" if doc1.present?
@@ -178,29 +188,20 @@ class ApplicationController < ActionController::Base
   def manager?(user)
     #sets the manager flag status
     a = true
-    a = false if (user.person_role == 'transcriber' || user.person_role == 'researcher' ||  user.person_role == 'technical')
-    return a
+    a = false if user.person_role == 'transcriber' || user.person_role == 'researcher' || user.person_role == 'technical'
+    a
   end
 
-  def reject_assess(user,action)
-    flash[:notice] = "You are not permitted to use this action"
+  def reject_access(user, action)
+    flash[:notice] = 'You are not permitted to use this action'
     logger.info "FREEREG:ACCESS ISSUE: The #{user} attempted to access #{action}."
-    redirect_to main_app.new_manage_resource_path
-    return
-  end
-
-  def require_cookie_directive
-    #p "cookie"
-    if cookies[:cookiesDirective].blank?
-      flash[:notice] = 'This website only works if you are willing to explicitly accept cookies. If you did not see the cookie declaration you could be using an obsolete browser or a browser add on that blocks cookie messages'
-      redirect_to main_app.new_search_query_path
-    end
+    redirect_to(main_app.new_manage_resource_path) && return
   end
 
   def require_login
     if session[:userid_detail_id].nil?
       flash[:notice] = "You must be logged in to access that action"
-      redirect_to new_search_query_path  # halts request cycle
+      redirect_to(new_search_query_path) && return  # halts request cycle
     end
   end
 
@@ -217,7 +218,6 @@ class ApplicationController < ActionController::Base
   end
 
   def clean_session
-
     session.delete(:manage_user_origin)
     session.delete(:freereg1_csv_file_id)
     session.delete(:freereg1_csv_file_name)
@@ -348,5 +348,4 @@ class ApplicationController < ActionController::Base
     session.delete(:select_place)
     session.delete(:current_page)
   end
-
 end

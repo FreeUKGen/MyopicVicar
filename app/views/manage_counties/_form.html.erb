@@ -1,13 +1,13 @@
+<% breadcrumb :county_selection%>
 <div class="island  island--light">
- <% if flash[:notice] %>
+  <% if flash[:notice] %>
     <div id="notice" style="color:red"><br>
-   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+      <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
     </div>
-   <% end %>
-<%= simple_form_for @manage_county, :html => { :class => "grid"}  do |f| %>
-  <%= f.input :chapman_code, 
-  { :as => :select,  :label => @prompt, :collection => @options,:width => 10, :input_html => {
+  <% end %>
+  <%= simple_form_for @manage_county, :html => { :class => "grid"}  do |f| %>
+    <%= f.input :chapman_code,
+  { :as => :select,  :label => @prompt, :collection => @options,:width => 10, :required => true, :input_html => {
     :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 5,'onchange' => @location }}%>
-<% end %>
+  <% end %>
 </div>
-

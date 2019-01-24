@@ -277,7 +277,7 @@ class Freereg1CsvFile
         message = message + ": place" if session[:selectplace].blank?
         message = message + ": church" if session[:selectchurch].blank?
         message = message + ": register" if param.blank? || param[:register_type].blank?
-        return[true, "You are missing a selection of #{message}"]
+        return[false, "You are missing a selection of #{message}"]
       end
       place = Place.id(session[:selectplace]).first
       church = Church.id(session[:selectchurch]).first
@@ -300,7 +300,7 @@ class Freereg1CsvFile
       if session[:my_own]
         file.locked_by_transcriber = true
       else
-        file.locked_by_coordinator =  true
+        file.locked_by_coordinator = true
       end
       file.save
       place.update_attribute(:data_present, true)
@@ -309,7 +309,7 @@ class Freereg1CsvFile
       file.propogate_file_location_change(place.id)
       PlaceCache.refresh_cache(place)
       file.update_freereg_contents_after_processing
-      return[false,""]
+      return[true, '']
     end
 
     def unique_names(names)
@@ -679,7 +679,7 @@ class Freereg1CsvFile
      self.update_attributes(:records => records.to_s,:locked_by_coordinator => true )
      logger.info "FREEREG:updated record count #{self.records.to_i} "
    end
-   return [false, ""]
+   return [true, ""]
   end
 
   def physical_userid_location(userid)
