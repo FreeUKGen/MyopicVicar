@@ -555,11 +555,7 @@ class MessagesController < ApplicationController
 
     session[:com_role] = params[:role]
     @people = @message.select_the_list_of_individuals(params[:role])
-    unless @people.present?
-      flash[:notice] = 'There is no one associated with that role'
-      redirect_to select_role_message_path(@message.id, source: params[:action])
-      return
-    end
+    redirect_to(select_role_message_path(@message.id, source: params[:action]), notice: 'There is no one associated with that role') && return if @people.blank?
   end
 
   def select_recipients

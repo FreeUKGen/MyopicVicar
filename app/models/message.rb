@@ -215,20 +215,33 @@ class Message
   def extract_actual_recipients(recipients, role)
     case role
     when 'county_coordinator'
-      recipients = self.extract_coordinators(recipients)
+      recipients = extract_coordinators(recipients)
     when 'syndicate_coordinator'
-      recipients = self.extract_coordinators(recipients)
+      recipients = extract_coordinators(recipients)
     when 'country_coordinator'
-      recipients = self.extract_coordinators(recipients)
+      recipients = extract_coordinators(recipients)
+    else
+      recipients = extract_others(recipients)
     end
     recipients
   end
 
   def extract_coordinators(recipients)
-    individuals = Array.new
+    individuals = []
     recipients.each do |single|
       single_parts = single.split('(')
-      individual = single_parts[-1].gsub(')', '')
+      second_parts = single_parts[1].split('[')
+      individual = second_parts[0].present? ? second_parts[0].delete(')').strip : ''
+      individuals << individual
+    end
+    individuals
+  end
+
+  def extract_others(recipients)
+    individuals = []
+    recipients.each do |single|
+      single_parts = single.split('(')
+      individual = single_parts[0].strip
       individuals << individual
     end
     individuals
