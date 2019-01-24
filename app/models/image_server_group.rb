@@ -397,7 +397,6 @@ class ImageServerGroup
 
       return flash_message
     end
-
   end
 
   def create_upload_images_url(userid)
@@ -413,7 +412,7 @@ class ImageServerGroup
     message = ''
     uploaded_file_names = param[:files_uploaded].split('/ ')
     uploaded_file_names.each do |file_name|
-      image = ImageServerImage.create(image_server_group_id: id, image_file_name: file_name, status: 'u', assignment_id: '5a34124050d37090d7d1ec3e') if ImageServerImage.where(image_server_group_id: id, image_file_name: file_name).first.blank?
+      image = ImageServerImage.create(image_server_group_id: id, image_file_name: file_name, status: 'u') if ImageServerImage.where(image_server_group_id: id, image_file_name: file_name).first.blank?
     end
     number_of_images = self.image_server_images.count
     self.update_attribute(:number_of_images, number_of_images)
