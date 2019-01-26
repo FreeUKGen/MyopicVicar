@@ -616,7 +616,7 @@ class SearchQuery
 
     trimmed = name_string.sub(/\**$/, '') # remove trailing * for performance
     scrubbed = trimmed.gsub('?', 'QUESTION').gsub('*', 'STAR')
-    cleaned = Regexp.escape(scrubbed)
+    cleaned = ::Regexp.escape(scrubbed)
     regex_string = cleaned.gsub('QUESTION', '\w').gsub('STAR', '.*') #replace glob-style wildcards with regex wildcards
     begins_with_wildcard(name_string) ? /#{regex_string}/ : /^#{regex_string}/
   end

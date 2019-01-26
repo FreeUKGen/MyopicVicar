@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 #
 class ManageCountiesController < ApplicationController
-
   def batches_with_errors
     get_user_info_from_userid
     @county = session[:county]
@@ -190,7 +189,7 @@ class ManageCountiesController < ApplicationController
   end
 
   def new
-    #get county to be used
+    # get county to be used
     clean_session_for_county
     clean_session_for_images
     session.delete(:county)
@@ -230,7 +229,7 @@ class ManageCountiesController < ApplicationController
     end
     @places = []
     @all_places.each do |place|
-      @places << place if place.place_name =~ Regexp.new(/^[#{@character}]/)
+      @places << place if place.place_name =~ ::Regexp.new(/^[#{@character}]/)
     end
     # TODO at some point consider place/churches/registers hash
   end
