@@ -11,12 +11,19 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
     days_until_archive = Rails.application.config.days_to_retain_messages
     remaining_days = days_until_archive + 10
     delete_records_less_than = DateTime.now - days_until_delete.days
+    archive_records_less_than = DateTime.now - days_until_archive.days
     report_records_less_than = DateTime.now - (days_until_archive + 10).days
     days_until_report = Rails.application.config.days_to_retain_messages - 10
     p "Running message delete with an age of #{days_until_delete} or older than #{delete_records_less_than}"
     p "Messages will be archived in #{days_until_archive} and reported in #{days_until_report}"
     message_file.puts "Running message delete with an age of #{days_until_delete} or older than #{delete_records_less_than}"
     message_file.puts "Messages will be archived in #{days_until_archive} and reported in #{days_until_report}"
+
+    p DateTime.now
+    p report_records_less_than
+    p archive_records_less_than
+    p delete_records_less_than
+
     Feedback.no_timeout.each do |record|
       if record.keep.blank? && record.created_at <= report_records_less_than
         message_file.puts " Feedback #{record.identifier} created on #{record.created_at} is due for archiving in 10 days and deletion in #{remaining_days} days"
