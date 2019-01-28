@@ -1,0 +1,10 @@
+<%= render 'refinery/admin/search_header', :url => refinery.authentication_devise_admin_users_path %>
+<% if @users.any? %>
+  <div class='pagination_container'>
+    <%= render 'users' %>
+  </div>
+<% else %>
+  <p>
+    <%= t('no_results', :scope => 'refinery.authentication.devise.admin.search') %>
+  </p>
+<% end %>
