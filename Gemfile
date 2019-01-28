@@ -4,7 +4,7 @@ gem 'rails'
 gem 'tzinfo-data' #needed by windows
 gem 'mysql2'
 gem 'refinerycms'
-#gem 'refinerycms-authentication-devise'
+gem 'refinerycms-authentication-devise'
 gem 'refinerycms-wymeditor'
 gem 'mongoid'
 gem 'mongo'
