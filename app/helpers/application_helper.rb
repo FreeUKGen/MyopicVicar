@@ -147,6 +147,16 @@ module ApplicationHelper
 
   def banner_header
     banner = <<-HTML
+      <script>
+    if( window.canRunAds === undefined ){
+      console.log("Adblock detected")
+      var donateBanner = document.getElementById("donations");
+      donateBanner.style.display = "block";
+    }
+    else {
+      console.log("Adblock not detected")
+    }
+    </script>
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <script>
         (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
