@@ -487,6 +487,10 @@ dl.table-display dd { width: calc(100% - 4em); }
   z-index: 1000;
 }
 
+#donations {
+  display: none;
+}
+
 div#cookieText {
   position:relative;
   height:auto;
