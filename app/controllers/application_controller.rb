@@ -56,15 +56,11 @@ class ApplicationController < ActionController::Base
   private
 
   def after_sign_in_path_for(resource_or_scope)
-    p 'after_sign_in_path_for'
-    p current_authentication_devise_user
-    p current_authentication_devise_user.userid_detail_id
-    p current_authentication_devise_user.username
     cookies.signed[:Administrator] = Rails.application.config.github_issues_password
-    cookies.signed[:userid] = current_authentication_devise_user[:userid_detail_id]
-    session[:userid_detail_id] = current_authentication_devise_user[:userid_detail_id]
+    cookies.signed[:userid] = current_authentication_devise_user.userid_detail_id
+    session[:userid_detail_id] = current_authentication_devise_user.userid_detail_id
     session[:devise] = current_authentication_devise_user.id
-    logger.warn "FREEREG::USER current  #{current_authentication_devise_user[:username]}"
+    logger.warn "FREEREG::USER current  #{current_authentication_devise_user.username}"
     scope = Devise::Mapping.find_scope!(resource_or_scope)
     home_path = "#{scope}_root_path"
     respond_to?(home_path, true) ? refinery.send(home_path) : main_app.new_manage_resource_path
