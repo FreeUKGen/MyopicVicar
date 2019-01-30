@@ -1,4 +1,4 @@
-class FreecenUtility
+class FreecenUtility #collection can be used to store FreeCEN estra utilies
   include Mongoid::Document
   include Mongoid::Timestamps::Short
   field :description, type: String
