@@ -171,6 +171,7 @@ module ApplicationHelper
     </script>
     <script>
     function detectAdblock(){
+      console.log(window.canRunAds);
       if( window.canRunAds === undefined){
         console.log("Adblock detected")
         var donateBanners = document.getElementsByClassName("donations");
@@ -180,6 +181,7 @@ module ApplicationHelper
         }
       }
       else {
+            console.log(window.canRunAds);
         console.log("Adblock not detected");
       }
     }
