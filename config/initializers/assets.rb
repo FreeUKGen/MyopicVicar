@@ -20,7 +20,6 @@ Rails.application.configure do
   config.assets.precompile += %w(  styles/css/icons.fallback.css )
   config.assets.precompile += %w( styles/css/freereg_content.css )
   config.assets.precompile += %w( styles/css/ladda.min.css )
-  config.assets.precompile += %w( ads.js )
   config.assets.precompile += %w( jquery.min.js  )
   config.assets.precompile += %w( jquery.chained.remote.js  )
   config.assets.precompile += %w( jquery.cookiesDirective.js  )
