@@ -611,9 +611,17 @@ end
 crumb :create_reply_communication do |message, id|
   link 'Create Reply for Communication', reply_messages_path(message.id, source: 'reply')
   if params[:source] == 'reply'
-    parent :show_reply_communication, Message.find(id), source: params[:source]
+    if id.blank?
+      parent :communications, source: params[:source]
+    else
+      parent :show_reply_communication, Message.find(id), source: params[:source]
+    end
   elsif params[:source] == 'original'
-    parent :show_communication, Message.find(session[:original_message_id]), source: params[:source]
+    if session[:original_message_id].blank?
+      parent :communications
+    else
+      parent :show_communication, Message.find(session[:original_message_id]), source: params[:source]
+    end
   else
     parent :communications, source: params[:source]
   end
@@ -625,7 +633,11 @@ crumb :list_reply_communications do |message|
     parent :show_communication, message, source: params[:source]
   elsif params[:source] == 'reply'
     params[:source] = 'original'
-    parent :show_communication, Message.find(session[:original_message_id]), source: params[:source]
+    if session[:original_message_id].blank?
+      parent :communications
+    else
+      parent :show_communication, Message.find(session[:original_message_id]), source: params[:source]
+    end
   else
     oarent :communications
   end
@@ -681,9 +693,17 @@ end
 crumb :create_message_reply do |message, id|
   link 'Create Reply', reply_messages_path(message.id, source: 'reply')
   if params[:source] == 'reply'
-    parent :show_reply_message, Message.find(id), source: params[:source]
+    if id.blank?
+      parent :messages, source: params[:source]
+    else
+      parent :show_reply_message, Message.find(id), source: params[:source]
+    end
   elsif params[:source] == 'original'
-    parent :show_message, Message.find(session[:original_message_id]), source: params[:source]
+    if session[:original_message_id].blank?
+      parent :messages, source: params[:source]
+    else
+      parent :show_message, Message.find(session[:original_message_id]), source: params[:source]
+    end
   else
     parent :messages, source: params[:source]
   end
@@ -693,7 +713,11 @@ crumb :reply_messages_list do |message|
   link 'Reply Messages', reply_messages_path(message, source: params[:source])
   if session[:message_base] == 'userid_messages'
     if params[:source] == 'original'
-      parent :show_userid_message, Message.find(session[:original_message_id]), source: params[:source]
+      if session[:original_message_id].blank?
+        parent :userid_messages
+      else
+        parent :show_userid_message, Message.find(session[:original_message_id]), source: params[:source]
+      end
     else
       parent :userid_messages
     end
@@ -701,7 +725,11 @@ crumb :reply_messages_list do |message|
     parent :show_message, message, source: params[:source]
   elsif params[:source] == 'reply'
     params[:source] = 'original'
-    parent :show_message, Message.find(session[:original_message_id]), source: params[:source]
+    if session[:original_message_id].blank?
+      parent :messages
+    else
+      parent :show_message, Message.find(session[:original_message_id]), source: params[:source]
+    end
   else
     parent :messages
   end
@@ -778,9 +806,17 @@ end
 crumb :create_reply_syndicate_message do |message, id|
   link 'Create Reply for Syndicate Message', reply_messages_path(message.id, source: 'reply')
   if params[:source] == 'reply'
-    parent :show_syndicate_reply_message,  Message.find(id), source: params[:source]
+    if id.blank?
+      parent :syndicate_messages, source: params[:source]
+    else
+      parent :show_syndicate_reply_message, Message.find(id), source: params[:source]
+    end
   elsif params[:source] == 'original'
-    parent :show_syndicate_message, Message.find(session[:original_message_id]), source: params[:source]
+    if session[:original_message_id].blank?
+      parent :syndicate_messages, source: params[:source]
+    else
+      parent :show_syndicate_message, Message.find(session[:original_message_id]), source: params[:source]
+    end
   else
     parent :syndicate_messages, source: params[:source]
   end
@@ -792,9 +828,13 @@ crumb :list_replies_to_syndicate_message do |message|
     parent :show_syndicate_message, message, source: params[:source]
   elsif params[:source] == 'reply'
     params[:source] = 'original'
-    parent :show_syndicate_message, Message.find(session[:original_message_id]), source: params[:source]
+    if session[:original_message_id].blank?
+      parent :syndicate_messages, source: params[:source]
+    else
+      parent :show_syndicate_message, Message.find(session[:original_message_id]), source: params[:source]
+    end
   else
-    parent :syndicate_messages
+    parent :syndicate_messages, source: params[:source]
   end
 end
 
@@ -816,9 +856,17 @@ end
 crumb :create_reply_userid_message do |message, id|
   link 'Create Reply for a Message', reply_messages_path(message.id, source: 'reply')
   if params[:source] == 'reply'
-    parent :show_userid_reply_message, Message.find(id), source: params[:source]
+    if id.blank?
+      parent :userid_messages
+    else
+      parent :show_userid_reply_message, Message.find(id), source: params[:source]
+    end
   elsif params[:source] == 'original'
-    parent :show_userid_message, Message.find(session[:original_message_id]), source: params[:source]
+    if session[:original_message_id].blank?
+      parent :userid_messages
+    else
+      parent :show_userid_message, Message.find(session[:original_message_id]), source: params[:source]
+    end
   else
     parent :userid_messages, source: params[:source]
   end
@@ -830,7 +878,11 @@ crumb :userid_reply_messages do |message|
     parent :show_userid_message, message, source: params[:source]
   elsif params[:source] == 'reply'
     params[:source] = 'original'
-    parent :show_userid_message, Message.find(session[:original_message_id]), source: params[:source]
+    if session[:original_message_id].blank?
+      parent :userid_messages
+    else
+      parent :show_userid_message, Message.find(session[:original_message_id]), source: params[:source]
+    end
   else
     parent :userid_messages
   end
