@@ -189,9 +189,9 @@ module ApplicationHelper
     </script>
     HTML
     if Rails.env.development?
-    banner = <<-HTML
-      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
-      HTML
+      banner = <<-HTML
+        <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
+        HTML
     end
     banner.html_safe
   end
@@ -227,9 +227,9 @@ module ApplicationHelper
     </script>
     HTML
     if Rails.env.development?
-    banner = <<-HTML
-      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
-      HTML
+      banner = <<-HTML
+        <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
+        HTML
     end
     banner.html_safe
   end
@@ -260,9 +260,9 @@ module ApplicationHelper
     </script>
     HTML
     if Rails.env.development?
-    banner = <<-HTML
-      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
-      HTML
+      banner = <<-HTML
+        <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
+        HTML
     end
     banner.html_safe
   end
