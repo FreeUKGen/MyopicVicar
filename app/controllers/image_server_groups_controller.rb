@@ -110,7 +110,7 @@ class ImageServerGroupsController < ApplicationController
     @image_server_group = @group.first
     @parent_source = Source.id(session[:source_id]).first
 
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'Attempted to edit a non_esxistent Image Group') && return if @image_server_group.blank?
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'Attempted to edit a non_esxistent Image Group') && return if @image_server_group.nil?
   end
 
   def error
@@ -128,7 +128,7 @@ class ImageServerGroupsController < ApplicationController
     display_info
 
     @image_server_group = ImageServerGroup.image_server_groups_by_user_role(session[:manage_user_origin], session[:source_id], session[:syndicate])
-    #   redirect_back(fallback_location: new_manage_resource_path, notice: 'Register does not have any Image Group from Image Server.') && return if @image_server_group.blank?
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'Register does not have any Image Group from Image Server.') && return if @image_server_group.nil?
   end
 
   def initialize_status
@@ -142,7 +142,7 @@ class ImageServerGroupsController < ApplicationController
       @image_server_group = ImageServerGroup.id(params[:id]).first
     end
 
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'No Image Group Available for Initialization') && return if @image_server_group.blank?
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No Image Group Available for Initialization') && return if @image_server_group.nil?
   end
 
   def my_list_by_county

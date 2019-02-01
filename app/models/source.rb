@@ -101,9 +101,6 @@ class Source
       end
 
       return nil, nil if sid.blank?
-      p sid
-
-      logger.warn sid
 
       s_id = sid.sort_by { |a, b, c, d, e| [b, c, d, e] }
       return s_id, source_id
