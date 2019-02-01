@@ -97,8 +97,7 @@ class Source
         register_type = register_id[v1[0]][1]
         church_name = church_id[register_id[v1[0]][0]][1]
         place_name = place_id[church_id[register_id[v1[0]][0]][0]]
-        v1[1] = '' if v1[1].nil?
-        sid << [k1, place_name, church_name, register_type, v1[1]]
+        sid << [k1, place_name, church_name, register_type, v1[1]] unless v1[1].nil?
       end
 
       return nil, nil if sid.blank?
