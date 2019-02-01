@@ -102,8 +102,14 @@ class SourcesController < ApplicationController
 
   def index
     display_info
+    logger.warn @register
+    logger.warn @church
+    logger.warn @place
+    logger.warn @source
+    logger.warn  params[:id]
     params[:id] = session[:register_id] if params[:id].blank?
     @source = Source.where(register_id: params[:id]).all
+    logger.warn @source
     redirect_back(fallback_location: root_path, notice: 'Attempting to display an incomplete source') && return if @register.blank? ||
       @church.blank? || @place.blank? || @source.blank?
 
