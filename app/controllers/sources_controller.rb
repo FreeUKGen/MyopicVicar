@@ -190,6 +190,7 @@ class SourcesController < ApplicationController
     session[:from_source] = true
   end
 
+
   def update
     source = Source.find(params[:id])
     redirect_back(fallback_location: root_path, notice: 'Attempting to update an incomplete source') && return if source.blank?

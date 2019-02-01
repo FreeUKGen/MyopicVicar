@@ -173,6 +173,13 @@ class RegistersController < ApplicationController
     @image_server = @register.image_server_exists?
   end
 
+  def show_image_server
+    load(params[:id])
+    redirect_back(fallback_location: root_path, notice: 'There was a missing ownership link') && return if @register.blank? ||
+      @church.blank? || @place.blank?
+    redirect_to(index_source_path(@register.id)) && return
+  end
+
   def update
     load(params[:id])
     redirect_back(fallback_location: root_path, notice: 'There was a missing ownership link') && return if @register.blank? ||
