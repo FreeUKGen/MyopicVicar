@@ -96,7 +96,7 @@ class Freereg1CsvFile
 
 
   belongs_to :register, index: true
-  belongs_to :userid_detail, index: true
+  belongs_to :userid_detail, index: true, optional: true
 
   #register belongs to church which belongs to place
 
@@ -335,6 +335,14 @@ class Freereg1CsvFile
         end
       end
       names
+    end
+
+    def valid_freereg1_csv_file?(freereg1_csv_file)
+      result = false
+      freereg1_csv_file_object = Freereg1CsvFile.find(freereg1_csv_file)
+      result = true if freereg1_csv_file_object.present? && Register.valid_register?(freereg1_csv_file_object.register_id)
+      logger.warn("FREEREG:LOCATION:VALIDATION invalid freereg1_csv_file id #{freereg1_csv_file} ") unless result
+      result
     end
   end #self
 

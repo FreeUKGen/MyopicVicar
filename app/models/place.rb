@@ -126,12 +126,33 @@ class Place
     def place(place)
       where(:place_name => place)
     end
+
     def modified_place_name(place)
       where(:modified_place_name => place)
     end
 
-  end
+    def valid_chapman_code?(chapman_code)
+      result = ChapmanCode.values.include?(chapman_code) ? true : false
+      logger.warn("FREEREG:LOCATION:VALIDATION invalid Chapman code #{chapman_code} ") unless result
+      result
+    end
 
+    def valid_county?(county)
+      result = ChapmanCode.keys.include?(county) ? true : false
+      logger.warn("FREEREG:LOCATION:VALIDATION invalid County code #{county} ") unless result
+      result
+    end
+
+    def valid_place?(place)
+      result = false
+      place_object = Place.find(id: place)
+      if place_object.present?
+        result = true if Place.valid_chapman_code?(place_object.chapman_code) && Place.valid_county?(place_object.county)
+      end
+      logger.warn("FREEREG:LOCATION:VALIDATION invalid place id #{place} ") unless result
+      result
+    end
+  end
   ############################################################### instance methods
 
   def add_country

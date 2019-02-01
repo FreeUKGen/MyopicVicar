@@ -173,6 +173,14 @@ class Register
       register.update_data_present_in_place(freereg1_csv_file)
     end
 
+    def valid_register?(register)
+      result = false
+      register_object = Register.find(register)
+      result = true if register_object.present? && Church.valid_church?(register_object.church_id)
+      logger.warn("FREEREG:LOCATION:VALIDATION invalid register id #{register} ") unless result
+      result
+    end
+
   end #self
 
   ######################################################################## instance methods

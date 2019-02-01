@@ -33,7 +33,10 @@ class Freereg1CsvFilesController < ApplicationController
 
   def change_userid
     @freereg1_csv_file = Freereg1CsvFile.find(params[:id])
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'The file was not found') && return if @freereg1_csv_file.blank?
+    unless Freereg1CsvFile.valid_freereg1_csv_file?(params[:id])
+      message = 'The file was not correctly linked. Have your coordinator contact the web master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
 
     session[:return_to] = request.original_url
     controls(@freereg1_csv_file)
@@ -57,8 +60,10 @@ class Freereg1CsvFilesController < ApplicationController
   def destroy
     # this removes all batches and the file
     @freereg1_csv_file = Freereg1CsvFile.find(params[:id])
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'The file was not found') && return if @freereg1_csv_file.blank?
-
+    unless Freereg1CsvFile.valid_freereg1_csv_file?(params[:id])
+      message = 'The file was not correctly linked. Have your coordinator contact the web master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
     controls(@freereg1_csv_file)
     redirect_back(fallback_location: new_manage_resource_path, notice: 'The batch cannot be deleted it is locked') && return if @freereg1_csv_file.locked_by_transcriber || @freereg1_csv_file.locked_by_coordinator
 
@@ -150,8 +155,10 @@ class Freereg1CsvFilesController < ApplicationController
 
   def download
     @freereg1_csv_file = Freereg1CsvFile.find(params[:id])
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'The file was not found') && return if @freereg1_csv_file.blank?
-
+    unless Freereg1CsvFile.valid_freereg1_csv_file?(params[:id])
+      message = 'The file was not correctly linked. Have your coordinator contact the web master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
     proceed, message = @freereg1_csv_file.check_file
     if proceed
       success = @freereg1_csv_file.backup_file
@@ -174,10 +181,14 @@ class Freereg1CsvFilesController < ApplicationController
 
   def edit
     @freereg1_csv_file = Freereg1CsvFile.find(params[:id])
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'The file was not found') && return if @freereg1_csv_file.blank?
-
-    redirect_back(fallback_location: {:action => 'show'}, notice: 'Header and Place name errors can only be corrected by correcting the file and either replacing or uploading a new file') && return  if session[:error_line].present?
-
+    unless Freereg1CsvFile.valid_freereg1_csv_file?(params[:id])
+      message = 'The file was not correctly linked. Have your coordinator contact the web master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
+    if session[:error_line].present?
+      message = 'Header and Place name errors can only be corrected by correcting the file and either replacing or uploading a new file'
+      redirect_back(fallback_location: {:action => 'show'}, notice: message) && return
+    end
     session[:return_to] = request.original_url
     controls(@freereg1_csv_file)
     @role = session[:role]
@@ -185,14 +196,18 @@ class Freereg1CsvFilesController < ApplicationController
   end
 
   def error
+    @referrer = request.referer
     @freereg1_csv_file = Freereg1CsvFile.find(params[:id])
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'The file was not found') && return if @freereg1_csv_file.blank?
-
+    unless Freereg1CsvFile.valid_freereg1_csv_file?(params[:id])
+      message = 'The file was not correctly linked. Have your coordinator contact the web master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
     controls(@freereg1_csv_file)
     errors_for_error_display
   end
 
   def errors_for_error_display
+    @referrer = request.referer
     @errors = @freereg1_csv_file.batch_errors.count
     @owner = @freereg1_csv_file.userid
     redirect_back(fallback_location: new_manage_resource_path, notice: 'There are no errors') && return if @errors.zero?
@@ -245,8 +260,10 @@ class Freereg1CsvFilesController < ApplicationController
 
   def lock
     @freereg1_csv_file = Freereg1CsvFile.find(params[:id])
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'The file was not found') && return if @freereg1_csv_file.blank?
-
+    unless Freereg1CsvFile.valid_freereg1_csv_file?(params[:id])
+      message = 'The file was not correctly linked. Have your coordinator contact the web master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
     controls(@freereg1_csv_file)
     @freereg1_csv_file.lock(session[:my_own])
     flash[:notice] = 'The lock change to all the batches in the file was successful'
@@ -255,8 +272,10 @@ class Freereg1CsvFilesController < ApplicationController
 
   def merge
     @freereg1_csv_file = Freereg1CsvFile.find(params[:id])
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'The file was not found') && return if @freereg1_csv_file.blank?
-
+    unless Freereg1CsvFile.valid_freereg1_csv_file?(params[:id])
+      message = 'The file was not correctly linked. Have your coordinator contact the web master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
     controls(@freereg1_csv_file)
     proceed, message = @freereg1_csv_file.merge_batches
     redirect_back(fallback_location: { action: 'show' }, notice: "Merge unsuccessful; #{message}") && return unless proceed
@@ -286,8 +305,10 @@ class Freereg1CsvFilesController < ApplicationController
 
   def relocate
     @freereg1_csv_file = Freereg1CsvFile.find(params[:id])
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'The file was not found') && return if @freereg1_csv_file.blank?
-
+    unless Freereg1CsvFile.valid_freereg1_csv_file?(params[:id])
+      message = 'The file was not correctly linked. Have your coordinator contact the web master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
     session[:return_to] = request.original_url
     controls(@freereg1_csv_file)
     session[:initial_page] = @return_location
@@ -299,7 +320,7 @@ class Freereg1CsvFilesController < ApplicationController
 
     session[:records] = @records
     if @user.person_role == 'system_administrator' || @user.person_role == 'data_manager'
-      @county =  session[:county]
+      @county = session[:county]
       locations
       #setting these means that we are a DM
       session[:selectcountry] = nil
@@ -323,8 +344,10 @@ class Freereg1CsvFilesController < ApplicationController
   def remove
     # this just removes a batch of records it leaves the entries and search records there to be removed by a rake task
     @freereg1_csv_file = Freereg1CsvFile.find(params[:id])
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'The file was not found') && return if @freereg1_csv_file.blank?
-
+    unless Freereg1CsvFile.valid_freereg1_csv_file?(params[:id])
+      message = 'The file was not correctly linked. Have your coordinator contact the web master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
     controls(@freereg1_csv_file)
     proceed, message = @freereg1_csv_file.remove_batch
     proceed ? flash[:notice] = 'The removal of the batch entry was successful' : flash[:notice] = message
@@ -338,19 +361,21 @@ class Freereg1CsvFilesController < ApplicationController
   def show
     # show an individual batch
     @freereg1_csv_file = Freereg1CsvFile.find(params[:id])
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'The file was not found') && return if @freereg1_csv_file.blank?
-
+    unless Freereg1CsvFile.valid_freereg1_csv_file?(params[:id])
+      message = 'The file was not correctly linked. Have your coordinator contact the web master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
     controls(@freereg1_csv_file)
   end
 
   def show_zero_startyear_entries
     @freereg1_csv_file = Freereg1CsvFile.find(params[:id])
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'The file was not found') && return if @freereg1_csv_file.blank?
-
+    unless Freereg1CsvFile.valid_freereg1_csv_file?(params[:id])
+      message = 'The file was not correctly linked. Have your coordinator contact the web master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
     @freereg1_csv_entries = @freereg1_csv_file.get_zero_year_records
     display_info
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'The file was not found') && return if @register.blank? ||
-      @church.blank? || @place.blank?
 
     @get_zero_year_records = true
     render 'freereg1_csv_entries/index'
@@ -489,8 +514,10 @@ class Freereg1CsvFilesController < ApplicationController
   def update
     #update the headers
     @freereg1_csv_file = Freereg1CsvFile.find(params[:id])
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'The file was not found') && return if @freereg1_csv_file.blank?
-
+    unless Freereg1CsvFile.valid_freereg1_csv_file?(params[:id])
+      message = 'The file was not correctly linked. Have your coordinator contact the web master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
     controls(@freereg1_csv_file)
     case params[:commit]
     when 'Change Userid'
@@ -550,8 +577,10 @@ class Freereg1CsvFilesController < ApplicationController
 
   def unique_names
     @freereg1_csv_file = Freereg1CsvFile.find(params[:object])
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'The file was not found') && return if @freereg1_csv_file.blank?
-
+    unless Freereg1CsvFile.valid_freereg1_csv_file?(params[:id])
+      message = 'The file was not correctly linked. Have your coordinator contact the web master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
     controls(@freereg1_csv_file)
     @freereg1_csv_entries = @freereg1_csv_file.get_unique_names
   end
@@ -559,13 +588,13 @@ class Freereg1CsvFilesController < ApplicationController
   def zero_year
     # get the entries with a zero year
     @freereg1_csv_file = Freereg1CsvFile.find(params[:id])
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'The file was not found') && return if @freereg1_csv_file.blank?
-
+    unless Freereg1CsvFile.valid_freereg1_csv_file?(params[:id])
+      message = 'The file was not correctly linked. Have your coordinator contact the web master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
     controls(@freereg1_csv_file)
     @freereg1_csv_entries = @freereg1_csv_file.zero_year_entries
     display_info
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'The file was not found') && return if @register.blank? ||
-      @church.blank? || @place.blank?
 
     @zero_year = true
     render 'freereg1_csv_entries/index'
@@ -583,16 +612,10 @@ class Freereg1CsvFilesController < ApplicationController
     @freereg1_csv_file_name = @freereg1_csv_file.file_name
     @file_owner = @freereg1_csv_file.userid
     @register = @freereg1_csv_file.register
-    return if @register.blank?
-
     @register_name = RegisterType.display_name(@register.register_type)
     @church = @register.church
-    return if @church.blank?
-
     @church_name = @church.church_name
     @place = @church.place
-    return if @place.blank?
-
     @county = @place.county
     @place_name = @place.place_name
     @user = get_user

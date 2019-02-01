@@ -293,6 +293,14 @@ class Freereg1CsvEntry
       params = params.delete_if { |k, v| v == '' }
       return params
     end
+
+    def valid_freereg1_csv_entry?(freereg1_csv_entry)
+      result = false
+      freereg1_csv_entry_object = Freereg1CsvEntry.find(freereg1_csv_entry)
+      result = true if freereg1_csv_entry_object.present? && Freereg1CsvFile.valid_freereg1_csv_file?(freereg1_csv_entry_object.freereg1_csv_file_id)
+      logger.warn("FREEREG:LOCATION:VALIDATION invalid freereg1_csv_entry id #{freereg1_csv_entry} ") unless result
+      result
+    end
   end
 
   # ...........................................................................Instance methods
@@ -323,7 +331,7 @@ class Freereg1CsvEntry
     church_name = church.church_name
     place = place_object.place_name
     county = batch.chapman_code # note that the record carries the chapman code in the county field
-    return place_object, church, register
+    [place_object, church, register]
   end
 
   def add_digest
