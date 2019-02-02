@@ -9,7 +9,7 @@
     <%= link_to 'Change Register Type', rename_register_path(@register), method: :get, data: { confirm: 'Are you really really sure that you to change the Register Type?'}, :class => "btn weight--light  btn--small" %>
     <%= link_to 'Merge Identical Register Types into this one', merge_register_path(@register), method: :get, data: { confirm: 'Are you really really sure that this is the Register Type into which you want all similar Register Types in this church to be merged? The action will be taken on selecting OK and cannot be recovered!!!!'}, :class => "btn weight--light  btn--small " %>
     <%= link_to 'Create Image Server', create_image_server_register_path(@register), method: :get, :class => "btn weight--light  btn--small" unless @image_server %>
-    <%= link_to 'Image Server', show_image_server_register_path(@register), method: :get, :class => "btn weight--light  btn--small" if @image_server %>
+    <%= link_to 'Image Sources', show_image_server_register_path(@register), method: :get, :class => "btn weight--light  btn--small" if @image_server %>
   </div>
 <% end%>
 <div style="clear:both;"> </div>

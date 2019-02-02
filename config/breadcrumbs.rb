@@ -268,7 +268,7 @@ end
 crumb :show_register do |county, place, church, register|
   if register.present?
     link 'Register Information', register_path(register)
-    parent :show_church, county, place,church
+    parent :show_church, county, place, church
   else
     parent :county_options, session[:county] if session[:county].present?
     parent :syndicate_options, session[:syndicate] if session[:syndicate].present?
@@ -1132,24 +1132,16 @@ crumb :county_manage_images_selection do |county, browse_source|
   parent :county_manage_images, session[:county], browse_source
 end
 
-
-
-
-
 # from 'register' => Sources        (is taken out right now)
-crumb :image_sources do |register|
+crumb :image_sources do |county, place, church, register|
   link 'Sources', index_source_path(register)
-  parent :county_manage_images
+  parent :show_register, county, place, church, register
 end
 
-crumb :new_image_source do |register,source|
+crumb :new_image_source do |register, source|
   link 'Create New Source'
   parent :image_sources, register
 end
-
-
-
-
 
 # breadcrumb for image_source
 crumb :show_image_source do |register,source|
