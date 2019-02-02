@@ -18,6 +18,8 @@ class Freereg1CsvEntriesController < ApplicationController
 
   skip_before_action :require_login, only: [:show]
 
+  ActionController::Parameters.permit_all_parameters = true
+
   def calculate_software_version
     software_version = SoftwareVersion.control.first
     search_version = ''
@@ -256,6 +258,6 @@ class Freereg1CsvEntriesController < ApplicationController
   private
 
   def freereg1_csv_entry_params
-    params.require(:freereg1_csv_entry).permit!
+    params.require(:freereg1_csv_entry).permit(:freereg1_csv_entry)
   end
 end
