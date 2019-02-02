@@ -101,15 +101,9 @@ class SourcesController < ApplicationController
   end
 
   def index
-
     params[:id] = session[:register_id] if params[:id].blank?
     @source = Source.where(register_id: params[:id]).all
     display_info
-    logger.warn @register
-    logger.warn @church
-    logger.warn @place
-    logger.warn @source
-    logger.warn params[:id]
     redirect_back(fallback_location: root_path, notice: 'Attempting to display an incomplete source') && return if @register.blank? ||
       @church.blank? || @place.blank? || @source.blank?
 
@@ -141,35 +135,6 @@ class SourcesController < ApplicationController
 
     allow_initialize = ImageServerGroup.check_all_images_status_before_initialize_source(params[:id])
     redirect_back(fallback_location: root_path, notice: 'Source can be initialized only when all image groups status is unset') && return unless allow_initialize
-
-  end
-
-  def load(source_id)
-    @source = Source.id(source_id).first
-    return if @source.blank?
-
-    session[:source_id] = @source.id
-    @register = @source.register
-    return if @register.blank?
-
-    @register_type = RegisterType.display_name(@register.register_type)
-    session[:register_id] = @register.id
-    session[:register_name] = @register_type
-    @church = @register.church
-    return if @church.blank?
-
-    @church_name = @church.church_name
-    session[:church_name] = @church_name
-    session[:church_id] = @church.id
-    @place = @church.place
-    return if @place.blank?
-
-    session[:place_id] = @place.id
-    @place_name = @place.place_name
-    session[:place_name] = @place_name
-    @county = @place.county
-    session[:county] = @county
-    @user = get_user
   end
 
   def new
@@ -195,7 +160,6 @@ class SourcesController < ApplicationController
     # indicate image group display comes from Source or filters under 'All Sources' directly
     session[:from_source] = true
   end
-
 
   def update
     source = Source.find(params[:id])
