@@ -85,7 +85,6 @@ class Freereg1CsvEntriesController < ApplicationController
     update_batch_error_file if session[:error_id].present?
 
     flash[:notice] = 'The creation/update in entry contents was successful, a backup of file made and locked'
-    p 'The creation/update in entry contents was successful, a backup of file made and locked'
     redirect_to(freereg1_csv_entry_path(@freereg1_csv_entry)) && return
   end
 
@@ -132,7 +131,7 @@ class Freereg1CsvEntriesController < ApplicationController
 
     session[:freereg1_csv_entry_id] = @freereg1_csv_entry._id
     session[:zero_listing] = true if params[:zero_listing].present?
-    @freereg1_csv_entry.multiple_witnesses.build
+    @freereg1_csv_entry.multiple_witnesses.build if @freereg1_csv_entry.multiple_witnesses.count < FreeregOptionsConstants::MAXIMUM_WINESSES
   end
 
   def error
@@ -173,6 +172,7 @@ class Freereg1CsvEntriesController < ApplicationController
     file_line_number = @freereg1_csv_file.records.to_i + 1
     line_id = @freereg1_csv_file.userid + '.' + @freereg1_csv_file.file_name.upcase + '.' + file_line_number.to_s
     @freereg1_csv_entry = Freereg1CsvEntry.new(record_type: @freereg1_csv_file.record_type, line_id: line_id, file_line_number: file_line_number)
+    @freereg1_csv_entry.multiple_witnesses.build
     @freereg1_csv_entry.multiple_witnesses.build
   end
 
@@ -245,19 +245,17 @@ class Freereg1CsvEntriesController < ApplicationController
     @freereg1_csv_file.error = @freereg1_csv_file.batch_errors.count - 1 if session[:error_id].present?
     @freereg1_csv_file.userid_detail_id = @userid
     @freereg1_csv_file.save
-    p 'file saved after stats'
   end
 
   def update_other_statistics(place, church, register)
     register.calculate_register_numbers
     church.calculate_church_numbers
     place.calculate_place_numbers
-    p 'after stats'
   end
 
   private
 
   def freereg1_csv_entry_params
-    params.require(:freereg1_csv_entry).permit(:freereg1_csv_entry)
+    params.require(:freereg1_csv_entry).permit!
   end
 end

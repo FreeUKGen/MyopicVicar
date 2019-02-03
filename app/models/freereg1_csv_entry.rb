@@ -43,7 +43,6 @@ class Freereg1CsvEntry
   #new common fields
   field :image_file_name, type: String
   field :notes_from_transcriber, type: String
-  field :multiple_witnesses_attributes, type: hash
 
 
   #original baptism fields
@@ -191,7 +190,7 @@ class Freereg1CsvEntry
   field :record_type, type: String
   field :processed_date, type: DateTime
 
-  belongs_to :freereg1_csv_file, index: true
+  belongs_to :freereg1_csv_file, index: true, optional: true
 
   before_save :add_digest, :captitalize_surnames, :check_register_type
 
@@ -208,8 +207,8 @@ class Freereg1CsvEntry
 
 
   embeds_many :multiple_witnesses, cascade_callbacks: true
-  accepts_nested_attributes_for :multiple_witnesses, allow_destroy: true,
-    reject_if: :all_blank
+  accepts_nested_attributes_for :multiple_witnesses, allow_destroy: true, reject_if: :all_blank, limit: 8
+
   index({ freereg1_csv_file_id: 1, year: 1 }, { name: 'freereg1_csv_file_id_year' })
   index({freereg1_csv_file_id: 1,file_line_number:1})
   index({freereg1_csv_file_id: 1, record_digest:1})
@@ -343,13 +342,7 @@ class Freereg1CsvEntry
     param[:year] = get_year(param)
     param[:processed_date] = Time.now
     param[:person_sex] == person_sex ? sex_change = false : sex_change = true
-    param['multiple_witnesses_attributes'].present? ? number_of_witnesses = param['multiple_witnesses_attributes'].to_h.length : number_of_witnesses = 0
-    p number_of_witnesses
-    while number_of_witnesses > FreeregOptionsConstants::MAXIMUM_WINESSES
-      param['multiple_witnesses_attributes'].delete_if {|key, value| key.to_i >= FreeregOptionsConstants::MAXIMUM_WINESSES }
-      number_of_witnesses = number_of_witnesses - 1
-    end
-    return param, sex_change
+    [param, sex_change]
   end
 
   def cal_digest

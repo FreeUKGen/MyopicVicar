@@ -150,7 +150,7 @@ class SourcesController < ApplicationController
   end
 
   def show
-    load(params[:id])
+    display_info
     redirect_back(fallback_location: root_path, notice: 'Attempting to show an incomplete source') && return if @register.blank? ||
       @church.blank? || @place.blank? || @source.blank?
 
