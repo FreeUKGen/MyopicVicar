@@ -86,7 +86,7 @@ class MessagesController < ApplicationController
     get_user_info_from_userid
     @message.nature = 'communication'
     original_message = Message.id(@message.source_message_id).first
-    @sent_message = SentMessage.new(message_id: @message.id, sender: @user.userid, recipients: ['system'], sent_time: Time.now)
+    @sent_message = SentMessage.new(message_id: @message.id, sender: @user.userid, recipients: ['comment_only'], sent_time: Time.now)
     @message.sent_messages << [@sent_message]
     @sent_message.save
     @message.save
@@ -153,7 +153,7 @@ class MessagesController < ApplicationController
     original_message = Message.id(@message.source_message_id).first
     @message.syndicate = original_message.syndicate
     @message.nature = original_message.nature
-    @sent_message = SentMessage.new(message_id: @message.id, sender: @user.userid, recipients: ['system'], sent_time: Time.now)
+    @sent_message = SentMessage.new(message_id: @message.id, sender: @user.userid, recipients: ['comment_only'], sent_time: Time.now)
     @message.sent_messages << [@sent_message]
     @sent_message.save
     @message.save
