@@ -134,25 +134,13 @@ class AssignmentsController < ApplicationController
     group_id = Assignment.get_group_id_for_list_assignment(params)
 
     @assignment, @count = Assignment.filter_assignments_by_userid(user_id, session[:syndicate], group_id)
-
-    if @assignment.blank?
-      flash[:notice] = 'No assignment found.'
-      redirect_back(fallback_location: root_path)
-    else
-      render 'list_assignment_images' if @count.length == 1
-    end
+    render 'list_assignment_images' if @count.length == 1
   end
 
   def list_assignments_of_myself
     @user = UseridDetail.where(userid: session[:userid]).first
     @assignment, @count = Assignment.filter_assignments_by_userid([@user.id], '', '')
-
-    if @assignment.blank?
-      flash[:notice] = 'No assignment found.'
-      redirect_back(fallback_location: root_path)
-    else
-      render 'list_assignment_images' if @count.length == 1
-    end
+    render 'list_assignment_images' if @count.length == 1
   end
 
   def list_assignment_image
@@ -167,38 +155,24 @@ class AssignmentsController < ApplicationController
   def list_assignment_images
     session.delete(:image_group_filter)
     session[:assignment_filter_list] = params[:assignment_filter_list]
-
     heading_info
     @assignment, @count = Assignment.filter_assignments_by_assignment_id(params[:id])
-
-    if @assignment.blank?
-      flash[:notice] = 'Assignment information was changed, please refresh the browser and try again'
-      redirect_back(fallback_location: root_path)
-    end
   end
 
   def list_submitted_review_assignments
-    if session[:syndicate].blank?
-      redirect_to main_app.new_manage_resource_path
-      return
-    else
-      @assignment, @count = Assignment.list_assignment_by_status(session[:syndicate], 'rs')
+    redirect_to(main_app.new_manage_resource_path) && return  if session[:syndicate].blank?
 
-      @assignment_ids = []
-      @assignment.each { |k1, v1| @assignment_ids << k1 }
-    end
+    @assignment, @count = Assignment.list_assignment_by_status(session[:syndicate], 'rs')
+    @assignment_ids = []
+    @assignment.each { |k1, v1| @assignment_ids << k1 }
   end
 
   def list_submitted_transcribe_assignments
-    if session[:syndicate].blank?
-      redirect_to main_app.new_manage_resource_path
-      return
-    else
-      @assignment, @count = Assignment.list_assignment_by_status(session[:syndicate], 'ts')
+    redirect_to(main_app.new_manage_resource_path) && return  if session[:syndicate].blank?
 
-      @assignment_ids = []
-      @assignment.each { |k1, v1| @assignment_ids << k1 }
-    end
+    @assignment, @count = Assignment.list_assignment_by_status(session[:syndicate], 'ts')
+    @assignment_ids = []
+    @assignment.each { |k1, v1| @assignment_ids << k1 }
   end
 
   def my_own
@@ -218,15 +192,13 @@ class AssignmentsController < ApplicationController
   def re_assign
     userids_and_transcribers
     heading_info
-    @assignment = Assignment.id(params[:id]).first
-
-    @reassign_transcriber_images = ImageServerImage.get_transcriber_reassign_image_list(params[:id])
-    @reassign_reviewer_images = ImageServerImage.get_reviewer_reassign_image_list(params[:id])
-
+    @assignment = Assignment.find(params[:id])
     if @assignment.blank?
-      flash[:notice] = 'No assignment in this Image Source'
+      flash[:notice] = 'No assignment for reassignments in this Image Source'
       redirect_back(fallback_location: root_path)
     end
+    @reassign_transcriber_images = ImageServerImage.get_transcriber_reassign_image_list(params[:id])
+    @reassign_reviewer_images = ImageServerImage.get_reviewer_reassign_image_list(params[:id])
   end
 
   def select_county
@@ -234,9 +206,8 @@ class AssignmentsController < ApplicationController
     counties_for_selection
 
     if @counties.blank?
-      flash[:notice] = 'You do not have any counties to manage'
-      redirect_to new_manage_resource_path
-      return
+      flash[:notice] = 'There are not any counties with images'
+      redirect_back(fallback_location: new_manage_resource_path) && return
     else
       @county = County.new
       @location = 'location.href= "/image_server_groups/" + this.value +/my_list_by_county/'
@@ -250,7 +221,7 @@ class AssignmentsController < ApplicationController
     @people = Hash.new { |h, k| h[k] = [] }.tap { |h| users.each { |k, v| h[k] = v } }
 
     if users.empty?
-      flash[:notice] = 'No user under this syndicate'
+      flash[:notice] = 'No members in this syndicate'
       redirect_back(fallback_location: root_path)
     else
       session[:list_user_assignments] = true
@@ -266,7 +237,7 @@ class AssignmentsController < ApplicationController
     when 'put'
       update_result = Assignment.update_assignment_from_put_request(session[:my_own], params)
       flash[:notice] = Assignment.get_flash_message(params[:type], session[:my_own])
-    else                                       # re_assign
+    else                                    # re_assign
       update_result = Assignment.update_assignment_from_reassign(params)
       flash[:notice] = 'Re_assignment was successful'
     end
@@ -287,8 +258,7 @@ class AssignmentsController < ApplicationController
 
   def userids_and_transcribers
     @userids = UseridDetail.where(syndicate: session[:syndicate], active: true).all.order_by(userid_lower_case: 1)
-
-    @people =[]
+    @people = []
     @userids.each { |ids| @people << ids.userid }
   end
 
