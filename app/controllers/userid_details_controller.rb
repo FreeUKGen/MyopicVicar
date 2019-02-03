@@ -428,7 +428,8 @@ class UseridDetailsController < ApplicationController
     when 'Confirm'
       if params[:userid_detail][:email_address_valid] == 'true'
         @userid.update_attributes(email_address_valid: true, email_address_last_confirmned: Time.new, email_address_validity_change_message: [])
-        redirect_back(fallback_location: new_manage_resource_path, notice: 'confirmed') && return
+        flash[:notice] = 'Email address confirmed'
+        redirect_to(new_manage_resource_path) && return
       else
         session[:my_own] = true
         redirect_to(edit_userid_detail_path(@userid)) && return

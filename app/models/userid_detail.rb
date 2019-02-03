@@ -424,8 +424,6 @@ class UseridDetail
     return result
   end
 
-
-
   def remember_search(search_query)
     self.search_queries << search_query
   end
