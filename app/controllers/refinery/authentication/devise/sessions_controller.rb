@@ -4,12 +4,19 @@ module Refinery
       class SessionsController < ::Devise::SessionsController
         helper Refinery::Core::Engine.helpers
         layout 'refinery/layouts/login'
-        skip_before_action :verify_authenticity_token
+        skip_before_action :require_login
         before_action :clear_unauthenticated_flash, :only => [:new]
         before_action :force_signup_when_no_users!
-        skip_before_action :require_login
-        skip_before_action :detect_authentication_devise_user!, only: [:create,:destroy]
+        skip_before_action :detect_authentication_devise_user!, only: [:create], raise: false
         after_action :detect_authentication_devise_user!, only: [:create]
+
+        # GET /resource/sign_in
+        def new
+          self.resource = resource_class.new(sign_in_params)
+          clean_up_passwords(resource)
+          yield resource if block_given?
+          respond_with(resource, serialize_options(resource))
+        end
 
         def create
           super

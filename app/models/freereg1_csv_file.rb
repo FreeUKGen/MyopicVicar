@@ -96,7 +96,7 @@ class Freereg1CsvFile
 
 
   belongs_to :register, index: true
-  belongs_to :userid_detail, index: true
+  belongs_to :userid_detail, index: true, optional: true
 
   #register belongs to church which belongs to place
 
@@ -265,7 +265,7 @@ class Freereg1CsvFile
 
     def delete_userid_folder(userid)
       folder_location = File.join(Rails.application.config.datafiles,userid)
-      FileUtils.rm_rf(folder_location) if Dir.exist?(folder_location) 
+      FileUtils.rm_rf(folder_location) if Dir.exist?(folder_location)
     end
 
     def file_update_location(file,param,session)
@@ -277,7 +277,7 @@ class Freereg1CsvFile
         message = message + ": place" if session[:selectplace].blank?
         message = message + ": church" if session[:selectchurch].blank?
         message = message + ": register" if param.blank? || param[:register_type].blank?
-        return[true, "You are missing a selection of #{message}"]
+        return[false, "You are missing a selection of #{message}"]
       end
       place = Place.id(session[:selectplace]).first
       church = Church.id(session[:selectchurch]).first
@@ -300,7 +300,7 @@ class Freereg1CsvFile
       if session[:my_own]
         file.locked_by_transcriber = true
       else
-        file.locked_by_coordinator =  true
+        file.locked_by_coordinator = true
       end
       file.save
       place.update_attribute(:data_present, true)
@@ -309,7 +309,7 @@ class Freereg1CsvFile
       file.propogate_file_location_change(place.id)
       PlaceCache.refresh_cache(place)
       file.update_freereg_contents_after_processing
-      return[false,""]
+      return[true, '']
     end
 
     def unique_names(names)
@@ -335,6 +335,14 @@ class Freereg1CsvFile
         end
       end
       names
+    end
+
+    def valid_freereg1_csv_file?(freereg1_csv_file)
+      result = false
+      freereg1_csv_file_object = Freereg1CsvFile.find(freereg1_csv_file)
+      result = true if freereg1_csv_file_object.present? && Register.valid_register?(freereg1_csv_file_object.register_id)
+      logger.warn("FREEREG:LOCATION:VALIDATION invalid freereg1_csv_file id #{freereg1_csv_file} ") unless result
+      result
     end
   end #self
 
@@ -584,7 +592,7 @@ class Freereg1CsvFile
      color = "color:black"
     end
     color
-  end 
+  end
 
   def determine_line_information(error_id)
    error_file = batch_errors.find(error_id)
@@ -679,7 +687,7 @@ class Freereg1CsvFile
      self.update_attributes(:records => records.to_s,:locked_by_coordinator => true )
      logger.info "FREEREG:updated record count #{self.records.to_i} "
    end
-   return [false, ""]
+   return [true, ""]
   end
 
   def physical_userid_location(userid)
@@ -817,14 +825,15 @@ class Freereg1CsvFile
                  end
 
                  def update_statistics_and_access(who_actioned)
-                   locked_by_transcriber = true if who_actioned
-                   locked_by_coordinator = true unless who_actioned
-                   modification_date = Time.now.strftime("%d %b %Y")
+                   p 'update_statistics_and_access'
+                   self.locked_by_transcriber = true if who_actioned
+                   self.locked_by_coordinator = true unless who_actioned
+                   self.modification_date = Time.now.strftime("%d %b %Y")
                    calculate_distribution
                    recalculate_last_amended
                    update_number_of_files
                    save
-                   place, church, register = self.location_from_file
+                   place, church, register = location_from_file
                    register.calculate_register_numbers
                    church.calculate_church_numbers
                    place.calculate_place_numbers

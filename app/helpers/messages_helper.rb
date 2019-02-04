@@ -245,7 +245,7 @@ module MessagesHelper
   def index_explanation
     case
     when session[:message_base] == 'syndicate'
-      explanation = 'These are the messages created and sent to you syndicate'
+      explanation = 'These are the messages created and sent to your syndicate'
     when session[:message_base] == 'userid_messages'
       explanation = 'These are the messages that have been sent to you. Select the SHOW button to see the full message. The message can be removed from the list by selecting the REMOVE button on the SHOW page.'
     when session[:message_base] == 'communication'
@@ -440,7 +440,7 @@ module MessagesHelper
 
   def recipients_list
     if @message.nature == 'communication'
-      options_for_select(@people)
+      options_for_select(@people, @people[0])
     elsif @syndicate
       options_for_select(['Members of Syndicate'])
     else

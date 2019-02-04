@@ -74,7 +74,6 @@ MyopicVicar::Application.routes.draw do
   get 'messages/select_individual', to: 'messages#select_individual', as: :select_individual_messages
   resources :messages
 
-  get 'attic_files/select', :to =>'attic_files#select', :as => :select_attic_files
   get 'attic_files/select_userid', :to =>'attic_files#select_userid', :as => :select_userid_attic_files
   get 'attic_files/:id/download(.:format)', :to => 'attic_files#download', :as => :download_attic_file
   resources :attic_files
@@ -269,6 +268,7 @@ MyopicVicar::Application.routes.draw do
   get 'registers/:id/relocate', :to => 'registers#relocate', :as => :relocate_register
   get 'registers/:id/create_image_server', :to => 'registers#create_image_server', :as => :create_image_server_register
   get 'registers/create_image_server_return', :to => 'registers#create_image_server_return', :as => :create_image_server_return_register
+  get 'registers/:id/show_image_server', to: 'registers#show_image_server', as: :show_image_server_register
   resources :registers
 
   resources :master_place_names

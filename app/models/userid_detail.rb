@@ -59,8 +59,8 @@ class UseridDetail
   index({syndicate: 1, active: 1}, {name: "syndicate_active"})
   index({person_role: 1}, {name: "person_role"})
 
-  has_many :freereg1_csv_files, dependent: :restrict
-  has_many :attic_files, dependent: :restrict
+  has_many :freereg1_csv_files, dependent: :restrict_with_error
+  has_many :attic_files, dependent: :restrict_with_error
   has_many :assignments
 
   validates_presence_of :userid,:syndicate,:email_address, :person_role, :person_surname, :person_forename,
@@ -73,7 +73,7 @@ class UseridDetail
   before_create :add_lower_case_userid,:capitalize_forename, :captilaize_surname, :remove_secondary_role_blank_entries, :transcription_agreement_value_change
   after_create :save_to_refinery
   before_save :capitalize_forename, :captilaize_surname, :remove_secondary_role_blank_entries
-  after_update :update_refinery
+  #after_update :update_refinery
   before_destroy :delete_refinery_user_and_userid_folder
 
   class << self
@@ -140,8 +140,11 @@ class UseridDetail
 
     def create_friendly_from_email(userid)
       user = UseridDetail.userid(userid).first
-      user.present? ? friendly_email = "#{user.person_forename} #{user.person_surname} <#{user.email_address}>" :
+      if user.present?
+        friendly_email = "#{user.person_forename} #{user.person_surname} <#{user.email_address}>"
+      else
         friendly_email = 'FreeREG Servant <freereg-contacts@freereg.org.uk>'
+      end
       friendly_email
     end
   end
@@ -251,11 +254,6 @@ class UseridDetail
     userid_msgs = self.userid_messages
     userid_msgs = userid_msgs - [msg_id]
     self.update_attribute(:userid_messages, userid_msgs) if userid_msgs.length != self.userid_messages.length
-  end
-
-  def remove_myself(list)
-    list = list.delete_if { |role| role == person_role }
-    list
   end
 
   def update_userid_feedbacks
@@ -425,8 +423,6 @@ class UseridDetail
     result = true if !@user.email_address_valid || (last_date + FreeregOptionsConstants::CONFIRM_EMAIL_ADDRESS.days < Time.now)
     return result
   end
-
-
 
   def remember_search(search_query)
     self.search_queries << search_query

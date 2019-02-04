@@ -3,34 +3,30 @@ class Csvfile < CarrierWave::Uploader::Base
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
   field :userid, type: String
-  field :file_name,type: String
-  field :process,type: String, default: "Process tonight"
+  field :file_name, type: String
+  field :process, type: String, default: 'Process tonight'
   field :action, type: String
   # files are stored in Rails.application.config.datafiles_changeset
   mount_uploader :csvfile, CsvfileUploader
 
-
-
   def check_for_existing_file_and_save
     process = true
-    batch = PhysicalFile.where(userid: self.userid, file_name: self.file_name,:base => true).first
+    batch = PhysicalFile.where(userid: userid, file_name: file_name, base: true).first
     if batch.present?
-      file_location = File.join(Rails.application.config.datafiles,self.userid,self.file_name)
+      file_location = File.join(Rails.application.config.datafiles, userid, file_name)
       if File.file?(file_location)
-        newdir = File.join(File.join(Rails.application.config.datafiles,self.userid),'.attic')
+        newdir = File.join(File.join(Rails.application.config.datafiles, userid), '.attic')
         Dir.mkdir(newdir) unless Dir.exists?(newdir)
         time = Time.now.to_i.to_s
-        renamed_file = (file_location + "." + time).to_s
-        File.rename(file_location,renamed_file)
-        FileUtils.mv(renamed_file,newdir,:verbose => true)
+        renamed_file = (file_location + '.' + time).to_s
+        File.rename(file_location, renamed_file)
+        FileUtils.mv(renamed_file, newdir, verbose: true)
         FileUtils.rm(file_location) if File.file?(file_location)
-        user =UseridDetail.where(:userid => self.userid).first
-        unless user.nil?
-          attic_file = AtticFile.new(:name => "#{self.file_name}.#{time}", :date_created => DateTime.strptime(time,'%s'), :userid_detail_id => user.id)
+        user = UseridDetail.where(userid: userid).first
+        if user.present?
+          attic_file = AtticFile.new(name: "#{file_name}.#{time}", date_created: DateTime.strptime(time, '%s'), userid_detail_id: user.id)
           attic_file.save
         end
-      else
-        p "There is no file to put into the attic"
       end
     end
     process
@@ -38,83 +34,118 @@ class Csvfile < CarrierWave::Uploader::Base
 
   def check_name(name)
     decision = false
-    decision = true if self.file_name == name
+    decision = true if file_name == name
     decision
   end
+
   def create_batch_unless_exists
-    batch = PhysicalFile.where(userid: self.userid, file_name: self.file_name).first
-    if !batch.present?
-      batch = PhysicalFile.new(:userid => self.userid, :file_name => self.file_name, :base =>true, :base_uploaded_date => Time.now, :file_processed => false)
-      batch.save
+    batch = PhysicalFile.where(userid: userid, file_name: file_name).first
+    if batch.present?
+      batch.update_attributes(base: true, base_uploaded_date: Time.now, file_processed: false)
     else
-      batch.update_attributes( :base =>true, :base_uploaded_date => Time.now, :file_processed => false)
+      batch = PhysicalFile.new(userid: userid, file_name: file_name, base: true, base_uploaded_date: Time.now, file_processed: false)
+      batch.save
     end
     batch
   end
 
-  def csvfile_already_exists
-    ok = true
-    case
-    when  PhysicalFile.userid(self.userid).file_name(self.file_name).processed.first.present?
-      ok = false
-      message = "You already have a processed file of that name. You cannot upload a file with the same name. You must replace the existing file or use a different file name."
-    when Freereg1CsvFile.userid(self.userid).file_name(self.file_name).transcriber_lock.exists?
-      message =   "The file you are replacing is locked."
-      ok = false
-    end
-    return ok, message
-  end
-
   def estimate_time
-    processing_time =
-    place = File.join(Rails.application.config.datafiles,self.userid,self.file_name) unless self.userid.nil? || self.file_name.nil?
-    File.exists?(place) ? size = File.size(place) : size = 1
+    size = 1
+    place = File.join(Rails.application.config.datafiles, userid, file_name)
+    size = File.size(place)
     unit = 0.001
-    processing_time = (size.to_i*unit).to_i
+    processing_time = (size.to_i * unit).to_i
+    processing_time
   end
 
-  def setup_batch_on_replace
-    ok = true
-    place = File.join(Rails.application.config.datafiles,self.userid,self.file_name)
-    processing_time = self.estimate_time
-    batch_entries = PhysicalFile.where(userid: self.userid, file_name: self.file_name).count
-    case
-    when !File.exists?(place)
-      ok = false
-      batch = "You are attempting to replace a file you do not have. Likely you are a coordinator replacing a file belonging to someone else. You must replace into their userid."
-    when processing_time >= 600 && batch_entries == 0
-      batch = PhysicalFile.new(:base => true,:base_uploaded_date => Time.now,:file_processed => false, :userid =>self.userid , :file_name => self.file_name)
-      batch.save
-      batch = "Too large a file to be replaced. A message has been sent to your coordinator and data managers so please discuss with them how to proceed."
-      self.check_for_existing_file_and_save
-      self.save
-      ok = false
-      UserMailer.report_to_data_manger_of_large_file(self.file_name,self.userid).deliver_now
-    when processing_time >= 600 && batch_entries == 1
-      batch = PhysicalFile.where(userid: self.userid, file_name: self.file_name).first
-      batch.update_attributes(:base => true,:base_uploaded_date => Time.now,:file_processed => false)
-      batch = "Too large a file to be replaced. A message has been sent to your coordinator and data managers so please discuss with them how to proceed."
-      self.check_for_existing_file_and_save
-      self.save
-      ok = false
-      UserMailer.report_to_data_manger_of_large_file(self.file_name,self.userid).deliver_now
-    when Freereg1CsvFile.userid(self.userid).file_name(self.file_name).transcriber_lock.exists?
-      message =   "You have done on-line edits to the file, so it is locked against replacement until you have downloaded and edited the file."
-      ok = false
-    when Freereg1CsvFile.userid(self.userid).file_name(self.file_name).coordinator_lock.exists?
-      message =   "The file you are trying to replace has been locked by your coordinator."
-      ok = false
-    when batch_entries == 0
-      batch = PhysicalFile.new(:base => true,:base_uploaded_date => Time.now,:file_processed => false, :userid =>self.userid , :file_name => self.file_name)
-      batch.save
-    when batch_entries == 1
-      batch = PhysicalFile.where(userid: self.userid, file_name: self.file_name).first
-      batch.update_attributes(:base => true,:base_uploaded_date => Time.now,:file_processed => false)
-    else
-      message =   "A situation has occurred that should not have. Please have your coordinator contact system administration."
-      ok = false
+  def physical_file_for_user_exists
+    place = File.join(Rails.application.config.datafiles, userid, file_name)
+    return false if place.blank?
+
+    return true if File.exist?(place)
+
+    false
+  end
+
+  def process_the_batch(user)
+    proceed = check_for_existing_file_and_save
+    save if proceed
+    message = "The upload with file name #{file_name} was unsuccessful because #{errors.messages}" if errors.any?
+    return [false, message] if errors.any?
+
+    batch = create_batch_unless_exists
+    range = File.join(userid, file_name)
+    batch_processing = PhysicalFile.where(userid: userid, file_name: file_name, waiting_to_be_processed: true).exists?
+    message = 'Your file is already waiting to be processed. It cannot reprocess it until that one is finished' if batch_processing.present?
+    return [false, message] if batch_processing.present?
+
+    processing_time = estimate_time
+    if user.person_role == 'trainee'
+      pid1 = Kernel.spawn("rake build:freereg_new_update[\"no_search_records\",\"individual\",\"no\",#{range}]")
+      message = "The csv file #{file_name} is being checked. You will receive an email when it has been completed."
+      process = true
+    elsif processing_time < 600
+      batch.update_attributes(waiting_to_be_processed: true, waiting_date: Time.now)
+      # check to see if rake task running
+      rake_lock_file = File.join(Rails.root, 'tmp', 'processing_rake_lock_file.txt')
+      processor_initiation_lock_file = File.join(Rails.root, 'tmp', 'processor_initiation_lock_file.txt')
+      if File.exist?(rake_lock_file) || File.exist?(processor_initiation_lock_file)
+        message = "The csv file #{file_name} has been sent for processing . You will receive an email when it has been completed."
+      else
+        initiation_locking_file = File.new(processor_initiation_lock_file, 'w')
+        pid1 = Kernel.spawn("rake build:freereg_new_update[\"create_search_records\",\"waiting\",\"no\",\"a-9\"]")
+        message = "The csv file #{file_name} is being processed . You will receive an email when it has been completed."
+      end
+      process = true
+    elsif processing_time >= 600
+      batch.update_attributes(base: true, base_uploaded_date: Time.now, file_processed: false)
+      message =  "Your file #{file_name} is not being processed in its current form as it is too large. Your coordinator and the data managers have been informed. Please discuss with them how to proceed. "
+      UserMailer.report_to_data_manger_of_large_file(file_name, userid).deliver_now
+      process = false
     end
-    return[ok,batch]
+    [process, message]
   end
 
+  def setup_batch_on_replace(original_file_name)
+    return false, 'The file you are replacing must have the same name' unless check_name(original_file_name)
+
+    proceed = true
+    proceed = physical_file_for_user_exists
+    #lets check that the file has indeed been processed previously.
+    PhysicalFile.where(userid: userid, file_name: file_name).exists? ? batch_entries_present = true : batch_entries_present = false
+    if !proceed
+      message = 'You are attempting to replace a file you do not have. Likely you are a coordinator replacing a file belonging to someone else. You must replace into their userid.'
+
+    elsif Freereg1CsvFile.userid(userid).file_name(file_name).transcriber_lock.exists?
+      message = 'You have done on-line edits to the file, so it is locked against replacement until you have downloaded and edited the file.'
+      proceed = false
+
+    elsif Freereg1CsvFile.userid(userid).file_name(file_name).coordinator_lock.exists?
+      message = 'The file you are trying to replace has been locked by your coordinator.'
+      proceed = false
+
+    elsif !batch_entries_present
+      batch = PhysicalFile.new(base: true, base_uploaded_date: Time.now, file_processed: false, userid: userid , file_name: file_name)
+      batch.save
+      message = ''
+    elsif batch_entries_present
+      batch = PhysicalFile.find_by(userid: userid, file_name: file_name)
+      batch.update_attributes(base: true, base_uploaded_date: Time.now, file_processed: false)
+      message = ''
+    else
+      message = 'A situation has occurred that should not have. Please have your coordinator contact system administration.'
+      proceed = false
+    end
+    [proceed, message]
+  end
+
+  def setup_batch_on_upload
+    proceed = true
+    message = ''
+    if PhysicalFile.userid(userid).file_name(file_name).processed.first.present?
+      proceed = false
+      message = 'You already have a processed file of that name. You cannot upload a file with the same name. You must replace the existing file or use a different file name.'
+    end
+    [proceed, message]
+  end
 end

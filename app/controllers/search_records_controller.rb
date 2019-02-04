@@ -1,6 +1,19 @@
+# Copyright 2012 Trustees of FreeBMD
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+#
 class SearchRecordsController < ApplicationController
-  before_filter :viewed
-  skip_before_filter :require_login
+  before_action :viewed
+  skip_before_action :require_login
   require 'csv'
   rescue_from Mongo::Error::OperationFailure, :with => :catch_error
 
@@ -32,7 +45,7 @@ class SearchRecordsController < ApplicationController
       @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
       @search_result.update_attribute(:viewed_records, @viewed_records)
       @image_id = @entry.get_the_image_id(@church,@user,session[:manage_user_origin],session[:image_server_group_id],session[:chapman_code])
-      @order,@array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type],@entry.freereg1_csv_file.def,current_authentication_devise_user.present?)
+      @order, @array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type],@entry.freereg1_csv_file.def,current_authentication_devise_user.present?)
       #session[:viewed] << params[:id] unless  session[:viewed].length >= 10
     end
   end

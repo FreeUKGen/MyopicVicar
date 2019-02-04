@@ -1,9 +1,7 @@
-<% breadcrumb :image_sources, @register %>
-
+<% breadcrumb :image_sources, @county, @place, @church, @register %>
 <% title "Source - list" %>
 <%= render partial: 'header' %>
 <%= render partial: 'flash_notice' %>
-
 <div class="grid">
   <section class="island">
     <%= render 'source_index' %>

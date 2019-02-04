@@ -21,8 +21,8 @@ class Source
   attr_accessor :initialize_status
 
   belongs_to :register, index: true
-  has_many :image_server_groups, foreign_key: :source_id, :dependent=>:restrict # includes transcripts, printed editions, and microform, and digital versions of these
-  has_many :assignments, :dependent=>:restrict
+  has_many :image_server_groups, foreign_key: :source_id, dependent: :restrict_with_error # includes transcripts, printed editions, and microform, and digital versions of these
+  has_many :assignments, dependent: :restrict_with_error
 
   accepts_nested_attributes_for :image_server_groups, :reject_if => :all_blank
   attr_accessor :propagate
@@ -97,7 +97,7 @@ class Source
         register_type = register_id[v1[0]][1]
         church_name = church_id[register_id[v1[0]][0]][1]
         place_name = place_id[church_id[register_id[v1[0]][0]][0]]
-        sid << [k1, place_name, church_name, register_type, v1[1]]
+        sid << [k1, place_name, church_name, register_type, v1[1]] unless v1[1].nil?
       end
 
       return nil, nil if sid.blank?
@@ -138,7 +138,7 @@ class Source
       end
 
       sourceid.each do |k1, v1|
-        sourceid.delete(k1) if initialized_source.keys?(k1)
+        sourceid.delete(k1) if !initialized_source.empty? && initialized_source.key?(k1)
       end
 
       sid = []
@@ -187,6 +187,6 @@ class Source
     errors.add(:source_name, 'Source name not selected') if source_name.blank?
     errors.add(:start_date, 'Invalid start year') if start_date.present? && (start_date.to_i <= 1 || start_date.to_i > Time.now.year)
     errors.add(:end_date, 'Invalid end year') if end_date.present? && (end_date.to_i <= 1 || end_date.to_i > Time.now.year)
-    errors.add(:end_date, 'End year greater than start year') if end_date.present? && start_date.present? && end_date.to_i > start_date.to_i
+    errors.add(:end_date, 'Start year greater than end year') if end_date.present? && start_date.present? && start_date.to_i > end_date.to_i
   end
 end

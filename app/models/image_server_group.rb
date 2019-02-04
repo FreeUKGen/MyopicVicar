@@ -28,7 +28,7 @@ class ImageServerGroup
   belongs_to :source, index: true
   belongs_to :place, index: true
   belongs_to :church, index: true
-  has_many :image_server_images, foreign_key: :image_server_group_id, :dependent=>:restrict # includes images
+  has_many :image_server_images, foreign_key: :image_server_group_id, dependent: :restrict_with_error # includes images
   has_many :gaps
 
   accepts_nested_attributes_for :image_server_images, :reject_if => :all_blank
@@ -372,7 +372,7 @@ class ImageServerGroup
       return @image_server_group
     end
 
-    def update_put_request(params,userid)
+    def update_put_request(params, userid)
       image_server_group = ImageServerGroup.id(params[:id])
       logger.info 'update put request'
       logger.info image_server_group.first
@@ -397,7 +397,6 @@ class ImageServerGroup
 
       return flash_message
     end
-
   end
 
   def create_upload_images_url(userid)
@@ -413,15 +412,10 @@ class ImageServerGroup
     message = ''
     uploaded_file_names = param[:files_uploaded].split('/ ')
     uploaded_file_names.each do |file_name|
-      image = ImageServerImage.create(image_server_group_id: self.id, image_file_name: file_name) if ImageServerImage.where(image_server_group_id: self.id, image_file_name: file_name).first.blank?
-      if image.errors.any?
-        process = false
-        message = image.errors.messages
-        break
-      end
+      image = ImageServerImage.create(image_server_group_id: id, image_file_name: file_name, status: 'u') if ImageServerImage.where(image_server_group_id: id, image_file_name: file_name).first.blank?
     end
     number_of_images = self.image_server_images.count
-    self.update_attribute(:number_of_images, number_of_images )
-    return process,message
+    self.update_attribute(:number_of_images, number_of_images)
+    [process, message]
   end
 end

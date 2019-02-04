@@ -4,14 +4,14 @@
       FreeREG (https://www.freereg.org.uk : viewed <%=@viewed_date%>)
       <%=record_type(@entry).downcase%>
       <%if record_type(@entry).downcase == "baptism"%>
-        <%=@entry['person_forename'].titleize%> <%=@entry['father_surname'].titleize%>
-        <%=@entry['baptism_date'].titleize%>
+        <%=entitle(@entry['person_forename'])%> <%=entitle(@entry['father_surname'])%>
+        <%=entitle(@entry['baptism_date'])%>
       <%elsif record_type(@entry).downcase == "burial"%>
-        <%=@entry['burial_person_forename'].titleize%> <%=@entry['burial_person_surname'].titleize%>
-        <%=@entry['burial_date'].titleize%>
+        <%=entitle(@entry['burial_person_forename'])%> <%=entitle(@entry['burial_person_surname'])%>
+        <%=entitle(@entry['burial_date'])%>
       <%elsif record_type(@entry).downcase == "marriage"%>
-        <%=@entry['groom_forename'].titleize%> <%=@entry['groom_surname'].titleize%> to <%=@entry['bride_forename'].titleize%> <%=@entry['bride_surname'].titleize%>
-        <%=@entry['marriage_date'].titleize%>
+        <%=entitle(@entry['groom_forename'])%> <%=entitle(@entry['groom_surname'])%> to <%=entitle(@entry['bride_forename'])%> <%=entitle(@entry['bride_surname'])%>
+        <%=entitle(@entry['marriage_date'])%>
       <%end%>
   </p>
 </section>
