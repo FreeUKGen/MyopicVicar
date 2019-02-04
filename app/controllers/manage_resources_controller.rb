@@ -1,9 +1,20 @@
+# Copyright 2012 Trustees of FreeBMD
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+#
 class ManageResourcesController < ApplicationController
   require "county"
   require 'userid_role'
-  #skip_before_filter :require_login, only: [:new, :pages]
-  skip_before_filter :require_login, only: [:logout]
-  skip_before_filter :refinery_authentication_devise_users
+  skip_before_action :require_login, only: [:logout]
 
   def create
     #@user = UseridDetail.where(:userid => params[:manage_resource][:userid] ).first
@@ -23,24 +34,24 @@ class ManageResourcesController < ApplicationController
     if @user.present?
       if @user.blank?
         logger.warn "FREEREG::USER userid not found in session #{session[:userid_detail_id]}"
-        flash[:notice] = "Your userid was not found in the system (if you believe this to be a mistake please contact your coordinator)"
+        flash[:notice] = 'Your userid was not found in the system (if you believe this to be a mistake please contact your coordinator)'
         continue = false
       end
     else
-      logger.warn "FREEREG::USER no userid cookie"
-      flash[:notice] = "We did not find your userid cookie. Do you have them disabled?"
+      logger.warn 'FREEREG::USER no userid cookie'
+      flash[:notice] = 'We did not find your userid cookie. Do you have them disabled?'
       continue = false
     end
     case
     when @user.blank?
       continue = false
-    when  !@user.active
-      flash[:notice] = "You are not active, if you believe this to be a mistake please contact your coordinator"
+    when !@user.active
+      flash[:notice] = 'You are not active, if you believe this to be a mistake please contact your coordinator'
       continue = false
-    when @user.person_role == "researcher"  || @user.person_role == 'pending'
+    when @user.person_role == "researcher" || @user.person_role == 'pending'
       flash[:notice] = "You are not currently permitted to access the system as your functions are still under development"
       continue = false
-    when !Rails.application.config.member_open  && !(@user.person_role == "system_administrator"  || @user.person_role == 'technical')
+    when !Rails.application.config.member_open && !(@user.person_role == "system_administrator" || @user.person_role == 'technical')
       #we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
       flash[:notice] = "The system is presently undergoing maintenance and is unavailable"
       continue = false
@@ -64,26 +75,20 @@ class ManageResourcesController < ApplicationController
   def new
     case
     when !is_ok_to_render_actions?
-      stop_processing and return
+      stop_processing
     when @user.need_to_confirm_email_address?
       redirect_to '/userid_details/confirm_email_address'
-      return
     when user_is_computer?
       go_to_computer_code
-      return
     else
       clean_session
       clean_session_for_syndicate
       clean_session_for_county
       clean_session_for_images
-      if @page = Refinery::Page.where(:slug => 'information-for-members').exists?
-        @page = Refinery::Page.where(:slug => 'information-for-members').first.parts.first.body.html_safe
-      else
-        @page = ""
-      end
+      Refinery::Page.where(slug: 'information-for-members').exists? ?
+        @page = Refinery::Page.where(slug: 'information-for-members').first.parts.first.body.html_safe : @page = ''
       @manage_resources = ManageResource.new
       render 'actions'
-      return
     end
   end
 
@@ -96,18 +101,16 @@ class ManageResourcesController < ApplicationController
     if UseridRole::OPTIONS_TRANSLATION.has_key?(params[:option])
       value = UseridRole::OPTIONS_TRANSLATION[params[:option]]
       redirect_to value
-      return
     else
       flash[:notice] = 'Invalid option'
-      redirect_to :back
-      return
+      redirect_back fallback_location: { action: 'new' }
     end
   end
 
   def set_session
     @user_id = @user._id
     @userid = @user.userid
-    @first_name = @user.person_forename unless @user.blank?
+    @first_name = @user.person_forename if @user.present?
     @manager = manager?(@user)
     @roles = UseridRole::OPTIONS.fetch(@user.person_role)
     session[:userid] = @userid
@@ -116,35 +119,27 @@ class ManageResourcesController < ApplicationController
     session[:manager] = manager?(@user)
     session[:role] = @user.person_role
     logger.warn "FREEREG::USER user #{@user.userid}"
-    logger.warn "FREEREG::USER  manager #{@manager}"
   end
 
   def show
     load(params[:id])
   end
 
-
   def stop_processing
-    redirect_to logout_manage_resources_path and return
+    redirect_to(logout_manage_resources_path) && return
   end
 
   def update
-
-
   end
 
   def user_is_computer?
-    @user.person_role == "computer" ? result = true : result = false
+    @user.person_role == 'computer' ? result = true : result = false
     result
   end
 
-
   private
 
-
   def go_to_computer_code
-    redirect_to new_transreg_user_path
-    return
+    redirect_to(new_transreg_user_path) && return
   end
-
 end

@@ -1,4 +1,17 @@
 class RegistersController < ApplicationController
+  # Copyright 2012 Trustees of FreeBMD
+  #
+  # Licensed under the Apache License, Version 2.0 (the "License");
+  # you may not use this file except in compliance with the License.
+  # You may obtain a copy of the License at
+  #
+  # http://www.apache.org/licenses/LICENSE-2.0
+  #
+  # Unless required by applicable law or agreed to in writing, software
+  # distributed under the License is distributed on an "AS IS" BASIS,
+  # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  # See the License for the specific language governing permissions and
+  # class RegistersController < ApplicationController
   rescue_from Mongoid::Errors::DeleteRestriction, with: :record_cannot_be_deleted
   rescue_from Mongoid::Errors::Validations, with: :record_validation_errors
   skip_before_action :require_login, only: [:create_image_server_return]
@@ -9,56 +22,47 @@ class RegistersController < ApplicationController
     @county = session[:county]
     @place_name = session[:place_name]
     @church = Church.find(session[:church_id])
+    redirect_back(fallback_location: root_path, notice: 'There was no church for the create') && return if @church.blank?
+
     @church.registers.each do |register|
-      if register.register_type == params[:register][:register_type]
-        flash[:notice] = "A register of that register #{register.register_type} type already exists"
-        redirect_to new_register_path and return
-      end #if
+      redirect_to(new_register_path, notice: "A register of that register #{register.register_type} type already exists") && return if register.register_type == params[:register][:register_type]
     end #do
     @register = Register.new(register_params)
     @register[:alternate_register_name] = @church_name.to_s + ' ' + params[:register][:register_type]
     @church.registers << @register
     @church.save
-    if @register.errors.any?
-      flash[:notice] = "The addition of the Register #{register.register_name} was unsuccessful"
-      render action: 'new'
-      return
-    else
-      flash[:notice] = 'The addition of the Register was successful'
-      @place_name = session[:place_name]
-      # redirect_to register_path
-      redirect_to register_path(@register)
-    end
+    redirect_back(fallback_location: new_register_path, notice: "The addition of the Register #{@register.register_name} was unsuccessful because #{@church.errors.full_messages}") && return if @church.errors.any?
+
+    flash[:notice] = 'The addition of the Register was successful'
+    @place_name = session[:place_name]
+    redirect_to register_path(@register)
   end
 
   def create_image_server
     load(params[:id])
-    redirect_to new_manage_resource_path, notice: 'There was no register, church or place identified for the create image server' and
-    return if @register.blank? || @church.blank? || @place.blank?
+    redirect_back(fallback_location: root_path, notice: 'There was a missing ownership link') && return if @register.blank? ||
+      @church.blank? || @place.blank?
 
     proceed, message = @register.can_create_image_source
-    if proceed
-      flash[:notice] = 'creating image server'
-      folder_name = @place_name.to_s + ' ' + @church_name.to_s + ' ' + @register.register_type.to_s
-      website = Register.create_folder_url(@chapman_code,folder_name,params[:id])
-      redirect_to website and return
-    else
-      flash[:notice] = message
-      redirect_to register_path(params[:id]) and return
-    end
+    redirect_to(register_path(params[:id]), notice: message) && return unless proceed
+
+    flash[:notice] = 'creating image server'
+    folder_name = @place_name.to_s + ' ' + @church_name.to_s + ' ' + @register.register_type.to_s
+    website = Register.create_folder_url(@chapman_code, folder_name, params[:id])
+    redirect_to(website) && return
   end
 
   def create_image_server_return
     register = Register.id(params[:register]).first
-    proceed, message = register.add_source(params[:folder_name]) if params[:success] == "Succeeded"
-    (params[:success] == "Succeeded" && proceed) ? flash[:notice] = "Creation succeeded: #{params[:message]}" : flash[:notice] = "Creation failed: #{message} #{params[:message]}"
-    redirect_to register_path(params[:register]) and return
+    proceed, message = register.add_source(params[:folder_name]) if params[:success] == 'Succeeded'
+    (params[:success] == 'Succeeded' && proceed) ? flash[:notice] = "Creation succeeded: #{params[:message]}" : flash[:notice] = "Creation failed: #{message} #{params[:message]}"
+    redirect_to(register_path(params[:register])) && return
   end
 
   def destroy
     load(params[:id])
-    redirect_to new_manage_resource_path, notice: 'There was no register, church or place identified for the destroy' and
-    return if @register.blank? || @church.blank? || @place.blank?
+    redirect_back(fallback_location: root_path, notice: 'There was a missing ownership link') && return if @register.blank? ||
+      @church.blank? || @place.blank?
 
     return_location = @register.church
     @register.destroy
@@ -68,8 +72,8 @@ class RegistersController < ApplicationController
 
   def edit
     load(params[:id])
-    redirect_to new_manage_resource_path, notice: 'There was no register, church or place identified for the edit' and
-    return if @register.blank? || @church.blank? || @place.blank?
+    redirect_back(fallback_location: root_path, notice: 'There was a missing ownership link') && return if @register.blank? ||
+      @church.blank? || @place.blank?
 
     get_user_info_from_userid
   end
@@ -100,21 +104,15 @@ class RegistersController < ApplicationController
 
   def merge
     load(params[:id])
-    unless @register.nil?
-      success = @register.merge_registers
-    else
-      success = Array.new
-      success[0] = false
-      success[1] = 'Non-existent register'
-    end
-    if success[0]
-      @register.calculate_register_numbers
-      flash[:notice] = 'The merge of the Register was successful'
-      redirect_to register_path(@register) and return
-    else
-      flash[:notice] = "Merge unsuccessful; #{success[1]}"
-      render action: 'show' and return
-    end
+    redirect_back(fallback_location: root_path, notice: 'There was a missing ownership link') && return if @register.blank? ||
+      @church.blank? || @place.blank?
+
+    proceed, message = @register.merge_registers
+    redirect_back(fallback_location: register_path(@register), notice: "Merge unsuccessful; #{message}") && return unless proceed
+
+    @register.calculate_register_numbers
+    flash[:notice] = 'The merge of the Register was successful'
+    redirect_to(register_path(@register))
   end
 
   def new
@@ -129,22 +127,23 @@ class RegistersController < ApplicationController
 
   def record_cannot_be_deleted
     flash[:notice] = 'The deletion of the register was unsuccessful because there were dependent documents; please delete them first'
-    redirect_to register_path(@register) and return
+    redirect_to(register_path(@register)) && return
   end
 
   def record_validation_errors
     flash[:notice] = 'The update of the children to Register with a register name change failed'
-    redirect_to register_path(@register) and return
+    redirect_to(register_path(@register)) && return
   end
 
   def relocate
     load(params[:id])
-    redirect_to new_manage_resource_path, notice: 'There was no register, church or place identified for the relocate' and
-    return if @register.blank? || @church.blank? || @place.blank?
+    redirect_back(fallback_location: root_path, notice: 'There was a missing ownership link') && return if @register.blank? ||
+      @church.blank? || @place.blank?
 
     @records = @register.records
     max_records = get_max_records(@user)
-    redirect_to(action: 'show', notice: 'There are too many records for an on-line relocation') and return if @records.present? && @records.to_i >= max_records
+    redirect_to(action: 'show', notice: 'There are too many records for an on-line relocation') && return if @records.present? && @records.to_i >= max_records
+
     get_user_info_from_userid
     @county =  session[:county]
     @role = session[:role]
@@ -153,22 +152,19 @@ class RegistersController < ApplicationController
 
   def rename
     load(params[:id])
-    redirect_to new_manage_resource_path, notice: 'There was no register, church or place identified for the rename' and
-    return if @register.blank? || @church.blank? || @place.blank?
+    redirect_back(fallback_location: root_path, notice: 'There was a missing ownership link') && return if @register.blank? ||
+      @church.blank? || @place.blank?
 
     @user = get_user
     @records = @register.records
     max_records = get_max_records(@user)
-    if @records.present? && @records.to_i >= max_records
-      flash[:notice] = 'There are too many records for an on-line rename'
-      redirect_to :action => 'show' and return
-    end
+    redirect_to(action: 'show', notice: 'There are too many records for an on-line relocation') && return if @records.present? && @records.to_i >= max_records
   end
 
   def show
     load(params[:id])
-    redirect_to new_manage_resource_path, notice: 'There was no register, church or place identified for the show' and
-    return if @register.blank? || @church.blank? || @place.blank?
+    redirect_back(fallback_location: root_path, notice: 'There was a missing ownership link') && return if @register.blank? ||
+      @church.blank? || @place.blank?
 
     @user = get_user
     @decade = @register.daterange
@@ -177,37 +173,35 @@ class RegistersController < ApplicationController
     @image_server = @register.image_server_exists?
   end
 
+  def show_image_server
+    load(params[:id])
+    redirect_back(fallback_location: root_path, notice: 'There was a missing ownership link') && return if @register.blank? ||
+      @church.blank? || @place.blank?
+    redirect_to(index_source_path(@register.id)) && return
+  end
+
   def update
     load(params[:id])
-    redirect_to new_manage_resource_path, notice: 'There was no register, church or place identified for the update' and
-    return if @register.blank? || @church.blank? || @place.blank?
+    redirect_back(fallback_location: root_path, notice: 'There was a missing ownership link') && return if @register.blank? ||
+      @church.blank? || @place.blank?
 
     case params[:commit]
     when 'Submit'
-      @register.update_attributes(register_params)
-      if @register.errors.any?
-        flash[:notice] = 'The update of the Register was unsuccessful'
-        render :action => 'edit'
-        return
-      end
+      proceed = @register.update_attributes(register_params)
+      redirect_back(fallback_location: edit_register_path(@register), notice: "The update was unsuccessful; #{@register.errors.full_messages}") && return unless proceed
+
       flash[:notice] = 'The update the Register was successful'
       redirect_to register_path(@register)
-      return
     when 'Rename'
       errors = @register.change_type(params[:register][:register_type])
-      if errors
-        flash[:notice] = 'The change of register type for the Register was unsuccessful'
-        render :action => 'rename'
-        return
-      end
+      redirect_back(fallback_location: rename_register_path(@register), notice: 'The change in register type was unsuccessful') && return if errors
+
       @register.calculate_register_numbers
       flash[:notice] = 'The change of register type for the Register was successful'
       redirect_to register_path(@register)
-      return
     else
       flash[:notice] = 'The change to the Register was unsuccessful'
       redirect_to register_path(@register)
-      @register.change_type(params[:register])
     end
   end
 

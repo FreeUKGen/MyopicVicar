@@ -17,4 +17,13 @@ module Freereg1CsvFilesHelper
       breadcrumb :my_own_files
     end
   end
+
+  def can_view_files?(role)
+    %w[county_coordinator syndicate_coordinator country_coordinator system_administrator technical
+       data_manager volunteer_coordinator documentation_coordinator].include?(role)
+  end
+
+  def sorted_by?(sort)
+    sort == '; sorted by descending number of errors and then file name'
+  end
 end

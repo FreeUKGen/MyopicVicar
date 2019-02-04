@@ -1,4 +1,4 @@
-class SearchStatisticsController < InheritedResources::Base
+class SearchStatisticsController < ApplicationController
   skip_before_action :require_login
 
   LAUNCH = [2015, 4, 14, 14]
@@ -8,7 +8,6 @@ class SearchStatisticsController < InheritedResources::Base
     if params[:hours]
       #       over-write with recent stuff
       calculate_last_48_hours(params[:hours])
-
     end
 
     #     calculate_last_48_hours
@@ -34,7 +33,6 @@ class SearchStatisticsController < InheritedResources::Base
         end
       end
     end
-    
     # convert the percentages
     absolute_fields = [:n_searches, :n_time_gt_1s, :n_time_gt_10s, :n_time_gt_60s]
     fields.each do |field|
@@ -44,7 +42,6 @@ class SearchStatisticsController < InheritedResources::Base
         end
       end
     end
-
   end
 
   def calculate_last_48_hours(hours)
@@ -77,5 +74,4 @@ class SearchStatisticsController < InheritedResources::Base
     seconds_from_launch = Time.now - Time.new(LAUNCH[0], LAUNCH[1], LAUNCH[2], LAUNCH[3])
     (seconds_from_launch / 3600).to_i
   end
-
 end

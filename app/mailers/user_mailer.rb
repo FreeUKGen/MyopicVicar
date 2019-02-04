@@ -16,21 +16,21 @@ class UserMailer < ActionMailer::Base
   end
 
   def add_emails(ccs)
-    ccs_emails = Array.new
+    ccs_emails = []
     ccs.each do |cc|
       ccs_emails << UseridDetail.create_friendly_from_email(cc)
     end
     ccs_emails
   end
 
-  def batch_processing_failure(message,user,batch)
+  def batch_processing_failure(message, user, batch)
     @message = File.read(message)
     @userid = UseridDetail.where(userid: user).first
     if @userid.present?
-      emails = Array.new
-      if @userid.present? &&  @userid.active && @userid.email_address_valid && @userid.registration_completed(@userid) && !@userid.no_processing_messages
+      emails = []
+      if @userid.present? && @userid.active && @userid.email_address_valid && @userid.registration_completed(@userid) && !@userid.no_processing_messages
         user_email_with_name = @userid.email_address
-        emails <<  user_email_with_name
+        emails << user_email_with_name
       end
       syndicate_coordinator = nil
       syndicate_coordinator = Syndicate.where(syndicate_code: @userid.syndicate).first
@@ -64,14 +64,14 @@ class UserMailer < ActionMailer::Base
     end
   end
 
-  def batch_processing_success(file,user,batch)
+  def batch_processing_success(file, user, batch)
     @message = File.read(file)
     @userid = UseridDetail.where(userid: user).first
     if @userid.present?
-      emails = Array.new
-      if @userid.present? &&  @userid.active && @userid.email_address_valid && @userid.registration_completed(@userid) && !@userid.no_processing_messages
+      emails = []
+      if @userid.present? && @userid.active && @userid.email_address_valid && @userid.registration_completed(@userid) && !@userid.no_processing_messages
         user_email_with_name =  @userid.email_address
-        emails <<  user_email_with_name
+        emails << user_email_with_name
       end
       syndicate_coordinator = nil
       syndicate_coordinator = Syndicate.where(syndicate_code: @userid.syndicate).first
@@ -79,7 +79,7 @@ class UserMailer < ActionMailer::Base
         syndicate_coordinator = syndicate_coordinator.syndicate_coordinator
         sc = UseridDetail.where(userid: syndicate_coordinator, email_address_valid: true).first
         if sc.present?
-          sc_email_with_name =  sc.email_address
+          sc_email_with_name = sc.email_address
           emails << sc_email_with_name unless user_email_with_name == sc_email_with_name
         end
       end
@@ -89,7 +89,7 @@ class UserMailer < ActionMailer::Base
         county_coordinator = county.county_coordinator
         cc = UseridDetail.where(userid: county_coordinator, email_address_valid: true).first
         if cc.present?
-          cc_email_with_name =  cc.email_address
+          cc_email_with_name = cc.email_address
           emails << cc_email_with_name unless cc_email_with_name == sc_email_with_name
         end
       end
@@ -104,12 +104,12 @@ class UserMailer < ActionMailer::Base
     end
   end
 
-  def contact_action_request(contact,send_to,copies_to)
+  def contact_action_request(contact, send_to, copies_to)
     @contact = contact
     @send_to = UseridDetail.userid(send_to).first
-    @cc_email_addresses = Array.new
-    @cc_names = Array.new
-    unless copies_to.blank?
+    @cc_email_addresses = []
+    @cc_names = []
+    if copies_to.present?
       copies_to.each do |copy_userid|
         copy = UseridDetail.userid(copy_userid).first
         person_name = (copy.person_forename + ' ' + copy.person_surname + ' ' + copy.email_address) unless @cc_email_addresses.include?(copy.email_address)
@@ -118,27 +118,27 @@ class UserMailer < ActionMailer::Base
       end
     end
     get_attachment(@contact)
-    mail(to: "#{@send_to.email_address}",cc: @cc_email_addresses, subject: "This is a contact action request for reference #{@contact.identifier}")
+    mail(to: "#{@send_to.email_address}", cc: @cc_email_addresses, subject: "This is a contact action request for reference #{@contact.identifier}")
   end
 
-  def coordinator_contact_reply(contact,ccs_userids,message,sender_userid)
+  def coordinator_contact_reply(contact, ccs_userids, message, sender_userid)
     @contact = contact
     @message = message
     @cc_email_addresses = get_email_address_array_from_array_of_userids(ccs_userids)
     sender_email_address = get_email_address_from_userid(sender_userid)
     @reply_messages = Message.where(source_contact_id: @message.source_contact_id).all
-    get_attachment(@contact)
-    mail(from: sender_email_address, to:  "#{@contact.name} <#{@contact.email_address}>", bcc: @cc_email_addresses, subject: @message.subject)
+    get_message_attachment
+    mail(from: sender_email_address, to: "#{@contact.name} <#{@contact.email_address}>", bcc: @cc_email_addresses, subject: @message.subject)
   end
 
-  def coordinator_feedback_reply(feedback,ccs_userids,message,sender_userid)
+  def coordinator_feedback_reply(feedback, ccs_userids, message, sender_userid)
     @feedback = feedback
     @message = message
     @cc_email_addresses = get_email_address_array_from_array_of_userids(ccs_userids)
     sender_email_address = get_email_address_from_userid(sender_userid)
     @reply_messages = Message.where(source_feedback_id: @message.source_feedback_id).all
-    get_attachment(@feedback)
-    mail(from: sender_email_address, to:  "#{@feedback.name} <#{@feedback.email_address}>", bcc: @cc_email_addresses, subject: @message.subject)
+    get_message_attachment
+    mail(from: sender_email_address, to: "#{@feedback.name} <#{@feedback.email_address}>", bcc: @cc_email_addresses, subject: @message.subject)
   end
 
   def message_reply(reply, to_userid, copy_to_userid, original_message, sender_userid)
@@ -151,12 +151,12 @@ class UserMailer < ActionMailer::Base
     mail(from: sender_email, to: to_email, cc: copy_to_email, subject: "#{@sending.person_forename} #{@sending.person_surname} of FreeREG sent a message #{@reply.subject} in response to reference #{@original_message.identifier}")
   end
 
-  def feedback_action_request(contact,send_to,copies_to)
+  def feedback_action_request(contact, send_to, copies_to)
     @contact = contact
     @send_to = UseridDetail.userid(send_to).first
-    @cc_email_addresses = Array.new
-    @cc_names = Array.new
-    unless copies_to.blank?
+    @cc_email_addresses = []
+    @cc_names = []
+    if copies_to.present?
       copies_to.each do |copy_userid|
         copy = UseridDetail.userid(copy_userid).first
         person_name = (copy.person_forename + ' ' + copy.person_surname + ' ' + copy.email_address) unless @cc_email_addresses.include?(copy.email_address)
@@ -165,7 +165,7 @@ class UserMailer < ActionMailer::Base
       end
     end
     get_attachment(@contact)
-    mail(to: "#{@send_to.email_address}",cc: @cc_email_addresses, subject: "This is a feedback action request for reference #{@contact.identifier}")
+    mail(to: "#{@send_to.email_address}", cc: @cc_email_addresses, subject: "This is a feedback action request for reference #{@contact.identifier}")
   end
 
   def get_attachment(contact)

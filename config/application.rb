@@ -66,7 +66,7 @@ module MyopicVicar
     # This will create an empty whitelist of attributes available for mass-assignment for all models
     # in your app. As such, your models will need to explicitly whitelist or blacklist accessible
     # parameters by using an attr_accessible or attr_protected declaration.
-    config.active_record.whitelist_attributes = true
+    #config.active_record.whitelist_attributes = true Remove as no longer relevant in rails 4.2
     config.api_only = false
 
     config.generators do |g|

@@ -11,9 +11,9 @@ class ImageServerImage
   field :transcriber, type: Array
   field :reviewer, type: Array
   field :difficulty, type: String
-#  validates_inclusion_of :difficulty, :in => Difficulty::ALL_DIFFICULTIES+[nil]
+  #  validates_inclusion_of :difficulty, :in => Difficulty::ALL_DIFFICULTIES+[nil]
   field :status, type: String, default: nil
-#  validates_inclusion_of :status, :in => Status::ALL_STATUSES
+  #  validates_inclusion_of :status, :in => Status::ALL_STATUSES
   field :notes, type: String
 
   field :order, type: Integer
@@ -21,12 +21,13 @@ class ImageServerImage
   field :consistency, type: Mongoid::Boolean, default: 'true'
 
   belongs_to :image_server_group, index: true
-  belongs_to :assignment, index: true # optional -- consider renaming as "current_assignment" or storing as an array of image_ids on an assignment record
+  belongs_to :assignment, index: true, optional: true
+  # -- consider renaming as "current_assignment" or storing as an array of image_ids on an assignment record
   #has_one :page_image # kirk prefers has_many here and may be right, but the only example I can think of
   # where it makes sense to have multiple images per page(of a source) is in the case
   # of derivatives
   #embeds_one :page_image
-  
+
   index({image_server_group_id:1,status:1},{name: "image_server_group_id_status"})
   index({image_server_group_id:1,difficulty:1},{name: "image_server_group_id_difficulty"})
   index({image_server_group_id:1,transcriber:1},{name: "image_server_group_id_transcriber"})
@@ -36,10 +37,10 @@ class ImageServerImage
   class << self
 
 
-  def create_url(method,id,chapman_code,folder_name,image_file_name,userid)
-   URI.escape(Rails.application.config.image_server + 'manage_freereg_images/' + method + '?' + 'chapman_code=' + chapman_code + '&folder_name=' + folder_name + '&image_file_name=' + image_file_name + '&userid=' + userid + '&id=' + id  + '&image_server_access=' + Rails.application.config.image_server_access)
-  end
-  
+    def create_url(method,id,chapman_code,folder_name,image_file_name,userid)
+      URI.escape(Rails.application.config.image_server + 'manage_freereg_images/' + method + '?' + 'chapman_code=' + chapman_code + '&folder_name=' + folder_name + '&image_file_name=' + image_file_name + '&userid=' + userid + '&id=' + id  + '&image_server_access=' + Rails.application.config.image_server_access)
+    end
+
     def find_by_image_server_group_ids(id)
       where(:image_server_group_id => {'$in'=>id.keys})
     end
@@ -119,13 +120,13 @@ class ImageServerImage
           @image_server_group = ImageServerGroup.id(image_server_group_id).first
           return true if user.syndicate == @image_server_group.syndicate_code
         when 'county_coordinator'
-          case manage_user_origin 
-            when 'manage county'
-              county_coordinator = County.where(:chapman_code=>chapman_code).first.county_coordinator
-              return true if user.userid == county_coordinator
-            when 'manage syndicate'
-              @image_server_group = ImageServerGroup.id(image_server_group_id).first
-              return true if user.syndicate == @image_server_group.syndicate_code
+          case manage_user_origin
+          when 'manage county'
+            county_coordinator = County.where(:chapman_code=>chapman_code).first.county_coordinator
+            return true if user.userid == county_coordinator
+          when 'manage syndicate'
+            @image_server_group = ImageServerGroup.id(image_server_group_id).first
+            return true if user.syndicate == @image_server_group.syndicate_code
           end
         when 'system_administrator'
           return true
@@ -151,25 +152,25 @@ class ImageServerImage
       ImageServerImage.where(:image_server_group_id=>image_server_group.first.id).update_all(:status=>status)
       refresh_src_dest_group_summary(image_server_group)
     end
-  
+
   end # end of class methods
-  
+
   def deletion_permitted?
     permitted = false
     permitted = true if self.status.nil? || self.status == 'u'
     permitted
   end
-  
+
   def file_location
-     group = self.image_server_group
-     source = group.source 
-     register = source.register 
-     church = register.church 
-     place = church.place 
-     place.nil? ? process = false: process = true
-     return process,place.chapman_code, source.folder_name, self.image_file_name
+    group = self.image_server_group
+    source = group.source
+    register = source.register
+    church = register.church
+    place = church.place
+    place.nil? ? process = false: process = true
+    return process,place.chapman_code, source.folder_name, self.image_file_name
   end
-  
+
   def location
     group = self.image_server_group
     source = group.source

@@ -262,7 +262,7 @@ module FreeregOptionsConstants
 
   MARRIAGE_BY_LICENCE_OPTIONS = ['y', 'yes', 'licence', 'by licence', 'by_licence', 'marriage_by_licence','true']
 
-  MAXIMUM_NUMBER_OF_RESULTS = 250
+  MAXIMUM_NUMBER_OF_RESULTS = 500
 
   MAXIMUM_NUMBER_OF_SCANS = 500
 

@@ -74,17 +74,27 @@ class SearchQuery
   attr_accessor :action
 
 
- index({ c_at: 1},{name: "c_at_1",background: true })
- index({day: -1,runtime: -1},{name: "day__1_runtime__1",background: true })
- index({day: -1,result_count: -1},{name: "day__1_result_count__1",background: true })
+  index({ c_at: 1},{name: "c_at_1",background: true })
+  index({day: -1,runtime: -1},{name: "day__1_runtime__1",background: true })
+  index({day: -1,result_count: -1},{name: "day__1_result_count__1",background: true })
 
   class << self
     def search_id(name)
-      where(:id => name)
+      where(id: name)
     end
 
-
-
+    def invalid_integer(param)
+      do_not_proceed = false
+      if param[:start_year].present? && !param[:start_year].to_i.bson_int32?
+        do_not_proceed = true
+        message = 'The start year is an invalid integer'
+      end
+      if param[:end_year].present? && !param[:end_year].to_i.bson_int32?
+        do_not_proceed = true
+        message = 'The end year is an invalid integer'
+      end
+      [do_not_proceed, message]
+    end
   end
 
   ############################################################################# instance methods #####################################################
@@ -92,7 +102,7 @@ class SearchQuery
   def adequate_first_name_criteria?
     !first_name.blank? && chapman_codes.length > 0 && place_ids.present?
   end
-  
+
   def all_counties_have_both_surname_and_firstname
     if (chapman_codes.length == 0) && (first_name.blank? || last_name.blank?)
       errors.add(:first_name, "A forename and surname must be present to perform an all counties search.")
@@ -480,21 +490,21 @@ class SearchQuery
   def search
     @search_parameters = search_params
     @search_index = SearchRecord.index_hint(@search_parameters)
-   #@search_index = "place_rt_sd_ssd" if query_contains_wildcard?
+    #@search_index = "place_rt_sd_ssd" if query_contains_wildcard?
     logger.warn("FREEREG:SEARCH_HINT: #{@search_index}")
     self.update_attribute(:search_index, @search_index)
-   # logger.warn @search_parameters.inspect
+    # logger.warn @search_parameters.inspect
     records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     self.persist_results(records)
     self.persist_additional_results(secondary_date_results) if (self.result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     search_ucf  if can_query_ucf? && self.result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
     records
   end
-  
+
   def secondary_date_results
     @secondary_search_params = @search_parameters
     @secondary_search_params[:secondary_search_date] = @secondary_search_params[:search_date]
-    @secondary_search_params.delete_if {|key, value| key == :search_date } 
+    @secondary_search_params.delete_if {|key, value| key == :search_date }
     #@secondary_search_params[:record_type] = { '$in' => [RecordType::BAPTISM] }
     @search_index = SearchRecord.index_hint(@search_parameters)
     logger.warn("FREEREG:SSD_SEARCH_HINT: #{@search_index}")
@@ -606,7 +616,7 @@ class SearchQuery
 
     trimmed = name_string.sub(/\**$/, '') # remove trailing * for performance
     scrubbed = trimmed.gsub('?', 'QUESTION').gsub('*', 'STAR')
-    cleaned = Regexp.escape(scrubbed)
+    cleaned = ::Regexp.escape(scrubbed)
     regex_string = cleaned.gsub('QUESTION', '\w').gsub('STAR', '.*') #replace glob-style wildcards with regex wildcards
     begins_with_wildcard(name_string) ? /#{regex_string}/ : /^#{regex_string}/
   end

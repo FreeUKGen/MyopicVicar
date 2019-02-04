@@ -1,9 +1,9 @@
 module Refinery
   module CountyPages
     class CountyPagesController < ::ApplicationController
-      skip_before_filter :require_login
-      before_filter :find_all_county_pages
-      before_filter :find_page
+      skip_before_action :require_login
+      before_action :find_all_county_pages
+      before_action :find_page
 
       def index
         # you can use meta fields from your model instead (e.g. browser_title)

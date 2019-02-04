@@ -2,6 +2,8 @@ crumb :root do
   link 'Your Actions:', main_app.new_manage_resource_path
 end
 
+
+
 # userid details .................................................
 
 crumb :my_own_userid_detail do |userid_detail|
@@ -165,18 +167,28 @@ crumb :correct_error_record do |entry, file|
   parent :error_records, file
 end
 
+# manage county
+crumb :county_selection do
+  link 'Select County'
+  parent :root
+end
 
-#manage county
 crumb :county_options do |county|
   link "County Options(#{county})", select_action_manage_counties_path(:county => "#{county}")
   parent :root
 end
+
 crumb :place_range_options do |county, active|
   if session[:active_place]
     link 'Range Selection', selection_active_manage_counties_path(:option =>'Work with Active Places')
   else
     link 'Range Selection', selection_all_manage_counties_path(:option =>'Work with All Places')
   end
+  parent :county_options, county
+end
+
+crumb :manage_county_selection do |county|
+  link 'Selection'
   parent :county_options, county
 end
 
@@ -256,7 +268,7 @@ end
 crumb :show_register do |county, place, church, register|
   if register.present?
     link 'Register Information', register_path(register)
-    parent :show_church, county, place,church
+    parent :show_church, county, place, church
   else
     parent :county_options, session[:county] if session[:county].present?
     parent :syndicate_options, session[:syndicate] if session[:syndicate].present?
@@ -275,10 +287,20 @@ crumb :rename_register do |county, place, church, register|
   parent :show_register, county, place, church, register
 end
 
-#manage syndicate
+# manage syndicate
+crumb :syndicate_selection do
+  link 'Select Syndicate'
+  parent :root
+end
+
 crumb :syndicate_options do |syndicate|
   link "Syndicate Options(#{syndicate})", select_action_manage_syndicates_path("?syndicate=#{syndicate}")
   parent :root
+end
+
+crumb :manage_syndicate_selection do |syndicate|
+  link 'Selection'
+  parent :syndicate_options, syndicate
 end
 
 crumb :userid_details_listing do |syndicate, user|
@@ -514,8 +536,9 @@ crumb :edit_contact do |contact|
     parent :contacts
   end
 end
-crumb :contact_for_selection do ||
-    link 'Form for Selection'
+
+crumb :contact_form_for_selection do
+  link 'Form for Selection'
   if session[:archived_contacts]
     parent :archived_contacts
   else
@@ -588,9 +611,17 @@ end
 crumb :create_reply_communication do |message, id|
   link 'Create Reply for Communication', reply_messages_path(message.id, source: 'reply')
   if params[:source] == 'reply'
-    parent :show_reply_communication, Message.find(id), source: params[:source]
+    if id.blank?
+      parent :communications, source: params[:source]
+    else
+      parent :show_reply_communication, Message.find(id), source: params[:source]
+    end
   elsif params[:source] == 'original'
-    parent :show_communication, Message.find(session[:original_message_id]), source: params[:source]
+    if session[:original_message_id].blank?
+      parent :communications
+    else
+      parent :show_communication, Message.find(session[:original_message_id]), source: params[:source]
+    end
   else
     parent :communications, source: params[:source]
   end
@@ -602,7 +633,11 @@ crumb :list_reply_communications do |message|
     parent :show_communication, message, source: params[:source]
   elsif params[:source] == 'reply'
     params[:source] = 'original'
-    parent :show_communication, Message.find(session[:original_message_id]), source: params[:source]
+    if session[:original_message_id].blank?
+      parent :communications
+    else
+      parent :show_communication, Message.find(session[:original_message_id]), source: params[:source]
+    end
   else
     oarent :communications
   end
@@ -658,9 +693,17 @@ end
 crumb :create_message_reply do |message, id|
   link 'Create Reply', reply_messages_path(message.id, source: 'reply')
   if params[:source] == 'reply'
-    parent :show_reply_message, Message.find(id), source: params[:source]
+    if id.blank?
+      parent :messages, source: params[:source]
+    else
+      parent :show_reply_message, Message.find(id), source: params[:source]
+    end
   elsif params[:source] == 'original'
-    parent :show_message, Message.find(session[:original_message_id]), source: params[:source]
+    if session[:original_message_id].blank?
+      parent :messages, source: params[:source]
+    else
+      parent :show_message, Message.find(session[:original_message_id]), source: params[:source]
+    end
   else
     parent :messages, source: params[:source]
   end
@@ -670,7 +713,11 @@ crumb :reply_messages_list do |message|
   link 'Reply Messages', reply_messages_path(message, source: params[:source])
   if session[:message_base] == 'userid_messages'
     if params[:source] == 'original'
-      parent :show_userid_message, Message.find(session[:original_message_id]), source: params[:source]
+      if session[:original_message_id].blank?
+        parent :userid_messages
+      else
+        parent :show_userid_message, Message.find(session[:original_message_id]), source: params[:source]
+      end
     else
       parent :userid_messages
     end
@@ -678,7 +725,11 @@ crumb :reply_messages_list do |message|
     parent :show_message, message, source: params[:source]
   elsif params[:source] == 'reply'
     params[:source] = 'original'
-    parent :show_message, Message.find(session[:original_message_id]), source: params[:source]
+    if session[:original_message_id].blank?
+      parent :messages
+    else
+      parent :show_message, Message.find(session[:original_message_id]), source: params[:source]
+    end
   else
     parent :messages
   end
@@ -755,9 +806,17 @@ end
 crumb :create_reply_syndicate_message do |message, id|
   link 'Create Reply for Syndicate Message', reply_messages_path(message.id, source: 'reply')
   if params[:source] == 'reply'
-    parent :show_syndicate_reply_message,  Message.find(id), source: params[:source]
+    if id.blank?
+      parent :syndicate_messages, source: params[:source]
+    else
+      parent :show_syndicate_reply_message, Message.find(id), source: params[:source]
+    end
   elsif params[:source] == 'original'
-    parent :show_syndicate_message, Message.find(session[:original_message_id]), source: params[:source]
+    if session[:original_message_id].blank?
+      parent :syndicate_messages, source: params[:source]
+    else
+      parent :show_syndicate_message, Message.find(session[:original_message_id]), source: params[:source]
+    end
   else
     parent :syndicate_messages, source: params[:source]
   end
@@ -769,9 +828,13 @@ crumb :list_replies_to_syndicate_message do |message|
     parent :show_syndicate_message, message, source: params[:source]
   elsif params[:source] == 'reply'
     params[:source] = 'original'
-    parent :show_syndicate_message, Message.find(session[:original_message_id]), source: params[:source]
+    if session[:original_message_id].blank?
+      parent :syndicate_messages, source: params[:source]
+    else
+      parent :show_syndicate_message, Message.find(session[:original_message_id]), source: params[:source]
+    end
   else
-    parent :syndicate_messages
+    parent :syndicate_messages, source: params[:source]
   end
 end
 
@@ -793,9 +856,17 @@ end
 crumb :create_reply_userid_message do |message, id|
   link 'Create Reply for a Message', reply_messages_path(message.id, source: 'reply')
   if params[:source] == 'reply'
-    parent :show_userid_reply_message, Message.find(id), source: params[:source]
+    if id.blank?
+      parent :userid_messages
+    else
+      parent :show_userid_reply_message, Message.find(id), source: params[:source]
+    end
   elsif params[:source] == 'original'
-    parent :show_userid_message, Message.find(session[:original_message_id]), source: params[:source]
+    if session[:original_message_id].blank?
+      parent :userid_messages
+    else
+      parent :show_userid_message, Message.find(session[:original_message_id]), source: params[:source]
+    end
   else
     parent :userid_messages, source: params[:source]
   end
@@ -807,7 +878,11 @@ crumb :userid_reply_messages do |message|
     parent :show_userid_message, message, source: params[:source]
   elsif params[:source] == 'reply'
     params[:source] = 'original'
-    parent :show_userid_message, Message.find(session[:original_message_id]), source: params[:source]
+    if session[:original_message_id].blank?
+      parent :userid_messages
+    else
+      parent :show_userid_message, Message.find(session[:original_message_id]), source: params[:source]
+    end
   else
     parent :userid_messages
   end
@@ -835,7 +910,7 @@ crumb :create_denomination do |denomination|
   parent :denominations
 end
 crumb :select_attic_files do
-  link 'Select Userid', select_attic_files_path
+  link 'Select Userid', select_userid_attic_files_path
   parent :root
 end
 crumb :show_attic_files do |user|
@@ -1057,24 +1132,16 @@ crumb :county_manage_images_selection do |county, browse_source|
   parent :county_manage_images, session[:county], browse_source
 end
 
-
-
-
-
 # from 'register' => Sources        (is taken out right now)
-crumb :image_sources do |register|
+crumb :image_sources do |county, place, church, register|
   link 'Sources', index_source_path(register)
-  parent :county_manage_images
+  parent :show_register, county, place, church, register
 end
 
-crumb :new_image_source do |register,source|
+crumb :new_image_source do |register, source|
   link 'Create New Source'
   parent :image_sources, register
 end
-
-
-
-
 
 # breadcrumb for image_source
 crumb :show_image_source do |register,source|
