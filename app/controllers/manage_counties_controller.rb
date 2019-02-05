@@ -216,7 +216,7 @@ class ManageCountiesController < ApplicationController
 
   def place_range
     session[:character] = params[:params] if params[:params].present?
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'You did not make a range selection') && return if params[:params].blank? || session[:character].blank?
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'You did not make a range selection') && return if session[:character].blank?
 
     @character = session[:character]
     @county = session[:county]
