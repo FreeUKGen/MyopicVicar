@@ -518,6 +518,8 @@ module MessagesHelper
         breadcrumb :show_reply_contact_message, @message
       elsif @message.nature == 'feedback' && params[:source] == 'reply'
         breadcrumb :show_reply_feedback_message, @message
+      elsif @message.nature == 'general' && params[:source] == 'reply'
+        breadcrumb :show_reply_message, @message
       elsif params[:source] == 'reply'
         breadcrumb :show_userid_reply_message, @message
       else
