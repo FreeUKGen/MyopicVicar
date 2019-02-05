@@ -610,17 +610,18 @@ table.center50 {
 .cookieConsent {
   display: none;
   position: fixed;
-  top: 0px;
+  bottom: 0px;
   left: 0px;
   width: 100%;
   height: auto;
-  background: rgb(247, 162, 28);
+  background: rgb(107, 102, 95);
   opacity: 0.99;
   color: rgb(255, 255, 255);
   font-family: helvetica;
   font-size: 0.8125rem;
   text-align: center;
   z-index: 1000;
+  padding: 25px 0px 25px 0px;
 }
 div#cookieText {
   position:relative;
@@ -629,7 +630,7 @@ div#cookieText {
   padding:10px;
   margin-left:auto;
   margin-right:auto;
-  color: rgb(40, 40, 40);
+  color: rgb(255, 249, 249);
 }
 div#cookieAcceptButton {
   margin-top:5px;
