@@ -17,7 +17,9 @@ class SearchQueriesController < ApplicationController
   before_action :check_for_mobile, only: :show
   rescue_from Mongo::Error::OperationFailure, with: :search_taking_too_long
   rescue_from Mongoid::Errors::DocumentNotFound, with: :missing_document
-  #rescue_from ActionView::Template::Error, :with => :missing_template
+  rescue_from ActionController::UnknownFormat, with: :github_camo
+  rescue_from ActionView::Template::Error, with: :missing_template
+  rescue_from Timeout::Error, with: :search_taking_too_long
   RECORDS_PER_PAGE = 100
 
   def about
@@ -78,6 +80,11 @@ class SearchQueriesController < ApplicationController
 
   def edit
     @search_query = SearchQuery.find(params[:id])
+  end
+  def github_camo
+    logger.warn("FREEREG:SEARCH: Search encountered an UnknownFormat #{params}")
+    flash[:notice] = 'We encountered an UnknownFormat'
+    redirect_to new_search_query_path
   end
 
   def go_back
