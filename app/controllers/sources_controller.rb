@@ -88,7 +88,6 @@ class SourcesController < ApplicationController
     @source = Source.id(params[:id]).first
     redirect_back(fallback_location: root_path, notice: 'Attempting to edit an incomplete source') && return if @register.blank? ||
       @church.blank? || @place.blank? || @source.blank?
-
   end
 
   def flush
@@ -137,6 +136,34 @@ class SourcesController < ApplicationController
     redirect_back(fallback_location: root_path, notice: 'Source can be initialized only when all image groups status is unset') && return unless allow_initialize
   end
 
+  def load(source_id)
+    @source = Source.id(source_id).first
+    return if @source.blank?
+
+    session[:source_id] = @source.id
+    @register = @source.register
+    return if @register.blank?
+
+    @register_type = RegisterType.display_name(@register.register_type)
+    session[:register_id] = @register.id
+    session[:register_name] = @register_type
+    @church = @register.church
+    return if @church.blank?
+
+    @church_name = @church.church_name
+    session[:church_name] = @church_name
+    session[:church_id] = @church.id
+    @place = @church.place
+    return if @place.blank?
+
+    session[:place_id] = @place.id
+    @place_name = @place.place_name
+    session[:place_name] = @place_name
+    @county = @place.county
+    session[:county] = @county
+    @user = get_user
+  end
+
   def new
     display_info
     redirect_back(fallback_location: root_path, notice: 'Attempting to show an incomplete source') && return if @register.blank? ||
@@ -150,7 +177,7 @@ class SourcesController < ApplicationController
   end
 
   def show
-    display_info
+    load(params[:id])
     redirect_back(fallback_location: root_path, notice: 'Attempting to show an incomplete source') && return if @register.blank? ||
       @church.blank? || @place.blank? || @source.blank?
 
