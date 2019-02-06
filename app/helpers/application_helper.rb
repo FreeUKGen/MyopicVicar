@@ -141,9 +141,10 @@ module ApplicationHelper
   def fullwidth_adsense
     banner = <<-HTML
     <style>
-        .adSenseBanner { width: 320px; height: 100px; text-align: center; margin: auto;}
-        @media(min-width: 500px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
-        @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
+        .adSenseBanner { width: 768px; height: 90px; text-align: center; margin: auto;}
+        @media(max-width: 950px) { .adSenseBanner { width: 468px; height: 60px; text-align: center; margin: auto; } }
+        @media(max-width: 810px) { .adSenseBanner { display: none; } }
+
     </style>
       <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
       <script>
@@ -184,11 +185,11 @@ module ApplicationHelper
       window.onload = detectAdblock;
       </script>
     HTML
-    if Rails.env.development?
-    banner = <<-HTML
-      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
-      HTML
-    end
+    # if Rails.env.development?
+    # banner = <<-HTML
+    #   <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
+    #   HTML
+    # end
     banner.html_safe
   end
 
