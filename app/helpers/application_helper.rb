@@ -184,11 +184,11 @@ module ApplicationHelper
       window.onload = detectAdblock;
       </script>
     HTML
-    # if Rails.env.development?
-    # banner = <<-HTML
-    #   <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
-    #   HTML
-    # end
+    if Rails.env.development?
+    banner = <<-HTML
+      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
+      HTML
+    end
     banner.html_safe
   end
 
