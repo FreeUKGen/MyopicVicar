@@ -620,7 +620,7 @@ table.center50 {
   left: 0px;
   width: 100%;
   height: auto;
-  background: rgb(107, 102, 95);
+  background: #18A098;
   opacity: 0.99;
   color: rgb(255, 255, 255);
   font-family: helvetica;
@@ -642,6 +642,11 @@ div#cookieText {
 div#cookieAcceptButton {
   margin-top:5px;
 }
+
+.accept_cookies {
+  background: #033033 !important;
+}
+
 .cookie_policy_link {
   color: #000080;
 }
