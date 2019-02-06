@@ -147,7 +147,7 @@ module ApplicationHelper
 
   def banner_header
     banner = <<-HTML
-    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <script>
         (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
       </script>
@@ -159,15 +159,6 @@ module ApplicationHelper
        data-ad-format="auto">
     </ins>
     <script>
-      window.onload = setTimeout(function delayAdblockMessage(){
-        var bannerHeader = document.querySelector('.bnner-horz')
-        bannerHeader.classList.add("adblck-background");
-        var bannerHeaderSecondary = document.querySelectorAll('.bnner-horz-secondary'), i;
-        for (i = 0; i < bannerHeaderSecondary.length; i++) {
-          bannerHeaderSecondary[i].classList.add("adblck-background");
-        }
-    }, 2000)
-      
       window.update_personalized_header_adverts = function (preference) {
           if(preference == 'accept') {
             (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
@@ -178,27 +169,40 @@ module ApplicationHelper
       $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})});
       (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
     </script>
+    <script>
+    function detectAdblock(){
+      console.log(window.canRunAds);
+      if( window.canRunAds === undefined){
+        console.log("Adblock detected")
+        var donateBanners = document.getElementsByClassName("donations");
+        for (i = 0; i < donateBanners.length; i++) {
+            donateBanners[i].style.display = "block";
+            console.log("Banner displayed! " + i)
+        }
+      }
+      else {
+            console.log(window.canRunAds);
+        console.log("Adblock not detected");
+      }
+    }
+    window.onload = detectAdblock;
+    </script>
     HTML
     if Rails.env.development?
-     banner = <<-HTML
-      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
-      HTML
+      banner = <<-HTML
+        <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
+        HTML
     end
     banner.html_safe
   end
 
   def google_advert
-    @data_ad_slot = ""
-    case
-    when current_page?(freecen_coverage_path)
-      @data_ad_slot = "9056426667"
-    when current_page?('/') || ('/search_queries') || current_page?(new_search_query_path) || current_page?(new_search_query_path(:search_id => @search_query))
-      @data_ad_slot = "2003577939"
-    when current_page?(search_query_path(@search_query))
-      @data_ad_slot = "2003577939"
-    when current_page?(:action => 'show', :controller => 'search_records')
-      @data_ad_slot = "2003577939"
-    end
+    @data_ad_slot = ''
+    @data_ad_slot = if current_page?(freecen_coverage_path)
+                      '9056426667'
+                    else
+                      '2003577939'
+                    end
     banner = <<-HTML
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <script>
@@ -223,9 +227,9 @@ module ApplicationHelper
     </script>
     HTML
     if Rails.env.development?
-     banner = <<-HTML
-      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
-      HTML
+      banner = <<-HTML
+        <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
+        HTML
     end
     banner.html_safe
   end
@@ -256,9 +260,9 @@ module ApplicationHelper
     </script>
     HTML
     if Rails.env.development?
-     banner = <<-HTML
-      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
-      HTML
+      banner = <<-HTML
+        <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
+        HTML
     end
     banner.html_safe
   end
