@@ -145,7 +145,7 @@ module ApplicationHelper
         @media(min-width: 500px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
         @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
     </style>
-      <script async="" src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+      <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
       <script>
         (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
       </script>
@@ -184,11 +184,11 @@ module ApplicationHelper
       window.onload = detectAdblock;
       </script>
     HTML
-    if Rails.env.development?
-     banner = <<-HTML
-      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
-      HTML
-    end
+    # if Rails.env.development?
+    # banner = <<-HTML
+    #   <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
+    #   HTML
+    # end
     banner.html_safe
   end
 
