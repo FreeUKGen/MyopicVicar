@@ -610,6 +610,7 @@ table.center50 {
 /*For the adblock background in banners */
 .donations {
   display: none;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
 
 /* For Cookie Consent notification bar */
