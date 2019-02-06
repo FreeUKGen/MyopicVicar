@@ -165,6 +165,24 @@ module ApplicationHelper
         $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})});
         (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
       </script>
+      <script>
+      function detectAdblock(){
+        console.log(window.canRunAds);
+        if( window.canRunAds === undefined){
+          console.log("Adblock detected")
+          var donateBanners = document.getElementsByClassName("donations");
+          for (i = 0; i < donateBanners.length; i++) {
+              donateBanners[i].style.display = "block";
+              console.log("Banner displayed! " + i)
+          }
+        }
+        else {
+              console.log(window.canRunAds);
+          console.log("Adblock not detected");
+        }
+      }
+      window.onload = detectAdblock;
+      </script>
     HTML
     if Rails.env.development?
      banner = <<-HTML
