@@ -34,10 +34,10 @@
                   <td><%= message.identifier  %></td>
                   <td><%= message.body[0,100] %>&hellip;</td>
                   <td>
-                    <%= index_action_edit(message, params[:source])%>
-                    <%= index_action_show(message, params[:source])%>
-                    <%= index_action_view_replies(message, params[:source])%>
-                    <%= index_action_archive(message, params[:source])%>
+                    <%= index_action_edit(message)%>
+                    <%= index_action_show(message)%>
+                    <%= index_action_view_replies(message)%>
+                    <%= index_action_archive(message)%>
                   </td>
                 </tr>
               <% end %>
