@@ -106,7 +106,7 @@ class SourcesController < ApplicationController
     redirect_back(fallback_location: root_path, notice: 'Attempting to display an incomplete source') && return if @register.blank? ||
       @church.blank? || @place.blank? || @source.blank?
 
-    case @source.count
+    case @source.length
     when 0
       redirect_back(fallback_location: root_path, notice: 'No Source under this register') && return
 
