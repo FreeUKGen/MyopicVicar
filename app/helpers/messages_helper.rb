@@ -162,7 +162,7 @@ module MessagesHelper
     response
   end
 
-  def index_action_archive(message, index_action)
+  def index_action_archive(message)
     if do_we_show_archive_action?(message)
       link_to 'Archive', archive_message_path(message.id, source: 'original'),
         :class => 'btn weight--light  btn--small',
@@ -174,36 +174,36 @@ module MessagesHelper
     end
   end
 
-  def index_action_edit(message, index_action)
+  def index_action_edit(message)
     if do_we_permit_an_edit?(message)
       link_to 'Edit', edit_message_path(message.id, source: 'original'), :class => 'btn weight--light  btn--small', method: :get
     end
   end
 
-  def index_action_show(message, index_action)
+  def index_action_show(message)
     if message.nature == 'contact'
       params[:source] = 'reply'
       link_to 'Show', show_reply_message_path(message.id, source: 'reply'), :class => 'btn weight--light  btn--small', method: :get
     elsif message.nature == 'feedback'
       params[:source] = 'reply'
       link_to 'Show', show_reply_message_path(message.id, source: 'reply'), :class => 'btn weight--light  btn--small', method: :get
-    elsif params[:source].blank? || params[:source] == 'original'
+    elsif message.not_a_reply?
       params[:source] = 'original'
       link_to 'Show', message_path(message.id, source: 'original'), :class => 'btn weight--light  btn--small', method: :get
-    else
+    elsif message.a_reply?
       params[:source] = 'reply'
       link_to 'Show', show_reply_message_path(message.id, source: 'reply'), :class => 'btn weight--light  btn--small', method: :get
     end
   end
 
-  def index_action_view_replies(message, index_action)
+  def index_action_view_replies(message)
     if (message.nature == 'feedback'|| message.nature == 'contact') && message.there_are_reply_messages?
       params[:source] = 'reply'
       link_to 'View Replies', reply_messages_path(message.id, source: 'reply'), :class => 'btn weight--light  btn--small', method: :get
-    elsif params[:source].blank? || params[:source] == 'original'
+    elsif message.not_a_reply?
       params[:source] = 'original'
       link_to 'View Replies', reply_messages_path(message.id, source: 'original'), :class => 'btn weight--light  btn--small', method: :get  if do_we_show_replies_action?(message)
-    else
+    elsif message.a_reply?
       params[:source] = 'reply'
       link_to 'View Replies', reply_messages_path(message.id, source: 'reply'), :class => 'btn weight--light  btn--small', method: :get  if do_we_show_replies_action?(message)
     end
@@ -518,6 +518,8 @@ module MessagesHelper
         breadcrumb :show_reply_contact_message, @message
       elsif @message.nature == 'feedback' && params[:source] == 'reply'
         breadcrumb :show_reply_feedback_message, @message
+      elsif @message.nature == 'general' && params[:source] == 'reply'
+        breadcrumb :show_reply_message, @message
       elsif params[:source] == 'reply'
         breadcrumb :show_userid_reply_message, @message
       else
