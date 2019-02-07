@@ -145,6 +145,12 @@ class SearchQueriesController < ApplicationController
 
   def reorder
     old_query = SearchQuery.find(params[:id])
+    flash[:notice] = 'No such search' if old_query.blank?
+    redirect_to(new_search_query_path) && return if old_query.blank?
+
+    flash[:notice] = 'No such search' unless SearchQuery.valid_order?(params[:order_field])
+    redirect_to(new_search_query_path) && return unless SearchQuery.valid_order?(params[:order_field])
+
     order_field = params[:order_field]
     if order_field == old_query.order_field
       # reverse the directions
