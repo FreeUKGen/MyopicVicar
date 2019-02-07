@@ -26,8 +26,8 @@ class ImageServerGroup
   attr_accessor :custom_field
 
   belongs_to :source, index: true
-  belongs_to :place, index: true
-  belongs_to :church, index: true
+  belongs_to :place, index: true, optional: true
+  belongs_to :church, index: true, optional: true
   has_many :image_server_images, foreign_key: :image_server_group_id, dependent: :restrict_with_error # includes images
   has_many :gaps
 
