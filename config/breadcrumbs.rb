@@ -1162,14 +1162,23 @@ crumb :show_image_source do |register,source|
       parent :county_manage_images_selection, session[:county], source.id.to_s
     end
   when 'Other Server1'
+    church = register.church
+    place = church.place
+    county = place.county
     link 'Other Server1', source_path(source)
-    parent :image_sources, register
+    parent :image_sources, county, place, church, register
   when 'Other Server2'
+    church = register.church
+    place = church.place
+    county = place.county
     link 'Other Server2', source_path(source)
-    parent :images_sources, register
+    parent :images_sources, county, place, church, register
   when 'Other Server3'
+    church = register.church
+    place = church.place
+    county = place.county
     link 'Other Server3', source_path(source)
-    parent :image_sources, register
+    parent :image_sources, county, place, church, register
   end
 end
 
