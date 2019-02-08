@@ -606,22 +606,30 @@ table.center50 {
 .disabled_link:hover {
   background: #a5a5a5;
 }
+
+/*For the adblock background in banners */
+.donations {
+  display: none;
+}
+
 /* For Cookie Consent notification bar */
 .cookieConsent {
   display: none;
   position: fixed;
-  top: 0px;
+  bottom: 0px;
   left: 0px;
   width: 100%;
   height: auto;
-  background: rgb(247, 162, 28);
+  background: #18A098;
   opacity: 0.99;
   color: rgb(255, 255, 255);
   font-family: helvetica;
   font-size: 0.8125rem;
   text-align: center;
   z-index: 1000;
+  padding: 25px 0px 25px 0px;
 }
+
 div#cookieText {
   position:relative;
   height:auto;
@@ -629,11 +637,16 @@ div#cookieText {
   padding:10px;
   margin-left:auto;
   margin-right:auto;
-  color: rgb(40, 40, 40);
+  color: rgb(255, 249, 249);
 }
 div#cookieAcceptButton {
   margin-top:5px;
 }
+
+.accept_cookies {
+  background: #033033 !important;
+}
+
 .cookie_policy_link {
   color: #000080;
 }

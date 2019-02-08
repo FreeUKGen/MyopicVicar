@@ -17,7 +17,9 @@ class SearchQueriesController < ApplicationController
   before_action :check_for_mobile, only: :show
   rescue_from Mongo::Error::OperationFailure, with: :search_taking_too_long
   rescue_from Mongoid::Errors::DocumentNotFound, with: :missing_document
-  #rescue_from ActionView::Template::Error, :with => :missing_template
+  rescue_from ActionController::UnknownFormat, with: :github_camo
+  rescue_from ActionView::Template::Error, with: :missing_template
+  rescue_from Timeout::Error, with: :search_taking_too_long
   RECORDS_PER_PAGE = 100
 
   def about
@@ -79,6 +81,11 @@ class SearchQueriesController < ApplicationController
   def edit
     @search_query = SearchQuery.find(params[:id])
   end
+  def github_camo
+    logger.warn("FREEREG:SEARCH: Search encountered an UnknownFormat #{params}")
+    flash[:notice] = 'We encountered an UnknownFormat'
+    redirect_to new_search_query_path
+  end
 
   def go_back
     flash[:notice] = 'We encountered a problem completing your request. Please resubmit. If this situation continues please let us know through the Contact Us link at the foot of this page'
@@ -138,6 +145,12 @@ class SearchQueriesController < ApplicationController
 
   def reorder
     old_query = SearchQuery.find(params[:id])
+    flash[:notice] = 'No such search' if old_query.blank?
+    redirect_to(new_search_query_path) && return if old_query.blank?
+
+    flash[:notice] = 'No such search' unless SearchQuery.valid_order?(params[:order_field])
+    redirect_to(new_search_query_path) && return unless SearchQuery.valid_order?(params[:order_field])
+
     order_field = params[:order_field]
     if order_field == old_query.order_field
       # reverse the directions
@@ -182,7 +195,7 @@ class SearchQueriesController < ApplicationController
   end
 
   def search_taking_too_long(message)
-    if message.to_s =~ /operation exceeded time limit/
+    if message.to_s =~ /operation exceeded time limit/ || message.to_s =~ /to receive data/
       @search_query = SearchQuery.find(session[:query])
       runtime = Rails.application.config.max_search_time
       @search_query.update_attributes(runtime: runtime, day: Time.now.strftime('%F'))

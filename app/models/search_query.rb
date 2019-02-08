@@ -79,10 +79,6 @@ class SearchQuery
   index({day: -1,result_count: -1},{name: "day__1_result_count__1",background: true })
 
   class << self
-    def search_id(name)
-      where(id: name)
-    end
-
     def invalid_integer(param)
       do_not_proceed = false
       if param[:start_year].present? && !param[:start_year].to_i.bson_int32?
@@ -94,6 +90,15 @@ class SearchQuery
         message = 'The end year is an invalid integer'
       end
       [do_not_proceed, message]
+    end
+
+    def search_id(name)
+      where(id: name)
+    end
+
+    def valid_order?(value)
+      result = SearchOrder::ALL_ORDERS.include?(value) ? true : false
+      result
     end
   end
 

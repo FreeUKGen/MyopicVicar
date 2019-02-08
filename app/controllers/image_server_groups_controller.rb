@@ -16,7 +16,7 @@ class ImageServerGroupsController < ApplicationController
 
   def allocate
     display_info
-
+    
     @syndicate = Syndicate.get_syndicates
     @group_name = ImageServerGroup.group_list_by_status(params[:id], ['u', 'ar'])
     @group = ImageServerGroup.source_id(params[:id])
@@ -38,14 +38,14 @@ class ImageServerGroupsController < ApplicationController
       image_server_group.save
 
       if image_server_group.errors.any? then
-        flash[:notice] = 'Addition of Image Group "' + image_server_group_params[:group_name] + '" was unsuccessful'
+        flash[:notice] = "Addition of Image Group  #{image_server_group_params[:group_name]} was unsuccessful #{image_server_group.errors.full_messages}"
         redirect_back(fallback_location: new_manage_resource_path) && return
 
       else
         image_server_group.update_attributes(:source_id=>@source.id, :church_id=>@church.id, :place_id=>@place.id)
 
         flash[:notice] = 'Addition of Image Group "' + image_server_group_params[:group_name] + '" was successful'
-        redirect_to index_image_server_group_path(@source) && return
+        redirect_to(index_image_server_group_path(@source)) && return
       end
     else
 
@@ -180,7 +180,6 @@ class ImageServerGroupsController < ApplicationController
 
   def new
     display_info
-
     @image_server_group = ImageServerGroup.new
     @parent_source = Source.id(session[:source_id]).first
   end

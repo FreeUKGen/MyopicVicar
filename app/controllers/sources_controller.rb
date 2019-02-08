@@ -64,8 +64,9 @@ class SourcesController < ApplicationController
   end
 
   def display_info
-    @source = Source.find(session[:source_id]) if session[:source_id].present?
+    @source = Source.find(session[:source_id]) if @source.blank?
     @register = Register.find(session[:register_id]) if session[:register_id].present?
+    
     return if @register.blank? || @source.blank?
 
     @register_type = RegisterType.display_name(@register.register_type)
@@ -84,11 +85,9 @@ class SourcesController < ApplicationController
   end
 
   def edit
-    display_info
-    @source = Source.id(params[:id]).first
+    load(params[:id])
     redirect_back(fallback_location: root_path, notice: 'Attempting to edit an incomplete source') && return if @register.blank? ||
       @church.blank? || @place.blank? || @source.blank?
-
   end
 
   def flush
@@ -106,12 +105,8 @@ class SourcesController < ApplicationController
     display_info
     redirect_back(fallback_location: root_path, notice: 'Attempting to display an incomplete source') && return if @register.blank? ||
       @church.blank? || @place.blank? || @source.blank?
-
-    case @source.count
-    when 0
-      redirect_back(fallback_location: root_path, notice: 'No Source under this register') && return
-
-    when 1
+   
+    if @source.count == 1
       case @source.first.source_name
       when 'Image Server'
         redirect_to(source_path(id: @source.first.id)) && return
@@ -121,9 +116,6 @@ class SourcesController < ApplicationController
 
       when 'other server2'
         #            redirect_to :controller=>'server2', :action=>'show', :source_name=>'other server1'
-      else
-        redirect_back(fallback_location: root_path, notice: 'Something wrong') && return
-
       end
     end
   end
@@ -135,6 +127,34 @@ class SourcesController < ApplicationController
 
     allow_initialize = ImageServerGroup.check_all_images_status_before_initialize_source(params[:id])
     redirect_back(fallback_location: root_path, notice: 'Source can be initialized only when all image groups status is unset') && return unless allow_initialize
+  end
+
+  def load(source_id)
+    @source = Source.find(source_id)
+    return if @source.blank?
+
+    session[:source_id] = @source.id
+    @register = @source.register
+    return if @register.blank?
+
+    @register_type = RegisterType.display_name(@register.register_type)
+    session[:register_id] = @register.id
+    session[:register_name] = @register_type
+    @church = @register.church
+    return if @church.blank?
+
+    @church_name = @church.church_name
+    session[:church_name] = @church_name
+    session[:church_id] = @church.id
+    @place = @church.place
+    return if @place.blank?
+
+    session[:place_id] = @place.id
+    @place_name = @place.place_name
+    session[:place_name] = @place_name
+    @county = @place.county
+    session[:county] = @county
+    @user = get_user
   end
 
   def new
@@ -150,7 +170,7 @@ class SourcesController < ApplicationController
   end
 
   def show
-    display_info
+    load(params[:id])
     redirect_back(fallback_location: root_path, notice: 'Attempting to show an incomplete source') && return if @register.blank? ||
       @church.blank? || @place.blank? || @source.blank?
 

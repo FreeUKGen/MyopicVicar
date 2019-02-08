@@ -145,7 +145,7 @@ module ApplicationHelper
         @media(min-width: 500px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
         @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
     </style>
-      <script async="" src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+      <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
       <script>
         (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
       </script>
@@ -165,9 +165,27 @@ module ApplicationHelper
         $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})});
         (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
       </script>
+      <script>
+      function detectAdblock(){
+        console.log(window.canRunAds);
+        if( window.canRunAds === undefined){
+          console.log("Adblock detected")
+          var donateBanners = document.getElementsByClassName("donations");
+          for (i = 0; i < donateBanners.length; i++) {
+              donateBanners[i].style.display = "block";
+              console.log("Banner displayed! " + i)
+          }
+        }
+        else {
+              console.log(window.canRunAds);
+          console.log("Adblock not detected");
+        }
+      }
+      window.onload = detectAdblock;
+      </script>
     HTML
     if Rails.env.development?
-     banner = <<-HTML
+    banner = <<-HTML
       <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
       HTML
     end

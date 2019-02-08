@@ -3,6 +3,7 @@
     <% unless current_page?('/cms/refinery/login') || current_page?('/cms/freereg2/page-not-found') || current_page?('/cms/refinery/users/login')%>
       <div class="banner-horz reg_adsense">
         <% unless device_type == :mobile%>
+          <a href ="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/"><%= image_tag 'png/header-donate.png', :class => "donations", :alt => "Donations - FreeUKGenealogy" %></a>
           <%= fullwidth_adsense %>
         <% end %>
       </div>
