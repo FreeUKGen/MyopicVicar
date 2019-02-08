@@ -1,3 +1,4 @@
+ #rules to list the contacts to user on the basis of their roles
 class ContactRules
   attr_reader :user, :result_sets
 
@@ -10,38 +11,22 @@ class ContactRules
     @result_sets = []
   end
 
-  def result(achived,sort_order)
-    get_contacts_for_roles(achived,sort_order)
+  def result(archived,sort_order)
+    @contacts = Contact.archived(archived).order_by(sort_order)
+    get_contacts_for_roles
   end
 
   private
 
-  # Get the user primary role => has one
-  def primary_role
-    return nil if user.person_role.blank?
-    user.person_role
-  end
-
-  # Get the user secondary roles => array
-  def secondary_roles
-    user.secondary_role
-  end
-
   # Merge the user primary and secondary roles and remove duplicates
   def merge_roles
-    combined_roles = secondary_roles << primary_role
-    combined_roles.uniq
+    user_roles = user.secondary_role << user.person_role
+    user_roles.uniq
   end
 
   # Get the contacts for each role
-  def get_contacts_for_roles(achived,sort_order)
-    return all_contacts(achived,sort_order) unless roles_in_contact_types?
-
-    unless county_and_country_coordinators?
-      return county_and_country_contacts(achived,sort_order)
-    end
-
-    return user_role_contacts(achived,sort_order)
+  def get_contacts_for_roles
+    roles_in_contact_types? ? add_contacts_to_result_set(user_role_contacts) : @contacts
   end
   
   # Check user roles are not in contact types
@@ -61,29 +46,16 @@ class ContactRules
     }
   end
 
-  # All contacts
-  def all_contacts(achived,sort_order)
-    Contact.archived(achived).order_by(sort_order)
-  end
-
-   # Get county and country co-ordinator contacts
-  def county_and_country_contacts(achived,sort_order)
-    results = Contact.where(county: { '$in': county_groups }).archived(achived).all.order_by(sort_order)
-    results
-  end
-
   # Get contacts for the user roles
-  def user_role_contacts(achived,sort_order)
-    remaining_roles = []
-    merge_roles = remove_county_or_country_roles
+  def user_role_contacts
+    @contacts.or(
+      { county: { '$in': county_contacts } },
+      { contact_type: { '$in': remaining_contact_types.flatten } }
+    )
+  end
 
-    merge_roles.each do |role|
-      remaining_roles << contact_types[role]
-    end
-
-    remaining_roles = remaining_roles.flatten
-    contacts = Contact.where(contact_type: { '$in': remaining_roles }).archived(achived).all.order_by(sort_order)
-    contacts
+  def county_contacts
+    county_and_country_coordinators? ? [nil] : county_groups
   end
 
   # Check the role has county or a country coordinator
@@ -103,8 +75,20 @@ class ContactRules
     }
   end
 
+  #user county groups
   def county_groups
     user.county_groups
   end
 
+  #return array of contacts
+  def add_contacts_to_result_set(contacts)
+    contacts.map{ |result| result }
+  end
+
+  # array of remaining contact types
+  def remaining_contact_types
+    remove_county_or_country_roles.map do |role|
+      contact_types[role]
+    end
+  end
 end
