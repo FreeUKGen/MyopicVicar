@@ -26,7 +26,7 @@ class ContactRules
 
   # Get the contacts for each role
   def get_contacts_for_roles
-    roles_in_contact_types? ? add_contacts_to_result_set(user_role_contacts) : @contacts
+    roles_in_contact_types? ? user_role_contacts : @contacts
   end
   
   # Check user roles are not in contact types
@@ -48,10 +48,11 @@ class ContactRules
 
   # Get contacts for the user roles
   def user_role_contacts
-    @contacts.or(
+    contacts = @contacts.or(
       { county: { '$in': county_contacts } },
       { contact_type: { '$in': remaining_contact_types.flatten } }
     )
+    contacts.map{ |result| result }
   end
 
   def county_contacts
@@ -78,11 +79,6 @@ class ContactRules
   #user county groups
   def county_groups
     user.county_groups
-  end
-
-  #return array of contacts
-  def add_contacts_to_result_set(contacts)
-    contacts.map{ |result| result }
   end
 
   # array of remaining contact types
