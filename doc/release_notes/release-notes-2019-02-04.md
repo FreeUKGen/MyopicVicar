@@ -12,6 +12,9 @@ __FreeCEN2 | Release Notes__
   ----------------
 
   * Added improved adblock detection with Javascript and added hyperlink to donation banner ads - Issue 395
+  * Added “Last Updated” Section to communicate when the database was updated, as with FreeCEN1 - Issue 372
+  * Enabled Google Analytics Tracking of Donation buttons and adblock donation banner - Issue 219 
+
 
 
   __Fixes__
@@ -34,6 +37,9 @@ __FreeCEN2 | Release Notes__
 * Update asset path
 * Update asset path
 * Update all asset paths with fingerprints
+* Added description for FreeCEN utility collection
+* Added spec for FreecenUtiility model
+* Added FreeCEN2 updated date in database coverage page
 * Change image path format
 * Change asset path format
 * Undo display:none removal for testing, and change image_tag assets/png path
@@ -53,3 +59,4 @@ __FreeCEN2 | Release Notes__
 * Add JS to help detect adblockers
 * Refactor to use the return of the conditional for variable assignment
 * Fix for Issue 491 - remove redundant case statements
+* Initial commit
