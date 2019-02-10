@@ -40,7 +40,7 @@ class SearchQuery
   field :witness, type: Boolean
   field :start_year, type: Integer
   field :end_year, type: Integer
-  field :radius_factor, type: Integer, default: 41
+  field :radius_factor, type: Integer, default: 101
   field :search_nearby_places, type: Boolean
   field :result_count, type: Integer
   field :place_system, type: String, default: Place::MeasurementSystem::ENGLISH
