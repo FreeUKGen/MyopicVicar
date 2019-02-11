@@ -23,22 +23,15 @@ class SearchQueriesController < ApplicationController
   RECORDS_PER_PAGE = 100
 
   def about
-    if params[:page_number]
-      @page_number = params[:page_number].to_i
-    else
-      @page_number = 0
-    end
-    begin
-      @search_query = SearchQuery.find(params[:id])
-      # @emendations = EmendationRule.where(:replacement => @search_query.first_name.downcase).all.to_a unless @search_query.blank? || @search_query.first_name.blank?
-    rescue Mongoid::Errors::DocumentNotFound
-      log_possible_host_change
-      redirect_to new_search_query_path
-    end
+    @page_number = params[:page_number].present? ? params[:page_number].to_i : 0
+    @search_query, proceed, message = check_and_return_query(params[:id])
+    redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
   end
 
   def analyze
-    @search_query = SearchQuery.find(params[:id])
+    @search_query, proceed, message = check_and_return_query(params[:id])
+    redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
+
     begin
       @plan = @search_query.explain_plan
     rescue => ex
@@ -48,7 +41,9 @@ class SearchQueriesController < ApplicationController
   end
 
   def broaden
-    old_query = SearchQuery.find(params[:id])
+    old_query, proceed, message = check_and_return_query(params[:id])
+    redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
+
     new_parameters = old_query.reduce_attributes
     @search_query = SearchQuery.new(new_parameters)
     @search_query.radius_factor = @search_query.radius_factor * 2
@@ -58,7 +53,8 @@ class SearchQueriesController < ApplicationController
   end
 
   def create
-    redirect_back(fallback_location: new_search_query_path, notice: 'Invalid Search') && return unless params[:search_query].present? && params[:search_query][:region].blank?
+    condition = true if params[:search_query].present? && params[:search_query][:region].blank?
+    redirect_back(fallback_location: new_search_query_path, notice: 'Invalid Search') && return unless condition
 
     do_not_proceed, message = SearchQuery.invalid_integer(params[:search_query])
     redirect_back(fallback_location: new_search_query_path, notice: message) && return if do_not_proceed
@@ -79,8 +75,10 @@ class SearchQueriesController < ApplicationController
   end
 
   def edit
-    @search_query = SearchQuery.find(params[:id])
+    @search_query, proceed, message = check_and_return_query(params[:id])
+    redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
   end
+
   def github_camo
     logger.warn("FREEREG:SEARCH: Search encountered an UnknownFormat #{params}")
     flash[:notice] = 'We encountered an UnknownFormat'
@@ -109,7 +107,9 @@ class SearchQueriesController < ApplicationController
   end
 
   def narrow
-    old_query = SearchQuery.find(params[:id])
+    old_query, proceed, message = check_and_return_query(params[:id])
+    redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
+
     new_parameters = old_query.reduce_attributes
     @search_query = SearchQuery.new(new_parameters)
     @search_query.radius_factor = @search_query.radius_factor / 2
@@ -119,24 +119,20 @@ class SearchQueriesController < ApplicationController
   end
 
   def new
-    session[:message] == 'load' ? @page = Refinery::Page.where(slug: 'message').first.parts.first.body.html_safe : @page = nil
+    @page = session[:message] == 'load' ? Refinery::Page.where(slug: 'message').first.parts.first.body.html_safe : nil
 
     session.delete(:search_controller)
-    if params[:search_id]
-      old_query = SearchQuery.search_id(params[:search_id]).first
-      if old_query.present?
-        old_query.search_result.records = {} if old_query.search_result.present?
-        @search_query = SearchQuery.new(old_query.attributes)
-      else
-        @search_query = SearchQuery.new
-      end
-    else
-      @search_query = SearchQuery.new
-    end
+    @search_query = SearchQuery.new
+    old_query = SearchQuery.search_id(params[:search_id]).first if params[:search_id]
+
+    old_query.search_result.records = {} if old_query.present? && old_query.search_result.present?
+    @search_query = SearchQuery.new(old_query.attributes) if old_query.present?
   end
 
   def remember
-    @search_query = SearchQuery.find(params[:id])
+    @search_query, proceed, message = check_and_return_query(params[:id])
+    redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
+
     get_user_info_from_userid
     @user.remember_search(@search_query)
     flash[:notice] = 'This search has been added to your remembered searches'
@@ -144,12 +140,11 @@ class SearchQueriesController < ApplicationController
   end
 
   def reorder
-    old_query = SearchQuery.find(params[:id])
-    flash[:notice] = 'No such search' if old_query.blank?
-    redirect_to(new_search_query_path) && return if old_query.blank?
+    old_query, proceed, message = check_and_return_query(params[:id])
+    redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
 
-    flash[:notice] = 'No such search' unless SearchQuery.valid_order?(params[:order_field])
-    redirect_to(new_search_query_path) && return unless SearchQuery.valid_order?(params[:order_field])
+    proceed = SearchQuery.valid_order?(params[:order_field])
+    redirect_back(fallback_location: new_search_query_path, notice: 'No such order') && return unless proceed
 
     order_field = params[:order_field]
     if order_field == old_query.order_field
@@ -207,7 +202,7 @@ class SearchQueriesController < ApplicationController
       logger.warn("FREEREG:SEARCH: Search #{message}") unless @search_query.present? && @search_query.id.present?
       flash[:notice] = 'Your search encountered a problem please contact us with this message '
     end
-    redirect_to new_search_query_path(:search_id => @search_query)
+    redirect_to new_search_query_path(search_id: @search_query)
   end
 
   def selection
@@ -225,77 +220,56 @@ class SearchQueriesController < ApplicationController
   end
 
   def show
-    if params[:id].present?
-      @search_query = SearchQuery.find(params[:id])
+    @search_query, proceed, message = check_and_return_query(params[:id])
+    redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
+
+    flash[:notice] = 'Your search results are not available. Please repeat your search' if @search_query.result_count.blank?
+    redirect_back(fallback_location: new_search_query_path) && return if @search_query.result_count.blank?
+
+    if @search_query.result_count > FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+      @result_count = @search_query.result_count
+      @search_results = []
+      @ucf_results = []
     else
-      logger.warn('FREEREG:SEARCH_ERROR:nil parameter condition occurred')
-      go_back
-      return
-    end
-    if @search_query.present? && @search_query.result_count.present?
-      if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
-        @result_count = @search_query.result_count
-        @search_results = []
-        @ucf_results = []
-      else
-        response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
-        if !response || @search_results.nil? || @search_query.result_count.nil?
-          logger.warn("FREEREG:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
-          flash[:notice] = 'Your search results are not available. Please repeat your search'
-          redirect_to new_search_query_path(search_id: @search_query)
-          return
-        end
+      response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
+      if !response || @search_results.nil? || @search_query.result_count.nil?
+        logger.warn("FREEREG:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
+        flash[:notice] = 'Your search results are not available. Please repeat your search'
+        redirect_to(new_search_query_path(search_id: @search_query)) && return
       end
-    else
-      logger.warn('FREEREG:SEARCH_ERROR:search query no longer present')
-      redirect_to new_search_query_path
-      return
     end
   end
 
   def show_print_version
+    @search_query, proceed, message = check_and_return_query(params[:id])
+    redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
+
+    flash[:notice] = 'Your search results are not available. Please repeat your search' if @search_query.result_count.blank?
+    redirect_back(fallback_location: new_search_query_path) && return if @search_query.result_count.blank?
+
     @printable_format = true
-    if params[:id].present?
-      @search_query = SearchQuery.find(params[:id])
+    if @search_query.result_count > FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+      @result_count = @search_query.result_count
+      @search_results = []
+      @ucf_results = []
     else
-      logger.warn('FREEREG:SEARCH_ERROR:nil parameter condition occurred')
-      go_back
-      return
-    end
-    if @search_query.present?
-      if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
-        @result_count = @search_query.result_count
-        @search_results = []
-        @ucf_results = []
-      else
-        response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
-        if !response || @search_results.nil? || @search_query.result_count.nil?
-          logger.warn("FREEREG:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
-          flash[:notice] = 'Your search results are not available. Please repeat your search'
-          redirect_to new_search_query_path(search_id: @search_query)
-          return
-        end
+      response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
+      if !response || @search_results.nil? || @search_query.result_count.nil?
+        logger.warn("FREEREG:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
+        flash[:notice] = 'Your search results are not available. Please repeat your search'
+        redirect_to(new_search_query_path(search_id: @search_query)) && return
       end
-    else
-      logger.warn('FREEREG:SEARCH_ERROR:search query no longer present')
-      flash[:notice] = 'Your search is not available. Please repeat your criteria'
-      redirect_to new_search_query_path
-      return
     end
     render 'show', layout: false
   end
 
   def show_query
-    if params[:id].present?
-      @search_query = SearchQuery.find(params[:id])
-    else
-      logger.warn('FREEREG:SEARCH_ERROR:nil parameter condition occurred')
-      go_back
-    end
+    @search_query, proceed, message = check_and_return_query(params[:id])
+    redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
   end
 
   def update
-    @search_query = SearchQuery.new(search_params.delete_if{|k,v| v.blank? })
+    @search_query = SearchQuery.new(search_params.delete_if { |k, v| v.blank? })
     @search_query.session_id = request.session_options[:id]
     if @search_query.save
       redirect_to search_query_path(@search_query)
