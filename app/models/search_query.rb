@@ -100,6 +100,18 @@ class SearchQuery
       result = SearchOrder::ALL_ORDERS.include?(value) ? true : false
       result
     end
+
+    def check_and_return_query(parameter)
+      messagea = 'Invalid parameter'
+      messageb = 'Non existent query'
+      record = nil
+      return record, false, messagea if parameter.nil?
+
+      record = SearchQuery.find(parameter)
+      return record, false, messageb if record.blank?
+
+      [record, true, '']
+    end
   end
 
   ############################################################################# instance methods #####################################################
