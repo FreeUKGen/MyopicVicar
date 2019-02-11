@@ -339,6 +339,8 @@ class Freereg1CsvFile
 
     def valid_freereg1_csv_file?(freereg1_csv_file)
       result = false
+      return result if freereg1_csv_file.blank?
+
       freereg1_csv_file_object = Freereg1CsvFile.find(freereg1_csv_file)
       result = true if freereg1_csv_file_object.present? && Register.valid_register?(freereg1_csv_file_object.register_id)
       logger.warn("FREEREG:LOCATION:VALIDATION invalid freereg1_csv_file id #{freereg1_csv_file} ") unless result

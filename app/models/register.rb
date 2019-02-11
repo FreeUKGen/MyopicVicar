@@ -175,6 +175,8 @@ class Register
 
     def valid_register?(register)
       result = false
+      return result if register.blank?
+
       register_object = Register.find(register)
       result = true if register_object.present? && Church.valid_church?(register_object.church_id)
       logger.warn("FREEREG:LOCATION:VALIDATION invalid register id #{register} ") unless result
