@@ -24,12 +24,12 @@ class SearchQueriesController < ApplicationController
 
   def about
     @page_number = params[:page_number].present? ? params[:page_number].to_i : 0
-    @search_query, proceed, message = check_and_return_query(params[:id])
+    @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
   end
 
   def analyze
-    @search_query, proceed, message = check_and_return_query(params[:id])
+    @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
 
     begin
@@ -41,7 +41,7 @@ class SearchQueriesController < ApplicationController
   end
 
   def broaden
-    old_query, proceed, message = check_and_return_query(params[:id])
+    old_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
 
     new_parameters = old_query.reduce_attributes
@@ -75,18 +75,13 @@ class SearchQueriesController < ApplicationController
   end
 
   def edit
-    @search_query, proceed, message = check_and_return_query(params[:id])
+    @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
   end
 
   def github_camo
     logger.warn("FREEREG:SEARCH: Search encountered an UnknownFormat #{params}")
     flash[:notice] = 'We encountered an UnknownFormat'
-    redirect_to new_search_query_path
-  end
-
-  def go_back
-    flash[:notice] = 'We encountered a problem completing your request. Please resubmit. If this situation continues please let us know through the Contact Us link at the foot of this page'
     redirect_to new_search_query_path
   end
 
@@ -107,7 +102,7 @@ class SearchQueriesController < ApplicationController
   end
 
   def narrow
-    old_query, proceed, message = check_and_return_query(params[:id])
+    old_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
 
     new_parameters = old_query.reduce_attributes
@@ -130,7 +125,7 @@ class SearchQueriesController < ApplicationController
   end
 
   def remember
-    @search_query, proceed, message = check_and_return_query(params[:id])
+    @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
 
     get_user_info_from_userid
@@ -140,7 +135,7 @@ class SearchQueriesController < ApplicationController
   end
 
   def reorder
-    old_query, proceed, message = check_and_return_query(params[:id])
+    old_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
 
     proceed = SearchQuery.valid_order?(params[:order_field])
@@ -220,7 +215,7 @@ class SearchQueriesController < ApplicationController
   end
 
   def show
-    @search_query, proceed, message = check_and_return_query(params[:id])
+    @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
 
     flash[:notice] = 'Your search results are not available. Please repeat your search' if @search_query.result_count.blank?
@@ -241,7 +236,7 @@ class SearchQueriesController < ApplicationController
   end
 
   def show_print_version
-    @search_query, proceed, message = check_and_return_query(params[:id])
+    @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
 
     flash[:notice] = 'Your search results are not available. Please repeat your search' if @search_query.result_count.blank?
@@ -264,7 +259,7 @@ class SearchQueriesController < ApplicationController
   end
 
   def show_query
-    @search_query, proceed, message = check_and_return_query(params[:id])
+    @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
   end
 
