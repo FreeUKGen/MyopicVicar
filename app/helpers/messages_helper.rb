@@ -583,7 +583,7 @@ module MessagesHelper
   end
 
   def show_remove_link(message, action)
-    if session[:message_base] == 'userid_messages' && (action == 'original' || message.nature == 'contact' || message.nature == 'feedback')
+    if session[:message_base] == 'userid_messages'
       link_to 'Remove', remove_from_userid_detail_path(message.id, source: 'original'),
         :class => 'btn weight--light  btn--small',
         data: { confirm: 'Are you sure you want to remove this message' },
