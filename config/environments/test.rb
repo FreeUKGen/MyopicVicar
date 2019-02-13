@@ -20,6 +20,7 @@ MyopicVicar::Application.configure do
   # and recreated between test runs. Don't rely on the data there!
   config.cache_classes = true
 
+  config.log_level = :debug
   # Configure static asset server for tests with Cache-Control for performance
 
   config.static_cache_control = "public, max-age=3600"
@@ -84,5 +85,5 @@ MyopicVicar::Application.configure do
   config.assets.debug = false
   config.assets.digest = false
   config.dragonfly_secret_code = MyopicVicar::MongoConfig['dragonfly_secret_code']
-
+  config.citation = MyopicVicar::MongoConfig['citation']
 end
