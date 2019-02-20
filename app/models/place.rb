@@ -145,6 +145,8 @@ class Place
 
     def valid_place?(place)
       result = false
+      return result if place.blank?
+
       place_object = Place.find(id: place)
       if place_object.present?
         result = true if Place.valid_chapman_code?(place_object.chapman_code) && Place.valid_county?(place_object.county)

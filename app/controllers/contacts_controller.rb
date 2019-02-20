@@ -19,7 +19,7 @@ class ContactsController < ApplicationController
   skip_before_action :require_login, only: [:new, :report_error, :create, :show]
 
   def archive
-    @contact = Contact.find(params[:id])
+    @contact = Contact.find(params[:id]) if params[:id].present?
     redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @contact.blank?
 
     @contact.archive
@@ -28,7 +28,7 @@ class ContactsController < ApplicationController
   end
 
   def contact_reply_messages
-    @contact = Contact.find(params[:id])
+    @contact = Contact.find(params[:id]) if params[:id].present?
     redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @contact.blank?
 
     get_user_info_from_userid
@@ -38,7 +38,7 @@ class ContactsController < ApplicationController
   end
 
   def convert_to_issue
-    @contact = Contact.find(params[:id])
+    @contact = Contact.find(params[:id]) if params[:id].present?
     redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @contact.blank?
 
     if @contact.github_issue_url.blank?
@@ -88,7 +88,7 @@ class ContactsController < ApplicationController
   end
 
   def destroy
-    @contact = Contact.find(params[:id])
+    @contact = Contact.find(params[:id]) if params[:id].present?
     redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @contact.blank?
 
     @contact.delete
@@ -97,7 +97,7 @@ class ContactsController < ApplicationController
   end
 
   def edit
-    @contact = Contact.find(params[:id])
+    @contact = Contact.find(params[:id]) if params[:id].present?
     redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @contact.blank?
 
     if @contact.github_issue_url.present?
@@ -107,7 +107,7 @@ class ContactsController < ApplicationController
   end
 
   def force_destroy
-    @contact = Contact.find(params[:id])
+    @contact = Contact.find(params[:id]) if params[:id].present?
     redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @contact.blank?
 
     delete_reply_messages(params[:id]) if @contact.has_replies?(params[:id])
@@ -131,7 +131,7 @@ class ContactsController < ApplicationController
   end
 
   def keep
-    @contact = Contact.find(params[:id])
+    @contact = Contact.find(params[:id]) if params[:id].present?
     redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @contact.blank?
 
     session[:archived_contacts] = true
@@ -196,14 +196,16 @@ class ContactsController < ApplicationController
     @contact.contact_type = 'Data Problem'
     @contact.query = params[:query]
     @contact.record_id = params[:id]
-    @contact.entry_id = SearchRecord.find(params[:id]).freereg1_csv_entry._id
-    @freereg1_csv_entry = Freereg1CsvEntry.find( @contact.entry_id)
-    @contact.county = @freereg1_csv_entry.freereg1_csv_file.county
-    @contact.line_id = @freereg1_csv_entry.line_id
+    search_record = SearchRecord.find(params[:id]) if params[:id].present?
+    @contact.entry_id = search_record.freereg1_csv_entry._id if search_record.present?
+    @freereg1_csv_entry = Freereg1CsvEntry.find(@contact.entry_id) if @contact.entry_id.present?
+    @contact.county = @freereg1_csv_entry.freereg1_csv_file.county if @freereg1_csv_entry.present?
+    @contact.line_id = @freereg1_csv_entry.line_id if @freereg1_csv_entry.present?
+    redirect_back(fallback_location: contacts_path, notice: 'The entry does not exist') && return if @freereg1_csv_entry.blank?
   end
 
   def restore
-    @contact = Contact.find(params[:id])
+    @contact = Contact.find(params[:id]) if params[:id].present?
     redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @contact.blank?
 
     @contact.restore
@@ -298,7 +300,7 @@ class ContactsController < ApplicationController
   end
 
   def show
-    @contact = Contact.find(params[:id])
+    @contact = Contact.find(params[:id]) if params[:id].present?
     redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @contact.blank?
 
     if @contact.entry_id.present? && Freereg1CsvEntry.id(@contact.entry_id).present?
@@ -311,7 +313,7 @@ class ContactsController < ApplicationController
   end
 
   def unkeep
-    @contact = Contact.find(params[:id])
+    @contact = Contact.find(params[:id]) if params[:id].present?
     redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @contact.blank?
 
     get_user_info_from_userid
@@ -321,7 +323,7 @@ class ContactsController < ApplicationController
   end
 
   def update
-    @contact = Contact.find(params[:id])
+    @contact = Contact.find(params[:id]) if params[:id].present?
     redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @contact.blank?
 
     @contact.update_attributes(contact_params)

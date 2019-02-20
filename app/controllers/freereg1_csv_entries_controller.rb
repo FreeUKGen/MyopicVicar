@@ -89,7 +89,8 @@ class Freereg1CsvEntriesController < ApplicationController
   end
 
   def destroy
-    @freereg1_csv_entry = Freereg1CsvEntry.find(params[:id])
+    @freereg1_csv_entry = Freereg1CsvEntry.find(params[:id]) if params[:id].present?
+
     unless Freereg1CsvEntry.valid_freereg1_csv_entry?(@freereg1_csv_entry)
       message = 'The entry was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
@@ -103,8 +104,7 @@ class Freereg1CsvEntriesController < ApplicationController
   end
 
   def display_info
-    @freereg1_csv_entry.blank? ? @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id]) :
-      @freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
+    @freereg1_csv_file = @freereg1_csv_entry.blank? ? Freereg1CsvFile.find(session[:freereg1_csv_file_id]) : @freereg1_csv_entry.freereg1_csv_file
     @freereg1_csv_file_id = @freereg1_csv_file.id
     @freereg1_csv_file_name = @freereg1_csv_file.file_name
     @file_owner = @freereg1_csv_file.userid
@@ -122,7 +122,8 @@ class Freereg1CsvEntriesController < ApplicationController
   end
 
   def edit
-    @freereg1_csv_entry = Freereg1CsvEntry.find(params[:id])
+    @freereg1_csv_entry = Freereg1CsvEntry.find(params[:id]) if params[:id].present?
+
     unless Freereg1CsvEntry.valid_freereg1_csv_entry?(@freereg1_csv_entry)
       message = 'The entry was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
@@ -137,7 +138,7 @@ class Freereg1CsvEntriesController < ApplicationController
   def error
     # This prepares an error file to be edited by the entry edit/create process.
     # The error file was created by the csv file processor
-    @error_file = BatchError.find(params[:id])
+    @error_file = BatchError.find(params[:id]) if params[:id].present?
     if @error_file.blank?
       flash[:notice] = 'The error entry was not found'
       redirect_to(params[:referrer]) && return
@@ -177,7 +178,8 @@ class Freereg1CsvEntriesController < ApplicationController
   end
 
   def show
-    @freereg1_csv_entry = Freereg1CsvEntry.find(params[:id])
+    @freereg1_csv_entry = Freereg1CsvEntry.find(params[:id]) if params[:id].present?
+
     unless Freereg1CsvEntry.valid_freereg1_csv_entry?(@freereg1_csv_entry)
       message = 'The entry was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
@@ -199,7 +201,7 @@ class Freereg1CsvEntriesController < ApplicationController
   end
 
   def update
-    @freereg1_csv_entry = Freereg1CsvEntry.find(params[:id])
+    @freereg1_csv_entry = Freereg1CsvEntry.find(params[:id]) if params[:id].present?
     unless Freereg1CsvEntry.valid_freereg1_csv_entry?(@freereg1_csv_entry)
       message = 'The entry was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return

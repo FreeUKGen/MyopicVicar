@@ -40,7 +40,7 @@ class SearchQuery
   field :witness, type: Boolean
   field :start_year, type: Integer
   field :end_year, type: Integer
-  field :radius_factor, type: Integer, default: 41
+  field :radius_factor, type: Integer, default: 101
   field :search_nearby_places, type: Boolean
   field :result_count, type: Integer
   field :place_system, type: String, default: Place::MeasurementSystem::ENGLISH
@@ -99,6 +99,18 @@ class SearchQuery
     def valid_order?(value)
       result = SearchOrder::ALL_ORDERS.include?(value) ? true : false
       result
+    end
+
+    def check_and_return_query(parameter)
+      messagea = 'Invalid parameter'
+      messageb = 'Non existent query'
+      record = nil
+      return record, false, messagea if parameter.nil?
+
+      record = SearchQuery.find(parameter)
+      return record, false, messageb if record.blank?
+
+      [record, true, '']
     end
   end
 

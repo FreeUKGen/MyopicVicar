@@ -158,7 +158,7 @@ class ImageServerImagesController < ApplicationController
 
     image_server_group, image_server_image = ImageServerImage.get_group_and_image_from_group_id(group_id)
 
-    redirect_back(fallback_location: new_manage_resource_path, :notice => 'Image "'+image_server_image_params[:image_file_name]+' does not exist') && return if image_server_image.blank?
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'Image does not exist') && return if image_server_image.nil?
 
     case image_server_image_params[:origin]
     when 'edit'
@@ -174,8 +174,8 @@ class ImageServerImagesController < ApplicationController
 
       redirect_to(image_server_image_path(edit_image)) && return
     when 'move'
-      image_server_image.where(:id=>{'$in': image_id}, :image_server_group_id=>src_group_id)
-      .update_all(:image_server_group_id=>group_id)
+      image_server_image.where(id: { '$in': image_id }, image_server_group_id: src_group_id)
+      .update_all(image_server_group_id: group_id)
 
       src_image_server_image.refresh_src_dest_group_summary(src_image_server_group)
       image_server_image.refresh_src_dest_group_summary(image_server_group)

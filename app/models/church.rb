@@ -63,12 +63,14 @@ class Church
 
     def valid_church?(church)
       result = false
+      return result if church.blank?
+
       church_object = Church.find(church)
       result = true if church_object.present? && Place.valid_place?(church_object.place_id)
       logger.warn("FREEREG:LOCATION:VALIDATION invalid church id #{church} ") unless result
       result
     end
-  end #self
+  end # self
 
   ############################################################################## instance methods
 
