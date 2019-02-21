@@ -1,7 +1,7 @@
 # robots.txt for https://www.freereg.org.uk/
 sitemap: https://www.freereg.org.uk/sitemap_location.txt
 User-agent: *
-Disallow: /
+Allow: /
 Allow: /cms/about
 Allow: /cms/donate
 Allow: /cms/help
