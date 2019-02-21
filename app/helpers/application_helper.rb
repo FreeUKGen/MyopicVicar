@@ -196,12 +196,12 @@ module ApplicationHelper
     if title.present?
       content_for :title, title
     elsif content_for?(:title)
-      title = content_for(:title) +  ' | ' + "FreeReg"
+      title = content_for(:title) +  ' | ' + "FreeREG"
 
     elsif  page_title.present?
-      title = page_title + ' | '  + "FreeReg"
+      title = page_title + ' | '  + "FreeREG"
     else
-      title = "FreeReg"
+      title = "FreeREG | UK Parish Register Records"
     end
   end
   def display_number(num)
