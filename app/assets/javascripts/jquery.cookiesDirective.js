@@ -99,7 +99,7 @@
 	};
 	
 	// Set cookie
-	 window.setCookie = function(name,value,days) {
+	window.setCookie = function(name,value,days) {
 		var expires = "";
 		if (days) {
 			var date = new Date();

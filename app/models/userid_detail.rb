@@ -13,6 +13,7 @@ class UseridDetail
   field :person_surname, type: String
   field :person_forename, type: String
   field :email_address, type: String
+  field :alternate_email_address, type: String
   field :email_address_confirmation, type: String
   field :address, type: String
   field :telephone_number, type: String
@@ -34,15 +35,23 @@ class UseridDetail
   field :county_groups, type: Array
   field :country_groups, type: Array
   field :digest, type: String, default: nil
-  field :skill_notes, type: String
-  field :transcription_agreement, type: String, default: 'Unknown'
+  field :skill_notes, type: String # only planned to be used for technical registrations
+  field :transcription_agreement, type: Boolean, default: false
   field :technical_agreement, type: Boolean, default: false
   field :research_agreement, type: Boolean, default: false
   field :email_address_valid, type: Boolean, default: true
   field :email_address_last_confirmned, type: DateTime
   field :no_processing_messages, type: Boolean, default: false
   field :userid_messages,type: Array, default: []
+  field :userid_feedback_replies,type: Hash, default: {}
   field :reason_for_invalidating,type: String
+  field :new_transcription_agreement, type: String, default: "Unknown"
+  field :email_address_validity_change_message, type: Array, default: []
+  field :secondary_role, type: Array, default: []
+  field :do_not_acknowledge_me, type: Boolean
+  field :acknowledge_with_pseudo_name, type: Boolean
+  field :pseudo_name, type: String
+  # Note if you add or change fields you may need to update the display and edit field order in /lib/freereg_options_constants
 
   attr_accessor :action, :message, :volunteer_induction_handbook, :code_of_conduct, :volunteer_policy
   index({ email_address: 1 })
@@ -51,98 +60,129 @@ class UseridDetail
   index({syndicate: 1, active: 1}, {name: "syndicate_active"})
   index({person_role: 1}, {name: "person_role"})
 
-  has_many :freereg1_csv_files, dependent: :restrict
-  has_many :attic_files, dependent: :restrict
+  has_many :freereg1_csv_files, dependent: :restrict_with_error
+  has_many :attic_files, dependent: :restrict_with_error
   has_many :assignments
 
   validates_presence_of :userid,:syndicate,:email_address, :person_role, :person_surname, :person_forename,
-    :skill_level #,:transcription_agreement
+    :skill_level #,:new_transcription_agreement
   validates_format_of :email_address,:with => Devise::email_regexp
   validate :userid_and_email_address_does_not_exist, :transcription_agreement_must_accepted, on: :create
-  validate :email_address_does_not_exist,  on: :update#:transcription_agreement_accept, on: :update
+  validate :email_address_does_not_exist, on: :update
   validates :volunteer_induction_handbook, :code_of_conduct, :volunteer_policy, acceptance: true
 
-  before_create :add_lower_case_userid,:capitalize_forename, :captilaize_surname, :transcription_agreement_value_change
+  before_create :add_lower_case_userid,:capitalize_forename, :captilaize_surname, :remove_secondary_role_blank_entries, :transcription_agreement_value_change
   after_create :save_to_refinery
-  before_save :capitalize_forename, :captilaize_surname
-  after_update :update_refinery
+  before_save :capitalize_forename, :captilaize_surname, :remove_secondary_role_blank_entries
+  #after_update :update_refinery
   before_destroy :delete_refinery_user_and_userid_folder
 
   class << self
     def syndicate(syndicate)
       where(:syndicate => syndicate)
     end
+
     def syndicate_coordinator(syndicate_coordinator)
       where(:syndicate_coordinator => syndicate_coordinator)
     end
+
     def userid(userid)
       where(:userid => userid)
     end
+
     def id(userid)
       where(:id => userid)
     end
+
     def role(role)
       where(:person_role => role)
     end
+
+    def secondary(role)
+      where(:secondary_role => role)
+    end
+
     def active(active)
       where(:active => active)
     end
+
     def reason(reason)
       where(:disabled_reason_standard => reason)
     end
+
     def email_address_valid
       where(:email_address_valid => true)
     end
-  end
 
-  def remember_search(search_query)
-    self.search_queries << search_query
-  end
-
-  def write_userid_file
-    return if MyopicVicar::Application.config.template_set == 'freecen'
-    user = self
-    details_dir = File.join(Rails.application.config.datafiles,user.userid)
-    change_details_dir = File.join(Rails.application.config.datafiles_changeset,user.userid)
-    Dir.mkdir(details_dir)  unless Dir.exist?(details_dir)
-    Dir.mkdir(change_details_dir)  unless Dir.exist?(change_details_dir)
-    details_file = File.join(details_dir,".uDetails")
-    change_details_file = File.join(change_details_dir,".uDetails")
-    if File.file?(details_file)
-      save_to_attic
+    def transcription_agreement(transcription_agreement)
+      where(:transcription_agreement => transcription_agreement)
     end
-    #we do not need a udetails file in the change set
-    details = File.new(details_file, "w")
-    details.puts "Surname:#{user.person_surname}"
-    details.puts "UserID:#{user.userid}"
-    details.puts "EmailID:#{user.email_address}"
-    details.puts "Password:#{user.password}"
-    details.puts "GivenName:#{user.person_forename}"
-    details.puts "Country:#{user.address}"
-    details.puts "SyndicateID:#{ChapmanCode.values_at(user.syndicate)}"
-    details.puts "SyndicateName:#{user.syndicate}"
-    details.puts "SignUpDate:#{user.sign_up_date}"
-    details.puts "Person:#{user.person_role}"
-    unless user.active
-      details.puts "DisabledDate:#{user.disabled_date}"
-      details.puts "DisabledReason:#{user.disabled_reason}"
-      details.puts "Active:0"
-      details.puts "Disabled:1"
-    else
-      details.puts "Active:1"
-      details.puts "Disabled:0"
+
+    def new_transcription_agreement(new_transcription_agreement)
+      if new_transcription_agreement[0] == 'All'
+        where(new_transcription_agreement: { '$in': SentMessage::ACTUAL_STATUS_MESSAGES })
+      elsif new_transcription_agreement.length == 1
+        where(new_transcription_agreement: new_transcription_agreement[0])
+      else
+        where(new_transcription_agreement: { '$in': new_transcription_agreement })
+      end
     end
-    details.close
+
+    def can_we_acknowledge_the_transcriber(userid)
+      answer = false
+      transcribed_by = nil
+      if userid.present? && !(userid.do_not_acknowledge_me.present?)
+        answer = true
+        if userid.acknowledge_with_pseudo_name
+          transcribed_by = userid.pseudo_name
+        else
+          transcribed_by = userid.person_forename
+          transcribed_by.nil? ? transcribed_by = userid.person_surname : transcribed_by = transcribed_by + ' ' + userid.person_surname
+        end
+      end
+      return answer, transcribed_by
+    end
+
+    def create_friendly_from_email(userid)
+      user = UseridDetail.userid(userid).first
+      if user.present?
+        friendly_email = "#{user.person_forename} #{user.person_surname} <#{user.email_address}>"
+      else
+        friendly_email = 'FreeREG Servant <freereg-contacts@freereg.org.uk>'
+      end
+      friendly_email
+    end
   end
 
 
-  def remove_checked_messages(msg_id)
-    self.reload
-    return if !(self.userid_messages.include? msg_id)
-    userid_msgs = self.userid_messages
-    userid_msgs = userid_msgs - [msg_id]
-    self.update_attribute(:userid_messages, userid_msgs) if userid_msgs.length != self.userid_messages.length
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Instance Methods
+
+  def add_fields(type, syndicate)
+    self.syndicate = syndicate if self.syndicate.nil?
+    self.userid = self.userid.strip unless self.userid.nil?
+    self.sign_up_date =  DateTime.now
+    self.active = true
+    case
+    when type == 'Register Researcher'
+      self.person_role = 'researcher'
+      self.syndicate = 'Researcher'
+    when type == 'Register as Transcriber'
+      self.person_role = 'transcriber'
+    when type == 'Technical Registration'
+      self.active  = false
+      self.person_role = 'technical'
+      self.syndicate = 'Technical'
+    end
+    password = Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil)
+    self.password = password
+    self.password_confirmation = password
+    self.email_address_last_confirmned = self.sign_up_date
+    self.email_address_valid= true
+    self.email_address_last_confirmned = Time.new
+    #self.new_transcription_agreement = "Unknown"
   end
+
+
 
   def count_not_checked_messages
     self.reload
@@ -158,6 +198,89 @@ class UseridDetail
     self.userid_messages.length
   end
 
+  def delete_feedback
+    self.userid_feedback_replies.each do |feedback_id, message_id|
+      next unless message_id.empty?
+      feedback = Feedback.id(feedback_id).first
+      if feedback.nil?
+        @userid_feedback_msgs.except!(feedback_id)
+      end
+    end
+  end
+
+  def does_not_have_original_message?(message)
+    userid_messages.include?(message.source_message_id) ? answer = false : answer = true
+    answer
+  end
+
+  def feedback_without_replies
+    self.update_userid_feedbacks
+    @feedbacks_with_no_reply = self.userid_feedback_replies.keys.select do |id|
+      self.userid_feedback_replies[id].blank?
+    end
+  end
+
+  def feedback_with_replies
+    self.update_userid_feedbacks
+    @feedbacks_with_no_reply = self.userid_feedback_replies.keys.reject do |id|
+      self.userid_feedback_replies[id].blank?
+    end
+  end
+
+  def has_original_message?(message)
+    userid_messages.include?(message.source_message_id) ? answer = true : answer = false
+    answer
+  end
+
+  def meets_open_status_requirement?(open_data_status)
+    return true if open_data_status[0] == 'All'
+
+    open_data_status.each do |status|
+      return true if new_transcription_agreement == status
+    end
+    false
+  end
+
+  def meets_reasons?(reasons)
+    reasons.each do |reason|
+      return true if disabled_reason == reason || disabled_reason_standard == reason
+    end
+    false
+  end
+
+  def self.look_up_id(userid)
+    user = UseridDetail.userid(userid).first
+  end
+
+
+
+  def remove_checked_messages(msg_id)
+    self.reload
+    return if !(self.userid_messages.include? msg_id)
+    userid_msgs = self.userid_messages
+    userid_msgs = userid_msgs - [msg_id]
+    self.update_attribute(:userid_messages, userid_msgs) if userid_msgs.length != self.userid_messages.length
+  end
+
+  def update_userid_feedbacks
+    self.reload
+    update_feedback_replies
+    @userid_feedback_msgs = self.userid_feedback_replies
+    return {} if @userid_feedback_msgs.empty?
+    delete_feedback
+    self.userid_feedback_replies.replace(@userid_feedback_msgs) if @userid_feedback_msgs.length != self.userid_feedback_replies.length
+    self.update_attribute(:userid_feedback_replies, self.userid_feedback_replies)
+  end
+
+  def update_feedback_replies
+    self.userid_feedback_replies.each do |key, value|
+      next if value.blank?
+      @existing_messages = value.delete_if do |v|
+        Message.where(id: v).blank?
+      end
+      self.userid_feedback_replies.store(key, @existing_messages) if value.length != @existing_messages
+    end
+  end
 
 
   def self.get_active_userids_for_display(syndicate)
@@ -245,30 +368,13 @@ class UseridDetail
     return userids
   end
 
-  def add_fields(type,syndicate)
-    self.syndicate = syndicate if self.syndicate.nil?
-    self.userid = self.userid.strip unless self.userid.nil?
-    self.sign_up_date =  DateTime.now
-    self.active = true
-    case
-    when type == 'Register Researcher'
-      self.person_role = 'researcher'
-      self.syndicate = 'Researcher'
-    when type == 'Register as Transcriber'
-      self.person_role = 'transcriber'
-    when type == 'Technical Registration'
-      self.active  = false
-      self.person_role = 'technical'
-      self.syndicate = 'Technical'
-    when type == 'Upload Users'
-      self.transcription_agreement = "Unknown"
+
+
+  def remove_secondary_role_blank_entries
+    secondary_role = self.secondary_role
+    if secondary_role.include? ""
+      secondary_role.delete("")
     end
-    password = Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil)
-    self.password = password
-    self.password_confirmation = password
-    self.email_address_last_confirmned = self.sign_up_date
-    self.email_address_valid= true
-    self.email_address_last_confirmned = Time.new
   end
 
   def add_lower_case_userid
@@ -353,6 +459,15 @@ class UseridDetail
     value = false
     value = true if Freereg1CsvFile.where(:userid => self.userid).exists?
     value
+  end
+
+  def json_of_my_profile
+    json_of_my_profile = Hash.new
+    fields = FreeregOptionsConstants::USERID_DETAILS_MYOWN_DISPLAY
+    fields.each do |field|
+      self[field].blank? ? json_of_my_profile[field.to_sym] = nil : json_of_my_profile[field.to_sym]  = self[field]
+    end
+    json_of_my_profile
   end
 
   def need_to_confirm_email_address?
@@ -451,20 +566,48 @@ class UseridDetail
   end
 
   def list_incomplete_registrations current_user, current_syndicate
-    if current_syndicate == 'all'
-      @users = list_all_users
-    else
-      @users = get_users(current_syndicate)
-    end
+    @users = get_users_by_syndicate(current_syndicate)
     filter_users
   end
 
   def full_name
     "#{self.person_forename} #{self.person_surname}"
   end
-  
+
   def registration_completed user
     user.password != registered_password
+  end
+
+  def incomplete_registration_user_lists(current_syndicate, active)
+    syndicate_users = get_users_by_syndicate(current_syndicate)
+    if active.nil?
+      @users = syndicate_users
+    elsif active
+      @users = syndicate_users.where(active: true)
+    else
+      @users = syndicate_users.where(active: false)
+    end
+    active_lists(get_user_ids)
+  end
+
+  def active_incomplete_registration_list
+    @users = list_all_users
+    active_incomplete_registrations = Array.new
+    filter_users.each { |usr|
+      next if !usr.active
+      active_incomplete_registrations << usr.userid
+    }
+    active_incomplete_registrations
+  end
+
+  def active_lists(user_lists)
+    original_stdout = STDOUT.clone
+    file_name = "active_incomplete_registrations"
+    ApplicationController.helpers.delete_file_if_exists(file_name)
+    STDOUT.reopen(ApplicationController.helpers.new_file(file_name), "w")
+    puts user_lists
+    STDOUT.reopen(original_stdout)
+    puts "Total number of ids: #{user_lists.count}"
   end
 
   def incomplete_user_registrations_count
@@ -484,7 +627,7 @@ class UseridDetail
     @users.each { |user|
       next if registration_completed(user)
       @incompleted_registration_users << user
-    }    
+    }
     @incompleted_registration_users
   end
 
@@ -493,27 +636,31 @@ class UseridDetail
   end
 
   def list_all_users
-    self.class.only(:_id, :userid, :password, :person_forename, :person_surname, :email_address, :syndicate)
+    self.class.only(:_id, :userid, :password, :person_forename, :person_surname, :email_address, :syndicate, :active)
   end
 
-  def get_users(current_syndicate)
-    Syndicate.get_users_for_syndicate(current_syndicate)
-  end
-
-  def transcription_agreement_must_accepted
-    errors.add(:base, "Transcription agreement must be accepted") if self.transcription_agreement == "0"
-  end
-
-  def transcription_agreement_value_change
-    if self.transcription_agreement == "1"
-      self.transcription_agreement = 'Accepted'
-    elsif self.transcription_agreement == 0
-      self.transcription_agreement = 'Declined'
+  def get_users_by_syndicate(current_syndicate)
+    if current_syndicate == 'all'
+      list_all_users
+    else
+      self.class.syndicate(current_syndicate)
     end
   end
 
-  def transcription_agreement_accept
-    errors.add(:base, "Transcription agreement must be accepted") if self.transcription_agreement != "Accepted"
+  def get_user_ids
+    filter_users.map{ |x| x[:userid] }
+  end
+
+  def transcription_agreement_must_accepted
+    errors.add(:base, "Transcription agreement must be accepted") if self.new_transcription_agreement == "0"
+  end
+
+  def transcription_agreement_value_change
+    if self.new_transcription_agreement == "1"
+      self.new_transcription_agreement = 'Accepted'
+    elsif self.new_transcription_agreement == 0
+      self.new_transcription_agreement = 'Declined'
+    end
   end
 
 end #end class

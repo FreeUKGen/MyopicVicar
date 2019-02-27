@@ -17,7 +17,7 @@
   </aside>
 </div>
 <% if flash[:notice] %>
-  <div class="weight--semibold text--center push--bottom" style="color: #a1185a;">
+  <div class="weight--semibold push--bottom" style="color: #a1185a;">
     <%= flash[:notice] %>  <% flash[:notice] = nil %>
   </div>
 <% end %>
@@ -30,6 +30,7 @@
   </ul>
   <%@userid.errors.clear%>
 <% end %>
+
 <%= semantic_form_for @userid do |f| %>
   <div class="grid">
     <div class= "grid__item two-thirds lap-four-fifths palm-one-whole">
@@ -37,8 +38,8 @@
         <legend>Volunteer documents</legend>
         <p class="push-half--bottom">We need you to read and agree to these documents:</p>
         <label for="userid_detail_new_transcription_agreement">
-          <%= f.check_box :transcription_agreement %>
-          I have read and hereby sign, the <%= link_to 'Transcription Agreement(pdf)', "http://www.freeukgenealogy.org.uk/files/Documents/FreeUKGenealogyTranscriptionAgreement.pdf", target: '_blank', title: "View or download the Agreement" %><span class="weight--normal">(link opens in new tab)</span>
+          <%= f.check_box :new_transcription_agreement %>
+          I have read and hereby sign, the <%= link_to 'Transcription Agreement (pdf)', "http://www.freeukgenealogy.org.uk/files/Documents/FreeUKGenealogyTranscriptionAgreement.pdf", target: '_blank', title: "View or download the Agreement" %> <span class="weight--normal">(link opens in new tab)</span>
         </label>
         <label for="userid_detail_volunteer_induction_handbook">
           <%= f.check_box :volunteer_induction_handbook %>
@@ -127,15 +128,11 @@
     </ol>
   </fieldset>
 <% end %>
-
 <div class="grid">
   <aside class="grid__item one-whole">
-    <div class = "adsense_box push--ends cen_unit_fullwidth">
+    <div class = "adsense_box push--ends reg_adsense">
       <p class = "text--center">Advertisement</p>
-      <div class="bnner-horz-secondary">
-      <a href ="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/?_ga=2.145101431.251616756.1548792447-1735478806.1548792447"><%= image_tag 'png/header-donate.png', :class => "donations", :alt => "Donations - FreeUKGenealogy" %></a>
       <%= fullwidth_adsense %>
-      </div>
     </div>
   </aside>
 </div>

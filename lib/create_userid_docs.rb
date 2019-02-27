@@ -194,6 +194,7 @@ class CreateUseridDocs
 
       header[:person_role] = "system_administrator" if header[:userid] == "REGManager"
       header[:person_role] = "system_administrator" if header[:userid] == "Captainkirk"
+      header[:person_role] = "system_administrator" if header[:userid] == "smrr723"
       header[:person_role] = "data_manager" if header[:userid] == "ericb"
       header[:person_role] = "data_manager" if header[:userid] == "kirkbedfordshire"
 
@@ -212,6 +213,7 @@ class CreateUseridDocs
             header[:country_groups] = old_detail.country_groups
             header[:skill_notes] = old_detail.skill_notes
             header[:transcription_agreement] = old_detail.transcription_agreement
+            header[:new_transcription_agreement] = old_detail.new_transcription_agreement
             header[:technical_agreement] = old_detail.technical_agreement
             header[:research_agreement] = old_detail.research_agreement
             old_detail.delete
@@ -230,10 +232,10 @@ class CreateUseridDocs
           header.delete(:disabled)
           userid = UseridDetail.new(header)
           if type == 'recreate'
-    
+
             userid.save(:validate => false)
           else
-          
+
             userid.save
           end
         end

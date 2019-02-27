@@ -1,82 +1,82 @@
 <% breadcrumb :show_contact, @contact %>
 <div style="clear:both;"> </div>
 <% if flash[:notice] %>
-<div id="notice" style="color:blue"><br>
-  <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
-</div>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+  </div>
 <% end %>
-<div class="grid">
+<h4 class=" text--center push--bottom" ><%= show_contact_title(@contact) %></h4>
+<h4 class=" text--center push--bottom" ><%= show_contact_title_line_two(@contact) %></h4>
+<% if !Contact.github_enabled %>
+  <h4 class=" text--center">GitHub integration is not activated </h4>
+<% end%>
+<div  class=" text--center push--bottom">
+  <%= link_to 'Create Reply', reply_contact_path(source_contact_id:@contact.id) ,:class => "btn weight--light  btn--small" %>
+  <%= show_contact_add_comment_link(@contact, params[:source])%>
+  <%= link_to 'View Replies', contact_reply_messages_path(@contact.id), class: "btn weight--light  btn--small", method: :get %>
+  <%= link_to 'Archive', archive_contact_path(@contact.id), :class => "btn weight--light  btn--small", data: { confirm: 'Are you sure you want to Archive this contact?' } if do_we_show_archive_contact_action?(@contact)%>
+  <%= link_to 'Restore', restore_contact_path(@contact.id), :class => "btn weight--light  btn--small", data: { confirm: 'Are you sure you want to Archive this contact?' } if do_we_show_restore_contact_action?(@contact)%>
+  <%= link_to 'Keep until I say so', keep_contact_path(@contact.id,:source => params[:action]), :class => 'btn weight--light  btn--small',  data: { confirm: 'Are you sure you want keep this contact' } unless @contact.keep.present? %>
+  <%= link_to 'Remove Keep Designation', unkeep_contact_path(@contact.id,:source => params[:action]), :class => 'btn weight--light  btn--small',  data: { confirm: 'Are you sure you want remove the keep designation for this contact' } if @contact.keep.present? %>
+  <%= link_to "Convert to Issue", convert_contact_to_issue_path(@contact),:class => "btn weight--light  btn--small" if do_we_show_github_create_contact_action?(@contact) %>
+</div>
+<div class="grid" >
   <section class="island ">
-    <h4 >Contact Details</h4>
-    <div class="grid__item  ">
-      
-      <table class="table--bordered table--data " >
+    <div class="grid__item ">
+      <table class="table--bordered table--data " style="text-align: left">
         <colgroup >
-        <col class=t40>
-        <col class=t60>
+          <col class=t20>
+          <col class=t80>
         </colgroup>
         <tr>
           <th class="caps">Field</th>
           <th  class="caps">Value</th>
         </tr>
-        <tr>
-          <td>Type of Contact : </td> <td class="weight--semibold"> <%= @contact.contact_type %>  </td>
-        </tr>
-        <tr>
-          <td>Reference : </td> <td class="weight--semibold"> <%= @contact.identifier %>  </td>
-        </tr>
-	<% if @contact.selected_county.present? %>
-	<tr>
-	  <td>County user selected to Contact:</td>
-	  <td class="weight--semibold"><%= @contact.selected_county %></td>
-	</tr>
-	<% end %>
-        <tr>
-          <td>Time and date of Contact:</td> <td class="weight--semibold">  <%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil? %></td>
-        </tr>
-        <tr>
-          <td>Name of Contact Person:</td> <td class="weight--semibold"><%= @contact.name %></td>
-        </tr>
-        <tr>
-          <td>Email address of Contact Person :</td><td class="weight--semibold"><%= @contact.email_address %> </td>
-        </tr>
         <% if @contact.contact_type = 'Data Problem' &&  @contact.entry_id.present?%>
-        <tr><td>Record :</td><td class="weight--semibold"> <%= @contact.line_id %> </td></tr>
-	<% if 'freecen' == MyopicVicar::Application.config.template_set %>
+          <tr >
+            <td>Record :</td>
+            <td class="weight--semibold"> <%= @contact.line_id %> </td>
+          </tr>
+  <% if 'freecen' == MyopicVicar::Application.config.template_set %>
           <tr><td>Data Record :</td><td class="weight--semibold"><%= link_to(' Record in question', search_record_path(@contact.record_id, :search_id => @contact.query), method: :get)%></td></tr>
-	<% elsif 'freereg' == MyopicVicar::Application.config.template_set %>
+  <% elsif 'freereg' == MyopicVicar::Application.config.template_set %>
           <tr><td>Data Record :</td><td class="weight--semibold"><%= button_to ' Record in question', freereg1_csv_entry_path(@contact.entry_id),  method: :get%></td></tr>
-	<% end %>
-        <tr><td>Data County :</td><td class="weight--semibold"> <%= @contact.county %> </td></tr>
+  <% end %>
+          <tr>
+            <td>Data Record :</td>
+            <td class="weight--semibold"><%= link_to ' Record in question', freereg1_csv_entry_path(@contact.entry_id),  method: :get, :class => "btn weight--light  btn--small"%></td>
+          </tr>
+          <tr>
+            <td>County :</td>
+            <td class="weight--semibold"> <%= @contact.county %> </td>
+          </tr>
         <% end%>
-        <tr>
-          <td>Explanation:</td><td class="weight--semibold"><%= @contact.body %></td>
+        <tr >
+          <td >The explanation was:</td>
+          <td class="weight--semibold"><%= @contact.body %></td>
         </tr>
-        
         <tr>
-          <td>Session Data:</td><td class="weight--semibold"> <%= @contact.session_data %> </td>
+          <td>Session Data:</td>
+          <td class="weight--semibold"> <%= @contact.session_data %> </td>
         </tr>
-        
         <% if @contact.github_issue_url %>
-          <tr><td>Github Issue:</td><td class="weight--semibold"> <%= link_to @contact.github_issue_url, @contact.github_issue_url  %></td></tr>
-          <tr><td>Github Number:</td><td class="weight--semibold"> <%= @contact.github_number  %></td></tr>
-          <tr><td>Make Github Comment:</td><td class="weight--semibold"> <%= link_to @contact.github_comment_url, @contact.github_comment_url  %></td></tr>
-        <% else %>
-          <% if Contact.github_enabled %>
-            <tr><span  style="float:left;">
-              <%= button_to "Convert to Issue", convert_contact_to_issue_path(@contact)  %>
-            </span></tr>
-          <% else %>
-            <tr>Github integration is not set up on this site yet.</tr>
-          <% end %>
+          <tr>
+            <td>Github Issue:</td>
+            <td class="weight--semibold"> <%= link_to @contact.github_issue_url, @contact.github_issue_url  %></td>
+          </tr>
+          <tr>
+            <td>Github Number:</td>
+            <td class="weight--semibold"> <%= @contact.github_number  %></td>
+          </tr>
+          <tr>
+            <td>Make Github Comment:</td>
+            <td class="weight--semibold"> <%= link_to @contact.github_comment_url, @contact.github_comment_url  %></td>
+          </tr>
         <% end %>
-    </table>
-    <b>Screenshot:</b>
-    <% if @contact.screenshot_url %>
-      <%= image_tag @contact.screenshot_url %>
-    <% else %>
-      No screenshot attached.
-    <% end %>
-  </div>
-</section>
+      </table>
+      <% if @contact.screenshot_url %>
+        <%= image_tag @contact.screenshot_url %>
+      <% end %>
+    </div>
+  </section>
 </div>

@@ -76,11 +76,14 @@ class Place
   index({ chapman_code: 1, _id: 1, disabled: 1, data_present: 1}, {name: "chapman_place_disabled_data_present"})
   index({ location: "2dsphere" }, { min: -200, max: 200 })
 
-  has_many :churches, dependent: :restrict
+  has_many :churches, dependent: :restrict_with_error
   has_many :search_records
+
   has_many :freecen_pieces
   has_many :freecen_dwellings
   has_many :sources
+
+  has_many :image_server_groups
   has_many :gaps
 
   has_many :open_names_per_place
@@ -110,7 +113,11 @@ class Place
     end
 
     def chapman_code(chapman)
-      where(:chapman_code => chapman)
+      if chapman.nil?
+        all
+      else
+        where(:chapman_code => chapman)
+      end
     end
 
     def county(county)
@@ -128,12 +135,35 @@ class Place
     def place(place)
       where(:place_name => place)
     end
+
     def modified_place_name(place)
       where(:modified_place_name => place)
     end
 
-  end
+    def valid_chapman_code?(chapman_code)
+      result = ChapmanCode.values.include?(chapman_code) ? true : false
+      logger.warn("FREEREG:LOCATION:VALIDATION invalid Chapman code #{chapman_code} ") unless result
+      result
+    end
 
+    def valid_county?(county)
+      result = ChapmanCode.keys.include?(county) ? true : false
+      logger.warn("FREEREG:LOCATION:VALIDATION invalid County code #{county} ") unless result
+      result
+    end
+
+    def valid_place?(place)
+      result = false
+      return result if place.blank?
+
+      place_object = Place.find(id: place)
+      if place_object.present?
+        result = true if Place.valid_chapman_code?(place_object.chapman_code) && Place.valid_county?(place_object.county)
+      end
+      logger.warn("FREEREG:LOCATION:VALIDATION invalid place id #{place} ") unless result
+      result
+    end
+  end
   ############################################################### instance methods
 
   def add_country
@@ -187,9 +217,9 @@ class Place
   end
 
 
-  def adjust_location_before_applying(params,session)
+  def adjust_location_before_applying(params, chapman)
     self.chapman_code = ChapmanCode.name_from_code(params[:place][:county]) unless params[:place][:county].nil?
-    self.chapman_code = session[:chapman_code] if self.chapman_code.nil?
+    self.chapman_code = chapman if self.chapman_code.nil?
     #We use the lat/lon if provided and the grid reference if  lat/lon not available
     self.change_grid_reference(params[:place][:grid_reference])
     self.change_lat_lon(params[:place][:latitude],params[:place][:longitude]) if params[:place][:grid_reference].blank?
@@ -266,17 +296,17 @@ class Place
   def change_name(param)
     place_name = param[:place_name]
     old_place_name = self.place_name
-    return [true, "That place name is already in use"] if Place.place(place_name).exists?
+    return [false, "That place name is already in use"] if Place.place(place_name).exists?
     unless old_place_name == place_name
       self.save_to_original
       self.update_attributes(:place_name => place_name, :modified_place_name => place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase )
-      return [true, "Error in save of place; contact the webmaster"] if self.errors.any?
+      return [false, "Error in save of place; contact the webmaster"] if self.errors.any?
       self.propogate_place_name_change(old_place_name)
       self.propogate_batch_lock
       self.recalculate_last_amended_date
       PlaceCache.refresh_cache(self)
     end
-    return [false, ""]
+    [true, '']
   end
 
   def check_and_set(param)
@@ -529,11 +559,11 @@ class Place
     country = param[:country] if param[:country].present?
     self.update_attributes(:county => county, :chapman_code => chapman_code, :country => country)
     if self.errors.any?
-      return [true, "Error in save of place; contact the webmaster"]
+      return [false, "Error in save of place; contact the webmaster"]
     end
     self.propogate_county_change
     PlaceCache.refresh_cache(self)
-    return [false, ""]
+    [true, '']
   end
 
   def save_to_original

@@ -1,31 +1,37 @@
+# Copyright 2012 Trustees of FreeBMD
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+#
 class SearchQueriesController < ApplicationController
-  helper DonateIconHelper
   skip_before_action :require_login
-  skip_before_action :require_cookie_directive, :only => :new
   skip_before_action :verify_authenticity_token
-  before_action :check_for_mobile, :only => :show
-  rescue_from Mongo::Error::OperationFailure, :with => :search_taking_too_long
-  rescue_from Mongoid::Errors::DocumentNotFound, :with => :missing_document
-  #rescue_from ActionView::Template::Error, :with => :missing_template
+  before_action :check_for_mobile, only: :show
+  rescue_from Mongo::Error::OperationFailure, with: :search_taking_too_long
+  rescue_from Mongoid::Errors::DocumentNotFound, with: :missing_document
+  rescue_from ActionController::UnknownFormat, with: :github_camo
+  rescue_from ActionView::Template::Error, with: :missing_template
+  rescue_from Timeout::Error, with: :search_taking_too_long
   RECORDS_PER_PAGE = 100
 
   def about
-    if params[:page_number]
-      @page_number = params[:page_number].to_i
-    else
-      @page_number = 0
-    end
-    begin
-      @search_query = SearchQuery.find(params[:id])
-      # @emendations = EmendationRule.where(:replacement => @search_query.first_name.downcase).all.to_a unless @search_query.blank? || @search_query.first_name.blank?
-    rescue Mongoid::Errors::DocumentNotFound
-      log_possible_host_change
-      redirect_to new_search_query_path
-    end
+    @page_number = params[:page_number].present? ? params[:page_number].to_i : 0
+    @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
+    redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
   end
 
   def analyze
-    @search_query = SearchQuery.find(params[:id])
+    @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
+    redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
+
     begin
       @plan = @search_query.explain_plan
     rescue => ex
@@ -35,7 +41,9 @@ class SearchQueriesController < ApplicationController
   end
 
   def broaden
-    old_query = SearchQuery.find(params[:id])
+    old_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
+    redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
+
     new_parameters = old_query.reduce_attributes
     @search_query = SearchQuery.new(new_parameters)
     @search_query.radius_factor = @search_query.radius_factor * 2
@@ -45,50 +53,43 @@ class SearchQueriesController < ApplicationController
   end
 
   def create
-    p "#{request.env['mobvious.device_type']}"
-    if params[:search_query].present? && params[:search_query][:region].blank?
-      @search_query = SearchQuery.new(search_params.delete_if{|k,v| v.blank? })
-      @search_query["first_name"] = @search_query["first_name"].strip unless @search_query["first_name"].nil?
-      @search_query["last_name"] = @search_query["last_name"].strip unless @search_query["last_name"].nil?
+    binding.pry
+    condition = true if params[:search_query].present? && params[:search_query][:region].blank?
+    redirect_back(fallback_location: new_search_query_path, notice: 'Invalid Search') && return unless condition
 
-      if @search_query["chapman_codes"].include?("YKS")
-        @search_query["chapman_codes"] = (@search_query["chapman_codes"] + ["ERY", "NRY", "WRY"]).uniq #keep YKS (in case user revises search) and add codes for the ridings
-      end
-      if @search_query["birth_chapman_codes"].include?("YKS")
-        @search_query["birth_chapman_codes"] = (@search_query["birth_chapman_codes"] + ["ERY", "NRY", "WRY"]).uniq #check for birth county of the ridings in addition to generic "YKS"
-      end
-      if @search_query["chapman_codes"].include?("CHI")
-        @search_query["chapman_codes"] = (@search_query["chapman_codes"] + ["ALD", "GSY", "JSY", "SRK"]).uniq
-      end
-      if @search_query["birth_chapman_codes"].include?("CHI")
-        @search_query["birth_chapman_codes"] = (@search_query["birth_chapman_codes"] + ["ALD", "GSY", "JSY", "SRK"]).uniq
-      end
-      @search_query.session_id = request.session_options[:id]
-      if  @search_query.save
-        session[:query] = @search_query.id
-        @search_results = @search_query.search
-        redirect_to search_query_path(@search_query)
-      else
-      render :new
-      end
+    do_not_proceed, message = SearchQuery.invalid_integer(params[:search_query])
+    redirect_back(fallback_location: new_search_query_path, notice: message) && return if do_not_proceed
+
+    @search_query = SearchQuery.new(search_params.delete_if { |k, v| v.blank? })
+    @search_query['first_name'] = @search_query['first_name'].strip if @search_query['first_name'].present?
+    @search_query['last_name'] = @search_query['last_name'].strip if @search_query['last_name'].present?
+    @search_query['chapman_codes'] = ['', 'ERY', 'NRY', 'WRY'] if @search_query['chapman_codes'][1].eql?('YKS')
+    @search_query['birth_chapman_codes'] = ['', 'ERY', 'NRY', 'WRY'] if @search_query['birth_chapman_codes'][1].eql?('YKS')
+    @search_query['chapman_codes'] = ['', 'ALD', 'GSY', 'JSY', 'SRK'] if @search_query['chapman_codes'][1].eql?('CHI')
+    @search_query['birth_chapman_codes'] = ['', 'ALD', 'GSY', 'JSY', 'SRK'] if @search_query['birth_chapman_codes'][1].eql?('CHI')
+    @search_query.session_id = request.session_options[:id]
+    if @search_query.save
+      session[:query] = @search_query.id
+      @search_results = @search_query.search
+      redirect_to search_query_path(@search_query)
     else
-     logger.warn("FREEREG:SEARCH: Search was initiated by a bot")
-     render :new
+      render :new
     end
   end
 
   def edit
-    @search_query = SearchQuery.find(params[:id])
+    @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
+    redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
   end
 
-  def go_back
-    flash[:notice] = "We encountered a problem completing your request. Please resubmit. If this situation continues please let us know through the Contact Us link at the foot of this page"
+  def github_camo
+    logger.warn("FREEREG:SEARCH: Search encountered an UnknownFormat #{params}")
+    flash[:notice] = 'We encountered an UnknownFormat'
     redirect_to new_search_query_path
-    return
   end
 
   def index
-    redirect_to :action => :new
+    redirect_to action: :new
   end
 
   def missing_document
@@ -106,7 +107,9 @@ class SearchQueriesController < ApplicationController
   end
 
   def narrow
-    old_query = SearchQuery.find(params[:id])
+    old_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
+    redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
+
     new_parameters = old_query.reduce_attributes
     @search_query = SearchQuery.new(new_parameters)
     @search_query.radius_factor = @search_query.radius_factor / 2
@@ -116,35 +119,33 @@ class SearchQueriesController < ApplicationController
   end
 
   def new
-    if session[:message]  == "load"
-      @page = Refinery::Page.where(:slug => 'message').first.parts.first.body.html_safe
-    else
-      @page = nil
-    end
-    if params[:search_id]
+    @page = session[:message] == 'load' ? Refinery::Page.where(slug: 'message').first.parts.first.body.html_safe : nil
 
-      old_query = SearchQuery.search_id(params[:search_id]).first
-      if old_query.present?
-        old_query.search_result.records = Hash.new unless  old_query.search_result.nil?
-        @search_query = SearchQuery.new(old_query.attributes)
-      else
-        @search_query = SearchQuery.new
-      end
-    else
-      @search_query = SearchQuery.new
-    end
+    session.delete(:search_controller)
+    @search_query = SearchQuery.new
+    old_query = SearchQuery.search_id(params[:search_id]).first if params[:search_id]
+
+    old_query.search_result.records = {} if old_query.present? && old_query.search_result.present?
+    @search_query = SearchQuery.new(old_query.attributes) if old_query.present?
   end
 
   def remember
-    @search_query = SearchQuery.find(params[:id])
+    @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
+    redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
+
     get_user_info_from_userid
     @user.remember_search(@search_query)
-    flash[:notice] = "This search has been added to your remembered searches"
+    flash[:notice] = 'This search has been added to your remembered searches'
     redirect_to search_query_path(@search_query)
   end
 
   def reorder
-    old_query = SearchQuery.find(params[:id])
+    old_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
+    redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
+
+    proceed = SearchQuery.valid_order?(params[:order_field])
+    redirect_back(fallback_location: new_search_query_path, notice: 'No such order') && return unless proceed
+
     order_field = params[:order_field]
     if order_field == old_query.order_field
       # reverse the directions
@@ -170,53 +171,45 @@ class SearchQueriesController < ApplicationController
 
   def report_for_day
     if day_param = params[:day]
-      @start_day = DateTime.parse(day_param).strftime("%F")
+      @start_day = DateTime.parse(day_param).strftime('%F')
     else
-      @start_day = DateTime.now.strftime("%F")
+      @start_day = DateTime.now.strftime('%F')
     end
-    unless order_param = params[:order]
-      order_param = :runtime
-    end
-    @previous_day = (Date.parse(@start_day) - 1).strftime("%F")
-    @next_day = (Date.parse(@start_day) + 1).strftime("%F")
-    @number = SearchQuery.where(:day => @start_day).count
-    @search_queries = SearchQuery.where(:day => @start_day).limit(500).order_by(runtime: -1)
+    order_param = :runtime unless order_param == params[:order]
+    @previous_day = (Date.parse(@start_day) - 1).strftime('%F')
+    @next_day = (Date.parse(@start_day) + 1).strftime('%F')
+    @number = SearchQuery.where(day: @start_day).count
+    @search_queries = SearchQuery.where(day: @start_day).limit(500).order_by(runtime: -1)
   end
 
   def report_for_session
     @session_id = params[:session_id]
     @feedback = nil
-    if params[:feedback_id]
-      @feedback = Feedback.find(params[:feedback_id])
-    end
-    @search_queries = SearchQuery.where(:session_id => @session_id).order_by(c_at: 1)
+    @feedback = Feedback.find(params[:feedback_id]) if params[:feedback_id]
+    @search_queries = SearchQuery.where(session_id: @session_id).order_by(c_at: 1)
   end
 
   def search_taking_too_long(message)
     appname = MyopicVicar::Application.config.freexxx_display_name.upcase
-    if message.to_s =~ /operation exceeded time limit/
+    if message.to_s =~ /operation exceeded time limit/ || message.to_s =~ /to receive data/
       @search_query = SearchQuery.find(session[:query])
       runtime = Rails.application.config.max_search_time
-      @search_query.update_attributes(:runtime => runtime, :day => Time.now.strftime("%F"))
+      @search_query.update_attributes(runtime: runtime, day: Time.now.strftime('%F'))
       logger.warn("#{appname}:SEARCH: Search #{@search_query.id} took too long #{Rails.application.config.max_search_time} ms")
       session[:query] = nil
       flash[:notice] = 'Your search was running too long. Please review your search criteria. Advice is contained in the Help pages.'
     else
       logger.warn("#{appname}:SEARCH: Search #{@search_query.id} had a problem #{message}") if @search_query.present? && @search_query.id.present?
-      logger.warn("#{appname}:SEARCH: Search #{message}") unless  @search_query.present? && @search_query.id.present?
+      logger.warn("#{appname}:SEARCH: Search #{message}") unless @search_query.present? && @search_query.id.present?
       flash[:notice] = 'Your search encountered a problem please contact us with this message '
     end
-    redirect_to new_search_query_path(:search_id => @search_query)
+    redirect_to new_search_query_path(search_id: @search_query)
   end
 
   def selection
-    if day_param = params[:day]
-      @start_day = DateTime.parse(day_param).strftime("%F")
-    else
-      @start_day = DateTime.now.strftime("%F")
-    end
-    @search_queries = SearchQuery.where(:day => @start_day).order_by("_id ASC")
-    @searches = Hash.new
+    @start_day = day_param = params[:day] ? DateTime.parse(day_param).strftime('%F') : DateTime.now.strftime('%F')
+    @search_queries = SearchQuery.where(day: @start_day).order_by('_id ASC')
+    @searches = {}
     @search_queries.each do |search|
       @searches[":#{search.id}"] = search._id
     end
@@ -229,97 +222,68 @@ class SearchQueriesController < ApplicationController
 
   def show
     appname = MyopicVicar::Application.config.freexxx_display_name.upcase
-    if params[:id].present?
-      @search_query = SearchQuery.where(:id => params[:id]).first
+    @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
+    redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
+
+    flash[:notice] = 'Your search results are not available. Please repeat your search' if @search_query.result_count.blank?
+    redirect_back(fallback_location: new_search_query_path) && return if @search_query.result_count.blank?
+
+    if @search_query.result_count > FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+      @result_count = @search_query.result_count
+      @search_results = []
+      @ucf_results = []
     else
-      logger.warn("#{appname}:SEARCH_ERROR:nil parameter condition occurred")
-      go_back
-      return
-    end
-    if @search_query.present? &&  @search_query.result_count.present?
-      if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS && MyopicVicar::TemplateSet::FREECEN != MyopicVicar::Application.config.template_set
-        @result_count = @search_query.result_count
-        @search_results =   Array.new
-        @ucf_results = Array.new
-      else
-        response, @search_results,  @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
-        if !response || @search_results.nil? || @search_query.result_count.nil?
-          logger.warn("#{appname}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
-          flash[:notice] = 'Your search results are not available. Please repeat your search'
-          redirect_to new_search_query_path(:search_id => @search_query)
-          return
-        end
+      response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
+      if !response || @search_results.nil? || @search_query.result_count.nil?
+        logger.warn("#{appname}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
+        flash[:notice] = 'Your search results are not available. Please repeat your search'
+        redirect_to(new_search_query_path(search_id: @search_query)) && return
       end
-    else
-      logger.warn("#{appname}:SEARCH_ERROR:search query no longer present")
-      go_back
-      return
     end
   end
 
   def show_print_version
-    @printable_format = true;
     appname = MyopicVicar::Application.config.freexxx_display_name.upcase
-    if params[:id].present?
-      @search_query = SearchQuery.where(:id => params[:id]).first
+    @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
+    redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
+
+    flash[:notice] = 'Your search results are not available. Please repeat your search' if @search_query.result_count.blank?
+    redirect_back(fallback_location: new_search_query_path) && return if @search_query.result_count.blank?
+
+    @printable_format = true
+    if @search_query.result_count > FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+      @result_count = @search_query.result_count
+      @search_results = []
+      @ucf_results = []
     else
-      logger.warn("#{appname}:SEARCH_ERROR:nil parameter condition occurred")
-      go_back
-      return
-    end
-    if @search_query.present?
-      if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS && MyopicVicar::TemplateSet::FREECEN != MyopicVicar::Application.config.template_set
-        @result_count = @search_query.result_count
-        @search_results =   Array.new
-        @ucf_results = Array.new
-      else
-        response, @search_results,  @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
-        if !response || @search_results.nil? || @search_query.result_count.nil?
-          logger.warn("#{appname}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
-          flash[:notice] = 'Your search results are not available. Please repeat your search'
-          redirect_to new_search_query_path(:search_id => @search_query)
-          return
-        end
+      response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
+      if !response || @search_results.nil? || @search_query.result_count.nil?
+        logger.warn("#{appname}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
+        flash[:notice] = 'Your search results are not available. Please repeat your search'
+        redirect_to(new_search_query_path(search_id: @search_query)) && return
       end
-    else
-      logger.warn("#{appname}:SEARCH_ERROR:search query no longer present")
-      go_back
-      return
     end
-    if @search_results.nil? || @search_query.result_count.nil?
-      logger.warn("#{appname}:SEARCH_ERROR:search results no longer present")
-      go_back
-      return
-    end
-    render "show", :layout => false
+    render 'show', layout: false
   end
 
   def show_query
-    if params[:id].present?
-      @search_query = SearchQuery.where(:id => params[:id]).first
-    else
-      appname = MyopicVicar::Application.config.freexxx_display_name.upcase
-      logger.warn("#{appname}:SEARCH_ERROR:nil parameter condition occurred")
-      go_back
-      return
-    end
+    @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
+    redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
   end
 
   def update
-    @search_query = SearchQuery.new(search_params.delete_if{|k,v| v.blank? })
+    @search_query = SearchQuery.new(search_params.delete_if { |k, v| v.blank? })
     @search_query.session_id = request.session_options[:id]
-    if  @search_query.save
+    if @search_query.save
       redirect_to search_query_path(@search_query)
     else
       render :edit
     end
   end
 
-
   private
 
   def search_params
     params.require(:search_query).permit!
   end
-
 end

@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
@@ -13,179 +12,169 @@
 
 ActiveRecord::Schema.define(version: 20160611162608) do
 
-  create_table "refinery_authentication_devise_roles", force: :cascade do |t|
-    t.string "title", limit: 255
+  create_table "refinery_authentication_devise_roles", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+    t.string "title"
   end
 
-  create_table "refinery_authentication_devise_roles_users", id: false, force: :cascade do |t|
-    t.integer "user_id", limit: 4
-    t.integer "role_id", limit: 4
+  create_table "refinery_authentication_devise_roles_users", id: false, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+    t.integer "user_id"
+    t.integer "role_id"
+    t.index ["role_id", "user_id"], name: "refinery_roles_users_role_id_user_id"
+    t.index ["user_id", "role_id"], name: "refinery_roles_users_user_id_role_id"
   end
 
-  add_index "refinery_authentication_devise_roles_users", ["role_id", "user_id"], name: "refinery_roles_users_role_id_user_id", using: :btree
-  add_index "refinery_authentication_devise_roles_users", ["user_id", "role_id"], name: "refinery_roles_users_user_id_role_id", using: :btree
-
-  create_table "refinery_authentication_devise_user_plugins", force: :cascade do |t|
-    t.integer "user_id",  limit: 4
-    t.string  "name",     limit: 255
-    t.integer "position", limit: 4
+  create_table "refinery_authentication_devise_user_plugins", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+    t.integer "user_id"
+    t.string "name"
+    t.integer "position"
+    t.index ["name"], name: "index_refinery_authentication_devise_user_plugins_on_name"
+    t.index ["user_id", "name"], name: "refinery_user_plugins_user_id_name", unique: true
   end
 
-  add_index "refinery_authentication_devise_user_plugins", ["name"], name: "index_refinery_authentication_devise_user_plugins_on_name", using: :btree
-  add_index "refinery_authentication_devise_user_plugins", ["user_id", "name"], name: "refinery_user_plugins_user_id_name", unique: true, using: :btree
-
-  create_table "refinery_authentication_devise_users", force: :cascade do |t|
-    t.string   "username",               limit: 255, null: false
-    t.string   "email",                  limit: 255, null: false
-    t.string   "encrypted_password",     limit: 255, null: false
+  create_table "refinery_authentication_devise_users", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+    t.string "username", null: false
+    t.string "email", null: false
+    t.string "encrypted_password", null: false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
-    t.string   "current_sign_in_ip",     limit: 255
-    t.string   "last_sign_in_ip",        limit: 255
-    t.integer  "sign_in_count",          limit: 4
+    t.string "current_sign_in_ip"
+    t.string "last_sign_in_ip"
+    t.integer "sign_in_count"
     t.datetime "remember_created_at"
-    t.string   "reset_password_token",   limit: 255
+    t.string "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "slug",                   limit: 255
-    t.string   "userid_detail_id",       limit: 255
-    t.string   "password_salt",          limit: 255
-    t.string   "full_name",              limit: 255
+    t.string "slug"
+    t.string "userid_detail_id"
+    t.string "password_salt"
+    t.string "full_name"
+    t.index ["id"], name: "index_refinery_authentication_devise_users_on_id"
+    t.index ["slug"], name: "index_refinery_authentication_devise_users_on_slug"
   end
 
-  add_index "refinery_authentication_devise_users", ["id"], name: "index_refinery_authentication_devise_users_on_id", using: :btree
-  add_index "refinery_authentication_devise_users", ["slug"], name: "index_refinery_authentication_devise_users_on_slug", using: :btree
-
-  create_table "refinery_county_pages", force: :cascade do |t|
-    t.string   "name",         limit: 255
-    t.string   "chapman_code", limit: 255
-    t.text     "content",      limit: 65535
-    t.integer  "position",     limit: 4
+  create_table "refinery_county_pages", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+    t.string "name"
+    t.string "chapman_code"
+    t.text "content"
+    t.integer "position"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "refinery_image_translations", force: :cascade do |t|
-    t.integer  "refinery_image_id", limit: 4,   null: false
-    t.string   "locale",            limit: 255, null: false
-    t.datetime "created_at",                    null: false
-    t.datetime "updated_at",                    null: false
-    t.string   "image_alt",         limit: 255
-    t.string   "image_title",       limit: 255
+  create_table "refinery_image_translations", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+    t.integer "refinery_image_id", null: false
+    t.string "locale", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "image_alt"
+    t.string "image_title"
+    t.index ["locale"], name: "index_refinery_image_translations_on_locale"
+    t.index ["refinery_image_id"], name: "index_refinery_image_translations_on_refinery_image_id"
   end
 
-  add_index "refinery_image_translations", ["locale"], name: "index_refinery_image_translations_on_locale", using: :btree
-  add_index "refinery_image_translations", ["refinery_image_id"], name: "index_refinery_image_translations_on_refinery_image_id", using: :btree
-
-  create_table "refinery_images", force: :cascade do |t|
-    t.string   "image_mime_type", limit: 255
-    t.string   "image_name",      limit: 255
-    t.integer  "image_size",      limit: 4
-    t.integer  "image_width",     limit: 4
-    t.integer  "image_height",    limit: 4
-    t.string   "image_uid",       limit: 255
+  create_table "refinery_images", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+    t.string "image_mime_type"
+    t.string "image_name"
+    t.integer "image_size"
+    t.integer "image_width"
+    t.integer "image_height"
+    t.string "image_uid"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "image_title",     limit: 255
-    t.string   "image_alt",       limit: 255
+    t.string "image_title"
+    t.string "image_alt"
   end
 
-  create_table "refinery_page_part_translations", force: :cascade do |t|
-    t.integer  "refinery_page_part_id", limit: 4,     null: false
-    t.string   "locale",                limit: 255,   null: false
-    t.datetime "created_at",                          null: false
-    t.datetime "updated_at",                          null: false
-    t.text     "body",                  limit: 65535
+  create_table "refinery_page_part_translations", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+    t.integer "refinery_page_part_id", null: false
+    t.string "locale", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.text "body"
+    t.index ["locale"], name: "index_refinery_page_part_translations_on_locale"
+    t.index ["refinery_page_part_id"], name: "index_refinery_page_part_translations_on_refinery_page_part_id"
   end
 
-  add_index "refinery_page_part_translations", ["locale"], name: "index_refinery_page_part_translations_on_locale", using: :btree
-  add_index "refinery_page_part_translations", ["refinery_page_part_id"], name: "index_refinery_page_part_translations_on_refinery_page_part_id", using: :btree
-
-  create_table "refinery_page_parts", force: :cascade do |t|
-    t.integer  "refinery_page_id", limit: 4
-    t.string   "slug",             limit: 255
-    t.text     "body",             limit: 65535
-    t.integer  "position",         limit: 4
+  create_table "refinery_page_parts", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+    t.integer "refinery_page_id"
+    t.string "slug"
+    t.text "body"
+    t.integer "position"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "title",            limit: 255
+    t.string "title"
+    t.index ["id"], name: "index_refinery_page_parts_on_id"
+    t.index ["refinery_page_id"], name: "index_refinery_page_parts_on_refinery_page_id"
   end
 
-  add_index "refinery_page_parts", ["id"], name: "index_refinery_page_parts_on_id", using: :btree
-  add_index "refinery_page_parts", ["refinery_page_id"], name: "index_refinery_page_parts_on_refinery_page_id", using: :btree
-
-  create_table "refinery_page_translations", force: :cascade do |t|
-    t.integer  "refinery_page_id", limit: 4,   null: false
-    t.string   "locale",           limit: 255, null: false
-    t.datetime "created_at",                   null: false
-    t.datetime "updated_at",                   null: false
-    t.string   "title",            limit: 255
-    t.string   "custom_slug",      limit: 255
-    t.string   "menu_title",       limit: 255
-    t.string   "slug",             limit: 255
+  create_table "refinery_page_translations", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+    t.integer "refinery_page_id", null: false
+    t.string "locale", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "title"
+    t.string "custom_slug"
+    t.string "menu_title"
+    t.string "slug"
+    t.index ["locale"], name: "index_refinery_page_translations_on_locale"
+    t.index ["refinery_page_id"], name: "index_refinery_page_translations_on_refinery_page_id"
   end
 
-  add_index "refinery_page_translations", ["locale"], name: "index_refinery_page_translations_on_locale", using: :btree
-  add_index "refinery_page_translations", ["refinery_page_id"], name: "index_refinery_page_translations_on_refinery_page_id", using: :btree
-
-  create_table "refinery_pages", force: :cascade do |t|
-    t.integer  "parent_id",           limit: 4
-    t.string   "path",                limit: 255
-    t.string   "slug",                limit: 255
-    t.boolean  "show_in_menu",                    default: true
-    t.string   "link_url",            limit: 255
-    t.string   "menu_match",          limit: 255
-    t.boolean  "deletable",                       default: true
-    t.boolean  "draft",                           default: false
-    t.boolean  "skip_to_first_child",             default: false
-    t.integer  "lft",                 limit: 4
-    t.integer  "rgt",                 limit: 4
-    t.integer  "depth",               limit: 4
-    t.string   "view_template",       limit: 255
-    t.string   "layout_template",     limit: 255
+  create_table "refinery_pages", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+    t.integer "parent_id"
+    t.string "path"
+    t.string "slug"
+    t.boolean "show_in_menu", default: true
+    t.string "link_url"
+    t.string "menu_match"
+    t.boolean "deletable", default: true
+    t.boolean "draft", default: false
+    t.boolean "skip_to_first_child", default: false
+    t.integer "lft"
+    t.integer "rgt"
+    t.integer "depth"
+    t.string "view_template"
+    t.string "layout_template"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "custom_slug",         limit: 255
+    t.string "custom_slug"
+    t.index ["depth"], name: "index_refinery_pages_on_depth"
+    t.index ["id"], name: "index_refinery_pages_on_id"
+    t.index ["lft"], name: "index_refinery_pages_on_lft"
+    t.index ["parent_id"], name: "index_refinery_pages_on_parent_id"
+    t.index ["rgt"], name: "index_refinery_pages_on_rgt"
   end
 
-  add_index "refinery_pages", ["depth"], name: "index_refinery_pages_on_depth", using: :btree
-  add_index "refinery_pages", ["id"], name: "index_refinery_pages_on_id", using: :btree
-  add_index "refinery_pages", ["lft"], name: "index_refinery_pages_on_lft", using: :btree
-  add_index "refinery_pages", ["parent_id"], name: "index_refinery_pages_on_parent_id", using: :btree
-  add_index "refinery_pages", ["rgt"], name: "index_refinery_pages_on_rgt", using: :btree
-
-  create_table "refinery_resource_translations", force: :cascade do |t|
-    t.integer  "refinery_resource_id", limit: 4,   null: false
-    t.string   "locale",               limit: 255, null: false
-    t.datetime "created_at",                       null: false
-    t.datetime "updated_at",                       null: false
-    t.string   "resource_title",       limit: 255
+  create_table "refinery_resource_translations", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+    t.integer "refinery_resource_id", null: false
+    t.string "locale", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "resource_title"
+    t.index ["locale"], name: "index_refinery_resource_translations_on_locale"
+    t.index ["refinery_resource_id"], name: "index_refinery_resource_translations_on_refinery_resource_id"
   end
 
-  add_index "refinery_resource_translations", ["locale"], name: "index_refinery_resource_translations_on_locale", using: :btree
-  add_index "refinery_resource_translations", ["refinery_resource_id"], name: "index_refinery_resource_translations_on_refinery_resource_id", using: :btree
-
-  create_table "refinery_resources", force: :cascade do |t|
-    t.string   "file_mime_type", limit: 255
-    t.string   "file_name",      limit: 255
-    t.integer  "file_size",      limit: 4
-    t.string   "file_uid",       limit: 255
-    t.string   "file_ext",       limit: 255
+  create_table "refinery_resources", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+    t.string "file_mime_type"
+    t.string "file_name"
+    t.integer "file_size"
+    t.string "file_uid"
+    t.string "file_ext"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "seo_meta", force: :cascade do |t|
-    t.integer  "seo_meta_id",      limit: 4
-    t.string   "seo_meta_type",    limit: 255
-    t.string   "browser_title",    limit: 255
-    t.text     "meta_description", limit: 65535
+  create_table "seo_meta", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+    t.integer "seo_meta_id"
+    t.string "seo_meta_type"
+    t.string "browser_title"
+    t.text "meta_description"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.index ["id"], name: "index_seo_meta_on_id"
+    t.index ["seo_meta_id", "seo_meta_type"], name: "id_type_index_on_seo_meta"
   end
-
-  add_index "seo_meta", ["id"], name: "index_seo_meta_on_id", using: :btree
-  add_index "seo_meta", ["seo_meta_id", "seo_meta_type"], name: "id_type_index_on_seo_meta", using: :btree
 
 end

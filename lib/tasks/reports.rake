@@ -1,5 +1,13 @@
 namespace :reports do
 
+
+  task :check_image_availability, [:limit] => :environment do |t, args|
+    require 'check_image_availability'
+
+    CheckImageAvailability.process(args.limit)
+
+  end
+
   desc "Unapproved_place_names list"
   task :unapproved_place_names, [:limit] => [:environment] do |t, args|
     require 'unapproved_place_names'
@@ -196,4 +204,43 @@ namespace :reports do
     end
   end
 
+  desc "Create a report of Enabled Places"
+  task :check_records_place, [:chapmancode] => [:environment] do |t, args|
+    require 'check_records_place'
+
+    CheckRecordsPlace.process(args.chapmancode)
+    puts "Task complete."
+  end
+
+  desc "Create a report of Churches"
+  task :check_records_church, [:chapmancode] => [:environment] do |t, args|
+    require 'check_records_church'
+
+    CheckRecordsChurch.process(args.chapmancode)
+    puts "Task complete."
+  end
+
+  desc "Create a report of Registers"
+  task :check_records_register, [:chapmancode] => [:environment] do |t, args|
+    require 'check_records_register'
+
+    CheckRecordsRegister.process(args.chapmancode)
+    puts "Task complete."
+  end
+
+  desc "Create a report of Freereg1_Csv_File"
+  task :check_records_freereg1_csv_file, [:chapmancode] => [:environment] do |t, args|
+    require 'check_records_freereg1_csv_file'
+
+    CheckRecordsFreereg1CsvFile.process(args.chapmancode)
+    puts "Task complete."
+  end
+
+  desc "Create a report of Search_Record"
+  task :check_records_search_record => [:environment] do |t, args|
+    require 'check_records_search_record'
+
+    CheckRecordsSearchRecord.process
+    puts "Task complete."
+  end
 end

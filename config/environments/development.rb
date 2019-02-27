@@ -19,7 +19,7 @@ MyopicVicar::Application.configure do
   # every request.  This slows down response time but is perfect for development
   # since you don't have to restart the webserver when you make code changes.
   config.cache_classes = false
-
+  config.log_level = :debug
   # Log error messages when you accidentally call methods on nil.
   config.whiny_nils = true
 
@@ -65,11 +65,14 @@ MyopicVicar::Application.configure do
   config.datafiles_changeset = MyopicVicar::MongoConfig['datafiles_changeset'] unless MyopicVicar::MongoConfig['datafiles_changeset'].blank?
   config.datafiles_delta = MyopicVicar::MongoConfig['datafiles_delta'] unless MyopicVicar::MongoConfig['datafiles_delta'].blank?
   config.website = MyopicVicar::MongoConfig['website']
+  config.image_server = MyopicVicar::MongoConfig['image_server']
+  config.image_server_access =  MyopicVicar::MongoConfig['image_server_access']
   config.backup_directory = MyopicVicar::MongoConfig['backup_directory']
   config.github_issues_login = MyopicVicar::MongoConfig['github_issues_login']
   config.github_issues_password = MyopicVicar::MongoConfig['github_issues_password']
   config.github_issues_repo = MyopicVicar::MongoConfig['github_issues_repo']
   config.days_to_retain_search_queries = MyopicVicar::MongoConfig['days_to_retain_search_queries']
+  config.days_to_retain_messages = MyopicVicar::MongoConfig['days_to_retain_messages']
   config.sleep = MyopicVicar::MongoConfig['sleep']
   config.emmendation_sleep = MyopicVicar::MongoConfig['emmendation_sleep']
   config.processing_delta = MyopicVicar::MongoConfig['files_for_processing'] unless MyopicVicar::MongoConfig['files_for_processing'].blank?
@@ -85,5 +88,7 @@ MyopicVicar::Application.configure do
   config.our_secret_key = MyopicVicar::MongoConfig['our_secret_key']
   config.secret_key_base = MyopicVicar::MongoConfig['secret_key_base']
   config.sendgrid_api_key = MyopicVicar::MongoConfig['sendgrid_api_key']
+  config.citation = MyopicVicar::MongoConfig['citation']
   config.eager_load = false
+  config.dragonfly_secret_code = MyopicVicar::MongoConfig['dragonfly_secret_code']
 end

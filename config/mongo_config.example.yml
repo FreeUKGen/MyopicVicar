@@ -3,6 +3,8 @@ development:
   datafiles: #location of the FR user files eg 'c:/freereg11/'
   website: # the website being used eg '192.168.1.112:3000'
   backup_directory: #location of the backup folder 'd:/users/kirk/documents/github/myopicvicar/tmp/backups'
+  image_server:  #which image server do you wish to access eg https://image-management-captainkirkbc.c9users.io/' #'https://image-management.freereg.org.uk/' 
+  image_server_access: #access code for the image server
   sleep: # number of seconds to wait after each entry/search_record creation/deletion  eg '0.001'
   emmendation_sleep:
   datafiles_changeset: # location of the FR1 user files eg 'c:/freereg12/' ! obsolete
@@ -41,6 +43,8 @@ production:
   datafiles: 
   website: 
   backup_directory:
+  image_server:  #which image server do you wish to access eg https://image-management-captainkirkbc.c9users.io/' #'https://image-management.freereg.org.uk/' 
+  image_server_access: #access code for the image server
   sleep: 
   emmendation_sleep:
   datafiles_changeset:

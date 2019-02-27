@@ -1,0 +1,20 @@
+<% if @gap_reason.errors.any? %>
+  <div id="error_explanation">
+    <h2><%= pluralize(@gap_reason.errors.count, "error") %> prohibited this GAP reason from being saved:</h2>
+    <ul>
+      <% @gap_reason.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<section class="island  island--light">
+<div class="grid">
+  <%= simple_form_for @gap_reason do |f| %>
+    <%= f.input :reason, :label => "Reason" ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }  %>
+    <%= f.input :notes, :label => "Notes" ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }  %>
+    <%= f.button :submit , :button_html => {:class => "btn  weight--light  btn--small" } %>
+  <% end %>
+</div>
+</section>

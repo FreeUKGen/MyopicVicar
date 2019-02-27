@@ -73,9 +73,10 @@ module MyopicVicar
     # This will create an empty whitelist of attributes available for mass-assignment for all models
     # in your app. As such, your models will need to explicitly whitelist or blacklist accessible
     # parameters by using an attr_accessible or attr_protected declaration.
-    config.active_record.whitelist_attributes = true
+# Explodes in current rails    config.active_record.whitelist_attributes = true
 
     # set config.template_set before asset directories are selected
+    # TODO: make bimodal
     config.template_set = TemplateSet::FREECEN
 
     #set config.freexxx_display_name based on the template_set
@@ -93,6 +94,7 @@ module MyopicVicar
     # Version of your assets, change this if you want to expire all your assets
     # config.assets.version = '1.0' # commented out because already set above
 
+    #config.active_record.whitelist_attributes = true Remove as no longer relevant in rails 4.2
     config.api_only = false
 
     # make the designer's fonts available for the stylesheets

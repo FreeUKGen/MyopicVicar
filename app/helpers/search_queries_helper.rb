@@ -49,6 +49,14 @@ module SearchQueriesHelper
     end
     county
   end
+  
+  def transcript_date(search_record)
+    transcript_dates = search_record.transcript_dates
+    transcript_dates.each do |transcript_date|
+      return transcript_date if transcript_date.present?
+    end
+    return ""
+  end
 
   def format_for_line_breaks (names)
     place = ' '

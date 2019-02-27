@@ -1,0 +1,6 @@
+<p> Dear <%= @original_message.userid %>;</p>
+<p>A reply to message with subject <%= @original_message.subject %> and reference number <%= @original_message.identifier %> was sent to you by <%= @reply.userid %> at <%= @reply.message_time unless @reply.message_time.nil?%>.</p>
+<p>You are requested to log into the Members website <% if Rails.application.config.website == 'https://test3.freereg.org.uk' %> ON TEST3: https://test3.freereg.org.uk <% end%> (if not already logged in) to review the message there. </p>
+<p>On the initial landing page after the log in; select the "Messages" button and on the list of messages select the "Show" for specific message identification <%=@reply.identifier%>.</p>
+<p>In many cases you will be able reply to the originator of the message by selecting the "Reply" button at the top of the message being displayed.</p>
+<p>The FreeREG Servant</p>

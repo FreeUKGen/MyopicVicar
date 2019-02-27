@@ -275,7 +275,7 @@ describe Freecen1VldFile do
       dwelling = FreecenDwelling.last
       translator = Freecen::Freecen1VldTranslator.new
       translator.translate_dwelling(dwelling, 'CON', dwelling.freecen1_vld_file.full_year)
-
+#      binding.pry
       inc_individual = dwelling.freecen_individuals[0]
       query_params = { :first_name => inc_individual.forenames,
                        :last_name => inc_individual.surname,

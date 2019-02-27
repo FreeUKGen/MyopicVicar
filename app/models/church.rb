@@ -17,8 +17,8 @@ class Church
   field :daterange, type: Hash
   field :transcribers, type: Hash
   field :contributors, type: Hash
-  has_many :registers, dependent: :restrict
-
+  has_many :registers, dependent: :restrict_with_error
+  has_many :image_server_groups
   embeds_many :alternatechurchnames
   accepts_nested_attributes_for :alternatechurchnames, allow_destroy: true,  reject_if: :all_blank
 
@@ -30,6 +30,10 @@ class Church
   class << self
     def id(id)
       where(:id => id)
+    end
+
+    def find_by_place_ids(id)
+      where(:place_id => {'$in'=>id.keys})
     end
 
     def find_by_name_and_place(chapman_code, place_name,church_name)
@@ -57,7 +61,16 @@ class Church
       return word
     end
 
-  end #self
+    def valid_church?(church)
+      result = false
+      return result if church.blank?
+
+      church_object = Church.find(church)
+      result = true if church_object.present? && Place.valid_place?(church_object.place_id)
+      logger.warn("FREEREG:LOCATION:VALIDATION invalid church id #{church} ") unless result
+      result
+    end
+  end # self
 
   ############################################################################## instance methods
 
@@ -96,10 +109,10 @@ class Church
       self.update_attribute(:church_name, param[:church_name])
     end
     if self.errors.any?
-      return true
+      return false
     end
     self.propogate_church_name_change(old_church_name)
-    return false
+    return true
   end
 
   def church_does_not_exist(place)
@@ -110,7 +123,7 @@ class Church
         return false, "Church of that name already exists"
       end
     end
-    return true, "OK"
+    return true,''
   end
 
   def data_contents
@@ -128,6 +141,16 @@ class Church
     return stats
   end
 
+  def get_alternate_church_names
+    names = Array.new
+    alternate_church_names = self.alternatechurchnames.all
+    alternate_church_names.each do |acn|
+      name = acn.alternate_name
+      names << name
+    end
+    names
+  end
+
   def has_input?
     value = false
     value = true if (self.denomination.present? || self.church_notes.present? || self.location.present? || self.website.present?)
@@ -140,7 +163,7 @@ class Church
     place = self.place
     place.churches.each do |church|
       unless (church._id == new_church_id || church.church_name != church_name)
-        return [true, "a church being merged has input"] if church.has_input?
+        return [false, "a church being merged has input"] if church.has_input?
       end
     end
     place.churches.each do |church|
@@ -152,7 +175,7 @@ class Church
       end
     end
     self.calculate_church_numbers
-    return [false, ""]
+    return [true, '']
   end
 
   def propogate_church_name_change(old_church_name)
@@ -205,11 +228,11 @@ class Church
       new_place.recalculate_last_amended_date
       new_place.calculate_place_numbers
       self.calculate_church_numbers
-      return [true, "Error in save of church; contact the webmaster"] if self.errors.any?
+      return [false, "Error in save of church; contact the webmaster"] if self.errors.any?
     end
     self.propogate_place_change(old_place,old_church_name)
     PlaceCache.refresh_cache(new_place) unless new_place.blank?
-    return [false, ""]
+    return [true, ""]
   end
 
 

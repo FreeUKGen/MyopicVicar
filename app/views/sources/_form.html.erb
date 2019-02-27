@@ -1,0 +1,33 @@
+<section class="island  island--light">
+<div class="grid">
+<%= simple_form_for @source_new do |s| %>
+  <%= s.input :source_name, :collection=>@list, :label=>'Source Name', :include_blank=>false, :input_html=>{:class=>"simple_form_bgcolour simple_form_position overide_selection_field_width", :size=>2} %>
+  <%= s.input :notes, :label => 'Notes', :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :style=>'width: 100%'} %>
+  <%= s.input :start_date, :label=>'Start Year', :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>20, :maxlength => 15} %>
+    <div id='is_wrong_format_start_date' style='display:none; color:red; font-weight:bold; margin:2px 10px'>start year needs to be 4 digits</div>
+    <div id='is_wrong_range_start_date' style='display:none; color:red; font-weight:bold; margin:2px 10px'>start year can not be later than current year</div>
+  <%= s.input :end_date, :label=>'End Year', :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>20, :maxlenght=>15} %>
+    <div id='is_wrong_format_end_date' style='display:none; color:red; font-weight:bold; margin:2px 10px'>end year needs to be 4 digits</div>
+    <div id='is_wrong_range_end_date' style='display:none; color:red; font-weight:bold; margin:2px 10px'>end year can not be earlier than start year or later than current year</div>
+    
+  <%= s.simple_fields_for :original_form do |orig_form| %>
+    <%= orig_form.input :type, :as=>:select, :collection=>['fiche', 'film', 'document', 'other'], :label=>"Original Form", :include_blank=>false, :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :style=>'width: 100%', :size=>2} %>
+    <div id="test"><%= orig_form.input :name, :label=>"name of the other form", :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>50}, :label_html=>{:id=>"original_form_label"} %></div>
+  <% end %>
+  
+  <%= s.input :creating_institution, :label=>'Creating Institution', :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :style=>'width: 100%'} %>
+  <%= s.input :holding_institution, :label=>'Holding Institution', :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :style=>'width: 100%'} %>
+  <%= s.input :restrictions_on_use_by_creating_institution, :label=>'Restrictions on Use by Creating Institution', :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :style=>'width: 100%'} %>
+  <%= s.input :restrictions_on_use_by_holding_institution, :label=>'Restrictions on Use by Creating Institution', :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :style=>'width: 100%'} %>
+  <%= s.input :open_data, :label => 'Open Data', :as=>:select, :collection=>[['Yes', true], ['No', false]], :include_blank=>false, :value=>s.object.open_data, :input_html=>{:class=>"simple_form_bgcolour simple_form_position overide_selection_field_width", :size=>2} %>
+  <%= s.input :url, :label=>'URL', :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :style=>'width: 100%'} %>
+
+	<%= s.hidden_field :register_id, :value=>session[:register_id] %>
+  <%= s.button :submit, 'Submit', :onclick=>'return check_year_range()' %>
+<% end %>
+</div>
+</section>
+
+<script type="text/javascript">
+  <%= render :partial => 'source.js' %>
+</script>

@@ -1,0 +1,7 @@
+<% if controller.action_name == 'index' %>
+	<div style="clear:both;"></div><br>
+	<p style="text-align: center"><b>GAPs</b> for <b><%= @source.source_name %></b> source for <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
+<% else %>
+	<div style="clear:both;"></div><br>
+	<p style="text-align: center"><b>GAP</b> for <b><%= @source.source_name %></b> source for <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
+<% end %>

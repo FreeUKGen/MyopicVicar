@@ -105,9 +105,9 @@ class NewFreeregCsvUpdateProcessor
   end
 
   def communicate_to_managers(csvfile)
-    time = 0
-    time = ((Time.new.to_i  - @project_start_time.to_i)*1000)/@total_records unless @total_records == 0
-    self.write_messages_to_all("Created  #{@total_records} entries at an average time of #{time}ms per record at #{Time.new}. <br>",false)
+    records = @total_records
+    records == 0 ? average_time = 0 :  average_time = (Time.new.to_i - @project_start_time.to_i) * 1000 / records  
+    self.write_messages_to_all("Created  #{records} entries at an average time of #{average_time}ms per record at #{Time.new}. <br>",false)
     file = @message_file
     #@message_file.close if @project.type_of_project == "individual"
     user = UseridDetail.where(userid: "REGManager").first
@@ -263,8 +263,7 @@ class CsvFile < CsvFiles
   attr_accessor :header, :list_of_registers, :header_error, :system_error, :data_hold,
     :array_of_data_lines, :default_charset, :file, :file_name, :userid, :uploaded_date, :slurp_fail_message,
     :file_start, :file_locations, :data, :unique_locations, :unique_existing_locations,
-    :all_existing_records, :total_files, :total_records, :total_data_errors, :total_header_errors, :place_id
-
+    :all_existing_records, :total_files, :total_records, :total_data_errors, :total_header_errors, :place_id, :uploaded_file_is_flexible_format
   def initialize(file)
     standalone_filename = File.basename(file)
     full_dirname = File.dirname(file)
@@ -302,6 +301,7 @@ class CsvFile < CsvFiles
     @total_records = 0
     @unique_existing_locations = Hash.new
     @unique_locations = Hash.new
+    @uploaded_file_is_flexible_format = false
   end
 
   def a_single_csv_file_process(project)
@@ -332,7 +332,8 @@ class CsvFile < CsvFiles
     return success,"Data not processed #{@records_processed}. <br>" unless success
     success, message = self.clean_up_supporting_information(project)
     #p "finished clean up"
-    time = ((Time.new.to_i  - @file_start.to_i)*1000)/@total_records unless @total_records == 0
+    records = @total_records
+    time = ((Time.new.to_i  - @file_start.to_i)*1000) / records unless records == 0
     project.write_messages_to_all("Created  #{@total_records} entries at an average time of #{time}ms per record at #{Time.new}. <br>",true)
     return success,"clean up failed #{message}. <br>" unless success
     success, message = self.communicate_file_processing_results(project)
@@ -357,7 +358,8 @@ class CsvFile < CsvFiles
        success = "change"
        #transform_search_record is a method in freereg1_csv_entry.rb.rb
        # enough_name_fields is a method in freereg1_csv_entry.rb that ensures we have names to create a search record on
-       place = self.place_id
+       place_id = self.place_id
+       place = Place.id(place_id).first
        SearchRecord.update_create_search_record(existing_record,self.header[:search_record_version],place) if  project.create_search_records && existing_record.enough_name_fields?
        sleep_time = (Rails.application.config.sleep.to_f).to_f
        sleep(sleep_time)
@@ -372,6 +374,7 @@ class CsvFile < CsvFiles
       data_record.delete(:chapman_code)
        entry = Freereg1CsvEntry.new(data_record)
        #p "new entry"
+       #p entry
        new_digest = entry.cal_digest
        if @all_existing_records.has_value?(new_digest)
          #p "we have an existing record but may be for different location"
@@ -449,6 +452,7 @@ class CsvFile < CsvFiles
     end
   end
 
+  
 
   def check_file_is_not_locked?(batch,project)
     return true, "OK" if batch.blank?
@@ -519,9 +523,9 @@ class CsvFile < CsvFiles
       file = Freereg1CsvFile.id(value[:id]).first
         if file.present?
           message = "Removing batch #{file.county}, #{file.place}, #{file.church_name}, #{file.register_type}, #{file.record_type} for #{file.userid} #{file.file_name}. <br>"
-              project.write_messages_to_all(message,false)
-              file.delete
-      end
+          project.write_messages_to_all(message,false)
+          file.delete
+        end
      end
     return counter
   end
@@ -549,18 +553,29 @@ class CsvFile < CsvFiles
       #p "creating new entry"
       data_record.delete(:chapman_code)
      entry = Freereg1CsvEntry.new(data_record)
-     if data_record[:record_type] == "ma"
+     if data_record[:record_type] == "ma" || data_record[:record_type] == "ba"
        entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness1_forename],:witness_surname => data_record[:witness1_surname]) unless data_record[:witness1_forename].blank? && data_record[:witness1_surname].blank?
        entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness2_forename],:witness_surname => data_record[:witness2_surname]) unless data_record[:witness2_forename].blank? && data_record[:witness2_surname].blank?
+       entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness3_forename], :witness_surname => data_record[:witness3_surname]) unless data_record[:witness3_forename].blank? &&  data_record[:witness3_surname].blank?
+       entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness4_forename], :witness_surname => data_record[:witness4_surname]) unless data_record[:witness4_forename].blank? &&  data_record[:witness4_surname].blank?
+       entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness5_forename], :witness_surname => data_record[:witness5_surname]) unless data_record[:witness5_forename].blank? &&  data_record[:witness5_surname].blank?
+       entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness6_forename], :witness_surname => data_record[:witness6_surname]) unless data_record[:witness6_forename].blank? &&  data_record[:witness6_surname].blank?
+       entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness7_forename], :witness_surname => data_record[:witness7_surname]) unless data_record[:witness7_forename].blank? &&  data_record[:witness7_surname].blank?
+       entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness8_forename], :witness_surname => data_record[:witness8_surname]) unless data_record[:witness8_forename].blank? &&  data_record[:witness8_surname].blank?
      end
+     entry.multiple_witnesses.each do |witness|
+       witness.witness_surname = witness.witness_surname.upcase if witness.witness_surname.present?
+     end
+     
      entry.freereg1_csv_file = freereg1_csv_file
-     # p "creating entry"
+      #p "creating entry"
      entry.save
-     # p entry
+      #p entry
      if entry.errors.any?
        success = entry.errors.messages
      else
-       place = self.place_id
+       place_id = self.place_id
+       place = Place.id(place_id).first
        SearchRecord.update_create_search_record(entry,self.header[:search_record_version],place) if  project.create_search_records && entry.enough_name_fields?
        success = "new"
      end
@@ -573,7 +588,7 @@ class CsvFile < CsvFiles
   def define_member_message_file
       file_for_member_messages = File.join(Rails.root,"log/#{self.userid}_member_update_messages")
     time = Time.new
-    tnsec = time.nsec/1000
+    tnsec = time.nsec / 1000
     time = time.to_i.to_s + tnsec.to_s
     file_for_member_messages = (file_for_member_messages + "_" + time + ".log").to_s
     member_message_file = File.new(file_for_member_messages, "w")
@@ -645,7 +660,8 @@ class CsvFile < CsvFiles
         success = "change"
         #need to create search record as one does not exist
         #p "creating search record as not there"
-        place = self.place_id
+        place_id = self.place_id
+        place = Place.id(place_id).first
         SearchRecord.update_create_search_record(existing_record,self.header[:search_record_version],place) if project.create_search_records && existing_record.enough_name_fields?
         sleep_time = (Rails.application.config.sleep.to_f).to_f
         sleep(sleep_time)
@@ -815,13 +831,11 @@ class CsvFile < CsvFiles
     freereg1_csv_file = Freereg1CsvFile.where(:userid => @header[:userid],:file_name => @header[:file_name],:county => thisvalue[:chapman_code], :place => thisvalue[:place_name], :church_name => thisvalue[:church_name], :register_type => thisvalue[:register_type], :record_type =>@header[:record_type]).first
     #:place => value[:place_name], :church_name => value[:church_name], :register_type => value[:register_type], :record_type =>@header[:record_type]
     if freereg1_csv_file.nil?
-      #p "creating new"
       freereg1_csv_file = Freereg1CsvFile.new(batch_header)
       freereg1_csv_file.update_register
       message = "Creating a new batch for #{batch_header[:chapman_code]}, #{batch_header[:place_name]}, #{batch_header[:church_name]}, #{RegisterType::display_name(batch_header[:register_type])}. <br>"
     else
-      freereg1_csv_file.update_attributes(:uploaded_date => self.uploaded_date, :lds => self.header[:lds], :def => self.header[:def])
-      #p "using current"
+      freereg1_csv_file.update_attributes(:uploaded_date => self.uploaded_date, :lds => self.header[:lds], :def => self.header[:def], :order => self.header[:order])
       message = "Updating the current batch for #{batch_header[:chapman_code]}, #{batch_header[:place_name]}, #{batch_header[:church_name]}, #{RegisterType::display_name(batch_header[:register_type])}. <br>"
       #remove batch errors for this location
       freereg1_csv_file.error = 0
@@ -1090,11 +1104,12 @@ class CsvRecords <  CsvFile
   end
 
   def process_header_line_three_block(header_field,csvfile)
-    csvfile.header_error << "The credit person name #{header_field[2]} can only contain alphabetic and space characters in the third header line. <br>" unless FreeregValidations.cleantext(header_field[2])
+    csvfile.header_error << "The credit name #{header_field[2]} cannot contain what might be an email address in the third field of the third header line. <br>" unless FreeregValidations.cleancredit(header_field[2])
     csvfile.header[:credit_name] = header_field[2]
+    #csvfile.header[:credit_email] = header_field[3]
     # # suppressing for the moment
     # address = EmailVeracity::Address.new(header_field[3])
-    # raise FreeREGError, "Invalid email address '#{header_field[3]}' for the credit person in the third line of header" unless address.valid? || header_field[3].nil?
+    # raise FreeREGError, "Invalid email address '#{header_field[3]}' for the credit person or organization in the forth field of the third line of header" unless address.valid? || header_field[3].nil?
   end
 
   def extract_from_header_four(header_field,csvfile)
@@ -1135,7 +1150,7 @@ class CsvRecords <  CsvFile
       csvfile.header[:first_comment] = header_field[1]
     when number_of_fields == 3  && header_field[0] =~FreeregOptionsConstants::HEADER_FLAG
       # Many comments
-      header_field.drop(1)
+      header_field = header_field.drop(1)
       csvfile.header[:first_comment] = header_field.join(" ")
     when (number_of_fields == 4 && header_field[0] =~FreeregOptionsConstants::HEADER_FLAG && @modern_date_field_1)
       #date and 3 comments
@@ -1210,41 +1225,62 @@ class CsvRecords <  CsvFile
     end
   end
 
-  def extract_from_header_five(header_field,csvfile)
+  def extract_from_header_five(header_field,csvfile,project)
     #process the optional header line 5
-    #eg +LDS,,,,
+    #eg +LDS,,,, #,DEF
     #get an array of current entry fields
+    proceed = true
     case
     when header_field[0] == "+LDS"
-      csvfile.header[:lds] = "yes"
+      csvfile.header[:lds] = "yes"    
       @data_entry_order = get_default_data_entry_order(csvfile)
     when header_field[0] == "#" && header_field[1] == "DEF"
       csvfile.header[:def]  = true
-      n = 1
-      if header_field[n].present?
-        definition = header_field[n].split("=")
-        #need to verify fields
-        if definition[0].valid_order_definition? && definition[1].valid_order_number?
-          field = ":" + definition[0]
-          @data_entry_order[field] = definition[1] - 1
-          n = n + 1
-        else
-          csvfile.header_error << "The field order definition contains an invalid field #{header_field[n]}. <br>"
-        end
-        return false, "The field order definition contains an invalid field #{header_field[n]}. <br>"
+      project.write_messages_to_all("Flexible csv flag detected. The next line will be taken a column specification. <p>", true)
+     
+      if !valid_field_definition?(@data_lines[0][0].downcase)
+        proceed = false
+        csvfile.header_error << "The field order definition is missing. "
+      else
+        proceed, @data_entry_order = extract_data_field_order(@data_lines[0],csvfile)
       end
+     
+      project.write_messages_to_all("Will use the following column specification \n\r #{@data_lines[0]} ", true)
+      @data_lines.shift if proceed
     else
       csvfile.header[:lds] = "no"
       csvfile.header[:def]  = false
       @data_entry_order = get_default_data_entry_order(csvfile)
     end
-    return true, "OK"
+    csvfile.header[:order]  = @data_entry_order
+    return proceed
   end
+
+  def extract_data_field_order(header_fields,csvfile)
+    proceed = true
+    if header_fields.length == 1
+        proceed = false
+        csvfile.header_error << "The field order definition contains no fields. <br>"
+    end 
+    n = 0
+    while n < header_fields.length 
+      #need to verify fields
+      header_fields[n].nil? ? field = nil : field = header_fields[n].downcase
+      if field.present? && valid_field_definition?(field) 
+        @data_entry_order[field.to_sym] = n 
+      else
+        proceed = false
+        csvfile.header_error << "The field order definition at position #{n} contains an invalid field #{header_fields[n]}; (is it blank?)}. <br>"
+      end 
+      n = n + 1  
+    end 
+    return proceed,  @data_entry_order
+  end
+
   # This extracts the header and entry information from the file and adds it to the database
   def extract_the_data(csvfile,project)
-    p "processing #{@data_lines.length} data lines"
-    n = 0
     success = true
+    n = 0
     @data_lines.each do |line|
       n = n + 1
       #p "processing line #{n}"
@@ -1273,7 +1309,7 @@ class CsvRecords <  CsvFile
 
   def get_the_file_information_from_the_headers(csvfile,project)
     #p "Extracting header information"
-    success1 = success2 = success3 = success4 = true
+    success1 = success2 = success3 = success4 = success5 = true 
     success = false
     csvfile.header_error << "There are no valid header lines. <br>" if @header_lines.length == 0
     success = extract_from_header_one(@header_lines[0],csvfile) unless @header_lines.length <= 0
@@ -1284,9 +1320,12 @@ class CsvRecords <  CsvFile
     csvfile.header_error << "There were only three header lines. <br>" if @header_lines.length == 3
     success3 = extract_from_header_four(@header_lines[3],csvfile)  unless @header_lines.length <= 3
     @data_entry_order = get_default_data_entry_order(csvfile)  if @header_lines.length <= 4 && csvfile.header[:record_type].present?
-    success4 = extract_from_header_five(@header_lines[4],csvfile) unless @header_lines.length <= 4
+    success4 = extract_from_header_five(@header_lines[4],csvfile,project) unless @header_lines.length <= 4
+    original_file_is_flexible_format = check_original_file_is_flexible_format?(csvfile.file_name,csvfile.userid)
+    success5 = false unless !original_file_is_flexible_format || (original_file_is_flexible_format && csvfile.header[:def])
+    csvfile.header_error << "The file has been process as extended but this file does not contain a DEF control"  unless success5
     if csvfile.header_error.present?
-      if !success || !success1 || !success2 || !success3 || !success4
+      if !success || !success1 || !success2 || !success3 || !success4 || !success5
         project.write_messages_to_all("Processing was terminated because of a fatal header error. <p>",true)
         inform_the_user(csvfile,project)
         return false, "Header problem"
@@ -1297,21 +1336,36 @@ class CsvRecords <  CsvFile
     end
     return true, "OK"
   end
-
+  
+  def check_original_file_is_flexible_format?(batch,userid)
+    file = Freereg1CsvFile.file_name(batch).userid(userid).first
+    result = false
+    if file.present?
+      result = true if file.def
+    end
+    return result 
+  end
+  
   def inform_the_user(csvfile,project)
     csvfile.header_error.each do |error|
       project.write_messages_to_all(error,true)
     end
   end
 
-  def valid_order_definition?
-    entry_fields = Freereg1CsvEntry.fields.keys
-    return true if entry_fields.includes?(self)
-  end
-  def valid_order_number?
-    entry_fields.to_i = Freereg1CsvEntry.fields.keys.count
-    num = self.to_i
-    return true if num >= 1 && self < (entry_fields - 8)
+  def valid_field_definition?(fields)
+    entry_fields = Freereg1CsvEntry.attribute_names
+    entry_fields << "chapman_code"
+    entry_fields << "place_name"
+    result = true
+    unless fields.kind_of?(Array)
+      result = false if !entry_fields.include?(fields)
+      return result
+    end
+    fields.each do |field|
+      result = false if !entry_fields.include?(field)
+      break unless result
+    end
+    return result
   end
 end
 
@@ -1326,6 +1380,7 @@ class CsvRecord < CsvRecords
 
   def extract_data_line(csvrecords,csvfile,project,line)
     #p "extracting data line"
+    #p "#{line}"
     begin
       success, register_location = self.extract_register_location(csvrecords,csvfile,project,line)
       return false unless success
@@ -1333,20 +1388,43 @@ class CsvRecord < CsvRecords
       type = csvfile.header[:record_type]
       case type
       when RecordType::BAPTISM
-        success, message = self.process_baptism_data_fields(csvrecords,csvfile,project,line)
+        self.process_baptism_data_fields(csvrecords,csvfile,project,line)
       when RecordType::BURIAL
-        success, message = self.process_burial_data_fields(csvrecords,csvfile,project,line)
+        self.process_burial_data_fields(csvrecords,csvfile,project,line)
       when RecordType::MARRIAGE
-        success, message = self.process_marriage_data_fields(csvrecords,csvfile,project,line)
+        self.process_marriage_data_fields(csvrecords,csvfile,project,line)
       end# end of case
-      return success, message
+      
     rescue  => e
-      puts e.message
-      puts e.backtrace
-      csvfile.header_error << "#{csvfile.userid}\t#{csvfile.file_name} line #{line} crashed the processor. <br>"
-      csvfile.header_error << e.message
-      csvfile.header_error << e.backtrace.inspect
+      p "FREEREG:CSV_PROCESSOR_FAILURE: #{e.message}"
+      p "FREEREG:CSV_PROCESSOR_FAILURE: #{csvfile.userid} #{csvfile.file_name} at line #{line} crashed the processor. <br>"
+      p "FREEREG:CSV_PROCESSOR_FAILURE: #{e.backtrace.inspect}"
+      project.write_messages_to_all("FREEREG:CSV_PROCESSOR_FAILURE: #{e.message}",false)
+      error_message = "FREEREG:CSV_PROCESSOR_FAILURE: #{csvfile.userid} #{csvfile.file_name} at line #{line} crashed the processor. <br>"
+      project.write_messages_to_all(error_message,true)
+      project.write_log_file("#{e.message}")
+      project.write_log_file("#{e.backtrace.inspect}")
+      success = false
     end
+    return success
+  end
+  def validate_and_set_register_type(possible_register_type)
+    if possible_register_type =~ FreeregOptionsConstants::VALID_REGISTER_TYPES
+      # deal with possible register type; clean up variations before we check
+      possible_register_type = possible_register_type.gsub(/\(?\)?'?"?[Ss]?/, '')
+      possible_register_type = Unicode::upcase(possible_register_type)
+      if RegisterType::OPTIONS.values.include?(possible_register_type)
+        register_type = possible_register_type
+        register_type = "DW" if register_type == "DT"
+        register_type = "PH" if register_type == "PT"
+        register_type = "TR" if register_type == "OT"
+      else
+        register_type = " "
+      end
+    else
+      register_type = " "
+    end
+    register_type
   end
 
   def extract_register_type_and_church_name(csvrecords,csvfile,project,line)
@@ -1392,10 +1470,7 @@ class CsvRecord < CsvRecords
 
   def extract_register_location(csvrecords,csvfile,project,line)
     #p "Extracting location"
-    cleaningsuccess = false
     success1 = false
-    success2 = false
-    success3 = false
     success4 = false
     success5 = false
     register_location = Hash.new
@@ -1411,25 +1486,22 @@ class CsvRecord < CsvRecords
     project.write_messages_to_all("The place name at field #{@data_line[csvrecords.data_entry_order[:place_name]]} is invalid at line #{line}. <br>", true)   if  !success1
     place_name = set_place_name if success1
     #allows for different Register type input
-    if csvfile.header[:def]
-      #separate field
+    if csvfile.header[:def] && csvrecords.data_entry_order[:register_type].present?
+      success4 = true
       church_name = @data_line[csvrecords.data_entry_order[:church_name]]
-      success2 , set_church_name = validate_church_and_set(church_name,chapman_code,place_name)
-      project.write_messages_to_all("The church name #{church_name} is not in the database for #{place_name} at line #{line}. <br>" , true)  if  !success2
-      register_type = @data_line[csvrecords.data_entry_order[:register_type]]
-      success3 = true if FreeregValidations.valid_register_type?(register_type,chapman_code,place_name,church_name)
-      project.write_messages_to_all("The register type at field #{@data_line[csvrecords.data_entry_order[:register_type]]} is invalid at line #{line}. <br>", true)   if  !success3
-      return false unless success && success1 && success2 && success3
+      possible_register_type = @data_line[csvrecords.data_entry_order[:register_type]]
+      register_type = validate_and_set_register_type(possible_register_type)
+      success5, set_church_name = validate_church_and_set(church_name,chapman_code,place_name) if success1
     else
       #part of church name
       success4,message,church_name,register_type = self.extract_register_type_and_church_name(csvrecords,csvfile,project,line)
       project.write_messages_to_all("The church field #{church_name} is invalid at line #{line}. <br>", true)   if  !success4
       success5, set_church_name = validate_church_and_set(church_name,chapman_code,place_name) if success1 && success4
-      project.write_messages_to_all("The church name #{church_name} is not in the database for #{place_name} at line #{line}. <br>", true)   if  !success5
-      #we use the server church name in case of case differences
-      church_name = set_church_name if  success5
-      return false unless success && success1 && success4 && success5
     end
+    project.write_messages_to_all("The church name #{church_name} is not in the database for #{place_name} at line #{line}. <br>", true)   if  !success5
+      #we use the server church name in case of case differences
+    church_name = set_church_name if  success5
+    return false unless success && success1 && success4 && success5
     self.load_data_record(csvfile,chapman_code,place_name,church_name,register_type)
     csvfile.unique_locations[@data_record[:location]] = self.load_hold(csvfile) unless csvfile.unique_locations.key?(@data_record[:location])
     return true, register_location = {:chapman_code=> chapman_code,:place_name => place_name,:church_name => church_name, :register_type => register_type}
@@ -1461,107 +1533,136 @@ class CsvRecord < CsvRecords
 
   def no_location_fields?(data_line,csvrecords,csvfile)
     location = false
-    if csvfile.header[:def]
-      location = true if data_line[csvrecords.data_entry_order[:chapman_code]].blank? && data_line[csvrecords.data_entry_order[:place_name]].blank? &&
-        data_line[csvrecords.data_entry_order[:church_name]].blank? && data_line[csvrecords.data_entry_order[:register_type]].blank?
-    else
-      location = true if data_line[csvrecords.data_entry_order[:chapman_code]].blank? && data_line[csvrecords.data_entry_order[:place_name]].blank? &&
+    location = true if data_line[csvrecords.data_entry_order[:chapman_code]].blank? && data_line[csvrecords.data_entry_order[:place_name]].blank? &&
         data_line[csvrecords.data_entry_order[:church_name]].blank?
-    end
     return location
   end
 
   def process_baptism_data_fields(csvrecords,csvfile,project,line)
     #p "extracting baptism"
+    FreeregOptionsConstants::ORIGINAL_BAPTISM_FIELDS.each do |field|
+      field_symbol = field.to_sym
+      @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
+    end
+    if csvfile.header[:def]
+      FreeregOptionsConstants::ADDITIONAL_BAPTISM_FIELDS.each do |field|
+        field_symbol = field.to_sym
+        @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
+      end
+    end
+    FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS.each do |field|
+      field_symbol = field.to_sym
+      @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
+    end
+    if csvfile.header[:def]
+      FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS.each do |field|
+        field_symbol = field.to_sym
+        @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
+      end
+    end
     @data_record[:line_id] = csvfile.header[:userid] + "." + csvfile.header[:file_name] + "." + line.to_s
     @data_record[:file_line_number] = line
-    @data_record[:register_entry_number] = @data_line[csvrecords.data_entry_order[:register_entry_number]]
-    @data_record[:birth_date] = @data_line[csvrecords.data_entry_order[:birth_date]]
-    @data_record[:baptism_date] = @data_line[csvrecords.data_entry_order[:baptism_date]]
-    @data_record[:year] = FreeregValidations.year_extract(@data_line[csvrecords.data_entry_order[:baptism_date]])
-    @data_record[:year] = FreeregValidations.year_extract(@data_line[csvrecords.data_entry_order[:birth_date]]) if
-    FreeregValidations.year_extract(@data_line[csvrecords.data_entry_order[:baptism_date]]).nil?
-    @data_record[:person_forename] = @data_line[csvrecords.data_entry_order[:person_forename]]
-    @data_record[:person_sex] = @data_line[csvrecords.data_entry_order[:person_sex]] if FreeregValidations.cleansex(@data_line[csvrecords.data_entry_order[:person_sex]])
-    @data_record[:father_forename] = @data_line[csvrecords.data_entry_order[:father_forename]]
-    @data_record[:mother_forename] = @data_line[csvrecords.data_entry_order[:mother_forename]]
-    @data_record[:father_surname] = Unicode::upcase(@data_line[csvrecords.data_entry_order[:father_surname]]) unless @data_line[csvrecords.data_entry_order[:father_surname]].nil?
-    @data_record[:father_surname] = @data_line[csvrecords.data_entry_order[:father_surname]]  if @data_line[csvrecords.data_entry_order[:father_surname]].nil?
-    @data_record[:mother_surname] = Unicode::upcase(@data_line[csvrecords.data_entry_order[:mother_surname]]) unless @data_line[csvrecords.data_entry_order[:mother_surname]].nil?
-    @data_record[:mother_surname] = @data_line[csvrecords.data_entry_order[:mother_surname]]  if @data_line[csvrecords.data_entry_order[:mother_surname]].nil?
-    @data_record[:person_abode] = @data_line[csvrecords.data_entry_order[:person_abode]]
-    @data_record[:father_occupation] = @data_line[csvrecords.data_entry_order[:father_occupation]]
-    @data_record[:notes] = @data_line[csvrecords.data_entry_order[:notes]]
-    @data_record[:film] = @data_line[csvrecords.data_entry_order[:film]] if csvfile.header[:lds] == "yes"
-    @data_record[:film_number] = @data_line[csvrecords.data_entry_order[:film_number]] if csvfile.header[:lds] == "yes"
-    csvfile.data[line] = data_record
+    @data_record[:year] = FreeregValidations.year_extract(@data_record[:baptism_date])
+    @data_record[:year] = FreeregValidations.year_extract(@data_record[:birth_date]) if @data_record[:year].blank?
+    @data_record[:year] = FreeregValidations.year_extract(@data_record[:confirmation_date]) if @data_record[:year].blank?
+    @data_record[:year] = FreeregValidations.year_extract(@data_record[:received_into_church_date]) if @data_record[:year].blank?
+    (@data_record[:private_baptism].present? && FreeregOptionsConstants::PRIVATE_BAPTISM_OPTIONS.include?(@data_record[:private_baptism].downcase)) ? @data_record[:private_baptism] = true : @data_record[:private_baptism] = false
+    @data_record[:person_sex] = process_baptism_sex_field(@data_record[:person_sex])
+    @data_record[:father_surname] = Unicode::upcase(@data_record[:father_surname] ) unless @data_record[:father_surname] .nil?
+    @data_record[:mother_surname] = Unicode::upcase(@data_record[:mother_surname]) unless  @data_record[:mother_surname].nil?
+    @data_record[:processed_date] = Time.now
+    csvfile.data[line] = @data_record
   end
 
   def process_burial_data_fields(csvrecords,csvfile,project,line)
     #p "Extracting burial"
+    FreeregOptionsConstants::ORIGINAL_BURIAL_FIELDS.each do |field|
+      field_symbol = field.to_sym
+      @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
+    end
+    if csvfile.header[:def]
+      FreeregOptionsConstants::ADDITIONAL_BURIAL_FIELDS.each do |field|
+        field_symbol = field.to_sym
+        @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
+      end
+    end
+    FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS.each do |field|
+      field_symbol = field.to_sym
+      @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
+    end
+    if csvfile.header[:def]
+      FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS.each do |field|
+        field_symbol = field.to_sym
+        @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
+      end
+    end
     @data_record[:line_id] = csvfile.header[:userid] + "." + csvfile.header[:file_name] + "." + line.to_s
     @data_record[:file_line_number] = line
-    @data_record[:register_entry_number] = @data_line[csvrecords.data_entry_order[:register_entry_number]]
-    @data_record[:burial_date] = @data_line[csvrecords.data_entry_order[:burial_date]]
-    @data_record[:year] = FreeregValidations.year_extract(@data_line[csvrecords.data_entry_order[:burial_date]])
-    @data_record[:burial_person_forename] = @data_line[csvrecords.data_entry_order[:burial_person_forename]]
-    @data_record[:relationship] = @data_line[csvrecords.data_entry_order[:relationship]]
-    @data_record[:male_relative_forename] = @data_line[csvrecords.data_entry_order[:male_relative_forename]]
-    @data_record[:female_relative_forename] = @data_line[csvrecords.data_entry_order[:female_relative_forename]]
-    @data_record[:relative_surname] = Unicode::upcase(@data_line[csvrecords.data_entry_order[:relative_surname]]) unless
-    @data_line[csvrecords.data_entry_order[:relative_surname]].nil?
-    @data_record[:burial_person_surname] = Unicode::upcase(@data_line[csvrecords.data_entry_order[:burial_person_surname]])  unless
-    @data_line[csvrecords.data_entry_order[:burial_person_surname]].nil?
-    @data_record[:person_age] = @data_line[csvrecords.data_entry_order[:person_age]]
-    @data_record[:burial_person_abode] = @data_line[csvrecords.data_entry_order[:burial_person_abode]]
-    @data_record[:notes] = @data_line[csvrecords.data_entry_order[:notes]]
-    @data_record[:film] = @data_line[csvrecords.data_entry_order[:film]] if csvfile.header[:lds] == "yes"
-    @data_record[:film_number] = @data_line[csvrecords.data_entry_order[:film_number]] if csvfile.header[:lds] == "yes"
-    csvfile.data[line] = data_record
+    @data_record[:year] = FreeregValidations.year_extract(@data_record[:burial_date])
+    @data_record[:year] = FreeregValidations.year_extract(@data_record[:death_date]) if @data_record[:year].blank?
+    @data_record[:relative_surname] = Unicode::upcase(@data_record[:relative_surname]) unless @data_record[:relative_surname].nil?
+    @data_record[:burial_person_surname] = Unicode::upcase( @data_record[:burial_person_surname])  unless @data_record[:burial_person_surname].nil?
+    @data_record[:female_relative_surname] = Unicode::upcase( @data_record[:female_relative_surname])  unless @data_record[:female_relative_surname].nil? 
+    @data_record[:processed_date] = Time.now
+    csvfile.data[line] = @data_record
+   
   end
 
   def process_marriage_data_fields(csvrecords,csvfile,project,line)
     #p "extracting marriage"
+     FreeregOptionsConstants::ORIGINAL_MARRIAGE_FIELDS.each do |field|
+      field_symbol = field.to_sym
+      @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
+    end
+    if csvfile.header[:def]
+      FreeregOptionsConstants::ADDITIONAL_MARRIAGE_FIELDS.each do |field|
+        field_symbol = field.to_sym
+        @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
+      end
+    end
+    FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS.each do |field|
+      field_symbol = field.to_sym
+      @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
+    end
+    if csvfile.header[:def]
+      FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS.each do |field|
+        field_symbol = field.to_sym
+        @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
+      end
+    end
     @data_record[:line_id] = csvfile.header[:userid] + "." + csvfile.header[:file_name] + "." + line.to_s
     @data_record[:file_line_number] = line
-    @data_record[:register_entry_number] = @data_line[csvrecords.data_entry_order[:register_entry_number]]
-    @data_record[:marriage_date] = @data_line[csvrecords.data_entry_order[:marriage_date]]
-    @data_record[:year] = FreeregValidations.year_extract(@data_line[csvrecords.data_entry_order[:marriage_date]])
-    @data_record[:groom_forename] = @data_line[csvrecords.data_entry_order[:groom_forename]]
-    @data_record[:groom_surname] = Unicode::upcase(@data_line[csvrecords.data_entry_order[:groom_surname]]) unless
-    @data_line[csvrecords.data_entry_order[:groom_surname]].nil?
-    @data_record[:groom_age] = @data_line[csvrecords.data_entry_order[:groom_age]]
-    @data_record[:groom_parish] = @data_line[csvrecords.data_entry_order[:groom_parish]]
-    @data_record[:groom_condition] = @data_line[csvrecords.data_entry_order[:groom_condition]]
-    @data_record[:groom_occupation] = @data_line[csvrecords.data_entry_order[:groom_occupation]]
-    @data_record[:groom_abode] = @data_line[csvrecords.data_entry_order[:groom_abode]]
-    @data_record[:bride_forename] = @data_line[csvrecords.data_entry_order[:bride_forename]]
-    @data_record[:bride_surname] = Unicode::upcase(@data_line[csvrecords.data_entry_order[:bride_surname]]) unless
-    @data_line[csvrecords.data_entry_order[:bride_surname]].nil?
-    @data_record[:bride_age] = @data_line[csvrecords.data_entry_order[:bride_age]]
-    @data_record[:bride_parish] = @data_line[csvrecords.data_entry_order[:bride_parish]]
-    @data_record[:bride_condition] = @data_line[csvrecords.data_entry_order[:bride_condition]]
-    @data_record[:bride_occupation] = @data_line[csvrecords.data_entry_order[:bride_occupation]]
-    @data_record[:bride_abode] = @data_line[csvrecords.data_entry_order[:bride_abode]]
-    @data_record[:groom_father_forename] = @data_line[csvrecords.data_entry_order[:groom_father_forename]]
-    @data_record[:groom_father_surname] = Unicode::upcase(@data_line[csvrecords.data_entry_order[:groom_father_surname]]) unless
-    @data_line[csvrecords.data_entry_order[:groom_father_surname]].nil?
-    @data_record[:groom_father_occupation] = @data_line[csvrecords.data_entry_order[:groom_father_occupation]]
-    @data_record[:bride_father_forename] = @data_line[csvrecords.data_entry_order[:bride_father_forename]]
-    @data_record[:bride_father_surname] = Unicode::upcase(@data_line[csvrecords.data_entry_order[:bride_father_surname]]) unless
-    @data_line[csvrecords.data_entry_order[:bride_father_surname]].nil?
-    @data_record[:bride_father_occupation] = @data_line[csvrecords.data_entry_order[:bride_father_occupation]]
-    @data_record[:witness1_forename] = @data_line[csvrecords.data_entry_order[:witness1_forename]]
-    @data_record[:witness1_surname] = Unicode::upcase(@data_line[csvrecords.data_entry_order[:witness1_surname]]) unless
-    @data_line[csvrecords.data_entry_order[:witness1_surname]].nil?
-    @data_record[:witness2_forename] = @data_line[csvrecords.data_entry_order[:witness2_forename]]
-    @data_record[:witness2_surname] = Unicode::upcase(@data_line[csvrecords.data_entry_order[:witness2_surname]]) unless
-    @data_line[csvrecords.data_entry_order[:witness2_surname]].nil?
-    @data_record[:notes] = @data_line[csvrecords.data_entry_order[:notes]]
-    @data_record[:film] = @data_line[csvrecords.data_entry_order[:film]] if csvfile.header[:lds] == "yes"
-    @data_record[:film_number] = @data_line[csvrecords.data_entry_order[:film_number]] if csvfile.header[:lds] == "yes"
-    csvfile.data[line] = data_record
+    @data_record[:year] = FreeregValidations.year_extract(@data_record[:marriage_date])
+    @data_record[:year] = FreeregValidations.year_extract(@data_record[:contract_date]) if @data_record[:year].blank?
+    (@data_record[:marriage_by_licence].present? && FreeregOptionsConstants::MARRIAGE_BY_LICENCE_OPTIONS.include?(@data_record[:marriage_by_licence].downcase)) ? @data_record[:marriage_by_licence] = true : @data_record[:marriage_by_licence] = false 
+    (@data_record[:groom_marked].present? && FreeregOptionsConstants::MARKED_OPTIONS.include?(@data_record[:groom_marked].downcase)) ? @data_record[:groom_marked] = true : @data_record[:groom_marked] = false
+    (@data_record[:bride_marked].present? && FreeregOptionsConstants::MARKED_OPTIONS.include?(@data_record[:bride_marked].downcase)) ? @data_record[:bride_marked] = true : @data_record[:bride_marked] = false
+    @data_record[:processed_date] = Time.now
+    csvfile.data[line] = @data_record
   end
+  
+  def  process_baptism_sex_field(field)
+    case
+      when field.nil?
+        return_field = "?" 
+      when FreeregValidations::UNCERTAIN_SEX.include?(field.upcase)
+        return_field = field    
+      when FreeregValidations::VALID_MALE_SEX.include?(field.upcase)
+        return_field = "M" 
+      when FreeregValidations::UNCERTAIN_MALE_SEX.include?(field.upcase)
+        return_field = "M?" 
+      when FreeregValidations::VALID_FEMALE_SEX.include?(field.upcase)
+        return_field = "F"
+      when FreeregValidations::UNCERTAIN_FEMALE_SEX.include?(field.upcase)
+        return_field = "F?"
+      when field =~ FreeregValidations::VALID_UCF
+        return_field = "?"  
+      else
+        return_field = field
+    end
+    return return_field
+  end
+
 
   def validate_church_and_set(church_name,chapman_code,place_name)
     place = Place.chapman_code(chapman_code).place(place_name).not_disabled.first
@@ -1579,5 +1680,17 @@ class CsvRecord < CsvRecords
     return false unless place.present?
     return true, place.place_name
   end
+
+  def field_actually_exists_in_def(field,csvrecords)
+    csvrecords.data_entry_order.has_key?(field) ? result = true : result = false 
+    result
+  end
+
+  def avoid_look_up_of_nil_field(line,record,csvrecords)
+    record = record.to_sym
+    field_actually_exists_in_def(record,csvrecords) ? result = line[csvrecords.data_entry_order[record]] : result = nil  
+    result
+  end
+
 
 end

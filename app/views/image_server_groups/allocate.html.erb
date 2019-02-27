@@ -1,0 +1,25 @@
+<% breadcrumb :allocate_image_server_group, @user, @chapman_code, @county, @register, @source, @image_server_group %>
+
+<div style="clear:both;"></div><br>
+<% title "IS Group - allocation" %>
+<%= render partial: 'header' %>
+<%= render partial: 'flash_notice' %>
+
+<section class="island  island--light">
+<div class="grid">
+
+<%= simple_form_for @image_server_group do |s| %>
+  <%= s.input :syndicate_code, :as => :select, :collection => @syndicate, :label => 'Select Syndicate', :include_blank => false, :include_hidden => false, :selected => 0, :input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 5} %>
+  <%= s.input :custom_field, :as=>:check_boxes, :collection=>@group_name.invert.sort_by{|x| x[0].downcase}.unshift(['select all', '0']), :label=>'Select Image Groups You Want to Allocate to Selected Syndicate', :include_hidden=>false, :label_html=>{:style=>'margin-left:2px'}, :item_label_class=>"collection_check_boxes", :input_html=>{:class=>"simple_form_position", :checked=>false} %>
+
+	<%= s.hidden_field :source_id %>
+  <%= s.hidden_field :origin, as: :fake, :value=>'allocate' %>
+  <%= s.button :submit, 'Allocate', :onclick => 'return validate_selection()' %>
+<% end %>
+
+</div>
+</section>
+
+<script type="text/javascript">
+  <%= render :partial => 'image_server_group.js' %>
+</script>

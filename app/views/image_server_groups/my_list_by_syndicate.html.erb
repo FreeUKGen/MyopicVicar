@@ -1,0 +1,13 @@
+<% breadcrumb :request_assignments_by_syndicate, @user %>
+
+<% title "IS Group - list" %>
+<div style="clear:both;"></div><br>
+<p style="text-align: center"><b>Image Groups</b> under user <b><%= @user.userid %></b>'s Syndicate <b><%= @user.syndicate %></b>
+
+<%= render partial: 'flash_notice' %>
+
+<div class="grid">
+  <section class="island">
+    <%= render 'image_group_index' %>
+  </section>
+</div>

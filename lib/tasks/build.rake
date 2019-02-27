@@ -236,7 +236,7 @@ namespace :build do
   end
   task :process_freereg1_individual_csv,[:user,:file] => [:environment] do |t, args|
 
-    require 'freereg_csv_update_processor'
+    require 'new_freereg_csv_update_processor'
     require 'user_mailer'
     # use the processor to initiate search record creation on add or update but not on recreation when we do at end
     range = File.join(args.user ,args.file)

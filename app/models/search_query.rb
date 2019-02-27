@@ -41,7 +41,7 @@ class SearchQuery
   field :witness, type: Boolean
   field :start_year, type: Integer
   field :end_year, type: Integer
-  field :radius_factor, type: Integer, default: 41
+  field :radius_factor, type: Integer, default: 101
   field :search_nearby_places, type: Boolean
   field :result_count, type: Integer
   field :place_system, type: String, default: Place::MeasurementSystem::ENGLISH
@@ -79,17 +79,44 @@ class SearchQuery
   attr_accessor :action
 
 
- index({ c_at: 1},{name: "c_at_1",background: true })
- index({day: -1,runtime: -1},{name: "day__1_runtime__1",background: true })
- index({day: -1,result_count: -1},{name: "day__1_result_count__1",background: true })
+  index({ c_at: 1},{name: "c_at_1",background: true })
+  index({day: -1,runtime: -1},{name: "day__1_runtime__1",background: true })
+  index({day: -1,result_count: -1},{name: "day__1_result_count__1",background: true })
 
   class << self
-    def search_id(name)
-      where(:id => name)
+    def invalid_integer(param)
+      do_not_proceed = false
+      if param[:start_year].present? && !param[:start_year].to_i.bson_int32?
+        do_not_proceed = true
+        message = 'The start year is an invalid integer'
+      end
+      if param[:end_year].present? && !param[:end_year].to_i.bson_int32?
+        do_not_proceed = true
+        message = 'The end year is an invalid integer'
+      end
+      [do_not_proceed, message]
     end
 
+    def search_id(name)
+      where(id: name)
+    end
 
+    def valid_order?(value)
+      result = SearchOrder::ALL_ORDERS.include?(value) ? true : false
+      result
+    end
 
+    def check_and_return_query(parameter)
+      messagea = 'Invalid parameter'
+      messageb = 'Non existent query'
+      record = nil
+      return record, false, messagea if parameter.nil?
+
+      record = SearchQuery.find(parameter)
+      return record, false, messageb if record.blank?
+
+      [record, true, '']
+    end
   end
 
   ############################################################################# instance methods #####################################################
@@ -97,7 +124,7 @@ class SearchQuery
   def adequate_first_name_criteria?
     !first_name.blank? && chapman_codes.length > 0 && place_ids.present?
   end
-  
+
   def all_counties_have_both_surname_and_firstname
     if (chapman_codes.length == 0) && (first_name.blank? || last_name.blank?)
       errors.add(:first_name, "A forename and surname must be present to perform an all counties search.")
@@ -377,6 +404,7 @@ class SearchQuery
     if self.search_result.records.respond_to?(:values)
       search_results =   self.search_result.records.values
       search_results = self.filter_name_types(search_results)
+      search_results = self.sort_results(search_results) unless search_results.nil?
       record_number = locate_index(search_results,current)
       next_record = nil
       previous_record = nil
@@ -537,14 +565,13 @@ class SearchQuery
   def search
     @search_parameters = search_params
     @search_index = SearchRecord.index_hint(@search_parameters)
-   # p @search_parameters
-   #@search_index = "place_rt_sd_ssd" if query_contains_wildcard?
+    #@search_index = "place_rt_sd_ssd" if query_contains_wildcard?
     logger.warn("FREEREG:SEARCH_HINT: #{@search_index}")
     self.update_attribute(:search_index, @search_index)
-#    p @search_parameters
+    # logger.warn @search_parameters.inspect
     records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     self.persist_results(records)
-    self.persist_additional_results(secondary_date_results) if secondary_date_query_required && self.result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+    self.persist_additional_results(secondary_date_results) if (self.result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     search_ucf  if can_query_ucf? && self.result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
     records
   end
@@ -552,16 +579,12 @@ class SearchQuery
   def secondary_date_results
     @secondary_search_params = @search_parameters
     @secondary_search_params[:secondary_search_date] = @secondary_search_params[:search_date]
-    @secondary_search_params.delete_if {|key, value| key == :search_date } 
-    @secondary_search_params[:record_type] = { '$in' => [RecordType::BAPTISM] }
+    @secondary_search_params.delete_if {|key, value| key == :search_date }
+    #@secondary_search_params[:record_type] = { '$in' => [RecordType::BAPTISM] }
     @search_index = SearchRecord.index_hint(@search_parameters)
     logger.warn("FREEREG:SSD_SEARCH_HINT: #{@search_index}")
     secondary_records = SearchRecord.collection.find(@secondary_search_params).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     secondary_records
-  end
-
-  def secondary_date_query_required
-    @search_parameters[:search_date].present? && (self.record_type == nil || self.record_type==RecordType::BAPTISM)
   end
 
   def search_params
@@ -668,7 +691,7 @@ class SearchQuery
 
     trimmed = name_string.sub(/\**$/, '') # remove trailing * for performance
     scrubbed = trimmed.gsub('?', 'QUESTION').gsub('*', 'STAR')
-    cleaned = Regexp.escape(scrubbed)
+    cleaned = ::Regexp.escape(scrubbed)
     regex_string = cleaned.gsub('QUESTION', '\w').gsub('STAR', '.*') #replace glob-style wildcards with regex wildcards
     begins_with_wildcard(name_string) ? /#{regex_string}/ : /^#{regex_string}/
   end

@@ -56,8 +56,7 @@
         </li>
     <%# if false %>
         <li>
-          <%= link_to "Volunteer", "/cms/opportunities-to-volunteer-with-freecen" %>
-          <%#transcriber_registration_userid_detail_path%>
+          <%= link_to "Volunteer", "/cms/opportunities-to-volunteer-with-#{MyopicVicar::Application.config.template_set}" %>
         </li>
         <li>
           <%= link_to "Members", refinery.login_path %>

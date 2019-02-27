@@ -1,12 +1,30 @@
 <% breadcrumb :correct_error_record,  @freereg1_csv_entry, @freereg1_csv_file%>
-<p style="text-align: center">Editing entry error in <b><%= @error_line %></b> for <b><%= @freereg1_csv_file_name %></b> (<%= @file_owner %>) in <b><%= @register_name %></b> of <b> <%= @church_name%></b> in <b><%= @place_name %></b> of <b><%= @county %></b><br>
-<b>The Error Message(s)<%= @error_message%></p></b><br>
-
+<p style="text-align: center">Editing entry error in <b><%= @error_file.record_number %></b> for <b><%= @freereg1_csv_file.file_name %></b> (<%= userid(@freereg1_csv_file) %>) in <b><%= register_name_for_file(@freereg1_csv_file) %></b> of <b> <%= church_name(@freereg1_csv_file)%></b> in <b><%= place_name(@freereg1_csv_file) %></b> of <b><%= county(@freereg1_csv_file) %></b><br>
+  <b>The Error Message(s)<%= @error_file.error_message%></p>
+</b><br>
 <% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
-   <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
-    </div>
-   <% end %>  
-<%= render 'form' %>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+  </div>
+<% end %>
+<% case @freereg1_csv_file.record_type %>
+<% when "ba" %>
+<% if @freereg1_csv_file.def %>
+  <%= render 'extended_baptism_form' %>
+<% else %>
+  <%= render 'original_baptism_form' %>
+<% end %>
+<% when "bu" %>
+<% if @freereg1_csv_file.def %>
+  <%= render 'extended_burial_form' %>
+<% else %>
+  <%= render 'original_burial_form' %>
+<% end %>
+<% when "ma" %>
+<% if @freereg1_csv_file.def %>
+  <%= render 'extended_marriage_form' %>
+<% else %>
+  <%= render 'original_marriage_form' %>
+<% end %>
+<% end %>
 <br>
-

@@ -5,7 +5,7 @@ module Refinery
 
         # Protect these actions behind an admin login
         before_action :redirect?, :only => [:new, :create]
-        skip_before_filter :require_login
+        skip_before_action :require_login
         helper Refinery::Core::Engine.helpers
         layout 'refinery/layouts/login'
 

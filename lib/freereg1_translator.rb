@@ -71,7 +71,7 @@ module Freereg1Translator
     new_attrs[:line_id] = entry[:line_id]
 
     new_attrs[:transcript_dates] = []
-    ['baptism_date', 'burial_date', 'marriage_date', 'birth_date'].each do |date_key|
+    ['baptism_date', 'burial_date', 'marriage_date', 'birth_date', 'death_date', 'contract_date', 'confirmation_date','received_into_church_date'].each do |date_key|
       new_attrs[:transcript_dates] << entry[date_key] if entry[date_key]
     end
     #new_attrs[:line_id] = entry.line_id
@@ -132,6 +132,12 @@ module Freereg1Translator
     if entry.bride_father_surname
       names << { :role => 'bf', :type => 'other', :first_name => entry.bride_father_forename, :last_name => entry.bride_father_surname }
     end
+    if entry.bride_mother_surname
+      names << { :role => 'bm', :type => 'other', :first_name => entry.bride_mother_forename, :last_name => entry.bride_mother_surname }
+    end
+    if entry.groom_mother_surname
+      names << { :role => 'gm', :type => 'other', :first_name => entry.groom_mother_forename, :last_name => entry.groom_mother_surname }
+    end
     # - role: wt
     # type: witness
     # fields:
@@ -157,11 +163,22 @@ module Freereg1Translator
     # - role: fr
     # type: other
     # fields:
+    
     # first_name: female_relative_forename
+    # last_name: female_relative_surname
     # last_name:  relative_surname
+    #
     if entry.female_relative_forename.present? || entry.male_relative_forename.present? || entry.relative_surname.present?
       if entry.female_relative_forename
-        names << { :role => 'fr', :type => 'other', :first_name => entry.female_relative_forename, :last_name => entry.relative_surname.present? ? entry.relative_surname : entry.burial_person_surname }
+        if entry.female_relative_surname.present?
+          names << { :role => 'fr', :type => 'other', :first_name => entry.female_relative_forename, :last_name => entry.female_relative_surname }
+        else
+          if entry.relative_surname.present? 
+            names << { :role => 'fr', :type => 'other', :first_name => entry.female_relative_forename, :last_name => entry.relative_surname }
+          else 
+            names << { :role => 'fr', :type => 'other', :first_name => entry.female_relative_forename, :last_name => entry.burial_person_surname }
+          end
+        end
       end
       # - role: mr
       # type: other
@@ -172,8 +189,6 @@ module Freereg1Translator
         names << { :role => 'mr', :type => 'other', :first_name => entry.male_relative_forename, :last_name => entry.relative_surname.present?  ? entry.relative_surname : entry.burial_person_surname }
       end
     end
-
-
     names
   end
 
@@ -184,13 +199,15 @@ module Freereg1Translator
     # type: primary
     # fields:
     # first_name: person_forename
-    # last_name:
+    # last_name: person_surname
     # - father_surname
     # - mother_surname
-    surname = entry.father_surname.present? ? entry.father_surname : entry.mother_surname
     forename = entry.person_forename || ""
+    entry.person_surname.present? ? surname = entry.person_surname : surname = nil
+    if surname.nil?
+      surname = entry.father_surname.present? ? entry.father_surname : entry.mother_surname
+    end
     names << { :role => 'ba', :type => 'primary', :first_name => forename, :last_name => surname}
-
     # - role: f
     # type: other
     # fields:
@@ -210,6 +227,14 @@ module Freereg1Translator
     # - father_surname
     if entry.mother_forename
       names << { :role => 'm', :type => 'other', :first_name => entry.mother_forename, :last_name => entry.mother_surname.present? ? entry.mother_surname : entry.father_surname}
+    end
+    # - role: wt
+    # type: witness
+    # fields:
+    # first_name: witness_forename
+    # last_name:  witness_surname
+    entry.multiple_witnesses.each do |witness|
+      names << { :role => 'wt', :type => 'witness', :first_name => witness.witness_forename, :last_name => witness.witness_surname }
     end
     names
   end

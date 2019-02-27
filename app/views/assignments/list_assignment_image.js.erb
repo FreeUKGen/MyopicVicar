@@ -1,0 +1,6 @@
+if ($("#<%= @image[:_id] %>").css('display') == 'none') {
+	$("#<%= @image[:_id] %>").html("<%= j render :partial=>"image_detail" %>");
+	$("#<%= @image[:_id] %>").slideDown(1350);
+} else {
+	$("#<%= @image[:_id] %>").css('display', 'none');
+}

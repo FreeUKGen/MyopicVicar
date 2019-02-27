@@ -7,13 +7,13 @@
 <html lang="en">
   <!--<![endif]-->
   <head>
-<!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-TRMFBNL');</script>
-<!-- End Google Tag Manager -->
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-NQ743M4');</script>
+    <!-- End Google Tag Manager -->
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <meta charset="utf-8"/>
 <% if MyopicVicar::Application.config.template_set == 'freereg' %>
@@ -71,29 +71,27 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <noscript>
     <link rel="stylesheet" type="text/css" href="<%= path_to_stylesheet('styles/css/icons.fallback.css') %>">
     </noscript>
-    
     <!-- Styles -->
     <%= stylesheet_link_tag "styles/scss/palm" %>
     <%= stylesheet_link_tag "styles/scss/lap_and_up", media:"(min-width:571px)" %>
     <!--[if (lt IE 9) & (!IEMobile)]>
-    <%#= stylesheet_link_tag "styles/scss/lap_and_up" %>
+    <%#= stylesheet_link_tag "styles/css/lap_and_up.min.css" %>
     <![endif]-->
     <!--[if lte IE 7]>
-    <%#= stylesheet_link_tag "styles/scss/ie" %>
+    <%#= stylesheet_link_tag "styles/css/ie.min" %>
     <![endif]-->
     <%= stylesheet_link_tag "styles/css/donate_icon" %>
     <%= stylesheet_link_tag "styles/css/freereg_content" %>
     <%= stylesheet_link_tag "styles/css/ladda.min" %>
-    <%= stylesheet_link_tag "styles/css/donate_icon" %>
-    <!-- Javascript -->
-    <%= javascript_include_tag "ads.js" %>
-    <%= javascript_include_tag "application.js" %>
+    <!-- JavaScripts -->
+    <%= javascript_include_tag "application" %>
     <%= javascript_include_tag "jquery.min.js" %>
     <%= javascript_include_tag "jquery.chained.remote.js" %>
-    <%= javascript_include_tag "jquery.cookiesDirective.js" %>
+    <%#= javascript_include_tag "jquery.cookiesDirective.js" %>
     <%= javascript_include_tag "spin.min.js" %>
     <%= javascript_include_tag "ladda.min.js" %>
     <%= javascript_include_tag "freecen_coverage_graph.js" %>
+    <%= javascript_include_tag "ads.js" %>
    
     <%= csrf_meta_tags %>
     <% google_analytics_tracking_id = '' %>
@@ -106,6 +104,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       <% else %>
       <%  google_analytics_tracking_id = "" %>
       <% end %>
+    <% else %>
+      <!--- not implemented for FreeBMD yet -->
     <% end %>
 
     <script>
@@ -119,10 +119,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     </script>
   </head>
   <body ontouchstart class="offcanvas  offcanvas--rev">
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TRMFBNL"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NQ743M4"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    
     <%= render "layouts/main_nav" %>
     
     <div class="offcanvas__primary">
@@ -144,19 +145,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               </div>
             </div>
           <% else %>
-            <%= yield %>
+            <%= yield %>  
           <% end %>
-          <% if  session[:userid_detail_id].present?%>
-            <div  style="float:left;">
-              <%= form_tag(problem_url, :method=>:get) do %>
-                <% problem_button_options.each_pair do |name, value| %>
-                  <%= hidden_field_tag(name, value)%>
-                <% end %>
-                <input type="submit" value="Report a Problem"  class = "btn  btn--small"/>
-              <% end %>
-            </div>
-          <% end %>
+          <div class="grid__item  one-third  lap-two-fifths  palm-one-whole  push-half--top">
+            <%= yield :sidebar %>
+          </div>
         </div>
+        <% if  session[:userid_detail_id].present?%>
+          <div  style="float:right;">
+          <%= form_tag(problem_url, :method=>:get) do %>
+            <% problem_button_options.each_pair do |name, value| %>
+              <%= hidden_field_tag(name, value)%>
+            <% end %>
+            <input type="submit" value="Report a Problem"  class = "btn  btn--small"/>
+          <% end %>
+          </div>
+        <% end %>
+      </div>
       </main>
       <%= render "layouts/footer" %>
     </div>
@@ -164,23 +169,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- example offcanvas switching code -->
     
     <script type="text/javascript">
-    var el = document.getElementById("trigger-offcanvas");
-        var switchOffCanvas = function() {
-          classie.toggle(document.body, 'offcanvas--active');
-          classie.toggle(el, 'site__header__menu-btn--active');
-        }
-        if (el.addEventListener) {
-          el.addEventListener('click', switchOffCanvas, false);
-        } else if (el.attachEvent) {
+      var el = document.getElementById("trigger-offcanvas");
+      var switchOffCanvas = function() {
+        classie.toggle(document.body, 'offcanvas--active');
+        classie.toggle(el, 'site__header__menu-btn--active');
+      }
+      if (el.addEventListener) {
+        el.addEventListener('click', switchOffCanvas, false);
+      } else if (el.attachEvent) {
           el.attachEvent('onclick', switchOffCanvas);
-        }
+      }
     </script> 
 
-    <script type="text/javascript">
+    <!--script type="text/javascript">
       $(document).ready(function() {
-          $.cookiesDirective({
-              privacyPolicyUri:  "/cms/about/cookie-policy",
-              duration: 120,
+        $.cookiesDirective({
+          privacyPolicyUri:  "/cms/about/cookie-policy",
+          duration: 120,
               <% if MyopicVicar::Application.config.template_set == 'freecen' %>
                 fontColor: '#FFFFFF', // font color for disclosure panel
                 backgroundColor: '#4A993E',
@@ -190,11 +195,33 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 backgroundColor: '#f7a21c', //background color of disclosure panel
                 linkColor: ' #000080'// link color in disclosure panel
               <% end %>
-              fontSize: '1.0rem', // font size for disclosure panel
-              backgroundOpacity: '99',
-          });
+          backgroundOpacity: '99',
+          linkColor: ' #000080'// link color in disclosure panel
+        });
       });
+    </script-->
 
+    <script type="text/javascript">
+      $('#source_original_form_type').ready(function(){
+        if ($('#source_original_form_type :selected').val() === 'other') {
+          $('#original_form_label').show()
+          $('#source_original_form_name').show()
+        } else {
+          $('#original_form_label').hide()
+          $('#source_original_form_name').hide()
+        }
+      })
+      $('#source_original_form_type').on('change',function(){
+        x = document.getElementById('source_original_form_type')
+        if (x.options[x.selectedIndex].value === 'other') {
+          $('#original_form_label').show()
+          $('#source_original_form_name').show()
+        } else {
+          $('#original_form_label').hide()
+          $('#source_original_form_name').hide()
+          document.getElementById('source_original_form_name').value = ''
+        }
+      })
     </script>
   </body>
 </html>

@@ -1,6 +1,6 @@
 require 'spec_helper'
 require 'record_type'
-require 'freereg_csv_update_processor'
+require 'new_freereg_csv_update_processor'
 require 'freereg1_translator'
 require 'pp'
 

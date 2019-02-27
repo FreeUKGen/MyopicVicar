@@ -1,17 +1,11 @@
 <% breadcrumb :edit_contact,  @contact%>
 <h4 style="text-align: center">Editing contact entry <%= @contact.identifier %></h4>
-
 <% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
+  <div id="notice" style="color:blue"><br>
     <%= flash[:notice] %> <br>
-    </div>
-   <% end %>
-
+  </div>
+<% end %>
 <%= simple_form_for  @contact   do |f| %>
-
-
-<%= f.input :body, :label => "Comments ",as: :text, :input_html => { :rows => 5, :columns =>40 , :placeholder => @contact.body} %>
-
- <%= f.button :submit, 'Submit'   %>
-  
+  <%= f.input :body, :label => "Comments ",as: :text, :input_html => { :rows => 5, :cols =>40 , :placeholder => @contact.body} %>
+  <%= f.button :submit, 'Submit'   %>
 <% end %>

@@ -52,6 +52,23 @@ class County
       where(:county_coordinator => userid)
     end
 
+    def county_with_unallocated_image_groups
+      counties = Array.new
+      image_server_group = Array.new
+
+      place_id = Place.all.pluck(:id, :chapman_code).to_h
+      place_county = Hash.new{|h,k| h[k]=[]}.tap{|h| place_id.each{|k,v| h[k] = v}}
+
+      image_server_group = ImageServerGroup.where("summary.status"=>{'$in'=>['u']}).pluck(:id, :place_id)
+      group_id = Hash.new{|h,k| h[k]=[]}.tap{|h| image_server_group.each{|k,v| h[k] = v}}
+
+      group_id.each do |group_id,place_id|
+        counties << place_county[place_id] if not counties.include?(place_county[place_id])
+      end
+
+      return counties
+    end
+
     def is_county(code)
       County.chapman_code(code).present?  ? result = true : result = false
       result

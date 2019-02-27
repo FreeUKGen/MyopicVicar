@@ -1,0 +1,17 @@
+<% breadcrumb :fully_reviewed_groups, session[:syndicate] %>
+
+<% title "IS Group - fully reviewed group" %>
+<p><h3 style="text-align: center">Fully Reviewed Image Groups Allocated to Syndicate <%= session[:syndicate] %>.</h3></p>
+<%= render partial: 'flash_notice' %>
+
+<div class="grid">
+	<% if not @group_ids.empty? %>
+  	<div style="text-align: center">  
+			<%= link_to 'Email CC of All Image Groups', send_complete_to_cc_image_server_group_path(:completed_groups=>@completed_groups), method: :get, :class => "btn weight--light btn--small" %>
+		</div>
+	<% end %>
+
+  <section class="island">
+		<%= render partial: 'image_groups', :locals=>{:image_group_filter=>'fully_reviewed'} %>
+  </section>
+</div>

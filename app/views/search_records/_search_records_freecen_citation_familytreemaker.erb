@@ -1,0 +1,17 @@
+<section>
+  <p>
+    Source title: FreeREG - <%=@entry['church_name']%>, <%=@entry['place']%>, <%=@entry['county']%><br>
+    Repository:  unknown<br>
+    Citation detail: <%unless @entry['register_type'].include? "Unspecified"%><%=@entry['register_type']%><% else %>Register of unspecified type<% end %><br>
+    Citation text:  <%=record_type(@entry).titleize%>
+    <%if record_type(@entry).downcase == "baptism"%>
+      <%=entitle(@entry['person_forename'])%> <%=entitle(@entry['father_surname'])%> <%=entitle(@entry['baptism_date'])%>
+    <%elsif record_type(@entry).downcase == "burial"%>
+      <%=entitle(@entry['burial_person_forename'])%> <%=entitle(@entry['burial_person_surname'])%> <%=entitle(@entry['burial_date'])%>
+    <%elsif record_type(@entry).downcase == "marriage"%>
+      <%=entitle(@entry['groom_forename'])%> <%=entitle(@entry['groom_surname'])%> to <%=entitle(@entry['bride_forename'])%> <%=entitle(@entry['bride_surname'])%> <%=entitle(@entry['marriage_date'])%>
+    <%end%>
+    <br>
+    Web address:https:www.freereg.org.uk  viewed <%=@viewed_date%>
+  </p>
+</section>

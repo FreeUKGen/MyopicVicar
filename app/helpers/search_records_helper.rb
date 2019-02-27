@@ -33,4 +33,8 @@ module SearchRecordsHelper
     end
     field
   end
+
+  def entitle(record)
+    record = record.present? ? record.titleize : record
+  end
 end

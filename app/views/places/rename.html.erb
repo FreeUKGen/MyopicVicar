@@ -1,17 +1,15 @@
 <% breadcrumb :rename_place,  @county, @place%>
-<p style="text-align: center"> <b><%= @place_name %></b> of <b><%= @county %></b><br></p>
-
+<p style="text-align: center"> <b><%= @place_name %></b> of <b><%= @county %></b><br>
+</p>
 <% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
-  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
-    </div>
-   <% end %> 
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+  </div>
+<% end %>
 <section class="island  island--light">
-<%= semantic_form_for  @place, :html => { :class => "grid"}  do |f| %>
- <%= f.input :place_name, :label => "Enter the new Place Name",:input_html => { :size => 15 } %>
- 
- <%= f.action :submit, :as => :input, :label => 'Rename' %>
- <% end %>
- <p style="color:red">Please note you are changing the name in a large number of records (<%=@records%>) the processing time could be several minutes depending upon the number of batches affected. <b>Please wait for the process to complete.</b></p>
- </section>
-  
+  <%= simple_form_for  @place, :html => { :class => "grid"}  do |f| %>
+    <%= f.input :place_name, :label => "Enter the new Place Name", :input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width"}%>
+    <%= f.button :submit, 'Rename' %>
+  <% end %>
+  <p style="color:red">Please note you are changing the name in a large number of records (<%=@records%>) the processing time could be several minutes depending upon the number of batches affected. <b>Please wait for the process to complete.</b></p>
+</section>

@@ -57,10 +57,11 @@ MyopicVicar::Application.configure do
   config.datafiles_delta = MyopicVicar::MongoConfig['datafiles_delta'] unless MyopicVicar::MongoConfig['datafiles_delta'].blank?
   config.website = MyopicVicar::MongoConfig['website']
   config.backup_directory = MyopicVicar::MongoConfig['backup_directory']
-  config.github_issues_login = MyopicVicar::MongoConfig['github_issues_login']
-  config.github_issues_password = MyopicVicar::MongoConfig['github_issues_password']
-  config.github_issues_repo = MyopicVicar::MongoConfig['github_issues_repo']
-  config.days_to_retain_search_queries = MyopicVicar::MongoConfig['days_to_retain_search_queries']
+  config.github_login = 'FreeUKGenIssues'
+  config.github_password = ENV["GITHUB_WORD"]
+  config.github_repo = 'FreeUKGen/FreeUKRegProductIssues'
+  config.days_to_retain_search_queries = 90
+  config.days_to_retain_messages = MyopicVicar::MongoConfig['days_to_retain_messages']
   config.sleep = MyopicVicar::MongoConfig['sleep']
   config.emmendation_sleep = MyopicVicar::MongoConfig['emmendation_sleep']
   config.processing_delta = MyopicVicar::MongoConfig['files_for_processing'] unless MyopicVicar::MongoConfig['files_for_processing'].blank?
@@ -84,5 +85,6 @@ MyopicVicar::Application.configure do
   config.assets.compress = false
   config.assets.debug = false
   config.assets.digest = false
+  config.dragonfly_secret_code = MyopicVicar::MongoConfig['dragonfly_secret_code']
 
 end

@@ -5,6 +5,30 @@ namespace :foo do
   #eg f2rake  foo:update_search_records[0,bu,"2016-05-27T19:23:31+00:00", true, 1]
   #number of files of 0 is all, force creation is true or false, order files processed is 1 or -1
 
+  task :delete_or_archive_old_messages_feedbacks_and_contacts => [:environment] do
+    require 'delete_or_archive_old_messages_feedbacks_and_contacts'
+    DeleteOrArchiveOldMessagesFeedbacksAndContacts.process
+  end
+
+  task :update_message_nature_field => [:environment] do
+    require 'update_message_nature_field'
+    UpdateMessageNatureField.process
+  end
+
+  task :check_and_delete_orphan_records, [:limit, :sleep_time, :fix] =>  :environment do |t, args|
+    require 'check_and_delete_orphan_records'
+
+    CheckAndDeleteOrphanRecords.process(args.limit, args.sleep_time, args.fix)
+
+  end
+
+  task :correct_image_server_group, [:limit, :fix] => :environment do |t, args|
+    # limit of an integer does that number of groups. "image_server_groups/5c10fe8af493fdac0a29d7fd3" does that one only
+    # enter something in the fix field and it fixes what is found wrong otherwise no correction Allows for a dry run
+    require 'correct_image_server_group'
+    CorrectImageServerGroup.process(args.limit, args.fix)
+  end
+
   task :update_search_records,[:limit,:record_type,:version,:force, :order] => [:environment] do |t,args|
     #limit is number of files to process 0 is all
     require 'update_search_records'
@@ -272,9 +296,88 @@ namespace :foo do
 
   end
 
+  task :load_place_id_church_id => [:environment] do
+
+    p "Start load"
+    Source.all.each do |source|
+      register = source.register
+      church = register.church
+      place = church.place
+      source.update_attributes(:place_id => place._id, :church_id => church._id)
+      p source
+    end
+
+    p "Task complete."
+
+  end
+
+  task :locate_batches_with_bad_credit_names, [:limit,:fix] => [:environment] do |t,args|
+    p "looking for @ in credit name"
+    file_for_output = "#{Rails.root}/log/files_with_email_in_credit_name.log"
+    FileUtils.mkdir_p(File.dirname(file_for_output) )
+    output_file = File.new(file_for_output, "w")
+    number = 0
+    affected_batches = Hash.new
+    Freereg1CsvFile.each do |file|
+      affected_batches[file.id.to_s] = {:file_name => file.file_name.to_s, :credit_name => file.credit_name.to_s, :userid => file.userid} if file.present? && file.credit_name.present? && file.credit_name.include?('@')
+      number = number + 1
+      break if args.limit.to_i == number
+    end
+    p affected_batches.length
+    output_file.puts affected_batches
+    if args.fix == "fix" && affected_batches.length > 0
+      p "Fixing"
+      affected_batches.each_pair do |id, value|
+        file = Freereg1CsvFile.id(id).first
+        file.update_attribute(:credit_name,nil)
+      end
+    end
+  end
+
+  task :update_html_address_for_place_location, [:limit] => [:environment] do |t,args|
+    file_for_output = "#{Rails.root}/log/place_location_linkords.log"
+    FileUtils.mkdir_p(File.dirname(file_for_output) )
+    output_file = File.new(file_for_output, "w")
+    p "Updating Place location links"
+    number = 0
+    empty_place = Hash.new
+    different_location = Hash.new
+    Place.approved.each do |place|
+      if place.genuki_url.present? && place.genuki_url.include?("http:")
+        genuki = place.genuki_url
+        if genuki.include?("cgi-bin/gazplace")
+          genuki = genuki.gsub(/cgi-bin/,'maps').gsub(/gazplace/,'gmap').gsub(/,/,'&')
+          place.update_attribute(:genuki_url,genuki)
+        else
+          different_location[place.id.to_s.to_sym] = {:place_name => place.place_name.to_s, :county => place.chapman_code.to_s, :location => genuki}
+        end
+      else
+        empty_place[place.id.to_s.to_sym] = {:place_name => place.place_name.to_s, :county => place.chapman_code.to_s}
+      end
+      number = number + 1
+      break if args.limit.to_i == number
+      p number if (number/1000)*1000 == number
+    end
+    p empty_place.length
+    p different_location.length
+    output_file.puts empty_place.length
+    if empty_place.length > 0
+      empty_place.each_pair do |id, place|
+        output_file.puts place
+      end
+    end
+    output_file.puts different_location.length
+    if different_location.length > 0
+      different_location.each_pair do |id, place|
+        output_file.puts place
+      end
+    end
+  end
+
+
   desc "Refresh UCF lists on places"
   task :refresh_ucf_lists, [:skip] => [:environment] do |t,args|
-     p "starting with a skip of #{args.skip.to_i}"
+    p "starting with a skip of #{args.skip.to_i}"
     Place.data_present.order(:chapman_code => :asc, :place_name => :asc).no_timeout.all.each_with_index do |place, i|
       unless args.skip && i < args.skip.to_i
         Freereg1CsvFile.where(:place_name => place.place_name).order(:file_name => :asc).all.each do |file|
@@ -285,12 +388,12 @@ namespace :foo do
       end
     end
   end
-  
+
   desc "Recalculate SearchRecord for Freereg1CsvEntry ids in a file"
   task :recalc_search_record_for_entries_in_file, [:id_file,:skip,:limit] => [:environment] do |t,args|
-   file_for_warning_messages = "#{Rails.root}/log/update_search_records.log"
-   FileUtils.mkdir_p(File.dirname(file_for_warning_messages))
-   output_file = File.new(file_for_warning_messages, "w")
+    file_for_warning_messages = "#{Rails.root}/log/update_search_records.log"
+    FileUtils.mkdir_p(File.dirname(file_for_warning_messages))
+    output_file = File.new(file_for_warning_messages, "w")
     lines = File.readlines(args.id_file).map { |l| l.to_s }
     p "starting"
     number = 0
@@ -311,12 +414,12 @@ namespace :foo do
         print line
       else
         begin
-        entry = Freereg1CsvEntry.find(line.chomp)
-        record = entry.search_record 
-        
-          if  entry.present? && record.present? && entry.freereg1_csv_file_id.present? 
+          entry = Freereg1CsvEntry.find(line.chomp)
+          record = entry.search_record
+
+          if  entry.present? && record.present? && entry.freereg1_csv_file_id.present?
             record.transform
-            record.save!  
+            record.save!
           else
             output_file.puts "bypassed #{line}"
           end
@@ -332,7 +435,7 @@ namespace :foo do
     average_time = time_running/(number - skipping)
     p "finished #{number} with #{skipping} skipped at average time of #{average_time} sec/record"
   end
-  
+
   desc "Recalculate SearchRecord search date for Freereg1CsvEntry ids in a file"
   task :recalc_search_record_seach_date_for_entries_in_file, [:id_file,:limit] => [:environment] do |t,args|
     p "starting"
@@ -352,23 +455,23 @@ namespace :foo do
         entry = Freereg1CsvEntry.find(line.chomp)
         record = entry.search_record
         begin
-        p "original"
-            p entry
-            p record.search_date unless record.blank?
-             p record.secondary_search_date unless record.blank?
-            software_version = SoftwareVersion.control.first
-            search_version = ''
-            search_version  = software_version.last_search_record_version unless software_version.blank?
-            freereg1_csv_file = entry.freereg1_csv_file
-            register = freereg1_csv_file.register
-            church = register.church
-            place = church.place
-            SearchRecord.update_create_search_record(entry,search_version,place.id)
-            record = entry.search_record
-            p "Upadted"
-            p record.search_date
-            p record.secondary_search_date
-            p "passed #{number}"
+          p "original"
+          p entry
+          p record.search_date unless record.blank?
+          p record.secondary_search_date unless record.blank?
+          software_version = SoftwareVersion.control.first
+          search_version = ''
+          search_version  = software_version.last_search_record_version unless software_version.blank?
+          freereg1_csv_file = entry.freereg1_csv_file
+          register = freereg1_csv_file.register
+          church = register.church
+          place = church.place
+          SearchRecord.update_create_search_record(entry,search_version,place)
+          record = entry.search_record
+          p "Upadted"
+          p record.search_date
+          p record.secondary_search_date
+          p "passed #{number}"
         rescue => e
           p "#{e.message}"
           p "#{e.backtrace.inspect}"
@@ -378,5 +481,4 @@ namespace :foo do
     end
     p "#{number} records processed"
   end
-  
 end

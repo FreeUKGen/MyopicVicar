@@ -1,3 +1,9 @@
-<% breadcrumb :create_message,  @message%>
-<h4 style="text-align: center">Creating New Message</h4>
-<%= render 'form' %>
+<% new_breadcrumb(@message, params[:id])  %>
+<br>
+<h4 style="text-align: center"><%= new_title(@respond_to_message, params[:id])%></h4>
+<% if params[:id].present? %>
+  <p style="text-align: center">This reply will go to the sender of the original message</p>
+  <%= render 'reply'%>
+<% else %>
+  <%= render 'form' %>
+<% end %>

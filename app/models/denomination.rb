@@ -19,6 +19,7 @@ class Denomination
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
   field :denomination, type: String 
+  validates_uniqueness_of :denomination
   field :notes, type: String 
 
   class << self
