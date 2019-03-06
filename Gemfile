@@ -9,12 +9,14 @@ gem 'refinerycms-wymeditor'
 gem 'mongoid'
 gem 'mongo'
 gem 'execjs'
-gem 'libv8'
+#gem 'libv8'
 gem 'mobvious'
 gem 'formtastic'
-gem 'therubyracer', platforms: :ruby # avoid loading on windows
+#gem 'therubyracer', platforms: :ruby # avoid loading on windows
 gem 'airbrake'
-gem 'bcrypt', platforms: :ruby  # avoid loading on windows
+gem 'bcrypt', git: 'https://github.com/adam12/bcrypt-ruby', ref: '613daca', platforms: :ruby
+
+#gem 'bcrypt', platforms: :ruby  # avoid loading on windows
 gem 'text'
 gem 'json'
 gem 'pry'
