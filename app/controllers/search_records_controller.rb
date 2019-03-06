@@ -2,6 +2,10 @@ class SearchRecordsController < ApplicationController
   before_filter :viewed
   skip_before_filter :require_login
   rescue_from Mongo::Error::OperationFailure, :with => :catch_error
+  before_action only: [:show, :show_print_version] do
+    flash[:notice] = 'We are sorry but the record you are trying to access does not exist. If you think this is mistake please let us know'
+    redirect_to new_search_query_path if validate_existance_of(params[:id])
+  end
   
   def catch_error
     logger.warn("#{MyopicVicar::Application.config.freexxx_display_name.upcase}:RECORD: Record encountered a problem #{params}")
@@ -175,6 +179,10 @@ class SearchRecordsController < ApplicationController
 
   def viewed
     session[:viewed] ||= []
+  end
+
+  def validate_existance_of(record)
+    SearchRecord.record_id(record).blank?
   end
 
 end
