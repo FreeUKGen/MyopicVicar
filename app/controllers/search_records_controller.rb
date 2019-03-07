@@ -3,7 +3,7 @@ class SearchRecordsController < ApplicationController
   skip_before_filter :require_login
   rescue_from Mongo::Error::OperationFailure, :with => :catch_error
   before_action only: [:show, :show_print_version] do
-    flash[:notice] = 'We are sorry but the record you are trying to access does not exist. If you think this is mistake please let us know'
+    flash[:notice] = 'We are sorry but the record you are trying to access does not exist. If you think this is a mistake, please let us know'
     redirect_to new_search_query_path if validate_existance_of(params[:id])
   end
   
