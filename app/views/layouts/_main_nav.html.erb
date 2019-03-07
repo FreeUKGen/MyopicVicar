@@ -15,7 +15,7 @@
         <% end%>
         <% if MyopicVicar::Application.config.template_set == 'freecen' && (controller_name != 'freecen_coverage' || @chapman_code != nil)%>
           <li>
-            <%=link_to("Database Coverage",main_app.freecen_coverage_path)%>
+            <%=link_to("Database Coverage",main_app.freecen_coverage_path, id: "db_coverage_nav")%>
           </li>
         <% end %>
 
