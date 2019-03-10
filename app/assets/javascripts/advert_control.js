@@ -18,7 +18,7 @@ $(document).ready(function() {
          update_personalized_google_adverts('deny');
        };
     };
-  };
+  }
   //------------------------------------------------------------//
 
   // advert control for freecen application
