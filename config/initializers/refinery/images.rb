@@ -44,7 +44,7 @@ Refinery::Images.configure do |config|
   # Configure Dragonfly
   #config.dragonfly_verify_urls = false
   config.dragonfly_secret = Rails.application.config.dragonfly_secret_code
-  # config.dragonfly_url_format = "/system/images/:job/:basename.:ext"
+  config.dragonfly_url_format = "/system/images/:job/:basename.:ext"
   # config.dragonfly_url_host = ""
   # config.datastore_root_path = "/home/benwbrum/dev/clients/freeukgen/scratch/test_for_refinery/public/system/refinery/images"
 
