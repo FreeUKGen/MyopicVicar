@@ -9,7 +9,6 @@ gem 'refinerycms-wymeditor'
 gem 'mongoid'
 gem 'mongo'
 gem 'execjs'
-gem 'libv8'
 gem 'mobvious'
 gem 'formtastic'
 gem 'therubyracer', platforms: :ruby # avoid loading on windows

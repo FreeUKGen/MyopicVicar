@@ -601,7 +601,6 @@ DEPENDENCIES
   json
   kaminari
   kaminari-mongoid
-  libv8
   mail-logger
   mobvious
   mongo
