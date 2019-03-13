@@ -14,7 +14,7 @@ gem 'mobvious'
 gem 'formtastic'
 gem 'therubyracer', platforms: :ruby # avoid loading on windows
 gem 'airbrake'
-gem 'bcrypt', platforms: :ruby  # avoid loading on windows
+gem 'bcrypt', git: 'https://github.com/codahale/bcrypt-ruby' # , platforms: :ruby # avoid loading on windows
 gem 'text'
 gem 'json'
 gem 'pry'
