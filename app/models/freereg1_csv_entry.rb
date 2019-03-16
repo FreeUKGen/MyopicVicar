@@ -685,9 +685,7 @@ class Freereg1CsvEntry
       order = order + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS
     end
     order = order + FreeregOptionsConstants::END_FIELDS
-    p 'ordered_marriage_display_fields'
     order = order.uniq
-    p order
     order
   end
 
