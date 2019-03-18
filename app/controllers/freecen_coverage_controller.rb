@@ -2,7 +2,7 @@ class FreecenCoverageController < ApplicationController
   require 'chapman_code'
   require 'freecen_piece'
   require 'freecen_constants'
-  skip_before_filter :require_login
+  skip_before_action :require_login
 
   def index
     # Since get_index_stats is slow (several seconds on production), we cache
@@ -29,7 +29,7 @@ class FreecenCoverageController < ApplicationController
 
     @chapman_code = params[:chapman_code]
     @county = ChapmanCode.name_from_code(@chapman_code) if !@chapman_code.nil?
-    if @county.nil? 
+    if @county.nil?
       redirect_to freecen_coverage_path
     end
     @county_pieces = FreecenCoverage.get_county_coverage(@chapman_code)
@@ -41,7 +41,7 @@ class FreecenCoverageController < ApplicationController
     @county = ChapmanCode.name_from_code(@chapman_code) if !@chapman_code.nil?
     @county = 'All Counties' if 'all' == params[:chapman_code]
     @year = params[:year]
-    
+
     redirect_to freecen_coverage_path if 'ind'!=@graph_type&&'pct'!=@graph_type
     redirect_to freecen_coverage_path if @county.nil?
     unless Freecen::CENSUS_YEARS_ARRAY.include?(@year) || 'all' == @year
