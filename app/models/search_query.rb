@@ -230,7 +230,6 @@ class SearchQuery
     return if my_name.blank? || !my_name.match(WILDCARD)
 
     name_parts = my_name.split(WILDCARD)
-    p name_parts
     name_parts[0].downcase
   end
 
