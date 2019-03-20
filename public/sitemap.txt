@@ -1,10 +1,10 @@
-# Sitemap for freecen2.freecen.org.uk
+# Sitemap for freecen.org.uk
 
-https://freecen2.freecen.org.uk/
-https://freecen2.freecen.org.uk/cms/about
-https://freecen2.freecen.org.uk/cms/opportunities-to-volunteer-with-freecen
-https://freecen2.freecen.org.uk/cms/help
-https://freecen2.freecen.org.uk/cms/about/cookie-policy
-https://freecen2.freecen.org.uk/search_queries/new
-https://freecen2.freecen.org.uk/freecen_coverage
-https://freecen2.freecen.org.uk/cms/donate
+https://www.freecen.org.uk/
+https://www.freecen.org.uk/cms/about
+https://www.freecen.org.uk/cms/opportunities-to-volunteer-with-freecen
+https://www.freecen.org.uk/cms/help
+https://www.freecen.org.uk/cms/about/cookie-policy
+https://www.freecen.org.uk/search_queries/new
+https://www.freecen.org.uk/freecen_coverage
+https://www.freecen.org.uk/cms/donate
