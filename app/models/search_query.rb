@@ -338,16 +338,12 @@ class SearchQuery
   end
 
   def include_record_for_type(search_name)
-    p 'include_record_for_type'
     include_record = false
     if search_name[:type] == 'p'
-      p 'p'
       include_record = true
     elsif search_name[:type] == 'f' && inclusive
-      p 'f and inc'
       include_record = true
     elsif search_name[:type] == 'w' && witness
-      p 'w and witness'
       include_record = true
     end
     include_record
