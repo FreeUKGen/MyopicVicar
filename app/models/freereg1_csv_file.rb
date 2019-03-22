@@ -968,7 +968,7 @@ class Freereg1CsvFile
                      when :witness2_surname
                        witnesses.blank? || witnesses[1].nil? ? record = record.push('') : record = record.push(witnesses[1][1].to_s)
                      when :notes
-                       dup_notice ? notes = rec[field.to_sym].to_s + 'duplicated record for other witnesses' : notes = rec[field.to_sym].to_s
+                       dup_notice ? notes = rec[field.to_sym].to_s + ' duplicated record for other witnesses' : notes = rec[field.to_sym].to_s
                        record = record.push(notes)
                      else
                        record = record.push(rec[field.to_sym].to_s)
