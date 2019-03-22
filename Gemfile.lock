@@ -4,6 +4,12 @@ GIT
   specs:
     osgb (0.3.1)
 
+GIT
+  remote: https://github.com/codahale/bcrypt-ruby
+  revision: 7644e3684d96fb49f5aa20cb5f547cb1b56b3f38
+  specs:
+    bcrypt (3.1.12)
+
 PATH
   remote: vendor/extensions
   specs:
@@ -66,8 +72,6 @@ GEM
     awesome_nested_set (3.1.4)
       activerecord (>= 4.0.0, < 5.3)
     babosa (1.0.2)
-    bcrypt (3.1.11)
-    bcrypt (3.1.11-x64-mingw32)
     bourbon (5.0.0)
       sass (~> 3.4)
       thor (~> 0.19)
@@ -319,7 +323,6 @@ GEM
     kaminari-mongoid (1.0.1)
       kaminari-core (~> 1.0)
       mongoid
-    libv8 (3.16.14.19)
     loofah (2.2.3)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
@@ -413,7 +416,6 @@ GEM
       json (>= 1.8)
       nokogiri (~> 1.5)
       trollop (~> 2.1)
-    ref (2.0.0)
     refinerycms (4.0.3)
       refinerycms-core (= 4.0.3)
       refinerycms-images (= 4.0.3)
@@ -542,9 +544,6 @@ GEM
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
     text (1.3.1)
-    therubyracer (0.12.3)
-      libv8 (~> 3.16.14.15)
-      ref
     thor (0.20.3)
     thread_safe (0.3.6)
     tilt (2.0.9)
@@ -581,7 +580,7 @@ PLATFORMS
 
 DEPENDENCIES
   airbrake
-  bcrypt
+  bcrypt!
   bourbon
   carrierwave-mongoid
   coffee-rails
@@ -597,7 +596,6 @@ DEPENDENCIES
   json
   kaminari
   kaminari-mongoid
-  libv8
   mail-logger
   mobvious
   mongo
@@ -620,7 +618,6 @@ DEPENDENCIES
   sass-rails
   simple_form
   text
-  therubyracer
   traceroute
   tzinfo-data
   uglifier
@@ -628,4 +625,4 @@ DEPENDENCIES
   zip-zip
 
 BUNDLED WITH
-   1.17.1
+   2.0.1

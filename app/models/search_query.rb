@@ -490,7 +490,7 @@ class SearchQuery
     param[:order_field] = self.order_field
     param[:order_asc] = self.order_asc
     param[:region] = self.region
-    #param[:userid_detail_id] = self.userid_detail_id
+    # param[:userid_detail_id] = self.userid_detail_id
     param[:c_at] = self.c_at
     param[:u_at] = Time.now
     param[:place_ids] = self.place_ids
@@ -498,7 +498,7 @@ class SearchQuery
   end
 
   def record_type_params
-    params = Hash.new
+    params = {}
     params[:record_type] = record_type if record_type.present?
     params[:record_type] = { '$in' => RecordType.all_types } if record_type.blank?
     params
@@ -507,22 +507,22 @@ class SearchQuery
   def search
     @search_parameters = search_params
     @search_index = SearchRecord.index_hint(@search_parameters)
-    #@search_index = "place_rt_sd_ssd" if query_contains_wildcard?
+    # @search_index = "place_rt_sd_ssd" if query_contains_wildcard?
     logger.warn("FREEREG:SEARCH_HINT: #{@search_index}")
     self.update_attribute(:search_index, @search_index)
     # logger.warn @search_parameters.inspect
     records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     self.persist_results(records)
     self.persist_additional_results(secondary_date_results) if (self.result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
-    search_ucf  if can_query_ucf? && self.result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+    search_ucf if can_query_ucf? && self.result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
     records
   end
 
   def secondary_date_results
     @secondary_search_params = @search_parameters
     @secondary_search_params[:secondary_search_date] = @secondary_search_params[:search_date]
-    @secondary_search_params.delete_if {|key, value| key == :search_date }
-    #@secondary_search_params[:record_type] = { '$in' => [RecordType::BAPTISM] }
+    @secondary_search_params.delete_if { |key, value| key == :search_date }
+    # @secondary_search_params[:record_type] = { '$in' => [RecordType::BAPTISM] }
     @search_index = SearchRecord.index_hint(@search_parameters)
     logger.warn("FREEREG:SSD_SEARCH_HINT: #{@search_index}")
     secondary_records = SearchRecord.collection.find(@secondary_search_params).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
@@ -530,7 +530,7 @@ class SearchQuery
   end
 
   def search_params
-    params = Hash.new
+    params = {}
     params.merge!(name_search_params)
     params.merge!(place_search_params)
     params.merge!(record_type_params)
@@ -549,47 +549,46 @@ class SearchQuery
     self.save
   end
 
-
   def sort_results(results)
     # next reorder in memory
     if results.present?
       case self.order_field
       when SearchOrder::COUNTY
         if self.order_asc
-          results.sort! { |x, y| x['chapman_code'] <=> y['chapman_code'] }
+          results.sort! { |x, y| (x['chapman_code'] || '') <=> (y['chapman_code'] || '') }
         else
-          results.sort! { |x, y| y['chapman_code'] <=> x['chapman_code'] }
+          results.sort! { |x, y| (y['chapman_code'] || '') <=> (x['chapman_code'] || '') }
         end
       when SearchOrder::DATE
         if self.order_asc
-          results.sort! { |x,y| (x[:search_date]||'') <=> (y[:search_date]||'') }
+          results.sort! { |x, y| (x[:search_date] || '') <=> (y[:search_date] || '') }
         else
-          results.sort! { |x,y| (y[:search_date]||'') <=> (x[:search_date]||'') }
+          results.sort! { |x, y| (y[:search_date] || '') <=> (x[:search_date] || '') }
         end
       when SearchOrder::TYPE
         if self.order_asc
-          results.sort! { |x, y| x['record_type'] <=> y['record_type'] }
+          results.sort! { |x, y| (x['record_type'] || '') <=> (y['record_type'] || '') }
         else
-          results.sort! { |x, y| y['record_type'] <=> x['record_type'] }
+          results.sort! { |x, y| (y['record_type'] || '') <=> (x['record_type'] || '') }
         end
       when SearchOrder::LOCATION
         if self.order_asc
           results.sort! do |x, y|
-            compare_location(x,y)
+            compare_location(x, y)
           end
         else
           results.sort! do |x, y|
-            compare_location(y,x)  # note the reverse order
+            compare_location(y, x) # note the reverse order
           end
         end
       when SearchOrder::NAME
         if self.order_asc
           results.sort! do |x, y|
-            compare_name(x,y)
+            compare_name(x, y)
           end
         else
           results.sort! do |x, y|
-            compare_name(y,x)  # note the reverse order
+            compare_name(y, x) # note the reverse order
           end
         end
       end
@@ -598,7 +597,7 @@ class SearchQuery
   end
 
   def ucf_params
-    params = Hash.new
+    params = {}
     params.merge!(place_search_params)
     params.merge!(record_type_params)
     params.merge!(date_search_params)
@@ -667,5 +666,4 @@ class SearchQuery
       errors.add(:first_name, "A place must be selected if name queries begin with a wildcard")
     end
   end
-
 end
