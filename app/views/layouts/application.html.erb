@@ -92,7 +92,7 @@
     <%= javascript_include_tag "ladda.min.js" %>
     <%= javascript_include_tag "freecen_coverage_graph.js" %>
     <%= javascript_include_tag "ads.js" %>
-   
+
     <%= csrf_meta_tags %>
     <% google_analytics_tracking_id = '' %>
     <% if MyopicVicar::Application.config.template_set == 'freereg' %>
@@ -123,12 +123,12 @@
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NQ743M4"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
-    
+
     <%= render "layouts/main_nav" %>
-    
+
     <div class="offcanvas__primary">
       <%= render "layouts/header" %>
-      
+
       <main  class="site__content  icon__honeycomb--top-right">
         <div class="container">
           <% if session[:userid_detail_id].present?%>
@@ -145,12 +145,9 @@
               </div>
             </div>
           <% else %>
-            <%= yield %>  
+            <%= yield %>
           <% end %>
-          <div class="grid__item  one-third  lap-two-fifths  palm-one-whole  push-half--top">
-            <%= yield :sidebar %>
-          </div>
-        </div>
+
         <% if  session[:userid_detail_id].present?%>
           <div  style="float:right;">
           <%= form_tag(problem_url, :method=>:get) do %>
@@ -167,7 +164,7 @@
     </div>
     <!-- TODO fix above this -->
     <!-- example offcanvas switching code -->
-    
+
     <script type="text/javascript">
       var el = document.getElementById("trigger-offcanvas");
       var switchOffCanvas = function() {
@@ -179,7 +176,7 @@
       } else if (el.attachEvent) {
           el.attachEvent('onclick', switchOffCanvas);
       }
-    </script> 
+    </script>
 
     <!--script type="text/javascript">
       $(document).ready(function() {
