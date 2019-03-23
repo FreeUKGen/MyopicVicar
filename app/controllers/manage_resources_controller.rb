@@ -30,14 +30,8 @@ class ManageResourcesController < ApplicationController
 
   def is_ok_to_render_actions?
     continue = true
-<<<<<<< HEAD
-    if cookies.signed[:userid].present?
-      @userid = cookies.signed[:userid]
-      @user = UseridDetail.where(userid: @userid.userid).first
-=======
     @user = get_user
     if @user.present?
->>>>>>> master
       if @user.blank?
         logger.warn "FREEREG::USER userid not found in session #{session[:userid_detail_id]}"
         flash[:notice] = 'Your userid was not found in the system (if you believe this to be a mistake please contact your coordinator)'

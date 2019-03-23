@@ -558,21 +558,6 @@ class MessagesController < ApplicationController
     redirect_to(select_role_message_path(@message.id, source: params[:action]), notice: 'There is no one associated with that role') && return if @people.blank?
   end
 
-# TODO: review this -- it was apparently deleted from master
-# <<<<<<< HEAD
-  # def create
-    # @message = Message.new(message_params)
-    # @message.file_name = @message.attachment_identifier
-    # if @message.save
-      # flash[:notice] = "Message created"
-      # redirect_to :action => 'index'
-      # return
-    # else
-      # render  :new
-      # return
-    # end
-  # end
-# =======
   def select_recipients
     @message = Message.find(params[:id])
     redirect_back(fallback_location: new_manage_resource_path, notice: 'The message was not found') && return if @message.blank?

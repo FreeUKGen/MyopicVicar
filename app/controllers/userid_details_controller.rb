@@ -85,7 +85,7 @@ class UseridDetailsController < ApplicationController
 
     if MyopicVicar::Application.config.template_set != 'freecen'
       Freereg1CsvFile.delete_userid_folder(@userid.userid)
-      end
+    end
     flash[:notice] = 'The destruction of the profile was successful'
     redirect_to(options_userid_details_path)
   end
@@ -179,10 +179,6 @@ class UseridDetailsController < ApplicationController
     session[:return_to] = request.fullpath
     session[:my_own] = true
     get_user_info_from_userid
-    # TODO test and delete commented code
-# <<<<<<< HEAD
-    # @userid = UseridDetail.where(userid: @user.userid).first
-# =======
     @userid = @user
     respond_to do |format|
       format.html
@@ -201,7 +197,7 @@ class UseridDetailsController < ApplicationController
       if MyopicVicar::Application.config.template_set != 'freecen'
         redirect_to(transcriber_registration_userid_detail_path) && return
       else
-        redirect_to "/cms/opportunities-to-volunteer-with-freecen/welcome-to-freecen" and return      
+        redirect_to "/cms/opportunities-to-volunteer-with-freecen/welcome-to-freecen" and return
       end
     elsif params[:commit] == 'Submit' && session[:userid_detail_id].present?
       redirect_to(userid_detail_path(@userid)) && return
@@ -561,22 +557,22 @@ class UseridDetailsController < ApplicationController
   end
 
   def download_txt
-  send_file "#{Rails.root}/script/create_user.txt", type: "application/txt", x_sendfile: true
+    send_file "#{Rails.root}/script/create_user.txt", type: "application/txt", x_sendfile: true
   end
-  
+
   def return_total_transcriber_records
     total_records = 0
     UseridDetail.where(person_role: "transcriber", transcription_agreement: "Accepted", number_of_records: {'$ne': 0}).each do |count|
       total_records += count.number_of_records
-    end 
+    end
     return total_records
   end
-  
+
   def return_total_records
     total_records = 0
     UseridDetail.where(number_of_records: {'$ne': 0}).each do |count|
       total_records += count.number_of_records
-    end 
+    end
     return total_records
   end
 
@@ -585,42 +581,42 @@ class UseridDetailsController < ApplicationController
     total_records_open_transcribers = return_total_transcriber_records.to_f
     if total_records_all == 0 || total_records_open_transcribers == 0
       return 0
-    else 
+    else
       return (total_records_open_transcribers / total_records_all) * 100
-    end   
-  end 
-  
+    end
+  end
+
   def return_percentage_all_users_accepted_transcriber_agreement
     total_users = UseridDetail.count.to_f
     total_users_accepted = UseridDetail.where(transcription_agreement: "Accepted").count.to_f
-    if total_users == 0 || total_users_accepted == 0 
+    if total_users == 0 || total_users_accepted == 0
       return 0
     else
       return ((total_users_accepted / total_users) * 100).round(2)
     end
-  end 
-  
+  end
+
   def return_percentage_all_existing_users_accepted_transcriber_agreement
     total_existing_users = UseridDetail.where(sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
     total_existing_users_accepted = UseridDetail.where(transcription_agreement: "Accepted", sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
-    if total_existing_users == 0 || total_existing_users_accepted == 0 
+    if total_existing_users == 0 || total_existing_users_accepted == 0
       return 0
     else
       return ((total_existing_users_accepted / total_existing_users) * 100).round(2)
     end
-  end 
-  
+  end
+
   def return_percentage_all_existing_active_users_accepted_transcriber_agreement
     total_existing_active_users = UseridDetail.where(active: true, sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
     total_existing_active_users_accepted = UseridDetail.where(active: true, transcription_agreement: "Accepted", sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
-    if total_existing_active_users == 0 || total_existing_active_users_accepted == 0 
+    if total_existing_active_users == 0 || total_existing_active_users_accepted == 0
       return 0
     else
       return ((total_existing_active_users_accepted / total_existing_active_users) * 100).round(2)
     end
-  end 
-  
-  
+  end
+
+
   def transcriber_statistics
     @current_user = cookies.signed[:userid]
     if stats_permitted_users?

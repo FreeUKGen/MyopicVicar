@@ -182,8 +182,8 @@ class ApplicationController < ActionController::Base
     log_message += "#{appname}:PHC HTTP_USER_AGENT=\t#{request.env['HTTP_USER_AGENT']}\n"
     log_message += "#{appname}:PHC REQUEST_URI=\t#{request.env['REQUEST_URI']}\n"
     log_message += "#{appname}:PHC REQUEST_PATH=\t#{request.env['REQUEST_PATH']}\n"
-    
-    logger.warn(log_message)    
+
+    logger.warn(log_message)
   end
 
   def manager?(user)
@@ -353,23 +353,11 @@ class ApplicationController < ActionController::Base
     session.delete(:edit_freecen_pieces)
   end
   # TODO: review and test: these two methods were removed from master
-# <<<<<<< HEAD
-
-  def go_back(type,record)
-    flash[:notice] = "The #{type} document you are trying to access does not exist."
-    appname = MyopicVicar::Application.config.freexxx_display_name.upcase
-    logger.info "#{appname}:ACCESS ISSUE: The #{type} document #{record} being accessed does not exist."
-    redirect_to main_app.new_manage_resource_path
-    return
-  end
-  def reject_assess(user,action)
+  def reject_assess(user, action)
     flash[:notice] = "You are not permitted to use this action"
     appname = MyopicVicar::Application.config.freexxx_display_name.upcase
     logger.info "#{appname}:ACCESS ISSUE: The #{user} attempted to access #{action}."
     redirect_to main_app.new_manage_resource_path
     return
   end
-
-# =======
-# >>>>>>> master
 end

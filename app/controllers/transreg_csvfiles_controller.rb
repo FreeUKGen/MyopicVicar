@@ -239,6 +239,14 @@ class TransregCsvfilesController < ApplicationController
     @county =  @place.county
     @place_name = @place.place_name
   end
+  def go_back(type,record)
+    flash[:notice] = "The #{type} document you are trying to access does not exist."
+    appname = MyopicVicar::Application.config.freexxx_display_name.upcase
+    logger.info "#{appname}:ACCESS ISSUE: The #{type} document #{record} being accessed does not exist."
+    redirect_to main_app.new_manage_resource_path
+    return
+  end
+
   private
   def csvfile_params
     params.require(:csvfile).permit!
