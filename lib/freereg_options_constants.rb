@@ -291,6 +291,10 @@ module FreeregOptionsConstants
                               'groom_father_surname','groom_father_occupation','bride_father_forename','bride_father_surname','bride_father_occupation','witness1_forename',
                               'witness1_surname','witness2_forename','witness2_surname']
 
+  ORIGINAL_MARRIAGE_LAYOUT = ['register_entry_number','marriage_date','groom_forename','groom_surname','groom_age','groom_parish','groom_condition','groom_occupation','groom_abode',
+                              'bride_forename','bride_surname','bride_age','bride_parish','bride_condition','bride_occupation','bride_abode','groom_father_forename',
+                              'groom_father_surname','groom_father_occupation','bride_father_forename','bride_father_surname', 'bride_father_occupation', 'witness']
+
   PRIVATE_BAPTISM_OPTIONS = ['y','yes', 'private', 'true', 'private baptism',  'private_baptism']
 
   RECORDS_PER_RANGE = 100000

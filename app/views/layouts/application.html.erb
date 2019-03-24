@@ -20,21 +20,17 @@
     <title><%= title %></title>
     <meta name="keywords" content="genealogy,registers,parish registers,church registers,transcriptions,indexes,baptism,marriage,burial">
     <meta name="description" content="The FreeREG project provides free online access to transcriptions of parish registers and similar resources from England, Scotland and Wales.">
-    <meta name="google-site-verification" content="zAYAee-PuoiMAfi5hbUreeLsvTGf4XFNXDxMDB9PcCQ" >
-
 <% elsif MyopicVicar::Application.config.template_set == 'freecen' %>
     <title>FreeCEN - UK Census Records (England, Scotland, Wales)</title>
     <meta name="keywords" content="genealogy,census,census records,transcriptions,indexes,family history">
     <meta name="description" content="The FreeCEN project provides free online access to transcriptions of 19th Century UK Censuses.">
-    <meta name="google-site-verification" content="zAYAee-PuoiMAfi5hbUreeLsvTGf4XFNXDxMDB9PcCQ" ><!-- do we need an app-specific verification key? -->
-
 <% elsif MyopicVicar::Application.config.template_set == 'freebmd' %>
     <title>FreeBMD - UK Birth, Marriage, and Death Records (England, Scotland, Wales)</title>
     <meta name="keywords" content="genealogy,registers,birth records,birth certificates,transcriptions,indexes,birth,marriage,death">
     <meta name="description" content="The FreeBMD project provides free online access to the GRO indexes of births, marriages and deaths for England and Wales. ">
-    <meta name="google-site-verification" content="zAYAee-PuoiMAfi5hbUreeLsvTGf4XFNXDxMDB9PcCQ" ><!-- do we need an app-specific verification key? -->
 <% end %>
-    <META NAME="ROBOTS" CONTENT="INDEX">
+    <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
+    <meta name="google-site-verification" content="zAYAee-PuoiMAfi5hbUreeLsvTGf4XFNXDxMDB9PcCQ" />
     <!--[if lt IE 9]>
     <%= javascript_include_tag "html5shiv" %>
     <![endif]-->
