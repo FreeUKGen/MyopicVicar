@@ -199,6 +199,9 @@ module UseridRole
       if opts.include?('Manage Image Server')
         opts.delete('Manage Image Server')
       end
+      if opts.include?('Assignments')
+        opts.delete('Assignments')
+      end
     end
     OPTIONS['system_administrator'] << 'Manage Pieces'
     OPTIONS['technical'] << 'Manage Pieces'
