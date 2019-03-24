@@ -170,28 +170,34 @@ module UseridRole
   }
 
 
-# Remove options for functionality that is not implemented for FreeCEN yet
+  # Remove options for functionality that is not implemented for FreeCEN yet
   if MyopicVicar::Application.config.template_set == 'freecen'
     transcriber_idx = VALUES.find_index('transcriber')
-    VALUES.insert(transcriber_idx+1,'checker')
-    VALUES.insert(transcriber_idx+2,'validator')
-    OPTIONS['checker'] = ["Batches","Profile", "Roadmap"]
-    OPTIONS['validator'] = ["Batches","Profile", "Roadmap"]
-    OPTIONS.each do |role,opts|
+    VALUES.insert(transcriber_idx+1, 'checker')
+    VALUES.insert(transcriber_idx+2, 'validator')
+    OPTIONS['checker'] = ['Batches', 'Profile', 'Roadmap']
+    OPTIONS['validator'] = ['Batches', 'Profile', 'Roadmap']
+    OPTIONS.each do |role, opts|
       if opts.include?('Batches')
-        opts.delete("Batches")
+        opts.delete('Batches')
       end
       if opts.include?('Access Attic')
-        opts.delete("Access Attic")
+        opts.delete('Access Attic')
       end
       if opts.include?('Physical Files')
-        opts.delete("Physical Files")
+        opts.delete('Physical Files')
       end
       if opts.include?('Manage Counties')
-#        opts.delete("Manage Counties")
+        #        opts.delete('Manage Counties')
       end
       if opts.include?('Denominations')
-        opts.delete("Denominations")
+        opts.delete('Denominations')
+      end
+      if opts.include?('GAP Reasons')
+        opts.delete('GAP Reasons')
+      end
+      if opts.include?('Manage Image Server')
+        opts.delete('Manage Image Server')
       end
     end
     OPTIONS['system_administrator'] << 'Manage Pieces'
@@ -199,13 +205,13 @@ module UseridRole
     self.send(:remove_const, :FILE_MANAGEMENT_OPTIONS)
     FILE_MANAGEMENT_OPTIONS = []
     COUNTY_MANAGEMENT_OPTIONS.reverse_each do |val|
-      unless val.downcase().index("batch").nil?
+      unless val.downcase().index('batch').nil?
         COUNTY_MANAGEMENT_OPTIONS.delete(val)
       end
     end
 
     SYNDICATE_MANAGEMENT_OPTIONS.reverse_each do |val|
-      unless val.downcase().index("batch").nil?
+      unless val.downcase().index('batch').nil?
         SYNDICATE_MANAGEMENT_OPTIONS.delete(val)
       end
     end
