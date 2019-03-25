@@ -49,7 +49,7 @@ MyopicVicar::Application.configure do
 
   # Print deprecation notices to the stderr
   config.active_support.deprecation = :stderr
-  config.application = MyopicVicar::MongoConfig['application']
+
   config.mongodb_bin_location = MyopicVicar::MongoConfig['mongodb_bin_location']
   config.datafiles = MyopicVicar::MongoConfig['datafiles']
   config.dataset_date =  MyopicVicar::MongoConfig['dataset_date'] unless MyopicVicar::MongoConfig['dataset_date'].blank?
