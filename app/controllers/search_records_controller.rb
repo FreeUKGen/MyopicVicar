@@ -31,46 +31,103 @@ class SearchRecordsController < ApplicationController
   def show
     redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
 
-    @display_date = false
-    if @entry  # fFreeREG only
+    @page_number = params[:page_number].to_i
+    if MyopicVicar::Application.config.template_set == 'freecen'
+      @search_record = SearchRecord.record_id(params[:id]).first
+      @individual = @search_record.freecen_individual
+      @dwelling = @individual.freecen_dwelling if @individual
+      @cen_year = ' '
+      @cen_piece = ' '
+      @cen_chapman_code = ' '
+      if @dwelling && @dwelling.freecen_piece
+        @dwelling_offset = 0
+        @dwelling_number = @dwelling.dwelling_number
+        if !params[:dwel].nil?
+          @dwelling = @dwelling.freecen_piece.freecen_dwellings.where(_id: params[:dwel]).first
+          if @dwelling.nil?
+            redirect_to new_search_query_path
+            return
+          end
+          @dwelling_offset = @dwelling.dwelling_number - @dwelling_number
+          @dwelling_number = @dwelling.dwelling_number
+        end
+        @cen_year = @dwelling.freecen_piece.year
+        @cen_piece = @dwelling.freecen_piece.piece_number.to_s
+        @cen_chapman_code = @dwelling.freecen_piece.chapman_code
+        prev_next_dwellings = @dwelling.prev_next_dwelling_ids
+        @cen_prev_dwelling = prev_next_dwellings[0]
+        @cen_next_dwelling = prev_next_dwellings[1]
+      end
+    elsif MyopicVicar::Application.config.template_set == 'freereg'
+      @display_date = false
       @entry.display_fields(@search_record)
       @entry.acknowledge
       @place_id, @church_id, @register_id, extended_def = @entry.get_location_ids
+      @annotations = Annotation.find(@search_record[:annotation_ids]) if @search_record[:annotation_ids]
+      @search_result = @search_query.search_result
+      @viewed_records = @search_result.viewed_records
+      @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
+      @search_result.update_attribute(:viewed_records, @viewed_records)
       @image_id = @entry.get_the_image_id(@church, @user, session[:manage_user_origin], session[:image_server_group_id], session[:chapman_code])
       @order, @array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type], @entry.freereg1_csv_file.def, current_authentication_devise_user.present?)
     end
-    @annotations = Annotation.find(@search_record[:annotation_ids]) if @search_record[:annotation_ids]
-    @search_result = @search_query.search_result
-    @viewed_records = @search_result.viewed_records
-    @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
-    @search_result.update_attribute(:viewed_records, @viewed_records)
-    #session[:viewed] << params[:id] unless  session[:viewed].length >= 10
   end
 
   def show_print_version
     redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
+    if MyopicVicar::Application.config.template_set == 'freecen'
+      @search_record = SearchRecord.record_id(params[:id]).first
+      @individual = @search_record.freecen_individual
+      @dwelling = @individual.freecen_dwelling if @individual
+      @cen_year = ' '
+      @cen_piece = ' '
+      @cen_chapman_code = ' '
+      if @dwelling && @dwelling.freecen_piece
+        @dwelling_offset = 0
+        @dwelling_number = @dwelling.dwelling_number
+        if !params[:dwel].nil?
+          @dwelling = @dwelling.freecen_piece.freecen_dwellings.where(_id: params[:dwel]).first
+          if @dwelling.nil?
+            redirect_to new_search_query_path
+            return
+          end
+          @dwelling_offset = @dwelling.dwelling_number - @dwelling_number
+          @dwelling_number = @dwelling.dwelling_number
+        end
+        @cen_year = @dwelling.freecen_piece.year
+        @cen_piece = @dwelling.freecen_piece.piece_number.to_s
+        @cen_chapman_code = @dwelling.freecen_piece.chapman_code
+        prev_next_dwellings = @dwelling.prev_next_dwelling_ids
+        @cen_prev_dwelling = prev_next_dwellings[0]
+        @cen_next_dwelling = prev_next_dwellings[1]
 
-    @printable_format = true
-    @display_date = true
-    @all_data = true
-    @entry.display_fields(@search_record)
-    @entry.acknowledge
-    @place_id, @church_id, @register_id, extended_def = @entry.get_location_ids
-    @annotations = Annotation.find(@search_record[:annotation_ids]) if @search_record[:annotation_ids]
-    @search_result = @search_query.search_result
-    @all_data = true
-    @order, @array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type], @entry.freereg1_csv_file.def, current_authentication_devise_user.present?)
-    respond_to do |format|
-      format.html { render 'show', layout: false }
-      format.json do
-        file_name = "search-record-#{@entry.id}.json"
-        send_data @json_of_entries.to_json, :type => 'application/json; header=present', :disposition => "attachment; filename=\"#{file_name}\""
       end
-      format.csv do
-        header_line = CSV.generate_line(@order, options = { :row_sep => "\r\n" })
-        data_line = CSV.generate_line(@array_of_entries, options = { :row_sep => "\r\n", :force_quotes => true })
-        file_name = "search-record-#{@entry.id}.csv"
-        send_data (header_line + data_line), :type => 'text/csv', :disposition => "attachment; filename=\"#{file_name}\""
+      @display_date = true
+      render "_search_records_freecen_print", :layout => false
+
+    elsif MyopicVicar::Application.config.template_set == 'freereg'
+      @printable_format = true
+      @display_date = true
+      @all_data = true
+      @entry.display_fields(@search_record)
+      @entry.acknowledge
+      @place_id, @church_id, @register_id, extended_def = @entry.get_location_ids
+      @annotations = Annotation.find(@search_record[:annotation_ids]) if @search_record[:annotation_ids]
+      @search_result = @search_query.search_result
+      @all_data = true
+      @order, @array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type], @entry.freereg1_csv_file.def, current_authentication_devise_user.present?)
+      respond_to do |format|
+        format.html { render 'show', layout: false }
+        format.json do
+          file_name = "search-record-#{@entry.id}.json"
+          send_data @json_of_entries.to_json, :type => 'application/json; header=present', :disposition => "attachment; filename=\"#{file_name}\""
+        end
+        format.csv do
+          header_line = CSV.generate_line(@order, options = { :row_sep => "\r\n" })
+          data_line = CSV.generate_line(@array_of_entries, options = { :row_sep => "\r\n", :force_quotes => true })
+          file_name = "search-record-#{@entry.id}.csv"
+          send_data (header_line + data_line), :type => 'text/csv', :disposition => "attachment; filename=\"#{file_name}\""
+        end
       end
     end
   end
@@ -133,35 +190,7 @@ class SearchRecordsController < ApplicationController
         flash.keep
         return false
       end
-    else
-      @search_record = SearchRecord.find(params[:id])
-      @individual = @search_record.freecen_individual
-      @dwelling = @individual.freecen_dwelling if @individual
-      @cen_year = ' '
-      @cen_piece = ' '
-      @cen_chapman_code = ' '
-      if @dwelling && @dwelling.freecen_piece
-        @dwelling_offset = 0
-        @dwelling_number = @dwelling.dwelling_number
-        if !params[:dwel].nil?
-          @dwelling = @dwelling.freecen_piece.freecen_dwellings.where(_id: params[:dwel]).first
-          if @dwelling.nil?
-            redirect_to new_search_query_path
-            return
-          end
-          @dwelling_offset = @dwelling.dwelling_number - @dwelling_number
-          @dwelling_number = @dwelling.dwelling_number
-        end
-        @cen_year = @dwelling.freecen_piece.year
-        @cen_piece = @dwelling.freecen_piece.piece_number.to_s
-        @cen_chapman_code = @dwelling.freecen_piece.chapman_code
-        prev_next_dwellings = @dwelling.prev_next_dwelling_ids
-        @cen_prev_dwelling = prev_next_dwellings[0]
-        @cen_next_dwelling = prev_next_dwellings[1]
-        @display_date = true
-      end
     end
-    
     true
   end
 

@@ -15,7 +15,7 @@
         <% end%>
         <% if MyopicVicar::Application.config.template_set == 'freecen' && (controller_name != 'freecen_coverage' || @chapman_code != nil)%>
           <li>
-            <%=link_to("Database Coverage",main_app.freecen_coverage_path)%>
+            <%=link_to("Database Coverage",main_app.freecen_coverage_path, id: "db_coverage_nav")%>
           </li>
         <% end %>
 
@@ -52,7 +52,7 @@
           </li>
         <!-- TODO: Convert remainder to refinery page references -->
         <li>
-          <a href="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/">Donate</a>
+          <%= link_to "Donate", "https://www.freeukgenealogy.org.uk/help-us-keep-history-free/", id: "donate_nav"%>
         </li>
     <%# if false %>
         <li>
