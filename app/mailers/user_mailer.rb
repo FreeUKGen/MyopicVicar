@@ -214,30 +214,6 @@ class UserMailer < ActionMailer::Base
     end
   end
 
-  def notification_of_registration_completion(user)
-    appname = MyopicVicar::Application.config.freexxx_display_name
-    @user = user
-    manager = nil
-    if MyopicVicar::Application.config.template_set == 'freereg'
-      manager = UseridDetail.userid("REGManager").first
-    elsif MyopicVicar::Application.config.template_set == 'freecen'
-      manager = UseridDetail.userid("CENManager").first
-    end
-    get_coordinator_name
-    if Time.now - 5.days <= @user.c_at
-      subj = "#{appname} registration completion"
-      if @coordinator.nil?
-        to_email = "#{manager.person_forename} <#{manager.email_address}>" unless manager.nil?
-        cc_email = nil
-        subj = "NO COORDINATOR!" + subj
-      else
-        to_email = "#{@coordinator.person_forename} <#{@coordinator.email_address}>"
-        cc_email = "#{manager.person_forename} <#{manager.email_address}>" unless manager.nil?
-      end
-      mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => to_email, :cc => cc_email, :subject => subj) unless to_email.nil?
-    end
-  end
-
   def notification_of_technical_registration(user)
     appname = MyopicVicar::Application.config.freexxx_display_name
     @user = user
