@@ -142,6 +142,7 @@ config/errbit.yml
 config/mongo_config.yml
 config/mongoid.yml
 config/secrets.yml
+config/freeukgen_application.yml
 
 # assets copied into app/assets/ from app/assets_free[reg/cen/bmd]
 app/assets/copy_of_assets_free*
