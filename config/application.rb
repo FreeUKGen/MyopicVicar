@@ -26,12 +26,22 @@ end
 
 module MyopicVicar
   module TemplateSet
-    FREEREG='freereg'
-    FREECEN='freecen'
-    FREEBMD='freebmd'
+    FREEREG = 'freereg'
+    FREECEN = 'freecen'
+    FREEBMD = 'freebmd'
   end
-  
+
   class Application < Rails::Application
+    config.before_configuration do
+      env_file = Rails.root.join('config', 'application.yml').to_s
+      if File.exist?(env_file)
+        YAML.load_file(env_file)[Rails.env].each do |key, value|
+          ENV[key.to_s] = value
+        end
+      end
+      mongo_config = Rails.root.join('config', 'mongo_config.yml').to_s
+      MyopicVicar::MongoConfig = YAML.load_file(mongo_config)[Rails.env] if File.exist?(mongo_config)
+    end
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
@@ -73,21 +83,21 @@ module MyopicVicar
     # This will create an empty whitelist of attributes available for mass-assignment for all models
     # in your app. As such, your models will need to explicitly whitelist or blacklist accessible
     # parameters by using an attr_accessible or attr_protected declaration.
-# Explodes in current rails    config.active_record.whitelist_attributes = true
+    # Explodes in current rails    config.active_record.whitelist_attributes = true
 
     # set config.template_set before asset directories are selected
     # TODO: make bimodal
-    config.template_set = TemplateSet::FREECEN
+
+    config.template_set = config.application.presence || TemplateSet::FREEREG
 
     #set config.freexxx_display_name based on the template_set
     if config.template_set == TemplateSet::FREECEN
-      config.freexxx_display_name = "FreeCEN"
+      config.freexxx_display_name = 'FreeCEN'
     elsif config.template_set == TemplateSet::FREEREG
-      config.freexxx_display_name = "FreeReg"
+      config.freexxx_display_name = 'FreeReg'
     elsif config.template_set == TemplateSet::FREEBMD
-      config.freexxx_display_name = "FreeBMD"
+      config.freexxx_display_name = 'FreeBMD'
     end
-
     # Enable the asset pipeline
     # config.assets.enabled = true  # commented out because already set above
 
@@ -96,29 +106,12 @@ module MyopicVicar
 
     #config.active_record.whitelist_attributes = true Remove as no longer relevant in rails 4.2
     config.api_only = false
-
     # make the designer's fonts available for the stylesheets
-    config.assets.paths << Rails.root.join('app', 'assets') 
-    config.assets.paths << Rails.root.join("app", "assets", "fonts")
-    
+    config.assets.paths << Rails.root.join('app', 'assets')
+    config.assets.paths << Rails.root.join('app', 'assets', 'fonts')
+
     config.generators do |g|
       g.orm :mongoid
     end
-
-    config.before_configuration do
-      env_file = Rails.root.join("config", 'application.yml').to_s
-
-      if File.exists?(env_file)
-        YAML.load_file(env_file)[Rails.env].each do |key, value|
-          ENV[key.to_s] = value
-        end # end YAML.load_file
-      end # end if File.exists?
-
-      mongo_config = "#{Rails.root}/config/mongo_config.yml"
-      if File.exists?(mongo_config)
-        MyopicVicar::MongoConfig = YAML.load_file(mongo_config)[Rails.env]
-      end
-      
-    end # end config.before_configuration
   end
 end
