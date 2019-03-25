@@ -84,7 +84,6 @@ MyopicVicar::Application.configure do
   config.mongodb_collection_location = File.join(Rails.root,'db','collections')
   # Date of dataset used
   config.dataset_date = "9 November 2014"
-  config.application = MyopicVicar::MongoConfig['application']
   config.mongodb_bin_location = MyopicVicar::MongoConfig['mongodb_bin_location']
   config.datafiles = MyopicVicar::MongoConfig['datafiles']
   config.dataset_date =  MyopicVicar::MongoConfig['dataset_date'] unless MyopicVicar::MongoConfig['dataset_date'].blank?
