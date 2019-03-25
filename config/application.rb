@@ -88,7 +88,7 @@ module MyopicVicar
     # set config.template_set before asset directories are selected
     # TODO: make bimodal
 
-    config.template_set = config.application.presence || TemplateSet::FREEREG
+    config.template_set = MyopicVicar::Application.config.application.presence || TemplateSet::FREEREG
 
     #set config.freexxx_display_name based on the template_set
     if config.template_set == TemplateSet::FREECEN
