@@ -69,7 +69,8 @@ module UseridRole
     'Logout' => '/refinery/logout',
     'Message System' => '/messages',
     'Manage Images' => '/sources',
-    'Assignments' => '/assignments/my_own'
+    'Assignments' => '/assignments/my_own',
+    'Manage Pieces' => '/freecen_coverage/edit'
   }
   USERID_MANAGER_OPTIONS = ['Select specific userid', 'Select specific email', 'Select specific surname/forename',
                             'Browse userids', 'Select Role', 'Select Secondary Role', 'Incomplete Registrations', 'Create userid', 'Transcriber Statistics']
