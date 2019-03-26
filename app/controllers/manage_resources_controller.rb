@@ -29,8 +29,6 @@ class ManageResourcesController < ApplicationController
   end
 
   def is_ok_to_render_actions?
-    p 'kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk'
-    p session[:host]
     continue = true
     @user = get_user
     if @user.present?

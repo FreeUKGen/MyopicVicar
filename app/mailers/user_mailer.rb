@@ -385,8 +385,6 @@ class UserMailer < ActionMailer::Base
     mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} change of email") unless @coordinator.blank?
   end
 
-
-
   def send_message(mymessage, ccs, from, host)
     @appname = MyopicVicar::Application.config.freexxx_display_name
     @message = mymessage
