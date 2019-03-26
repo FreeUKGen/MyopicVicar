@@ -61,6 +61,7 @@ class ApplicationController < ActionController::Base
     session[:userid_detail_id] = current_authentication_devise_user.userid_detail_id
     session[:devise] = current_authentication_devise_user.id
     logger.warn "FREEREG::USER current  #{current_authentication_devise_user.username}"
+    session[:host] = request.host
     scope = Devise::Mapping.find_scope!(resource_or_scope)
     home_path = "#{scope}_root_path"
     respond_to?(home_path, true) ? refinery.send(home_path) : main_app.new_manage_resource_path

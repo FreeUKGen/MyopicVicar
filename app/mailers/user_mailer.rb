@@ -388,15 +388,16 @@ class UserMailer < ActionMailer::Base
 
 
   def send_message(mymessage, ccs, from)
-    appname = MyopicVicar::Application.config.freexxx_display_name
+    @appname = MyopicVicar::Application.config.freexxx_display_name
     @message = mymessage
+    @host = session[:host]
     @sender = UseridDetail.userid(from).first
     @reply_messages = Message.where(source_message_id: @message.source_message_id).all unless @message.source_message_id.blank?
     @respond_to_message = Message.id(@message.source_message_id).first
     from_email = UseridDetail.create_friendly_from_email(from)
     from_email = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>' if from_email.blank?
     ccs_emails = add_emails(ccs)
-    mail(from: from_email, bcc: ccs_emails, subject: "#{@message.subject} from #{@sender.person_forename} #{@sender.person_surname} of #{appname}. Reference #{@message.identifier}")
+    mail(from: from_email, bcc: ccs_emails, subject: "#{@message.subject} from #{@sender.person_forename} #{@sender.person_surname} of #{@appname}. Reference #{@message.identifier}")
   end
 
   def send_logs(file, ccs, body_message, subjects)
