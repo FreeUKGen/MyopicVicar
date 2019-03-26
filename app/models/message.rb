@@ -173,7 +173,7 @@ class Message
     answer
   end
 
-  def communicate(recipient_roles, active, reasons, sender, open_data_status, syndicate = nil)
+  def communicate(recipient_roles, active, reasons, sender, open_data_status, syndicate = nil, host)
     appname = MyopicVicar::Application.config.freexxx_display_name
     ccs = Array.new
     recipient_roles.each do |recipient_role|
