@@ -387,10 +387,10 @@ class UserMailer < ActionMailer::Base
 
 
 
-  def send_message(mymessage, ccs, from)
+  def send_message(mymessage, ccs, from, host)
     @appname = MyopicVicar::Application.config.freexxx_display_name
     @message = mymessage
-    @host = session[:host]
+    @host = host
     @sender = UseridDetail.userid(from).first
     @reply_messages = Message.where(source_message_id: @message.source_message_id).all unless @message.source_message_id.blank?
     @respond_to_message = Message.id(@message.source_message_id).first

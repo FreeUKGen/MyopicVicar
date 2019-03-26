@@ -183,7 +183,7 @@ class Message
     add_message_to_userid_messages(UseridDetail.look_up_id(sender)) unless sender.blank? || ccs.include?(sender)
     ccs << sender
     ccs = ccs.uniq
-    UserMailer.send_message(self, ccs, sender).deliver_now
+    UserMailer.send_message(self, ccs, sender, host).deliver_now
   end
 
   def communicate_message_reply(original_message)
