@@ -310,4 +310,16 @@ module ApplicationHelper
   def calculate_total(array)
     array.inject(0){|sum,x| sum + x }
   end
+
+  def freecen1_link_text
+    content_tag :span, "You can visit the old FreeCEN website here -"
+  end
+
+  def freecen1_link
+    link_to "https://freecen1.freecen.org.uk","https://freecen1.freecen.org.uk",class: "go", target: :_blank, title: 'Link opens in new tab'
+  end
+
+  def freecen1_text
+    ("#{freecen1_link_text.strip} #{freecen1_link.strip}").html_safe
+  end
 end
