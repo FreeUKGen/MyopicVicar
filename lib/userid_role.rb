@@ -75,7 +75,7 @@ module UseridRole
   USERID_ACCESS_OPTIONS = ['Select specific userid', 'Select specific email', 'Select specific surname/forename']
 
   USERID_OPTIONS_TRANSLATION = {
-    #todo clean up first 2
+    # todo clean up first 2
     'Browse userids' => '/userid_details/selection?option=Browse userids',
     'Incomplete Registrations' => '/userid_details/incomplete_registrations',
     'Create userid' => '/userid_details/selection?option=Create userid',
