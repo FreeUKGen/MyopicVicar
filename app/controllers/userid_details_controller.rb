@@ -616,35 +616,6 @@ class UseridDetailsController < ApplicationController
     end
   end
 
-
-  def transcriber_statistics
-    @current_user = cookies.signed[:userid]
-    if stats_permitted_users?
-      @total_users = UseridDetail.count
-      @total_transcribers = UseridDetail.where(person_role: "transcriber").count
-      @total_transcribers_accepted_agreement = UseridDetail.where(person_role: "transcriber", transcription_agreement: "Accepted").count
-      @total_active_transcribers = UseridDetail.where(person_role: "transcriber", active: true).count
-      @users_never_uploaded_file = UseridDetail.where(number_of_files: 0).count
-      @users_uploaded_file = UseridDetail.where(number_of_files: {'$ne': 0}).count
-      @transcribers_never_uploaded_file = UseridDetail.where(person_role: "transcriber",number_of_files: 0).count
-      @transcriber_uploaded_file = UseridDetail.where(person_role: "transcriber",number_of_files: {'$ne': 0}).count
-      @incomplete_registrations = UseridDetail.new.incomplete_user_registrations_count
-      @incomplete_transcriber_registrations = UseridDetail.new.incomplete_transcribers_registrations_count
-      # New Statistics
-      @total_records_transcribers = return_total_transcriber_records
-      @percentage_total_records_by_transcribers = return_percentage_total_records_by_transcribers
-      @total_transcribers_accepted_agreement_no_records = UseridDetail.where(person_role: "transcriber", transcription_agreement: "Accepted", number_of_records: 0).count
-      @percentage_all_users_who_accepted_transcription_agreement = return_percentage_all_users_accepted_transcriber_agreement
-      @percentage_existing_users_who_accepted_transcription_agreement = return_percentage_all_existing_users_accepted_transcriber_agreement
-      @percentage_active_existing_users_who_accepted_transcription_agreement = return_percentage_all_existing_active_users_accepted_transcriber_agreement
-      @new_users_last_30_days = UseridDetail.where(sign_up_date: {'$gt': DateTime.now - 30.days }).count
-      @new_users_last_90_days = UseridDetail.where(sign_up_date: {'$gt': DateTime.now - 90.days }).count
-    else
-      flash[:notice] = 'Sorry, You are not authorized for this action'
-      redirect_to '/manage_resources/new'
-    end
-  end
-
   private
 
   def userid_details_params
