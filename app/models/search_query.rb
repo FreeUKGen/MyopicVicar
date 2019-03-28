@@ -326,6 +326,8 @@ class SearchQuery
   def include_record_for_wildcard_search(search_name)
     last_name_stub = extract_stub(last_name)
     first_name_stub = extract_stub(first_name)
+    last_name_stub = last_name if last_name_stub.blank?
+    first_name_stub = first_name if first_name_stub.blank?
     include_record = false
     if last_name.present? && first_name.blank? && search_name[:last_name].downcase.start_with?(last_name_stub)
       include_record = include_record_for_type(search_name)
