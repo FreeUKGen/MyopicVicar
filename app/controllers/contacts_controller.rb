@@ -149,7 +149,7 @@ class ContactsController < ApplicationController
     elsif MyopicVicar::Application.config.template_set == 'freecen'
       @rec = SearchRecord.where("id" => @contact.record_id).first
       unless @rec.nil?
-        assign_field_values
+        #assign_field_values
         fc_ind = FreecenIndividual.where("id" => @ind_id).first if @ind_id.present?
         if fc_ind.present?
           @contact.entry_id = fc_ind.freecen1_vld_entry_id.to_s unless fc_ind.freecen1_vld_entry_id.nil?

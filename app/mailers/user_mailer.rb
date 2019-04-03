@@ -101,8 +101,10 @@ class UserMailer < ActionMailer::Base
   def coordinator_data_problem(contact,ccs)
     appname = MyopicVicar::Application.config.freexxx_display_name
     @contact = contact
+    @record = SearchRecord.where(id: @contact.record_id).first
+    @individual = @record.freecen_individual
     get_attachment
-    mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for reporting a problem with our data. Reference #{@contact.identifier}")
+    mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",to: "#{@contact.name} <#{@contact.email_address}>",cc: ccs, :subject => "Thank you for reporting a problem with our data. Reference #{@contact.identifier}")
   end
 
   def datamanager_data_question(contact,ccs)
