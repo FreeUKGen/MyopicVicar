@@ -587,7 +587,7 @@ class SearchQuery
     # next reorder in memory
     if results.present?
       case self.order_field
-      when selected_sort_fields
+      when *selected_sort_fields
         results.sort! do |x, y|
           x,y = y,x unless self.order_asc
           x[order_field] <=> y[order_field]
@@ -726,7 +726,7 @@ class SearchQuery
 
   private
   def selected_sort_fields
-    SearchOrder::COUNTY || SearchOrder::BIRTH_COUNTY || SearchOrder::TYPE
+    [ SearchOrder::COUNTY, SearchOrder::BIRTH_COUNTY, SearchOrder::TYPE ]
   end
 
 end
