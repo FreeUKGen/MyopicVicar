@@ -587,23 +587,16 @@ class SearchQuery
     # next reorder in memory
     if results.present?
       case self.order_field
-      when SearchOrder::COUNTY
-        if self.order_asc
-          results.sort! { |x, y| x['chapman_code'] <=> y['chapman_code'] }
-        else
-          results.sort! { |x, y| y['chapman_code'] <=> x['chapman_code'] }
+      when selected_sort_fields
+        results.sort! do |x, y|
+          x,y = y,x unless self.order_asc
+          x[order_field] <=> y[order_field]
         end
       when SearchOrder::DATE
         if self.order_asc
           results.sort! { |x,y| (x[:search_date]||'') <=> (y[:search_date]||'') }
         else
           results.sort! { |x,y| (y[:search_date]||'') <=> (x[:search_date]||'') }
-        end
-      when SearchOrder::TYPE
-        if self.order_asc
-          results.sort! { |x, y| x['record_type'] <=> y['record_type'] }
-        else
-          results.sort! { |x, y| y['record_type'] <=> x['record_type'] }
         end
       when SearchOrder::LOCATION
         if self.order_asc
@@ -729,6 +722,11 @@ class SearchQuery
     if first_name && begins_with_wildcard(first_name) && places.count == 0
       errors.add(:first_name, "A place must be selected if name queries begin with a wildcard")
     end
+  end
+
+  private
+  def selected_sort_fields
+    SearchOrder::COUNTY || SearchOrder::BIRTH_COUNTY || SearchOrder::TYPE
   end
 
 end
