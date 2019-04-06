@@ -313,11 +313,13 @@ class SearchQuery
 
   def include_record_for_standard_search(search_name)
     include_record = false
-    if last_name.present? && first_name.blank? && search_name[:last_name].downcase == last_name.downcase
+    search_name_first_name = search_name[:first_name].present? ? search_name[:first_name].downcase : ''
+    search_name_last_name = search_name[:last_name].present? ? search_name[:last_name].downcase : ''
+    if last_name.present? && first_name.blank? && search_name_last_name == last_name.downcase
       include_record = include_record_for_type(search_name)
-    elsif last_name.present? && first_name.present? && search_name[:last_name].downcase == last_name.downcase && first_name.downcase == search_name[:first_name]
+    elsif last_name.present? && first_name.present? && search_name_last_name == last_name.downcase && first_name.downcase == search_name_first_name
       include_record = include_record_for_type(search_name)
-    elsif last_name.blank? && first_name.present? && first_name.downcase == search_name[:first_name].downcase
+    elsif last_name.blank? && first_name.present? && first_name.downcase == search_name_first_name
       include_record = include_record_for_type(search_name)
     end
     include_record
@@ -329,11 +331,13 @@ class SearchQuery
     last_name_stub = last_name if last_name_stub.blank?
     first_name_stub = first_name if first_name_stub.blank?
     include_record = false
-    if last_name.present? && first_name.blank? && search_name[:last_name].downcase.start_with?(last_name_stub)
+    search_name_first_name = search_name[:first_name].present? ? search_name[:first_name].downcase : ''
+    search_name_last_name = search_name[:last_name].present? ? search_name[:last_name].downcase : ''
+    if last_name.present? && first_name.blank? && search_name_last_name.start_with?(last_name_stub)
       include_record = include_record_for_type(search_name)
-    elsif last_name.present? && first_name.present? && search_name[:last_name].downcase.start_with?(last_name_stub) && search_name[:first_name].downcase.start_with?(first_name_stub)
+    elsif last_name.present? && first_name.present? && search_name_last_name.start_with?(last_name_stub) && search_name_first_name.start_with?(first_name_stub)
       include_record = include_record_for_type(search_name)
-    elsif last_name.blank? && first_name.present? && search_name[:first_name].downcase.start_with?(first_name_stub)
+    elsif last_name.blank? && first_name.present? && search_name_first_name.start_with?(first_name_stub)
       include_record = include_record_for_type(search_name)
     end
     include_record
