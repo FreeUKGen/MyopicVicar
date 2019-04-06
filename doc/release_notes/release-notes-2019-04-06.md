@@ -28,6 +28,7 @@ __FreeREG | Release Notes__
   Change log listing all commit messages for this release.
 
 
+
 * Fix issue 1879: [search_queries#show] undefined method `downcase' for nil:NilClass
 * Fiz issue_1877: [search_records#show] no implicit conversion of nil into String
 * Fix Reg 1203: file not linked correctly (Julie)
@@ -36,5 +37,3 @@ __FreeREG | Release Notes__
 * Fixed spelling error
 * Fix error in 1691 code when wildcard present
 * Add release notes(2019/03/27)
-
-
