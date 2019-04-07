@@ -47,9 +47,13 @@ class SearchQueriesController < ApplicationController
     new_parameters = old_query.reduce_attributes
     @search_query = SearchQuery.new(new_parameters)
     @search_query.radius_factor = @search_query.radius_factor * 2
-    @search_query.save
-    @search_results = @search_query.search
-    redirect_to search_query_path(@search_query.id)
+    if @search_query.save
+      session[:query] = @search_query.id
+      @search_results = @search_query.search
+      redirect_to search_query_path(@search_query)
+    else
+      render :new
+    end
   end
 
   def create
@@ -77,6 +81,7 @@ class SearchQueriesController < ApplicationController
   def edit
     @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
+
   end
 
   def github_camo
@@ -108,18 +113,21 @@ class SearchQueriesController < ApplicationController
     new_parameters = old_query.reduce_attributes
     @search_query = SearchQuery.new(new_parameters)
     @search_query.radius_factor = @search_query.radius_factor / 2
-    @search_query.save
-    @search_results = @search_query.search
-    redirect_to search_query_path(@search_query.id)
+    if @search_query.save
+      session[:query] = @search_query.id
+      @search_results = @search_query.search
+      redirect_to search_query_path(@search_query)
+    else
+      render :new
+    end
   end
 
   def new
     @page = session[:message] == 'load' ? Refinery::Page.where(slug: 'message').first.parts.first.body.html_safe : nil
 
-    session.delete(:search_controller)
     @search_query = SearchQuery.new
-    old_query = SearchQuery.search_id(params[:search_id]).first if params[:search_id]
-
+    session.delete(:query)
+    old_query = SearchQuery.search_id(params[:search_id]).first if params[:search_id].present?
     old_query.search_result.records = {} if old_query.present? && old_query.search_result.present?
     @search_query = SearchQuery.new(old_query.attributes) if old_query.present?
   end
@@ -127,7 +135,6 @@ class SearchQueriesController < ApplicationController
   def remember
     @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
-
     get_user_info_from_userid
     @user.remember_search(@search_query)
     flash[:notice] = 'This search has been added to your remembered searches'
@@ -220,7 +227,6 @@ class SearchQueriesController < ApplicationController
 
     flash[:notice] = 'Your search results are not available. Please repeat your search' if @search_query.result_count.blank?
     redirect_back(fallback_location: new_search_query_path) && return if @search_query.result_count.blank?
-
     if @search_query.result_count > FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
       @result_count = @search_query.result_count
       @search_results = []
