@@ -140,32 +140,12 @@ class SearchRecordsController < ApplicationController
     @entry.acknowledge
     @place_id, @church_id, @register_id = @entry.get_location_ids
     @annotations = Annotation.find(@search_record[:annotation_ids]) if @search_record[:annotation_ids]
-    @search_result = @search_query.search_result
+    #@search_result = @search_query.search_result
 
     respond_to do |format|
-      if params[:citation_type] == "wikitree"
-        @viewed_date = Date.today.strftime("%e %b %Y")
-        format.html {render "_search_records_freecen_citation_wikitree", :layout => false}
-      elsif params[:citation_type] == "familytreemaker"
-        @viewed_date = Date.today.strftime("%e %B %Y")
-        format.html {render "_search_records_freecen_citation_familytreemaker", :layout => false}
-        format.html {render "_search_records_freecen_citation_wikitree", :layout => false}
-      elsif params[:citation_type] == "legacyfamilytree"
-        @viewed_date = Date.today.strftime("%e %b %Y")
-        format.html {render "_search_records_freecen_citation_legacyfamilytree", :layout => false}
-      elsif params[:citation_type] == "mla"
-        @viewed_date = Date.today.strftime("%a. %e %B. %Y")
-        format.html {render "_search_records_freecen_citation_mla", :layout => false}
-      elsif params[:citation_type] == "chicago"
-        @viewed_date = Date.today.strftime("%B %e, %Y")
-        format.html {render "_search_records_freecen_citation_chicago", :layout => false}
-      elsif params[:citation_type] == "wikipedia"
-        @viewed_date = Date.today.strftime("%e %b %Y")
-        format.html {render "_search_records_freecen_citation_wikipedia", :layout => false}
-      elsif params[:citation_type] == "evidenceexplained"
-        @viewed_date = Date.today.strftime("%e %B %Y")
-        format.html {render "_search_records_freecen_citation_evidenceexplained", :layout => false}
-      end
+      @viewed_date = Date.today.strftime("%e %b %Y")
+      @type = params[:citation_type]
+      format.html { render :citation, layout: false }
     end
   end
 end
