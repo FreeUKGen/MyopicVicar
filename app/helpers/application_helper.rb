@@ -13,10 +13,14 @@
 # limitations under the License.
 #
 module ApplicationHelper
-  
+
   def action_manage_image_server(role)
     role == 'Manage Image Server' ? action = true : action = false
     action
+  end
+
+  def application_name
+    MyopicVicar::Application.config.freexxx_display_name
   end
 
   def get_user_info_from_userid
@@ -29,7 +33,7 @@ module ApplicationHelper
       @roles = UseridRole::OPTIONS.fetch(@user.person_role)
     end
   end
-  
+
   def get_user
     user = cookies.signed[:userid]
     user = UseridDetail.id(user).first
@@ -141,268 +145,268 @@ module ApplicationHelper
   def fullwidth_adsense
     banner = <<-HTML
     <style>
-        .adSenseBanner { width: 320px; height: 100px; text-align: center; margin: auto;}
-        @media(min-width: 500px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
-        @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
+    .adSenseBanner { width: 320px; height: 100px; text-align: center; margin: auto;}
+    @media(min-width: 500px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
+    @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
     </style>
-      <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-      <script>
-        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
-      </script>
-        <ins class="adsbygoogle adSenseBanner"
-             style="display:block"
-             data-ad-client="ca-pub-7825403497160061"
-             data-ad-slot="8870759291"
-             data-ad-format="auto"></ins>
-      <script>
-        window.update_personalized_google_adverts = function (preference) {
-          if(preference == 'accept') {
-            (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
-          } else if(preference == 'deny') {
-            (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
-          }
+    <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+    (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
+    </script>
+    <ins class="adsbygoogle adSenseBanner"
+    style="display:block"
+    data-ad-client="ca-pub-7825403497160061"
+    data-ad-slot="8870759291"
+    data-ad-format="auto"></ins>
+    <script>
+    window.update_personalized_google_adverts = function (preference) {
+      if(preference == 'accept') {
+          (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
+        } else if(preference == 'deny') {
+          (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
+        }
         };
         $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})});
         (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
-      </script>
-      <script>
-      function detectAdblock(){
-        console.log(window.canRunAds);
-        if( window.canRunAds === undefined){
-          console.log("Adblock detected")
-          var donateBanners = document.getElementsByClassName("donations");
-          for (i = 0; i < donateBanners.length; i++) {
-              donateBanners[i].style.display = "block";
-              console.log("Banner displayed! " + i)
-          }
-        }
-        else {
-              console.log(window.canRunAds);
-          console.log("Adblock not detected");
-        }
-      }
-      window.onload = detectAdblock;
-      </script>
-    HTML
-    if Rails.env.development?
-    banner = <<-HTML
-      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
-      HTML
-    end
-    banner.html_safe
-  end
+        </script>
+        <script>
+        function detectAdblock(){
+          console.log(window.canRunAds);
+          if( window.canRunAds === undefined){
+              console.log("Adblock detected")
+              var donateBanners = document.getElementsByClassName("donations");
+              for (i = 0; i < donateBanners.length; i++) {
+                  donateBanners[i].style.display = "block";
+                  console.log("Banner displayed! " + i)
+                }
+                }
+                else {
+                    console.log(window.canRunAds);
+                    console.log("Adblock not detected");
+                  }
+                  }
+                  window.onload = detectAdblock;
+                  </script>
+                  HTML
+                  if Rails.env.development?
+                    banner = <<-HTML
+                    <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
+                    HTML
+                  end
+                  banner.html_safe
+                end
 
-  def title(title = nil)
-    if title.present?
-      content_for :title, title
-    elsif content_for?(:title)
-      title = content_for(:title) +  ' | ' + "FreeREG"
+                def title(title = nil)
+                  if title.present?
+                    content_for :title, title
+                  elsif content_for?(:title)
+                    title = content_for(:title) +  ' | ' + "FreeREG"
 
-    elsif  page_title.present?
-      title = page_title + ' | '  + "FreeREG"
-    else
-      title = "FreeREG | UK Parish Register Records"
-    end
-  end
-  def display_number(num)
-    number_with_delimiter(num, :delimiter => ',')
-  end
+                  elsif  page_title.present?
+                    title = page_title + ' | '  + "FreeREG"
+                  else
+                    title = "FreeREG | UK Parish Register Records"
+                  end
+                end
+                def display_number(num)
+                  number_with_delimiter(num, :delimiter => ',')
+                end
 
-  def witness_search_enabled?
-    Rails.application.config.respond_to?(:witness_support) && Rails.application.config.witness_support
-  end
+                def witness_search_enabled?
+                  Rails.application.config.respond_to?(:witness_support) && Rails.application.config.witness_support
+                end
 
-  def ucf_wildcards_enabled?
-    Rails.application.config.respond_to?(:ucf_support) && Rails.application.config.ucf_support
-  end
+                def ucf_wildcards_enabled?
+                  Rails.application.config.respond_to?(:ucf_support) && Rails.application.config.ucf_support
+                end
 
-  def valid_directory?
-    File.directory?(output_directory_path)
-  end
+                def valid_directory?
+                  File.directory?(output_directory_path)
+                end
 
-  # Create a new file named as current date and time
-  def new_file(name)
-    raise "Not a Valid Directory" unless valid_directory?
+                # Create a new file named as current date and time
+                def new_file(name)
+                  raise "Not a Valid Directory" unless valid_directory?
 
-    file_name = "#{Time.now.strftime("%Y%m%d%H%M%S")}_#{name}.txt"
-    "#{output_directory_path}/#{file_name}"
-  end
+                  file_name = "#{Time.now.strftime("%Y%m%d%H%M%S")}_#{name}.txt"
+                  "#{output_directory_path}/#{file_name}"
+                end
 
-  # Set an output directory
-  # If there is no ouput directory, then set the default
-  # else check the trailing slash at the end of the directory
-  def output_directory_path
-    if @output_directory.nil?
-      directory = File.join(Rails.root, 'script')
-    else
-      directory = File.join(@output_directory, "")
-    end
-    directory
-  end
+                # Set an output directory
+                # If there is no ouput directory, then set the default
+                # else check the trailing slash at the end of the directory
+                def output_directory_path
+                  if @output_directory.nil?
+                    directory = File.join(Rails.root, 'script')
+                  else
+                    directory = File.join(@output_directory, "")
+                  end
+                  directory
+                end
 
-  def delete_file_if_exists(name)
-    File.delete(*Dir.glob("#{output_directory_path}/*_#{name}.txt"))
-  end
+                def delete_file_if_exists(name)
+                  File.delete(*Dir.glob("#{output_directory_path}/*_#{name}.txt"))
+                end
 
-  def to_boolean(value)
-    case value
-    when true, 'true', 1, '1', 't' then true
-    when false, 'false', nil, '', 0, '0', 'f' then false
-    when nil, "nil" then nil
-    else
-      raise ArgumentError, "invalid value for Boolean(): \"#{value.inspect}\""
-    end
-  end
-  def church_name(file)
-    church_name = file.church_name
-    if church_name.blank?
-      register = get_register_object(file)
-      church = get_church_object(register)
-      church_name = church.church_name unless church.blank?
-    end
-    church_name
-  end
-  
-  def userid(file)
-    userid = file.userid
-  end
-  
-  def register_name_for_entry(entry)
-    #expecting the field
-    if RegisterType.approved_option_values.include?(entry)
-      register_name = RegisterType::display_name(entry)
-    else
-      register_name = entry
-    end
-   register_name
-  end 
-  
-  def register_name_for_file(file)
-    register_type = file.register_type
-    if register_type.blank?
-      new_register = get_register_object(file)
-      new_register_type = ' '
-      new_register_type = new_register.register_type 
-      new_register_type = Register.check_and_correct_register_type(new_register_type)
-    else
-      new_register_type = Register.check_and_correct_register_type(register_type)
-    end
-    file.update_attribute(:register_type, new_register_type) unless new_register_type == register_type
-    register_name = RegisterType::display_name(new_register_type)
-    register_name
-  end 
-  
-  def county_name(file)
-    county_name = file.county #note county has chapman in file and record)
-    case
-    when ChapmanCode.value?(county_name)
-      county_name = ChapmanCode.name_from_code(county_name)
-    when ChapmanCode.key?(county_name)
-    else
-      register = get_register_object(file)
-      church = get_church_object(register)
-      place = get_place_object(church)
-      county_name = place.county unless place.blank?
-    end
-    county_name
-  end
-  
-  def chapman(file)
-    chapman = file.county
-    return chapman if  ChapmanCode.value?(chapman)
-    return ChapmanCode.value_at(chapman) if ChapmanCode.has_key?(chapman)
-    register = get_register_object(file)
-    church = get_church_object(register)
-    place = get_place_object(church)
-    chapman = place.chapman_code unless place.blank?
-    chapman
-  end
-  
-  def place_name(file)
-    place_name = file.place
-    if place_name.blank?
-      register = get_register_object(file)
-      church = get_church_object(register)
-      place = get_place_object(church)
-      place_name = place.place_name unless place.blank?
-    end
-    place_name
-  end
-  
-  def owner(file)
-    owner = file.userid
-  end
-  
-  def processed_date(file)
-    if file.processed_date.nil?
-      physical_file = PhysicalFile.file_name(file.file_name).userid(file.userid).first
-      if physical_file.present? && physical_file.file_processed_date.present?
-        processed_date = physical_file.file_processed_date.strftime("%d/%m/%Y")
-        file.update_attribute(:processed_date, physical_file.file_processed_date) 
-      else
-        processed_date = ''
-      end
-    else
-      processed_date = file.processed_date.strftime("%d/%m/%Y")
-    end
-    processed_date
-  end
-  
-  def uploaded_date(file)
-    file.uploaded_date.nil? ? uploaded_date = '' : uploaded_date = file.uploaded_date.strftime("%d/%m/%Y")
-  end
-  
-  def system_administrator(user)
-    user.user_role == 'system_administrator' ? system_administerator = true : system_administerator = false
-    system_administrator
-  end
- 
-  def get_register_object(file)
-    register = file.register unless file.blank?
-  end
-  def get_church_object(register)
-    church = register.church unless register.blank?
-  end
-  def get_place_object(church)
-    place = church.place unless church.blank?
-  end
-  def uploaded_date(file)
-    file.uploaded_date.strftime("%d %b %Y") unless file.uploaded_date.nil?
-  end
-  def file_name(file)
-    file.file_name[0..-5]  unless file.file_name.nil?
-  end
-  def locked_by_transcriber(file)
-    if file.locked_by_transcriber
-      value = "Y"
-    else
-      value = "N"
-    end
-    value
-  end
-  def locked_by_coordinator(file)
-    if file.locked_by_coordinator
-      value = "Y"
-    else
-      value = "N"
-    end
-    value
-  end
-  def base_uploaded_date(file)
-    file.base_uploaded_date.strftime("%d %b %Y") unless file.base_uploaded_date.nil?
-  end
+                def to_boolean(value)
+                  case value
+                  when true, 'true', 1, '1', 't' then true
+                  when false, 'false', nil, '', 0, '0', 'f' then false
+                  when nil, "nil" then nil
+                  else
+                    raise ArgumentError, "invalid value for Boolean(): \"#{value.inspect}\""
+                  end
+                end
+                def church_name(file)
+                  church_name = file.church_name
+                  if church_name.blank?
+                    register = get_register_object(file)
+                    church = get_church_object(register)
+                    church_name = church.church_name unless church.blank?
+                  end
+                  church_name
+                end
 
-  def waiting_date(file)
-    file.waiting_date.strftime("%d %b %Y") unless file.waiting_date.nil?
-  end
-  def errors(file)
-    if file.error >= 0
-      errors = file.error
-    else
-      errors = 0
-    end
-    errors
-  end
+                def userid(file)
+                  userid = file.userid
+                end
 
-  
-end
+                def register_name_for_entry(entry)
+                  #expecting the field
+                  if RegisterType.approved_option_values.include?(entry)
+                    register_name = RegisterType::display_name(entry)
+                  else
+                    register_name = entry
+                  end
+                  register_name
+                end
+
+                def register_name_for_file(file)
+                  register_type = file.register_type
+                  if register_type.blank?
+                    new_register = get_register_object(file)
+                    new_register_type = ' '
+                    new_register_type = new_register.register_type
+                    new_register_type = Register.check_and_correct_register_type(new_register_type)
+                  else
+                    new_register_type = Register.check_and_correct_register_type(register_type)
+                  end
+                  file.update_attribute(:register_type, new_register_type) unless new_register_type == register_type
+                  register_name = RegisterType::display_name(new_register_type)
+                  register_name
+                end
+
+                def county_name(file)
+                  county_name = file.county #note county has chapman in file and record)
+                  case
+                  when ChapmanCode.value?(county_name)
+                    county_name = ChapmanCode.name_from_code(county_name)
+                  when ChapmanCode.key?(county_name)
+                  else
+                    register = get_register_object(file)
+                    church = get_church_object(register)
+                    place = get_place_object(church)
+                    county_name = place.county unless place.blank?
+                  end
+                  county_name
+                end
+
+                def chapman(file)
+                  chapman = file.county
+                  return chapman if  ChapmanCode.value?(chapman)
+                  return ChapmanCode.value_at(chapman) if ChapmanCode.has_key?(chapman)
+                  register = get_register_object(file)
+                  church = get_church_object(register)
+                  place = get_place_object(church)
+                  chapman = place.chapman_code unless place.blank?
+                  chapman
+                end
+
+                def place_name(file)
+                  place_name = file.place
+                  if place_name.blank?
+                    register = get_register_object(file)
+                    church = get_church_object(register)
+                    place = get_place_object(church)
+                    place_name = place.place_name unless place.blank?
+                  end
+                  place_name
+                end
+
+                def owner(file)
+                  owner = file.userid
+                end
+
+                def processed_date(file)
+                  if file.processed_date.nil?
+                    physical_file = PhysicalFile.file_name(file.file_name).userid(file.userid).first
+                    if physical_file.present? && physical_file.file_processed_date.present?
+                      processed_date = physical_file.file_processed_date.strftime("%d/%m/%Y")
+                      file.update_attribute(:processed_date, physical_file.file_processed_date)
+                    else
+                      processed_date = ''
+                    end
+                  else
+                    processed_date = file.processed_date.strftime("%d/%m/%Y")
+                  end
+                  processed_date
+                end
+
+                def uploaded_date(file)
+                  file.uploaded_date.nil? ? uploaded_date = '' : uploaded_date = file.uploaded_date.strftime("%d/%m/%Y")
+                end
+
+                def system_administrator(user)
+                  user.user_role == 'system_administrator' ? system_administerator = true : system_administerator = false
+                  system_administrator
+                end
+
+                def get_register_object(file)
+                  register = file.register unless file.blank?
+                end
+                def get_church_object(register)
+                  church = register.church unless register.blank?
+                end
+                def get_place_object(church)
+                  place = church.place unless church.blank?
+                end
+                def uploaded_date(file)
+                  file.uploaded_date.strftime("%d %b %Y") unless file.uploaded_date.nil?
+                end
+                def file_name(file)
+                  file.file_name[0..-5]  unless file.file_name.nil?
+                end
+                def locked_by_transcriber(file)
+                  if file.locked_by_transcriber
+                    value = "Y"
+                  else
+                    value = "N"
+                  end
+                  value
+                end
+                def locked_by_coordinator(file)
+                  if file.locked_by_coordinator
+                    value = "Y"
+                  else
+                    value = "N"
+                  end
+                  value
+                end
+                def base_uploaded_date(file)
+                  file.base_uploaded_date.strftime("%d %b %Y") unless file.base_uploaded_date.nil?
+                end
+
+                def waiting_date(file)
+                  file.waiting_date.strftime("%d %b %Y") unless file.waiting_date.nil?
+                end
+                def errors(file)
+                  if file.error >= 0
+                    errors = file.error
+                  else
+                    errors = 0
+                  end
+                  errors
+                end
+
+
+              end
