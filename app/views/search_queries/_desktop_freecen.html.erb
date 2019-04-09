@@ -53,7 +53,7 @@
           <tr id="<%=search_record.id%>">
           <% unless print_friendly %>
             <td>
-              <%= link_to "Detail", search_record_path(search_record.id, :title => "Row #{n}, details for #{search_record.transcript_names.first['first_name']} #{search_record.transcript_names.first['last_name']}", :class => "btn weight--light btn--small" %><br />
+              <%= link_to "Detail", search_record_path(search_record.id), :title => "Row #{n}, details for #{search_record.transcript_names.first['first_name']} #{search_record.transcript_names.first['last_name']}", :class => "btn weight--light btn--small" %><br />
               <i><%= viewed(@search_query,search_record) %></i>
             </td>
           <% end %>
