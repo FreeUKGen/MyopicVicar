@@ -36,6 +36,9 @@ module ApplicationHelper
 
     app_specific_template
   end
+  def application_name
+    MyopicVicar::Application.config.freexxx_display_name
+  end
 
   def get_user_info_from_userid
     @user = get_user
@@ -155,21 +158,278 @@ module ApplicationHelper
     dist
   end
 
-  def banner_header
+  def title(title = nil)
+    if title.present?
+      content_for :title, title
+    elsif content_for?(:title)
+      title = content_for(:title) +  ' | ' + "FreeREG"
+
+    elsif  page_title.present?
+      title = page_title + ' | '  + "FreeREG"
+    else
+      title = "FreeREG | UK Parish Register Records"
+    end
+  end
+  def display_number(num)
+    number_with_delimiter(num, :delimiter => ',')
+  end
+
+  def witness_search_enabled?
+    Rails.application.config.respond_to?(:witness_support) && Rails.application.config.witness_support
+  end
+
+  def ucf_wildcards_enabled?
+    Rails.application.config.respond_to?(:ucf_support) && Rails.application.config.ucf_support
+  end
+
+  def valid_directory?
+    File.directory?(output_directory_path)
+  end
+
+  # Create a new file named as current date and time
+  def new_file(name)
+    raise "Not a Valid Directory" unless valid_directory?
+
+    file_name = "#{Time.now.strftime("%Y%m%d%H%M%S")}_#{name}.txt"
+    "#{output_directory_path}/#{file_name}"
+  end
+
+  # Set an output directory
+  # If there is no ouput directory, then set the default
+  # else check the trailing slash at the end of the directory
+  def output_directory_path
+    if @output_directory.nil?
+      directory = File.join(Rails.root, 'script')
+    else
+      directory = File.join(@output_directory, "")
+    end
+    directory
+  end
+
+  def delete_file_if_exists(name)
+    File.delete(*Dir.glob("#{output_directory_path}/*_#{name}.txt"))
+  end
+
+  def to_boolean(value)
+    case value
+    when true, 'true', 1, '1', 't' then true
+    when false, 'false', nil, '', 0, '0', 'f' then false
+    when nil, "nil" then nil
+    else
+      raise ArgumentError, "invalid value for Boolean(): \"#{value.inspect}\""
+    end
+  end
+  def church_name(file)
+    church_name = file.church_name
+    if church_name.blank?
+      register = get_register_object(file)
+      church = get_church_object(register)
+      church_name = church.church_name unless church.blank?
+    end
+    church_name
+  end
+
+  def userid(file)
+    userid = file.userid
+  end
+
+  def register_name_for_entry(entry)
+    #expecting the field
+    if RegisterType.approved_option_values.include?(entry)
+      register_name = RegisterType::display_name(entry)
+    else
+      register_name = entry
+    end
+    register_name
+  end
+
+  def register_name_for_file(file)
+    register_type = file.register_type
+    if register_type.blank?
+      new_register = get_register_object(file)
+      new_register_type = ' '
+      new_register_type = new_register.register_type
+      new_register_type = Register.check_and_correct_register_type(new_register_type)
+    else
+      new_register_type = Register.check_and_correct_register_type(register_type)
+    end
+    file.update_attribute(:register_type, new_register_type) unless new_register_type == register_type
+    register_name = RegisterType::display_name(new_register_type)
+    register_name
+  end
+
+  def county_name(file)
+    county_name = file.county #note county has chapman in file and record)
+    case
+    when ChapmanCode.value?(county_name)
+      county_name = ChapmanCode.name_from_code(county_name)
+    when ChapmanCode.key?(county_name)
+    else
+      register = get_register_object(file)
+      church = get_church_object(register)
+      place = get_place_object(church)
+      county_name = place.county unless place.blank?
+    end
+    county_name
+  end
+
+  def chapman(file)
+    chapman = file.county
+    return chapman if  ChapmanCode.value?(chapman)
+    return ChapmanCode.value_at(chapman) if ChapmanCode.has_key?(chapman)
+    register = get_register_object(file)
+    church = get_church_object(register)
+    place = get_place_object(church)
+    chapman = place.chapman_code unless place.blank?
+    chapman
+  end
+
+  def place_name(file)
+    place_name = file.place
+    if place_name.blank?
+      register = get_register_object(file)
+      church = get_church_object(register)
+      place = get_place_object(church)
+      place_name = place.place_name unless place.blank?
+    end
+    place_name
+  end
+
+  def owner(file)
+    owner = file.userid
+  end
+
+  def processed_date(file)
+    if file.processed_date.nil?
+      physical_file = PhysicalFile.file_name(file.file_name).userid(file.userid).first
+      if physical_file.present? && physical_file.file_processed_date.present?
+        processed_date = physical_file.file_processed_date.strftime("%d/%m/%Y")
+        file.update_attribute(:processed_date, physical_file.file_processed_date)
+      else
+        processed_date = ''
+      end
+    else
+      processed_date = file.processed_date.strftime("%d/%m/%Y")
+    end
+    processed_date
+  end
+
+  def uploaded_date(file)
+    file.uploaded_date.nil? ? uploaded_date = '' : uploaded_date = file.uploaded_date.strftime("%d/%m/%Y")
+  end
+
+  def system_administrator(user)
+    user.user_role == 'system_administrator' ? system_administerator = true : system_administerator = false
+    system_administrator
+  end
+
+  def get_register_object(file)
+    register = file.register unless file.blank?
+  end
+  def get_church_object(register)
+    church = register.church unless register.blank?
+  end
+  def get_place_object(church)
+    place = church.place unless church.blank?
+  end
+  def uploaded_date(file)
+    file.uploaded_date.strftime("%d %b %Y") unless file.uploaded_date.nil?
+  end
+  def file_name(file)
+    file.file_name[0..-5]  unless file.file_name.nil?
+  end
+  def locked_by_transcriber(file)
+    if file.locked_by_transcriber
+      value = "Y"
+    else
+      value = "N"
+    end
+    value
+  end
+  def locked_by_coordinator(file)
+    if file.locked_by_coordinator
+      value = "Y"
+    else
+      value = "N"
+    end
+    value
+  end
+  def base_uploaded_date(file)
+    file.base_uploaded_date.strftime("%d %b %Y") unless file.base_uploaded_date.nil?
+  end
+
+  def waiting_date(file)
+    file.waiting_date.strftime("%d %b %Y") unless file.waiting_date.nil?
+  end
+  def errors(file)
+    if file.error >= 0
+      errors = file.error
+    else
+      errors = 0
+    end
+    errors
+  end
+
+  def calculate_total(array)
+    array.inject(0){|sum,x| sum + x }
+  end
+
+  def freecen1_link_text
+    content_tag :span, "You can visit the old FreeCEN website here -"
+  end
+
+  def freecen1_link
+    link_to "https://freecen1.freecen.org.uk","https://freecen1.freecen.org.uk",class: "go", target: :_blank, title: 'Link opens in new tab'
+  end
+
+  def freecen1_text
+    ("#{freecen1_link_text.strip} #{freecen1_link.strip}").html_safe
+  end
+
+  def freecen2_survey_text1
+    content_tag :span, "FreeCEN2 is a work in progress;"
+  end
+
+  def freecen2_survey_link
+    link_to "we want your feedback ", "https://docs.google.com/a/freeukgenealogy.org.uk/forms/d/e/1FAIpQLSdT2291Wot-IdsP_Y2_w82BsP9WkqXfdTnX_8V-Y7g6pClqvg/viewform",
+      class: "go", target: :_blank, title: 'link opens in a new tab'
+  end
+
+  def freecen2_survey_text2
+    content_tag :span, "on all aspects so that we can make it better."
+  end
+
+  def freecen2_survey_full_text
+    ("#{freecen2_survey_text1.strip} #{freecen2_survey_link.strip} #{freecen2_survey_text2.strip}").html_safe
+  end
+
+  def fullwidth_adsense
+    case MyopicVicar::Application.config.template_set
+    when 'freecen'
+      fullwidth_adsense_freecen
+    when 'freereg'
+      fullwidth_adsense_freereg
+    end
+  end
+
+  def fullwidth_adsense_freereg
     banner = <<-HTML
+    <style>
+    .adSenseBanner { width: 320px; height: 100px; text-align: center; margin: auto;}
+    @media(min-width: 500px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
+    @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
+    </style>
     <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <script>
     (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
     </script>
-    <!-- FreeCEN2 Responsive Header -->
     <ins class="adsbygoogle adSenseBanner"
     style="display:block"
-    data-ad-client="ca-pub-5379635334920389"
-    data-ad-slot="7868124617"
-    data-ad-format="auto">
-    </ins>
+    data-ad-client="ca-pub-7825403497160061"
+    data-ad-slot="8870759291"
+    data-ad-format="auto"></ins>
     <script>
-    window.update_personalized_header_adverts = function (preference) {
+    window.update_personalized_google_adverts = function (preference) {
       if(preference == 'accept') {
           (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
         } else if(preference == 'deny') {
@@ -206,26 +466,21 @@ module ApplicationHelper
                   banner.html_safe
                 end
 
-                def google_advert
-                  @data_ad_slot = ''
-                  @data_ad_slot = if current_page?(freecen_coverage_path)
-                    '9056426667'
-                  else
-                    '2003577939'
-                  end
+                def fullwidth_adsense_freecen
                   banner = <<-HTML
                   <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
                   <script>
                   (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
                   </script>
-                  <!-- Responsive ad -->
+                  <!-- FreeCEN2 Transcriber Registration (Responsive) -->
                   <ins class="adsbygoogle adSenseBanner"
                   style="display:block"
                   data-ad-client="ca-pub-5379635334920389"
-                  data-ad-slot= "#{@data_ad_slot}"
-                  data-ad-format="auto"></ins>
+                  data-ad-slot="9391036375"
+                  data-ad-format="auto"
+                  data-full-width-responsive="true"></ins>
                   <script>
-                  window.update_personalized_adverts = function (preference) {
+                  window.update_personalized_fullwidth_adverts = function (preference) {
                     if(preference == 'accept') {
                         (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
                       } else if(preference == 'deny') {
@@ -244,21 +499,26 @@ module ApplicationHelper
                       banner.html_safe
                     end
 
-                    def fullwidth_adsense_freecen
+                    def google_advert
+                      @data_ad_slot = ''
+                      @data_ad_slot = if current_page?(freecen_coverage_path)
+                        '9056426667'
+                      else
+                        '2003577939'
+                      end
                       banner = <<-HTML
                       <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
                       <script>
                       (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
                       </script>
-                      <!-- FreeCEN2 Transcriber Registration (Responsive) -->
+                      <!-- Responsive ad -->
                       <ins class="adsbygoogle adSenseBanner"
                       style="display:block"
                       data-ad-client="ca-pub-5379635334920389"
-                      data-ad-slot="9391036375"
-                      data-ad-format="auto"
-                      data-full-width-responsive="true"></ins>
+                      data-ad-slot= "#{@data_ad_slot}"
+                      data-ad-format="auto"></ins>
                       <script>
-                      window.update_personalized_fullwidth_adverts = function (preference) {
+                      window.update_personalized_adverts = function (preference) {
                         if(preference == 'accept') {
                             (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
                           } else if(preference == 'deny') {
@@ -277,24 +537,21 @@ module ApplicationHelper
                           banner.html_safe
                         end
 
-                        def fullwidth_adsense_freereg
+                        def banner_header
                           banner = <<-HTML
-                          <style>
-                          .adSenseBanner { width: 320px; height: 100px; text-align: center; margin: auto;}
-                          @media(min-width: 500px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
-                          @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
-                          </style>
                           <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
                           <script>
                           (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
                           </script>
+                          <!-- FreeCEN2 Responsive Header -->
                           <ins class="adsbygoogle adSenseBanner"
                           style="display:block"
-                          data-ad-client="ca-pub-7825403497160061"
-                          data-ad-slot="8870759291"
-                          data-ad-format="auto"></ins>
+                          data-ad-client="ca-pub-5379635334920389"
+                          data-ad-slot="7868124617"
+                          data-ad-format="auto">
+                          </ins>
                           <script>
-                          window.update_personalized_google_adverts = function (preference) {
+                          window.update_personalized_header_adverts = function (preference) {
                             if(preference == 'accept') {
                                 (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
                               } else if(preference == 'deny') {
@@ -329,286 +586,5 @@ module ApplicationHelper
                                           HTML
                                         end
                                         banner.html_safe
-                                      end
-
-                                      def fullwidth_adsense
-                                        if MyopicVicar::Application.config.template_set == 'freecen'
-                                          fullwidth_adsense_freecen
-                                        else
-                                          fullwidth_adsense_freereg
-                                        end
-                                      end
-
-                                      def title(title = nil)
-                                        if title.present?
-                                          content_for :title, title
-                                        elsif content_for?(:title)
-                                          title = content_for(:title) + ' | ' + MyopicVicar::Application.config.freexxx_display_name
-                                        elsif  page_title.present?
-                                          title = page_title + ' | ' + MyopicVicar::Application.config.freexxx_display_name
-                                        else
-                                          title = MyopicVicar::Application.config.freexxx_display_name
-                                        end
-                                      end
-
-                                      def display_number(num)
-                                        number_with_delimiter(num, :delimiter => ',')
-                                      end
-
-                                      def witness_search_enabled?
-                                        Rails.application.config.respond_to?(:witness_support) && Rails.application.config.witness_support
-                                      end
-
-                                      def ucf_wildcards_enabled?
-                                        Rails.application.config.respond_to?(:ucf_support) && Rails.application.config.ucf_support
-                                      end
-
-                                      def sum_calculation(piece_hash)
-                                        count_array = Array.new
-                                        piece_hash.each{ |e|
-                                          count_array << e.freecen_dwellings.count
-                                        }
-                                        calculate_total(count_array)
-                                      end
-
-                                      def individual_calculation(piece_hash)
-                                        count_array = Array.new
-                                        piece_hash.each{ |e|
-                                          count_array << e.num_individuals
-                                        }
-                                        calculate_total(count_array)
-                                      end
-
-                                      def calculate_total(array)
-                                        array.inject(0){|sum,x| sum + x }
-                                      end
-
-                                      def valid_directory?
-                                        File.directory?(output_directory_path)
-                                      end
-
-                                      # Create a new file named as current date and time
-                                      def new_file(name)
-                                        raise "Not a Valid Directory" unless valid_directory?
-
-                                        file_name = "#{Time.now.strftime("%Y%m%d%H%M%S")}_#{name}.txt"
-                                        "#{output_directory_path}/#{file_name}"
-                                      end
-
-                                      # Set an output directory
-                                      # If there is no ouput directory, then set the default
-                                      # else check the trailing slash at the end of the directory
-                                      def output_directory_path
-                                        if @output_directory.nil?
-                                          directory = File.join(Rails.root, 'script')
-                                        else
-                                          directory = File.join(@output_directory, "")
-                                        end
-                                        directory
-                                      end
-
-                                      def delete_file_if_exists(name)
-                                        File.delete(*Dir.glob("#{output_directory_path}/*_#{name}.txt"))
-                                      end
-
-                                      def to_boolean(value)
-                                        case value
-                                        when true, 'true', 1, '1', 't' then true
-                                        when false, 'false', nil, '', 0, '0', 'f' then false
-                                        when nil, "nil" then nil
-                                        else
-                                          raise ArgumentError, "invalid value for Boolean(): \"#{value.inspect}\""
-                                        end
-                                      end
-                                      def church_name(file)
-                                        church_name = file.church_name
-                                        if church_name.blank?
-                                          register = get_register_object(file)
-                                          church = get_church_object(register)
-                                          church_name = church.church_name unless church.blank?
-                                        end
-                                        church_name
-                                      end
-
-                                      def userid(file)
-                                        userid = file.userid
-                                      end
-
-                                      def register_name_for_entry(entry)
-                                        #expecting the field
-                                        if RegisterType.approved_option_values.include?(entry)
-                                          register_name = RegisterType::display_name(entry)
-                                        else
-                                          register_name = entry
-                                        end
-                                        register_name
-                                      end
-
-                                      def register_name_for_file(file)
-                                        register_type = file.register_type
-                                        if register_type.blank?
-                                          new_register = get_register_object(file)
-                                          new_register_type = ' '
-                                          new_register_type = new_register.register_type
-                                          new_register_type = Register.check_and_correct_register_type(new_register_type)
-                                        else
-                                          new_register_type = Register.check_and_correct_register_type(register_type)
-                                        end
-                                        file.update_attribute(:register_type, new_register_type) unless new_register_type == register_type
-                                        register_name = RegisterType::display_name(new_register_type)
-                                        register_name
-                                      end
-
-                                      def county_name(file)
-                                        county_name = file.county #note county has chapman in file and record)
-                                        case
-                                        when ChapmanCode.value?(county_name)
-                                          county_name = ChapmanCode.name_from_code(county_name)
-                                        when ChapmanCode.key?(county_name)
-                                        else
-                                          register = get_register_object(file)
-                                          church = get_church_object(register)
-                                          place = get_place_object(church)
-                                          county_name = place.county unless place.blank?
-                                        end
-                                        county_name
-                                      end
-
-                                      def chapman(file)
-                                        chapman = file.county
-                                        return chapman if  ChapmanCode.value?(chapman)
-                                        return ChapmanCode.value_at(chapman) if ChapmanCode.has_key?(chapman)
-                                        register = get_register_object(file)
-                                        church = get_church_object(register)
-                                        place = get_place_object(church)
-                                        chapman = place.chapman_code unless place.blank?
-                                        chapman
-                                      end
-
-                                      def place_name(file)
-                                        place_name = file.place
-                                        if place_name.blank?
-                                          register = get_register_object(file)
-                                          church = get_church_object(register)
-                                          place = get_place_object(church)
-                                          place_name = place.place_name unless place.blank?
-                                        end
-                                        place_name
-                                      end
-
-                                      def owner(file)
-                                        owner = file.userid
-                                      end
-
-                                      def processed_date(file)
-                                        if file.processed_date.nil?
-                                          physical_file = PhysicalFile.file_name(file.file_name).userid(file.userid).first
-                                          if physical_file.present? && physical_file.file_processed_date.present?
-                                            processed_date = physical_file.file_processed_date.strftime("%d/%m/%Y")
-                                            file.update_attribute(:processed_date, physical_file.file_processed_date)
-                                          else
-                                            processed_date = ''
-                                          end
-                                        else
-                                          processed_date = file.processed_date.strftime("%d/%m/%Y")
-                                        end
-                                        processed_date
-                                      end
-
-                                      def uploaded_date(file)
-                                        file.uploaded_date.nil? ? uploaded_date = '' : uploaded_date = file.uploaded_date.strftime("%d/%m/%Y")
-                                      end
-
-                                      def system_administrator(user)
-                                        user.user_role == 'system_administrator' ? system_administerator = true : system_administerator = false
-                                        system_administrator
-                                      end
-
-                                      def get_register_object(file)
-                                        register = file.register unless file.blank?
-                                      end
-
-                                      def get_church_object(register)
-                                        church = register.church unless register.blank?
-                                      end
-
-                                      def get_place_object(church)
-                                        place = church.place unless church.blank?
-                                      end
-
-                                      def uploaded_date(file)
-                                        file.uploaded_date.strftime("%d %b %Y") unless file.uploaded_date.nil?
-                                      end
-
-                                      def file_name(file)
-                                        file.file_name[0..-5]  unless file.file_name.nil?
-                                      end
-
-                                      def locked_by_transcriber(file)
-                                        if file.locked_by_transcriber
-                                          value = "Y"
-                                        else
-                                          value = "N"
-                                        end
-                                        value
-                                      end
-
-                                      def locked_by_coordinator(file)
-                                        if file.locked_by_coordinator
-                                          value = "Y"
-                                        else
-                                          value = "N"
-                                        end
-                                        value
-                                      end
-
-                                      def base_uploaded_date(file)
-                                        file.base_uploaded_date.strftime("%d %b %Y") unless file.base_uploaded_date.nil?
-                                      end
-
-                                      def waiting_date(file)
-                                        file.waiting_date.strftime("%d %b %Y") unless file.waiting_date.nil?
-                                      end
-
-                                      def errors(file)
-                                        if file.error >= 0
-                                          errors = file.error
-                                        else
-                                          errors = 0
-                                        end
-                                        errors
-                                      end
-
-                                      def calculate_total(array)
-                                        array.inject(0){|sum,x| sum + x }
-                                      end
-
-                                      def freecen1_link_text
-                                        content_tag :span, "You can visit the old FreeCEN website here -"
-                                      end
-
-                                      def freecen1_link
-                                        link_to "https://freecen1.freecen.org.uk","https://freecen1.freecen.org.uk",class: "go", target: :_blank, title: 'Link opens in new tab'
-                                      end
-
-                                      def freecen1_text
-                                        ("#{freecen1_link_text.strip} #{freecen1_link.strip}").html_safe
-                                      end
-
-                                      def freecen2_survey_text1
-                                        content_tag :span, "FreeCEN2 is a work in progress;"
-                                      end
-
-                                      def freecen2_survey_link
-                                        link_to "we want your feedback ", "https://docs.google.com/a/freeukgenealogy.org.uk/forms/d/e/1FAIpQLSdT2291Wot-IdsP_Y2_w82BsP9WkqXfdTnX_8V-Y7g6pClqvg/viewform",
-                                          class: "go", target: :_blank, title: 'link opens in a new tab'
-                                      end
-
-                                      def freecen2_survey_text2
-                                        content_tag :span, "on all aspects so that we can make it better."
-                                      end
-
-                                      def freecen2_survey_full_text
-                                        ("#{freecen2_survey_text1.strip} #{freecen2_survey_link.strip} #{freecen2_survey_text2.strip}").html_safe
                                       end
                                     end

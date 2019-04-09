@@ -245,6 +245,7 @@ class ApplicationController < ActionController::Base
     session.delete(:archived_contacts)
     session.delete(:message_id)
     session.delete(:original_message_id)
+    session.delete(:query)
   end
 
   def clean_session_for_county
@@ -285,6 +286,7 @@ class ApplicationController < ActionController::Base
     session.delete(:record)
     session.delete(:current_page)
     session.delete(:edit_freecen_pieces)
+    session.delete(:query)
   end
 
   def clean_session_for_images
@@ -351,13 +353,6 @@ class ApplicationController < ActionController::Base
     session.delete(:select_place)
     session.delete(:current_page)
     session.delete(:edit_freecen_pieces)
-  end
-  # TODO: review and test: these two methods were removed from master
-  def reject_assess(user, action)
-    flash[:notice] = "You are not permitted to use this action"
-    appname = MyopicVicar::Application.config.freexxx_display_name.upcase
-    logger.info "#{appname}:ACCESS ISSUE: The #{user} attempted to access #{action}."
-    redirect_to main_app.new_manage_resource_path
-    return
+    session.delete(:query)
   end
 end

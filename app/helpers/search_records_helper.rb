@@ -24,17 +24,23 @@ module SearchRecordsHelper
     end
     field
   end
-  def viewed(search_query,search_record)
+
+  def viewed(search_query, search_record)
     search_results = search_query.search_result
     viewed_records = search_results.viewed_records
-    field = ""
+    field = ''
     if viewed_records.present?
-      field = "(viewed)" if viewed_records.include?("#{search_record[:_id]}")
+      field = '(viewed)' if viewed_records.include?("#{search_record[:_id]}")
     end
     field
   end
 
   def entitle(record)
     record = record.present? ? record.titleize : record
+  end
+
+  def search_record_link(record)
+    field = Rails.application.config.website + '/search_records/' + record
+    field
   end
 end

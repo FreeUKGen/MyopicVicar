@@ -689,10 +689,10 @@ class Freereg1CsvEntry
     order
   end
 
-  def order_fields_for_record_type(record_type,extended_def,member)
-    order = Array.new
-    array_of_entries = Array.new
-    json_of_entries = Hash.new
+  def order_fields_for_record_type(record_type, extended_def, member)
+    order = []
+    array_of_entries = []
+    json_of_entries = {}
     case record_type
     when 'ba'
       fields = ordered_baptism_display_fields(extended_def)
@@ -706,10 +706,13 @@ class Freereg1CsvEntry
       when 'witness'
         #this translate the embedded witness fields into specific line displays
         increment = 1
-        self.multiple_witnesses.each do |witness|
+        multiple_witnesses.each do |witness|
           field_for_order = field + increment.to_s
           order << field_for_order
-          witness.witness_forename.present? ? actual_witness = (witness.witness_forename + ' ' + witness.witness_surname) : actual_witness =  witness.witness_surname
+          forename = witness.witness_forename.present? ? witness.witness_forename.to_s : ''
+          surname = witness.witness_surname.present? ? witness.witness_surname.to_s : ''
+          actual_witness = forename + ' ' + surname
+          actual_witness = actual_witness.strip
           self[field_for_order] = actual_witness
           array_of_entries << actual_witness
           json_of_entries[field.to_sym] = actual_witness

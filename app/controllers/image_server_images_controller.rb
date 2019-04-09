@@ -24,7 +24,7 @@ class ImageServerImagesController < ApplicationController
       website = image_server_image.url_for_delete_image_from_image_server
       redirect_to website
     else
-      flash[:notice] = "Deletion of #{image_server_image.image_file_name} is not permitted due to its status of #{SourceProperty::Status[image_server_image.status]}"
+      flash[:notice] = "Deletion of #{image_server_image.image_file_name} is not permitted due to its status of #{SourceProperty::STATUS[image_server_image.status]}"
       redirect_back(fallback_location: new_manage_resource_path) && return
     end
   end

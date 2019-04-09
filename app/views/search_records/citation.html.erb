@@ -1,0 +1,16 @@
+<% case @type%>
+<% when 'wikitree'%>
+  <%= render 'wikitree_freereg_citation', layout: false %>
+<%when 'familytreemaker'%>
+  <%= render 'familytreemaker_freereg_citation', layout: false %>
+<%when 'legacyfamilytree'%>
+  <%= render 'legacyfamilytree_freereg_citation', layout: false %>
+<%when 'mla'%>
+  <%= render 'mla_freereg_citation', layout: false %>
+<%when 'chicago'%>
+  <%= render 'chicago_freereg_citation', layout: false %>
+<%when 'wikipedia'%>
+  <%= render 'wikipedia_freereg_citation', layout: false %>
+<%when 'evidenceexplained'%>
+  <%= render 'evidenceexplained_freereg_citation', layout: false %>
+<% end%>

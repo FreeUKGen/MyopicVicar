@@ -9,14 +9,30 @@ __FreeCEN2 | Release Notes__
   __Improvements__
   ----------------
 
-  * Issue 636: Adds FreeCEN2 survey link in search results page 
+  * Issue 636: Adds FreeCEN2 survey link in search results page
   * Refactored Search Result sort by chapman_code and Type code
 
-  __Fixes__
+   __Fixes__
   ---------
 
   * Issue 622: Fixed undefined method `schedule_number`
   * Issue 623: Fixed undefined method `remote_add`
+
+__FreeREG | Release Notes__
+  =======================
+  04-04-2019
+
+  __Improvements__
+  ----------------
+
+  * Add baptism witness to into
+
+  __Fixes__
+  ---------
+
+
+  * Spelling error
+  * Fix error in 1691 code when wildcard present
 
   __Change Log__
   ----------------
@@ -29,3 +45,7 @@ __FreeCEN2 | Release Notes__
   * Issue 631: Sort search results by Birth County and refactored sort code for chapman_code and Type
   * FreeCEN release notes
   * Remove FreeCEN2 link to survey and dry up FreeCEN1 link text
+  * Add baptism witness to into
+  * Spelling error
+  * Fix error in 1691 code when wildcard present
+  * Add release notes(2019/03/27)

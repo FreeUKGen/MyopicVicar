@@ -64,17 +64,21 @@ class SearchRecordsController < ApplicationController
       @entry.acknowledge
       @place_id, @church_id, @register_id, extended_def = @entry.get_location_ids
       @annotations = Annotation.find(@search_record[:annotation_ids]) if @search_record[:annotation_ids]
-      @search_result = @search_query.search_result
-      @viewed_records = @search_result.viewed_records
-      @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
-      @search_result.update_attribute(:viewed_records, @viewed_records)
+      if @search_query.present?
+        @search_result = @search_query.search_result
+        @viewed_records = @search_result.viewed_records
+        @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
+        @search_result.update_attribute(:viewed_records, @viewed_records)
+      end
       @image_id = @entry.get_the_image_id(@church, @user, session[:manage_user_origin], session[:image_server_group_id], session[:chapman_code])
       @order, @array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type], @entry.freereg1_csv_file.def, current_authentication_devise_user.present?)
+
     end
   end
 
   def show_print_version
     redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
+
     if MyopicVicar::Application.config.template_set == 'freecen'
       @search_record = SearchRecord.record_id(params[:id]).first
       @individual = @search_record.freecen_individual
@@ -113,7 +117,7 @@ class SearchRecordsController < ApplicationController
       @entry.acknowledge
       @place_id, @church_id, @register_id, extended_def = @entry.get_location_ids
       @annotations = Annotation.find(@search_record[:annotation_ids]) if @search_record[:annotation_ids]
-      @search_result = @search_query.search_result
+      @search_result = @search_query.search_result if @search_query.present?
       @all_data = true
       @order, @array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type], @entry.freereg1_csv_file.def, current_authentication_devise_user.present?)
       respond_to do |format|
@@ -134,43 +138,35 @@ class SearchRecordsController < ApplicationController
 
   def show_value_check
     messagea = 'We are sorry but the record you requested no longer exists; possibly as a result of some data being edited. You will need to redo the search with the original criteria to obtain the updated version.'
-    warning = "#{MyopicVicar::Application.config.freexxx_display_name.upcase}::SEARCH::ERROR Missing entry for search record"
-    warninga = "#{MyopicVicar::Application.config.freexxx_display_name.upcase}::SEARCH::ERROR Missing parameter"
-    warningb = "#{MyopicVicar::Application.config.freexxx_display_name.upcase}::SEARCH::ERROR Missing entry for search query"
-    if params[:search_id].blank? || params[:id].blank?
+    warning = 'FREEREG::SEARCH::ERROR Missing entry for search record'
+    warninga = "#{application_name.upcase}::SEARCH::ERROR Missing parameter"
+    if params[:id].blank?
       flash[:notice] = messagea
       logger.warn(warninga)
-      logger.warn " #{params[:search_id]}, #{params[:id]} no longer exists"
+      logger.warn " #{params[:id]} no longer exists"
       flash.keep
       return false
     end
-    @search_query = SearchQuery.find(params[:search_id])
-    if @search_query.blank?
-      flash[:notice] = messagea
-      logger.warn(warningb)
-      logger.warn "#{params[:search_id]} no longer exists"
-      flash.keep
-      return false
-    end
-    @entry = nil
+    @search_query = SearchQuery.find(session[:query]) if session[:query].present?
+
     if MyopicVicar::Application.config.template_set == 'freereg'
-      if params[:ucf] == 'true'
+      if session[:query].blank? || params[:ucf] == 'true'
         @search_record = SearchRecord.find(params[:id])
       else
         response, @next_record, @previous_record = @search_query.next_and_previous_records(params[:id])
-        response ? @search_record = @search_query.locate(params[:id]) : @search_record = nil
+        @search_record = response ? @search_query.locate(params[:id]) : nil
         return false unless response
       end
       if @search_record.blank?
         flash[:notice] = messagea
         logger.warn(warning)
-        logger.warn "#{@search_record}, #{@search_query} no longer exists"
+        logger.warn "#{@search_record} no longer exists"
         flash.keep
         return false
       end
       if @search_record[:freereg1_csv_entry_id].blank?
         logger.warn(warning)
-        logger.warn "#{@search_record}, #{@search_query} no longer exists"
+        logger.warn "#{@search_record} no longer exists"
         flash[:notice] = messagea
         flash.keep
         return false
@@ -178,20 +174,20 @@ class SearchRecordsController < ApplicationController
       @entry = Freereg1CsvEntry.find(@search_record[:freereg1_csv_entry_id])
       if @entry.blank?
         logger.warn(warning)
-        logger.warn "#{@search_record}, #{@search_query} no longer exists"
+        logger.warn "#{@search_record} no longer exists"
         flash[:notice] = messagea
         flash.keep
         return false
       end
       if @entry.freereg1_csv_file.blank?
         logger.warn(warning)
-        logger.warn "#{@search_record}, #{@search_query} no longer exists"
+        logger.warn "#{@search_record} no longer exists"
         flash[:notice] = messagea
         flash.keep
         return false
       end
+      true
     end
-    true
   end
 
   def viewed
@@ -207,34 +203,14 @@ class SearchRecordsController < ApplicationController
     @all_data = true
     @entry.display_fields(@search_record)
     @entry.acknowledge
-    @place_id,@church_id,@register_id = @entry.get_location_ids
+    @place_id, @church_id, @register_id = @entry.get_location_ids
     @annotations = Annotation.find(@search_record[:annotation_ids]) if @search_record[:annotation_ids]
-    @search_result = @search_query.search_result
+    #@search_result = @search_query.search_result
 
     respond_to do |format|
-      if params[:citation_type] == "wikitree"
-        @viewed_date = Date.today.strftime("%e %b %Y")
-        format.html {render "_search_records_freecen_citation_wikitree", :layout => false}
-      elsif params[:citation_type] == "familytreemaker"
-        @viewed_date = Date.today.strftime("%e %B %Y")
-        format.html {render "_search_records_freecen_citation_familytreemaker", :layout => false}
-        format.html {render "_search_records_freecen_citation_wikitree", :layout => false}
-      elsif params[:citation_type] == "legacyfamilytree"
-        @viewed_date = Date.today.strftime("%e %b %Y")
-        format.html {render "_search_records_freecen_citation_legacyfamilytree", :layout => false}
-      elsif params[:citation_type] == "mla"
-        @viewed_date = Date.today.strftime("%a. %e %B. %Y")
-        format.html {render "_search_records_freecen_citation_mla", :layout => false}
-      elsif params[:citation_type] == "chicago"
-        @viewed_date = Date.today.strftime("%B %e, %Y")
-        format.html {render "_search_records_freecen_citation_chicago", :layout => false}
-      elsif params[:citation_type] == "wikipedia"
-        @viewed_date = Date.today.strftime("%e %b %Y")
-        format.html {render "_search_records_freecen_citation_wikipedia", :layout => false}
-      elsif params[:citation_type] == "evidenceexplained"
-        @viewed_date = Date.today.strftime("%e %B %Y")
-        format.html {render "_search_records_freecen_citation_evidenceexplained", :layout => false}
-      end
+      @viewed_date = Date.today.strftime("%e %b %Y")
+      @type = params[:citation_type]
+      format.html { render :citation, layout: false }
     end
   end
 end

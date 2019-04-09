@@ -16,7 +16,7 @@ class Freereg1CsvFilesController < ApplicationController
   require 'freereg_options_constants'
 
   def by_userid
-    #entry by userid
+    # entry by userid
     session[:page] = request.original_url
     session[:my_own] = false
     session[:userid_id] = params[:id]
@@ -28,7 +28,6 @@ class Freereg1CsvFilesController < ApplicationController
     @role = session[:role]
     @freereg1_csv_files = Freereg1CsvFile.userid(user.userid).all.order_by('file_name ASC', 'userid_lower_case ASC').page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)  unless user.blank?
     render 'index'
-    return
   end
 
   def change_userid
@@ -322,7 +321,7 @@ class Freereg1CsvFilesController < ApplicationController
     if @user.person_role == 'system_administrator' || @user.person_role == 'data_manager'
       @county = session[:county]
       locations
-      #setting these means that we are a DM
+      # setting these means that we are a DM
       session[:selectcountry] = nil
       session[:selectcounty] = nil
       session[:selectplace] = session[:selectchurch] = nil
@@ -380,7 +379,6 @@ class Freereg1CsvFilesController < ApplicationController
     @get_zero_year_records = true
     render 'freereg1_csv_entries/index'
   end
-
 
   def update_churches
     if update_churches_not_ok?(params[:place])
@@ -480,7 +478,6 @@ class Freereg1CsvFilesController < ApplicationController
     result
   end
 
-
   def update_registers
     if update_registers_not_ok?(params[:church])
       flash[:notice] = 'You made an incorrect church selection '
@@ -533,7 +530,7 @@ class Freereg1CsvFilesController < ApplicationController
         redirect_to(change_userid_freereg1_csv_file_path(@freereg1_csv_file)) && return
       end
     when 'Submit'
-      #lets see if we are moving the file
+      # lets see if we are moving the file
       @freereg1_csv_file.date_change(params[:freereg1_csv_file][:transcription_date],params[:freereg1_csv_file][:modification_date])
       @freereg1_csv_file.check_locking_and_set(params[:freereg1_csv_file],session)
       @freereg1_csv_file.update_attributes(:alternate_register_name => (params[:freereg1_csv_file][:church_name].to_s + ' ' + params[:freereg1_csv_file][:register_type].to_s ))
@@ -546,14 +543,14 @@ class Freereg1CsvFilesController < ApplicationController
         return
       end
       if session[:error_line].present?
-        #lets remove the header errors
+        # lets remove the header errors
         @freereg1_csv_file.error = @freereg1_csv_file.error - session[:header_errors]
         session[:error_id].each do |id|
           error = BatchError.find(id)
           @freereg1_csv_file.batch_errors.delete(error) if error.present?
         end
         @freereg1_csv_file.save
-        #clean out the session variables
+        # clean out the session variables
         session[:error_id] = nil
         session[:header_errors] = nil
         session[:error_line] = nil
@@ -577,7 +574,7 @@ class Freereg1CsvFilesController < ApplicationController
 
   def unique_names
     @freereg1_csv_file = Freereg1CsvFile.find(params[:object])
-    unless Freereg1CsvFile.valid_freereg1_csv_file?(params[:id])
+    unless Freereg1CsvFile.valid_freereg1_csv_file?(params[:object])
       message = 'The file was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
@@ -599,7 +596,6 @@ class Freereg1CsvFilesController < ApplicationController
     @zero_year = true
     render 'freereg1_csv_entries/index'
   end
-
 
   private
 

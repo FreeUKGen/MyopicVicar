@@ -84,11 +84,11 @@ module MyopicVicar
     if config.template_set == TemplateSet::FREECEN
       config.freexxx_display_name = 'FreeCEN'
     elsif config.template_set == TemplateSet::FREEREG
-      config.freexxx_display_name = 'FreeReg'
+      config.freexxx_display_name = 'FreeREG'
     elsif config.template_set == TemplateSet::FREEBMD
       config.freexxx_display_name = 'FreeBMD'
     else
-      config.freexxx_display_name = 'FreeReg'
+      config.freexxx_display_name = 'FreeREG'
     end
 
     # Enable the asset pipeline

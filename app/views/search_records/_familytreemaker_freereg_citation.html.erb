@@ -12,6 +12,6 @@
       <%=entitle(@entry['groom_forename'])%> <%=entitle(@entry['groom_surname'])%> to <%=entitle(@entry['bride_forename'])%> <%=entitle(@entry['bride_surname'])%> <%=entitle(@entry['marriage_date'])%>
     <%end%>
     <br>
-    Web address:https:www.freereg.org.uk  viewed <%=@viewed_date%>
+    Web address:<%=search_record_link(@search_record[:_id])%>  viewed <%=@viewed_date%>
   </p>
 </section>

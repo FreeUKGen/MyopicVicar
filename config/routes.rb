@@ -20,7 +20,7 @@ MyopicVicar::Application.routes.draw do
   get 'open',:to => 'open#index'
   get 'open/:county/places', :to => 'open#places_for_county', :as => :open_places_for_county
   get 'open/:county/:place/surnames', :to => 'open#surnames_for_place', :as => :open_surnames_for_place
-  get 'open/:county/:place/:surname/:record_types', :to => 'open#records_for_place_surname', :as => :open_records_for_place_surname 
+  get 'open/:county/:place/:surname/:record_types', :to => 'open#records_for_place_surname', :as => :open_records_for_place_surname
   get 'open/places_for_county_surname'
   get 'open/index'
   get 'open/county'
@@ -376,9 +376,6 @@ MyopicVicar::Application.routes.draw do
 
   get 'search_records/:id/show_print_version(.:format)', :to => 'search_records#show_print_version', :as => :show_print_version_search_record
   get 'search_records/:id/:friendly(.:format)', :to => 'search_records#show', :as => :friendly_search_record
-  resources :search_records
-
-  # For generating the citations
   get 'search_records/:id/show_citation', :to => 'search_records#show_citation', :as => :show_citation_record
   resources :search_records
 
