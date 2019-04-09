@@ -1,0 +1,8 @@
+development:
+  template_set: 'freereg'
+
+test:
+  template_set: 'freereg'
+
+production:
+  template_set: 'freereg'
