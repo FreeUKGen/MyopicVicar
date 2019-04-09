@@ -1,7 +1,7 @@
 <section>
   <p>
       <%=@entry['place']%> : <%=@entry['church_name']%> : <%unless @entry['register_type'].include? "Unspecified"%><%=@entry['register_type']%><% else %>Register of unspecified type<% end %> : "Parish Register" database,
-      FreeREG (<%=search_record_link(@search_record[:_id])%> : viewed <%=@viewed_date%>)
+      <%= application_name%> (<%=search_record_link(@search_record[:_id])%> : viewed <%=@viewed_date%>)
       <%=record_type(@entry).downcase%>
       <% if record_type(@entry).downcase == "baptism"%>
         <%=entitle(@entry['person_forename'])%> <%=entitle(@entry['father_surname'])%>
