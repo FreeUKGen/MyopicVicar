@@ -16,6 +16,8 @@ class FreecenDwelling
   has_many :freecen_individuals
   belongs_to :place
   belongs_to :freecen_piece
+  delegate :piece_number, :year, :chapman_code, to: :freecen_piece, prefix: true
+  delegate :place_name, to: :place#, prefix: true
 
   index({freecen_piece_id: 1,dwelling_number: 1},{background: true})
 

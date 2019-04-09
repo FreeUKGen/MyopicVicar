@@ -34,6 +34,7 @@ class SearchRecord
   belongs_to :freecen_individual, index: true, optional: true
   belongs_to :place
 
+
   field :annotation_ids, type: Array #, :typecast => 'ObjectId'
 
   #denormalized fields
@@ -964,4 +965,7 @@ class SearchRecord
     needs_upgrade
   end
 
+  def dwelling_info
+    freecen_individual.freecen_dwelling
+  end
 end

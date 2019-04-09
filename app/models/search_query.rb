@@ -62,7 +62,7 @@ class SearchQuery
 
   field :birth_chapman_codes, type: Array, default: []
   field :birth_place_name, type: String
-  
+
   has_and_belongs_to_many :places, inverse_of: nil
 
   embeds_one :search_result
@@ -72,8 +72,8 @@ class SearchQuery
   validate :radius_is_valid
   validate :county_is_valid
   validate :wildcard_is_appropriate
-# probably not necessary in FreeCEN
-#  validate :all_counties_have_both_surname_and_firstname
+  # probably not necessary in FreeCEN
+  #  validate :all_counties_have_both_surname_and_firstname
 
   before_validation :clean_blanks
   attr_accessor :action
@@ -633,23 +633,16 @@ class SearchQuery
     # next reorder in memory
     if results.present?
       case self.order_field
-      when SearchOrder::COUNTY
-        if self.order_asc
-          results.sort! { |x, y| (x['chapman_code'] || '') <=> (y['chapman_code'] || '') }
-        else
-          results.sort! { |x, y| (y['chapman_code'] || '') <=> (x['chapman_code'] || '') }
+      when *selected_sort_fields
+        results.sort! do |x, y|
+          x, y = y, x unless self.order_asc
+          x[order_field] || '' <=> y[order_field] || ''
         end
       when SearchOrder::DATE
         if self.order_asc
           results.sort! { |x, y| (x[:search_date] || '') <=> (y[:search_date] || '') }
         else
           results.sort! { |x, y| (y[:search_date] || '') <=> (x[:search_date] || '') }
-        end
-      when SearchOrder::TYPE
-        if self.order_asc
-          results.sort! { |x, y| (x['record_type'] || '') <=> (y['record_type'] || '') }
-        else
-          results.sort! { |x, y| (y['record_type'] || '') <=> (x['record_type'] || '') }
         end
       when SearchOrder::LOCATION
         if self.order_asc
@@ -752,7 +745,7 @@ class SearchQuery
       end
       if chapman_codes.length > 3
         if !chapman_codes.eql?(["ALD", "GSY", "JSY", "SRK"])
-          errors.add(:chapman_codes, "You cannot select more than 3 counties.") 
+          errors.add(:chapman_codes, "You cannot select more than 3 counties.")
         end
       end
     elsif MyopicVicar::Application.config.template_set == 'freecen'
@@ -778,5 +771,11 @@ class SearchQuery
     if first_name && begins_with_wildcard(first_name) && places.count == 0
       errors.add(:first_name, 'A place must be selected if name queries begin with a wildcard')
     end
+  end
+
+  private
+
+  def selected_sort_fields
+    [ SearchOrder::COUNTY, SearchOrder::BIRTH_COUNTY, SearchOrder::TYPE ]
   end
 end

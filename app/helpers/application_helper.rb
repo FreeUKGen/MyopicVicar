@@ -527,18 +527,23 @@ module ApplicationHelper
                                       def get_register_object(file)
                                         register = file.register unless file.blank?
                                       end
+
                                       def get_church_object(register)
                                         church = register.church unless register.blank?
                                       end
+
                                       def get_place_object(church)
                                         place = church.place unless church.blank?
                                       end
+
                                       def uploaded_date(file)
                                         file.uploaded_date.strftime("%d %b %Y") unless file.uploaded_date.nil?
                                       end
+
                                       def file_name(file)
                                         file.file_name[0..-5]  unless file.file_name.nil?
                                       end
+
                                       def locked_by_transcriber(file)
                                         if file.locked_by_transcriber
                                           value = "Y"
@@ -547,6 +552,7 @@ module ApplicationHelper
                                         end
                                         value
                                       end
+
                                       def locked_by_coordinator(file)
                                         if file.locked_by_coordinator
                                           value = "Y"
@@ -555,6 +561,7 @@ module ApplicationHelper
                                         end
                                         value
                                       end
+
                                       def base_uploaded_date(file)
                                         file.base_uploaded_date.strftime("%d %b %Y") unless file.base_uploaded_date.nil?
                                       end
@@ -562,6 +569,7 @@ module ApplicationHelper
                                       def waiting_date(file)
                                         file.waiting_date.strftime("%d %b %Y") unless file.waiting_date.nil?
                                       end
+
                                       def errors(file)
                                         if file.error >= 0
                                           errors = file.error
@@ -571,5 +579,36 @@ module ApplicationHelper
                                         errors
                                       end
 
+                                      def calculate_total(array)
+                                        array.inject(0){|sum,x| sum + x }
+                                      end
 
+                                      def freecen1_link_text
+                                        content_tag :span, "You can visit the old FreeCEN website here -"
+                                      end
+
+                                      def freecen1_link
+                                        link_to "https://freecen1.freecen.org.uk","https://freecen1.freecen.org.uk",class: "go", target: :_blank, title: 'Link opens in new tab'
+                                      end
+
+                                      def freecen1_text
+                                        ("#{freecen1_link_text.strip} #{freecen1_link.strip}").html_safe
+                                      end
+
+                                      def freecen2_survey_text1
+                                        content_tag :span, "FreeCEN2 is a work in progress;"
+                                      end
+
+                                      def freecen2_survey_link
+                                        link_to "we want your feedback ", "https://docs.google.com/a/freeukgenealogy.org.uk/forms/d/e/1FAIpQLSdT2291Wot-IdsP_Y2_w82BsP9WkqXfdTnX_8V-Y7g6pClqvg/viewform",
+                                          class: "go", target: :_blank, title: 'link opens in a new tab'
+                                      end
+
+                                      def freecen2_survey_text2
+                                        content_tag :span, "on all aspects so that we can make it better."
+                                      end
+
+                                      def freecen2_survey_full_text
+                                        ("#{freecen2_survey_text1.strip} #{freecen2_survey_link.strip} #{freecen2_survey_text2.strip}").html_safe
+                                      end
                                     end
