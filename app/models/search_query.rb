@@ -636,7 +636,7 @@ class SearchQuery
       when *selected_sort_fields
         results.sort! do |x, y|
           x, y = y, x unless self.order_asc
-          x[order_field] || '' <=> y[order_field] || ''
+          (x[order_field] || '') <=> (y[order_field] || '')
         end
       when SearchOrder::DATE
         if self.order_asc
