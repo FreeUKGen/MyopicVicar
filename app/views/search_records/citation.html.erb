@@ -1,16 +1,44 @@
 <% case @type%>
 <% when 'wikitree'%>
-  <%= render 'wikitree_freereg_citation', layout: false %>
+  <% if application_name == 'FreeREG'%>
+    <%= render 'wikitree_freereg_citation', layout: false %>
+  <% elsif application_name == 'FreeCEN'%>
+    <%= render 'wikitree_freecen_citation', layout: false %>
+  <% end%>
 <%when 'familytreemaker'%>
-  <%= render 'familytreemaker_freereg_citation', layout: false %>
+  <% if application_name == 'FreeREG'%>
+    <%= render 'familytreemaker_freereg_citation', layout: false %>
+  <% elsif application_name == 'FreeCEN'%>
+    <%= render 'familytreemaker_freecen_citation', layout: false %>
+  <% end%>
 <%when 'legacyfamilytree'%>
-  <%= render 'legacyfamilytree_freereg_citation', layout: false %>
+  <% if application_name == 'FreeREG'%>
+    <%= render 'legacyfamilytree_freereg_citation', layout: false %>
+  <% elsif application_name == 'FreeCEN'%>
+    <%= render 'legacyfamilytree_freecen_citation', layout: false %>
+  <% end%>
 <%when 'mla'%>
-  <%= render 'mla_freereg_citation', layout: false %>
+  <% if application_name == 'FreeREG'%>
+    <%= render 'mla_freereg_citation', layout: false %>
+  <% elsif application_name == 'FreeCEN'%>
+    <%= render 'mla_freecen_citation', layout: false %>
+  <% end%>
 <%when 'chicago'%>
-  <%= render 'chicago_freereg_citation', layout: false %>
+  <% if application_name == 'FreeREG'%>
+    <%= render 'chicago_freereg_citation', layout: false %>
+  <% elsif application_name == 'FreeCEN'%>
+    <%= render 'chicago_freecen_citation', layout: false %>
+  <% end%>
 <%when 'wikipedia'%>
-  <%= render 'wikipedia_freereg_citation', layout: false %>
+  <% if application_name == 'FreeREG'%>
+    <%= render 'wikipedia_freereg_citation', layout: false %>
+  <% elsif application_name == 'FreeCEN'%>
+    <%= render 'wikipedia_freecen_citation', layout: false %>
+  <% end%>
 <%when 'evidenceexplained'%>
-  <%= render 'evidenceexplained_freereg_citation', layout: false %>
+  <% if application_name == 'FreeREG'%>
+    <%= render 'evidenceexplained_freereg_citation', layout: false %>
+  <% elsif application_name == 'FreeCEN'%>
+    <%= render 'evidenceexplained_freecen_citation', layout: false %>
+  <% end%>
 <% end%>

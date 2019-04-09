@@ -1,0 +1,18 @@
+<section>
+  <p>
+    Free UK Genealogy "<%=@census_database %>" database, <%= application_name%> (<%=search_record_link(@search_record[:_id])%> : accessed <%= @viewed_date %>) [data about <%=@searched_user_name %><% if !@is_family_head %> in household of <%= @family_head_name%><% end %>]; citing
+    <strong>Piece</strong>: <%=@piece%>
+    <strong>Place</strong>: <%=@place%>
+    <strong>Enumeration District</strong>: <%=@enumeration_district%>
+    <strong>Civil Parish</strong>: <%=@civil_parish%>
+    <strong>Ecclesiastical Parish</strong>: <%=@ecclesiastical_parish%>
+    <strong>Folio</strong>: <%=@folio%>
+    <strong>Page</strong>: <%=@page%>
+    <strong>Schedule</strong>: <%=@schedule%>
+
+    <% if @ee_address %>
+    <strong>Address</strong>: <%=@ee_address%>
+    <% end %>
+    .
+  </p>
+</section>

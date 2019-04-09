@@ -1,7 +1,7 @@
 <section>
   <p>
     Free UK Genealogy, “<%unless @entry['register_type'].include? "Unspecified"%><%=@entry['register_type']%><% else %>Register of unspecified type<% end %>, <%=@entry['church_name']%> Church, <%=@entry['place']%>, <%=@entry['county']%>” database,
-    FreeREG (<%=search_record_link(@search_record[:_id])%>) : accessed <%=@viewed_date%>), [data about
+    <%= application_name%> (<%=search_record_link(@search_record[:_id])%>) : accessed <%=@viewed_date%>), [data about
     <%if record_type(@entry).downcase == "baptism"%>
       <%=entitle(@entry['person_forename'])%> <%=entitle(@entry['father_surname'])%>
       <%=entitle(@entry['baptism_date'])%>

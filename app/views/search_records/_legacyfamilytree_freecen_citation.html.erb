@@ -1,0 +1,15 @@
+<section>
+  <p>
+    <strong>Footnote/Endnote Citation:</strong>
+    <br>
+    Free UK Genealogy, "<%=@census_database %>," database, <%= application_name%> (<%=search_record_link(@search_record[:_id])%> : accessed <%= @viewed_date %>), entry for <%=@searched_user_name %><% if !@is_family_head %> in household of <%= @family_head_name%><% end %>, <%= @user_address%>; citing PRO <%=@dep_series_code%>, The National Archives, UK
+    <br><br>
+    <strong>Subsequent Citation:</strong>
+    <br>
+    Free UK Genealogy, "<%=@census_database %>," database entry for, <%=@searched_user_name %> in census
+    <br><br>
+    <strong>Bibliography:</strong>
+    <br>
+    Free UK Genealogy, "<%=@census_database %>," Database. <%= application_name%>  <%=search_record_link(@search_record[:_id])%> <%= @viewed_date%>
+  </p>
+</section>
