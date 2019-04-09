@@ -15,6 +15,7 @@
 require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'
+require 'csv'
 
 if defined?(Bundler)
   # If you precompile assets before deploying to production, use this line
@@ -24,11 +25,18 @@ if defined?(Bundler)
 end
 
 module MyopicVicar
+  module TemplateSet
+    FREEREG = 'freereg'
+    FREECEN = 'freecen'
+    FREEBMD = 'freebmd'
+  end
+
   class Application < Rails::Application
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
-
+    app = config_for(:freeukgen_application)
+    config.template_set = app['template_set']
     # Custom directories with classes and modules you want to be autoloadable.
     # config.autoload_paths += %W(#{config.root}/extras)
 
@@ -50,7 +58,7 @@ module MyopicVicar
     config.assets.version = '1.0'
     # Change the path that assets are served from config.assets.prefix = "/assets"
     # Configure the default encoding used in templates for Ruby 1.9.
-    config.encoding = "utf-8"
+    config.encoding = 'utf-8'
 
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
@@ -61,31 +69,54 @@ module MyopicVicar
     # This is necessary if your schema can't be completely dumped by the schema dumper,
     # like if you have constraints or database-specific column types
     # config.active_record.schema_format = :sql
-    #config.assets.paths << Rails.root.join("app", "assets", "fonts")
+    # config.assets.paths << Rails.root.join("app", "assets", "fonts")
     # Enforce whitelist mode for mass assignment.
     # This will create an empty whitelist of attributes available for mass-assignment for all models
     # in your app. As such, your models will need to explicitly whitelist or blacklist accessible
     # parameters by using an attr_accessible or attr_protected declaration.
-    #config.active_record.whitelist_attributes = true Remove as no longer relevant in rails 4.2
+    # Explodes in current rails    config.active_record.whitelist_attributes = true
+
+    # set config.template_set before asset directories are selected
+    # TODO: make bimodal
+    # config.template_set = TemplateSet::FREECEN
+
+    # set config.freexxx_display_name based on the template_set
+    if config.template_set == TemplateSet::FREECEN
+      config.freexxx_display_name = 'FreeCEN'
+    elsif config.template_set == TemplateSet::FREEREG
+      config.freexxx_display_name = 'FreeREG'
+    elsif config.template_set == TemplateSet::FREEBMD
+      config.freexxx_display_name = 'FreeBMD'
+    else
+      config.freexxx_display_name = 'FreeREG'
+    end
+
+    # Enable the asset pipeline
+    # config.assets.enabled = true  # commented out because already set above
+
+    # Version of your assets, change this if you want to expire all your assets
+    # config.assets.version = '1.0' # commented out because already set above
+
+    # config.active_record.whitelist_attributes = true Remove as no longer relevant in rails 4.2
     config.api_only = false
+
+    # make the designer's fonts available for the stylesheets
+    config.assets.paths << Rails.root.join('app', 'assets')
+    config.assets.paths << Rails.root.join('app', 'assets', 'fonts')
 
     config.generators do |g|
       g.orm :mongoid
     end
 
     config.before_configuration do
-      env_file = Rails.root.join("config", 'application.yml').to_s
-
-      if File.exists?(env_file)
+      env_file = Rails.root.join('config', 'application.yml').to_s
+      if File.exist?(env_file)
         YAML.load_file(env_file)[Rails.env].each do |key, value|
           ENV[key.to_s] = value
-        end # end YAML.load_file
-      end # end if File.exists?
-
-      mongo_config = "#{Rails.root}/config/mongo_config.yml"
-      if File.exists?(mongo_config)
-        MyopicVicar::MongoConfig = YAML.load_file(mongo_config)[Rails.env]
+        end
       end
-    end # end config.before_configuration
+      mongo_config = Rails.root.join('config', 'mongo_config.yml')
+      MyopicVicar::MongoConfig = YAML.load_file(mongo_config)[Rails.env] if File.exist?(mongo_config)
+    end
   end
 end
