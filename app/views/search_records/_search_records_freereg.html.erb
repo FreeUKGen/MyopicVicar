@@ -1,12 +1,21 @@
-<% title "Record Details #{@search_record[:freereg1_csv_entry_id]}" %>
+% title "Record Details #{@search_record[:freereg1_csv_entry_id]}" %>
 <section>
-  <p class="text--center"><%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn weight--light  btn--small" %> <%= link_to "New Search", new_search_query_path, :class => "btn weight--light  btn--small" %> <%= link_to "Back to Results", search_query_path(params[:search_id], :anchor => "#{@search_record[:_id]}"), :class => "btn  weight--light btn--small"%> <%= link_to "Previous Result", search_record_path(@previous_record, :search_id => @search_query), :class => "btn  weight--light btn--small" unless @previous_record.nil?%> <%= link_to "Next Result", search_record_path(@next_record, :search_id => @search_query), :class => "btn  weight--light btn--small" unless @next_record.nil?%> <%= link_to "Printable Format", show_print_version_search_record_path(@search_record[:_id], :search_id => @search_query), :class => "btn  weight--light btn--small"%> <%= link_to "Export as CSV", show_print_version_search_record_path(  @search_record[:_id],format: :csv, :search_id => @search_query),  :class => "btn  weight--light btn--small"%> <%= link_to "Export as JSON", show_print_version_search_record_path(  @search_record[:_id],format: :json, :search_id => @search_query),  :class => "btn  weight--light btn--small"%>
-    <% if Rails.application.config.citation.present?%>
-    <a href="#" id="citation-toggle" class="btn weight--light  btn--small citation-toggle">
-      Generate Citation
-    </a>
-    <%end%>
-  </p>
+  <% if @search_query.present? %>
+    <p class="text--center">
+      <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn weight--light  btn--small" %>
+      <%= link_to "New Search", new_search_query_path, :class => "btn weight--light  btn--small" %>
+      <%= link_to "Back to Results", search_query_path(@search_query, :anchor => "#{@search_record[:_id]}"), :class => "btn  weight--light btn--small"%>
+      <%= link_to "Previous Result", search_record_path(@previous_record), :class => "btn  weight--light btn--small" unless @previous_record.nil?%>
+      <%= link_to "Next Result", search_record_path(@next_record), :class => "btn  weight--light btn--small" unless @next_record.nil?%>
+      <%= link_to "Printable Format", show_print_version_search_record_path(@search_record[:_id]), :class => "btn  weight--light btn--small"%>
+      <%= link_to "Export as CSV", show_print_version_search_record_path(@search_record[:_id],format: :csv),  :class => "btn  weight--light btn--small"%>
+      <%= link_to "Export as JSON", show_print_version_search_record_path(@search_record[:_id],format: :json),  :class => "btn  weight--light btn--small"%>
+      <% if Rails.application.config.citation.present?%>
+      <a href="#" id="citation-toggle" class="btn weight--light  btn--small citation-toggle">
+        Generate Citation
+      </a>
+      <% end%>
+    </p>
 
   <div id="citation-dropdown" class="citation-dropdown text--center">
    <p>Please choose a citation type :</p>
