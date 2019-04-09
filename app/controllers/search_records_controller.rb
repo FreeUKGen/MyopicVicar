@@ -186,8 +186,8 @@ class SearchRecordsController < ApplicationController
         flash.keep
         return false
       end
-      true
     end
+    true
   end
 
   def viewed

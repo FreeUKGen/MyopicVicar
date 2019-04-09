@@ -53,7 +53,7 @@
           <tr id="<%=search_record.id%>">
           <% unless print_friendly %>
             <td>
-              <%= link_to "Detail", search_record_path(search_record.id, :search_id => @search_query), :title => "Row #{n}, details for #{search_record.transcript_names.first['first_name']} #{search_record.transcript_names.first['last_name']}", :class => "btn weight--light btn--small" %><br />
+              <%= link_to "Detail", search_record_path(search_record.id, :title => "Row #{n}, details for #{search_record.transcript_names.first['first_name']} #{search_record.transcript_names.first['last_name']}", :class => "btn weight--light btn--small" %><br />
               <i><%= viewed(@search_query,search_record) %></i>
             </td>
           <% end %>
@@ -64,7 +64,7 @@
                 <% end%>
               <%= "#{name['first_name']} #{name['last_name']} " %>
             <% end%>
-          </td>        
+          </td>
           <td>
             <%= ChapmanCode::name_from_code(search_record.birth_chapman_code) %>
           </td>
@@ -84,6 +84,6 @@
         </tr>
       </tbody>
     <% end %>
-    </table>   
+    </table>
   </div>
 </section>
