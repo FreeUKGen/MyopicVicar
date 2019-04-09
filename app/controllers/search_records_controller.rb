@@ -139,7 +139,7 @@ class SearchRecordsController < ApplicationController
   def show_value_check
     messagea = 'We are sorry but the record you requested no longer exists; possibly as a result of some data being edited. You will need to redo the search with the original criteria to obtain the updated version.'
     warning = 'FREEREG::SEARCH::ERROR Missing entry for search record'
-    warninga = "#{application_name.upcase}::SEARCH::ERROR Missing parameter"
+    warninga = "#{MyopicVicar::Application.config.freexxx_display_name.upcase}::SEARCH::ERROR Missing parameter"
     if params[:id].blank?
       flash[:notice] = messagea
       logger.warn(warninga)
