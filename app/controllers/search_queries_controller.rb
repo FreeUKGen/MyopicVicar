@@ -18,7 +18,7 @@ class SearchQueriesController < ApplicationController
   rescue_from Mongo::Error::OperationFailure, with: :search_taking_too_long
   rescue_from Mongoid::Errors::DocumentNotFound, with: :missing_document
   rescue_from ActionController::UnknownFormat, with: :github_camo
-  rescue_from ActionView::Template::Error, with: :missing_template
+#  rescue_from ActionView::Template::Error, with: :missing_template
   rescue_from Timeout::Error, with: :search_taking_too_long
   RECORDS_PER_PAGE = 100
 
