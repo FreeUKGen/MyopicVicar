@@ -552,9 +552,9 @@ class SearchRecord
     particles << search_dates.first
     # join and clean
     friendly = particles.join('-')
-    friendly.gsub(/\W/, '-')
-    friendly.gsub(/-+/, '-')
-    friendly.downcase
+    friendly.gsub!(/\W/, '-')
+    friendly.gsub!(/-+/, '-')
+    friendly.downcase!
   end
 
 

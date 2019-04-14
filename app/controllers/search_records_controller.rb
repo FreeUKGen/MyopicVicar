@@ -89,7 +89,9 @@ class SearchRecordsController < ApplicationController
     if session[:query].blank? || params[:ucf] == 'true'
       @search_record = SearchRecord.find(params[:id])
     else
-      response, @next_record, @previous_record = @search_query.next_and_previous_records(params[:id])
+      response, next_record_id, previous_record_id = @search_query.next_and_previous_records(params[:id])
+      @next_record = SearchRecord.where(:id => next_record_id).first
+      @previous_record = SearchRecord.where(:id => previous_record_id).first
       @search_record = response ? @search_query.locate(params[:id]) : nil
       return false unless response
     end
