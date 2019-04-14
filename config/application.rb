@@ -80,15 +80,19 @@ module MyopicVicar
     # TODO: make bimodal
     # config.template_set = TemplateSet::FREECEN
 
-    # set config.freexxx_display_name based on the template_set
+    # set config.freexxx_display_name based on the template_set and load the appropriate assets path
     if config.template_set == TemplateSet::FREECEN
       config.freexxx_display_name = 'FreeCEN'
+      config.assets.paths << Rails.root.join('app', 'assets_freecen')
     elsif config.template_set == TemplateSet::FREEREG
       config.freexxx_display_name = 'FreeREG'
+      config.assets.paths << Rails.root.join('app', 'assets_freereg')
     elsif config.template_set == TemplateSet::FREEBMD
       config.freexxx_display_name = 'FreeBMD'
+      config.assets.paths << Rails.root.join('app', 'assets_freebmd')
     else
       config.freexxx_display_name = 'FreeREG'
+      config.assets.paths << Rails.root.join('app', 'assets_freereg')
     end
 
     # Enable the asset pipeline
