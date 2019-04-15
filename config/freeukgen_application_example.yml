@@ -6,3 +6,6 @@ test:
 
 production:
   template_set: 'freereg'
+
+# valid options are freecen, freereg, freebmd others can be added into application.rb
+
