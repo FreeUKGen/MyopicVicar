@@ -1,10 +1,10 @@
 
 <section>
   <p>
-      "<%=@census_database %>" database, <%= application_name%> (<%=search_record_link(@search_record[:_id])%> : viewed <%= @viewed_date %>),
+      "<%=@census_database %>, <%=@cen_year%>" database, <%= application_name%> (<%=search_record_link(@search_record[:_id])%> : viewed <%= @viewed_date %>),
       <%=@searched_user_name %><% if !@is_family_head %> in household of <%= @family_head_name%><% else%> head of household <% end %>,
       <%= @user_address%>;
-      from <%= @cen_year%> "England, Scotland and Wales census," database and images;
+      from <%= @cen_year%> <%=@census_database %> database and images;
       citing PRO <%=@dep_series_code%>/<%=@piece%>, Folio <%=@folio%>, Page <%=@page%>, Schedule <%=@schedule%>, The National Archives, Kew, Surrey.
   </p>
 </section>

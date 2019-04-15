@@ -244,11 +244,7 @@ class SearchRecordsController < ApplicationController
         @ee_address = @dweling_values[11]
 
         #census database description
-        @census_database = "England and Wales Census, "
-        if @search_record.place["country"].eql? "Scotland"
-          @census_database = "Scotland Census, "
-        end
-        @census_database += @cen_year
+        @census_database = 'England, Scotland and Wales Census'
 
         @searched_user_name = @search_record.transcript_names.first['first_name'] + " " + @search_record.transcript_names.first['last_name']
         @viewed_date = Date.today.strftime("%e %b %Y")
