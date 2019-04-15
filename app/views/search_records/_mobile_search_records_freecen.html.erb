@@ -8,7 +8,7 @@
     <%= link_to "Previous Dwelling", search_record_path(@search_record,  :page_number => @page_number, :dwel => @cen_prev_dwelling), :class => "btn  btn--small" unless @cen_prev_dwelling.nil?%>
     <%= link_to "Next Dwelling", search_record_path(@search_record,  :page_number => @page_number, :dwel => @cen_next_dwelling), :class => "btn  btn--small" unless @cen_next_dwelling.nil?%>
      <% if Rails.application.config.citation.present?%>
-      <a href="#" id="citation-toggle" class="btn weight--light  btn--small citation-toggle">
+      <a href="#" id="citation-toggle" class="btn btn--small citation-toggle">
         Generate Citation
       </a>
       <% end%>

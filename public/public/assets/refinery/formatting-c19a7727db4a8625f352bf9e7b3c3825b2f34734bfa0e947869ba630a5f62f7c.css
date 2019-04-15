@@ -1,0 +1,66 @@
+/* Default error colouring */
+/* line 3, C:/Ruby24-x64/lib/ruby/gems/2.4.0/gems/refinerycms-core-4.0.3/app/assets/stylesheets/refinery/formatting.scss */
+article, nav, header, footer, aside, hgroup, section {
+  display: block;
+}
+
+/* line 7, C:/Ruby24-x64/lib/ruby/gems/2.4.0/gems/refinerycms-core-4.0.3/app/assets/stylesheets/refinery/formatting.scss */
+div.fieldWithErrors {
+  display: inline;
+}
+
+/* line 11, C:/Ruby24-x64/lib/ruby/gems/2.4.0/gems/refinerycms-core-4.0.3/app/assets/stylesheets/refinery/formatting.scss */
+#errorExplanation {
+  border-top: 3px solid #F27F7F;
+  background: #FFBEBE;
+  padding: 10px;
+}
+
+/* line 17, C:/Ruby24-x64/lib/ruby/gems/2.4.0/gems/refinerycms-core-4.0.3/app/assets/stylesheets/refinery/formatting.scss */
+#errorExplanation, #errorExplanation *, .fieldWithErrors, .fieldWithErrors * {
+  color: #9C2626;
+}
+
+/* Browser Hacks */
+/* line 22, C:/Ruby24-x64/lib/ruby/gems/2.4.0/gems/refinerycms-core-4.0.3/app/assets/stylesheets/refinery/formatting.scss */
+a {
+  /* remove borders from images */
+  /*
+  Firefox Dotted Line Fix
+    - http://sonspring.com/journal/removing-dotted-links
+  */
+}
+/* line 24, C:/Ruby24-x64/lib/ruby/gems/2.4.0/gems/refinerycms-core-4.0.3/app/assets/stylesheets/refinery/formatting.scss */
+a img {
+  border: 0px none;
+}
+/* line 31, C:/Ruby24-x64/lib/ruby/gems/2.4.0/gems/refinerycms-core-4.0.3/app/assets/stylesheets/refinery/formatting.scss */
+a:focus {
+  outline: none;
+}
+
+/*
+Clearfix docs
+ - Main docs: http://positioniseverything.net/easyclearing.html
+ - IE7 change: http://www.456bereastreet.com/archive/200603/new_clearing_method_needed_for_ie7/
+*/
+/* line 41, C:/Ruby24-x64/lib/ruby/gems/2.4.0/gems/refinerycms-core-4.0.3/app/assets/stylesheets/refinery/formatting.scss */
+.clearfix, section {
+  display: inline-block;
+}
+/* line 43, C:/Ruby24-x64/lib/ruby/gems/2.4.0/gems/refinerycms-core-4.0.3/app/assets/stylesheets/refinery/formatting.scss */
+.clearfix:after, section:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+
+/* Hide from IE Mac \*/
+/* line 53, C:/Ruby24-x64/lib/ruby/gems/2.4.0/gems/refinerycms-core-4.0.3/app/assets/stylesheets/refinery/formatting.scss */
+.clearfix, section {
+  display: block;
+}
+
+/* End hide from IE Mac */

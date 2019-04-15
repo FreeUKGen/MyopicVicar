@@ -1,0 +1,51 @@
+/* alignment styles */
+/* line 3, C:/Ruby24-x64/lib/ruby/gems/2.4.0/gems/refinerycms-wymeditor-2.0.0/app/assets/stylesheets/theme.css.scss */
+.text-align-left {
+  text-align: left;
+}
+
+/* line 6, C:/Ruby24-x64/lib/ruby/gems/2.4.0/gems/refinerycms-wymeditor-2.0.0/app/assets/stylesheets/theme.css.scss */
+.text-align-center {
+  text-align: center;
+}
+
+/* line 9, C:/Ruby24-x64/lib/ruby/gems/2.4.0/gems/refinerycms-wymeditor-2.0.0/app/assets/stylesheets/theme.css.scss */
+.text-align-right {
+  text-align: right;
+}
+
+/* line 12, C:/Ruby24-x64/lib/ruby/gems/2.4.0/gems/refinerycms-wymeditor-2.0.0/app/assets/stylesheets/theme.css.scss */
+.text-align-justify {
+  text-align: justify;
+}
+
+/* block alignment styles */
+/* line 17, C:/Ruby24-x64/lib/ruby/gems/2.4.0/gems/refinerycms-wymeditor-2.0.0/app/assets/stylesheets/theme.css.scss */
+.image-align-left {
+  float: left;
+  margin-right: 6px;
+  margin-bottom: 6px;
+}
+
+/* line 22, C:/Ruby24-x64/lib/ruby/gems/2.4.0/gems/refinerycms-wymeditor-2.0.0/app/assets/stylesheets/theme.css.scss */
+.image-align-right {
+  float: right;
+  margin-left: 6px;
+  margin-bottom: 6px;
+}
+
+/* font sizes */
+/* line 29, C:/Ruby24-x64/lib/ruby/gems/2.4.0/gems/refinerycms-wymeditor-2.0.0/app/assets/stylesheets/theme.css.scss */
+.font-size-small {
+  font-size: 0.75em;
+}
+
+/* line 32, C:/Ruby24-x64/lib/ruby/gems/2.4.0/gems/refinerycms-wymeditor-2.0.0/app/assets/stylesheets/theme.css.scss */
+.font-size-normal {
+  font-size: 1em;
+}
+
+/* line 35, C:/Ruby24-x64/lib/ruby/gems/2.4.0/gems/refinerycms-wymeditor-2.0.0/app/assets/stylesheets/theme.css.scss */
+.font-size-large {
+  font-size: 1.25em;
+}

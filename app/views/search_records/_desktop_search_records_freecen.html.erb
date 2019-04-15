@@ -13,7 +13,7 @@
     <% else %>
     <%= link_to "Printable Format", show_print_version_search_record_path(@search_record), :class => "btn  btn--small"%>
      <% if Rails.application.config.citation.present?%>
-      <a href="#" id="citation-toggle" class="btn weight--light  btn--small citation-toggle">
+      <a href="#" id="citation-toggle" class="btn btn--small citation-toggle">
         Generate Citation
       </a>
       <% end%>
