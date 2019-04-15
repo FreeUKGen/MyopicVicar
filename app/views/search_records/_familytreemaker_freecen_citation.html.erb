@@ -1,12 +1,12 @@
 <section>
   <p>
-    Source tite: <%=@census_database %> database
+    Source title: <%=@census_database %> database
     <br>
     Repository: The National Archives, Kew, Surrey
     <br>
     Citation detail:  PRO <%=@dep_series_code%>
     <br>
-    Citation text: <%=@searched_user_name %><% if !@is_family_head %> in household of <%= @family_head_name%><% end %>, <%= @user_address%>
+    Citation text: <%=@searched_user_name %><% if !@is_family_head %> in household of <%= @family_head_name%><% else%> head of household<% end %>, <%= @user_address%>
     <br>
     Web address:  <%=search_record_link(@search_record[:_id])%> viewed <%= @viewed_date %>
   </p>

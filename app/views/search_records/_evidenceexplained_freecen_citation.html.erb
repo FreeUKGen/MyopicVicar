@@ -1,6 +1,6 @@
 <section>
   <p>
-    Free UK Genealogy "<%=@census_database %>" database, <%= application_name%> (<%=search_record_link(@search_record[:_id])%> : accessed <%= @viewed_date %>) [data about <%=@searched_user_name %><% if !@is_family_head %> in household of <%= @family_head_name%><% end %>]; citing
+    Free UK Genealogy "<%=@census_database %>" database, <%= application_name%> (<%=search_record_link(@search_record[:_id])%> : accessed <%= @viewed_date %>) [data about <%=@searched_user_name %><% if !@is_family_head %> in household of <%= @family_head_name%><% else%> head of household<% end %>]; citing
     <strong>Piece</strong>: <%=@piece%>
     <strong>Place</strong>: <%=@place%>
     <strong>Enumeration District</strong>: <%=@enumeration_district%>
