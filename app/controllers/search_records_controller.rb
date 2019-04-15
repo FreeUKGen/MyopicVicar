@@ -199,30 +199,90 @@ class SearchRecordsController < ApplicationController
     redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
 
     if MyopicVicar::Application.config.template_set == 'freecen'
+
       @search_record = SearchRecord.record_id(params[:id]).first
       @individual = @search_record.freecen_individual
       @dwelling = @individual.freecen_dwelling if @individual
       @cen_year = ' '
-      @cen_piece = ' '
       @cen_chapman_code = ' '
+
       if @dwelling && @dwelling.freecen_piece
-        @dwelling_offset = 0
-        @dwelling_number = @dwelling.dwelling_number
         if !params[:dwel].nil?
           @dwelling = @dwelling.freecen_piece.freecen_dwellings.where(_id: params[:dwel]).first
           if @dwelling.nil?
             redirect_to new_search_query_path
             return
           end
-          @dwelling_offset = @dwelling.dwelling_number - @dwelling_number
-          @dwelling_number = @dwelling.dwelling_number
         end
         @cen_year = @dwelling.freecen_piece.year
-        @cen_piece = @dwelling.freecen_piece.piece_number.to_s
         @cen_chapman_code = @dwelling.freecen_piece.chapman_code
-        prev_next_dwellings = @dwelling.prev_next_dwelling_ids
-        @cen_prev_dwelling = prev_next_dwellings[0]
-        @cen_next_dwelling = prev_next_dwellings[1]
+        @dweling_values = @dwelling.dwelling_display_values(@cen_year,@cen_chapman_code)
+
+        #   ------------------------ Fields required for citation generation ------------------------
+        @user_address = ""
+        unless @dweling_values[11] == "-" || @dweling_values[11].nil? || @dweling_values[11].empty?
+          @user_address += @dweling_values[11]  + ", "
+        end
+        unless @dweling_values[2] == "-" || @dweling_values[2].nil? || @dweling_values[2].empty?
+          @user_address += @dweling_values[2]  + ", "
+        end
+        @county = @dweling_values[1].slice(0..(@dweling_values[1].index(' ')-1))
+        unless @county == "-" || @county.nil? || @county.empty?
+          @user_address += @county  + ", "
+        end
+        @user_address += @search_record.place["country"]
+
+        #evidence explained
+        @piece = @dweling_values[5]
+        @place = @dweling_values[2]
+        @enumeration_district = @dweling_values[6]
+        @civil_parish = @dweling_values[3]
+        @ecclesiastical_parish = @dweling_values[4]
+        @folio = @dweling_values[7]
+        @page = @dweling_values[8]
+        @schedule = @dweling_values[9]
+        @ee_address = @dweling_values[11]
+
+        #census database description
+        @census_database = "England and Wales Census, "
+        if @search_record.place["country"].eql? "Scotland"
+          @census_database = "Scotland Census, "
+        end
+        @census_database += @cen_year
+
+        @searched_user_name = @search_record.transcript_names.first['first_name'] + " " + @search_record.transcript_names.first['last_name']
+        @viewed_date = Date.today.strftime("%e %b %Y")
+        @viewed_year = Date.today.strftime("%Y")
+
+        @is_family_head = false
+        @family_head_name = nil
+
+        #checks whether the head of the house is the same person searched for
+        if @individual.individual_display_values(@cen_year,@cen_chapman_code)[2].eql? "Head"
+          @is_family_head = true
+        else
+          @family_head_name = @dwelling.freecen_individuals.asc(:sequence_in_household).first['forenames'] + " " + @dwelling.freecen_individuals.asc(:sequence_in_household).first['surname']
+        end
+
+        #Adds the department and series codes based on the citation year
+        case @cen_year
+        when "1841" || "1851"
+          @dep_series_code = "HO 107"
+        when "1861"
+          @dep_series_code = "RG 9"
+        when "1871"
+          @dep_series_code = "RG 10"
+        when "1881"
+          @dep_series_code = "RG 11"
+        when "1891"
+          @dep_series_code = "RG 12"
+        when "1901"
+          @dep_series_code = "RG 13"
+        when "1911"
+          @dep_series_code = "RG 14"
+        else
+          @dep_series_code = nil
+        end
 
       end
       @display_date = true
@@ -239,6 +299,7 @@ class SearchRecordsController < ApplicationController
     end
     respond_to do |format|
       @viewed_date = Date.today.strftime("%e %b %Y")
+      @viewed_year = Date.today.strftime("%Y")
       @type = params[:citation_type]
       format.html { render :citation, layout: false }
     end
