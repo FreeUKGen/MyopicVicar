@@ -1,3 +1,4 @@
+
 @charset "UTF-8";
 /*------------------------------------*\
     LAP_AND_UP.CSS
@@ -15,16 +16,22 @@
 /**
  * Site header
  */
- 
+
  .icon__<%= MyopicVicar::Application.config.template_set %> {
-  background-image: url('<%= path_to_image 'png/freecen.png'%>');
+  <% if MyopicVicar::Application.config.template_set == 'freereg' %>
+    background-image: url('<%= path_to_image 'png/freereg.png'%>');
+  <% elsif MyopicVicar::Application.config.template_set == 'freecen' %>
+    background-image: url('<%= path_to_image 'png/freecen.png'%>');
+  <% elsif MyopicVicar::Application.config.template_set == 'freebmd' %>
+    background-image: url('<%= path_to_image 'png/freebmd.png'%>');
+  <% end%>
   background-repeat: no-repeat;
   width: 274px;
   height: 87px;
   display: inline-block;
  *display: inline;
   zoom: 1;
-  
+
     @include manual-media-query(1090px) {
       @include vendor(background-size, 100%);
       width: 20%;
@@ -83,10 +90,10 @@
       width: 468px;
       height: 60px;
       margin-top: 13px;
-      background-position: -60px; 
+      background-position: -60px;
     }
       @include manual-media-query(710px) {
-    display: none; 
+    display: none;
   }
 
   }
