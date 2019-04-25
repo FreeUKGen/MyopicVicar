@@ -20,24 +20,24 @@ class TransregCsvfilesController < ApplicationController
     #lets check for existing file, save if required
     processing_time = @csvfile.estimate_time
     proceed = @csvfile.check_for_existing_file_and_save
-    logger.warn("FREEREG:UPLOAD: About to save file #{proceed}")
+    logger.warn("#{appname_upcase}:UPLOAD: About to save file #{proceed}")
     @csvfile.save if proceed
 
     if @csvfile.errors.any? || !proceed
       @result = "failure"
       @message = "The upload with file name #{@csvfile.file_name} was unsuccessful because #{@csvfile.errors.messages}"
-      logger.warn("FREEREG:UPLOAD: The upload with file name #{@csvfile.file_name} was unsuccessful because #{@csvfile.errors.messages}")
+      logger.warn("#{appname_upcase}:UPLOAD: The upload with file name #{@csvfile.file_name} was unsuccessful because #{@csvfile.errors.messages}")
     else
       batch = @csvfile.create_batch_unless_exists
       batch_processing = PhysicalFile.where(:userid => @csvfile.userid, :file_name => @csvfile.file_name,:waiting_to_be_processed => true).first
       if batch_processing.present?
         @result = "failure"
         @message = "Your file is currently waiting to be processed. It cannot be processed this way now"
-        logger.warn("FREEREG:CSV_FAILURE: Attempt to double process #{@csvfile.userid} #{@csvfile.file_name}")
+        logger.warn("#{appname_upcase}:CSV_FAILURE: Attempt to double process #{@csvfile.userid} #{@csvfile.file_name}")
         @csvfile.delete
       else
         range = File.join(@csvfile.userid,@csvfile.file_name)
-        logger.warn("FREEREG:UPLOAD: About to process the file #{processing_time}")
+        logger.warn("#{appname_upcase}:UPLOAD: About to process the file #{processing_time}")
         case
         when @user.person_role == "trainee"
           @result = "success"
@@ -49,14 +49,14 @@ class TransregCsvfilesController < ApplicationController
           rake_lock_file = File.join(Rails.root,"tmp","processing_rake_lock_file.txt")
           processor_initiation_lock_file = File.join(Rails.root,"tmp","processor_initiation_lock_file.txt")
           if File.exist?(rake_lock_file) || File.exist?(processor_initiation_lock_file)
-            logger.warn("FREEREG:CSV_PROCESSING: rake lock file #{rake_lock_file} or processor_initiation_lock_file #{processor_initiation_lock_file} already exists")
+            logger.warn("#{appname_upcase}:CSV_PROCESSING: rake lock file #{rake_lock_file} or processor_initiation_lock_file #{processor_initiation_lock_file} already exists")
             @result = "success"
             @message =  "The csv file #{ @csvfile.file_name} has been sent for processing . You will receive an email when it has been completed."
           else
             @result = "success"
-            logger.warn("FREEREG:CSV_PROCESSING: Initiating rake task for #{@csvfile.userid} #{@csvfile.file_name}")
+            logger.warn("#{appname_upcase}:CSV_PROCESSING: Initiating rake task for #{@csvfile.userid} #{@csvfile.file_name}")
             initiation_locking_file = File.new(processor_initiation_lock_file, "w")
-            logger.warn("FREEREG:CSV_PROCESSING: Created processor_initiation_lock_file #{processor_initiation_lock_file}")
+            logger.warn("#{appname_upcase}:CSV_PROCESSING: Created processor_initiation_lock_file #{processor_initiation_lock_file}")
             pid1 = Kernel.spawn("rake build:freereg_new_update[\"create_search_records\",\"waiting\",\"no\",\"a-9\"]")
             @message =  "The csv file #{ @csvfile.file_name} is being processed . You will receive an email when it has been completed."
           end
@@ -241,8 +241,7 @@ class TransregCsvfilesController < ApplicationController
   end
   def go_back(type,record)
     flash[:notice] = "The #{type} document you are trying to access does not exist."
-    appname = MyopicVicar::Application.config.freexxx_display_name.upcase
-    logger.info "#{appname}:ACCESS ISSUE: The #{type} document #{record} being accessed does not exist."
+    logger.info "#{appname_upcase}:ACCESS ISSUE: The #{type} document #{record} being accessed does not exist."
     redirect_to main_app.new_manage_resource_path
     return
   end

@@ -27,6 +27,14 @@ class ApplicationController < ActionController::Base
   require 'userid_role'
   require 'register_type'
 
+  def appname
+    MyopicVicar::Application.config.freexxx_display_name
+  end
+
+  def appname_upcase
+    appname.upcase
+  end
+
   def load_last_stat
     if session[:site_stats].blank?
       time = Time.now
@@ -60,7 +68,7 @@ class ApplicationController < ActionController::Base
     cookies.signed[:userid] = current_authentication_devise_user.userid_detail_id
     session[:userid_detail_id] = current_authentication_devise_user.userid_detail_id
     session[:devise] = current_authentication_devise_user.id
-    logger.warn "FREEREG::USER current  #{current_authentication_devise_user.username}"
+    logger.warn "#{appname_upcase}::USER current  #{current_authentication_devise_user.username}"
     scope = Devise::Mapping.find_scope!(resource_or_scope)
     home_path = "#{scope}_root_path"
     respond_to?(home_path, true) ? refinery.send(home_path) : main_app.new_manage_resource_path
@@ -147,7 +155,7 @@ class ApplicationController < ActionController::Base
 
   def go_back(type, record)
     flash[:notice] = "The #{type} document you are trying to access does not exist."
-    logger.info "FREEREG:ACCESS ISSUE: The #{type} document #{record} being accessed does not exist."
+    logger.info "#{appname_upcase}:ACCESS ISSUE: The #{type} document #{record} being accessed does not exist."
     redirect_to(main_app.new_manage_resource_path) && return
   end
 
@@ -157,31 +165,30 @@ class ApplicationController < ActionController::Base
   end
 
   def log_missing_document(message, doc1, doc2)
-    log_message = "FREEREG:PHC WARNING: aunable to find a document #{message}\n"
-    log_message += "FREEREG:PHC Time.now=\t\t#{Time.now}\n"
-    log_message += "FREEREG:PHC #{doc1}\n" if doc1.present?
-    log_message += "FREEREG:PHC #{doc2}\n" if doc2.present?
-    log_message += "FREEREG:PHC caller=\t\t#{caller.first}\n"
-    log_message += "FREEREG:PHC REMOTE_ADDR=\t#{request.env['REMOTE_ADDR']}\n"
-    log_message += "FREEREG:PHC REMOTE_HOST=\t#{request.env['REMOTE_HOST']}\n"
-    log_message += "FREEREG:PHC HTTP_USER_AGENT=\t#{request.env['HTTP_USER_AGENT']}\n"
-    log_message += "FREEREG:PHC REQUEST_URI=\t#{request.env['REQUEST_URI']}\n"
-    log_message += "FREEREG:PHC REQUEST_PATH=\t#{request.env['REQUEST_PATH']}\n"
+    log_message = "#{appname_upcase}:PHC WARNING: aunable to find a document #{message}\n"
+    log_message += "#{appname_upcase}:PHC Time.now=\t\t#{Time.now}\n"
+    log_message += "#{appname_upcase}:PHC #{doc1}\n" if doc1.present?
+    log_message += "#{appname_upcase}:PHC #{doc2}\n" if doc2.present?
+    log_message += "#{appname_upcase}:PHC caller=\t\t#{caller.first}\n"
+    log_message += "#{appname_upcase}:PHC REMOTE_ADDR=\t#{request.env['REMOTE_ADDR']}\n"
+    log_message += "#{appname_upcase}:PHC REMOTE_HOST=\t#{request.env['REMOTE_HOST']}\n"
+    log_message += "#{appname_upcase}:PHC HTTP_USER_AGENT=\t#{request.env['HTTP_USER_AGENT']}\n"
+    log_message += "#{appname_upcase}:PHC REQUEST_URI=\t#{request.env['REQUEST_URI']}\n"
+    log_message += "#{appname_upcase}:PHC REQUEST_PATH=\t#{request.env['REQUEST_PATH']}\n"
 
     logger.warn(log_message)
   end
 
   def log_possible_host_change
-    appname = MyopicVicar::Application.config.freexxx_display_name.upcase
-    log_message = "#{appname}:PHC WARNING: browser may have jumped across servers mid-session!\n"
-    log_message += "#{appname}:PHC Time.now=\t\t#{Time.now}\n"
-    log_message += "#{appname}:PHC params=\t\t#{params}\n"
-    log_message += "#{appname}:PHC caller=\t\t#{caller.first}\n"
-    log_message += "#{appname}:PHC REMOTE_ADDR=\t#{request.env['REMOTE_ADDR']}\n"
-    log_message += "#{appname}:PHC REMOTE_HOST=\t#{request.env['REMOTE_HOST']}\n"
-    log_message += "#{appname}:PHC HTTP_USER_AGENT=\t#{request.env['HTTP_USER_AGENT']}\n"
-    log_message += "#{appname}:PHC REQUEST_URI=\t#{request.env['REQUEST_URI']}\n"
-    log_message += "#{appname}:PHC REQUEST_PATH=\t#{request.env['REQUEST_PATH']}\n"
+    log_message = "#{appname_upcase}:PHC WARNING: browser may have jumped across servers mid-session!\n"
+    log_message += "#{appname_upcase}:PHC Time.now=\t\t#{Time.now}\n"
+    log_message += "#{appname_upcase}:PHC params=\t\t#{params}\n"
+    log_message += "#{appname_upcase}:PHC caller=\t\t#{caller.first}\n"
+    log_message += "#{appname_upcase}:PHC REMOTE_ADDR=\t#{request.env['REMOTE_ADDR']}\n"
+    log_message += "#{appname_upcase}:PHC REMOTE_HOST=\t#{request.env['REMOTE_HOST']}\n"
+    log_message += "#{appname_upcase}:PHC HTTP_USER_AGENT=\t#{request.env['HTTP_USER_AGENT']}\n"
+    log_message += "#{appname_upcase}:PHC REQUEST_URI=\t#{request.env['REQUEST_URI']}\n"
+    log_message += "#{appname_upcase}:PHC REQUEST_PATH=\t#{request.env['REQUEST_PATH']}\n"
 
     logger.warn(log_message)
   end
@@ -195,7 +202,7 @@ class ApplicationController < ActionController::Base
 
   def reject_access(user, action)
     flash[:notice] = 'You are not permitted to use this action'
-    logger.info "FREEREG:ACCESS ISSUE: The #{user} attempted to access #{action}."
+    logger.info "#{appname_upcase}:ACCESS ISSUE: The #{user} attempted to access #{action}."
     redirect_to(main_app.new_manage_resource_path) && return
   end
 
@@ -206,17 +213,17 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  helper_method :mobile_device?, :device_type
 
-  helper_method :mobile_device?
+  def device_type
+    request.env['mobvious.device_type']
+  end
+
   def mobile_device?
     # Season this regexp to taste. I prefer to treat iPad as non-mobile.
     request.user_agent =~ /Mobile|webOS/ && request.user_agent !~ /iPad/
   end
 
-  helper_method :device_type
-  def device_type
-    request.env['mobvious.device_type']
-  end
 
   def clean_session
     session.delete(:manage_user_origin)

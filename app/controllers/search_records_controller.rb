@@ -154,6 +154,7 @@ class SearchRecordsController < ApplicationController
         @search_record = SearchRecord.find(params[:id])
       else
         response, @next_record, @previous_record = @search_query.next_and_previous_records(params[:id])
+
         @search_record = response ? @search_query.locate(params[:id]) : nil
         return false unless response
       end

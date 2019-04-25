@@ -378,31 +378,6 @@ module ApplicationHelper
     content_tag :span, "You can visit the old FreeCEN website here -"
   end
 
-  def freecen1_link
-    link_to "https://freecen1.freecen.org.uk","https://freecen1.freecen.org.uk",class: "go", target: :_blank, title: 'Link opens in new tab'
-  end
-
-  def freecen1_text
-    ("#{freecen1_link_text.strip} #{freecen1_link.strip}").html_safe
-  end
-
-  def freecen2_survey_text1
-    content_tag :span, "FreeCEN2 is a work in progress;"
-  end
-
-  def freecen2_survey_link
-    link_to "we want your feedback ", "https://docs.google.com/a/freeukgenealogy.org.uk/forms/d/e/1FAIpQLSdT2291Wot-IdsP_Y2_w82BsP9WkqXfdTnX_8V-Y7g6pClqvg/viewform",
-      class: "go", target: :_blank, title: 'link opens in a new tab'
-  end
-
-  def freecen2_survey_text2
-    content_tag :span, "on all aspects so that we can make it better."
-  end
-
-  def freecen2_survey_full_text
-    ("#{freecen2_survey_text1.strip} #{freecen2_survey_link.strip} #{freecen2_survey_text2.strip}").html_safe
-  end
-
   def fullwidth_adsense
     case MyopicVicar::Application.config.template_set
     when 'freecen'

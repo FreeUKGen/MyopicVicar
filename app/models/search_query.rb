@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class SearchQuery
   include Mongoid::Document
   include Mongoid::Timestamps::Created::Short
@@ -6,6 +7,9 @@ class SearchQuery
   require 'freereg_options_constants'
   require 'name_role'
   require 'date_parser'
+  require 'app'
+
+
   # consider extracting this from entities
   module SearchOrder
     TYPE='record_type'
@@ -430,24 +434,22 @@ class SearchQuery
   end
 
   def next_and_previous_records(current)
-    if self.search_result.records.respond_to?(:values)
-      search_results =   self.search_result.records.values
-      search_results = self.filter_name_types(search_results)
-      search_results = self.sort_results(search_results) unless search_results.nil?
-      record_number = locate_index(search_results,current)
-      next_record = nil
-      previous_record = nil
+    if search_result.records.respond_to?(:values)
+      search_results = search_result.records.values
+      search_results = filter_name_types(search_results)
+      search_results = sort_results(search_results) unless search_results.nil?
+      record_number = locate_index(search_results, current)
+      next_record_id = nil
+      previous_record_id = nil
       next_record_id = search_results[record_number + 1][:_id] unless record_number.nil? || search_results.nil? || record_number >= search_results.length - 1
-      previous_record_id = search_results[record_number - 1][:_id] unless search_results.nil?  || record_number.nil? || record_number == 0
-      next_record = SearchRecord.find(next_record_id)
-      previous_record = SearchRecord.find(previous_record_id)
+      previous_record_id = search_results[record_number - 1][:_id] unless search_results.nil? || record_number.nil? || record_number.zero?
+      next_record = SearchRecord.find(next_record_id) if next_record_id.present?
+      previous_record = SearchRecord.find(previous_record_id) if previous_record_id.present?
       response = true
-      return  response,next_record, previous_record
     else
       response = false
-      return response
     end
-
+    [response, next_record, previous_record]
   end
 
   def persist_additional_results(results)
@@ -594,13 +596,13 @@ class SearchQuery
     @search_parameters = search_params
     @search_index = SearchRecord.index_hint(@search_parameters)
     # @search_index = 'place_rt_sd_ssd' if query_contains_wildcard?
-    logger.warn("FREEREG:SEARCH_HINT: #{@search_index}")
-    self.update_attribute(:search_index, @search_index)
+    logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
+    update_attribute(:search_index, @search_index)
     # logger.warn @search_parameters.inspect
     records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
-    self.persist_results(records)
-    self.persist_additional_results(secondary_date_results) if (self.result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
-    search_ucf if can_query_ucf? && self.result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+    persist_results(records)
+    persist_additional_results(secondary_date_results) if App.name == 'FreeREG' && (result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+    search_ucf if can_query_ucf? && result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
     records
   end
 
@@ -610,7 +612,7 @@ class SearchQuery
     @secondary_search_params.delete_if { |key, value| key == :search_date }
     # @secondary_search_params[:record_type] = { '$in' => [RecordType::BAPTISM] }
     @search_index = SearchRecord.index_hint(@search_parameters)
-    logger.warn("FREEREG:SSD_SEARCH_HINT: #{@search_index}")
+    logger.warn("#{App.name_upcase}:SSD_SEARCH_HINT: #{@search_index}")
     secondary_records = SearchRecord.collection.find(@secondary_search_params).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     secondary_records
   end
@@ -627,12 +629,13 @@ class SearchQuery
   def search_ucf
     start_ucf_time = Time.now.utc
     ucf_index = SearchRecord.index_hint(ucf_params)
+    logger.warn("#{App.name_upcase}:UCF_SEARCH_HINT: #{ucf_index}")
     ucf_records = SearchRecord.collection.find(ucf_params).hint(ucf_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     ucf_records = filter_ucf_records(ucf_records)
-    self.ucf_filtered_count = ucf_records.length
-    self.search_result.ucf_records = ucf_records.map { |sr| sr.id }
-    self.runtime_ucf = (Time.now.utc - start_ucf_time) * 1000
-    self.save
+    ucf_filtered_count = ucf_records.length
+    search_result.ucf_records = ucf_records.map { |sr| sr.id }
+    runtime_ucf = (Time.now.utc - start_ucf_time) * 1000
+    save
   end
 
   def sort_results(results)
