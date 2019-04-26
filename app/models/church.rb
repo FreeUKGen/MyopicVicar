@@ -22,7 +22,7 @@ class Church
   embeds_many :alternatechurchnames
   accepts_nested_attributes_for :alternatechurchnames, allow_destroy: true,  reject_if: :all_blank
 
-  belongs_to :place, index: true
+  belongs_to :place, index: true, optional: true
   index({ place_id: 1, church_name: 1 })
 
   ############################################################# class methods
