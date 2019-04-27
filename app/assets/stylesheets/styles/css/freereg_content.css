@@ -229,7 +229,7 @@ div.boolean, .simple_form input[type='submit'] {
    margin-left: 15px;
   vertical-align: -3px;
   margin-right: 20px;
- 
+
 }
 
 div.boolean label, label.collection_radio_buttons {
@@ -237,7 +237,7 @@ div.boolean label, label.collection_radio_buttons {
   float: none;
 }
 
-.simple_form .collection_radio 
+.simple_form .collection_radio
 {
   margin-right: 10px;
   margin-left: 2px;
@@ -306,7 +306,7 @@ label.collection_check_boxes {
 
 .overide_selection_field_width{
   padding: 16px;
-    width: 40% !important;  
+    width: 40% !important;
 }
 .simple_form_bgcolour{background: #C2FFD1; color: #000000; font-weight: bold;}
 .simple_form_position {
@@ -315,7 +315,7 @@ label.collection_check_boxes {
 
 }
 .simple_form_uneditable {
-  border:0 none; 
+  border:0 none;
   background: #f9f9f9;
   font-weight: bold;
 }
@@ -335,18 +335,18 @@ label.collection_check_boxes {
 
 /* Used for spam trap
 -------------------------------------------------*/
-.betterstyling { display: none; visibility: hidden; } 
+.betterstyling { display: none; visibility: hidden; }
 
 .scrollable {
     overflow: auto;
-    max-height: 400px;  
+    max-height: 400px;
 }
 .strong {
   font-weight: bold;
 }
 .fixed-headers table { border-bottom: 1px solid #ccc; }
 .fixed-headers th:first-child { padding-left: 14px; }
-.fixed-headers th:last-child, 
+.fixed-headers th:last-child,
 .fixed-headers .scrollable td:last-child { padding-right: 14px; }
 .fixed-headers .scrollable table { border-top: none; border-bottom: none; }
 
@@ -366,7 +366,7 @@ dl.table-display
   padding: 0;
   border-bottom: 1px solid #999;
 }
-  
+
 .table-display dt
 {
   clear: left;
@@ -377,7 +377,7 @@ dl.table-display
   border-top: 1px solid #999;
   font-weight: bold;
 }
-  
+
 .table-display dd
 {
   float: left;
@@ -387,7 +387,7 @@ dl.table-display
   border-top: 1px solid #999;
 }
 .just--left td{
-  text-align: left  !important; 
+  text-align: left  !important;
   padding:6px;
 }
 .t3 {
@@ -488,7 +488,7 @@ li.choice label { font-weight: normal; margin-bottom: 7px; }
 }
 .ttip:focus { outline: none; }
 .ttip img:hover + .ttip__text,
-.ttip span:hover + .ttip__text, 
+.ttip span:hover + .ttip__text,
 .ttip:focus .ttip__text {
   visibility: visible;
 }
@@ -511,8 +511,8 @@ input::placeholder               { color: #585858; font-style: italic; opacity: 
 
 /* Tables - accessibility changes - 24 May 2017 */
 .table--bordered th, .table--bordered td { padding: 14px 5px !important; }
-#search-result .table--data, 
-#search-detail .table--data { line-height: 1.3; width: auto; margin: 0 auto; } 
+#search-result .table--data,
+#search-detail .table--data { line-height: 1.3; width: auto; margin: 0 auto; }
 #search-detail tbody td {
   padding-left: 14px !important;
   padding-right: 14px !important;
@@ -538,8 +538,8 @@ dl.table-display dt { width: 4em; }
 dl.table-display dd { width: calc(100% - 4em); }
 
 table.center50 {
-    width:50%; 
-    margin-left:25%; 
+    width:50%;
+    margin-left:25%;
     margin-right:25%;
   }
 
@@ -598,7 +598,7 @@ table.center50 {
   text-align: center;
 }
 
-.inputForm input[type="submit"], 
+.inputForm input[type="submit"],
 .inputForm input[type="button"] {
   background: transparent;
   border: none;
@@ -658,7 +658,6 @@ div#cookieText {
   color: rgb(255, 249, 249);
 }
 
-}
 div#cookieAcceptButton {
   margin-top:5px;
 }
