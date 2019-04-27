@@ -1304,10 +1304,8 @@ crumb :edit_image_server_image do |user,syndicate,county,register,source,group,i
   parent :show_image_server_image, user,syndicate,county,register,source,group,image
 end
 
-
-
 # breadcrumb for GAP
-crumb :gaps do |user,syndicate,county,register,source|
+crumb :gaps do |user, syndicate, county, register, source|
   link 'GAPs', index_gap_path(source)
   parent :show_image_source, register,source
 end
@@ -1326,7 +1324,6 @@ crumb :edit_gap do |user,syndicate,county,register,source|
   link 'Edit GAP'
   parent :gaps, user,syndicate,county,register,source
 end
-
 
 crumb :gap_reasons do
   link 'GAP Reasons', gap_reasons_path
@@ -1348,6 +1345,20 @@ crumb :create_gap_reason do |gap_reason|
   parent :gap_reasons
 end
 
+crumb :search_query_report do
+  link 'Search Performance', search_query_report_path
+  parent :root
+end
+
+crumb :show_search_query do |query|
+  link 'Search Query Report', show_query_search_query_path(query)
+  parent :search_query_report
+end
+
+crumb :search_query_analysis do |query|
+  link 'Search Query Report', analyze_search_query_path(query)
+  parent :search_query_report
+end
 
 # crumb :projects do
 #   link 'Projects', projects_path

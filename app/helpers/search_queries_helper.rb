@@ -10,9 +10,9 @@ module SearchQueriesHelper
       search_year
     else
       if record_type == RecordType::CENSUS_1841 && search_year > "1826"
-        "#{search_year.to_i - 3} - #{search_year.to_i + 2}"              
+        "#{search_year.to_i - 3} - #{search_year.to_i + 2}"
       else
-        "#{search_year.to_i - 1} - #{search_year}"      
+        "#{search_year.to_i - 1} - #{search_year}"
       end
     end
   end
@@ -49,7 +49,7 @@ module SearchQueriesHelper
     end
     county
   end
-  
+
   def transcript_date(search_record)
     transcript_dates = search_record.transcript_dates
     transcript_dates.each do |transcript_date|
@@ -61,9 +61,9 @@ module SearchQueriesHelper
   def format_for_line_breaks (names)
     place = ' '
     name_parts = names[0].split(') ')
-    case 
+    case
     when name_parts.length == 1
-    (place, church) = names[0].split(' (')
+      (place, church) = names[0].split(' (')
     when name_parts.length == 2
       place = name_parts[0] + ")"
       name_parts[1][0] = ""
@@ -85,4 +85,13 @@ module SearchQueriesHelper
     return loc
   end
 
+  def place_name_from_id(ids)
+    place_names = []
+    ids.each do |id|
+      place = Place.id(id).first
+      place_name = place.present? ? place.place_name : place_name = ''
+      place_names << place_name
+    end
+    place_names
+  end
 end

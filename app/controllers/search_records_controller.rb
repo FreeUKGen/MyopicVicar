@@ -30,6 +30,7 @@ class SearchRecordsController < ApplicationController
 
   def show
     redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
+    @appname = appname
 
     @page_number = params[:page_number].to_i
     if MyopicVicar::Application.config.template_set == 'freecen'

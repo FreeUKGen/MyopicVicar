@@ -1,11 +1,14 @@
 <% title "Record Details #{@search_record[:freereg1_csv_entry_id]}" %>
-<% case MyopicVicar::Application.config.freexxx_display_name %>
-  <% when 'FreeCEN'%>
-    <% if device_type == :desktop || device_type == :tablet %>
-      <%= render(:partial => app_partial("desktop")) %>
-    <% else %>
-      <%= render(:partial => app_partial("mobile")) %>
-    <% end %>
-  <% when 'FreeREG' %>
-    <%= render(:partial => app_partial('show')) %>
-  <% end %>
+<% case @appname
+  %>
+<% when 'FreeCEN'%>
+<% if device_type == :desktop || device_type == :tablet %>
+  <%= render(:partial => app_partial("desktop")) %>
+<% else %>
+  <%= render(:partial => app_partial("mobile")) %>
+<% end %>
+<% when 'FreeREG' %>
+<%= render(:partial => app_partial('show')) %>
+<% when 'FreeBMD' %>
+<%= render html: helpers.tag.strong('Display for FreeBMD not yet implemented') %>
+<% end %>

@@ -23,8 +23,6 @@ module ApplicationHelper
     template_set = MyopicVicar::Application.config.template_set
     base_template = File.basename(partial)
     app_specific_template = base_template.sub(/$/, "_#{template_set}")
-    #raise app_specific_template.inspect
-
     app_specific_template
   end
 
@@ -32,10 +30,9 @@ module ApplicationHelper
     template_set = MyopicVicar::Application.config.template_set
     base_template = File.basename(partial)
     app_specific_template = base_template.sub(/$/, "_search_records_#{template_set}")
-    #raise app_specific_template.inspect
-
     app_specific_template
   end
+
   def application_name
     MyopicVicar::Application.config.freexxx_display_name
   end
