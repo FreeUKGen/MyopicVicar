@@ -1,6 +1,5 @@
 class OpenController < ApplicationController
   skip_before_action :require_login
-  skip_before_action :require_cookie_directive
 
   FREEREG_RECORD_TYPE_DESCRIPTION = "baptisms, marriages and burials"
 
@@ -22,7 +21,7 @@ class OpenController < ApplicationController
     @county = params[:county]
     chapman_code = ChapmanCode.code_from_name(@county)
     place_name = params[:place]
-    
+
     @place = Place.where(:place_name => place_name, :chapman_code => chapman_code).first
     @record_types_display = FREEREG_RECORD_TYPE_DESCRIPTION
     @open_surnames = @place.open_names_per_place.where(:count.gt => MIN_SURNAMES_PER_PLACE)
@@ -34,10 +33,10 @@ class OpenController < ApplicationController
     chapman_code = ChapmanCode.code_from_name(@county)
     place_name = params[:place]
     @surname = params[:surname]
-    
+
     @place = Place.where(:place_name => place_name, :chapman_code => chapman_code).first
     @record_types_display = FREEREG_RECORD_TYPE_DESCRIPTION
-    
+
     @search_query = SearchQuery.new
     @search_query.last_name = @surname
     @search_query.places << @place
@@ -49,6 +48,6 @@ class OpenController < ApplicationController
 
   def places_for_county_surname
   end
-  
-  
+
+
 end
