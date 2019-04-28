@@ -1,20 +1,17 @@
 <section>
   <p class="text--center">
-    <%= link_to "New Search", new_search_query_path, :class => "btn  btn--small" %>  <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  btn--small" %> <%= link_to "Back to Results", search_query_path(@search_query, :page_number => @page_number, :anchor => "#{@search_record.id}"), :class => "btn  btn--small"%>
-    <%= link_to "Previous Result", friendly_search_record_path(@previous_record, @previous_record.friendly_url), :class => "btn  weight--light btn--small" unless @previous_record.nil?%>
-    <%= link_to "Next Result", friendly_search_record_path(@next_record, @next_record.friendly_url), :class => "btn  weight--light btn--small" unless @next_record.nil?%>
-    <%= link_to "Previous Dwelling", search_record_path(@search_record, :page_number => @page_number, :dwel => @cen_prev_dwelling), :class => "btn  btn--small" unless @cen_prev_dwelling.nil?%>
-    <%= link_to "Next Dwelling", search_record_path(@search_record, :page_number => @page_number, :dwel => @cen_next_dwelling), :class => "btn  btn--small" unless @cen_next_dwelling.nil?%>
-    <% if @dwelling_offset && 0 != @dwelling_offset %>
-      <%= link_to "Printable Format", show_print_version_search_record_path(@search_record, :page_number => @page_number, :dwel => @dwelling.id), :class => "btn  btn--small"%>
-    <% else %>
-      <%= link_to "Printable Format", show_print_version_search_record_path(@search_record), :class => "btn  btn--small"%>
-      <% if Rails.application.config.citation.present?%>
-        <a href="#" id="citation-toggle" class="btn btn--small citation-toggle">
-          Generate Citation
-        </a>
-      <% end%>
-    <% end %>
+    <% if @search_query.present? %>
+      <%= link_to "New Search", new_search_query_path, :class => "btn  btn--small" %>  <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  btn--small" %> <%= link_to "Back to Results", search_query_path(@search_query, :page_number => @page_number, :anchor => "#{@search_record.id}"), :class => "btn  btn--small"%>
+      <%= link_to "Previous Result", friendly_search_record_path(@previous_record, @previous_record.friendly_url), :class => "btn  weight--light btn--small" unless @previous_record.nil?%>
+      <%= link_to "Next Result", friendly_search_record_path(@next_record, @next_record.friendly_url), :class => "btn  weight--light btn--small" unless @next_record.nil?%>
+      <%= link_to "Previous Dwelling", search_record_path(@search_record, :page_number => @page_number, :dwel => @cen_prev_dwelling), :class => "btn  btn--small" unless @cen_prev_dwelling.nil?%>
+      <%= link_to "Next Dwelling", search_record_path(@search_record, :page_number => @page_number, :dwel => @cen_next_dwelling), :class => "btn  btn--small" unless @cen_next_dwelling.nil?%>
+      <% if @dwelling_offset && 0 != @dwelling_offset %>
+        <%= link_to "Printable Format", show_print_version_search_record_path(@search_record, :page_number => @page_number, :dwel => @dwelling.id), :class => "btn  btn--small"%>
+      <% else %>
+        <%= link_to "Printable Format", show_print_version_search_record_path(@search_record), :class => "btn  btn--small"%>    <% end %>
+      <a href="#" id="citation-toggle" class="btn btn--small citation-toggle">Generate Citation</a>
+    <% end%>
   </p>
   <div id="citation-dropdown" class="citation-dropdown text--center">
     <p>Please choose a citation type :</p>

@@ -10,141 +10,138 @@
       <%= link_to "Printable Format", show_print_version_search_record_path(@search_record[:_id]), :class => "btn  weight--light btn--small"%>
       <%= link_to "Export as CSV", show_print_version_search_record_path(@search_record[:_id],format: :csv),  :class => "btn  weight--light btn--small"%>
       <%= link_to "Export as JSON", show_print_version_search_record_path(@search_record[:_id],format: :json),  :class => "btn  weight--light btn--small"%>
-      <% if Rails.application.config.citation.present?%>
-        <a href="#" id="citation-toggle" class="btn weight--light  btn--small citation-toggle">
-          Generate Citation
-        </a>
-      <% end%>
+      <a href="#" id="citation-toggle" class="btn weight--light  btn--small citation-toggle">Generate Citation</a>
     </p>
-    <div id="citation-dropdown" class="citation-dropdown text--center">
-      <p>Please choose a citation type :</p>
-      <p class="text--center">
-        <%= link_to "WikiTree", show_citation_record_path(@search_record[:_id], :citation_type => "wikitree"), :class => "btn  btn--small weight--light" , :target => "_blank" %>
-        <%= link_to "Family Tree Maker", show_citation_record_path(@search_record[:_id], :citation_type => "familytreemaker"), :class => "btn  btn--small weight--light" , :target => "_blank" %>
-        <%= link_to "Legacy Family Tree", show_citation_record_path(@search_record[:_id], :citation_type => "legacyfamilytree"), :class => "btn  btn--small weight--light" , :target => "_blank" %>
-        <%= link_to "MLA", show_citation_record_path(@search_record[:_id], :citation_type => "mla"), :class => "btn  btn--small weight--light" , :target => "_blank" %>
-        <%= link_to "Chicago", show_citation_record_path(@search_record[:_id], :citation_type => "chicago"), :class => "btn  btn--small weight--light" , :target => "_blank" %>
-        <%= link_to "Evidence Explained", show_citation_record_path(@search_record[:_id], :citation_type => "evidenceexplained"), :class => "btn  btn--small weight--light" , :target => "_blank" %>
-        <%= link_to "Wikipedia", show_citation_record_path(@search_record[:_id], :citation_type => "wikipedia"), :class => "btn  btn--small weight--light" , :target => "_blank" %>
-      </p>
-    </div>
-    <style>
-      .citation-dropdown-list{
-        list-style-type: none;
+  <% end%>
+  <div id="citation-dropdown" class="citation-dropdown text--center">
+    <p>Please choose a citation type :</p>
+    <p class="text--center">
+      <%= link_to "WikiTree", show_citation_record_path(@search_record[:_id], :citation_type => "wikitree"), :class => "btn  btn--small weight--light" , :target => "_blank" %>
+      <%= link_to "Family Tree Maker", show_citation_record_path(@search_record[:_id], :citation_type => "familytreemaker"), :class => "btn  btn--small weight--light" , :target => "_blank" %>
+      <%= link_to "Legacy Family Tree", show_citation_record_path(@search_record[:_id], :citation_type => "legacyfamilytree"), :class => "btn  btn--small weight--light" , :target => "_blank" %>
+      <%= link_to "MLA", show_citation_record_path(@search_record[:_id], :citation_type => "mla"), :class => "btn  btn--small weight--light" , :target => "_blank" %>
+      <%= link_to "Chicago", show_citation_record_path(@search_record[:_id], :citation_type => "chicago"), :class => "btn  btn--small weight--light" , :target => "_blank" %>
+      <%= link_to "Evidence Explained", show_citation_record_path(@search_record[:_id], :citation_type => "evidenceexplained"), :class => "btn  btn--small weight--light" , :target => "_blank" %>
+      <%= link_to "Wikipedia", show_citation_record_path(@search_record[:_id], :citation_type => "wikipedia"), :class => "btn  btn--small weight--light" , :target => "_blank" %>
+    </p>
+  </div>
+  <style>
+    .citation-dropdown-list{
+      list-style-type: none;
+    }
+  </style>
+  <script>
+    document.getElementById("citation-dropdown").style.display = "none";
+    document.getElementById("citation-toggle").addEventListener("click", citationToggle);
+    /* When the user clicks on the button,
+    toggle between hiding and showing the dropdown content */
+    function citationToggle() {
+      var x = document.getElementById("citation-dropdown");
+    
+      if (x.style.display === "none") {
+          x.style.display = "block";
+      } else {
+          x.style.display = "none";
       }
-    </style>
-    <script>
-      document.getElementById("citation-dropdown").style.display = "none";
-      document.getElementById("citation-toggle").addEventListener("click", citationToggle);
-      /* When the user clicks on the button,
-      toggle between hiding and showing the dropdown content */
-      function citationToggle() {
-        var x = document.getElementById("citation-dropdown");
-      
-        if (x.style.display === "none") {
-            x.style.display = "block";
-        } else {
-            x.style.display = "none";
-        }
-      }
-    </script>
-  </section>
-  <section id="search-detail" >
-    <% if @entry %>
-      <% if @entry && @annotations && @annotations.length %>
-        <h2>Offline Transcriptions</h2>
-      <% end %>
-      <%= render 'entry_detail' %>
+    }
+  </script>
+</section>
+<section id="search-detail" >
+  <% if @entry %>
+    <% if @entry && @annotations && @annotations.length %>
+      <h2>Offline Transcriptions</h2>
     <% end %>
-    <div class="read-length push--bottom" style="margin-left: auto; margin-right: auto;">
-      <% unless defined?(@printable_format) && @printable_format %>
-        <center><a href="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/" class="freeREG" id="donate"><%= DonateIconHelper::DONATE_ICON.html_safe %></a></center>
-        <p class="push-half--bottom">While most other genealogy sites charge you to find and read records, <b style= "color: #009f98">FreeReg</b> is dedicated to keeping our searches free. A small donation towards our costs would really help us keep it that way. </p>
-      <% end %>
-    </div>
-    <% if @annotations && @annotations.length > 0 %>
-      <table class="table--bordered table--data">
-        <thead>
-          <tr>
-            <td colspan="2">
-              <h2>Online Transcriptions</h2>
-            </td>
-          </tr>
-        </thead>
-        <tbody>
-          <% @annotations.each do |annotation| %>
-            <% annotation.attributes.keys.each do |field| %>
-              <% if annotation[field] %>
+    <%= render 'entry_detail' %>
+  <% end %>
+  <div class="read-length push--bottom" style="margin-left: auto; margin-right: auto;">
+    <% unless defined?(@printable_format) && @printable_format %>
+      <center><a href="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/" class="freeREG" id="donate"><%= DonateIconHelper::DONATE_ICON.html_safe %></a></center>
+      <p class="push-half--bottom">While most other genealogy sites charge you to find and read records, <b style= "color: #009f98">FreeReg</b> is dedicated to keeping our searches free. A small donation towards our costs would really help us keep it that way. </p>
+    <% end %>
+  </div>
+  <% if @annotations && @annotations.length > 0 %>
+    <table class="table--bordered table--data">
+      <thead>
+        <tr>
+          <td colspan="2">
+            <h2>Online Transcriptions</h2>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <% @annotations.each do |annotation| %>
+          <% annotation.attributes.keys.each do |field| %>
+            <% if annotation[field] %>
+              <tr>
+                <td><%= field.gsub('_',' ').capitalize %></td>
+                <td><%= annotation[field] %></td>
+              </tr>
+            <% end %>
+          <% end %>
+          <% transcription = annotation.transcription %>
+          <% if transcription %>
+            <% transcription.attributes.keys.each do |field| %>
+              <% if transcription[field] %>
                 <tr>
                   <td><%= field.gsub('_',' ').capitalize %></td>
-                  <td><%= annotation[field] %></td>
+                  <td><%= transcription[field] %></td>
                 </tr>
               <% end %>
             <% end %>
-            <% transcription = annotation.transcription %>
-            <% if transcription %>
-              <% transcription.attributes.keys.each do |field| %>
-                <% if transcription[field] %>
-                  <tr>
-                    <td><%= field.gsub('_',' ').capitalize %></td>
-                    <td><%= transcription[field] %></td>
-                  </tr>
+            <tr>
+              <td>Image</td>
+              <td>
+                <% if transcription.asset.thumbnail_location %>
+                  <%= link_to(image_tag(transcription.asset.thumbnail_location), transcription.asset.location) %>
+                <% else %>
+                  <%= link_to("Image", transcription.asset.location) %>
                 <% end %>
-              <% end %>
-              <tr>
-                <td>Image</td>
-                <td>
-                  <% if transcription.asset.thumbnail_location %>
-                    <%= link_to(image_tag(transcription.asset.thumbnail_location), transcription.asset.location) %>
-                  <% else %>
-                    <%= link_to("Image", transcription.asset.location) %>
-                  <% end %>
-                </td>
-              </tr>
-            <% end %>
+              </td>
+            </tr>
           <% end %>
-        </tbody>
-      </table>
-    <% end%>
-    <% unless params[:debug].blank? %>
-      <table class="table--bordered table--data">
-        <thead>
-          <tr>
-            <td colspan="2">
-              <h1>Record</h1>
-            </td>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Primary names</td>
-            <td>
-              <% @search_record.primary_names.each do |name| %>
-                first_name: <%= name.first_name %><br/>
-                last_name: <%= name.last_name %><br/>
-                origin: <%= name.origin %><br/>
-              <% end %>
-            </td>
-          </tr>
-          <tr>
-            <td>Other family names</td>
-            <td>
-              <% @search_record.inclusive_names.each do |name| %>
-                first_name: <%= name.first_name %><br/>
-                last_name: <%= name.last_name %><br/>
-                origin: <%= name.origin %><br/>
-              <% end %>
-            </td>
-          </tr>
-          <% @search_record.ordered_display_fields.each do |field| %>
-            <% if @search_record[field] %>
-              <tr>
-                <td><%= field.gsub('_',' ').capitalize %></td>
-                <td><%= @search_record[field] %></td>
-              </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end%>
+  <% unless params[:debug].blank? %>
+    <table class="table--bordered table--data">
+      <thead>
+        <tr>
+          <td colspan="2">
+            <h1>Record</h1>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Primary names</td>
+          <td>
+            <% @search_record.primary_names.each do |name| %>
+              first_name: <%= name.first_name %><br/>
+              last_name: <%= name.last_name %><br/>
+              origin: <%= name.origin %><br/>
             <% end %>
+          </td>
+        </tr>
+        <tr>
+          <td>Other family names</td>
+          <td>
+            <% @search_record.inclusive_names.each do |name| %>
+              first_name: <%= name.first_name %><br/>
+              last_name: <%= name.last_name %><br/>
+              origin: <%= name.origin %><br/>
+            <% end %>
+          </td>
+        </tr>
+        <% @search_record.ordered_display_fields.each do |field| %>
+          <% if @search_record[field] %>
+            <tr>
+              <td><%= field.gsub('_',' ').capitalize %></td>
+              <td><%= @search_record[field] %></td>
+            </tr>
           <% end %>
-        </tbody>
-      </table>
-    <% end %>
-  </section>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</section>
