@@ -73,7 +73,7 @@ class SearchQueriesController < ApplicationController
 
     @search_query = SearchQuery.new(search_params.delete_if { |_k, v| v.blank? })
     adjust_search_query_parameters
-    render :new unless @search_query.save
+    render :new && return unless @search_query.save
 
     session[:query] = @search_query.id
     @search_results = @search_query.search
