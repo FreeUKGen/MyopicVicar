@@ -73,11 +73,14 @@ class SearchQueriesController < ApplicationController
 
     @search_query = SearchQuery.new(search_params.delete_if { |_k, v| v.blank? })
     adjust_search_query_parameters
-    render :new && return unless @search_query.save
-
-    session[:query] = @search_query.id
-    @search_results = @search_query.search
-    redirect_to search_query_path(@search_query)
+    if @search_query.save
+      session[:query] = @search_query.id
+      @search_results = @search_query.search
+      redirect_to search_query_path(@search_query)
+    else
+      message = 'Failed to save search. Please Contact Us with search criteria used and topic of Website Problem'
+      redirect_back(fallback_location: new_search_query_path, notice: message)
+    end
   end
 
   def edit
