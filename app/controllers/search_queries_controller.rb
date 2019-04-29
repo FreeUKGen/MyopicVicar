@@ -78,8 +78,9 @@ class SearchQueriesController < ApplicationController
       @search_results = @search_query.search
       redirect_to search_query_path(@search_query)
     else
-      message = 'Failed to save search. Please Contact Us with search criteria used and topic of Website Problem'
-      redirect_back(fallback_location: new_search_query_path, notice: message)
+      #message = 'Failed to save search. Please Contact Us with search criteria used and topic of Website Problem'
+      #redirect_back(fallback_location: new_search_query_path, notice: message)
+      render :new
     end
   end
 
