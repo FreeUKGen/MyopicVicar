@@ -38,7 +38,7 @@ class Place
   field :disabled, type: String, default: "false"
   field :master_place_lat, type: String
   field :master_place_lon, type: String
-  field :error_flag,type: String, default: nil
+  field :error_flag, type: String, default: nil
   field :data_present, type: Boolean, default: false
   field :cen_data_years, type: Array, default: [] #Cen: fullyears with data here
   field :alternate, type: String, default: ""
@@ -197,7 +197,7 @@ class Place
             earliest = counter[:earliest] || date
             latest = counter[:latest] || date
             number = counter[:number] || 0
-            
+
             number += 1
             if earliest > date
               earliest = date
@@ -205,14 +205,14 @@ class Place
             if latest < date
               latest = date
             end
-            
+
             surname[search_record.record_type] = { :number => number, :earliest => earliest, :latest => latest }
             open_surnames[name["last_name"]] = surname
           end
         end
       end
-    end  
-        
+    end
+
     open_surnames
   end
 
@@ -496,7 +496,7 @@ class Place
       end
     end
   end
-  
+
   def rebuild_open_records
     self.open_names_per_place.delete_all
     open_records = aggregate_open_surnames
@@ -524,9 +524,9 @@ class Place
       open.count = count
       open.description = description.join("<br />")
       self.open_names_per_place << open
-#      open.save!
+      #      open.save!
     end
-    self.save!   
+    self.save!
   end
 
   def recalculate_last_amended_date

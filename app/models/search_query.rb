@@ -267,25 +267,29 @@ class SearchQuery
       record = SearchRecord.new(record)
       record.search_names.each do |name|
         if name.type == SearchRecord::PersonType::PRIMARY || self.inclusive || self.witness
-          if name.contains_wildcard_ucf?
-            if self.first_name.blank?
-              # test surname
-              if self.last_name.match(UcfTransformer.ucf_to_regex(name.last_name.downcase))
-                filtered_records << record
-              end
-            elsif self.last_name.blank?
-              # test forename
-              if self.first_name.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))
-                filtered_records << record
-              end
-            else
-              # test both
-              #             print "#{self.last_name.downcase}.match(#{UcfTransformer.ucf_to_regex(name.last_name.downcase).inspect}) && #{self.first_name.downcase}.match(#{UcfTransformer.ucf_to_regex(name.first_name.downcase).inspect}) => #{self.last_name.downcase.match(UcfTransformer.ucf_to_regex(name.last_name.downcase)) && self.first_name.downcase.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))}\n"
-              if self.last_name.downcase.match(UcfTransformer.ucf_to_regex(name.last_name.downcase)) && self.first_name.downcase.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))
-                filtered_records << record
+          begin
+            if name.contains_wildcard_ucf?
+              if self.first_name.blank?
+                # test surname
+                if self.last_name.match(UcfTransformer.ucf_to_regex(name.last_name.downcase))
+                  filtered_records << record
+                end
+              elsif self.last_name.blank?
+                # test forename
+                if self.first_name.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))
+                  filtered_records << record
+                end
+              else
+                # test both
+                #             print "#{self.last_name.downcase}.match(#{UcfTransformer.ucf_to_regex(name.last_name.downcase).inspect}) && #{self.first_name.downcase}.match(#{UcfTransformer.ucf_to_regex(name.first_name.downcase).inspect}) => #{self.last_name.downcase.match(UcfTransformer.ucf_to_regex(name.last_name.downcase)) && self.first_name.downcase.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))}\n"
+                if self.last_name.downcase.match(UcfTransformer.ucf_to_regex(name.last_name.downcase)) && self.first_name.downcase.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))
+                  filtered_records << record
+                end
               end
             end
+          rescue RegexpError
           end
+
         end
       end
     end

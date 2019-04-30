@@ -533,6 +533,7 @@ class SearchRecord
       church = register.church
       church_name = ''
       church_name = church.church_name unless church.nil? # should not be nil but!
+      place = church.place
       place_name = place.place_name unless place.nil? # should not be nil but!
       location_array << "#{place_name} (#{church_name})"
       location_array << " [#{register_type}]"
@@ -540,7 +541,6 @@ class SearchRecord
       place_name = place.place_name unless place.nil?
       location_array << "#{place_name}"
     end
-
     location_array
   end
 
