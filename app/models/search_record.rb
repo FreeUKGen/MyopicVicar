@@ -165,6 +165,7 @@ class SearchRecord
     end
 
     def create_search_record(entry, search_version, place_id)
+      # Usewd only by a few old rake tasks. It was effectively replaced by update_create_search_record(entry, search_version, place)
       search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
       search_record = SearchRecord.new(search_record_parameters)
       search_record.freereg1_csv_entry = entry
@@ -645,11 +646,11 @@ class SearchRecord
     return true
   end
 
-  def record_updateable?(search_record,entry)
+  def record_updateable?(search_record, entry)
     is_ok = true
     return false if search_record.nil?
-    return false unless self.updateable_date?(search_record,entry)
-    return false unless self.updateable_county?(search_record,entry)
+    return false unless self.updateable_date?(search_record, entry)
+    return false unless self.updateable_county?(search_record, entry)
     return is_ok
   end
 
@@ -666,7 +667,7 @@ class SearchRecord
     return is_ok
   end
 
-  def updateable_date?(search_record,entry)
+  def updateable_date?(search_record, entry)
     #We cannot currently update a search date as it is a component of the sharding index
     #We need to delete and then recreate the search record
     is_ok = true
