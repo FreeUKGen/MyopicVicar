@@ -94,4 +94,14 @@ module SearchQueriesHelper
     end
     place_names
   end
+
+  def show_contents_link
+    if MyopicVicar::Application.config.template_set == 'freereg'
+      contents_link =  link_to "Transcriptions" , "/freereg_contents/new", :title => "By county, place and church"
+    elsif MyopicVicar::Application.config.template_set == 'freecen'
+      contents_link = link_to "Database Coverage" , freecen_coverage_path, :title => "Database Coverage"
+    elsif MyopicVicar::Application.config.template_set == 'freebmd'
+      contents_link = link_to "Database Coverage" , freebmd_coverage_path, :title => "Database Coverage"
+    end
+  end
 end

@@ -33,10 +33,6 @@ module ApplicationHelper
     app_specific_template
   end
 
-  def application_name
-    MyopicVicar::Application.config.freexxx_display_name
-  end
-
   def get_user_info_from_userid
     @user = get_user
     unless @user.blank?

@@ -17,11 +17,11 @@
       <%= f.input :userid,:label => "UserID (Required)",:input_html => { :class => "simple_form_bgcolour",:size => 40 }%>
       <% if (@user.person_role == 'system_administrator' || @user.person_role == 'volunteer_coordinator') && !session[:my_own] %>
         <%= f.input :syndicate,:label => "Syndicate  (Required)",:include_blank => false, :collection => @syndicates, :input_html => {  :class => "text-input simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 }%>
-        <%= f.input :person_role,  :collection => UseridRole::VALUES, :include_blank => false,:label => "Role in #{MyopicVicar::Application.config.freexxx_display_name} (Required)", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 }%>
-        <%= f.input :secondary_role, :collection => UseridRole::VALUES, :include_blank => true,:label => "Secondary Role(s) in #{MyopicVicar::Application.config.freexxx_display_name} :", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4, multiple: true }, include_hidden: false, :hint => "Hold Ctrl or Shift to select multiple roles" %>
+        <%= f.input :person_role,  :collection => UseridRole::VALUES, :include_blank => false,:label => "Role in #{appname} (Required)", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 }%>
+        <%= f.input :secondary_role, :collection => UseridRole::VALUES, :include_blank => true,:label => "Secondary Role(s) in #{appname} :", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4, multiple: true }, include_hidden: false, :hint => "Hold Ctrl or Shift to select multiple roles" %>
       <% else%>
         <%= f.input :syndicate, :label => "Syndicate",:include_blank => false, :collection => @syndicates,:input_html => {:class => "  simple_form_position", :size => 2}, :hint => "You can only create a Userid in your own syndicate"%>
-        <%= f.input :person_role,:label => "Role in #{MyopicVicar::Application.config.freexxx_display_name}",:include_blank => false,:collection => ["transcriber", "trainee"],:input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 2 },:selected => "trainee" %>
+        <%= f.input :person_role,:label => "Role in #{appname}",:include_blank => false,:collection => ["transcriber", "trainee"],:input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 2 },:selected => "trainee" %>
       <% end%>
     <% else %>
       <%= f.hidden_field :userid, :value => @userid.userid%>
@@ -41,8 +41,8 @@
         <%= f.input :syndicate,:label => "Syndicate",:include_blank => false,  :collection => @syndicates,:input_html => {  :class => "text-input simple_form_bgcolour simple_form_position", :size => 4 }, :hint => "The syndicate MUST be selected"%>
       <% end%>
       <% if @user.person_role == 'system_administrator'  && !session[:my_own] %>
-        <%= f.input :person_role,  :collection => UseridRole::VALUES, :include_blank => false,:label => "Role in #{MyopicVicar::Application.config.freexxx_display_name} :", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 } %>
-        <%= f.input :secondary_role, :collection => UseridRole::VALUES, :include_blank => true,:label => "Secondary Role(s) in #{MyopicVicar::Application.config.freexxx_display_name} :", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4, multiple: true }, include_hidden: true, :hint => "Hold Ctrl or Shift to select multiple roles" %>
+        <%= f.input :person_role,  :collection => UseridRole::VALUES, :include_blank => false,:label => "Role in #{appname} :", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 } %>
+        <%= f.input :secondary_role, :collection => UseridRole::VALUES, :include_blank => true,:label => "Secondary Role(s) in #{appname} :", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4, multiple: true }, include_hidden: true, :hint => "Hold Ctrl or Shift to select multiple roles" %>
       <% end %>
       <% if (manager?(@user)) %>
         <%= f.input :email_address_valid, :collection => [['Yes', 'true'], ['No', 'false']], :selected => @userid.email_address_valid, :label => @userid.userid+"'s email address is valid", :input_html => { :class => "simple_form_bgcolour  overide_selection_field_width", :size => 2, "data-tooltip" => true, :title => "Set to No if you want "+@userid.userid+" to validate the registered email address at next log in"} %>

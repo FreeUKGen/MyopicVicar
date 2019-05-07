@@ -1,7 +1,4 @@
 <p> Dear <%= @coordinator.person_forename unless @coordinator.nil? %>; (Coordinator for <%= @user.syndicate %>)</p>
-
 <p>The registrant <%= @user.person_forename%>  <%= @user.person_surname %> at <%= @user.email_address%> has confirmed their email address and registered a password with <%= MyopicVicar::Application.config.freexxx_display_name %> using an userid of <b><%= @user.userid %></b> for <b><%= @user.syndicate %></p>
-
-<p>They are now a member of your syndicate</p>
-
-<p> The <%= MyopicVicar::Application.config.freexxx_display_name %> Team</p>
+  <p>They are now a member of your syndicate</p>
+  <p>The <%= @appname %> Team</p>

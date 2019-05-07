@@ -19,8 +19,8 @@ module SearchRecordsHelper
       field = RecordType::display_name(@entry.freereg1_csv_file.record_type)
     else
       field = RecordType::display_name(entry.record_type)
-      appname = MyopicVicar::Application.config.freexxx_display_name.upcase
-      logger.warn("#{appname}:ENTRY ERROR #{entry.id} #{entry.line_id} #{entry.freereg1_csv_file_id} is missing}")
+
+      logger.warn("#{appname_upcase}::ENTRY ERROR #{entry.id} #{entry.line_id} #{entry.freereg1_csv_file_id} is missing}")
     end
     field
   end

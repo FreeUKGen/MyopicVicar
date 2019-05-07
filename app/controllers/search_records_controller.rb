@@ -18,7 +18,7 @@ class SearchRecordsController < ApplicationController
   rescue_from Mongo::Error::OperationFailure, with: :catch_error
 
   def catch_error
-    logger.warn("#{MyopicVicar::Application.config.freexxx_display_name.upcase}:RECORD: Record encountered a problem #{params}")
+    logger.warn("#{appname_upcase}::RECORD: Record encountered a problem #{params}")
     flash[:notice] = 'We are sorry but the record you requested no longer exists; possibly as a result of some data being edited. You will need to redo the search with the original criteria to obtain the updated version.'
     redirect_back(fallback_location: new_search_query_path)
   end
@@ -30,10 +30,10 @@ class SearchRecordsController < ApplicationController
 
   def show
     redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
-    @appname = appname
 
+    @appname = appname_downcase
     @page_number = params[:page_number].to_i
-    if MyopicVicar::Application.config.template_set == 'freecen'
+    if @appname == 'freecen'
       @search_record = SearchRecord.record_id(params[:id]).first
       @individual = @search_record.freecen_individual
       @dwelling = @individual.freecen_dwelling if @individual
@@ -59,7 +59,7 @@ class SearchRecordsController < ApplicationController
         @cen_prev_dwelling = prev_next_dwellings[0]
         @cen_next_dwelling = prev_next_dwellings[1]
       end
-    elsif MyopicVicar::Application.config.template_set == 'freereg'
+    elsif @appname == 'freereg'
       @display_date = false
       @entry.display_fields(@search_record)
       @entry.acknowledge
@@ -80,7 +80,8 @@ class SearchRecordsController < ApplicationController
   def show_print_version
     redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
 
-    if MyopicVicar::Application.config.template_set == 'freecen'
+    @appname = appname_downcase
+    if @appname == 'freecen'
       @search_record = SearchRecord.record_id(params[:id]).first
       @individual = @search_record.freecen_individual
       @dwelling = @individual.freecen_dwelling if @individual
@@ -110,7 +111,7 @@ class SearchRecordsController < ApplicationController
       @display_date = true
       render "_search_records_freecen_print", :layout => false
 
-    elsif MyopicVicar::Application.config.template_set == 'freereg'
+    elsif @appname == 'freereg'
       @printable_format = true
       @display_date = true
       @all_data = true
@@ -139,8 +140,8 @@ class SearchRecordsController < ApplicationController
 
   def show_value_check
     messagea = 'We are sorry but the record you requested no longer exists; possibly as a result of some data being edited. You will need to redo the search with the original criteria to obtain the updated version.'
-    warning = 'FREEREG::SEARCH::ERROR Missing entry for search record'
-    warninga = "#{MyopicVicar::Application.config.freexxx_display_name.upcase}::SEARCH::ERROR Missing parameter"
+    warning = "#{appname_upcase}::SEARCH::ERROR Missing entry for search record"
+    warninga = "#{appname_upcase}::SEARCH::ERROR Missing parameter"
     if params[:id].blank?
       flash[:notice] = messagea
       logger.warn(warninga)
@@ -150,7 +151,7 @@ class SearchRecordsController < ApplicationController
     end
     @search_query = SearchQuery.find(session[:query]) if session[:query].present?
 
-    if MyopicVicar::Application.config.template_set == 'freereg'
+    if appname_downcase == 'freereg'
       if session[:query].blank? || params[:ucf] == 'true'
         @search_record = SearchRecord.find(params[:id])
       else
@@ -200,7 +201,7 @@ class SearchRecordsController < ApplicationController
   def show_citation
     redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
 
-    if MyopicVicar::Application.config.template_set == 'freecen'
+    if appname_downcase == 'freecen'
 
       @search_record = SearchRecord.record_id(params[:id]).first
       @individual = @search_record.freecen_individual
@@ -285,7 +286,7 @@ class SearchRecordsController < ApplicationController
       end
       @display_date = true
 
-    elsif MyopicVicar::Application.config.template_set == 'freereg'
+    elsif appname_downcase == 'freereg'
       @printable_format = true
       @display_date = true
       @all_data = true

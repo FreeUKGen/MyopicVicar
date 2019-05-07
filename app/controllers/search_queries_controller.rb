@@ -271,7 +271,7 @@ class SearchQueriesController < ApplicationController
     @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
     @appname = appname
-    @view = "show_query_#{@appname.downcase}"
+    @view = "show_query_#{appname_downcase}"
   end
 
   def update

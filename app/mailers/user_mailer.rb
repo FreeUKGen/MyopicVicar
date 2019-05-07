@@ -12,14 +12,15 @@ class UserMailer < ActionMailer::Base
     MyopicVicar::Application.config.freexxx_display_name
   end
 
-  def freecen_processing_report(to_email,subj,report)
+  def freecen_processing_report(to_email, subj, report)
+    @appname = appname
     @freecen_report = report
     mail(:from => "freecen-processing@freecen.org.uk", :to => to_email, :subject => subj, :body => report, :content_type => "text/plain")
   end
   add_template_helper(EmailHelper)
 
-
   def acknowledge_communication(original)
+    @appname = appname
     @communication = original
     get_attachment(@communication)
     mail(to: "#{@communication.email_address}", :subject => "Thank you #{@communication.name} for your communication. Reference #{@communication.identifier}")
@@ -121,7 +122,6 @@ class UserMailer < ActionMailer::Base
   end
 
   def coordinator_data_problem(contact, ccs)
-    appname = MyopicVicar::Application.config.freexxx_display_name
     @contact = contact
     @record = SearchRecord.where(id: @contact.record_id).first
     @individual = @record.freecen_individual
@@ -167,6 +167,7 @@ class UserMailer < ActionMailer::Base
   end
 
   def message_reply(reply, to_userid, copy_to_userid, original_message, sender_userid)
+    @appname = appname
     @reply = reply
     @original_message = original_message
     @sending = UseridDetail.userid(sender_userid).first
@@ -203,7 +204,7 @@ class UserMailer < ActionMailer::Base
   def get_coordinator_name
     @coordinator = nil
     coordinator = Syndicate.where(:syndicate_code => @user.syndicate).first
-    unless coordinator.nil?
+    if coordinator.present?
       coordinator = coordinator.syndicate_coordinator
       @coordinator = UseridDetail.where(:userid => coordinator, :email_address_valid => true).first unless coordinator.nil?
     end
@@ -223,12 +224,11 @@ class UserMailer < ActionMailer::Base
   end
 
   def notification_of_technical_registration(user)
-    appname = MyopicVicar::Application.config.freexxx_display_name
     @user = user
     manager = nil
-    if MyopicVicar::Application.config.template_set == 'freereg'
+    if appname.downcase == 'freereg'
       manager = UseridDetail.userid("REGManager").first
-    elsif MyopicVicar::Application.config.template_set == 'freecen'
+    elsif appname.downcase == 'freecen'
       manager = UseridDetail.userid("CENManager").first
     end
     get_coordinator_name
@@ -236,19 +236,17 @@ class UserMailer < ActionMailer::Base
   end
 
   def notification_of_transcriber_creation(user)
-    appname = MyopicVicar::Application.config.freexxx_display_name
     @user = user
     get_coordinator_name
     mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} userid creation") unless @coordinator.nil?
   end
 
   def notification_of_transcriber_registration(user)
-    appname = MyopicVicar::Application.config.freexxx_display_name
     @user = user
     manager = nil
-    if MyopicVicar::Application.config.template_set == 'freereg'
+    if appname.downcase == 'freereg'
       manager = UseridDetail.userid("REGManager").first
-    elsif MyopicVicar::Application.config.template_set == 'freecen'
+    elsif appname.downcase == 'freecen'
       manager = UseridDetail.userid("CENManager").first
     end
     get_coordinator_name
@@ -256,14 +254,12 @@ class UserMailer < ActionMailer::Base
   end
 
   def notification_of_researcher_registration(user)
-    appname = MyopicVicar::Application.config.freexxx_display_name
     @user = user
     get_coordinator_name
     mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} research registration") unless @coordinator.nil?
   end
 
   def publicity(contact,ccs)
-    appname = MyopicVicar::Application.config.freexxx_display_name
     @ccs = ccs
     @contact = contact
     get_attachment
@@ -283,7 +279,7 @@ class UserMailer < ActionMailer::Base
     mail(:from => user.email_address, :to => cc.email_address, :subject => subject, :body => email_body)
   end
 
-  def notify_sc_allocate_request_rejection(user,group_name,syndicate,action_type)
+  def notify_sc_allocate_request_rejection(user, group_name, syndicate, action_type)
     syndicate = Syndicate.where(:syndicate_code=>syndicate).first
     return if syndicate.nil?
 
@@ -321,12 +317,12 @@ class UserMailer < ActionMailer::Base
         @sc_email_with_name =  sc.email_address
         mail(:from => user.email_address, :to => @sc_email_with_name, :cc => user.email_address, :subject => subject, :body => email_body)
       else
-        p 'FREREG_PROCESSING: There was no syndicate coordinator'
+        p "#{appname.downcase}_PROCESSING: There was no syndicate coordinator"
       end
     end
   end
 
-  def report_to_data_manger_of_large_file(file_name,userid)
+  def report_to_data_manger_of_large_file(file_name, userid)
     @file = file_name
     @user = UseridDetail.userid(userid).first
     if @user.present?
@@ -342,10 +338,10 @@ class UserMailer < ActionMailer::Base
         end
       end
       data_managers = UseridDetail.role('data_manager').email_address_valid.all
-      dm_emails = Array.new
+      dm_emails = []
       data_managers.each do |dm|
-        user_email_with_name =  dm.email_address
-        dm_emails <<  user_email_with_name unless user_email_with_name == @sc_email_with_name
+        user_email_with_name = dm.email_address
+        dm_emails << user_email_with_name unless user_email_with_name == @sc_email_with_name
       end
       if @sc_email_with_name.present?
         mail(:to => @sc_email_with_name,  :cc => dm_emails, :subject => "#{@user.userid} submitted an action for file/batch #{@file} at #{Time.now} that was too large for normal processing")
@@ -361,33 +357,31 @@ class UserMailer < ActionMailer::Base
     end
   end
 
-  def request_cc_image_server_group(sc,cc_email,group)
+  def request_cc_image_server_group(sc, cc_email, group)
     subject = 'SC request image group'
-    email_body = sc.userid+' at '+sc.syndicate+' requests to have '+group+' allocated'
+    email_body = sc.userid + ' at ' + sc.syndicate + ' requests to have ' + group + ' allocated'
     mail(:from => sc.email_address, :to => cc_email, :subject => subject, :body => email_body)
   end
 
-  def request_sc_image_server_group(transcriber,sc_email,group)
+  def request_sc_image_server_group(transcriber, sc_email, group)
     subject = 'Transcriber request image group'
-    email_body = 'member '+transcriber.userid+' of your syndicate '+transcriber.syndicate+' requests to obtain images in '+group
+    email_body = 'member ' + transcriber.userid + ' of your syndicate ' + transcriber.syndicate + ' requests to obtain images in ' + group
     mail(:from => transcriber.email_address, :to => sc_email, :subject => subject, :body => email_body)
   end
 
-  def request_to_volunteer(coordinator,group_name,applier_name,applier_email)
-    subject = 'Request to transcribe image group '+group_name
-    email_body = applier_name+' requests to transcribe '+group_name
+  def request_to_volunteer(coordinator, group_name, applier_name, applier_email)
+    subject = 'Request to transcribe image group ' + group_name
+    email_body = applier_name + ' requests to transcribe ' + group_name
     mail(:from => applier_email, :to => coordinator.email_address, :subject => subject, :body => email_body)
   end
 
   def send_change_of_syndicate_notification_to_sc(user)
-    appname = MyopicVicar::Application.config.freexxx_display_name
     @user = user
     get_coordinator_name
     mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} change of syndicate") unless @coordinator.blank?
   end
 
   def send_change_of_email_notification_to_sc(user)
-    appname = MyopicVicar::Application.config.freexxx_display_name
     @user = user
     get_coordinator_name
     mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} change of email") unless @coordinator.blank?
@@ -407,13 +401,13 @@ class UserMailer < ActionMailer::Base
   end
 
   def send_logs(file, ccs, body_message, subjects)
-    unless file.nil?
+    if file.present?
       attachments["log_#{Date.today.strftime('%Y_%m_%d')}.txt"] = File.read(file)
     end
     mail(:bcc => ccs, :subject => subjects,:body => body_message)
   end
 
-  def update_report_to_freereg_manager(file,user)
+  def update_report_to_freereg_manager(file, user)
     attachments['report.log'] = File.read(file)
     @person_forename = user.person_forename
     # userid is REGManager, so no need to check email_address_valid
@@ -421,32 +415,31 @@ class UserMailer < ActionMailer::Base
     mail(:to => "#{@person_forename} <#{@email_address}>", :subject => 'FreeReg update processing report')
   end
 
-  def update_report_to_freecen_manager(report,user,ccs)
-    attachments["report.txt"] = {:mime_type => 'text/plain', :content => report}
-    #attachments["report.log"] = report
+  def update_report_to_freecen_manager(report, user, ccs)
+    attachments["report.txt"] = { :mime_type => 'text/plain', :content => report }
+    # attachments["report.log"] = report
     @person_forename = user.person_forename
     @email_address = user.email_address
     mail(:from => "freecen-processing@freecen.org.uk",:to => "#{@person_forename} <#{@email_address}>", :cc=>ccs, :subject => "FreeCEN update processing report")
   end
 
-  def volunteer(contact,ccs)
-    appname = MyopicVicar::Application.config.freexxx_display_name
+  def volunteer(contact, ccs)
     @contact = contact
     get_attachment
     mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>", :cc => ccs, :subject => "Thank you for question about volunteering. Reference #{@contact.identifier}")
   end
 
-  def website(contact,ccs)
-    appname = MyopicVicar::Application.config.freexxx_display_name
+  def website(contact, ccs)
     @contact = contact
     get_attachment
     mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for reporting a website problem. Reference #{@contact.identifier}")
   end
+
   private
 
   def get_email_address_array_from_array_of_userids(userids)
-    array_of_email_addresses = Array.new
-    unless userids.blank?
+    array_of_email_addresses = []
+    if userids.present?
       userids.each do |copy_userid|
         copy = UseridDetail.userid(copy_userid).first
         if copy.present?
@@ -463,9 +456,8 @@ class UserMailer < ActionMailer::Base
     if userid_object.present?
       email_address = userid_object.email_address
     else
-      email_address = ' FreeREG Servant <freereg-processing@freereg.org.uk>'
+      email_address = "#{appname} Servant <freereg-processing@freereg.org.uk>"
     end
     email_address
   end
-
 end

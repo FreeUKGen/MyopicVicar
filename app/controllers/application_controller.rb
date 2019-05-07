@@ -26,13 +26,17 @@ class ApplicationController < ActionController::Base
   require 'chapman_code'
   require 'userid_role'
   require 'register_type'
-
+  helper_method :appname, :appname_upcase, :appname_downcase, :mobile_device?, :device_type
   def appname
     MyopicVicar::Application.config.freexxx_display_name
   end
 
   def appname_upcase
     appname.upcase
+  end
+
+  def appname_downcase
+    appname.downcase
   end
 
   def load_last_stat
@@ -213,8 +217,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  helper_method :mobile_device?, :device_type
-
   def device_type
     request.env['mobvious.device_type']
   end
@@ -223,7 +225,6 @@ class ApplicationController < ActionController::Base
     # Season this regexp to taste. I prefer to treat iPad as non-mobile.
     request.user_agent =~ /Mobile|webOS/ && request.user_agent !~ /iPad/
   end
-
 
   def clean_session
     session.delete(:manage_user_origin)
