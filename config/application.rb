@@ -81,18 +81,23 @@ module MyopicVicar
     # config.template_set = TemplateSet::FREECEN
 
     # set config.freexxx_display_name based on the template_set and load the appropriate assets path
-    if config.template_set == TemplateSet::FREECEN
+    case config.template_set
+    when TemplateSet::FREECEN
       config.freexxx_display_name = 'FreeCEN'
       config.assets.paths << Rails.root.join('app', 'assets_freecen')
-    elsif config.template_set == TemplateSet::FREEREG
+      config.assets.paths << Rails.root.join('app', 'assets_freecen', 'images')
+    when TemplateSet::FREEREG
       config.freexxx_display_name = 'FreeREG'
       config.assets.paths << Rails.root.join('app', 'assets_freereg')
-    elsif config.template_set == TemplateSet::FREEBMD
+      config.assets.paths << Rails.root.join('app', 'assets_freereg', 'images')
+    when TemplateSet::FREEBMD
       config.freexxx_display_name = 'FreeBMD'
       config.assets.paths << Rails.root.join('app', 'assets_freebmd')
+      config.assets.paths << Rails.root.join('app', 'assets_freebmd', 'images')
     else
       config.freexxx_display_name = 'FreeREG'
       config.assets.paths << Rails.root.join('app', 'assets_freereg')
+      config.assets.paths << Rails.root.join('app', 'assets_freereg', 'images')
     end
 
     # Enable the asset pipeline

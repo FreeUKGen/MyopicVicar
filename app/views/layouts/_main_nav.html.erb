@@ -18,7 +18,6 @@
             <%=link_to("Database Coverage",main_app.freecen_coverage_path, id: "db_coverage_nav")%>
           </li>
         <% end %>
-
         <% if  session[:userid_detail_id].present? %>
           <li>
             <%= link_to 'Your Actions', main_app.new_manage_resource_path %>
@@ -36,35 +35,35 @@
               <% else %>
                 <%= link_to "Help", "/cms/information-for-coordinators" %>
               <% end %>
-          </li>
-            <% else %>
-              <li>
-	             <%# if false %>
-                <%= link_to "About", "/cms/about" %>
-	             <%# end %>
-              </li>
-            <% end%>
+            </li>
+          <% else %>
+            <li>
+              <%# if false %>
+              <%= link_to "About", "/cms/about" %>
+              <%# end %>
+            </li>
+          <% end%>
         <% else %>
           <li>
-	         <%# if false %>
+            <%# if false %>
             <%= link_to "About", "/cms/about" %>
-	         <%# end %>
+            <%# end %>
           </li>
-        <!-- TODO: Convert remainder to refinery page references -->
-        <li>
-          <%= link_to "Donate", "https://www.freeukgenealogy.org.uk/help-us-keep-history-free/", id: "donate_nav"%>
-        </li>
-    <%# if false %>
-        <li>
-          <%= link_to "Volunteer", "/cms/opportunities-to-volunteer-with-#{MyopicVicar::Application.config.template_set}" %>
-        </li>
-        <li>
-          <%= link_to "Members", refinery.login_path %>
-        </li>
-    <%# end %>
-        <li>
-          <%= link_to "Help", "/cms/help" %>
-        </li>
+          <!-- TODO: Convert remainder to refinery page references -->
+          <li>
+            <%= link_to "Donate", "https://www.freeukgenealogy.org.uk/help-us-keep-history-free/", id: "donate_nav"%>
+          </li>
+          <%# if false %>
+          <li>
+            <%= link_to "Volunteer", "/cms/opportunities-to-volunteer-with-#{MyopicVicar::Application.config.template_set}" %>
+          </li>
+          <li>
+            <%= link_to "Members", refinery.login_path %>
+          </li>
+          <%# end %>
+          <li>
+            <%= link_to "Help", "/cms/help" %>
+          </li>
         <% end %>
       </ul>
     </nav>

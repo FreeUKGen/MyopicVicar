@@ -63,7 +63,7 @@
           }, r.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
         }
       };
-      grunticon(['assets/styles/css/icons.data.svg.css','assets/styles/css/icons.data.png.css', 'assets/styles/css/icons.fallback.css']);
+      grunticon(["<%= path_to_stylesheet('styles/css/icons.data.svg.css') %>", "<%= path_to_stylesheet('styles/css/icons.data.png.css') %>", "<%= path_to_stylesheet('styles/css/icons.fallback.css') %>"]);
     </script>
     <noscript>
       <link rel="stylesheet" type="text/css" href="<%= path_to_stylesheet('styles/css/icons.fallback.css') %>">
