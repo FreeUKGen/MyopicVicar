@@ -8,38 +8,37 @@
   <!--<![endif]-->
   <head>
     <!-- Google Tag Manager -->
-    <script>
-      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-          j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-          'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-          })(window,document,'script','dataLayer','GTM-NQ743M4');
-    </script>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-NQ743M4');</script>
     <!-- End Google Tag Manager -->
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <meta charset="utf-8"/>
-    <% if MyopicVicar::Application.config.template_set == 'freereg' %>
-      <title><%= title %></title>
-      <meta name="keywords" content="genealogy,registers,parish registers,church registers,transcriptions,indexes,baptism,marriage,burial">
-      <meta name="description" content="The FreeREG project provides free online access to transcriptions of parish registers and similar resources from England, Scotland and Wales.">
-    <% elsif MyopicVicar::Application.config.template_set == 'freecen' %>
-      <title>FreeCEN - UK Census Records (England, Scotland, Wales)</title>
-      <meta name="keywords" content="genealogy,census,census records,transcriptions,indexes,family history">
-      <meta name="description" content="The FreeCEN project provides free online access to transcriptions of 19th Century UK Censuses.">
-    <% elsif MyopicVicar::Application.config.template_set == 'freebmd' %>
-      <title>FreeBMD - UK Birth, Marriage, and Death Records (England, Scotland, Wales)</title>
-      <meta name="keywords" content="genealogy,registers,birth records,birth certificates,transcriptions,indexes,birth,marriage,death">
-      <meta name="description" content="The FreeBMD project provides free online access to the GRO indexes of births, marriages and deaths for England and Wales. ">
-    <% end %>
+<% if MyopicVicar::Application.config.template_set == 'freereg' %>
+    <title><%= title %></title>
+    <meta name="keywords" content="genealogy,registers,parish registers,church registers,transcriptions,indexes,baptism,marriage,burial">
+    <meta name="description" content="The FreeREG project provides free online access to transcriptions of parish registers and similar resources from England, Scotland and Wales.">
+<% elsif MyopicVicar::Application.config.template_set == 'freecen' %>
+    <title>FreeCEN - UK Census Records (England, Scotland, Wales)</title>
+    <meta name="keywords" content="genealogy,census,census records,transcriptions,indexes,family history">
+    <meta name="description" content="The FreeCEN project provides free online access to transcriptions of 19th Century UK Censuses.">
+<% elsif MyopicVicar::Application.config.template_set == 'freebmd' %>
+    <title>FreeBMD - UK Birth, Marriage, and Death Records (England, Scotland, Wales)</title>
+    <meta name="keywords" content="genealogy,registers,birth records,birth certificates,transcriptions,indexes,birth,marriage,death">
+    <meta name="description" content="The FreeBMD project provides free online access to the GRO indexes of births, marriages and deaths for England and Wales. ">
+<% end %>
     <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
     <meta name="google-site-verification" content="zAYAee-PuoiMAfi5hbUreeLsvTGf4XFNXDxMDB9PcCQ" />
     <!--[if lt IE 9]>
-      <%= javascript_include_tag "html5shiv" %>
+    <%= javascript_include_tag "html5shiv" %>
     <![endif]-->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="568">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="msapplication-config" content="none"/>
+    <link rel="shortcut icon" href="<%= path_to_image 'favicon.ico' %>" type="image/x-icon" />
     <link rel="apple-touch-icon" href="<%= path_to_image 'png/apple-touch-icon-precomposed.png' %>"><!-- we don't have a separate one, just use precomposed -->
     <link rel="apple-touch-icon-precomposed" sizes="152x152" href="<%= path_to_image 'png/apple-touch-icon-152x152-precomposed.png' %>">
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="<%= path_to_image 'png/apple-touch-icon-144x144-precomposed.png' %>">
@@ -66,16 +65,16 @@
       grunticon(['assets/styles/css/icons.data.svg.css','assets/styles/css/icons.data.png.css', 'assets/styles/css/icons.fallback.css']);
     </script>
     <noscript>
-      <link rel="stylesheet" type="text/css" href="<%= path_to_stylesheet('styles/css/icons.fallback.css') %>">
+    <link rel="stylesheet" type="text/css" href="<%= path_to_stylesheet('styles/css/icons.fallback.css') %>">
     </noscript>
     <!-- Styles -->
     <%= stylesheet_link_tag "styles/scss/palm" %>
     <%= stylesheet_link_tag "styles/scss/lap_and_up", media:"(min-width:571px)" %>
     <!--[if (lt IE 9) & (!IEMobile)]>
-      <%#= stylesheet_link_tag "styles/css/lap_and_up.min.css" %>
+    <%#= stylesheet_link_tag "styles/css/lap_and_up.min.css" %>
     <![endif]-->
     <!--[if lte IE 7]>
-      <%#= stylesheet_link_tag "styles/css/ie.min" %>
+    <%#= stylesheet_link_tag "styles/css/ie.min" %>
     <![endif]-->
     <%= stylesheet_link_tag "styles/css/donate_icon" %>
     <%= stylesheet_link_tag "styles/css/freereg_content" %>
@@ -89,19 +88,22 @@
     <%= javascript_include_tag "ladda.min.js" %>
     <%= javascript_include_tag "freecen_coverage_graph.js" %>
     <%= javascript_include_tag "ads.js" %>
+
     <%= csrf_meta_tags %>
     <% google_analytics_tracking_id = '' %>
     <% if MyopicVicar::Application.config.template_set == 'freereg' %>
       <% google_analytics_tracking_id = 'UA-62395250-1' %>
+
     <% elsif MyopicVicar::Application.config.template_set == 'freecen' %>
       <% if MyopicVicar::MongoConfig["website"].eql? "https://freecen2.freecen.org.uk" %>
-        <% google_analytics_tracking_id = 'UA-89287207-1' %>
+      <% google_analytics_tracking_id = 'UA-89287207-1' %>
       <% else %>
-        <%  google_analytics_tracking_id = "" %>
+      <%  google_analytics_tracking_id = "" %>
       <% end %>
     <% else %>
       <!--- not implemented for FreeBMD yet -->
     <% end %>
+
     <script>
       window.update_third_party_cookies_user_preference = function (preference) {
         if(preference == 'accept') {
@@ -117,13 +119,16 @@
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NQ743M4"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
+
     <%= render "layouts/main_nav" %>
+
     <div class="offcanvas__primary">
       <%= render "layouts/header" %>
+
       <main  class="site__content  icon__honeycomb--top-right">
         <div class="container">
           <% if session[:userid_detail_id].present?%>
-            <%= breadcrumbs  :class => "delta  text--teal"  unless controller_name == "refinery" ||
+             <%= breadcrumbs  :class => "delta  text--teal"  unless controller_name == "refinery" ||
              controller_name == "pages"%>
           <% end%>
           <% if content_for? :sidebar %>
@@ -138,22 +143,24 @@
           <% else %>
             <%= yield %>
           <% end %>
-          <% if  session[:userid_detail_id].present?%>
-            <div  style="float:right;">
-              <%= form_tag(problem_url, :method=>:get) do %>
-                <% problem_button_options.each_pair do |name, value| %>
-                  <%= hidden_field_tag(name, value)%>
-                <% end %>
-                <input type="submit" value="Report a Problem"  class = "btn  btn--small"/>
-              <% end %>
-            </div>
+
+        <% if  session[:userid_detail_id].present?%>
+          <div  style="float:right;">
+          <%= form_tag(problem_url, :method=>:get) do %>
+            <% problem_button_options.each_pair do |name, value| %>
+              <%= hidden_field_tag(name, value)%>
+            <% end %>
+            <input type="submit" value="Report a Problem"  class = "btn  btn--small"/>
           <% end %>
-        </div>
+          </div>
+        <% end %>
+      </div>
       </main>
       <%= render "layouts/footer" %>
     </div>
     <!-- TODO fix above this -->
     <!-- example offcanvas switching code -->
+
     <script type="text/javascript">
       var el = document.getElementById("trigger-offcanvas");
       var switchOffCanvas = function() {
@@ -166,6 +173,7 @@
           el.attachEvent('onclick', switchOffCanvas);
       }
     </script>
+
     <!--script type="text/javascript">
       $(document).ready(function() {
         $.cookiesDirective({
@@ -185,6 +193,7 @@
         });
       });
     </script-->
+
     <script type="text/javascript">
       $('#source_original_form_type').ready(function(){
         if ($('#source_original_form_type :selected').val() === 'other') {
