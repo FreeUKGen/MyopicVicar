@@ -2,20 +2,20 @@
   <table class="my-width-min flush--bottom" >
     <thead >
       <tr>
-        <th class="t15">Place <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
-          <span>A Place for which we have transcribed records. The names and their locations are defined by the Association of British Counties (http://www.gazetteer.org.uk/).</span></a></th>
-        <th  class="t25">Churches <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
+        <th class="t15">Place <a href="#" class="right_tooltip"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %>
+            <span>A Place for which we have transcribed records. The names and their locations are defined by the Association of British Counties (http://www.gazetteer.org.uk/).</span></a></th>
+        <th  class="t25">Churches <a href="#" class="right_tooltip"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %>
             <span>There can be multiple churches or organizations for which records have been transcribed in a specific place.</span></a></th>
-        <th class="t15">Registers <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
-              <span>A church can have multiple registers. A register can be: Parish Register; Archdeacon's Transcripts; Bishop's Transcripts; Phillimore's Transcripts (made from a parish register); Extract of the Parish Registers (incomplete set of records); Dwelly's Transcript (made from a parish register); Other Register (original document); Transcript (another person's transcription); Unknown; or Unspecified.</span></a></th>
-        <th class="t15">Changed <a href="#" class="right_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
-                <span>Latest date a transcription file loaded.</span></a></th>
-        <th class="t12">Records <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
-                  <span>The number of actual transcription records.</span></a></th>
-        <th class="t8">First <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
-                  <span>The first year for which there is a record transcribed in the register.</span></a></th>
-        <th class="t7">Last <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '16' %>
-                    <span>The last year for which there is a record transcribed in the register.</span></a></th>
+        <th class="t15">Registers <a href="#" class="right_tooltip"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %>
+            <span>A church can have multiple registers. A register can be: Parish Register; Archdeacon's Transcripts; Bishop's Transcripts; Phillimore's Transcripts (made from a parish register); Extract of the Parish Registers (incomplete set of records); Dwelly's Transcript (made from a parish register); Other Register (original document); Transcript (another person's transcription); Unknown; or Unspecified.</span></a></th>
+        <th class="t15">Changed <a href="#" class="right_tooltip"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %>
+            <span>Latest date a transcription file loaded.</span></a></th>
+        <th class="t12">Records <a href="#" class="left_tooltip"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %>
+            <span>The number of actual transcription records.</span></a></th>
+        <th class="t8">First <a href="#" class="left_tooltip"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %>
+            <span>The first year for which there is a record transcribed in the register.</span></a></th>
+        <th class="t7">Last <a href="#" class="left_tooltip"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %>
+            <span>The last year for which there is a record transcribed in the register.</span></a></th>
       </tr>
     </thead>
   </table>
@@ -23,24 +23,23 @@
     <table class=" my-width table--data">
       <tbody >
         <% old_place_name = nil %>
-       
-          <% old_church_name = nil %>
-          <% @place.churches.order_by(church_name: 1).each do |church| %>
-            <% church.registers.order_by(register_type: 1).each do |register| %>
+        <% old_church_name = nil %>
+        <% @place.churches.order_by(church_name: 1).each do |church| %>
+          <% church.registers.order_by(register_type: 1).each do |register| %>
             <% session[:placeid] = @place.id%>
             <tr class="weight--semibold" id="<%=@place.id%>">
               <td class="t15"> <%= link_to(@place.place_name, show_place_freereg_content_path(@place.place_name)) %> </td>
-              <td class="t25"> <%= link_to(church.church_name, show_church_freereg_content_path(church)) %> </td>  
+              <td class="t25"> <%= link_to(church.church_name, show_church_freereg_content_path(church)) %> </td>
               <td class="t15"> <% registertype = RegisterType.display_name(register.register_type)%>
-              <%= link_to(registertype, show_register_freereg_content_path(register)) %></td>
+                <%= link_to(registertype, show_register_freereg_content_path(register)) %></td>
               <td class="t15"> <%= register.last_amended %> </td>
               <td class="t12"> <%= display_number(register.records) %> </td>
               <td class="t8"> <%= register.datemin %> </td>
               <td class="t7"> <%= register.datemax %> </td>
               <% clear(register) %>
             </tr>
-            <% end%>
           <% end%>
+        <% end%>
       </tbody>
     </table>
   </div>

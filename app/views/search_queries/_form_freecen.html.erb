@@ -20,7 +20,7 @@
         <li class="grid__item one-quarter lap-one-half palm-one-whole">
           <label class="ttip" for="last_name" tabindex="0">
             Surname
-            <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
             <span class="ttip__text">Use upper- or lower-case. If you do not enter a surname, you <em>must</em> enter a County, Forename, and Place</span>
           </label>
           <% if @search_query.last_name.nil? %>
@@ -32,7 +32,7 @@
         <li class="grid__item one-quarter lap-one-half palm-one-whole">
           <label class="ttip" for="first_name" tabindex="0">
             Forename(s)
-            <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
             <span class="ttip__text">Optional. Use upper- or lower-case. Abbreviations and Latin versions of name will be included automatically</span>
           </label>
           <% if @search_query.first_name.nil? %>
@@ -44,7 +44,7 @@
         <li class="grid__item one-quarter lap-one-half palm-one-whole">
           <label class="ttip" for="start_year" tabindex="0">
             Birth year from
-            <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
             <span class="ttip__text">Optional, YYYY. The first year you want to include</span>
           </label>
           <% if @search_query.start_year.nil? %>
@@ -56,7 +56,7 @@
         <li class="grid__item one-quarter lap-one-half palm-one-whole">
           <label class="ttip" for="end_year" tabindex="0">
             Birth year to
-            <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
             <span class="ttip__text">Optional, YYYY. The last year you want to include</span>
           </label>
           <% if @search_query.end_year.nil? %>
@@ -69,7 +69,7 @@
           <input name="search_query[birth_chapman_codes][]" type="hidden" value="">
           <label class="label ttip" for="search_query_birth_chapman_codes" tabindex="0">
             Birth County
-            <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
             <span class="ttip__text">If you select more than one county, <em>all</em> places within those counties will be searched</span>
             <small class="additional">Select one to three (hold Ctrl for multiple)</small>
           </label>
@@ -93,7 +93,7 @@
           <input name="search_query[chapman_codes][]" type="hidden" value="">
           <label class="label ttip" for="search_query_chapman_codes" tabindex="0">
             Census County
-            <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
             <span class="ttip__text">If you select more than one county, <em>all</em> places within those counties will be searched</span>
             <small class="additional">Select one to three (hold Ctrl for multiple)</small>
           </label>
@@ -107,7 +107,7 @@
         <li class="grid__item three-eighths lap-three-quarters palm-one-whole"  id="search_query_places_input">
           <label class="label ttip" for="search_query_place_ids" tabindex="0">
             Census Place
-            <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
             <span class="ttip__text">This box fills only when a <em>single</em> county is selected. Select one place, or leave blank for <em>all</em> the places in a county. See also the &ldquo;Nearby Places&rdquo; option, below</span>
             <small class="additional">Select nothing or one place</small>
           </label>
@@ -118,7 +118,7 @@
         <li class="grid__item one-quarter lap-one-half palm-one-whole optional" id="search_query_record_type_input">
           <label class="label ttip" for="search_query_record_type" tabindex="0">
             Census year
-            <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
             <span class="ttip__text">The specific census year to search. Leave blank to search all.</span>
             <small class="additional">Leave blank to search all</small>
           </label>
@@ -142,7 +142,7 @@
           <%= f.label :search_nearby_places, { :class => "ttip", :tabindex => "0" } do %>
             <%= f.check_box :search_nearby_places, {}, "true", "false" %>
             Nearby places
-            <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
             <span class="ttip__text">Check to search places near to your selected starting place (up to 40 places in total)</span>
           <% end %>
         </li>
@@ -150,7 +150,7 @@
           <%= f.label :fuzzy, { :class => "ttip", :tabindex => "0" } do %>
             <%= f.check_box :fuzzy, {}, "true", "false" %>
             Name Soundex
-            <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
             <span class="ttip__text">Check to include the Soundex equivalent of the name: it is used for both surname and forename (if entered)</span>
           <% end %>
         </li>

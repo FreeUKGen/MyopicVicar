@@ -86,7 +86,6 @@ module MyopicVicar
       config.assets.paths << Rails.root.join('app', 'assets_freecen', 'images')
     when TemplateSet::FREEREG
       config.freexxx_display_name = 'FreeREG'
-      p 'FREEREG>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
       config.assets.paths << Rails.root.join('app', 'assets_freereg')
       config.assets.paths << Rails.root.join('app', 'assets_freereg', 'images')
       config.assets.paths << Rails.root.join('app', 'assets_freereg', 'stylesheets', 'styles', 'css')
@@ -104,7 +103,7 @@ module MyopicVicar
     # set config.freexxx_display_name based on the template_set and load the appropriate assets path
 
     # Enable the asset pipeline
-    config.assets.enabled = true  # commented out because already set above
+    config.assets.enabled = true # commented out because already set above
     # Version of your assets, change this if you want to expire all your assets
     # config.assets.version = '1.0' # commented out because already set above
 

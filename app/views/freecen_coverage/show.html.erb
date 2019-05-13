@@ -17,7 +17,7 @@
     <% yyhash = @county_pieces[yy] %>
     <a name="<%= yy %>"></a>
     <center>
-      <h3><%= @county %> &ndash; <%= yyhash['header'] %><% unless yyhash['header_info'].nil? || yyhash['header_info']=='' %> <a href="#" class="top_tooltip" onclick="return false;"><%= image_tag 'info.png', alt: 'Information', height: '16' %><span><%= yyhash['header_info'] %></span></a><% end %></h3>
+      <h3><%= @county %> &ndash; <%= yyhash['header'] %><% unless yyhash['header_info'].nil? || yyhash['header_info']=='' %> <a href="#" class="top_tooltip" onclick="return false;"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %><span><%= yyhash['header_info'] %></span></a><% end %></h3>
 <% if @editing %>
   <div style="margin-top:-1.5em;margin-bottom:1.5em;">
   <% url = "/freecen_pieces/new?yy=#{yy}&chapman_code=#{@chapman_code}" %>

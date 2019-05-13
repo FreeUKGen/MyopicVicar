@@ -60,49 +60,49 @@
     <ol class="grid">
       <li class="grid__item one-third lap-one-half palm-one-whole">
         <label class="label ttip" for="forename" tabindex="0">Forename
-          <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+          <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
           <span class="ttip__text">Required. Your forename for when we contact you</span>
         </label>
         <%= text_field_tag "userid_detail[person_forename]", @userid.person_forename.blank? ? nil : @userid.person_forename , :id => "forename", placeholder: @userid.person_forename.blank? ? "Required" : nil , :class => "text-input" %>
       </li>
       <li class="grid__item one-third lap-one-half palm-one-whole">
         <label class="label ttip" for="surname" tabindex="0">Surname
-          <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+          <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
           <span class="ttip__text">Required. Your surname for when we contact you</span>
         </label>
         <%= text_field_tag "userid_detail[person_surname]", @userid.person_surname.blank? ? nil : @userid.person_surname , :id => "surname", placeholder: @userid.person_surname.blank? ? "Required" : nil , :class => "text-input" %>
       </li>
       <li class="grid__item one-third lap-one-half palm-one-whole">
         <label class="label ttip" for="email_address" tabindex="0">Your email address
-          <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+          <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
           <span class="ttip__text">Required. Your email address so we can contact you: it will not be made public</span>
         </label>
         <%= text_field_tag "userid_detail[email_address]", @userid.email_address.blank? ? nil : @userid.email_address , :id => "email_address", placeholder: @userid.email_address.blank? ? "Required" : nil , :class => "text-input",:required => true %>
       </li>
       <li class="grid__item one-third lap-one-half palm-one-whole">
         <label class="label ttip" for="username" tabindex="0">User name (UserID)
-          <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+          <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
           <span class="ttip__text">Required. A <em>unique</em> way to identify you. Letters and numbers <em>only</em>. Any length</span>
         </label>
         <%= text_field_tag "userid_detail[userid]", @userid.userid.blank? ? nil : @userid.userid , :id => "username", placeholder: @userid.userid.blank? ? "Required" : nil , :class => "text-input"%>
       </li>
       <li class="grid__item one-third lap-one-half palm-one-whole">
         <label class="label ttip" for="location" tabindex="0">Location
-          <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+          <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
           <span class="ttip__text">Optional. The country you live in: this helps us if we need to contact you</span>
         </label>
         <%= text_field_tag "userid_detail[address]", @userid.address.blank? ? nil : @userid.address , :id => "location", placeholder: @userid.address.blank? ? "Optional" : nil , :class => "text-input"%>
       </li>
       <li class="grid__item one-third lap-one-half palm-one-whole">
         <label class="label ttip" for="phone" tabindex="0">Phone Number
-          <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+          <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
           <span class="ttip__text">Optional. Used only if we need to talk to you. Give country code if not UK</span>
         </label>
         <%= text_field_tag "userid_detail[telephone_number]", @userid.telephone_number.blank? ? nil : @userid.telephone_number , :id => "phone", placeholder: @userid.telephone_number.blank? ? "Optional" : nil , :class => "text-input"%>
       </li>
       <li class="grid__item seven-twelfths lap-one-whole palm-one-whole">
         <label class="label ttip" for="syndicate" tabindex="0">Syndicates available
-          <%= image_tag 'info.png', alt: 'Info', height: '16' %>
+          <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
           <span class="ttip__text">Select a syndicate to work with. If you are in doubt, select the <q>England, rest of</q> group &mdash; you can move later depending upon your interests</span>
           <small class="additional">Required</small>
         </label>
