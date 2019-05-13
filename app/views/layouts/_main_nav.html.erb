@@ -3,7 +3,7 @@
     <nav class="main-nav" >
       <ul>
         <% if controller_name.nil? || controller_name == 'search_queries' || controller_name == 'search_records'%>
-          <% if MyopicVicar::Application.config.template_set == 'freereg' %>
+          <% if appname_downcase == 'freereg' %>
             <li>
               <%=link_to("Transcriptions",main_app.new_freereg_content_path)%>
             </li>
@@ -13,7 +13,7 @@
             <%= link_to("Search",  main_app.new_search_query_path) %>
           </li>
         <% end%>
-        <% if MyopicVicar::Application.config.template_set == 'freecen' && (controller_name != 'freecen_coverage' || @chapman_code != nil)%>
+        <% if appname_downcase == 'freecen' && (controller_name != 'freecen_coverage' || @chapman_code != nil)%>
           <li>
             <%=link_to("Database Coverage",main_app.freecen_coverage_path, id: "db_coverage_nav")%>
           </li>

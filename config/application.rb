@@ -19,7 +19,7 @@ require 'csv'
 
 if defined?(Bundler)
   # If you precompile assets before deploying to production, use this line
-  Bundler.require(*Rails.groups(:assets => %w(development test)))
+  Bundler.require(*Rails.groups(assets: %w(development test)))
   # If you want your assets lazily compiled in production, use this line
   # Bundler.require(:default, :assets, Rails.env)
 end
@@ -84,23 +84,23 @@ module MyopicVicar
       config.freexxx_display_name = 'FreeCEN'
       config.assets.paths << Rails.root.join('app', 'assets_freecen')
       config.assets.paths << Rails.root.join('app', 'assets_freecen', 'images')
+      config.assets.paths << Rails.root.join('app', 'assets_freecen', 'styles')
     when TemplateSet::FREEREG
       config.freexxx_display_name = 'FreeREG'
       config.assets.paths << Rails.root.join('app', 'assets_freereg')
       config.assets.paths << Rails.root.join('app', 'assets_freereg', 'images')
-      config.assets.paths << Rails.root.join('app', 'assets_freereg', 'stylesheets', 'styles', 'css')
+      config.assets.paths << Rails.root.join('app', 'assets_freereg', 'styles')
     when TemplateSet::FREEBMD
       config.freexxx_display_name = 'FreeBMD'
       config.assets.paths << Rails.root.join('app', 'assets_freebmd')
       config.assets.paths << Rails.root.join('app', 'assets_freebmd', 'images')
+      config.assets.paths << Rails.root.join('app', 'assets_freebmd', 'styles')
     else
       config.freexxx_display_name = 'FreeREG'
       config.assets.paths << Rails.root.join('app', 'assets_freereg')
       config.assets.paths << Rails.root.join('app', 'assets_freereg', 'images')
-      config.assets.paths << Rails.root.join('app', 'assets_freereg', 'styles', 'css')
+      config.assets.paths << Rails.root.join('app', 'assets_freereg', 'styles')
     end
-
-    # set config.freexxx_display_name based on the template_set and load the appropriate assets path
 
     # Enable the asset pipeline
     config.assets.enabled = true # commented out because already set above
