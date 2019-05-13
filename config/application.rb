@@ -79,17 +79,17 @@ module MyopicVicar
     # set config.template_set before asset directories are selected
     # TODO: make bimodal
     # config.template_set = TemplateSet::FREECEN
-
-    # set config.freexxx_display_name based on the template_set and load the appropriate assets path
-    case config.template_set
+    case MyopicVicar::Application.config.template_set
     when TemplateSet::FREECEN
       config.freexxx_display_name = 'FreeCEN'
       config.assets.paths << Rails.root.join('app', 'assets_freecen')
       config.assets.paths << Rails.root.join('app', 'assets_freecen', 'images')
     when TemplateSet::FREEREG
       config.freexxx_display_name = 'FreeREG'
+      p 'FREEREG>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
       config.assets.paths << Rails.root.join('app', 'assets_freereg')
       config.assets.paths << Rails.root.join('app', 'assets_freereg', 'images')
+      config.assets.paths << Rails.root.join('app', 'assets_freereg', 'stylesheets', 'styles', 'css')
     when TemplateSet::FREEBMD
       config.freexxx_display_name = 'FreeBMD'
       config.assets.paths << Rails.root.join('app', 'assets_freebmd')
@@ -98,11 +98,13 @@ module MyopicVicar
       config.freexxx_display_name = 'FreeREG'
       config.assets.paths << Rails.root.join('app', 'assets_freereg')
       config.assets.paths << Rails.root.join('app', 'assets_freereg', 'images')
+      config.assets.paths << Rails.root.join('app', 'assets_freereg', 'styles', 'css')
     end
 
-    # Enable the asset pipeline
-    # config.assets.enabled = true  # commented out because already set above
+    # set config.freexxx_display_name based on the template_set and load the appropriate assets path
 
+    # Enable the asset pipeline
+    config.assets.enabled = true  # commented out because already set above
     # Version of your assets, change this if you want to expire all your assets
     # config.assets.version = '1.0' # commented out because already set above
 

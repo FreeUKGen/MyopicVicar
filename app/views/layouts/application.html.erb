@@ -90,18 +90,7 @@
     <%= javascript_include_tag "freecen_coverage_graph.js" %>
     <%= javascript_include_tag "ads.js" %>
     <%= csrf_meta_tags %>
-    <% google_analytics_tracking_id = '' %>
-    <% if MyopicVicar::Application.config.template_set == 'freereg' %>
-      <% google_analytics_tracking_id = 'UA-62395250-1' %>
-    <% elsif MyopicVicar::Application.config.template_set == 'freecen' %>
-      <% if MyopicVicar::MongoConfig["website"].eql? "https://freecen2.freecen.org.uk" %>
-        <% google_analytics_tracking_id = 'UA-89287207-1' %>
-      <% else %>
-        <%  google_analytics_tracking_id = "" %>
-      <% end %>
-    <% else %>
-      <!--- not implemented for FreeBMD yet -->
-    <% end %>
+    <% google_analytics_tracking_id = google_analytics_tracking %>
     <script>
       window.update_third_party_cookies_user_preference = function (preference) {
         if(preference == 'accept') {

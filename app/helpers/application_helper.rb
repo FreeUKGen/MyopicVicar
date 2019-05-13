@@ -33,6 +33,23 @@ module ApplicationHelper
     app_specific_template
   end
 
+  def google_analytics_tracking
+    google_analytics_tracking_id = ''
+    case appname_downcase
+    when 'freereg'
+      google_analytics_tracking_id = 'UA-62395250-1'
+    when 'freecen'
+      if MyopicVicar::MongoConfig["website"].eql? "https://freecen2.freecen.org.uk"
+        google_analytics_tracking_id = 'UA-89287207-1'
+      else
+        google_analytics_tracking_id = ""
+      end
+    when 'freebmd'
+      'not implemented for FreeBMD yet -->'
+    end
+    google_analytics_tracking_id
+  end
+
   def get_user_info_from_userid
     @user = get_user
     unless @user.blank?
