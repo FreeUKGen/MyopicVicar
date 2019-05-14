@@ -16,6 +16,13 @@
           <%= banner_header %>
         <% end %>
       </div>
+      <% when 'freebmd' %>
+      <div class="bnner-horz reg_adsense">
+        <% unless device_type == :mobile%>
+          <a href ="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/"><%= image_tag 'png/header-donate.png', :class => "donations", :alt => "Donations - FreeUKGenealogy" %></a>
+          <%= banner_header %>
+        <% end %>
+      </div>
     <% end %>
   <% end %>
   <button type="button" id="trigger-offcanvas" class="site__header__menu-btn">
@@ -31,7 +38,7 @@
   <%= link_to '/', class: "site__header__logo  icon__freecen" do %>
     <h1 class="accessibility">FreeCEN</h1>
   <% end %>
-  <% when appname_downcase == 'freebmd' %>
+  <% when 'freebmd' %>
   <%= link_to '/', class: "site__header__logo  icon__freebmd" do %>
     <h1 class="accessibility">FreeBMD</h1>
   <% end %>
