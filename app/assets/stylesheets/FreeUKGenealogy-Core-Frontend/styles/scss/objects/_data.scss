@@ -1,0 +1,81 @@
+/*------------------------------------*\
+    $DATA
+\*------------------------------------*/
+
+/**
+ * A list representation of data, best used with a dl:
+ *
+
+ <dl class="data">
+
+   <dt class="data__name">County</dt>
+   <dd class="data__value">Kent</dd>
+
+   <dt class="data__name">Place</dt>
+   <dd class="data__value">Deptford</dd>
+
+   <dt class="data__name">Registration number</dt>
+   <dd class="data__value">1924</dd>
+
+   <dt class="data__name">Baptism date</dt>
+   <dd class="data__value">1928</dd>
+
+   <dt class="data__name">Gender</dt>
+   <dd class="data__value">F</dd>
+
+   <dt class="data__name">Person abode(s)</dt>
+   <dd class="data__value">8 Franklin</dd>
+   <dd class="data__value">42 Boston St</dd>
+
+ </dl>
+
+ *
+ */
+
+.data {
+  border-bottom: 1px solid #dddddd;
+  overflow: hidden;
+  color: #666666;
+
+  .data__name,
+  .data__value {
+    border-top: 1px solid #dddddd;
+    margin: 0;
+    padding-top: $b-half;
+    padding-bottom: $b-half;
+  }
+
+  .data__name {
+    @extend %one-third;
+    text-align: left;
+    float: left;
+    clear: both;
+    padding-right: $b / 8;
+  }
+
+  .data__value {
+    @extend %two-thirds;
+    float: right;
+    font-weight: bold;
+    padding-left: $b / 8;
+  }
+
+}
+
+
+
+/**
+ * A more compact version
+ */
+.data--compact {
+
+  .data__name {
+    @extend %one-half;
+  }
+
+  .data__value {
+    @extend %one-half;
+    font-weight: normal;
+  }
+
+}

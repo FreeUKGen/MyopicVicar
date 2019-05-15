@@ -1,0 +1,241 @@
+/*------------------------------------*\
+    $FORMS
+\*------------------------------------*/
+
+/**
+ * Default styling for all forms, with error styles
+ */
+.text-input {
+  @include font-size(18px, false);
+
+  margin: 0 0 $b 0;
+  padding: $b-half;
+  width: 100%;
+  display: block;
+  color: #666;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  @include vendor(transition, all 0.15s linear);
+  &:hover,
+  &:focus {
+    background-color: #eee;
+    outline: none;
+    border-color: #bbb;
+  }
+}
+textarea.text-input { height: auto; }
+.text-input--inline {
+  display: inline;
+  width: auto;
+}
+
+.spoken-form .btn {
+  @extend %btn--small;
+  @include inline-block;
+  vertical-align: top;
+}
+
+.no-label  {
+  margin-top: $b;
+}
+
+
+
+/**
+ * Labels
+ */
+label {
+  font-weight: bold;
+  margin-bottom: $b-half;
+}
+
+
+
+/**
+ * Placeholders
+ *
+ * These need to be on separate lines as if the browser
+ * can't understand a selector it will invalidate the whole line.
+ *
+ * There is a .placeholder class that will could be used for when
+ * the browser doesn't support @placeholder and js adds it.
+ */
+::-webkit-input-placeholder {
+  color: #bdbdbd;
+  @include font-size(18px, false);
+  font-style: normal;
+}
+:-moz-placeholder {
+  color: #bdbdbd;
+  @include font-size(18px, false);
+  font-style: normal;
+}
+:-ms-placeholder {
+  color: #bdbdbd;
+  @include font-size(18px, false);
+  font-style: normal;
+}
+.placeholder {
+  color: #bdbdbd;
+  @include font-size(18px, false);
+  font-style: normal;
+}
+
+
+
+/**
+ * Hides any inputs that are inside so that we
+ * can have pretty styling for radios / checkboxes
+ */
+.hide-inputs input { @extend %visuallyhidden; }
+
+
+
+/**
+ * Selects
+ */
+.select {
+  @include vendor(appearance, none);
+  // -moz doesn't work yet, so hack in the next two lines
+  text-indent: 0.01px;
+  text-overflow: '';
+
+  // Firefox >= 30 is so rubbish we'll just not have a nice select arrow
+  // on any version of FF. Thanks moz.
+  @-moz-document url-prefix() { background-image: none !important; }
+
+  // firefox mobile needs this
+  @include media-query(palm) { text-indent: 5px; }
+
+  // take off any border-radius
+  @include vendor(border-radius, 0);
+
+  // style it the same as inputs
+  @extend %text-input;
+
+  // moz moz moz
+  &:-moz-focusring {
+    color: transparent;
+    text-shadow: 0 0 0 #000;
+  }
+
+  // ms ms ms
+  &::-ms-expand {
+    display: none;
+  }
+
+}
+
+
+
+/**
+ * Icons on forms
+ *
+ * list here any icons that may be used on forms to
+ * apply a right aligned style and fix the width problems
+ */
+  // use in conjunction with the above class to add an icon
+  .icon__select-error,
+  .icon__select-success,
+  .icon__select,
+  .icon__error,
+  .icon__success {
+    // pad the same distance as the icon width - the padding is given on the icon itself
+    padding-right: 50px;
+
+    // take off grunticon's widths
+    width: 100% !important;
+    height: auto !important;
+
+    // stick it on the right hand side
+    background-position: center right;
+  }
+  .spoken-form .icon__select-error,
+  .spoken-form .icon__select-success,
+  .spoken-form .icon__select,
+  .spoken-form .icon__error,
+  .spoken-form .icon__success {
+    width: inherit !important; // spoken-form needs inherit
+  }
+
+
+
+
+/**
+ * Text in forms
+ */
+form {
+  .lede,
+  .lead {
+    @include font-size(22px, false);
+  }
+}
+
+
+
+
+/**
+ * Criteria
+ *
+ * Typical scenario: a form has been filled in and you want
+ * to dsiaply all the options the use selected
+ *
+ * Suggested markup:
+ *
+ <div class="criteria-group">
+   <dl class="criteria">
+     <dt class="criteria__name">First name</dt>
+     <dd class="criteria__value">John</dd>
+   </dl>
+   <dl class="criteria">
+     <dt class="criteria__name">Last name</dt>
+     <dd class="criteria__value">Smith</dd>
+   </dl>
+   <dl class="criteria">
+     <dt class="criteria__name">Place</dt>
+     <dd class="criteria__value">Aldermarston (Berkshire)</dd>
+   </dl>
+ </div>
+ *
+ */
+.criteria-group {
+  margin-left: -$b;
+}
+
+  .criteria {
+    float:left;
+    margin-left: $b;
+  }
+
+    .criteria__name {
+      font-weight: lighter;
+      margin: 0;
+    }
+    .criteria__value {
+      font-weight: bold;
+      margin: 0;
+    }
+
+
+
+/**
+ * Groups of checkboxes and radios
+ */
+.check-list {
+
+  @include inline-block();
+
+  li {
+    @include inline-block();
+    margin-right: $b;
+  }
+
+}
+  /**
+   * Labels in check-lists
+   */
+  .check-label,
+  .check-list label,
+  .check-list .label{
+    margin-bottom: 0;
+  }

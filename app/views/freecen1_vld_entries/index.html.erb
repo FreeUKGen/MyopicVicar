@@ -1,0 +1,89 @@
+<h1>Listing freecen1_vld_entries</h1>
+
+<table>
+  <tr>
+    <th>Freecen1 vld file</th>
+    <th>Deleted flag</th>
+    <th>Household number</th>
+    <th>Sequence in household</th>
+    <th>Civil parish</th>
+    <th>Ecclesiastical parish</th>
+    <th>Enumeration district</th>
+    <th>Folio number</th>
+    <th>Page number</th>
+    <th>Schedule number</th>
+    <th>House number</th>
+    <th>House or street name</th>
+    <th>Uninhabited flag</th>
+    <th>Unoccupied notes</th>
+    <th>Individual flag</th>
+    <th>Surname</th>
+    <th>Forenames</th>
+    <th>Name flag</th>
+    <th>Relationship</th>
+    <th>Marital status</th>
+    <th>Sex</th>
+    <th>Age</th>
+    <th>Age unit</th>
+    <th>Detail flag</th>
+    <th>Occupation</th>
+    <th>Occupation flag</th>
+    <th>Birth county</th>
+    <th>Birth place</th>
+    <th>Verbatim birth county</th>
+    <th>Verbatim birth place</th>
+    <th>Birth place flag</th>
+    <th>Disability</th>
+    <th>Language</th>
+    <th>Notes</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @freecen1_vld_entries.each do |freecen1_vld_entry| %>
+  <tr>
+    <td><%= freecen1_vld_entry.freecen1_vld_file %></td>
+    <td><%= freecen1_vld_entry.deleted_flag %></td>
+    <td><%= freecen1_vld_entry.household_number %></td>
+    <td><%= freecen1_vld_entry.sequence_in_household %></td>
+    <td><%= freecen1_vld_entry.civil_parish %></td>
+    <td><%= freecen1_vld_entry.ecclesiastical_parish %></td>
+    <td><%= freecen1_vld_entry.enumeration_district %></td>
+    <td><%= freecen1_vld_entry.folio_number %></td>
+    <td><%= freecen1_vld_entry.page_number %></td>
+    <td><%= freecen1_vld_entry.schedule_number %></td>
+    <td><%= freecen1_vld_entry.house_number %></td>
+    <td><%= freecen1_vld_entry.house_or_street_name %></td>
+    <td><%= freecen1_vld_entry.uninhabited_flag %></td>
+    <td><%= freecen1_vld_entry.unoccupied_notes %></td>
+    <td><%= freecen1_vld_entry.individual_flag %></td>
+    <td><%= freecen1_vld_entry.surname %></td>
+    <td><%= freecen1_vld_entry.forenames %></td>
+    <td><%= freecen1_vld_entry.name_flag %></td>
+    <td><%= freecen1_vld_entry.relationship %></td>
+    <td><%= freecen1_vld_entry.marital_status %></td>
+    <td><%= freecen1_vld_entry.sex %></td>
+    <td><%= freecen1_vld_entry.age %></td>
+    <td><%= freecen1_vld_entry.age_unit %></td>
+    <td><%= freecen1_vld_entry.detail_flag %></td>
+    <td><%= freecen1_vld_entry.occupation %></td>
+    <td><%= freecen1_vld_entry.occupation_flag %></td>
+    <td><%= freecen1_vld_entry.birth_county %></td>
+    <td><%= freecen1_vld_entry.birth_place %></td>
+    <td><%= freecen1_vld_entry.verbatim_birth_county %></td>
+    <td><%= freecen1_vld_entry.verbatim_birth_place %></td>
+    <td><%= freecen1_vld_entry.birth_place_flag %></td>
+    <td><%= freecen1_vld_entry.disability %></td>
+    <td><%= freecen1_vld_entry.language %></td>
+    <td><%= freecen1_vld_entry.notes %></td>
+    <td><%= link_to 'Show', freecen1_vld_entry %></td>
+    <td><%= link_to 'Edit', edit_freecen1_vld_entry_path(freecen1_vld_entry) %></td>
+    <td><%= link_to 'Destroy', freecen1_vld_entry, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Freecen1 vld entry', new_freecen1_vld_entry_path %>

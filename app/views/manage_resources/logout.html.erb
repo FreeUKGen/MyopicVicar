@@ -1,10 +1,8 @@
 <div class="text--center">
-<% if @message %>
+  <% if @message %>
     <div id="notice" style="color:red"  ><br>
-   <%= @message%>  <br>
+      <%= @message%>  <br>
     </div>
-   <% end %> 
-
-<p style="text-align: center"><b>Thank you for working with FreeREG. This session is now finished.</b> </p>
-
+  <% end %>
+  <p style="text-align: center"><b>Thank you for working with <%=appname%>. This session is now finished.</b> </p>
 </div>

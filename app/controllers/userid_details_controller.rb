@@ -14,6 +14,7 @@
 class UseridDetailsController < ApplicationController
   include ActiveModel::Dirty
   require 'userid_role'
+  require 'import_users_from_csv'
   skip_before_action :require_login, only: [:general, :create, :researcher_registration, :transcriber_registration, :technical_registration]
   rescue_from ActiveRecord::RecordInvalid, with: :record_validation_errors
 
@@ -82,7 +83,9 @@ class UseridDetailsController < ApplicationController
     session[:type] = 'edit'
     redirect_back(fallback_location: options_userid_details_path, notice: 'The destruction of the profile not permitted as they have batches') && return if @userid.has_files?
 
-    Freereg1CsvFile.delete_userid_folder(@userid.userid)
+    if MyopicVicar::Application.config.template_set != 'freecen'
+      Freereg1CsvFile.delete_userid_folder(@userid.userid)
+    end
     flash[:notice] = 'The destruction of the profile was successful'
     redirect_to(options_userid_details_path)
   end
@@ -191,7 +194,11 @@ class UseridDetailsController < ApplicationController
     @userid.finish_researcher_creation_setup if params[:commit] == 'Register Researcher'
     @userid.finish_technical_creation_setup if params[:commit] == 'Technical Registration'
     if params[:commit] == 'Register as Transcriber'
-      redirect_to(transcriber_registration_userid_detail_path) && return
+      if MyopicVicar::Application.config.template_set != 'freecen'
+        redirect_to(transcriber_registration_userid_detail_path) && return
+      else
+        redirect_to "/cms/opportunities-to-volunteer-with-freecen/welcome-to-freecen" and return
+      end
     elsif params[:commit] == 'Submit' && session[:userid_detail_id].present?
       redirect_to(userid_detail_path(@userid)) && return
     elsif params[:commit] == 'Update' && session[:my_own]
@@ -411,6 +418,10 @@ class UseridDetailsController < ApplicationController
     @first_name = session[:first_name]
   end
 
+  def scotland_counties
+    ["Aberdeenshire Syndicate", "Angus (Forfarshire) Syndicate", "Argyllshire Syndicate", "Ayrshire Syndicate",]
+  end
+
   def update
     load(params[:id])
     redirect_back(fallback_location: userid_details_path, notice: 'The userid was not found') && return if @userid.blank?
@@ -437,8 +448,7 @@ class UseridDetailsController < ApplicationController
     end
     email_valid_change_message
     params[:userid_detail][:email_address_last_confirmned] = ['1', 'true'].include?(params[:userid_detail][:email_address_valid]) ? Time.now : ''
-    #    params[:userid_detail][:email_address_valid]  = true
-    @userid.update_attributes(userid_details_params)
+    @userid.update_attributes(userid_details_params.except(:userid))
     @userid.write_userid_file
     @userid.save_to_refinery
     if @userid.errors.any?
@@ -535,6 +545,75 @@ class UseridDetailsController < ApplicationController
     @percentage_active_existing_users_who_accepted_transcription_agreement = return_percentage_all_existing_active_users_accepted_transcriber_agreement
     @new_users_last_30_days = UseridDetail.where(sign_up_date: { '$gt': DateTime.now - 30.days }).count
     @new_users_last_90_days = UseridDetail.where(sign_up_date: { '$gt': DateTime.now - 90.days }).count
+  end
+
+  def import
+    create_users = ImportUsersFromCsv.new(params[:file], params[:commit],session[:syndicate]).import
+    flash[:notice] = "Users creation completed"
+    @userids = UseridDetail.get_userids_for_display('all')
+    @syndicate = 'all'
+    @show_log = true
+    render "index"
+  end
+
+  def download_txt
+    send_file "#{Rails.root}/script/create_user.txt", type: "application/txt", x_sendfile: true
+  end
+
+  def return_total_transcriber_records
+    total_records = 0
+    UseridDetail.where(person_role: "transcriber", transcription_agreement: "Accepted", number_of_records: {'$ne': 0}).each do |count|
+      total_records += count.number_of_records
+    end
+    return total_records
+  end
+
+  def return_total_records
+    total_records = 0
+    UseridDetail.where(number_of_records: {'$ne': 0}).each do |count|
+      total_records += count.number_of_records
+    end
+    return total_records
+  end
+
+  def return_percentage_total_records_by_transcribers
+    total_records_all = return_total_records.to_f
+    total_records_open_transcribers = return_total_transcriber_records.to_f
+    if total_records_all == 0 || total_records_open_transcribers == 0
+      return 0
+    else
+      return (total_records_open_transcribers / total_records_all) * 100
+    end
+  end
+
+  def return_percentage_all_users_accepted_transcriber_agreement
+    total_users = UseridDetail.count.to_f
+    total_users_accepted = UseridDetail.where(transcription_agreement: "Accepted").count.to_f
+    if total_users == 0 || total_users_accepted == 0
+      return 0
+    else
+      return ((total_users_accepted / total_users) * 100).round(2)
+    end
+  end
+
+  def return_percentage_all_existing_users_accepted_transcriber_agreement
+    total_existing_users = UseridDetail.where(sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
+    total_existing_users_accepted = UseridDetail.where(transcription_agreement: "Accepted", sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
+    if total_existing_users == 0 || total_existing_users_accepted == 0
+      return 0
+    else
+      return ((total_existing_users_accepted / total_existing_users) * 100).round(2)
+    end
+  end
+
+  def return_percentage_all_existing_active_users_accepted_transcriber_agreement
+    total_existing_active_users = UseridDetail.where(active: true, sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
+    total_existing_active_users_accepted = UseridDetail.where(active: true, transcription_agreement: "Accepted", sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
+    if total_existing_active_users == 0 || total_existing_active_users_accepted == 0
+      return 0
+    else
+      return ((total_existing_active_users_accepted / total_existing_active_users) * 100).round(2)
+    end
   end
 
   private

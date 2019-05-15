@@ -1,0 +1,52 @@
+@if $use-pagination == true{
+/*------------------------------------*\
+    $PAGINATION
+\*------------------------------------*/
+/**
+ * Building on inuit's and swapping in our icons
+ */
+
+.pagination {
+
+  @extend %nav;
+
+  /**
+   * Taking off inuit's whitespace hack, stick with commenting method.
+   */
+  letter-spacing: normal;
+  word-spacing: normal;
+
+  @include font-size(30px, false);
+  font-weight: bold;
+  color: #999999;
+
+
+  /**
+   * Space the <a>’s out slightly narrower and colour them
+   */
+  > li {
+    padding: $b-quarter;
+
+    > a {
+      padding: $b-quarter;
+      margin: -$b-quarter;
+      color: #999999;
+      &:hover {
+        color: #686868;
+      }
+    }
+
+  }
+
+
+  /**
+   * Icons
+   */
+  i {
+    margin-top: -5px;
+    vertical-align: middle;
+  }
+
+}
+
+}//endif

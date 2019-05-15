@@ -1,0 +1,22 @@
+/*------------------------------------*\
+   $STATS
+\*------------------------------------*/
+.stat {
+  float: left;
+}
+
+.stat-group__header {
+  clear: both;
+}
+.stat-group__footer {
+  clear: both;
+}
+
+  .stat-group__footer__primary {
+    float: left;
+    margin-bottom: 0;
+  }
+  .stat-group__footer__secondary {
+    float: right;
+    margin-bottom: 0;
+  }

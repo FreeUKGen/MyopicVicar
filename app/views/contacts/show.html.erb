@@ -37,6 +37,11 @@
             <td>Record :</td>
             <td class="weight--semibold"> <%= @contact.line_id %> </td>
           </tr>
+  <% if 'freecen' == MyopicVicar::Application.config.template_set %>
+          <tr><td>Data Record :</td><td class="weight--semibold"><%= link_to(' Record in question', search_record_path(@contact.record_id, :search_id => @contact.query), method: :get)%></td></tr>
+  <% elsif 'freereg' == MyopicVicar::Application.config.template_set %>
+          <tr><td>Data Record :</td><td class="weight--semibold"><%= button_to ' Record in question', freereg1_csv_entry_path(@contact.entry_id),  method: :get%></td></tr>
+  <% end %>
           <tr>
             <td>Data Record :</td>
             <td class="weight--semibold"><%= link_to ' Record in question', freereg1_csv_entry_path(@contact.entry_id),  method: :get, :class => "btn weight--light  btn--small"%></td>

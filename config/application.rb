@@ -19,7 +19,7 @@ require 'csv'
 
 if defined?(Bundler)
   # If you precompile assets before deploying to production, use this line
-  Bundler.require(*Rails.groups(:assets => %w(development test)))
+  Bundler.require(*Rails.groups(assets: %w(development test)))
   # If you want your assets lazily compiled in production, use this line
   # Bundler.require(:default, :assets, Rails.env)
 end
@@ -79,21 +79,31 @@ module MyopicVicar
     # set config.template_set before asset directories are selected
     # TODO: make bimodal
     # config.template_set = TemplateSet::FREECEN
-
-    # set config.freexxx_display_name based on the template_set
-    if config.template_set == TemplateSet::FREECEN
+    case MyopicVicar::Application.config.template_set
+    when TemplateSet::FREECEN
       config.freexxx_display_name = 'FreeCEN'
-    elsif config.template_set == TemplateSet::FREEREG
+      config.assets.paths << Rails.root.join('app', 'assets_freecen')
+      config.assets.paths << Rails.root.join('app', 'assets_freecen', 'images')
+      config.assets.paths << Rails.root.join('app', 'assets_freecen', 'styles')
+    when TemplateSet::FREEREG
       config.freexxx_display_name = 'FreeREG'
-    elsif config.template_set == TemplateSet::FREEBMD
+      config.assets.paths << Rails.root.join('app', 'assets_freereg')
+      config.assets.paths << Rails.root.join('app', 'assets_freereg', 'images')
+      config.assets.paths << Rails.root.join('app', 'assets_freereg', 'styles')
+    when TemplateSet::FREEBMD
       config.freexxx_display_name = 'FreeBMD'
+      config.assets.paths << Rails.root.join('app', 'assets_freebmd')
+      config.assets.paths << Rails.root.join('app', 'assets_freebmd', 'images')
+      config.assets.paths << Rails.root.join('app', 'assets_freebmd', 'styles')
     else
       config.freexxx_display_name = 'FreeREG'
+      config.assets.paths << Rails.root.join('app', 'assets_freereg')
+      config.assets.paths << Rails.root.join('app', 'assets_freereg', 'images')
+      config.assets.paths << Rails.root.join('app', 'assets_freereg', 'styles')
     end
 
     # Enable the asset pipeline
-    # config.assets.enabled = true  # commented out because already set above
-
+    config.assets.enabled = true # commented out because already set above
     # Version of your assets, change this if you want to expire all your assets
     # config.assets.version = '1.0' # commented out because already set above
 

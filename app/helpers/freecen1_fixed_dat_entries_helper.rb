@@ -1,0 +1,2 @@
+module Freecen1FixedDatEntriesHelper
+end

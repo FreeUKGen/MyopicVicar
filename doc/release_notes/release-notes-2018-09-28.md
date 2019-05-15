@@ -1,3 +1,36 @@
+__FreeCEN2 | Release Notes__
+  =======================
+  09-28-2018
+
+  __New Features__
+  ----------------
+
+  * None
+
+
+  __Improvements__
+  ----------------
+
+  * None
+
+
+  __Fixes__
+  ---------
+
+  * None
+
+
+  __Change Log__
+  ----------------
+
+  Detailed release notes below, listing all commit messages for this release.
+
+* Merge pull request #1595 from FreeUKGen/freecen_release_notes 
+* Updated release note for 14-09-18
+
+
+
+
 __FreeREG | Release Notes__
   =======================
   28-09-2018
@@ -11,8 +44,6 @@ __FreeREG | Release Notes__
   __Improvements__
   ----------------
 
-  * Added a button to "Initialize Multiple Image Groups" in the Image Server Group management options, in order to save time when marking (Issue 1600).
-  * Changed the field names on Edit Image Source, to read "Year" rather than "Date" to avoid confusion (Issue 1132)
 
 
   __Fixes__
@@ -31,5 +62,3 @@ __FreeREG | Release Notes__
 * issue #1600 - Initialize Multiple Image Groups
 * issue #1132 - 117142829 confusing field name on edit image source screen
 * Added notice message to Search page, about ongoing search issues
-
-  

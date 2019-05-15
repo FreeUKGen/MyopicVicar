@@ -20,12 +20,26 @@ class Contact
   field :line_id, type: String
   field :contact_name, type: String, default: nil  # this field is used as a span trap
   field :query, type: String
+  field :selected_county, type: String # user-selected county to contact in FC2
+  field :fc_individual_id, type: String
   field :identifier, type: String
   field :screenshot_location, type: String
+  field :census_year, type: String
+  field :data_county, type: String
+  field :place, type: String
+  field :civil_parish, type: String
+  field :piece, type: String
+  field :enumeration_district, type: String
+  field :folio, type: String
+  field :page, type: String
+  field :house_number, type: String
+  field :house_or_street_name, type: String
+
   field :contact_action_sent_to_userid, type: String, default: nil
   field :copies_of_contact_action_sent_to_userids, type: Array, default: Array.new
   field :archived, type: Boolean, default: false
   field :keep, type: Boolean, default: false
+
   attr_accessor :action
 
   validates_presence_of :name, :email_address
@@ -133,7 +147,39 @@ class Contact
       message.add_message_to_userid_messages(UseridDetail.look_up_id(userid))
     end
   end
+  
+  # FreeCEN
+  def communicate_website_problem
+    ccs = Array.new
+    selected_coord = get_coordinator_for_selected_county
+    ccs << selected_coord.email_address unless selected_coord.nil?
+    UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
+      ccs << person.email_address
+    end
+    if ccs.blank?
+      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
+        ccs << person.email_address
+      end
+    end
+    UserMailer.website(self,ccs).deliver_now
+  end
 
+  # FreeCEN
+  def communicate_data_question
+    ccs = Array.new
+    selected_coord = get_coordinator_for_selected_county
+    ccs << selected_coord.email_address unless selected_coord.nil?
+    UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
+      ccs << person.email_address
+    end
+    if ccs.blank?
+      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
+        ccs << person.email_address
+      end
+    end
+  end
+
+  # master
   def add_sender_to_copies_of_contact_action_sent_to_userids(sender_userid)
     copies_of_contact_action_sent_to_userids = self.copies_of_contact_action_sent_to_userids
     copies_of_contact_action_sent_to_userids.push(sender_userid) unless  copies_of_contact_action_sent_to_userids.include?(sender_userid)
@@ -141,6 +187,7 @@ class Contact
     copies_of_contact_action_sent_to_userids
   end
 
+  # master
   def archive
     update_attribute(:archived, true)
     Contact.message_replies(id).each do |message_rl1|
@@ -181,6 +228,24 @@ class Contact
     end
   end
 
+  # freecen
+  def communicate_data_problem
+    ccs = Array.new
+    selected_coord = get_coordinator_for_selected_county
+    ccs << selected_coord.email_address unless selected_coord.nil?
+    #coordinator = self.get_coordinator if self.record_id.present?
+    #ccs << coordinator.email_address if coordinator.present?
+    UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
+      ccs << person.email_address
+    end
+    if ccs.blank?
+      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
+        ccs << person.email_address
+      end
+    end
+    UserMailer.coordinator_data_problem(self,ccs).deliver_now
+  end
+
   def archived?
     archived.present?
   end
@@ -188,6 +253,82 @@ class Contact
   def being_kept?
     self.keep.present? ? answer = true : answer = false
     answer
+  end
+
+
+  def communicate_publicity
+    ccs = Array.new
+    selected_coord = get_coordinator_for_selected_county
+    ccs << selected_coord.email_address unless selected_coord.nil?
+    UseridDetail.where(:person_role => 'publicity_coordinator', :email_address_valid => true).all.each do |person|
+      ccs << person.email_address
+    end
+    UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
+      ccs << person.email_address
+    end
+    if ccs.blank?
+      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
+        ccs << person.email_address
+      end
+    end
+    UserMailer.publicity(self,ccs).deliver_now
+  end
+
+  def communicate_genealogical_question
+    ccs = Array.new
+    selected_coord = get_coordinator_for_selected_county
+    ccs << selected_coord.email_address unless selected_coord.nil?
+    UseridDetail.where(:person_role => 'genealogy_coordinator', :email_address_valid => true).all.each do |person|
+      ccs << person.email_address
+    end
+    UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
+      ccs << person.email_address
+    end
+    if ccs.blank?
+      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
+        ccs << person.email_address
+      end
+    end
+    UserMailer.genealogy(self,ccs).deliver_now
+  end
+
+  def communicate_enhancement_suggestion
+    ccs = Array.new
+    selected_coord = get_coordinator_for_selected_county
+    ccs << selected_coord.email_address unless selected_coord.nil?
+    UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
+      ccs << person.email_address
+    end
+    UseridDetail.where(:person_role => 'project_manager', :email_address_valid => true).all.each do |person|
+      ccs << person.email_address
+    end
+    if ccs.blank?
+      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
+        ccs << person.email_address
+      end
+    end
+    UserMailer.enhancement(self,ccs).deliver_now
+  end
+
+  def communicate_volunteering
+    ccs = Array.new
+    selected_coord = get_coordinator_for_selected_county
+    ccs << selected_coord.email_address unless selected_coord.nil?
+    UseridDetail.where(:person_role => 'volunteer_coordinator', :email_address_valid => true).all.each do |person|
+      ccs << person.email_address
+    end
+    UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
+      ccs << person.email_address
+    end
+    if ccs.blank?
+      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
+        ccs << person.email_address
+      end
+    else
+      coordinator = nil
+    end
+    coordinator.present? ? userid = coordinator.userid : userid = 'REGManager'
+    userid
   end
 
   def communicate_contact_reply(message, sender_userid)
@@ -242,6 +383,53 @@ class Contact
     userid
   end
 
+  def communicate_general
+    ccs = Array.new
+    selected_coord = get_coordinator_for_selected_county
+    ccs << selected_coord.email_address unless selected_coord.nil?
+    UseridDetail.where(:person_role => 'contacts_coordinator', :email_address_valid => true).all.each do |person|
+      ccs << person.email_address
+    end
+    if ccs.blank?
+      UseridDetail.where(:person_role => 'system_administrator', :email_address_valid => true).all.each do |person|
+        ccs << person.email_address
+      end
+    end
+    UserMailer.general(self,ccs).deliver_now
+  end
+
+  def get_coordinator
+    if MyopicVicar::Application.config.template_set == 'freereg'
+      entry = SearchRecord.find(self.record_id).freereg1_csv_entry
+      record = Freereg1CsvEntry.find(entry)
+      file = record.freereg1_csv_file
+      county = file.county #this is chapman code
+      coordinator = UseridDetail.where(:userid => County.where(:chapman_code => county).first.county_coordinator).first
+      return coordinator
+    elsif MyopicVicar::Application.config.template_set == 'freecen'
+      coord = nil
+      rec_county = SearchRecord.find(self.record_id).chapman_code
+      if rec_county.present?
+        c = County.where(:chapman_code => rec_county).first
+        return nil if c.nil?
+        cc_id = c.county_coordinator
+        coord = UseridDetail.where(:userid => cc_id).first unless cc_id.nil?
+      end
+      return coord
+    end
+  end
+
+  # used by freecen if user selects to contact coordinator for a specific county
+  def get_coordinator_for_selected_county
+    return nil if MyopicVicar::Application.config.template_set != 'freecen'
+    return nil if nil == self.selected_county || ''==self.selected_county
+    c = County.where(:chapman_code => self.selected_county).first
+    return nil if c.nil?
+    cc_userid = c.county_coordinator
+    coord = UseridDetail.where(:userid => cc_userid).first unless cc_userid.nil?
+    coord
+  end
+
   def get_manager
     action_person = UseridDetail.role("contacts_coordinator").active(true).first
     action_person = UseridDetail.secondary("contacts_coordinator").active(true).first if action_person.blank?
@@ -273,6 +461,7 @@ class Contact
   end
 
   def github_issue
+    appname = MyopicVicar::Application.config.freexxx_display_name.upcase
     if Contact.github_enabled
       self.add_link_to_attachment
       Octokit.configure do |c|
@@ -281,11 +470,11 @@ class Contact
       end
       self.screenshot = nil
       response = Octokit.create_issue(Rails.application.config.github_issues_repo, issue_title, issue_body, :labels => [])
-      logger.info("FREEREG:GITHUB response: #{response}")
+      logger.info("#{appname}:GITHUB response: #{response}")
       logger.info(response.inspect)
       self.update_attributes(:github_issue_url => response[:html_url],:github_comment_url => response[:comments_url], :github_number => response[:number])
     else
-      logger.error("FREEREG:Tried to create an issue, but Github integration is not enabled!")
+      logger.error("#{appname}:Tried to create an issue, but Github integration is not enabled!")
     end
   end
 

@@ -1,0 +1,34 @@
+/*------------------------------------*\
+    $QUOTES
+\*------------------------------------*/
+/**
+ * Fix inuit's bug with not being able to override these in vars
+ */
+
+blockquote{
+
+  quotes:"“" "”";
+
+  p:before{
+    content:"“";
+    content:open-quote;
+  }
+  p:after{
+    content:"";
+    content:no-close-quote;
+  }
+  p:last-of-type:after{
+    content:"”";
+    content:close-quote;
+  }
+
+  q:before{
+    content:"‘";
+    content:open-quote;
+  }
+  q:after{
+    content:"’";
+    content:close-quote;
+  }
+
+}

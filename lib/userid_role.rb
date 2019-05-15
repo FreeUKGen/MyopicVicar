@@ -12,13 +12,13 @@ module UseridRole
     'contacts_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Display County Coordinators',
                                'Display Syndicate Coordinators', 'Display Userids', 'Feedback', 'Manage Counties', 'Profile', 'System Documentation', 'Roadmap'],
     'county_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts',  'Display Userids', 'Manage County', 'Manage Syndicate', 'Profile', 'Roadmap'],
-    'country_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Display Userids', 'Manage Country', 'Manage County', 'Manage Syndicate', 'Profile', 'Roadmap'],
+    'country_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Display Userids', 'Manage County', 'Manage Syndicate', 'Profile', 'Roadmap'],
     'volunteer_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Manage Syndicates', 'Manage Userids', 'Profile', 'Roadmap'],
     'data_manager' => ['Access Attic', 'Assignments', 'Batches', 'Communicate', 'Contacts', 'Denominations', 'Display Userids', 'Display Syndicate Coordinators', 'Display County Coordinators', 'Manage Counties', 'Manage Syndicates', 'Physical Files', 'Profile', 'Roadmap' ],
     'technical' => ['Access Attic', 'Assignments', 'Batches', 'Communicate', 'Manage Assignments', 'Contacts', 'Feedback', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
                     'System Documentation'],
     'system_administrator' => ['Access Attic', 'Assignments', 'Batches', 'Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Denominations', 'GAP Reasons', 'Feedback',
-                               'Manage Counties', 'Manage Countries', 'Manage Image Server', 'Manage Syndicates', 'Manage Userids', 'Message System',  'Physical Files', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
+                               'Manage Counties', 'Manage Image Server', 'Manage Syndicates', 'Manage Userids', 'Message System',  'Physical Files', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
                                'Software Version Information', 'Syndicate Coordinators', 'System Documentation'],
     'project_manager' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Manage Userids', 'Feedback', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
                           'System Documentation'],
@@ -44,8 +44,6 @@ module UseridRole
     'Manage Syndicate' => '/manage_syndicates',
     'Manage Syndicates' => '/manage_syndicates',
     'Manage County' => '/manage_counties',
-    'Manage Country' => '/manage_countries',
-    'Manage Countries' => '/countries',
     'Manage Counties' => '/manage_counties',
     'Manage Image Server' => '/sources/access_image_server',
     'Manage Userids' => '/userid_details/options',
@@ -69,14 +67,15 @@ module UseridRole
     'Logout' => '/refinery/logout',
     'Message System' => '/messages',
     'Manage Images' => '/sources',
-    'Assignments' => '/assignments/my_own'
+    'Assignments' => '/assignments/my_own',
+    'Manage Pieces' => '/freecen_coverage/edit'
   }
   USERID_MANAGER_OPTIONS = ['Select specific userid', 'Select specific email', 'Select specific surname/forename',
                             'Browse userids', 'Select Role', 'Select Secondary Role', 'Incomplete Registrations', 'Create userid', 'Transcriber Statistics']
   USERID_ACCESS_OPTIONS = ['Select specific userid', 'Select specific email', 'Select specific surname/forename']
 
   USERID_OPTIONS_TRANSLATION = {
-    #todo clean up first 2
+    # todo clean up first 2
     'Browse userids' => '/userid_details/selection?option=Browse userids',
     'Incomplete Registrations' => '/userid_details/incomplete_registrations',
     'Create userid' => '/userid_details/selection?option=Create userid',
@@ -157,6 +156,7 @@ module UseridRole
 
   SKILLS = ['Learning', 'Straight Forward Forms', 'Complicated Forms', 'Post 1700 modern freehand', 'Post 1530 freehand - Secretary', 'Post 1530 freehand - Latin', 'Post 1530 freehand - Latin & Chancery']
 
+
   REASONS_FOR_INACTIVATING = {
     'Not currently transcribing (may return)' => 'temporary',
     'No longer transcribing (permanently)' => 'permanent',
@@ -167,6 +167,60 @@ module UseridRole
     'Coordinator controlled' => 'coord-controlled',
     'Other (please explain below)' => 'other'
   }
+
+
+  # Remove options for functionality that is not implemented for FreeCEN yet
+  if MyopicVicar::Application.config.template_set == 'freecen'
+    transcriber_idx = VALUES.find_index('transcriber')
+    VALUES.insert(transcriber_idx+1, 'checker')
+    VALUES.insert(transcriber_idx+2, 'validator')
+    OPTIONS['checker'] = ['Batches', 'Profile', 'Roadmap']
+    OPTIONS['validator'] = ['Batches', 'Profile', 'Roadmap']
+    OPTIONS.each do |role, opts|
+      if opts.include?('Batches')
+        opts.delete('Batches')
+      end
+      if opts.include?('Access Attic')
+        opts.delete('Access Attic')
+      end
+      if opts.include?('Physical Files')
+        opts.delete('Physical Files')
+      end
+      if opts.include?('Manage Counties')
+        #        opts.delete('Manage Counties')
+      end
+      if opts.include?('Denominations')
+        opts.delete('Denominations')
+      end
+      if opts.include?('GAP Reasons')
+        opts.delete('GAP Reasons')
+      end
+      if opts.include?('Manage Image Server')
+        opts.delete('Manage Image Server')
+      end
+      if opts.include?('Assignments')
+        opts.delete('Assignments')
+      end
+    end
+    OPTIONS['system_administrator'] << 'Manage Pieces'
+    OPTIONS['technical'] << 'Manage Pieces'
+    self.send(:remove_const, :FILE_MANAGEMENT_OPTIONS)
+    FILE_MANAGEMENT_OPTIONS = []
+    COUNTY_MANAGEMENT_OPTIONS.reverse_each do |val|
+      unless val.downcase().index('batch').nil?
+        COUNTY_MANAGEMENT_OPTIONS.delete(val)
+      end
+    end
+
+    SYNDICATE_MANAGEMENT_OPTIONS.reverse_each do |val|
+      unless val.downcase().index('batch').nil?
+        SYNDICATE_MANAGEMENT_OPTIONS.delete(val)
+      end
+    end
+
+    self.send(:remove_const, :PHYSICAL_FILES_OPTIONS)
+    PHYSICAL_FILES_OPTIONS = []
+  end
 
   REASONS_FOR_MAKING_EMAIL_INVALID = ['Mails to this email bounced', 'No Response', 'Cannot be reached']
 end

@@ -1,0 +1,14 @@
+<h1><%= @record_types_display.titleize %> for <%= @surname %> in <%= @place.place_name %> (<%= @county %>)</h1>
+
+
+
+<%= render(:partial => "desktop",
+           :controller => :search_query, 
+           :locals => {
+             :search_results => @open_results, 
+             :inclusive => @search_query.inclusive, 
+             :witness =>@search_query.witness,
+              :first_name => @search_query.first_name,
+               :last_name => @search_query.last_name, 
+               :ucf_results => false}) %>
+

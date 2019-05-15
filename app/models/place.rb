@@ -38,8 +38,9 @@ class Place
   field :disabled, type: String, default: "false"
   field :master_place_lat, type: String
   field :master_place_lon, type: String
-  field :error_flag,type: String, default: nil
+  field :error_flag, type: String, default: nil
   field :data_present, type: Boolean, default: false
+  field :cen_data_years, type: Array, default: [] #Cen: fullyears with data here
   field :alternate, type: String, default: ""
   field :ucf_list, type: Hash, default: {}
   field :records, type: String
@@ -48,6 +49,7 @@ class Place
   field :daterange, type: Hash
   field :transcribers, type: Hash
   field :contributors, type: Hash
+  field :open_record_count, type: Integer, default: 0
 
   embeds_many :alternateplacenames
 
@@ -76,8 +78,15 @@ class Place
 
   has_many :churches, dependent: :restrict_with_error
   has_many :search_records
+
+  has_many :freecen_pieces
+  has_many :freecen_dwellings
+  has_many :sources
+
   has_many :image_server_groups
   has_many :gaps
+
+  has_many :open_names_per_place
   PLACE_BASE_URL = "http://www.genuki.org.uk"
 
   module MeasurementSystem
@@ -163,7 +172,7 @@ class Place
 
   def add_location_if_not_present
     self[:place_name] = self[:place_name].strip
-    self[:modified_place_name] = self[:modified_place_name].strip
+    self[:modified_place_name] = self[:modified_place_name].strip if self[:modified_place_name]
     if self.location.blank?
       if self[:latitude].blank? || self[:longitude].blank? then
         my_location = self[:grid_reference].to_latlng.to_a
@@ -173,6 +182,40 @@ class Place
       self.location = [self[:longitude].to_f,self[:latitude].to_f]
     end
   end
+
+
+  def aggregate_open_surnames
+    open_surnames = {}
+    self.search_records.no_timeout.each do |search_record|
+      search_record.transcript_names.each do |name|
+        if name && name["last_name"] && name["last_name"].match(/^[A-Za-z \.-]+$/)
+          surname = open_surnames[name["last_name"]] || {}
+          counter = surname[search_record.record_type] || {}
+          date = search_record.search_date
+          # records without dates are not useful to us
+          if date
+            earliest = counter[:earliest] || date
+            latest = counter[:latest] || date
+            number = counter[:number] || 0
+
+            number += 1
+            if earliest > date
+              earliest = date
+            end
+            if latest < date
+              latest = date
+            end
+
+            surname[search_record.record_type] = { :number => number, :earliest => earliest, :latest => latest }
+            open_surnames[name["last_name"]] = surname
+          end
+        end
+      end
+    end
+
+    open_surnames
+  end
+
 
   def adjust_location_before_applying(params, chapman)
     self.chapman_code = ChapmanCode.name_from_code(params[:place][:county]) unless params[:place][:county].nil?
@@ -240,6 +283,14 @@ class Place
       self.location = [self.longitude.to_f,self.latitude.to_f]
     end
     self.save(:validate => false)
+    # update freecen pieces
+    if MyopicVicar::Application.config.template_set == 'freecen'
+      self.freecen_pieces.no_timeout.each do |piece|
+        piece.place_latitude = self.latitude
+        piece.place_longitude = self.longitude
+        piece.save
+      end
+    end
   end
 
   def change_name(param)
@@ -343,8 +394,10 @@ class Place
       if (self[:latitude].blank? || self[:longitude].blank?)
         errors.add(:grid_reference, "Either the grid reference or the lat/lon must be present")
       else
-        errors.add(:latitude, "The latitude must be between 45 and 70") unless (self[:latitude].to_i > 45 && self[:latitude].to_i < 70)
-        errors.add(:longitude, "The longitude must be between -10 and 5") unless self[:longitude].to_i > -10 && self[:longitude].to_i < 5
+        if MyopicVicar::Application.config.template_set != 'freecen'
+          errors.add(:latitude, "The latitude must be between 45 and 70") unless (self[:latitude].to_i > 45 && self[:latitude].to_i < 70)
+          errors.add(:longitude, "The longitude must be between -10 and 5") unless self[:longitude].to_i > -10 && self[:longitude].to_i < 5
+        end
       end
     else
       errors.add(:grid_reference, "The grid reference is not correctly formatted") unless self[:grid_reference].is_gridref?
@@ -436,6 +489,44 @@ class Place
       end
       church.update_attributes(:place_name => new_place_name)
     end
+    if MyopicVicar::Application.config.template_set == 'freecen'
+      self.freecen_pieces.no_timeout.each do |piece|
+        piece.district_name = self.place_name
+        piece.save
+      end
+    end
+  end
+
+  def rebuild_open_records
+    self.open_names_per_place.delete_all
+    open_records = aggregate_open_surnames
+    self.open_record_count = 0
+    open_records.keys.sort.each do |surname_key|
+      open = OpenNamesPerPlace.new
+      open.place_id = self.id
+      open.surname = surname_key.titleize
+      element = open_records[surname_key]
+      count=0
+      description = []
+      RecordType.all_types.each do |record_type|
+        stat = element[record_type]
+        if stat
+          count += stat[:number]
+          self.open_record_count = count if count > self.open_record_count
+          if stat[:number] > 1
+            display_type = RecordType.display_name(record_type).pluralize.downcase
+          else
+            display_type = RecordType.display_name(record_type).downcase
+          end
+          description << "#{stat[:number]} #{open.surname} #{display_type} from #{stat[:earliest]} to #{stat[:latest]}"
+        end
+      end
+      open.count = count
+      open.description = description.join("<br />")
+      self.open_names_per_place << open
+      #      open.save!
+    end
+    self.save!
   end
 
   def recalculate_last_amended_date
@@ -502,7 +593,7 @@ class Place
   end
 
   def update_places_cache
-    PlaceCache.refresh_cache(self)
+    PlaceCache.refresh(self.chapman_code)
   end
 
   def update_ucf_list(file)

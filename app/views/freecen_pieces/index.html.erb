@@ -1,0 +1,37 @@
+<h1>Listing freecen_pieces</h1>
+
+<table>
+  <tr>
+    <th>Chapman code</th>
+    <th>Piece number</th>
+    <th>District name</th>
+    <th>Subplaces</th>
+    <th>Parish number</th>
+    <th>Suffix</th>
+    <th>Freecen1 fixed dat entry</th>
+    <th>Place</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @freecen_pieces.each do |freecen_piece| %>
+  <tr>
+    <td><%= freecen_piece.chapman_code %></td>
+    <td><%= freecen_piece.piece_number %></td>
+    <td><%= freecen_piece.district_name %></td>
+    <td><%= freecen_piece.subplaces %></td>
+    <td><%= freecen_piece.parish_number %></td>
+    <td><%= freecen_piece.suffix %></td>
+    <td><%= freecen_piece.freecen1_fixed_dat_entry %></td>
+    <td><%= freecen_piece.place %></td>
+    <td><%= link_to 'Show', freecen_piece %></td>
+    <td><%= link_to 'Edit', edit_freecen_piece_path(freecen_piece) %></td>
+    <td><%= link_to 'Destroy', freecen_piece, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Freecen piece', new_freecen_piece_path %>

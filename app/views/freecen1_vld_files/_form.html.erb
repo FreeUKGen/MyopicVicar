@@ -1,0 +1,45 @@
+<%= form_for(@freecen1_vld_file) do |f| %>
+  <% if @freecen1_vld_file.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@freecen1_vld_file.errors.count, "error") %> prohibited this freecen1_vld_file from being saved:</h2>
+
+      <ul>
+      <% @freecen1_vld_file.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :file_name %><br />
+    <%= f.text_field :file_name %>
+  </div>
+  <div class="field">
+    <%= f.label :dir_name %><br />
+    <%= f.text_field :dir_name %>
+  </div>
+  <div class="field">
+    <%= f.label :census_type %><br />
+    <%= f.text_field :census_type %>
+  </div>
+  <div class="field">
+    <%= f.label :raw_year %><br />
+    <%= f.text_field :raw_year %>
+  </div>
+  <div class="field">
+    <%= f.label :full_year %><br />
+    <%= f.text_field :full_year %>
+  </div>
+  <div class="field">
+    <%= f.label :piece %><br />
+    <%= f.text_field :piece %>
+  </div>
+  <div class="field">
+    <%= f.label :series %><br />
+    <%= f.text_field :series %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

@@ -11,7 +11,7 @@
 		var settings = $.extend({
 			//Options
 			explicitConsent: false,
-			position: 'top',
+			position: 'bottom',
 			duration: 10,
 			limit: 0,
 			message: null,				
@@ -26,7 +26,6 @@
       backgroundOpacity: '80',
       linkColor: '#CA0000'
     }, options);
-		
 		// Perform consent checks
 		if(!getCookie('cookiesDirective')) {
 			if(settings.limit > 0) {
@@ -204,8 +203,8 @@
 			// Implied consent disclosure
 			html += scriptsDisclosure + 'Review our <a tabindex="1" style="color:'+ settings.linkColor + ';font-weight:bold;';
       html += 'font-family:' + settings.fontFamily + ';font-size:' + settings.fontSize + ';" href="'+ settings.privacyPolicyUri + '">Cookie policy</a>.';
-			html += '<div style="margin-top:5px;"><input class="btn btn--navy btn--small weight--light" tabindex="3" type="submit" name="impliedsubmit" id="impliedsubmit" value="Do not show this message again"/></div></div>';	
-		}		
+      html += '<div style="margin-top:5px;"><input class="btn btn--navy btn--small weight--light" tabindex="3" type="submit" name="impliedsubmit" id="impliedsubmit" value="Do not show this message again"/></div></div>';
+		}
 		html += '</div></div>';
 		$('body').append(html);
 		

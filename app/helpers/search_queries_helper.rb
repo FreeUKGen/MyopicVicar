@@ -4,6 +4,19 @@ module SearchQueriesHelper
     Text::Soundex.soundex(verbatim)
   end
 
+  def format_freecen_birth_year(search_date, record_type)
+    search_year = search_date.gsub(/\D.*/,'')
+    if search_year == record_type
+      search_year
+    else
+      if record_type == RecordType::CENSUS_1841 && search_year > "1826"
+        "#{search_year.to_i - 3} - #{search_year.to_i + 2}"
+      else
+        "#{search_year.to_i - 1} - #{search_year}"
+      end
+    end
+  end
+
   def format_start_date(year)
     "January 1, "+DateParser::start_search_date(year)
   end
@@ -36,7 +49,7 @@ module SearchQueriesHelper
     end
     county
   end
-  
+
   def transcript_date(search_record)
     transcript_dates = search_record.transcript_dates
     transcript_dates.each do |transcript_date|
@@ -48,9 +61,9 @@ module SearchQueriesHelper
   def format_for_line_breaks (names)
     place = ' '
     name_parts = names[0].split(') ')
-    case 
+    case
     when name_parts.length == 1
-    (place, church) = names[0].split(' (')
+      (place, church) = names[0].split(' (')
     when name_parts.length == 2
       place = name_parts[0] + ")"
       name_parts[1][0] = ""
@@ -62,9 +75,33 @@ module SearchQueriesHelper
     else
       church = ' '
     end
-    register_type = names[1].gsub('[', '').gsub(']', '')
-    loc = [place, church, register_type].join(' : ')
+    if names[1]
+      register_type = names[1].gsub('[', '').gsub(']', '')
+      loc = [place, church, register_type].join(' : ')
+    else
+      loc = place
+    end
+
     return loc
   end
 
+  def place_name_from_id(ids)
+    place_names = []
+    ids.each do |id|
+      place = Place.id(id).first
+      place_name = place.present? ? place.place_name : place_name = ''
+      place_names << place_name
+    end
+    place_names
+  end
+
+  def show_contents_link
+    if MyopicVicar::Application.config.template_set == 'freereg'
+      contents_link =  link_to "Transcriptions" , "/freereg_contents/new", :title => "By county, place and church"
+    elsif MyopicVicar::Application.config.template_set == 'freecen'
+      contents_link = link_to "Database Coverage" , freecen_coverage_path, :title => "Database Coverage"
+    elsif MyopicVicar::Application.config.template_set == 'freebmd'
+      contents_link = link_to "Database Coverage" , freebmd_coverage_path, :title => "Database Coverage"
+    end
+  end
 end

@@ -1,0 +1,35 @@
+<h1>Listing freecen1_vld_files</h1>
+
+<table>
+  <tr>
+    <th>File name</th>
+    <th>Dir name</th>
+    <th>Census type</th>
+    <th>Raw year</th>
+    <th>Full year</th>
+    <th>Piece</th>
+    <th>Series</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @freecen1_vld_files.each do |freecen1_vld_file| %>
+  <tr>
+    <td><%= freecen1_vld_file.file_name %></td>
+    <td><%= freecen1_vld_file.dir_name %></td>
+    <td><%= freecen1_vld_file.census_type %></td>
+    <td><%= freecen1_vld_file.raw_year %></td>
+    <td><%= freecen1_vld_file.full_year %></td>
+    <td><%= freecen1_vld_file.piece %></td>
+    <td><%= freecen1_vld_file.series %></td>
+    <td><%= link_to 'Show', freecen1_vld_file %></td>
+    <td><%= link_to 'Edit', edit_freecen1_vld_file_path(freecen1_vld_file) %></td>
+    <td><%= link_to 'Destroy', freecen1_vld_file, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Freecen1 vld file', new_freecen1_vld_file_path %>

@@ -3,7 +3,7 @@ $(document).ready(function() {
   window.delete_cookie = function(name, path, domain) {
     if (getCookie(name)) document.cookie = name + '=' +
       (('/') ? ';path=' + '/' : '') +
-      (('.freereg.org.uk') ? ';domain=' + '.freereg.org.uk' : '') +
+      (('.freecen.org.uk') ? ';domain=' + '.freecen.org.uk' : '') +
          ';expires=Thu, 01-Jan-1970 00:00:01 GMT';
   }
 
@@ -72,7 +72,7 @@ $(document).ready(function() {
       location.reload();
     };
   }
-  
+
   // Deny Personalized Adverts
   var denyPersonalizedAds = function() {
     if (getCookie('userAdPersonalization') == 1) {

@@ -11,52 +11,52 @@
         <th>Instructions</th>
         <th class="t8">Number</th>
         <th class="t10">Action
-          <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '14' %>
-          <% if session[:my_own] %>
-            <span>LS: List Assignment Detail</span></a>
+          <a href="#" class="left_tooltip"><%= image_tag 'png/info.png', alt: 'Information', height: '14' %>
+            <% if session[:my_own] %>
+              <span>LS: List Assignment Detail</span></a>
           <% else %>
-            <span>LS: List Assignment Detail;<br>AC: Accept Assignment Submitted;<br>UN: Unassign Images in This Assignment;<br>RA: Re_assign Images in This Assignment</span></a>
-          <% end %>
-        </th>
-      </tr>
-    </thead>
-  </table>
-
-  <div class="scrollable">
-    <table class=" table--bordered my-width table--data just--left">
-      <tbody>
-        <% prev_id = '' %>
-        <% if @assignment.nil? %>
-          No Assignment Exists
-        <% else %>
-          <% @assignment.each do |k1,v1| %>
+            <span>LS: List Assignment Detail;<br>
+              AC: Accept Assignment Submitted;<br>
+              UN: Unassign Images in This Assignment;<br>
+              RA: Re_assign Images in This Assignment</span></a>
+        <% end %>
+      </th>
+    </tr>
+  </thead>
+</table>
+<div class="scrollable">
+  <table class=" table--bordered my-width table--data just--left">
+    <tbody>
+      <% prev_id = '' %>
+      <% if @assignment.nil? %>
+        No Assignment Exists
+      <% else %>
+        <% @assignment.each do |k1,v1| %>
           <% v1.each do |k2,v2| %>
-          <% v2.each do |k,x| %>
-            <tr>
-              <% rows = x[:id] != prev_id ? @count[x[:id]] : 0 %>
-              <% prev_id = x[:id] %>
-              <% assignment_type = x[:status] == 'bt' ? 'transcriber' : 'reviewer' %>
-
-              <% if rows != 0 %>
-                <% if not session[:my_own] %>   <%# display only from 'List Assignment by userid' #%>
-                  <% if rows != 0 %>
-                    <td class="t12" rowspan=<%= rows %> style="vertical-align: top"><%= x[:userid] %>&nbsp;</td>
+            <% v2.each do |k,x| %>
+              <tr>
+                <% rows = x[:id] != prev_id ? @count[x[:id]] : 0 %>
+                <% prev_id = x[:id] %>
+                <% assignment_type = x[:status] == 'bt' ? 'transcriber' : 'reviewer' %>
+                <% if rows != 0 %>
+                  <% if not session[:my_own] %>   <%# display only from 'List Assignment by userid' #%>
+                    <% if rows != 0 %>
+                      <td class="t12" rowspan=<%= rows %> style="vertical-align: top"><%= x[:userid] %>&nbsp;</td>
+                    <% end %>
                   <% end %>
-                <% end %>
-                <td class="t12"><%= x[:group_name] %>&nbsp;</td>
-                <td class="t12"><%= x[:assign_date].to_date.strftime("%Y-%m-%d") %>&nbsp;</td>
-                <td class="t12"><%= SourceProperty::STATUS[x[:status]] %>&nbsp;</td>
-                <td><%= x[:instructions] %>&nbsp;</td>
-                <td class="t8"><%= rows %>&nbsp;</td>
-
-                <td class="t10">
-                  <% case assignment_filter_list %>
+                  <td class="t12"><%= x[:group_name] %>&nbsp;</td>
+                  <td class="t12"><%= x[:assign_date].to_date.strftime("%Y-%m-%d") %>&nbsp;</td>
+                  <td class="t12"><%= SourceProperty::STATUS[x[:status]] %>&nbsp;</td>
+                  <td><%= x[:instructions] %>&nbsp;</td>
+                  <td class="t8"><%= rows %>&nbsp;</td>
+                  <td class="t10">
+                    <% case assignment_filter_list %>
                     <% when 'submitted_transcribe' %>
-                      <%= link_to 'LS', list_assignment_images_assignment_path(x[:id], :assignment_filter_list=>'submitted_transcribe', :source_id=>x[:source_id], :image_server_group_id=>x[:group_id]), :title=>'list images in this assignment', method: :get %>
+                    <%= link_to 'LS', list_assignment_images_assignment_path(x[:id], :assignment_filter_list=>'submitted_transcribe', :source_id=>x[:source_id], :image_server_group_id=>x[:group_id]), :title=>'list images in this assignment', method: :get %>
                     <% when 'submitted_review' %>
-                      <%= link_to 'LS', list_assignment_images_assignment_path(x[:id], :assignment_filter_list=>'submitted_review', :source_id=>x[:source_id], :image_server_group_id=>x[:group_id]), :title=>'list images in this assignment', method: :get %>
-                    <% else %>
-                      <%= link_to 'LS', list_assignment_images_assignment_path(x[:id], :assignment_filter_list=>'', :source_id=>x[:source_id], :image_server_group_id=>x[:group_id]), :title=>'list images in this assignment', method: :get %>
+                    <%= link_to 'LS', list_assignment_images_assignment_path(x[:id], :assignment_filter_list=>'submitted_review', :source_id=>x[:source_id], :image_server_group_id=>x[:group_id]), :title=>'list images in this assignment', method: :get %>
+                  <% else %>
+                    <%= link_to 'LS', list_assignment_images_assignment_path(x[:id], :assignment_filter_list=>'', :source_id=>x[:source_id], :image_server_group_id=>x[:group_id]), :title=>'list images in this assignment', method: :get %>
                   <% end %>
                   <% if !session[:my_own] %>
                     <% if params[:assignment].nil? %>
@@ -64,7 +64,6 @@
                     <% else %>
                       <% assignment_list_type = params[:assignment][:assignment_list_type] %>
                     <% end %>
-
                     <% if ['ts','rs'].include? x[:status] %>
                       <%= link_to 'AC', assignment_path(x[:id], :status=>x[:status], :type=>'complete', :assignment_list_type=>assignment_list_type), :title=>'accept assignment', data: { confirm: 'Click OK if the assignment has been Completed' }, method: :put %>
                     <% end %>
@@ -76,11 +75,12 @@
             </tr>
             <tr id="<%= x[:images_id] %>" style="display:none;"></tr>
           <% end %>
-          <% end %>
-          <% end %>
         <% end %>
-      </tbody>
-    </table>
-  </div>
+      <% end %>
+    <% end %>
+  </tbody>
+</table>
 </div>
-<div style="clear:both;"></div><br>
+</div>
+<div style="clear:both;"></div>
+<br>

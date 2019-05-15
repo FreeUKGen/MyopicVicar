@@ -1,0 +1,39 @@
+<div class="island island--bordered text--center">
+  <h3>Summary</h3>
+  <p>
+    <strong>Total number of pieces for <%= session[:county]%> for year <%= params[:params]%> : <%= @freecen_piece.count%></strong><br /><strong>Total number of dwellings for <%= session[:county]%> county for year <%= params[:params]%> : <%= sum_calculation(@freecen_piece) %></strong><br />
+    <strong>Total number of individuals for <%= session[:county]%> county for year <%= params[:params]%> : <%= individual_calculation(@freecen_piece)%></strong>
+  </p>
+</div>
+<div class="grid__item "> 
+  <section class="island ">
+  <div class="scrollable">
+    <div class="table-wrapper" style="margin-top: 20px;">
+      <table class="table--bordered table--data" >
+        <thead>
+          <tr >
+            <th>Piece number</th>
+            <th>Year</th>
+            <th>File</th>
+            <th>Place</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @freecen_piece.each do |piece|%>
+            <tr>
+              <td><%= piece.piece_number %></td>
+              <td><%= piece.year %></td> 
+              <td><%= piece.freecen1_filename %></td>
+              <td><%= piece.place.place_name %></td>
+              <td>Number of dwellings: <%= piece.freecen_dwellings.count %><br />
+                Number of individuals/search_records: <%= piece[:num_individuals]%>
+              </td>
+            </tr>
+            <% end %>
+        </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>

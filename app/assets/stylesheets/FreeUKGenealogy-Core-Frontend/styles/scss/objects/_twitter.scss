@@ -1,0 +1,57 @@
+/*------------------------------------*\
+    $TWITTER
+\*------------------------------------*/
+
+.twitter {
+  @extend %islet;
+  @extend %islet--bordered;
+  padding-bottom: $b-quarter;
+}
+  .twitter__title {
+    @extend %title-block;
+    a {
+      @extend %title-block__sub;
+    }
+  }
+
+  .twitter__text {
+    margin-bottom: 2px;
+  }
+
+
+  .twitter__tools {
+
+    @extend %nav;
+    text-align: right;
+    width: 100%;
+    padding-top: $b-quarter;
+    border-top: 1px solid $lesslight;
+
+    li {
+
+      margin-left: $b-quarter;
+
+      &.twitter__tools__follow {
+        margin-left: 0;
+        margin-right: $b-quarter;
+        float: left;
+        border-right: 2px solid #fff;
+
+        a {
+
+          @include font-size(13px);
+          color: #8a8889;
+          font-weight: bold;
+
+          &:active,
+          &:hover {
+            color: #6b6b6b;
+          }
+
+        }
+
+      }
+
+    }
+
+  }

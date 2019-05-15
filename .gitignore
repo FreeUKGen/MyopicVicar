@@ -82,6 +82,12 @@ index/**/*
 *.autobackupbyrefinery.*
 refinerycms-*.gem
 
+# Cloud9 Specific
+start_dbs
+setup_cloud9.rb
+mongod
+.byebug_history
+
 # Mac
 .DS_Store
 
@@ -138,8 +144,13 @@ config/errbit.yml
 config/mongo_config.yml
 config/mongoid.yml
 config/secrets.yml
+config/freeukgen_application.yml
+
+# assets copied into app/assets/ from app/assets_free[reg/cen/bmd]
+app/assets/copy_of_assets_free*
 config/initializers/setup_mail.rb
 data/*
+
 .robocop.yml
 
 
