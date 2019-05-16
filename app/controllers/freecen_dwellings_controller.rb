@@ -1,2 +1,2 @@
-class FreecenDwellingsController < InheritedResources::Base
+class FreecenDwellingsController < ApplicationController
 end

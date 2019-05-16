@@ -1,2 +1,2 @@
-class FreecenIndividualsController < InheritedResources::Base
+class FreecenIndividualsController < ApplicationController
 end

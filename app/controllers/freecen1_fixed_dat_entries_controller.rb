@@ -1,2 +1,2 @@
-class Freecen1FixedDatEntriesController < InheritedResources::Base
+class Freecen1FixedDatEntriesController < ApplicationController
 end
