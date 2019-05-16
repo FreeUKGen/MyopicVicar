@@ -1,3 +1,8 @@
 <% title "Contact Us" %>
 <h1 class="title">Contact us</h1>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue">
+    <%= flash[:notice] %>  <% flash[:notice] = nil%>
+  </div>
+<% end %>
 <%= render 'form' %>
