@@ -1,4 +1,4 @@
-class FreecenPiecesController < InheritedResources::Base
+class FreecenPiecesController < ApplicationController
   require 'freecen_constants'
 
   def freecen_piece_params
@@ -10,7 +10,7 @@ class FreecenPiecesController < InheritedResources::Base
   def index
   end
 
-  
+
 
   def show
     if params[:id].present?
@@ -24,7 +24,7 @@ class FreecenPiecesController < InheritedResources::Base
 
   def new
     @freecen_piece = FreecenPiece.new
-    @freecen_piece.year = params[:year] if params[:year].present? && 
+    @freecen_piece.year = params[:year] if params[:year].present? &&
       Freecen::CENSUS_YEARS_ARRAY.include?(params[:year])
     @freecen_piece.chapman_code = params[:chapman_code].upcase if params[:chapman_code].present?
     @freecen_piece.subplaces = [{'name'=>'','lat'=>'0.0','long'=>'0.0'}]
@@ -34,7 +34,7 @@ class FreecenPiecesController < InheritedResources::Base
   def select_new_county
     @county = ''
     if Freecen::CENSUS_YEARS_ARRAY.include?(params[:year])
-      @year = params[:year] 
+      @year = params[:year]
       year_pieces = FreecenPiece.only(:chapman_code).where('year'=>@year).entries
       existing_year_counties = []
       if year_pieces.present?
