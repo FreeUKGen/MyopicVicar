@@ -1,0 +1,28 @@
+<tr>
+  <td>SC uploads my data:</td>
+  <td > <%=@userid.no_processing_messages %>  </td>
+</tr>
+<tr>
+  <td>Last upload:</td>
+  <td > <%= @userid.last_upload.strftime("%d %b %Y") if @userid.last_upload.present?%>  </td>
+</tr>
+<tr>
+  <td>Number of files loaded:</td>
+  <td > <%= @userid.freereg1_csv_files.count  %> </td>
+</tr>
+<% unless @userid.county_groups.nil? || @userid.county_groups.length == 0  %>
+  <tr>
+    <td>Counties coordinated:</td>
+    <td > <%=@userid.county_groups %>   </td>
+  </tr>
+  <tr>
+    <td>Counties managed as Country Coordinator:</td>
+    <td > <%= @userid.country_groups %>  </td>
+  </tr>
+<% end%>
+<% unless @userid.syndicate_groups.nil? || @userid.syndicate_groups.length == 0  %>
+  <tr>
+    <td>Syndicates coordinated:</td>
+    <td > <%=@userid.syndicate_groups %>   </td>
+  </tr>
+<% end%>
