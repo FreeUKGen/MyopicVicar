@@ -1,0 +1,49 @@
+<tr>
+  <td>Transcription agreement accepted:</td>
+  <td > <%= @userid.new_transcription_agreement%>  </td>
+</tr>
+<tr>
+  <td>Do not acknowledge my contributions:</td>
+  <td > <%= @userid.do_not_acknowledge_me%>  </td>
+</tr>
+<% if @userid.acknowledge_with_pseudo_name.present? %>
+  <tr>
+    <td>Use a pseudonym in place of my name:</td>
+    <td > <%=@userid.acknowledge_with_pseudo_name%>  </td>
+  </tr>
+  <tr>
+    <td>Pseudonym to be used:</td>
+    <td > <%=@userid.pseudo_name%>  </td>
+  </tr>
+<% end%>
+<% if @userid.secondary_role.present? %>
+  <tr>
+    <td>Secondary Role in <%= appname %>:</td>
+    <td>
+      <% @userid.secondary_role.each do |role| %>
+        <%= role%>
+        <% if (role != @userid.secondary_role.last) %>,<% end%>
+      <% end%>
+    </td>
+  </tr>
+<% end%>
+<tr>
+  <td>Skill Level:</td>
+  <td > <%=@userid.skill_level%>  </td>
+</tr>
+<% unless  @userid.active %>
+  <tr>
+    <% unless @userid.disabled_date.nil?%>
+      <td>Date made inactive :</td>
+      <td > <%=@userid.disabled_date.strftime("%d %b %Y")%>  </td>
+    <% end%>
+  </tr>
+  <tr>
+    <td>Reason for making inactive (standardized):</td>
+    <td > <%=UseridRole::REASONS_FOR_INACTIVATING.key(@userid.disabled_reason_standard) unless @userid.nil? || @userid.disabled_reason.nil? %>  </td>
+  </tr>
+  <tr>
+    <td>Reason for making inactive (explanation):</td>
+    <td > <%=@userid.disabled_reason %>  </td>
+  </tr>
+<% end%>

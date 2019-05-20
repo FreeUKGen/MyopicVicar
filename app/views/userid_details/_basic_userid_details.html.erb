@@ -1,0 +1,64 @@
+<tr>
+  <td>Forename:</td>
+  <td > <%= @userid.person_forename %>  </td>
+</tr>
+<tr>
+  <td>Surname:</td>
+  <td > <%= @userid.person_surname %>  </td>
+</tr>
+<tr>
+  <td>Email address:</td>
+  <td > <%= @userid.email_address   %> </td>
+</tr>
+<tr>
+  <td>Email address valid:</td>
+  <td > <%= @userid.email_address_valid   %> </td>
+</tr>
+<tr>
+  <% unless @userid.email_address_valid%>
+    <td>Reason email address is invalid:</td>
+    <td > <%= @userid.email_address_validity_change_message  %></td>
+  <% end%>
+</tr>
+<tr>
+  <td>Email address last confirmed:</td>
+  <td > <%= @userid.email_address_last_confirmned.strftime("%d %b %Y")  unless @userid.email_address_last_confirmned.nil? %> </td>
+</tr>
+<tr>
+  <td>Alternate email address:</td>
+  <td > <%= @userid.alternate_email_address   %> </td>
+</tr>
+<tr>
+  <td>Address or physical Location:</td>
+  <td > <%= @userid.address  %>  </td>
+</tr>
+<tr>
+  <td>Telephone number:</td>
+  <td > <%= @userid.telephone_number %>   </td>
+</tr>
+<tr>
+  <td>Active:</td>
+  <td > <%= @userid.active %>  </td>
+</tr>
+<tr>
+  <td>Fiche reader:</td>
+  <td > <%=@userid.fiche_reader%>  </td>
+</tr>
+<tr>
+  <td>Syndicate:</td>
+  <td > <%=@userid.syndicate %>  </td>
+</tr>
+<% if @userid.previous_syndicate.present?%>
+  <tr>
+    <td>Previous Syndicate:</td>
+    <td > <%= @userid.previous_syndicate%>  </td>
+  </tr>
+<% end%>
+<tr>
+  <td>Role in <%= appname %>:</td>
+  <td > <%=@userid.person_role%>  </td>
+</tr>
+<tr>
+  <td>Signed up:</td>
+  <td > <%= @userid.sign_up_date.strftime("%d %b %Y") unless @userid.sign_up_date.nil? %> </td>
+</tr>
