@@ -20,6 +20,7 @@
         </tr>
       </thead>
     </tr>
+     
     <tr>
       <td>Forename:</td>
       <td > <%= @userid.person_forename %>  </td>
@@ -28,35 +29,43 @@
       <td>Surname:</td>
       <td > <%= @userid.person_surname %>  </td>
     </tr>
+     
     <tr>
       <td>Email address:</td>
       <td > <%= @userid.email_address   %> </td>
     </tr>
+     
     <tr>
       <td>Email address valid:</td>
       <td > <%= @userid.email_address_valid   %> </td>
     </tr>
+     
     <tr>
       <td>Reason email address is invalid:</td>
       <td > <%= @userid.email_address_validity_change_message  %></td>
     </tr>
+     
     <tr>
       <td>Email address last confirmed:</td>
       <td > <%= @userid.email_address_last_confirmned.strftime("%d %b %Y")  unless @userid.email_address_last_confirmned.nil? %> </td>
     </tr>
+     
     <tr>
       <td>Alternate email address:</td>
       <td > <%= @userid.alternate_email_address   %> </td>
     </tr>
+     
     <tr>
       <td>Address or physical Location:</td>
       <td > <%= @userid.address  %>  </td>
     </tr>
+     
     <tr>
       <td>Telephone number:</td>
       <td > <%= @userid.telephone_number %>   </td>
       <% unless @userid.person_role == 'researcher'%>
       </tr>
+       
       <tr>
         <td>Role in <%= appname %>:</td>
         <td > <%=@userid.person_role%>  </td>
@@ -65,34 +74,41 @@
         <td>Secondary Role in <%= appname %>:</td>
         <td>
           <%@userid.secondary_role.each do |role| %>
-            <%=role%><% if (role != @userid.secondary_role.last)%>,<% end%>
-          <% end%>
+            <%=role%><%if(role != @userid.secondary_role.last)%>,<%end%>
+          <%end%>
         </td>
       </tr>
+       
       <tr>
         <td>Transcription agreement accepted:</td>
         <td > <%= @userid.new_transcription_agreement%>  </td>
       </tr>
+       
       <tr>
         <td>Syndicate:</td>
         <td > <%=@userid.syndicate %>  </td>
       </tr>
+       
       <tr>
         <td>Previous Syndicate:</td>
         <td > <%= @userid.previous_syndicate%>  </td>
       </tr>
+       
       <tr>
         <td>Fiche reader:</td>
         <td > <%=@userid.fiche_reader%>  </td>
       </tr>
+       
       <tr>
         <td>Just send my processing messages to my coordinator:</td>
         <td > <%=@userid.no_processing_messages %>  </td>
       </tr>
+       
       <tr>
         <td>Do not acknowledge my contributions:</td>
         <td > <%= @userid.do_not_acknowledge_me%>  </td>
       </tr>
+       
       <tr>
         <td>Use a pseudonym in place of my name:</td>
         <td > <%=@userid.acknowledge_with_pseudo_name%>  </td>
@@ -105,6 +121,7 @@
         <% unless MyopicVicar::Application.config.template_set == 'freecen' %>
           <% unless @userid.last_upload.nil?%>
           </tr>
+           
           <tr>
             <td>Last upload:</td>
             <td > <%= @userid.last_upload.strftime("%d %b %Y") %>  </td>
@@ -112,11 +129,13 @@
         <% end %>
         <%unless @userid.sign_up_date.nil?%>
         </tr>
+         
         <tr>
           <td>Signed up:</td>
           <td > <%= @userid.sign_up_date.strftime("%d %b %Y")  %> </td>
         <% end%>
       </tr>
+       
       <tr>
         <td>Skill Level:</td>
         <td > <%=@userid.skill_level%>  </td>

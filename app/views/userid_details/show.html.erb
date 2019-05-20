@@ -66,7 +66,7 @@
   <tr>
     <td>Syndicate:</td>
     <td > <%=@userid.syndicate %>  </td>
-    <% unless @userid.person_role == 'researcher' || !session[:edit_userid] %>
+    <% unless @userid.person_role == 'researcher' || !session[:edit_userid]%>
     </tr>
     <tr>
       <td>Role in <%= appname %>:</td>
@@ -75,10 +75,9 @@
     <tr>
       <td>Secondary Role in <%= appname %>:</td>
       <td>
-        <% @userid.secondary_role.each do |role| %>
-          <%= role%>
-          <% if (role != @userid.secondary_role.last) %>,<% end%>
-        <% end%>
+        <%@userid.secondary_role.each do |role| %>
+          <%=role%><%if(role != @userid.secondary_role.last)%>,<%end%>
+        <%end%>
       </td>
     </tr>
     <tr>
@@ -122,8 +121,8 @@
         <tr>
           <td>Signed up:</td>
           <td > <%= @userid.sign_up_date.strftime("%d %b %Y")  %> </td>
-        </tr>
-      <% end%>
+        <% end%>
+      </tr>
       <tr>
         <td>Skill Level:</td>
         <td > <%=@userid.skill_level%>  </td>
@@ -165,9 +164,8 @@
         </tr>
       <% end%>
     <% end%>
-  <% end%>
-</table>
-<br>
+  </table>
+  <br>
 </div>
 <div class="grid__item  one-third  palm-one-whole ">
   <%= render "resource_sidebar" %>
