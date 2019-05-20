@@ -386,12 +386,9 @@ class UseridDetailsController < ApplicationController
     get_user_info_from_userid
     load(params[:id])
     redirect_back(fallback_location: userid_details_path, notice: 'The userid was not found') && return if @userid.blank?
-    p 'show'
-    p params
     session[:return_to] = request.fullpath
     @syndicate = session[:syndicate]
     @page_name = params[:page_name]
-    p @page_name
   end
 
   def technical_registration
