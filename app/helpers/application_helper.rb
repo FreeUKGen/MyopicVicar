@@ -522,54 +522,36 @@ module ApplicationHelper
                           banner.html_safe
                         end
 
-                        def banner_header
-                          banner = <<-HTML
-                          <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-                          <script>
-                          (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
-                          </script>
-                          <!-- FreeCEN2 Responsive Header -->
-                          <ins class="adsbygoogle adSenseBanner"
-                          style="display:block"
-                          data-ad-client="ca-pub-5379635334920389"
-                          data-ad-slot="7868124617"
-                          data-ad-format="auto">
-                          </ins>
-                          <script>
-                          window.update_personalized_header_adverts = function (preference) {
-                            if(preference == 'accept') {
-                                (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
-                              } else if(preference == 'deny') {
-                                (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
-                              }
-                              };
-                              $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})});
-                              (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
-                              </script>
-                              <script>
-                              function detectAdblock(){
-                                console.log(window.canRunAds);
-                                if( window.canRunAds === undefined){
-                                    console.log("Adblock detected")
-                                    var donateBanners = document.getElementsByClassName("donations");
-                                    for (i = 0; i < donateBanners.length; i++) {
-                                        donateBanners[i].style.display = "block";
-                                        console.log("Banner displayed! " + i)
-                                      }
-                                      }
-                                      else {
-                                          console.log(window.canRunAds);
-                                          console.log("Adblock not detected");
-                                        }
-                                        }
-                                        window.onload = detectAdblock;
-                                        </script>
-                                        HTML
-                                        if Rails.env.development?
-                                          banner = <<-HTML
-                                          <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
-                                          HTML
-                                        end
-                                        banner.html_safe
-                                      end
-                                    end
+  def banner_header
+    banner = <<-HTML
+    <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
+    </script>
+    <!-- FreeCEN2 Responsive Header -->
+    <ins class="adsbygoogle adSenseBanner"
+    style="display:block"
+    data-ad-client="ca-pub-5379635334920389"
+    data-ad-slot="7868124617"
+    data-ad-format="auto">
+    </ins>
+    <script>
+      window.update_personalized_header_adverts = function (preference) {
+        if(preference == 'accept') {
+          (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
+        } else if(preference == 'deny') {
+          (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
+        }
+      };
+      $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})});
+      (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
+    </script>
+    HTML
+    if Rails.env.development?
+      banner = <<-HTML
+      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
+      HTML
+    end
+    banner.html_safe
+  end
+end

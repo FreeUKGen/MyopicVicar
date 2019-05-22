@@ -12,8 +12,12 @@
       <% when 'freereg' %>
       <div class="bnner-horz reg_adsense">
         <% unless device_type == :mobile%>
-          <a href ="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/"><%= image_tag 'png/header-donate.png', :class => "donations", :alt => "Donations - FreeUKGenealogy" %></a>
-          <%= banner_header %>
+          <div class='donations'>
+            <a href ="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/"><%= image_tag 'png/header-donate.png', class: "donation", :alt => "Donations - FreeUKGenealogy" %></a>
+          </div>
+          <div class="show_advert">
+            <%= banner_header %>
+          </div>
         <% end %>
       </div>
       <% when 'freebmd' %>
