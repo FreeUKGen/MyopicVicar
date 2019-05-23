@@ -128,8 +128,6 @@ module MyopicVicar
       end
       mongo_config = Rails.root.join('config', 'mongo_config.yml')
       MyopicVicar::MongoConfig = YAML.load_file(mongo_config)[Rails.env] if File.exist?(mongo_config)
-      advert_key = Rails.root.join('config','advert_key.yml')
-      MyopicVicar::AdvertKey = YAML.load_file(advert_key)
     end
   end
 end
