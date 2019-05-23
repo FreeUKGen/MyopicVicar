@@ -92,6 +92,23 @@
     <%= csrf_meta_tags %>
     <% google_analytics_tracking_id = google_analytics_tracking %>
     <script>
+      function detectAdblock(){
+        console.log(window.canRunAds);
+        if( window.canRunAds === undefined){
+          console.log("Adblock detected")
+            $('.donations').show()
+            $('.show_advert').hide()
+        }
+        else {
+          console.log(window.canRunAds);
+          $('.show_advert').show()
+          $('.donations').hide()
+          console.log("Adblock not detected");
+        }
+      }
+      window.onload = detectAdblock;
+    </script>
+    <script>
       window.update_third_party_cookies_user_preference = function (preference) {
         if(preference == 'accept') {
           console.log("Third party cookies allowed!");
