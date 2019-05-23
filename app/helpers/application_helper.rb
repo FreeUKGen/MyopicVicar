@@ -525,14 +525,19 @@ module ApplicationHelper
   def banner_header
     banner = <<-HTML
     <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <style>
+    .adSenseBanner { width: 320px; height: 100px; text-align: center; margin: auto;}
+    @media(min-width: 500px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
+    @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
+    </style>
     <script>
       (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
     </script>
     <!-- FreeCEN2 Responsive Header -->
     <ins class="adsbygoogle adSenseBanner"
     style="display:block"
-    data-ad-client="ca-pub-5379635334920389"
-    data-ad-slot="7868124617"
+    data-ad-client="ca-pub-7825403497160061"
+    data-ad-slot="8870759291"
     data-ad-format="auto">
     </ins>
     <script>
@@ -547,11 +552,11 @@ module ApplicationHelper
       (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
     </script>
     HTML
-    if Rails.env.development?
-      banner = <<-HTML
-      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
-      HTML
-    end
+    #if Rails.env.development?
+      #banner = <<-HTML
+      #<img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
+      #HTML
+    #end
     banner.html_safe
   end
 end
