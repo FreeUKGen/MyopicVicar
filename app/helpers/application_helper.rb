@@ -484,43 +484,43 @@ module ApplicationHelper
                       banner.html_safe
                     end
 
-                    def google_advert
-                      @data_ad_slot = ''
-                      @data_ad_slot = if current_page?(freecen_coverage_path)
-                        '9056426667'
-                      else
-                        '2003577939'
-                      end
-                      banner = <<-HTML
-                      <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-                      <script>
-                      (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
-                      </script>
-                      <!-- Responsive ad -->
-                      <ins class="adsbygoogle adSenseBanner"
-                      style="display:block"
-                      data-ad-client="ca-pub-5379635334920389"
-                      data-ad-slot= "#{@data_ad_slot}"
-                      data-ad-format="auto"></ins>
-                      <script>
-                      window.update_personalized_adverts = function (preference) {
-                        if(preference == 'accept') {
-                            (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
-                          } else if(preference == 'deny') {
-                            (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
-                          }
-                          };
-                          $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})});
-                          (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
-                          </script>
-                          HTML
-                          if Rails.env.development?
-                            banner = <<-HTML
-                            <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
-                            HTML
-                          end
-                          banner.html_safe
-                        end
+def google_advert
+  @data_ad_slot = ''
+  @data_ad_slot = if current_page?(freecen_coverage_path)
+    '9056426667'
+  else
+    '2003577939'
+  end
+  banner = <<-HTML
+      <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+      <script>
+        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
+      </script>
+      <!-- Responsive ad -->
+      <ins class="adsbygoogle adSenseBanner"
+      style="display:block"
+      data-ad-client="ca-pub-5379635334920389"
+      data-ad-slot= "#{@data_ad_slot}"
+      data-ad-format="auto"></ins>
+      <script>
+        window.update_personalized_adverts = function (preference) {
+          if(preference == 'accept') {
+            (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
+          } else if(preference == 'deny') {
+            (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
+          }
+        };
+        $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})});
+        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
+      </script>
+    HTML
+  if Rails.env.development?
+    banner = <<-HTML
+      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
+    HTML
+  end
+  banner.html_safe
+end
 
   def banner_header
     banner = <<-HTML
@@ -533,11 +533,10 @@ module ApplicationHelper
     <script>
       (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
     </script>
-    <!-- FreeCEN2 Responsive Header -->
     <ins class="adsbygoogle adSenseBanner"
     style="display:block"
-    data-ad-client="ca-pub-7825403497160061"
-    data-ad-slot="8870759291"
+    data-ad-client = "#{data_ad_client_header}"
+    data-ad-slot = "#{data_ad_slot_header}"
     data-ad-format="auto">
     </ins>
     <script>
@@ -552,11 +551,29 @@ module ApplicationHelper
       (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
     </script>
     HTML
-    #if Rails.env.development?
-      #banner = <<-HTML
-      #<img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
-      #HTML
-    #end
+    if Rails.env.development?
+      banner = <<-HTML
+      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
+      HTML
+    end
     banner.html_safe
+  end
+
+  def data_ad_client_header
+    case MyopicVicar::Application.config.template_set
+    when 'freecen'
+      MyopicVicar::AdvertKey.freecen_header.data_ad_client
+    when 'freereg'
+       MyopicVicar::AdvertKey.freereg_header.data_ad_client
+    end
+  end
+
+  def data_ad_slot_header
+    case MyopicVicar::Application.config.template_set
+    when 'freecen'
+      MyopicVicar::AdvertKey.freecen_header.data_ad_slot
+    when 'freereg'
+       MyopicVicar::AdvertKey.freereg_header.data_ad_slot
+    end
   end
 end
