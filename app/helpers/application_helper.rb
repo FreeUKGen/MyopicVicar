@@ -410,8 +410,8 @@ module ApplicationHelper
     </script>
     <ins class="adsbygoogle adSenseBanner"
     style="display:block"
-    data-ad-client="ca-pub-7825403497160061"
-    data-ad-slot="8870759291"
+    data-ad-client="#{data_ad_client}"
+    data-ad-slot="#{app_advert['data_ad_slot_header']}"
     data-ad-format="auto"></ins>
     <script>
     window.update_personalized_google_adverts = function (preference) {
@@ -460,8 +460,8 @@ module ApplicationHelper
                   <!-- FreeCEN2 Transcriber Registration (Responsive) -->
                   <ins class="adsbygoogle adSenseBanner"
                   style="display:block"
-                  data-ad-client="ca-pub-5379635334920389"
-                  data-ad-slot="9391036375"
+                  data-ad-client="#{data_ad_client}"
+                  data-ad-slot="#{app_advert['data_ad_slot_fullwidth']}"
                   data-ad-format="auto"
                   data-full-width-responsive="true"></ins>
                   <script>
@@ -485,12 +485,7 @@ module ApplicationHelper
                     end
 
 def google_advert
-  @data_ad_slot = ''
-  @data_ad_slot = if current_page?(freecen_coverage_path)
-    '9056426667'
-  else
-    '2003577939'
-  end
+  @data_ad_slot = current_page?(freecen_coverage_path) ? app_advert['data_ad_slot_coverage'] : app_advert['data_ad_slot_google_advert']
   banner = <<-HTML
       <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
       <script>
@@ -499,7 +494,7 @@ def google_advert
       <!-- Responsive ad -->
       <ins class="adsbygoogle adSenseBanner"
       style="display:block"
-      data-ad-client="ca-pub-5379635334920389"
+      data-ad-client="#{data_ad_client}"
       data-ad-slot= "#{@data_ad_slot}"
       data-ad-format="auto"></ins>
       <script>
@@ -535,8 +530,8 @@ end
     </script>
     <ins class="adsbygoogle adSenseBanner"
     style="display:block"
-    data-ad-client = "#{data_ad_client_header}"
-    data-ad-slot = "#{data_ad_slot_header}"
+    data-ad-client = "#{data_ad_client}"
+    data-ad-slot = "#{app_advert['data_ad_slot_header']}"
     data-ad-format="auto">
     </ins>
     <script>
@@ -559,21 +554,16 @@ end
     banner.html_safe
   end
 
-  def data_ad_client_header
-    case MyopicVicar::Application.config.template_set
-    when 'freecen'
-      MyopicVicar::AdvertKey.freecen_header.data_ad_client
-    when 'freereg'
-       MyopicVicar::AdvertKey.freereg_header.data_ad_client
-    end
+  def data_ad_client
+      app_advert['data_ad_client']
   end
 
-  def data_ad_slot_header
+  def app_advert
     case MyopicVicar::Application.config.template_set
     when 'freecen'
-      MyopicVicar::AdvertKey.freecen_header.data_ad_slot
+      MyopicVicar::AdvertKey['freecen']
     when 'freereg'
-       MyopicVicar::AdvertKey.freereg_header.data_ad_slot
+       MyopicVicar::AdvertKey['freereg']
     end
   end
 end
