@@ -554,31 +554,14 @@ module ApplicationHelper
                               $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})});
                               (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
                               </script>
-                              <script>
-                              function detectAdblock(){
-                                console.log(window.canRunAds);
-                                if( window.canRunAds === undefined){
-                                    console.log("Adblock detected")
-                                    $('.donations').show()
-                                    $('.show_advert').hide()
-                                  }
-                                else {
-                                    console.log(window.canRunAds);
-                                    $('.show_advert').show()
-                                    $('.donations').hide()
-                                    console.log("Adblock not detected");
-                                  }
-                                  }
-                                  window.onload = detectAdblock;
-                                  </script>
-                                  HTML
-                                  if Rails.env.development?
-                                    banner = <<-HTML
-                                    <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
-                                    HTML
-                                  end
-                                  banner.html_safe
-                                end
+                              HTML
+                              if Rails.env.development?
+                                banner = <<-HTML
+                                <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
+                                HTML
+                              end
+                              banner.html_safe
+                            end
 
 
-                                end
+                            end
