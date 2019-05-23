@@ -1,11 +1,29 @@
 development:
-  template_set: 'freereg'
+  template_set: 'freecen'
+  advert_key:
+    data_ad_client:
+    data_ad_slot_header:
+    data_ad_slot_google_advert:
+    data_ad_slot_coverage:
+    data_ad_slot_fullwidth:
 
 test:
-  template_set: 'freereg'
+  template_set: 'freecen'
+  advert_key:
+    data_ad_client:
+    data_ad_slot_header:
+    data_ad_slot_google_advert:
+    data_ad_slot_coverage:
+    data_ad_slot_fullwidth:
 
 production:
-  template_set: 'freereg'
+  template_set: 'freecen'
+  advert_key:
+    data_ad_client:
+    data_ad_slot_header:
+    data_ad_slot_google_advert:
+    data_ad_slot_coverage:
+    data_ad_slot_fullwidth:
 
 # valid options are freecen, freereg, freebmd others can be added into application.rb
 
