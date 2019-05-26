@@ -23,7 +23,7 @@ class UserMailer < ActionMailer::Base
     @appname = appname
     @communication = original
     get_attachment(@communication)
-    mail(to: "#{@communication.email_address}", :subject => "Thank you #{@communication.name} for your communication. Reference #{@communication.identifier}")
+    mail(to: "#{@communication.email_address}", :subject => "Thank you #{@communication.name} for contacting us. Reference #{@communication.identifier}")
   end
 
   def acknowledge_feedback(original)
@@ -119,14 +119,6 @@ class UserMailer < ActionMailer::Base
         mail(:to => first_mail, :cc => emails, :subject =>"#{@userid.userid}/#{batch} processed at #{Time.now} with #{@batch.error unless @batch.nil?} errors over period #{@batch.datemin unless @batch.nil?}-#{@batch.datemax unless @batch.nil?}")
       end
     end
-  end
-
-  def coordinator_data_problem(contact, ccs)
-    @contact = contact
-    @record = SearchRecord.where(id: @contact.record_id).first
-    @individual = @record.freecen_individual
-    get_attachment
-    mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk", to: "#{@contact.name} <#{@contact.email_address}>",cc: ccs, :subject => "Thank you for reporting a problem with our data. Reference #{@contact.identifier}")
   end
 
   def contact_action_request(contact, send_to, copies_to)
@@ -259,14 +251,7 @@ class UserMailer < ActionMailer::Base
     mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} research registration") unless @coordinator.nil?
   end
 
-  def publicity(contact,ccs)
-    @ccs = ccs
-    @contact = contact
-    get_attachment
-    mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for your compliments. Reference #{@contact.identifier}")
-  end
-
-  def notify_cc_assignment_complete(user,group_id,chapman_code)
+  def notify_cc_assignment_complete(user, group_id, chapman_code)
     image_server_group = ImageServerGroup.find(group_id)
 
     county_coordinator = County.where(:chapman_code=>chapman_code).first.county_coordinator
@@ -421,18 +406,6 @@ class UserMailer < ActionMailer::Base
     @person_forename = user.person_forename
     @email_address = user.email_address
     mail(:from => "freecen-processing@freecen.org.uk",:to => "#{@person_forename} <#{@email_address}>", :cc=>ccs, :subject => "FreeCEN update processing report")
-  end
-
-  def volunteer(contact, ccs)
-    @contact = contact
-    get_attachment
-    mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>", :cc => ccs, :subject => "Thank you for question about volunteering. Reference #{@contact.identifier}")
-  end
-
-  def website(contact, ccs)
-    @contact = contact
-    get_attachment
-    mail(:from => "#{appname.downcase}-contacts@#{appname.downcase}.org.uk",:to => "#{@contact.name} <#{@contact.email_address}>",:cc => ccs, :subject => "Thank you for reporting a website problem. Reference #{@contact.identifier}")
   end
 
   private
