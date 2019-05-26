@@ -1,25 +1,12 @@
 <% breadcrumb :show_contact, @contact %>
 <div style="clear:both;"> </div>
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
-  </div>
-<% end %>
+<%= render "flash_notice" %>
 <h4 class=" text--center push--bottom" ><%= show_contact_title(@contact) %></h4>
 <h4 class=" text--center push--bottom" ><%= show_contact_title_line_two(@contact) %></h4>
 <% if !Contact.github_enabled %>
   <h4 class=" text--center">GitHub integration is not activated </h4>
 <% end%>
-<div  class=" text--center push--bottom">
-  <%= link_to 'Create Reply', reply_contact_path(source_contact_id:@contact.id) ,:class => "btn weight--light  btn--small" %>
-  <%= show_contact_add_comment_link(@contact, params[:source])%>
-  <%= link_to 'View Replies', contact_reply_messages_path(@contact.id), class: "btn weight--light  btn--small", method: :get %>
-  <%= link_to 'Archive', archive_contact_path(@contact.id), :class => "btn weight--light  btn--small", data: { confirm: 'Are you sure you want to Archive this contact?' } if do_we_show_archive_contact_action?(@contact)%>
-  <%= link_to 'Restore', restore_contact_path(@contact.id), :class => "btn weight--light  btn--small", data: { confirm: 'Are you sure you want to Archive this contact?' } if do_we_show_restore_contact_action?(@contact)%>
-  <%= link_to 'Keep until I say so', keep_contact_path(@contact.id,:source => params[:action]), :class => 'btn weight--light  btn--small',  data: { confirm: 'Are you sure you want keep this contact' } unless @contact.keep.present? %>
-  <%= link_to 'Remove Keep Designation', unkeep_contact_path(@contact.id,:source => params[:action]), :class => 'btn weight--light  btn--small',  data: { confirm: 'Are you sure you want remove the keep designation for this contact' } if @contact.keep.present? %>
-  <%= link_to "Convert to Issue", convert_contact_to_issue_path(@contact),:class => "btn weight--light  btn--small" if do_we_show_github_create_contact_action?(@contact) %>
-</div>
+<%= render 'show_nav' %>
 <div class="grid" >
   <section class="island ">
     <div class="grid__item ">
@@ -32,25 +19,9 @@
           <th class="caps">Field</th>
           <th  class="caps">Value</th>
         </tr>
-        <% if @contact.contact_type = 'Data Problem' &&  @contact.entry_id.present?%>
-          <tr >
-            <td>Record :</td>
-            <td class="weight--semibold"> <%= @contact.line_id %> </td>
-          </tr>
-  <% if 'freecen' == MyopicVicar::Application.config.template_set %>
-          <tr><td>Data Record :</td><td class="weight--semibold"><%= link_to(' Record in question', search_record_path(@contact.record_id, :search_id => @contact.query), method: :get)%></td></tr>
-  <% elsif 'freereg' == MyopicVicar::Application.config.template_set %>
-          <tr><td>Data Record :</td><td class="weight--semibold"><%= button_to ' Record in question', freereg1_csv_entry_path(@contact.entry_id),  method: :get%></td></tr>
-  <% end %>
-          <tr>
-            <td>Data Record :</td>
-            <td class="weight--semibold"><%= link_to ' Record in question', freereg1_csv_entry_path(@contact.entry_id),  method: :get, :class => "btn weight--light  btn--small"%></td>
-          </tr>
-          <tr>
-            <td>County :</td>
-            <td class="weight--semibold"> <%= @contact.county %> </td>
-          </tr>
-        <% end%>
+        <%= render 'show_data_problem' if @contact.contact_type == 'Data Problem' &&  @contact.entry_id.present?%>
+        <%= render 'show_actor' if @contact.contact_action_sent_to_userid.present? ||
+               @contact.copies_of_contact_action_sent_to_userids.present?%>
         <tr >
           <td >The explanation was:</td>
           <td class="weight--semibold"><%= @contact.body %></td>
