@@ -118,7 +118,7 @@ class Contact
       if copies_of_contact_action_sent_to_userids.blank?
         copies_of_contact_action_sent_to_userids.push(action_person.userid)
       else
-        copies_of_contact_action_sent_to_userids.push(action_person.userid) unless  copies_of_contact_action_sent_to_userids.include?(action_person.userid)
+        copies_of_contact_action_sent_to_userids.push(action_person.userid) unless copies_of_contact_action_sent_to_userids.include?(action_person.userid)
       end
     end
     self.update_attribute(:copies_of_contact_action_sent_to_userids, copies_of_contact_action_sent_to_userids)

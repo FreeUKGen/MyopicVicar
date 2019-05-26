@@ -20,8 +20,7 @@
           <th  class="caps">Value</th>
         </tr>
         <%= render 'show_data_problem' if @contact.contact_type == 'Data Problem' &&  @contact.entry_id.present?%>
-        <%= render 'show_actor' if @contact.contact_action_sent_to_userid.present? ||
-               @contact.copies_of_contact_action_sent_to_userids.present?%>
+        <%= render 'show_actor' %>
         <tr >
           <td >The explanation was:</td>
           <td class="weight--semibold"><%= @contact.body %></td>
