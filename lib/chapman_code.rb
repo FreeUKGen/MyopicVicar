@@ -29,28 +29,23 @@ module ChapmanCode
   end
 
   def self.remove_codes(hash)
-    hash = hash.each_pair do |key, value|
+    hash = hash.each_pair do |_key, value|
       FreeregOptionsConstants::CHAPMAN_CODE_ELIMINATIONS.each do |country|
-        value.delete_if { |key, value| key == country }
+        value.delete_if { |new_key, _new_value| new_key == country }
       end
     end
-    if MyopicVicar::Application.config.template_set == 'freereg'
-      hash.delete("'England and Wales Shipping'")
-      hash.delete("'Out of County'")
-      hash.delete("'Overseas British'")
-      hash.delete("'Overseas Foreign'")
-      hash.delete("'Scottish Shipping'")
+    if MyopicVicar::Application.config.template_set == MyopicVicar::TemplateSet::FREECEN
+      hash.delete("All")
     end
-    hash.delete("All") if MyopicVicar::Application.config.template_set == 'freecen'
     hash
   end
 
   def self.codes_for_cen_county()
     hsh = {}
     ChapmanCode::CODES.each_pair do |ctry, ctryval|
-      ctryhash={}
+      ctryhash = {}
       ctryval.each_pair do |kk, vv|
-        ctryhash[kk] = vv unless ['ALD','GSY','JSY','SRK'].include?(vv.to_s)
+        ctryhash[kk] = vv unless ['ALD', 'GSY', 'JSY', 'SRK'].include?(vv.to_s)
       end
       hsh[ctry] = ctryhash
     end
@@ -62,7 +57,7 @@ module ChapmanCode
     ChapmanCode::CODES.each_pair do |ctry, ctryval|
       ctryhash = {}
       ctryval.each_pair do |kk, vv|
-        ctryhash[kk] = vv unless ['ERY','NRY','WRY'].include?(vv)
+        ctryhash[kk] = vv unless ['ERY', 'NRY', 'WRY'].include?(vv)
       end
       hsh[ctry] = ctryhash
     end
@@ -100,7 +95,7 @@ module ChapmanCode
 
   def self.keys
     codes = merge_countries
-    mine = Array.new
+    mine = []
     codes.each_key do |k|
       mine << k
     end
@@ -283,7 +278,7 @@ module ChapmanCode
      'Pembrokeshire' => 'PEM',
      'Powys' => 'POW',
      'Radnorshire' => 'RAD' },
-    "Special" => {
+    'Special' => {
       'Unknown' => 'UNK',
       'England and Wales Shipping' => 'EWS',
       'Out of County' => 'OUC',

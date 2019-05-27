@@ -31,24 +31,14 @@ class County
     end
 
     def coordinator_name(chapman_code)
-      p 'hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh'
-      p chapman_code
       coordinator_name = ''
-      p chapman_code.present?
-      p ChapmanCode.remove_codes(ChapmanCode::CODES).include?(chapman_code)
-      if chapman_code.present? && ChapmanCode.remove_codes(ChapmanCode::CODES).include?(chapman_code)
-        p 'look up'
+      if chapman_code.present? && ChapmanCode.values.include?(chapman_code)
         county = County.find_by(chapman_code: chapman_code)
-        p county
-        p county.county_coordinator
         if county.present?
-          p 'cord'
           coordinator_id = UseridDetail.find_by(userid: county.county_coordinator)
-          p coordinator_id
           coordinator_name = coordinator_id.person_forename + ' ' + coordinator_id.person_surname if coordinator_id.present?
         end
       end
-      p coordinator_name
       coordinator_name
     end
 
@@ -72,7 +62,7 @@ class County
       counties
     end
 
-    def is_county(code)
+    def county?(code)
       result = County.chapman_code(code).present? ? true : false
       result
     end
@@ -92,11 +82,11 @@ class County
       files.each do |file|
         records = records.to_i + file.records.to_i unless file.records.nil?
         case file.record_type
-        when "ba"
+        when 'ba'
           records_ba = records_ba + file.records.to_i unless file.records.nil?
-        when "ma"
+        when 'ma'
           records_ma = records_ma + file.records.to_i unless file.records.nil?
-        when "bu"
+        when 'bu'
           records_bu = records_bu + file.records.to_i unless file.records.nil?
         end
       end
