@@ -34,11 +34,18 @@ class County
       p 'hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh'
       p chapman_code
       coordinator_name = ''
+      p chapman_code.present?
+      p ChapmanCode.remove_codes(ChapmanCode::CODES).include?(chapman_code)
       if chapman_code.present? && ChapmanCode.remove_codes(ChapmanCode::CODES).include?(chapman_code)
+        p 'look up'
         county = County.find_by(chapman_code: chapman_code)
+        p county
+        p county.county_coordinator
         if county.present?
+          p 'cord'
           coordinator_id = UseridDetail.find_by(userid: county.county_coordinator)
-          coordinator_name = coordinator_id.person_forename + ' ' + coordinator_id.person_surname if coordinator_id.present
+          p coordinator_id
+          coordinator_name = coordinator_id.person_forename + ' ' + coordinator_id.person_surname if coordinator_id.present?
         end
       end
       p coordinator_name
