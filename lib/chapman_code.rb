@@ -34,9 +34,6 @@ module ChapmanCode
         value.delete_if { |new_key, _new_value| new_key == country }
       end
     end
-    if MyopicVicar::Application.config.template_set == MyopicVicar::TemplateSet::FREECEN
-      hash.delete("All")
-    end
     hash
   end
 
