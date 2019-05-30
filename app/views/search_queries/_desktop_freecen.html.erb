@@ -52,7 +52,7 @@
           <tr id="<%=search_record.id%>">
           <% unless print_friendly %>
             <td>
-              <%= link_to "Detail", friendly_search_record_path(search_record.id, search_record.friendly_url), :title => "Row #{n}, details for #{search_record.transcript_names.first['first_name']} #{search_record.transcript_names.first['last_name']}", :class => "btn weight--light btn--small" %><br />
+              <%= link_to "Detail", friendly_search_record_path(search_record.id, search_record.friendly_url), :rel => "nofollow", :title => "Row #{n}, details for #{search_record.transcript_names.first['first_name']} #{search_record.transcript_names.first['last_name']}", :class => "btn weight--light btn--small" %><br />
           <i><%= viewed(@search_query,search_record) %></i>
         </td>
       <% end %>
