@@ -5,5 +5,6 @@
   <p style="text-align: center">This reply will go to the sender of the original message</p>
   <%= render 'reply'%>
 <% else %>
+  <%= message_synicate_coordinator_first_reminder %>
   <%= render 'form' %>
 <% end %>
