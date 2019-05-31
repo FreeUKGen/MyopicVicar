@@ -405,6 +405,10 @@ module ApplicationHelper
     MyopicVicar::Application.config.advert_key
   end
 
+  def gtm_key_value
+    MyopicVicar::Application.config.gtm_key
+  end
+
   def fullwidth_adsense_freereg
     banner = <<-HTML
     <style>

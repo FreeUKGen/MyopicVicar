@@ -38,6 +38,7 @@ module MyopicVicar
     app = config_for(:freeukgen_application)
     config.template_set = app['template_set']
     config.advert_key = app['advert_key']
+    config.gtm_key = app['gtm_key']
     # Custom directories with classes and modules you want to be autoloadable.
     # config.autoload_paths += %W(#{config.root}/extras)
 
