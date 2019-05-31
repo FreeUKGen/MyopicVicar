@@ -3,27 +3,27 @@
     <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found') || current_page?('/cms/refinery/users/login')%>
       <% case appname_downcase %>
       <% when 'freecen' %>
-      <div class="bnner-horz cen_unit_header cen_unit">
-        <% unless device_type == :mobile%>
-          <a href ="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/?_ga=2.145101431.251616756.1548792447-1735478806.1548792447"><%= image_tag 'png/header-donate.png', :class => "donations", :alt => "Donations - FreeUKGenealogy" %></a>
+      <% unless device_type == :mobile%>
+        <div class="bnner-horz cen_unit_header cen_unit">
+          <a href ="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/?_ga=2.145101431.251616756.1548792447-1735478806.1548792447"><%= image_tag 'png/header-donate.png', class: "donations", alt: "Donations - FreeUKGenealogy" %></a>
           <%= banner_header %>
-        <% end %>
-      </div>
+        </div>
+      <% end %>
       <% when 'freereg' %>
-      <div class="bnner-horz reg_adsense">
-        <% unless device_type == :mobile%>
+      <% unless device_type == :mobile%>
+        <div class="bnner-horz reg_adsense">
           <div class='donations'>
-            <a href ="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/"><%= image_tag 'png/header-donate.png', class: "donation", :alt => "Donations - FreeUKGenealogy" %></a>
+            <a href ="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/"><%= image_tag 'png/header-donate.png', class: "donation", alt: "Donations - FreeUKGenealogy" %></a>
           </div>
           <div class="show_advert">
             <%= banner_header %>
           </div>
-        <% end %>
-      </div>
+        </div>
+      <% end %>
       <% when 'freebmd' %>
-      <div class="bnner-horz reg_adsense">
-        <% unless device_type == :mobile%>
-          <a href ="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/"><%= image_tag 'png/header-donate.png', :class => "donations", :alt => "Donations - FreeUKGenealogy" %></a>
+      <% unless device_type == :mobile%>
+        <div class="bnner-horz reg_adsense">
+          <a href ="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/"><%= image_tag 'png/header-donate.png',  class: "donations", alt: "Donations - FreeUKGenealogy" %></a>
           <%= banner_header %>
         <% end %>
       </div>
