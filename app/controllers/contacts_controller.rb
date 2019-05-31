@@ -63,7 +63,7 @@ class ContactsController < ApplicationController
       @contact.session_data['warden_user_authentication_devise_user_key_session'] = @contact.session_data['warden.user.authentication_devise_user.session']
       @contact.session_data.delete('warden.user.authentication_devise_user.session') if @contact.session_data['warden.user.authentication_devise_user.session'].present?
       @contact.session_id = session.to_hash['session_id']
-      @contact.previous_page_url= request.env['HTTP_REFERER']
+      @contact.previous_page_url = request.env['HTTP_REFERER']
       if @contact.selected_county == 'nil'
         @contact.selected_county = nil # string 'nil' to nil
       end
@@ -199,12 +199,13 @@ class ContactsController < ApplicationController
     @contact.contact_type = 'Data Problem'
     @contact.query = params[:query]
     @contact.record_id = params[:id]
-    if MyopicVicar::Application.config.template_set == 'freereg'
+    case appname_downcase
+    when 'freereg'
       @contact.entry_id = SearchRecord.find(params[:id]).freereg1_csv_entry._id
       @freereg1_csv_entry = Freereg1CsvEntry.find( @contact.entry_id)
       @contact.county = @freereg1_csv_entry.freereg1_csv_file.county
-      @contact.line_id  = @freereg1_csv_entry.line_id
-    elsif MyopicVicar::Application.config.template_set == 'freecen'
+      @contact.line_id = @freereg1_csv_entry.line_id
+    when 'freecen'
       @rec = SearchRecord.where("id" => @contact.record_id).first
       unless @rec.nil?
         #assign_field_values
@@ -220,10 +221,9 @@ class ContactsController < ApplicationController
               @contact.line_id = '' + (vldfname unless vldfname.nil?) + ':dwelling#' + (ent.dwelling_number.to_s unless  ent.dwelling_number.nil?) + ',individual#'+ (ent.sequence_in_household.to_s unless ent.sequence_in_household.nil?)
             end #ent.present
           end # @contact.entry_id.present?
-        end # fc_ind.present    
+        end # fc_ind.present
       end # unless rec.nil?
-    end # elsif freecen
-    redirect_back(fallback_location: contacts_path, notice: 'The entry does not exist') && return if @freereg1_csv_entry.blank?
+    end # case
   end
 
   def restore
