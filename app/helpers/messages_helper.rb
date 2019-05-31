@@ -698,7 +698,12 @@ module MessagesHelper
     source
   end
 
-
+  def message_synicate_coordinator_first_reminder
+    get_user_info_from_userid
+    if @user.present? && @user.person_role == 'transcriber'
+      content_tag :span, "Have you already tried contacting your Syndicate Coordinator?"
+    end
+  end
 
   private
 

@@ -38,4 +38,12 @@ module ContactsHelper
   def show_contact_add_comment_link(message, action)
     link_to 'Comment', reply_contact_path(source_contact_id: message.id, source: 'comment'), :class => "btn weight--light  btn--small"
   end
+
+  def use_communicate_action_reminder
+    get_user_info_from_userid
+    if @user.present? && @user.person_role == 'transcriber'
+      content_tag :span, "Please use the Communicate Action and contact your Syndicate Coordinator first"
+    end
+  end
+
 end
