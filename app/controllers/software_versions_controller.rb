@@ -24,7 +24,8 @@ class SoftwareVersionsController < ApplicationController
   end
 
   def index
-    @softwares = SoftwareVersion.all.order_by(date_of_update: -1)
+    @server = SoftwareVersion.extract_server(Socket.gethostname)
+    @softwares = SoftwareVersion.server(@server).all.order_by(date_of_update: -1)
   end
 
   def new
