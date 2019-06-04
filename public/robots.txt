@@ -8,8 +8,14 @@ Allow: /cms/help
 Allow: /cms/refinery/login
 Allow: /cms/information-for-transcribers
 Allow: /cms/information-for-coordinators
-Allow: /search_queries
+Allow: /cms/opportunities-to-volunteer-with-freereg
+Allow: /search_queries/new
+Allow: /contacts/new
 Allow: /search_statistics
 Allow: /freereg_contents
 Allow: /sitemap_location.txt
-Disallow: /search_queries/report
+Disallow: /userid_details
+Disallow: /search_queries
+Disallow: /search_records
+Disallow: /contacts
+
