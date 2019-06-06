@@ -1,4 +1,5 @@
-<h2 class=" text--center">Listing of Software Versions on <%=@server%></h2>
+<% breadcrumb :software_updates%>
+<h2 class=" text--center">Listing of Software Versions for <%=@application%> on <%=@server%></h2>
 <%= render 'flash_notice' %>
 <div>
   <table class="table--bordered  table--striped  table--data">

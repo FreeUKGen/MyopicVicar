@@ -1,4 +1,5 @@
 class GetSoftwareVersion
+  require 'app'
   # sudo -u webserv bundle exec rake RAILS_ENV=production foo:get_software_version[automatic,2016/1/1,2016/3/1,1.4.1]
   def self.process(process, time_start, time_end, version)
     server = SoftwareVersion.extract_server(Socket.gethostname)
@@ -18,7 +19,7 @@ class GetSoftwareVersion
     p " Start software version with start of #{date_start} and end of #{date_end} for version #{version}"
     response = client.commits_between('FreeUKGen/MyopicVicar', date_start, date_end)
     software_version = SoftwareVersion.new
-    software_version.update_attributes(server: server, date_of_update: date_end, version: version, type: 'System')
+    software_version.update_attributes(server: server, app: App.name, date_of_update: date_end, version: version, type: 'System')
     response.each do |commit|
       commitment = Commitment.new
       commitment[:commitment_number] = commit[:sha]
@@ -60,7 +61,7 @@ class GetSoftwareVersion
     last_system_update_version = last_system_update.version
     last_search_record_update = SoftwareVersion.type('Search Record').order_by(date_of_update: -1).first
     last_search_record_update_date = last_search_record_update.date_of_update
-    control_record.update_attributes(server: server, date_of_update: last_system_update_date, version: last_system_update_version, last_search_record_version: last_search_record_update_date)
+    control_record.update_attributes(server: server, app: App.name, date_of_update: last_system_update_date, version: last_system_update_version, last_search_record_version: last_search_record_update_date)
     p control_record
   end
 end

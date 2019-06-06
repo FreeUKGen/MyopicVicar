@@ -1360,6 +1360,16 @@ crumb :search_query_analysis do |query|
   parent :search_query_report
 end
 
+crumb :application_server_selection do
+  link 'Select Application Server Combination', select_app_and_server_software_versions_path
+  parent :root
+end
+
+crumb :software_updates do
+  link 'Software Update History', software_versions_path
+  parent :application_server_selection
+end
+
 # crumb :projects do
 #   link 'Projects', projects_path
 # end

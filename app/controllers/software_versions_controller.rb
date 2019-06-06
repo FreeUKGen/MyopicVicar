@@ -31,6 +31,24 @@ class SoftwareVersionsController < ApplicationController
   def new
   end
 
+  def select_app_and_server
+    @options = SoftwareVersion.selection_options
+    @software_version = SoftwareVersion.new
+    @location = 'location.href= "/software_versions/selected?server=" + this.value'
+    @prompt = 'Select application and server'
+    render '_form_for_selection'
+  end
+
+  def selected
+    p params
+
+
+    @softwares, @application, @server = SoftwareVersion.version_information(params[:server])
+    p @application
+    p @server
+    render 'index'
+  end
+
   def show
     @software = SoftwareVersion.find(params[:id])
     redirect_back(fallback_location: software_versions_path, notice: 'The object was not found') && return if @software.blank?

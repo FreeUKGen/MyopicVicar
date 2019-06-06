@@ -1,13 +1,15 @@
 class SoftwareVersion
-
   include Mongoid::Document
   include Mongoid::Timestamps
+  require 'app'
 
   field :date_of_update, type: DateTime
   field :version, type: String
   field :type, type: String
   field :last_search_record_version, type: String
   field :server
+  field :app
+  field :action, type: Array
   embeds_many :commitments
 
   class << self
@@ -31,10 +33,28 @@ class SoftwareVersion
       where(server: server)
     end
 
+    def app(app)
+      where(app: app)
+    end
+
     def extract_server(hostname)
       hostname_parts = hostname.split('.')
       server = hostname_parts[0]
       server
+    end
+
+    def selection_options
+      applications = MyopicVicar::TemplateSet::ALL_APPLICATIONS
+      servers = MyopicVicar::Servers::ALL_SERVERS
+      options = []
+      options[0] = 'This application and server'
+      applications.each do |app|
+        servers.each do |server|
+          option = app.to_s + '-' + server.to_s
+          options << option
+        end
+      end
+      options
     end
 
     def update_version(version)
@@ -50,6 +70,22 @@ class SoftwareVersion
         new_version = (version_parts[0].to_i + 1).to_s
       end
       new_version
+    end
+
+    def version_information(option)
+      if option == 'This application and server'
+        server = SoftwareVersion.extract_server(Socket.gethostname)
+        application = App.name
+      else
+        server_selected = option.split('-')
+        p server_selected
+        server = server_selected[1]
+        application = server_selected[0]
+      end
+      p server
+      p application
+      versions = SoftwareVersion.app(application).server(server).all.order_by(date_of_update: -1)
+      [versions, application, server]
     end
   end
 end
