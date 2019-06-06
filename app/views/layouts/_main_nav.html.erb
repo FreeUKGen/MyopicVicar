@@ -67,12 +67,15 @@
         <% end %>
       </ul>
     </nav>
-    <nav class="social-links">
-      <ul>
-        <li><a href="http://www.freeukgenealogy.org.uk/news/"><i class="icon__rss" aria-hidden="true"></i><span class="accessibility">Blog</span></a></li>
-        <li><a href="https://www.twitter.com/freeukgen" target="_blank"><i class="icon__twitter" aria-hidden="true"></i><span class="accessibility">Twitter</span></a></li>
-        <li><a href="https://www.facebook.com/freeukgen" target="_blank"><i class="icon__facebook" aria-hidden="true"></i><span class="accessibility">Facebook</span></a></li>
-      </ul>
-    </nav>
+
+    <% unless appname_downcase == 'freebmd' %>
+      <nav class="social-links">
+        <ul>
+          <li><a href="http://www.freeukgenealogy.org.uk/news/"><i class="icon__rss" aria-hidden="true"></i><span class="accessibility">Blog</span></a></li>
+          <li><a href="https://www.twitter.com/freeukgen" target="_blank"><i class="icon__twitter" aria-hidden="true"></i><span class="accessibility">Twitter</span></a></li>
+          <li><a href="https://www.facebook.com/freeukgen" target="_blank"><i class="icon__facebook" aria-hidden="true"></i><span class="accessibility">Facebook</span></a></li>
+        </ul>
+      </nav>
+    <% end %>
   </div>
 </div>

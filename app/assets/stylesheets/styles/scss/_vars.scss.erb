@@ -10,11 +10,18 @@
 $container-width:   1200px;
 
 <% if MyopicVicar::Application.config.template_set == 'freecen' %>
-$brand-color:          $orange;
-$brand-color-brighter: $orange-brighter;
-$brand-color-lighter:  $orange-lighter;
+  $brand-color:          $orange;
+  $brand-color-brighter: $orange-brighter;
+  $brand-color-lighter:  $orange-lighter;
 <% elsif MyopicVicar::Application.config.template_set == 'freebmd' %>
-$brand-color:          $magenta;
-$brand-color-brighter: $magenta-brighter;
-$brand-color-lighter:  $magenta-lighter;
-<%end%>
+  $brand-color:          $magenta;
+  $brand-color-brighter: $magenta-brighter;
+  $brand-color-lighter:  $magenta-lighter;
+  $navbar-position: right;
+  $site-header-padding-top: 10px;
+  $site-header-nav-top: 110px;
+  $site-header-height: 180px;
+  $site-header-nav-z-index: 2;
+  $site-content-margin-top: -20px;
+  $bnner-horz-right: 150px;
+<% end %>

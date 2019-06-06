@@ -223,6 +223,8 @@
   display: inline-block;
  *display: inline;
   zoom: 1;
+  background-color: white;
+  top: 80px;
 }
 
 

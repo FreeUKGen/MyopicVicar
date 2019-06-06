@@ -24,6 +24,8 @@
     background-image: url('<%= path_to_image 'png/freecen.png'%>');
   <% elsif MyopicVicar::Application.config.template_set == 'freebmd' %>
     background-image: url('<%= path_to_image 'png/freebmd.png'%>');
+    background-position: center center;
+    width: 310px !important;
   <% end%>
   background-repeat: no-repeat;
   width: 290px;
@@ -68,9 +70,9 @@
 }
 
 .site__header {
-  padding-top: 40px;
+  padding-top: $site-header-padding-top;
   padding-bottom: 40px;
-  height: 170px;
+  height: $site-header-height;
   @include vendor(box-shadow, 0 0 0 rgba(0, 0, 0, 0));
 
   @include manual-media-query(890px) {
@@ -84,6 +86,7 @@
     z-index: 3;
     margin: 0;
     box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    right: $bnner-horz-right;
 
 
     @include manual-media-query(950px) {
@@ -131,8 +134,8 @@
     position: absolute;
     right: 0;
     left: 0;
-    top: 170px;
-    z-index: 3;
+    top: $site-header-nav-top;
+    z-index: $site-header-nav-z-index;
 
     .site__header__nav__inner {
       @include container($container-width);
@@ -141,7 +144,7 @@
     .main-nav {
 
       ul {
-        float: left;
+        float: $navbar-position;
         margin: 0;
       }
 
@@ -214,7 +217,7 @@
  * Site content
  */
 .site__content {
-  margin-top: 46px;
+  margin-top: $site-content-margin-top;
   padding-top: $b;
 }
 
