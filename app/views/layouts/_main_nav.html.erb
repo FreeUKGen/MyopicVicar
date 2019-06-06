@@ -1,5 +1,10 @@
 <div class="site__header__nav  offcanvas__secondary">
   <div class="site__header__nav__inner">
+    <div class="freebmd_brand">
+      <%= link_to '/', class: "site__header__logo  icon__freebmd" do %>
+        <h1 class="accessibility">FreeBMD</h1>
+      <% end %>
+    </div>
     <nav class="main-nav" >
       <ul>
         <% if controller_name.nil? || controller_name == 'search_queries' || controller_name == 'search_records'%>

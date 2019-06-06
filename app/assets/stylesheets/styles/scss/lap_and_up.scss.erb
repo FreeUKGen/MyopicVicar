@@ -128,7 +128,7 @@
   .site__header__nav {
 
     background: $brand-color;
-    overflow: hidden;
+    overflow: $site-header-nav-overflow;
     height: 46px;
 
     position: absolute;
@@ -146,6 +146,7 @@
       ul {
         float: $navbar-position;
         margin: 0;
+        z-index: 999999 !important;
       }
 
       li {
