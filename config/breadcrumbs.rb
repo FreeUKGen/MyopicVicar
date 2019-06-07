@@ -1370,6 +1370,11 @@ crumb :software_updates do
   parent :application_server_selection
 end
 
+crumb :software_commitments do
+  link 'Software commitments', commitments_software_versions_path
+  parent :software_updates
+end
+
 # crumb :projects do
 #   link 'Projects', projects_path
 # end
