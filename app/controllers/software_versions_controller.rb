@@ -40,12 +40,7 @@ class SoftwareVersionsController < ApplicationController
   end
 
   def selected
-    p params
-
-
     @softwares, @application, @server = SoftwareVersion.version_information(params[:server])
-    p @application
-    p @server
     render 'index'
   end
 

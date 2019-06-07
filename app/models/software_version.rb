@@ -75,15 +75,12 @@ class SoftwareVersion
     def version_information(option)
       if option == 'This application and server'
         server = SoftwareVersion.extract_server(Socket.gethostname)
-        application = App.name
+        application = App.name_downcase
       else
         server_selected = option.split('-')
-        p server_selected
         server = server_selected[1]
         application = server_selected[0]
       end
-      p server
-      p application
       versions = SoftwareVersion.app(application).server(server).all.order_by(date_of_update: -1)
       [versions, application, server]
     end
