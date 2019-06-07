@@ -17,7 +17,7 @@ MyopicVicar::Application.routes.draw do
 
   root :to => 'search_queries#new'
 
-  get 'open',:to => 'open#index'
+  get 'open', :to => 'open#index'
   get 'open/:county/places', :to => 'open#places_for_county', :as => :open_places_for_county
   get 'open/:county/:place/surnames', :to => 'open#surnames_for_place', :as => :open_surnames_for_place
   get 'open/:county/:place/:surname/:record_types', :to => 'open#records_for_place_surname', :as => :open_records_for_place_surname
@@ -50,9 +50,9 @@ MyopicVicar::Application.routes.draw do
 
   # end mikes request
 
-
-
-  get 'software_versions/:id/commitments(.:format)',  :to => 'software_versions#commitments', :as => :commitments_software_versions
+  get 'software_versions/select_app_and_server', to: 'software_versions#select_app_and_server', as: :select_app_and_server_software_versions
+  get 'software_versions/selected', to: 'software_versions#selected', as: :selected_software_versions
+  get 'software_versions/:id/commitments(.:format)', to: 'software_versions#commitments', :as => :commitments_software_versions
   resources :software_versions
 
 

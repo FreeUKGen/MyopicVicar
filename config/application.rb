@@ -29,6 +29,27 @@ module MyopicVicar
     FREEREG = 'freereg'
     FREECEN = 'freecen'
     FREEBMD = 'freebmd'
+    ALL_APPLICATIONS = [
+      FREEREG,
+      FREECEN,
+      FREEBMD
+    ]
+  end
+  module Servers
+    VERVET = 'vervet'
+    BRAZZA = 'brazza'
+    COLOBUS = 'colobus'
+    DRILL = 'drill'
+    HOWLER = 'howler'
+    SAKI = 'saki'
+    ALL_SERVERS = [
+      VERVET,
+      BRAZZA,
+      COLOBUS,
+      DRILL,
+      HOWLER,
+      SAKI
+    ]
   end
 
   class Application < Rails::Application

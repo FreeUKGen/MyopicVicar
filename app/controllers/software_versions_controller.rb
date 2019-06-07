@@ -24,10 +24,24 @@ class SoftwareVersionsController < ApplicationController
   end
 
   def index
-    @softwares = SoftwareVersion.all.order_by(date_of_update: -1)
+    @server = SoftwareVersion.extract_server(Socket.gethostname)
+    @softwares = SoftwareVersion.server(@server).all.order_by(date_of_update: -1)
   end
 
   def new
+  end
+
+  def select_app_and_server
+    @options = SoftwareVersion.selection_options
+    @software_version = SoftwareVersion.new
+    @location = 'location.href= "/software_versions/selected?server=" + this.value'
+    @prompt = 'Select application and server'
+    render '_form_for_selection'
+  end
+
+  def selected
+    @softwares, @application, @server = SoftwareVersion.version_information(params[:server])
+    render 'index'
   end
 
   def show
