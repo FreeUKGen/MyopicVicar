@@ -60,7 +60,7 @@ class GetSoftwareVersion
     last_system_update_date = last_system_update.date_of_update
     last_system_update_version = last_system_update.version
     last_search_record_update = SoftwareVersion.type('Search Record').order_by(date_of_update: -1).first
-    last_search_record_update_date = last_search_record_update.date_of_update
+    last_search_record_update_date = last_search_record_update.date_of_update if last_search_record_update.present?
     control_record.update_attributes(server: server, app: App.name_downcase, date_of_update: last_system_update_date, version: last_system_update_version, last_search_record_version: last_search_record_update_date)
     p control_record
   end
