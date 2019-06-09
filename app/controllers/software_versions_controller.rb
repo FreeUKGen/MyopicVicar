@@ -20,6 +20,9 @@ class SoftwareVersionsController < ApplicationController
     @software = SoftwareVersion.find(params[:id])
     redirect_back(fallback_location: software_versions_path, notice: 'The object was not found') && return if @software.blank?
 
+    @server = SoftwareVersion.extract_server(Socket.gethostname)
+    @application = appname
+    @type = @software.type
     get_user_info_from_userid
   end
 

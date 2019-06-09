@@ -1,6 +1,3 @@
-<h2 class=" text--center">Editing Software Version</h2>
-
+<% breadcrumb :edit_software_version%>
+<h2 class=" text--center">Editing Software Version <%=@type%> Number  for <%=@application%> on <%=@server%></h2>
 <%= render 'form' %>
-
-<%= link_to 'Index of Software Versions', software_versions_path %>
-<br>

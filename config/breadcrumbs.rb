@@ -1375,6 +1375,11 @@ crumb :software_commitments do
   parent :software_updates
 end
 
+crumb :edit_software_version do
+  link 'Edit Software Version', edit_software_version_path
+  parent :software_updates
+end
+
 # crumb :projects do
 #   link 'Projects', projects_path
 # end
