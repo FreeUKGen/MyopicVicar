@@ -44,16 +44,18 @@ class SoftwareVersion
     end
 
     def selection_options
-      applications = MyopicVicar::TemplateSet::ALL_APPLICATIONS
       servers = MyopicVicar::Servers::ALL_SERVERS
+      this_server = SoftwareVersion.extract_server(Socket.gethostname)
       options = []
       options[0] = 'This application and server'
-      applications.each do |app|
+      app = App.name_downcase
+      if servers.include?(this_server)
         servers.each do |server|
           option = app.to_s + '-' + server.to_s
           options << option
         end
       end
+
       options
     end
 

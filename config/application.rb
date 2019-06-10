@@ -36,14 +36,12 @@ module MyopicVicar
     ]
   end
   module Servers
-    VERVET = 'vervet'
     BRAZZA = 'brazza'
     COLOBUS = 'colobus'
     DRILL = 'drill'
     HOWLER = 'howler'
     SAKI = 'saki'
     ALL_SERVERS = [
-      VERVET,
       BRAZZA,
       COLOBUS,
       DRILL,
