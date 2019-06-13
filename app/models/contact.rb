@@ -42,7 +42,7 @@ class Contact
 
   attr_accessor :action
 
-  validates_presence_of :name, :email_address
+  validates_presence_of :name, :email_address, :body
   validates :email_address, format: { :with => /\A[^@][\w\+.-]+@[\w.-]+[.][a-z]{2,4}\z/i }
 
   mount_uploader :screenshot, ScreenshotUploader

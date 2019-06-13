@@ -50,7 +50,7 @@
               <span class="ttip__text">If you want more information on volunteering to transcribe, please indicate the county that is of most interest. If wanting to assist in the project management or development, please indicate your area of expertise. </span>
             </label>
             <% if @contact.body.nil? %>
-              <textarea name="contact[body]" id="body" style="width: 100%;" rows="8"></textarea>
+              <textarea name="contact[body]" id="body" style="width: 100%;" rows="8" placeholder="Required" required="required"></textarea>
             <% else%>
               <textarea name="contact[body]" id="body" style="width: 100%;" rows="8"><%=@contact.body%></textarea>
             <% end%>
