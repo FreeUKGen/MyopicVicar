@@ -79,6 +79,7 @@
     <![endif]-->
     <%= stylesheet_link_tag "styles/css/donate_icon" %>
     <%= stylesheet_link_tag "styles/css/freereg_content" %>
+    <%= stylesheet_link_tag "styles/css/freebmd_content" %>
     <%= stylesheet_link_tag "styles/css/ladda.min" %>
     <!-- JavaScripts -->
     <%= javascript_include_tag "application" %>
@@ -89,6 +90,7 @@
     <%= javascript_include_tag "ladda.min.js" %>
     <%= javascript_include_tag "freecen_coverage_graph.js" %>
     <script src="/adsbygoogle.js" type="text/javascript"></script>
+    <script src="https://use.fontawesome.com/5b8044f85d.js"></script>
     <%= csrf_meta_tags %>
     <% google_analytics_tracking_id = google_analytics_tracking %>
     <script>
@@ -110,7 +112,11 @@
     <div class="offcanvas__primary">
       <%= render "layouts/header" %>
       <main  class="site__content  icon__honeycomb--top-right">
+      <!--div>
+          <%#= side_banners%>
+        </div-->
         <div class="container">
+        
           <% if session[:userid_detail_id].present?%>
             <%= breadcrumbs  :class => "delta  text--teal"  unless controller_name == "refinery" ||
              controller_name == "pages"%>
