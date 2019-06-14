@@ -20,6 +20,9 @@ class SoftwareVersion
     def type(type)
       where(type: type)
     end
+    def search_record
+      where(type: 'Search Record')
+    end
 
     def date(date)
       where(date_of_update: date)

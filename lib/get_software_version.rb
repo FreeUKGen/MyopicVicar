@@ -1,5 +1,6 @@
 class GetSoftwareVersion
   require 'app'
+
   # sudo -u webserv bundle exec rake RAILS_ENV=production foo:get_software_version[automatic,2016/1/1,2016/3/1,1.4.1]
   def self.process(process, time_start, time_end, version)
     server = SoftwareVersion.extract_server(Socket.gethostname)
@@ -9,75 +10,71 @@ class GetSoftwareVersion
       time_end_parts = time_end.split('/')
       date_start = Time.new(time_start_parts[0], time_start_parts[1], time_start_parts[2])
       date_end = Time.new(time_end_parts[0], time_end_parts[1], time_end_parts[2])
+      new_version = version
+      control_record = SoftwareVersion.create(server: server, app: appln, date_of_update: date_end, version: version, type: 'Control')
     else
-      control_record = SoftwareVersion.server(server).app(appln).control.first
+      control_record = SoftwareVersion.server(server).app(appln).control.order_by(date_of_update: -1).first
       if control_record.present?
         date_start = control_record.date_of_update
         date_end = Time.new
         last_version = control_record.version
-        version = SoftwareVersion.update_version(last_version)
+        new_version = SoftwareVersion.update_version(last_version)
+        last_search_record_version = control_record.last_search_record_version
       else
         date_start = Time.new(2019, 6, 1)
         date_end = Time.new
-        last_version = '1.5.0'
-        control_record = SoftwareVersion.new
-        control_record.update_attributes(server: server, app: appln, type: 'Control')
-        control_record.save
+        new_version = '1.5.0'
+        last_search_record_version = '1.5.0'
+        control_record = SoftwareVersion.create(server: server, app: appln, date_of_update: date_end, version: new_version, type: 'Control')
       end
-      version = SoftwareVersion.update_version(last_version)
     end
+
+    # Create system record with commitments
     client = Octokit::Client.new(login: Rails.application.config.github_issues_login, password: Rails.application.config.github_issues_password)
-    p " Start software version with start of #{date_start} and end of #{date_end} for version #{version}"
+    p " Start software version with start of #{date_start} and end of #{date_end} for version #{new_version}"
     response = client.commits_between('FreeUKGen/MyopicVicar', date_start, date_end)
-    software_version = SoftwareVersion.new
-    software_version.update_attributes(server: server, app: appln, date_of_update: date_end, version: version, type: 'System')
-    response.each do |commit|
-      commitment = Commitment.new
-      commitment[:commitment_number] = commit[:sha]
-      commitment[:author] = commit[:commit][:author][:name]
-      commitment[:date_committed] = commit[:commit][:author][:date]
-      commitment[:commitment_message] = commit[:commit][:message]
-      software_version.commitments << commitment
-      software_version.save
-    end
-    mods = ['app/models/search_record.rb', 'app/models/emendation_rule.rb', 'app/models/emendation_type.rb','lib/freereg1_translator.rb','lib/emendor.rb', 'lib/tasks/load_emendations.rake']
-    mods.each do |mod|
-      response = client.commits_between('FreeUKGen/MyopicVicar', date_start, date_end, path: mod)
+    if response.present?
+      software_version = SoftwareVersion.create(server: server, app: appln, date_of_update: date_end, version: new_version, type: 'System')
       response.each do |commit|
         commitment = Commitment.new
         commitment[:commitment_number] = commit[:sha]
         commitment[:author] = commit[:commit][:author][:name]
         commitment[:date_committed] = commit[:commit][:author][:date]
         commitment[:commitment_message] = commit[:commit][:message]
-        software_version = SoftwareVersion.server(server).app(appln).type('Search Record').date(commit[:commit][:author][:date]).first
-        if software_version.present?
-          software_version.commitments << commitment
-        else
-          software_version = SoftwareVersion.new
-          software_version.update_attributes(server: server, app: appln, date_of_update: commit[:commit][:author][:date], version: commit[:commit][:author][:date], type: 'Search Record')
-          software_version.commitments << commitment
-        end
-        software_version.save
+        software_version.commitments << commitment
       end
-    end
-    search_records = SoftwareVersion.server(server).app(appln).type('Search Record')
-    if search_records.blank?
-      software_version = SoftwareVersion.new
-      software_version.update_attributes(server: server, app: appln, date_of_update: date_end, version: version, type: 'Search Record')
       software_version.save
+
+      # create search record
+      search_record_version = SoftwareVersion.server(server).app(appln).search_record.order_by(date_of_update: -1).first
+      last_search_record_version = search_record_version.blank? ? new_version : search_record_version.version
+
+      # add commitments to search record
+      mods = ['app/models/search_record.rb', 'app/models/emendation_rule.rb', 'app/models/emendation_type.rb','lib/freereg1_translator.rb','lib/emendor.rb', 'lib/tasks/load_emendations.rake']
+      all_responses = []
+      mods.each do |mod|
+        responses = client.commits_between('FreeUKGen/MyopicVicar', date_start, date_end, path: mod)
+        all_responses << responses if responses.present?
+      end
+      if all_responses.present?
+        search_record_version = SoftwareVersion.create(server: server, app: appln, date_of_update: date_end, version: new_version, type: 'Search Record')
+        last_search_record_version = new_version
+        all_responses.each do |mod|
+          mod.each do |commit|
+            commitment = Commitment.new
+            commitment[:commitment_number] = commit[:sha]
+            commitment[:author] = commit[:commit][:author][:name]
+            commitment[:date_committed] = commit[:commit][:author][:date]
+            commitment[:commitment_message] = commit[:commit][:message]
+            search_record_version.commitments << commitment
+          end
+        end
+      end
+      search_record_version.save
+
+      # update control record
+      control_record.update_attributes(version: new_version, last_search_record_version: last_search_record_version, date_of_update: date_end )
     end
-    last_system_update = SoftwareVersion.server(server).app(appln).type('System').order_by(date_of_update: -1).first
-    if last_system_update.present?
-      last_system_update_date = last_system_update.date_of_update
-      last_system_update_version = last_system_update.version
-    else
-      last_system_update_date = date_end
-      last_system_update_version = version
-    end
-    last_search_record_update = SoftwareVersion.server(server).app(appln).type('Search Record').order_by(date_of_update: -1).first
-    last_search_record_update_date = last_search_record_update.present? ? last_search_record_update.date_of_update : date_end
-    control_record = SoftwareVersion.server(server).app(appln).control.first
-    control_record.update_attributes(date_of_update: last_system_update_date, version: last_system_update_version, last_search_record_version: last_search_record_update_date)
     p control_record
   end
 end
