@@ -39,9 +39,9 @@
               <span class="ttip__text">Required: so we can contact you; it will not be made public</span>
             </label>
             <% if @contact.email_address.nil? %>
-              <input name="contact[email_address]" id="email_address" type="text" class="text-input" placeholder="Required" required="required">
+              <input name="contact[email_address]" id="email_address" type="email" class="text-input" placeholder="Required" required="required">
             <% else%>
-              <input name="contact[email_address]" id="email_address" type="text" class="text-input" value="<%=@contact.email_address%>">
+              <input name="contact[email_address]" id="email_address" type="email" class="text-input" value="<%=@contact.email_address%>">
             <% end%>
           </li>
           <li class="grid__item one-half palm-one-whole push--bottom">
