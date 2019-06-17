@@ -112,9 +112,14 @@
     <div class="offcanvas__primary">
       <%= render "layouts/header" %>
       <main  class="site__content  icon__honeycomb--top-right">
-      <!--div>
-          <%#= side_banners%>
-        </div-->
+        <% unless device_type == :mobile%>
+          <!--div style="float: left; padding: 10px">
+            <%= side_banners%>
+          </div>
+          <div style="float: right; padding: 10px; text-align: center;">
+            <%= side_banners%>
+          </div-->
+        <% end %>
         <div class="container">
         
           <% if session[:userid_detail_id].present?%>
