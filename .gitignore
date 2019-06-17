@@ -31,6 +31,8 @@ mongo.log
 #ignore backup files in collections
 /db/collection/*.json
 /public/assets/
+/public/ads.txt
+/public/adsbygoogle.js
 /test_data/warning/
 
 # Cloud9
