@@ -9,7 +9,7 @@
       <th class="t15">Date Committed </th>
       <th class="t45" >Commitment Message </th>
     </tr>
-    <% @software.commitments.each do |software| %>
+    <% @software.commitments.order_by(date_committed: -1).each do |software| %>
       <tr>
         <td><%= link_to software[:commitment_number], "https://github.com/FreeUKGen/MyopicVicar/commit/#{software[:commitment_number]}" %></td>
         <td><%= software[:author] %></td>
