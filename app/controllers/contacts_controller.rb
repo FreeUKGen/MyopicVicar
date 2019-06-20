@@ -73,11 +73,8 @@ class ContactsController < ApplicationController
         if @contact.contact_type == 'Data Problem'
           redirect_to(@contact.previous_page_url) && return
         else
-          @options = FreeregOptionsConstants::ISSUES
-          @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
-          session[:old_query] = {:name => @contact.name, :email_address => @contact.email_address, :body => @contact.body}
+          session[:old_query] = contact_params
           redirect_to(new_contact_path) && return
-
         end
       else
         flash[:notice] = 'Thank you for contacting us!'
@@ -188,12 +185,9 @@ class ContactsController < ApplicationController
   end
 
   def new
-    @contact = Contact.new
-    @contact = Contact.new(:name => session[:old_query][:name], :email_address => session[:old_query][:email_address], :body => session[:old_query][:body]) if session[:old_query].present?
+    session[:old_query].present? ?  @contact = Contact.new(session[:old_query]) : @contact = Contact.new(:contact_type => FreeregOptionsConstants::ISSUES[0], :contact_time => Time.now)
     session.delete(:old_query)
     @options = FreeregOptionsConstants::ISSUES
-    @contact.contact_time = Time.now
-    @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
   end
 
   def report_error
