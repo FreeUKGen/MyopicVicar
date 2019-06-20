@@ -187,6 +187,7 @@ class ContactsController < ApplicationController
   def new
     @contact = Contact.new
     @options = FreeregOptionsConstants::ISSUES
+    @contact.contact_time = Time.now
     @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
   end
 
