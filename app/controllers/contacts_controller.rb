@@ -75,7 +75,7 @@ class ContactsController < ApplicationController
         else
           @options = FreeregOptionsConstants::ISSUES
           @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
-          redirect_back(fallback_location: new_contact_path, notice: 'There was a problem with your submission please review') && return
+          redirect_to(new_contact_path(:old_query => contact_params)) && return
 
         end
       else
@@ -84,7 +84,7 @@ class ContactsController < ApplicationController
         if @contact.query
           redirect_to(search_query_path(@contact.query)) && return
         else
-          redirect_to(@contact.previous_page_url) && return
+          redirect_to(new_contact_path) && return
         end
       end
     end
@@ -188,6 +188,8 @@ class ContactsController < ApplicationController
 
   def new
     @contact = Contact.new
+    @old_query = params[:old_query] if params[:old_query].present?
+    @contact = Contact.new(:name => @old_query[:name], :email_address => @old_query[:email_address], :body => @old_query[:body]) if @old_query.present?
     @options = FreeregOptionsConstants::ISSUES
     @contact.contact_time = Time.now
     @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
