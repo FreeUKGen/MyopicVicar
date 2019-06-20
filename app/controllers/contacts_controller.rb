@@ -75,7 +75,7 @@ class ContactsController < ApplicationController
         else
           @options = FreeregOptionsConstants::ISSUES
           @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
-          redirect_to(new_contact_path(:old_query => contact_params)) && return
+          redirect_to(new_contact_path(:old_query => {:name => @contact.name, :email_address => @contact.email_address, :body => @contact.body})) && return
 
         end
       else
@@ -188,8 +188,8 @@ class ContactsController < ApplicationController
 
   def new
     @contact = Contact.new
-    @old_query = params[:old_query] if params[:old_query].present?
-    @contact = Contact.new(:name => @old_query[:name], :email_address => @old_query[:email_address], :body => @old_query[:body]) if @old_query.present?
+    old_query = params[:old_query] if params[:old_query].present?
+    @contact = Contact.new(:name => old_query[:name], :email_address => old_query[:email_address], :body => old_query[:body]) if old_query.present?
     @options = FreeregOptionsConstants::ISSUES
     @contact.contact_time = Time.now
     @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
