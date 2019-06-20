@@ -82,7 +82,7 @@ class ContactsController < ApplicationController
         if @contact.query
           redirect_to(search_query_path(@contact.query)) && return
         else
-          redirect_to(new_contact_path) && return
+          redirect_to(@contact.previous_page_url) && return
         end
       end
     end
