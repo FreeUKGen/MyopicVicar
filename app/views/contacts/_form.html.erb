@@ -30,7 +30,7 @@
             <% if @contact.name.nil? %>
               <input id="name" name="contact[name]" type="text" class="text-input" placeholder="Required" required="required">
             <% else %>
-              <input id="name" name="contact[name]" type="text" class="text-input" value="<%=@contact.name%>">
+              <input id="name" name="contact[name]" type="text" class="text-input" value="<%=@contact.name%>" placeholder="Required" required="required">
             <% end %>
           </li>
           <li class="grid__item two-fifths palm-one-whole push--bottom" id="email_address_input">
@@ -41,7 +41,7 @@
             <% if @contact.email_address.nil? %>
               <input name="contact[email_address]" id="email_address" type="email" class="text-input" placeholder="Required" required="required">
             <% else%>
-              <input name="contact[email_address]" id="email_address" type="email" class="text-input" value="<%=@contact.email_address%>">
+              <input name="contact[email_address]" id="email_address" type="email" class="text-input" value="<%=@contact.email_address%>" placeholder="Required" required="required">
             <% end%>
           </li>
           <li class="grid__item one-half palm-one-whole push--bottom">
@@ -52,7 +52,7 @@
             <% if @contact.body.nil? %>
               <textarea name="contact[body]" id="body" style="width: 100%;" rows="8" placeholder="Required" required="required"></textarea>
             <% else%>
-              <textarea name="contact[body]" id="body" style="width: 100%;" rows="8"><%=@contact.body%></textarea>
+              <textarea name="contact[body]" id="body" style="width: 100%;" rows="8" placeholder="Required" required="required"><%=@contact.body%></textarea>
             <% end%>
           </li>
           <li class="grid__item one-third lap-one-half palm-one-whole push--bottom" id="contact_type_input">
