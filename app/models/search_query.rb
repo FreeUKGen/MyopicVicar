@@ -97,6 +97,18 @@ class SearchQuery
         do_not_proceed = true
         message = 'The end year is an invalid integer'
       end
+      if param[:start_year].present? && param[:end_year].blank?
+        do_not_proceed = true
+        message = 'You have specified a start year but no end year'
+      end
+      if param[:end_year].present? && param[:start_year].blank?
+        do_not_proceed = true
+        message = 'You have specified an end year but no start year'
+      end
+      if param[:start_year].present? && param[:end_year].present? && param[:start_year].to_i > param[:end_year].to_i
+        do_not_proceed = true
+        message = 'The start year is later than the end year'
+      end
       [do_not_proceed, message]
     end
 
@@ -228,17 +240,27 @@ class SearchQuery
   end
 
   def date_range_is_valid
-    if !start_year.blank? && !end_year.blank?
-      if start_year.to_i > end_year.to_i
-        errors.add(:end_year, 'First year must precede last year.')
-      end
+    if param[:start_year].present? && !param[:start_year].to_i.bson_int32?
+      errors.add(:start_year, 'The start year is an invalid integer')
+    end
+    if param[:end_year].present? && !param[:end_year].to_i.bson_int32?
+      errors.add(:end_year, 'The end year is an invalid integer')
+    end
+    if param[:start_year].present? && param[:end_year].blank?
+      errors.add(:end_year, 'You have specified a start year but no end year')
+    end
+    if param[:end_year].present? && param[:start_year].blank?
+      errors.add(:start_year, 'You have specified an end year but no start year')
+    end
+    if param[:start_year].present? && param[:end_year].present? && param[:start_year].to_i > param[:end_year].to_i
+      errors.add(:end_year, 'First year must precede last year.')
     end
   end
 
   def date_search_params
     params = Hash.new
     if start_year || end_year
-      date_params = Hash.new
+      date_params = {}
       date_params['$gt'] = DateParser::start_search_date(start_year) if start_year
       date_params['$lte'] = DateParser::end_search_date(end_year) if end_year
       params[:search_date] = date_params
