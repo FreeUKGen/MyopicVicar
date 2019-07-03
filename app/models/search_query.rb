@@ -87,30 +87,6 @@ class SearchQuery
   index({day: -1,result_count: -1},{name: 'day__1_result_count__1',background: true })
 
   class << self
-    def invalid_integer(param)
-      do_not_proceed = false
-      if param[:start_year].present? && !param[:start_year].to_i.bson_int32?
-        do_not_proceed = true
-        message = 'The start year is an invalid integer'
-      end
-      if param[:end_year].present? && !param[:end_year].to_i.bson_int32?
-        do_not_proceed = true
-        message = 'The end year is an invalid integer'
-      end
-      if param[:start_year].present? && param[:end_year].blank?
-        do_not_proceed = true
-        message = 'You have specified a start year but no end year'
-      end
-      if param[:end_year].present? && param[:start_year].blank?
-        do_not_proceed = true
-        message = 'You have specified an end year but no start year'
-      end
-      if param[:start_year].present? && param[:end_year].present? && param[:start_year].to_i > param[:end_year].to_i
-        do_not_proceed = true
-        message = 'The start year is later than the end year'
-      end
-      [do_not_proceed, message]
-    end
 
     def search_id(name)
       where(id: name)
@@ -240,25 +216,21 @@ class SearchQuery
   end
 
   def date_range_is_valid
-    if param[:start_year].present? && !param[:start_year].to_i.bson_int32?
+    if start_year.present? && !start_year.to_i.bson_int32?
       errors.add(:start_year, 'The start year is an invalid integer')
-    end
-    if param[:end_year].present? && !param[:end_year].to_i.bson_int32?
+    elsif end_year.present? && !end_year.to_i.bson_int32?
       errors.add(:end_year, 'The end year is an invalid integer')
-    end
-    if param[:start_year].present? && param[:end_year].blank?
+    elsif start_year.present? && end_year.blank?
       errors.add(:end_year, 'You have specified a start year but no end year')
-    end
-    if param[:end_year].present? && param[:start_year].blank?
+    elsif end_year.present? && start_year.blank?
       errors.add(:start_year, 'You have specified an end year but no start year')
-    end
-    if param[:start_year].present? && param[:end_year].present? && param[:start_year].to_i > param[:end_year].to_i
+    elsif start_year.present? && end_year.present? && start_year.to_i > end_year.to_i
       errors.add(:end_year, 'First year must precede last year.')
     end
   end
 
   def date_search_params
-    params = Hash.new
+    params = {}
     if start_year || end_year
       date_params = {}
       date_params['$gt'] = DateParser::start_search_date(start_year) if start_year
@@ -624,6 +596,7 @@ class SearchQuery
     # @search_index = 'place_rt_sd_ssd' if query_contains_wildcard?
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
     update_attribute(:search_index, @search_index)
+
     # logger.warn @search_parameters.inspect
     records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     persist_results(records)
@@ -785,14 +758,6 @@ class SearchQuery
       end
     elsif MyopicVicar::Application.config.template_set == 'freecen'
       # don't require date range for now. may need to add back in later.
-    end
-  end
-
-  def date_range_is_valid
-    if !start_year.blank? && !end_year.blank?
-      if start_year.to_i > end_year.to_i
-        errors.add(:end_year, "First year must precede last year.")
-      end
     end
   end
 
