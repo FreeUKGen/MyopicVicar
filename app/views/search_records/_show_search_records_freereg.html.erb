@@ -5,27 +5,30 @@
 </section>
 <section>
   <% if params[:citation_type].present? %>
-    <div id = "citationSection">
+  <h4>Citation(<%= params[:citation_type] %>):</h4>
+    <div id = "citationSection" style = "border: 1px solid; padding: 5px">
       <%= render params[:citation_type] + '_' + appname.downcase + '_citation'%>
     </div>
-    <!-- textarea offscreen -->
-    <textarea id = "citationBox" style = "position: absolute; left: -9999px;"></textarea>
-    <button onclick = copytext(this) style = "cursor: pointer">Copy</button>
+    <button onclick = copy("citationSection") style = "cursor: pointer">Copy</button>
     <script>
-    // Copies the citation to the textarea
-        document.getElementById("citationBox").innerText = document.getElementById("citationSection").innerText;
-
-        function copytext(e){
-            // Selects the text area content
-            document.getElementById("citationBox").select()
-            // Copies selection to clipboard
-            document.execCommand("copy");
-            // Changes button value to "Copied" for 1 second.
-            e.innerHTML = "Copied";
-            setTimeout(function(){
-                e.innerHTML = "Copy"
-            }, 1000);
-        }
+      function copy(elm) {
+            var target = document.getElementById(elm);
+            var range, select;
+            if (document.createRange) {
+              range = document.createRange();
+              range.selectNode(target)
+              select = window.getSelection();
+              select.removeAllRanges();
+              select.addRange(range);
+              document.execCommand('copy');
+              select.removeAllRanges();
+            } else {
+              range = document.body.createTextRange();
+              range.moveToElementText(target);
+              range.select();
+              document.execCommand('copy');
+            }
+          }
     </script>
   <% end%>
 </section>
