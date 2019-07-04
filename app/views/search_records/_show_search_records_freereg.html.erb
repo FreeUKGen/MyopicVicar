@@ -10,6 +10,7 @@
       <%= render params[:citation_type] + '_' + appname.downcase + '_citation'%>
     </div>
     <button onclick = copy("citationSection") style = "cursor: pointer">Copy</button>
+    <button onclick = this.parentElement.parentElement.removeChild(this.parentElement) style = "cursor: pointer">Close</button>
     <script>
       function copy(elm) {
             var target = document.getElementById(elm);
@@ -132,7 +133,9 @@
   }
 </style>
 <script>
+if(!document.getElementById("citationSection")){
   document.getElementById("citation-dropdown").style.display = "none";
+}
   document.getElementById("citation-toggle").addEventListener("click", citationToggle);
   /* When the user clicks on the button,
   toggle between hiding and showing the dropdown content */
