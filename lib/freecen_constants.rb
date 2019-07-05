@@ -1,7 +1,4 @@
 module Freecen
-  CHAPMAN_CODE_ELIMINATIONS = ['England', 'Scotland', 'Wales', 'Ireland', 'Unknown', 'Clwyd', 'Dyfed', 'Gwent', 'Gwynedd', 'Powys', 'Mid Glamorgan',
-                               'South Glamorgan', 'West Glamorgan', 'Borders', 'Central', 'Dumfries and Galloway', 'Grampian', 'Highland', 'Lothian', 'Orkney Isles',
-                               'Shetland Isles', 'Strathclyde', 'Tayside', 'Western Isles', 'Other Locations']
   module Uninhabited
     UNOCCUPIED = 'u'
     BUILDING = 'b'
@@ -55,5 +52,7 @@ module Freecen
   end
 
   CENSUS_YEARS_ARRAY = ['1841','1851','1861','1871','1881','1891']
-
+  CHAPMAN_CODE_ELIMINATIONS = ['England', 'Scotland', 'Wales', 'Ireland', 'Unknown', 'Clwyd', 'Dyfed', 'Gwent', 'Gwynedd', 'Powys', 'Mid Glamorgan',
+                               'South Glamorgan', 'West Glamorgan', 'Borders', 'Central', 'Dumfries and Galloway', 'Grampian', 'Highland', 'Lothian',
+                               'Orkney Isles', 'Shetland Isles', 'Strathclyde', 'Tayside', 'Western Isles', 'Other Locations']
 end
