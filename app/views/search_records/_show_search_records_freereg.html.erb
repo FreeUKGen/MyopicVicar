@@ -13,23 +13,28 @@
     <button onclick = this.parentElement.parentElement.removeChild(this.parentElement) style = "cursor: pointer">Close</button>
     <script>
       function copy(elm) {
-            var target = document.getElementById(elm);
-            var range, select;
-            if (document.createRange) {
-              range = document.createRange();
-              range.selectNode(target)
-              select = window.getSelection();
-              select.removeAllRanges();
-              select.addRange(range);
-              document.execCommand('copy');
-              select.removeAllRanges();
-            } else {
-              range = document.body.createTextRange();
-              range.moveToElementText(target);
-              range.select();
-              document.execCommand('copy');
-            }
+          var button = event.currentTarget || event.srcElement;
+          var target = document.getElementById(elm);
+          var range, select;
+          if (document.createRange) {
+            range = document.createRange();
+            range.selectNode(target)
+            select = window.getSelection();
+            select.removeAllRanges();
+            select.addRange(range);
+            document.execCommand('copy');
+            select.removeAllRanges();
+          } else {
+            range = document.body.createTextRange();
+            range.moveToElementText(target);
+            range.select();
+            document.execCommand('copy');
           }
+          button.innerHTML = "Copied"
+          setTimeout(function(){
+            button.innerHTML = "Copy"
+          }, 1000);
+        }
     </script>
   <% end%>
 </section>
