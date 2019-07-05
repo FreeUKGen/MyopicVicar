@@ -34,7 +34,7 @@ class County
       when 'freereg'
         counties = County.where(:county_description.nin => FreeregOptionsConstants::CHAPMAN_CODE_ELIMINATIONS).order_by(chapman_code: 1)
       when 'freecen'
-        counties = County.where(:county_description.nin => FreecenConstants::CHAPMAN_CODE_ELIMINATIONS).order_by(chapman_code: 1)
+        counties = County.where(:county_description.nin => Freecen::CHAPMAN_CODE_ELIMINATIONS).order_by(chapman_code: 1)
       end
       counties
     end

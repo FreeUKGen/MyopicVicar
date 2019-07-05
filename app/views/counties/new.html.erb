@@ -1,5 +1,5 @@
 <% breadcrumb :new_county%>
-<p style="text-align: center">Activate a new County</p>
+<h2 class=" text--center">Activate a new County</h2>
 <%= render 'flash_notice' %>
 <%= simple_form_for @county , :html => { :class => "grid"}  do |f| %>
   <%= f.input :county_description, :as => :select, :label => "Select the County to be activated :", :required => true,:include_blank => true, :collection => @counties ,:input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4}%>

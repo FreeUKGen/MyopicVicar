@@ -113,7 +113,7 @@ module ChapmanCode
         when 'freereg'
           elimination_codes = FreeregOptionsConstants::CHAPMAN_CODE_ELIMINATIONS
         when 'freecen'
-          elimination_codes = FreecenConstants::CHAPMAN_CODE_ELIMINATIONS
+          elimination_codes = Freecen::CHAPMAN_CODE_ELIMINATIONS
         end
         elimination_codes.each do |country|
           value.delete_if { |new_key, _new_value| new_key == country }
