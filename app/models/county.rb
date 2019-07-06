@@ -43,6 +43,10 @@ class County
       where(chapman_code: chapman)
     end
 
+    def county_description(county_description)
+      where(county_description: county_description)
+    end
+
     def coordinator_name(chapman_code)
       coordinator_name = ''
       if chapman_code.present? && ChapmanCode.values.include?(chapman_code)

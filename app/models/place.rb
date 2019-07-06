@@ -21,7 +21,7 @@ class Place
   field :genuki_url, type: String
   field :location, type: Array
   field :grid_reference, type: String
-  field :latitude , type: String
+  field :latitude, type: String
   field :longitude, type: String
   field :original_place_name, type: String
   field :original_county, type: String

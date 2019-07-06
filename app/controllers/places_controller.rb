@@ -31,6 +31,7 @@ class PlacesController < ApplicationController
   def create
     @user = get_user
     @first_name = @user.person_forename if @user.present?
+    params[:place][:county] = session[:county]
     @place = Place.new(place_params)
     proceed, message, place = @place.check_and_set(params)
     if proceed && message == 'Proceed'
@@ -39,7 +40,6 @@ class PlacesController < ApplicationController
         # we have errors on the creation
         flash[:notice] = 'The addition of a place was unsuccessful: (See fields below for actual error and explanations)'
         @county = session[:county]
-        places_counties_and_countries
         @place_name = @place.place_name if @place.present?
         render :new
       else
@@ -89,7 +89,6 @@ class PlacesController < ApplicationController
     load(params[:id])
     redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'That place does not exist') && return if @place.blank?
 
-    places_counties_and_countries
     @place_name = Place.find(session[:place_id]).place_name
     @place.alternateplacenames.build
     @county = session[:county]
@@ -190,7 +189,6 @@ class PlacesController < ApplicationController
   end
 
   def new
-    places_counties_and_countries
     @place = Place.new
     get_user_info_from_userid
     @place.alternateplacenames.build
@@ -203,7 +201,7 @@ class PlacesController < ApplicationController
       @countries << country.country_code
     end
     @counties = ChapmanCode.keys
-    placenames = Place.where(:chapman_code => session[:chapman_code],:disabled => 'false',:error_flag.ne => "Place name is not approved").all.order_by(place_name: 1)
+    placenames = Place.where(:chapman_code => session[:chapman_code], :disabled => 'false', :error_flag.ne => "Place name is not approved").all.order_by(place_name: 1)
     @placenames = []
     placenames.each do |placename|
       @placenames << placename.place_name

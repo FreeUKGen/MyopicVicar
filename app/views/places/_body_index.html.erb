@@ -4,11 +4,7 @@
 <% end%>
 <div style="clear:both;"> </div>
 <br>
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
-  </div>
-<% end %>
+<%= render 'flash_notice' %>
 <div style="overflow: hidden;">
   <table class="my-width-min flush--bottom" >
     <thead >
