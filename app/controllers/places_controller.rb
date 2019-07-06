@@ -51,7 +51,7 @@ class PlacesController < ApplicationController
       if proceed
         # we are clean on the addition
         flash[:notice] = 'The addition to a place was successful'
-        rredirect_to(place_path(place)) && return
+        redirect_to(place_path(place)) && return
       else
         flash[:notice] = "The addition of a place was unsuccessful: #{message}"
         @county = session[:county]
