@@ -1,7 +1,3 @@
 <% breadcrumb :create_place,  @county, @place%>
-<% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
-   <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
-    </div>
-   <% end %> 
+<%= render 'flash_notice' %>
 <%= render 'form' %>

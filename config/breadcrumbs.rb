@@ -930,6 +930,10 @@ crumb :show_countries do |country|
   link 'Show Country', country_path(country)
   parent :countries
 end
+crumb :new_county do |county|
+  link 'Activate County', new_county_path
+  parent :counties
+end
 crumb :edit_country do |country|
   link 'Edit Country', edit_country_path(country)
   parent :show_countries, country

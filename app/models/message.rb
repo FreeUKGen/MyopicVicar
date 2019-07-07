@@ -346,7 +346,7 @@ class Message
     else
       case role
       when 'county_coordinator'
-        County.all.order_by(chapman_code: 1).each do |single|
+        County.application_counties.each do |single|
           chapman_code = single.chapman_code
           coordinator = single.county_coordinator
           coord = UseridDetail.find_by(userid: coordinator)
@@ -593,7 +593,7 @@ class Message
       end
 
     when 'county_coordinator'
-      County.each do |county|
+      County.application_counties.each do |county|
         users << UseridDetail.look_up_id(county.county_coordinator)
       end
       UseridDetail.role(recipients).each do |user|
