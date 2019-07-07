@@ -1,4 +1,4 @@
-__FreeREG | Release Notes__
+__MyopicVicar | Release Notes__
 =======================
 DD-MM-YYYY
 

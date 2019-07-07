@@ -1,4 +1,4 @@
-__FreeREG | Release Notes__
+__MyopicVicar | Release Notes__
   =======================
   07-07-2019
 
