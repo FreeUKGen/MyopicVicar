@@ -26,13 +26,11 @@ lib/development_mail_interceptor.rb
 /db/*.sqlite3
 /db/*.sqlite3-journal
 /db/collection/*.json
-
 doc/api
 doc/app
 /log/**
 /log/**/*
-/public/*
-/public/*/*
+/public/**
 /test_data/*
 /tmp/*
 /tmp/*/*
