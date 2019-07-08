@@ -19,7 +19,6 @@ config/secrets.yml
 config/freeukgen_application.yml
 
 # assets copied into app/assets/ from app/assets_free[reg/cen/bmd]
-lib/development_mail_interceptor.rb
 
 
 # Ignore the default SQLite database.
