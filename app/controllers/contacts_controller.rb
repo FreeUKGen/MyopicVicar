@@ -74,9 +74,7 @@ class ContactsController < ApplicationController
           redirect_to(@contact.previous_page_url) && return
         else
           @options = FreeregOptionsConstants::ISSUES
-          @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
-          redirect_back(fallback_location: new_contact_path, notice: 'There was a problem with your submission please review') && return
-
+          render :new
         end
       else
         flash[:notice] = 'Thank you for contacting us!'
@@ -84,7 +82,7 @@ class ContactsController < ApplicationController
         if @contact.query
           redirect_to(search_query_path(@contact.query)) && return
         else
-          redirect_to(@contact.previous_page_url) && return
+          redirect_to(new_search_query_path) && return
         end
       end
     end

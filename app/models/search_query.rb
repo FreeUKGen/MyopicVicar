@@ -87,18 +87,6 @@ class SearchQuery
   index({day: -1,result_count: -1},{name: 'day__1_result_count__1',background: true })
 
   class << self
-    def invalid_integer(param)
-      do_not_proceed = false
-      if param[:start_year].present? && !param[:start_year].to_i.bson_int32?
-        do_not_proceed = true
-        message = 'The start year is an invalid integer'
-      end
-      if param[:end_year].present? && !param[:end_year].to_i.bson_int32?
-        do_not_proceed = true
-        message = 'The end year is an invalid integer'
-      end
-      [do_not_proceed, message]
-    end
 
     def search_id(name)
       where(id: name)
@@ -228,17 +216,23 @@ class SearchQuery
   end
 
   def date_range_is_valid
-    if !start_year.blank? && !end_year.blank?
-      if start_year.to_i > end_year.to_i
-        errors.add(:end_year, 'First year must precede last year.')
-      end
+    if start_year.present? && !start_year.to_i.bson_int32?
+      errors.add(:start_year, 'The start year is an invalid integer')
+    elsif end_year.present? && !end_year.to_i.bson_int32?
+      errors.add(:end_year, 'The end year is an invalid integer')
+    elsif start_year.present? && end_year.blank?
+      errors.add(:end_year, 'You have specified a start year but no end year')
+    elsif end_year.present? && start_year.blank?
+      errors.add(:start_year, 'You have specified an end year but no start year')
+    elsif start_year.present? && end_year.present? && start_year.to_i > end_year.to_i
+      errors.add(:end_year, 'First year must precede last year.')
     end
   end
 
   def date_search_params
-    params = Hash.new
+    params = {}
     if start_year || end_year
-      date_params = Hash.new
+      date_params = {}
       date_params['$gt'] = DateParser::start_search_date(start_year) if start_year
       date_params['$lte'] = DateParser::end_search_date(end_year) if end_year
       params[:search_date] = date_params
@@ -602,6 +596,7 @@ class SearchQuery
     # @search_index = 'place_rt_sd_ssd' if query_contains_wildcard?
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
     update_attribute(:search_index, @search_index)
+
     # logger.warn @search_parameters.inspect
     records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     persist_results(records)
@@ -763,14 +758,6 @@ class SearchQuery
       end
     elsif MyopicVicar::Application.config.template_set == 'freecen'
       # don't require date range for now. may need to add back in later.
-    end
-  end
-
-  def date_range_is_valid
-    if !start_year.blank? && !end_year.blank?
-      if start_year.to_i > end_year.to_i
-        errors.add(:end_year, "First year must precede last year.")
-      end
     end
   end
 

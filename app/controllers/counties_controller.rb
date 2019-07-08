@@ -14,9 +14,22 @@
 class CountiesController < ApplicationController
   require 'county'
 
+  def create
+    params[:county][:chapman_code] = ChapmanCode.values_at(params[:county][:county_description])
+    params[:county][:county_coordinator] = UseridDetail.id(params[:county][:county_coordinator]).first.userid
+    county = County.create(county_params)
+    if county.errors.any?
+      flash[:notice] = 'Activation failed'
+      redirect_to(new_county_path) && return
+    else
+      flash[:notice] = 'Activation successful'
+      redirect_to(counties_path) && return
+    end
+  end
+
   def display
     get_user_info_from_userid
-    @counties = County.all.order_by(chapman_code: 1)
+    @counties = County.application_counties
     render action: :index
   end
 
@@ -30,7 +43,7 @@ class CountiesController < ApplicationController
   def index
     @user = get_user
     @first_name = @user.person_forename if @user.present?
-    @counties = County.all.order_by(chapman_code: 1)
+    @counties = County.application_counties
   end
 
   def load(id)
@@ -40,6 +53,7 @@ class CountiesController < ApplicationController
   def new
     @user = get_user
     @first_name = @user.person_forename if @user.present?
+    @counties = County.inactive_counties
     @county = County.new
     get_userids_and_transcribers
   end
@@ -50,21 +64,21 @@ class CountiesController < ApplicationController
     session[:county] = 'all' if @user.person_role == 'system_administrator'
     case params[:county]
     when 'Browse counties'
-      @counties = County.all.order_by(chapman_code: 1)
+      @counties = County.application_counties
       render 'index'
       return
     when 'Create county'
       redirect_to action: 'new'
       return
     when 'Edit specific county'
-      counties = County.all.order_by(chapman_code: 1)
+      counties = County.application_counties
       @counties = []
       counties.each do |county|
         @counties << county.chapman_code
       end
       @location = 'location.href= "select?act=edit&county=" + this.value'
     when 'Show specific county'
-      counties = County.all.order_by(chapman_code: 1)
+      counties = County.application_counties
       @counties = []
       counties.each do |county|
         @counties << county.chapman_code

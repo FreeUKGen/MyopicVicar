@@ -558,7 +558,7 @@ namespace :build do
         processor_initiation_lock_file = File.join(Rails.root,"tmp","processor_initiation_lock_file.txt")
         p "Initiation lock present" if File.exist?(processor_initiation_lock_file)
         FileUtils.rm(processor_initiation_lock_file, :force => true) if File.exist?(processor_initiation_lock_file)
-        if File.exist?(rake_lock_file)
+        if rake_lock_file.present? && File.exist?(rake_lock_file)
           p "FREEREG:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists. Exiting"
         else
           #set the processor running flag
@@ -572,15 +572,15 @@ namespace :build do
         end
       end
       p "FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
-      FileUtils.rm(rake_lock_file, :force => true) if File.exist?(rake_lock_file)
-      p "Still there" if File.exist?(rake_lock_file)
+      FileUtils.rm(rake_lock_file, :force => true) if rake_lock_file.present? && File.exist?(rake_lock_file)
+      p "Still there" if rake_lock_file.present? && File.exist?(rake_lock_file)
 
     rescue Exception => msg
       p "rescue"
       p msg
       p "FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
-      FileUtils.rm(rake_lock_file, :force => true) if File.exist?(rake_lock_file)
-      p "Still there" if File.exist?(rake_lock_file)
+      FileUtils.rm(rake_lock_file, :force => true) if rake_lock_file.present? && File.exist?(rake_lock_file)
+      p "Still there" if rake_lock_file.present? && File.exist?(rake_lock_file)
     end
   end
   desc "build recommence search records from files.  Example arguments: [create_search_records,individual,force_rebuild,userid/filename.csv] or [create_search_records,range,force_rebuild,k]"
@@ -602,14 +602,14 @@ namespace :build do
         rake_lock_file = File.join(Rails.root,"tmp","processing_rake_lock_file.txt")
         processor_initiation_lock_file = File.join(Rails.root,"tmp","processor_initiation_lock_file.txt")
         File.delete(processor_initiation_lock_file) if File.exist?(processor_initiation_lock_file)
-        if File.exist?(rake_lock_file)
+        if rake_lock_file.present? && File.exist?(rake_lock_file)
           p "FREEREG:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists. Continuing with processing"
           while PhysicalFile.waiting.exists?
             NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
             sleep(300)
           end
           p "FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
-          FileUtils.rm(rake_lock_file, :force => true) if File.exist?(rake_lock_file)
+          FileUtils.rm(rake_lock_file, :force => true) if rake_lock_file.present? && File.exist?(rake_lock_file)
         else
           locking_file = File.new(rake_lock_file, "w")
           p "FREEREG:CSV_PROCESSING: Created rake lock file #{rake_lock_file} and processing files"
@@ -620,12 +620,12 @@ namespace :build do
         end
       end
       p "FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
-      FileUtils.rm(rake_lock_file, :force => true) if File.exist?(rake_lock_file)
+      FileUtils.rm(rake_lock_file, :force => true) if rake_lock_file.present? && File.exist?(rake_lock_file)
     rescue Exception => msg
       p "rescue"
       p msg
       p "FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
-      FileUtils.rm(rake_lock_file, :force => true) if File.exist?(rake_lock_file)
+      FileUtils.rm(rake_lock_file, :force => true) if rake_lock_file.present? && File.exist?(rake_lock_file)
     end
   end
 

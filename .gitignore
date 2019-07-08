@@ -7,36 +7,41 @@
 # Ignore bundler config
 /.bundle
 /.project
-vendor/bundle/*
+
+# Ignore application configuration
+config/application.yml
+config/freeukgen_application.yml
+config/database.yml
+config/errbit.yml
+config/mongo_config.yml
+config/mongoid.yml
+config/secrets.yml
+config/freeukgen_application.yml
+
+# assets copied into app/assets/ from app/assets_free[reg/cen/bmd]
+lib/development_mail_interceptor.rb
 
 
 # Ignore the default SQLite database.
 /db/*.sqlite3
+/db/*.sqlite3-journal
+/db/collection/*.json
+doc/api
+doc/app
+/log/**
+/log/**/*
+/public/**
+/test_data/*
+/tmp/*
+/tmp/*/*
+vendor/bundle/*
+vendor/cache
 
-/db/development.sqlite3
-
-/public/images/working
-
-# Ignore all logfiles and tempfiles.
-/log/*.log
-/test_data/*.log
-/log/upload
-/tmp
-tmp/**/*
 *#
 *~
 mongo.log
 #*.csv
 *.out
-#ignore backup files in collections
-/db/collection/*.json
-/public/assets/
-/test_data/warning/
-
-# Cloud9
-mongod
-start_dbs
-
 # Ignore RVM-related files
 .rvmrc
 
@@ -45,36 +50,15 @@ start_dbs
 tags
 
 # Rails
-.bundle
-db/*.sqlite3
-db/*.sqlite3-journal
 *.log
-tmp
-tmp/**/*
 */.attic/*
 
 # Documentation
-doc/api
-doc/app
+
 .yardoc
 .yardopts
 coverage
 
-# Public Uploads
-public/system/*
-public/themes/*
-public/uploads/*
-
-# Public Cache
-public/javascripts/cache
-public/stylesheets/cache
-public/refinery/*
-
-
-# Vendor Cache
-vendor/cache
-
-# Acts as Indexed
 index/**/*
 
 # Refinery Specific
@@ -82,10 +66,6 @@ index/**/*
 *.autobackupbyrefinery.*
 refinerycms-*.gem
 
-# Cloud9 Specific
-start_dbs
-setup_cloud9.rb
-mongod
 .byebug_history
 
 # Mac
@@ -134,21 +114,7 @@ capybara-*html
 vendor/extensions/**/spec/dummy
 
 
-# Ignore application configuration
-config/initializers/development_mail_interceptor.rb
-config/application.yml
-config/freeukgen_application.yml
-config/database.yml
 
-config/errbit.yml
-config/mongo_config.yml
-config/mongoid.yml
-config/secrets.yml
-config/freeukgen_application.yml
-
-# assets copied into app/assets/ from app/assets_free[reg/cen/bmd]
-app/assets/copy_of_assets_free*
-config/initializers/setup_mail.rb
 data/*
 
 .robocop.yml

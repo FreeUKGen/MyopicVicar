@@ -1,4 +1,5 @@
 class UpdateSearchRecords
+  require 'app'
   def self.process(limit,record_type,search_version,force,order)
     file_for_warning_messages = "log/search_record_digest.log"
     FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
@@ -12,7 +13,8 @@ class UpdateSearchRecords
       p "Invalid order it must be either 1 or -1"
       return
     end
-    software_version = SoftwareVersion.control.first
+    server = SoftwareVersion.extract_server(Socket.gethostname)
+    software_version = SoftwareVersion.server(server).app(App.name_downcase).control.first
     version = software_version.version unless software_version.nil?
     search_version  = software_version.last_search_record_version if search_version.blank? && software_version.last_search_record_version.present?
     search_version = 1 if search_version.blank?

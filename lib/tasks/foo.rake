@@ -438,6 +438,7 @@ namespace :foo do
 
   desc "Recalculate SearchRecord search date for Freereg1CsvEntry ids in a file"
   task :recalc_search_record_seach_date_for_entries_in_file, [:id_file,:limit] => [:environment] do |t,args|
+    require 'app'
     p "starting"
     number = 0
     stop_after = args.limit.to_i
@@ -459,7 +460,8 @@ namespace :foo do
           p entry
           p record.search_date unless record.blank?
           p record.secondary_search_date unless record.blank?
-          software_version = SoftwareVersion.control.first
+          server = SoftwareVersion.extract_server(Socket.gethostname)
+          software_version = SoftwareVersion.server(server).app(App.name_downcase).control.first
           search_version = ''
           search_version  = software_version.last_search_record_version unless software_version.blank?
           freereg1_csv_file = entry.freereg1_csv_file

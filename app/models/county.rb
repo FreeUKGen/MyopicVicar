@@ -3,6 +3,9 @@ class County
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
   require 'chapman_code'
+  require 'freereg_options_constants'
+  require 'freecen_constants'
+  require 'app'
 
   field :chapman_code, type: String
   field :county_coordinator, type: String
@@ -26,8 +29,22 @@ class County
   index ({ chapman_code: 1, previous_county_coordinator: 1 })
 
   class << self
+    def application_counties
+      case App.name_downcase
+      when 'freereg'
+        counties = County.where(:county_description.nin => FreeregOptionsConstants::CHAPMAN_CODE_ELIMINATIONS).order_by(chapman_code: 1)
+      when 'freecen'
+        counties = County.where(:county_description.nin => Freecen::CHAPMAN_CODE_ELIMINATIONS).order_by(chapman_code: 1)
+      end
+      counties
+    end
+
     def chapman_code(chapman)
       where(chapman_code: chapman)
+    end
+
+    def county_description(county_description)
+      where(county_description: county_description)
     end
 
     def coordinator_name(chapman_code)
@@ -69,6 +86,17 @@ class County
 
     def id(id)
       where(id: id)
+    end
+
+    def inactive_counties
+      valid_codes = ChapmanCode.chapman_codes_for_reg_county
+      actual_codes = County.all.pluck(:chapman_code).uniq
+      values_for_selection = valid_codes.delete_if { |code| actual_codes.include?(code) }
+      values = []
+      values_for_selection.each do |code|
+        values << ChapmanCode.has_key(code)
+      end
+      values
     end
 
     def records(chapman)
