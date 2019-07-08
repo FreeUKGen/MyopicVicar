@@ -21,7 +21,9 @@ class Freereg1CsvEntriesController < ApplicationController
   ActionController::Parameters.permit_all_parameters = true
 
   def calculate_software_version
-    software_version = SoftwareVersion.control.first
+    @server = SoftwareVersion.extract_server(Socket.gethostname)
+    @application = appname
+    software_version = SoftwareVersion.server(@server).app(@application).control.first
     search_version = ''
     search_version = software_version.last_search_record_version if software_version.present?
     search_version

@@ -59,7 +59,7 @@ module UseridRole
     'Physical Files' => '/physical_files/select_action',
     'Site Statistics' => '/site_statistics',
     'Search Performance' => '/search_queries/report',
-    'Software Version Information' => '/software_versions',
+    'Software Version Information' => '/software_versions/select_app_and_server',
     'Feedback' => '/feedbacks',
     'Contacts' => '/contacts',
     'System Documentation' => '/cms/system-documents',

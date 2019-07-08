@@ -1,11 +1,7 @@
 <% breadcrumb :rename_place,  @county, @place%>
 <p style="text-align: center"> <b><%= @place_name %></b> of <b><%= @county %></b><br>
 </p>
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
-  </div>
-<% end %>
+<%= render 'flash_notice' %>
 <section class="island  island--light">
   <%= simple_form_for  @place, :html => { :class => "grid"}  do |f| %>
     <%= f.input :place_name, :label => "Enter the new Place Name", :input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width"}%>

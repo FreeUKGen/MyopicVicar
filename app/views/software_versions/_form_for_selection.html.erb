@@ -1,0 +1,7 @@
+<% breadcrumb :application_server_selection%>
+<%= render 'flash_notice' %>
+<div class="island ">
+  <%= simple_form_for @software_version  do |f| %>
+    <%= f.input :action,  :as => :select, :label => "Make a Selection", :required => true, :collection => @options ,:input_html => {'onchange' => @location,:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4}%>
+  <% end %>
+</div>

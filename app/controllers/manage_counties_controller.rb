@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 #
 class ManageCountiesController < ApplicationController
- require 'freecen_constants'
+  require 'freecen_constants'
 
   def batches_with_errors
     get_user_info_from_userid
@@ -102,7 +102,7 @@ class ManageCountiesController < ApplicationController
     if  @user.person_role == 'data_manager' || @user.person_role == 'system_administrator' ||
         @user.person_role == 'documentation_coordinator' || @user.person_role == "contacts_coordinator"
       @countries = []
-      counties = County.all.order_by(chapman_code: 1)
+      counties = County.application_counties
       counties.each do |county|
         @countries << county.chapman_code
       end

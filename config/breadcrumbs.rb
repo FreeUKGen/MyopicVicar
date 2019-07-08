@@ -930,6 +930,10 @@ crumb :show_countries do |country|
   link 'Show Country', country_path(country)
   parent :countries
 end
+crumb :new_county do |county|
+  link 'Activate County', new_county_path
+  parent :counties
+end
 crumb :edit_country do |country|
   link 'Edit Country', edit_country_path(country)
   parent :show_countries, country
@@ -1358,6 +1362,26 @@ end
 crumb :search_query_analysis do |query|
   link 'Search Query Report', analyze_search_query_path(query)
   parent :search_query_report
+end
+
+crumb :application_server_selection do
+  link 'Select Application Server Combination', select_app_and_server_software_versions_path
+  parent :root
+end
+
+crumb :software_updates do
+  link 'Software Update History', software_versions_path
+  parent :application_server_selection
+end
+
+crumb :software_commitments do
+  link 'Software commitments', commitments_software_versions_path
+  parent :software_updates
+end
+
+crumb :edit_software_version do
+  link 'Edit Software Version', edit_software_version_path
+  parent :software_updates
 end
 
 # crumb :projects do

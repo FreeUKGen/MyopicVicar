@@ -2,6 +2,7 @@ desc "Check freereg1_csv_file locations records are correct, setting fix to fix 
 require 'chapman_code'
 require "check_search_record"
 require "check_freereg1_csv_file"
+require 'app'
 
 task :check_search_records,[:limit,:fix,:file] => :environment do |t, args|
   args.fix == "fix" ? fix = true : fix = false
@@ -20,7 +21,8 @@ task :check_search_records,[:limit,:fix,:file] => :environment do |t, args|
   missing_search_record = 0
   start = Time.now
   last_file_name = "old"
-  software_version = SoftwareVersion.control.first
+  server = SoftwareVersion.extract_server(Socket.gethostname)
+  software_version = SoftwareVersion.server(server).app(App.name_downcase).control.first
   version = software_version.version unless software_version.nil?
   search_version  = software_version.last_search_record_version if software_version.present? && software_version.last_search_record_version.present?
   search_version = 1 if search_version.blank?
@@ -53,7 +55,7 @@ task :check_search_records,[:limit,:fix,:file] => :environment do |t, args|
           record = SearchRecord.where(:freereg1_csv_entry_id => entry.id).count
           if record == 0
             p "missing entry"
-             missing_search_record = missing_search_record + 1
+            missing_search_record = missing_search_record + 1
             file = entry.entry.freereg1_csv_file
             if file.present?
               register = file.register if file.present?
@@ -86,52 +88,52 @@ task :check_search_records,[:limit,:fix,:file] => :environment do |t, args|
   else
     files = Freereg1CsvEntry.count
     p "Total entries: #{files}"
-    entries = 0    
-     
-        file_name = ""
-        owner = ""
-        Freereg1CsvEntry.no_timeout.each do |entry|
-          processing = processing + 1
-          number_processed = number_processed + 1  
-          entries = entries + 1
-          break if entries == limit
-          record = SearchRecord.where(:freereg1_csv_entry_id => entry.id).count
-          if record == 0
-            p "missing search record for #{entry.id} at #{entries}"
-            missing_search_record = missing_search_record + 1
-            file = entry.freereg1_csv_file
-            if file.present?
-              register = file.register if file.present?
-              church = register.church if register.present?
-              place = church.place if church.present?     
-              result = SearchRecord.create_search_record(entry,search_version,place.id) if fix && place.present?
-              message_file.puts " #{file.userid}, #{file.file_name},missing search records" unless  file.id unless last_file_name == file.id || place.blank?
-              last_file_name = file.id unless last_file_name == file.id || place.blank?
-              sleep_time = (Rails.application.config.sleep.to_f).to_f
-              sleep(sleep_time) if fix
-            else
-              message_file.puts  "#{entry.id},#{entry.line_id},missing file as well as search records"
-              entry.destroy if fix
-            end
-          end
-          if record == 2
-            duplicate_search_records = duplicate_search_records + 1
-            record = SearchRecord.where(:freereg1_csv_entry_id => entry.id).first
-            record.destroy if fix
-            message_file.puts  "#{entry.id},#{entry.line_id},duplicate search record"
-            sleep_time = (Rails.application.config.sleep.to_f).to_f
-            sleep(sleep_time) if fix
-          end
-          if processing == 10000
-            processed_time = Time.now
-            processing_time = (processed_time - start)*1000/entries
-             message_file.puts "#{entries} entries processed at a rate of #{processing_time} ms/entry #{missing_search_record} missing records and #{duplicate_search_records } duplicates"
-            p  "#{entries} entries processed at a rate of #{processing_time} ms/entry #{missing_search_record} missing records and #{duplicate_search_records } duplicates"
-            processing = 0
-          end
+    entries = 0
+
+    file_name = ""
+    owner = ""
+    Freereg1CsvEntry.no_timeout.each do |entry|
+      processing = processing + 1
+      number_processed = number_processed + 1
+      entries = entries + 1
+      break if entries == limit
+      record = SearchRecord.where(:freereg1_csv_entry_id => entry.id).count
+      if record == 0
+        p "missing search record for #{entry.id} at #{entries}"
+        missing_search_record = missing_search_record + 1
+        file = entry.freereg1_csv_file
+        if file.present?
+          register = file.register if file.present?
+          church = register.church if register.present?
+          place = church.place if church.present?
+          result = SearchRecord.create_search_record(entry,search_version,place.id) if fix && place.present?
+          message_file.puts " #{file.userid}, #{file.file_name},missing search records" unless  file.id unless last_file_name == file.id || place.blank?
+          last_file_name = file.id unless last_file_name == file.id || place.blank?
+          sleep_time = (Rails.application.config.sleep.to_f).to_f
+          sleep(sleep_time) if fix
+        else
+          message_file.puts  "#{entry.id},#{entry.line_id},missing file as well as search records"
+          entry.destroy if fix
         end
+      end
+      if record == 2
+        duplicate_search_records = duplicate_search_records + 1
+        record = SearchRecord.where(:freereg1_csv_entry_id => entry.id).first
+        record.destroy if fix
+        message_file.puts  "#{entry.id},#{entry.line_id},duplicate search record"
+        sleep_time = (Rails.application.config.sleep.to_f).to_f
+        sleep(sleep_time) if fix
+      end
+      if processing == 10000
+        processed_time = Time.now
+        processing_time = (processed_time - start)*1000/entries
+        message_file.puts "#{entries} entries processed at a rate of #{processing_time} ms/entry #{missing_search_record} missing records and #{duplicate_search_records } duplicates"
+        p  "#{entries} entries processed at a rate of #{processing_time} ms/entry #{missing_search_record} missing records and #{duplicate_search_records } duplicates"
+        processing = 0
+      end
+    end
   end
-   message_file.puts "checked  #{entries} entries there were #{missing_search_record} missing records and #{duplicate_search_records } duplicates"
+  message_file.puts "checked  #{entries} entries there were #{missing_search_record} missing records and #{duplicate_search_records } duplicates"
   p "checked  #{entries} entries there were #{missing_search_record} missing records and #{duplicate_search_records } duplicates"
   message_file.close
 end

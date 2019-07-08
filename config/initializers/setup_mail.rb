@@ -1,13 +1,26 @@
 require 'development_mail_interceptor'
 if Rails.env.development?
   ActionMailer::Base.register_interceptor(DevelopmentMailInterceptor)
-  ActionMailer::Base.delivery_method = :sendmail if Rails.application.config.website == 'https://test2.freereg.org.uk'
-  ActionMailer::Base.perform_deliveries = true
-  ActionMailer::Base.raise_delivery_errors = true
-  ActionMailer::Base.default_url_options[:host] = Rails.application.config.website
+  case Rails.application.config.website
+  when 'https://test2.freereg.org.uk'
+    ActionMailer::Base.delivery_method = :sendmail
+    ActionMailer::Base.perform_deliveries = true
+    ActionMailer::Base.raise_delivery_errors = true
+  when 'https://test2.freecen.org.uk'
+    ActionMailer::Base.delivery_method = :sendmail
+    ActionMailer::Base.perform_deliveries = true
+    ActionMailer::Base.raise_delivery_errors = true
+  when 'https://test2.freebmd.org.uk'
+    ActionMailer::Base.delivery_method = :sendmail
+    ActionMailer::Base.perform_deliveries = true
+    ActionMailer::Base.raise_delivery_errors = true
+  when 'localhost:3000'
+    ActionMailer::Base.perform_deliveries = false
+    ActionMailer::Base.raise_delivery_errors = false
+  end
 else
   ActionMailer::Base.delivery_method = :sendmail
   ActionMailer::Base.perform_deliveries = true
   ActionMailer::Base.raise_delivery_errors = true
-  ActionMailer::Base.default_url_options[:host] = Rails.application.config.website
 end
+ActionMailer::Base.default_url_options[:host] = Rails.application.config.website

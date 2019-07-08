@@ -1,8 +1,4 @@
 <% breadcrumb :edit_country,  @country%>
 <h2 class=" text--center">Editing <%= @country.country_code %></h2>
-<% if flash[:notice] %>
-<div id="notice" style="color:blue"><br>
-  <%= flash[:notice] %> <br>
-</div>
-<% end %>
+<%= render 'flash_notice' %>
 <%= render 'form' %>

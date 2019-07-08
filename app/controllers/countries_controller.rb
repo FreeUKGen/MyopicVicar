@@ -13,6 +13,8 @@
 #
 class CountriesController < ApplicationController
   def create
+    params[:country][:country_code] = params[:country][:country_description]
+    params[:country][:country_coordinator] = UseridDetail.find(params[:country][:country_coordinator]).userid
     @country = Country.new(country_params)
     @country.save
     if @country.errors.any?

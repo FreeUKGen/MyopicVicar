@@ -68,9 +68,6 @@ class SearchQueriesController < ApplicationController
     condition = true if params[:search_query].present? && params[:search_query][:region].blank?
     redirect_back(fallback_location: new_search_query_path, notice: 'Invalid Search') && return unless condition
 
-    do_not_proceed, message = SearchQuery.invalid_integer(params[:search_query])
-    redirect_back(fallback_location: new_search_query_path, notice: message) && return if do_not_proceed
-
     @search_query = SearchQuery.new(search_params.delete_if { |_k, v| v.blank? })
     adjust_search_query_parameters
     if @search_query.save

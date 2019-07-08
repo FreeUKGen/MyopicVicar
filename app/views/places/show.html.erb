@@ -8,11 +8,7 @@
   <% end%>
 </div>
 <div style="clear:both;"> </div>
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
-  </div>
-<% end %>
+<%= render 'flash_notice' %>
 <div class="grid">
   <section class="island ">
     <h4 style="text-align: center">The Place has the following Church(es)

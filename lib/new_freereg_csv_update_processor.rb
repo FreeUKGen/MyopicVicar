@@ -287,7 +287,8 @@ class CsvFile < CsvFiles
     @header[:uploaded_date] = @uploaded_date
     @header[:def] = false
     @header[:lds] = "no"
-    @software_version = SoftwareVersion.control.first
+    server = SoftwareVersion.extract_server(Socket.gethostname)
+    @software_version = SoftwareVersion.server(server).app('freereg').control.first
     @header[:software_version] = ''
     @header[:search_record_version] = ''
     @header[:software_version] = @software_version.version if @software_version.present?
