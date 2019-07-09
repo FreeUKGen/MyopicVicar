@@ -1,9 +1,5 @@
 <% breadcrumb :select_role, @message%>
 <br>
 <h4 style="text-align: center">Select the role of the person with whom you wish to communicate</h4>
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %> <% flash[:notice] = nil%><br>
-  </div>
-<% end %>
+<%= render 'flash_notice' %>
 <%= render 'form_for_selection' %>

@@ -1,11 +1,6 @@
 <% show_breadcrumb%>
 <div style='clear:both;'> </div>
-<% if flash[:notice] %>
-  <div id='notice' style='color:blue'><br>
-    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
-  </div>
-<% end %>
-<br>
+<%= render 'flash_notice' %>
 <h4 class=' text--center push--bottom'><%= show_title(@message)%>. Subject: <%= @message.subject %> </h4>
 <h4 class=' text--center push--bottom'><%= show_status_title(@message) if show_status_title(@message).present? %> <%= show_attachment_title(@message) if show_attachment_title(@message).present? %></h4>
 <div  class=' text--center push--bottom'>
