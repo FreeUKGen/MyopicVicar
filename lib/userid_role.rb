@@ -29,7 +29,7 @@ module UseridRole
     'genealogy_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Profile', 'Roadmap', 'System Documentation'],
     'documentation_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Display Userids', 'Feedback', 'Manage Syndicates',
                                     'Manage Counties', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation'],
-    'engagement_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation'],
+    'engagement_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Manage Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation'],
     'website_coordinator' => ['Batches', 'Contacts', 'Communicate', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation'],
     'general_communication_coordinator' => ['Batches', 'Contacts', 'Communicate', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation']
   }
