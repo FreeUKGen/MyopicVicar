@@ -1,11 +1,7 @@
 <% index_breadcrumbs %>
 <br>
 <h3 class=' text--center'><%= index_header(params[:source], @syndicate)%></h3>
-<% if flash[:notice] %>
-  <div id='notice' style='color:blue'><br>
-    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
-  </div>
-<% end %>
+<%= render 'flash_notice' %>
 <p style='text-align: center'>
   <%= index_header_create_link %>
   <% if index_sort_links? %>
