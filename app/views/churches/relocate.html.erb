@@ -1,10 +1,6 @@
 <% breadcrumb :relocate_church,  @county, @place, @church%>
 <p style="text-align: center"><b><%= @church_name %></b>  from  <b><%= @place_name %></b> in <b><%= @county %></b></p>
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %> <br>
-  </div>
-<% end %>
+<%= render 'flash_notice' %>
 <section class="island  island--light">
   <%= simple_form_for  @church do |f| %>
     <% if @user.person_role == 'data_manager' || @user.person_role == 'system_administrator' %>

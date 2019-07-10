@@ -1,13 +1,9 @@
 <% breadcrumb :rename_church,  @county, @place, @church%>
 <p style="text-align: center">Currently <%= @church_name %> within <b><%= @place_name %></b> of  <b><%= @county %></b></p>
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %> <br>
-  </div>
-<% end %>
+<%= render 'flash_notice' %>
 <section class="island  island--light">
   <%= simple_form_for  @church, :html => { :class => "grid"}  do |f| %>
-    <%= f.input :church_name, :label => "Church Name :",:input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 50 }%>
+    <%= f.input :church_name, :label => "Church Name :", :required => true, :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 50 }%>
     <%= f.button :submit, 'Rename' %>
   <% end %>
   <p style="color:red">Please note you are changing the name in a large number of records (<%=@records%>) the processing time could be several minutes depending upon the number of batches affected. <b>Please wait for the process to complete.</b></p>

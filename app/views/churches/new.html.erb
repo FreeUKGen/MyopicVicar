@@ -1,8 +1,4 @@
 <% breadcrumb :create_church,  @county, @place%>
 <p style="text-align: center">In <b><%=@place_name%></b> for <b><%= @county %></b></p>
-<% if flash[:notice] %>
-<div id="notice" style="color:blue"><br>
-  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
-</div>
-<% end %>
+<%= render 'flash_notice' %>
 <%= render 'form' %>

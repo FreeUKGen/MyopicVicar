@@ -1,33 +1,26 @@
 <p style="text-align: center">Listing csvfiles</p>
-  <% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
-  <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
-    </div>
-   <% end %>  
-
-    <%= link_to "New CsvFile", new_csvfile_path %>
-    <br />
-    <br />
-    <table >
-    <thead>
+<%= render 'flash_notice' %>
+<%= link_to "New CsvFile", new_csvfile_path %>
+<br />
+<br />
+<table >
+  <thead>
     <tr>
-    <th>Name</th>
-    <th>Download Link</th>
-    <th>&nbsp;</th>
+      <th>Name</th>
+      <th>Download Link</th>
+      <th>&nbsp;</th>
     </tr>
-    </thead>
-    <tbody>
+  </thead>
+  <tbody>
     <% unless @csvfiles.nil?%>
-  <% @csvfiles.each do |csvfile| %>
-  <tr>
-    <td><%= button_to 'Show', csvfile %></td>
-    <td><%= button_to 'Edit', edit_csvfile_path(csvfile) %></td>
-    <td><%= button_to 'Destroy', csvfile, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-  </tr>
-<% end %>
-<% end %>
-    </tbody>
-    </table>
-
-
+      <% @csvfiles.each do |csvfile| %>
+        <tr>
+          <td><%= button_to 'Show', csvfile %></td>
+          <td><%= button_to 'Edit', edit_csvfile_path(csvfile) %></td>
+          <td><%= button_to 'Destroy', csvfile, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        </tr>
+      <% end %>
+    <% end %>
+  </tbody>
+</table>
 <%= link_to 'New Csvfile', new_csvfile_path %>
