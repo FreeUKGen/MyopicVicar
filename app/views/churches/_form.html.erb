@@ -1,13 +1,13 @@
 <%= simple_form_for  @church, :html => { :class => "grid"}   do |f| %>
   <% if controller.action_name == 'new' %>
     <p style="color:red">Please take extreme care with the Church Name to get it correct!</p>
-    <%= f.input :church_name, :label => "Enter the Church Name" %>
+    <%= f.input :church_name, :label => "Enter the Church Name", :required => true , :input_html => {:class => " simple_form_bgcolour simple_form_position "}%>
   <% end %>
   <%= f.simple_fields_for :alternatechurchnames do |alternate| %>
     <%= alternate.input :alternate_name,:label => "Other Name for Church",:hint => "Alternative name by which church may be known. Use the destroy box below to delete this entry",:input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 30 } %>
     <%= alternate.input :_destroy, :as => :boolean %>
   <% end %>
-  <%= f.input :denomination,   :collection => @denominations, :include_blank => false, :label => "Select denomination", :selected => ( (@church.present? && @church.denomination.present?)? [@church.denomination] :  ["Church of England"])  ,:input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 5 }%>
+  <%= f.input :denomination,   :collection => @denominations, :required => true , :label => "Select denomination", :selected => ( (@church.present? && @church.denomination.present?)? [@church.denomination] :  ["Church of England"])  ,:input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 5 }%>
   <%= f.input :location, :label => "The Church Location :", :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 60 }%>
   <%= f.input :website, :label => "The Church Website :", :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 60 }%>
   <%= f.input :church_notes, :label => "Notes about the church :",as: :text, :input_html => { :rows => 5, :columns =>30 , :placeholder => "Enter your notes", :class => " simple_form_bgcolour simple_form_position overide_selection_field_width"} %>

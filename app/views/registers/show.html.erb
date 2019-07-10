@@ -14,11 +14,7 @@
 <% end%>
 <div style="clear:both;"> </div>
 <br>
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
-  </div>
-<% end %>
+<%= render 'flash_notice' %>
 <%if @register.nil? %>
   <p> There is no register with that document number.</p>
 <% else%>

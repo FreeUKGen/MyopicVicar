@@ -8,17 +8,13 @@
   </div>
 <%end%>
 <div style="clear:both;"> </div>
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue"><br>
-   <%= flash[:notice] %> <br>
-  </div>
-<% end %>
+<%= render 'flash_notice' %>
 <div class="grid">
-  <section class="island ">   
-    <h4 class="text--center">The Church has the following Registers    
-    <% @church.registers.order_by(register_type: 1).each do |register| %>   
-      <%= link_to(RegisterType.display_name(register.register_type), register_path(register), :class => "btn weight--light btn--small") %>   
-    <% end %></h4>
+  <section class="island ">
+    <h4 class="text--center">The Church has the following Registers
+      <% @church.registers.order_by(register_type: 1).each do |register| %>
+        <%= link_to(RegisterType.display_name(register.register_type), register_path(register), :class => "btn weight--light btn--small") %>
+      <% end %></h4>
     <div class="grid__item  ">
       <table class=" table--bordered table--data">
         <colgroup >
@@ -30,33 +26,53 @@
           <th class="caps">Value</th>
         </tr>
         <tr>
-          <td>Church name :</td><td class="weight--semibold"><%= @church.church_name %></td>
+          <td>Church name :</td>
+          <td class="weight--semibold"><%= @church.church_name %></td>
           <%  @church.alternatechurchnames.each do |church|%>
-          <tr><td>Other possible church name :</td><td class="weight--semibold"><%= church.alternate_name %> </td> </tr>
+            <tr>
+              <td>Other possible church name :</td>
+              <td class="weight--semibold"><%= church.alternate_name %> </td>
+               </tr>
           <% end%>
           <tr>
-            <td>Denomination of the Church :</td><td class="weight--semibold"><%= @church.denomination %></td>
+            <td>Denomination of the Church :</td>
+            <td class="weight--semibold"><%= @church.denomination %></td>
           </tr>
           <tr>
-            <td>Church Location :</td><td class="weight--semibold"><%= @church.location %></td>
+            <td>Church Location :</td>
+            <td class="weight--semibold"><%= @church.location %></td>
           </tr>
           <tr>
-            <td>The Church Website :</td><td class="weight--semibold"><%= @church.website %></td>
+            <td>The Church Website :</td>
+            <td class="weight--semibold"><%= @church.website %></td>
           </tr>
           <tr>
-            <td>Notes about the Church :</td><td class="weight--semibold"> <%= @church.church_notes %> </td>
+            <td>Notes about the Church :</td>
+            <td class="weight--semibold"> <%= @church.church_notes %> </td>
           </tr>
           <tr>
-            <td>Latest date a transcription changed:</td><td class="weight--semibold"> <%= @church.last_amended %></td>
+            <td>Latest date a transcription changed:</td>
+            <td class="weight--semibold"> <%= @church.last_amended %></td>
           </tr>
-          
-           <tr><td>Number of entries</td>  <td class="weight--semibold"><%= @church.records %></td></tr>
-        <tr><td>First actual year of entries</td>  <td class="weight--semibold"><%= @church.datemin %></td></tr>
-        <tr><td>Last actual year of entries</td>  <td class="weight--semibold"><%= @church.datemax %></td></tr>
-      </table>
-    </div>
+          <tr>
+            <td>Number of entries</td>
+              
+            <td class="weight--semibold"><%= @church.records %></td>
+          </tr>
+          <tr>
+            <td>First actual year of entries</td>
+              
+            <td class="weight--semibold"><%= @church.datemin %></td>
+          </tr>
+          <tr>
+            <td>Last actual year of entries</td>
+              
+            <td class="weight--semibold"><%= @church.datemax %></td>
+          </tr>
+        </table>
+      </div>
       <h3 class=" text--center">Numbers of transcriptions. </h3>
-    <p class=" text--center">Those periods with zero data may span several decades. The first period may include pre 1530 records. </p> 
-     <%= render :partial => '/freereg_contents/decade' %>
-  </section>
-</div>
+      <p class=" text--center">Those periods with zero data may span several decades. The first period may include pre 1530 records. </p>
+      <%= render :partial => '/freereg_contents/decade' %>
+    </section>
+  </div>

@@ -8,6 +8,7 @@ class FreecenPiecesController < ApplicationController
 
 
   def index
+    @freecen_pieces = FreecenPieces.all
   end
 
 
