@@ -3,11 +3,9 @@
     <nav class="main-nav" >
       <ul>
         <% if controller_name.nil? || controller_name == 'search_queries' || controller_name == 'search_records'%>
-          <% if appname_downcase == 'freereg' %>
-            <li>
-              <%=link_to("Transcriptions",main_app.new_freereg_content_path)%>
-            </li>
-          <% end %>
+          <li>
+            <%=link_to("Transcriptions",main_app.new_freereg_content_path)%>
+          </li>
         <% else%>
           <li>
             <%= link_to("Search",  main_app.new_search_query_path) %>
