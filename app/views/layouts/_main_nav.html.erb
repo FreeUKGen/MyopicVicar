@@ -1,10 +1,5 @@
 <div class="site__header__nav  offcanvas__secondary">
   <div class="site__header__nav__inner">
-    <div class="freebmd_brand">
-      <%= link_to '/', class: "site__header__logo  icon__freebmd" do %>
-        <h1 class="accessibility">FreeBMD</h1>
-      <% end %>
-    </div>
     <nav class="main-nav" >
       <ul>
         <% if controller_name.nil? || controller_name == 'search_queries' || controller_name == 'search_records'%>
@@ -72,15 +67,11 @@
         <% end %>
       </ul>
     </nav>
-
-    <% unless appname_downcase == 'freebmd' %>
-      <nav class="social-links">
-        <ul>
-          <li><a href="http://www.freeukgenealogy.org.uk/news/"><i class="icon__rss" aria-hidden="true"></i><span class="accessibility">Blog</span></a></li>
-          <li><a href="https://www.twitter.com/freeukgen" target="_blank"><i class="icon__twitter" aria-hidden="true"></i><span class="accessibility">Twitter</span></a></li>
-          <li><a href="https://www.facebook.com/freeukgen" target="_blank"><i class="icon__facebook" aria-hidden="true"></i><span class="accessibility">Facebook</span></a></li>
-        </ul>
-      </nav>
-    <% end %>
+    <nav class="social-links">
+      <ul>
+        <li><a href="http://www.freeukgenealogy.org.uk/news/"><i class="icon__rss" aria-hidden="true"></i><span class="accessibility">Blog</span></a></li>
+        <li><a href="https://www.twitter.com/freeukgen" target="_blank"><i class="icon__twitter" aria-hidden="true"></i><span class="accessibility">Twitter</span></a></li>
+        <li><a href="https://www.facebook.com/freeukgen" target="_blank"><i class="icon__facebook" aria-hidden="true"></i><span class="accessibility">Facebook</span></a></li>
+      </ul>
+    </nav>
   </div>
-</div>

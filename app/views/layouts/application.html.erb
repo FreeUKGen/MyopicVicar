@@ -108,7 +108,11 @@
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NQ743M4"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
-    <%= render "layouts/main_nav" %>
+    <% if appname_downcase == 'freebmd'%>
+      <%= render 'layouts/bmd_main_nav'%>
+    <% else %>
+      <%= render "layouts/main_nav" %>
+    <% end %>
     <div class="offcanvas__primary">
       <%= render "layouts/header" %>
       <main  class="site__content  icon__honeycomb--top-right">
@@ -118,8 +122,8 @@
           </div>
           <div style="float: right; padding: 10px; text-align: center;">
             <%= side_banners%>
-          </div-->
-        <% end %>
+          </div>
+        <% end %>-->
         <div class="container">
         
           <% if session[:userid_detail_id].present?%>
@@ -154,7 +158,7 @@
     </div>
     <!-- TODO fix above this -->
     <!-- example offcanvas switching code -->
-    <script type="text/javascript">
+    <script type="text/javascript"> 
       var el = document.getElementById("trigger-offcanvas");
       var switchOffCanvas = function() {
         classie.toggle(document.body, 'offcanvas--active');
