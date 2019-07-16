@@ -193,14 +193,14 @@ class SearchQueriesController < ApplicationController
 
   def search_taking_too_long(message)
     if message.to_s =~ /operation exceeded time limit/ || message.to_s =~ /to receive data/
-      @search_query = SearchQuery.find(session[:query])
+      @search_query = SearchQuery.find(session[:query]) if session[:query].present?
       runtime = Rails.application.config.max_search_time
-      @search_query.update_attributes(runtime: runtime, day: Time.now.strftime('%F'))
-      logger.warn("#{appname_upcase}:SEARCH: Search #{@search_query.id} took too long #{Rails.application.config.max_search_time} ms")
+      @search_query.update_attributes(runtime: runtime, day: Time.now.strftime('%F')) if session[:query].present?
+      logger.warn("#{appname_upcase}:SEARCH: Search #{message} #{Rails.application.config.max_search_time} ms")
       session[:query] = nil
-      flash[:notice] = 'Your search was running too long. Please review your search criteria. Advice is contained in the Help pages.'
+      flash[:notice] = 'Your search encountered an issue. Please review your search criteria. Advice is contained in the Help pages.'
     else
-      logger.warn("#{appname_upcase}:SEARCH: Search #{@search_query.id} had a problem #{message}") if @search_query.present? && @search_query.id.present?
+      logger.warn("#{appname_upcase}:SEARCH: Search #{session[:query]} had a problem #{message}") if @search_query.present? && @search_query.id.present?
       logger.warn("#{appname_upcase}:SEARCH: Search #{message}") unless @search_query.present? && @search_query.id.present?
       flash[:notice] = 'Your search encountered a problem please contact us with this message '
     end

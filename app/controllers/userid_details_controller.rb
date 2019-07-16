@@ -237,11 +237,7 @@ class UseridDetailsController < ApplicationController
     session[:edit_userid] = true
     @syndicate = 'all'
     session[:syndicate] = @syndicate
-    if @user.person_role == 'system_administrator' || @user.person_role == 'volunteer_coordinator'
-      @options = UseridRole::USERID_MANAGER_OPTIONS
-    else
-      @options = UseridRole::USERID_ACCESS_OPTIONS
-    end
+    @options = UseridRole::USERID_MANAGER_OPTIONS
   end
 
   def person_roles
