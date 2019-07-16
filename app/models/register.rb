@@ -186,6 +186,8 @@ class Register
   end #self
 
   ######################################################################## instance methods
+
+
   def add_source(folder_name)
     proceed = true
     message = ''
@@ -204,6 +206,10 @@ class Register
   end
 
   def calculate_register_numbers
+    p 'calculate_register_numbers'
+    p alternate_register_name
+    p _id
+    p credit
     records = 0
     total_hash = FreeregContent.setup_total_hash
     transcriber_hash = FreeregContent.setup_transcriber_hash
@@ -226,7 +232,7 @@ class Register
         end
       end
     end
-
+    FreeregContent.add_contributors(transcriber_hash, credit)
     datemax = '' if datemax == FreeregValidations::YEAR_MIN.to_i
     datemin = '' if datemin == FreeregValidations::YEAR_MAX.to_i
     last_amended.to_datetime == DateTime.new(1998, 1, 1)? last_amended = '' : last_amended = last_amended.strftime("%d %b %Y")
@@ -240,7 +246,7 @@ class Register
       proceed = false
       message = 'Cannot create source for unspecified register'
     end
-    return proceed,message
+    return proceed, message
   end
 
   def change_type(type)

@@ -22,13 +22,20 @@ class FreeregContent
 
   class << self
 
+    def add_contributors(contributors, credit)
+      contributors['contributor']['total'] << credit if credit.present?
+    end
+
     def calculate_freereg_content
+      p 'register'
       Register.no_timeout.all.each do |register|
         register.calculate_register_numbers
       end
+      p 'church'
       Church.no_timeout.all.each do |church|
         church.calculate_church_numbers if church.registers.present?
       end
+      p 'place'
       Place.no_timeout.all.each do |place|
         place.calculate_place_numbers if place.churches.present?
       end
@@ -70,7 +77,7 @@ class FreeregContent
       if alphabet.blank?
         county = County.chapman_code(chapman).first
         if county.present?
-          number = county.total_records.to_i 
+          number = county.total_records.to_i
           number = (number/FreeregOptionsConstants::RECORDS_PER_RANGE).to_i
           number = FreeregOptionsConstants::ALPHABETS.length - 1 if number >= FreeregOptionsConstants::ALPHABETS.length
         else
@@ -123,25 +130,15 @@ class FreeregContent
       total_keys = ["ba","bu","ma", "total"]
       if file == "file"
         keys.each do |key|
-          my_hash["transcriber"][key] << individual.transcriber_name.strip.gsub(/\s+/, ' ').downcase.split.map(&:capitalize).join(' ') if individual.transcriber_name.present? && individual.record_type == key
-          my_hash["contributor"][key] << individual.credit_name.strip.gsub(/\s+/, ' ').downcase.split.map(&:capitalize).join(' ') if individual.credit_name.present? && individual.record_type == key
+          transcriber = individual.calculate_transcriber_name(key)
+          my_hash["transcriber"][key] << transcriber if transcriber.present?
         end
         keys.each do |key|
+          my_hash["transcriber"][key].compact!
           my_hash["transcriber"]["total"] = my_hash["transcriber"]["total"] + my_hash["transcriber"][key] if  my_hash["transcriber"][key].present?
-          my_hash["contributor"]["total"] = my_hash["contributor"]["total"] +  my_hash["contributor"][key] if my_hash["contributor"][key].present?
         end
-
-        keys.each do |key|
-          my_hash["transcriber"][key] =  my_hash["transcriber"][key].uniq
-          my_hash["contributor"][key] = my_hash["contributor"][key].uniq
-          my_hash["transcriber"][key].each do |entry|
-            my_hash["contributor"][key].delete_if{ |value| value == entry}
-          end
-        end
-        my_hash["transcriber"]["total"] = my_hash["transcriber"]["total"].uniq
-        my_hash["contributor"]["total"] = my_hash["contributor"]["total"].uniq
-        my_hash["transcriber"]["total"].each do |entry|
-          my_hash["contributor"]["total"].delete_if{ |value| value == entry}
+        total_keys.each do |key|
+          my_hash["transcriber"][key] = my_hash["transcriber"][key].uniq
         end
       else
         total_keys.each do |key|
@@ -149,14 +146,12 @@ class FreeregContent
           my_hash["contributor"][key] = my_hash["contributor"][key] + individual["contributors"][key] if individual["contributors"][key].present?
         end
         total_keys.each do |key|
+          my_hash["transcriber"][key] = my_hash["transcriber"][key].compact
           my_hash["transcriber"][key] = my_hash["transcriber"][key].uniq
+          my_hash["contributor"][key] = my_hash["contributor"][key].compact
           my_hash["contributor"][key] = my_hash["contributor"][key].uniq
-          my_hash["transcriber"][key].each do |entry|
-            my_hash["contributor"][key].delete_if{ |value| value == entry}
-          end
         end
       end
-
     end
 
     def number_of_records_in_county(chapman)

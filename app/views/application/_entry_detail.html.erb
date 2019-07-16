@@ -98,6 +98,22 @@
                 <td><%= @entry.line_id %></td>
               </tr>
             <% end%>
+            <% when 'credit' %>
+            <%  creditable = credit(@entry) %>
+            <% if creditable.present? %>
+              <tr>
+                <td><%= field.gsub('_',' ').capitalize %></td>
+                <td><%= creditable %></td>
+              </tr>
+            <% end %>
+            <% when 'transcribed_by' %>
+            <%  creditable = transcriber(@entry) %>
+            <% if creditable.present? %>
+              <tr>
+                <td><%= field.gsub('_',' ').capitalize %></td>
+                <td><%= creditable %></td>
+              </tr>
+            <% end %>
             <% when 'error_flag'  %>
             <% if  current_authentication_devise_user.present?%>
               <% if @entry.error_flag == 'true' %>
@@ -117,7 +133,6 @@
                 <td ><%= @entry[field] %></td>
               </tr>
             <% end %>
-
           <% end %>
         <% end %>
         <% if  !current_authentication_devise_user.present?%>

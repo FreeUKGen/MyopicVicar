@@ -881,9 +881,17 @@ def update_register
   Register.update_or_create_register(self)
 end
 
-def write_csv_file(file_location)
-  file = self
-  # since there can be multiple places/churches in a single file we must combine the records for all those back into the single file
+def calculate_transcriber_name(key)
+  if record_type == key && userid_detail.present? && (userid_detail.person_surname.present? || userid_detail.person_forename.present?)
+    answer, transcriber =  UseridDetail.can_we_acknowledge_the_transcriber(userid_detail)
+    transcriber = nil unless answer
+  end
+  transcriber
+end
+
+      def write_csv_file(file_location)
+        file = self
+        # since there can be multiple places/churches in a single file we must combine the records for all those back into the single file
                  chapman_code, place_name, church_name, register_type, proceed = file.write_csv_get_location
                  fields = file.field_order_of_csv
                  CSV.open(file_location, "wb", { :row_sep => "\r\n"}) do |csv|
