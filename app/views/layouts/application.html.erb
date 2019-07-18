@@ -117,13 +117,13 @@
       <%= render "layouts/header" %>
       <main  class="site__content  icon__honeycomb--top-right">
         <% unless device_type == :mobile%>
-          <!--div style="float: left; padding: 10px">
+          <div class='side_banners' style="float: left; padding: 10px">
             <%= side_banners%>
           </div>
-          <div style="float: right; padding: 10px; text-align: center;">
+          <div class='side_banners' style="float: right; padding: 10px; text-align: center;">
             <%= side_banners%>
           </div>
-        <% end %>-->
+        <% end %>
         <div class="container">
         
           <% if session[:userid_detail_id].present?%>
@@ -154,7 +154,11 @@
           <% end %>
         </div>
       </main>
+      <% if appname_downcase == 'freebmd'%>
+      <%= render 'layouts/bmd_footer'%>
+    <% else %>
       <%= render "layouts/footer" %>
+    <% end %>
     </div>
     <!-- TODO fix above this -->
     <!-- example offcanvas switching code -->

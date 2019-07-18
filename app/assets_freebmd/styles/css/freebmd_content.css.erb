@@ -139,7 +139,8 @@ select[multiple]:focus option:checked {
 }
 @media only screen and (max-width: 870px) {
   .Navbar__Items,
-  .Navbar {
+  .Navbar,
+  .copyright_banner {
     flex-direction: column;
     }
   .Navbar__Items--right {
@@ -153,6 +154,10 @@ select[multiple]:focus option:checked {
     align-self: flex-end;
     display: initial;
     position: absolute;
+  }
+
+  .brand_logo_footer {
+    text-align: center;
   }
 
   .Navbar__Link-toggle i {
@@ -184,6 +189,17 @@ select[multiple]:focus option:checked {
   }
 }
 
+@media only screen and (max-width: 1300px) {
+  .side_banners {
+    display: none;
+  }
+}
+
 li i {
   padding-right: 1px;
 }
+
+.copyright_banner {
+  display: flex;
+}
+

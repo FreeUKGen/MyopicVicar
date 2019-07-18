@@ -1,0 +1,94 @@
+<footer class="site__footer">
+  <div class="island  island--magenta  flush--bottom">
+    <div class="container  text--center">
+      <% if @site_stat %>
+        <%= number_with_delimiter(@site_stat[:n_searches])%> searches were performed on <%= number_with_delimiter(@site_stat[:n_records]) %> records
+        (<%= number_with_delimiter(@site_stat[:n_records_baptisms]) %> baptisms, <%= number_with_delimiter(@site_stat[:n_records_marriages]) %> marriages and
+        <%= number_with_delimiter(@site_stat[:n_records_burials]) %> burials)<br>
+        <% if @site_stat[:n_records_added]  %>
+          <%= number_with_delimiter(@site_stat[:n_records_added]) %> records  (<%= number_with_delimiter(@site_stat[:n_records_added_baptisms]) %> baptisms, <%= number_with_delimiter(@site_stat[:n_records_added_marriages]) %> marriages and
+          <%= number_with_delimiter(@site_stat[:n_records_added_burials]) %> burials) were added
+        <% else %>
+          No records were added
+        <% end %>
+        in the 24 hrs ending at midnight GMT.
+      <% end %>
+        <p>
+          Data © Crown copyright. Published by permission of the Controller of HMSO and the Office for National Statistics (ONS).You must not copy on, transfer or reproduce significant portions of data without the prior permission of the ONS.Our Search engine, layout and database Copyright © 1998-2019 Free UK Genealogy CIO, a charity registered in England and Wales, Number 1167484.We make no warranty whatsoever as to the accuracy or completeness of the FreeBMD data.
+        </p>
+    </div>
+  </div>
+  <div class="icon__honeycomb--bottom-left  island  flush--bottom">
+    <div class="container  text--center">
+      <h3 class="epsilon  text--navy">Other FreeUKGenealogy</h3>
+      <ul class="icon-list">
+        <li>          
+          <a href="http://www.freecen.org.uk/" class="icon__freecen"><span class="accessibility">FreeCEN</span></a></li>
+        <li>
+          <a href="http://freereg.org.uk/" class="icon__freereg"><span class="accessibility">FreeReg</span></a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="island  island--dark  flush--bottom  milli  text--white">
+    <div class="container">
+      <div class="grid">
+        <div class="grid__item  one-quarter  palm-one-whole">
+          <ul class="nav  nav--stacked  lap-and-up-flush--bottom">
+            <li> <%= link_to "Terms and Conditions", "#" %></li>
+            <li> <%= link_to "Privacy policy", "#" %></li>
+            <li> <%= link_to "Usage policy", "#" %></li>
+            <li> <%= link_to "Cookie policy", "#" %></li>
+          </ul>
+        </div>
+        <div class="grid__item  one-quarter  palm-one-whole">
+          <ul class="nav  nav--stacked   lap-and-up-flush--bottom">
+            <li> <%= link_to "Volunteer", "#" %></li>
+            <li> <%= link_to "Help with Transcribing", "#" %></li>
+            <li> <%= link_to "Stats and database info", "#" %></li>
+          </ul>
+        </div>
+        <div class="grid__item  one-quarter  palm-one-whole">
+          <ul class="nav  nav--stacked   lap-and-up-flush--bottom">
+            <li> <%= link_to "Donate", "#" %></li>
+            <li> <%= link_to "News", "#" %></li>
+            <li> <%= link_to "Stats and database info", "#" %></li>
+          </ul>
+        </div>
+        <div class="grid__item  one-quarter  palm-one-whole">
+        <ul class="nav  nav--stacked   lap-and-up-flush--bottom">
+          <li> Follow us:</li>
+          <li>
+            <i class="fa fa-rss-square fa-2x"></i>
+            <i class="fa fa-facebook-square fa-2x"></i>
+            <i class="fa fa-twitter-square fa-2x"></i>
+          </li>
+          <li>
+            <i class="fa fa-instagram fa-2x"></i>
+            <i class="fa fa-pinterest-square fa-2x" aria-hidden="true"></i>
+            <i class="fa fa-github-square fa-2x" aria-hidden="true"></i>
+          </li>
+        </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="island  island--grey  flush--bottom">
+    <div class="container">
+      <div class='copyright_banner'>
+
+        <div class='copyright_text'>
+          <p class="micro  text--grey">
+            Data © Crown copyright. Published by permission of the Controller of HMSO and the Office for National Statistics (ONS).You must not copy on, transfer or reproduce significant portions of data without the prior permission of the ONS.Our Search engine, layout and database Copyright © 1998-2019 Free UK Genealogy CIO, a charity registered in England and Wales, Number 1167484.We make no warranty whatsoever as to the accuracy or completeness of the FreeBMD data.
+          </p>
+        </div>
+        <div class= 'footer_brand'>
+          <%= link_to '/', class: "site__header__logo  icon__freebmd brand_logo_footer" do %>
+            <h1 class="accessibility">FreeBMD</h1>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
