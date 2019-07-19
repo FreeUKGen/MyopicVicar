@@ -202,7 +202,7 @@ class Register
       self.sources << source
       self.save
     end
-    return proceed,message
+    return proceed, message
   end
 
   def calculate_register_numbers
@@ -219,11 +219,11 @@ class Register
     individual_files = self.freereg1_csv_files
     if individual_files.present?
       individual_files.each do |file|
-        if !file.records.nil? &&  file.records.to_i > 0
-          records = records + file.records.to_i unless file.records.blank?
-          datemax = file.datemax.to_i if file.datemax.to_i > datemax && file.datemax.to_i < FreeregValidations::YEAR_MAX unless file.datemax.blank?
-          datemin = file.datemin.to_i if file.datemin.to_i < datemin unless file.datemin.blank?
-          file.daterange = FreeregContent.setup_array if  file.daterange.blank?
+        if file.records.present? && file.records.to_i > 0
+          records = records + file.records.to_i if file.records.present?
+          datemax = file.datemax.to_i if file.datemax.present? && (file.datemax.to_i > datemax) && (file.datemax.to_i < FreeregValidations::YEAR_MAX)
+          datemin = file.datemin.to_i if file.datemin.present? && file.datemin.to_i < datemin
+          file.daterange = FreeregContent.setup_array if file.daterange.blank?
           FreeregContent.calculate_date_range(file, total_hash,"file")
           FreeregContent.get_transcribers(file, transcriber_hash,"file")
           batch = PhysicalFile.userid(file.userid).file_name(file.file_name).first
@@ -232,12 +232,11 @@ class Register
         end
       end
     end
-    FreeregContent.add_contributors(transcriber_hash, credit)
     datemax = '' if datemax == FreeregValidations::YEAR_MIN.to_i
     datemin = '' if datemin == FreeregValidations::YEAR_MAX.to_i
     last_amended.to_datetime == DateTime.new(1998, 1, 1)? last_amended = '' : last_amended = last_amended.strftime("%d %b %Y")
     self.update_attributes(:records => records, :datemin => datemin, :datemax => datemax, :daterange => total_hash, :transcribers => transcriber_hash["transcriber"],
-                           :contributors => transcriber_hash["contributor"], :last_amended => last_amended   )
+                           :last_amended => last_amended   )
   end
 
   def can_create_image_source

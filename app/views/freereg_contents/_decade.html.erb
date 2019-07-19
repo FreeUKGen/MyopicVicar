@@ -33,21 +33,6 @@
               <td></td>
             <% end%>
           </tr>
-          <tr style="font-size: 16px; font-weight: bold">
-            <td>Special acknowledgments</td>
-            <%= @contributors["total"]%>
-            <% if @contributors.present? %>
-              <td ><%= @contributors["ba"].join(",")  if  @contributors["ba"].present? %></td>
-              <td ><%= @contributors["ma"].join(",") if  @contributors["ma"].present?%></td>
-              <td ><%= @contributors["bu"].join(",") if  @contributors["bu"].present?%></td>
-              <td ><%= @contributors["total"].join(",") if  @contributors["total"].present?%></td>
-            <% else %>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            <% end%>
-          </tr>
           <% decade_start = 1530%>
           <% decade_end = 1539%>
           <% current_index = 0 %>

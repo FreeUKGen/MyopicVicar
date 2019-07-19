@@ -1,5 +1,5 @@
  <%#= This partial is used to display the register information section %>
-<table  class=" table--bordered table--data push--bottom center50">
+<table  class=' table--bordered table--data push--bottom center50'>
   <thead  >
     <tr>
       <th >Field</th>
@@ -7,59 +7,72 @@
     </tr>
   </thead>
   <tbody>
-    <tr>
-      <td>Notes</td>
-       
-      <td class="weight--semibold"><%= add_blank(@register.register_notes) %></td>
-    </tr>
-    <tr>
-      <td>Status</td>
-              
-      <td class="weight--semibold"><%= add_blank(@register.status) %></td>
-    </tr>
-    <tr>
-      <td>Source</td>
-              
-      <td class="weight--semibold"><%= add_blank(@register.source) %></td>
-    </tr>
-    <tr>
-      <td>Special acknowledgment to :</td>
-      <td class="weight--semibold"> <%= @register.credit %>  </td>
-    </tr>
-    <tr>
-      <td>First official year for Register</td>
-          
-      <td class="weight--semibold"><%= add_blank(@register.minimum_year_for_register)  %></td>
-    </tr>
-    <tr>
-      <td>Last official year for Register</td>
-      <td class="weight--semibold"><%= add_blank(@register.maximum_year_for_register) %>
-      </td>
-    </tr>
-    <tr>
-      <td>Latest date a transcription file loaded</td>
-        
-      <td class="weight--semibold"><%= @register.last_amended %></td>
-    </tr>
-    <tr>
-      <td>Number of entries</td>
-        
-      <td class="weight--semibold"><%= @register.records %></td>
-    </tr>
-    <tr>
-      <td>First actual year of entries</td>
-        
-      <td class="weight--semibold"><%= @register.datemin %></td>
-    </tr>
-    <tr>
-      <td>Last actual year of entries</td>
-        
-      <td class="weight--semibold"><%= @register.datemax %></td>
-    </tr>
-    <tr>
-      <td>Date register information changed</td>
-        
-      <td class="weight--semibold"><%= @register.u_at.strftime("%d %b %Y") %></td>
-    </tr>
+    <% if @register.status.present?%>
+      <tr>
+        <td>Status</td>
+        <td class='weight--semibold'><%= @register.status %></td>
+      </tr>
+    <% end%>
+    <% if @register.source.present?%>
+      <tr>
+        <td>Source</td>
+        <td class='weight--semibold'><%= @register.source %></td>
+      </tr>
+    <% end%>
+    <% if @register.credit.present?%>
+      <tr>
+        <td>Special thank you to :</td>
+        <td class='weight--semibold'><%= @register.credit %></td>
+      </tr>
+    <% end%>
+    <% if @register.minimum_year_for_register.present?%>
+      <tr>
+        <td>First official year for Register</td>
+        <td class='weight--semibold'><%= @register.minimum_year_for_register%></td>
+      </tr>
+    <% end%>
+    <% if @register.maximum_year_for_register.present?%>
+      <tr>
+        <td>Last official year for Register</td>
+        <td class='weight--semibold'><%= @register.maximum_year_for_register %>
+        </td>
+      </tr>
+    <% end%>
+    <% if @register.records.present?%>
+      <tr>
+        <td>Number of transcriptions</td>
+        <td class='weight--semibold'><%= @register.records %></td>
+      </tr>
+    <% end%>
+    <% if @register.datemin.present?%>
+      <tr>
+        <td>First year for a transcription</td>
+        <td class='weight--semibold'><%= @register.datemin %></td>
+      </tr>
+    <% end%>
+    <% if @register.datemax.present?%>
+      <tr>
+        <td>Last year for a transcription</td>
+        <td class='weight--semibold'><%= @register.datemax %></td>
+      </tr>
+    <% end%>
+    <% if @register.last_amended.present?%>
+      <tr>
+        <td>Last date a transcription added</td>
+        <td class='weight--semibold'><%= @register.last_amended %></td>
+      </tr>
+    <% end%>
+    <% if @register.u_at.present?%>
+      <tr>
+        <td>Last date register information changed</td>
+        <td class='weight--semibold'><%= @register.u_at.strftime('%d %b %Y') %></td>
+      </tr>
+    <% end%>
+    <% if @register.register_notes.present?%>
+      <tr>
+        <td>Notes about the register</td>
+        <td class='weight--semibold'><%= @register.register_notes %></td>
+      </tr>
+    <% end%>
   </tbody>
 </table>
