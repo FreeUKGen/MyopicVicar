@@ -244,23 +244,22 @@ class Place
     individual_churches = self.churches
     if individual_churches.present?
       individual_churches.each do |church|
-        if !church.records.nil? && church.records.to_i > 0
-          records = records + church.records.to_i unless church.records.blank?
-          datemax = church.datemax.to_i if church.datemax.to_i > datemax && church.datemax.to_i < FreeregValidations::YEAR_MAX unless church.datemax.blank?
-          datemin = church.datemin.to_i if church.datemin.to_i < datemin unless church.datemin.blank?
-          church.daterange = FreeregContent.setup_total_hash if  church.daterange.blank?
-          FreeregContent.calculate_date_range(church, total_hash,"church")
-          FreeregContent.get_transcribers(church, transcriber_hash,"register")
+        if church.records.present? && church.records.to_i > 0
+          records = records + church.records.to_i if church.records.present?
+          datemax = church.datemax.to_i if church.datemax.present? && (church.datemax.to_i > datemax) && (church.datemax.to_i < FreeregValidations::YEAR_MAX)
+          datemin = church.datemin.to_i if church.datemin.present? && (church.datemin.to_i < datemin)
+          church.daterange = FreeregContent.setup_total_hash if church.daterange.blank?
+          FreeregContent.calculate_date_range(church, total_hash, "church")
+          FreeregContent.get_transcribers(church, transcriber_hash, "register")
           last_amended = church.last_amended.to_datetime if church.present? && church.last_amended.present? && church.last_amended.to_datetime > last_amended.to_datetime
         end
-
       end
     end
     datemax = '' if datemax == FreeregValidations::YEAR_MIN
     datemin = '' if datemin == FreeregValidations::YEAR_MAX
-    last_amended.to_datetime == DateTime.new(1998,1,1)? last_amended = '' : last_amended = last_amended.strftime("%d %b %Y")
-    self.update_attributes(:records => records,:datemin => datemin, :datemax => datemax, :daterange => total_hash, :transcribers => transcriber_hash["transcriber"],
-                           :contributors => transcriber_hash["contributor"], :last_amended => last_amended)
+    last_amended = last_amended.to_datetime == DateTime.new(1998, 1, 1) ? '' : last_amended.strftime("%d %b %Y")
+    self.update_attributes(records: records, datemin: datemin, datemax: datemax, daterange: total_hash, transcribers: transcriber_hash["transcriber"],
+                           last_amended: last_amended)
   end
 
   def change_grid_reference(grid)
