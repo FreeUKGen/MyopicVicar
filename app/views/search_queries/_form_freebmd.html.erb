@@ -12,7 +12,7 @@
   </ul>
   <% @search_query.errors.clear %>
 <% end %>
-<div class="push soft--top bmd_search_form">
+<div class="bmd_search_form">
   <%= semantic_form_for(@search_query) do |f| %>
     <div class="grid search_form">
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
@@ -81,7 +81,7 @@
         </label>
         <% if @search_query.end_year.nil? %>
           <span class="stack_fields">
-            <%= f.label :fuzzy, { :class => "optional_attributes header_label", :tabindex => "0" } do %>
+            <%= f.label :fuzzy, { :class => "header_label", :tabindex => "0" } do %>
               <%= f.check_box :fuzzy, {},  true, false %>
               <span class="optional_checkbox_label">Select All</span>
             <% end %>
