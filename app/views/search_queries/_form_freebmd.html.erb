@@ -12,10 +12,10 @@
   </ul>
   <% @search_query.errors.clear %>
 <% end %>
-<div class="push soft--top palm-flush--bottom bmd_search_form">
+<div class="push soft--top bmd_search_form">
   <%= semantic_form_for(@search_query) do |f| %>
-    <ol class="grid search_form">
-      <li class="grid__item one-fifth lap-one-half palm-one-whole">
+    <div class="grid search_form">
+      <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <label class="ttip" for="first_name" tabindex="0">
           First name(s)
           <i class="fa fa-info-circle"></i>
@@ -30,8 +30,8 @@
           <%= f.check_box :fuzzy, {},  true, false %>
           <small class="optional_checkbox_label">Exact match on first names</small>
         <% end %>
-      </li>
-      <li class="grid__item one-fifth lap-one-half palm-one-whole">
+      </div>
+      <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <label class="ttip" for="last_name" tabindex="0">
           Surname
           <i class="fa fa-info-circle"></i>
@@ -46,8 +46,8 @@
           <%= f.check_box :witness, {},  true, false %>
           <small class="optional_checkbox_label">Phonetic search surnames</small>
         <% end %>
-      </li>
-      <li class="grid__item one-fifth lap-one-half palm-one-whole">
+      </div>
+      <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <label class="ttip" for="start_year" tabindex="0">
           Date range from
           <i class="fa fa-info-circle"></i>
@@ -59,8 +59,8 @@
         <% else %>
           <input id="start_year" name="search_query[start_year]" type="text" class="text-input" value="<%=@search_query.start_year%>">
         <% end %>
-      </li>
-      <li class="grid__item one-fifth lap-one-half palm-one-whole">
+      </div>
+      <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <label class="ttip" for="start_year" tabindex="0">
           Date range to
           <i class="fa fa-info-circle"></i>
@@ -72,8 +72,8 @@
         <% else %>
           <input id="start_year" name="search_query[start_year]" type="text" class="text-input" value="<%=@search_query.start_year%>">
         <% end %>
-      </li>
-      <li class="grid__item one-fifth lap-one-half palm-one-whole">
+      </div>
+      <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <label class="ttip" for="end_year" tabindex="0">
           Record Type
           <i class="fa fa-info-circle"></i>
@@ -101,8 +101,8 @@
         <% else %>
           <input id="end_year" name="search_query[end_year]" type="text" class="text-input" value="<%=@search_query.end_year%>">
         <% end %>
-      </li>
-      <li class="grid__item one-quarter lap-one-half palm-one-whole">
+      </div>
+      <div class="grid__item one-quarter lap-one-half palm-one-whole">
         <label class="ttip" for="first_name" tabindex="0">
          Spouses first name(s)
           <i class="fa fa-info-circle"></i>
@@ -117,8 +117,8 @@
           <%= f.check_box :fuzzy, {},  true, false %>
           <small class="optional_checkbox_label">Identifiable spouses only</small>
         <% end %>
-      </li>
-      <li class="grid__item one-quarter lap-one-half palm-one-whole">
+      </div>
+      <div class="grid__item one-quarter lap-one-half palm-one-whole">
         <label class="ttip" for="last_name" tabindex="0">
           Spouses/Mothers surname
           <i class="fa fa-info-circle"></i>
@@ -129,8 +129,8 @@
         <% else %>
           <input id="last_name" name="search_query[last_name]" type="text" class="text-input" value="<%=@search_query.last_name%>">
         <% end %>
-      </li>
-      <li class="grid__item one-quarter lap-one-half palm-one-whole">
+      </div>
+      <div class="grid__item one-quarter lap-one-half palm-one-whole">
         <label class="ttip" for="first_name" tabindex="0">
          Date of birth / Death age
           <i class="fa fa-info-circle"></i>
@@ -145,8 +145,8 @@
           <%= f.check_box :fuzzy, {},  true, false %>
           <small class="optional_checkbox_label">Match only recorded ages</small>
         <% end %>
-      </li>
-      <li class="grid__item one-eighth lap-one-half palm-one-whole">
+      </div>
+      <div class="grid__item one-eighth lap-one-half palm-one-whole">
         <label class="ttip" for="start_year" tabindex="0">
           Volume
           <i class="fa fa-info-circle"></i>
@@ -157,8 +157,8 @@
         <% else %>
           <input id="start_year" name="search_query[start_year]" type="text" class="text-input" value="<%=@search_query.start_year%>">
         <% end %>
-      </li>
-      <li class="grid__item one-eighth lap-one-half palm-one-whole">
+      </div>
+      <div class="grid__item one-eighth lap-one-half palm-one-whole">
         <label class="ttip" for="start_year" tabindex="0">
           Page
           <i class="fa fa-info-circle"></i>
@@ -169,8 +169,8 @@
         <% else %>
           <input id="start_year" name="search_query[start_year]" type="text" class="text-input" value="<%=@search_query.start_year%>">
         <% end %>
-      </li>
-      <li class="grid__item three-eighths lap-three-quarters palm-one-whole" id="search_query_chapman_codes_input">
+      </div>
+      <div class="grid__item three-eighths lap-three-quarters palm-one-whole" id="search_query_chapman_codes_input">
         <label class="ttip" for="last_name" tabindex="0">
           Counties
           <i class="fa fa-info-circle"></i>
@@ -180,8 +180,8 @@
         <% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil?%>
         <%= f.select :chapman_codes, grouped_options_for_select(grouped_options, selected_key = key), {prompt: 'All Counties'}, {multiple: true} %>
         <small class="additional">Select one place or none</small>
-      </li>
-      <li class="grid__item three-eighths lap-three-quarters palm-one-whole"  id="search_query_places_input">
+      </div>
+      <div class="grid__item three-eighths lap-three-quarters palm-one-whole"  id="search_query_places_input">
         <label class="ttip" for="last_name" tabindex="0">
           Districts
           <i class="fa fa-info-circle"></i>
@@ -191,8 +191,8 @@
         <% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil?%>
         <%= f.select :chapman_codes, grouped_options_for_select(grouped_options, selected_key = key), {prompt: 'All Counties'}, {multiple: true} %>
         <small class="additional">Select one place or none</small>
-      </li>
-    </ol>
+      </div>
+    </div>
     <div class="grid action">
       <%#= f.action :submit,
       :as => :button,
