@@ -131,16 +131,16 @@ class UseridDetail
     def can_we_acknowledge_the_transcriber(userid)
       answer = false
       transcribed_by = nil
-      if userid.present? && !(userid.do_not_acknowledge_me.present?)
+      if userid.present? && userid.do_not_acknowledge_me.blank?
         answer = true
         if userid.acknowledge_with_pseudo_name
           transcribed_by = userid.pseudo_name
         else
           transcribed_by = userid.person_forename
-          transcribed_by.nil? ? transcribed_by = userid.person_surname : transcribed_by = transcribed_by + ' ' + userid.person_surname
+          transcribed_by = transcribed_by.nil? ? userid.person_surname : transcribed_by = transcribed_by + ' ' + userid.person_surname
         end
       end
-      return answer, transcribed_by
+      [answer, transcribed_by]
     end
 
     def create_friendly_from_email(userid)
@@ -346,10 +346,10 @@ class UseridDetail
   end
 
   #def userid_and_email_address_does_not_exist
-   # errors.add(:userid, "Userid Already exists") if UseridDetail.where(:userid => self[:userid]).exists?
-    #errors.add(:userid, "Refinery User Already exists") if Refinery::Authentication::Devise::User.where(:username => self[:userid]).exists?
-    #errors.add(:email_address, "Userid email already exists") if UseridDetail.where(:email_address => self[:email_address]).exists?
-    #errors.add(:email_address, "Refinery email already exists") if Refinery::Authentication::Devise::User.where(:email => self[:email_address]).exists?
+  # errors.add(:userid, "Userid Already exists") if UseridDetail.where(:userid => self[:userid]).exists?
+  #errors.add(:userid, "Refinery User Already exists") if Refinery::Authentication::Devise::User.where(:username => self[:userid]).exists?
+  #errors.add(:email_address, "Userid email already exists") if UseridDetail.where(:email_address => self[:email_address]).exists?
+  #errors.add(:email_address, "Refinery email already exists") if Refinery::Authentication::Devise::User.where(:email => self[:email_address]).exists?
   #end
 
   def self.get_userids_for_display(syndicate)
@@ -431,7 +431,7 @@ class UseridDetail
       errors.add(:email_address, "Refinery email already exists on change") if
       Refinery::Authentication::Devise::User.where(:email => self[:email_address]).exists? && (self.userid != Refinery::Authentication::Devise::User.where(:username => self[:userid]))
     end
-  end  
+  end
 
   def self.userid_does_not_exist
     if self.changed.include?('userid')

@@ -1,96 +1,96 @@
-<div class="container">  
-  <section class="island " > 
-   <div class="table-wrapper">
-    <table class="table--bordered table--data" >
-      <colgroup >
-        <col class="t20">
-        <col class="t20">
-        <col class="t20">
-        <col class="t20 ">
-        <col class="t20">
-      </colgroup>
-      <thead >
-        <tr style="font-size: 20px; font-weight: bold">
-          <th>Period</th>
-          <th>Baptisms</th>
-          <th>Marriages</th>
-          <th>Burials</th>
-          <th>Total</th>
-        </tr>
-      </thead>
-      <tbody >
-        <tr style="font-size: 16px; font-weight: bold">
-          <td>Transcribed by</td>
-          <td ><%= @transcribers["ba"].join(",")  unless  @transcribers.nil? %></td>
-          <td ><%= @transcribers["ma"].join(",") unless  @transcribers.nil?%></td>
-          <td ><%= @transcribers["bu"].join(",") unless  @transcribers.nil?%></td>
-          <td ><%= @transcribers["total"].join(",") unless  @transcribers.nil?%></td>
-        </tr>
-        <tr style="font-size: 16px; font-weight: bold">
-          <td>Contribution by these people or organizations is acknowledged</td>
-          <td ><%= @contributors["ba"].join(",") unless @contributors.nil? %>  </td>
-          <td ><%= @contributors["ma"].join(",") unless @contributors.nil? %></td>
-          <td ><%= @contributors["bu"].join(",") unless @contributors.nil? %></td>
-          <td ><%= @contributors["total"].join(",") unless @contributors.nil? %></td>
-        </tr>
-        <% decade_start = 1530%>
-        <% decade_end = 1539%>
-        <% current_index = 0 %>
-        <% next_index = 0 %>
-        <% decade_total = 0 %>
-        <% next_total = 0 %>
-        <% unless @decade.nil? %>
-          <% while current_index < @decade["ba"].count %>
-          <% decade_total = @decade["total"][current_index] %>
-            <% if decade_total > 0 then %>
-              <tr >
-              <td><%= decade_start %><%= "\u2013" %><%= decade_end %></td>
-              <td><%= display_number(@decade["ba"][current_index].to_s.sub(/^0$/, " ")) %></td>
-              <td><%= display_number(@decade["ma"][current_index].to_s.sub(/^0$/, " ")) %></td>
-              <td><%= display_number(@decade["bu"][current_index].to_s.sub(/^0$/, " ")) %></td>
-              <td><%= display_number(@decade["total"][current_index].to_s.sub(/^0$/, " ")) %></td>
-              </tr>
-              <% decade_start += 10 %>
-              <% decade_end += 10 %>
-              <% current_index += 1 %>
+<div class="container">
+  <section class="island " >
+    <div class="table-wrapper">
+      <table class="table--bordered table--data" >
+        <colgroup >
+          <col class="t20">
+          <col class="t20">
+          <col class="t20">
+          <col class="t20 ">
+          <col class="t20">
+        </colgroup>
+        <thead >
+          <tr style="font-size: 20px; font-weight: bold">
+            <th>Period</th>
+            <th>Baptisms</th>
+            <th>Marriages</th>
+            <th>Burials</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody >
+          <tr style="font-size: 16px; font-weight: bold">
+            <td>Transcribed by</td>
+            <% if @transcribers.present? %>
+              <td ><%= @transcribers["ba"].join(",")  unless  @transcribers["ba"].nil? %></td>
+              <td ><%= @transcribers["ma"].join(",") unless  @transcribers["ma"].nil?%></td>
+              <td ><%= @transcribers["bu"].join(",") unless  @transcribers["bu"].nil?%></td>
+              <td ><%= @transcribers["total"].join(",") unless  @transcribers["total"].nil?%></td>
             <% else %>
-              <% next_index = current_index + 1 %>
-              <% if next_index < @decade["ba"].count then %>
-                <% next_total = @decade["total"][next_index]  %>
-                <% if next_total > 0 then %>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            <% end%>
+          </tr>
+          <% decade_start = 1530%>
+          <% decade_end = 1539%>
+          <% current_index = 0 %>
+          <% next_index = 0 %>
+          <% decade_total = 0 %>
+          <% next_total = 0 %>
+          <% unless @decade.nil? %>
+            <% while current_index < @decade["ba"].count %>
+              <% decade_total = @decade["total"][current_index] %>
+              <% if decade_total > 0 then %>
+                <tr >
+                  <td><%= decade_start %><%= "\u2013" %><%= decade_end %></td>
+                  <td><%= display_number(@decade["ba"][current_index].to_s.sub(/^0$/, " ")) %></td>
+                  <td><%= display_number(@decade["ma"][current_index].to_s.sub(/^0$/, " ")) %></td>
+                  <td><%= display_number(@decade["bu"][current_index].to_s.sub(/^0$/, " ")) %></td>
+                  <td><%= display_number(@decade["total"][current_index].to_s.sub(/^0$/, " ")) %></td>
+                </tr>
+                <% decade_start += 10 %>
+                <% decade_end += 10 %>
+                <% current_index += 1 %>
+              <% else %>
+                <% next_index = current_index + 1 %>
+                <% if next_index < @decade["ba"].count then %>
+                  <% next_total = @decade["total"][next_index]  %>
+                  <% if next_total > 0 then %>
+                    <tr>
+                      <td><%= decade_start %><%= "\u2013"%><%= decade_end %></td>
+                      <td><%= display_number(@decade["ba"][current_index].to_s.sub(/^0$/, " "))%></td>
+                      <td><%= display_number(@decade["ma"][current_index].to_s.sub(/^0$/, " "))%></td>
+                      <td><%= display_number(@decade["bu"][current_index].to_s.sub(/^0$/, " ")) %></td>
+                      <td><%= display_number(@decade["total"][current_index].to_s.sub(/^0$/, " ")) %></td>
+                    </tr>
+                    <% current_index += 1 %>
+                    <% decade_start = decade_end + 1 %>
+                    <% decade_end += 10 %>
+                  <% else %>
+                    <% decade_end += 10 %>
+                    <% current_index = next_index %>
+                  <% end %>
+                <% else %>
                   <tr>
-                    <td><%= decade_start %><%= "\u2013"%><%= decade_end %></td>
-                    <td><%= display_number(@decade["ba"][current_index].to_s.sub(/^0$/, " "))%></td>
-                    <td><%= display_number(@decade["ma"][current_index].to_s.sub(/^0$/, " "))%></td>
+                    <td><%= decade_start %><%= "\u2013" %><%= decade_end %></td>
+                    <td><%= display_number(@decade["ba"][current_index].to_s.sub(/^0$/, " ")) %></td>
+                    <td><%= display_number(@decade["ma"][current_index].to_s.sub(/^0$/, " ")) %></td>
                     <td><%= display_number(@decade["bu"][current_index].to_s.sub(/^0$/, " ")) %></td>
                     <td><%= display_number(@decade["total"][current_index].to_s.sub(/^0$/, " ")) %></td>
                   </tr>
                   <% current_index += 1 %>
                   <% decade_start = decade_end + 1 %>
                   <% decade_end += 10 %>
-                  <% else %>
-                  <% decade_end += 10 %>
-                  <% current_index = next_index %>
-                  <% end %>
-                <% else %>
-                  <tr>
-                  <td><%= decade_start %><%= "\u2013" %><%= decade_end %></td>
-                  <td><%= display_number(@decade["ba"][current_index].to_s.sub(/^0$/, " ")) %></td>
-                  <td><%= display_number(@decade["ma"][current_index].to_s.sub(/^0$/, " ")) %></td>
-                  <td><%= display_number(@decade["bu"][current_index].to_s.sub(/^0$/, " ")) %></td>
-                  <td><%= display_number(@decade["total"][current_index].to_s.sub(/^0$/, " ")) %></td>
-                  </tr>
-                  <% current_index += 1 %>
-                  <% decade_start = decade_end + 1 %>
-                  <% decade_end += 10 %>
                 <% end %>
               <% end %>
-           <% end %>
-        <%else%>
-         <td colspan= "4"> No entries </td>
-       <% end %> 
-      </tbody>
-    </table>
-  </div>
-</section>
+            <% end %>
+          <%else%>
+            <td colspan= "4"> No entries </td>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </section>
 </div>

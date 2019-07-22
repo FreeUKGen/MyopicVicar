@@ -33,6 +33,22 @@ module ApplicationHelper
     app_specific_template
   end
 
+  def credit(entry)
+    credit = nil
+    file = entry.freereg1_csv_file
+    register = file.register if file.present?
+    credit = register.credit if register.credit.present?
+    credit
+  end
+
+  def transcriber(entry)
+    transciber = nil
+    file = entry.freereg1_csv_file
+    transciber = file.userid_detail if file.userid_detail.present?
+    answer, transciber = UseridDetail.can_we_acknowledge_the_transcriber(transciber) if transciber.present?
+    transciber
+  end
+
   def google_analytics_tracking
     google_analytics_tracking_id = ''
     case appname_downcase

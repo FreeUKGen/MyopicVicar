@@ -9,7 +9,7 @@
   <%= render 'nav_header' %>
   <%= render 'display_search_criteria' %>
   <section>
-    <% if @result_count > FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+    <% if @result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
       <%= render 'too_many_results' %>
     <% else %>
       <% if @result_count == 0 && ( @ucf_results && @ucf_results.size == 0) %>
@@ -25,11 +25,11 @@
           <%= render 'display_ucf_results' %>
         <% end %>
       <% end%>
-      <% if @result_count > 10 && @result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+      <% if @result_count > 10 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
         <%= render 'nav_header' %>
         <a href="#" class="btn weight--light btn--small">Go to top</a>
       <% end %>
-      <% if @result_count > 0 && @result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+      <% if @result_count > 0 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
         <%= render 'please_donate' %>
       <% end %>
     <% end %>
