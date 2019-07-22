@@ -585,7 +585,7 @@ module ApplicationHelper
 
   def side_banners
     banner = <<-HTML
-      <img src="https://dummyimage.com/120x600/000/fff?text=banner+ad">
+      <img src="http://dummyimage.com/120x600/000/fff?text=banner+ad">
       HTML
     banner.html_safe
   end
