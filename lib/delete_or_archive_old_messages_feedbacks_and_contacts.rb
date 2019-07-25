@@ -33,12 +33,14 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
     stage = 'Feedback processing'
     message_file.puts stage
     p stage
+    send_email = false
     feedback_message_file.puts stage
     stage = 'Active feedbacks due for archiving'
     p stage
     feedback_message_file.puts stage
     Feedback.archived(false).keep(false).each do |record|
       if record.created_at <= report_records_less_than
+        send_email = true
         feedback_message_file.puts "#{record.identifier}, created on #{record.created_at}"
       end
     end
@@ -47,6 +49,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
     feedback_message_file.puts stage
     Feedback.archived(false).keep(false).each do |record|
       if record.created_at <= archive_records_less_than
+        send_email = true
         feedback_message_file.puts "#{record.identifier}, created on #{record.created_at}"
         #record.update_attribute(:archived, true)
       end
@@ -56,6 +59,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
     feedback_message_file.puts stage
     Feedback.archived(true).keep(false).each do |record|
       if record.created_at <= report_delete_less_than
+        send_email = true
         feedback_message_file.puts "#{record.identifier}, created on #{record.created_at}"
         #record.update_attribute(:archived, true)
       end
@@ -65,19 +69,35 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
     feedback_message_file.puts stage
     Feedback.archived(true).keep(false).each do |record|
       if record.created_at <= delete_records_less_than
+        send_email = true
         feedback_message_file.puts "#{record.identifier}, deleted"
         #record.destroy
       end
     end
 
+    if send_email
+      send_to = []
+      managera = UseridDetail.find_by(userid: 'REGManager')
+      send_to << managera.email_address if managera.present?
+      managerb = UseridDetail.find_by(userid: 'SBManager')
+      send_to << managerb.email_address if managerb.present?
+      send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
+      UserMailer.send_logs(feedback_message_file, send_to, 'feedback messages', 'feedback messages archiving report')
+      p 'mailing'
+      p feedback_message_file
+      p send_to
+    end
+
     stage = 'Contact processing'
     message_file.puts stage
     p stage
+    send_email = false
     stage = 'Active contacts (except Data Problems) due for archiving'
     p stage
     contact_message_file.puts stage
     Contact.archived(false).keep(false).each do |record|
       if record.contact_type != 'Data Problem' && record.created_at <= report_records_less_than
+        send_email = true
         contact_message_file.puts "#{record.identifier}, created on #{record.created_at}"
       end
     end
@@ -86,6 +106,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
     contact_message_file.puts stage
     Contact.archived(false).keep(false).each do |record|
       if record.contact_type != 'Data Problem' && record.created_at <= archive_records_less_than
+        send_email = true
         contact_message_file.puts "#{record.identifier}, created on #{record.created_at}"
         #record.update_attribute(:archived, true)
       end
@@ -95,6 +116,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
     contact_message_file.puts stage
     Contact.archived(true).keep(false).each do |record|
       if record.contact_type != 'Data Problem' && record.created_at <= report_delete_less_than
+        send_email = true
         contact_message_file.puts "#{record.identifier}, created on #{record.created_at}"
         #record.update_attribute(:archived, true)
       end
@@ -105,14 +127,29 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
 
     Contact.archived(true).keep(false).each do |record|
       if record.contact_type != 'Data Problem' && record.created_at <= delete_records_less_than
+        send_email = true
         contact_message_file.puts "#{record.identifier}, deleted"
         #record.destroy
       end
     end
 
+    if send_email
+      send_to = []
+      managera = UseridDetail.find_by(role: 'contacts_coordinator')
+      send_to << managera.email_address if managera.present?
+      managerb = UseridDetail.find_by(userid: 'SBManager')
+      send_to << managerb.email_address if managerb.present?
+      send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
+      UserMailer.send_logs(contact_message_file, send_to, 'contact messages', 'contact messages archiving report')
+      p 'mailing'
+      p contact_message_file
+      p send_to
+    end
+
     stage = 'Data Problem processing'
     message_message_file.puts stage
     p stage
+    send_email = false
     counties = Contact.distinct(:chapman_code)
     p counties
     counties.each do |chapman|
@@ -123,6 +160,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       dp_message_file.puts stage
       Contact.chapman_code(chapman).archived(false).keep(false).each do |record|
         if record.created_at <= report_records_less_than
+          send_email = true
           dp_message_file.puts "#{record.identifier}, created on #{record.created_at}"
           #record.update_attribute(:archived, true)
         end
@@ -132,6 +170,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       contact_message_file.puts stage
       Contact.chapman_code(chapman).archived(false).keep(false).each do |record|
         if record.created_at <= archive_records_less_than
+          send_email = true
           contact_message_file.puts "#{record.identifier}, created on #{record.created_at}"
           #record.update_attribute(:archived, true)
         end
@@ -141,6 +180,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       contact_message_file.puts stage
       Contact.chapman_code(chapman).archived(true).keep(false).each do |record|
         if record.created_at <= report_delete_less_than
+          send_email = true
           contact_message_file.puts "#{record.identifier}, created on #{record.created_at}"
           #record.update_attribute(:archived, true)
         end
@@ -148,34 +188,48 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       stage = "Archived Data Problem deleted for #{chapman}"
       p stage
       contact_message_file.puts stage
-
       Contact.chapman_code(chapman).archived(true).keep(false).each do |record|
         if record.created_at <= delete_records_less_than
+          send_email = true
           contact_message_file.puts "#{record.identifier}, deleted"
           #record.destroy
         end
       end
+
+      if send_email
+        send_to = []
+        managera = County.coordinator_email_address(chapman)
+        send_to << managera if managera.present?
+        managerb = UseridDetail.find_by(role: 'contacts_coordinator')
+        send_to << managerb.email_address if managerb.present?
+        send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
+        UserMailer.send_logs(contact_message_file, send_to, 'Data Problem contact messages', 'Data Problem contact messages archiving report')
+        p 'mailing'
+        p contact_message_file
+        p send_to
+      end
+
     end
+
 
     stage = 'Message processing'
     message_message_file.puts stage
     p stage
+    send_email = false
     stage = 'Active message due to be archived'
     p stage
     message_message_file.puts stage
     Message.archived(false).keep(false).each do |record|
-      if record.created_at <= report_records_less_than
-        message_message_file.puts "#{record.identifier}, created on #{record.created_at}" unless record.source_message_id.present? ||
-          record.source_feedback_id.present? || record.source_contact_id.present?
+      if record.created_at <= report_records_less_than && record.source_message_id.blank? && record.source_feedback_id.blank? && record.source_contact_id.blank?
+        message_message_file.puts "#{record.identifier}, created on #{record.created_at}"
       end
     end
     stage = 'Active messages being archived'
     p stage
     message_message_file.puts stage
     Message.archived(false).keep(false).each do |record|
-      if record.created_at <= archive_records_less_than
-        message_message_file.puts "#{record.identifier}, created on #{record.created_at}" unless record.source_message_id.present? ||
-          record.source_feedback_id.present? || record.source_contact_id.present?
+      if record.created_at <= archive_records_less_than && record.source_message_id.blank? && record.source_feedback_id.blank? && record.source_contact_id.blank?
+        message_message_file.puts "#{record.identifier}, created on #{record.created_at}"
         #record.update_attribute(:archived, true)
       end
     end
@@ -183,20 +237,31 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
     p stage
     message_message_file.puts stage
     Message.archived(true).keep(false).each do |record|
-      if record.created_at <= report_delete_less_than
-        message_message_file.puts "#{record.identifier}, created on #{record.created_at}" unless record.source_message_id.present? ||
-          record.source_feedback_id.present? || record.source_contact_id.present?
+      if record.created_at <= report_delete_less_than && record.source_message_id.blank? && record.source_feedback_id.blank? && record.source_contact_id.blank?
+        message_message_file.puts "#{record.identifier}, created on #{record.created_at}"
       end
     end
     stage = 'Archived messages deleted'
     p stage
     message_message_file.puts stage
     Message.archived(true).keep(false).each do |record|
-      if record.created_at <= delete_records_less_than
-        message_message_file.puts "#{record.identifier}, deleted" unless record.source_message_id.present? ||
-          record.source_feedback_id.present? || record.source_contact_id.present?
+      if record.created_at <= delete_records_less_than && record.source_message_id.blank? && record.source_feedback_id.blank? && record.source_contact_id.blank?
+        message_message_file.puts "#{record.identifier}, deleted"
         #record.destroy
       end
     end
+    if send_email
+      send_to = []
+      managera = UseridDetail.find_by(userid: 'REGManager')
+      send_to << managera.email_address if managera.present?
+      managerb = UseridDetail.find_by(userid: 'SBManager')
+      send_to << managerb.email_address if managerb.present?
+      send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
+      UserMailer.send_logs(message_message_file, send_to, 'General messages', 'General messages archiving report')
+      p 'mailing'
+      p message_message_file
+      p send_to
+    end
+
   end
 end
