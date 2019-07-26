@@ -5,16 +5,15 @@
 </section>
 <section>
   <% if params[:citation_type].present? %>
-  <h4>Citation(<%= params[:citation_type] %>):</h4>
-    <div id = "citationSection" style = "border: 1px solid; padding: 5px">
+    <span id = "citation_section">
       <%= render params[:citation_type] + '_' + appname.downcase + '_citation'%>
-    </div>
-    <button onclick = copy("citationSection") style = "cursor: pointer">Copy</button>
-    <button onclick = this.parentElement.parentElement.removeChild(this.parentElement) style = "cursor: pointer">Close</button>
+      <button onclick = copy("citation_container") style = "cursor: pointer">Copy</button>
+      <button onclick = this.parentElement.parentElement.removeChild(this.parentElement) style = "cursor: pointer">Close</button>
+    </span>
     <script>
       function copy(elm) {
           var button = event.currentTarget || event.srcElement;
-          var target = document.getElementById(elm);
+          var target = document.getElementsByClassName(elm)[0];
           var range, select;
           if (document.createRange) {
             range = document.createRange();
@@ -36,6 +35,9 @@
           }, 1000);
         }
     </script>
+    <style>
+      textarea{width: 100%; height: 175px; resize: none}
+    </style>
   <% end%>
 </section>
 <section id="search-detail" >
@@ -136,9 +138,13 @@
   .citation-dropdown-list{
     list-style-type: none;
   }
+  .citation_container{
+    border: 1px solid black;
+    padding: 5px;
+  }
 </style>
 <script>
-if(!document.getElementById("citationSection")){
+if(!document.getElementById("citation_section")){
   document.getElementById("citation-dropdown").style.display = "none";
 }
   document.getElementById("citation-toggle").addEventListener("click", citationToggle);
