@@ -211,7 +211,6 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
 
     end
 
-
     stage = 'Message processing'
     message_message_file.puts stage
     p stage
