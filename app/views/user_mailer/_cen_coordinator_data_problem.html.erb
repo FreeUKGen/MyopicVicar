@@ -8,7 +8,7 @@
   <tr>
     <th>Full Name :</th>
     <td>
-      <%= "#{individual.forenames} #{individual.surname}"%>
+      <%= "#{get_individual_info.forenames} #{get_individual_info.surname}"%>
     </td>
   </tr>
 </table>
@@ -26,7 +26,7 @@
     <th>House Number</th>
     <th>House or Street Name</th>
   </tr>
-  <% dwelling.tap do |d| %>
+  <% get_dwelling_info.tap do |d| %>
     <tr>
       <td><%= d.freecen_piece.year %></td>
       <td>
