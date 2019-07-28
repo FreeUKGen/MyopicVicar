@@ -46,4 +46,10 @@ module ContactsHelper
     end
   end
 
+  def search_record_info
+    problem_record = SearchRecord.where(id: @communication.record_id).first
+    individual = problem_record.freecen_individual
+    dwelling = individual.freecen_dwelling
+    piece = dwelling.freecen_piece
+  end
 end

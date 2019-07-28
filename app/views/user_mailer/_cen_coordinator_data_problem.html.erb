@@ -1,15 +1,12 @@
-<%# if @communication.selected_county %>
 <% problem_record = SearchRecord.where(id: @communication.record_id).first%>
 <% individual = problem_record.freecen_individual%>
 <% dwelling = individual.freecen_dwelling %>
 <% piece = dwelling.freecen_piece %>
-<%# raise piece.inspect %>
   <p>
     <b>County:</b>
     <%= ChapmanCode::name_from_code(problem_record.chapman_code) + '(' + problem_record.chapman_code + ')' %>
   </p>
-<%# end %>
-<p> <b>Data Problem:</b></p>
+<p><b>Data Problem:</b></p>
 <h4>Below are the further details of the data:</h4>
 <table border="1">
   <tr>
