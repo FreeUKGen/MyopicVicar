@@ -3,7 +3,12 @@
 <p>A member of our team should be in touch as soon as we can.</p>
 <p>The following is the information you submitted.</p>
 <p>  <b><%= @communication.contact_type %>:</b></p>
-<p>  <%= @communication.body %></p>
+<%= @communication.body %>
+<% if @appname.downcase == 'freecen'%>
+  <% if @communication.contact_type == 'Data Problem'%>
+    <%= render 'cen_coordinator_data_problem'%>
+  <% end %>
+<% end %>
 <% if @communication.screenshot_url.present?%>
   <p>A copy of any attachment is provided.</p>
 <% end%>
