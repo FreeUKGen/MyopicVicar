@@ -127,7 +127,7 @@ class UserMailer < ActionMailer::Base
   def contact_action_request(contact, send_to, copies_to)
     @appname = appname
     @contact = contact
-    @communicate = contact
+    @communication = contact
     @send_to = UseridDetail.userid(send_to).first
     @cc_email_addresses = []
     @cc_names = []
