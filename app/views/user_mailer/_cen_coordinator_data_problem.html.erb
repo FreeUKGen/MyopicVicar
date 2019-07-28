@@ -1,14 +1,17 @@
-<p>
-  <b>County:</b>
-  <%= ChapmanCode::name_from_code(search_record_info.chapman_code) + '(' + search_record_info.chapman_code + ')' %>
-</p>
+<% problem_record = SearchRecord.where(id: @communication.record_id).first%>
+<% individual = problem_record.freecen_individual%>
+<% dwelling = individual.freecen_dwelling %>
+  <p>
+    <b>County:</b>
+    <%= ChapmanCode::name_from_code(problem_record.chapman_code) + '(' + problem_record.chapman_code + ')' %>
+  </p>
 <p><b>Data Problem:</b></p>
 <h4>Below are the further details of the data:</h4>
 <table border="1">
   <tr>
     <th>Full Name :</th>
     <td>
-      <%= "#{get_individual_info.forenames} #{get_individual_info.surname}"%>
+      <%= "#{individual.forenames} #{individual.surname}"%>
     </td>
   </tr>
 </table>
@@ -26,7 +29,7 @@
     <th>House Number</th>
     <th>House or Street Name</th>
   </tr>
-  <% get_dwelling_info.tap do |d| %>
+  <% dwelling.tap do |d| %>
     <tr>
       <td><%= d.freecen_piece.year %></td>
       <td>

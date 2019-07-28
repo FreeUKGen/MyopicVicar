@@ -45,16 +45,4 @@ module ContactsHelper
       content_tag :span, "Please use the Communicate Action and contact your Syndicate Coordinator first"
     end
   end
-
-  def search_record_info
-    SearchRecord.where(id: @communication.record_id).first
-  end
-
-  def get_individual_info
-    search_record_info.freecen_individual
-  end
-
-  def get_dwelling_info
-    get_individual_info.freecen_dwelling
-  end
 end
