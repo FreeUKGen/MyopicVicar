@@ -406,11 +406,17 @@ class UserMailer < ActionMailer::Base
   end
 
   def send_logs(file, ccs, body_message, subjects)
+    p 'sending log................................................................'
+    Rails.logger.debug 'sending log'
     @appname = appname
     if file.present?
       attachments["log_#{Date.today.strftime('%Y_%m_%d')}.txt"] = File.read(file)
+      Rails.logger.debug 'log added'
     end
-    mail(:bcc => ccs, :subject => subjects,:body => body_message)
+    Rails.logger.debug ccs
+    Rails.logger.debug subjects
+    Rails.logger.debug body_message
+    mail(bcc: ccs, subject: subjects, body: body_message)
   end
 
   def update_report_to_freereg_manager(file, user)

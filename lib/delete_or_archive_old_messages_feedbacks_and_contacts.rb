@@ -76,16 +76,20 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
     end
 
     if send_email
+      p 'mailing'
       send_to = []
       managera = UseridDetail.find_by(userid: 'REGManager')
       send_to << managera.email_address if managera.present?
+      p send_to
       managerb = UseridDetail.find_by(userid: 'SBManager')
       send_to << managerb.email_address if managerb.present?
-      send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
-      UserMailer.send_logs(feedback_message_file, send_to, 'feedback messages', 'feedback messages archiving report')
-      p 'mailing'
-      p feedback_message_file
       p send_to
+      send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
+      p send_to
+      UserMailer.send_logs(feedback_message_file, send_to, 'feedback messages', 'feedback messages archiving report').deliver_now
+
+      p feedback_message_file
+
     end
 
     stage = 'Contact processing'
@@ -134,16 +138,20 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
     end
 
     if send_email
+      p 'mailing'
       send_to = []
       managera = UseridDetail.find_by(role: 'contacts_coordinator')
       send_to << managera.email_address if managera.present?
+      p send_to
       managerb = UseridDetail.find_by(userid: 'SBManager')
       send_to << managerb.email_address if managerb.present?
-      send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
-      UserMailer.send_logs(contact_message_file, send_to, 'contact messages', 'contact messages archiving report')
-      p 'mailing'
-      p contact_message_file
       p send_to
+      send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
+      p send_to
+      UserMailer.send_logs(contact_message_file, send_to, 'contact messages', 'contact messages archiving report').deliver_now
+
+      p contact_message_file
+
     end
 
     stage = 'Data Problem processing'
@@ -197,16 +205,20 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       end
 
       if send_email
+        p 'mailing'
         send_to = []
         managera = County.coordinator_email_address(chapman)
         send_to << managera if managera.present?
+        p send_to
         managerb = UseridDetail.find_by(role: 'contacts_coordinator')
         send_to << managerb.email_address if managerb.present?
-        send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
-        UserMailer.send_logs(contact_message_file, send_to, 'Data Problem contact messages', 'Data Problem contact messages archiving report')
-        p 'mailing'
-        p contact_message_file
         p send_to
+        send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
+        p send_to
+        UserMailer.send_logs(contact_message_file, send_to, 'Data Problem contact messages', 'Data Problem contact messages archiving report').deliver_now
+
+        p contact_message_file
+
       end
 
     end
@@ -250,16 +262,20 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       end
     end
     if send_email
+      p 'mailing'
       send_to = []
       managera = UseridDetail.find_by(userid: 'REGManager')
       send_to << managera.email_address if managera.present?
+      p send_to
       managerb = UseridDetail.find_by(userid: 'SBManager')
       send_to << managerb.email_address if managerb.present?
-      send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
-      UserMailer.send_logs(message_message_file, send_to, 'General messages', 'General messages archiving report')
-      p 'mailing'
-      p message_message_file
       p send_to
+      send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
+      p send_to
+      UserMailer.send_logs(message_message_file, send_to, 'General messages', 'General messages archiving report').deliver_now
+
+      p message_message_file
+
     end
 
   end
