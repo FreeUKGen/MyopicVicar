@@ -76,6 +76,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
     end
 
     if send_email
+      feedback_message_file.close
       p 'mailing'
       send_to = []
       manager = UseridDetail.find_by(userid: 'Captainkirk')
@@ -131,6 +132,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
     end
 
     if send_email
+      contact_message_file.close
       p 'mailing'
       send_to = []
       manager = UseridDetail.find_by(userid: 'Captainkirk')
@@ -162,36 +164,37 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       end
       stage = "Active Data Problem being archived for #{chapman}"
       p stage
-      contact_message_file.puts stage
+      dp_message_file.puts stage
       Contact.chapman_code(chapman).archived(false).keep(false).each do |record|
         if record.created_at <= archive_records_less_than
           send_email = true
-          contact_message_file.puts "#{record.identifier}, created on #{record.created_at}"
+          dp_message_file.puts "#{record.identifier}, created on #{record.created_at}"
           #record.update_attribute(:archived, true)
         end
       end
       stage = "Archived Data Problem due for deletion for #{chapman}"
       p stage
-      contact_message_file.puts stage
+      dp_message_file.puts stage
       Contact.chapman_code(chapman).archived(true).keep(false).each do |record|
         if record.created_at <= report_delete_less_than
           send_email = true
-          contact_message_file.puts "#{record.identifier}, created on #{record.created_at}"
+          dp_message_file.puts "#{record.identifier}, created on #{record.created_at}"
           #record.update_attribute(:archived, true)
         end
       end
       stage = "Archived Data Problem deleted for #{chapman}"
       p stage
-      contact_message_file.puts stage
+      dp_message_file.puts stage
       Contact.chapman_code(chapman).archived(true).keep(false).each do |record|
         if record.created_at <= delete_records_less_than
           send_email = true
-          contact_message_file.puts "#{record.identifier}, deleted"
+          dp_message_file.puts "#{record.identifier}, deleted"
           #record.destroy
         end
       end
 
       if send_email
+        dp_message_file.close
         p 'mailing'
         send_to = []
         manager = UseridDetail.find_by(userid: 'Captainkirk')
@@ -248,6 +251,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       end
     end
     if send_email
+      message_message_file.close
       p 'mailing'
       send_to = []
       manager = UseridDetail.find_by(userid: 'Captainkirk')
