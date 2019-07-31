@@ -1,51 +1,51 @@
 <% breadcrumb :show_syndicate,  @syndicate%>
 <h2 class=" text--center">Details for <%= @syndicate.syndicate_code%></h2>
 <%if @user.person_role == "system_administrator"%>
-<div style="text-align: center"> <%= link_to 'Edit details', edit_syndicate_path(@syndicate), method: :get, :class => "btn  weight--light btn--small" %> <%= link_to 'Destroy syndicate', syndicate_path(@syndicate), method: :delete,  :class => "btn  weight--light btn--small" ,data: { confirm: 'Are you sure you want to delete this syndicate'} %></div>
+  <div style="text-align: center"> <%= link_to 'Edit details', edit_syndicate_path(@syndicate), method: :get, :class => "btn  weight--light btn--small" %> <%= link_to 'Destroy syndicate', syndicate_path(@syndicate), method: :delete,  :class => "btn  weight--light btn--small" ,data: { confirm: 'Are you sure you want to delete this syndicate'} %></div>
 <% end%>
- <% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
-  <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
-    </div>
-   <% end %>
-
-
+<%= render 'flash_notice' %>
 <div id="main"style="color:black">
-<table   class="table--bordered    table--data">
-  <tr>
-    
-    <th style="width:25%">Field</th>
-    <th style="width:50">Value</th>
-     
-  </tr>
-
-  <tr> 
-   <td>Syndicate</td><td > <%= @syndicate.syndicate_code %>  </td>
-  </tr><tr>
-   <td>Syndicate Coordinator Userid</td><td > <%= @syndicate.syndicate_coordinator %>  </td>   
-   </tr>
-   <tr>
-   <td>Syndicate Coordinator Name</td><td > <%= @person unless @person.nil? %> </td>   
-   </tr>
-   <tr>
-   <td>Previous Syndicate Coordinator Userid</td><td > <%= @syndicate.previous_syndicate_coordinator %>  </td>   
-   </tr>
-   <tr>
-   <td>Previous Syndicate Coordinator Name</td><td > <%= @previous_person unless @previous_person.nil? %>  </td>   
-   </tr>
-   <tr>
-   <td>Syndicate Description</td><td > <%= @syndicate.syndicate_description %>  </td>   
-   </tr>
-   <tr>
-   <td>Accepting Transcribers?</td><td > <%= @syndicate.accepting_transcribers %>  </td>   
-   </tr>
-  <tr>
-   <td>Syndicate Notes</td><td > <%= @syndicate.syndicate_notes %>  </td>   
-   </tr>
- <tr>
-   <td>Syndicate Last Updated</td><td > <%= @syndicate.u_at.strftime("%d %b %Y") unless @syndicate.u_at.nil?%>  </td>   
-   </tr>
-
-</table>
+  <table   class="table--bordered    table--data">
+    <tr>
+      <th style="width:25%">Field</th>
+      <th style="width:50">Value</th>
+    </tr>
+    <tr>
+      <td>Syndicate</td>
+      <td > <%= @syndicate.syndicate_code %>  </td>
+    </tr>
+    <tr>
+      <td>Syndicate Coordinator Userid</td>
+      <td > <%= @syndicate.syndicate_coordinator %>  </td>
+    </tr>
+    <tr>
+      <td>Syndicate Coordinator Name</td>
+      <td > <%= @person unless @person.nil? %> </td>
+    </tr>
+    <tr>
+      <td>Previous Syndicate Coordinator Userid</td>
+      <td > <%= @syndicate.previous_syndicate_coordinator %>  </td>
+    </tr>
+    <tr>
+      <td>Previous Syndicate Coordinator Name</td>
+      <td > <%= @previous_person unless @previous_person.nil? %>  </td>
+    </tr>
+    <tr>
+      <td>Syndicate Description</td>
+      <td > <%= @syndicate.syndicate_description %>  </td>
+    </tr>
+    <tr>
+      <td>Accepting Transcribers?</td>
+      <td > <%= @syndicate.accepting_transcribers %>  </td>
+    </tr>
+    <tr>
+      <td>Syndicate Notes</td>
+      <td > <%= @syndicate.syndicate_notes %>  </td>
+    </tr>
+    <tr>
+      <td>Syndicate Last Updated</td>
+      <td > <%= @syndicate.u_at.strftime("%d %b %Y") unless @syndicate.u_at.nil?%>  </td>
+    </tr>
+  </table>
 </div>
 <%= render "resource_sidebar" %>
