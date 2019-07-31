@@ -407,15 +407,16 @@ class UserMailer < ActionMailer::Base
 
   def send_logs(file, ccs, body_message, subjects)
     p 'sending log................................................................'
-    Rails.logger.debug 'sending log'
+
     @appname = appname
     if file.present?
       attachments["log_#{Date.today.strftime('%Y_%m_%d')}.txt"] = File.read(file)
-      Rails.logger.debug 'log added'
+      p 'log added'
+      p file
     end
-    Rails.logger.debug ccs
-    Rails.logger.debug subjects
-    Rails.logger.debug body_message
+    p ccs
+    p subjects
+    p body_message
     mail(bcc: ccs, subject: subjects, body: body_message)
   end
 
