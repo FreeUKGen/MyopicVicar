@@ -406,17 +406,10 @@ class UserMailer < ActionMailer::Base
   end
 
   def send_logs(file, ccs, body_message, subjects)
-    p 'sending log................................................................'
-
     @appname = appname
     if file.present?
       attachments["log_#{Date.today.strftime('%Y_%m_%d')}.txt"] = File.read(file)
-      p 'log added'
-      p file
     end
-    p ccs
-    p subjects
-    p body_message
     mail(bcc: ccs, subject: subjects, body: body_message)
   end
 

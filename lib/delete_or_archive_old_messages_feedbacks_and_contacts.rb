@@ -25,17 +25,13 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
     contact_message_file = File.new(file_for_contact_messages, 'w')
     file_for_message_messages = "#{Rails.root}/log/message.log"
     message_message_file = File.new(file_for_message_messages, 'w')
-    p DateTime.now
-    p report_records_less_than
-    p archive_records_less_than
-    p delete_records_less_than
 
-    stage = 'Feedback processing'
+    stage = "Feedback processing"
     message_file.puts stage
     p stage
     send_email = false
     feedback_message_file.puts stage
-    stage = 'Active feedbacks due for archiving'
+    stage = "Active feedbacks due for archiving #{report_records_less_than.strftime('%Y_%m_%d')}"
     p stage
     feedback_message_file.puts stage
     Feedback.archived(false).keep(false).each do |record|
@@ -44,7 +40,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
         feedback_message_file.puts "#{record.identifier}, created on #{record.created_at}"
       end
     end
-    stage = 'Active feedbacks being archived'
+    stage = "Active feedbacks being archived #{archive_records_less_than.strftime('%Y_%m_%d')}"
     p stage
     feedback_message_file.puts stage
     Feedback.archived(false).keep(false).each do |record|
@@ -54,7 +50,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
         #record.update_attribute(:archived, true)
       end
     end
-    stage = 'Archived feedbacks due for deletion'
+    stage = "Archived feedbacks due for deletion #{delete_records_less_than.strftime('%Y_%m_%d')}"
     p stage
     feedback_message_file.puts stage
     Feedback.archived(true).keep(false).each do |record|
@@ -64,7 +60,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
         #record.update_attribute(:archived, true)
       end
     end
-    stage = 'Archived feedbacks deleted'
+    stage = "Archived feedbacks deleted"
     p stage
     feedback_message_file.puts stage
     Feedback.archived(true).keep(false).each do |record|
@@ -77,12 +73,14 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
 
     if send_email
       feedback_message_file.close
-      p 'mailing'
+      p "mailing"
       send_to = []
-      manager = UseridDetail.find_by(userid: 'Captainkirk')
-      send_to << manager.email_address if manager.present?
-      p manager.email_address if manager.present?
-
+      managera = UseridDetail.find_by(userid: 'REGManager')
+      send_to << managera.email_address if managera.present?
+      managerb = UseridDetail.find_by(userid: 'SBManager')
+      send_to << managerb.email_address if managerb.present?
+      send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
+      p send_to
       UserMailer.send_logs(feedback_message_file, send_to, 'feedback messages', 'feedback messages archiving report').deliver_now
     end
 
@@ -90,7 +88,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
     message_file.puts stage
     p stage
     send_email = false
-    stage = 'Active contacts (except Data Problems) due for archiving'
+    stage = "Active contacts (except Data Problems) due for archiving #{report_records_less_than.strftime('%Y_%m_%d')}"
     p stage
     contact_message_file.puts stage
     Contact.archived(false).keep(false).each do |record|
@@ -99,7 +97,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
         contact_message_file.puts "#{record.identifier}, created on #{record.created_at}"
       end
     end
-    stage = 'Active contacts (except Data Problems) being archived'
+    stage = "Active contacts (except Data Problems) being archived #{archive_records_less_than.strftime('%Y_%m_%d')}"
     p stage
     contact_message_file.puts stage
     Contact.archived(false).keep(false).each do |record|
@@ -109,7 +107,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
         #record.update_attribute(:archived, true)
       end
     end
-    stage = 'Archived contacts (except Data Problems) due for deletion'
+    stage = "Archived contacts (except Data Problems) due for deletion #{delete_records_less_than.strftime('%Y_%m_%d')}"
     p stage
     contact_message_file.puts stage
     Contact.archived(true).keep(false).each do |record|
@@ -119,7 +117,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
         #record.update_attribute(:archived, true)
       end
     end
-    stage = 'Archived contacts (except Data Problems) deleted'
+    stage = "Archived contacts (except Data Problems) deleted"
     p stage
     contact_message_file.puts stage
 
@@ -134,12 +132,12 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
     if send_email
       contact_message_file.close
       p 'mailing'
-      send_to = []
-      manager = UseridDetail.find_by(userid: 'Captainkirk')
-      send_to << manager.email_address if manager.present?
-      p manager.email_address if manager.present?
-
-
+      managera = UseridDetail.find_by(role: 'contacts_coordinator')
+      send_to << managera.email_address if managera.present?
+      managerb = UseridDetail.find_by(userid: 'SBManager')
+      send_to << managerb.email_address if managerb.present?
+      send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
+      p send_to
       UserMailer.send_logs(contact_message_file, send_to, 'contact messages', 'contact messages archiving report').deliver_now
     end
 
@@ -152,7 +150,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
     counties.each do |chapman|
       file_for_dp_messages = "#{Rails.root}/log/#{chapman}_data_problem_messages.log"
       dp_message_file = File.new(file_for_dp_messages, 'w')
-      stage = "Active Data Problem due to be archived for #{chapman}"
+      stage = "Active Data Problem due to be archived for #{chapman} #{report_records_less_than.strftime('%Y_%m_%d')}"
       p stage
       dp_message_file.puts stage
       Contact.chapman_code(chapman).archived(false).keep(false).each do |record|
@@ -162,7 +160,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
           #record.update_attribute(:archived, true)
         end
       end
-      stage = "Active Data Problem being archived for #{chapman}"
+      stage = "Active Data Problem being archived for #{chapman} #{archive_records_less_than.strftime('%Y_%m_%d')}"
       p stage
       dp_message_file.puts stage
       Contact.chapman_code(chapman).archived(false).keep(false).each do |record|
@@ -172,7 +170,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
           #record.update_attribute(:archived, true)
         end
       end
-      stage = "Archived Data Problem due for deletion for #{chapman}"
+      stage = "Archived Data Problem due for deletion for #{chapman} #{delete_records_less_than.strftime('%Y_%m_%d')}"
       p stage
       dp_message_file.puts stage
       Contact.chapman_code(chapman).archived(true).keep(false).each do |record|
@@ -197,12 +195,12 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
         dp_message_file.close
         p 'mailing'
         send_to = []
-        manager = UseridDetail.find_by(userid: 'Captainkirk')
-        send_to << manager.email_address if manager.present?
-        p manager.email_address if manager.present?
-
-
-
+        managera = County.coordinator_email_address(chapman)
+        send_to << managera if managera.present?
+        managerb = UseridDetail.find_by(role: 'contacts_coordinator')
+        send_to << managerb.email_address if managerb.present?
+        send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
+        p send_to
         UserMailer.send_logs(dp_message_file, send_to, "#{chapman} Data Problem contacts", "#{chapman } Data Problem contact archiving report").deliver_now
       end
 
@@ -212,7 +210,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
     message_message_file.puts stage
     p stage
     send_email = false
-    stage = 'Active message due to be archived'
+    stage = "Active message due to be archived #{report_records_less_than.strftime('%Y_%m_%d')}"
     p stage
     message_message_file.puts stage
     Message.general.archived(false).keep(false).each do |record|
@@ -221,7 +219,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
         message_message_file.puts "#{record.identifier}, created on #{record.created_at}"
       end
     end
-    stage = 'Active messages being archived'
+    stage = "Active messages being archived #{archive_records_less_than.strftime('%Y_%m_%d')}"
     p stage
     message_message_file.puts stage
     Message.general.archived(false).keep(false).each do |record|
@@ -231,7 +229,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
         #record.update_attribute(:archived, true)
       end
     end
-    stage = 'Archived messages due for deletion'
+    stage = "Archived messages due for deletion #{delete_records_less_than.strftime('%Y_%m_%d')}"
     p stage
     message_message_file.puts stage
     Message.general.archived(true).keep(false).each do |record|
@@ -240,7 +238,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
         message_message_file.puts "#{record.identifier}, created on #{record.created_at}"
       end
     end
-    stage = 'Archived messages deleted'
+    stage = "Archived messages deleted"
     p stage
     message_message_file.puts stage
     Message.general.archived(true).keep(false).each do |record|
@@ -254,9 +252,14 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       message_message_file.close
       p 'mailing'
       send_to = []
-      manager = UseridDetail.find_by(userid: 'Captainkirk')
-      send_to << manager.email_address if manager.present?
-      p manager.email_address if manager.present?
+      managera = UseridDetail.find_by(userid: 'REGManager')
+      send_to << managera.email_address if managera.present?
+      p send_to
+      managerb = UseridDetail.find_by(userid: 'SBManager')
+      send_to << managerb.email_address if managerb.present?
+      p send_to
+      send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
+      p send_to
 
       UserMailer.send_logs(message_message_file, send_to, 'General messages', 'General messages archiving report').deliver_now
     end
