@@ -195,6 +195,7 @@ class ContactsController < ApplicationController
     @contact = Contact.new
     @contact.contact_time = Time.now
     @contact.contact_type = 'Data Problem'
+    @contact.problem_page_url = request.headers["HTTP_REFERER"]
     @contact.query = params[:query]
     @contact.record_id = params[:id]
     case appname_downcase
