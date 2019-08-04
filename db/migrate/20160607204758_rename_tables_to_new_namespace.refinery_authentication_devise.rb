@@ -1,9 +1,9 @@
 # This migration comes from refinery_authentication_devise (originally 20150503125200)
-class RenameTablesToNewNamespace < ActiveRecord::Migration
+class RenameTablesToNewNamespace < ActiveRecord::Migration[4.2]
   def change
     remove_index :refinery_user_plugins, [:user_id, :name]
     add_index :refinery_user_plugins, [:user_id, :name], unique: true,
-              name: :refinery_user_plugins_user_id_name
+      name: :refinery_user_plugins_user_id_name
 
     remove_index :refinery_roles_users, [:role_id, :user_id]
     remove_index :refinery_roles_users, [:user_id, :role_id]

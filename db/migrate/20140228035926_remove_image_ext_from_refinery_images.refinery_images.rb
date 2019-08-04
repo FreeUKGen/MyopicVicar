@@ -1,5 +1,5 @@
 # This migration comes from refinery_images (originally 20120625093918)
-class RemoveImageExtFromRefineryImages < ActiveRecord::Migration
+class RemoveImageExtFromRefineryImages < ActiveRecord::Migration[4.2]
   def up
     remove_column :refinery_images, :image_ext
   end

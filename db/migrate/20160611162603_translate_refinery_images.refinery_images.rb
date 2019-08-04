@@ -1,12 +1,12 @@
 # This migration comes from refinery_images (originally 20150430171341)
-class TranslateRefineryImages < ActiveRecord::Migration
+class TranslateRefineryImages < ActiveRecord::Migration[4.2]
   def self.up
     begin
       ::Refinery::Image.create_translation_table!({
-        image_alt: :string,
-        image_title: :string
-      }, {
-        :migrate_data => true
+                                                    image_alt: :string,
+                                                    image_title: :string
+                                                  }, {
+                                                    :migrate_data => true
       })
     rescue NameError
       warn "Refinery::Image was not defined!"

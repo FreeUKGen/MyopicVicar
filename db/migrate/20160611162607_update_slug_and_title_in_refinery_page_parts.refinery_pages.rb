@@ -1,5 +1,5 @@
 # This migration comes from refinery_pages (originally 20150720155305)
-class UpdateSlugAndTitleInRefineryPageParts < ActiveRecord::Migration
+class UpdateSlugAndTitleInRefineryPageParts < ActiveRecord::Migration[4.2]
   def change
     begin
       ::Refinery::PagePart.all.each do |pp|
