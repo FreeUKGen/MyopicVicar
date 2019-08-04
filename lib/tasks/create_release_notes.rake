@@ -1,4 +1,3 @@
-
 task :new_release_note do
   
   puts "Creating new release note"
@@ -48,11 +47,11 @@ task :new_release_note do
   #{git_log}
   "
 
-  out_file = File.new("./doc/release_notes/release-notes-#{current_date}.md", "w")
+  out_file = File.new("./doc/release_notes/#{MyopicVicar::Application.config.template_set}_release-notes-#{current_date}.md", "w")
   out_file.puts(template)
 
   if File.exist?(out_file) 
-    puts "New release note generated successfully at /doc/release-notes/release-notes-#{current_date}.md"
+    puts "New release note generated successfully at /doc/release-notes/#{MyopicVicar::Application.config.template_set}_release-notes-#{current_date}.md"
   else 
     puts "Error - file not generated."
   end 
