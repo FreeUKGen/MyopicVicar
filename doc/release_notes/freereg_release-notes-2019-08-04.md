@@ -2,6 +2,11 @@ __FreeREG | Release Notes__
   =======================
   04-08-2019
 
+  __New Feature__
+  ---------------
+
+  * Add Remove Option to Messages display on login
+
   __Improvements__
   ----------------
 
