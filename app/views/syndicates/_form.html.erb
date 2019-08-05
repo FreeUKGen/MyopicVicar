@@ -1,38 +1,32 @@
 <section class="island  island--light">
-
-<%= semantic_form_for @syndicate,  :html => { :class =>  "grid"} do |f| %>
-
-<%= f.input :syndicate_code,:label => "Syndicate name :",
+  <%= semantic_form_for @syndicate,  :html => { :class =>  "grid"} do |f| %>
+    <%= f.input :syndicate_code,:label => "Syndicate name :",
               :input_html =>
               {:class => "simple_form_bgcolour text-input", :size => 10 },
               :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
               }%>
-<%= f.input :syndicate_coordinator, 
-              { :as => :select,:include_blank => false, :required => true, :collection => @people, 
+    <%= f.input :syndicate_coordinator,
+              { :as => :select, :required => true, :collection => @people,
               :size => 5 ,  :label => "Syndicate Coordinator:",
-              :input_html => {:class => "simple_form_bgcolour text-input select" }, 
+              :input_html => {:class => "simple_form_bgcolour text-input select" },
               :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
               }%>
-<%= f.input :syndicate_description,:label => "Syndicate description :",
+    <%= f.input :syndicate_description,:label => "Syndicate description :",
               :input_html =>
               { :size => 60 , :class => "simple_form_bgcolour text-input"},
               :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
               }%>
-<%= f.input :accepting_transcribers, 
-              { :as => :select,:include_blank => false, :required => true, :collection => [true,false], 
+    <%= f.input :accepting_transcribers,
+              { :as => :select, :required => true, :collection => [true,false],
               :size => 2 ,  :label => "Accepting Transcribers?:",
-              :input_html => {  :class => "simple_form_bgcolour text-input select" }, 
+              :input_html => {  :class => "simple_form_bgcolour text-input select" },
               :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
               }%>
-  
-<%= f.input :syndicate_notes,:label => "Syndicate notes :",
+    <%= f.input :syndicate_notes,:label => "Syndicate notes :",
               :input_html =>
               { :size => 60 , :class => "simple_form_bgcolour text-input"},
               :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
               }%>
-
-<%= f.action :submit,  :label => 'Update', :as => :button, :button_html => {:class => "btn  weight--light " }  %>
-<% end %>
+    <%= f.action :submit,  :label => 'Update', :as => :button, :button_html => {:class => "btn  weight--light " }  %>
+  <% end %>
 </section>
-
-  

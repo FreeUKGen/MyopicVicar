@@ -206,10 +206,6 @@ class Register
   end
 
   def calculate_register_numbers
-    p 'calculate_register_numbers'
-    p alternate_register_name
-    p _id
-    p credit
     records = 0
     total_hash = FreeregContent.setup_total_hash
     transcriber_hash = FreeregContent.setup_transcriber_hash

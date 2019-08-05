@@ -1,5 +1,5 @@
 # This migration comes from seo_meta_engine (originally 20110329222114)
-class CreateSeoMeta < ActiveRecord::Migration
+class CreateSeoMeta < ActiveRecord::Migration[4.2]
 
   def self.up
     create_table :seo_meta do |t|
