@@ -14,9 +14,16 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
     archive_records_less_than = DateTime.now - days_until_archive.days
     report_records_less_than = archive_records_less_than + 30.days
 
-    title = "Running message clean up on #{DateTime.now.strftime('%Y_%m_%d')} with #{days_until_archive} days until archive and #{days_until_delete} days until deletion"
-    action_message = "To avoid cluttering the system with stale communications we have a 4 stage process. 1) alerting that a communication is to be archived the next next time this clean up process runs. 2) that it has been archived by this process. 3) that it will be deleted in the next process 4) that it has been deleted.
-You may of course archive a communication earlier if you wish. You may also set its KEEP status and the communication will not be deleted."
+    title = "Running penultimate test of the message clean up process on test3 on #{DateTime.now.strftime('%Y_%m_%d')} with #{days_until_archive} days until archive
+    and #{days_until_delete} days until deletion. Now includes syndicate and communication messages.
+    No actual archiving or deletion will occur in this test"
+    action_message = "To avoid cluttering the system with stale communications we have a 4 stage process.
+    1) alerting that a communication is to be archived the next next time this clean up process runs.
+    2) that it has been archived today by this process.
+    3) that it will be deleted in the next process
+    4) that it has been deleted by this process.
+    You may of course archive a communication earlier if you wish.
+    You may also set its KEEP status and the communication will not be deleted."
     message_file.puts title
     file_for_feedback_messages = "#{Rails.root}/log/feedback.log"
     feedback_message_file = File.new(file_for_feedback_messages, 'w')
@@ -335,6 +342,7 @@ You may of course archive a communication earlier if you wish. You may also set 
         p 'mailing'
         send_to = []
         managera = Syndicate.find_by(syndicate_code: syndicate)
+        managera = UseridDetail.find_by(userid: managera)
         send_to << managera.email_address if managera.present?
         p send_to
         managerb = UseridDetail.find_by(userid: 'SBManager')
@@ -400,11 +408,11 @@ You may of course archive a communication earlier if you wish. You may also set 
 
         p 'mailing'
         send_to = []
-        managera = UseridDetail.userid(individual).first
+        managera = UseridDetail.find_by(userid: individual)
         p managera
         send_to << managera.email_address if managera.present?
         p send_to
-        managerb = UseridDetail.userid('SBManager').first
+        managerb = UseridDetail.find_by(userid: 'SBManager')
         p managerb
         send_to << managerb.email_address if managerb.present? && managera.blank?
         p send_to
