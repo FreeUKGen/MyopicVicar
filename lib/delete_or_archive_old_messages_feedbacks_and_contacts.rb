@@ -14,9 +14,9 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
     archive_records_less_than = DateTime.now - days_until_archive.days
     report_records_less_than = archive_records_less_than + 30.days
 
-    title = "Running penultimate test of the message clean up process on test3 on #{DateTime.now.strftime('%Y_%m_%d')} with #{days_until_archive} days until archive
+    title = "Running actual active test of the message clean up process on test3 on #{DateTime.now.strftime('%Y_%m_%d')} with #{days_until_archive} days until archive
     and #{days_until_delete} days until deletion. Now includes syndicate and communication messages.
-    No actual archiving or deletion will occur in this test"
+    Actual archiving and deletion will occur in this test"
     action_message = "To avoid cluttering the system with stale communications we have a 4 stage process.
     1) alerting that a communication is to be archived the next next time this clean up process runs.
     2) that it has been archived today by this process.
@@ -43,7 +43,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
     p stage
     send_email = false
     feedback_message_file.puts stage
-    stage = "Active feedbacks due for archiving #{report_records_less_than.strftime('%Y_%m_%d')}"
+    stage = "Active feedbacks due for archiving in next process run (Usually monthly)"
     p stage
     feedback_message_file.puts stage
     Feedback.archived(false).keep(false).each do |record|
@@ -52,34 +52,33 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
         feedback_message_file.puts "#{record.identifier}, created on #{record.created_at}"
       end
     end
-    stage = "Active feedbacks being archived #{archive_records_less_than.strftime('%Y_%m_%d')}"
+    stage = "Active feedbacks being archived now"
     p stage
     feedback_message_file.puts stage
     Feedback.archived(false).keep(false).each do |record|
       if record.created_at <= archive_records_less_than
         send_email = true
         feedback_message_file.puts "#{record.identifier}, created on #{record.created_at}"
-        #record.update_attribute(:archived, true)
+        record.update_attribute(:archived, true)
       end
     end
-    stage = "Archived feedbacks due for deletion #{delete_records_less_than.strftime('%Y_%m_%d')}"
+    stage = "Archived feedbacks due for deletion in next process run (Usually monthly)"
     p stage
     feedback_message_file.puts stage
     Feedback.archived(true).keep(false).each do |record|
       if record.created_at <= report_delete_less_than
         send_email = true
         feedback_message_file.puts "#{record.identifier}, created on #{record.created_at}"
-        #record.update_attribute(:archived, true)
       end
     end
-    stage = "Archived feedbacks deleted"
+    stage = "Archived feedbacks deleted now"
     p stage
     feedback_message_file.puts stage
     Feedback.archived(true).keep(false).each do |record|
       if record.created_at <= delete_records_less_than
         send_email = true
         feedback_message_file.puts "#{record.identifier}, deleted"
-        #record.destroy
+        record.destroy
       end
     end
     feedback_message_file.close
@@ -99,7 +98,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
     message_file.puts stage
     p stage
     send_email = false
-    stage = "Active contacts (except Data Problems) due for archiving #{report_records_less_than.strftime('%Y_%m_%d')}"
+    stage = "Active contacts (except Data Problems) due for archiving in next process run (Usually monthly)"
     p stage
     contact_message_file.puts stage
     Contact.archived(false).keep(false).each do |record|
@@ -108,27 +107,26 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
         contact_message_file.puts "#{record.identifier}, created on #{record.created_at}"
       end
     end
-    stage = "Active contacts (except Data Problems) being archived #{archive_records_less_than.strftime('%Y_%m_%d')}"
+    stage = "Active contacts (except Data Problems) being archived now"
     p stage
     contact_message_file.puts stage
     Contact.archived(false).keep(false).each do |record|
       if record.contact_type != 'Data Problem' && record.created_at <= archive_records_less_than
         send_email = true
         contact_message_file.puts "#{record.identifier}, created on #{record.created_at}"
-        #record.update_attribute(:archived, true)
+        record.update_attribute(:archived, true)
       end
     end
-    stage = "Archived contacts (except Data Problems) due for deletion #{delete_records_less_than.strftime('%Y_%m_%d')}"
+    stage = "Archived contacts (except Data Problems) due for deletion in next process run (Usually monthly)"
     p stage
     contact_message_file.puts stage
     Contact.archived(true).keep(false).each do |record|
       if record.contact_type != 'Data Problem' && record.created_at <= report_delete_less_than
         send_email = true
         contact_message_file.puts "#{record.identifier}, created on #{record.created_at}"
-        #record.update_attribute(:archived, true)
       end
     end
-    stage = "Archived contacts (except Data Problems) deleted"
+    stage = "Archived contacts (except Data Problems) deleted now"
     p stage
     contact_message_file.puts stage
 
@@ -136,7 +134,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       if record.contact_type != 'Data Problem' && record.created_at <= delete_records_less_than
         send_email = true
         contact_message_file.puts "#{record.identifier}, deleted"
-        #record.destroy
+        record.destroy
       end
     end
     contact_message_file.close
@@ -162,44 +160,42 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       dp_message_file = File.new(file_for_dp_messages, 'w')
       dp_message_file.puts title
       dp_message_file.puts action_message
-      stage = "Active Data Problem due to be archived for #{chapman} #{report_records_less_than.strftime('%Y_%m_%d')}"
+      stage = "Active Data Problem due to be archived for #{chapman} in next process run (Usually monthly)"
       p stage
       dp_message_file.puts stage
       Contact.chapman_code(chapman).archived(false).keep(false).each do |record|
         if record.created_at <= report_records_less_than
           send_email = true
           dp_message_file.puts "#{record.identifier}, created on #{record.created_at}"
-          #record.update_attribute(:archived, true)
         end
       end
-      stage = "Active Data Problem being archived for #{chapman} #{archive_records_less_than.strftime('%Y_%m_%d')}"
+      stage = "Active Data Problem being archived for #{chapman} now"
       p stage
       dp_message_file.puts stage
       Contact.chapman_code(chapman).archived(false).keep(false).each do |record|
         if record.created_at <= archive_records_less_than
           send_email = true
           dp_message_file.puts "#{record.identifier}, created on #{record.created_at}"
-          #record.update_attribute(:archived, true)
+          record.update_attribute(:archived, true)
         end
       end
-      stage = "Archived Data Problem due for deletion for #{chapman} #{delete_records_less_than.strftime('%Y_%m_%d')}"
+      stage = "Archived Data Problem due for deletion for #{chapman} in next process run (Usually monthly)"
       p stage
       dp_message_file.puts stage
       Contact.chapman_code(chapman).archived(true).keep(false).each do |record|
         if record.created_at <= report_delete_less_than
           send_email = true
           dp_message_file.puts "#{record.identifier}, created on #{record.created_at}"
-          #record.update_attribute(:archived, true)
         end
       end
-      stage = "Archived Data Problem deleted for #{chapman}"
+      stage = "Archived Data Problem deleted for #{chapman} now"
       p stage
       dp_message_file.puts stage
       Contact.chapman_code(chapman).archived(true).keep(false).each do |record|
         if record.created_at <= delete_records_less_than
           send_email = true
           dp_message_file.puts "#{record.identifier}, deleted"
-          #record.destroy
+          record.destroy
         end
       end
       dp_message_file.close
@@ -221,7 +217,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
     message_file.puts stage
     p stage
     send_email = false
-    stage = "Active general messages due to be archived #{report_records_less_than.strftime('%Y_%m_%d')}"
+    stage = "Active general messages due to be archived in next process run (Usually monthly)"
     p stage
     message_message_file.puts stage
     Message.general.non_reply_messages.archived(false).keep(false).each do |record|
@@ -230,17 +226,17 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
         message_message_file.puts "#{record.identifier}, created on #{record.created_at}"
       end
     end
-    stage = "Active general messages being archived #{archive_records_less_than.strftime('%Y_%m_%d')}"
+    stage = "Active general messages being archived now"
     p stage
     message_message_file.puts stage
     Message.general.non_reply_messages.archived(false).keep(false).each do |record|
       if record.created_at <= archive_records_less_than && record.source_message_id.blank? && record.source_feedback_id.blank? && record.source_contact_id.blank?
         send_email = true
         message_message_file.puts "#{record.identifier}, created on #{record.created_at}"
-        #record.update_attribute(:archived, true)
+        record.update_attribute(:archived, true)
       end
     end
-    stage = "Archived general messages due for deletion #{delete_records_less_than.strftime('%Y_%m_%d')}"
+    stage = "Archived general messages due for deletion in next process run (Usually monthly)"
     p stage
     message_message_file.puts stage
     Message.general.non_reply_messages.archived(true).keep(false).each do |record|
@@ -249,14 +245,14 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
         message_message_file.puts "#{record.identifier}, created on #{record.created_at}"
       end
     end
-    stage = "Archived general messages deleted"
+    stage = "Archived general messages deletedin next process run (Usually monthly)"
     p stage
     message_message_file.puts stage
     Message.general.non_reply_messages.archived(true).keep(false).each do |record|
       if record.created_at <= delete_records_less_than && record.source_message_id.blank? && record.source_feedback_id.blank? && record.source_contact_id.blank?
         send_email = true
         message_message_file.puts "#{record.identifier}, deleted"
-        #record.destroy
+        record.destroy
       end
     end
     message_message_file.close
@@ -284,7 +280,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       syndicate_message_file = File.new(file_for_syndicate_messages, 'w')
       syndicate_message_file.puts title
       syndicate_message_file.puts action_message
-      stage = "Active syndicate messages due to be archived #{report_records_less_than.strftime('%Y_%m_%d')}"
+      stage = "Active syndicate messages due to be archived in next process run (Usually monthly)"
       p stage
       syndicate_message_file.puts stage
       Message.syndicate(syndicate).non_reply_messages.archived(false).keep(false).each do |record|
@@ -293,17 +289,17 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
           syndicate_message_file.puts "#{record.identifier}, created on #{record.created_at}"
         end
       end
-      stage = "Active syndicate messages being archived #{archive_records_less_than.strftime('%Y_%m_%d')}"
+      stage = "Active syndicate messages being archived now"
       p stage
       syndicate_message_file.puts stage
       Message.syndicate(syndicate).non_reply_messages.archived(false).keep(false).each do |record|
         if record.created_at <= archive_records_less_than && record.source_message_id.blank? && record.source_feedback_id.blank? && record.source_contact_id.blank?
           send_email = true
           syndicate_message_file.puts "#{record.identifier}, created on #{record.created_at}"
-          #record.update_attribute(:archived, true)
+          record.update_attribute(:archived, true)
         end
       end
-      stage = "Archived syndicate messages due for deletion #{delete_records_less_than.strftime('%Y_%m_%d')}"
+      stage = "Archived syndicate messages due for deletion in next process run (Usually monthly)"
       p stage
       syndicate_message_file.puts stage
       Message.syndicate(syndicate).non_reply_messages.archived(true).keep(false).each do |record|
@@ -312,14 +308,14 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
           syndicate_message_file.puts "#{record.identifier}, created on #{record.created_at}"
         end
       end
-      stage = "Archived syndicate messages deleted"
+      stage = "Archived syndicate messages deleted now"
       p stage
       syndicate_message_file.puts stage
       Message.syndicate(syndicate).non_reply_messages.archived(true).keep(false).each do |record|
         if record.created_at <= delete_records_less_than
           send_email = true
           syndicate_message_file.puts "#{record.identifier}, deleted"
-          #record.destroy
+          record.destroy
         end
       end
       syndicate_message_file.close
@@ -347,7 +343,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       individual_message_file = File.new(file_for_individual_messages, 'w')
       individual_message_file.puts title
       individual_message_file.puts action_message
-      stage = "Active individual communications due to be archived #{report_records_less_than.strftime('%Y_%m_%d')}"
+      stage = "Active individual communications due to be archived in next process run (Usually monthly)"
       p stage
       individual_message_file.puts stage
       Message.userid(individual).non_reply_messages.archived(false).keep(false).each do |record|
@@ -356,17 +352,17 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
           individual_message_file.puts "#{record.identifier}, created on #{record.created_at}"
         end
       end
-      stage = "Active individual communications being archived #{archive_records_less_than.strftime('%Y_%m_%d')}"
+      stage = "Active individual communications being archived now"
       p stage
       individual_message_file.puts stage
       Message.userid(individual).non_reply_messages.archived(false).keep(false).each do |record|
         if record.created_at <= archive_records_less_than && record.source_message_id.blank? && record.source_feedback_id.blank? && record.source_contact_id.blank?
           send_email = true
           individual_message_file.puts "#{record.identifier}, created on #{record.created_at}"
-          #record.update_attribute(:archived, true)
+          record.update_attribute(:archived, true)
         end
       end
-      stage = "Archived individual communications due for deletion #{delete_records_less_than.strftime('%Y_%m_%d')}"
+      stage = "Archived individual communications due for deletion in next process run (Usually monthly)"
       p stage
       individual_message_file.puts stage
       Message.userid(individual).non_reply_messages.archived(true).keep(false).each do |record|
@@ -375,14 +371,14 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
           individual_message_file.puts "#{record.identifier}, created on #{record.created_at}"
         end
       end
-      stage = "Archived individual communications deleted"
+      stage = "Archived individual communications deleted now"
       p stage
       individual_message_file.puts stage
       Message.userid(individual).non_reply_messages.archived(true).keep(false).each do |record|
         if record.created_at <= delete_records_less_than
           send_email = true
           individual_message_file.puts "#{record.identifier}, deleted"
-          #record.destroy
+          record.destroy
         end
       end
       individual_message_file.close
