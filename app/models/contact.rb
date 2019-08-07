@@ -6,6 +6,7 @@ class Contact
   field :name, type: String
   field :email_address, type: String
   field :county, type: String
+  alias_attribute :chapman_code, :county
   field :session_id, type: String
   field :problem_page_url, type: String
   field :previous_page_url, type: String
@@ -58,6 +59,15 @@ class Contact
       where(archived: value)
     end
 
+    def chapman_code(value)
+      where(chapman_code: value)
+    end
+
+
+    def github_enabled
+      Rails.application.config.github_issues_password.present?
+    end
+
     def keep(status)
       where(keep: status)
     end
@@ -66,8 +76,8 @@ class Contact
       where(source_contact_id: id)
     end
 
-    def github_enabled
-      Rails.application.config.github_issues_password.present?
+    def type(status)
+      where(contact_type: status)
     end
   end
 

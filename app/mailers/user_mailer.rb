@@ -410,7 +410,7 @@ class UserMailer < ActionMailer::Base
     if file.present?
       attachments["log_#{Date.today.strftime('%Y_%m_%d')}.txt"] = File.read(file)
     end
-    mail(:bcc => ccs, :subject => subjects,:body => body_message)
+    mail(bcc: ccs, subject: subjects, body: body_message)
   end
 
   def update_report_to_freereg_manager(file, user)
