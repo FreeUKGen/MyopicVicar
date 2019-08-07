@@ -1,9 +1,6 @@
+<% breadcrumb :transcriber_statistics %>
 <h2 class=" text--center">Statistics</h2>
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %> <br>
-  </div>
-<% end %>
+<%= render "flash_notice" %>
 <div class="grid">
   <section class="island  ">
     <div class="grid__item one-whole" >

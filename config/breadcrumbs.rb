@@ -38,6 +38,21 @@ crumb :create_userid_detail do |userid_detail|
   end
 end
 
+crumb :transcriber_statistics do
+  link "Transcriber Statistics"
+  parent :regmanager_userid_options
+end
+
+crumb :secondary_role_selection do
+  link 'Secondary Role Selection'
+  parent :regmanager_userid_options
+end
+
+crumb :person_role_selection do
+  link 'Role Selection'
+  parent :regmanager_userid_options
+end
+
 #................................................File....................................................
 
 crumb :my_own_files do
@@ -305,6 +320,8 @@ end
 
 crumb :userid_details_listing do |syndicate, user|
   case
+  when syndicate == 'all'
+    link 'All Members', userid_details_path
   when user.nil?
     link 'Syndicate Listing', userid_details_path
   when !user.nil?
@@ -315,6 +332,8 @@ crumb :userid_details_listing do |syndicate, user|
     end
   end
   case
+  when session[:syndicate].present? && session[:syndicate] == 'all'
+    parent:regmanager_userid_options
   when !session[:syndicate].nil? && (session[:role] == 'county_coordinator' ||
                                      session[:role] == 'system_administrator' || session[:role] == 'technical' ||
                                      session[:role] == 'volunteer_coordinator' || session[:role] == 'syndicate_coordinator' )
@@ -325,6 +344,7 @@ crumb :userid_details_listing do |syndicate, user|
     parent :syndicate_options, syndicate
   end
 end
+
 crumb :syndicate_waiting do |syndicate|
   link 'Files waiting to be processed'
   parent :syndicate_options,syndicate
