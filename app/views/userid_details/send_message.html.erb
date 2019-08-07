@@ -8,11 +8,7 @@
     </ul>
   </div>
 <% end %>
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
-  </div>
-<% end %>
+<%= render "flash_notice" %>
 <section class="island  island--light ">
   <%= semantic_form_for(@contact, :html => {:multipart => true}) do |f| %>
     <%= f.hidden_field :contact_time %>
