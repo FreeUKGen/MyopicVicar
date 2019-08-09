@@ -64,6 +64,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       feedback_message_file.puts action_message
       feedback_message_file.puts stage
       send_email = false
+      send_email = true
       stage = "Active feedbacks due for archiving in next process run (Usually monthly)"
       p stage
       feedback_message_file.puts stage
@@ -112,6 +113,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       contact_message_file.puts title
       contact_message_file.puts action_message
       send_email = false
+      send_email = true
       stage = "Active contacts (except Data Problems) due for archiving in next process run (Usually monthly)"
       p stage
       contact_message_file.puts stage
@@ -160,6 +162,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       p counties
       counties.each do |chapman|
         send_email = false
+        send_email = true
         file_for_dp_messages = "#{Rails.root}/log/#{chapman}_data_problem_messages.log"
         dp_message_file = File.new(file_for_dp_messages, 'w')
         dp_message_file.puts title
@@ -213,6 +216,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       message_message_file.puts title
       message_message_file.puts action_message
       send_email = false
+      send_email = true
       stage = "Active general messages due to be archived in next process run (Usually monthly)"
       p stage
       message_message_file.puts stage
@@ -261,6 +265,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       syndicates.each do |syndicate|
         p syndicate
         send_email = false
+        send_email = true
         file_for_syndicate_messages = "#{Rails.root}/log/#{syndicate}_messages.log"
         syndicate_message_file = File.new(file_for_syndicate_messages, 'w')
         syndicate_message_file.puts title
@@ -315,6 +320,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       individuals.each do |individual|
         p individual
         send_email = false
+        send_email = true
         file_for_individual_messages = "#{Rails.root}/log/#{individual}_messages.log"
         individual_message_file = File.new(file_for_individual_messages, 'w')
         individual_message_file.puts title
@@ -363,8 +369,17 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
     end
 
     def send_logs(send_email, log_file_location, log_file, message_nature, specific)
+      p 'send_logs//////////////////////'
+      p send_email
+      p log_file_location
+      p log_file
+      p message_nature
+      p specific
       if send_email
         send_to = recipients(message_nature, specific)
+        p 'No recipients' if send_to.blank?
+        return if send_to.blank?
+
         UserMailer.send_logs(log_file, send_to, "#{message_nature} messages #{specific}", "#{message_nature} messages #{specific} archiving report").deliver_now
       else
         File.delete(log_file_location) if File.exist?(log_file_location)
@@ -372,6 +387,10 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
     end
 
     def recipients(type, specific)
+      p 'recipientslllllllllllllllllllllllllllllll'
+      p MyopicVicar::Application.config.template_set
+      p type
+      p specific
       case MyopicVicar::Application.config.template_set
       when 'freereg'
         case type
@@ -419,6 +438,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
           recipients = freebmd_individuals(specific)
         end
       end
+      p recipients
       recipients
     end
 
@@ -429,6 +449,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       managerb = UseridDetail.find_by(userid: 'SBManager')
       send_to << managerb.email_address if managerb.present?
       send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
+      send_to
     end
 
     def freereg_contacts
@@ -438,6 +459,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       managerb = UseridDetail.find_by(userid: 'SBManager')
       send_to << managerb.email_address if managerb.present?
       send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
+      send_to
     end
 
     def freereg_data_problems(chapman)
@@ -447,6 +469,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       managerb = UseridDetail.find_by(role: 'contacts_coordinator')
       send_to << managerb.email_address if managerb.present?
       send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
+      send_to
     end
 
     def freereg_messages
@@ -456,6 +479,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       managerb = UseridDetail.find_by(userid: 'SBManager')
       send_to << managerb.email_address if managerb.present?
       send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
+      send_to
     end
 
     def freereg_syndicate(syndicate)
@@ -465,6 +489,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       send_to << managera.email_address if managera.present?
       managerb = UseridDetail.find_by(userid: 'SBManager')
       send_to << managerb.email_address if managerb.present?
+      send_to
     end
 
     def freereg_individuals(individual)
@@ -473,11 +498,13 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       send_to << managera.email_address if managera.present?
       managerb = UseridDetail.find_by(userid: 'SBManager')
       send_to << managerb.email_address if managerb.present? && managera.blank?
+      send_to
     end
 
     def freecen_feedbacks
       send_to = []
       send_to << UseridDetail.role('system_administrator').first.email_address
+      send_to
     end
 
     def freecen_contacts
@@ -485,6 +512,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       managera = UseridDetail.find_by(role: 'contacts_coordinator')
       send_to << managera.email_address if managera.present?
       send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
+      send_to
     end
 
     def freecen_data_problems(chapman)
@@ -494,11 +522,13 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       managerb = UseridDetail.find_by(role: 'contacts_coordinator')
       send_to << managerb.email_address if managerb.present?
       send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
+      send_to
     end
 
     def freecen_messages
       send_to = []
       send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
+      send_to
     end
 
     def freecen_syndicate(syndicate)
@@ -507,18 +537,23 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       managera = UseridDetail.find_by(userid: managera)
       send_to << managera.email_address if managera.present?
       send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
+      send_to
     end
 
     def freecen_individuals(individual)
+      p 'freecen_individuals'
+      p individual
       send_to = []
       managera = UseridDetail.find_by(userid: individual)
       send_to << managera.email_address if managera.present?
       send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
+      send_to
     end
 
     def freebmd_feedbacks
       send_to = []
       send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
+      send_to
     end
 
     def freebmd_contacts
@@ -526,6 +561,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       managera = UseridDetail.find_by(role: 'contacts_coordinator')
       send_to << managera.email_address if managera.present?
       send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
+      send_to
     end
 
     def freebmd_data_problems(chapman)
@@ -535,11 +571,13 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       managerb = UseridDetail.find_by(role: 'contacts_coordinator')
       send_to << managerb.email_address if managerb.present?
       send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
+      send_to
     end
 
     def freebmd_messages
       send_to = []
       send_to << UseridDetail.role('system_administrator').first.email_address
+      send_to
     end
 
     def freebmd_syndicate(syndicate)
@@ -548,6 +586,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       managera = UseridDetail.find_by(userid: managera)
       send_to << managera.email_address if managera.present?
       send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
+      send_to
     end
 
     def freebmd_individuals(individual)
@@ -555,6 +594,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       managera = UseridDetail.find_by(userid: individual)
       send_to << managera.email_address if managera.present?
       send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
+      send_to
     end
   end
 end
