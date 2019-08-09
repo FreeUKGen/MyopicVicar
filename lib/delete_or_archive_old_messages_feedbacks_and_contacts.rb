@@ -241,7 +241,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
           message_message_file.puts "#{record.identifier}, created on #{record.created_at}"
         end
       end
-      stage = "Archived general messages deletedin next process run (Usually monthly)"
+      stage = "Archived general messages deleted in next process run (Usually monthly)"
       p stage
       message_message_file.puts stage
       Message.general.non_reply_messages.archived(true).keep(false).each do |record|
@@ -477,19 +477,13 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
 
     def freecen_feedbacks
       send_to = []
-      managera = UseridDetail.find_by(userid: 'REGManager')
-      send_to << managera.email_address if managera.present?
-      managerb = UseridDetail.find_by(userid: 'SBManager')
-      send_to << managerb.email_address if managerb.present?
-      send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
+      send_to << UseridDetail.role('system_administrator').first.email_address
     end
 
     def freecen_contacts
       send_to = []
       managera = UseridDetail.find_by(role: 'contacts_coordinator')
       send_to << managera.email_address if managera.present?
-      managerb = UseridDetail.find_by(userid: 'SBManager')
-      send_to << managerb.email_address if managerb.present?
       send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
     end
 
@@ -504,10 +498,6 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
 
     def freecen_messages
       send_to = []
-      managera = UseridDetail.find_by(userid: 'REGManager')
-      send_to << managera.email_address if managera.present?
-      managerb = UseridDetail.find_by(userid: 'SBManager')
-      send_to << managerb.email_address if managerb.present?
       send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
     end
 
@@ -516,24 +506,18 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       managera = Syndicate.find_by(syndicate_code: syndicate)
       managera = UseridDetail.find_by(userid: managera)
       send_to << managera.email_address if managera.present?
-      managerb = UseridDetail.find_by(userid: 'SBManager')
-      send_to << managerb.email_address if managerb.present?
+      send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
     end
 
     def freecen_individuals(individual)
       send_to = []
       managera = UseridDetail.find_by(userid: individual)
       send_to << managera.email_address if managera.present?
-      managerb = UseridDetail.find_by(userid: 'SBManager')
-      send_to << managerb.email_address if managerb.present? && managera.blank?
+      send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
     end
 
     def freebmd_feedbacks
       send_to = []
-      managera = UseridDetail.find_by(userid: 'REGManager')
-      send_to << managera.email_address if managera.present?
-      managerb = UseridDetail.find_by(userid: 'SBManager')
-      send_to << managerb.email_address if managerb.present?
       send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
     end
 
@@ -541,8 +525,6 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       send_to = []
       managera = UseridDetail.find_by(role: 'contacts_coordinator')
       send_to << managera.email_address if managera.present?
-      managerb = UseridDetail.find_by(userid: 'SBManager')
-      send_to << managerb.email_address if managerb.present?
       send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
     end
 
@@ -557,11 +539,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
 
     def freebmd_messages
       send_to = []
-      managera = UseridDetail.find_by(userid: 'REGManager')
-      send_to << managera.email_address if managera.present?
-      managerb = UseridDetail.find_by(userid: 'SBManager')
-      send_to << managerb.email_address if managerb.present?
-      send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
+      send_to << UseridDetail.role('system_administrator').first.email_address
     end
 
     def freebmd_syndicate(syndicate)
@@ -569,16 +547,14 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       managera = Syndicate.find_by(syndicate_code: syndicate)
       managera = UseridDetail.find_by(userid: managera)
       send_to << managera.email_address if managera.present?
-      managerb = UseridDetail.find_by(userid: 'SBManager')
-      send_to << managerb.email_address if managerb.present?
+      send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
     end
 
     def freebmd_individuals(individual)
       send_to = []
       managera = UseridDetail.find_by(userid: individual)
       send_to << managera.email_address if managera.present?
-      managerb = UseridDetail.find_by(userid: 'SBManager')
-      send_to << managerb.email_address if managerb.present? && managera.blank?
+      send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
     end
   end
 end
