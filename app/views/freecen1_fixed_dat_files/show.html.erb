@@ -1,25 +1,16 @@
-<p id="notice"><%= notice %></p>
-
-<p>
-  <b>Filename:</b>
-  <%= @freecen1_fixed_dat_file.filename %>
-</p>
-
+<% breadcrumb :freecen1_fixed_dat_file,  @freecen1_fixed_dat_file %>
+<%= render 'flash_notice' %>
+<h2 style="text-align: center">Listing of Freecen1 Fixed DAT File  <%= @freecen1_fixed_dat_file.filename %></h2>
 <p>
   <b>Dirname:</b>
   <%= @freecen1_fixed_dat_file.dirname %>
 </p>
-
 <p>
   <b>Year:</b>
   <%= @freecen1_fixed_dat_file.year %>
 </p>
-
 <p>
   <b>Chapman code:</b>
   <%= @freecen1_fixed_dat_file.chapman_code %>
 </p>
-
-
-<%= link_to 'Edit', edit_freecen1_fixed_dat_file_path(@freecen1_fixed_dat_file) %> |
-<%= link_to 'Back', freecen1_fixed_dat_files_path %>
+<%= link_to 'Edit', edit_freecen1_fixed_dat_file_path(@freecen1_fixed_dat_file) %>

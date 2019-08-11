@@ -8,7 +8,13 @@ class FreecenPiecesController < ApplicationController
 
 
   def index
-    @freecen_pieces = FreecenPieces.all
+    if session[:chapman_code].present?
+      @freecen_pieces = FreecenPiece.chapman_code(session[:chapman_code]).order_by(year: 1, piece_number: 1).page(params[:page]).per(25)
+      @chapman_code = session[:chapman_code]
+    else
+      redirect_to manage_resources_path && return
+    end
+    session.delete(:manage_places)
   end
 
 

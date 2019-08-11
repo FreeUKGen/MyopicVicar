@@ -1,0 +1,48 @@
+<% breadcrumb :show_freecen_place,  @county, @place%>
+<%= render 'flash_notice' %>
+<div class="grid">
+  <section class="island ">
+    <h4 style="text-align: center">The Place <%= @place.place_name%> in <%=@county%></h4>
+    <div class="grid__item  ">
+      <table class="table--bordered table--data " >
+        <colgroup >
+          <col class=t40>
+          <col class=t60>
+        </colgroup>
+        <tr>
+          <th class="caps">Field</th>
+          <th  class="caps">Value</th>
+        </tr>
+        <tr>
+          <td>Place : </td>
+          <td class="weight--semibold"><%= @place.place_name %>  </td>
+        </tr>
+        <tr>
+          <td>County:</td>
+          <td class="weight--semibold"><%= @county %></td>
+        </tr>
+        <tr>
+          <td>Country:</td>
+          <td class="weight--semibold"><%= @place.country %></td>
+        </tr>
+        <%  @place.alternateplacenames.each do |place|%>
+          <tr>
+            <td>Other possible place name :</td>
+            <td class="weight--semibold"><%= place.alternate_name %> </td>
+          </tr>
+        <% end%>
+        <tr>
+          <td>Latitude:</td>
+          <td class="weight--semibold"> <%= @place.latitude%></td>
+        </tr>
+        <tr>
+          <td>Longitude:</td>
+          <td class="weight--semibold"> <%= @place.longitude%></td>
+        </tr>
+        <tr>
+          <td>Notes about the place :</td>
+          <td class="weight--semibold"><%= @place.place_notes %> </td>
+        </tr>
+      </table>
+    </div>
+  </div>

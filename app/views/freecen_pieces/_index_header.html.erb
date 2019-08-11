@@ -1,0 +1,5 @@
+<% breadcrumb :freecen_pieces,  @chapman_code, params[:page] %>
+<% session[:page] = params[:page]%>
+<h1 style="text-align: center">Listing of FreeCen Pieces for <%=@chapman_code%></h1>
+<%= render 'flash_notice' %>
+<%= paginate @freecen_pieces %>
