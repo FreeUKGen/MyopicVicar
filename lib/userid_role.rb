@@ -44,8 +44,8 @@ module UseridRole
       'pending' => ['Profile'],
       'technical' => ['Communicate', 'Contacts', 'Feedback', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
                       'System Documentation'],
-      'system_administrator' => ['Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Feedback',
-                                 'Manage Counties', 'Manage Syndicates', 'Manage Userids', 'Message System',  'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
+      'system_administrator' => ['Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Feedback', 'FreeCen Errors',
+                                 'Manage Counties', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
                                  'Software Version Information', 'Syndicate Coordinators', 'System Documentation'],
       'trainee' => ['Communicate', 'Profile', 'Roadmap'],
       'transcriber' => ['Communicate', 'Profile', 'Roadmap'],
@@ -87,7 +87,8 @@ module UseridRole
     'Message System' => '/messages',
     'Manage Images' => '/sources',
     'Assignments' => '/assignments/my_own',
-    'Manage Pieces' => '/freecen_pieces'
+    'Manage Pieces' => '/freecen_pieces',
+    'FreeCen Errors' => '/freecen_errors'
   }
   USERID_MANAGER_OPTIONS = ['Select specific userid', 'Select specific email', 'Select specific surname/forename',
                             'Browse userids', 'Select Role', 'Select Secondary Role', 'Incomplete Registrations', 'Create userid', 'Transcriber Statistics']
