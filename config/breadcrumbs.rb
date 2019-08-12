@@ -1407,9 +1407,14 @@ end
 
 # ...................................FreeCEN>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-crumb :freecen_pieces do |county, page|
-  link 'FreeCen Pieces', freecen_pieces_path(county: county, page: page)
+crumb :freecen_pieces do |county|
+  link 'FreeCen Pieces', freecen_pieces_path(county: county)
   parent :county_options, session[:county]
+end
+
+crumb :show_freecen_piece do |file|
+  link 'FreeCen Pieces', freecen_piece_path(file.id)
+  parent :freecen_pieces, session[:county]
 end
 
 crumb :freecen1_fixed_dat_entry do |file|

@@ -1,30 +1,33 @@
 <%= render 'index_header' %>
-<table>
-  <tr>
-    <th>Census Year</th>
-    <th>Piece number</th>
-    <th>District name</th>
-    <th>Subplaces</th>
-    <th>Parish number</th>
-    <th>Suffix</th>
-    <th>Freecen1 fixed dat entry</th>
-    <th>Place</th>
-    <th></th>
-    <th></th>
-    <th></th>
-  </tr>
-  <% @freecen_pieces.each do |freecen_piece| %>
-    <tr id="<%=freecen_piece.id%>">
-      <td><%= freecen_piece.year %></td>
-      <td><%= freecen_piece.piece_number %></td>
-      <td><%= freecen_piece.district_name %></td>
-      <td><%= freecen_piece.subplaces %></td>
-      <td><%= freecen_piece.parish_number %></td>
-      <td><%= freecen_piece.suffix %></td>
-      <td><%= link_to 'freecen1_fixed_dat_entry', freecen1_fixed_dat_entry_path(freecen_piece.freecen1_fixed_dat_entry)  %></td>
-      <td><%= link_to 'place', place_path(freecen_piece.place) %></td>
-      <td><%= link_to 'Show', freecen_piece %></td>
-    </tr>
-  <% end %>
-</table>
-<br />
+<div style="overflow: hidden;">
+  <table class="my-width-min flush--bottom" >
+    <thead >
+      <tr>
+        <th class="t5">Year</th>
+        <th class="t5">Piece</th>
+        <th class="t25">District</th>
+        <th class="t35">Sub places</th>
+        <th class="t10">Parish</th>
+        <th class="t10">Suffix</th>
+        <th class="t10">Action</th>
+      </tr>
+    </thead>
+  </table>
+  <div class="scrollable ">
+    <table class=" table--bordered my-width table--data table--striped just--left">
+      <tbody >
+        <% @freecen_pieces.each do |freecen_piece| %>
+          <tr id="<%=freecen_piece.id%>">
+            <td class="t5"><%= freecen_piece.year %></td>
+            <td class="t5"><%= freecen_piece.piece_number %></td>
+            <td class="t25"><%= freecen_piece.district_name%></td>
+            <td class="t35"><%= sub_pieces(freecen_piece.subplaces) %></td>
+            <td class="t10"><%= freecen_piece.parish_number %></td>
+            <td class="t10"><%= freecen_piece.suffix %></td>
+            <td class="t10"><%= link_to 'Show', freecen_piece %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
