@@ -1,16 +1,10 @@
 <h3 style="text-align: center"><b><%= active(session[:active_place])%> Places for <%= @county  %></b>.</h3>
-<%  if @user.person_role == 'system_administrator' || @user.person_role == 'data_manager' %>
-  <div style="text-align: center">  <%= link_to 'Create New Place', new_place_path, method: :get , :class => "btn  weight--light btn--small"%> </div>
-<% end%>
-<div style="clear:both;"> </div>
-<br>
 <%= render 'flash_notice' %>
 <div style="overflow: hidden;">
   <table class="my-width-min flush--bottom" >
     <thead >
       <tr>
-        <th class="t15">Place <a href="#" class="right_tooltip"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %>
-            <span> The names and their locations are defined by the Association of British Counties (http://www.gazetteer.org.uk/).</span></a></th>
+        <th class="t15">Place </th>
       </tr>
     </thead>
   </table>
