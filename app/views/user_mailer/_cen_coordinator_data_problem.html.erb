@@ -14,6 +14,12 @@
       <%= "#{individual.forenames} #{individual.surname}"%>
     </td>
   </tr>
+  <tr>
+    <th>Record:</th>
+    <td>
+      <%= link_to 'Problem Record Link', search_record_path(@contact.record_id), method: :get%>
+    </td>
+  </tr>
 </table>
 <table border="1">
   <tr>
@@ -47,3 +53,4 @@
     </tr>
   <% end %>
 </table>
+<p>Link to record:  to view the problem record.</p>

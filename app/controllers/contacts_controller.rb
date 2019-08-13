@@ -206,6 +206,8 @@ class ContactsController < ApplicationController
       @contact.line_id = @freereg1_csv_entry.line_id
     when 'freecen'
       @rec = SearchRecord.where("id" => @contact.record_id).first
+      @ind_id = @rec.freecen_individual_id
+      @contact.county = @rec.chapman_code
       unless @rec.nil?
         fc_ind = FreecenIndividual.where("id" => @ind_id).first if @ind_id.present?
         if fc_ind.present?
