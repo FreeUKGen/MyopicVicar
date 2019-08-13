@@ -1,5 +1,5 @@
 # This migration comes from refinery_pages (originally 20151103211604)
-class FixSlugFormatInRefineryPageParts < ActiveRecord::Migration
+class FixSlugFormatInRefineryPageParts < ActiveRecord::Migration[4.2]
   def change
     begin
       ::Refinery::PagePart.all.each do |pp|

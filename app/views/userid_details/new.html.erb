@@ -1,11 +1,5 @@
- <% breadcrumb :create_userid_detail, @userid%>  
-
-<% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
- <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
-    </div>
-   <% end %>
-  
+ <% breadcrumb :create_userid_detail, @userid%>
+<%= render "flash_notice" %>
 <section class="island ">
-<%= render 'form' %>
+  <%= render 'form' %>
 </section>

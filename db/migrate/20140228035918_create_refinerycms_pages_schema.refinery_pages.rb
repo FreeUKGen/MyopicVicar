@@ -1,5 +1,5 @@
 # This migration comes from refinery_pages (originally 20100913234708)
-class CreateRefinerycmsPagesSchema < ActiveRecord::Migration
+class CreateRefinerycmsPagesSchema < ActiveRecord::Migration[4.2]
   def up
     create_table :refinery_page_parts do |t|
       t.integer  :refinery_page_id
@@ -39,14 +39,14 @@ class CreateRefinerycmsPagesSchema < ActiveRecord::Migration
     add_index :refinery_pages, :rgt
 
     Refinery::PagePart.create_translation_table!({
-      :body => :text
+                                                   :body => :text
     })
 
     Refinery::Page.create_translation_table!({
-      :title => :string,
-      :custom_slug => :string,
-      :menu_title => :string,
-      :slug => :string
+                                               :title => :string,
+                                               :custom_slug => :string,
+                                               :menu_title => :string,
+                                               :slug => :string
     })
   end
 

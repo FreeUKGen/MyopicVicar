@@ -59,6 +59,18 @@ class County
       coordinator_name
     end
 
+    def coordinator_email_address(chapman_code)
+      coordinator_email_address = ''
+      if chapman_code.present? && ChapmanCode.values.include?(chapman_code)
+        county = County.find_by(chapman_code: chapman_code)
+        if county.present?
+          coordinator_id = UseridDetail.find_by(userid: county.county_coordinator)
+          coordinator_email_address = coordinator_id.email_address if coordinator_id.present?
+        end
+      end
+      coordinator_email_address
+    end
+
     def coordinator(userid)
       where(county_coordinator: userid)
     end

@@ -1,10 +1,6 @@
- <% breadcrumb :regmanager_userid_options if session[:edit_userid]%> 
- <% breadcrumb :coordinator_userid_options unless session[:edit_userid]%>  
-<div id="notice" style="color:red"><br>
-  <% if flash[:notice] %>
-   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
-  <% end %>
-</div>
+ <% breadcrumb :regmanager_userid_options if session[:edit_userid]%>
+<% breadcrumb :coordinator_userid_options unless session[:edit_userid]%>
+<%= render "flash_notice" %>
 <div >
   <%@options.each do |option| %>
     <% unless option == "Import Users" %>
@@ -21,26 +17,28 @@
       <%= file_field_tag :file %>
       <%= submit_tag "Upload Users", :class => "btn weight--light btn--small", :id => "upload_users" %>
     <% end %>
-    <strong><p id="upload_users_helper_text">Importing Users Failed</p></strong>
-    <strong><p id="upload_users_helper">Importing Users....</p></strong>
+    <strong>
+      <p id="upload_users_helper_text">Importing Users Failed</p>
+    </strong>
+    <strong>
+      <p id="upload_users_helper">Importing Users....</p>
+    </strong>
   </div>
 </div>
-
 <%= render "resource_sidebar" %>
-
 <script type="text/javascript" >
   $("#form_for_import_users").hide();
   $('#show_form_for_import_users').click(function() {
     $('#form_for_import_users').slideDown();
   });
-
+  
   $("#upload_users_helper").hide();
   $("#upload_users_helper_text").hide();
   $('#upload_users').click(function() {
     $('#upload_users_helper').slideDown();
     $("#upload_users_helper_text").hide();
   });
-
+  
   $(document).ready(function () {
     $('#file_upload_form').submit(function(event) {
        var file = $('input[type=file]').val();
@@ -60,6 +58,3 @@
     });
   });
 </script>
-
-
-

@@ -1,5 +1,5 @@
 # This migration comes from refinery_county_pages (originally 1)
-class CreateCountyPagesCountyPages < ActiveRecord::Migration
+class CreateCountyPagesCountyPages < ActiveRecord::Migration[4.2]
 
   def up
     create_table :refinery_county_pages do |t|

@@ -1,10 +1,6 @@
 <% breadcrumb :edit_userid_detail, @syndicate, @userid, params[:page_name] %>
 <p style="text-align: center"><b>Editing Profile for <%= @userid.userid %></b> </p>
- <% if flash[:notice] %>
-   <div id="notice" style="color:red"><br>
-   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
-    </div>
-  <% end %>
+<%= render "flash_notice" %>
 <section>
-<%= render 'form' %>
+  <%= render 'form' %>
 </section>
