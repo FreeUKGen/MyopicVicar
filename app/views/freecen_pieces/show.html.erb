@@ -24,6 +24,40 @@
   <%= @freecen_piece.suffix %>
 </p>
 <p>
+  <p>
+    <b>Year:</b>
+    <%= @freecen_piece.year %>
+  </p>
+  <p>
+    <b>Film Number:</b>
+    <%= @freecen_piece.film_number %>
+  </p>
+  <p>
+    <b>Freecen1 filename:</b>
+    <%= @freecen_piece.freecen1_filename %>
+  </p>
+  <p>
+    <b>Status:</b>
+    <%= @freecen_piece.status %>
+  </p>
+  <p>
+    <b>Remarks:</b>
+    <%= @freecen_piece.remarks %>
+  </p>
+  <p>
+    <b>Remarks_coord:</b>
+    <%= @freecen_piece.remarks_coord %>
+  </p>
+  <p>
+    <b>Online time:</b>
+    <%= @freecen_piece.online_time %>
+  </p>
+  <p>
+    <b>Number of individuals:</b>
+    <%= @freecen_piece.num_individuals %>
+  </p>
+</p>
+<p>
   <b>Freecen1 fixed dat entry:</b>
   <%= link_to 'dat_entry', freecen1_fixed_dat_entry_path(@freecen_piece.freecen1_fixed_dat_entry)  %>
 </p>
