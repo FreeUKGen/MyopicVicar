@@ -158,6 +158,7 @@ class PlacesController < ApplicationController
     @user = get_user
     @first_name = @user.person_forename if @user.present?
     session[:page] = request.original_url
+    session[:manage_places] = true
   end
 
   def load(place_id)

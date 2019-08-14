@@ -1,16 +1,44 @@
 <h1 class="title text--center">VLD File Errors</h1>
-
-
 <section class="island">
-<p>*This list includes errors detected in files that were loaded into the database. If there was an error that prevented the file from being loaded, it may not be listed here:</p>
-
-<%  @freecen_error_list.each do |fc_err| %>
-<%= fc_err %><br>
-<% end%>
-&nbsp;<br>
-<p><b>These pieces have an unexpected load status:</b></p>
-<%  @freecen_error_files_list.each do |f_err| %>
-<%= f_err %><br>
-<% end%>
-
+  <p>*This list includes errors detected in files that were loaded into the database. If there was an error that prevented the file from being loaded, it may not be listed here:</p>
+  <table  class=" table--bordered my-width table--data table--striped just--left">
+    <tr>
+      <th>County</th>
+      <th>File</th>
+      <th>Entry</th>
+      <th>Message</th>
+      <th>Detail</th>
+    </tr>
+    <%  @freecen_error_list.each do |fc_err| %>
+      <tr>
+        <td><%= error_county(fc_err) %></td>
+        <td><%= error_file(fc_err) %></td>
+        <td><%= error_entry(fc_err) %></td>
+        <td><%= error_message(fc_err) %></td>
+        <td><%= error_detail(fc_err) %></td>
+      </tr>
+    <% end%>
+  </table>
+  &nbsp;<br>
+  <p><b>These pieces have an unexpected load status:</b></p>
+  <table  class=" table--bordered my-width table--data table--striped just--left">
+    <tr>
+      <th>County</th>
+      <th>File</th>
+      <th>Year</th>
+      <th>Piece</th>
+      <th>Suffix</th>
+      <th>Status</th>
+    </tr>
+    <%  @freecen_error_files_list.each do |fc_err| %>
+      <tr>
+        <td><%= load_error_county(fc_err) %></td>
+        <td><%= load_error_file(fc_err) %></td>
+        <td><%= load_error_year(fc_err) %></td>
+        <td><%= load_error_piece(fc_err) %></td>
+        <td><%= load_error_suffix(fc_err) %></td>
+        <td><%= load_error_status(fc_err) %></td>
+      </tr>
+    <% end%>
+  </table>
 </section>

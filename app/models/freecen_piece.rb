@@ -22,7 +22,14 @@ class FreecenPiece
   belongs_to :freecen1_fixed_dat_entry
   belongs_to :place, optional: true
   has_many :freecen_dwellings
-  
+
   index(:piece_number => 1, :chapman_code => 1)
   index(:piece_number => 1, :chapman_code => 1, :year => 1, :suffix => 1, :parish_number => 1)
+
+  class << self
+    def chapman_code(chapman)
+      where(chapman_code: chapman)
+    end
+  end
+
 end

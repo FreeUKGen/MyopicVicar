@@ -5,10 +5,14 @@ class FreecenPiecesController < ApplicationController
     params.require(:freecen_piece).permit!
   end
 
-
-
   def index
-    @freecen_pieces = FreecenPieces.all
+    if session[:chapman_code].present?
+      @freecen_pieces = FreecenPiece.chapman_code(session[:chapman_code]).order_by(year: 1, piece_number: 1)
+      @chapman_code = session[:chapman_code]
+    else
+      redirect_to manage_resources_path && return
+    end
+    session.delete(:manage_places)
   end
 
 
@@ -17,6 +21,7 @@ class FreecenPiecesController < ApplicationController
     if params[:id].present?
       @freecen_piece = FreecenPiece.where('_id' => params[:id])
       @freecen_piece = @freecen_piece.first if @freecen_piece.present?
+      @chapman_code = session[:chapman_code]
     end
     redirect_to freecen_pieces_path if @freecen_piece.blank?
   end
