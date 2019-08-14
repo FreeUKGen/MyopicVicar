@@ -1,63 +1,78 @@
 <%= render 'show_header' %>
-<p>
-  <b>Chapman code:</b>
-  <%= @freecen_piece.chapman_code %>
-</p>
-<p>
-  <b>Piece number:</b>
-  <%= @freecen_piece.piece_number %>
-</p>
-<p>
-  <b>District name:</b>
-  <%= link_to "#{@freecen_piece.district_name}" , place_path(@freecen_piece.place) %>
-</p>
-<p>
-  <b>Subplaces:</b>
-  <%= sub_pieces(@freecen_piece.subplaces) %>
-</p>
-<p>
-  <b>Parish number:</b>
-  <%= @freecen_piece.parish_number %>
-</p>
-<p>
-  <b>Suffix:</b>
-  <%= @freecen_piece.suffix %>
-</p>
-<p>
-  <p>
-    <b>Year:</b>
-    <%= @freecen_piece.year %>
-  </p>
-  <p>
-    <b>Film Number:</b>
-    <%= @freecen_piece.film_number %>
-  </p>
-  <p>
-    <b>Freecen1 filename:</b>
-    <%= @freecen_piece.freecen1_filename %>
-  </p>
-  <p>
-    <b>Status:</b>
-    <%= @freecen_piece.status %>
-  </p>
-  <p>
-    <b>Remarks:</b>
-    <%= @freecen_piece.remarks %>
-  </p>
-  <p>
-    <b>Remarks_coord:</b>
-    <%= @freecen_piece.remarks_coord %>
-  </p>
-  <p>
-    <b>Online time:</b>
-    <%= @freecen_piece.online_time %>
-  </p>
-  <p>
-    <b>Number of individuals:</b>
-    <%= @freecen_piece.num_individuals %>
-  </p>
-</p>
-<p>
-  <b>Freecen1 fixed dat entry:</b>
-  <%= link_to 'dat_entry', freecen1_fixed_dat_entry_path(@freecen_piece.freecen1_fixed_dat_entry)  %>
-</p>
+<div class="grid">
+  <section class="island ">
+    <div class="grid__item ">
+      <table   class="table--bordered table--striped  table--data">
+        <colgroup >
+          <col class=t40>
+          <col class=t60>
+        </colgroup>
+        <tr>
+          <th class="caps">Field</th>
+          <th  class="caps">Value</th>
+        </tr>
+        <tr>
+          <td>Chapman code</td>
+          <td class="weight--semibold"> <%=  @freecen_piece.chapman_code %> </td>
+        </tr>
+        <tr>
+          <td>Piece number</td>
+          <td class="weight--semibold"> <%=  @freecen_piece.piece_number %> </td>
+        </tr>
+        <tr>
+          <td>District name</td>
+          <td class="weight--semibold"> <%= link_to "#{@freecen_piece.district_name}" , place_path(@freecen_piece.place) %> </td>
+        </tr>
+        <tr>
+          <td>Subplaces</td>
+          <td class="weight--semibold"> <%= sub_pieces(@freecen_piece.subplaces)  %></td>
+        </tr>
+        <tr>
+          <td>Parish number</td>
+          <td class="weight--semibold"> <%=  @freecen_piece.parish_number %> </td>
+        </tr>
+        <tr>
+          <td>Suffix</td>
+          <td class="weight--semibold"> <%=  @freecen_piece.suffix %> </td>
+        </tr>
+        <tr>
+          <td>Year</td>
+          <td class="weight--semibold"> <%=  @freecen_piece.year %> </td>
+        </tr>
+        <tr>
+          <td>Film Number</td>
+          <td class="weight--semibold"> <%=  @freecen_piece.film_number %> </td>
+        </tr>
+        <tr>
+          <td>Freecen1 filename</td>
+          <td class="weight--semibold"> <%=  @freecen_piece.freecen1_filename %> </td>
+        </tr>
+        <tr>
+          <td>Status</td>
+          <td class="weight--semibold"> <%=  @freecen_piece.status %> </td>
+        </tr>
+        <tr>
+          <td>Remarks</td>
+          <td class="weight--semibold"> <%=  @freecen_piece.remarks %> </td>
+        </tr>
+        <tr>
+          <td>Remarks Coord</td>
+          <td class="weight--semibold"> <%=  @freecen_piece.remarks_coord %> </td>
+        </tr>
+        <tr>
+          <td>Online time</td>
+          <td class="weight--semibold"> <%=  @freecen_piece.online_time %> </td>
+        </tr>
+        <tr>
+          <td>Number of individuals</td>
+          <td class="weight--semibold"> <%=  @freecen_piece.num_individuals %> </td>
+        </tr>
+        <tr>
+          <td>Freecen1 fixed DAT entry</td>
+          <td class="weight--semibold">  <%= link_to 'dat_entry', freecen1_fixed_dat_entry_path(@freecen_piece.freecen1_fixed_dat_entry)  %></td>
+        </tr>
+      </table>
+    </div>
+  </section>
+</div>
+<br>
