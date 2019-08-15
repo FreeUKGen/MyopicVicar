@@ -12,8 +12,7 @@ module FreecenPiecesHelper
   def sub_pieces(subplaces)
     place_names = []
     subplaces.each do |place|
-      p place
-      place_names << place[:name]
+      place_names << place[:name] if place[:name].present?
     end
     place_names.sort_by! { |e| ActiveSupport::Inflector.transliterate(e.downcase) }
     place_names.join(', ')
