@@ -1,6 +1,6 @@
 <h1 class="title text--center">VLD File Errors</h1>
 <section class="island">
-  <p>*This list includes errors detected in files that were loaded into the database. If there was an error that prevented the file from being loaded, it may not be listed here:</p>
+  <p>*This list includes errors detected in files that were loaded into the database. </p>
   <table  class=" table--bordered my-width table--data table--striped just--left">
     <tr>
       <th>County</th>
@@ -30,14 +30,57 @@
       <th>Suffix</th>
       <th>Status</th>
     </tr>
-    <%  @freecen_error_files_list.each do |fc_err| %>
+    <%  @freecen_error_files_list[:not_online].each do |piece| %>
+      <% actual_piece = FreecenPiece.find(piece) %>
       <tr>
-        <td><%= load_error_county(fc_err) %></td>
-        <td><%= load_error_file(fc_err) %></td>
-        <td><%= load_error_year(fc_err) %></td>
-        <td><%= load_error_piece(fc_err) %></td>
-        <td><%= load_error_suffix(fc_err) %></td>
-        <td><%= load_error_status(fc_err) %></td>
+        <td><%= actual_piece.chapman_code %></td>
+        <td><%= actual_piece.freecen1_filename %></td>
+        <td><%= actual_piece.year %></td>
+        <td><%= actual_piece.piece_number %></td>
+        <td><%= actual_piece.suffix %></td>
+        <td><%= actual_piece.status %></td>
+      </tr>
+    <% end%>
+  </table>
+  <p><b>These pieces have an error status:</b></p>
+  <table  class=" table--bordered my-width table--data table--striped just--left">
+    <tr>
+      <th>County</th>
+      <th>Year</th>
+      <th>File</th>
+      <th>Piece</th>
+      <th>Suffix</th>
+      <th>Status</th>
+    </tr>
+    <%  @freecen_error_files_list[:no_freecen1_filename].each do |piece| %>
+      <% actual_piece = FreecenPiece.find(piece) %>
+      <tr>
+        <td><%= actual_piece.chapman_code %></td>
+        <td><%= actual_piece.year %></td>
+        <td><%= actual_piece.freecen1_filename %></td>
+        <td><%= actual_piece.piece_number %></td>
+        <td><%= actual_piece.suffix %></td>
+        <td><%= actual_piece.status %></td>
+      </tr>
+    <% end%>
+  </table>
+  <p><b>These pieces have a missing freereg1_filename and not included above:</b></p>
+  <table  class=" table--bordered my-width table--data table--striped just--left">
+    <tr>
+      <th>County</th>
+      <th>Year</th>
+      <th>Piece</th>
+      <th>Suffix</th>
+      <th>Status</th>
+    </tr>
+    <%  @freecen_error_files_list[:no_freecen1_filename].each do |piece| %>
+      <% actual_piece = FreecenPiece.find(piece) %>
+      <tr>
+        <td><%= actual_piece.chapman_code %></td>
+        <td><%= actual_piece.year %></td>
+        <td><%= actual_piece.piece_number %></td>
+        <td><%= actual_piece.suffix %></td>
+        <td><%= actual_piece.status %></td>
       </tr>
     <% end%>
   </table>
