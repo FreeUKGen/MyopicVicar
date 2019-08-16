@@ -52,7 +52,7 @@
       <th>Suffix</th>
       <th>Status</th>
     </tr>
-    <%  @freecen_error_files_list[:no_freecen1_filename].each do |piece| %>
+    <%  @freecen_error_files_list[:error_status].each do |piece| %>
       <% actual_piece = FreecenPiece.find(piece) %>
       <tr>
         <td><%= actual_piece.chapman_code %></td>

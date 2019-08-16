@@ -24,7 +24,7 @@ class FreecenError
     end
     pcs = FreecenPiece.where(status: 'Error')
     pcs.each do |pc|
-      piece_error_list[:error_status] << pc.id
+      piece_error_list[:error_status] << pc.id unless piece_error_list[:not_online].include?(pc.id)
     end
     pcs = FreecenPiece.where(:status => 'Online', :freecen1_filename.in=>[nil,''])
     pcs.each do |pc|
