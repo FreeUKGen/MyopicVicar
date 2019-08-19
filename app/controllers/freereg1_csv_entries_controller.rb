@@ -158,7 +158,7 @@ class Freereg1CsvEntriesController < ApplicationController
 
   def index
     unless Freereg1CsvFile.valid_freereg1_csv_file?(session[:freereg1_csv_file_id])
-      flash[:notice] = 'The entry was not correctly linked. Have your coordinator contact the web master'
+      message = 'The file was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
     display_info
