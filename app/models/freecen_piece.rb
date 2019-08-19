@@ -19,8 +19,8 @@ class FreecenPiece
   field :remarks_coord, type: String #visible to coords, not public
   field :online_time, type: Integer
   field :num_individuals, type: Integer, default: 0
-  belongs_to :freecen1_fixed_dat_entry
-  belongs_to :place, optional: true
+  belongs_to :freecen1_fixed_dat_entry, index: true
+  belongs_to :place, optional: true, index: true
   has_many :freecen_dwellings
 
   index(:piece_number => 1, :chapman_code => 1)
