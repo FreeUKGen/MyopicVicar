@@ -62,7 +62,7 @@ module UseridRole
 
       'syndicate_coordinator' => ['Communicate', 'Manage Syndicate', 'Profile', 'Roadmap'],
       'system_administrator' => ['Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Feedback', 'FreeCen Errors',
-                                 'Manage Counties', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
+                                 'Manage Counties', 'Manage FreeCen Coverage', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
                                  'Software Version Information', 'Syndicate Coordinators', 'System Documentation'],
       'trainee' => ['Communicate', 'Profile', 'Roadmap'],
       'technical' => ['Communicate', 'Contacts', 'Feedback', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
@@ -111,7 +111,8 @@ module UseridRole
     'Manage Images' => '/sources',
     'Assignments' => '/assignments/my_own',
     'Manage Pieces' => '/freecen_pieces',
-    'FreeCen Errors' => '/freecen_errors'
+    'FreeCen Errors' => '/freecen_errors',
+    'Manage FreeCen Coverage' => '/freecen_coverage/edit'
   }
   USERID_MANAGER_OPTIONS = ['Select specific userid', 'Select specific email', 'Select specific surname/forename',
                             'Browse userids', 'Select Role', 'Select Secondary Role', 'Incomplete Registrations', 'Create userid', 'Transcriber Statistics']
