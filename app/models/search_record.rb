@@ -365,6 +365,8 @@ class SearchRecord
         new_search_record.place_id = place.id
         new_search_record.chapman_code = place.chapman_code
         new_search_record.save
+        search_record.update_attributes(location_names: nil, chapman_code: nil)
+        search_record.destroy if search_record.present?
         search_record.destroy if search_record.present?
         return 'created'
       else
