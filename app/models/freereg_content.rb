@@ -27,15 +27,12 @@ class FreeregContent
     end
 
     def calculate_freereg_content
-      p 'register'
       Register.no_timeout.all.each do |register|
         register.calculate_register_numbers
       end
-      p 'church'
       Church.no_timeout.all.each do |church|
         church.calculate_church_numbers if church.registers.present?
       end
-      p 'place'
       Place.no_timeout.all.each do |place|
         place.calculate_place_numbers if place.churches.present?
       end
