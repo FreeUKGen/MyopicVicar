@@ -1434,8 +1434,6 @@ end
 
 crumb :show_freecen_place do |county, place|
   link 'FreeCen Place', place_path(place)
-  p 'show_freecen_place'
-  p session[:manage_places]
   if session[:manage_places]
     parent :manage_places, session[:county]
   else
