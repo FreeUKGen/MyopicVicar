@@ -20,24 +20,26 @@ class CheckSearchRecordsWithNullEntry
       break if record_number == limit
       entries = Freereg1CsvEntry.where(line_id: my_entry.line_id).all
       if entries.length.zero?
-        message_file.puts "#{my_entry.line_id}, 'No matching entry'"
+        message_file.puts "#{my_entry.id},#{my_entry.line_id}, 'No matching entry'"
       else
         entries.each do |entry|
           records = SearchRecord.where(freereg1_csv_entry_id: entry.id).all
           if records.blank?
             if fix
               my_entry.update_attribute(:freereg1_csv_entry_id, entry.id)
-              message_file.puts "#{my_entry.line_id}, #{entry.id}, 'fixed'"
+              message_file.puts "#{my_entry.id},#{my_entry.line_id}, #{entry.id}, 'fixed'"
             else
-              message_file.puts "#{my_entry.line_id}, #{entry.id}"
+              message_file.puts "#{my_entry.id},#{my_entry.line_id}, #{entry.id}"
             end
           else
             records.each do |record|
               if fix
-                my_entry.update_attribute(:freereg1_csv_entry_id, entry.id)
-                message_file.puts "#{my_entry.line_id}, #{entry.id}, 'fixed'"
+                my_entry.update_attribute(:freereg1_csv_entry_id, entry.id) unless my_entry.freereg1_csv_entry_id == entry.id
+                message_file.puts "#{my_entry.id},#{my_entry.id},#{my_entry.line_id}, #{entry.id}, 'fixed'" unless my_entry.freereg1_csv_entry_id == entry.id
+                message_file.puts "#{my_entry.id},#{my_entry.line_id}, #{record.id}, 'deleted'"
+                record.destroy
               else
-                message_file.puts "#{my_entry.line_id}, #{entry.id}"
+                message_file.puts "#{my_entry.id},#{my_entry.line_id}, #{record.id}, 'duplicated record'"
               end
             end
 
