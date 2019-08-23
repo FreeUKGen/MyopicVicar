@@ -1,6 +1,7 @@
 class FreecenPiece
   include Mongoid::Document
   include Mongoid::Timestamps::Short
+  require 'freecen_constants'
   field :chapman_code, type: String
   field :piece_number, type: Integer
   field :district_name, type: String #same as place.name, copied for performance
@@ -30,6 +31,38 @@ class FreecenPiece
     def chapman_code(chapman)
       where(chapman_code: chapman)
     end
-  end
 
+    def year(year)
+      where(year: year)
+    end
+
+    def status(status)
+      where(status: status)
+    end
+
+    def year_totals(chapman_code)
+      totals_pieces = {}
+      totals_pieces_online = {}
+      totals_individuals = {}
+      totals_dwellings = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        totals_dwellings[year] = 0
+        totals_individuals[year] = FreecenPiece.chapman_code(chapman_code).status('Online').year(year).sum(:num_individuals)
+        totals_pieces[year] = FreecenPiece.chapman_code(chapman_code).year(year).count
+        totals_pieces_online[year] = FreecenPiece.chapman_code(chapman_code).status('Online').year(year).length
+        FreecenPiece.chapman_code(chapman_code).status('Online').year(year).each do |piece|
+          totals_dwellings[year] = totals_dwellings[year] + piece.freecen_dwellings.count
+        end
+      end
+      [totals_pieces, totals_pieces_online, totals_individuals, totals_dwellings]
+    end
+
+    def grand_totals(pieces, pieces_online, individuals, dwellings)
+      grand_pieces = pieces.values.sum
+      grand_pieces_online = pieces_online.values.sum
+      grand_individuals = individuals.values.sum
+      grand_dwellings = dwellings.values.sum
+      [grand_pieces, grand_pieces_online, grand_individuals, grand_dwellings]
+    end
+  end
 end

@@ -9,6 +9,8 @@ class FreecenPiecesController < ApplicationController
     if session[:chapman_code].present?
       @freecen_pieces = FreecenPiece.chapman_code(session[:chapman_code]).order_by(year: 1, piece_number: 1)
       @chapman_code = session[:chapman_code]
+      @totals_pieces, @totals_pieces_online, @totals_individuals, @totals_dwellings = FreecenPiece.year_totals(@chapman_code)
+      @grand_totals_pieces, @grand_totals_pieces_online, @grand_totals_individuals, @grand_totals_dwellings = FreecenPiece.grand_totals(@totals_pieces, @totals_pieces_online, @totals_individuals, @totals_dwellings)
     else
       redirect_to manage_resources_path && return
     end
