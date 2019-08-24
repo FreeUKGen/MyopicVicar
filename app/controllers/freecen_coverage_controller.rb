@@ -52,4 +52,10 @@ class FreecenCoverageController < ApplicationController
     @year = 'All Years' if 'all'==params[:year]
   end
 
+  def grand_totals
+    @totals_pieces, @totals_pieces_online, @totals_individuals, @totals_dwellings = FreecenPiece.grand_year_totals
+    @grand_totals_pieces, @grand_totals_pieces_online, @grand_totals_individuals, @grand_totals_dwellings = FreecenPiece.grand_totals(@totals_pieces, @totals_pieces_online, @totals_individuals, @totals_dwellings)
+    session.delete(:manage_places)
+  end
+
 end

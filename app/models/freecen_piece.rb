@@ -40,7 +40,7 @@ class FreecenPiece
       where(status: status)
     end
 
-    def year_totals(chapman_code)
+    def county_year_totals(chapman_code)
       totals_pieces = {}
       totals_pieces_online = {}
       totals_individuals = {}
@@ -63,6 +63,23 @@ class FreecenPiece
       grand_individuals = individuals.values.sum
       grand_dwellings = dwellings.values.sum
       [grand_pieces, grand_pieces_online, grand_individuals, grand_dwellings]
+    end
+
+    def grand_year_totals
+      totals_pieces = {}
+      totals_pieces_online = {}
+      totals_individuals = {}
+      totals_dwellings = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        totals_dwellings[year] = 0
+        totals_individuals[year] = FreecenPiece.status('Online').year(year).sum(:num_individuals)
+        totals_pieces[year] = FreecenPiece.year(year).count
+        totals_pieces_online[year] = FreecenPiece.status('Online').year(year).length
+        FreecenPiece.status('Online').year(year).each do |piece|
+          totals_dwellings[year] = totals_dwellings[year] + piece.freecen_dwellings.count
+        end
+      end
+      [totals_pieces, totals_pieces_online, totals_individuals, totals_dwellings]
     end
   end
 end
