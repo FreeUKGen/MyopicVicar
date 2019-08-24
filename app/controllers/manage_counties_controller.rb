@@ -115,6 +115,7 @@ class ManageCountiesController < ApplicationController
       end
     end
     @counties = @counties.compact if @counties.present?
+    @counties.sort! if @counties.present?
   end
 
   def index
