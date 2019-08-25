@@ -352,9 +352,6 @@ class SearchRecord
     end
 
     def update_create_search_record(entry, search_version, place)
-      p 'update_create_search_record'
-      p entry
-      p place
       #create a temporary search record with the new information
       search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
       search_record = entry.search_record
@@ -364,7 +361,6 @@ class SearchRecord
       new_search_record.digest = new_search_record.cal_digest
       if search_record.present?
         if new_search_record.digest == search_record.digest
-          p 'no update'
           return 'no update'
         end
       end
@@ -373,9 +369,8 @@ class SearchRecord
       new_search_record.place_id = place.id
       new_search_record.chapman_code = place.chapman_code
       new_search_record.save
-      search_record.update_attributes(location_names: nil, record_type: nil) if search_record.present?
+      #search_record.update_attributes(location_names: nil, record_type: nil) if search_record.present?
       search_record.destroy if search_record.present?
-      p 'created'
       return 'created'
     end
   end
