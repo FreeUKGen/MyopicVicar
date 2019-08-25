@@ -356,52 +356,23 @@ class SearchRecord
       search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
       search_record = entry.search_record
       new_search_record = SearchRecord.new(search_record_parameters)
-      new_search_record.freereg1_csv_entry = entry
+      new_search_record[:freereg1_csv_entry_id] = entry.id
       new_search_record.transform
       new_search_record.digest = new_search_record.cal_digest
-      unless new_search_record.record_updateable?(search_record, entry)
-        new_search_record.search_record_version = search_version
-        new_search_record.search_date = ' ' if new_search_record.search_date.nil?
-        new_search_record.place_id = place.id
-        new_search_record.chapman_code = place.chapman_code
-        new_search_record.save
-        return 'created'
-      else
-        digest = search_record.digest
-        digest = search_record.cal_digest if digest.blank?
-        brand_new_digest = new_search_record.digest
-        if  brand_new_digest != digest
-          #we have to update the current search record
-          #add the search version and digest
-          search_record.search_record_version = search_version
-          search_record.digest = brand_new_digest
-          search_record.transcript_dates  = new_search_record.transcript_dates unless search_record.transcript_dates_equal?(new_search_record)
-          search_record.search_dates  = new_search_record.search_dates unless search_record.search_dates_equal?(new_search_record)
-          search_record.secondary_search_date  = new_search_record.secondary_search_date unless search_record.secondary_search_date_equal?(new_search_record)
-          #update the transcript names if it has changed
-          search_record.transcript_names  = new_search_record.transcript_names unless search_record.transcript_names_equal?(new_search_record)
-          #update the location if it has changed
-          search_record.location_names = new_search_record.location_names unless  search_record.location_names_equal?(new_search_record)
-          #update the soundex if it has changed
-          search_record.search_soundex = new_search_record.search_soundex unless search_record.soundex_names_equal?(new_search_record)
-          #search_record.search_dates = new_search_record.search_dates unless search_record.search_dates == new_search_record.search_dates
-          #search_record.upgrade_search_date!(search_version) unless search_record.search_date == new_search_record.search_date && search_record.secondary_search_date == new_search_record.secondary_search_date
-          #create a hash of search names from the original search names
-          #note adjust_search_names does a save of the search record
-          search_record.adjust_search_names(new_search_record)
-          return 'updated'
-        else
-          #unless search_record.search_record_version == search_version && search_record.digest == digest
-          #search_record.search_record_version = search_version
-          #search_record.digest = digest
-          #search_record.save
-          #return 'digest added'
-          #end
+      if search_record.present?
+        if new_search_record.digest == search_record.digest
           return 'no update'
         end
       end
+      new_search_record.search_record_version = search_version
+      new_search_record.search_date = ' ' if new_search_record.search_date.nil?
+      new_search_record.place_id = place.id
+      new_search_record.chapman_code = place.chapman_code
+      new_search_record.save
+      #search_record.update_attributes(location_names: nil, record_type: nil) if search_record.present?
+      search_record.destroy if search_record.present?
+      return 'created'
     end
-
   end
 
   ############################################################################# instance methods ####################################################################
@@ -649,40 +620,30 @@ class SearchRecord
   def record_updateable?(search_record, entry)
     is_ok = true
     return false if search_record.nil?
+
     return false unless self.updateable_date?(search_record, entry)
+
     return false unless self.updateable_county?(search_record, entry)
-    return is_ok
+
+    is_ok
   end
 
-  def updateable_county?(search_record,entry)
+  def updateable_county?(search_record, entry)
     is_ok = true
-    if self.chapman_code.present? && search_record.chapman_code.present? && search_record.chapman_code  != self.chapman_code
-      is_ok = false
-    end
-    unless is_ok
-      search_record.destroy
-      entry.search_record = nil
-      entry.save
-    end
-    return is_ok
+    is_ok = false if chapman_code.present? && search_record.chapman_code.present? && search_record.chapman_code != chapman_code
+    is_ok
   end
 
   def updateable_date?(search_record, entry)
     #We cannot currently update a search date as it is a component of the sharding index
     #We need to delete and then recreate the search record
     is_ok = true
-    case
-    when self.search_date.blank? || search_record.search_date.blank?
+    if search_date.blank? || search_record.search_date.blank?
       is_ok = false
-    when search_record.search_date.present? && self.search_date != search_record.search_date
+    elsif search_record.search_date.present? && search_date != search_record.search_date
       is_ok = false
     end
-    unless is_ok
-      search_record.destroy
-      entry.search_record = nil
-      entry.save
-    end
-    return is_ok
+    is_ok
   end
 
   def search_dates_equal?(new_search_record)
