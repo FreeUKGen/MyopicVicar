@@ -352,6 +352,9 @@ class SearchRecord
     end
 
     def update_create_search_record(entry, search_version, place)
+      p 'update_create_search_record'
+      p entry
+      p place
       #create a temporary search record with the new information
       search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
       search_record = entry.search_record
@@ -359,51 +362,22 @@ class SearchRecord
       new_search_record[:freereg1_csv_entry_id] = entry.id
       new_search_record.transform
       new_search_record.digest = new_search_record.cal_digest
-      unless new_search_record.record_updateable?(search_record, entry)
-        new_search_record.search_record_version = search_version
-        new_search_record.search_date = ' ' if new_search_record.search_date.nil?
-        new_search_record.place_id = place.id
-        new_search_record.chapman_code = place.chapman_code
-        new_search_record.save
-        search_record.update_attributes(location_names: nil, record_type: nil)
-        search_record.destroy if search_record.present?
-        search_record.destroy if search_record.present?
-        return 'created'
-      else
-        digest = search_record.digest
-        digest = search_record.cal_digest if digest.blank?
-        brand_new_digest = new_search_record.digest
-        if  brand_new_digest != digest
-          #we have to update the current search record
-          #add the search version and digest
-          search_record.search_record_version = search_version
-          search_record.digest = brand_new_digest
-          search_record.transcript_dates  = new_search_record.transcript_dates unless search_record.transcript_dates_equal?(new_search_record)
-          search_record.search_dates  = new_search_record.search_dates unless search_record.search_dates_equal?(new_search_record)
-          search_record.secondary_search_date  = new_search_record.secondary_search_date unless search_record.secondary_search_date_equal?(new_search_record)
-          #update the transcript names if it has changed
-          search_record.transcript_names  = new_search_record.transcript_names unless search_record.transcript_names_equal?(new_search_record)
-          #update the location if it has changed
-          search_record.location_names = new_search_record.location_names unless  search_record.location_names_equal?(new_search_record)
-          #update the soundex if it has changed
-          search_record.search_soundex = new_search_record.search_soundex unless search_record.soundex_names_equal?(new_search_record)
-          #search_record.search_dates = new_search_record.search_dates unless search_record.search_dates == new_search_record.search_dates
-          #search_record.upgrade_search_date!(search_version) unless search_record.search_date == new_search_record.search_date && search_record.secondary_search_date == new_search_record.secondary_search_date
-          #create a hash of search names from the original search names
-          #note adjust_search_names does a save of the search record
-          return 'updated'
-        else
-          #unless search_record.search_record_version == search_version && search_record.digest == digest
-          #search_record.search_record_version = search_version
-          #search_record.digest = digest
-          #search_record.save
-          #return 'digest added'
-          #end
+      if search_record.present?
+        if new_search_record.digest == search_record.digest
+          p 'no update'
           return 'no update'
         end
       end
+      new_search_record.search_record_version = search_version
+      new_search_record.search_date = ' ' if new_search_record.search_date.nil?
+      new_search_record.place_id = place.id
+      new_search_record.chapman_code = place.chapman_code
+      new_search_record.save
+      search_record.update_attributes(location_names: nil, record_type: nil) if search_record.present?
+      search_record.destroy if search_record.present?
+      p 'created'
+      return 'created'
     end
-
   end
 
   ############################################################################# instance methods ####################################################################
