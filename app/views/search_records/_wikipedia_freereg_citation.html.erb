@@ -1,5 +1,6 @@
 <section>
-  <p>
-    {{Cite web|url=<%=search_record_link(@search_record[:_id])%>|title=<%= appname%> - "Parish Register" database|accessdate=<%=@viewed_date%>|work=<%= appname%>|publisher=Free UK Genealogy}}
+<h4>Citation(Wikipedia):</h4>
+  <p class = "citation_container">
+    {{Cite web|url=<%=search_record_link(@search_record[:_id])%>|title=<%= appname%> - "Parish Register" database|accessdate=<%=Date.today.strftime("%e %b %Y")%>|work=<%= appname%>|publisher=Free UK Genealogy}}
   </p>
 </section>
