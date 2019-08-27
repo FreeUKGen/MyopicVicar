@@ -343,8 +343,7 @@ class Freereg1CsvEntry
   def adjust_parameters(param)
     param[:year] = get_year(param)
     param[:processed_date] = Time.now
-    param[:person_sex] == person_sex ? sex_change = false : sex_change = true
-    [param, sex_change]
+    param
   end
 
   def cal_digest
@@ -388,10 +387,10 @@ class Freereg1CsvEntry
       place_id = search_record.place_id
       place = Place.id(place_id).first
       if self.county.blank?
-        self.update_attribute(:county,place.chapman_code) if place.present?
+        self.update_attribute(:county, place.chapman_code) if place.present?
       else
         unless ChapmanCode.value?(self.county)
-          self.update_attribute(:county,place.chapman_code) if place.present?
+          self.update_attribute(:county, place.chapman_code) if place.present?
         end
       end
     end
@@ -414,7 +413,7 @@ class Freereg1CsvEntry
     end
     return if  old_year == new_year
     return if new_year.blank? && old_year.blank?
-    self.update_attribute(:year,new_year)
+    self.update_attribute(:year, new_year)
     return
   end
 
