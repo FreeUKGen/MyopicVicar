@@ -61,8 +61,8 @@ module UseridRole
       'publicity_coordinator' => ['Communicate', 'Contacts', 'Profile', 'Roadmap', 'System Documentation'],
 
       'syndicate_coordinator' => ['Communicate', 'Manage Syndicate', 'Profile', 'Roadmap'],
-      'system_administrator' => ['Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Feedback', 'FreeCen Errors',
-                                 'Manage Counties', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
+      'system_administrator' => ['Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Database Statistics','Feedback', 'FreeCen Errors',
+                                 'Manage Counties', 'Manage FreeCen Coverage', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
                                  'Software Version Information', 'Syndicate Coordinators', 'System Documentation'],
       'trainee' => ['Communicate', 'Profile', 'Roadmap'],
       'technical' => ['Communicate', 'Contacts', 'Feedback', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
@@ -79,6 +79,7 @@ module UseridRole
   OPTIONS_TRANSLATION = {
     'Communicate' => '/messages/communications?source=original',
     'Denominations' => '/denominations',
+    'Database Statistics' => '/freecen_coverage/grand_totals',
     'GAP Reasons' => '/gap_reasons',
     'Saved Searches' => '/my_saved_searches',
     'Profile' => '/userid_details/my_own',
@@ -111,7 +112,8 @@ module UseridRole
     'Manage Images' => '/sources',
     'Assignments' => '/assignments/my_own',
     'Manage Pieces' => '/freecen_pieces',
-    'FreeCen Errors' => '/freecen_errors'
+    'FreeCen Errors' => '/freecen_errors',
+    'Manage FreeCen Coverage' => '/freecen_coverage/edit'
   }
   USERID_MANAGER_OPTIONS = ['Select specific userid', 'Select specific email', 'Select specific surname/forename',
                             'Browse userids', 'Select Role', 'Select Secondary Role', 'Incomplete Registrations', 'Create userid', 'Transcriber Statistics']

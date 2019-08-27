@@ -8,6 +8,6 @@ class Freecen1FixedDatEntry
   field :lds_film_number, type: String
   field :freecen_filename, type: String
   field :entry_number, type: Integer
-  belongs_to :freecen1_fixed_dat_file
+  belongs_to :freecen1_fixed_dat_file, index: true
   has_one :freecen_piece
 end
