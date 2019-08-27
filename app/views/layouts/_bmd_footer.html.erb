@@ -46,15 +46,15 @@
         <div class="grid__item  one-quarter  palm-one-whole">
         <ul class="nav  nav--stacked   lap-and-up-flush--bottom">
           <li> Follow us:</li>
-          <li>
-            <i class="fa fa-rss-square fa-2x"></i>
-            <i class="fa fa-facebook-square fa-2x"></i>
-            <i class="fa fa-twitter-square fa-2x"></i>
+          <li class='social_links'>
+            <%= link_to app_icons[:news].html_safe, social_links[:news], html_options %>
+            <%= link_to app_icons[:facebook].html_safe, social_links[:facebook], html_options %>
+            <%= link_to app_icons[:twitter].html_safe, social_links[:twitter], html_options %>
           </li>
-          <li>
-            <i class="fa fa-instagram fa-2x"></i>
-            <i class="fa fa-pinterest-square fa-2x" aria-hidden="true"></i>
-            <i class="fa fa-github-square fa-2x" aria-hidden="true"></i>
+          <li class='social_links'>
+            <%= link_to app_icons[:instagram].html_safe, social_links[:instagram], html_options %>
+            <%= link_to app_icons[:pinterest].html_safe, social_links[:pinterest], html_options %>
+            <%= link_to app_icons[:github].html_safe, social_links[:github], html_options %>
           </li>
         </ul>
         </div>

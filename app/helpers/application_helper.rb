@@ -589,4 +589,33 @@ module ApplicationHelper
       HTML
     banner.html_safe
   end
+
+  def app_icons
+    {
+      facebook: '<i class="fa fa-facebook-square fa-2x"></i>',
+      news: '<i class="fa fa-rss-square fa-2x"></i>',
+      twitter: '<i class="fa fa-twitter-square fa-2x"></i>',
+      github: '<i class="fa fa-github-square fa-2x" aria-hidden="true"></i>',
+      info: '<i class="fa fa-info-circle"></i>',
+      pinterest: '<i class="fa fa-pinterest-square fa-2x" aria-hidden="true"></i>',
+      instagram: '<i class="fa fa-instagram fa-2x"></i>'
+    }
+  end
+  def social_links
+    {
+      facebook: 'https://www.facebook.com/freeukgen',
+      news: 'https://www.freeukgenealogy.org.uk/news/',
+      twitter: 'https://www.twitter.com/freeukgen',
+      github: 'https://github.com/FreeUKGen/MyopicVicar/',
+      pinterest: 'https://www.pinterest.co.uk/FreeUKGenealogy/',
+      instagram: 'https://www.instagram.com/freeukgenealogy/'
+    }
+  end
+  def html_options
+    {target: '_blank', rel: 'noreferrer'}
+  end
+
+  def info_tag_message
+   # <%= tag.span 'Optional. Use upper- or lower-case. Abbreviations and Latin versions of the forename (first-name) will be included automatically', class: 'ttip__text'%>
+  end
 end

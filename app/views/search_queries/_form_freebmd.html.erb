@@ -16,43 +16,35 @@
   <%= semantic_form_for(@search_query) do |f| %>
     <div class="grid search_form">
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
-        <label class="ttip" for="first_name" tabindex="0">
-          First name(s)
-          <i class="fa fa-info-circle"></i>
-          <span class="ttip__text">Optional. Use upper- or lower-case. Abbreviations and Latin versions of the forename (first-name) will be included automatically</span>
-        </label>
-        <% if @search_query.first_name.nil? %>
-          <input id="first_name" name="search_query[first_name]" type="text" class="text-input">
-        <% else %>
-          <input id="first_name" name="search_query[first_name]" type="text" class="text-input" value="<%=@search_query.first_name%>">
-        <% end %>
-        <%= f.label :fuzzy, { :class => "optional_attributes", :tabindex => "0" } do %>
+        <div class='labels'>
+          <%= label_tag 'first_name', 'First name(s)', class: "ttip" %>
+          <%= label_tag 'first_name', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '0'%>
+        </div>
+        <%= text_field_tag 'first_name', set_value(@search_query.first_name), class: 'text-input', placeholder: 'Enter first names here', tabindex: '1'%>        
+        <%= f.label :fuzzy, { :class => "optional_attributes", :tabindex => "2" } do %>
           <%= f.check_box :fuzzy, {},  true, false %>
           <small class="optional_checkbox_label">Exact match on first names</small>
         <% end %>
       </div>
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
-        <label class="ttip" for="last_name" tabindex="0">
-          Surname
-          <i class="fa fa-info-circle"></i>
-          <span class="ttip__text">Use upper- or lower-case. If you do not enter a surname (last-name) you <em>must</em> enter a forename, select one county and choose a single record type</span>
-        </label>
-        <% if @search_query.last_name.nil? %>
-          <input id="last_name" name="search_query[last_name]" type="text" class="text-input">
-        <% else %>
-          <input id="last_name" name="search_query[last_name]" type="text" class="text-input" value="<%=@search_query.last_name%>">
-        <% end %>
-        <%= f.label :witness, { :class => "optional_attributes", :tabindex => "0" } do %>
-          <%= f.check_box :witness, {},  true, false %>
-          <small class="optional_checkbox_label">Phonetic search surnames</small>
+
+          <!--span class="ttip__text">Use upper- or lower-case. If you do not enter a surname (last-name) you <em>must</em> enter a forename, select one county and choose a single record type</span-->
+        <div class='labels'>
+          <%= label_tag 'last_name', 'Surname', class: "ttip" %>
+          <%= label_tag 'last_name', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '3'%>
+        </div>
+        <%= text_field_tag "search_query[last_name]", set_value(@search_query.last_name), class: 'text-input', id: 'last_name', placeholder: 'Enter Surname here', tabindex: '4' %>
+        <%= f.label :fuzzy, { :class => "optional_attributes", :tabindex => "5" } do %>
+          <%= f.check_box :fuzzy, {},  true, false %>
+          <small class="optional_checkbox_label">Exact match on first names</small>
         <% end %>
       </div>
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
-        <label class="ttip" for="start_year" tabindex="0">
-          Date range from
-          <i class="fa fa-info-circle"></i>
-          <span class="ttip__text">Optional, YYYY. The first year you want to search</span>
-        </label>
+        <div class='labels'>
+          <%= label_tag 'start_year', 'Date range from', class: "ttip" %>
+          <%= label_tag 'start_year', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '6'%>
+        </div>
+          <!--span class="ttip__text">Optional, YYYY. The first year you want to search</span-->
         <% if @search_query.start_year.nil? %>
           <%= select_month(Date.today, {use_short_month: true}, :class => 'select_month_year' ) %>
           <%= select_year(Date.today, {start_year: 1992, end_year: 2007, prompt: '- - - -'}, {:class => 'select_month_year'}) %>
@@ -199,41 +191,13 @@
       :label => 'Search ',
       :button_html => { :class => "ladda-button" , "data-style" => "contract" ,"data-color" =>"#a1185a" , "data-size" => "l", "data-spinner-color" => "#ffffff" },
       :wrapper_html => { :class => "grid__item one-whole push-half--ends" } %>
-      <%= link_to 'Clear Form', '#', class: 'clear_form' %>
+      <%= button_tag 'Clear Form', type: :reset, class: 'clear_form' %>
       <%= f.submit 'Search', class: 'search_form_submit_button' %>
+
     </div>
   <% end %>
 </div>
 <script type="text/javascript">
   Ladda.bind( 'button[type=submit]' );
 </script>
-<script type="text/javascript" >
-  <% if @search_query && @search_query.chapman_codes.size > 0 %>
-    var selection=<%= raw(PlaceCache.where(:chapman_code => @search_query.chapman_codes.first).first.places_json) %>;
-    <% if @search_query.places.size > 0 %>
-      selection["selected"]="<%= @search_query.places.first.id %>";
-    <% end %>
-  <% end %>
-  (function($) {$("#search_query_place_ids").remoteChained({
-    parents : "#search_query_chapman_codes",
-    url : "/places/for_search_form.json",
-    loading : "Loading..."
-    <% if @search_query && @search_query.chapman_codes.size == 1 %>
-      , bootstrap: selection
-    <% end %>
-  });})(jQuery);
-  $(function(){
-    $("#search_query_place").hide();  // By default use jQuery to hide the second modal
-  
-    // We can use the change(); function to watch the state of the select box and run some conditional logic every time it's changes to hide or show the second select box
-    $("#search_query_chapman_codes").change(function(){
-        if( $("#default").is(':selected') ){
-            $("#search_query_place").show();
-            $("#search_query_place_ids").hide();
-        } else {
-            $("#search_query_place").hide();
-            $("#search_query_place_ids").show();
-        }
-    });
-  })
-</script>
+

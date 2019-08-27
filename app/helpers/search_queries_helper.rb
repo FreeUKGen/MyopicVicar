@@ -104,4 +104,8 @@ module SearchQueriesHelper
       contents_link = link_to "Database Coverage" , freebmd_coverage_path, :title => "Database Coverage"
     end
   end
+
+  def set_value field_value=nil
+    return field_value
+  end
 end
