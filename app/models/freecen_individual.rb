@@ -21,10 +21,10 @@ class FreecenIndividual
   field :disability, type: String
   field :language, type: String
   field :notes, type: String
-  belongs_to :freecen_dwelling
-  belongs_to :freecen1_vld_entry
+  belongs_to :freecen_dwelling, index: true
+  belongs_to :freecen1_vld_entry, index: true
   has_one :search_record
-  
+
   index(freecen_dwelling_id:1)
 
   # labels/values for dwelling page table body (header in freecen_dwelling)

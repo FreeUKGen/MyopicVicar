@@ -1404,6 +1404,63 @@ crumb :edit_software_version do
   parent :software_updates
 end
 
+
+# ...................................FreeCEN>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+crumb :freecen_pieces do |county|
+  link 'FreeCen Pieces', freecen_pieces_path(county: county)
+  parent :county_options, session[:county]
+end
+
+crumb :show_freecen_piece do |file|
+  link 'FreeCen Pieces', freecen_piece_path(file.id)
+  parent :freecen_pieces, session[:county]
+end
+
+crumb :freecen1_fixed_dat_entry do |file|
+  link 'FreeCen1 Fixed DAT Entry', freecen1_fixed_dat_entry_path(session[:county])
+  parent :freecen1_fixed_dat_file, file, session[:county]
+end
+
+crumb :freecen1_fixed_dat_file do |file|
+  link 'FreeCen1 Fixed DAT File', freecen1_fixed_dat_file_path(file)
+  parent :freecen_pieces, session[:county], session[:page]
+end
+
+crumb :manage_places do |county|
+  link 'FreeCen Places',  places_path
+  parent :county_options, session[:county]
+end
+
+crumb :show_freecen_place do |county, place|
+  link 'FreeCen Place', place_path(place)
+  if session[:manage_places]
+    parent :manage_places, session[:county]
+  else
+    parent :freecen_pieces, session[:county], session[:page]
+  end
+end
+
+crumb :freecen1_vld_files do |county, page|
+  link 'FreeCen1 VLD Files', freecen1_vld_files_path(county: county, page: page)
+  parent :county_options, county
+end
+
+crumb :freecen1_vld_file do |county, file|
+  link 'FreeCen1 VLD File', freecen1_vld_file_path(id: file, county: county)
+  parent :freecen1_vld_files, county, session[:file_page]
+end
+
+crumb :freecen1_vld_entries do |file, page|
+  link 'FreeCen1 VLD Entries', freecen1_vld_entries_path(file: file, page: page)
+  parent :freecen1_vld_file, session[:county], file
+end
+
+crumb :freecen1_vld_entry do |county, file|
+  link 'FreeCen1 VLD Entry', freecen1_vld_entry_path(id: file, county: county)
+  parent :freecen1_vld_entries, session[:freecen1_vld_file], session[:entry_page]
+end
+
 # crumb :projects do
 #   link 'Projects', projects_path
 # end

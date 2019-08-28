@@ -8,4 +8,13 @@ module FreecenPiecesHelper
       return raw '<a href="https://www.openstreetmap.org/?mlat='+(lat.to_f.to_s)+'&mlon='+(long.to_f.to_s)+'#map='+(zoom.to_i.to_s)+'/'+(lat.to_f.to_s)+'/'+(long.to_f.to_s)+'" target="_blank" title="'+(title.to_s)+'">'+(text.to_s)+'</a>'
     end
   end
+
+  def sub_pieces(subplaces)
+    place_names = []
+    subplaces.each do |place|
+      place_names << place[:name] if place[:name].present?
+    end
+    place_names.sort_by! { |e| ActiveSupport::Inflector.transliterate(e.downcase) }
+    place_names.join(', ')
+  end
 end

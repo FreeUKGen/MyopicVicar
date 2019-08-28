@@ -208,11 +208,12 @@ MyopicVicar::Application.routes.draw do
   get 'freecen_pieces/:chapman_code/:year/new', :to => 'freecen_pieces#new', :as => :new_freecen_piece
   get 'freecen_pieces/:year/select_new_county', :to => 'freecen_pieces#select_new_county', :as => :select_new_county_freecen_piece
 
+  get 'freecen_coverage/grand_totals', to: 'freecen_coverage#grand_totals', as: :grand_totals_freecen_coverage
+
   get 'freecen_coverage', :to => 'freecen_coverage#index', :as => :freecen_coverage
   get 'freecen_coverage/:chapman_code', :to => 'freecen_coverage#show', :as => :show_freecen_coverage
   get 'freecen_coverage/:chapman_code/:act', :to => 'freecen_coverage#show', :as => :show_edit_freecen_coverage
   get 'freecen_coverage_graph/:type/:chapman_code/:year', :to => 'freecen_coverage#graph', :as => :graph_freecen_coverage
-
   get 'freecen_errors', :to => 'freecen_errors#index', :as => :freecen_errors
 
   resources :countries

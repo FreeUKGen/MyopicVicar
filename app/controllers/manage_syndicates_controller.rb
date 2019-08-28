@@ -116,6 +116,7 @@ class ManageSyndicatesController < ApplicationController
         synd << syn.syndicate_code if all
       end
       @syndicates = synd
+      @syndicates.sort! if @syndicates.present?
     else
       logger.warn "FREEREG::USER #{@user.userid} has no syndicates and attempting to manage one"
       redirect_back(fallback_location: new_manage_syndicate_path, notice: 'You do not have any syndicates') && return
