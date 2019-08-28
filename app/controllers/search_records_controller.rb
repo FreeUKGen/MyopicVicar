@@ -85,7 +85,7 @@ class SearchRecordsController < ApplicationController
         @ee_address = @dweling_values[11]
 
         #census database description
-        @census_database = 'England, Scotland and Wales Census'
+        @census_database = 'General Register Office: 1891 Census Returns'
 
         @searched_user_name = @search_record.transcript_names.first['first_name'] + " " + @search_record.transcript_names.first['last_name']
         @viewed_date = Date.today.strftime("%e %b %Y")
@@ -309,7 +309,7 @@ class SearchRecordsController < ApplicationController
         @ee_address = @dweling_values[11]
 
         #census database description
-        @census_database = 'England, Scotland and Wales Census'
+        @census_database = 'General Register Office: 1891 Census Returns'
 
         @searched_user_name = @search_record.transcript_names.first['first_name'] + " " + @search_record.transcript_names.first['last_name']
         @viewed_date = Date.today.strftime("%e %b %Y")
