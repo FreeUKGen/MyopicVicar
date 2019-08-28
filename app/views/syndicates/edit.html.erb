@@ -1,15 +1,7 @@
 <% breadcrumb :edit_syndicate,  @syndicate%>
 <h2 class=" text--center">Editing <%= @syndicate.syndicate_code%></h2>
 <section class="island  island--light">
-
- <% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
-    </div>
-   <% end %>
-<%= render 'form' %>
-
+  <%= render 'flash_notice' %>
+  <%= render 'form' %>
 </section>
 <%= render "resource_sidebar" %>
-
-  

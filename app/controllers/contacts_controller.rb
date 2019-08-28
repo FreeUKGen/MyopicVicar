@@ -146,7 +146,7 @@ class ContactsController < ApplicationController
     session[:message_base] = 'contact'
     params[:source] = 'original'
     get_user_info_from_userid
-    order = 'contact_time  DESC'
+    order = 'contact_time  ASC'
     @contacts = get_contacts.result(session[:archived_contacts],order)
     @archived = session[:archived_contacts]
     render :index

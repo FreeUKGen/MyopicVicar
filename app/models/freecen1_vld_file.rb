@@ -2,7 +2,7 @@ class Freecen1VldFile
   include Mongoid::Document
   has_many :freecen1_vld_entries
   has_many :freecen_dwellings
-  
+
   field :file_name, type: String
   field :dir_name, type: String
   field :census_type, type: String
@@ -13,8 +13,12 @@ class Freecen1VldFile
   field :sctpar, type: String
   field :file_digest, type: String
   field :file_errors, type: Array
-  
+  class << self
+    def chapman(chapman)
+      where(dir_name: chapman)
+    end
+  end
   def chapman_code
-    self.dir_name.sub(/-.*/, '') 
+    self.dir_name.sub(/-.*/, '')
   end
 end

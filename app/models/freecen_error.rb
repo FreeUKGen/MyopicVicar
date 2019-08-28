@@ -14,16 +14,22 @@ class FreecenError
   end
 
   def self.get_pieces_not_loaded_list
-    plist = []
+    piece_error_list = {}
+    piece_error_list[:not_online] = []
+    piece_error_list[:no_freecen1_filename] = []
+    piece_error_list[:error_status] = []
     pcs = FreecenPiece.where(:status.nin => [nil, '', 'Online'])
     pcs.each do |pc|
-      plist << "#{pc.chapman_code} filename:#{pc.freecen1_filename} #{pc.year} piece:#{pc.piece_number} suffix:#{pc.suffix} status:#{pc.status}"
+      piece_error_list[:not_online] << pc.id
+    end
+    pcs = FreecenPiece.where(status: 'Error')
+    pcs.each do |pc|
+      piece_error_list[:error_status] << pc.id unless piece_error_list[:not_online].include?(pc.id)
     end
     pcs = FreecenPiece.where(:status => 'Online', :freecen1_filename.in=>[nil,''])
     pcs.each do |pc|
-      plist << "missing-filename #{pc.chapman_code} #{pc.year} piece:#{pc.piece_number} suffix:#{pc.suffix} status:#{pc.status}"
+      piece_error_list[:no_freecen1_filename] << pc.id unless piece_error_list[:error_status].include?(pc.id)
     end
-
-    return plist
+    piece_error_list
   end
 end

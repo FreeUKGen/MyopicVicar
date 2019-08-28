@@ -1,3 +1,9 @@
-<% breadcrumb :places,  @county%>
 <%= render 'flash_notice' %>
-<%= render 'place_index' %>
+<% case appname.downcase %>
+<% when 'freereg' %>
+<% breadcrumb :places,  @county%>
+<%= render 'index_freereg_place' %>
+<% when 'freecen' %>
+<% breadcrumb :manage_places,  @county%>
+<%= render 'index_freecen_place' %>
+<% end%>

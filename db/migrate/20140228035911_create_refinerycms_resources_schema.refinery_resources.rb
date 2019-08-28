@@ -1,5 +1,5 @@
 # This migration comes from refinery_resources (originally 20100913234709)
-class CreateRefinerycmsResourcesSchema < ActiveRecord::Migration
+class CreateRefinerycmsResourcesSchema < ActiveRecord::Migration[4.2]
   def change
     create_table :refinery_resources do |t|
       t.string   :file_mime_type

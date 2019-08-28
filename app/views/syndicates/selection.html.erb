@@ -1,19 +1,12 @@
 <section class="island  island--light">
-<%= semantic_form_for @syndicate, :html => { :class => "grid"} do |f| %>
-<% if flash[:notice] %>
-    <div id="notice" style="color:red"><br>
-   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
-    </div>
-   <% end %>  
-
-<%= f.input :userid,
+  <%= semantic_form_for @syndicate, :html => { :class => "grid"} do |f| %>
+    <%= render 'flash_notice' %>
+    <%= f.input :userid,
               { :as => :select,:include_blank => false, :required => true, :collection => @syndicates,
               :size => 2 , :class => "text-input",  :label => "Type of Register :",
-              :input_html => { :class => "select",'onchange' => @location}  }, 
+              :input_html => { :class => "select",'onchange' => @location}  },
               :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole" }
               }%>
-
- <% end %> 
- </section>
+  <% end %>
+</section>
 <%= render "resource_sidebar" %>
-

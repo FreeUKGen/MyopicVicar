@@ -5,6 +5,21 @@ namespace :foo do
   #eg f2rake  foo:update_search_records[0,bu,"2016-05-27T19:23:31+00:00", true, 1]
   #number of files of 0 is all, force creation is true or false, order files processed is 1 or -1
 
+  # eg foo:check_search_records[100000]
+  #num is the number of records to be checked
+  task :check_search_records_with_null_entry, [:num, :fix] => [:environment] do |t, args|
+    require 'check_search_records_with_null_entry'
+    limit = args.num
+    puts "Checking the existence of search record documents with null entry "
+    CheckSearchRecordsWithNullEntry.process(args.num, args.fix)
+    puts "Completed Checking #{limit} Search records"
+  end
+
+  task :delete_or_archive_old_messages_feedbacks_and_contacts => [:environment] do
+    require 'delete_or_archive_old_messages_feedbacks_and_contacts'
+    DeleteOrArchiveOldMessagesFeedbacksAndContacts.process
+  end
+
   task :delete_or_archive_old_messages_feedbacks_and_contacts => [:environment] do
     require 'delete_or_archive_old_messages_feedbacks_and_contacts'
     DeleteOrArchiveOldMessagesFeedbacksAndContacts.process

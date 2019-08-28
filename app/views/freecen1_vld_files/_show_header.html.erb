@@ -1,0 +1,6 @@
+<% breadcrumb :freecen1_vld_file,  @chapman_code, @freecen1_vld_file %>
+<h1 style="text-align: center">Listing of <%= @freecen1_vld_file.file_name %> for <%= @chapman_code%></h1>
+<%= render 'flash_notice' %>
+<div style="text-align: center">
+  <%= link_to 'List entries ', freecen1_vld_entries_path(file: @freecen1_vld_file.id) , :class => "btn weight--light  btn--small" %>
+</div>
