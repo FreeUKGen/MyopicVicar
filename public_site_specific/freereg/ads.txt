@@ -6,6 +6,7 @@ google.com, pub-7825403497160061, DIRECT, f08c47fec0942fa0
 #adx
 google.com, pub-7620071422727774, RESELLER, f08c47fec0942fa0 #MMCAD
 google.com, pub-5278973888786334, RESELLER, f08c47fec0942fa0 #MMUSD
+google.com, pub-6190096338979886, RESELLER, f08c47fec0942fa0 #MMLATAM
 
 #amazonA9
 aps.amazon.com,6bc54345-8f2a-4a82-8027-bcbecfe095b5,DIRECT #amazonA9
