@@ -1,48 +1,46 @@
 <% breadcrumb :show_countries,  @country%>
 <h2 class=" text--center">Details for a Country </h2>
+<%= render 'flash_notice' %>
 <% if @user.person_role == "system_administrator"%>
-
-  <% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %> <br>
-    </div>
-   <% end %>  
-<div style="text-align: center"> <%= link_to 'Edit Country' , edit_country_path(@country), method: :get , :class => "btn weight--light btn--small" %> </div>
+  <div style="text-align: center"> <%= link_to 'Edit Country' , edit_country_path(@country), method: :get , :class => "btn weight--light btn--small" %> </div>
 <% end%>
-
 <div id="main"style="color:black">
-<table  class="table--bordered  table--data">
-  <tr>
-    
-    <th style="width:25%">Field</th>
-    <th style="width:50">Value</th>
-     
-  </tr>
-
-  <tr> 
-   <td>Country</td><td > <%= @country.country_code %>  </td>
-  </tr><tr>
-   <td>Country Coordinator Userid</td><td > <%= @country.country_coordinator %>  </td>   
-   </tr>
-   <tr>
-   <td>Country Coordinator Name</td><td > <%= @person unless @person.nil? %> </td>   
-   </tr>
-   <tr>
-   <td>Previous Country Coordinator Userid</td><td > <%= @country.previous_country_coordinator %>  </td>   
-   </tr>
-   <tr>
-   <td>Previous Country Coordinator Name</td><td > <%= @previous_person unless @previous_person.nil? %>  </td>   
-   </tr>
-   <tr>
-   <td>Country Description</td><td > <%= @country.country_description %>  </td>   
-   </tr>
-  <tr>
-   <td>Country Notes</td><td > <%= @country.country_notes %>  </td>   
-   </tr>
- <tr>
-   <td>Country Last Updated</td><td > <%= @country.u_at.strftime("%d %b %Y") unless  @country.u_at.nil?%>  </td>   
-   </tr>
-
-</table>
+  <table  class="table--bordered  table--data">
+    <tr>
+      <th style="width:25%">Field</th>
+      <th style="width:50">Value</th>
+    </tr>
+    <tr>
+      <td>Country</td>
+      <td > <%= @country.country_code %>  </td>
+    </tr>
+    <tr>
+      <td>Country Coordinator Userid</td>
+      <td > <%= @country.country_coordinator %>  </td>
+    </tr>
+    <tr>
+      <td>Country Coordinator Name</td>
+      <td > <%= @person unless @person.nil? %> </td>
+    </tr>
+    <tr>
+      <td>Previous Country Coordinator Userid</td>
+      <td > <%= @country.previous_country_coordinator %>  </td>
+    </tr>
+    <tr>
+      <td>Previous Country Coordinator Name</td>
+      <td > <%= @previous_person unless @previous_person.nil? %>  </td>
+    </tr>
+    <tr>
+      <td>Country Description</td>
+      <td > <%= @country.country_description %>  </td>
+    </tr>
+    <tr>
+      <td>Country Notes</td>
+      <td > <%= @country.country_notes %>  </td>
+    </tr>
+    <tr>
+      <td>Country Last Updated</td>
+      <td > <%= @country.u_at.strftime("%d %b %Y") unless  @country.u_at.nil?%>  </td>
+    </tr>
+  </table>
 </div>
-

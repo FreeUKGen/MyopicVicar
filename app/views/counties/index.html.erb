@@ -1,10 +1,9 @@
 <% breadcrumb :counties%>
-<h2 class=" text--center">Listing of all counties</h2>
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %> <br>
-  </div>
-<% end %>
+<h2 class=" text--center">All Active Counties</h2>
+<%= render 'flash_notice' %>
+<div  class=" text--center push--bottom">
+  <%= link_to 'Activate Empty County', new_county_path,:class => "btn weight--light  btn--small", method: :get %>
+</div>
 <div id="main" style="color:black">
   <table class="table--bordered table--data ">
     <tr>
@@ -20,7 +19,7 @@
     </tr>
     <% @counties.each do |county| %>
       <tr id="<%=county.id%>">
-        <td > <%= county.chapman_code %>  </td>
+        <td > <%= county.chapman_code %> <%= ChapmanCode::name_from_code(county.chapman_code)%> </td>
         <td > <%= county.county_coordinator %>  </td>
         <td > <%= email_address(county.county_coordinator) %>  </td>
         <td > <%= county.files %>  </td>
@@ -29,7 +28,7 @@
         <td > <%= county.burial_records %>  </td>
         <td > <%= county.marriage_records %>  </td>
         <% if @user.person_role == "system_administrator"%>
-          <td><%= link_to 'Show', county_path(county), :class => "btn weight--light  btn--small",method: :get  %> <%= link_to 'Edit', edit_county_path(county),:class => "btn weight--light  btn--small", method: :get %></td>
+          <td><%= link_to 'Show', county_path(county), :class => "btn weight--light  btn--small",method: :get  %> <%= link_to 'Edit', edit_county_path(county),:class => "btn weight--light  btn--small", method: :get %> </td>
         <% end%>
       </tr>
     <% end %>

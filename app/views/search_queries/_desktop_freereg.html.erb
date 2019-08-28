@@ -1,0 +1,84 @@
+<% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
+<div class="table-wrapper" id="search-result">
+  <table class="table--bordered table--data">
+    <caption class="gamma"> <%= pluralize(@result_count, ' Search Result', ' Search Results') %>
+      <% unless print_friendly %>
+        <small class="additional">Select a heading to sort results on that column.<br>
+          Each link in the <q>Detail</q> column opens a page with all the information we have for that record.</small>
+      <% end %>
+    </caption>
+    <thead>
+      <tr>
+        <th>
+          <% unless print_friendly %><%= link_to('Main participant(s)',
+            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME),
+            :title => 'Ascending sort on name') %>
+          <% else%> Main participant(s)<% end%>
+        </th>
+        <th>
+          <% unless print_friendly %><%= link_to('Record type',
+            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::TYPE),
+            :title => 'Ascending sort on Record type') %>
+          <% else%> Record type<% end%>
+        </th>
+        <th>
+          <% unless print_friendly %><%= link_to('Event date',
+            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DATE),
+            :title => 'Ascending sort on Event date') %>
+          <% else%> Event date<% end%>
+        </th>
+        <th>
+          <% unless print_friendly %><%= link_to('County',
+            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::COUNTY),
+            :title => 'Ascending sort on County') %>
+          <% else%> County<% end%>
+        </th>
+        <th>
+          <% unless print_friendly %><%= link_to("Place : Church : Register type",
+            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::LOCATION),
+            :title => 'Ascending sort on Place') %>
+          <% else%> Place : Church : Register type<% end%>
+        </th>
+        <% unless print_friendly %>
+          <th>Detail</th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <% n = 0 %>
+      <% search_results.each do |search_record| %>
+        <% n = n + 1 %>
+        <tr id="<%=search_record[:_id]%>">
+          <td>
+          <% search_record[:transcript_names].uniq.each_with_index do |name, i| %>
+            <% if  name['type'] == 'primary' %>
+              <% if i > 0 %>
+              <br />
+      <% end%>
+      <%= "#{name['first_name']} #{name['last_name']} " %>
+    <% end %>
+  <% end%>
+</td>
+<td>
+  <%= RecordType::display_name(search_record.record_type) %>
+</td>
+<td>
+  <%= transcript_date(search_record) %>
+</td>
+<td>
+  <%= county(search_record) %>
+</td>
+<td>
+  <%= format_location(search_record) %>
+</td>
+<% unless print_friendly %>
+  <td>
+    <%= link_to("Row #{n}", friendly_search_record_path(search_record.id, search_record.friendly_url),title: "As available for this record",rel:"nofollow")%>
+    <i><%= viewed(@search_query,search_record) %></i>
+  </td>
+<% end %>
+</tr>
+<% end %>
+</tbody>
+</table>
+</div>

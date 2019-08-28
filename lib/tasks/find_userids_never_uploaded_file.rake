@@ -9,8 +9,9 @@ namespace :freereg do
 
         model_name = UseridDetail
         output_directory = File.join(Rails.root, 'script')
+        process = "users_never_uploaded_files"
 
-        users = UsersNeverUploadedFile.new(model_name, output_directory)
+        users = UsersNeverUploadedFile.new(model_name, output_directory, process)
         a = users.lists
         puts a
 

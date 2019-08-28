@@ -14,7 +14,20 @@
 #
 MyopicVicar::Application.routes.draw do
 
+
   root :to => 'search_queries#new'
+
+  get 'open', :to => 'open#index'
+  get 'open/:county/places', :to => 'open#places_for_county', :as => :open_places_for_county
+  get 'open/:county/:place/surnames', :to => 'open#surnames_for_place', :as => :open_surnames_for_place
+  get 'open/:county/:place/:surname/:record_types', :to => 'open#records_for_place_surname', :as => :open_records_for_place_surname
+  get 'open/places_for_county_surname'
+  get 'open/index'
+  get 'open/county'
+  get 'open/surname'
+  get 'open/place'
+  get 'open/place_surname_type'
+
 
   # Mikes winfreereg request
 
@@ -37,15 +50,37 @@ MyopicVicar::Application.routes.draw do
 
   # end mikes request
 
-
-
-  get 'software_versions/:id/commitments(.:format)',  :to => 'software_versions#commitments', :as => :commitments_software_versions
+  get 'software_versions/select_app_and_server', to: 'software_versions#select_app_and_server', as: :select_app_and_server_software_versions
+  get 'software_versions/selected', to: 'software_versions#selected', as: :selected_software_versions
+  get 'software_versions/:id/commitments(.:format)', to: 'software_versions#commitments', :as => :commitments_software_versions
   resources :software_versions
 
 
   resources :denominations
 
 
+  resources :freecen1_fixed_dat_files
+
+
+  resources :freecen1_fixed_dat_entries
+
+
+  resources :freecen_dwellings
+
+
+  resources :freecen_individuals
+
+
+  #resources :site_statistics
+
+
+  resources :freecen1_vld_entries
+
+
+  resources :freecen1_vld_files
+
+  get 'messages/:id/show_waitlist_msg',:to => 'messages#show_waitlist_msg', :as => :show_waitlist_msg
+  delete 'messages/:id/remove_from_useriddetail_waitlist(.:format)',:to => 'messages#remove_from_useriddetail_waitlist', :as => :remove_from_useriddetail_waitlist
   delete 'messages/:id/remove_from_userid_detail(.:format)', :to => 'messages#remove_from_userid_detail', :as => :remove_from_userid_detail
   get 'messages/communications', to: 'messages#communications', as: :communications_messages
   get 'messages/list_inactive_comminications', to: 'messages#list_archived_communications', as: :list_archived_communications_messages
@@ -166,6 +201,21 @@ MyopicVicar::Application.routes.draw do
   get 'csvfiles/:id/error(.:format)', :to => 'csvfiles#replace', :as => :replace_csvfile
   get 'csvfiles/:id/download(.:format)', :to => 'csvfiles#download', :as => :download_csvfile
 
+  resources :freecen_parms
+  get 'freecen_parms/:year/:chapman_code/download(.:format)', :to => 'freecen_parms#download', :as => :download_freecen_parms
+
+  resources :freecen_pieces, except: :new
+  get 'freecen_pieces/:chapman_code/:year/new', :to => 'freecen_pieces#new', :as => :new_freecen_piece
+  get 'freecen_pieces/:year/select_new_county', :to => 'freecen_pieces#select_new_county', :as => :select_new_county_freecen_piece
+
+  get 'freecen_coverage/grand_totals', to: 'freecen_coverage#grand_totals', as: :grand_totals_freecen_coverage
+
+  get 'freecen_coverage', :to => 'freecen_coverage#index', :as => :freecen_coverage
+  get 'freecen_coverage/:chapman_code', :to => 'freecen_coverage#show', :as => :show_freecen_coverage
+  get 'freecen_coverage/:chapman_code/:act', :to => 'freecen_coverage#show', :as => :show_edit_freecen_coverage
+  get 'freecen_coverage_graph/:type/:chapman_code/:year', :to => 'freecen_coverage#graph', :as => :graph_freecen_coverage
+  get 'freecen_errors', :to => 'freecen_errors#index', :as => :freecen_errors
+
   resources :countries
 
   get 'counties/display', :to =>'counties#display', :as => :display_counties
@@ -204,7 +254,10 @@ MyopicVicar::Application.routes.draw do
   get 'userid_details/incomplete_registrations', :to =>'userid_details#incomplete_registrations', :as => :incomplete_registrations_userid_details
   get 'userid_details/transcriber_statistics', :to =>'userid_details#transcriber_statistics', :as => :transcriber_statistics_userid_details
   post 'userid_details/new', :to => 'userid_details#create'
-  resources :userid_details
+  get 'download_txt', to: "userid_details#download_txt"
+  resources :userid_details do
+    collection { post :import }
+  end
 
 
   get  'manage_counties/selection',  :to => 'manage_counties#work_all_places', constraints: ManageCountiesAllPlacesConstraint ,:as => :selection_all_manage_counties
@@ -234,6 +287,8 @@ MyopicVicar::Application.routes.draw do
   get 'manage_counties/files', :to =>'manage_counties#files', :as => :files_manage_counties
   get 'manage_counties/places', :to =>'manage_counties#places', :as => :places_manage_counties
   get 'manage_counties/place_range', :to =>'manage_counties#place_range', :as => :place_range_manage_counties
+  get 'manage_counties/selection', :to =>'manage_counties#select_year', :as => :select_year_manage_counties
+  get 'manage_counties/piece_statistics', :to =>'manage_counties#piece_statistics', :as => :piece_statistics_manage_counties
   resources :manage_counties
 
 
@@ -257,7 +312,6 @@ MyopicVicar::Application.routes.draw do
   post 'freereg_contents/send_request_email(.:format)', :to => 'freereg_contents#send_request_email', :as => :send_request_email_freereg_content
   resources :freereg_contents
 
-
   get 'churches/:id/rename', :to => 'churches#rename', :as => :rename_church
   get 'churches/:id/merge(.:format)', :to => 'churches#merge', :as => :merge_church
   get 'churches/:id/relocate(.:format)', :to => 'churches#relocate', :as => :relocate_church
@@ -279,6 +333,7 @@ MyopicVicar::Application.routes.draw do
   get 'places/:id/relocate(.:format)', :to => 'places#relocate', :as => :relocate_place
   get 'places/for_search_form(.:format)', :to => 'places#for_search_form', :as => :places_for_search_form
   get 'places/for_freereg_content_form(.:format)', :to => 'places#for_freereg_content_form', :as => :places_for_freereg_content_form
+  get 'places/for_freecen_piece_form(.:format)', :to => 'places#for_freecen_piece_form', :as => :places_for_freecen_piece_form
   resources :places
 
   resources :church_names
@@ -323,7 +378,7 @@ MyopicVicar::Application.routes.draw do
   get 'search_records/:id/show_print_version(.:format)', :to => 'search_records#show_print_version', :as => :show_print_version_search_record
   get 'search_records/:id/show_citation', :to => 'search_records#show_citation', :as => :show_citation_record
   get 'search_records/:id/:friendly(.:format)', :to => 'search_records#show', :as => :friendly_search_record
-   resources :search_records
+  resources :search_records
 
   get 'search_queries/:id/show_query', :to => 'search_queries#show_query', :as => :show_query_search_query
   get 'search_queries/:id/show_print_version', :to => 'search_queries#show_print_version', :as => :show_print_version_search_query

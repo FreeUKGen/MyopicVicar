@@ -325,6 +325,15 @@ module MessagesHelper
     end
   end
 
+  def index_remove_link(message)
+    if session[:message_base] == 'userid_messages'
+      link_to 'Remove', remove_from_userid_detail_path(message.id, source: 'original'),
+        :class => 'btn weight--light  btn--small',
+        data: { confirm: 'Are you sure you want to remove this message' },
+        method: :delete
+    end
+  end
+
   def index_sort_links?
     session[:message_base] == 'general' ? index_sort_links = true : index_sort_links = false
     index_sort_links
@@ -698,7 +707,12 @@ module MessagesHelper
     source
   end
 
-
+  def message_synicate_coordinator_first_reminder
+    get_user_info_from_userid
+    if @user.present? && @user.person_role == 'transcriber'
+      content_tag :span, "Have you already tried contacting your Syndicate Coordinator?"
+    end
+  end
 
   private
 

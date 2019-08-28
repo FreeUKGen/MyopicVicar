@@ -1,0 +1,14 @@
+<%= simple_form_for(@freecen1_fixed_dat_file) do |f| %>
+  <%= f.error_notification %>
+
+  <div class="form-inputs">
+    <%= f.input :filename %>
+    <%= f.input :dirname %>
+    <%= f.input :year %>
+    <%= f.input :chapman_code %>
+  </div>
+
+  <div class="form-actions">
+    <%= f.button :submit %>
+  </div>
+<% end %>

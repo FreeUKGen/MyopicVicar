@@ -1,8 +1,9 @@
 <section>
-  <p>
+<h4>Citation(Legacy Family Tree):</h4>
+  <p class = "citation_container">
     <strong>Footnote/Endnote Citation:</strong>
     <br>
-    Free UK Genealogy, "Parish Register" database, <%= application_name%> (<%=search_record_link(@search_record[:_id])%> : viewed <%=@viewed_date%>), <%=record_type(@entry).downcase%>
+    Free UK Genealogy, "Parish Register" database, <%= appname%> (<%=search_record_link(@search_record[:_id])%> : viewed <%=Date.today.strftime("%e %b %Y")%>), <%=record_type(@entry).downcase%>
     <%if record_type(@entry).downcase == "baptism"%>
       <%=entitle(@entry['person_forename'])%> <%=entitle(@entry['father_surname'])%>, <%=@entry['place']%>, <%=@entry['county']%>, UK <%=entitle(@entry['baptism_date'])%>; citing  <%unless @entry['register_type'].include? "Unspecified"%><%=@entry['register_type']%><% else %>Register of unspecified type<% end %>, <%=@entry['church_name']%>
     <%elsif record_type(@entry).downcase == "burial"%>
@@ -10,8 +11,8 @@
     <%elsif record_type(@entry).downcase == "marriage"%>
       <%=entitle(@entry['groom_forename'])%> <%=entitle(@entry['groom_surname'])%> to <%=entitle(@entry['bride_forename'])%> <%=entitle(@entry['bride_surname'])%>, <%=@entry['place']%>, <%=@entry['county']%>, UK <%=entitle(@entry['marriage_date'])%>; citing  <%unless @entry['register_type'].include? "Unspecified"%><%=@entry['register_type']%><% else %>Register of unspecified type<% end %>, <%=@entry['church_name']%>
     <%end%><br>
-    <br><br>
-
+    <br>
+    <br>
     <strong>Subsequent Citation:</strong>
     <br>
     Free UK Genealogy, "Parish Register" database entry for <%=record_type(@entry).titleize%>
@@ -22,10 +23,10 @@
     <% elsif record_type(@entry).downcase == "marriage"%>
       <%=entitle(@entry['groom_forename'])%> <%=entitle(@entry['groom_surname'])%> to <%=entitle(@entry['bride_forename'])%> <%=entitle(@entry['bride_surname'])%>
     <% end%>
-    <br><br>
-
+    <br>
+    <br>
     <strong>Bibliography:</strong>
     <br>
-    Free UK Genealogy, "Parish Register" Database. <%= application_name%> <%=search_record_link(@search_record[:_id])%>: <%=@viewed_date%>
+    Free UK Genealogy, "Parish Register" Database. <%= appname%> <%=search_record_link(@search_record[:_id])%>: <%=Date.today.strftime("%e %b %Y")%>
   </p>
 </section>

@@ -1,0 +1,148 @@
+@if $use-nav == true or $use-options == true or $use-pagination == true or $use-breadcrumb == true{
+
+/*------------------------------------*\
+    $NAV
+\*------------------------------------*/
+
+/**
+ * Tweak the default from inuit
+ */
+.nav--stacked {
+
+  > li {
+    margin-bottom: $b-quarter;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+  }
+
+}
+
+
+/**
+ * A stacked blocky sub nav with open and active states
+ */
+.sub-nav {
+
+  @extend %nav;
+  @extend %nav--stacked;
+  @include font-size(18px);
+
+  margin-bottom: - $b-half !important;
+
+  a {
+    padding: $b-half 0;
+    color: $navy;
+    &:active,
+    &:hover {
+      color: $magenta;
+    }
+  }
+
+  > li {
+    border-bottom: 1px solid $lesslight;
+    margin-bottom: 0;
+
+    &:last-child {
+      border-bottom: 0;
+    }
+
+    &.open > a {
+      color: $teal;
+      &:active,
+      &:hover {
+        color: $magenta;
+      }
+    }
+
+    &.active {
+      // suck over the border of the prev li
+      margin-top: -1px;
+      border: 0;
+
+      > a {
+        background: $light;
+        margin-left: - $b-half;
+        margin-right: - $b-half;
+        padding-left: $b-half;
+        padding-right: $b-half;
+      }
+
+    }
+
+  }
+
+  // all child levels
+  ul {
+    @extend %nav;
+    @extend %nav--stacked;
+    @include font-size(16px);
+    margin-bottom: 0;
+
+    // direct children
+    > li {
+
+      a {
+        padding: $b-quarter 0;
+      }
+
+      &.open > a {
+        color: $teal;
+        &:active,
+        &:hover {
+          color: $magenta;
+        }
+      }
+
+      &.active > a {
+        background: $light;
+        margin-left: - $b-half;
+        margin-right: - $b-half;
+        padding-left: $b-half;
+        padding-right: $b-half;
+      }
+
+    }
+
+    // grandchildren and below
+    ul {
+      a {
+        padding-left: $b * 1.5;
+      }
+      .active a {
+        padding-left: $b * 2;
+      }
+    }
+  }
+
+}
+
+
+/**
+ * A 50% list designed to fit inside an `.islet--bordered`
+ */
+.boxed-nav {
+
+  @extend %multi-list;
+  margin-top: - $b-half;
+
+  > li {
+    width: 50%;
+    margin-top: $b-half;
+  }
+
+  a {
+    @include font-size(16px, false);
+    color: $navy;
+    &:active,
+    &:hover {
+      color: $navy-lighter;
+    }
+  }
+
+}
+
+
+}//endif

@@ -15,6 +15,8 @@
 
 # describes the role a name place in a record
 module NameRole
+  INDIVIDUAL='i'
+  
   FATHER='f'
   MOTHER='m'
   HUSBAND='h'

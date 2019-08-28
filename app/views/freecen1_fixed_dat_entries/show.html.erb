@@ -1,0 +1,23 @@
+<% breadcrumb :freecen1_fixed_dat_entry,  @freecen1_fixed_dat_entry.freecen1_fixed_dat_file %>
+<%= render 'flash_notice' %>
+<h2 style="text-align: center">Listing of FeeCen1 Fixed DAT Entry Piece number: <%= @freecen1_fixed_dat_entry.piece_number %></h2>
+<p>
+  <b>District name:</b>
+  <%= @freecen1_fixed_dat_entry.district_name %>
+</p>
+<p>
+  <b>Subplaces:</b>
+  <%= @freecen1_fixed_dat_entry.subplaces %>
+</p>
+<p>
+  <b>Parish number:</b>
+  <%= @freecen1_fixed_dat_entry.parish_number %>
+</p>
+<p>
+  <b>Suffix:</b>
+  <%= @freecen1_fixed_dat_entry.suffix %>
+</p>
+<p>
+  <b>Freecen1 fixed dat file:</b>
+  <%=link_to 'freecen1_fixed_dat_file', freecen1_fixed_dat_file_path(@freecen1_fixed_dat_entry.freecen1_fixed_dat_file)   %>
+</p>

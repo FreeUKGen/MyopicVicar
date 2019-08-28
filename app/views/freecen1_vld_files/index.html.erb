@@ -1,0 +1,29 @@
+<%= render 'index_header' %>
+<table>
+  <tr>
+    <th>File name</th>
+    <th>Dir name</th>
+    <th>Census type</th>
+    <th>Raw year</th>
+    <th>Full year</th>
+    <th>Piece</th>
+    <th>Series</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+  <% @freecen1_vld_files.each do |freecen1_vld_file| %>
+    <tr>
+      <td><%= freecen1_vld_file.file_name %></td>
+      <td><%= freecen1_vld_file.dir_name %></td>
+      <td><%= freecen1_vld_file.census_type %></td>
+      <td><%= freecen1_vld_file.raw_year %></td>
+      <td><%= freecen1_vld_file.full_year %></td>
+      <td><%= freecen1_vld_file.piece %></td>
+      <td><%= freecen1_vld_file.series %></td>
+      <td><%= link_to 'Show', freecen1_vld_file %></td>
+    </td>
+  </tr>
+<% end %>
+</table>
+<br />

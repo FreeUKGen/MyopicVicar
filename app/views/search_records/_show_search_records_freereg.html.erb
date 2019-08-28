@@ -1,0 +1,162 @@
+<section>
+  <% if @search_query.present? %>
+    <%= render 'nav_header'%>
+  <% end%>
+</section>
+<section id="search-detail" >
+  <% if @entry %>
+    <% if @entry && @annotations && @annotations.length %>
+      <h2>Offline Transcriptions</h2>
+    <% end %>
+    <%= render 'entry_detail' %>
+  <% end %>
+  <%= render 'please_donate' %>
+  <% if @annotations && @annotations.length > 0 %>
+    <table class="table--bordered table--data">
+      <thead>
+        <tr>
+          <td colspan="2">
+            <h2>Online Transcriptions</h2>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <% @annotations.each do |annotation| %>
+          <% annotation.attributes.keys.each do |field| %>
+            <% if annotation[field] %>
+              <tr>
+                <td><%= field.gsub('_',' ').capitalize %></td>
+                <td><%= annotation[field] %></td>
+              </tr>
+            <% end %>
+          <% end %>
+          <% transcription = annotation.transcription %>
+          <% if transcription %>
+            <% transcription.attributes.keys.each do |field| %>
+              <% if transcription[field] %>
+                <tr>
+                  <td><%= field.gsub('_',' ').capitalize %></td>
+                  <td><%= transcription[field] %></td>
+                </tr>
+              <% end %>
+            <% end %>
+            <tr>
+              <td>Image</td>
+              <td>
+                <% if transcription.asset.thumbnail_location %>
+                  <%= link_to(image_tag(transcription.asset.thumbnail_location), transcription.asset.location) %>
+                <% else %>
+                  <%= link_to("Image", transcription.asset.location) %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        <% end %>
+      </tbody>
+    </table>
+  <% end%>
+  <% unless params[:debug].blank? %>
+    <table class="table--bordered table--data">
+      <thead>
+        <tr>
+          <td colspan="2">
+            <h1>Record</h1>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Primary names</td>
+          <td>
+            <% @search_record.primary_names.each do |name| %>
+              first_name: <%= name.first_name %><br/>
+              last_name: <%= name.last_name %><br/>
+              origin: <%= name.origin %><br/>
+            <% end %>
+          </td>
+        </tr>
+        <tr>
+          <td>Other family names</td>
+          <td>
+            <% @search_record.inclusive_names.each do |name| %>
+              first_name: <%= name.first_name %><br/>
+              last_name: <%= name.last_name %><br/>
+              origin: <%= name.origin %><br/>
+            <% end %>
+          </td>
+        </tr>
+        <% @search_record.ordered_display_fields.each do |field| %>
+          <% if @search_record[field] %>
+            <tr>
+              <td><%= field.gsub('_',' ').capitalize %></td>
+              <td><%= @search_record[field] %></td>
+            </tr>
+          <% end %>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</section>
+<style>
+  .javascript{
+    display: none;
+  }
+  .citation-dropdown-list{
+    list-style-type: none;
+  }
+  .citation_container{
+    border: 1px solid black;
+    padding: 5px;
+  }
+</style>
+<script>
+  document.getElementById("citation-toggle").addEventListener("click", citationToggle);
+  /* When the user clicks on the button,
+  toggle between hiding and showing the dropdown content */
+  function citationToggle() {
+    var x = document.getElementById("citation-dropdown");
+  
+    if (x.style.display === "none") {
+        x.style.display = "block";
+    } else {
+        x.style.display = "none";
+    }
+  }
+  window.addEventListener("load", function(){
+    const no_javascript_elements = document.getElementsByClassName("no-javascript");
+    const javascript_elements = document.getElementsByClassName("javascript");
+
+    for(let i = 0; i < no_javascript_elements.length; i++){
+      no_javascript_elements[i].remove();
+    }
+    for(let i = 0; i < javascript_elements.length; i++){
+      javascript_elements[i].style.display = "block";
+    }
+    if(!document.getElementById("citation_section")){
+      document.getElementById("citation-dropdown").style.display = "none";
+    }
+  })
+  function copy(elm) {
+      var button = event.currentTarget || event.srcElement;
+      var target = document.getElementsByClassName(elm)[0];
+      var range, select;
+      if (document.createRange) {
+        range = document.createRange();
+        range.selectNode(target)
+        select = window.getSelection();
+        select.removeAllRanges();
+        select.addRange(range);
+        document.execCommand('copy');
+        select.removeAllRanges();
+      } else {
+        range = document.body.createTextRange();
+        range.moveToElementText(target);
+        range.select();
+        document.execCommand('copy');
+      }
+      button.innerHTML = "Copied"
+      setTimeout(function(){
+        button.innerHTML = "Copy"
+      }, 1000);
+    }
+</script>

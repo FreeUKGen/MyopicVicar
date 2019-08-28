@@ -6,6 +6,7 @@ class Contact
   field :name, type: String
   field :email_address, type: String
   field :county, type: String
+  alias_attribute :chapman_code, :county
   field :session_id, type: String
   field :problem_page_url, type: String
   field :previous_page_url, type: String
@@ -20,16 +21,30 @@ class Contact
   field :line_id, type: String
   field :contact_name, type: String, default: nil  # this field is used as a span trap
   field :query, type: String
+  field :selected_county, type: String # user-selected county to contact in FC2
+  field :fc_individual_id, type: String
   field :identifier, type: String
   field :screenshot_location, type: String
+  field :census_year, type: String
+  field :data_county, type: String
+  field :place, type: String
+  field :civil_parish, type: String
+  field :piece, type: String
+  field :enumeration_district, type: String
+  field :folio, type: String
+  field :page, type: String
+  field :house_number, type: String
+  field :house_or_street_name, type: String
+
   field :contact_action_sent_to_userid, type: String, default: nil
-  field :copies_of_contact_action_sent_to_userids, type: Array, default: Array.new
+  field :copies_of_contact_action_sent_to_userids, type: Array, default: []
   field :archived, type: Boolean, default: false
   field :keep, type: Boolean, default: false
+
   attr_accessor :action
 
-  validates_presence_of :name, :email_address
-  validates :email_address,:format => {:with => /\A[^@][\w\+.-]+@[\w.-]+[.][a-z]{2,4}\z/i}
+  validates_presence_of :name, :email_address, :body
+  validates :email_address, format: { :with => /\A[^@][\w\+.-]+@[\w.-]+[.][a-z]{2,4}\z/i }
 
   mount_uploader :screenshot, ScreenshotUploader
 
@@ -37,11 +52,20 @@ class Contact
 
   class << self
     def id(id)
-      where(:id => id)
+      where(id: id)
     end
 
     def archived(value)
-      where(:archived => value)
+      where(archived: value)
+    end
+
+    def chapman_code(value)
+      where(chapman_code: value)
+    end
+
+
+    def github_enabled
+      Rails.application.config.github_issues_password.present?
     end
 
     def keep(status)
@@ -49,11 +73,11 @@ class Contact
     end
 
     def message_replies(id)
-      where(:source_contact_id => id)
+      where(source_contact_id: id)
     end
 
-    def github_enabled
-      !Rails.application.config.github_issues_password.blank?
+    def type(status)
+      where(contact_type: status)
     end
   end
 
@@ -69,22 +93,22 @@ class Contact
   end
 
   def action_recipient_userid
+    coordinator = nil
     if self.contact_type == 'Data Problem'
-      coordinator = self.get_coordinator if self.record_id.present?
-      coordinator.present? ? action_person = coordinator : action_person = self.get_manager
+      coordinator = self.obtain_coordinator if self.record_id.present?
     else
-      role = self.get_role_from_contact
-      person = UseridDetail.role(role).active(true).first
-      person = UseridDetail.secondary(role).active(true).first if person.blank?
-      person.present? ? action_person = person.userid : action_person = self.get_manager
+      coordinator = UseridDetail.role(self.role_from_contact).active(true).first
+      coordinator = UseridDetail.secondary(self.role_from_contact).active(true).first if coordinator.blank?
+      coordinator = coordinator.userid unless coordinator.blank?
     end
-    self.update_attribute(:contact_action_sent_to_userid,action_person)
-    return action_person
+    coordinator = self.obtain_manager if coordinator.blank?
+    self.update_attribute(:contact_action_sent_to_userid, coordinator)
+    coordinator
   end
 
   def action_recipient_copies_userids(action_person)
-    action_recipient_copies_userids = Array.new
-    role = self.get_role_from_contact
+    action_recipient_copies_userids = []
+    role = self.role_from_contact
     UseridDetail.role(role).active(true).all.each do |person|
       action_recipient_copies_userids.push(person.userid) unless person.userid == action_person
     end
@@ -92,19 +116,19 @@ class Contact
       action_recipient_copies_userids.push(person.userid) unless person.userid == action_person
     end
     action_recipient_copies_userids = action_recipient_copies_userids.uniq
-    self.update_attribute(:copies_of_contact_action_sent_to_userids,action_recipient_copies_userids)
-    return action_recipient_copies_userids
+    self.update_attribute(:copies_of_contact_action_sent_to_userids, action_recipient_copies_userids)
+    action_recipient_copies_userids
   end
 
   def add_contact_coordinator_to_copies_of_contact_action_sent_to_userids
     copies_of_contact_action_sent_to_userids = self.copies_of_contact_action_sent_to_userids
-    action_person = UseridDetail.role("contacts_coordinator").active(true).first
-    action_person = UseridDetail.secondary("contacts_coordinator").active(true).first if action_person.blank?
-    if action_person.present? && !(action_person.userid == self.contact_action_sent_to_userid)
+    action_person = UseridDetail.role('contacts_coordinator').active(true).first
+    action_person = UseridDetail.secondary('contacts_coordinator').active(true).first if action_person.blank?
+    if action_person.present? && (action_person.userid != self.contact_action_sent_to_userid)
       if copies_of_contact_action_sent_to_userids.blank?
         copies_of_contact_action_sent_to_userids.push(action_person.userid)
       else
-        copies_of_contact_action_sent_to_userids.push(action_person.userid) unless  copies_of_contact_action_sent_to_userids.include?(action_person.userid)
+        copies_of_contact_action_sent_to_userids.push(action_person.userid) unless copies_of_contact_action_sent_to_userids.include?(action_person.userid)
       end
     end
     self.update_attribute(:copies_of_contact_action_sent_to_userids, copies_of_contact_action_sent_to_userids)
@@ -117,11 +141,12 @@ class Contact
 
   def add_link_to_attachment
     return if self.screenshot_location.blank?
+
     website = Rails.application.config.website
-    website  = website.sub("www","www13") if website == "http://www.freereg.org.uk"
+    website = website.sub('www','www13') if website == 'https://www.freereg.org.uk'
     go_to = "#{website}/#{self.screenshot_location}"
     body = self.body + "\n" + go_to
-    self.update_attribute(:body,body)
+    self.update_attribute(:body, body)
   end
 
   def add_screenshot_location
@@ -136,7 +161,7 @@ class Contact
 
   def add_sender_to_copies_of_contact_action_sent_to_userids(sender_userid)
     copies_of_contact_action_sent_to_userids = self.copies_of_contact_action_sent_to_userids
-    copies_of_contact_action_sent_to_userids.push(sender_userid) unless  copies_of_contact_action_sent_to_userids.include?(sender_userid)
+    copies_of_contact_action_sent_to_userids.push(sender_userid) unless copies_of_contact_action_sent_to_userids.include?(sender_userid)
     self.update_attribute(:copies_of_contact_action_sent_to_userids, copies_of_contact_action_sent_to_userids)
     copies_of_contact_action_sent_to_userids
   end
@@ -189,14 +214,13 @@ class Contact
     self.keep.present? ? answer = true : answer = false
     answer
   end
-
   def communicate_contact_reply(message, sender_userid)
     copies = self.copies_of_contact_action_sent_to_userids
-    recipients = Array.new
+    recipients = []
     recipients.push(self.email_address)
-    UserMailer.coordinator_contact_reply(self,copies,message,sender_userid).deliver_now
+    UserMailer.coordinator_contact_reply(self, copies, message, sender_userid).deliver_now
     copies = self.add_sender_to_copies_of_contact_action_sent_to_userids(sender_userid)
-    reply_sent_messages(message,sender_userid,recipients,copies)
+    reply_sent_messages(message, sender_userid, recipients, copies)
   end
 
   def communicate_initial_contact
@@ -206,73 +230,14 @@ class Contact
 
   def contact_action_communication
     send_to_userid = self.action_recipient_userid
-    #we are sending an action request
-    copies_of_contact_action_sent_to_userids =   self.add_contact_coordinator_to_copies_of_contact_action_sent_to_userids
-    UserMailer.contact_action_request(self,send_to_userid,copies_of_contact_action_sent_to_userids).deliver_now
+    copies_of_contact_action_sent_to_userids = self.action_recipient_copies_userids(send_to_userid)
+    copies_of_contact_action_sent_to_userids = self.add_contact_coordinator_to_copies_of_contact_action_sent_to_userids
+    UserMailer.contact_action_request(self, send_to_userid, copies_of_contact_action_sent_to_userids).deliver_now
     #copies = self.add_sender_to_copies_of_contact_action_sent_to_userids(send_to_userid)
   end
 
-  def get_coordinator
-    search_record = SearchRecord.record_id(self.record_id).first
-    if search_record.present?
-      entry_id = search_record.freereg1_csv_entry
-      entry = Freereg1CsvEntry.id(entry_id).first
-      if entry.present?
-        file_id = entry.freereg1_csv_file
-        file = Freereg1CsvFile.id(file_id).first
-        if file.present?
-          chapman_code = file.county #this is chapman code
-          county = County.where(:chapman_code => chapman_code).first
-          if county.present?
-            county_coordinator = county.county_coordinator
-            coordinator = UseridDetail.where(:userid => county_coordinator, :active => true).first
-          else
-            coordinator = nil
-          end
-        else
-          coordinator = nil
-        end
-      else
-        coordinator = nil
-      end
-    else
-      coordinator = nil
-    end
-    coordinator.present? ? userid = coordinator.userid : userid = 'REGManager'
-    userid
-  end
-
-  def get_manager
-    action_person = UseridDetail.role("contacts_coordinator").active(true).first
-    action_person = UseridDetail.secondary("contacts_coordinator").active(true).first if action_person.blank?
-    action_person = UseridDetail.userid("REGManager").active(true).first if action_person.blank?
-    action_person = UseridDetail.role("system_administrator").active(true).first if action_person.blank?
-    return action_person.userid
-  end
-
-  def get_role_from_contact
-    case self.contact_type
-    when 'Website Problem'
-      role = "website_coordinator"
-    when 'Data Question'
-      role = "contacts_coordinator"
-    when 'Volunteering Question'
-      role = "volunteer_coordinator"
-    when 'General Comment'
-      role = "general_communication_coordinator"
-    when "Thank you"
-      role = "publicity_coordinator"
-    when 'Genealogical Question'
-      role = "genealogy_coordinator"
-    when 'Enhancement Suggestion'
-      role =  "project_manager"
-    else
-      role = "general_communication_coordinator"
-    end
-    role
-  end
-
   def github_issue
+    appname = MyopicVicar::Application.config.freexxx_display_name.upcase
     if Contact.github_enabled
       self.add_link_to_attachment
       Octokit.configure do |c|
@@ -281,11 +246,11 @@ class Contact
       end
       self.screenshot = nil
       response = Octokit.create_issue(Rails.application.config.github_issues_repo, issue_title, issue_body, :labels => [])
-      logger.info("FREEREG:GITHUB response: #{response}")
+      logger.info("#{appname}:GITHUB response: #{response}")
       logger.info(response.inspect)
       self.update_attributes(:github_issue_url => response[:html_url],:github_comment_url => response[:comments_url], :github_number => response[:number])
     else
-      logger.error("FREEREG:Tried to create an issue, but Github integration is not enabled!")
+      logger.error("#{appname}:Tried to create an issue, but Github integration is not enabled!")
     end
   end
 
@@ -358,6 +323,63 @@ class Contact
 
   def sent?
     sent_messages.deliveries.count != 0
+  end
+
+  def obtain_coordinator
+    coordinator = nil
+    search_record = SearchRecord.record_id(self.record_id).first
+    if search_record.present?
+      county = County.where(chapman_code: search_record.chapman_code).first
+      coordinator = county.county_coordinator if county.present?
+    end
+    coordinator
+  end
+
+  # used by freecen if user selects to contact coordinator for a specific county
+  def obtain_coordinator_for_selected_county
+    return nil if MyopicVicar::Application.config.template_set != 'freecen'
+
+    return nil if self.selected_county.blank?
+
+    c = County.where(chapman_code: self.selected_county).first
+
+    return nil if c.nil
+
+    cc_userid = c.county_coordinator
+    coord = UseridDetail.where(userid: cc_userid).first unless cc_userid.nil?
+    coord
+  end
+
+  def obtain_manager
+    manager = nil
+    action_person = UseridDetail.role('contacts_coordinator').active(true).first
+    action_person = UseridDetail.secondary('contacts_coordinator').active(true).first if action_person.blank?
+    action_person = UseridDetail.userid('REGManager').active(true).first if action_person.blank?
+    action_person = UseridDetail.role('system_administrator').active(true).first if action_person.blank?
+    manager = action_person.userid if action_person.present?
+    manager
+  end
+
+  def role_from_contact
+    case self.contact_type
+    when 'Website Problem'
+      role = 'website_coordinator'
+    when 'Data Question'
+      role = 'contacts_coordinator'
+    when 'Volunteering Question'
+      role = 'volunteer_coordinator'
+    when 'General Comment'
+      role = 'general_communication_coordinator'
+    when 'Thank you'
+      role = 'publicity_coordinator'
+    when 'Genealogical Question'
+      role = 'genealogy_coordinator'
+    when 'Enhancement Suggestion'
+      role = 'project_manager'
+    else
+      role = 'general_communication_coordinator'
+    end
+    role
   end
 
   def update_keep
@@ -440,12 +462,10 @@ class Contact
     end
   end
 
-
   def url_check
-    self.problem_page_url = "unknown" if self.problem_page_url.nil?
-    self.previous_page_url = "unknown" if self.previous_page_url.nil?
+    self.problem_page_url = 'unknown' if self.problem_page_url.nil?
+    self.previous_page_url = 'unknown' if self.previous_page_url.nil?
   end
-
 
   private
 

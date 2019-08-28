@@ -41,6 +41,9 @@ Devise.setup do |config|
   # Configure the e-mail address which will be shown in Devise::Mailer,
   # note that it will be overwritten if you use your own mailer class with default "from" parameter.
   config.mailer_sender = "freereg-registration@freereg.org.uk"
+  if MyopicVicar::Application.config.template_set == 'freecen'
+    config.mailer_sender = "freecen-registration@freecen.org.uk"
+  end
 
   # Configure the class responsible to send e-mails.
   #config.mailer = "UserMailer"
@@ -211,7 +214,7 @@ Devise.setup do |config|
   # Don't put a too small interval or your users won't have the time to
   # change their passwords.
 
-  config.reset_password_within = 24.hours
+  config.reset_password_within = 7.days
 
   # ==> Configuration for :encryptable
   # Allow you to use another encryption algorithm besides bcrypt (default). You can use

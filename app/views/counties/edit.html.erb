@@ -1,8 +1,4 @@
 <% breadcrumb :edit_county,  @county%>
-<h2 class=" text--center">Editing <%= ChapmanCode.name_from_code(@county.chapman_code)%></h2>
-<% if flash[:notice] %>
-<div id="notice" style="color:blue"><br>
-  <%= flash[:notice] %> <br>
-</div>
-<% end %>
+<h2 class=" text--center">Editing County: <%= @county.county_description%></h2>
+<%= render 'flash_notice' %>
 <%= render 'form' %>

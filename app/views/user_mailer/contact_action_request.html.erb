@@ -3,20 +3,20 @@
 <p>You are requested to take action on the correspondence preferably using the on-line contact system</p>
 <% unless @cc_names.blank? %>
   <p>Copies of the action request were sent to the following. Please include them in any correspondence<br>
-  <%  @cc_names.each do |copy| %>
-    <%= copy%>
-  <% end%>
-</p>
+    <%  @cc_names.each do |copy| %>
+      <%= copy%>
+    <% end%>
+  </p>
 <% end%>
 <p>The following is the information submitted.</p>
 <p>  <b><%= @contact.contact_type %>:</b></p>
 <p>  <%= @contact.body %></p>
- 
 <% if @contact.contact_type == 'Data Problem' &&  @contact.entry_id.present?%>
-<p><a href="<%=Rails.application.config.website%>/freereg1_csv_entries/<%=@contact.entry_id%>"> <%=@contact.line_id %> </a></p>
+  <p><a href="<%=Rails.application.config.website%>/freereg1_csv_entries/<%=@contact.entry_id%>"> <%=@contact.line_id %> </a></p>
 <% end%>
 <p>
-<% if @contact.screenshot_url.present?%>
- <p>An image/attachment is provided</p>
-<% end%>
-<p> The FreeREG Team</p> %>;</p>
+  <% if @contact.screenshot_url.present?%>
+    <p>An image/attachment is provided</p>
+  <% end%></p>
+<p>The <%= @appname %> Team</p>
+</p>

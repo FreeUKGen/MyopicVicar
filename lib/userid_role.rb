@@ -1,42 +1,85 @@
 module UseridRole
-  VALUES = ['researcher', 'trainee', 'pending', 'transcriber', 'syndicate_coordinator', 'county_coordinator', 'country_coordinator',
-            'volunteer_coordinator', 'data_manager', 'technical', 'system_administrator', 'contacts_coordinator', 'project_manager', 'executive_director',
-            'publicity_coordinator', 'genealogy_coordinator', 'documentation_coordinator', 'engagement_coordinator', 'computer', 'website_coordinator', 'general_communication_coordinator']
-  OPTIONS = {
-    'researcher' => ['Communicate', 'Profile', 'Roadmap'],
-    'computer' => ['Profile', 'Roadmap'],
-    'trainee' => ['Assignments', 'Batches', 'Communicate', 'Profile', 'Batches', 'Roadmap'],
-    'pending' => ['Profile'],
-    'transcriber' => ['Assignments', 'Batches', 'Communicate', 'Profile', 'Roadmap'],
-    'syndicate_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Manage Syndicate', 'Profile', 'Roadmap'],
-    'contacts_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Display County Coordinators',
-                               'Display Syndicate Coordinators', 'Display Userids', 'Feedback', 'Manage Counties', 'Profile', 'System Documentation', 'Roadmap'],
-    'county_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts',  'Display Userids', 'Manage County', 'Manage Syndicate', 'Profile', 'Roadmap'],
-    'country_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Display Userids', 'Manage Country', 'Manage County', 'Manage Syndicate', 'Profile', 'Roadmap'],
-    'volunteer_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Manage Syndicates', 'Manage Userids', 'Profile', 'Roadmap'],
-    'data_manager' => ['Access Attic', 'Assignments', 'Batches', 'Communicate', 'Contacts', 'Denominations', 'Display Userids', 'Display Syndicate Coordinators', 'Display County Coordinators', 'Manage Counties', 'Manage Syndicates', 'Physical Files', 'Profile', 'Roadmap' ],
-    'technical' => ['Access Attic', 'Assignments', 'Batches', 'Communicate', 'Manage Assignments', 'Contacts', 'Feedback', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
-                    'System Documentation'],
-    'system_administrator' => ['Access Attic', 'Assignments', 'Batches', 'Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Denominations', 'GAP Reasons', 'Feedback',
-                               'Manage Counties', 'Manage Countries', 'Manage Image Server', 'Manage Syndicates', 'Manage Userids', 'Message System',  'Physical Files', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
-                               'Software Version Information', 'Syndicate Coordinators', 'System Documentation'],
-    'project_manager' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Manage Userids', 'Feedback', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
-                          'System Documentation'],
-    'executive_director' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators',
-                             'Feedback', 'Profile', 'Manage Userids', 'Message System', 'RefineryCMS', 'Roadmap',
-                             'Site Statistics', 'Search Performance', 'Syndicate Coordinators', 'System Documentation'],
-    'publicity_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Profile', 'Roadmap', 'System Documentation'],
-    'genealogy_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Profile', 'Roadmap', 'System Documentation'],
-    'documentation_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Display Userids', 'Feedback', 'Manage Syndicates',
-                                    'Manage Counties', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation'],
-    'engagement_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation'],
-    'website_coordinator' => ['Batches', 'Contacts', 'Communicate', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation'],
-    'general_communication_coordinator' => ['Batches', 'Contacts', 'Communicate', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation']
-  }
+  VALUES = ['checker', 'computer', 'contacts_coordinator', 'county_coordinator', 'country_coordinator', 'data_manager', 'documentation_coordinator',
+            'engagement_coordinator', 'executive_director', 'genealogy_coordinator', 'general_communication_coordinator', 'pending', 'project_manager',
+            'publicity_coordinator', 'researcher', 'syndicate_coordinator', 'system_administrator', 'technical', 'trainee', 'transcriber',
+            'validator', 'volunteer_coordinator', 'website_coordinator']
+  case MyopicVicar::Application.config.template_set
+  when 'freereg'
+    OPTIONS = {
+      'researcher' => ['Communicate', 'Profile', 'Roadmap'],
+      'computer' => ['Profile', 'Roadmap'],
+      'trainee' => ['Assignments', 'Batches', 'Communicate', 'Profile', 'Batches', 'Roadmap'],
+      'pending' => ['Profile'],
+      'transcriber' => ['Assignments', 'Batches', 'Communicate', 'Profile', 'Roadmap'],
+      'syndicate_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Manage Syndicate', 'Profile', 'Roadmap'],
+      'contacts_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Display County Coordinators',
+                                 'Display Syndicate Coordinators', 'Display Userids', 'Feedback', 'Manage Counties', 'Profile', 'System Documentation', 'Roadmap'],
+      'county_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts',  'Display Userids', 'Manage County', 'Manage Syndicate', 'Profile', 'Roadmap'],
+      'country_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Display Userids', 'Manage County', 'Manage Syndicate', 'Profile', 'Roadmap'],
+      'volunteer_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Manage Syndicates', 'Manage Userids', 'Profile', 'Roadmap'],
+      'data_manager' => ['Access Attic', 'Assignments', 'Batches', 'Communicate', 'Contacts', 'Denominations', 'Display Userids', 'Display Syndicate Coordinators', 'Display County Coordinators', 'Manage Counties', 'Manage Syndicates', 'Physical Files', 'Profile', 'Roadmap' ],
+      'technical' => ['Access Attic', 'Assignments', 'Batches', 'Communicate', 'Manage Assignments', 'Contacts', 'Feedback', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
+                      'System Documentation'],
+      'system_administrator' => ['Access Attic', 'Assignments', 'Batches', 'Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Denominations', 'GAP Reasons', 'Feedback',
+                                 'Manage Counties', 'Manage Image Server', 'Manage Syndicates', 'Manage Userids', 'Message System',  'Physical Files', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
+                                 'Software Version Information', 'Syndicate Coordinators', 'System Documentation'],
+      'project_manager' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Manage Userids', 'Feedback', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
+                            'System Documentation'],
+      'executive_director' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators',
+                               'Feedback', 'Profile', 'Manage Userids', 'Message System', 'RefineryCMS', 'Roadmap',
+                               'Site Statistics', 'Search Performance', 'Syndicate Coordinators', 'System Documentation'],
+      'publicity_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Profile', 'Roadmap', 'System Documentation'],
+      'genealogy_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Profile', 'Roadmap', 'System Documentation'],
+      'documentation_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Display Userids', 'Feedback', 'Manage Syndicates',
+                                      'Manage Counties', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation'],
+      'engagement_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Manage Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation'],
+      'website_coordinator' => ['Batches', 'Contacts', 'Communicate', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation'],
+      'general_communication_coordinator' => ['Batches', 'Contacts', 'Communicate', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation']
+    }
+  when 'freecen'
+    OPTIONS = {
+      'checker' => ['Communicate', 'Profile', 'Roadmap'],
+      'computer' => ['Profile', 'Roadmap'],
+      'researcher' => ['Communicate', 'Profile', 'Roadmap'],
+      'pending' => ['Profile'],
+      'contacts_coordinator' => ['Communicate', 'Contacts', 'Display County Coordinators',
+                                 'Display Syndicate Coordinators', 'Display Userids', 'Feedback', 'Manage Counties', 'Profile', 'System Documentation', 'Roadmap'],
+      'county_coordinator' => ['Communicate', 'Contacts', 'Display Userids', 'Manage County', 'Manage Syndicate', 'Profile', 'Roadmap'],
+      'data_manager' => ['Communicate', 'Contacts', 'Display Userids', 'Display Syndicate Coordinators', 'Display County Coordinators', 'Manage Counties', 'Manage Syndicates', 'Profile', 'Roadmap' ],
+      'documentation_coordinator' => ['Communicate', 'Display Userids', 'Feedback', 'Manage Syndicates',
+                                      'Manage Counties', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation'],
+      'engagement_coordinator' => ['Communicate', 'Contacts', 'Manage Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation'],
+
+      'executive_director' => ['Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators',
+                               'Feedback', 'Profile', 'Manage Userids', 'Message System', 'RefineryCMS', 'Roadmap',
+                               'Site Statistics', 'Search Performance', 'Syndicate Coordinators', 'System Documentation'],
+      'genealogy_coordinator' => ['Communicate', 'Contacts', 'Profile', 'Roadmap', 'System Documentation'],
+      'general_communication_coordinator' => ['Communicate', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation'],
+
+      'project_manager' => ['Communicate', 'Contacts', 'Manage Userids', 'Feedback', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
+                            'System Documentation'],
+      'publicity_coordinator' => ['Communicate', 'Contacts', 'Profile', 'Roadmap', 'System Documentation'],
+
+      'syndicate_coordinator' => ['Communicate', 'Manage Syndicate', 'Profile', 'Roadmap'],
+      'system_administrator' => ['Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Database Statistics','Feedback', 'FreeCen Errors',
+                                 'Manage Counties', 'Manage FreeCen Coverage', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
+                                 'Software Version Information', 'Syndicate Coordinators', 'System Documentation'],
+      'trainee' => ['Communicate', 'Profile', 'Roadmap'],
+      'technical' => ['Communicate', 'Contacts', 'Feedback', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
+                      'System Documentation'],
+
+      'transcriber' => ['Communicate', 'Profile', 'Roadmap'],
+      'validator' => ['Communicate', 'Profile', 'Roadmap'],
+      'volunteer_coordinator' => ['Communicate', 'Contacts', 'Manage Syndicates', 'Manage Userids', 'Profile', 'Roadmap'],
+      'website_coordinator' => ['Communicate', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation']
+
+    }
+  end
   #'/messages/communications?source=original',
   OPTIONS_TRANSLATION = {
     'Communicate' => '/messages/communications?source=original',
     'Denominations' => '/denominations',
+    'Database Statistics' => '/freecen_coverage/grand_totals',
     'GAP Reasons' => '/gap_reasons',
     'Saved Searches' => '/my_saved_searches',
     'Profile' => '/userid_details/my_own',
@@ -44,8 +87,6 @@ module UseridRole
     'Manage Syndicate' => '/manage_syndicates',
     'Manage Syndicates' => '/manage_syndicates',
     'Manage County' => '/manage_counties',
-    'Manage Country' => '/manage_countries',
-    'Manage Countries' => '/countries',
     'Manage Counties' => '/manage_counties',
     'Manage Image Server' => '/sources/access_image_server',
     'Manage Userids' => '/userid_details/options',
@@ -61,7 +102,7 @@ module UseridRole
     'Physical Files' => '/physical_files/select_action',
     'Site Statistics' => '/site_statistics',
     'Search Performance' => '/search_queries/report',
-    'Software Version Information' => '/software_versions',
+    'Software Version Information' => '/software_versions/select_app_and_server',
     'Feedback' => '/feedbacks',
     'Contacts' => '/contacts',
     'System Documentation' => '/cms/system-documents',
@@ -69,14 +110,17 @@ module UseridRole
     'Logout' => '/refinery/logout',
     'Message System' => '/messages',
     'Manage Images' => '/sources',
-    'Assignments' => '/assignments/my_own'
+    'Assignments' => '/assignments/my_own',
+    'Manage Pieces' => '/freecen_pieces',
+    'FreeCen Errors' => '/freecen_errors',
+    'Manage FreeCen Coverage' => '/freecen_coverage/edit'
   }
   USERID_MANAGER_OPTIONS = ['Select specific userid', 'Select specific email', 'Select specific surname/forename',
                             'Browse userids', 'Select Role', 'Select Secondary Role', 'Incomplete Registrations', 'Create userid', 'Transcriber Statistics']
   USERID_ACCESS_OPTIONS = ['Select specific userid', 'Select specific email', 'Select specific surname/forename']
 
   USERID_OPTIONS_TRANSLATION = {
-    #todo clean up first 2
+    # todo clean up first 2
     'Browse userids' => '/userid_details/selection?option=Browse userids',
     'Incomplete Registrations' => '/userid_details/incomplete_registrations',
     'Create userid' => '/userid_details/selection?option=Create userid',
@@ -99,10 +143,16 @@ module UseridRole
     'List files waiting to be processed' => '/freereg1_csv_files/selection?option=List files waiting to be processed',
     'Review Specific Batch' => '/freereg1_csv_files/selection?option=Review Specific Batch'
   }
-  COUNTY_MANAGEMENT_OPTIONS = ['All Places', 'Active Places', 'Specific Place', 'Places with Unapproved Names', 'Review Batches with Errors',
-                               'Review Batches with Zero Dates', 'Review Batches by Filename', 'Review Batches by Userid then Filename',
-                               'Review Batches by Most Recent Date of Change', 'Review Batches by Oldest Date of Change', 'Review Specific Batch',
-                               'Upload New Batch', 'Manage Images']
+  case MyopicVicar::Application.config.template_set
+  when 'freereg'
+    COUNTY_MANAGEMENT_OPTIONS = ['All Places', 'Active Places', 'Specific Place', 'Places with Unapproved Names', 'Review Batches with Errors',
+                                 'Review Batches with Zero Dates', 'Review Batches by Filename', 'Review Batches by Userid then Filename',
+                                 'Review Batches by Most Recent Date of Change', 'Review Batches by Oldest Date of Change', 'Review Specific Batch',
+                                 'Upload New Batch', 'Manage Images']
+  when 'freecen'
+    COUNTY_MANAGEMENT_OPTIONS = ['Manage Pieces', 'Manage VLD Files', 'Manage Places']
+  when 'freebmd'
+  end
   COUNTY_OPTIONS_TRANSLATION = {
     'All Places' => '/manage_counties/selection?option=Work with All Places',
     'Active Places' => '/manage_counties/selection?option=Work with Active Places',
@@ -116,7 +166,11 @@ module UseridRole
     'Review Batches by Oldest Date of Change' => '/manage_counties/selection?option=Review Batches by Oldest Date of Change',
     'Review Specific Batch' => '/manage_counties/selection?option=Review Specific Batch',
     'Upload New Batch' => '/csvfiles/new',
-    'Manage Images' => '/manage_counties/selection?option=Manage Images'
+    'Manage Images' => '/manage_counties/selection?option=Manage Images',
+    'Manage Pieces' => '/freecen_pieces',
+    'Manage VLD Files' => '/freecen1_vld_files',
+    'Manage Places' => '/places'
+
   }
   SYNDICATE_MANAGEMENT_OPTIONS =  ['Review Active Members', 'Review All Members', 'Select Specific Member by Userid',
                                    'Select Specific Member by Email Address', 'Select Specific Member by Surname/Forename', 'Incomplete Registrations', 'Create Userid',
@@ -157,6 +211,7 @@ module UseridRole
 
   SKILLS = ['Learning', 'Straight Forward Forms', 'Complicated Forms', 'Post 1700 modern freehand', 'Post 1530 freehand - Secretary', 'Post 1530 freehand - Latin', 'Post 1530 freehand - Latin & Chancery']
 
+
   REASONS_FOR_INACTIVATING = {
     'Not currently transcribing (may return)' => 'temporary',
     'No longer transcribing (permanently)' => 'permanent',
@@ -167,6 +222,5 @@ module UseridRole
     'Coordinator controlled' => 'coord-controlled',
     'Other (please explain below)' => 'other'
   }
-
   REASONS_FOR_MAKING_EMAIL_INVALID = ['Mails to this email bounced', 'No Response', 'Cannot be reached']
 end

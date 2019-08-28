@@ -173,7 +173,8 @@ class Message
     answer
   end
 
-  def communicate(recipient_roles, active, reasons, sender, open_data_status, syndicate = nil)
+  def communicate(recipient_roles, active, reasons, sender, open_data_status, syndicate = nil, host)
+    appname = MyopicVicar::Application.config.freexxx_display_name
     ccs = Array.new
     recipient_roles.each do |recipient_role|
       ccs << get_actual_recipients(recipient_role, syndicate, active, open_data_status, reasons )
@@ -182,7 +183,7 @@ class Message
     add_message_to_userid_messages(UseridDetail.look_up_id(sender)) unless sender.blank? || ccs.include?(sender)
     ccs << sender
     ccs = ccs.uniq
-    UserMailer.send_message(self, ccs, sender).deliver_now
+    UserMailer.send_message(self, ccs, sender, host).deliver_now
   end
 
   def communicate_message_reply(original_message)
@@ -345,7 +346,7 @@ class Message
     else
       case role
       when 'county_coordinator'
-        County.all.order_by(chapman_code: 1).each do |single|
+        County.application_counties.each do |single|
           chapman_code = single.chapman_code
           coordinator = single.county_coordinator
           coord = UseridDetail.find_by(userid: coordinator)
@@ -592,7 +593,7 @@ class Message
       end
 
     when 'county_coordinator'
-      County.each do |county|
+      County.application_counties.each do |county|
         users << UseridDetail.look_up_id(county.county_coordinator)
       end
       UseridDetail.role(recipients).each do |user|

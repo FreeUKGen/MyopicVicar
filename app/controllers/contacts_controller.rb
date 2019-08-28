@@ -63,7 +63,10 @@ class ContactsController < ApplicationController
       @contact.session_data['warden_user_authentication_devise_user_key_session'] = @contact.session_data['warden.user.authentication_devise_user.session']
       @contact.session_data.delete('warden.user.authentication_devise_user.session') if @contact.session_data['warden.user.authentication_devise_user.session'].present?
       @contact.session_id = session.to_hash['session_id']
-      @contact.previous_page_url= request.env['HTTP_REFERER']
+      @contact.previous_page_url = request.env['HTTP_REFERER']
+      if @contact.selected_county == 'nil'
+        @contact.selected_county = nil # string 'nil' to nil
+      end
       @contact.save
       if @contact.errors.any?
         flash[:notice] = 'There was a problem with your submission please review'
@@ -71,9 +74,7 @@ class ContactsController < ApplicationController
           redirect_to(@contact.previous_page_url) && return
         else
           @options = FreeregOptionsConstants::ISSUES
-          @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
-          redirect_back(fallback_location: new_contact_path, notice: 'There was a problem with your submission please review') && return
-
+          render :new
         end
       else
         flash[:notice] = 'Thank you for contacting us!'
@@ -81,7 +82,7 @@ class ContactsController < ApplicationController
         if @contact.query
           redirect_to(search_query_path(@contact.query)) && return
         else
-          redirect_to(@contact.previous_page_url) && return
+          redirect_to(new_search_query_path) && return
         end
       end
     end
@@ -145,7 +146,7 @@ class ContactsController < ApplicationController
     session[:message_base] = 'contact'
     params[:source] = 'original'
     get_user_info_from_userid
-    order = 'contact_time  DESC'
+    order = 'contact_time  ASC'
     @contacts = get_contacts.result(session[:archived_contacts],order)
     @archived = session[:archived_contacts]
     render :index
@@ -197,12 +198,31 @@ class ContactsController < ApplicationController
     @contact.contact_type = 'Data Problem'
     @contact.query = params[:query]
     @contact.record_id = params[:id]
-    search_record = SearchRecord.find(params[:id]) if params[:id].present?
-    @contact.entry_id = search_record.freereg1_csv_entry._id if search_record.present?
-    @freereg1_csv_entry = Freereg1CsvEntry.find(@contact.entry_id) if @contact.entry_id.present?
-    @contact.county = @freereg1_csv_entry.freereg1_csv_file.county if @freereg1_csv_entry.present?
-    @contact.line_id = @freereg1_csv_entry.line_id if @freereg1_csv_entry.present?
-    redirect_back(fallback_location: contacts_path, notice: 'The entry does not exist') && return if @freereg1_csv_entry.blank?
+    case appname_downcase
+    when 'freereg'
+      @contact.entry_id = SearchRecord.find(params[:id]).freereg1_csv_entry._id
+      @freereg1_csv_entry = Freereg1CsvEntry.find( @contact.entry_id)
+      @contact.county = @freereg1_csv_entry.freereg1_csv_file.county
+      @contact.line_id = @freereg1_csv_entry.line_id
+    when 'freecen'
+      @rec = SearchRecord.where("id" => @contact.record_id).first
+      unless @rec.nil?
+        #assign_field_values
+        fc_ind = FreecenIndividual.where("id" => @ind_id).first if @ind_id.present?
+        if fc_ind.present?
+          @contact.entry_id = fc_ind.freecen1_vld_entry_id.to_s unless fc_ind.freecen1_vld_entry_id.nil?
+          if @contact.entry_id.present?
+            ent = Freecen1VldEntry.where("id" => @contact.entry_id).first
+            if ent.present?
+              if ent.freecen1_vld_file.present?
+                vldfname = ent.freecen1_vld_file.file_name
+              end
+              @contact.line_id = '' + (vldfname unless vldfname.nil?) + ':dwelling#' + (ent.dwelling_number.to_s unless  ent.dwelling_number.nil?) + ',individual#'+ (ent.sequence_in_household.to_s unless ent.sequence_in_household.nil?)
+            end #ent.present
+          end # @contact.entry_id.present?
+        end # fc_ind.present
+      end # unless rec.nil?
+    end # case
   end
 
   def restore
@@ -281,6 +301,8 @@ class ContactsController < ApplicationController
   end
 
   def set_session_parameters_for_record(file)
+    return true if MyopicVicar::Application.config.template_set == 'freecen'
+
     return false if file.blank?
 
     register = file.register
@@ -337,7 +359,28 @@ class ContactsController < ApplicationController
     params.require(:contact).permit!
   end
 
+  def assign_field_values
+    @piece = @rec.freecen_individual#.freecen_dwelling#.freecen_piece
+    @dwelling = @piece.freecen_dwelling if @piece
+    disp_county = '' + ChapmanCode::name_from_code(@dwelling.freecen_piece.chapman_code) + ' (' + @dwelling.freecen_piece.chapman_code + ')'
+    @contact.census_year = @dwelling.freecen_piece.year.to_s
+    @contact.data_county = disp_county
+    @contact.place = @dwelling.place.place_name
+    @contact.civil_parish = @dwelling.civil_parish
+    @contact.piece = @dwelling.freecen_piece.piece_number
+    @contact.enumeration_district = @dwelling.enumeration_district unless @dwelling.enumeration_district.nil?
+    @contact.folio = @dwelling.folio_number unless @dwelling.folio_number.nil?
+    @contact.page = @dwelling.page_number
+    @contact.house_number = @dwelling.house_number
+    @contact.house_or_street_name = @dwelling.house_or_street_name
+    @ind_id = @rec.freecen_individual_id if @rec.freecen_individual_id.present?
+    @contact.fc_individual_id = @ind_id.to_s unless @ind_id.nil?
+    @contact.county = @rec.chapman_code
+  end
+
+
   def delete_reply_messages(contact_id)
     Message.where(source_contact_id: contact_id).destroy
   end
+
 end

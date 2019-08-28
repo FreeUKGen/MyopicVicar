@@ -1,0 +1,2 @@
+class FreecenDwellingsController < ApplicationController
+end

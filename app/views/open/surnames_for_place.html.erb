@@ -1,0 +1,27 @@
+<h1><%= @record_types_display.titleize %> for <%= @place.place_name %> (<%= @county %>) Genealogy</h1>
+<p>FreeUKGenealogy provides free access to genealogy records for <%= @place.place_name %> in <%= @county %>.  The most common surnames appearing in our records are below, but you can use our search feature to find even more records.</p>
+
+
+<table>
+  <thead>
+    <tr>
+      <th>Surname</th>
+      <th>Records</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @open_surnames.each do |open_surname| %>
+      <% surname = open_surname.surname %>
+      <tr>
+        <td>
+          <%= surname %>
+        </td>
+        <td>
+              <%= link_to(raw(open_surname.description), open_records_for_place_surname_path(@county, @place.place_name, surname, @record_types_display.gsub(/\W/,' ').gsub(/\s+/,'-').downcase)
+) %>
+        </td>
+      </tr>
+    <% end %>
+    
+  </tbody>
+</table>

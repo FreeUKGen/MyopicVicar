@@ -13,78 +13,144 @@
 # limitations under the License.
 #
 module ChapmanCode
-
+  require 'freereg_options_constants'
+  require 'freecen_constants'
   ###################
   #Note the actual list of codes is the merge_counties or select_hash
   #######################
-
-  def self.name_from_code(code)
-    codes = merge_countries
-    codes.invert[code]
-  end
-
-  def self.remove_codes(hash)
-    hash = ChapmanCode::CODES.each_pair do |key, value|
-      FreeregOptionsConstants::CHAPMAN_CODE_ELIMINATIONS.each do |country|
-        value.delete_if {|key, value| key == country }
+  class << self
+    def add_parenthetical_codes(hash)
+      hsh = {}
+      hash.each_pair do |key, value|
+        hsh[key] = Hash[value.map { |k,v| ["#{k} (#{v})", v] }]
       end
+      hsh
     end
-    hash
-  end
 
-  def self.add_parenthetical_codes(hash)
-    hsh = {}
-    hash.each_pair do |key, value|
-      hsh[key] = Hash[value.map { |k,v| ["#{k} (#{v})", v] }]
+    def code_from_name(name)
+      codes = merge_countries
+      codes[name]
     end
-    hsh
-  end
 
-  def self.values
-    codes = merge_countries
-    code = codes.values
-  end
-
-  def self.has_key?(code)
-    codes = merge_countries
-    codes.has_key?(code)
-  end
-
-  def self.values_at(value)
-    codes = merge_countries
-    array = codes.values_at(value)
-    array[0]
-  end
-
-  def self.select_hash
-    codes = merge_countries
-    codes
-  end
-
-  def self.keys
-    codes = merge_countries
-    mine = Array.new
-    codes.each_key do |k|
-      mine << k
+    def codes_for_cen_birth_county()
+      hsh = {}
+      codes = ChapmanCode.remove_codes(ChapmanCode::CODES)
+      codes.each_pair do |ctry, ctryval|
+        ctryhash = {}
+        ctryval.each_pair do |kk, vv|
+          ctryhash[kk] = vv unless ['ERY', 'NRY', 'WRY'].include?(vv)
+        end
+        hsh[ctry] = ctryhash
+      end
+      hsh
     end
-    mine
-  end
 
-  def self.select_hash_with_parenthetical_codes
-    hash = ChapmanCode::CODES.each_pair do |key, value|
-      ChapmanCode::CODES[key] = Hash[value.map { |k,v| ["#{k} (#{v})", v] }]
+    def codes_for_cen_county()
+      hsh = {}
+      codes = ChapmanCode.remove_codes(ChapmanCode::CODES)
+      codes.each_pair do |ctry, ctryval|
+        ctryhash = {}
+        ctryval.each_pair do |kk, vv|
+          ctryhash[kk] = vv unless ['ALD', 'GSY', 'JSY', 'SRK'].include?(vv.to_s)
+        end
+        hsh[ctry] = ctryhash
+      end
+      hsh
     end
-    hash
-  end
 
-  def self.has_key(value)
-    codes = merge_countries
-    codes.key(value)
-  end
+    def chapman_codes_for_reg_county
+      codes = ChapmanCode.remove_codes(ChapmanCode::CODES)
+      all_codes = []
+      codes.each_pair do |_key, value|
+        value.each_value do |actual_value|
+          all_codes << actual_value
+        end
+      end
+      all_codes
+    end
 
-  def self.value?(value)
-    codes = merge_countries
-    codes.value?(value)
+    def has_key(value)
+      codes = merge_countries
+      codes.key(value)
+    end
+
+    def has_key?(code)
+      codes = merge_countries
+      codes.has_key?(code)
+    end
+
+    def keys
+      codes = merge_countries
+      mine = []
+      codes.each_key do |k|
+        mine << k
+      end
+      mine
+    end
+
+    def merge_countries
+      all_countries = {}
+      ChapmanCode::CODES.each_pair do |key, value|
+        all_countries.merge!(CODES[key])
+      end
+      all_countries
+    end
+
+    # Note the actual list of codes is the merge_counties or select_hash
+    def merge_counties
+      all_counties = County.distinct(:chapman_code)
+      all_counties
+    end
+
+    def name_from_code(code)
+      codes = merge_countries
+      codes.invert[code]
+    end
+
+    def remove_codes(original_hash)
+      reduced_hash = original_hash.each_pair do |_key, value|
+        case App.name_downcase
+        when 'freereg'
+          elimination_codes = FreeregOptionsConstants::CHAPMAN_CODE_ELIMINATIONS
+        when 'freecen'
+          elimination_codes = Freecen::CHAPMAN_CODE_ELIMINATIONS
+        when 'freebmd'
+          elimination_codes = {}
+        end
+        elimination_codes.each do |country|
+          value.delete_if { |new_key, _new_value| new_key == country }
+        end
+      end
+      reduced_hash
+    end
+
+    def select_hash
+      codes = merge_countries
+      codes
+    end
+
+    def select_hash_with_parenthetical_codes
+      hash = ChapmanCode::CODES.each_pair do |key, value|
+        ChapmanCode::CODES[key] = Hash[value.map { |k,v| ["#{k} (#{v})", v] }]
+      end
+      hash
+    end
+
+    def value?(value)
+      codes = merge_countries
+      codes.value?(value)
+    end
+
+    def values
+      codes = merge_countries
+      code = codes.values
+    end
+
+    def values_at(value)
+      codes = merge_countries
+      array = codes.values_at(value)
+      array[0]
+    end
   end
 
   CODES = {
@@ -133,7 +199,42 @@ module ChapmanCode
      'Yorkshire' => 'YKS',
      'Yorkshire, East Riding' => 'ERY',
      'Yorkshire, North Riding' => 'NRY',
-     'Yorkshire, West Riding' => 'WRY'},
+     'Yorkshire, West Riding' => 'WRY'
+     },
+    "Ireland" => {
+      'County Antrim' => 'ANT',
+      'County Armagh' => 'ARM',
+      'County Carlow' => 'CAR',
+      'County Cavan' => 'CAV',
+      'County Clare' => 'CLA',
+      'County Cork' => 'COR',
+      'County Donegal' => 'DON',
+      'County Down' => 'DOW',
+      'County Dublin' => 'DUB',
+      'County Fermanagh' => 'FER',
+      'County Galway' => 'GAL',
+      'County Kerry' => 'KER',
+      'County Kildare' => 'KID',
+      'County Kilkenny' => 'KIK',
+      'County Leitrim' => 'LET',
+      'County Laois' => 'LEX',
+      'County Limerick' => 'LIM',
+      'County Londonderry ' => 'LDY',
+      'County Longford' => 'LOG',
+      'County Louth' => 'LOU',
+      'County Mayo' => 'MAY',
+      'County Meath' => 'MEA',
+      'County Monaghan' => 'MOG',
+      'County Offaly' => 'OFF',
+      'County Roscommon' => 'ROS',
+      'County Sligo' => 'SLI',
+      'County Tipperary' => 'TIP',
+      'County Tyrone' => 'TYR',
+      'County Waterford' => 'WAT',
+      'County Westmeath' => 'WEM',
+      'County Wexford' => 'WEX',
+      'County Wicklow' => 'WIC',
+    },
     "Islands" =>{
       'Channel Islands' => 'CHI',
       'Alderney' => 'ALD',
@@ -141,7 +242,6 @@ module ChapmanCode
       'Jersey' => 'JSY',
       'Isle of Man' => 'IOM',
       'Sark' => 'SRK'
-
     },
     "Scotland" =>
     {'Scotland' => 'SCT',
@@ -211,32 +311,14 @@ module ChapmanCode
      'Montgomeryshire' => 'MGY',
      'Pembrokeshire' => 'PEM',
      'Powys' => 'POW',
-     'Radnorshire' => 'RAD'},
-     "Northern Ireland" =>
-     {"Northern Ireland" => 'NIR',
-     'Antrim' => 'ANT',
-     'Armagh' => 'ARM',
-     'Down' => 'DOW',
-     'Fermanagh' => 'FER',
-     'Londonderry' => 'LDY',
-     'Tyrone' => 'TYR'},
-     'Unknown' => 
-     {'Unknown' => 'UNK'}
+     'Radnorshire' => 'RAD' },
+    'Special' => {
+      'Unknown' => 'UNK',
+      'England and Wales Shipping' => 'EWS',
+      'Out of County' => 'OUC',
+      'Overseas British' => 'OVB',
+      'Overseas Foreign' => 'OVF',
+      'Scottish Shipping' => 'SCS',
+    'Other Locations' => 'OTH' }
   }
-
-
-  def self.merge_countries
-    all_countries = {}
-    ChapmanCode::CODES.each_pair do |key,value|
-      all_countries.merge!(CODES[key])
-    end
-    all_countries
-  end
-
-  #Note the actual list of codes is the merge_counties or select_hash
-  def self.merge_counties
-    all_counties = Array.new
-    all_counties = County.distinct(:chapman_code)
-    all_counties
-  end
 end

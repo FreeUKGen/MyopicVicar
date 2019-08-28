@@ -1,14 +1,10 @@
-
 <% content_for :sidebar do %>
-   <h5 class="beta  text--teal">Actions</h5>
+  <h5 class="beta  text--teal">Actions</h5>
   <%@roles.each do |role| %>
     <% if action_manage_image_server(role) %>
       <%= button_to role, UseridRole::OPTIONS_TRANSLATION[role], :class => "btn weight--light btn--small" ,method: :get, :form=>{:target=>'_blank'} %>
     <% else%>
-       <%= button_to role, UseridRole::OPTIONS_TRANSLATION[role], :class => "btn weight--light btn--small" ,method: :get %>
+      <%= button_to role, UseridRole::OPTIONS_TRANSLATION[role], :class => "btn weight--light btn--small" ,method: :get %>
     <% end%>
-   <%end%>
+  <% end%>
 <% end %>
-
-
-

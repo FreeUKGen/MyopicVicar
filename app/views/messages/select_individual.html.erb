@@ -1,17 +1,13 @@
 <% breadcrumb :select_individual, @message%>
 <br>
 <h4 style="text-align: center">Select the specific individuals with whom you wish to communicate</h4>
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %> <% flash[:notice] = nil%><br>
-  </div>
-<% end %>
+<%= render 'flash_notice' %>
 <div class= "grid">
   <section class="island  island--light ">
     <%= semantic_form_for(@message, :html => {:multipart => true}) do |f| %>
       <li  class="grid__item  two-fifths  palm-one-whole text--center push--bottom "></li>
       <li  class="grid__item  one-third  palm-one-whole text--center push--bottom " id="message_recipients">
-        <label class="ttip" for="recipients" tabindex="0"> Recipients  <%= image_tag 'info.png', alt: 'Info', height: '16' %><span  class=" ttip__text">You may select multiple individuals</span></a></label>
+        <label class="ttip" for="recipients" tabindex="0"> Recipients  <%= image_tag 'png/info.png', alt: 'Info', height: '16' %><span  class=" ttip__text">You may select multiple individuals</span></a></label>
       <select id="recipients" name="recipients[]"  multiple="multiple" class="select" required="required" size="4">
         <%= recipients_list %>
       </select>

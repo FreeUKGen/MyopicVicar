@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 #
 class ManageCountiesController < ApplicationController
+  require 'freecen_constants'
+
   def batches_with_errors
     get_user_info_from_userid
     @county = session[:county]
@@ -100,7 +102,7 @@ class ManageCountiesController < ApplicationController
     if  @user.person_role == 'data_manager' || @user.person_role == 'system_administrator' ||
         @user.person_role == 'documentation_coordinator' || @user.person_role == "contacts_coordinator"
       @countries = []
-      counties = County.all.order_by(chapman_code: 1)
+      counties = County.application_counties
       counties.each do |county|
         @countries << county.chapman_code
       end
@@ -113,6 +115,7 @@ class ManageCountiesController < ApplicationController
       end
     end
     @counties = @counties.compact if @counties.present?
+    @counties.sort! if @counties.present?
   end
 
   def index
@@ -386,5 +389,22 @@ class ManageCountiesController < ApplicationController
     @location = 'location.href= "/manage_counties/places?params=" + this.value'
     @prompt = 'Select Place'
     render '_form_for_selection'
+  end
+
+  def select_year
+    @manage_county = ManageCounty.new
+    @county = session[:county]
+    @chapman_code = session[:chapman_code]
+    @rec_types = Freecen::CENSUS_YEARS_ARRAY
+    @options = @rec_types
+    @location = 'location.href= "/manage_counties/piece_statistics?params=" + this.value'
+    @prompt = 'Select Year'
+    render '_form_for_selection'
+  end
+
+  def piece_statistics
+    @chapman_code = session[:chapman_code]
+    @rec_type = params[:params]
+    @freecen_piece = FreecenPiece.where(chapman_code: @chapman_code, year: @rec_type)
   end
 end

@@ -1,13 +1,7 @@
-<div class="island  island--light">
- <% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
-   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
-    </div>
-   <% end %>  
+<% breadcrumb :person_role_selection%>
+<%= render "flash_notice" %>
 <%= semantic_form_for @userid  do |f| %>
-<%= f.input :action,  
+  <%= f.input :action,
     { :as => :select, :include_blank => true,  :label => @prompt, :required => true, :collection => @options,:width => 10 ,:input_html => {'onchange' => @location} }%>
-
 <% end %>
 </div>
- 

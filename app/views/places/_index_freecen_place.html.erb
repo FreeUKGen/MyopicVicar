@@ -1,0 +1,22 @@
+<h3 style="text-align: center"><b><%= active(session[:active_place])%> Places for <%= @county  %></b>.</h3>
+<%= render 'flash_notice' %>
+<div style="overflow: hidden;">
+  <table class="my-width-min flush--bottom" >
+    <thead >
+      <tr>
+        <th class="t15">Place </th>
+      </tr>
+    </thead>
+  </table>
+  <div class="scrollable ">
+    <table class=" table--bordered my-width table--data just--left">
+      <tbody >
+        <% @places.each do |place| %>
+          <tr>
+            <td class="t15"><%= link_to(place.place_name, place_path(place) )%> </td>
+          </tr>
+        <% end%>
+      </tbody>
+    </table>
+  </div>
+</div>

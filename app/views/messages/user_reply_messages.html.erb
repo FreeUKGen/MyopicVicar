@@ -2,10 +2,5 @@
 <h3 class="text--center">
   Your had sent <%= pluralize(@messages.count, 'Replies')%> for Main Message sent by <%= @main_message.userid%> on <%= @main_message.message_time.to_formatted_s(:long)%>
 </h3>
-<% if flash[:notice] %>
-<div id="notice" style="color:blue"><br>
-  <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
-</div>
-<% end %>
-<br>
+<%= render 'flash_notice' %>
 <%= render 'index_table' %>

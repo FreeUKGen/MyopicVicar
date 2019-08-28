@@ -1,4 +1,5 @@
 class UpdatePlaceUcf
+  require 'app'
   def self.process(limit)
     file_for_warning_messages = "log/place_ucf_update.log"
     FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
@@ -6,9 +7,10 @@ class UpdatePlaceUcf
     p "Started a place ucf update for #{limit} files "
     message_file.puts  "Started a place ucf update for #{limit} files "
     n = 0
-    software_version = SoftwareVersion.control.first
+    server = SoftwareVersion.extract_server(Socket.gethostname)
+    software_version = SoftwareVersion.server(server).app(App.name_downcase).control.first
     version = software_version.version
-    search_version  = software_version.last_search_record_version
+    search_version = software_version.last_search_record_version
     records = 0
     updated_records = 0
     time_start = Time.new

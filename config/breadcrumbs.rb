@@ -38,6 +38,21 @@ crumb :create_userid_detail do |userid_detail|
   end
 end
 
+crumb :transcriber_statistics do
+  link "Transcriber Statistics"
+  parent :regmanager_userid_options
+end
+
+crumb :secondary_role_selection do
+  link 'Secondary Role Selection'
+  parent :regmanager_userid_options
+end
+
+crumb :person_role_selection do
+  link 'Role Selection'
+  parent :regmanager_userid_options
+end
+
 #................................................File....................................................
 
 crumb :my_own_files do
@@ -305,6 +320,8 @@ end
 
 crumb :userid_details_listing do |syndicate, user|
   case
+  when syndicate == 'all'
+    link 'All Members', userid_details_path
   when user.nil?
     link 'Syndicate Listing', userid_details_path
   when !user.nil?
@@ -315,6 +332,8 @@ crumb :userid_details_listing do |syndicate, user|
     end
   end
   case
+  when session[:syndicate].present? && session[:syndicate] == 'all'
+    parent:regmanager_userid_options
   when !session[:syndicate].nil? && (session[:role] == 'county_coordinator' ||
                                      session[:role] == 'system_administrator' || session[:role] == 'technical' ||
                                      session[:role] == 'volunteer_coordinator' || session[:role] == 'syndicate_coordinator' )
@@ -325,6 +344,7 @@ crumb :userid_details_listing do |syndicate, user|
     parent :syndicate_options, syndicate
   end
 end
+
 crumb :syndicate_waiting do |syndicate|
   link 'Files waiting to be processed'
   parent :syndicate_options,syndicate
@@ -395,6 +415,11 @@ crumb :incomplete_registrations do |syndicate|
   else
     parent :syndicate_options,syndicate
   end
+end
+
+crumb :import do
+  link 'Import Users', import_userid_details_path
+  parent :regmanager_userid_options
 end
 
 
@@ -925,6 +950,10 @@ crumb :show_countries do |country|
   link 'Show Country', country_path(country)
   parent :countries
 end
+crumb :new_county do |county|
+  link 'Activate County', new_county_path
+  parent :counties
+end
 crumb :edit_country do |country|
   link 'Edit Country', edit_country_path(country)
   parent :show_countries, country
@@ -1299,10 +1328,8 @@ crumb :edit_image_server_image do |user,syndicate,county,register,source,group,i
   parent :show_image_server_image, user,syndicate,county,register,source,group,image
 end
 
-
-
 # breadcrumb for GAP
-crumb :gaps do |user,syndicate,county,register,source|
+crumb :gaps do |user, syndicate, county, register, source|
   link 'GAPs', index_gap_path(source)
   parent :show_image_source, register,source
 end
@@ -1321,7 +1348,6 @@ crumb :edit_gap do |user,syndicate,county,register,source|
   link 'Edit GAP'
   parent :gaps, user,syndicate,county,register,source
 end
-
 
 crumb :gap_reasons do
   link 'GAP Reasons', gap_reasons_path
@@ -1343,6 +1369,97 @@ crumb :create_gap_reason do |gap_reason|
   parent :gap_reasons
 end
 
+crumb :search_query_report do
+  link 'Search Performance', search_query_report_path
+  parent :root
+end
+
+crumb :show_search_query do |query|
+  link 'Search Query Report', show_query_search_query_path(query)
+  parent :search_query_report
+end
+
+crumb :search_query_analysis do |query|
+  link 'Search Query Report', analyze_search_query_path(query)
+  parent :search_query_report
+end
+
+crumb :application_server_selection do
+  link 'Select Application Server Combination', select_app_and_server_software_versions_path
+  parent :root
+end
+
+crumb :software_updates do
+  link 'Software Update History', software_versions_path
+  parent :application_server_selection
+end
+
+crumb :software_commitments do
+  link 'Software commitments', commitments_software_versions_path
+  parent :software_updates
+end
+
+crumb :edit_software_version do
+  link 'Edit Software Version', edit_software_version_path
+  parent :software_updates
+end
+
+
+# ...................................FreeCEN>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+crumb :freecen_pieces do |county|
+  link 'FreeCen Pieces', freecen_pieces_path(county: county)
+  parent :county_options, session[:county]
+end
+
+crumb :show_freecen_piece do |file|
+  link 'FreeCen Pieces', freecen_piece_path(file.id)
+  parent :freecen_pieces, session[:county]
+end
+
+crumb :freecen1_fixed_dat_entry do |file|
+  link 'FreeCen1 Fixed DAT Entry', freecen1_fixed_dat_entry_path(session[:county])
+  parent :freecen1_fixed_dat_file, file, session[:county]
+end
+
+crumb :freecen1_fixed_dat_file do |file|
+  link 'FreeCen1 Fixed DAT File', freecen1_fixed_dat_file_path(file)
+  parent :freecen_pieces, session[:county], session[:page]
+end
+
+crumb :manage_places do |county|
+  link 'FreeCen Places',  places_path
+  parent :county_options, session[:county]
+end
+
+crumb :show_freecen_place do |county, place|
+  link 'FreeCen Place', place_path(place)
+  if session[:manage_places]
+    parent :manage_places, session[:county]
+  else
+    parent :freecen_pieces, session[:county], session[:page]
+  end
+end
+
+crumb :freecen1_vld_files do |county, page|
+  link 'FreeCen1 VLD Files', freecen1_vld_files_path(county: county, page: page)
+  parent :county_options, county
+end
+
+crumb :freecen1_vld_file do |county, file|
+  link 'FreeCen1 VLD File', freecen1_vld_file_path(id: file, county: county)
+  parent :freecen1_vld_files, county, session[:file_page]
+end
+
+crumb :freecen1_vld_entries do |file, page|
+  link 'FreeCen1 VLD Entries', freecen1_vld_entries_path(file: file, page: page)
+  parent :freecen1_vld_file, session[:county], file
+end
+
+crumb :freecen1_vld_entry do |county, file|
+  link 'FreeCen1 VLD Entry', freecen1_vld_entry_path(id: file, county: county)
+  parent :freecen1_vld_entries, session[:freecen1_vld_file], session[:entry_page]
+end
 
 # crumb :projects do
 #   link 'Projects', projects_path

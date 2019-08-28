@@ -1,0 +1,9 @@
+/*------------------------------------*\
+    $PARAGRAPHS
+\*------------------------------------*/
+
+.lede,
+.lead{
+  @include font-size(26px, false);
+  font-weight: bold;
+}

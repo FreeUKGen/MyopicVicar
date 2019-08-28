@@ -73,6 +73,7 @@ class ManageResourcesController < ApplicationController
   end
 
   def new
+    session[:host] = request.host
     case
     when !is_ok_to_render_actions?
       stop_processing

@@ -21,7 +21,9 @@ class Freereg1CsvEntriesController < ApplicationController
   ActionController::Parameters.permit_all_parameters = true
 
   def calculate_software_version
-    software_version = SoftwareVersion.control.first
+    @server = SoftwareVersion.extract_server(Socket.gethostname)
+    @application = appname
+    software_version = SoftwareVersion.server(@server).app(@application).control.first
     search_version = ''
     search_version = software_version.last_search_record_version if software_version.present?
     search_version
@@ -156,7 +158,7 @@ class Freereg1CsvEntriesController < ApplicationController
 
   def index
     unless Freereg1CsvFile.valid_freereg1_csv_file?(session[:freereg1_csv_file_id])
-      flash[:notice] = 'The entry was not correctly linked. Have your coordinator contact the web master'
+      message = 'The file was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
     display_info
@@ -210,14 +212,12 @@ class Freereg1CsvEntriesController < ApplicationController
     params[:freereg1_csv_entry][:record_type] = @freereg1_csv_file.record_type
     @freereg1_csv_file.check_and_augment_def(params[:freereg1_csv_entry])
 
-    params[:freereg1_csv_entry], sex_change = @freereg1_csv_entry.adjust_parameters(params[:freereg1_csv_entry])
+    params[:freereg1_csv_entry] = @freereg1_csv_entry.adjust_parameters(params[:freereg1_csv_entry])
     proceed = @freereg1_csv_entry.update_attributes(freereg1_csv_entry_params)
     redirect_back(fallback_location: edit_freereg1_csv_entry_path(@freereg1_csv_entry), notice: "The update of the entry failed #{@freereg1_csv_file.errors.full_messages}.") && return unless proceed
 
     @freereg1_csv_entry.check_and_correct_county
     @freereg1_csv_entry.check_year
-    @freereg1_csv_entry.search_record.destroy if sex_change # updating the search names is too complex on a sex change it is better to just recreate
-    @freereg1_csv_entry.search_record(true) if sex_change # this frefreshes the cache
     search_version = calculate_software_version
     place, church, register = get_location_from_file(@freereg1_csv_file)
     SearchRecord.update_create_search_record(@freereg1_csv_entry, search_version, place)

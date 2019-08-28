@@ -1,0 +1,18 @@
+/*------------------------------------*\
+    $IE
+\*------------------------------------*/
+
+/**
+ * IE opacity hack for hidden but still working inputs
+ *
+ * Ref: base/_forms.scss
+ */
+.hide-inputs input {
+  height: $b;
+  width: 70px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  filter: alpha(opacity=0);
+  z-index: 4;
+}

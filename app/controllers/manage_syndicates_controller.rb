@@ -116,6 +116,7 @@ class ManageSyndicatesController < ApplicationController
         synd << syn.syndicate_code if all
       end
       @syndicates = synd
+      @syndicates.sort! if @syndicates.present?
     else
       logger.warn "FREEREG::USER #{@user.userid} has no syndicates and attempting to manage one"
       redirect_back(fallback_location: new_manage_syndicate_path, notice: 'You do not have any syndicates') && return
@@ -193,6 +194,7 @@ class ManageSyndicatesController < ApplicationController
     @syndicates.blank? ? number_of_syndicates = 0 : number_of_syndicates = @syndicates.length
 
     redirect_back(fallback_location: new_manage_resource_path, notice: 'You do not have any syndicates to manage') && return if number_of_syndicates.zero?
+
     if number_of_syndicates == 1
       @syndicate = @syndicates[0]
       session[:syndicate] = @syndicate
@@ -254,5 +256,10 @@ class ManageSyndicatesController < ApplicationController
 
   def upload_batch
     redirect_to(new_csvfile_path) && return
+  end
+
+  def display_no_syndicate_message
+    flash[:notice] = 'You do not have any syndicates to manage'
+    redirect_to new_manage_resource_path
   end
 end

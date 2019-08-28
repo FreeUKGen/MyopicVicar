@@ -5,6 +5,21 @@ namespace :foo do
   #eg f2rake  foo:update_search_records[0,bu,"2016-05-27T19:23:31+00:00", true, 1]
   #number of files of 0 is all, force creation is true or false, order files processed is 1 or -1
 
+  # eg foo:check_search_records[100000]
+  #num is the number of records to be checked
+  task :check_search_records_with_null_entry, [:num, :fix] => [:environment] do |t, args|
+    require 'check_search_records_with_null_entry'
+    limit = args.num
+    puts "Checking the existence of search record documents with null entry "
+    CheckSearchRecordsWithNullEntry.process(args.num, args.fix)
+    puts "Completed Checking #{limit} Search records"
+  end
+
+  task :delete_or_archive_old_messages_feedbacks_and_contacts => [:environment] do
+    require 'delete_or_archive_old_messages_feedbacks_and_contacts'
+    DeleteOrArchiveOldMessagesFeedbacksAndContacts.process
+  end
+
   task :delete_or_archive_old_messages_feedbacks_and_contacts => [:environment] do
     require 'delete_or_archive_old_messages_feedbacks_and_contacts'
     DeleteOrArchiveOldMessagesFeedbacksAndContacts.process
@@ -438,6 +453,7 @@ namespace :foo do
 
   desc "Recalculate SearchRecord search date for Freereg1CsvEntry ids in a file"
   task :recalc_search_record_seach_date_for_entries_in_file, [:id_file,:limit] => [:environment] do |t,args|
+    require 'app'
     p "starting"
     number = 0
     stop_after = args.limit.to_i
@@ -459,7 +475,8 @@ namespace :foo do
           p entry
           p record.search_date unless record.blank?
           p record.secondary_search_date unless record.blank?
-          software_version = SoftwareVersion.control.first
+          server = SoftwareVersion.extract_server(Socket.gethostname)
+          software_version = SoftwareVersion.server(server).app(App.name_downcase).control.first
           search_version = ''
           search_version  = software_version.last_search_record_version unless software_version.blank?
           freereg1_csv_file = entry.freereg1_csv_file

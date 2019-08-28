@@ -1,17 +1,18 @@
 <section>
-  <p>
-      <%=@entry['place']%> : <%=@entry['church_name']%> : <%unless @entry['register_type'].include? "Unspecified"%><%=@entry['register_type']%><% else %>Register of unspecified type<% end %> : "Parish Register" database,
-      <%= application_name%> (<%=search_record_link(@search_record[:_id])%> : viewed <%=@viewed_date%>)
-      <%=record_type(@entry).downcase%>
-      <% if record_type(@entry).downcase == "baptism"%>
-        <%=entitle(@entry['person_forename'])%> <%=entitle(@entry['father_surname'])%>
-        <%=entitle(@entry['baptism_date'])%>
-      <% elsif record_type(@entry).downcase == "burial"%>
-        <%=entitle(@entry['burial_person_forename'])%> <%=entitle(@entry['burial_person_surname'])%>
-        <%=entitle(@entry['burial_date'])%>
-      <% elsif record_type(@entry).downcase == "marriage"%>
-        <%=entitle(@entry['groom_forename'])%> <%=entitle(@entry['groom_surname'])%> to <%=entitle(@entry['bride_forename'])%> <%=entitle(@entry['bride_surname'])%>
-        <%=entitle(@entry['marriage_date'])%>
-      <% end%>
+<h4>Citation(Wikitree):</h4>
+  <p class = "citation_container">
+    <%=@entry['place']%> : <%=@entry['church_name']%> : <%unless @entry['register_type'].include? "Unspecified"%><%=@entry['register_type']%><% else %>Register of unspecified type<% end %> : "Parish Register" database,
+    <%= appname%> (<%=search_record_link(@search_record[:_id])%> : viewed <%=Date.today.strftime("%e %b %Y")%>)
+    <%=record_type(@entry).downcase%>
+    <% if record_type(@entry).downcase == "baptism"%>
+      <%=entitle(@entry['person_forename'])%> <%=entitle(@entry['father_surname'])%>
+      <%=entitle(@entry['baptism_date'])%>
+    <% elsif record_type(@entry).downcase == "burial"%>
+      <%=entitle(@entry['burial_person_forename'])%> <%=entitle(@entry['burial_person_surname'])%>
+      <%=entitle(@entry['burial_date'])%>
+    <% elsif record_type(@entry).downcase == "marriage"%>
+      <%=entitle(@entry['groom_forename'])%> <%=entitle(@entry['groom_surname'])%> to <%=entitle(@entry['bride_forename'])%> <%=entitle(@entry['bride_surname'])%>
+      <%=entitle(@entry['marriage_date'])%>
+    <% end%>
   </p>
 </section>

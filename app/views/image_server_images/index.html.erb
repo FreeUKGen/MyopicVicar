@@ -1,28 +1,26 @@
 <% breadcrumb :image_server_images, @user, @chapman_code, @county, @register, @source, @group %>
-
 <% title "IS Image - list" %>
 <%= render partial: 'header' %>
 <%= render partial: 'flash_notice' %>
-
 <% unless session[:userid].nil?%>
   <div style="text-align: center">
-  <% if session[:manage_user_origin] == 'manage county' %>
-    <%= link_to 'Move Multiple Images', move_image_server_image_path, method: :get, :class => "btn weight--light btn--small" %> 
-  <% end %>
-  <% if ['manage county', 'manage syndicate'].include? session[:manage_user_origin] %>
-    <%= link_to 'Propagate Difficulty', flush_image_server_image_path(:propagate_choice=>'difficulty'), method: :get, :class => "btn weight--light btn--small" %> 
-  <% end %>
-  <% if session[:manage_user_origin] == 'manage county' %>
-    <%= link_to 'Propagate Status', flush_image_server_image_path(:propagate_choice=>'status'), method: :get, :class => "btn weight--light btn--small" %> 
-  <% end %>
-  <% if session[:manage_user_origin] == 'manage syndicate' %>
-    <%= link_to 'Create Assignment', assign_assignment_path(:assign_type=>'transcriber'), method: :get, :class => "btn weight--light btn--small" %>
-    <%= link_to 'List assignments by userid', select_user_assignment_path(:assignment_list_type=>'group'), method: :get, :class => "btn weight--light btn--small" %>
-  <% end %>
+    <% if session[:manage_user_origin] == 'manage county' %>
+      <%= link_to 'Move Multiple Images', move_image_server_image_path, method: :get, :class => "btn weight--light btn--small" %>
+    <% end %>
+    <% if ['manage county', 'manage syndicate'].include? session[:manage_user_origin] %>
+      <%= link_to 'Propagate Difficulty', flush_image_server_image_path(:propagate_choice=>'difficulty'), method: :get, :class => "btn weight--light btn--small" %>
+    <% end %>
+    <% if session[:manage_user_origin] == 'manage county' %>
+      <%= link_to 'Propagate Status', flush_image_server_image_path(:propagate_choice=>'status'), method: :get, :class => "btn weight--light btn--small" %>
+    <% end %>
+    <% if session[:manage_user_origin] == 'manage syndicate' %>
+      <%= link_to 'Create Assignment', assign_assignment_path(:assign_type=>'transcriber'), method: :get, :class => "btn weight--light btn--small" %>
+      <%= link_to 'List assignments by userid', select_user_assignment_path(:assignment_list_type=>'group'), method: :get, :class => "btn weight--light btn--small" %>
+    <% end %>
   </div>
-  <div style="clear:both;"> </div><br>
+  <div style="clear:both;"> </div>
+  <br>
 <% end %>
-
 <div style="overflow: hidden;">
   <table class="my-width-min flush--bottom" >
     <thead>
@@ -32,20 +30,26 @@
         <th class="t15">Difficulty</th>
         <th class="t15">Transcriber</th>
         <th class="t15">Reviewer</th>
-        <th class="t15">Action <a href="#" class="left_tooltip"><%= image_tag 'info.png', alt: 'Information', height: '14' %>
-          <% if @user.person_role == 'system_administrator' %>     <%# system_administrator from manage_counties %>
-            <span>SH: Show Image Properties;<br>ED: Edit Image Properties;<br>VW: View Original Image;<br>DL: Download Original Image;<br>DE: Delete Image information from FR</span>
-          <% else %>        <%# non admin from manage_counties %>
-            <span>SH: Show Image Properties;<br>ED: Edit Image Properties;<br>VW: View Original Image;<br>DL: Download Original Image;</span>
-          <% end %>        
-        </a></th>
+        <th class="t15">Action <a href="#" class="left_tooltip"><%= image_tag 'png/info.png', alt: 'Information', height: '14' %>
+            <% if @user.person_role == 'system_administrator' %>     <%# system_administrator from manage_counties %>
+              <span>SH: Show Image Properties;<br>
+                ED: Edit Image Properties;<br>
+                VW: View Original Image;<br>
+                DL: Download Original Image;<br>
+                DE: Delete Image information from FR</span>
+            <% else %>        <%# non admin from manage_counties %>
+              <span>SH: Show Image Properties;<br>
+                ED: Edit Image Properties;<br>
+                VW: View Original Image;<br>
+                DL: Download Original Image;</span>
+            <% end %>
+          </a></th>
       </tr>
     </thead>
   </table>
-
-    <div class="scrollable">
+  <div class="scrollable">
     <table class=" table--bordered my-width table--data just--left">
-      <tbody>  
+      <tbody>
         <% @image_server_image.each do |x| %>
           <tr>
             <td class="t15"><%= x[:image_file_name] %></td>
@@ -56,7 +60,7 @@
             <td class="t15">
               <%= link_to 'SH', image_server_image_path(x), :title=>'show image properties' %>
               <% if @image_detail_access_allowed %>
-                <%= link_to 'ED', edit_image_server_image_path(x), :title=>'edit image properties' %> 
+                <%= link_to 'ED', edit_image_server_image_path(x), :title=>'edit image properties' %>
                 <%= link_to 'VW', view_image_server_image_path(:object => x[:_id]), :title=>'view original image', method: :get,:target => "_blank" %>
                 <%= link_to 'DL', download_image_server_image_path(:object => x[:_id]), :title=>'download original image', method: :get,:target => "_blank" %>
               <% end %>
@@ -70,4 +74,5 @@
     </table>
   </div>
 </div>
-<div style="clear:both;"></div><br>
+<div style="clear:both;"></div>
+<br>

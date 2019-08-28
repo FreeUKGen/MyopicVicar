@@ -14,6 +14,7 @@
 class UseridDetailsController < ApplicationController
   include ActiveModel::Dirty
   require 'userid_role'
+  require 'import_users_from_csv'
   skip_before_action :require_login, only: [:general, :create, :researcher_registration, :transcriber_registration, :technical_registration]
   rescue_from ActiveRecord::RecordInvalid, with: :record_validation_errors
 
@@ -82,7 +83,9 @@ class UseridDetailsController < ApplicationController
     session[:type] = 'edit'
     redirect_back(fallback_location: options_userid_details_path, notice: 'The destruction of the profile not permitted as they have batches') && return if @userid.has_files?
 
-    Freereg1CsvFile.delete_userid_folder(@userid.userid)
+    if MyopicVicar::Application.config.template_set != 'freecen'
+      Freereg1CsvFile.delete_userid_folder(@userid.userid)
+    end
     flash[:notice] = 'The destruction of the profile was successful'
     redirect_to(options_userid_details_path)
   end
@@ -110,14 +113,18 @@ class UseridDetailsController < ApplicationController
     render action: :options
   end
 
+  def download_txt
+    send_file "#{Rails.root}/script/create_user.txt", type: "application/txt", x_sendfile: true
+  end
+
   def edit
     get_user_info_from_userid
     load(params[:id])
     redirect_back(fallback_location: userid_details_path, notice: 'The userid was not found') && return if @userid.blank?
 
-    session[:return_to] = request.fullpath
+    #session[:return_to] = request.fullpath
     session[:type] = 'edit'
-    @userid = @user if  session[:my_own]
+    @userid = @user if session[:my_own]
     @current_user = get_user
     @syndicates = Syndicate.get_syndicates
   end
@@ -125,6 +132,26 @@ class UseridDetailsController < ApplicationController
   def general
     session[:return_to] = request.fullpath
     session[:first_name] = 'New Registrant'
+  end
+
+  def import
+    create_users = ImportUsersFromCsv.new(params[:file], params[:commit],session[:syndicate]).import
+    flash[:notice] = "Users creation completed"
+    @userids = UseridDetail.get_userids_for_display('all')
+    @syndicate = 'all'
+    @show_log = true
+    render "index"
+  end
+
+  def incomplete_registrations
+    @current_syndicate = session[:syndicate]
+    @current_user = get_user
+    session[:edit_userid] = true
+    user = UseridDetail.new
+    redirect_back(fallback_location: new_manage_resource_path, notice:'Sorry, You are not authorized for this action') && return unless permitted_users?
+
+    @incomplete_registrations = user.list_incomplete_registrations(@current_user, @current_syndicate)
+    render template: 'shared/incomplete_registrations'
   end
 
   def index
@@ -191,7 +218,11 @@ class UseridDetailsController < ApplicationController
     @userid.finish_researcher_creation_setup if params[:commit] == 'Register Researcher'
     @userid.finish_technical_creation_setup if params[:commit] == 'Technical Registration'
     if params[:commit] == 'Register as Transcriber'
-      redirect_to(transcriber_registration_userid_detail_path) && return
+      if MyopicVicar::Application.config.template_set != 'freecen'
+        redirect_to(transcriber_registration_userid_detail_path) && return
+      else
+        redirect_to "/cms/opportunities-to-volunteer-with-freecen/welcome-to-freecen" and return
+      end
     elsif params[:commit] == 'Submit' && session[:userid_detail_id].present?
       redirect_to(userid_detail_path(@userid)) && return
     elsif params[:commit] == 'Update' && session[:my_own]
@@ -230,11 +261,7 @@ class UseridDetailsController < ApplicationController
     session[:edit_userid] = true
     @syndicate = 'all'
     session[:syndicate] = @syndicate
-    if @user.person_role == 'system_administrator' || @user.person_role == 'volunteer_coordinator'
-      @options = UseridRole::USERID_MANAGER_OPTIONS
-    else
-      @options = UseridRole::USERID_ACCESS_OPTIONS
-    end
+    @options = UseridRole::USERID_MANAGER_OPTIONS
   end
 
   def person_roles
@@ -244,15 +271,6 @@ class UseridDetailsController < ApplicationController
     @options = UseridRole::VALUES
     @prompt = 'Select Role?'
     @location = 'location.href= "role?role=" + this.value'
-  end
-
-  def secondary_roles
-    session[:return_to] = request.fullpath
-    get_user_info_from_userid
-    @userid = UseridDetail.new
-    @options = UseridRole::VALUES
-    @prompt = 'Select Secondary Role?'
-    @location = 'location.href= "secondary?role=" + this.value'
   end
 
   def record_validation_errors(exception)
@@ -287,16 +305,125 @@ class UseridDetailsController < ApplicationController
     end
   end
 
+  def return_percentage_total_records_by_transcribers
+    total_records_all = return_total_records.to_f
+    total_records_open_transcribers = return_total_transcriber_records.to_f
+    return 0 if total_records_all == 0 || total_records_open_transcribers == 0
+
+    ((total_records_open_transcribers / total_records_all) * 100).round(2)
+  end
+
+  def return_percentage_all_users_accepted_transcriber_agreement
+    total_users = UseridDetail.count.to_f
+    total_users_accepted = UseridDetail.where(new_transcription_agreement: 'Accepted').count.to_f
+    return 0 if total_users == 0 || total_users_accepted == 0
+
+    ((total_users_accepted / total_users) * 100).round(2)
+  end
+
+  def return_percentage_all_existing_users_accepted_transcriber_agreement
+    total_existing_users = UseridDetail.where(sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
+    total_existing_users_accepted = UseridDetail.where(new_transcription_agreement: 'Accepted', sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
+    return 0  if total_existing_users == 0 || total_existing_users_accepted == 0
+
+    ((total_existing_users_accepted / total_existing_users) * 100).round(2)
+  end
+
+  def return_percentage_all_existing_active_users_accepted_transcriber_agreement
+    total_existing_active_users = UseridDetail.where(active: true, sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
+    total_existing_active_users_accepted = UseridDetail.where(active: true, new_transcription_agreement: 'Accepted', sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
+    return 0 if total_existing_active_users == 0 || total_existing_active_users_accepted == 0
+
+    ((total_existing_active_users_accepted / total_existing_active_users) * 100).round(2)
+  end
+
+  def return_percentage_total_records_by_transcribers
+    total_records_all = return_total_records.to_f
+    total_records_open_transcribers = return_total_transcriber_records.to_f
+    if total_records_all == 0 || total_records_open_transcribers == 0
+      return 0
+    else
+      return (total_records_open_transcribers / total_records_all) * 100
+    end
+  end
+
+  def return_percentage_all_users_accepted_transcriber_agreement
+    total_users = UseridDetail.count.to_f
+    total_users_accepted = UseridDetail.where(transcription_agreement: "Accepted").count.to_f
+    if total_users == 0 || total_users_accepted == 0
+      return 0
+    else
+      return ((total_users_accepted / total_users) * 100).round(2)
+    end
+  end
+
+  def return_percentage_all_existing_users_accepted_transcriber_agreement
+    total_existing_users = UseridDetail.where(sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
+    total_existing_users_accepted = UseridDetail.where(transcription_agreement: "Accepted", sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
+    if total_existing_users == 0 || total_existing_users_accepted == 0
+      return 0
+    else
+      return ((total_existing_users_accepted / total_existing_users) * 100).round(2)
+    end
+  end
+
+  def return_percentage_all_existing_active_users_accepted_transcriber_agreement
+    total_existing_active_users = UseridDetail.where(active: true, sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
+    total_existing_active_users_accepted = UseridDetail.where(active: true, transcription_agreement: "Accepted", sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
+    if total_existing_active_users == 0 || total_existing_active_users_accepted == 0
+      return 0
+    else
+      return ((total_existing_active_users_accepted / total_existing_active_users) * 100).round(2)
+    end
+  end
+
+  def return_total_transcriber_records
+    total_records = 0
+    UseridDetail.where(person_role: "transcriber", transcription_agreement: "Accepted", number_of_records: {'$ne': 0}).each do |count|
+      total_records += count.number_of_records
+    end
+    return total_records
+  end
+
+  def return_total_transcriber_records
+    total_records = 0
+    UseridDetail.where(person_role: 'transcriber', new_transcription_agreement: 'Accepted', number_of_records: { '$ne': 0 }).each do |count|
+      total_records += count.number_of_records
+    end
+    total_records
+  end
+
+  def return_total_records
+    total_records = 0
+    UseridDetail.where(number_of_records: { '$ne': 0 }).each do |count|
+      total_records += count.number_of_records
+    end
+    total_records
+  end
+
   def role
     @userids = UseridDetail.role(params[:role]).all.order_by(userid_lower_case: 1)
     @syndicate = " #{params[:role]}"
     @sorted_by = ' lower case userid'
   end
 
+  def scotland_counties
+    ["Aberdeenshire Syndicate", "Angus (Forfarshire) Syndicate", "Argyllshire Syndicate", "Ayrshire Syndicate",]
+  end
+
   def secondary
     @userids = UseridDetail.secondary(params[:role]).all.order_by(userid_lower_case: 1)
     @syndicate = " #{params[:role]}"
     @sorted_by = ' lower case userid'
+  end
+
+  def secondary_roles
+    session[:return_to] = request.fullpath
+    get_user_info_from_userid
+    @userid = UseridDetail.new
+    @options = UseridRole::VALUES
+    @prompt = 'Select Secondary Role?'
+    @location = 'location.href= "secondary?role=" + this.value'
   end
 
   def select
@@ -379,7 +506,6 @@ class UseridDetailsController < ApplicationController
     get_user_info_from_userid
     load(params[:id])
     redirect_back(fallback_location: userid_details_path, notice: 'The userid was not found') && return if @userid.blank?
-
     session[:return_to] = request.fullpath
     @syndicate = session[:syndicate]
     @page_name = params[:page_name]
@@ -411,6 +537,31 @@ class UseridDetailsController < ApplicationController
     @first_name = session[:first_name]
   end
 
+  def transcriber_statistics
+    @current_user = get_user
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'Sorry, You are not authorized for this action') && return unless stats_permitted_users?
+
+    @total_users = UseridDetail.count
+    @total_transcribers = UseridDetail.where(person_role: 'transcriber').count
+    @total_transcribers_accepted_agreement = UseridDetail.where(person_role: 'transcriber', new_transcription_agreement: 'Accepted').count
+    @total_active_transcribers = UseridDetail.where(person_role: 'transcriber', active: true).count
+    @users_never_uploaded_file = UseridDetail.where(number_of_files: 0).count
+    @users_uploaded_file = UseridDetail.where(number_of_files: { '$ne': 0 }).count
+    @transcribers_never_uploaded_file = UseridDetail.where(person_role: 'transcriber', number_of_files: 0).count
+    @transcriber_uploaded_file = UseridDetail.where(person_role: 'transcriber', number_of_files: { '$ne': 0 }).count
+    @incomplete_registrations = UseridDetail.new.incomplete_user_registrations_count
+    @incomplete_transcriber_registrations = UseridDetail.new.incomplete_transcribers_registrations_count
+    # New statistics
+    @total_records_transcribers = return_total_transcriber_records
+    @percentage_total_records_by_transcribers = return_percentage_total_records_by_transcribers
+    @total_transcribers_accepted_agreement_no_records = UseridDetail.where(person_role: 'transcriber', new_transcription_agreement: 'Accepted', number_of_records: 0).count
+    @percentage_all_users_who_accepted_transcription_agreement = return_percentage_all_users_accepted_transcriber_agreement
+    @percentage_existing_users_who_accepted_transcription_agreement = return_percentage_all_existing_users_accepted_transcriber_agreement
+    @percentage_active_existing_users_who_accepted_transcription_agreement = return_percentage_all_existing_active_users_accepted_transcriber_agreement
+    @new_users_last_30_days = UseridDetail.where(sign_up_date: { '$gt': DateTime.now - 30.days }).count
+    @new_users_last_90_days = UseridDetail.where(sign_up_date: { '$gt': DateTime.now - 90.days }).count
+  end
+
   def update
     load(params[:id])
     redirect_back(fallback_location: userid_details_path, notice: 'The userid was not found') && return if @userid.blank?
@@ -437,13 +588,11 @@ class UseridDetailsController < ApplicationController
     end
     email_valid_change_message
     params[:userid_detail][:email_address_last_confirmned] = ['1', 'true'].include?(params[:userid_detail][:email_address_valid]) ? Time.now : ''
-    #    params[:userid_detail][:email_address_valid]  = true
-    @userid.update_attributes(userid_details_params)
+    @userid.update_attributes(userid_details_params.except(:userid))
     @userid.write_userid_file
     @userid.save_to_refinery
     if @userid.errors.any?
       flash[:notice] = "The update of the profile was unsuccessful #{@userid.errors.full_messages}"
-      @syndicates = Syndicate.get_syndicates_open_for_transcription
       redirect_to(edit_userid_detail_path(@userid)) && return
     else
       UserMailer.send_change_of_syndicate_notification_to_sc(@userid).deliver_now if changed_syndicate
@@ -453,89 +602,7 @@ class UseridDetailsController < ApplicationController
     end
   end
 
-  def incomplete_registrations
-    @current_syndicate = session[:syndicate]
-    @current_user = get_user
-    session[:edit_userid] = true
-    user = UseridDetail.new
-    redirect_back(fallback_location: new_manage_resource_path, notice:'Sorry, You are not authorized for this action') && return unless permitted_users?
 
-    @incomplete_registrations = user.list_incomplete_registrations(@current_user, @current_syndicate)
-    render template: 'shared/incomplete_registrations'
-  end
-
-  def return_total_transcriber_records
-    total_records = 0
-    UseridDetail.where(person_role: 'transcriber', new_transcription_agreement: 'Accepted', number_of_records: { '$ne': 0 }).each do |count|
-      total_records += count.number_of_records
-    end
-    total_records
-  end
-
-  def return_total_records
-    total_records = 0
-    UseridDetail.where(number_of_records: { '$ne': 0 }).each do |count|
-      total_records += count.number_of_records
-    end
-    total_records
-  end
-
-  def return_percentage_total_records_by_transcribers
-    total_records_all = return_total_records.to_f
-    total_records_open_transcribers = return_total_transcriber_records.to_f
-    return 0 if total_records_all == 0 || total_records_open_transcribers == 0
-
-    ((total_records_open_transcribers / total_records_all) * 100).round(2)
-  end
-
-  def return_percentage_all_users_accepted_transcriber_agreement
-    total_users = UseridDetail.count.to_f
-    total_users_accepted = UseridDetail.where(new_transcription_agreement: 'Accepted').count.to_f
-    return 0 if total_users == 0 || total_users_accepted == 0
-
-    ((total_users_accepted / total_users) * 100).round(2)
-  end
-
-  def return_percentage_all_existing_users_accepted_transcriber_agreement
-    total_existing_users = UseridDetail.where(sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
-    total_existing_users_accepted = UseridDetail.where(new_transcription_agreement: 'Accepted', sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
-    return 0  if total_existing_users == 0 || total_existing_users_accepted == 0
-
-    ((total_existing_users_accepted / total_existing_users) * 100).round(2)
-  end
-
-  def return_percentage_all_existing_active_users_accepted_transcriber_agreement
-    total_existing_active_users = UseridDetail.where(active: true, sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
-    total_existing_active_users_accepted = UseridDetail.where(active: true, new_transcription_agreement: 'Accepted', sign_up_date: {'$lt': DateTime.new(2017, 10, 17)}).count.to_f
-    return 0 if total_existing_active_users == 0 || total_existing_active_users_accepted == 0
-
-    ((total_existing_active_users_accepted / total_existing_active_users) * 100).round(2)
-  end
-
-  def transcriber_statistics
-    @current_user = get_user
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'Sorry, You are not authorized for this action') && return unless stats_permitted_users?
-
-    @total_users = UseridDetail.count
-    @total_transcribers = UseridDetail.where(person_role: 'transcriber').count
-    @total_transcribers_accepted_agreement = UseridDetail.where(person_role: 'transcriber', new_transcription_agreement: 'Accepted').count
-    @total_active_transcribers = UseridDetail.where(person_role: 'transcriber', active: true).count
-    @users_never_uploaded_file = UseridDetail.where(number_of_files: 0).count
-    @users_uploaded_file = UseridDetail.where(number_of_files: { '$ne': 0 }).count
-    @transcribers_never_uploaded_file = UseridDetail.where(person_role: 'transcriber', number_of_files: 0).count
-    @transcriber_uploaded_file = UseridDetail.where(person_role: 'transcriber', number_of_files: { '$ne': 0 }).count
-    @incomplete_registrations = UseridDetail.new.incomplete_user_registrations_count
-    @incomplete_transcriber_registrations = UseridDetail.new.incomplete_transcribers_registrations_count
-    # New statistics
-    @total_records_transcribers = return_total_transcriber_records
-    @percentage_total_records_by_transcribers = return_percentage_total_records_by_transcribers
-    @total_transcribers_accepted_agreement_no_records = UseridDetail.where(person_role: 'transcriber', new_transcription_agreement: 'Accepted', number_of_records: 0).count
-    @percentage_all_users_who_accepted_transcription_agreement = return_percentage_all_users_accepted_transcriber_agreement
-    @percentage_existing_users_who_accepted_transcription_agreement = return_percentage_all_existing_users_accepted_transcriber_agreement
-    @percentage_active_existing_users_who_accepted_transcription_agreement = return_percentage_all_existing_active_users_accepted_transcriber_agreement
-    @new_users_last_30_days = UseridDetail.where(sign_up_date: { '$gt': DateTime.now - 30.days }).count
-    @new_users_last_90_days = UseridDetail.where(sign_up_date: { '$gt': DateTime.now - 90.days }).count
-  end
 
   private
 

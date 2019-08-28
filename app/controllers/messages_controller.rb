@@ -600,7 +600,7 @@ class MessagesController < ApplicationController
     @sent_message = SentMessage.new(message_id: @message.id, sender: @user_userid, recipients: acutal_recipients)
     @message.sent_messages << [@sent_message]
     @sent_message.save
-    UserMailer.send_message(@message, acutal_recipients, @user_userid).deliver_now
+    UserMailer.send_message(@message, acutal_recipients, @user_userid, session[:host]).deliver_now
     @sent_message.update_attributes(sent_time: Time.now)
     @message.add_message_to_userid_messages(UseridDetail.look_up_id(@user_userid)) unless @user_userid.blank?
     acutal_recipients.each do |recipient|
@@ -630,7 +630,7 @@ class MessagesController < ApplicationController
       session.delete(:sent_message_id)
       reasons = params[:inactive_reason] if !params[:active]
       @sent_message.update_attributes(recipients: params[:recipients], active: params[:active], inactive_reason: reasons, sender: sender, open_data_status: params[:open_data_status], syndicate: @syndicate)
-      @message.communicate(params[:recipients],  params[:active], reasons, sender, params[:open_data_status], @syndicate)
+      @message.communicate(params[:recipients],  params[:active], reasons, sender, params[:open_data_status], @syndicate, session[:host])
       @sent_message.update_attributes(sent_time: Time.now)
       @message.update_attributes(message_sent_time: Time.now)
       flash[:notice] = @message.reciever_notice(params)

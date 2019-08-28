@@ -279,7 +279,7 @@ class FreeregContentsController < ApplicationController
         @register_type = RegisterType.display_name(@register.register_type)
         @decade = @register.daterange
         @transcribers = @register.transcribers
-        @contributors = @register.contributors
+        @contributors = @register.credit
       end
     end
   end

@@ -84,7 +84,11 @@ module UcfTransformer
   end
 
   def self.ucf_to_regex(name_part)
-    ::Regexp.new(name_part.gsub(/\./, '\.').gsub(/_/, ".").gsub(/\*/, '\w+'))
+    begin
+      ::Regexp.new(name_part.gsub(/\./, '\.').gsub(/_/, ".").gsub(/\*/, '\w+'))
+    rescue RegexpError
+      name_part
+    end
   end
 
   def self.wildcard_ucf_to_regex(name_part)

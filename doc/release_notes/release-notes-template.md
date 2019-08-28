@@ -1,4 +1,4 @@
-__FreeREG | Release Notes__
+__MyopicVicar | Release Notes__
 =======================
 DD-MM-YYYY
 
@@ -17,14 +17,4 @@ __Improvements__
 __Fixes__
 ---------
 
-* -
-
-
-__Change Log__
-----------------
-
-Detailed release notes below, listing all commit messages for this release.
-
-* -
-* -
 * -

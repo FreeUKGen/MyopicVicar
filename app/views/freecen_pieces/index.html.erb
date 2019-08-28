@@ -1,0 +1,36 @@
+<%= render 'index_header' %>
+<%= render 'totals' %>
+<div style="overflow: hidden;">
+  <table class="my-width-min flush--bottom" >
+    <thead >
+      <tr>
+        <th class="t5">Year</th>
+        <th class="t5">Piece</th>
+        <th class="t25">District</th>
+        <th class="t35">Sub places</th>
+        <th class="t5">Parish</th>
+        <th class="t5">Suffix</th>
+        <th class="t5">Inds</th>
+        <th class="t10">Action</th>
+      </tr>
+    </thead>
+  </table>
+  <div class="scrollable ">
+    <table class=" table--bordered my-width table--data table--striped just--left">
+      <tbody >
+        <% @freecen_pieces.each do |freecen_piece| %>
+          <tr id="<%=freecen_piece.id%>">
+            <td class="t5"><%= freecen_piece.year %></td>
+            <td class="t5"><%= freecen_piece.piece_number %></td>
+            <td class="t25"><%= freecen_piece.district_name%></td>
+            <td class="t35"><%= sub_pieces(freecen_piece.subplaces) %></td>
+            <td class="t5"><%= freecen_piece.parish_number %></td>
+            <td class="t5"><%= freecen_piece.suffix %></td>
+            <td class="t5"><%= freecen_piece.num_individuals %></td>
+            <td class="t10"><%= link_to 'Show', freecen_piece %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,3 +1,25 @@
+__FreeCEN2 | Release Notes__
+=======================
+01-08-2018
+
+__New Features__
+----------------
+
+* Errbit - the Open Source Error catcher has now been added to all of our FreeCEN2 servers which will help us to spot and debug issues more effectively (Issue 493)
+
+__Improvements__
+----------------
+
+* None
+
+__Fixes__
+---------
+
+* Fixed a bug which was preventing users from signing up, and also preventing existing users from resetting their passwords. (Issue 499)
+* Fixed an issue with our Adsense code, in which two ads on our website had the wrong publisher ID from an old account. (Issue 425)
+
+
+
 __FreeREG | Release Notes__
 =======================
 01-08-2018
@@ -23,9 +45,3 @@ __Fixes__
 * Fixed an issue where render and/or redirect were being called multiple times in register (Issue 1493)
 * Fixed an issue which triggered an 'undefined method' error for 'get_sorted_group_name' on ImageServer (Issue 1490)
 * Fixed an issue caused by bots navigating past the login area triggering a nomethod error (Issue 1524)
-
-
-
-
-
-

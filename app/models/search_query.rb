@@ -1,22 +1,27 @@
+# frozen_string_literal: true
 class SearchQuery
   include Mongoid::Document
-  #store_in client: "local_writable"
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
   require 'chapman_code'
   require 'freereg_options_constants'
   require 'name_role'
   require 'date_parser'
+  require 'app'
+
+
   # consider extracting this from entities
   module SearchOrder
     TYPE='record_type'
     DATE='search_date'
+    BIRTH_COUNTY='birth_chapman_code'
     COUNTY='chapman_code'
     LOCATION='location'
     NAME='transcript_names'
 
     ALL_ORDERS = [
       TYPE,
+      BIRTH_COUNTY,
       DATE,
       COUNTY,
       LOCATION,
@@ -59,6 +64,9 @@ class SearchQuery
   field :all_radius_place_ids, type: Array, default: []
   field :wildcard_search, type: Boolean, default: false
 
+  field :birth_chapman_codes, type: Array, default: []
+  field :birth_place_name, type: String
+
   has_and_belongs_to_many :places, inverse_of: nil
 
   embeds_one :search_result
@@ -68,7 +76,8 @@ class SearchQuery
   validate :radius_is_valid
   validate :county_is_valid
   validate :wildcard_is_appropriate
-  validate :all_counties_have_both_surname_and_firstname
+  # probably not necessary in FreeCEN
+  #  validate :all_counties_have_both_surname_and_firstname
 
   before_validation :clean_blanks
   attr_accessor :action
@@ -78,18 +87,6 @@ class SearchQuery
   index({day: -1,result_count: -1},{name: 'day__1_result_count__1',background: true })
 
   class << self
-    def invalid_integer(param)
-      do_not_proceed = false
-      if param[:start_year].present? && !param[:start_year].to_i.bson_int32?
-        do_not_proceed = true
-        message = 'The start year is an invalid integer'
-      end
-      if param[:end_year].present? && !param[:end_year].to_i.bson_int32?
-        do_not_proceed = true
-        message = 'The end year is an invalid integer'
-      end
-      [do_not_proceed, message]
-    end
 
     def search_id(name)
       where(id: name)
@@ -149,12 +146,31 @@ class SearchQuery
     radius_search? && radius_factor > 2
   end
 
+
+  def fetch_records
+    return @search_results if @search_results
+    if self.search_result.present?
+      records = self.search_result.records
+      begin
+        @search_results = SearchRecord.find(records)
+      rescue Mongoid::Errors::DocumentNotFound
+        appname = MyopicVicar::Application.config.freexxx_display_name.upcase
+        logger.warn("#{appname}:SEARCH_ERROR:search record in search results went missing")
+        @search_results = nil
+      end
+    else
+      @search_results = nil
+    end
+    @search_results
+  end
+
   def can_query_ucf?
     Rails.application.config.ucf_support && self.places.exists? && !self.search_nearby_places# disable search until tested
   end
 
   def clean_blanks
     chapman_codes.delete_if { |x| x.blank? }
+    birth_chapman_codes.delete_if { |x| x.blank? }
   end
 
   def compare_location(x, y)
@@ -200,17 +216,23 @@ class SearchQuery
   end
 
   def date_range_is_valid
-    if !start_year.blank? && !end_year.blank?
-      if start_year.to_i > end_year.to_i
-        errors.add(:end_year, 'First year must precede last year.')
-      end
+    if start_year.present? && !start_year.to_i.bson_int32?
+      errors.add(:start_year, 'The start year is an invalid integer')
+    elsif end_year.present? && !end_year.to_i.bson_int32?
+      errors.add(:end_year, 'The end year is an invalid integer')
+    elsif start_year.present? && end_year.blank?
+      errors.add(:end_year, 'You have specified a start year but no end year')
+    elsif end_year.present? && start_year.blank?
+      errors.add(:start_year, 'You have specified an end year but no start year')
+    elsif start_year.present? && end_year.present? && start_year.to_i > end_year.to_i
+      errors.add(:end_year, 'First year must precede last year.')
     end
   end
 
   def date_search_params
-    params = Hash.new
+    params = {}
     if start_year || end_year
-      date_params = Hash.new
+      date_params = {}
       date_params['$gt'] = DateParser::start_search_date(start_year) if start_year
       date_params['$lte'] = DateParser::end_search_date(end_year) if end_year
       params[:search_date] = date_params
@@ -239,25 +261,29 @@ class SearchQuery
       record = SearchRecord.new(record)
       record.search_names.each do |name|
         if name.type == SearchRecord::PersonType::PRIMARY || self.inclusive || self.witness
-          if name.contains_wildcard_ucf?
-            if self.first_name.blank?
-              # test surname
-              if self.last_name.match(UcfTransformer.ucf_to_regex(name.last_name.downcase))
-                filtered_records << record
-              end
-            elsif self.last_name.blank?
-              # test forename
-              if self.first_name.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))
-                filtered_records << record
-              end
-            else
-              # test both
-              #             print "#{self.last_name.downcase}.match(#{UcfTransformer.ucf_to_regex(name.last_name.downcase).inspect}) && #{self.first_name.downcase}.match(#{UcfTransformer.ucf_to_regex(name.first_name.downcase).inspect}) => #{self.last_name.downcase.match(UcfTransformer.ucf_to_regex(name.last_name.downcase)) && self.first_name.downcase.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))}\n"
-              if self.last_name.downcase.match(UcfTransformer.ucf_to_regex(name.last_name.downcase)) && self.first_name.downcase.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))
-                filtered_records << record
+          begin
+            if name.contains_wildcard_ucf?
+              if self.first_name.blank?
+                # test surname
+                if self.last_name.match(UcfTransformer.ucf_to_regex(name.last_name.downcase))
+                  filtered_records << record
+                end
+              elsif self.last_name.blank?
+                # test forename
+                if self.first_name.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))
+                  filtered_records << record
+                end
+              else
+                # test both
+                #             print "#{self.last_name.downcase}.match(#{UcfTransformer.ucf_to_regex(name.last_name.downcase).inspect}) && #{self.first_name.downcase}.match(#{UcfTransformer.ucf_to_regex(name.first_name.downcase).inspect}) => #{self.last_name.downcase.match(UcfTransformer.ucf_to_regex(name.last_name.downcase)) && self.first_name.downcase.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))}\n"
+                if self.last_name.downcase.match(UcfTransformer.ucf_to_regex(name.last_name.downcase)) && self.first_name.downcase.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))
+                  filtered_records << record
+                end
               end
             end
+          rescue RegexpError
           end
+
         end
       end
     end
@@ -390,6 +416,8 @@ class SearchQuery
       name_params['last_name'] = wildcard_to_regex(last_name.downcase) if last_name
       params['search_names'] =  { '$elemMatch' => name_params}
     else
+      params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes && chapman_codes.size > 0
+      params[:birth_chapman_code] = { '$in' => birth_chapman_codes } if birth_chapman_codes && birth_chapman_codes.size > 0
       if fuzzy
         name_params['first_name'] = Text::Soundex.soundex(first_name) if first_name
         name_params['last_name'] = Text::Soundex.soundex(last_name) if last_name.present?
@@ -404,22 +432,22 @@ class SearchQuery
   end
 
   def next_and_previous_records(current)
-    if self.search_result.records.respond_to?(:values)
-      search_results =   self.search_result.records.values
-      search_results = self.filter_name_types(search_results)
-      search_results = self.sort_results(search_results) unless search_results.nil?
-      record_number = locate_index(search_results,current)
-      next_record = nil
-      previous_record = nil
-      next_record = search_results[record_number + 1][:_id] unless record_number.nil? || search_results.nil? || record_number >= search_results.length - 1
-      previous_record = search_results[record_number - 1][:_id] unless search_results.nil?  || record_number.nil? || record_number == 0
+    if search_result.records.respond_to?(:values)
+      search_results = search_result.records.values
+      search_results = filter_name_types(search_results)
+      search_results = sort_results(search_results) unless search_results.nil?
+      record_number = locate_index(search_results, current)
+      next_record_id = nil
+      previous_record_id = nil
+      next_record_id = search_results[record_number + 1][:_id] unless record_number.nil? || search_results.nil? || record_number >= search_results.length - 1
+      previous_record_id = search_results[record_number - 1][:_id] unless search_results.nil? || record_number.nil? || record_number.zero?
+      next_record = SearchRecord.find(next_record_id) if next_record_id.present?
+      previous_record = SearchRecord.find(previous_record_id) if previous_record_id.present?
       response = true
-      return  response,next_record, previous_record
     else
       response = false
-      return response
     end
-
+    [response, next_record, previous_record]
   end
 
   def persist_additional_results(results)
@@ -464,9 +492,38 @@ class SearchQuery
 
       params[:place_id] = { '$in' => search_place_ids }
     else
-      params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes && chapman_codes.size > 0
+      chapman_codes && chapman_codes.size > 0 ? params[:chapman_code] = { '$in' => chapman_codes } : params[:chapman_code] = { '$in' => ChapmanCode.values }
+      # params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes && chapman_codes.size > 0
+      params[:birth_chapman_code] = { '$in' => birth_chapman_codes } if birth_chapman_codes && birth_chapman_codes.size > 0
     end
     params
+  end
+
+  def previous_record(current)
+    records_sorted = self.results
+    return nil if records_sorted.nil?
+    record_ids_sorted = Array.new
+    records_sorted.each do |rec|
+      record_ids_sorted << rec["_id"].to_s
+    end
+    idx = record_ids_sorted.index(current.to_s) unless record_ids_sorted.nil?
+    return nil if idx.nil? || idx <= 0
+    record = record_ids_sorted[idx-1]
+    record
+  end
+
+
+  def next_record(current)
+    records_sorted = self.results
+    return nil if records_sorted.nil?
+    record_ids_sorted = Array.new
+    records_sorted.each do |rec|
+      record_ids_sorted << rec["_id"].to_s
+    end
+    idx = record_ids_sorted.index(current.to_s) unless record_ids_sorted.nil?
+    return nil if idx.nil?
+    record = record_ids_sorted[idx+1]
+    record
   end
 
   def query_contains_wildcard?
@@ -507,6 +564,7 @@ class SearchQuery
     param[:role] = self.role
     param[:record_type] = self.record_type
     param[:chapman_codes] = self.chapman_codes
+    param[:birth_chapman_codes] = self.birth_chapman_codes
     param[:inclusive] = self.inclusive
     param[:witness] = self.witness
     param[:start_year] = self.start_year
@@ -536,13 +594,14 @@ class SearchQuery
     @search_parameters = search_params
     @search_index = SearchRecord.index_hint(@search_parameters)
     # @search_index = 'place_rt_sd_ssd' if query_contains_wildcard?
-    logger.warn("FREEREG:SEARCH_HINT: #{@search_index}")
-    self.update_attribute(:search_index, @search_index)
+    logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
+    update_attribute(:search_index, @search_index)
+
     # logger.warn @search_parameters.inspect
     records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
-    self.persist_results(records)
-    self.persist_additional_results(secondary_date_results) if (self.result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
-    search_ucf if can_query_ucf? && self.result_count <= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+    persist_results(records)
+    persist_additional_results(secondary_date_results) if App.name == 'FreeREG' && (result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+    search_ucf if can_query_ucf? && result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
     records
   end
 
@@ -552,7 +611,7 @@ class SearchQuery
     @secondary_search_params.delete_if { |key, value| key == :search_date }
     # @secondary_search_params[:record_type] = { '$in' => [RecordType::BAPTISM] }
     @search_index = SearchRecord.index_hint(@search_parameters)
-    logger.warn("FREEREG:SSD_SEARCH_HINT: #{@search_index}")
+    logger.warn("#{App.name_upcase}:SSD_SEARCH_HINT: #{@search_index}")
     secondary_records = SearchRecord.collection.find(@secondary_search_params).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     secondary_records
   end
@@ -569,35 +628,29 @@ class SearchQuery
   def search_ucf
     start_ucf_time = Time.now.utc
     ucf_index = SearchRecord.index_hint(ucf_params)
+    logger.warn("#{App.name_upcase}:UCF_SEARCH_HINT: #{ucf_index}")
     ucf_records = SearchRecord.collection.find(ucf_params).hint(ucf_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     ucf_records = filter_ucf_records(ucf_records)
-    self.ucf_filtered_count = ucf_records.length
-    self.search_result.ucf_records = ucf_records.map { |sr| sr.id }
-    self.runtime_ucf = (Time.now.utc - start_ucf_time) * 1000
-    self.save
+    ucf_filtered_count = ucf_records.length
+    search_result.ucf_records = ucf_records.map { |sr| sr.id }
+    runtime_ucf = (Time.now.utc - start_ucf_time) * 1000
+    save
   end
 
   def sort_results(results)
     # next reorder in memory
     if results.present?
       case self.order_field
-      when SearchOrder::COUNTY
-        if self.order_asc
-          results.sort! { |x, y| (x['chapman_code'] || '') <=> (y['chapman_code'] || '') }
-        else
-          results.sort! { |x, y| (y['chapman_code'] || '') <=> (x['chapman_code'] || '') }
+      when *selected_sort_fields
+        results.sort! do |x, y|
+          x, y = y, x unless self.order_asc
+          (x[order_field] || '') <=> (y[order_field] || '')
         end
       when SearchOrder::DATE
         if self.order_asc
           results.sort! { |x, y| (x[:search_date] || '') <=> (y[:search_date] || '') }
         else
           results.sort! { |x, y| (y[:search_date] || '') <=> (x[:search_date] || '') }
-        end
-      when SearchOrder::TYPE
-        if self.order_asc
-          results.sort! { |x, y| (x['record_type'] || '') <=> (y['record_type'] || '') }
-        else
-          results.sort! { |x, y| (y['record_type'] || '') <=> (x['record_type'] || '') }
         end
       when SearchOrder::LOCATION
         if self.order_asc
@@ -692,9 +745,37 @@ class SearchQuery
     end
   end
 
+
+  def county_is_valid
+    if MyopicVicar::Application.config.template_set == 'freereg'
+      if chapman_codes[0].nil? && !(record_type.present? && start_year.present? && end_year.present?)
+        errors.add(:chapman_codes, "A date range and record type must be part of your search if you do not select a county.")
+      end
+      if chapman_codes.length > 3
+        if !chapman_codes.eql?(["ALD", "GSY", "JSY", "SRK"])
+          errors.add(:chapman_codes, "You cannot select more than 3 counties.")
+        end
+      end
+    elsif MyopicVicar::Application.config.template_set == 'freecen'
+      # don't require date range for now. may need to add back in later.
+    end
+  end
+
+  def radius_is_valid
+    if search_nearby_places && places.count == 0
+      errors.add(:search_nearby_places, "A Place must have been selected as a starting point to use the nearby option.")
+    end
+  end
+
   def wildcards_are_valid
     if first_name && begins_with_wildcard(first_name) && places.count == 0
       errors.add(:first_name, 'A place must be selected if name queries begin with a wildcard')
     end
+  end
+
+  private
+
+  def selected_sort_fields
+    [ SearchOrder::COUNTY, SearchOrder::BIRTH_COUNTY, SearchOrder::TYPE ]
   end
 end

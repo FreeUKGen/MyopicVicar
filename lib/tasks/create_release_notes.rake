@@ -1,4 +1,3 @@
-
 task :new_release_note do
   
   puts "Creating new release note"
@@ -12,7 +11,12 @@ task :new_release_note do
   current_date = current_time.strftime "%Y-%m-%d"
   current_date_UK = current_time.strftime "%d-%m-%Y"
   
-  template = "__FreeREG | Release Notes__
+  if MyopicVicar::Application.config.template_set == 'freecen'
+    template = "__FreeCEN2 | Release Notes__"
+  else
+    template = "__FreeREG | Release Notes__"
+  end
+  template += "
   =======================
   #{current_date_UK}
 
@@ -43,11 +47,11 @@ task :new_release_note do
   #{git_log}
   "
 
-  out_file = File.new("./doc/release_notes/release-notes-#{current_date}.md", "w")
+  out_file = File.new("./doc/release_notes/#{MyopicVicar::Application.config.template_set}_release-notes-#{current_date}.md", "w")
   out_file.puts(template)
 
   if File.exist?(out_file) 
-    puts "New release note generated successfully at /doc/release-notes/release-notes-#{current_date}.md"
+    puts "New release note generated successfully at /doc/release-notes/#{MyopicVicar::Application.config.template_set}_release-notes-#{current_date}.md"
   else 
     puts "Error - file not generated."
   end 

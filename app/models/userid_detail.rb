@@ -8,6 +8,7 @@ class UseridDetail
   field :userid, type: String
   field :userid_lower_case, type: String
   field :syndicate, type: String
+  field :syndicate_coordinator, type: String
   field :submitter_number, type: String
   field :person_surname, type: String
   field :person_forename, type: String
@@ -81,6 +82,10 @@ class UseridDetail
       where(:syndicate => syndicate)
     end
 
+    def syndicate_coordinator(syndicate_coordinator)
+      where(:syndicate_coordinator => syndicate_coordinator)
+    end
+
     def userid(userid)
       where(:userid => userid)
     end
@@ -126,16 +131,16 @@ class UseridDetail
     def can_we_acknowledge_the_transcriber(userid)
       answer = false
       transcribed_by = nil
-      if userid.present? && !(userid.do_not_acknowledge_me.present?)
+      if userid.present? && userid.do_not_acknowledge_me.blank?
         answer = true
         if userid.acknowledge_with_pseudo_name
           transcribed_by = userid.pseudo_name
         else
           transcribed_by = userid.person_forename
-          transcribed_by.nil? ? transcribed_by = userid.person_surname : transcribed_by = transcribed_by + ' ' + userid.person_surname
+          transcribed_by = transcribed_by.nil? ? userid.person_surname : transcribed_by = transcribed_by + ' ' + userid.person_surname
         end
       end
-      return answer, transcribed_by
+      [answer, transcribed_by]
     end
 
     def create_friendly_from_email(userid)
@@ -148,6 +153,7 @@ class UseridDetail
       friendly_email
     end
   end
+
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Instance Methods
 
@@ -276,6 +282,7 @@ class UseridDetail
     end
   end
 
+
   def self.get_active_userids_for_display(syndicate)
     @userids = UseridDetail.where(:active => true).all.order_by(userid_lower_case: 1) if syndicate == 'all'
     @userids = UseridDetail.where(:syndicate => syndicate, :active => true).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
@@ -305,6 +312,45 @@ class UseridDetail
     end
     return @userids
   end
+
+  def send_invitation_to_create_password
+    type = self.person_role
+    UserMailer.invitation_to_register_researcher(self).deliver if type == 'researcher'
+    UserMailer.invitation_to_register_transcriber(self).deliver if type == 'transcriber'
+    UserMailer.invitation_to_register_technical(self).deliver if type == 'technical'
+  end
+
+  def send_invitation_to_reset_password
+    UserMailer.invitation_to_reset_password(self).deliver
+
+  end
+
+  def save_to_attic
+    return if MyopicVicar::Application.config.template_set == 'freecen'
+    #to-do unix permissions
+    user = self
+    details_dir = File.join(Rails.application.config.datafiles,user.userid)
+    details_file = File.join(details_dir,".uDetails")
+    newdir = File.join(details_dir,'.attic')
+    Dir.mkdir(newdir) unless Dir.exists?(newdir)
+    renamed_file = (details_file + "." + (Time.now.to_i).to_s).to_s
+    File.rename(details_file,renamed_file)
+    FileUtils.mv(renamed_file,newdir)
+  end
+
+  def userid_and_email_address_does_not_exist
+    errors.add(:userid, "Userid Already exists") if UseridDetail.where(:userid => self[:userid]).exists?
+    errors.add(:userid, "Refinery User Already exists") if Refinery::User.where(:username => self[:userid]).exists?
+    errors.add(:email_address, "Userid email already exists") if UseridDetail.where(:email_address => self[:email_address]).exists?
+    errors.add(:email_address, "Refinery email already exists") if Refinery::User.where(:email => self[:email_address]).exists?
+  end
+
+  #def userid_and_email_address_does_not_exist
+  # errors.add(:userid, "Userid Already exists") if UseridDetail.where(:userid => self[:userid]).exists?
+  #errors.add(:userid, "Refinery User Already exists") if Refinery::Authentication::Devise::User.where(:username => self[:userid]).exists?
+  #errors.add(:email_address, "Userid email already exists") if UseridDetail.where(:email_address => self[:email_address]).exists?
+  #errors.add(:email_address, "Refinery email already exists") if Refinery::Authentication::Devise::User.where(:email => self[:email_address]).exists?
+  #end
 
   def self.get_userids_for_display(syndicate)
     @userids  = UseridDetail.all.order_by(userid_lower_case: 1) if syndicate == 'all'
@@ -374,6 +420,7 @@ class UseridDetail
     refinery_user = Refinery::Authentication::Devise::User.where(:username => self.userid).first
     refinery_user.destroy unless refinery_user.nil?
     details_dir = File.join(Rails.application.config.datafiles,self.userid)
+    return if MyopicVicar::Application.config.template_set == 'freecen'
     FileUtils.rmdir(details_dir) if File.file?(details_dir)
   end
 
@@ -383,6 +430,13 @@ class UseridDetail
       UseridDetail.where(:email_address => self[:email_address]).exists?  && (self.userid != Refinery::Authentication::Devise::User.where(:username => self[:userid]))
       errors.add(:email_address, "Refinery email already exists on change") if
       Refinery::Authentication::Devise::User.where(:email => self[:email_address]).exists? && (self.userid != Refinery::Authentication::Devise::User.where(:username => self[:userid]))
+    end
+  end
+
+  def self.userid_does_not_exist
+    if self.changed.include?('userid')
+      errors.add(:base, "Userid Already exists") if UseridDetail.where(:userid => self[:userid]).exists?
+      errors.add(:base, "Refinery User Already exists") if Refinery::Authentication::Devise::User.where(:username => self[:userid]).exists?
     end
   end
 
@@ -608,4 +662,5 @@ class UseridDetail
       self.new_transcription_agreement = 'Declined'
     end
   end
+
 end #end class

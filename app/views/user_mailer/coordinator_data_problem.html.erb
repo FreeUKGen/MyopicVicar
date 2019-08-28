@@ -1,0 +1,59 @@
+<p> Dear <%= @contact.name %>;</p>
+<p>Thank you for your correspondence at <%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil?%>. Please quote the following number <%= @contact.identifier %> in any subsequent communication with us on this matter.</p>
+<p>Your correspondence has been forwarded to a member of the team for consideration. It may be sometime before you receive a reply as we may have to contact the original transcriber for their opinion.</p>
+<p>The following is the information you submitted.</p>
+<% if @contact.selected_county %>
+  <p>
+    <b>County:</b>
+    <%= ChapmanCode::name_from_code(@contact.selected_county) + '(' + @contact.selected_county + ')' %>
+  </p>
+<% end %>
+<p> <b>Data Problem:</b></p>
+<p>
+  <%= @contact.body %>
+</p>
+<h4>Below are the further details of the data:</h4>
+<table border="1">
+  <tr>
+    <th>Full Name :</th>
+    <td>
+      <%= "#{@individual.forenames} #{@individual.surname}"%>
+    </td>
+  </tr>
+</table>
+<table border="1">
+  <tr>
+    <th>Census Year</th>
+    <th>County</th>
+    <th>Place</th>
+    <th>Civil Parish</th>
+    <th>Piece</th>
+    <th>Enumeration District</th>
+    <th>Folio</th>
+    <th>Page</th>
+    <th>Schedule Number</th>
+    <th>House Number</th>
+    <th>House or Street Name</th>
+  </tr>
+  <% @record.dwelling_info.tap do |d| %>
+    <tr>
+      <td><%= d.freecen_piece_year.to_s %></td>
+      <td>
+        <%= "#{ChapmanCode::name_from_code(d.freecen_piece_chapman_code)} ( #{ d.freecen_piece_chapman_code } )"%>
+      </td>
+      <td><%= d.place_name %></td>
+      <td><%= d.civil_parish %></td>
+      <td><%= d.freecen_piece_piece_number %></td>
+      <td><%= d.enumeration_district %></td>
+      <td><%= d.folio_number %></td>
+      <td><%= d.page_number %></td>
+      <td><%= d.schedule_number %></td>
+      <td><%= d.house_number %></td>
+      <td><%= d.house_or_street_name %></td>
+    </tr>
+  <% end %>
+</table>
+<% if @contact.screenshot_url.present?%>
+  <p>An image is attached</p>
+<% end%>
+<p>The <%= @appname %> Team</p>
