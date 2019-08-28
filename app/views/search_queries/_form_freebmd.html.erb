@@ -10,35 +10,32 @@
       <li class="validation-list__error text--center" ><%= msg[0] %></li>
     <% end %>
   </ul>
-  <% @search_query.errors.clear %>
 <% end %>
 <div class="bmd_search_form">
   <%= semantic_form_for(@search_query) do |f| %>
     <div class="grid search_form">
+
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <div class='labels'>
           <%= label_tag 'first_name', 'First name(s)', class: "ttip" %>
-          <%= label_tag 'first_name', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '0'%>
+          <%= label_tag 'first_name', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '0', title: info_tag_text[:firstname]%>
         </div>
-        <%= text_field_tag 'first_name', set_value(@search_query.first_name), class: 'text-input', placeholder: 'Enter first names here', tabindex: '1'%>        
-        <%= f.label :fuzzy, { :class => "optional_attributes", :tabindex => "2" } do %>
-          <%= f.check_box :fuzzy, {},  true, false %>
-          <small class="optional_checkbox_label">Exact match on first names</small>
-        <% end %>
+        <%= text_field_tag 'search_query[first_name]', set_value(@search_query.first_name), class: 'text-input', placeholder: 'Enter first name(s) here', tabindex: '1'%>
+        <%= check_box_tag :first_name_exact_match, tabindex: '2' %>
+        <%= content_text(:small,'Exact match on first names') %>
       </div>
-      <div class="grid__item one-fifth lap-one-half palm-one-whole">
 
-          <!--span class="ttip__text">Use upper- or lower-case. If you do not enter a surname (last-name) you <em>must</em> enter a forename, select one county and choose a single record type</span-->
+      <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <div class='labels'>
           <%= label_tag 'last_name', 'Surname', class: "ttip" %>
           <%= label_tag 'last_name', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '3'%>
         </div>
-        <%= text_field_tag "search_query[last_name]", set_value(@search_query.last_name), class: 'text-input', id: 'last_name', placeholder: 'Enter Surname here', tabindex: '4' %>
-        <%= f.label :fuzzy, { :class => "optional_attributes", :tabindex => "5" } do %>
-          <%= f.check_box :fuzzy, {},  true, false %>
-          <small class="optional_checkbox_label">Exact match on first names</small>
-        <% end %>
+        <%= text_field_tag 'search_query[last_name]', set_value(@search_query.last_name), class: 'text-input', id: 'last_name', placeholder: 'Enter Surname here', tabindex: '4' %>
+        <%= check_box_tag :surname_exact_match, tabindex: '5' %>
+        <%= content_text(:small, 'Exact match on surname') %>
       </div>
+
+
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <div class='labels'>
           <%= label_tag 'start_year', 'Date range from', class: "ttip" %>
@@ -101,9 +98,9 @@
           <span class="ttip__text">Optional. Use upper- or lower-case. Abbreviations and Latin versions of the forename (first-name) will be included automatically</span>
         </label>
         <% if @search_query.first_name.nil? %>
-          <input id="first_name" name="search_query[first_name]" type="text" class="text-input">
+          <input id="first_name" name="search_query[spouse_first_name]" type="text" class="text-input">
         <% else %>
-          <input id="first_name" name="search_query[first_name]" type="text" class="text-input" value="<%=@search_query.first_name%>">
+          <input id="first_name" name="search_query[spouse_first_name]" type="text" class="text-input" value="<%=@search_query.first_name%>">
         <% end %>
         <%= f.label :fuzzy, { :class => "optional_attributes", :tabindex => "0" } do %>
           <%= f.check_box :fuzzy, {},  true, false %>
@@ -117,9 +114,9 @@
           <span class="ttip__text">Use upper- or lower-case. If you do not enter a surname (last-name) you <em>must</em> enter a forename, select one county and choose a single record type</span>
         </label>
         <% if @search_query.last_name.nil? %>
-          <input id="last_name" name="search_query[last_name]" type="text" class="text-input">
+          <input id="last_name" name="search_query[mother_last_name]" type="text" class="text-input">
         <% else %>
-          <input id="last_name" name="search_query[last_name]" type="text" class="text-input" value="<%=@search_query.last_name%>">
+          <input id="last_name" name="search_query[mother_last_name]" type="text" class="text-input" value="<%=@search_query.last_name%>">
         <% end %>
       </div>
       <div class="grid__item one-quarter lap-one-half palm-one-whole">
@@ -192,7 +189,7 @@
       :button_html => { :class => "ladda-button" , "data-style" => "contract" ,"data-color" =>"#a1185a" , "data-size" => "l", "data-spinner-color" => "#ffffff" },
       :wrapper_html => { :class => "grid__item one-whole push-half--ends" } %>
       <%= button_tag 'Clear Form', type: :reset, class: 'clear_form' %>
-      <%= f.submit 'Search', class: 'search_form_submit_button' %>
+      <%= submit_tag 'Search', class: 'search_form_submit_button' %>
 
     </div>
   <% end %>

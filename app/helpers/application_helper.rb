@@ -615,7 +615,14 @@ module ApplicationHelper
     {target: '_blank', rel: 'noreferrer'}
   end
 
-  def info_tag_message
-   # <%= tag.span 'Optional. Use upper- or lower-case. Abbreviations and Latin versions of the forename (first-name) will be included automatically', class: 'ttip__text'%>
+  def info_tag_text
+   {
+    firstname: 'Optional. Use upper- or lower-case. Abbreviations and Latin versions of the forename (first-name) will be included automatically',
+    lastname: 'Use upper- or lower-case. If you do not enter a surname (last-name) you <em>must</em> enter a forename, select one county and choose a single record type'
+  }
+  end
+
+  def content_text tag, info_text
+    content_tag tag, info_text, class: 'ttip__text'
   end
 end
