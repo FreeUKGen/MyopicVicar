@@ -189,7 +189,7 @@ class ContactsController < ApplicationController
     @options = FreeregOptionsConstants::ISSUES
     @contact.contact_time = Time.now
     @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
-    flash.notice = 'Please use Communicate Action to contact your Syndicate Coordinator first.' if session[:userid].present?
+    #flash.notice = 'Please use Communicate Action to contact your Syndicate Coordinator first.' if session[:userid].present?
   end
 
   def report_error
