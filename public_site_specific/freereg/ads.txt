@@ -1,4 +1,3 @@
-google.com, pub-5379635334920389, DIRECT, f08c47fec0942fa0
 google.com, pub-7825403497160061, DIRECT, f08c47fec0942fa0
 
 #Monetizemore
