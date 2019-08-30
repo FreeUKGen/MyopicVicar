@@ -437,7 +437,6 @@ module ApplicationHelper
     (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
     </script>
     <ins class="adsbygoogle adSenseBanner"
-    style = "display:inline-block;height:90px"
     data-ad-client="#{data_ad_client}"
     data-ad-slot="#{app_advert['data_ad_slot_header']}"
     data-ad-format="auto"
@@ -489,7 +488,6 @@ module ApplicationHelper
                   </script>
                   <!-- FreeCEN2 Transcriber Registration (Responsive) -->
                   <ins class="adsbygoogle adSenseBanner"
-                  style = "display:inline-block;height:90px"
                   data-ad-client="#{data_ad_client}"
                   data-ad-slot="#{app_advert['data_ad_slot_fullwidth']}"
                   data-ad-format="auto"
@@ -523,7 +521,6 @@ module ApplicationHelper
                       </script>
                       <!-- Responsive ad -->
                       <ins class="adsbygoogle adSenseBanner"
-                      style = "display:inline-block"
                       data-ad-client="#{data_ad_client}"
                       data-ad-slot= "#{@data_ad_slot}"
                       data-ad-format="auto"
@@ -560,7 +557,6 @@ module ApplicationHelper
                           (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
                           </script>
                           <ins class="adsbygoogle adSenseBanner"
-                          style = "display:inline-block;height:90px"
                           data-ad-client = "#{data_ad_client}"
                           data-ad-slot = "#{app_advert['data_ad_slot_header']}"
                           data-ad-format="auto"
@@ -578,11 +574,6 @@ module ApplicationHelper
                               (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
                               </script>
                               HTML
-                              if Rails.env.development?
-                                banner = <<-HTML
-                                <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
-                                HTML
-                              end
                               banner.html_safe
                             end
 
