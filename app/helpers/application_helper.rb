@@ -437,7 +437,7 @@ module ApplicationHelper
     (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
     </script>
     <ins class="adsbygoogle adSenseBanner"
-    style = "display:inline-block"
+    style = "display:inline-block;height:90px"
     data-ad-client="#{data_ad_client}"
     data-ad-slot="#{app_advert['data_ad_slot_header']}"
     data-ad-format="auto"
@@ -489,7 +489,7 @@ module ApplicationHelper
                   </script>
                   <!-- FreeCEN2 Transcriber Registration (Responsive) -->
                   <ins class="adsbygoogle adSenseBanner"
-                  style = "display:inline-block"
+                  style = "display:inline-block;height:90px"
                   data-ad-client="#{data_ad_client}"
                   data-ad-slot="#{app_advert['data_ad_slot_fullwidth']}"
                   data-ad-format="auto"
@@ -560,7 +560,7 @@ module ApplicationHelper
                           (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
                           </script>
                           <ins class="adsbygoogle adSenseBanner"
-                          style = "display:inline-block"
+                          style = "display:inline-block;height:90px"
                           data-ad-client = "#{data_ad_client}"
                           data-ad-slot = "#{app_advert['data_ad_slot_header']}"
                           data-ad-format="auto"
