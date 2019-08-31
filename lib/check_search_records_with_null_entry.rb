@@ -6,7 +6,6 @@ class CheckSearchRecordsWithNullEntry
   end
 
   class << self
-
     def process(limit, do_we_fix)
       file_for_warning_messages = 'log/check_search_records_messages.log'
       FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )
@@ -15,72 +14,66 @@ class CheckSearchRecordsWithNullEntry
       fix = false
       fix = true if do_we_fix == 'fix'
 
-      p "checking #{limit} documents for null entries in the search records collection with fix of #{fix}"
-      record_number = 0
-      previous_date = 0
-      previous_line_id = 0
-      previous_id = 0
-      SearchRecord.where(freereg1_csv_entry_id: nil).order_by(u_at: 1).no_timeout.each do |my_entry|
-        p my_entry
-        record_number = record_number + 1
-        break if record_number == limit
-
-        continue = CheckSearchRecordsWithNullEntry.delete_previous_entry(previous_date, previous_line_id, previous_id, my_entry, fix, message_file)
-        p "Could not delete record #{previous_date}, #{previous_line_id}, #{previous_id}, #{my_entry.id}" unless continue
-        break unless continue
-
-        previous_date, previous_line_id, previous_id = CheckSearchRecordsWithNullEntry.previous(my_entry)
-        entries = Freereg1CsvEntry.where(line_id: my_entry.line_id).all
-        if entries.length.zero?
-          message_file.puts "#{my_entry.id},#{my_entry.line_id}, 'No matching entry'"
-        else
+      p "checking documents for null entries in the search records collection with fix of #{fix}"
+      null_search_records = SearchRecord.where(freereg1_csv_entry_id: nil).order_by(u_at: 1).all
+      null_search_records.uniq!
+      message_file.puts 'Number'
+      message_file.puts null_search_records.length
+      null_search_records.each do |record|
+        message_file.puts record.line_id
+        entries = Freereg1CsvEntry.where(line_id: record.line_id).order_by(u_at: 1).all
+        if entries.present? && entries.length > 1
+          message_file.puts 'greater than 1'
+          message_file.puts record.inspect
           entries.each do |entry|
-            records = SearchRecord.where(freereg1_csv_entry_id: entry.id).all
-            if records.blank?
-              if fix
-                my_entry.update_attribute(:freereg1_csv_entry_id, entry.id)
-                message_file.puts "#{my_entry.id},#{my_entry.line_id}, #{entry.id}, 'fixed'"
-              else
-                message_file.puts "#{my_entry.id},#{my_entry.line_id}, #{entry.id}"
-              end
-            else
-              records.each do |record|
-                if fix
-                  my_entry.update_attribute(:freereg1_csv_entry_id, entry.id) unless my_entry.freereg1_csv_entry_id == entry.id
-                  message_file.puts "#{my_entry.id},#{my_entry.line_id}, #{entry.id}, 'fixed'" unless my_entry.freereg1_csv_entry_id == entry.id
-                  message_file.puts "#{my_entry.id},#{my_entry.line_id}, #{record.id}, 'deleted'"
-                  record.destroy
-                else
-                  message_file.puts "#{my_entry.id},#{my_entry.line_id}, #{record.id}, 'duplicated record'"
-                end
-              end
-
-            end
+            message_file.puts entry.inspect
           end
+          message_file.puts 'fine tune'
+          if record.record_type == 'ba'
+            entry = Freereg1CsvEntry.where(freereg1_csv_file_id: entries.first.freereg1_csv_file_id,  line_id: record.line_id, person_forename: record.transcript_names[0]["first_name"], father_surname: record.transcript_names[0]["last_name"]).order_by(u_at: 1).all
+          elsif record.record_type == 'ma'
+            entry = Freereg1CsvEntry.where(freereg1_csv_file_id: entries.first.freereg1_csv_file_id,  line_id: record.line_id, bride_forename: record.transcript_names[0]["first_name"], bride_surname: record.transcript_names[0]["last_name"]).order_by(u_at: 1).all
+          end
+          if entry.present? && entry.length > 1
+            message_file.puts 'too many entries'
+            entry.each do |ent|
+              message_file.puts ent.inspect
+            end
+          elsif entry.present? && entry.length == 1
+            message_file.puts 'single entry'
+            message_file.puts entry.inspect
+            record.update_attribute(:freereg1_csv_entry_id, entry.first.id)
+            message_file.puts 'record updated'
+            message_file.puts record.inspect
+          elsif entry.blank?
+            message_file.puts 'no entry'
+          end
+
+        elsif entries.present? && entries.length == 1
+          message_file.puts 'equal 1'
+          message_file.puts record.inspect
+          message_file.puts entries.first.inspect
+          search_records = SearchRecord.where(search_date: record.search_date, chapman_code: record.chapman_code, place_id: record.place_id, line_id: record.line_id).order_by(u_at: 1).all
+          if search_records.length > 1
+            message_file.puts 'multiple records'
+            search_records.each do |search_record|
+              message_file.puts search_record.inspect
+            end
+            message_file.puts 'first multiple destroyed'
+            search_records.first.destroy
+          else
+            message_file.puts 'single record'
+            record.update_attribute(:freereg1_csv_entry_id, entries.first.id)
+            message_file.puts 'record updated'
+            message_file.puts record.inspect
+          end
+        elsif entries.blank?
+          message_file.puts "No entry for #{record.line_id}"
+          message_file.puts record.inspect
+          record.destroy
+          message_file.puts 'record destroyed'
         end
       end
-      puts "checked #{record_number} entries "
-    end
-
-    def previous(record)
-      previous_date = record.u_at
-      previous_line_id = record.line_id
-      previous_id = record.id
-      [previous_date, previous_line_id, previous_id]
-    end
-
-    def delete_previous_entry(previous_date, previous_line_id, previous_id, my_entry, fix, message_file)
-      continue = false
-      date_check = false
-      line_check = false
-      date_check = true if my_entry.u_at >= previous_date
-      line_check = true if my_entry.line_id == previous_line_id
-      previous = SearchRecord.find(previous_id) if date_check && line_check
-      previous.destroy if previous.present? && date_check && line_check && fix
-      p "Destroying #{previous_id}" if previous.present? && date_check && line_check
-      message_file.puts "#{previous_id}, destroyed as duplicate empty " if previous.present? && date_check && line_check && fix
-      continue = true unless line_check
-      continue
     end
   end
 end
