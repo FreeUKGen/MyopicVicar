@@ -449,7 +449,7 @@ class Freecen1UpdateProcessor
             elsif db_file.file_digest.blank? || db_file.file_digest == vinfo['digest']
               piece = FreecenPiece.where(piece_number: db_file.piece, chapman_code: db_file.dir_name, year: db_file.full_year).first
               if piece.present? && piece.status != 'Online'
-                log_message("****Force reprocess #{db_file.piece} ************")
+                log_message("****Force reprocess #{db_file.dir_name} #{db_file.piece} ************")
                 vinfo['vld_file_id'] = db_file_id
                 modified_vlds << vinfo
                 vld_info[idx]['stat'] = 'modified'
