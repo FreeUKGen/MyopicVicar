@@ -181,8 +181,7 @@ class Freecen1UpdateProcessor
           if vld.present?
             pc = FreecenPiece.where(year: vld[:full_year], chapman_code: nv['chapman'], piece_number: vld[:piece], parish_number: vld[:sctpar]).first
             if pc.present?
-              pc.status = 'Online'
-              pc.save!
+              pc.update_attribute(:status, 'Online')
             end
           end
         rescue => e # rescue any exceptions and continue processing the other VLDs
@@ -448,7 +447,7 @@ class Freecen1UpdateProcessor
               modified_vlds << vinfo
               vld_info[idx]['stat'] = 'modified'
             elsif db_file.file_digest.blank? || db_file.file_digest == vinfo['digest']
-              piece = FreecenPiece.find_by(piece_number: db_file.piece)
+              piece = FreecenPiece.where(piece_number: db_file.piece, chapman_code: db_file.dir_name, year: db_file.full_year).first
               if piece.present? && piece.status != 'Online'
                 log_message("****Force reprocess #{db_file.piece} ************")
                 vinfo['vld_file_id'] = db_file_id
