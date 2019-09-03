@@ -439,8 +439,7 @@ module ApplicationHelper
     <ins class="adsbygoogle adSenseBanner"
     style="display:block"
     data-ad-client="#{data_ad_client}"
-    data-ad-slot="#{app_advert['data_ad_slot_header']}"
-    data-ad-format="auto"></ins>
+    data-ad-slot="#{app_advert['data_ad_slot_header']}"></ins>
     <script>
     window.update_personalized_google_adverts = function (preference) {
       if(preference == 'accept') {
@@ -549,9 +548,9 @@ module ApplicationHelper
                           banner = <<-HTML
                           <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
                           <style>
-                          .adSenseBanner { width: 320px; height: 100px; text-align: center; margin: auto;}
-                          @media(min-width: 500px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
-                          @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
+                          .adSenseBanner { width: 320px; height: 90px; text-align: left; margin: auto;}
+                          @media(min-width: 500px) { .adSenseBanner { width: 728px; height: 90px; text-align: left; margin: auto; } }
+                          @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; text-align: left; margin: auto; } }
                           </style>
                           <script>
                           (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
@@ -559,9 +558,7 @@ module ApplicationHelper
                           <ins class="adsbygoogle adSenseBanner"
                           style="display:block"
                           data-ad-client = "#{data_ad_client}"
-                          data-ad-slot = "#{app_advert['data_ad_slot_header']}"
-                          data-ad-format="auto"
-                          data-full-width-responsive="true">
+                          data-ad-slot = "#{app_advert['data_ad_slot_header']}">                         >
                           </ins>
                           <script>
                           window.update_personalized_header_adverts = function (preference) {
