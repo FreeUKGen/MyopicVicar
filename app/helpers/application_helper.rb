@@ -515,17 +515,12 @@ module ApplicationHelper
                       @data_ad_slot = current_page?(freecen_coverage_path) ? app_advert['data_ad_slot_coverage'] : app_advert['data_ad_slot_google_advert']
                       banner = <<-HTML
                       <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-                      <style>
-                      .adSenseBanner { width: 320px; text-align: left; margin: auto;}
-                      @media(min-width: 500px) { .adSenseBanner { width: 500px;  text-align: left; margin: auto; } }
-                      @media(min-width: 800px) { .adSenseBanner { width: 728px;  text-align: left; margin: auto; } }
-                      </style>
                       <script>
                       (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
                       </script>
                       <!-- Responsive ad -->
                       <ins class="adsbygoogle adSenseBanner"
-                      style="display:block"
+                      style="display:inline-block;width:500px;height:280px"
                       data-ad-client="#{data_ad_client}"
                       data-ad-slot= "#{@data_ad_slot}">
                       </ins>
