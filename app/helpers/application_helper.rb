@@ -554,7 +554,7 @@ module ApplicationHelper
                           <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
                           <style>
                           .adSenseBanner { width: 320px; height: 90px; text-align: left; margin: auto;}
-                          @media(min-width: 500px) { .adSenseBanner { width: 728px; height: 90px; text-align: left; margin: auto; } }
+                          @media(min-width: 500px) { .adSenseBanner { width: 500px; height: 90px; text-align: left; margin: auto; } }
                           @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; text-align: left; margin: auto; } }
                           </style>
                           <script>
