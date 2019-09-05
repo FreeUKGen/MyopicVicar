@@ -520,9 +520,9 @@ module ApplicationHelper
                       </script>
                       <!-- Responsive ad -->
                       <ins class="adsbygoogle"
-                      style="display:inline-block;width:728px;height:280px"
+                      style="display:inline-block;width:728px;height:90px"
                       data-ad-client="#{data_ad_client}"
-                      data-ad-slot= "#{@data_ad_slot}">
+                      data-ad-slot = "#{app_advert['data_ad_slot_header']}">
                       </ins>
                       <script>
                       window.update_personalized_adverts = function (preference) {
