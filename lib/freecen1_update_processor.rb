@@ -196,7 +196,7 @@ class Freecen1UpdateProcessor
             p "In recovery.................................."
             p nv
             p vld
-            file_record = Freecen1VldParser.process_vld_filename(nv['file'])
+            file_record = Freecen::Freecen1VldParser.process_vld_filename(nv['file'])
             # update the corresponding piece (if found) status to 'Error'
             pc = FreecenPiece.where(year: file_record[:full_year], chapman_code: file_record['chapman'], piece_number: file_record[:piece], parish_number: file_record[:sctpar]).first
             p pc
