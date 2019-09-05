@@ -194,6 +194,7 @@ class Freecen1UpdateProcessor
           begin
             vld = Freecen1VldFile.where(dir_name: nv['chapman'], file_name: nv['base']).first
             p "In recovery.................................."
+            p nv
             p vld
             # update the corresponding piece (if found) status to 'Error'
             if vld.present?
@@ -452,7 +453,7 @@ class Freecen1UpdateProcessor
             elsif db_file.file_digest.blank? || db_file.file_digest == vinfo['digest']
               piece = FreecenPiece.where(piece_number: db_file.piece, chapman_code: db_file.dir_name, year: db_file.full_year).first
               if piece.present? && piece.status != 'Online'
-                log_message("****Force reprocess #{db_file.dir_name} #{db_file.piece} ************")
+                log_message("****Force reprocess #{db_file.dir_name} #{db_file.file_name} ************")
                 vinfo['vld_file_id'] = db_file_id
                 modified_vlds << vinfo
                 vld_info[idx]['stat'] = 'modified'
