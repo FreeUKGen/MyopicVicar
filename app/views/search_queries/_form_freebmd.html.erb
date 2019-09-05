@@ -42,26 +42,19 @@
           <%= label_tag 'start_year', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '6'%>
         </div>
           <!--span class="ttip__text">Optional, YYYY. The first year you want to search</span-->
-        <% if @search_query.start_year.nil? %>
-          <%= select_month(Date.today, {use_short_month: true}, :class => 'select_month_year' ) %>
-          <%= select_year(Date.today, {start_year: 1992, end_year: 2007, prompt: '- - - -'}, {:class => 'select_month_year'}) %>
-        <% else %>
-          <input id="start_year" name="search_query[start_year]" type="text" class="text-input" value="<%=@search_query.start_year%>">
-        <% end %>
+          <%= select_month(Date.today, {use_short_month: true}, selected: @search_query.start_year, class: 'select_month_year' ) %>
+          <%= select_year(Date.today, {start_year: 1992, end_year: 2007, prompt: '- - - -'}, selected: @search_query.start_year, class: 'select_month_year') %>
       </div>
+
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
-        <label class="ttip" for="start_year" tabindex="0">
-          Date range to
-          <i class="fa fa-info-circle"></i>
-          <span class="ttip__text">Optional, YYYY. The first year you want to search</span>
-        </label>
-        <% if @search_query.start_year.nil? %>
-          <%= select_month(Date.today, {use_short_month: true}, :class => 'select_month_year' ) %>
-          <%= select_year(Date.today, {start_year: 1992, end_year: 2007, prompt: '- - - -'}, {:class => 'select_month_year'}) %>
-        <% else %>
-          <input id="start_year" name="search_query[start_year]" type="text" class="text-input" value="<%=@search_query.start_year%>">
-        <% end %>
+        <div class='labels'>
+          <%= label_tag 'to_year', 'Date range to', class: "ttip" %>
+          <%= label_tag 'to_year', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '6'%>
+        </div>
+        <%= select_month(Date.today, {use_short_month: true}, selected: @search_query.start_year, class: 'select_month_year' ) %>
+        <%= select_year(Date.today, {start_year: 1992, end_year: 2007, prompt: '- - - -'}, selected: @search_query.start_year, class: 'select_month_year') %>
       </div>
+
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <label class="ttip" for="end_year" tabindex="0">
           Record Type

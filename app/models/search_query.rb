@@ -8,8 +8,7 @@ class SearchQuery
   require 'name_role'
   require 'date_parser'
   require 'app'
-
-
+  extend SharedSearchMethods
   # consider extracting this from entities
   module SearchOrder
     TYPE='record_type'
@@ -425,7 +424,9 @@ class SearchQuery
       else
         name_params['first_name'] = first_name.downcase if first_name
         name_params['last_name'] = last_name.downcase if last_name.present?
+        name_params[:surname] = name_params.delete('last_name')
         params['search_names'] =  { '$elemMatch' => name_params}
+        params =   name_params if SearchQuery.app_template == 'freebmd'
       end
     end
     params
@@ -471,6 +472,7 @@ class SearchQuery
     results.each do |rec|
       record = rec # should be a SearchRecord despite Mongoid bug
       rec_id = record['_id'].to_s
+      rec_id = record[:RecordNumber].to_s if SearchQuery.app_template == 'freebmd'
       records[rec_id] = record
     end
     self.search_result =  SearchResult.new
@@ -478,6 +480,7 @@ class SearchQuery
     self.result_count = records.length
     self.runtime = (Time.now.utc - self.updated_at) * 1000
     self.day = Time.now.strftime('%F')
+    raise self.save.inspect
     self.save
   end
 
@@ -592,16 +595,14 @@ class SearchQuery
 
   def search
     @search_parameters = search_params
-    @search_index = SearchRecord.index_hint(@search_parameters)
+    @search_index = SearchQuery.get_search_table.index_hint(@search_parameters)
     # @search_index = 'place_rt_sd_ssd' if query_contains_wildcard?
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
     update_attribute(:search_index, @search_index)
-
-    # logger.warn @search_parameters.inspect
-    records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+    records = SearchQuery.get_search_table.where(@search_parameters)#.hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     persist_results(records)
     persist_additional_results(secondary_date_results) if App.name == 'FreeREG' && (result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
-    search_ucf if can_query_ucf? && result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+    #search_ucf if can_query_ucf? && result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
     records
   end
 
@@ -619,9 +620,9 @@ class SearchQuery
   def search_params
     params = {}
     params.merge!(name_search_params)
-    params.merge!(place_search_params)
-    params.merge!(record_type_params)
-    params.merge!(date_search_params)
+    #params.merge!(place_search_params)
+    #params.merge!(record_type_params)
+    #params.merge!(date_search_params)
     params
   end
 
