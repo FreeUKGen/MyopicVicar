@@ -192,18 +192,17 @@ class Freecen1UpdateProcessor
           end
           # remove the vld from the database because it didn't load properly
           begin
-            vld = Freecen1VldFile.where(dir_name: nv['chapman'], file_name: nv['base']).first
+            vld = Freecen1VldFile.where(dir_name: nv['chapman'], file_name: nv['base_up']).first
             p "In recovery.................................."
             p nv
             p vld
+            file_record = Freecen1VldParser.process_vld_filename(nv['file'])
             # update the corresponding piece (if found) status to 'Error'
-            if vld.present?
-              pc = FreecenPiece.where(year: vld[:full_year], chapman_code: nv['chapman'], piece_number: vld[:piece], parish_number: vld[:sctpar]).first
-              p pc
-              if pc.present?
-                pc.status = "Error #{e.message}"
-                pc.save!
-              end
+            pc = FreecenPiece.where(year: file_record[:full_year], chapman_code: file_record['chapman'], piece_number: file_record[:piece], parish_number: file_record[:sctpar]).first
+            p pc
+            if pc.present?
+              pc.status = "Error #{e.message}"
+              pc.save!
             end
             delete_vld_from_db(vld) unless vld.nil?
           rescue => e

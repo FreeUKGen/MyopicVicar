@@ -519,8 +519,8 @@ module ApplicationHelper
                       (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
                       </script>
                       <!-- Responsive ad -->
-                      <ins class="adsbygoogle adSenseBanner"
-                      style="display:inline-block;width:500px;height:280px"
+                      <ins class="adsbygoogle"
+                      style="display:inline-block;width:728px;height:280px"
                       data-ad-client="#{data_ad_client}"
                       data-ad-slot= "#{@data_ad_slot}">
                       </ins>
