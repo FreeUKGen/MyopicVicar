@@ -193,11 +193,14 @@ class Freecen1UpdateProcessor
           # remove the vld from the database because it didn't load properly
           begin
             vld = Freecen1VldFile.where(dir_name: nv['chapman'], file_name: nv['base']).first
+            p "In recovery.................................."
+            p vld
             # update the corresponding piece (if found) status to 'Error'
             if vld.present?
               pc = FreecenPiece.where(year: vld[:full_year], chapman_code: nv['chapman'], piece_number: vld[:piece], parish_number: vld[:sctpar]).first
+              p pc
               if pc.present?
-                pc.status = 'Error'
+                pc.status = "Error #{e.message}"
                 pc.save!
               end
             end
