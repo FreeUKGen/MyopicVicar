@@ -193,18 +193,15 @@ class Freecen1UpdateProcessor
           # remove the vld from the database because it didn't load properly
           begin
             vld = Freecen1VldFile.where(dir_name: nv['chapman'], file_name: nv['base_up']).first
-            p "In recovery.................................."
-            p nv
-            p vld
-            file_record = Freecen::Freecen1VldParser.process_vld_filename(nv['file'])
+            base_parts = nv['base_up'].split('.')
+            piece_number = base_parts[0][4, 4]
             # update the corresponding piece (if found) status to 'Error'
-            pc = FreecenPiece.where(year: file_record[:full_year], chapman_code: file_record['chapman'], piece_number: file_record[:piece], parish_number: file_record[:sctpar]).first
-            p pc
+            pc = FreecenPiece.where(chapman_code: nv['chapman'], piece_number: piece_number).first
             if pc.present?
               pc.status = "Error #{e.message}"
               pc.save!
             end
-            delete_vld_from_db(vld) unless vld.nil?
+            delete_vld_from_db(vld) if vld.present?
           rescue => e
             log_message("  ***EXCEPTION CAUGHT while cleaning up during rescue from previous exception! The database may not have been fully cleaned up for VLD file #{nv['file']}.\n  #{e.message}")
             log_message(e.backtrace.inspect)
