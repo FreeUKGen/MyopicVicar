@@ -292,6 +292,7 @@ class SearchQuery
   def filter_name_types(search_results)
     filtered_records = Array.new { {} }
     search_results.each do |search_result|
+      raise search_result.inspect
       search_result[:search_names].each do |search_name|
         if fuzzy
           include_record = include_record_for_fuzzy_search(search_name)
@@ -481,10 +482,6 @@ class SearchQuery
     self.runtime = (Time.now.utc - self.updated_at) * 1000
     self.day = Time.now.strftime('%F')
     self.save
-    p self
-    p self.search_result
-    p self.search_result.records
-    raise 'Crash'
   end
 
   def place_search?
