@@ -467,21 +467,24 @@ class SearchQuery
 
   def persist_results(results)
     return unless results
+
     # finally extract the records IDs and persist them
-    records = Hash.new
+    records = {}
     results.each do |rec|
       record = rec # should be a SearchRecord despite Mongoid bug
-      rec_id = record['_id'].to_s
-      rec_id = record[:RecordNumber].to_s if SearchQuery.app_template == 'freebmd'
-      records[rec_id] = record
+      rec_id = SearchQuery.app_template == 'freebmd' ? record[:RecordNumber].to_s : record['_id'].to_s
+      records[rec_id] = SearchQuery.app_template == 'freebmd' ? record.attributes : record
     end
-    self.search_result =  SearchResult.new
+    self.search_result = SearchResult.new
     self.search_result.records = records
     self.result_count = records.length
     self.runtime = (Time.now.utc - self.updated_at) * 1000
     self.day = Time.now.strftime('%F')
-    raise self.save.inspect
     self.save
+    p self
+    p self.search_result
+    p self.search_result.records
+    raise 'Crash'
   end
 
   def place_search?
