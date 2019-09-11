@@ -2,10 +2,18 @@ class OpenController < ApplicationController
   skip_before_action :require_login
 
   FREEREG_RECORD_TYPE_DESCRIPTION = "baptisms, marriages and burials"
+  FREECEN_RECORD_TYPE_DESCRIPTION = "census records"
+  def record_type_description
+    if MyopicVicar::Application.config.template_set == 'freecen'
+      FREECEN_RECORD_TYPE_DESCRIPTION
+    else
+      FREEREG_RECORD_TYPE_DESCRIPTION
+    end
+  end
 
   def index
     @open_counties = OpenCounty.all
-    @record_types_display = FREEREG_RECORD_TYPE_DESCRIPTION
+    @record_types_display = record_type_description
   end
 
   MIN_SURNAMES_PER_PLACE = 100
@@ -14,7 +22,7 @@ class OpenController < ApplicationController
     @county = params[:county]
     chapman_code = ChapmanCode.code_from_name(@county)
     @open_places = Place.chapman_code(chapman_code).not_disabled.data_present.where(:open_record_count.gt => MIN_SURNAMES_PER_PLACE).sort(:place_name => 1)
-    @record_types_display = FREEREG_RECORD_TYPE_DESCRIPTION
+    @record_types_display = record_type_description
   end
 
   def surnames_for_place
@@ -23,7 +31,7 @@ class OpenController < ApplicationController
     place_name = params[:place]
 
     @place = Place.where(:place_name => place_name, :chapman_code => chapman_code).first
-    @record_types_display = FREEREG_RECORD_TYPE_DESCRIPTION
+    @record_types_display = record_type_description
     @open_surnames = @place.open_names_per_place.where(:count.gt => MIN_SURNAMES_PER_PLACE)
 
   end
@@ -35,7 +43,7 @@ class OpenController < ApplicationController
     @surname = params[:surname]
 
     @place = Place.where(:place_name => place_name, :chapman_code => chapman_code).first
-    @record_types_display = FREEREG_RECORD_TYPE_DESCRIPTION
+    @record_types_display = record_type_description
 
     @search_query = SearchQuery.new
     @search_query.last_name = @surname
@@ -48,6 +56,5 @@ class OpenController < ApplicationController
 
   def places_for_county_surname
   end
-
 
 end
