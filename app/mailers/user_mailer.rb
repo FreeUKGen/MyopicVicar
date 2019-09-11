@@ -21,6 +21,7 @@ class UserMailer < ActionMailer::Base
 
   def acknowledge_communication(original)
     @appname = appname
+    @contact = original
     @communication = original
     get_attachment(@communication)
     mail(to: "#{@communication.email_address}", :subject => "Thank you #{@communication.name} for contacting us. Reference #{@communication.identifier}")
