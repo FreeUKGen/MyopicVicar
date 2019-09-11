@@ -45,33 +45,33 @@ module UseridRole
       'contacts_coordinator' => ['Communicate', 'Contacts', 'Display County Coordinators',
                                  'Display Syndicate Coordinators', 'Display Userids', 'Feedback', 'Manage Counties', 'Profile', 'System Documentation', 'Roadmap'],
       'county_coordinator' => ['Communicate', 'Contacts', 'Display Userids', 'Manage County', 'Manage Syndicate', 'Profile', 'Roadmap'],
-      'data_manager' => ['Communicate', 'Contacts', 'Display Userids', 'Display Syndicate Coordinators', 'Display County Coordinators', 'Manage Counties', 'Manage Syndicates', 'Profile', 'Roadmap' ],
+      'data_manager' => ['Communicate', 'Contacts', 'Database Statistics', 'Display Userids', 'Display Syndicate Coordinators', 'Display County Coordinators', 'Manage Counties', 'Manage Syndicates', 'Profile', 'Roadmap' ],
       'documentation_coordinator' => ['Communicate', 'Display Userids', 'Feedback', 'Manage Syndicates',
                                       'Manage Counties', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation'],
-      'engagement_coordinator' => ['Communicate', 'Contacts', 'Manage Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation'],
+      'engagement_coordinator' => ['Communicate', 'Contacts', 'Database Statistics', 'Manage Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation'],
 
-      'executive_director' => ['Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators',
-                               'Feedback', 'Profile', 'Manage Userids', 'Message System', 'RefineryCMS', 'Roadmap',
+      'executive_director' => ['Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Database Statistics',
+                               'Feedback', 'FreeCen Errors', 'Profile','Manage FreeCen Coverage', 'Manage Userids', 'Message System', 'RefineryCMS', 'Roadmap',
                                'Site Statistics', 'Search Performance', 'Syndicate Coordinators', 'System Documentation'],
       'genealogy_coordinator' => ['Communicate', 'Contacts', 'Profile', 'Roadmap', 'System Documentation'],
       'general_communication_coordinator' => ['Communicate', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation'],
 
-      'project_manager' => ['Communicate', 'Contacts', 'Manage Userids', 'Feedback', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
+      'project_manager' => ['Communicate', 'Contacts', 'Database Statistics', 'FreeCen Errors', 'Manage Userids', 'Manage FreeCen Coverage', 'Feedback', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
                             'System Documentation'],
       'publicity_coordinator' => ['Communicate', 'Contacts', 'Profile', 'Roadmap', 'System Documentation'],
 
       'syndicate_coordinator' => ['Communicate', 'Manage Syndicate', 'Profile', 'Roadmap'],
-      'system_administrator' => ['Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Database Statistics','Feedback', 'FreeCen Errors',
+      'system_administrator' => ['Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Database Statistics', 'Feedback', 'FreeCen Errors',
                                  'Manage Counties', 'Manage FreeCen Coverage', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
                                  'Software Version Information', 'Syndicate Coordinators', 'System Documentation'],
       'trainee' => ['Communicate', 'Profile', 'Roadmap'],
-      'technical' => ['Communicate', 'Contacts', 'Feedback', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
+      'technical' => ['Communicate', 'Contacts', 'Database Statistics', 'Feedback', 'FreeCen Errors', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
                       'System Documentation'],
 
       'transcriber' => ['Communicate', 'Profile', 'Roadmap'],
       'validator' => ['Communicate', 'Profile', 'Roadmap'],
       'volunteer_coordinator' => ['Communicate', 'Contacts', 'Manage Syndicates', 'Manage Userids', 'Profile', 'Roadmap'],
-      'website_coordinator' => ['Communicate', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation']
+      'website_coordinator' => ['Communicate', 'Contacts', 'Database Statistics', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation']
 
     }
   end
