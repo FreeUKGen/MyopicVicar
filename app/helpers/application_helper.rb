@@ -519,11 +519,12 @@ module ApplicationHelper
                       (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
                       </script>
                       <!-- Responsive ad -->
-                      <ins class="adsbygoogle"
-                      style="display:inline-block;width:728px;height:90px"
+                      <ins class="adsbygoogle "
+                      style="display:block"
                       data-ad-client="#{data_ad_client}"
-                      data-ad-slot = "#{app_advert['data_ad_slot_header']}">
-                      </ins>
+                      data-ad-slot= "#{@data_ad_slot}"
+                      data-ad-format="auto"
+                      data-full-width-responsive="true"></ins>
                       <script>
                       window.update_personalized_adverts = function (preference) {
                         if(preference == 'accept') {
