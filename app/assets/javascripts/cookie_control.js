@@ -1,9 +1,10 @@
 $(document).ready(function() {
+  var app_name = window.location.hostname;
   // Delete Cookie
   window.delete_cookie = function(name, path, domain) {
     if (getCookie(name)) document.cookie = name + '=' +
       (('/') ? ';path=' + '/' : '') +
-      (('.freecen.org.uk') ? ';domain=' + '.freecen.org.uk' : '') +
+      ((app_name) ? ';domain=' + app_name : '') +
          ';expires=Thu, 01-Jan-1970 00:00:01 GMT';
   }
 
