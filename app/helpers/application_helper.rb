@@ -413,12 +413,28 @@ module ApplicationHelper
     end
   end
 
+  def app_advert
+    MyopicVicar::Application.config.advert_key
+  end
+
   def data_ad_client
     app_advert['data_ad_client']
   end
 
-  def app_advert
-    MyopicVicar::Application.config.advert_key
+  def data_ad_slot_header
+    app_advert['data_ad_slot_header']
+  end
+
+  def data_ad_slot_google_advert
+    app_advert['data_ad_slot_google_advert']
+  end
+
+  def data_ad_slot_coverage
+    app_advert['data_ad_slot_coverage']
+  end
+
+  def data_ad_slot_fullwidth
+    app_advert['data_ad_slot_fullwidth']
   end
 
   def gtm_key_value
@@ -427,20 +443,15 @@ module ApplicationHelper
 
   def fullwidth_adsense_freereg
     banner = <<-HTML
-    <style>
-    .adSenseBanner { width: 320px; height: 100px; text-align: center; margin: auto;}
-    @media(min-width: 500px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
-    @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
-    </style>
     <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <script>
     (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
     </script>
     <ins class="adsbygoogle adSenseBanner"
-    style="display:block"
+    style="display:inline-block;width:728px;height:90px"
     data-ad-client="#{data_ad_client}"
-    data-ad-slot="#{app_advert['data_ad_slot_header']}"
-    data-ad-format="auto"></ins>
+    data-ad-slot="#{data_ad_slot_header}">
+    </ins>
     <script>
     window.update_personalized_google_adverts = function (preference) {
       if(preference == 'accept') {
@@ -487,11 +498,10 @@ module ApplicationHelper
                   </script>
                   <!-- FreeCEN2 Transcriber Registration (Responsive) -->
                   <ins class="adsbygoogle adSenseBanner"
-                  style="display:block"
+                  style="display:inline-block;width:728px;height:90px"
                   data-ad-client="#{data_ad_client}"
-                  data-ad-slot="#{app_advert['data_ad_slot_fullwidth']}"
-                  data-ad-format="auto"
-                  data-full-width-responsive="true"></ins>
+                  data-ad-slot="#{data_ad_slot_fullwidth}">
+                  </ins>
                   <script>
                   window.update_personalized_fullwidth_adverts = function (preference) {
                     if(preference == 'accept') {
@@ -513,7 +523,7 @@ module ApplicationHelper
                     end
 
                     def google_advert
-                      @data_ad_slot = current_page?(freecen_coverage_path) ? app_advert['data_ad_slot_coverage'] : app_advert['data_ad_slot_google_advert']
+                      @data_ad_slot = current_page?(freecen_coverage_path) ? data_ad_slot_coverage : data_ad_slot_google_advert
                       banner = <<-HTML
                       <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
                       <script>
@@ -521,10 +531,10 @@ module ApplicationHelper
                       </script>
                       <!-- Responsive ad -->
                       <ins class="adsbygoogle adSenseBanner"
-                      style="display:block"
+                      style="display:inline-block;width:728px;height:90px"
                       data-ad-client="#{data_ad_client}"
-                      data-ad-slot= "#{@data_ad_slot}"
-                      data-ad-format="auto"></ins>
+                      data-ad-slot= "#{@data_ad_slot}">
+                      </ins>
                       <script>
                       window.update_personalized_adverts = function (preference) {
                         if(preference == 'accept') {
@@ -548,20 +558,13 @@ module ApplicationHelper
                         def banner_header
                           banner = <<-HTML
                           <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-                          <style>
-                          .adSenseBanner { width: 320px; height: 100px; text-align: center; margin: auto;}
-                          @media(min-width: 500px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
-                          @media(min-width: 800px) { .adSenseBanner { width: 728px; height: 90px; text-align: center; margin: auto; } }
-                          </style>
                           <script>
                           (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
                           </script>
                           <ins class="adsbygoogle adSenseBanner"
-                          style="display:block"
+                          style="display:inline-block;width:728px;height:90px"
                           data-ad-client = "#{data_ad_client}"
-                          data-ad-slot = "#{app_advert['data_ad_slot_header']}"
-                          data-ad-format="auto"
-                          data-full-width-responsive="true">
+                          data-ad-slot = "#{data_ad_slot_header}">
                           </ins>
                           <script>
                           window.update_personalized_header_adverts = function (preference) {
@@ -574,6 +577,7 @@ module ApplicationHelper
                               $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})});
                               (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
                               </script>
+
                               HTML
                               if Rails.env.development?
                                 banner = <<-HTML
