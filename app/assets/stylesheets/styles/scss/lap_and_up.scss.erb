@@ -87,7 +87,6 @@
     z-index: 3;
     margin: 0;
     box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-    right: $bnner-horz-right;
 
 
     @include manual-media-query(950px) {
@@ -129,14 +128,14 @@
   .site__header__nav {
 
     background: $brand-color;
-    overflow: $site-header-nav-overflow;
+    overflow: hidden;
     height: 46px;
 
     position: absolute;
     right: 0;
     left: 0;
-    top: $site-header-nav-top;
-    z-index: $site-header-nav-z-index;
+    top: 170px;
+    z-index: 3;
 
     .site__header__nav__inner {
       @include container($container-width);
@@ -145,7 +144,7 @@
     .main-nav {
 
       ul {
-        float: $navbar-position;
+        float: left;
         margin: 0;
         z-index: 999999 !important;
       }
@@ -219,7 +218,7 @@
  * Site content
  */
 .site__content {
-  margin-top: $site-content-margin-top;
+  margin-top: 46px;
   padding-top: $b;
 }
 
