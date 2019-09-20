@@ -353,7 +353,7 @@ label.collection_check_boxes {
 h1#body_content_title {
         border-bottom: 1px solid #999;
         font-size: 3.33333rem;
-        font-weight: lighter;
+        font-weight: 300;
         line-height: 1.2;
         padding-bottom: 14px;
 }
