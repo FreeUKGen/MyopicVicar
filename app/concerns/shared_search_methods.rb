@@ -1,14 +1,15 @@
 module SharedSearchMethods
   extend ActiveSupport::Concern
 
-  BMD_INDEXES = {
-    'ln_only' => ['search_names.last_name']
+  BMD_INDEXES_HINT = {
+    'PRIMARY' => ['RecordNumber'],
+    'SURNAME' => ['Surname', 'GivenName', 'QuarterNumber'],
   }
 
   def apply_index
     case app_template
     when 'freebmd'
-      BMD_INDEXES
+      BMD_INDEXES_HINT
     when 'freecen'
       NEW_INDEXES
     when 'freereg'
@@ -33,7 +34,6 @@ module SharedSearchMethods
   end
     
   def index_hint(search_params)
-    #raise search_params.inspect
     candidates = apply_index.keys
     scores = {}
     search_fields = fields_from_params(search_params)

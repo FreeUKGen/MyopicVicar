@@ -72,7 +72,7 @@ class SearchQueriesController < ApplicationController
     adjust_search_query_parameters
     if @search_query.save
       session[:query] = @search_query.id
-      @search_results = @search_query.search
+      @search_results = @search_query.search_records
       redirect_to search_query_path(@search_query)
     else
       #message = 'Failed to save search. Please Contact Us with search criteria used and topic of Website Problem'
@@ -232,7 +232,8 @@ class SearchQueriesController < ApplicationController
       @search_results = []
       @ucf_results = []
     else
-      response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
+      response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display unless MyopicVicar::Application.config.template_set == 'freebmd'
+      response, @search_results, @ucf_results, @result_count = @search_query.get_bmd_search_results if MyopicVicar::Application.config.template_set == 'freebmd'
       if !response || @search_results.nil? || @search_query.result_count.nil?
         logger.warn("#{appname_upcase}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
         flash[:notice] = 'Your search results are not available. Please repeat your search'
