@@ -722,10 +722,9 @@ class SearchQuery
   end
 
   def bmd_record_type_params
-    #raise bmd_record_type.inspect
     params = {}
     params[:RecordTypeID] = bmd_record_type.map(&:to_i) if bmd_record_type.present?
-    params[:RecordTypeID] = RecordType.all_types if bmd_record_type.blank? || bmd_record_type == '0'
+    params[:RecordTypeID] = RecordType.all_types if bmd_record_type.blank? || bmd_record_type == ['0']
     params
   end
 
@@ -767,7 +766,6 @@ class SearchQuery
     records = SearchQuery.get_search_table.where(bmd_params_hash).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     records = records.where(first_name_filteration) unless self.first_name_exact_match
     persist_results(records)
-    #search_ucf if can_query_ucf? && result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
     records
   end
 
