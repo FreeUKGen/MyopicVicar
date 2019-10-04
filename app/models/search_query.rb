@@ -507,22 +507,11 @@ class SearchQuery
   end
 
   def name_search_params_bmd
-    params = Hash.new
-    name_params = Hash.new
-    #type_array = [SearchRecord::PersonType::PRIMARY]
-    #type_array << SearchRecord::PersonType::FAMILY if inclusive
-    #type_array << SearchRecord::PersonType::WITNESS if witness
-    #search_type = type_array.size > 1 ? { '$in' => type_array } : SearchRecord::PersonType::PRIMARY
-    #name_params['type'] = search_type
-    if query_contains_wildcard?
+    self.attributes.symbolize_keys.except(:_id).keep_if {|k,v|  name_fields.include?(k) && v.present?}
+  end
 
-    else
-      name_params['first_name'] = first_name.downcase if first_name
-      name_params['last_name'] = last_name.downcase if last_name.present?
-      name_params['SurnameSx'] = Text::Soundex.soundex(last_name) if fuzzy
-      params =   name_params 
-    end
-    params
+  def name_fields
+  	[:first_name, :last_name, :first_name_exact_match, :fuzzy]
   end
 
   def surname_params
@@ -729,7 +718,7 @@ class SearchQuery
   end
 
   def first_name_filteration
-      "GivenName like '#{bmd_adjust_field_names[:GivenName]}%'"
+    "GivenName like '#{bmd_adjust_field_names[:GivenName]}%'"
   end
 
   def bmd_params_hash
