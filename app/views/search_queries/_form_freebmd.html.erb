@@ -62,19 +62,19 @@
         </div>
         <span class="stack_fields">
           <%= f.label :select_all, { :class => "header_label", :tabindex => "0" } do %>
-            <%= check_box_tag 'search_query[bmd_record_type][]', '0',false,{ multiple: true } %>
+            <%= check_box_tag 'search_query[bmd_record_type][]', '0',false,{ multiple: true, class: 'checkAll' } %>
             <%= content_text(:optional_checkbox_label, 'Select All') %>
           <% end %>
           <%= f.label :birth, { :class => "optional_attributes", :tabindex => "0" } do %>
-            <%= check_box_tag 'search_query[bmd_record_type][]', 1,false,{ multiple: true } %>
+            <%= check_box_tag 'search_query[bmd_record_type][]', 1,false,{ multiple: true, class: 'checkboxtag' } %>
             <%= content_text(:optional_checkbox_label, 'Birth') %>
           <% end %>
           <%= f.label :death, { :class => "optional_attributes", :tabindex => "0" } do %>
-            <%= check_box_tag 'search_query[bmd_record_type][]', 2,false,{ multiple: true } %>
+            <%= check_box_tag 'search_query[bmd_record_type][]', 2,false,{ multiple: true, class: 'checkboxtag' } %>
             <%= content_text(:optional_checkbox_label, 'Death') %>
           <% end %>
           <%= f.label :marriage, { :class => "optional_attributes", :tabindex => "0" } do %>
-            <%= check_box_tag 'search_query[bmd_record_type][]', 3,false,{ multiple: true } %>
+            <%= check_box_tag 'search_query[bmd_record_type][]', 3,false,{ multiple: true, class: 'checkboxtag' } %>
             <%= content_text(:optional_checkbox_label, 'Marriage') %>
           <% end %>
         </span>
@@ -184,5 +184,24 @@
 </div>
 <script type="text/javascript">
   Ladda.bind( 'button[type=submit]' );
+</script>
+
+<script type="text/javascript">
+  $('.checkAll').on('change', function(e) {
+    var $inputs = $('.checkboxtag');
+    if(e.originalEvent === undefined) {
+        var allChecked = true;
+        $inputs.each(function(){
+            allChecked = allChecked && this.checked;
+        });
+        this.checked = allChecked;
+    } else {
+        $inputs.prop('checked', this.checked);
+    }
+});
+
+$('.checkboxtag').on('change', function(){
+    $('.checkAll').trigger('change');
+});
 </script>
 
