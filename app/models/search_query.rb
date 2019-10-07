@@ -531,7 +531,7 @@ class SearchQuery
   end
 
   def bmd_fields_name
-    { first_name: 'GivenName', last_name: 'Surname', bmd_record_type: 'RecordTypeID', SurnameSx: 'SurnameSx'}
+    { first_name: 'GivenName', last_name: 'Surname', bmd_record_type: 'RecordTypeID', SurnameSx: 'SurnameSx', chapman_codes: 'CountyComboID'}
   end
 
   def symbolize_search_params_keys
@@ -717,6 +717,12 @@ class SearchQuery
     params
   end
 
+  def bmd_county_params
+    params = {}
+    params[:chapman_codes] = CountyCombo.where(county: self.chapman_codes).pluck(:CountyComboID) if self.chapman_codes.present?
+    params
+  end
+
   def first_name_filteration
     "GivenName like '#{bmd_adjust_field_names[:GivenName]}%'"
   end
@@ -783,6 +789,7 @@ class SearchQuery
     params.merge!(name_search_params_bmd)
     params.merge!(bmd_record_type_params)
     params.merge!(get_date_quarter_params)
+    params.merge!(bmd_county_params)
     params
   end
 
