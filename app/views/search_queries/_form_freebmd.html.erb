@@ -79,22 +79,16 @@
           <% end %>
         </span>
       </div>
-      <div class="grid__item one-quarter lap-one-half palm-one-whole">
-        <label class="ttip" for="first_name" tabindex="0">
-         Spouses first name(s)
-          <i class="fa fa-info-circle"></i>
-          <span class="ttip__text">Optional. Use upper- or lower-case. Abbreviations and Latin versions of the forename (first-name) will be included automatically</span>
-        </label>
-        <% if @search_query.first_name.nil? %>
-          <input id="first_name" name="search_query[spouse_first_name]" type="text" class="text-input">
-        <% else %>
-          <input id="first_name" name="search_query[spouse_first_name]" type="text" class="text-input" value="<%=@search_query.spouse_first_name%>">
-        <% end %>
-        <%= f.label :fuzzy, { :class => "optional_attributes", :tabindex => "0" } do %>
-          <%= f.check_box :fuzzy, {},  true, false %>
-          <small class="optional_checkbox_label">Identifiable spouses only</small>
-        <% end %>
+      <div class="grid__item one-fifth lap-one-half palm-one-whole">
+        <div class='labels'>
+          <%= label_tag 'spouse_first_name', 'Spouses first name(s)', class: "ttip" %>
+          <%= label_tag 'spouse_first_name', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '0', title: info_tag_text[:firstname]%>
+        </div>
+        <%= text_field_tag 'search_query[spouse_first_name]', set_value(@search_query.spouse_first_name), class: 'text-input', placeholder: 'Enter spouse first name(s) here', tabindex: '1'%>
+        <%= check_box_tag 'hello', true, false %>
+        <%= content_text(:small,'Identifiable spouses only') %>
       </div>
+            
       <div class="grid__item one-quarter lap-one-half palm-one-whole">
         <label class="ttip" for="last_name" tabindex="0">
           Spouses/Mothers surname
@@ -148,11 +142,11 @@
         <% end %>
       </div>
       <div class="grid__item three-eighths lap-three-quarters palm-one-whole" id="search_query_chapman_codes_input">
-        <label class="ttip" for="last_name" tabindex="0">
-          Counties
-          <i class="fa fa-info-circle"></i>
-          <span class="ttip__text">If you select multiple counties, <em>all</em> places within those counties will be searched. We use the county boundaries as they were in 1831</span>
-        </label>
+        <div class='labels'>
+          <%= label_tag 'chapman_codes', 'Counties', class: "ttip" %>
+          <%= label_tag 'chapman_codes', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '0', title: info_tag_text[:firstname]%>
+        </div>
+        
         <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
         <% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil?%>
         <%= f.select :chapman_codes, grouped_options_for_select(grouped_options, selected_key = key), {prompt: 'All Counties'}, {multiple: true} %>
@@ -204,4 +198,34 @@ $('.checkboxtag').on('change', function(){
     $('.checkAll').trigger('change');
 });
 </script>
+<script>
+$(document).ready(function() {
+    $("button").click(function(){
+        var countries = [];
+        $.each($(".country option:selected"), function(){            
+            countries.push($(this).val());
+        });
+        alert("You have selected the country - " + countries.join(", "));
+    });
+});
+</script>
+<script>
+$(document).ready(function(){
+    $("#search_query_chapman_codes").change(function(){
+        var counties = [];
+        $.each($("#search_query_chapman_codes option:selected"), function(){            
+            counties.push($(this).val());
 
+        });
+        return $.ajax({
+          url: '/',
+          type: 'GET',
+          data: {
+            code: counties
+        }
+        var districts = <%= DistrictToCounty.where(County: data).pluck(:DistrictNumber)%>;
+        //var selectedOption = $(this).find(":selected").val();
+        alert("You have selected - " + counties);
+    });
+});
+</script>
