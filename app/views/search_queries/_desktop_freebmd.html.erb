@@ -13,8 +13,12 @@
         </th>
         <th>
           Record Type
-        </th><th>
-          quarter number
+        </th>
+        <th>
+          Year
+        </th>
+        <th>
+          Quarter
         </th>
         <% unless print_friendly %>
           <th>Detail</th>
@@ -32,7 +36,10 @@
             <%= "#{search_record[:RecordTypeID]}" %>
           </td>
           <td>          
-            <%= "#{search_record[:QuarterNumber]} " %>
+            <%= (search_record[:QuarterNumber]-1)/4 + 1837%>
+          </td>
+          <td>
+            <%= (search_record[:QuarterNumber]-1)%4 + 1%>
           </td>
         </tr>
       <% end %>
