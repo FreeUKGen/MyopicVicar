@@ -45,6 +45,7 @@ class SearchQuery
   validates_inclusion_of :record_type, :in => RecordType.all_types + [nil]
   field :bmd_record_type, type: Array#, :required => false
   field :chapman_codes, type: Array, default: [] # , :required => false
+  field :districts, type: Array, default: []
   #  validates_inclusion_of :chapman_codes, :in => ChapmanCode::values+[nil]
   #field :extern_ref, type: String
   field :inclusive, type: Boolean
