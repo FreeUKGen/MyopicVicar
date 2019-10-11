@@ -49,5 +49,4 @@ module ContactsHelper
   def communicate_link
     link_to('Communicate Action','/messages/new?source=original', target: '_blank')
   end
-
 end

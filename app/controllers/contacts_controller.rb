@@ -196,6 +196,7 @@ class ContactsController < ApplicationController
     @contact = Contact.new
     @contact.contact_time = Time.now
     @contact.contact_type = 'Data Problem'
+    @contact.problem_page_url = request.headers["HTTP_REFERER"]
     @contact.query = params[:query]
     @contact.record_id = params[:id]
     case appname_downcase
@@ -206,8 +207,9 @@ class ContactsController < ApplicationController
       @contact.line_id = @freereg1_csv_entry.line_id
     when 'freecen'
       @rec = SearchRecord.where("id" => @contact.record_id).first
+      @ind_id = @rec.freecen_individual_id
+      @contact.county = @rec.chapman_code
       unless @rec.nil?
-        #assign_field_values
         fc_ind = FreecenIndividual.where("id" => @ind_id).first if @ind_id.present?
         if fc_ind.present?
           @contact.entry_id = fc_ind.freecen1_vld_entry_id.to_s unless fc_ind.freecen1_vld_entry_id.nil?
@@ -358,26 +360,6 @@ class ContactsController < ApplicationController
   def contact_params
     params.require(:contact).permit!
   end
-
-  def assign_field_values
-    @piece = @rec.freecen_individual#.freecen_dwelling#.freecen_piece
-    @dwelling = @piece.freecen_dwelling if @piece
-    disp_county = '' + ChapmanCode::name_from_code(@dwelling.freecen_piece.chapman_code) + ' (' + @dwelling.freecen_piece.chapman_code + ')'
-    @contact.census_year = @dwelling.freecen_piece.year.to_s
-    @contact.data_county = disp_county
-    @contact.place = @dwelling.place.place_name
-    @contact.civil_parish = @dwelling.civil_parish
-    @contact.piece = @dwelling.freecen_piece.piece_number
-    @contact.enumeration_district = @dwelling.enumeration_district unless @dwelling.enumeration_district.nil?
-    @contact.folio = @dwelling.folio_number unless @dwelling.folio_number.nil?
-    @contact.page = @dwelling.page_number
-    @contact.house_number = @dwelling.house_number
-    @contact.house_or_street_name = @dwelling.house_or_street_name
-    @ind_id = @rec.freecen_individual_id if @rec.freecen_individual_id.present?
-    @contact.fc_individual_id = @ind_id.to_s unless @ind_id.nil?
-    @contact.county = @rec.chapman_code
-  end
-
 
   def delete_reply_messages(contact_id)
     Message.where(source_contact_id: contact_id).destroy
