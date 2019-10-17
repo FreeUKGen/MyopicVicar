@@ -6,8 +6,10 @@ class OpenController < ApplicationController
   def record_type_description
     if MyopicVicar::Application.config.template_set == 'freecen'
       FREECEN_RECORD_TYPE_DESCRIPTION
-    else
+    elsif MyopicVicar::Application.config.template_set == 'freereg'
       FREEREG_RECORD_TYPE_DESCRIPTION
+    else
+      "records"
     end
   end
 
