@@ -14,6 +14,11 @@
 <% if @contact.contact_type == 'Data Problem' &&  @contact.entry_id.present?%>
   <p><a href="<%=Rails.application.config.website%>/freereg1_csv_entries/<%=@contact.entry_id%>"> <%=@contact.line_id %> </a></p>
 <% end%>
+<% if @appname.downcase == 'freecen'%>
+  <% if @communication.contact_type == 'Data Problem'%>
+    <%= render 'cen_coordinator_data_problem'%>
+  <% end %>
+<% end %>
 <p>
   <% if @contact.screenshot_url.present?%>
     <p>An image/attachment is provided</p>

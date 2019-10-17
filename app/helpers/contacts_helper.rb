@@ -42,8 +42,11 @@ module ContactsHelper
   def use_communicate_action_reminder
     get_user_info_from_userid
     if @user.present? && @user.person_role == 'transcriber'
-      content_tag :span, "Please use the Communicate Action and contact your Syndicate Coordinator first"
+      content_tag(:span, content_tag(:strong, "For transcribing queries, please contact your Syndicate Coordinator using the Communicate Action"))
     end
   end
 
+  def communicate_link
+    link_to('Communicate Action','/messages/new?source=original', target: '_blank')
+  end
 end
