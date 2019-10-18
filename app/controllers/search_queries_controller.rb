@@ -65,6 +65,7 @@ class SearchQueriesController < ApplicationController
 
   def create
     # binding.pry
+    #raise params[:search_query][:chapman_codes].reject { |c| c.empty? }.inspect
     condition = true if params[:search_query].present? && params[:search_query][:region].blank?
     redirect_back(fallback_location: new_search_query_path, notice: 'Invalid Search') && return unless condition
 
@@ -277,6 +278,11 @@ class SearchQueriesController < ApplicationController
     @search_query.session_id = request.session_options[:id]
     render :new unless @search_query.save
     redirect_to search_query_path(@search_query)
+  end
+
+  def districts_of_selected_counties
+    districts_names = DistrictToCounty.joins(:District).distinct
+    @districts = districts_names.where(County: params[:selected_counties].reject { |c| c.empty? }).pluck(:DistrictName)
   end
 
   private

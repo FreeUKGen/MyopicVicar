@@ -152,15 +152,13 @@
         <%= f.select :chapman_codes, grouped_options_for_select(grouped_options, selected_key = key), {prompt: 'All Counties'}, {multiple: true} %>
         <small class="additional">Select one place or none</small>
       </div>
-      <div class="grid__item three-eighths lap-three-quarters palm-one-whole"  id="search_query_places_input">
-        <label class="ttip" for="last_name" tabindex="0">
-          Districts
-          <i class="fa fa-info-circle"></i>
-          <span class="ttip__text">If you select multiple counties, <em>all</em> places within those counties will be searched. We use the county boundaries as they were in 1831</span>
-        </label>
-        <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
-        <% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil?%>
-        <%= f.select :chapman_codes, grouped_options_for_select(grouped_options, selected_key = key), {prompt: 'All Counties'}, {multiple: true} %>
+      <div class="grid__item three-eighths lap-three-quarters palm-one-whole"  id="search_query_chapman_codes_input">
+        <div class='labels'>
+          <%= label_tag 'districts', 'Districts', class: "ttip" %>
+          <%= label_tag 'districts', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '0', title: info_tag_text[:firstname]%>
+        </div>
+        <% districts_names = DistrictToCounty.joins(:District).distinct%>
+        <%= f.select :districts, districts_names.pluck(:DistrictName), {prompt: 'All Districts'}, {multiple: true} %>
         <small class="additional">Select one place or none</small>
       </div>
     </div>
@@ -198,34 +196,18 @@ $('.checkboxtag').on('change', function(){
     $('.checkAll').trigger('change');
 });
 </script>
-<script>
-$(document).ready(function() {
-    $("button").click(function(){
-        var countries = [];
-        $.each($(".country option:selected"), function(){            
-            countries.push($(this).val());
-        });
-        alert("You have selected the country - " + countries.join(", "));
-    });
-});
-</script>
+
 <script>
 $(document).ready(function(){
-    $("#search_query_chapman_codes").change(function(){
-        var counties = [];
-        $.each($("#search_query_chapman_codes option:selected"), function(){            
-            counties.push($(this).val());
-
-        });
-        return $.ajax({
-          url: '/',
-          type: 'GET',
-          data: {
-            code: counties
-        }
-        var districts = <%= DistrictToCounty.where(County: data).pluck(:DistrictNumber)%>;
-        //var selectedOption = $(this).find(":selected").val();
-        alert("You have selected - " + counties);
+  $("#search_query_chapman_codes").change(function() {
+    var counties = [];
+    $.each($("#search_query_chapman_codes option:selected"), function(){          counties.push($(this).val())
     });
+    $.ajax({
+      url:  "/search_queries/districts_of_selected_counties",
+      type: "GET",
+      data: { selected_counties: counties }
+    });
+  });
 });
 </script>
