@@ -282,7 +282,11 @@ class SearchQueriesController < ApplicationController
 
   def districts_of_selected_counties
     districts_names = DistrictToCounty.joins(:District).distinct
-    @districts = districts_names.where(County: params[:selected_counties].reject { |c| c.empty? }).pluck(:DistrictName)
+    @districts = Hash.new
+    params[:selected_counties].reject { |c| c.empty? }.each { |c|
+      @districts[c] = districts_names.where(County: [c]).pluck(:DistrictName)
+    }
+    @districts
   end
 
   private
