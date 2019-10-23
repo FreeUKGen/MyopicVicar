@@ -517,7 +517,13 @@ class Place
           else
             display_type = RecordType.display_name(record_type).downcase
           end
-          description << "#{stat[:number]} #{open.surname} #{display_type} from #{stat[:earliest]} to #{stat[:latest]}"
+          if MyopicVicar::Application.config.template_set == 'freecen'
+            display_type = RecordType.display_name(record_type)
+            description << "#{stat[:number]} #{open.surname} #{display_type} census entries"
+          else
+            # the date range should probably be displayed for FreeREG and FreeBMD
+            description << "#{stat[:number]} #{open.surname} #{display_type} from #{stat[:earliest]} to #{stat[:latest]}"
+          end
         end
       end
       open.count = count
