@@ -86,7 +86,6 @@ class SearchQuery
   validate :radius_is_valid
   validate :county_is_valid
   validate :wildcard_is_appropriate
-  validate :validation_range
   # probably not necessary in FreeCEN
   #  validate :all_counties_have_both_surname_and_firstname
 

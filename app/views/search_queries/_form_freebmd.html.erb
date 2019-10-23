@@ -66,11 +66,11 @@
             <%= content_text(:optional_checkbox_label, 'Select All') %>
           <% end %>
           <%= f.label :birth, { :class => "optional_attributes", :tabindex => "0" } do %>
-            <%= check_box_tag 'search_query[bmd_record_type][]', 1,false,{ multiple: true, class: 'checkboxtag' } %>
+            <%= check_box_tag 'search_query[bmd_record_type][]', 1,false,{ multiple: true, class: 'checkboxtag', id: 'bmd_record_type_birth' } %>
             <%= content_text(:optional_checkbox_label, 'Birth') %>
           <% end %>
           <%= f.label :death, { :class => "optional_attributes", :tabindex => "0" } do %>
-            <%= check_box_tag 'search_query[bmd_record_type][]', 2,false,{ multiple: true, class: 'checkboxtag' } %>
+            <%= check_box_tag 'search_query[bmd_record_type][]', 2,false,{ multiple: true, class: 'checkboxtag', id: 'bmd_record_type_death' } %>
             <%= content_text(:optional_checkbox_label, 'Death') %>
           <% end %>
           <%= f.label :marriage, { :class => "optional_attributes", :tabindex => "0" } do %>
@@ -227,6 +227,14 @@ $(document).ready(function(){
     var x = age_at_death.split('-')
     if ((x[0] >= x[1])) {
       $('#age_at_death')[0].setCustomValidity('Invalid age range. Please enter a valid age range. For more information please visit search help page');
+    }
+  }
+ });
+
+ $('#age_at_death').focusout(function() {
+  if($('#age_at_death').val()) {
+     if ($('#bmd_record_type_death').is(':checked') && $('#bmd_record_type_birth').is(':checked'))  {
+        $('#bmd_record_type_death, #bmd_record_type_birth')[0].setCustomValidity('Please choose either birth or death record type if Date of birth / Death age is provided');
     }
   }
  });
