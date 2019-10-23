@@ -86,6 +86,7 @@ class SearchQuery
   validate :radius_is_valid
   validate :county_is_valid
   validate :wildcard_is_appropriate
+  validate :validation_range
   # probably not necessary in FreeCEN
   #  validate :all_counties_have_both_surname_and_firstname
 
@@ -532,7 +533,7 @@ class SearchQuery
   end
 
   def bmd_fields_name
-    { first_name: 'GivenName', last_name: 'Surname', bmd_record_type: 'RecordTypeID', SurnameSx: 'SurnameSx', chapman_codes: 'CountyComboID'}
+    { first_name: 'GivenName', last_name: 'Surname', bmd_record_type: 'RecordTypeID', SurnameSx: 'SurnameSx', chapman_codes: 'CountyComboID', districts: 'District'}
   end
 
   def symbolize_search_params_keys
@@ -724,6 +725,29 @@ class SearchQuery
     params
   end
 
+  def bmd_districts_params
+    params = {}
+    params[:districts] = self.districts
+    params
+  end
+
+  def bmd_age_at_death_params
+    params = {}
+    params[:age_at_death] = self.age_at_death
+    params[:age_at_death] = death_age_range if check_if_age_range
+  end
+
+  def death_age_range
+    age_range = self.age_at_death.split('-')
+    age_range.map(&:to_i)
+    age_range.join('..')
+  end
+
+  def check_if_age_range
+    self.age_at_death.include?('-')
+  end
+
+
   def first_name_filteration
     "GivenName like '#{bmd_adjust_field_names[:GivenName]}%'"
   end
@@ -756,6 +780,7 @@ class SearchQuery
   end
 
   def freebmd_search_records
+    #raise bmd_adjust_field_names.inspect
     @search_index = SearchQuery.get_search_table.index_hint(bmd_adjust_field_names)
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
     update_attribute(:search_index, @search_index)
@@ -791,6 +816,7 @@ class SearchQuery
     params.merge!(bmd_record_type_params)
     params.merge!(get_date_quarter_params)
     params.merge!(bmd_county_params)
+    params.merge!(bmd_districts_params)
     params
   end
 

@@ -42,8 +42,8 @@
           <%= label_tag 'start_year', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '6'%>
         </div>
           <!--span class="ttip__text">Optional, YYYY. The first year you want to search</span-->
-          <%= select_tag( 'search_query[start_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.start_quarter)), class: 'select_month_year', id: 'date_year') %>
-          <%= select_year(set_value(@search_query.start_year), { start_year: 1837, end_year: 1992, prompt: '- - - -' }, class: 'select_month_year', name: 'search_query[start_year]') %>
+          <%= select_tag( 'search_query[start_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.start_quarter)), class: 'select_month_start', id: 'date_year') %>
+          <%= select_year(set_value(@search_query.start_year), { start_year: 1837, end_year: 1992, prompt: '- - - -' }, class: 'select_year_start', name: 'search_query[start_year]') %>
       </div>
 
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
@@ -51,8 +51,8 @@
           <%= label_tag 'to_year', 'Date range to', class: "ttip" %>
           <%= label_tag 'to_year', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '6'%>
         </div>
-        <%= select_tag( 'search_query[end_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.end_quarter)), class: 'select_month_year', id: 'date_year') %>
-        <%= select_year(set_value(@search_query.end_year), {start_year: 1837, end_year: 1992, prompt: '- - - -'}, class: 'select_month_year', name: 'search_query[end_year]') %>
+        <%= select_tag( 'search_query[end_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.end_quarter)), class: 'select_month_end', id: 'date_year') %>
+        <%= select_year(set_value(@search_query.end_year), {start_year: 1837, end_year: 1992, prompt: '- - - -'}, class: 'select_year_end', name: 'search_query[end_year]') %>
       </div>
 
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
@@ -62,7 +62,7 @@
         </div>
         <span class="stack_fields">
           <%= f.label :select_all, { :class => "header_label", :tabindex => "0" } do %>
-            <%= check_box_tag 'search_query[bmd_record_type][]', '0',false,{ multiple: true, class: 'checkAll' } %>
+            <%= check_box_tag 'search_query[bmd_record_type][]', '0',false,{ multiple: true, class: 'checkAll', id: 'bmd_record_type_all' } %>
             <%= content_text(:optional_checkbox_label, 'Select All') %>
           <% end %>
           <%= f.label :birth, { :class => "optional_attributes", :tabindex => "0" } do %>
@@ -74,7 +74,7 @@
             <%= content_text(:optional_checkbox_label, 'Death') %>
           <% end %>
           <%= f.label :marriage, { :class => "optional_attributes", :tabindex => "0" } do %>
-            <%= check_box_tag 'search_query[bmd_record_type][]', 3,false,{ multiple: true, class: 'checkboxtag' } %>
+            <%= check_box_tag 'search_query[bmd_record_type][]', 3,false,{ multiple: true, class: 'checkboxtag' , id: 'bmd_record_type_marriage'} %>
             <%= content_text(:optional_checkbox_label, 'Marriage') %>
           <% end %>
         </span>
@@ -101,22 +101,17 @@
           <input id="last_name" name="search_query[mother_last_name]" type="text" class="text-input" value="<%=@search_query.mother_last_name%>">
         <% end %>
       </div>
+
       <div class="grid__item one-quarter lap-one-half palm-one-whole">
-        <label class="ttip" for="first_name" tabindex="0">
-         Date of birth / Death age
-          <i class="fa fa-info-circle"></i>
-          <span class="ttip__text">Optional. Use upper- or lower-case. Abbreviations and Latin versions of the forename (first-name) will be included automatically</span>
-        </label>
-        <% if @search_query.age_at_death.nil? %>
-          <input id="first_name" name="search_query[age_at_death]" type="text" class="text-input">
-        <% else %>
-          <input id="first_name" name="search_query[age_at_death]" type="text" class="text-input" value="<%=@search_query.age_at_death%>">
-        <% end %>
-        <%= f.label :fuzzy, { :class => "optional_attributes", :tabindex => "0" } do %>
-          <%= f.check_box :fuzzy, {},  true, false %>
-          <small class="optional_checkbox_label">Match only recorded ages</small>
-        <% end %>
+        <div class='labels'>
+          <%= label_tag 'date_of_birth_or_age_at_death', 'Date of birth / Death age', class: "ttip" %>
+          <%= label_tag 'date_of_birth_or_age_at_death', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '0', title: info_tag_text[:firstname]%>
+        </div>
+        <%= text_field_tag 'search_query[age_at_death]', set_value(@search_query.age_at_death), pattern: "[0-9-%]{0,8}", class: 'text-input', id: 'age_at_death', placeholder: '', tabindex: '4' %>
+        <%= check_box_tag 'search_query[match_recorded_ages_or_dates]', true, false %>
+        <%= content_text(:small, 'Match only recorded ages') %>
       </div>
+
       <div class="grid__item one-eighth lap-one-half palm-one-whole">
         <label class="ttip" for="start_year" tabindex="0">
           Volume
@@ -149,7 +144,7 @@
         
         <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
         <% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil?%>
-        <%= f.select :chapman_codes, grouped_options_for_select(grouped_options, selected_key = key), {prompt: 'All Counties'}, {multiple: true} %>
+        <%= f.select :chapman_codes, grouped_options_for_select(grouped_options, selected_key = key), {include_blank: 'All Counties'}, {multiple: true} %>
         <small class="additional">Select one place or none</small>
       </div>
       <div class="grid__item three-eighths lap-three-quarters palm-one-whole"  id="search_query_chapman_codes_input">
@@ -158,7 +153,7 @@
           <%= label_tag 'districts', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '0', title: info_tag_text[:firstname]%>
         </div>
         <% districts_names = DistrictToCounty.joins(:District).distinct%>
-        <%= f.select :districts, districts_names.pluck(:DistrictName), {prompt: 'All Districts'}, {multiple: true} %>
+        <%= f.select :districts, districts_names.pluck(:DistrictName), {include_hidden: false}, {multiple: true} %>
         <small class="additional">Select one place or none</small>
       </div>
     </div>
@@ -169,7 +164,7 @@
       :button_html => { :class => "ladda-button" , "data-style" => "contract" ,"data-color" =>"#a1185a" , "data-size" => "l", "data-spinner-color" => "#ffffff" },
       :wrapper_html => { :class => "grid__item one-whole push-half--ends" } %>
       <%= button_tag 'Clear Form', type: :reset, class: 'clear_form' %>
-      <%= submit_tag 'Search', class: 'search_form_submit_button' %>
+      <%= submit_tag 'Search', class: 'search_form_submit_button' , id: 'search_form_submit'%>
 
     </div>
   <% end %>
@@ -201,7 +196,8 @@ $('.checkboxtag').on('change', function(){
 $(document).ready(function(){
   $("#search_query_chapman_codes").change(function() {
     var counties = [];
-    $.each($("#search_query_chapman_codes option:selected"), function(){          counties.push($(this).val())
+    $.each($("#search_query_chapman_codes option:selected"), function(){
+      counties.push($(this).val())
     });
     $.ajax({
       url:  "/search_queries/districts_of_selected_counties",
@@ -209,5 +205,30 @@ $(document).ready(function(){
       data: { selected_counties: counties }
     });
   });
+
+  $('#bmd_record_type_marriage, #bmd_record_type_all').change(function() {
+    if ($("#bmd_record_type_marriage").is(":checked")) {
+      $('#age_at_death').prop('disabled', true)
+    }  else {
+      $('#age_at_death').prop('disabled', false)
+    }
+  });
+
+ $('#age_at_death').focusout(function() {
+  var age_at_death = $(this).val();
+   if ((age_at_death.includes('-')) && (age_at_death.includes('%'))) {
+      $('#age_at_death')[0].setCustomValidity("Invalid age or age range. Please enter a valid age or age range. For information please visit help page");
+   }
+ });
+
+ $('#age_at_death').focusout(function() {
+  var age_at_death = $(this).val();
+   if ((age_at_death.includes('-')) && !(age_at_death.includes('%')))  {
+    var x = age_at_death.split('-')
+    if ((x[0] >= x[1])) {
+      $('#age_at_death')[0].setCustomValidity('Invalid age range. Please enter a valid age range. For more information please visit search help page');
+    }
+  }
+ });
 });
 </script>
