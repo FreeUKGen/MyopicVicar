@@ -36,6 +36,7 @@ class SearchQuery
   field :spouse_first_name, type: String # , :required => false
   field :mother_last_name, type: String # , :required => false
   field :age_at_death, type: String # , :required => false
+  field :match_recorded_ages_or_dates, type: Boolean # , :required => false
   field :volume, type: String # , :required => false
   field :page, type: String # , :required => false
   field :fuzzy, type: Boolean
@@ -734,6 +735,8 @@ class SearchQuery
     params = {}
     params[:age_at_death] = self.age_at_death
     params[:age_at_death] = death_age_range if check_if_age_range
+    params[:death_age] = ['',params[:age_at_death]]
+    params[:death_age] = params[:age_at_death] if match_recorded_ages_or_dates
   end
 
   def death_age_range
@@ -816,6 +819,7 @@ class SearchQuery
     params.merge!(get_date_quarter_params)
     params.merge!(bmd_county_params)
     params.merge!(bmd_districts_params)
+    params.merge!(bmd_age_at_death_params) if self.age_at_death.present?
     params
   end
 

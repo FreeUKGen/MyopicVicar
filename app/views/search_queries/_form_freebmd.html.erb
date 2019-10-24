@@ -214,29 +214,24 @@ $(document).ready(function(){
     }
   });
 
- $('#age_at_death').focusout(function() {
-  var age_at_death = $(this).val();
-   if ((age_at_death.includes('-')) && (age_at_death.includes('%'))) {
-      $('#age_at_death')[0].setCustomValidity("Invalid age or age range. Please enter a valid age or age range. For information please visit help page");
-   }
- });
-
- $('#age_at_death').focusout(function() {
-  var age_at_death = $(this).val();
-   if ((age_at_death.includes('-')) && !(age_at_death.includes('%')))  {
-    var x = age_at_death.split('-')
-    if ((x[0] >= x[1])) {
-      $('#age_at_death')[0].setCustomValidity('Invalid age range. Please enter a valid age range. For more information please visit search help page');
-    }
-  }
- });
-
- $('#age_at_death').focusout(function() {
+ $('#search_form_submit').click(function() {
   if($('#age_at_death').val()) {
      if ($('#bmd_record_type_death').is(':checked') && $('#bmd_record_type_birth').is(':checked'))  {
         $('#bmd_record_type_death, #bmd_record_type_birth')[0].setCustomValidity('Please choose either birth or death record type if Date of birth / Death age is provided');
     }
   }
+
+  var age_at_death = $('#age_at_death').val();
+   if ((age_at_death.includes('-')) && !(age_at_death.includes('%')))  {
+    var x = age_at_death.split('-')
+    if ((x[0] >= x[1])) {
+      $('#age_at_death')[0].setCustomValidity('Invalid age range.');
+    }
+  }
+
+  if ((age_at_death.includes('-')) && (age_at_death.includes('%'))) {
+      $('#age_at_death')[0].setCustomValidity("Invalid age or age range.");
+   }
  });
 });
 </script>
