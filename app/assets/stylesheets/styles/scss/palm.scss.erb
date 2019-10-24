@@ -81,7 +81,7 @@
     display: block !important;
     @include manual-media-query(570px) {
                   margin: ($base-spacing-unit * 2) auto $base-spacing-unit auto;
-            }    
+            }
   }
 
   .site__header__freeukgen-logo {
@@ -107,11 +107,7 @@
       a {
         background: $light;
         text-transform: uppercase;
-<% if MyopicVicar::Application.config.template_set=='freecen' %>
-        color: $orange;
-<% else %>
-        color: $magenta;
-<% end %>
+        color: $brand-color-brighter;
         font-weight: bold;
         padding: $base-spacing-unit / 2;
         &:active,
@@ -136,9 +132,9 @@
 .bnner-horz-secondary {
     width: 320px;
     height: 50px;
-    background-position: -60px; 
+    background-position: -60px;
     background-size: 170%;
-    
+
     @include manual-media-query(448px) {
     display: none;
   }
