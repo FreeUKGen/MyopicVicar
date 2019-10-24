@@ -219,6 +219,9 @@ $(document).ready(function(){
      if ($('#bmd_record_type_death').is(':checked') && $('#bmd_record_type_birth').is(':checked'))  {
         $('#bmd_record_type_death, #bmd_record_type_birth')[0].setCustomValidity('Please choose either birth or death record type if Date of birth / Death age is provided');
     }
+    if (!$('#bmd_record_type_death').is(':checked') && !$('#bmd_record_type_birth').is(':checked'))  {
+        $('#bmd_record_type_death, #bmd_record_type_birth')[0].setCustomValidity('Please choose either birth or death record type if Date of birth / Death age is provided');
+    }
   }
 
   var age_at_death = $('#age_at_death').val();
