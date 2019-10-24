@@ -36,6 +36,7 @@ class SearchQuery
   field :spouse_first_name, type: String # , :required => false
   field :mother_last_name, type: String # , :required => false
   field :age_at_death, type: String # , :required => false
+  field :date_of_birth, type: String # , :required => false
   field :match_recorded_ages_or_dates, type: Boolean # , :required => false
   field :volume, type: String # , :required => false
   field :page, type: String # , :required => false
@@ -533,7 +534,17 @@ class SearchQuery
   end
 
   def bmd_fields_name
-    { first_name: 'GivenName', last_name: 'Surname', bmd_record_type: 'RecordTypeID', SurnameSx: 'SurnameSx', chapman_codes: 'CountyComboID', districts: 'District'}
+    {
+      first_name: 'GivenName',
+      last_name: 'Surname',
+      bmd_record_type: 'RecordTypeID',
+      SurnameSx: 'SurnameSx',
+      chapman_codes: 'CountyComboID',
+      districts: 'District',
+      age_at_death: 'AgeAtDeath',
+      volume: 'Volume',
+      page: 'Page'
+    }
   end
 
   def symbolize_search_params_keys
@@ -749,6 +760,16 @@ class SearchQuery
     self.age_at_death.include?('-')
   end
 
+  def bmd_volume_params
+    params = {}
+    params[:volume] = self.volume
+  end
+
+  def bmd_page_params
+    params = {}
+    params[:page] = self.page
+  end
+
 
   def first_name_filteration
     "GivenName like '#{bmd_adjust_field_names[:GivenName]}%'"
@@ -820,6 +841,8 @@ class SearchQuery
     params.merge!(bmd_county_params)
     params.merge!(bmd_districts_params)
     params.merge!(bmd_age_at_death_params) if self.age_at_death.present?
+    params.merge!(bmd_volume_params) if self.volume.present?
+    params.merge!(bmd_page_params) if self.page.present?
     params
   end
 

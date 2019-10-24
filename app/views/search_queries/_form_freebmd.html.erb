@@ -107,35 +107,27 @@
           <%= label_tag 'date_of_birth_or_age_at_death', 'Date of birth / Death age', class: "ttip" %>
           <%= label_tag 'date_of_birth_or_age_at_death', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '0', title: info_tag_text[:firstname]%>
         </div>
-        <%= text_field_tag 'search_query[age_at_death]', set_value(@search_query.age_at_death), pattern: "[0-9-%]{0,8}", class: 'text-input', id: 'age_at_death', placeholder: '', tabindex: '4' %>
+        <%= text_field_tag 'search_query[age_at_death]', set_value(@search_query.age_at_death), pattern: "[0-9-%]{0,10}", class: 'text-input', id: 'age_at_death', placeholder: '', tabindex: '4' %>
         <%= check_box_tag 'search_query[match_recorded_ages_or_dates]', true, false %>
         <%= content_text(:small, 'Match only recorded ages') %>
       </div>
 
       <div class="grid__item one-eighth lap-one-half palm-one-whole">
-        <label class="ttip" for="start_year" tabindex="0">
-          Volume
-          <i class="fa fa-info-circle"></i>
-          <span class="ttip__text">Optional, YYYY. The first year you want to search</span>
-        </label>
-        <% if @search_query.volume.nil? %>
-          <input id="first_name" name="search_query[volume]" type="text" class="text-input">
-        <% else %>
-          <input id="start_year" name="search_query[volume]" type="text" class="text-input" value="<%=@search_query.volume%>">
-        <% end %>
+        <div class='labels'>
+          <%= label_tag 'volume', 'Volume', class: "ttip" %>
+          <%= label_tag 'volume', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '3'%>
+        </div>
+        <%= text_field_tag 'search_query[volume]', set_value(@search_query.volume), class: 'text-input', id: 'volume', placeholder: 'Enter Volume', tabindex: '4' %>
       </div>
+
       <div class="grid__item one-eighth lap-one-half palm-one-whole">
-        <label class="ttip" for="start_year" tabindex="0">
-          Page
-          <i class="fa fa-info-circle"></i>
-          <span class="ttip__text">Optional, YYYY. The first year you want to search</span>
-        </label>
-        <% if @search_query.page.nil? %>
-          <input id="first_name" name="search_query[page]" type="text" class="text-input">
-        <% else %>
-          <input id="start_year" name="search_query[page]" type="text" class="text-input" value="<%=@search_query.page%>">
-        <% end %>
+        <div class='labels'>
+          <%= label_tag 'page', 'Page', class: "ttip" %>
+          <%= label_tag 'page', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '3'%>
+        </div>
+        <%= text_field_tag 'search_query[page]', set_value(@search_query.page), class: 'text-input', id: 'page', placeholder: 'Enter Page', tabindex: '4' %>
       </div>
+
       <div class="grid__item three-eighths lap-three-quarters palm-one-whole" id="search_query_chapman_codes_input">
         <div class='labels'>
           <%= label_tag 'chapman_codes', 'Counties', class: "ttip" %>
@@ -208,11 +200,28 @@ $(document).ready(function(){
 
   $('#bmd_record_type_marriage, #bmd_record_type_all').change(function() {
     if ($("#bmd_record_type_marriage").is(":checked")) {
+      $('#age_at_death').val('')
+      $('#age_at_death').prop('placeholder', '');
       $('#age_at_death').prop('disabled', true)
     }  else {
       $('#age_at_death').prop('disabled', false)
     }
   });
+
+  $('#bmd_record_type_birth, #bmd_record_type_death').change(function() {
+    if (!$('#age_at_death').prop('disabled')) {
+      if ($('#bmd_record_type_death').is(':checked') && !$('#bmd_record_type_birth').is(':checked'))  {
+        $('#age_at_death').prop('placeholder', 'Enter Age at Death here');
+        $('#age_at_death').prop('name', 'search_query[age_at_death]')
+      } else if ($('#bmd_record_type_birth').is(':checked') && !$('#bmd_record_type_death').is(':checked'))  {
+        $('#age_at_death').prop('placeholder', 'Enter Date of Birth here');
+        $('#age_at_death').prop('name', 'search_query[date_of_birth]')
+      } else {
+        $('#age_at_death').prop('placeholder', '');
+      }
+    }
+  });
+
 
  $('#search_form_submit').click(function() {
   if($('#age_at_death').val()) {
