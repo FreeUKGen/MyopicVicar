@@ -1,19 +1,16 @@
 <% breadcrumb :county_options,  @county%>
 <div class="grid">
   <section class="island ">
-<h3 style="text-align: center"><%= @first_name%>: How would you like to process <%= @county%>? </h3>
- <% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
-   <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
-    </div>
-   <% end %>  
-
-<%@options.each do |option| %>
-    <%= link_to option, UseridRole::COUNTY_OPTIONS_TRANSLATION[option],  method: :get , :class => "btn  weight--light btn--small"%> 
-    <br>
-  <%end%>
-
-
-<%= render "resource_sidebar" %> 
-</section>
+    <h3 style="text-align: center"><%= @first_name%>: How would you like to process <%= @county%>? </h3>
+    <% if flash[:notice] %>
+      <div id="notice" style="color:blue"><br>
+        <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+      </div>
+    <% end %>
+    <%@options.each do |option| %>
+      <%= link_to option, UseridRole::COUNTY_OPTIONS_TRANSLATION[option],  method: :get , :class => "btn  btn--small"%>
+      <br>
+    <%end%>
+    <%= render "resource_sidebar" %>
+  </section>
 </div>

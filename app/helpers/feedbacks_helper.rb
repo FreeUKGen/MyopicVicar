@@ -35,6 +35,6 @@ module FeedbacksHelper
   end
 
   def show_feedback_add_comment_link(message, action)
-    link_to 'Comment', reply_feedback_path(source_feedback_id: message.id, source: 'comment'), :class => "btn weight--light  btn--small"
+    link_to 'Comment', reply_feedback_path(source_feedback_id: message.id, source: 'comment'), :class => "btn btn--small"
   end
 end

@@ -7,13 +7,13 @@
 <tr>
   <td>Data Record :</td>
   <td class="weight--semibold">
-    <%= link_to ' Record in question', search_record_path(@contact.record_id), method: :get, :class => "btn weight--light  btn--small"%></td>
+    <%= link_to ' Record in question', search_record_path(@contact.record_id), method: :get, :class => "btn btn--small"%></td>
 </tr>
 <%when 'freereg' %>
 <tr>
   <td>Data Record :</td>
   <td class="weight--semibold">
-    <%= link_to ' Record in question', freereg1_csv_entry_path(@contact.entry_id),  method: :get, :class => "btn weight--light  btn--small"%></td>
+    <%= link_to ' Record in question', freereg1_csv_entry_path(@contact.entry_id),  method: :get, :class => "btn btn--small"%></td>
 </tr>
 <% end %>
 <tr>

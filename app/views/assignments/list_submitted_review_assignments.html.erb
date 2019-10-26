@@ -1,22 +1,20 @@
 <% breadcrumb :submitted_review_assignments, @user, @county, @register, @source, @group %>
-
 <% title "Assignment - review_submitted" %>
-<div style="clear:both;"></div><br>
+<div style="clear:both;"></div>
+<br>
 <p style="text-align: center">Submitted_Review Assignments in Syndicate <b><%= session[:syndicate] %></b>
-<%= render partial: 'flash_notice' %>
-
-<div class="grid">
-	<% if not @assignment_ids.empty? %>
-  	<div style="text-align: center">  
-			<%= link_to 'Accept All Assignments', assignment_path(:status=>'rs', :type=>'complete', :assignment_list_type=>'', :assignment_ids=>@assignment_ids), :title=>'accept assignment', data: { confirm: 'All Submitted Review Assignments will be accepted, are you sure?' }, method: :put, :class => "btn weight--light btn--small" %>
-		</div>
-	<% end %>
-
-  <section class="island">
-  	<% if @count.length == 1 %>
-  		<%= render 'assignment_list' %>
-  	<% else %>
-			<%= render partial: 'assignments_list', :locals=>{:assignment_filter_list=>'submitted_review'} %>
-		<% end %>
-	</section>
-</div>
+  <%= render partial: 'flash_notice' %>
+  <div class="grid">
+    <% if not @assignment_ids.empty? %>
+      <div style="text-align: center">
+        <%= link_to 'Accept All Assignments', assignment_path(:status=>'rs', :type=>'complete', :assignment_list_type=>'', :assignment_ids=>@assignment_ids), :title=>'accept assignment', data: { confirm: 'All Submitted Review Assignments will be accepted, are you sure?' }, method: :put, :class => "btn btn--small" %>
+      </div>
+    <% end %>
+    <section class="island">
+      <% if @count.length == 1 %>
+        <%= render 'assignment_list' %>
+      <% else %>
+        <%= render partial: 'assignments_list', :locals=>{:assignment_filter_list=>'submitted_review'} %>
+      <% end %>
+    </section>
+  </div>

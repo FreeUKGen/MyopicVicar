@@ -4,9 +4,9 @@
 <div >
   <%@options.each do |option| %>
     <% unless option == "Import Users" %>
-      <%= link_to option, UseridRole::USERID_OPTIONS_TRANSLATION[option],  method: :get , :class => "btn weight--light btn--small"%> <br>
+      <%= link_to option, UseridRole::USERID_OPTIONS_TRANSLATION[option],  method: :get , :class => "btn  btn--small"%> <br>
     <% else %>
-      <%= link_to option, "#" ,  :class => "btn weight--light btn--small", :id => "show_form_for_import_users"%> <br>
+      <%= link_to option, "#" ,  :class => "btn  btn--small", :id => "show_form_for_import_users"%> <br>
     <% end %>
   <%end%>
 </div>
@@ -15,7 +15,7 @@
     <h3>Import Users From CSV File</h3>
     <%= form_tag import_userid_details_path(:file), :id=> "file_upload_form", multipart: true do %>
       <%= file_field_tag :file %>
-      <%= submit_tag "Upload Users", :class => "btn weight--light btn--small", :id => "upload_users" %>
+      <%= submit_tag "Upload Users", :class => "btn  btn--small", :id => "upload_users" %>
     <% end %>
     <strong>
       <p id="upload_users_helper_text">Importing Users Failed</p>

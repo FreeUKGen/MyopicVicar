@@ -83,7 +83,7 @@
         <% number = number + 1 %>
         <tr>
           <td><%= number %></td>
-          <td><%= button_to("Show", show_query_search_query_path(query), :method=>:get, :class => "btn weight--light  btn--small") %>
+          <td><%= button_to("Show", show_query_search_query_path(query), :method=>:get, :class => "btn   btn--small") %>
             <td>
               <% search_params_for_display(query).each do |name, value| %>
                 <%= name %>: <strong><%= value %></strong><br />
@@ -94,7 +94,7 @@
             <td><%= query.result_count %></td>
             <td><%= query.search_index %></td>
             <td>
-              <%= button_to("Analyze", analyze_search_query_path(query), :method=>:post, :class => "btn weight--light  btn--small") %>
+              <%= button_to("Analyze", analyze_search_query_path(query), :method=>:post, :class => "btn   btn--small") %>
             </td>
           </tr>
         <% end %>

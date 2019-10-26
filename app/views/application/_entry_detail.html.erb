@@ -8,7 +8,7 @@
           <span class='additional'> search made on <%=Time.now.strftime('%d %b %Y') %></span><br>
           <%when !current_authentication_devise_user.present?%>
           <span class='additional'>While we have made all efforts to correctly record the information in the original document there may be different interpretations of the written words. <b>If you have access to the original document</b> and believe we have made a mistake you are encouraged to report this to us.
-            <%= link_to 'Report an Error in this Data', report_error_contact_path(@search_record[:_id], :query => @search_query), class: 'btn weight--light btn--natural' unless  @search_record.blank? || @search_query.blank? %></span>
+            <%= link_to 'Report an Error in this Data', report_error_contact_path(@search_record[:_id], :query => @search_query), class: 'btn btn--natural' unless  @search_record.blank? || @search_query.blank? %></span>
         <% end%>
       </caption>
       <thead>
@@ -67,7 +67,7 @@
             <% else %>
               <tr>
                 <td ><%= field.gsub('_',' ').capitalize %></td>
-                <td>  <%= link_to 'View image', view_image_server_image_path(:object => @image_id), method: :get,:target => '_blank' , :class => 'btn weight--light btn--small' %></td>
+                <td>  <%= link_to 'View image', view_image_server_image_path(:object => @image_id), method: :get,:target => '_blank' , :class => 'btn btn--small' %></td>
               </tr>
             <% end %>
             <% when 'film' %>
@@ -136,7 +136,7 @@
           <% end %>
         <% end %>
         <% if  !current_authentication_devise_user.present?%>
-          <td colspan=2><%= link_to 'Report an Error in this Data', report_error_contact_path(@search_record[:_id], :query => @search_query), class: 'btn weight--light btn--natural' unless  @search_record.blank? || @search_query.blank? %></td>
+          <td colspan=2><%= link_to 'Report an Error in this Data', report_error_contact_path(@search_record[:_id], :query => @search_query), class: 'btn btn--natural' unless  @search_record.blank? || @search_query.blank? %></td>
         <% end %>
       </tbody>
     </table>

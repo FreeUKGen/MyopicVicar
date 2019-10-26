@@ -1,75 +1,107 @@
-<div style="text-align: center">  
-  <%= link_to 'List Images Under This Group', index_image_server_image_path(@image_server_group), method: :get, :class => "btn weight--light btn--small" %>
+<div style="text-align: center">
+  <%= link_to 'List Images Under This Group', index_image_server_image_path(@image_server_group), method: :get, :class => "btn  btn--small" %>
   <% if session[:manage_user_origin] == 'manage county' %>
-    <%= link_to 'Edit Image Group', edit_image_server_group_path(@image_server_group), method: :get, :class => "btn weight--light btn--small" %>
-    <%= link_to 'Unallocate Image Group', image_server_group_path(@image_server_group, :type=>'unallocate'), data: { confirm: 'Are you sure you want to unallocate this Image Group?'}, method: :put, :class => "btn weight--light btn--small" if @image_server_group[:summary][:status] == ['a'] %>
-    <%= link_to 'Upload Images', upload_image_server_group_path(@image_server_group), data: { confirm: 'Are you sure you want to upload images into this Image Group "'+@image_server_group[:group_name]+'"?'}, method: :get, :class => "btn weight--light btn--small" %>
-    <%= link_to 'Accept as Completed', image_server_group_path(@image_server_group, :type=>'complete'), data: { confirm: 'Click Yes if all images in this group have been completed the transcription'}, method: :put, :class => "btn weight--light btn--small" if @image_server_group[:summary][:status] == ['cs'] %>
-    <%= link_to 'Accept Allocate Request', image_server_group_path(@image_server_group, :type=>'allocate accept'), method: :put, :class => "btn weight--light btn--small" if @image_server_group[:summary][:status] == ['ar'] %>
-    <%= link_to 'Reject Allocate Request', image_server_group_path(@image_server_group, :type=>'allocate reject'), data: { confirm: 'Are you sure you want to reject the allocate request?'}, method: :put, :class => "btn weight--light btn--small" if @image_server_group[:summary][:status] == ['ar'] %>
-    <%= link_to 'Initialize Image Group', initialize_status_image_server_group_path(@image_server_group, :type=>'allocate accept'), method: :get, :class => "btn weight--light btn--small" if @image_server_group[:summary][:status].nil? || (@image_server_group[:summary][:status] - ['u','c','t']).empty? %>
-    <%= link_to 'Delete Image Group', image_server_group_path(@image_server_group), data: { confirm: 'Are you sure you want to delete Image Group "'+@image_server_group[:group_name]+'"?'}, method: :delete, :class => "btn weight--light btn--small" %> 
+    <%= link_to 'Edit Image Group', edit_image_server_group_path(@image_server_group), method: :get, :class => "btn  btn--small" %>
+    <%= link_to 'Unallocate Image Group', image_server_group_path(@image_server_group, :type=>'unallocate'), data: { confirm: 'Are you sure you want to unallocate this Image Group?'}, method: :put, :class => "btn  btn--small" if @image_server_group[:summary][:status] == ['a'] %>
+    <%= link_to 'Upload Images', upload_image_server_group_path(@image_server_group), data: { confirm: 'Are you sure you want to upload images into this Image Group "'+@image_server_group[:group_name]+'"?'}, method: :get, :class => "btn  btn--small" %>
+    <%= link_to 'Accept as Completed', image_server_group_path(@image_server_group, :type=>'complete'), data: { confirm: 'Click Yes if all images in this group have been completed the transcription'}, method: :put, :class => "btn  btn--small" if @image_server_group[:summary][:status] == ['cs'] %>
+    <%= link_to 'Accept Allocate Request', image_server_group_path(@image_server_group, :type=>'allocate accept'), method: :put, :class => "btn  btn--small" if @image_server_group[:summary][:status] == ['ar'] %>
+    <%= link_to 'Reject Allocate Request', image_server_group_path(@image_server_group, :type=>'allocate reject'), data: { confirm: 'Are you sure you want to reject the allocate request?'}, method: :put, :class => "btn  btn--small" if @image_server_group[:summary][:status] == ['ar'] %>
+    <%= link_to 'Initialize Image Group', initialize_status_image_server_group_path(@image_server_group, :type=>'allocate accept'), method: :get, :class => "btn  btn--small" if @image_server_group[:summary][:status].nil? || (@image_server_group[:summary][:status] - ['u','c','t']).empty? %>
+    <%= link_to 'Delete Image Group', image_server_group_path(@image_server_group), data: { confirm: 'Are you sure you want to delete Image Group "'+@image_server_group[:group_name]+'"?'}, method: :delete, :class => "btn  btn--small" %>
   <% end %>
-  <%= link_to 'Send Complete Email to CC', send_complete_to_cc_image_server_group_path(@image_server_group), method: :get, :class => "btn weight--light btn--small"  if do_we_offer_mail_to_cc(@image_server_group) %>
+  <%= link_to 'Send Complete Email to CC', send_complete_to_cc_image_server_group_path(@image_server_group), method: :get, :class => "btn  btn--small"  if do_we_offer_mail_to_cc(@image_server_group) %>
 </div>
-<div style="clear:both;"> </div><br>
-
+<div style="clear:both;"> </div>
+<br>
 <div class="grid">
   <section class="island ">
-  <div class="grid__item ">
-    <table class="table--bordered  table--data">
-      <colgroup >
-        <col class=t40>
-        <col class=t60>
-      </colgroup>
-      <tr>
-        <th class="caps">Field</th>
-        <th class="caps">Value</th>
-      </tr>
-      <tr><td>Group Name</td><td class="weight--semibold"><%= @image_server_group[:group_name] %></td></tr>
-      <tr><td>Start Date</td><td class="t15"><%= @image_server_group[:start_date] %>&nbsp;</td></tr>
-      <tr><td>End Date</td><td class="t15"><%= @image_server_group[:end_date] %>&nbsp;</td></tr>
-      <tr><td>Syndicate</td><td class="t15"><%= @image_server_group[:syndicate_code] %>&nbsp;</td></tr>
-      <tr><td>Assign Date</td><td class="t15"><%= @image_server_group[:assign_date] %>&nbsp;</td></tr>
-      <tr><td>Number Of Images</td><td class="t15"><%= @image_server_group[:number_of_images] %>&nbsp;</td></tr>
-      <tr><td>Transcriber</td><td class="t15">
-        <% unless @image_server_group.summary[:transcriber].nil? %>
-          <% @image_server_group.summary[:transcriber].each do |transcriber| %>
-            <span><%= transcriber %></span>
-          <% end %>
-        <% end %>
-      &nbsp;</td></tr>
-      <tr><td>Reviewer</td><td class="t15">
-        <% unless @image_server_group.summary[:reviewer].nil? %>
-          <% @image_server_group.summary[:reviewer].each do |reviewer| %>
-            <span><%= reviewer %></span>
-          <% end %>
-        <% end %>
-      &nbsp;</td></tr>
-      <tr><td>Difficulty</td><td class="t15">
-        <% unless @image_server_group.summary[:difficulty].nil? %>
-          <% @image_server_group.summary[:difficulty].each do |difficulty| %>
-            <span><%= SourceProperty::DIFFICULTY[difficulty] %></span>
-          <% end %>
-        <% end %>
-      &nbsp;</td></tr>
-      <tr><td>Status</td><td class="t10">
-        <% unless @image_server_group.summary[:status].nil? %>
-          <% @image_server_group.summary[:status].each do |status| %>
-            <% case SourceProperty::STATUS[status] %>
-              <% when 'UNALLOCATED' %>
+    <div class="grid__item ">
+      <table class="table--bordered  table--data">
+        <colgroup >
+          <col class=t40>
+          <col class=t60>
+        </colgroup>
+        <tr>
+          <th class="caps">Field</th>
+          <th class="caps">Value</th>
+        </tr>
+        <tr>
+          <td>Group Name</td>
+          <td class="weight--semibold"><%= @image_server_group[:group_name] %></td>
+        </tr>
+        <tr>
+          <td>Start Date</td>
+          <td class="t15"><%= @image_server_group[:start_date] %>&nbsp;</td>
+        </tr>
+        <tr>
+          <td>End Date</td>
+          <td class="t15"><%= @image_server_group[:end_date] %>&nbsp;</td>
+        </tr>
+        <tr>
+          <td>Syndicate</td>
+          <td class="t15"><%= @image_server_group[:syndicate_code] %>&nbsp;</td>
+        </tr>
+        <tr>
+          <td>Assign Date</td>
+          <td class="t15"><%= @image_server_group[:assign_date] %>&nbsp;</td>
+        </tr>
+        <tr>
+          <td>Number Of Images</td>
+          <td class="t15"><%= @image_server_group[:number_of_images] %>&nbsp;</td>
+        </tr>
+        <tr>
+          <td>Transcriber</td>
+          <td class="t15">
+            <% unless @image_server_group.summary[:transcriber].nil? %>
+              <% @image_server_group.summary[:transcriber].each do |transcriber| %>
+                <span><%= transcriber %></span>
+              <% end %>
+            <% end %>
+            &nbsp;</td>
+        </tr>
+        <tr>
+          <td>Reviewer</td>
+          <td class="t15">
+            <% unless @image_server_group.summary[:reviewer].nil? %>
+              <% @image_server_group.summary[:reviewer].each do |reviewer| %>
+                <span><%= reviewer %></span>
+              <% end %>
+            <% end %>
+            &nbsp;</td>
+        </tr>
+        <tr>
+          <td>Difficulty</td>
+          <td class="t15">
+            <% unless @image_server_group.summary[:difficulty].nil? %>
+              <% @image_server_group.summary[:difficulty].each do |difficulty| %>
+                <span><%= SourceProperty::DIFFICULTY[difficulty] %></span>
+              <% end %>
+            <% end %>
+            &nbsp;</td>
+        </tr>
+        <tr>
+          <td>Status</td>
+          <td class="t10">
+            <% unless @image_server_group.summary[:status].nil? %>
+              <% @image_server_group.summary[:status].each do |status| %>
+                <% case SourceProperty::STATUS[status] %>
+                <% when 'UNALLOCATED' %>
                 <span style="color:red"><%= SourceProperty::STATUS[status] %></span>
-              <% when 'REVIEWED' %>
+                <% when 'REVIEWED' %>
                 <span style="color:green"><%= SourceProperty::STATUS[status] %></span>
               <% else %>
                 <span><%= SourceProperty::STATUS[status] %></span>
+              <% end %>
             <% end %>
           <% end %>
-        <% end %>
-      &nbsp;</td></tr>
-      <tr><td>Notes</td><td class="t15"><%= @image_server_group[:notes] %>&nbsp;</td></tr>
+          &nbsp;</td>
+      </tr>
+      <tr>
+        <td>Notes</td>
+        <td class="t15"><%= @image_server_group[:notes] %>&nbsp;</td>
+      </tr>
     </table>
   </div>
-  </section>
+</section>
 </div>
- 
