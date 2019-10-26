@@ -4,12 +4,12 @@
 </p>
 <% unless @user.person_role == "contacts_coordinator" %>
   <div style="text-align: center">
-    <%= link_to 'Edit Register Fields', edit_register_path(@register), method: :get, :class => "btn weight--light  btn--small" %>
-    <%= link_to  'Destroy Register', register_path(@register), method: :delete, data: { confirm: 'Are you sure you want to destroy this Register.? It will not happen if there are dependants!'}, :class => "btn weight--light  btn--small " %>
-    <%= link_to 'Change Register Type', rename_register_path(@register), method: :get, data: { confirm: 'Are you really really sure that you to change the Register Type?'}, :class => "btn weight--light  btn--small" %>
-    <%= link_to 'Merge Identical Register Types into this one', merge_register_path(@register), method: :get, data: { confirm: 'Are you really really sure that this is the Register Type into which you want all similar Register Types in this church to be merged? The action will be taken on selecting OK and cannot be recovered!!!!'}, :class => "btn weight--light  btn--small " %>
-    <%= link_to 'Create Image Server', create_image_server_register_path(@register), method: :get, :class => "btn weight--light  btn--small" unless @image_server %>
-    <%= link_to 'Image Sources', show_image_server_register_path(@register), method: :get, :class => "btn weight--light  btn--small" if @image_server %>
+    <%= link_to 'Edit Register Fields', edit_register_path(@register), method: :get, :class => "btn   btn--small" %>
+    <%= link_to  'Destroy Register', register_path(@register), method: :delete, data: { confirm: 'Are you sure you want to destroy this Register.? It will not happen if there are dependants!'}, :class => "btn   btn--small " %>
+    <%= link_to 'Change Register Type', rename_register_path(@register), method: :get, data: { confirm: 'Are you really really sure that you to change the Register Type?'}, :class => "btn   btn--small" %>
+    <%= link_to 'Merge Identical Register Types into this one', merge_register_path(@register), method: :get, data: { confirm: 'Are you really really sure that this is the Register Type into which you want all similar Register Types in this church to be merged? The action will be taken on selecting OK and cannot be recovered!!!!'}, :class => "btn   btn--small " %>
+    <%= link_to 'Create Image Server', create_image_server_register_path(@register), method: :get, :class => "btn   btn--small" unless @image_server %>
+    <%= link_to 'Image Sources', show_image_server_register_path(@register), method: :get, :class => "btn   btn--small" if @image_server %>
   </div>
 <% end%>
 <div style="clear:both;"> </div>
@@ -23,17 +23,17 @@
       <h5 style="text-align: center">The Register has the following Batches:<br>
         <% if @register.freereg1_csv_files.record_type("ba").count >= 1%> Baptisms:<br>
           <% @register.freereg1_csv_files.record_type("ba").order_by(record_type: 1,datemin: 1).each do |file_name| %>
-            <%= link_to("#{file_name.datemin}-#{file_name.datemax} #{file_name.userid} (#{file_name.file_name})",freereg1_csv_file_path(file_name), :class => "btn weight--light  btn--small") %>
+            <%= link_to("#{file_name.datemin}-#{file_name.datemax} #{file_name.userid} (#{file_name.file_name})",freereg1_csv_file_path(file_name), :class => "btn   btn--small") %>
           <% end %>
         <% end %><br>
         <% if @register.freereg1_csv_files.record_type("bu").count >= 1%>Burials:<br>
           <% @register.freereg1_csv_files.record_type("bu").order_by(record_type: 1,datemin: 1).each do |file_name| %>
-            <%= link_to("#{file_name.datemin}-#{file_name.datemax} #{file_name.userid} (#{file_name.file_name})",freereg1_csv_file_path(file_name), :class => "btn weight--light  btn--small") %>
+            <%= link_to("#{file_name.datemin}-#{file_name.datemax} #{file_name.userid} (#{file_name.file_name})",freereg1_csv_file_path(file_name), :class => "btn   btn--small") %>
           <% end %>
         <% end %><br>
         <% if @register.freereg1_csv_files.record_type("ma").count >= 1%>Marriages:<br>
           <% @register.freereg1_csv_files.record_type("ma").order_by(record_type: 1,datemin: 1).each do |file_name| %>
-            <%= link_to("#{file_name.datemin}-#{file_name.datemax} #{file_name.userid} (#{file_name.file_name})",freereg1_csv_file_path(file_name), :class => "btn weight--light  btn--small") %>
+            <%= link_to("#{file_name.datemin}-#{file_name.datemax} #{file_name.userid} (#{file_name.file_name})",freereg1_csv_file_path(file_name), :class => "btn   btn--small") %>
           <% end %>
         <% end %>
       </h5>

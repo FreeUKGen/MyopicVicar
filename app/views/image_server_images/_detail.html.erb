@@ -1,56 +1,65 @@
 <div style="text-align: center">
   <% if @image_detail_access_allowed %>
-    <%= link_to 'Edit Image', edit_image_server_image_path(@image_server_image), :class => "btn weight--light btn--small" %> 
-    <%= link_to 'View image', view_image_server_image_path(:object => @image_server_image[:_id]), method: :get,:target => "_blank", :class => "btn weight--light btn--small" %>
-    <%= link_to 'Download image', download_image_server_image_path(:object => @image_server_image[:_id]), method: :get,:target => "_blank",  :class => "btn weight--light btn--small" %>
+    <%= link_to 'Edit Image', edit_image_server_image_path(@image_server_image), :class => "btn  btn--small" %>
+    <%= link_to 'View image', view_image_server_image_path(:object => @image_server_image[:_id]), method: :get,:target => "_blank", :class => "btn  btn--small" %>
+    <%= link_to 'Download image', download_image_server_image_path(:object => @image_server_image[:_id]), method: :get,:target => "_blank",  :class => "btn  btn--small" %>
   <% end %>
   <% if session[:manage_user_origin] == 'manage county' && @user.person_role == 'system_administrator' %>
-    <%= link_to 'Delete Image', image_server_image_path(@image_server_image), data: { confirm: 'Are you sure you want to delete IS image '+@image_server_image[:image_file_name]}, method: :delete, :class => "btn weight--light btn--small" %>
+    <%= link_to 'Delete Image', image_server_image_path(@image_server_image), data: { confirm: 'Are you sure you want to delete IS image '+@image_server_image[:image_file_name]}, method: :delete, :class => "btn  btn--small" %>
   <% end %>
-  <%= link_to 'List All Images In the Same Image Group', index_image_server_image_path(@image_server_image[:image_server_group_id]), method: :get, :class => "btn weight--light btn--small" %>
+  <%= link_to 'List All Images In the Same Image Group', index_image_server_image_path(@image_server_image[:image_server_group_id]), method: :get, :class => "btn  btn--small" %>
 </div>
-
-<div style="clear:both;"> </div><br>
-
+<div style="clear:both;"> </div>
+<br>
 <div class="grid">
   <section class="island ">
     <div class="grid__item ">
       <table   class="table--bordered  table--data">
         <colgroup >
-        <col class=t20>
-        <col class=t80>
+          <col class=t20>
+          <col class=t80>
         </colgroup>
         <tr>
           <th class="caps">Field</th>
           <th class="caps">Value</th>
         </tr>
-        <tr><td>Image Group</td><td class="weight--semibold"><%= @image_server_image[:image_group][:group_name] %></td></tr>
-        <tr><td>Image Name</td><td class="weight--semibold"><%= @image_server_image[:image_file_name] %></td></tr>
+        <tr>
+          <td>Image Group</td>
+          <td class="weight--semibold"><%= @image_server_image[:image_group][:group_name] %></td>
+        </tr>
+        <tr>
+          <td>Image Name</td>
+          <td class="weight--semibold"><%= @image_server_image[:image_file_name] %></td>
+        </tr>
         <tr>
           <td>Status</td>
           <% case @image_server_image[:status] %>
-            <% when 'u' %>
-              <td class="weight--semibold" style="color:red">
+          <% when 'u' %>
+          <td class="weight--semibold" style="color:red">
             <% when 't' %>
-              <td class="weight--semibold" style="color:green">
+            <td class="weight--semibold" style="color:green">
             <% else %>
               <td class="weight--semibold">
-          <% end %>
-          <%= SourceProperty::STATUS[@image_server_image[:status]] %>&nbsp;</td>
-        </tr>
-        <tr>
-          <td>Difficulty</td><td class="weight--semibold"><%= SourceProperty::DIFFICULTY[@image_server_image[:difficulty]] if @image_server_image[:difficulty].present? %>&nbsp;</td>
-        </tr>
-        <tr>
-        	<td>Transcriber</td><td class="weight--semibold"><%= @image_server_image[:transcriber].join(' / ') if !@image_server_image[:transcriber].blank? %>&nbsp;</td>
-				</tr>
-        <tr>
-        	<td>Reviewer</td><td class="weight--semibold"><%= @image_server_image[:reviewer].join(' / ') if !@image_server_image[:reviewer].blank? %>&nbsp;</td>
-				</tr>
-        <tr>
-          <td>Notes</td><td class="weight--semibold"><%= @image_server_image[:notes] %>&nbsp;</td>
-        </tr>
-      </table>
-    </div>
-  </section>
-</div>
+              <% end %>
+              <%= SourceProperty::STATUS[@image_server_image[:status]] %>&nbsp;</td>
+          </tr>
+          <tr>
+            <td>Difficulty</td>
+            <td class="weight--semibold"><%= SourceProperty::DIFFICULTY[@image_server_image[:difficulty]] if @image_server_image[:difficulty].present? %>&nbsp;</td>
+          </tr>
+          <tr>
+            <td>Transcriber</td>
+            <td class="weight--semibold"><%= @image_server_image[:transcriber].join(' / ') if !@image_server_image[:transcriber].blank? %>&nbsp;</td>
+          </tr>
+          <tr>
+            <td>Reviewer</td>
+            <td class="weight--semibold"><%= @image_server_image[:reviewer].join(' / ') if !@image_server_image[:reviewer].blank? %>&nbsp;</td>
+          </tr>
+          <tr>
+            <td>Notes</td>
+            <td class="weight--semibold"><%= @image_server_image[:notes] %>&nbsp;</td>
+          </tr>
+        </table>
+      </div>
+    </section>
+  </div>

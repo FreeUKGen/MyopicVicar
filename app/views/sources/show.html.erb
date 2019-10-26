@@ -6,7 +6,7 @@
   <div style="text-align: center">
     <% case @source.source_name %>
     <% when 'Image Server' %>
-    <%= link_to 'List Image Groups', index_image_server_group_path(@source), method: :get, :class => "btn weight--light btn--small" %>
+    <%= link_to 'List Image Groups', index_image_server_group_path(@source), method: :get, :class => "btn  btn--small" %>
     <% when 'Other Server1' %>
     <% when 'Other Server2' %>
     <% when 'OTher Server3' %>
@@ -15,29 +15,29 @@
   <% if session[:manage_user_origin] == 'manage county' && !['syndicate','place','unallocate'].include?(session[:image_group_filter])  %>
     <% case @source.source_name %>
     <% when 'Image Server' %>
-    <%= link_to 'Edit Image Source', edit_source_path(@source), method: :get, :class => "btn weight--light btn--small" %>
-    <%= link_to 'Initialize Status', initialize_status_source_path(@source), method: :get, :class => "btn weight--light btn--small" %>
+    <%= link_to 'Edit Image Source', edit_source_path(@source), method: :get, :class => "btn  btn--small" %>
+    <%= link_to 'Initialize Status', initialize_status_source_path(@source), method: :get, :class => "btn  btn--small" %>
     <% if ['county_coordinator', 'system_administrator', 'country_coordinator', 'data_manager'].include? @user.person_role %>
-      <%= link_to 'Propagate this Image Source Information', flush_source_path(@source), method: :get, :class => "btn weight--light btn--small" %>
+      <%= link_to 'Propagate this Image Source Information', flush_source_path(@source), method: :get, :class => "btn  btn--small" %>
     <% end %>
     <% if @user.person_role == 'system_administrator' %>
-      <%= link_to 'Delete Image Source', source_path(@source), data: { confirm: 'Are you sure you want to delete "'+@source[:source_name]+'"?'}, method: :delete, :class => "btn weight--light btn--small" %>
+      <%= link_to 'Delete Image Source', source_path(@source), data: { confirm: 'Are you sure you want to delete "'+@source[:source_name]+'"?'}, method: :delete, :class => "btn  btn--small" %>
     <% end %>
     <% when 'Other Server1' %>
     <% if @user.person_role == 'system_administrator' %>
-      <%= link_to 'Delete Other Server1', source_path(@source), data: { confirm: 'Are you sure you want to delete "'+@source[:source_name]+'"?'}, method: :delete, :class => "btn weight--light btn--small" %>
+      <%= link_to 'Delete Other Server1', source_path(@source), data: { confirm: 'Are you sure you want to delete "'+@source[:source_name]+'"?'}, method: :delete, :class => "btn  btn--small" %>
     <% end %>
     <% when 'Other Server2' %>
     <% if @user.person_role == 'system_administrator' %>
-      <%= link_to 'Delete Other Server2', source_path(@source), data: { confirm: 'Are you sure you want to delete "'+@source[:source_name]+'"?'}, method: :delete, :class => "btn weight--light btn--small" %>
+      <%= link_to 'Delete Other Server2', source_path(@source), data: { confirm: 'Are you sure you want to delete "'+@source[:source_name]+'"?'}, method: :delete, :class => "btn  btn--small" %>
     <% end %>
     <% when 'Other Server3' %>
     <% if @user.person_role == 'system_administrator' %>
-      <%= link_to 'Delete Other Server3', source_path(@source), data: { confirm: 'Are you sure you want to delete "'+@source[:source_name]+'"?'}, method: :delete, :class => "btn weight--light btn--small" %>
+      <%= link_to 'Delete Other Server3', source_path(@source), data: { confirm: 'Are you sure you want to delete "'+@source[:source_name]+'"?'}, method: :delete, :class => "btn  btn--small" %>
     <% end %>
   <% end %>
 <% end %>
-<%= link_to 'List GAPs', index_gap_path(@source), method: :get, :class => "btn weight--light btn--small" %>
+<%= link_to 'List GAPs', index_gap_path(@source), method: :get, :class => "btn  btn--small" %>
 </div>
 <div style="clear:both;"> </div>
 <br>

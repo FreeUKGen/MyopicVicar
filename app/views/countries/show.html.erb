@@ -2,7 +2,7 @@
 <h2 class=" text--center">Details for a Country </h2>
 <%= render 'flash_notice' %>
 <% if @user.person_role == "system_administrator"%>
-  <div style="text-align: center"> <%= link_to 'Edit Country' , edit_country_path(@country), method: :get , :class => "btn weight--light btn--small" %> </div>
+  <div style="text-align: center"> <%= link_to 'Edit Country' , edit_country_path(@country), method: :get , :class => "btn btn--small" %> </div>
 <% end%>
 <div id="main"style="color:black">
   <table  class="table--bordered  table--data">

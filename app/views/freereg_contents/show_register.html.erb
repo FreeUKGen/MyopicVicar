@@ -1,18 +1,19 @@
 <% title "#{RegisterType.display_name(@register.register_type)} #{@church_name} #{@place_name} #{@county} transcriptions" %>
 <%#= This is a view used by the showing of a register from the Transcriptions link %>
 <div class="container"></div>
-  <section class="island ">
+<section class="island ">
   <div class="text--center">
-    <%= link_to 'County Selection', new_freereg_content_path, method: :get, :class => "btn weight--light  btn--small"%> 
+    <%= link_to 'County Selection', new_freereg_content_path, method: :get, :class => "btn   btn--small"%>
     <% if @character.present? %>
-      <%= link_to 'Alphabet Place Selection', freereg_contents_path, :class => "btn weight--light btn--small "%>
-      <%= link_to 'These Alphabet Places', select_places_freereg_content_path, :class => "btn weight--light btn--small "%>
-    <% else %> 
-     <%= link_to 'This County', freereg_contents_path, method: :get, :class => "btn weight--light  btn--small"%>
+      <%= link_to 'Alphabet Place Selection', freereg_contents_path, :class => "btn  btn--small "%>
+      <%= link_to 'These Alphabet Places', select_places_freereg_content_path, :class => "btn  btn--small "%>
+    <% else %>
+      <%= link_to 'This County', freereg_contents_path, method: :get, :class => "btn   btn--small"%>
     <% end%>
-    <%= link_to 'Place for this Church', show_place_freereg_content_path(@place_name), :class => "btn weight--light  btn--small" %> 
-    <%= link_to 'Church for this Register', show_church_freereg_content_path( @register.church), :class => "btn weight--light  btn--small" %>     
-   </div><br>
-    <%= render 'register_body' %>
-  </section>
+    <%= link_to 'Place for this Church', show_place_freereg_content_path(@place_name), :class => "btn   btn--small" %>
+    <%= link_to 'Church for this Register', show_church_freereg_content_path( @register.church), :class => "btn   btn--small" %>
+  </div>
+  <br>
+  <%= render 'register_body' %>
+</section>
 </div>
