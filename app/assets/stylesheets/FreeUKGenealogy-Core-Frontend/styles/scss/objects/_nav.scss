@@ -23,6 +23,7 @@
 
 /**
  * A stacked blocky sub nav with open and active states
+ * AO: edit colours, add focus states, remove link-like stuff from .active ('you are here')
  */
 .sub-nav {
 
@@ -35,9 +36,16 @@
   a {
     padding: $b-half 0;
     color: $navy;
+    font-weight: normal;
     &:active,
+    &:focus,
     &:hover {
-      color: $magenta;
+      color: $focus-hover;
+      font-weight: normal;
+    }
+    &:focus {
+      background-color: $project-color-faded;
+      outline: 3px solid $project-color-faded;
     }
   }
 
@@ -50,10 +58,15 @@
     }
 
     &.open > a {
-      color: $teal;
+      color: $project-color;
       &:active,
+      &:focus,
       &:hover {
-        color: $magenta;
+        color: $focus-hover;
+      }
+      &:focus {
+        background-color: $project-color-faded;
+        outline: 3px solid $project-color-faded;
       }
     }
 
@@ -68,6 +81,16 @@
         margin-right: - $b-half;
         padding-left: $b-half;
         padding-right: $b-half;
+        &:focus,
+        &:hover {
+          background: $light;
+          color: $navy !important;
+          cursor: text;
+          text-decoration: none;
+        }
+        &:hover {
+          outline: none;
+        }
       }
 
     }
@@ -89,10 +112,12 @@
       }
 
       &.open > a {
-        color: $teal;
+        color: $project-color;
         &:active,
+        &:focus,
         &:hover {
-          color: $magenta;
+          background-color: $project-color-faded;
+          color: $focus-hover;
         }
       }
 
@@ -136,9 +161,15 @@
   a {
     @include font-size(16px, false);
     color: $navy;
+    font-weight: normal;
     &:active,
+    &:focus,
     &:hover {
-      color: $navy-lighter;
+      color: $focus-hover;
+    }
+    &:focus {
+      background-color: $project-color-faded;
+      outline: 3px solid $project-color-faded;
     }
   }
 

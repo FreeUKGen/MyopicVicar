@@ -1,23 +1,29 @@
 /*------------------------------------*\
     $TABLES
 \*------------------------------------*/
-
+// comment why do we use sans-serif in tables
 table {
 
   /**
    * A style for captions
-   */
+   * AO: make font-size smaller, tweak span color for accessibility, add .additional
+ */
   caption {
-    @include font-size(36px, false);
+    @include font-size(22px, false);
     text-align: left;
-    font-weight: 300;
+    font-weight: lighter;
     overflow: hidden;
 
     // like an `.islet  .islet--light`
     span {
       background: $light;
       padding: $b-half;
-      color: #888888;
+      color: #707070;
+      &.additional {
+        background: transparent;
+        font-size: 14px;
+        margin-bottom: $base-spacing-unit / 4;
+      }
     }
 
   }
@@ -43,16 +49,17 @@ table {
 
   /**
    * Spacing
+   * AO: do not understand wish to be rid of padding!
    */
-  thead tr th:first-child,
-  tbody tr th:first-child {
-    padding-left: 0;
-  }
-  thead tr th:last-child,
-  tbody tr th:last-child,
-  tbody tr td:last-child {
-    padding-right: 0;
-  }
+  // thead tr th:first-child,
+  // tbody tr th:first-child {
+  //   padding-left: 0;
+  // }
+  // thead tr th:last-child,
+  // tbody tr th:last-child,
+  // tbody tr td:last-child {
+  //   padding-right: 0;
+  // }
 
 
 
@@ -107,6 +114,12 @@ table {
   vertical-align: top;
 }
 
+/**
+ * Data: AO: make text a little bigger, for comfort
+ */
+.table--data {
+  font: 14px/1.2 sans-serif;
+}
 
 
 /**

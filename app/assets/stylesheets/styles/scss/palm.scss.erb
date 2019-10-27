@@ -24,6 +24,7 @@
 
   /**
    * Trigger for off canvas menu
+   * AO: edit colours for accessibility and for project
    */
   .site__header__menu-btn {
 
@@ -48,9 +49,11 @@
     }
 
     &:active span,
+    &:focus,
     &:hover span {
-      color: $teal-brighter;
-      border-color: $teal-brighter;
+      background-color: $teal;
+      color: #fff;
+      border-color: $teal;
     }
 
     &:focus {
@@ -78,10 +81,8 @@
 
 
   .site__header__logo {
+    margin: ($base-spacing-unit * 2) auto $base-spacing-unit auto;
     display: block !important;
-    @include manual-media-query(570px) {
-                  margin: ($base-spacing-unit * 2) auto $base-spacing-unit auto;
-            }
   }
 
   .site__header__freeukgen-logo {
@@ -107,12 +108,20 @@
       a {
         background: $light;
         text-transform: uppercase;
-        color: $brand-color-brighter;
+<% if MyopicVicar::Application.config.template_set=='freecen' %>
+        color: $lavender-on-light;
+<% elsif MyopicVicar::Application.config.template_set=='freereg' %>
+        color: $turquoise-on-light;
+<% else %>
+        color: $magenta-on-light;
+<% end %>
         font-weight: bold;
         padding: $base-spacing-unit / 2;
         &:active,
+        &:focus,
         &:hover {
-          background: #e2e2e2;
+          background: $project-color-faded;
+          color: $focus-hover;
         }
       }
 
@@ -157,7 +166,6 @@
     display: none;
   }
 }
-
 
 /**
  * Site content

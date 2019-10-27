@@ -4,7 +4,7 @@
     LAP_AND_UP.CSS
 \*------------------------------------*/
 
-
+// comment this is a merge of Alison's and Scott's
 /**
  * Vars and core
  */
@@ -110,8 +110,43 @@
 
   .site__header__logo {
     float: left;
+    margin: 0;
     position: relative;
     z-index: 3;
+    &:focus,
+    &:hover {
+      background-color: #fff;
+      outline: 2px dashed $project-color;
+      outline-offset: 7px; // will not work in IE/Edge
+    }
+  }
+
+  @include manual-media-query(1090px) {
+    .icon__<%= MyopicVicar::Application.config.template_set %> {
+      @include vendor(background-size, 100%);
+      width: 20%;
+      height: 0px;
+      overflow: hidden;
+
+      padding-bottom: 7%;
+      margin-top: 1%;
+    }
+  }
+
+  @include manual-media-query(1010px) {
+    .icon__<%= MyopicVicar::Application.config.template_set %> {
+      margin-top: 2%;
+      width: 16%;
+    }
+  }
+
+  @include manual-media-query(950px) {
+    .icon__<%= MyopicVicar::Application.config.template_set %> {
+      width: 266px;
+      height: 87px;
+      padding-bottom: 0;
+      margin-top: 0;
+    }
   }
 
   .site__header__freeukgen-logo {
@@ -125,7 +160,7 @@
    */
   .site__header__nav {
 
-    background: $brand-color;
+    background: $project-color;
     overflow: hidden;
     height: 46px;
 
@@ -174,9 +209,12 @@
         }
 
         &:active,
+        &:focus,
         &:hover {
-          background: none;
-          color: #fff;
+          background: #fff;
+          color: $project-color;
+          outline: 5px solid #fff;
+          text-decoration: none;
         }
 
       }
@@ -228,6 +266,11 @@
 .site__footer {
   .icon__freeukgen__project--light {
     margin-top: $base-spacing-unit / 3;
+    &:focus,
+    &:hover {
+      background-color: transparent;
+      outline: 2px dashed $project-color-faded;
+    }
   }
 }
 
@@ -241,5 +284,11 @@
     @include inline-block;
     margin-left: $base-spacing-unit * 2;
     margin-right: $base-spacing-unit * 2;
+    a:focus,
+    a:hover {
+      background-color: transparent;
+      outline: 2px dashed $project-color;
+      outline-offset: 7px;
+    }
   }
 }

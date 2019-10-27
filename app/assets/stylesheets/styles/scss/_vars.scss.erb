@@ -9,21 +9,16 @@
 
 $container-width:   1200px;
 
-<% case MyopicVicar::Application.config.template_set %>
-<% when 'freecen' %>
-$brand-color:          $orange;
-$brand-color-brighter: $orange-brighter;
-$brand-color-lighter:  $orange-lighter;
-<% when 'freebmd' %>
-$brand-color:          $magenta;
-$brand-color-brighter: $magenta-brighter;
-$brand-color-lighter:  $magenta-lighter;
-<% when 'freereg' %>
-$brand-color:          $blue;
-$brand-color-brighter: $blue-brighter;
-$brand-color-lighter:  $blue-lighter;
-<% else %>
-$brand-color:          $teal;
-$brand-color-brighter: $teal-brighter;
-$brand-color-lighter:  $teal-lighter;
-<% end%>
+<% if MyopicVicar::Application.config.template_set == 'freecen' %>
+$project-color:           $lavender;
+$project-color-faded:     $lavender-faded;
+$project-color-on-light:  $lavender-on-light;
+<% elsif MyopicVicar::Application.config.template_set == 'freebmd' %>
+$project-color:           $magenta;
+$project-color-faded:     $magenta-faded;
+$project-color-on-light:  $magenta-on-light;
+<% elsif MyopicVicar::Application.config.template_set == 'freereg' %>
+$project-color:           $turquoise;
+$project-color-faded:     $turquoise-faded;
+$project-color-on-light:  $turquoise-on-light;
+<%end%>
