@@ -5,17 +5,17 @@
 <% unless session[:userid].nil?%>
   <div style="text-align: center">
     <% if session[:manage_user_origin] == 'manage county' %>
-      <%= link_to 'Move Multiple Images', move_image_server_image_path, method: :get, :class => "btn weight--light btn--small" %>
+      <%= link_to 'Move Multiple Images', move_image_server_image_path, method: :get, :class => "btn  btn--small" %>
     <% end %>
     <% if ['manage county', 'manage syndicate'].include? session[:manage_user_origin] %>
-      <%= link_to 'Propagate Difficulty', flush_image_server_image_path(:propagate_choice=>'difficulty'), method: :get, :class => "btn weight--light btn--small" %>
+      <%= link_to 'Propagate Difficulty', flush_image_server_image_path(:propagate_choice=>'difficulty'), method: :get, :class => "btn  btn--small" %>
     <% end %>
     <% if session[:manage_user_origin] == 'manage county' %>
-      <%= link_to 'Propagate Status', flush_image_server_image_path(:propagate_choice=>'status'), method: :get, :class => "btn weight--light btn--small" %>
+      <%= link_to 'Propagate Status', flush_image_server_image_path(:propagate_choice=>'status'), method: :get, :class => "btn  btn--small" %>
     <% end %>
     <% if session[:manage_user_origin] == 'manage syndicate' %>
-      <%= link_to 'Create Assignment', assign_assignment_path(:assign_type=>'transcriber'), method: :get, :class => "btn weight--light btn--small" %>
-      <%= link_to 'List assignments by userid', select_user_assignment_path(:assignment_list_type=>'group'), method: :get, :class => "btn weight--light btn--small" %>
+      <%= link_to 'Create Assignment', assign_assignment_path(:assign_type=>'transcriber'), method: :get, :class => "btn  btn--small" %>
+      <%= link_to 'List assignments by userid', select_user_assignment_path(:assignment_list_type=>'group'), method: :get, :class => "btn  btn--small" %>
     <% end %>
   </div>
   <div style="clear:both;"> </div>

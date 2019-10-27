@@ -24,6 +24,6 @@
     <%= f.input :church_name, :label => "Select church name from the following list",:include_blank => true, :required => true, :collection => options_for_select(@churches,@selected_church), :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width",'onchange' =>@update_registers_location,:size => 3}   %>
     <%= f.input :register_type,:label => "Select Type of Register :",:include_blank => true, :required => true, :collection => options_for_select(@register_types,@selected_register), :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 3}%>
     <div style="text-align: center">
-      <%= f.action :submit,  :label => 'Relocate', :as => :input, :button_html => {:class => "btn  weight--light ", :data => { disable_with: false } }  %>
+      <%= f.action :submit,  :label => 'Relocate', :as => :input, :button_html => {:class => "btn  ", :data => { disable_with: false } }  %>
     </div>
   <% end %>

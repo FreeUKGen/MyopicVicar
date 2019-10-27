@@ -29,7 +29,7 @@
     <% if @place.genuki_url.present?%>
       <tr>
         <td>Location on map</td>
-        <td  ><%= link_to('Location', @place.genuki_url, :class => 'btn weight--light  btn--small',target: '_blank')  if @place.genuki_url.present? || @place.genuki_url == "no url" %></td>
+        <td  ><%= link_to('Location', @place.genuki_url, :class => 'btn   btn--small',target: '_blank')  if @place.genuki_url.present? || @place.genuki_url == "no url" %></td>
       </tr>
     <% end%>
     <% if @place.records.present?%>

@@ -3,7 +3,7 @@
 <%= render 'flash_notice' %>
 <% if @user.person_role == 'system_administrator'%>
   <div  class=" text--center push--bottom">
-    <%= link_to 'Add Country', new_country_path,:class => "btn weight--light  btn--small", method: :get %>
+    <%= link_to 'Add Country', new_country_path,:class => "btn btn--small", method: :get %>
   </div>
 <% end %>
 <div class="grid">
@@ -20,9 +20,9 @@
           <tr id="<%=country.id%>">
             <td > <%= country.country_code %>  </td>
             <td > <%= country.country_coordinator %>  </td>
-            <td><%= link_to 'Show', country_path(country), method: :get, :class => "btn weight--light btn--small" %>  </td>
+            <td><%= link_to 'Show', country_path(country), method: :get, :class => "btn btn--small" %>  </td>
             <% if @user.person_role == 'system_administrator' %>
-              <td><%= link_to 'Edit details', edit_country_path(country), method: :get  , :class => "btn weight--light btn--small" %></td>
+              <td><%= link_to 'Edit details', edit_country_path(country), method: :get  , :class => "btn btn--small" %></td>
             <% end %>
           </tr>
         <% end %>

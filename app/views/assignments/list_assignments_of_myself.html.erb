@@ -3,23 +3,21 @@
 <% else %>
   <% breadcrumb :syndicate_image_group_assignments, @user, @county, @register, @source, @group %>
 <% end %>
-
-<div style="clear:both;"></div><br>
+<div style="clear:both;"></div>
+<br>
 <p style="text-align: center"><b>Assignments</b> for <b><%= @user.userid %></b>
-
-<% title "Assignment - list my assignment" %>
-<%= render partial: 'flash_notice' %>
-
-<% unless session[:userid].nil?%>
-  <div style="text-align: center">  
-    <%= link_to 'List Image Groups Under My Syndicate', my_list_by_syndicate_image_server_group_path, method: :get, :class => "btn weight--light btn--small" %> 
-    <%= link_to 'Image Groups Available for Allocation(By County)', select_county_assignment_path, method: :get, :class => "btn weight--light btn--small" %> 
+  <% title "Assignment - list my assignment" %>
+  <%= render partial: 'flash_notice' %>
+  <% unless session[:userid].nil?%>
+    <div style="text-align: center">
+      <%= link_to 'List Image Groups Under My Syndicate', my_list_by_syndicate_image_server_group_path, method: :get, :class => "btn btn--small" %>
+      <%= link_to 'Image Groups Available for Allocation(By County)', select_county_assignment_path, method: :get, :class => "btn btn--small" %>
+    </div>
+    <div style="clear:both;"> </div>
+    <br>
+  <% end %>
+  <div class="grid">
+    <section class="island">
+      <%= render partial: 'assignments_list', :locals=>{:assignment_filter_list=>''} %>
+    </section>
   </div>
-  <div style="clear:both;"> </div><br>
-<% end %>
-
-<div class="grid">
-  <section class="island">
-		<%= render partial: 'assignments_list', :locals=>{:assignment_filter_list=>''} %>
-	</section>
-</div>

@@ -1,7 +1,7 @@
 <% breadcrumb :syndicates%>
 <h2 class=" text--center">Listing of all syndicates</h2>
 <%= render 'flash_notice' %>
-<div style="text-align: center"> <%= link_to 'Create new syndicate', new_syndicate_path, method: :get , :class => "btn weight--light btn--small" if @user.person_role == "system_administrator"%></div>
+<div style="text-align: center"> <%= link_to 'Create new syndicate', new_syndicate_path, method: :get , :class => "btn  btn--small" if @user.person_role == "system_administrator"%></div>
 <div class="grid">
   <section class="island  ">
     <div class="grid__item one-whole" >
@@ -23,8 +23,8 @@
             <td > <%= email_address(syndicate.syndicate_coordinator) %>  </td>
             <td > <%= syndicate.accepting_transcribers %>  </td>
             <% if @user.person_role == "system_administrator"%>
-              <td><%= link_to 'Show', syndicate_path(syndicate), method: :get , :class => "btn weight--light btn--small" %></td>
-              <td><%= link_to 'Edit details', edit_syndicate_path(syndicate), method: :get, :class => "btn weight--light btn--small" %></td>
+              <td><%= link_to 'Show', syndicate_path(syndicate), method: :get , :class => "btn  btn--small" %></td>
+              <td><%= link_to 'Edit details', edit_syndicate_path(syndicate), method: :get, :class => "btn  btn--small" %></td>
             </tr>
           <% end %>
         <% end %>
