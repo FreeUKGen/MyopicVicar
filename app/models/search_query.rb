@@ -815,8 +815,8 @@ class SearchQuery
     params = {}
     start_year = 1837 if start_year.blank?
     start_quarter = 3 if start_quarter.blank?
-    end_year = 1993 if start_year.blank?
-    end_quarter = 4 if start_quarter.blank?
+    end_year = 1993 if end_year.blank?
+    end_quarter = 4 if end_quarter.blank?
     params[:quarternumber] = quarter_number(year: start_year, quarter: start_quarter)..quarter_number(year:end_year, quarter: end_quarter)
     params
   end
