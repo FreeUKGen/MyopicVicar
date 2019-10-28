@@ -876,7 +876,7 @@ class SearchQuery
   def bmd_age_at_death_params
     params = {}
     params[:age_at_death] = self.age_at_death
-    params[:age_at_death] = define_range if check_if_age_range
+    params[:age_at_death] = define_range if check_age_range?
     params[:death_age] = ['',params[:age_at_death]]
     params[:death_age] = params[:age_at_death] if match_recorded_ages_or_dates
   end
