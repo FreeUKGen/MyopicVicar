@@ -227,16 +227,6 @@ $(document).ready(function(){
 
   var age_at_death = $('#age_at_death').val();
 
-  if ((age_at_death.includes('-')) || (age_at_death.includes('%')) )  {
-    if (age_at_death.search(/[^0-9]/) === -1) {
-      $('#age_at_death')[0].setCustomValidity('');
-    } else {
-    $('#age_at_death')[0].setCustomValidity('Invalid Range');
-    }
-  } else {
-    $('#age_at_death')[0].setCustomValidity('');
-  };
-
   if ((age_at_death.includes('-')) && !(age_at_death.includes('%')) )  {
     var x = age_at_death.split('-')
     if ((x[0] >= x[1])) {
