@@ -66,15 +66,15 @@
             <%= content_text(:optional_checkbox_label, 'Select All') %>
           <% end %>
           <%= f.label :birth, { :class => "optional_attributes", :tabindex => "0" } do %>
-            <%= check_box_tag 'search_query[bmd_record_type][]', 1,false,{ multiple: true, class: 'checkboxtag', id: 'bmd_record_type_birth' } %>
+            <%= check_box_tag 'search_query[bmd_record_type][]', 1,false,{ multiple: true, class: 'checkboxtag birth', id: 'bmd_record_type birth' } %>
             <%= content_text(:optional_checkbox_label, 'Birth') %>
           <% end %>
           <%= f.label :death, { :class => "optional_attributes", :tabindex => "0" } do %>
-            <%= check_box_tag 'search_query[bmd_record_type][]', 2,false,{ multiple: true, class: 'checkboxtag', id: 'bmd_record_type_death' } %>
+            <%= check_box_tag 'search_query[bmd_record_type][]', 2,false,{ multiple: true, class: 'checkboxtag death', id: 'bmd_record_type death' } %>
             <%= content_text(:optional_checkbox_label, 'Death') %>
           <% end %>
           <%= f.label :marriage, { :class => "optional_attributes", :tabindex => "0" } do %>
-            <%= check_box_tag 'search_query[bmd_record_type][]', 3,false,{ multiple: true, class: 'checkboxtag' , id: 'bmd_record_type_marriage'} %>
+            <%= check_box_tag 'search_query[bmd_record_type][]', 3,false,{ multiple: true, class: 'checkboxtag marriage' , id: 'bmd_record_type marriage'} %>
             <%= content_text(:optional_checkbox_label, 'Marriage') %>
           <% end %>
         </span>
@@ -107,7 +107,7 @@
           <%= label_tag 'date_of_birth_or_age_at_death', 'Date of birth / Death age', class: "ttip" %>
           <%= label_tag 'date_of_birth_or_age_at_death', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '0', title: info_tag_text[:firstname]%>
         </div>
-        <%= text_field_tag 'search_query[age_at_death]', set_value(@search_query.age_at_death), pattern: "[0-9-%]{0,10}", class: 'text-input', id: 'age_at_death', placeholder: '', tabindex: '4' %>
+        <%= text_field_tag 'search_query[age_at_death]', set_value(@search_query.age_at_death), pattern: "[a-zA-Z0-9-%/]{0,10}", class: 'text-input', id: 'age_at_death', disabled: true, placeholder: '', tabindex: '4' %>
         <%= check_box_tag 'search_query[match_recorded_ages_or_dates]', true, false %>
         <%= content_text(:small, 'Match only recorded ages') %>
       </div>
@@ -198,52 +198,61 @@ $(document).ready(function(){
     });
   });
 
-  $('#bmd_record_type_marriage, #bmd_record_type_all').change(function() {
-    if ($("#bmd_record_type_marriage").is(":checked")) {
-      $('#age_at_death').val('')
-      $('#age_at_death').prop('placeholder', '');
-      $('#age_at_death').prop('disabled', true)
-    }  else {
+  $('.checkboxtag, .checkAll').change(function() {
+    if ($(".death").is(":checked") && !$('.birth, .marriage, .checkAll').is(':checked')) {
       $('#age_at_death').prop('disabled', false)
+      $('#age_at_death').prop('placeholder', 'Enter Age at Death or date of birth')
+    }  else {
+      $('#age_at_death').val('')
+      $('#age_at_death').prop('disabled', true)
+      $('#age_at_death').prop('placeholder', '')
+
     }
   });
 
-  $('#bmd_record_type_birth, #bmd_record_type_death').change(function() {
-    if (!$('#age_at_death').prop('disabled')) {
-      if ($('#bmd_record_type_death').is(':checked') && !$('#bmd_record_type_birth').is(':checked'))  {
-        $('#age_at_death').prop('placeholder', 'Enter Age at Death here');
-        $('#age_at_death').prop('name', 'search_query[age_at_death]')
-      } else if ($('#bmd_record_type_birth').is(':checked') && !$('#bmd_record_type_death').is(':checked'))  {
-        $('#age_at_death').prop('placeholder', 'Enter Date of Birth here');
-        $('#age_at_death').prop('name', 'search_query[date_of_birth]')
-      } else {
-        $('#age_at_death').prop('placeholder', '');
-      }
+  if ($(".death").is(":checked") && !$('.birth, .marriage, .checkAll').is(':checked')) {
+      $('#age_at_death').prop('disabled', false)
+      $('#age_at_death').prop('placeholder', 'Enter Age at Death or date of birth')
     }
-  });
-
 
  $('#search_form_submit').click(function() {
-  if($('#age_at_death').val()) {
-     if ($('#bmd_record_type_death').is(':checked') && $('#bmd_record_type_birth').is(':checked'))  {
-        $('#bmd_record_type_death, #bmd_record_type_birth')[0].setCustomValidity('Please choose either birth or death record type if Date of birth / Death age is provided');
-    }
-    if (!$('#bmd_record_type_death').is(':checked') && !$('#bmd_record_type_birth').is(':checked'))  {
-        $('#bmd_record_type_death, #bmd_record_type_birth')[0].setCustomValidity('Please choose either birth or death record type if Date of birth / Death age is provided');
-    }
-  }
+ // if($('#age_at_death').val()) {
+    // if ($('#bmd_record_type_death').is(':checked') && $('#bmd_record_type_birth').is(':checked'))  {
+       // $('#bmd_record_type_death, #bmd_record_type_birth')[0].setCustomValidity('Please choose either birth or death record type if Date of birth / Death age is provided');
+   // }
+   // if (!$('#bmd_record_type_death').is(':checked') && !$('#bmd_record_type_birth').is(':checked'))  {
+    //    $('#bmd_record_type_death, #bmd_record_type_birth')[0].setCustomValidity('Please choose either birth or death record type if Date of birth / Death age is provided');
+   // }
+  //}
 
   var age_at_death = $('#age_at_death').val();
-   if ((age_at_death.includes('-')) && !(age_at_death.includes('%')))  {
+
+  if ((age_at_death.includes('-')) || (age_at_death.includes('%')) )  {
+    if (age_at_death.search(/[^0-9]/) === -1) {
+      $('#age_at_death')[0].setCustomValidity('');
+    } else {
+    $('#age_at_death')[0].setCustomValidity('Invalid Range');
+    }
+  } else {
+    $('#age_at_death')[0].setCustomValidity('');
+  };
+
+  if ((age_at_death.includes('-')) && !(age_at_death.includes('%')) )  {
     var x = age_at_death.split('-')
     if ((x[0] >= x[1])) {
       $('#age_at_death')[0].setCustomValidity('Invalid age range.');
     }
-  }
+  } else {
+    $('#age_at_death')[0].setCustomValidity('');
+  };
 
-  if ((age_at_death.includes('-')) && (age_at_death.includes('%'))) {
-      $('#age_at_death')[0].setCustomValidity("Invalid age or age range.");
-   }
+  if ((age_at_death.includes('-')) && (age_at_death.includes('%')) )  {
+    $('#age_at_death')[0].setCustomValidity('Invalid age or age-range.');
+  };
+
+  if ((age_at_death.includes('/')) && (age_at_death.includes('%')) )  {
+    $('#age_at_death')[0].setCustomValidity('Invalid age or age-range.');
+  };
  });
 });
 </script>
