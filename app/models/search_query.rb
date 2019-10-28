@@ -822,7 +822,7 @@ class SearchQuery
   end
 
   def quarter_number(year:, quarter:)
-    (year - 1837)*4 + quarter
+    (year.to_i-1837)*4 + quarter.to_i
   end
 
   def bmd_search_params
