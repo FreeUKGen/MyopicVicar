@@ -631,7 +631,6 @@ class SearchQuery
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
     update_attribute(:search_index, @search_index)
     records = SearchQuery.get_search_table.where(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
-    records = records.where(first_name_filteration) unless self.first_name_exact_match
     persist_results(records)
     persist_additional_results(secondary_date_results) if App.name == 'FreeREG' && (result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     #search_ucf if can_query_ucf? && result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
@@ -814,10 +813,9 @@ class SearchQuery
   def get_quarter
     params = {}
     start_year = 1837 if start_year.blank?
-    start_quarter = 3 if start_quarter.blank?
     end_year = 1993 if end_year.blank?
-    end_quarter = 4 if end_quarter.blank?
     params[:quarternumber] = quarter_number(year: start_year, quarter: start_quarter)..quarter_number(year:end_year, quarter: end_quarter)
+    #raise params[:quarternumber].inspect
     params
   end
 
@@ -847,10 +845,8 @@ class SearchQuery
   end
 
   def freebmd_search_records
-    #raise bmd_adjust_field_names.inspect
     @search_index = SearchQuery.get_search_table.index_hint(bmd_adjust_field_names)
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
-    update_attribute(:search_index, @search_index)
     records = SearchQuery.get_search_table.where(bmd_params_hash).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     records = records.where(first_name_filteration) unless self.first_name_exact_match
     persist_results(records)
@@ -873,7 +869,7 @@ class SearchQuery
 
   def bmd_districts_params
     params = {}
-    params[:districts] = self.districts
+    params[:districts] = self.districts if self.districts.present?
     params
   end
 
@@ -882,6 +878,7 @@ class SearchQuery
     params[:age_at_death] = ['',self.age_at_death]
     params[:age_at_death] = define_range if check_age_range?
     params[:age_at_death] = self.age_at_death if match_recorded_ages_or_dates
+    params
   end
 
   def check_age_range?
@@ -968,7 +965,8 @@ class SearchQuery
       districts: 'District',
       age_at_death: 'AgeAtDeath',
       volume: 'Volume',
-      page: 'Page'
+      page: 'Page',
+      quarternumber: 'QuarterNumber'
     }
   end
 
