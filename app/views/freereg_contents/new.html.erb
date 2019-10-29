@@ -1,9 +1,9 @@
 <% title "Transcription County Selection" %>
 <h1 class="title text--center ">County and Place Records</h1>
 <% if flash[:notice] %>
-<div class="weight--semibold text--center" style="color:red"><br>
-  <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
-</div>
+  <div class="weight--semibold text--center" style="color:red"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+  </div>
 <% end %>
 <div class="grid">
   <div  class="grid__item two-thirds lap-one-half palm-one-whole">
@@ -12,18 +12,18 @@
       <p>These pages contain information about our transcriptions for each County, Place, Church and Register in the database: everything from a detailed county listing right down to how many records the database holds for every ten-year period of an individual register.</p>
       <p>To get started, choose a county from the list below. We use the 1831 county boundaries.</p>
       <%= semantic_form_for @freereg_content do |f| %>
-      <ol class="grid">
-        <li class="grid__item one-whole push--bottom text--center" id="freereg_content_chapman_codes_input">
-          <input name="freereg_content[chapman_codes][]" type="hidden" value="" />
-          <label class="accessibility" for="freereg_content_chapman_codes">County</label>
-          <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
-          <select  id="freereg_content_chapman_codes"  name="freereg_content[chapman_codes][]" size="6">
-            <% key = @freereg_content.chapman_codes unless @freereg_content.chapman_codes.nil?%>
-            <%= grouped_options_for_select(grouped_options, selected_key = key) %>
-          </select>
-        </li>
-        <%= f.action :submit, :as => :button,  :label =>  "Go", :button_html => { :class => "ladda-button" , "data-style" => "contract" ,"data-color" =>"green" , "data-size" => "l", "data-spinner-color" => "#ffffff"  }, :wrapper_html => { :class => "grid__item one-whole push--bottom text--center" } %>
-      </ol>
+        <ol class="grid">
+          <li class="grid__item one-whole push--bottom text--center" id="freereg_content_chapman_codes_input">
+            <input name="freereg_content[chapman_codes][]" type="hidden" value="" />
+            <label class="accessibility" for="freereg_content_chapman_codes">County</label>
+            <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
+            <select  id="freereg_content_chapman_codes"  name="freereg_content[chapman_codes][]" size="6">
+              <% key = @freereg_content.chapman_codes unless @freereg_content.chapman_codes.nil?%>
+              <%= grouped_options_for_select(grouped_options, selected_key = key) %>
+            </select>
+          </li>
+          <%= f.action :submit, :as => :button,  :label =>  "Go", :button_html => { :class => "ladda-button" , "data-style" => "contract" ,"data-color" => appname_downcase , "data-size" => "s", "data-spinner-color" => "#ffffff"  }, :wrapper_html => { :class => "grid__item one-whole push--bottom text--center" } %>
+        </ol>
       <% end %>
       <hr class="rule" />
       <h2 class="accessibility">Information and help</h2>
@@ -58,5 +58,5 @@
   </aside>
 </div>
 <script type="text/javascript">
-Ladda.bind( 'button[type=submit]' );
+  Ladda.bind( 'button[type=submit]' );
 </script>
