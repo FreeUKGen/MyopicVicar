@@ -812,9 +812,9 @@ class SearchQuery
 
   def get_quarter
     params = {}
-    start_year = 1837 if start_year.blank?
-    end_year = 1993 if end_year.blank?
-    params[:quarternumber] = quarter_number(year: start_year, quarter: start_quarter)..quarter_number(year:end_year, quarter: end_quarter)
+    start_year = 1837 if self.start_year.blank?
+    end_year = 1993 if self.end_year.blank?
+    params[:quarternumber] = quarter_number(year: self.start_year, quarter: start_quarter)..quarter_number(year:self.end_year, quarter: end_quarter)
     #raise params[:quarternumber].inspect
     params
   end
