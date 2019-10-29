@@ -845,6 +845,7 @@ class SearchQuery
   end
 
   def freebmd_search_records
+    #raise bmd_params_hash.inspect
     @search_index = SearchQuery.get_search_table.index_hint(bmd_adjust_field_names)
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
     records = SearchQuery.get_search_table.where(bmd_params_hash).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
@@ -888,7 +889,7 @@ class SearchQuery
   def define_range
     case special_character
    when '-'
-      range_to_integer.join('..') unless special_character.include?'/'
+      range_to_integer[0]..range_to_integer[1] unless special_character.include?'/'
     when '%'
       range_to_integer[0]-range_to_integer[1]..range_to_integer[0]+range_to_integer[1]
     end
