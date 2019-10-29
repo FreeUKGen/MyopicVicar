@@ -38,8 +38,8 @@
       <span id = "citation_section">
         <%= render params[:citation_type] + '_' + appname.downcase + '_citation'%>
         <div class = "text--center">
-          <button onclick = copy("citation_container") style = "cursor: pointer">Copy</button>
-          <button onclick = this.parentElement.parentElement.remove() style = "cursor: pointer">Close</button>
+          <button class = "btn  btn--small ", onclick = copy("citation_container") style = "cursor: pointer">Copy</button>
+          <button class = "btn  btn--small ", onclick = this.parentElement.parentElement.remove() style = "cursor: pointer">Close</button>
         </div>
       </span>
     <% end%>
