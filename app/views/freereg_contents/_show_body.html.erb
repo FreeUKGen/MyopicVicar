@@ -1,15 +1,15 @@
 <% title "#{@county} Contents" %>
 <div class="text--center push-half--bottom">
-  <%= link_to 'Choose new County', new_freereg_content_path, :class => "btn weight--light btn--small" %> 
+  <%= link_to 'Choose new County', new_freereg_content_path, :class => "btn  btn--small" %>
   <% if @character  %>
-    <%= link_to 'Choose new Place', freereg_contents_path, :class => "btn weight--light btn--small", :title => "in this county" %>
+    <%= link_to 'Choose new Place', freereg_contents_path, :class => "btn  btn--small", :title => "in this county" %>
   <% end %>
 </div>
 <h1 class="title text--center"><%= @county %></h1>
 <% if flash[:notice] %>
-<div class="push-half--bottom" id="notice" role="alert" style="color:#a1185a;">
-  <%= flash[:notice] %> <% flash[:notice] = nil %>
-</div>
+  <div class="push-half--bottom" id="notice" role="alert" style="color:#a1185a;">
+    <%= flash[:notice] %> <% flash[:notice] = nil %>
+  </div>
 <% end %>
 <h2 class="accessibility">Places with records</h2>
 <% loc = (@character) ? "#{@county} (#{@character})" : @county %>
@@ -21,7 +21,7 @@
     </colgroup>
     <thead>
       <tr>
-        <th>Place</th>       
+        <th>Place</th>
         <th>Last Changed</th>
         <th>Number of Records</th>
         <th>First Year</th>
@@ -36,7 +36,7 @@
       </colgroup>
       <thead class="accessibility">
         <tr>
-          <th scope="col">Place</th>       
+          <th scope="col">Place</th>
           <th scope="col">Last Changed</th>
           <th scope="col">Number of Records</th>
           <th scope="col">First Year</th>
@@ -44,16 +44,16 @@
         </tr>
       </thead>
       <tbody>
-      <% @places.each do |place| %>
-        <% session[:placeid] = place.id%>
-        <tr id="<%=place.id%>">
-          <th scope="row" aria-label="place"><%= link_to(place.place_name, show_place_freereg_content_path(place.place_name)) %> </th>            
-          <td aria-label="date last changed"><%= place.last_amended %> </td>
-          <td aria-label="number of records"><%= display_number(place.records) %> </td>
-          <td aria-label="first year of records"><%= place.datemin %> </td>
-          <td aria-label="last year of records"><%= place.datemax %> </td>
-        </tr>
-      <% end %>
+        <% @places.each do |place| %>
+          <% session[:placeid] = place.id%>
+          <tr id="<%=place.id%>">
+            <th scope="row" aria-label="place"><%= link_to(place.place_name, show_place_freereg_content_path(place.place_name)) %> </th>
+            <td aria-label="date last changed"><%= place.last_amended %> </td>
+            <td aria-label="number of records"><%= display_number(place.records) %> </td>
+            <td aria-label="first year of records"><%= place.datemin %> </td>
+            <td aria-label="last year of records"><%= place.datemax %> </td>
+          </tr>
+        <% end %>
       </tbody>
     </table>
   </div>

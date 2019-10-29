@@ -16,7 +16,7 @@
 
 
   .banner__title {
-    font-weight: lighter;
+    font-weight: 300;
     @include font-size(32px, false);
   }
     .banner__title--bold { font-weight: bold; }
@@ -29,7 +29,7 @@
     left: $b;
     right: $b;
 
-    font-weight: lighter;
+    font-weight: 300;
   }
 
 

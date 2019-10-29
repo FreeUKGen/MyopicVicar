@@ -45,7 +45,7 @@ Step 8 Start your server
 
 Updating A Using Myopicvicar Code Base
 
-This is done in the normal mannerpulling code change and running assets:precompile if assets are changed.
+This is done in the normal manner pulling code change and running assets:precompile if assets are changed.
 
 Switching From One application to Another:
 

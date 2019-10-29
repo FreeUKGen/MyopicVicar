@@ -2,7 +2,7 @@
 <h2 class=" text--center">Details for <%= @county.county_description%></h2>
 <%= render 'flash_notice' %>
 <% if @user.person_role == "system_administrator"%>
-  <div style="text-align: center"> <%= link_to 'Edit details', edit_county_path(@county), method: :get , :class => "btn weight--light btn--small" %> </div>
+  <div style="text-align: center"> <%= link_to 'Edit details', edit_county_path(@county), method: :get , :class => "btn btn--small" %> </div>
 <% end %>
 <div id="main"style="color:black">
   <table class="table--bordered    table--data">
@@ -48,22 +48,18 @@
     </tr>
     <tr>
       <td>Total Records</td>
-             
       <td > <%= @county.total_records %>  </td>
     </tr>
     <tr>
       <td>Baptism Records</td>
-             
       <td > <%= @county.baptism_records %>  </td>
     </tr>
     <tr>
       <td>Burial Records</td>
-            
       <td > <%= @county.burial_records %>  </td>
     </tr>
     <tr>
       <td>Marriage Records</td>
-             
       <td > <%= @county.marriage_records %>  </td>
     </tr>
   </table>

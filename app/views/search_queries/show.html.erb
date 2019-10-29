@@ -27,7 +27,7 @@
       <% end%>
       <% if @result_count > 10 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
         <%= render 'nav_header' %>
-        <a href="#" class="btn weight--light btn--small">Go to top</a>
+        <a href="#" class="btn  btn--small">Go to top</a>
       <% end %>
       <% if @result_count > 0 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
         <%= render 'please_donate' %>

@@ -1,6 +1,6 @@
 <h3 style="text-align: center"><b><%= active(session[:active_place])%> Places for <%= @county  %></b>.</h3>
 <%  if @user.person_role == 'system_administrator' || @user.person_role == 'data_manager' %>
-  <div style="text-align: center">  <%= link_to 'Create New Place', new_place_path, method: :get , :class => "btn  weight--light btn--small"%> </div>
+  <div style="text-align: center">  <%= link_to 'Create New Place', new_place_path, method: :get , :class => "btn  btn--small"%> </div>
 <% end%>
 <div style="clear:both;"> </div>
 <br>

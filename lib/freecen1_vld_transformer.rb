@@ -2,7 +2,7 @@ require 'freecen_constants'
 
 module Freecen
   class Freecen1VldTransformer
-      
+
     def transform_file_record(freecen1_vld_file)
       dwelling = nil
       piece = check_and_get_piece_for_file(freecen1_vld_file)
@@ -16,7 +16,7 @@ module Freecen
         else
           # save previous dwelling
           dwelling.save! if dwelling
-          
+
           # first record or different record
           dwelling = dwelling_from_entry(entry, piece)
         end
@@ -31,7 +31,7 @@ module Freecen
       piece.save! unless piece.nil?
     end
 
-  
+
     def dwelling_from_entry(entry, piece)
       dwelling = FreecenDwelling.new
       (FreecenDwelling.fields.keys&Freecen1VldEntry.fields.keys).each do |key|
@@ -43,7 +43,7 @@ module Freecen
       dwelling.place = piece.place unless piece.nil?
       dwelling
     end
-    
+
     def individual_from_entry(entry, dwelling)
       individual = FreecenIndividual.new
       (FreecenIndividual.fields.keys&Freecen1VldEntry.fields.keys).each do |key|
@@ -52,8 +52,8 @@ module Freecen
       individual.freecen1_vld_entry=entry
       individual.freecen_dwelling=dwelling
       individual.save!
-      
-      individual    
+
+      individual
     end
 
     def check_and_get_piece_for_file(freecen1_vld_file)
