@@ -64,6 +64,7 @@ class SearchQueriesController < ApplicationController
   end
 
   def create
+    #raise params.inspect
     # binding.pry
     #raise params[:search_query][:chapman_codes].reject { |c| c.empty? }.inspect
     condition = true if params[:search_query].present? && params[:search_query][:region].blank?
@@ -284,7 +285,7 @@ class SearchQueriesController < ApplicationController
     districts_names = DistrictToCounty.joins(:District).distinct
     @districts = Hash.new
     params[:selected_counties].reject { |c| c.empty? }.each { |c|
-      @districts[c] = districts_names.where(County: [c]).pluck(:DistrictName)
+      @districts[c] = districts_names.where(County: [c]).pluck(:DistrictName, :DistrictNumber)
     }
     @districts
   end
