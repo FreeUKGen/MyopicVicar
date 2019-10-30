@@ -874,10 +874,13 @@ class SearchQuery
     params
   end
 
+  def get_district_code
+  end
+
   def bmd_age_at_death_params
     params = {}
     params[:age_at_death] = ['',self.age_at_death]
-    params[:age_at_death] = define_range if check_age_range?
+    params[:age_at_death] = ['',define_range] if check_age_range?
     params[:age_at_death] = self.age_at_death if match_recorded_ages_or_dates
     params
   end
@@ -963,7 +966,7 @@ class SearchQuery
       bmd_record_type: 'RecordTypeID',
       SurnameSx: 'SurnameSx',
       chapman_codes: 'CountyComboID',
-      districts: 'District',
+      districts: 'DistrictNumber',
       age_at_death: 'AgeAtDeath',
       volume: 'Volume',
       page: 'Page',
