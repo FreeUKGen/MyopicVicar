@@ -158,25 +158,6 @@
           el.attachEvent('onclick', switchOffCanvas);
       }
     </script>
-    <!--script type="text/javascript">
-      $(document).ready(function() {
-        $.cookiesDirective({
-          privacyPolicyUri:  "/cms/about/cookie-policy",
-          duration: 120,
-              <% if MyopicVicar::Application.config.template_set == 'freecen' %>
-                fontColor: '#FFFFFF', // font color for disclosure panel
-                backgroundColor: '#4A993E',
-                linkColor: '#ffff00',
-              <% else %>
-                fontColor: '#282828', // font color for disclosure panel
-                backgroundColor: '#f7a21c', //background color of disclosure panel
-                linkColor: ' #000080'// link color in disclosure panel
-              <% end %>
-          backgroundOpacity: '99',
-          linkColor: ' #000080'// link color in disclosure panel
-        });
-      });
-    </script-->
     <script type="text/javascript">
       $('#source_original_form_type').ready(function(){
         if ($('#source_original_form_type :selected').val() === 'other') {
