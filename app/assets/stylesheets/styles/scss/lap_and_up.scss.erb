@@ -112,6 +112,12 @@
     float: left;
     position: relative;
     z-index: 3;
+    &:focus,
+    &:hover {
+      background-color: #fff;
+      outline: 2px dashed $project-color;
+      outline-offset: 7px; // will not work in IE/Edge
+    }
   }
 
   .site__header__freeukgen-logo {
