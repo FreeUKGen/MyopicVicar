@@ -12,17 +12,17 @@
   <% Freecen::CENSUS_YEARS_ARRAY.each.each do |year| %>
     <tr >
       <td> <%= year %></td>
-      <td> <%= @totals_pieces[year] %></td>
-      <td> <%= @totals_pieces_online[year] %></td>
-      <td> <%= @totals_individuals[year] %></td>
-      <td> <%= @totals_dwellings[year] %></td>
+      <td> <%= number_with_delimiter(@totals_pieces[year]) %></td>
+      <td> <%= number_with_delimiter(@totals_pieces_online[year]) %></td>
+      <td> <%= number_with_delimiter(@totals_individuals[year]) %></td>
+      <td> <%= number_with_delimiter(@totals_dwellings[year]) %></td>
     </tr>
   <% end%>
   <tr >
     <td> Total</td>
-    <td> <%= @grand_totals_pieces %></td>
-    <td> <%= @grand_totals_pieces_online %></td>
-    <td> <%= @grand_totals_individuals %></td>
-    <td> <%= @grand_totals_dwellings %></td>
+    <td> <%= number_with_delimiter(@grand_totals_pieces) %></td>
+    <td> <%= number_with_delimiter(@grand_totals_pieces_online) %></td>
+    <td> <%= number_with_delimiter(@grand_totals_individuals) %></td>
+    <td> <%= number_with_delimiter(@grand_totals_dwellings) %></td>
   </tr>
 </table>
