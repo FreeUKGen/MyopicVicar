@@ -17,13 +17,7 @@
  */
 
  .icon__<%= MyopicVicar::Application.config.template_set %> {
-  <% if MyopicVicar::Application.config.template_set == 'freereg' %>
-    background-image: url('<%= path_to_image 'png/freereg.png'%>');
-  <% elsif MyopicVicar::Application.config.template_set == 'freecen' %>
-    background-image: url('<%= path_to_image 'png/freecen.png'%>');
-  <% elsif MyopicVicar::Application.config.template_set == 'freebmd' %>
-    background-image: url('<%= path_to_image 'png/freebmd.png'%>');
-  <% end%>
+  @include vendor(background-size, 100%);
   background-repeat: no-repeat;
   width: 290px;
   height: 87px;
