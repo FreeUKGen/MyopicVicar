@@ -1,97 +1,45 @@
 <footer class="site__footer">
   <div class="island  island--magenta  flush--bottom">
     <div class="container  text--center">
-      <% if @site_stat %>
-        <%= number_with_delimiter(@site_stat[:n_searches])%> searches were performed on <%= number_with_delimiter(@site_stat[:n_records]) %> records
-        (<%= number_with_delimiter(@site_stat[:n_records_baptisms]) %> baptisms, <%= number_with_delimiter(@site_stat[:n_records_marriages]) %> marriages and
-        <%= number_with_delimiter(@site_stat[:n_records_burials]) %> burials)<br>
-        <% if @site_stat[:n_records_added]  %>
-          <%= number_with_delimiter(@site_stat[:n_records_added]) %> records  (<%= number_with_delimiter(@site_stat[:n_records_added_baptisms]) %> baptisms, <%= number_with_delimiter(@site_stat[:n_records_added_marriages]) %> marriages and
-          <%= number_with_delimiter(@site_stat[:n_records_added_burials]) %> burials) were added
-        <% else %>
-          No records were added
-        <% end %>
-        in the 24 hrs ending at midnight GMT.
-      <% end %>
-      <% if MyopicVicar::Application.config.template_set == 'freereg' %>
-        <p>
-          The FreeREG database is just a finding tool. It should not be considered to be *proof* that such event was recorded.<br>
-          Always confirm its content with the actual register at a County Record Office, local Family History Society or LDS Family History Centre.
-        </p>
-      <% elsif MyopicVicar::Application.config.template_set == 'freecen' %>
-        <p>
-          The FreeCEN database is just a finding tool. It should not be considered to be *proof* that such information was recorded.<br>
-          Always confirm its content with the actual census record at a County Record Office, local Family History Society or LDS Family History Centre.
-        </p>
-      <% elsif MyopicVicar::Application.config.template_set == 'freebmd' %>
-        <p>
-          The FreeBMD database is just a finding tool. It should not be considered to be *proof* that such event was recorded.<br>
-          Always confirm its content with the actual register at a County Record Office, local Family History Society or LDS Family History Centre.
-        </p>
-      <% end %>
+      <p>
+        The <%= appname%> database is just a finding tool. It should not be considered to be *proof* that such event was recorded.<br>
+        Always confirm its content with the actual register at a County Record Office, local Family History Society or LDS Family History Centre.
+      </p>
+      <%= render "layouts/stats" %>
     </div>
   </div>
   <div class="icon__honeycomb--bottom-left  island  flush--bottom">
     <div class="container  text--center">
-      <h3 class="epsilon  text--navy">Other FreeUKGenealogy</h3>
-      <ul class="icon-list">
-        <li>
-          <% case appname_downcase %>
-          <% when 'freecen' %>
-          <a href="http://freereg.org.uk/" class="icon__freereg"><span class="accessibility">FreeReg</span></a></li>
-        <li>
-          <a href="http://www.freebmd.org.uk/" class="icon__freebmd"><span class="accessibility">FreeBMD</span></a>
-          <% when 'freereg' %>
-          <a href="http://www.freecen.org.uk/" class="icon__freecen"><span class="accessibility">FreeCEN</span></a></li>
-        <li>
-          <a href="http://www.freebmd.org.uk/" class="icon__freebmd"><span class="accessibility">FreeBMD</span></a>
-          <% when 'freebmd' %>
-          <a href="http://www.freecen.org.uk/" class="icon__freecen"><span class="accessibility">FreeCEN</span></a></li>
-        <li>
-          <a href="http://freereg.org.uk/" class="icon__freereg"><span class="accessibility">FreeReg</span></a>
-        <% end %>
-      </li>
-    </ul>
-  </div>
-</div>
-<div class="island  island--dark  flush--bottom  milli  text--white">
-  <div class="container">
-    <div class="grid">
-      <div class="grid__item  one-third  palm-one-whole">
-        <ul class="nav  nav--stacked  lap-and-up-flush--bottom">
-          <li><a href="/contacts/new">Contact Us</a></li>
-          <li><a href="http://www.freeukgenealogy.org.uk/help-us-keep-history-free/">Make a Donation</a></li>
-          <li><a href="https://www.freeukgenealogy.org.uk/files/Documents/Privacy-Notice.pdf">Privacy Notice</a></li>
-          <li><a href="http://www.freeukgenealogy.org.uk/about/constitution-and-policies/">Policies</a></li>
-          <li><%= link_to "Cookie Policy", "/cms/about/cookie-policy" %></li>
-        </ul>
-      </div>
-      <div class="grid__item  one-third  palm-one-whole">
-        <ul class="nav no-text  lap-and-up-flush--bottom">
-          <li><a href="http://www.freeukgenealogy.org.uk/news/"><i class="icon__rss" aria-hidden="true"></i><span class="accessibility">Blog</span></a></li>
-          <li><a href="https://www.facebook.com/freeukgen" target="_blank"><i class="icon__facebook" aria-hidden="true"></i><span class="accessibility">Facebook</span></a></li>
-          <li><a href="https://www.twitter.com/freeukgen" target="_blank"><i class="icon__twitter" aria-hidden="true"></i><span class="accessibility">Twitter</span></a></li>
-        </ul>
-      </div>
-      <div class="grid__item  one-third  palm-one-whole">
-        <a href="http://www.freeukgenealogy.org.uk/" class="icon__freeukgen__project--light"><span class="accessibility">A project by FreeUKGenealogy</span></a>
-      </div>
+      <%= render "layouts/other_projects" %>
     </div>
   </div>
-</div>
-<div class="island  island--grey  flush--bottom">
-  <div class="container  text--center">
-    <p class="micro  text--grey">
-      Search engine, layout and database Copyright © 1998-2018 Free UK Genealogy CIO, a charity registered in England and Wales, Number 1167484. We make no warranty whatsoever as to the accuracy or completeness of the
-      <% if MyopicVicar::Application.config.template_set == 'freereg' %>
-        FreeREG
-      <% elsif MyopicVicar::Application.config.template_set == 'freecen' %>
-        FreeCEN
-      <% elsif MyopicVicar::Application.config.template_set == 'freebmd' %>
-        FreeBMD
-      <% end %>
-      data.
-    </p>
+  <div class="island  island--dark  flush--bottom  milli  text--white">
+    <div class="container">
+      <div class="grid">
+        <div class="grid__item  one-third  palm-one-whole">
+          <ul class="nav  nav--stacked  lap-and-up-flush--bottom">
+            <li><a href="/contacts/new">Contact Us</a></li>
+            <li><a href="http://www.freeukgenealogy.org.uk/help-us-keep-history-free/">Make a Donation</a></li>
+            <li><a href="https://www.freeukgenealogy.org.uk/files/Documents/Privacy-Notice.pdf">Privacy Notice</a></li>
+            <li><a href="http://www.freeukgenealogy.org.uk/about/constitution-and-policies/">Policies</a></li>
+            <li><%= link_to "Cookie Policy", "/cms/about/cookie-policy" %></li>
+          </ul>
+        </div>
+        <div class="grid__item  one-third  palm-one-whole">
+          <ul class="nav no-text  lap-and-up-flush--bottom">
+            <li><a href="http://www.freeukgenealogy.org.uk/news/"><i class="icon__rss" aria-hidden="true"></i><span class="accessibility">Blog</span></a></li>
+            <li><a href="https://www.facebook.com/freeukgen" target="_blank"><i class="icon__facebook" aria-hidden="true"></i><span class="accessibility">Facebook</span></a></li>
+            <li><a href="https://www.twitter.com/freeukgen" target="_blank"><i class="icon__twitter" aria-hidden="true"></i><span class="accessibility">Twitter</span></a></li>
+          </ul>
+        </div>
+        <div class="grid__item  one-third  palm-one-whole">
+          <a href="http://www.freeukgenealogy.org.uk/" class="icon__freeukgen__project--light"><span class="accessibility">A project by FreeUKGenealogy</span></a>
+        </div>
+      </div>
+      <br>
+      <p class="micro">
+        Search engine, layout and database Copyright © 1998-2019 Free UK Genealogy CIO, a charity registered in England and Wales, Number 1167484. We make no warranty whatsoever as to the accuracy or completeness of the <%= appname%> data.
+      </p>
+    </div>
   </div>
-</div>
 </footer>
