@@ -596,7 +596,7 @@ module ApplicationHelper
     <ins class="adsbygoogle adSenseBanner"
     style="display:inline-block;width:120px;height:600px"
     data-ad-client = "#{data_ad_client}"
-    data-ad-slot = "#{banners_slot_120w600h}">
+    data-ad-slot = "#{app_advert['banners_slot_120w600h']}">
     </ins>
     <script>
       window.update_personalized_header_adverts = function (preference) {
@@ -626,7 +626,7 @@ module ApplicationHelper
     <ins class="adsbygoogle adSenseBanner"
     style="display:inline-block;width:300px;height:600px"
     data-ad-client = "#{data_ad_client}"
-    data-ad-slot = "#{banners_slot_300w600h}">
+    data-ad-slot = "#{app_advert['banners_slot_300w600h']}">
     </ins>
     <script>
       window.update_personalized_header_adverts = function (preference) {
@@ -656,7 +656,7 @@ module ApplicationHelper
     <ins class="adsbygoogle adSenseBanner"
     style="display:inline-block;width:300px;height:250px"
     data-ad-client = "#{data_ad_client}"
-    data-ad-slot = "#{banners_slot_300w250h}">
+    data-ad-slot = "#{app_advert['banners_slot_300w250h']}">
     </ins>
     <script>
       window.update_personalized_header_adverts = function (preference) {
