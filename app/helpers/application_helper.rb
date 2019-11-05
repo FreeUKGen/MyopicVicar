@@ -588,4 +588,22 @@ module ApplicationHelper
                             end
 
 
-                            end
+  def side_banners
+    banner = <<-HTML
+      <img src="http://dummyimage.com/120x600/000/fff?text=banner+ad">
+      HTML
+    banner.html_safe
+  end
+  def side_banners_large
+    banner = <<-HTML
+      <img src="https://dummyimage.com/300x600/000/fff">
+      HTML
+    banner.html_safe
+  end
+  def side_banners_square
+    banner = <<-HTML
+      <img src="http://dummyimage.com/300x250/000/fff?text=banner+ad">
+      HTML
+    banner.html_safe
+  end
+end

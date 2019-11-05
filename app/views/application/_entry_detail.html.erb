@@ -1,6 +1,9 @@
 <div class='grid'>
   <section class='island '>
-    <div class='grid__item '>
+  <div class="grid__item  one-fifth  palm-one-whole advert_div">
+    <%= side_banners_large %>
+  </div>
+    <div class='' id='results_detail_table'>
       <table class='table--bordered table--data push--bottom t100' >
         <caption class='beta'><%= record_type(@entry) %> entry
           <%case%>
@@ -141,5 +144,18 @@
       </tbody>
     </table>
   </div>
+  <div class="grid__item  one-fifth  palm-one-whole text--right advert_div">
+    <%= side_banners_large %>
+  </div>
 </section>
 </div>
+<script type="text/javascript">
+  var result = window.canRunAds;
+  if(result == true) {
+    $("#results_detail_table").addClass("grid__item  three-fifths  palm-one-whole");
+    $('#advert_div').hide();
+  } else {
+    $('#advert_div').show();
+    $("#results_detail_table").addClass("");
+  }
+</script>
