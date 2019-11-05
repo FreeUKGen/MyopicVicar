@@ -573,10 +573,10 @@ module ApplicationHelper
                               } else if(preference == 'deny') {
                                 (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
                               }
-                              };.function(){(adsbygoogle = window.adsbygoogle || []).push({})});
-                              (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
-                              </script>
-000000
+                              };
+                          $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})});
+                            (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
+                          </script>
                               HTML
                               if Rails.env.development?
                                 banner = <<-HTML
