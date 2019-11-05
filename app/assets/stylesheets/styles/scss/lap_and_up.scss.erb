@@ -19,8 +19,6 @@
  .icon__<%= MyopicVicar::Application.config.template_set %> {
   @include vendor(background-size, 100%);
   background-repeat: no-repeat;
-  width: 290px;
-  height: 87px;
   display: inline-block;
  *display: inline;
   margin: 0% 0% 0% 0%;
@@ -31,11 +29,12 @@
       width: 20%;
       height: 0px;
       overflow: hidden;
-      padding-bottom: 7%;
+      padding-bottom: 6.5%;
       margin: 1% 0% 0% 0%;
     }
     @include manual-media-query(1010px) {
       margin: 2% 0% 0% 0%;
+      padding-bottom: 5%;
       width: 16%;
     }
 
@@ -48,13 +47,11 @@
 
   @include manual-media-query(800px) {
       width: 25%;
-      max-height: 70px;
+      max-height: 60px;
       padding-bottom: 0;
       margin: 13px 0px 0px 0px;
     }
   @include manual-media-query(710px) {
-      width: 266px;
-      height:87px;
       max-height: 87px;
       padding-bottom: 0;
       margin: 0;
