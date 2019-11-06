@@ -1,4 +1,3 @@
-
 @charset "UTF-8";
 /*------------------------------------*\
     LAP_AND_UP.CSS
@@ -18,18 +17,11 @@
  */
 
  .icon__<%= MyopicVicar::Application.config.template_set %> {
-  <% if MyopicVicar::Application.config.template_set == 'freereg' %>
-    background-image: url('<%= path_to_image 'png/freereg.png'%>');
-  <% elsif MyopicVicar::Application.config.template_set == 'freecen' %>
-    background-image: url('<%= path_to_image 'png/freecen.png'%>');
-  <% elsif MyopicVicar::Application.config.template_set == 'freebmd' %>
-    background-image: url('<%= path_to_image 'png/freebmd.png'%>');
-  <% end%>
+  @include vendor(background-size, 100%);
   background-repeat: no-repeat;
-  width: 290px;
-  height: 87px;
   display: inline-block;
  *display: inline;
+  margin: 0% 0% 0% 0%;
   zoom: 1;
 
     @include manual-media-query(1090px) {
@@ -37,11 +29,12 @@
       width: 20%;
       height: 0px;
       overflow: hidden;
-      padding-bottom: 7%;
+      padding-bottom: 6.5%;
       margin: 1% 0% 0% 0%;
     }
     @include manual-media-query(1010px) {
       margin: 2% 0% 0% 0%;
+      padding-bottom: 5%;
       width: 16%;
     }
 
@@ -54,13 +47,12 @@
 
   @include manual-media-query(800px) {
       width: 25%;
-      max-height: 70px;
+      max-height: 60px;
       padding-bottom: 0;
       margin: 13px 0px 0px 0px;
     }
   @include manual-media-query(710px) {
-      width: 266px;
-      height:87px;
+      @include vendor(background-size, 100%);
       max-height: 87px;
       padding-bottom: 0;
       margin: 0;
@@ -103,14 +95,21 @@
 .adSenseBanner { width: 100%; height: 100%; text-align: center; margin: auto;}
 
 
-  .site__header__menu-btn {
+
+.site__header__menu-btn {
     display: none;
-  }
+}
 
   .site__header__logo {
     float: left;
     position: relative;
     z-index: 3;
+    &:focus,
+    &:hover {
+      background-color: #fff;
+      outline: 2px dashed $project-color;
+      outline-offset: 7px; // will not work in IE/Edge
+    }
   }
 
   .site__header__freeukgen-logo {
@@ -124,7 +123,7 @@
    */
   .site__header__nav {
 
-    background: $brand-color;
+    background: $project-color;
     overflow: hidden;
     height: 46px;
 
@@ -166,16 +165,18 @@
 
         background: none;
         color: #fff;
-        color: rgba(255, 255, 255, 0.9);
 
         @include manual-media-query(800px) {
           @include font-size(16px, false);
         }
 
         &:active,
+        &:focus,
         &:hover {
-          background: none;
-          color: #fff;
+          background: #fff;
+          color: $project-color;
+          outline: 5px solid #fff;
+          text-decoration: none;
         }
 
       }
@@ -227,10 +228,25 @@
 .site__footer {
   .icon__freeukgen__project--light {
     margin-top: $base-spacing-unit / 3;
+    &:focus,
+    &:hover {
+      background-color: transparent;
+      outline: 2px dashed $project-color-faded;
+      outline-offset: 5px;
+    }
   }
 }
 
+/* For Cookie Consent notification bar */
 
+.cookieConsent {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  width: 100%;
+  height: auto;
+  text-align: center;
+}
 
 /**
  * A list of icons
@@ -240,5 +256,11 @@
     @include inline-block;
     margin-left: $base-spacing-unit * 2;
     margin-right: $base-spacing-unit * 2;
+    a:focus,
+    a:hover {
+      background-color: transparent;
+      outline: 2px dashed $project-color;
+      outline-offset: 7px;
+    }
   }
 }

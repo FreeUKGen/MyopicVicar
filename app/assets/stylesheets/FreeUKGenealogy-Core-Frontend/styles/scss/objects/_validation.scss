@@ -4,6 +4,7 @@
 
 /**
  * Validation list - this is designed to sit directly under a `.text-input`
+ * AO: edit colours for accessibility
  */
 .validation-list {
   @extend %nav;
@@ -17,10 +18,10 @@
   }
 
   .validation-list__error {
-    color: $red;
+    color: $negative;
   }
   .validation-list__success {
-    color: $teal-brighter;
+    color: $positive;
   }
 }
 
@@ -38,32 +39,32 @@
 
 .select--error,
 .text-input--error {
-  border-color: $red;
-  color: $red;
+  border-color: $negative;
+  color: $negative;
   &:hover,
   &:focus {
-    border-color: $red;
+    border-color: $negative;
   }
 }
 
 .select--success,
 .text-input--success {
-  border-color: $teal-brighter;
-  color: $teal-brighter;
+  border-color: $positive;
+  color: $positive;
   &:hover,
   &:focus {
-    border-color: $teal-brighter;
+    border-color: $positive;
   }
 
 }
 
 
-.text-input--success::-webkit-input-placeholder { color: $teal-lighter; }
-.text-input--success:-moz-placeholder           { color: $teal-lighter; }
-.text-input--success:-ms-placeholder            { color: $teal-lighter; }
-.text-input--success.placeholder                { color: $teal-lighter; }
+.text-input--success::-webkit-input-placeholder { color: $positive; }
+.text-input--success:-moz-placeholder           { color: $positive; }
+.text-input--success:-ms-placeholder            { color: $positive; }
+.text-input--success.placeholder                { color: $positive; }
 
-.text-input--error::-webkit-input-placeholder   { color: $red-lighter; }
-.text-input--error:-moz-placeholder             { color: $red-lighter; }
-.text-input--error:-ms-placeholder              { color: $red-lighter; }
-.text-input--error.placeholder                  { color: $red-lighter; }
+.text-input--error::-webkit-input-placeholder   { color: $negative; }
+.text-input--error:-moz-placeholder             { color: $negative; }
+.text-input--error:-ms-placeholder              { color: $negative; }
+.text-input--error.placeholder                  { color: $negative; }

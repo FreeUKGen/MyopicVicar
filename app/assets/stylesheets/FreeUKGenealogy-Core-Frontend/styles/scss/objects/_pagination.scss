@@ -12,27 +12,31 @@
 
   /**
    * Taking off inuit's whitespace hack, stick with commenting method.
+   * AO: make colour accessible; reduce font-size (not using icons)
    */
   letter-spacing: normal;
   word-spacing: normal;
 
-  @include font-size(30px, false);
+  @include font-size(24px, false);
   font-weight: bold;
-  color: #999999;
+  color: #757575;
 
 
   /**
    * Space the <a>’s out slightly narrower and colour them
+   * AO: reduce spacing further
    */
   > li {
-    padding: $b-quarter;
+    padding: $b-quarter / 2;
 
     > a {
-      padding: $b-quarter;
-      margin: -$b-quarter;
-      color: #999999;
+      padding: $b-quarter / 2;
+      margin: -$b-quarter / 2;
+      color: #project-color;
+      &:focus,
       &:hover {
-        color: #686868;
+        background-color: $project-color-faded;
+        color: $focus-hover;
       }
     }
 

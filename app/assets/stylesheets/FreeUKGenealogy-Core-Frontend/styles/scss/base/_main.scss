@@ -1,10 +1,10 @@
 /*------------------------------------*\
     $MAIN
 \*------------------------------------*/
+// comment uses color $default-text and eliminates  font-style: normal;
 html {
   font-family: $brand-face;
-  font-style: normal;
   background: #fff;
-  color: #444;
+  color: $default-text;
   overflow: auto;
 }

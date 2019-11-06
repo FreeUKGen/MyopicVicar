@@ -16,7 +16,8 @@
 
 
   .banner__title {
-    font-weight: 300;
+    color: inherit;
+    font-weight: lighter;
     @include font-size(32px, false);
   }
     .banner__title--bold { font-weight: bold; }
@@ -29,7 +30,7 @@
     left: $b;
     right: $b;
 
-    font-weight: 300;
+    font-weight: lighter;
   }
 
 
@@ -64,6 +65,6 @@
 /**
  * A horizontal banner - only show on desktop
  */
-.bnner-horz {
+.banner-horz {
   display: none;
 }
