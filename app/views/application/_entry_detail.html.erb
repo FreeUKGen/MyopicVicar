@@ -151,11 +151,26 @@
 </div>
 <script type="text/javascript">
   var result = window.canRunAds;
-  if(result == true) {
+  if(result === true) {
     $("#results_detail_table").addClass("grid__item  three-fifths  palm-one-whole");
-    $('#advert_div').hide();
+    $('.advert_div').show();
   } else {
-    $('#advert_div').show();
+    $('.advert_div').hide();
     $("#results_detail_table").addClass("");
-  }
+  };
+  function changeClass(screen_width) {
+    if (screen_width.matches) {
+      $("#results_detail_table").removeClass("grid__item  three-fifths  palm-one-whole").addClass('');
+    }
+  };
+  var screen_width = window.matchMedia("(max-width: 1280px)")
+  changeClass(screen_width)
+  screen_width.addListener(changeClass)
 </script>
+<style type="text/css">
+  @media only screen and (max-width: 1280px) {
+  .advert_div {
+    display: none !important;
+  }
+}
+</style>
