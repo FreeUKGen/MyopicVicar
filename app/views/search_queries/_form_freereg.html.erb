@@ -90,9 +90,6 @@
           <select id="search_query_place_ids" name="search_query[place_ids][]" class="select" size="4">
             <option value="" >List fills when you select one county</option>
           </select>
-          <select id="search_query_place" name="search_query[place_ids][]" class="select" size="4">
-            <option value="" >All places with records have been selected</option>
-          </select>
         </li>
         <li class="grid__item one-quarter lap-one-whole palm-one-whole" id="search_query_record_type_input">
           <fieldset class="choices">
@@ -168,7 +165,7 @@
         <%= f.action :submit,
         :as => :button,
         :label => 'Search ',
-        :button_html => { :class => "ladda-button" , "data-style" => "contract" ,"data-color" =>"green" , "data-size" => "l", "data-spinner-color" => "#ffffff" },
+        :button_html => { :class => "ladda-button" , "data-style" => "contract" ,"data-color" => appname.downcase , "data-size" => "s", "data-spinner-color" => "#ffffff" },
         :wrapper_html => { :class => "grid__item one-whole push-half--ends" } %>
         <li class="grid__item one-whole clear--left">
           <% x = Rails.application.config.max_search_time/1000 %>

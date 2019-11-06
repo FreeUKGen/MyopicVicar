@@ -2,6 +2,8 @@
     $TWITTER
 \*------------------------------------*/
 
+// AO: adjust grey for accessibility
+
 .twitter {
   @extend %islet;
   @extend %islet--bordered;
@@ -40,12 +42,13 @@
         a {
 
           @include font-size(13px);
-          color: #8a8889;
+          color: #767474;
           font-weight: bold;
 
           &:active,
+          &:focus,
           &:hover {
-            color: #6b6b6b;
+            color: #334;
           }
 
         }
