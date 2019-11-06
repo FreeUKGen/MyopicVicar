@@ -654,7 +654,7 @@ module ApplicationHelper
     (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
     </script>
     <ins class="adsbygoogle adSenseBanner"
-    style="display:inline-block;width:300px;height:250px"
+    style="display:inline-block;width:336px;height:280px"
     data-ad-client = "#{data_ad_client}"
     data-ad-slot = "#{app_advert['side_banners_square_slot']}">
     </ins>
