@@ -1,13 +1,11 @@
 <% breadcrumb :gap_reasons %>
-
 <h2 class="text--center"> List of GAP reasons</h2>
 <div style="text-align: center">
-  <%= link_to 'Create New GAP reason',new_gap_reason_path, method: :get , :class => "btn weight--light btn--small"  %>
+  <%= link_to 'Create New GAP reason',new_gap_reason_path, method: :get , :class => "btn  btn--small"  %>
 </div>
-<div style="clear:both;"> </div><br>
-
+<div style="clear:both;"> </div>
+<br>
 <%= render partial: 'flash_notice' %>
-
 <div>
   <table class=" table--bordered table--data">
     <tr>

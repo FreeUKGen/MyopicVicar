@@ -24,10 +24,17 @@
  * Default links
  */
 a {
-  color: $brand-color;
+  color: $project-color;
   text-decoration: none;
-  &:hover { color: $brand-color-brighter; }
-  &:focus { outline: none; }
+  font-weight: bold;
+  &:focus, &:hover {
+    color: $focus-hover;
+    text-decoration: underline;
+  }
+  &:focus {
+    background-color: $project-color-faded;
+    outline: 3px solid $project-color-faded;
+  }
 }
 
 
@@ -51,7 +58,7 @@ a {
  * a default time style that might be used anywhere
  */
 %time {
-  color: #999;
+  color: #757575;
   font-weight: bold;
 }
 
@@ -60,20 +67,15 @@ a {
 /**
  * Coloured text and links
  */
-@each $colour in $colours {
+@each $colour in $text-colours {
   .text--#{nth($colour, 1)} {
     color: #{nth($colour, 2)};
   }
-  .text--#{nth($colour, 1)} a,
-  a.text--#{nth($colour, 1)} {
-    color: #{nth($colour, 2)};
-    &:hover {
-      color: #{nth($colour, 3)};
-    }
-  }
 }
 
-// .text--grey { color: #aaaaaa; }
-.text--white,
-.text--white a,
-a.text--white { color: #fff; }
+/**
+ * AO: a class to limit line width to a comfortable reading length
+ */
+.read-length {
+  max-width: 32em;
+}

@@ -5,12 +5,14 @@
 
 /**
  * General style adjustments
+ * AO: edit colours for accessibility; add focus state
  */
 .btn {
-  background: $brand-color;
+  background: $project-color;
+  border: 2px solid $project-color;
   color: #fff;
   text-align: center;
-  font-weight: bold;
+  font-weight: normal;
 
   // slightly adjust inuits sizing
   padding-left: 1.25em;
@@ -19,19 +21,21 @@
 
   // add a bit of bottom margin to account for box-shadow
   // clipping when inside other containers that clip
-  margin-bottom:  0.3em;
+  // AO: add a little more bottom-margin so that buttons stack nicely
+  margin-bottom:  0.5em;
 
-  @include vendor(box-shadow, 0 0.222222em 0 ($brand-color / 2));
+  @include vendor(box-shadow, 0 0.222222em 0 ($project-color / 2));
   @include vendor(transition, all 0.15s ease-in-out);
-  @include vendor(border-radius, 3px);
+  @include vendor(border-radius, 4px);
   &:focus, &:hover {
-    color: #fff;
-    background: $brand-color-brighter;
-    @include vendor(box-shadow, 0 0.222222em 0 ($brand-color-brighter / 2));
+    color: $project-color;
+    background: #fff;
+    text-decoration: none;
+    @include vendor(box-shadow, 0 0.222222em 0 #ccc);
   }
   &:active {
     text-decoration: none;
-    @include vendor(box-shadow, 0 0 0 ($brand-color-brighter / 2));
+    @include vendor(box-shadow, 0 0 0 ($project-color-faded / 2));
     @include vendor(transform, translate(0, 0.222222em));
   }
 }
@@ -41,15 +45,18 @@
   /**
    * Pretty colours
    */
-  @each $colour in $colours {
+    @each $colour in $btn-colours {
     .btn--#{nth($colour, 1)} {
       background: nth($colour, 2);
+      border-color: nth($colour, 2);
+      color: nth($colour, 3);
       @include vendor(box-shadow, 0 0.222222em 0 (nth($colour, 2) / 2));
       &:focus, &:hover {
-        background: nth($colour, 3);
-        @include vendor(box-shadow, 0 0.222222em 0 (nth($colour, 3) / 2));
+        background: #fff;
+        border-color: $project-color;
+        @include vendor(box-shadow, 0 0.222222em 0 #ccc);
       }
-      &:active { @include vendor(box-shadow, 0 0 0 (nth($colour, 3) / 2)); }
+      &:active { @include vendor(box-shadow, 0 0 0 (nth($colour, 2) / 2)); }
     }
   }
 

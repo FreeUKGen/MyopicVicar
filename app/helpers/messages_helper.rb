@@ -165,47 +165,47 @@ module MessagesHelper
   def index_action_archive(message)
     if do_we_show_archive_action?(message)
       link_to 'Archive', archive_message_path(message.id, source: 'original'),
-        :class => 'btn weight--light  btn--small',
+        :class => 'btn btn--small',
         data: { confirm: 'Are you sure you want to archive this message'}
     elsif do_we_show_restore_action?(message)
       link_to 'Restore', restore_message_path(message.id, source: 'original'),
-        :class => 'btn weight--light  btn--small',
+        :class => 'btn btn--small',
         data: { confirm: 'Are you sure you want to restore this message' }
     end
   end
 
   def index_action_edit(message)
     if do_we_permit_an_edit?(message)
-      link_to 'Edit', edit_message_path(message.id, source: 'original'), :class => 'btn weight--light  btn--small', method: :get
+      link_to 'Edit', edit_message_path(message.id, source: 'original'), :class => 'btn btn--small', method: :get
     end
   end
 
   def index_action_show(message)
     if message.nature == 'contact'
       params[:source] = 'reply'
-      link_to 'Show', show_reply_message_path(message.id, source: 'reply'), :class => 'btn weight--light  btn--small', method: :get
+      link_to 'Show', show_reply_message_path(message.id, source: 'reply'), :class => 'btn btn--small', method: :get
     elsif message.nature == 'feedback'
       params[:source] = 'reply'
-      link_to 'Show', show_reply_message_path(message.id, source: 'reply'), :class => 'btn weight--light  btn--small', method: :get
+      link_to 'Show', show_reply_message_path(message.id, source: 'reply'), :class => 'btn btn--small', method: :get
     elsif message.not_a_reply?
       params[:source] = 'original'
-      link_to 'Show', message_path(message.id, source: 'original'), :class => 'btn weight--light  btn--small', method: :get
+      link_to 'Show', message_path(message.id, source: 'original'), :class => 'btn btn--small', method: :get
     elsif message.a_reply?
       params[:source] = 'reply'
-      link_to 'Show', show_reply_message_path(message.id, source: 'reply'), :class => 'btn weight--light  btn--small', method: :get
+      link_to 'Show', show_reply_message_path(message.id, source: 'reply'), :class => 'btn btn--small', method: :get
     end
   end
 
   def index_action_view_replies(message)
     if (message.nature == 'feedback'|| message.nature == 'contact') && message.there_are_reply_messages?
       params[:source] = 'reply'
-      link_to 'View Replies', reply_messages_path(message.id, source: 'reply'), :class => 'btn weight--light  btn--small', method: :get
+      link_to 'View Replies', reply_messages_path(message.id, source: 'reply'), :class => 'btn btn--small', method: :get
     elsif message.not_a_reply?
       params[:source] = 'original'
-      link_to 'View Replies', reply_messages_path(message.id, source: 'original'), :class => 'btn weight--light  btn--small', method: :get  if do_we_show_replies_action?(message)
+      link_to 'View Replies', reply_messages_path(message.id, source: 'original'), :class => 'btn btn--small', method: :get  if do_we_show_replies_action?(message)
     elsif message.a_reply?
       params[:source] = 'reply'
-      link_to 'View Replies', reply_messages_path(message.id, source: 'reply'), :class => 'btn weight--light  btn--small', method: :get  if do_we_show_replies_action?(message)
+      link_to 'View Replies', reply_messages_path(message.id, source: 'reply'), :class => 'btn btn--small', method: :get  if do_we_show_replies_action?(message)
     end
   end
 
@@ -263,27 +263,27 @@ module MessagesHelper
   def index_header_create_link
     case session[:message_base]
     when 'communication'
-      link_to 'Create Communication', new_message_path(:source => params[:source]), method: :get , :class => 'btn weight--light btn--small'
+      link_to 'Create Communication', new_message_path(:source => params[:source]), method: :get , :class => 'btn btn--small'
     when 'general'
-      link_to 'Create Message', new_message_path(:source => params[:source]), method: :get , :class => 'btn weight--light btn--small'
+      link_to 'Create Message', new_message_path(:source => params[:source]), method: :get , :class => 'btn btn--small'
     when 'syndicate'
-      link_to 'Create Syndicate Message', new_message_path(:source => params[:source]), method: :get , :class => 'btn weight--light btn--small'
+      link_to 'Create Syndicate Message', new_message_path(:source => params[:source]), method: :get , :class => 'btn btn--small'
     end
   end
 
   def index_header_list_link
     if session[:message_base] == 'syndicate' && !session[:archived_contacts]
-      link_to 'Archived Syndicate Messages', list_archived_syndicate_messages_path(:source => params[:source]) , method: :get , :class => 'btn weight--light btn--small'
+      link_to 'Archived Syndicate Messages', list_archived_syndicate_messages_path(:source => params[:source]) , method: :get , :class => 'btn btn--small'
     elsif session[:message_base] == 'syndicate' && session[:archived_contacts]
-      link_to 'Active Syndicate Messages', list_syndicate_messages_path(:source => params[:source]), method: :get , :class => 'btn weight--light btn--small'
+      link_to 'Active Syndicate Messages', list_syndicate_messages_path(:source => params[:source]), method: :get , :class => 'btn btn--small'
     elsif session[:message_base] == 'general' && !session[:archived_contacts]
-      link_to 'Archived Messages', list_archived_messages_path(:source => params[:source]) , method: :get , :class => 'btn weight--light btn--small'
+      link_to 'Archived Messages', list_archived_messages_path(:source => params[:source]) , method: :get , :class => 'btn btn--small'
     elsif session[:message_base] == 'general' && session[:archived_contacts]
-      link_to 'Active Messages', messages_path(:source => params[:source]), method: :get , :class => 'btn weight--light btn--small'
+      link_to 'Active Messages', messages_path(:source => params[:source]), method: :get , :class => 'btn btn--small'
     elsif session[:message_base] == 'communication' && !session[:archived_contacts]
-      link_to 'Archived Communications', list_archived_communications_messages_path(:source => params[:source]) , method: :get , :class => 'btn weight--light btn--small'
+      link_to 'Archived Communications', list_archived_communications_messages_path(:source => params[:source]) , method: :get , :class => 'btn btn--small'
     elsif session[:message_base] == 'communication' && session[:archived_contacts]
-      link_to 'Active Communications', communications_messages_path(:source => params[:source]), method: :get , :class => 'btn weight--light btn--small'
+      link_to 'Active Communications', communications_messages_path(:source => params[:source]), method: :get , :class => 'btn btn--small'
     end
   end
 
@@ -328,7 +328,7 @@ module MessagesHelper
   def index_remove_link(message)
     if session[:message_base] == 'userid_messages'
       link_to 'Remove', remove_from_userid_detail_path(message.id, source: 'original'),
-        :class => 'btn weight--light  btn--small',
+        :class => 'btn btn--small',
         data: { confirm: 'Are you sure you want to remove this message' },
         method: :delete
     end
@@ -347,7 +347,7 @@ module MessagesHelper
   def message_attachment_tag(message)
     if message.attachment.present?
       content_tag :td, :class => 'weight--semibold' do
-        link_to("Attachment named #{@message[:attachment]}", @message.attachment_url, :class => 'btn weight--light  btn--small', target: '_blank', title: 'The link will open in a new tab')
+        link_to("Attachment named #{@message[:attachment]}", @message.attachment_url, :class => 'btn btn--small', target: '_blank', title: 'The link will open in a new tab')
       end
     end
   end
@@ -490,9 +490,9 @@ module MessagesHelper
   def reply_action(message)
     case
     when ReplyUseridRole::GENERAL_REPLY_ROLES.include?(@user.person_role)
-      link_to 'Reply', reply_messages_path(message.id), method: :get, :class => 'btn weight--light  btn--small' if message.source_message_id.blank?
+      link_to 'Reply', reply_messages_path(message.id), method: :get, :class => 'btn btn--small' if message.source_message_id.blank?
     when session[:syndicate].present? &&  ReplyUseridRole::COORDINATOR_ROLES.include?(@user.person_role)
-      link_to 'Reply', reply_messages_path(message.id), method: :get, :class => 'btn weight--light  btn--small' if message.source_message_id.blank?
+      link_to 'Reply', reply_messages_path(message.id), method: :get, :class => 'btn btn--small' if message.source_message_id.blank?
     end
   end
 
@@ -549,44 +549,44 @@ module MessagesHelper
 
   def show_create_reply_link(message, action)
     if message.nature == 'contact' && !(session[:message_base] == 'userid_messages')
-      link_to 'Reply', reply_contact_path(source_contact_id: message.source_contact_id), :class => "btn weight--light  btn--small"
+      link_to 'Reply', reply_contact_path(source_contact_id: message.source_contact_id), :class => "btn btn--small"
     elsif message.nature == 'feedback' && !(session[:message_base] == 'userid_messages')
-      link_to 'Reply', reply_feedback_path(source_feedback_id: message.source_feedback_id), :class => "btn weight--light  btn--small"
+      link_to 'Reply', reply_feedback_path(source_feedback_id: message.source_feedback_id), :class => "btn btn--small"
     elsif message.message_sent?
-      link_to 'Reply', new_reply_messages_path(message.id, source: action), :class => 'btn weight--light  btn--small' unless session[:message_base] == 'userid_messages' && (message.nature == 'contact' || message.nature == 'feedback')
+      link_to 'Reply', new_reply_messages_path(message.id, source: action), :class => 'btn btn--small' unless session[:message_base] == 'userid_messages' && (message.nature == 'contact' || message.nature == 'feedback')
     end
   end
 
   def show_add_comment_link(message, action)
     if message.nature == 'contact' && !(session[:message_base] == 'userid_messages')
-      #link_to 'Comment', reply_contact_path(source_contact_id: message.source_contact_id, source: 'comment'), :class => "btn weight--light  btn--small"
+      #link_to 'Comment', reply_contact_path(source_contact_id: message.source_contact_id, source: 'comment'), :class => "btn btn--small"
     elsif message.nature == 'feedback' && !(session[:message_base] == 'userid_messages')
-      #link_to 'Reply', reply_feedback_path(source_feedback_id: message.source_feedback_id), :class => "btn weight--light  btn--small"
+      #link_to 'Reply', reply_feedback_path(source_feedback_id: message.source_feedback_id), :class => "btn btn--small"
     elsif message.message_sent?
-      link_to 'Comment', new_reply_messages_path(message.id, source: 'comment'), :class => "btn weight--light  btn--small"
+      link_to 'Comment', new_reply_messages_path(message.id, source: 'comment'), :class => "btn btn--small"
     end
   end
 
   def show_destroy_link(message, action)
     if do_we_show_destroy_action?(message)
       link_to 'Destroy', force_destroy_messages_path(message.id, :source => action),
-        :class => 'btn weight--light  btn--small', title: 'This message may have replies which and will also be destroyed with this action',
+        :class => 'btn btn--small', title: 'This message may have replies which and will also be destroyed with this action',
         data: { confirm: 'This message may have replies. Are you sure you want to delete this message and all its replies' }
     end
   end
 
   def show_edit_link(message, action)
     if do_we_permit_an_edit?(message)
-      link_to 'Edit', edit_message_path(message.id, source: action), :class => 'btn weight--light  btn--small'
+      link_to 'Edit', edit_message_path(message.id, source: action), :class => 'btn btn--small'
     end
   end
 
   def show_keep_link(message, action)
     if do_we_show_keep_action?(message)
-      link_to 'Keep until I say so', keep_message_path(message.id, :source => action), :class => 'btn weight--light  btn--small',
+      link_to 'Keep until I say so', keep_message_path(message.id, :source => action), :class => 'btn btn--small',
         data: { confirm: 'Are you sure you want keep this message' }
     elsif do_we_show_unkeep_action?(message)
-      link_to 'Remove Keep Designation', unkeep_message_path(@message.id,:source => action), :class => 'btn weight--light  btn--small',
+      link_to 'Remove Keep Designation', unkeep_message_path(@message.id,:source => action), :class => 'btn btn--small',
         data: { confirm: 'Are you sure you want remove the keep designation for this message' }
     end
   end
@@ -594,7 +594,7 @@ module MessagesHelper
   def show_remove_link(message, action)
     if session[:message_base] == 'userid_messages'
       link_to 'Remove', remove_from_userid_detail_path(message.id, source: 'original'),
-        :class => 'btn weight--light  btn--small',
+        :class => 'btn btn--small',
         data: { confirm: 'Are you sure you want to remove this message' },
         method: :delete
     end
@@ -602,22 +602,22 @@ module MessagesHelper
 
   def show_send_link(message, action)
     if message.nature == 'communication' && !message.message_sent? && message.not_a_reply? && message.mine?(@user)
-      link_to 'Send Communication', select_role_message_path(message.id, source: action), :class => 'btn weight--light  btn--small' , data: { confirm: 'Are you sure you want to send this message'}, method: :get
+      link_to 'Send Communication', select_role_message_path(message.id, source: action), :class => 'btn btn--small' , data: { confirm: 'Are you sure you want to send this message'}, method: :get
     elsif message.nature == 'communication' && message.message_sent? && message.not_a_reply? && message.mine?(@user)
-      link_to 'Resend Communication', select_role_message_path(message.id, source: action), :class => 'btn weight--light  btn--small' , data: { confirm: 'Are you sure you want to send this message'}, method: :get
+      link_to 'Resend Communication', select_role_message_path(message.id, source: action), :class => 'btn btn--small' , data: { confirm: 'Are you sure you want to send this message'}, method: :get
     elsif message.nature == 'syndicate' && !message.message_sent? && message.not_a_reply? && message.mine?(@user)
-      link_to 'Send Syndicate Message', select_recipients_messages_path(message.id, source: action), :class => 'btn weight--light  btn--small' , data: { confirm: 'Are you sure you want to send this message'}, method: :get
+      link_to 'Send Syndicate Message', select_recipients_messages_path(message.id, source: action), :class => 'btn btn--small' , data: { confirm: 'Are you sure you want to send this message'}, method: :get
     elsif message.nature == 'syndicate' && message.message_sent? && message.not_a_reply? && message.mine?(@user)
-      link_to 'Resend Syndicate Message', select_recipients_messages_path(message.id, source: action), :class => 'btn weight--light  btn--small' , data: { confirm: 'Are you sure you want to send this message'}, method: :get
+      link_to 'Resend Syndicate Message', select_recipients_messages_path(message.id, source: action), :class => 'btn btn--small' , data: { confirm: 'Are you sure you want to send this message'}, method: :get
     elsif message.nature == 'general' && !message.message_sent? && message.not_a_reply? && message.mine?(@user)
-      link_to 'Send Message', select_recipients_messages_path(message.id, source: action), :class => 'btn weight--light  btn--small' , data: { confirm: 'Are you sure you want to send this message'}, method: :get
+      link_to 'Send Message', select_recipients_messages_path(message.id, source: action), :class => 'btn btn--small' , data: { confirm: 'Are you sure you want to send this message'}, method: :get
     elsif message.nature == 'general' && message.message_sent? && message.not_a_reply? && message.mine?(@user)
-      link_to 'Resend Message', select_recipients_messages_path(message.id, source: action), :class => 'btn weight--light  btn--small' , data: { confirm: 'Are you sure you want to send this message'}, method: :get
+      link_to 'Resend Message', select_recipients_messages_path(message.id, source: action), :class => 'btn btn--small' , data: { confirm: 'Are you sure you want to send this message'}, method: :get
     end
   end
   def show_view_replies_link(message, action)
     if do_we_show_replies_action?(message)
-      link_to 'View Replies', reply_messages_path(message.id, source: action), :class => 'btn weight--light  btn--small', method: :get
+      link_to 'View Replies', reply_messages_path(message.id, source: action), :class => 'btn btn--small', method: :get
     end
   end
 

@@ -353,7 +353,7 @@ label.collection_check_boxes {
 h1#body_content_title {
         border-bottom: 1px solid #999;
         font-size: 3.33333rem;
-        font-weight: lighter;
+        font-weight: 300;
         line-height: 1.2;
         padding-bottom: 14px;
 }
@@ -625,50 +625,6 @@ table.center50 {
   display: none;
 }
 
-
-/* For Cookie Consent notification bar */
-.cookieConsent {
-  display: none;
-  position: fixed;
-  bottom: 0px;
-  left: 0px;
-  width: 100%;
-  height: auto;
-  background: #18A098;
-  opacity: 0.99;
-  color: rgb(255, 255, 255);
-  font-family: helvetica;
-  font-size: 0.8125rem;
-  text-align: center;
-  z-index: 1000;
-  padding: 25px 0px 25px 0px;
-}
-
-.donations {
-  display: none;
-}
-
-div#cookieText {
-  position:relative;
-  height:auto;
-  width:90%;
-  padding:10px;
-  margin-left:auto;
-  margin-right:auto;
-  color: rgb(255, 249, 249);
-}
-
-div#cookieAcceptButton {
-  margin-top:5px;
-}
-
-.accept_cookies {
-  background: #033033 !important;
-}
-
-.cookie_policy_link {
-  color: #000080;
-}
 /* Switch Flat
 ==========================*/
 .toggle {

@@ -1,7 +1,7 @@
 /*------------------------------------*\
    $STATS
 \*------------------------------------*/
-
+// comment I find this one VERY odd
 /**
  * This expands on inuits default stats object to add a bunch of styling
  * and remove the grid-like margins so we can center it all nicer with
@@ -38,6 +38,8 @@
    </div>
 
  </section>
+
+ * AO: adjust grey for accessibility
 
  *
  */
@@ -88,7 +90,7 @@
     .stat-group__footer__primary,
     .stat-group__footer__secondary {
       @include font-size(14px, false);
-      color: #888;
+      color: #707070;
       margin-top: $b-quarter;
       margin-bottom: $b-half;
     }

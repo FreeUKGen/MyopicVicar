@@ -4,6 +4,7 @@
 
 /**
  * Default styling for all forms, with error styles
+ * AO: make grey text accessible
  */
 .text-input {
   @include font-size(18px, false);
@@ -12,13 +13,14 @@
   padding: $b-half;
   width: 100%;
   display: block;
-  color: #666;
+  color: #444;
   background-color: #fff;
   border: 1px solid #ccc;
   @include vendor(transition, all 0.15s linear);
   &:hover,
   &:focus {
     background-color: #eee;
+    color: #444;
     outline: none;
     border-color: #bbb;
   }
@@ -43,8 +45,10 @@ textarea.text-input { height: auto; }
 
 /**
  * Labels
+ * AO: edit color to reduce heaviness
  */
 label {
+  color: #444;
   font-weight: bold;
   margin-bottom: $b-half;
 }
@@ -59,26 +63,34 @@ label {
  *
  * There is a .placeholder class that will could be used for when
  * the browser doesn't support @placeholder and js adds it.
+ *
+ * AO: make placeholder text an accessible grey; add italic style; adjust selectors; add opacity:1 to moz version
  */
-::-webkit-input-placeholder {
-  color: #bdbdbd;
+input::-webkit-input-placeholder {
+  color: #757575;
   @include font-size(18px, false);
-  font-style: normal;
+  font-style: italic;
 }
-:-moz-placeholder {
-  color: #bdbdbd;
+input::-moz-placeholder {
+  color: #757575;
   @include font-size(18px, false);
-  font-style: normal;
+  font-style: italic;
+  opacity: 1 !important;
 }
-:-ms-placeholder {
-  color: #bdbdbd;
+input:-ms-placeholder {
+  color: #757575;
   @include font-size(18px, false);
-  font-style: normal;
+  font-style: italic;
 }
-.placeholder {
-  color: #bdbdbd;
+input::placeholder {
+  color: #757575;
   @include font-size(18px, false);
-  font-style: normal;
+  font-style: italic;
+}
+input.placeholder {
+  color: #757575;
+  @include font-size(18px, false);
+  font-style: italic;
 }
 
 

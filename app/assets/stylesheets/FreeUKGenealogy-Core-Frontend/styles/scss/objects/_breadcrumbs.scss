@@ -14,4 +14,19 @@
   margin-top: 0.13em;
   content: "\bb";
 }
+.breadcrumb, .breadcrumb--path {
+   a {
+    color: $brand-color;
+    &:active,
+    &:focus,
+    &:hover {
+      color: $focus-hover;
+    }
+    &:focus {
+      background-color: $project-color-faded;
+      outline: 3px solid $project-color-faded;
+    }
+  }
+}
 }//endif
+

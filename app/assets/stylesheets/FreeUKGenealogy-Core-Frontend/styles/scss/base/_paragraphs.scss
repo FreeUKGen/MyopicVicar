@@ -2,8 +2,11 @@
     $PARAGRAPHS
 \*------------------------------------*/
 
+// AO: reduce tone of text vs default; reduce size
+// comment why hard code of color #444
 .lede,
-.lead{
-  @include font-size(26px, false);
+.lead {
+  @include font-size($base-font-size * 1.25);
   font-weight: bold;
+  color: #444;
 }

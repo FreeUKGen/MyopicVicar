@@ -36,7 +36,7 @@ module ContactsHelper
   end
 
   def show_contact_add_comment_link(message, action)
-    link_to 'Comment', reply_contact_path(source_contact_id: message.id, source: 'comment'), :class => "btn weight--light  btn--small"
+    link_to 'Comment', reply_contact_path(source_contact_id: message.id, source: 'comment'), :class => "btn btn--small"
   end
 
   def use_communicate_action_reminder

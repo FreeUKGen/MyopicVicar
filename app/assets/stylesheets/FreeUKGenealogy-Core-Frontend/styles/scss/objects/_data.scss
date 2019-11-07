@@ -35,7 +35,7 @@
 .data {
   border-bottom: 1px solid #dddddd;
   overflow: hidden;
-  color: #666666;
+  color: $default-text;
 
   .data__name,
   .data__value {

@@ -2,7 +2,7 @@
 <h2 class=" text--center">All Active Counties</h2>
 <%= render 'flash_notice' %>
 <div  class=" text--center push--bottom">
-  <%= link_to 'Activate Empty County', new_county_path,:class => "btn weight--light  btn--small", method: :get %>
+  <%= link_to 'Activate Empty County', new_county_path,:class => "btn btn--small", method: :get %>
 </div>
 <div id="main" style="color:black">
   <table class="table--bordered table--data ">
@@ -28,7 +28,7 @@
         <td > <%= county.burial_records %>  </td>
         <td > <%= county.marriage_records %>  </td>
         <% if @user.person_role == "system_administrator"%>
-          <td><%= link_to 'Show', county_path(county), :class => "btn weight--light  btn--small",method: :get  %> <%= link_to 'Edit', edit_county_path(county),:class => "btn weight--light  btn--small", method: :get %> </td>
+          <td><%= link_to 'Show', county_path(county), :class => "btn btn--small",method: :get  %> <%= link_to 'Edit', edit_county_path(county),:class => "btn btn--small", method: :get %> </td>
         <% end%>
       </tr>
     <% end %>
