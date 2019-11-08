@@ -104,22 +104,22 @@ module MyopicVicar
     when TemplateSet::FREECEN
       config.freexxx_display_name = 'FreeCEN'
       config.assets.paths << Rails.root.join('app', 'assets_freecen')
-      config.assets.paths << Rails.root.join('app', 'assets_freecen', 'images')
+
       config.assets.paths << Rails.root.join('app', 'assets_freecen', 'styles')
     when TemplateSet::FREEREG
       config.freexxx_display_name = 'FreeREG'
       config.assets.paths << Rails.root.join('app', 'assets_freereg')
-      config.assets.paths << Rails.root.join('app', 'assets_freereg', 'images')
+
       config.assets.paths << Rails.root.join('app', 'assets_freereg', 'styles')
     when TemplateSet::FREEBMD
       config.freexxx_display_name = 'FreeBMD'
       config.assets.paths << Rails.root.join('app', 'assets_freebmd')
-      config.assets.paths << Rails.root.join('app', 'assets_freebmd', 'images')
+
       config.assets.paths << Rails.root.join('app', 'assets_freebmd', 'styles')
     else
       config.freexxx_display_name = 'FreeREG'
       config.assets.paths << Rails.root.join('app', 'assets_freereg')
-      config.assets.paths << Rails.root.join('app', 'assets_freereg', 'images')
+
       config.assets.paths << Rails.root.join('app', 'assets_freereg', 'styles')
     end
 
