@@ -1,0 +1,1 @@
+sudo -u webserv bundle exec rake RAILS_ENV=production foo:delete_or_archive_old_messages_feedbacks_and_contacts
