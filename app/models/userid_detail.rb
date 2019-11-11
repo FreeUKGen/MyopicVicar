@@ -283,7 +283,7 @@ class UseridDetail
   end
 
 
-  def self.active_userids_for_display(syndicate)
+  def self.userids_active_for_display(syndicate)
     @userids = UseridDetail.where(:active => true).all.order_by(userid_lower_case: 1) if syndicate == 'all'
     @userids = UseridDetail.where(:syndicate => syndicate, :active => true).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
     @userids
