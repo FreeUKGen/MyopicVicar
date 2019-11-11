@@ -35,7 +35,6 @@
         <%= content_text(:small, 'Phonetic search surnames') %>
       </div>
 
-
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <div class='labels'>
           <%= label_tag 'start_quarter', 'Date range from', class: "ttip" %>
@@ -55,6 +54,8 @@
         <%= select_year(set_value(@search_query.end_year), {start_year: 1837, end_year: 1992, prompt: '- - - -'}, class: 'select_year_end', name: 'search_query[end_year]') %>
       </div>
 
+      <%# raise  (@search_query.bmd_record_type).inspect%>
+
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <div class='labels'>
           <%= label_tag 'record_type', 'Record Type', class: "ttip" %>
@@ -62,19 +63,19 @@
         </div>
         <span class="stack_fields">
           <%= f.label :select_all, { :class => "header_label", :tabindex => "0" } do %>
-            <%= check_box_tag 'search_query[bmd_record_type][]', '0',false,{ multiple: true, class: 'checkAll', id: 'bmd_record_type_all' } %>
+            <%= check_box_tag 'search_query[bmd_record_type][]', '0',set_checkbox_checked_value(field_value: @search_query.bmd_record_type, value: '0'),{ multiple: true, class: 'checkAll', id: 'bmd_record_type_all' } %>
             <%= content_text(:optional_checkbox_label, 'Select All') %>
           <% end %>
           <%= f.label :birth, { :class => "optional_attributes", :tabindex => "0" } do %>
-            <%= check_box_tag 'search_query[bmd_record_type][]', 1,false,{ multiple: true, class: 'checkboxtag birth', id: 'bmd_record_type birth' } %>
+            <%= check_box_tag 'search_query[bmd_record_type][]', 1,set_checkbox_checked_value(field_value: @search_query.bmd_record_type, value: '1'),{ multiple: true, class: 'checkboxtag birth', id: 'bmd_record_type birth' } %>
             <%= content_text(:optional_checkbox_label, 'Birth') %>
           <% end %>
           <%= f.label :death, { :class => "optional_attributes", :tabindex => "0" } do %>
-            <%= check_box_tag 'search_query[bmd_record_type][]', 2,false,{ multiple: true, class: 'checkboxtag death', id: 'bmd_record_type death' } %>
+            <%= check_box_tag 'search_query[bmd_record_type][]', 2,set_checkbox_checked_value(field_value: @search_query.bmd_record_type, value: '2'),{ multiple: true, class: 'checkboxtag death', id: 'bmd_record_type death' } %>
             <%= content_text(:optional_checkbox_label, 'Death') %>
           <% end %>
           <%= f.label :marriage, { :class => "optional_attributes", :tabindex => "0" } do %>
-            <%= check_box_tag 'search_query[bmd_record_type][]', 3,false,{ multiple: true, class: 'checkboxtag marriage' , id: 'bmd_record_type marriage'} %>
+            <%= check_box_tag 'search_query[bmd_record_type][]', 3,set_checkbox_checked_value(field_value: @search_query.bmd_record_type, value: '3'),{ multiple: true, class: 'checkboxtag marriage' , id: 'bmd_record_type marriage'} %>
             <%= content_text(:optional_checkbox_label, 'Marriage') %>
           <% end %>
         </span>

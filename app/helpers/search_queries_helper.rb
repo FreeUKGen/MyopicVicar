@@ -108,4 +108,8 @@ module SearchQueriesHelper
   def set_value field_value=nil
     return field_value
   end
+
+  def set_checkbox_checked_value field_value:, value: nil
+    return field_value.include?value
+  end
 end

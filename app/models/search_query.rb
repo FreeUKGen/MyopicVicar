@@ -45,7 +45,7 @@ class SearchQuery
   validates_inclusion_of :role, :in => NameRole::ALL_ROLES + [nil]
   field :record_type, type: String#, :required => false
   validates_inclusion_of :record_type, :in => RecordType.all_types + [nil]
-  field :bmd_record_type, type: Array#, :required => false
+  field :bmd_record_type, type: Array, default: []#, :required => false
   field :chapman_codes, type: Array, default: [] # , :required => false
   field :districts, type: Array, default: []
   #  validates_inclusion_of :chapman_codes, :in => ChapmanCode::values+[nil]
@@ -812,28 +812,18 @@ class SearchQuery
 
   def get_quarter
     params = {}
-    start_year = 1837 if self.start_year.blank?
-    end_year = 1993 if self.end_year.blank?
-    params[:quarternumber] = quarter_number(year: self.start_year, quarter: start_quarter)..quarter_number(year:self.end_year, quarter: end_quarter)
-    #raise params[:quarternumber].inspect
+    start_year = year_with_default(year:self.start_year, default: 1837)
+    end_year = year_with_default(year:self.end_year, default: 1993)
+    params[:quarternumber] = quarter_number(year: start_year, quarter: start_quarter)..quarter_number(year: end_year, quarter: end_quarter)
     params
+  end
+
+  def year_with_default(year:, default:nil)
+    year.blank? ? default : year
   end
 
   def quarter_number(year:, quarter:)
     (year.to_i-1837)*4 + quarter.to_i
-  end
-
-  def bmd_search_params
-    params = {}
-    params.merge!(name_search_params_bmd)
-    params.merge!(bmd_record_type_params)
-    params.merge!(get_date_quarter_params)
-    params.merge!(bmd_county_params)
-    params.merge!(bmd_districts_params)
-    params.merge!(bmd_age_at_death_params) if self.age_at_death.present?
-    params.merge!(bmd_volume_params) if self.volume.present?
-    params.merge!(bmd_page_params) if self.page.present?
-    params
   end
 
   def search_records
@@ -842,6 +832,10 @@ class SearchQuery
     else
       self.search
     end
+  end
+
+  def move_to_array hash
+    [] << hash.select{|key, value| value.present?}
   end
 
   def freebmd_search_records
@@ -939,6 +933,23 @@ class SearchQuery
     self.attributes.symbolize_keys.except(:_id).keep_if {|k,v|  name_fields.include?(k) && v.present?}
   end
 
+  def is_soundex_search?
+    name_search_params_bmd.has_key?(:fuzzy)
+  end
+
+  def do_soundex_search
+    name_search_params_bmd.merge!
+  end
+
+  def bmd_search_names_criteria
+    self.fuzzy.present? ? soundex_param : name_search_params_bmd
+  end
+
+  def soundex_param
+    name_search_params_bmd[:SurnameSx] = Text::Soundex.soundex(name_search_params_bmd[:last_name])
+    name_search_params_bmd.except(:last_name)
+  end
+
   def name_fields
     [:first_name, :last_name, :first_name_exact_match, :fuzzy]
   end
@@ -950,6 +961,12 @@ class SearchQuery
       surname_param = last_name.downcase
     end
     surname_param
+  end
+
+  def soundex_param
+    params = {}
+    params[:SurnameSx] = Text::Soundex.soundex(last_name)
+    params
   end
 
   def refresh_name_params(name:, replacement_name:, params_hash:)
@@ -1025,6 +1042,67 @@ class SearchQuery
     records.select{|r|
       r.QuarterNumber - ((r.AgeAtDeath + 1) * 4 + 1) <= dob_quarter_number
     }
+  end
+
+  def combined_results
+    date_of_birth_search_range_a + date_of_birth_search_range_b
+  end
+
+  def dob_quarter_number
+    date_array = self.age_at_death.split('/')
+    month = predefined_month_key(date_array[1])
+    date_array.unshift(1) if date_array.length == 2
+    quarter_number(year: date_array[2], quarter: get_quarter_from_month(month))
+    end
+  end
+
+  def get_quarter_from_month month
+    quarter_index = quarters_months.each {|q|
+      quarters_months.find_index(q) if q.include?month
+    }
+    quarter_index + 1
+  end
+
+  def predefined_month_key month
+    bmd_dob_month_formats.key(month)
+  end
+
+  def differentiate_aad_dob
+  end
+
+
+  def quarters_months
+    [[:ja,:fe,:mr],[:ap,:my,:je],[:jy,:au,:se],[:oc,:no,:de]]
+  end
+
+  def bmd_dob_month_formats
+    {
+      ja: ['ja','January','jan','01','1'],
+      fe: ['fe','February','feb','02','2'],
+      mr: ['mr','March','mar','03','3'],
+      ap: ['ap','April','apr','04','4'],
+      my: ['my','May','may','05','5'],
+      je: ['je','June','jun','06','6'],
+      jy: ['jy','July','jul','07','7'],
+      au: ['au','August','aug','08','8'],
+      se: ['se','September','sep','09','9'],
+      oc: ['oc','October','oct','10','10'],
+      no: ['no','November','nov','11','11'],
+      de: ['de','December','dec','12','12']
+    }
+  end
+
+  def bmd_search_params
+    params = {}
+    params.merge!(bmd_search_names_criteria)
+    params.merge!(bmd_record_type_params)
+    params.merge!(get_date_quarter_params)
+    params.merge!(bmd_county_params)
+    params.merge!(bmd_districts_params)
+    params.merge!(bmd_age_at_death_params) if self.age_at_death.present?
+    params.merge!(bmd_volume_params) if self.volume.present?
+    params.merge!(bmd_page_params) if self.page.present?
+    params
   end
 
   private
