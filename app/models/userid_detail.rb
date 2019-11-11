@@ -283,9 +283,27 @@ class UseridDetail
   end
 
 
-  def self.get_active_userids_for_display(syndicate)
+  def self.active_userids_for_display(syndicate)
     @userids = UseridDetail.where(:active => true).all.order_by(userid_lower_case: 1) if syndicate == 'all'
     @userids = UseridDetail.where(:syndicate => syndicate, :active => true).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
+    @userids
+  end
+
+  def self.userids_for_display(syndicate)
+    @userids = UseridDetail.all.order_by(userid_lower_case: 1) if syndicate == 'all'
+    @userids = UseridDetail.syndicate(syndicate).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
+    @userids
+  end
+
+  def self.userids_agreement_signed_for_display(syndicate)
+    @userids = UseridDetail.where(active: true, new_transcription_agreement: 'Accepted').all.order_by(userid_lower_case: 1) if syndicate == 'all'
+    @userids = UseridDetail.where(syndicate: syndicate, active: true, new_transcription_agreement: 'Accepted').all.order_by(userid_lower_case: 1) unless syndicate == 'all'
+    @userids
+  end
+
+  def self.userids_agreement_not_signed_for_display(syndicate)
+    @userids = UseridDetail.where(:active => true, :new_transcription_agreement.ne => 'Accepted').all.order_by(userid_lower_case: 1) if syndicate == 'all'
+    @userids = UseridDetail.where(:syndicate => syndicate, :active => true, :new_transcription_agreement.ne => 'Accepted').all.order_by(userid_lower_case: 1) unless syndicate == 'all'
     @userids
   end
 
@@ -351,12 +369,6 @@ class UseridDetail
   #errors.add(:email_address, "Userid email already exists") if UseridDetail.where(:email_address => self[:email_address]).exists?
   #errors.add(:email_address, "Refinery email already exists") if Refinery::Authentication::Devise::User.where(:email => self[:email_address]).exists?
   #end
-
-  def self.get_userids_for_display(syndicate)
-    @userids  = UseridDetail.all.order_by(userid_lower_case: 1) if syndicate == 'all'
-    @userids = UseridDetail.syndicate(syndicate).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
-    @userids
-  end
 
   def self.get_userids_for_selection(syndicate)
     users = UseridDetail.all.order_by(userid_lower_case: 1) if syndicate == 'all'

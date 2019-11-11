@@ -159,10 +159,15 @@ class UseridDetailsController < ApplicationController
     get_user_info_from_userid
     session[:my_own] = false
     @role = session[:role]
-    if session[:active] == 'All Members'
-      @userids = UseridDetail.get_userids_for_display(session[:syndicate])
-    else
-      @userids = UseridDetail.get_active_userids_for_display(session[:syndicate])
+    case session[:active]
+    when 'All Members'
+      @userids = UseridDetail.userids_for_display(session[:syndicate])
+    when 'Active Members'
+      @userids = UseridDetail.userids_active_for_display(session[:syndicate])
+    when 'Agreement Accepted'
+      @userids = UseridDetail.userids_agreement_signed_for_display(session[:syndicate])
+    when 'Agreement Not Accepted'
+      @userids = UseridDetail.userids_agreement_not_signed_for_display(session[:syndicate])
     end
     @syndicate = session[:syndicate]
     @sorted_by = session[:active]
