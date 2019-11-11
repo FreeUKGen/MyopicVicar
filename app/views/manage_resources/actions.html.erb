@@ -1,4 +1,8 @@
+<% breadcrumb :root %>
 <% title "Action Page" %>
+<% if  @user.new_transcription_agreement.blank? || @user.new_transcription_agreement == 'Unknown' || @user.new_transcription_agreement == 'Pending' %>
+  <%= link_to 'Transcriber Agreement' , "/cms/transcriber_agreement", target: :_blank %>
+<% end%>
 <%# raise @current_user.inspect %>
 <% if flash[:notice] %>
   <div class="push-half--bottom" id="notice" style="color:blue;">
@@ -11,6 +15,5 @@
     You have <b><%= link_to "#{pluralize(count, 'message')}", userid_messages_path %>.</b>
   </div>
 <% end %>
-<% breadcrumb :root %>
 <%= @page %>
 <%= render "resource_sidebar" %>
