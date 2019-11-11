@@ -1,7 +1,6 @@
 <% breadcrumb :root %>
 <% title "Action Page" %>
 <% if  @user.new_transcription_agreement.blank? || @user.new_transcription_agreement == 'Unknown' || @user.new_transcription_agreement == 'Pending' %>
-  i am here
   <%= @acceptance %>
 <% end%>
 <%# raise @current_user.inspect %>
