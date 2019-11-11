@@ -145,7 +145,7 @@
           <%= label_tag 'districts', 'Districts', class: "ttip" %>
           <%= label_tag 'districts', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '0', title: info_tag_text[:firstname]%>
         </div>
-        <% districts_names = DistrictToCounty.joins(:District).distinct%>
+        <% districts_names = DistrictToCounty.joins(:District).distinct.order( 'DistrictName ASC' )%>
         <%= f.select :districts, districts_names.pluck(:DistrictName, :DistrictNumber), {include_hidden: false}, {multiple: true} %>
         <small class="additional">Select one place or none</small>
       </div>

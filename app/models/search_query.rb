@@ -1053,7 +1053,6 @@ class SearchQuery
     month = predefined_month_key(date_array[1])
     date_array.unshift(1) if date_array.length == 2
     quarter_number(year: date_array[2], quarter: get_quarter_from_month(month))
-    end
   end
 
   def get_quarter_from_month month
