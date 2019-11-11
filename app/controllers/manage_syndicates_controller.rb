@@ -254,6 +254,18 @@ class ManageSyndicatesController < ApplicationController
     redirect_to action: 'new'
   end
 
+  def transcription_agreement_accepted
+    get_user_info_from_userid
+    session[:active] = 'Agreement Accepted'
+    redirect_to(userid_details_path) && return
+  end
+
+  def transcription_agreement_not_accepted
+    get_user_info_from_userid
+    session[:active] = 'Agreement Not Accepted'
+    redirect_to(userid_details_path) && return
+  end
+
   def upload_batch
     redirect_to(new_csvfile_path) && return
   end
