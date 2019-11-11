@@ -86,8 +86,10 @@ class ManageResourcesController < ApplicationController
       clean_session_for_syndicate
       clean_session_for_county
       clean_session_for_images
+      p Refinery::Page.where(slug: 'transcriber_agreement_acceptance').exists?
       Refinery::Page.where(slug: 'transcriber_agreement_acceptance').exists? ?
         @acceptance = Refinery::Page.where(slug: 'transcriber_agreement_acceptance').first.parts.first.body.html_safe : @acceptance = ''
+      p @acceptance
       Refinery::Page.where(slug: 'information-for-members').exists? ?
         @page = Refinery::Page.where(slug: 'information-for-members').first.parts.first.body.html_safe : @page = ''
       @manage_resources = ManageResource.new
