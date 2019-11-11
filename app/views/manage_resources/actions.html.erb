@@ -1,7 +1,7 @@
 <% breadcrumb :root %>
 <% title "Action Page" %>
 <% if  @user.new_transcription_agreement.blank? || @user.new_transcription_agreement == 'Unknown' || @user.new_transcription_agreement == 'Pending' %>
-  <%= link_to 'Transcriber Agreement' , "/cms/transcriber_agreement", target: :_blank %>
+  @acceptance
 <% end%>
 <%# raise @current_user.inspect %>
 <% if flash[:notice] %>
