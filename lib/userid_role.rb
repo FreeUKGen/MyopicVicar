@@ -117,7 +117,8 @@ module UseridRole
     'FreeUKGenealogy  Policies' => '/cms/freeUKGenealogy-policies'
   }
   USERID_MANAGER_OPTIONS = ['Select specific userid', 'Select specific email', 'Select specific surname/forename',
-                            'Browse userids', 'Select Role', 'Select Secondary Role', 'Incomplete Registrations', 'Create userid', 'Transcriber Statistics']
+                            'Browse userids', 'Select Role', 'Select Secondary Role', 'Transcription Agreement Accepted',
+                            'Transcription Agreement Not Accepted', 'Incomplete Registrations', 'Create userid', 'Transcriber Statistics']
   USERID_ACCESS_OPTIONS = ['Select specific userid', 'Select specific email', 'Select specific surname/forename']
 
   USERID_OPTIONS_TRANSLATION = {
@@ -130,7 +131,9 @@ module UseridRole
     'Select specific surname/forename' => '/userid_details/selection?option=Select specific surname/forename',
     'Select Role' => '/userid_details/person_roles',
     'Select Secondary Role' => '/userid_details/secondary_roles',
-    'Transcriber Statistics' => '/userid_details/transcriber_statistics'
+    'Transcriber Statistics' => '/userid_details/transcriber_statistics',
+    'Transcription Agreement Accepted' => '/manage_syndicates/selection?option=Transcription Agreement Accepted',
+    'Transcription Agreement Not Accepted' => '/manage_syndicates/selection?option=Transcription Agreement Not Accepted'
   }
   FILE_MANAGEMENT_OPTIONS = ['Upload New Batch', 'List by Number of Errors then Filename', 'List those with Zero Dates', 'List by Filename',
                              'List by uploaded date (ascending)', 'List by uploaded date (descending)', 'List files waiting to be processed', 'Review Specific Batch']
@@ -173,7 +176,7 @@ module UseridRole
     'Manage Places' => '/places'
 
   }
-  SYNDICATE_MANAGEMENT_OPTIONS =  ['Review Active Members', 'Review All Members', 'Select Specific Member by Userid',
+  SYNDICATE_MANAGEMENT_OPTIONS =  ['Review Active Members', 'Review All Members', 'Transcription Agreement Accepted', 'Transcription Agreement Not Accepted', 'Select Specific Member by Userid',
                                    'Select Specific Member by Email Address', 'Select Specific Member by Surname/Forename', 'Incomplete Registrations', 'Create Userid',
                                    'Syndicate Messages', 'Review Batches with Errors', 'Review Batches with Zero Dates', 'Review Batches by Filename',
                                    'Review Batches by Userid then Filename', 'Review Batches by Most Recent Date of Change', 'Review Batches by Oldest Date of Change',
@@ -181,6 +184,8 @@ module UseridRole
   SYNDICATE_OPTIONS_TRANSLATION = {
     'Review Active Members' => '/manage_syndicates/selection?option=Review Active Members',
     'Review All Members' => '/manage_syndicates/selection?option=Review All Members',
+    'Transcription Agreement Accepted' => '/manage_syndicates/selection?option=Transcription Agreement Accepted',
+    'Transcription Agreement Not Accepted' => '/manage_syndicates/selection?option=Transcription Agreement Not Accepted',
     'Select Specific Member by Userid' => '/manage_syndicates/selection?option=Select Specific Member by Userid',
     'Select Specific Member by Email Address' => '/manage_syndicates/selection?option=Select Specific Member by Email Address',
     'Select Specific Member by Surname/Forename' => '/manage_syndicates/selection?option=Select Specific Member by Surname/Forename',

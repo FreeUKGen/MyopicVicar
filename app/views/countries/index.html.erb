@@ -11,15 +11,17 @@
     <div class="grid__item one-whole" >
       <table  class="table--bordered   table--data">
         <tr>
-          <th style="width:25%">Country</th>
-          <th style="width:25">Country Coordinator</th>
-          <th style="width:25%">Show</th>
-          <th style="width:25%">Edit</th>
+          <th style="width:20%">Country</th>
+          <th style="width:20">Country Coordinator</th>
+          <th style="width:20">Transcriber Agreement Accepted</th>
+          <th style="width:20%">Show</th>
+          <th style="width:20%">Edit</th>
         </tr>
         <% @countries.each do |country| %>
           <tr id="<%=country.id%>">
             <td > <%= country.country_code %>  </td>
             <td > <%= country.country_coordinator %>  </td>
+            <td > <%= country_coordinator_agreement(country.country_coordinator) %>  </td>
             <td><%= link_to 'Show', country_path(country), method: :get, :class => "btn btn--small" %>  </td>
             <% if @user.person_role == 'system_administrator' %>
               <td><%= link_to 'Edit details', edit_country_path(country), method: :get  , :class => "btn btn--small" %></td>
