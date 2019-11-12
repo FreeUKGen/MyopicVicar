@@ -95,6 +95,7 @@ class ManageSyndicatesController < ApplicationController
   def display_by_zero_date
     get_user_info_from_userid
     @county = session[:syndicate]
+    session[:zero_action] = 'Main Syndicate Action'
     @who = @user.person_forename
     @sorted_by = '; selects files with zero date records then alphabetically by userid and file name'
     session[:sorted_by] = @sorted_by
