@@ -124,6 +124,7 @@ class Freereg1CsvFilesController < ApplicationController
   def display_my_own_zero_years
     get_user_info_from_userid
     @who = @first_name
+    session[:zero_action] = 'My Own Action'
     @sorted_by = 'Zero years'
     session[:sort] = 'uploaded_date ASC'
     session[:sorted_by] = @sorted_by

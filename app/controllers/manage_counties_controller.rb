@@ -33,18 +33,6 @@ class ManageCountiesController < ApplicationController
     redirect_to(action: 'select_action') && return
   end
 
-  def files
-    get_user_info_from_userid
-    @county = session[:county]
-    @freereg1_csv_files = Freereg1CsvFile.where(county: session[:chapman_code], file_name: params[:params]).all
-    if @freereg1_csv_files.length == 1
-      file = Freereg1CsvFile.where(county: session[:chapman_code], file_name: params[:params]).first
-      redirect_to(freereg1_csv_file_path(file)) && return
-    else
-      redirect_to(freereg1_csv_files_path) && return
-    end
-  end
-
   def display_by_ascending_uploaded_date
     get_user_info_from_userid
     @county = session[:county]
@@ -88,12 +76,25 @@ class ManageCountiesController < ApplicationController
   def display_by_zero_date
     get_user_info_from_userid
     @county = session[:county]
+    session[:zero_action] = 'Main County Action'
     @who = @user.person_forename
     @sorted_by = '; selects files with zero date records then alphabetically by userid and file name'
     session[:sorted_by] = @sorted_by
     session[:sort] = 'userid_lower_case ASC, file_name ASC'
     @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).datemin('0').no_timeout.order_by(session[:sort]).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
     render 'freereg1_csv_files/index'
+  end
+
+  def files
+    get_user_info_from_userid
+    @county = session[:county]
+    @freereg1_csv_files = Freereg1CsvFile.where(county: session[:chapman_code], file_name: params[:params]).all
+    if @freereg1_csv_files.length == 1
+      file = Freereg1CsvFile.where(county: session[:chapman_code], file_name: params[:params]).first
+      redirect_to(freereg1_csv_file_path(file)) && return
+    else
+      redirect_to(freereg1_csv_files_path) && return
+    end
   end
 
   def get_counties_for_selection
