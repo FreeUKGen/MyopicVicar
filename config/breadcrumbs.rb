@@ -63,37 +63,34 @@ crumb :files do |file|
   if session[:my_own].present?
     link 'Your Batches', my_own_freereg1_csv_file_path
     parent :root
+  end
+  if file.blank?
+    link 'List of Batches', freereg1_csv_files_path
   else
-    if file.nil?
-      link 'List of Batches', freereg1_csv_files_path
-    else
-      link 'List of Batches', freereg1_csv_files_path(:anchor => "#{file.id}", :page => "#{session[:current_page]}")
-    end
-    case
-    when session[:county].present? && (session[:role] == 'county_coordinator' ||
-                                       session[:role] == 'system_administrator' || session[:role] == 'technical' ||
-                                       session[:role] == 'data_manager')
-      if session[:place_name].present?
-        place = Place.where(:chapman_code => session[:chapman_code], :place_name => session[:place_name]).first
-        unless place.nil?
-          parent :show_place, session[:county], place
-        else
-          parent :county_options, session[:county]
-        end
+    link 'List of Batches', freereg1_csv_files_path(:anchor => "#{file.id}", :page => "#{session[:current_page]}")
+  end
+  if session[:county].present? && (session[:role] == 'county_coordinator' || session[:role] == 'system_administrator' ||
+                                   session[:role] == 'technical' || session[:role] == 'data_manager')
+    if session[:place_name].present?
+      place = Place.where(:chapman_code => session[:chapman_code], :place_name => session[:place_name]).first
+      unless place.nil?
+        parent :show_place, session[:county], place
       else
         parent :county_options, session[:county]
       end
-    when session[:role] == 'volunteer_coordinator' || session[:role] == 'syndicate_coordinator'
-      parent :userid_details_listing, session[:syndicate]
-    when session[:syndicate].present? && (session[:role] == 'county_coordinator' || session[:role] == 'data_manager' ||session[:role] == 'system_administrator' || session[:role] == 'technical')
-      unless  session[:userid_id].nil?
-        parent :userid_detail, session[:syndicate], UseridDetail.find(session[:userid_id])
-      else
-        parent :syndicate_options, session[:syndicate]
-      end
-    when session[:role] == 'system_administrator' || session[:role] == 'technical'
-      parent :regmanager_userid_options
+    else
+      parent :county_options, session[:county]
     end
+  elsif session[:role] == 'volunteer_coordinator' || session[:role] == 'syndicate_coordinator'
+    parent :userid_details_listing, session[:syndicate]
+  elsif session[:syndicate].present? && (session[:role] == 'county_coordinator' || session[:role] == 'data_manager' ||session[:role] == 'system_administrator' || session[:role] == 'technical')
+    unless  session[:userid_id].nil?
+      parent :userid_detail, session[:syndicate], UseridDetail.find(session[:userid_id])
+    else
+      parent :syndicate_options, session[:syndicate]
+    end
+  elsif session[:role] == 'system_administrator' || session[:role] == 'technical'
+    parent :regmanager_userid_options
   end
 end
 
@@ -101,19 +98,23 @@ crumb :show_file do |file|
   link 'Batch Information', freereg1_csv_file_path(file.id)
   if session[:my_own]
     parent :files, file
-  else
-    if session[:register_id].present? && session[:county].present? && session[:place_id].present? && session[:church_id].present? && session[:register_id].present?
-      place = Place.id(session[:place_id]).first
-      church = Church.id(session[:church_id]).first
-      register = Register.id(session[:register_id]).first
-      if place.present? && church.present? && register.present?
-        parent :show_register, session[:county], place, church, register
-      end
+  end
+  if session[:register_id].present? && session[:county].present? && session[:place_id].present? && session[:church_id].present? && session[:register_id].present?
+    place = Place.id(session[:place_id]).first
+    church = Church.id(session[:church_id]).first
+    register = Register.id(session[:register_id]).first
+    if place.present? && church.present? && register.present?
+      parent :show_register, session[:county], place, church, register
     else
       parent :files, file
     end
+  elsif session[:zero_action].present?
+    parent :listing_of_zero_year_files, file
+  else
+    parent :files, file
   end
 end
+
 
 crumb :unique_names do |file|
   link 'Unique Names'
@@ -987,22 +988,31 @@ crumb :create_syndicate do |syndicate|
   parent :syndicates
 end
 
-crumb :listing_of_zero_year_files do
-  if session[:syndicate].present?
+crumb :listing_of_zero_year_files do |file|
+  if session[:zero_action] == 'Main Syndicate Action'
     link "Listing of Zero Year files", zero_selection_manage_syndicates_path(option: 'Review Batches with Zero Dates')
     parent :syndicate_options, session[:syndicate]
-  elsif session[:county].present?
+  elsif session[:zero_action] == 'Main County Action'
     link "Listing of Zero Year files", zero_selection_manage_counties_path(option: 'Review Batches with Zero Dates')
     parent :county_options, session[:county]
-  else
+  elsif session[:zero_action] == 'My Own Action'
     link "Listing of Zero Year files", display_my_own_zero_years_files_path
+    parent :my_own_files
+  else
+    link "Listing of Zero Year files", zero_selection_manage_syndicates_path(option: 'Review Batches with Zero Dates') if session[:syndicate].present?
+    link "Listing of Zero Year files", zero_selection_manage_counties_path(option: 'Review Batches with Zero Dates') if session[:county].present?
+    link "Listing of Zero Year files", display_my_own_zero_years_files_path if session[:my_own].present?
     parent :files, file
   end
 end
 
 crumb :listing_of_zero_year_entries do |file|
   link "Listing of Zero Year Entries", zero_year_freereg1_csv_file_path(id: "#{file.id}")
-  parent :listing_of_zero_year_files
+  if session[:zero_action].present?
+    parent :listing_of_zero_year_files, file
+  else
+    parent :show_file, file
+  end
 end
 
 crumb :show_zero_year_entry do |entry, file|
