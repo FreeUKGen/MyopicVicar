@@ -264,3 +264,21 @@
     }
   }
 }
+
+th.sticky-header {
+  position: -webkit-sticky; /* Safari */
+  position: sticky;
+  background-color: $project-color ;
+  color: white;
+  top: 0;
+  z-index: 10;
+  box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.06);
+  &:focus,
+  &:hover {
+          background: #fff;
+          color: $project-color;
+          outline: 5px solid #fff;
+          text-decoration: none;
+        }
+
+}
