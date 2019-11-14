@@ -314,6 +314,11 @@ label.collection_check_boxes {
   margin-right: auto;
 
 }
+.simple_form_position_left {
+  float: left;
+  margin-right: auto;
+
+}
 .simple_form_uneditable {
   border:0 none;
   background: #f9f9f9;

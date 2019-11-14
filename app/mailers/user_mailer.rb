@@ -48,13 +48,8 @@ class UserMailer < ActionMailer::Base
     @userid, @userid_email = user_email_lookup(user)
     @syndicate_coordinator, @syndicate_coordinator_email = syndicate_coordinator_email_lookup(@userid)
     @county_coordinator, @county_coordinator_email = county_coordinator_email_lookup(batch, @userid)
-    p 'mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm'
-    p "Sending failure email #{@userid} #{@userid_email} #{@syndicate_coordinator} #{@syndicate_coordinator_email} #{@county_coordinator} #{@county_coordinator_email}"
-    if @county_coordinator == @syndicate_coordinator
-      mail(:to => @userid_email, :cc => @syndicate_coordinator_email, :subject => "#{@userid.userid}/#{batch} processing encountered serious problem at #{Time.now}")
-    else
-      mail(:to => @userid_email, :cc => [@syndicate_coordinator_email, @county_coordinator_email], :subject => "#{@userid.userid}/#{batch} processing encountered serious problem at #{Time.now}")
-    end
+    subject = "#{@userid.userid}/#{batch} processing encountered serious problem at #{Time.now}"
+    adjust_recipients_and_send(subject)
   end
 
   def batch_processing_success(message, user, batch)
@@ -63,13 +58,8 @@ class UserMailer < ActionMailer::Base
     @userid, @userid_email = user_email_lookup(user)
     @syndicate_coordinator, @syndicate_coordinator_email = syndicate_coordinator_email_lookup(@userid)
     @county_coordinator, @county_coordinator_email = county_coordinator_email_lookup(batch, @userid)
-    p 'mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm'
-    p "Sending success email #{@userid} #{@userid_email} #{@syndicate_coordinator} #{@syndicate_coordinator_email} #{@county_coordinator} #{@county_coordinator_email}"
-    if @county_coordinator == @syndicate_coordinator
-      mail(:to => @userid_email, :cc => syndicate_coordinator_email, :subject => "#{@userid.userid}/#{batch} processed at #{Time.now} with #{@batch.error unless @batch.nil?} errors over period #{@batch.datemin unless @batch.nil?}-#{@batch.datemax unless @batch.nil?}")
-    else
-      mail(:to => @userid_email, :cc => [@syndicate_coordinator_email, @county_coordinator_email], :subject => "#{@userid.userid}/#{batch} processed at #{Time.now} with #{@batch.error unless @batch.nil?} errors over period #{@batch.datemin unless @batch.nil?}-#{@batch.datemax unless @batch.nil?}")
-    end
+    subject = "#{@userid.userid}/#{batch} processed at #{Time.now} with #{@batch.error unless @batch.nil?} errors over period #{@batch.datemin unless @batch.nil?}-#{@batch.datemax unless @batch.nil?}"
+    adjust_recipients_and_send(subject)
   end
 
   def contact_action_request(contact, send_to, copies_to)
@@ -382,6 +372,23 @@ class UserMailer < ActionMailer::Base
 
   private
 
+  def adjust_recipients_and_send(message)
+    #This substitutes recipient to SC if required and adjusts copies accordingly
+    if @userid.active && @userid.email_address_valid && @userid.registration_completed(@userid) && !@userid.no_processing_messages
+      if @county_coordinator == @syndicate_coordinator
+        mail(:to => @userid_email, :cc => syndicate_coordinator_email, :subject => message)
+      else
+        mail(:to => @userid_email, :cc => [@syndicate_coordinator_email, @county_coordinator_email], :subject => message)
+      end
+    else
+      if @county_coordinator == @syndicate_coordinator
+        mail(:to => @syndicate_coordinator, :subject => message)
+      else
+        mail(:to => @syndicate_coordinator, :cc => @county_coordinator_email, :subject => message)
+      end
+    end
+  end
+
   def get_email_address_array_from_array_of_userids(userids)
     array_of_email_addresses = []
     if userids.present?
@@ -408,7 +415,7 @@ class UserMailer < ActionMailer::Base
 
   def user_email_lookup(user)
     userid = UseridDetail.userid(user).first
-    if userid.present? && userid.active && userid.email_address_valid && userid.registration_completed(userid) && !userid.no_processing_messages
+    if userid.present?
       friendly_email = "#{userid.person_forename} #{userid.person_surname} <#{userid.email_address}>"
     else
       friendly_email = 'FreeREG Servant <freereg-contacts@freereg.org.uk>'
