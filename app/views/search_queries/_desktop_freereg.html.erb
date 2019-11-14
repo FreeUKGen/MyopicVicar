@@ -1,6 +1,6 @@
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
 <div class="table-wrapper" id="search-result">
-  <table class="table--bordered table--data table--striped">
+  <table class="table--bordered table--data ">
     <caption tabindex=0 class="gamma"> <%= pluralize(@result_count, ' Search Result', ' Search Results') %>
       <% unless print_friendly %>
         <small class="additional">Select a heading to sort results on that column.<br>
@@ -51,11 +51,11 @@
         <tr id="<%=search_record[:_id]%>">
           <% unless print_friendly %>
            <td>
-             <%= link_to("View #{n}", friendly_search_record_path(search_record.id, search_record.friendly_url),rel:"nofollow")%>
+             <%= link_to("View #{n}", friendly_search_record_path(search_record.id, search_record.friendly_url),rel:"nofollow", :class => "btn  btn--small" )%>
             <i><%= viewed(@search_query,search_record) %></i>
            </td>
           <% end %>
-           <td tabindex= 0 >
+           <td  >
           <% search_record[:transcript_names].uniq.each_with_index do |name, i| %>
             <% if  name['type'] == 'primary' %>
               <% if i > 0 %>
@@ -65,19 +65,19 @@
     <% end %>
   <% end%>
 </td>
-<td tabindex=0 >
+<td  >
   <%= RecordType::display_name(search_record.record_type) %>
 </td>
-<td tabindex=0 >
+<td  >
   <%= transcript_date(search_record) %>
 </td>
-<td tabindex=0 >
+<td  >
   <%= county(search_record) %>
 </td>
-<td tabindex=0 >
+<td  >
   <%= format_location(search_record) %>
 </td>
-</tr tabindex=0 >
+</tr  >
 <% end %>
 </tbody>
 </table>
