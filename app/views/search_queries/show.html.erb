@@ -26,6 +26,7 @@
         <% end %>
       <% end%>
       <% if @result_count > 10 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+        <br>
         <%= render 'nav_header' %>
         <a href="#" class="btn  btn--small">Go to top</a>
       <% end %>
