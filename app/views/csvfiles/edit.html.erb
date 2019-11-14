@@ -1,22 +1,20 @@
 <% breadcrumb :edit_csvfile,  @csvfile, @file%>
-<p style="text-align: center"><b>Replacing existing Batch of records <%= @file_name %> for <%= @person %></b></p>
+<p style="text-align: center"><b>Replacing existing batch of records <%= @file_name %> for <%= @person %></b></p>
 <%= render 'flash_notice' %>
 <ul>
   <% @csvfile.errors.full_messages.each do |msg| %>
     <li><%= msg %></li>
   <% end %>
 </ul>
-<div class="text--center" >
+<div align="center">
   <%= simple_form_for @csvfile, html: { multipart: true } do |f| %>
     <%= f.input :action, :as => :hidden, :input_html => { :value => @action } %>
-    <%= f.input :csvfile, :label => "Please select file to upload", :hint => "Locate the file on your device." %><br>
-    <%= f.input :userid, :collection => @people, :required => true ,:label => "Userid where file is to be stored", :hint => "Your own userid has been preselected. Select another userid if you wish.",
-      :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 },:selected => @user.userid unless session[:my_own] %>
-    <p class="text--center text--negative push-half--bottom"> <b> Change of procedure<br>
-        After selecting your file when you click the Replace button your file will be submitted for processing</b><br>
-      <%= f.button :button, 'Replace' , :class => "ladda-button" , "data-style" => "contract" ,"data-color" =>appname_downcase , "data-size" => "s", "data-spinner-color" => "#ffffff" %></p>
+    <%= f.input :csvfile, :label => "Select the file to be uploaded from a folder on your computer", :input_html => {  :class => " simple_form_bgcolour simple_form_position_left"} %>
+    <br>
+    <%= f.input :userid, :collection => @people,:required => true , :label => "Userid where file is to be stored .Your own has been preselected. Select another if you wish.",
+      :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 },:selected => @user.userid unless session[:my_own] %><br>
+    <p class="text--center text--negative push-half--bottom"> <b>
+        Click the Upload button after selecting your file and it will be submitted for processing</b><br>
+      <%= f.button :button, 'Replace' ,:button_html => {:class => "btn  btn-small" } %></p>
   <% end %>
 </div>
-<script type="text/javascript">
-  Ladda.bind( 'button' , { timeout: 2000 });
-</script>

@@ -83,10 +83,14 @@ class UseridDetailsController < ApplicationController
     session[:type] = 'edit'
     redirect_back(fallback_location: options_userid_details_path, notice: 'The destruction of the profile not permitted as they have batches') && return if @userid.has_files?
 
-    if MyopicVicar::Application.config.template_set != 'freecen'
+    if appname_downcase == 'freereg'
       Freereg1CsvFile.delete_userid_folder(@userid.userid)
     end
-    flash[:notice] = 'The destruction of the profile was successful'
+    if @userid.destroy
+      flash[:notice] = 'The destruction of the profile and deletion of the user folder was successful'
+    else
+      flash[:notice] = 'The destruction of the profile failed'
+    end
     redirect_to(options_userid_details_path)
   end
 
@@ -671,7 +675,6 @@ class UseridDetailsController < ApplicationController
       message = @userid.email_address_validity_change_message
       case userid_details_params[:email_address_valid]
       when 'true'
-        raise 'hello'
         message << "VALID on #{Time.now.utc.strftime("%B %d, %Y")} at #{Time.now.utc.strftime("%H:%M:%S")}"
       else
         message << "INVALID on #{Time.now.utc.strftime("%B %d, %Y")} at #{Time.now.utc.strftime("%H:%M:%S")}"

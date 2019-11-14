@@ -1,42 +1,36 @@
 <div style="overflow: hidden;">
-  <table class="my-width-min flush--bottom" >
-    <thead >
-      <tr>
-        <th>Record number</th>
-        <th>Burial date</th>
-        <th>Person forename</th>
-        <th>Person surname</th>
-        <th>Relative (M) forename</th>
-        <th>Relative (F) forename</th>
-        <th>Relative surname</th>
-        <th >Action</th>
-        <th ></th>
-        <th ></th>
-      </tr>
-    </thead>
-  </table>
   <div class="scrollable ">
     <table class="table--bordered my-width table--data just--left">
+      <thead  >
+        <tr >
+          <th class='sticky-header' title='The position in the file not the register number'>Number</th>
+          <th class='sticky-header'>Burial date</th>
+          <th class='sticky-header'>Person forename</th>
+          <th class='sticky-header'>Person surname</th>
+          <th class='sticky-header'>Male relative forename</th>
+          <th class='sticky-header'>Female relative forename</th>
+          <th class='sticky-header'>Relative surname</th>
+          <th class='sticky-header'>Action</th>
+        </tr>
+      </thead>
       <tbody >
         <% @freereg1_csv_entries.each do |freereg1_csv_entry| %>
           <% if freereg1_csv_entry.error_flag == 'true' %>
             <tr id="<%= freereg1_csv_entry.id %>" style= "color:red">
-          <%else%>
+            <%else%>
               <tr id="<%= freereg1_csv_entry.id %>" style= "color:teal">
-          <% end%>
-            <td><%= freereg1_csv_entry.file_line_number%></td>
-            <td><%= freereg1_csv_entry.burial_date %></td>
-            <td><%= freereg1_csv_entry.burial_person_forename %></td>
-            <td><%= freereg1_csv_entry.burial_person_surname %></td>
-            
-            <td><%= freereg1_csv_entry.male_relative_forename %></td>
-            <td><%= freereg1_csv_entry.female_relative_forename %></td>
-            <td><%= freereg1_csv_entry.relative_surname %></td>
-            
-            <td><%= link_to 'SH', freereg1_csv_entry_path(freereg1_csv_entry, "zero_record" => @get_zero_year_records,"zero_listing" => @zero_year) %> <%= link_to 'ED', edit_freereg1_csv_entry_path(freereg1_csv_entry, "zero_record" => @get_zero_year_records, "zero_listing" => @zero_year) %> <%= link_to 'DE', freereg1_csv_entry, data: { confirm:  'Are you sure?'}, method: :delete   %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+              <% end%>
+              <td><%= freereg1_csv_entry.file_line_number%></td>
+              <td><%= freereg1_csv_entry.burial_date %></td>
+              <td><%= freereg1_csv_entry.burial_person_forename %></td>
+              <td><%= freereg1_csv_entry.burial_person_surname %></td>
+              <td><%= freereg1_csv_entry.male_relative_forename %></td>
+              <td><%= freereg1_csv_entry.female_relative_forename %></td>
+              <td><%= freereg1_csv_entry.relative_surname %></td>
+              <td><%= link_to 'SH', freereg1_csv_entry_path(freereg1_csv_entry, "zero_record" => @get_zero_year_records,"zero_listing" => @zero_year) %> <%= link_to 'ED', edit_freereg1_csv_entry_path(freereg1_csv_entry, "zero_record" => @get_zero_year_records, "zero_listing" => @zero_year) %> <%= link_to 'DE', freereg1_csv_entry, data: { confirm:  'Are you sure?'}, method: :delete   %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
   </div>
-</div>
