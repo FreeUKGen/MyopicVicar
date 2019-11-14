@@ -675,7 +675,6 @@ class UseridDetailsController < ApplicationController
       message = @userid.email_address_validity_change_message
       case userid_details_params[:email_address_valid]
       when 'true'
-        raise 'hello'
         message << "VALID on #{Time.now.utc.strftime("%B %d, %Y")} at #{Time.now.utc.strftime("%H:%M:%S")}"
       else
         message << "INVALID on #{Time.now.utc.strftime("%B %d, %Y")} at #{Time.now.utc.strftime("%H:%M:%S")}"
