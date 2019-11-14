@@ -375,16 +375,20 @@ class UserMailer < ActionMailer::Base
   def adjust_recipients_and_send(message)
     #This substitutes recipient to SC if required and adjusts copies accordingly
     if @userid.active && @userid.email_address_valid && @userid.registration_completed(@userid) && !@userid.no_processing_messages
+      p 'OK to use userid'
       if @county_coordinator == @syndicate_coordinator
+        p 'but only one coordinator'
         mail(:to => @userid_email, :cc => syndicate_coordinator_email, :subject => message)
       else
+        p 'both coordinatoes'
         mail(:to => @userid_email, :cc => [@syndicate_coordinator_email, @county_coordinator_email], :subject => message)
       end
     else
+      p 'Do not use userid'
       if @county_coordinator == @syndicate_coordinator
-        mail(:to => @syndicate_coordinator, :subject => message)
+        mail(:to => @syndicate_coordinator_email, :subject => message)
       else
-        mail(:to => @syndicate_coordinator, :cc => @county_coordinator_email, :subject => message)
+        mail(:to => @syndicate_coordinator_email, :cc => @county_coordinator_email, :subject => message)
       end
     end
   end
