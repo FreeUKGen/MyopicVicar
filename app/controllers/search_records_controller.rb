@@ -85,7 +85,13 @@ class SearchRecordsController < ApplicationController
         @ee_address = @dweling_values[11]
 
         #census database description
-        @census_database = 'General Register Office: 1891 Census Returns'
+        @census_database = 'England, Scotland and Wales Census'
+
+        @wikitree_database = 'General Register Office'
+
+        if @search_record.place['country'] = 'Scotland'
+          @wikitree_database = 'Scottish General Register Office'
+        end
 
         @searched_user_name = @search_record.transcript_names.first['first_name'] + " " + @search_record.transcript_names.first['last_name']
         @viewed_date = Date.today.strftime("%e %b %Y")
@@ -309,7 +315,7 @@ class SearchRecordsController < ApplicationController
         @ee_address = @dweling_values[11]
 
         #census database description
-        @census_database = 'General Register Office: 1891 Census Returns'
+        @census_database = 'England, Scotland and Wales Census'
 
         @searched_user_name = @search_record.transcript_names.first['first_name'] + " " + @search_record.transcript_names.first['last_name']
         @viewed_date = Date.today.strftime("%e %b %Y")
