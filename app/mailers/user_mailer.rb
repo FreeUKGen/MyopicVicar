@@ -49,7 +49,7 @@ class UserMailer < ActionMailer::Base
     @syndicate_coordinator, @syndicate_coordinator_email = syndicate_coordinator_email_lookup(@userid)
     @county_coordinator, @county_coordinator_email = county_coordinator_email_lookup(batch, @userid)
     subject = "#{@userid.userid}/#{batch} processing encountered serious problem at #{Time.now}"
-    adjust_recipients_and_send(subject)
+    adjust_email_recipients(subject)
   end
 
   def batch_processing_success(message, user, batch)
@@ -59,7 +59,7 @@ class UserMailer < ActionMailer::Base
     @syndicate_coordinator, @syndicate_coordinator_email = syndicate_coordinator_email_lookup(@userid)
     @county_coordinator, @county_coordinator_email = county_coordinator_email_lookup(batch, @userid)
     subject = "#{@userid.userid}/#{batch} processed at #{Time.now} with #{@batch.error unless @batch.nil?} errors over period #{@batch.datemin unless @batch.nil?}-#{@batch.datemax unless @batch.nil?}"
-    adjust_recipients_and_send(subject)
+    adjust_email_recipients(subject)
   end
 
   def contact_action_request(contact, send_to, copies_to)
@@ -372,27 +372,17 @@ class UserMailer < ActionMailer::Base
 
   private
 
-  def adjust_recipients_and_send(message)
-    #This substitutes recipient to SC if required and adjusts copies accordingly
+  def adjust_email_recipients(message)
     if @userid.active && @userid.email_address_valid && @userid.registration_completed(@userid) && !@userid.no_processing_messages
-      p 'OK to use userid'
       if @county_coordinator == @syndicate_coordinator
-        p 'but only one coordinator'
         mail(:to => @userid_email, :cc => syndicate_coordinator_email, :subject => message)
       else
-        p 'both coordinatoes'
         mail(:to => @userid_email, :cc => [@syndicate_coordinator_email, @county_coordinator_email], :subject => message)
       end
     else
-      p 'Do not use userid'
-      p
       if @county_coordinator == @syndicate_coordinator
-        p 'same coordinator'
-        p "#{@syndicate_coordinator_email}"
         mail(:to => @syndicate_coordinator_email, :subject => message)
       else
-        p 'different coordinator'
-        p "#{@syndicate_coordinator_email} #{@county_coordinator_email}"
         mail(:to => @syndicate_coordinator_email, :cc => @county_coordinator_email, :subject => message)
       end
     end

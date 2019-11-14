@@ -14,10 +14,7 @@
       :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width ", :size => 4 },:selected => @user.userid unless session[:my_own] %><br>
     <p class="text--center text--negative push-half--bottom"> <b>
         Click the Upload button after selecting your file and it will be submitted for processing</b><br>
-      <%= f.button :button, 'Upload' ,:button_html => { :class => "ladda-button" , "data-style" => "contract" ,"data-color" => appname_downcase , "data-size" => "s", "data-spinner-color" => "#ffffff" },:wrapper_html => { :class => "grid__item one-whole text--center push--bottom" } %>
+      <%= f.button :button, 'Upload' ,:button_html => {:class => "btn  btn-small" } %>
       <br>
     <% end %>
   </div>
-  <script type="text/javascript">
-    Ladda.bind( 'button' , { timeout: 50000 });
-  </script>
