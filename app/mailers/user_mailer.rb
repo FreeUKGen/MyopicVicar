@@ -385,9 +385,14 @@ class UserMailer < ActionMailer::Base
       end
     else
       p 'Do not use userid'
+      p
       if @county_coordinator == @syndicate_coordinator
+        p 'same coordinator'
+        p "#{@syndicate_coordinator_email}"
         mail(:to => @syndicate_coordinator_email, :subject => message)
       else
+        p 'different coordinator'
+        p "#{@syndicate_coordinator_email} #{county_coordinator_email}"
         mail(:to => @syndicate_coordinator_email, :cc => @county_coordinator_email, :subject => message)
       end
     end
