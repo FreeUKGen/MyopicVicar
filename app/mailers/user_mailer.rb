@@ -392,7 +392,7 @@ class UserMailer < ActionMailer::Base
         mail(:to => @syndicate_coordinator_email, :subject => message)
       else
         p 'different coordinator'
-        p "#{@syndicate_coordinator_email} #{county_coordinator_email}"
+        p "#{@syndicate_coordinator_email} #{@county_coordinator_email}"
         mail(:to => @syndicate_coordinator_email, :cc => @county_coordinator_email, :subject => message)
       end
     end
