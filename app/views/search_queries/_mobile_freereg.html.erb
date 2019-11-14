@@ -7,8 +7,10 @@
 <% search_results.each do |search_record| %>
   <div>
     <dl class="table-display">
-      <dt ><% unless print_friendly %><%= link_to('Person ', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME)) %><% else%> Person<% end%>
-      </dt>
+      <dt>Detail</dt>
+      <dd><%= link_to("Detail ", friendly_search_record_path(search_record.id, search_record.friendly_url, :search_id => @search_query, :ucf => ucf_results)) %>
+        <i><%= viewed(@search_query,search_record)%></i></dd>
+      <dt > Person or persons</dt>
       <dd ><% search_record.transcript_names.uniq.each_with_index do |name, i| %>
           <% if  name['type'] == 'primary' %>
             <% if i > 0 %>
@@ -34,9 +36,6 @@
          :order_field => SearchQuery::SearchOrder::LOCATION)) %><% else%> Place<% end%>
       </dt>
       <dd><%= format_location(search_record) %></dd>
-      <dt>Detail</dt>
-      <dd><%= link_to("Detail ", friendly_search_record_path(search_record.id, search_record.friendly_url, :search_id => @search_query, :ucf => ucf_results)) %>
-        <i><%= viewed(@search_query,search_record)%></i></dd>
     </dl>
   </div>
 <% end%>
