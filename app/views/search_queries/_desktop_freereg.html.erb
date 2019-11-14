@@ -52,7 +52,7 @@
           <% unless print_friendly %>
            <td>
              <%= link_to("View #{n}", friendly_search_record_path(search_record.id, search_record.friendly_url),rel:"nofollow", :class => "btn  btn--small" )%>
-            <i><%= viewed(@search_query,search_record) %></i>
+            <i><br><%= viewed(@search_query,search_record) %></i>
            </td>
           <% end %>
            <td  >
