@@ -120,6 +120,13 @@ class SearchRecordsController < ApplicationController
         else
           @dep_series_code = nil
         end
+        if @search_query.present?
+          @search_result = @search_query.search_result
+          @viewed_records = @search_result.viewed_records
+          @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
+          @search_result.update_attribute(:viewed_records, @viewed_records)
+        end
+
       end
     elsif @appname == 'freereg'
       @display_date = false
