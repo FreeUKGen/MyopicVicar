@@ -16,7 +16,7 @@ class ImageServerGroupsController < ApplicationController
 
   def allocate
     display_info
-    
+
     @syndicate = Syndicate.get_syndicates
     @group_name = ImageServerGroup.group_list_by_status(params[:id], ['u', 'ar'])
     @group = ImageServerGroup.source_id(params[:id])
@@ -220,7 +220,7 @@ class ImageServerGroupsController < ApplicationController
     sc = UseridDetail.where(:userid=>syndicate.syndicate_coordinator).first
     redirect_back(fallback_location: new_manage_resource_path, :notice => 'SC does not exist, please contact administrator') && return if sc.blank?
 
-    UserMailer.request_sc_image_server_group(transcriber, sc.email_address, image_server_group).deliver_now
+    UserMailer.request_sc_image_server_group(transcriber, sc, params[:id]).deliver_now
 
     redirect_back(fallback_location: new_manage_resource_path, :notice => 'Email send to Syndicate Coordinator')
   end
