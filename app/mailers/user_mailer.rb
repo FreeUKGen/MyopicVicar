@@ -303,11 +303,13 @@ class UserMailer < ActionMailer::Base
     mail(:from => sc.email_address, :to => cc_email, :subject => subject, :body => email_body)
   end
 
-  def request_sc_image_server_group(transcriber, sc_email, group)
+  def request_sc_image_server_group(transcriber, sc, group)
     @appname = appname
-    subject = 'Transcriber request image group'
-    email_body = 'member ' + transcriber.userid + ' of your syndicate ' + transcriber.syndicate + ' requests to obtain images in ' + group
-    mail(:from => transcriber.email_address, :to => sc_email, :subject => subject, :body => email_body)
+    @subject = 'Transcriber request image group'
+    @transcriber = transcriber
+    @sc_email = sc_email
+    @group = group
+    mail(:from => @transcriber.email_address, :to => @sc.email_address, :subject => @subject)
   end
 
   def request_to_volunteer(coordinator, group_name, applier_name, applier_email)
