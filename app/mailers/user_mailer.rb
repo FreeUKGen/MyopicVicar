@@ -307,7 +307,7 @@ class UserMailer < ActionMailer::Base
     @appname = appname
     @subject = 'Transcriber request image group'
     @transcriber = transcriber
-    @sc_email = sc_email
+    @sc = sc
     @group = group
     mail(:from => @transcriber.email_address, :to => @sc.email_address, :subject => @subject)
   end
