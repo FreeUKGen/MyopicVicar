@@ -407,6 +407,21 @@ class ImageServerGroup
     URI.escape(Rails.application.config.image_server + 'manage_freereg_images/upload_images?chapman_code=' + place.chapman_code + '&place=' + place.place_name + '&church=' + church.church_name + '&register_type=' + register.register_type  + '&register=' + register.id + '&folder_name=' + source.folder_name + '&userid=' + userid + '&group_id=' + self.id + '&image_server_group_name=' + self.group_name + '&image_server_access=' + Rails.application.config.image_server_access)
   end
 
+  def determine_ownership
+    location = []
+    source = self.source
+    register = source.register if source.present?
+    church = register.church if register.present?
+    place = church.place if church.present?
+    if place.present?
+      location[0] = register.register_type
+      location[1] = church.church_name
+      location[2] = place.place_name
+      location[3] = place.county
+    end
+    location
+  end
+
   def process_uploaded_images(param)
     process = true
     message = ''
