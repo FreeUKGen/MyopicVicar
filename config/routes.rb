@@ -15,6 +15,7 @@
 MyopicVicar::Application.routes.draw do
 
 
+
   root :to => 'search_queries#new'
 
   get 'open', :to => 'open#index'
@@ -58,24 +59,21 @@ MyopicVicar::Application.routes.draw do
 
   resources :denominations
 
+  resources :embargo_rules
+
+  resources :embargo_reasons
 
   resources :freecen1_fixed_dat_files
 
-
   resources :freecen1_fixed_dat_entries
-
 
   resources :freecen_dwellings
 
-
   resources :freecen_individuals
-
 
   #resources :site_statistics
 
-
   resources :freecen1_vld_entries
-
 
   resources :freecen1_vld_files
 

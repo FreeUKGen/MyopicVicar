@@ -1,0 +1,21 @@
+<% breadcrumb :show_embargo_reason,  @reason%>
+<h2 class="text--center"> Embargo Reason</h2>
+<%= render 'flash_notice' %>
+<div  class="text--center">  <%= link_to 'Edit Embargo Reason', edit_embargo_reason_path(@reason) , method: :get, :class => "btn btn--small" %>     <%= link_to 'Create Embargo Reason', new_embargo_reason_path , method: :get, :class => "btn btn--small" %> <%= link_to 'Destroy Embargo Reason', embargo_reason_path( @reason), method: :delete, data: { confirm: 'Are you sure you want to destroy this Embargo Reason.?' } , :class => "btn  btn--small"%>
+</div>
+<div class="grid__item  ">
+  <table class=" table--bordered table--data">
+    <colgroup >
+      <col class="t40">
+      <col class="t60">
+    </colgroup>
+    <tr>
+      <th class="caps">Field</th>
+      <th class="caps">Value</th>
+    </tr>
+    <tr>
+      <td>Embargo Reason :</td>
+      <td class="weight--semibold"><%= @reason.reason %></td>
+    </tr>
+  </table>
+</div>

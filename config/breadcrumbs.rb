@@ -935,6 +935,24 @@ crumb :create_denomination do |denomination|
   link 'Create Denomination', new_denomination_path(denomination)
   parent :denominations
 end
+
+crumb :embargo_reasons do
+  link 'Embargo Reasons', embargo_reasons_path
+  parent :root
+end
+crumb :show_embargo_reason do |embargo_reason|
+  link 'Show Embargo Reason', embargo_reason_path(embargo_reason)
+  parent :embargo_reason
+end
+crumb :edit_embargo_reason do |embargo_reason|
+  link 'Edit Embargo Reason', edit_embargo_reason_path(embargo_reason)
+  parent :show_embargo_reason, embargo_reason
+end
+crumb :create_embargo_reason do |embargo_reason|
+  link 'Create Embargo Reason', new_embargo_reason_path(embargo_reason)
+  parent :embargo_reasons
+end
+
 crumb :select_attic_files do
   link 'Select Userid', select_userid_attic_files_path
   parent :root
