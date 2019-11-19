@@ -87,10 +87,10 @@ class SearchRecordsController < ApplicationController
         #census database description
         @census_database = 'England, Scotland and Wales Census'
 
-        @wikitree_database = 'General Register Office'
+        @freecen_database = 'General Register Office'
 
         if @search_record.place['country'] = 'Scotland'
-          @wikitree_database = 'Scottish General Register Office'
+          @freecen_database = 'Scottish General Register Office'
         end
 
         @searched_user_name = @search_record.transcript_names.first['first_name'] + " " + @search_record.transcript_names.first['last_name']
