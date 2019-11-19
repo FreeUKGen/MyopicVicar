@@ -1,20 +1,10 @@
-<% if @rule.errors.any? %>
-  <div id="error_explanation">
-    <h2><%= pluralize(@rule.errors.count, "error") %> prohibited this embargo rule from being saved:</h2>
-    <ul>
-      <% @rule.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-    </ul>
-  </div>
-<% end %>
 <%= render 'flash_notice' %>
 <div>
   <%= simple_form_for @rule do |f| %>
     <%= f.hidden_field :register_id, :value => @register.id %>
     <%= f.input :record_type, :label => "Record Type" , :collection => @types,:include_blank => false, :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width ",  :size => 3 }  %>
     <%= f.input :rule, :label => "Rule", :collection => @options, :include_blank => false,:input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width ",  :size => 2 }  %>
-    <%= f.input :period, :label => "Period or Year" ,  :input_html => {:class => " simple_form_bgcolour  ",  :size =>5}  %>
+    <%= f.input :period, :label => "Period (1 to 125 Years) or a specific future Year" ,  :input_html => {:class => " simple_form_bgcolour  ",  :size =>5}  %>
     <%= f.input :authority, :label => "Entity that imposed rule" ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }  %>
     <%= f.button :submit, 'Submit', :button_html => {:class => "btn   btn--small" } %>
   <% end %>

@@ -9,8 +9,10 @@ class EmbargoRule
   field :period, type: Integer
   validates :period, numericality: { only_integer: true }
   field :authority, type: String
+  validates :authority, presence: true
   belongs_to :register, index: true
-  before_save :check_inclusion_of_rule
+  validate :only_one_rule_per_record_type
+
 
   module EmbargoRuleOptions
     ALL_OPTIONS = [
@@ -18,7 +20,13 @@ class EmbargoRule
     ]
   end
 
-  def check_inclusion_of_rule
-
+  def only_one_rule_per_record_type
+    if EmbargoRule.where(register_id: register_id, rule: rule, record_type: record_type).exists?
+      errors.add(:rule, "should only be one rule for a record type" )
+    end
+    unless (period >= 1 && period < 125) || (period > Date.current.year.to_i && period < Date.current.year.to_i + 25)
+      errors.add(:period, "Period must be in the range of between 1 and 125, Or a year between now and 25 years in the future")
+    end
   end
+
 end
