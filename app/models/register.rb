@@ -271,6 +271,11 @@ class Register
     @first_name = @user.person_forename unless @user.blank?
   end
 
+  def embargo_rules_exist?
+    embargo_rules = self.embargo_rules.present? ? true : false
+    embargo_rules
+  end
+
   def has_input?
     value = false
     value = true if (self.status.present? || self.quality.present? || self.source.present? || self.copyright.present?|| self.register_notes.present? ||
@@ -278,7 +283,7 @@ class Register
     value
   end
 
-  def image_server_exists?
+  def image_servers_exist?
     image_server = false
     unless self.sources.nil?
       self.sources.each do |source|

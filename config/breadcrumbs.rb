@@ -936,21 +936,21 @@ crumb :create_denomination do |denomination|
   parent :denominations
 end
 
-crumb :embargo_reasons do
-  link 'Embargo Reasons', embargo_reasons_path
-  parent :root
+crumb :embargo_rules do |county, place, church, register|
+  link 'Embargo Rules', embargo_rules_path( :county => county, :place => place, :church => church, :register => register)
+  parent :show_register, county, place, church, register
 end
-crumb :show_embargo_reason do |embargo_reason|
-  link 'Show Embargo Reason', embargo_reason_path(embargo_reason)
-  parent :embargo_reason
+crumb :show_embargo_rule do |county, place, church, register, embargo_rule|
+  link 'Show Embargo Rule', embargo_rule_path(embargo_rule, :county => county, :place => place, :church => church, :register => register)
+  parent :embargo_rules, county, place, church, register
 end
-crumb :edit_embargo_reason do |embargo_reason|
-  link 'Edit Embargo Reason', edit_embargo_reason_path(embargo_reason)
-  parent :show_embargo_reason, embargo_reason
+crumb :edit_embargo_rule do |county, place, church, register, embargo_rule|
+  link 'Edit Embargo Rule', edit_embargo_rule_path(embargo_rule, :county => county, :place => place, :church => church, :register => register)
+  parent :show_embargo_rule, county, place, church, register, embargo_rule
 end
-crumb :create_embargo_reason do |embargo_reason|
-  link 'Create Embargo Reason', new_embargo_reason_path(embargo_reason)
-  parent :embargo_reasons
+crumb :new_embargo_rule do |county, place, church, register, embargo_rule|
+  link 'Create Embargo Rule', new_embargo_rule_path(embargo_rule, :county => county, :place => place, :church => church, :register => register)
+  parent :embargo_rules, county, place, church, register
 end
 
 crumb :select_attic_files do

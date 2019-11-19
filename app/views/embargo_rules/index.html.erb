@@ -1,23 +1,23 @@
-<% breadcrumb :denominations%>
-<h2 class="text--center"> List of Denominations</h2>
-<div style="text-align: center"><%= link_to 'Create New Denomination',new_denomination_path, method: :get , :class => "btn btn--small"  %></div>
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
-  </div>
-<% end %>
+<% breadcrumb :embargo_rules, @county, @place, @church, @register%>
+<h2 class="text--center"> List of Embargo Rules for <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b></h2>
+<div style="text-align: center"><%= link_to 'Create New Embargo Rule',new_embargo_rule_path(county: @county, place: @place, church: @church, register: @register), method: :get , :class => "btn btn--small"  %></div>
+<%= render 'flash_notice' %>
 <div>
   <table class=" table--bordered table--data">
     <tr>
-      <th> Denomination</th>
-      <th colspan = "3">Actions</th>
+      <th> Record Type </th>
+      <th> Embargo Rule</th>
+      <th> Period or end year</th>
+      <th> Entity that required the rule </th>
+      <th >Actions</th>
     </tr>
-    <% @denominations.each do |denomination| %>
+    <% @rules.each do |rule| %>
       <tr>
-        <td><%= denomination.denomination %></td>
-        <td><%= link_to 'Show', denomination %></td>
-        <td><%= link_to 'Edit', edit_denomination_path(denomination) %></td>
-        <td><%= link_to 'Destroy', denomination, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td ><%= rule.record_type %></td>
+        <td><%= rule.rule%></td>
+        <td ><%= rule.period %></td>
+        <td ><%= rule.authority %></td>
+        <td><%= link_to 'Show', embargo_rule_path(rule,county: @county, place: @place, church: @church, register: @register) %> <%= link_to 'Edit', edit_embargo_rule_path(rule, county: @county, place: @place, church: @church, register: @register) %> <%= link_to 'Destroy', embargo_rule_path(rule, county: @county, place: @place, church: @church, register: @register), method: :delete, data: { confirm: 'Are you sure?' } %></td>
       </tr>
     <% end %>
   </table>

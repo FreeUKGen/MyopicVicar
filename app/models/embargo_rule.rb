@@ -12,6 +12,12 @@ class EmbargoRule
   belongs_to :register, index: true
   before_save :check_inclusion_of_rule
 
+  module EmbargoRuleOptions
+    ALL_OPTIONS = [
+      'Embargoed until the end of ', 'Embargoed for the period of '
+    ]
+  end
+
   def check_inclusion_of_rule
 
   end

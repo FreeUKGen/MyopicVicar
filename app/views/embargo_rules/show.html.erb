@@ -1,11 +1,7 @@
-<% breadcrumb :show_denomination,  @denomination%>
-<h2 class="text--center"> Denomination</h2>
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
-  </div>
-<% end %>
-<div  class="text--center">  <%= link_to 'Edit Denomination', edit_denomination_path(@denomination) , method: :get, :class => "btn btn--small" %>     <%= link_to 'Create Denomination', new_denomination_path , method: :get, :class => "btn btn--small" %> <%= link_to 'Destroy Denomination', denomination_path(@denomination), method: :delete, data: { confirm: 'Are you sure you want to destroy this Denomination.?' } , :class => "btn  btn--small"%>
+<% breadcrumb :show_embargo_rule, @county, @place, @church, @register, @rule%>
+<h2 class="text--center"> Embargo Rule for <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b></h2>
+<%= render 'flash_notice' %>
+<div  class="text--center">  <%= link_to 'Edit Embargo Rule', edit_embargo_rule_path(@rule,county: @county, place: @place, church: @church, register: @register), method: :get, :class => "btn btn--small" %>     <%= link_to 'Create Embargo Rule', new_embargo_rule_path(county: @county, place: @place, church: @church, register: @register) , method: :get, :class => "btn btn--small" %> <%= link_to 'Destroy Embargo Rule', embargo_rule_path( @rule,county: @county, place: @place, church: @church, register: @register), method: :delete, data: { confirm: 'Are you sure you want to destroy this Embargo Rule.?' } , :class => "btn  btn--small"%>
 </div>
 <div class="grid__item  ">
   <table class=" table--bordered table--data">
@@ -18,12 +14,20 @@
       <th class="caps">Value</th>
     </tr>
     <tr>
-      <td>Denomination :</td>
-      <td class="weight--semibold"><%= @denomination.denomination %></td>
+      <td>Record Type :</td>
+      <td class="weight--semibold"><%= @rule.record_type %></td>
     </tr>
     <tr>
-      <td>Notes about the Denomination :</td>
-      <td class="weight--semibold"> <%= @denomination.notes %> </td>
+      <td>Embargo Rule :</td>
+      <td class="weight--semibold"><%= @rule.rule %></td>
+    </tr>
+    <tr>
+      <td>Period or end year :</td>
+      <td class="weight--semibold"><%= @rule.period %></td>
+    </tr>
+    <tr>
+      <td>Entity that required the rule :</td>
+      <td class="weight--semibold"><%= @rule.authority %></td>
     </tr>
   </table>
 </div>
