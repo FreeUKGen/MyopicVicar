@@ -85,12 +85,10 @@ class SearchRecordsController < ApplicationController
         @ee_address = @dweling_values[11]
 
         #census database description
-        @census_database = 'England, Scotland and Wales Census'
-
-        @freecen_database = 'General Register Office'
+        @census_database = "General Register Office: #{@cen_year} Census Returns database" 
 
         if @search_record.place['country'] = 'Scotland'
-          @freecen_database = 'Scottish General Register Office'
+          @census_database = "Scottish General Register Office: #{@cen_year} Census Returns database"
         end
 
         @searched_user_name = @search_record.transcript_names.first['first_name'] + " " + @search_record.transcript_names.first['last_name']

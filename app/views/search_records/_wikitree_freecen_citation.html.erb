@@ -1,7 +1,7 @@
 <section>
 <h4>Citation(Wikitree):</h4>
   <p class = "citation_container">
-    "<%= @freecen_database%> <%= @cen_year %> Census Returns" database, <%= appname%> (<%=search_record_link(@search_record[:_id])%> : viewed <%= @viewed_date %>),
+    "<%= @census_database%>, <%= appname%> (<%=search_record_link(@search_record[:_id])%> : viewed <%= @viewed_date %>),
     <%=@searched_user_name %><% if !@is_family_head %> in household of <%= @family_head_name%><% end %>,
     <%= @user_address%>;
     from <%= @cen_year%> "England, Scotland and Wales census," database and images;
