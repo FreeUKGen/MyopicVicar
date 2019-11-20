@@ -216,7 +216,7 @@ class ImageServerGroupsController < ApplicationController
 
     redirect_back(fallback_location: new_manage_resource_path, :notice => 'Syndicate does not exist') && return if syndicate.blank?
 
-    location = ig.determine_ownnership
+    location = ig.determine_ownership
     sc = UseridDetail.where(:userid=>syndicate.syndicate_coordinator).first
     redirect_back(fallback_location: new_manage_resource_path, :notice => 'SC does not exist, please contact administrator') && return if sc.blank?
 
