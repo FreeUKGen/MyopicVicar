@@ -892,12 +892,15 @@ class SearchQuery
     end
   end
 
+  def 
+
   def date_of_birth
    date split_range unless special_character.include?('-')
   end
 
   def range_to_integer
     split_range.map(&:to_i)
+    split_range.map{|r| r.dob_quarter_number}
   end
 
   def split_range
@@ -905,7 +908,7 @@ class SearchQuery
   end
 
   def special_character
-    self.age_at_death.remove(/[0-9]/)
+    self.age_at_death.remove(/[0-9a-zA-Z]/,'/')
   end
 
   def validate_age_at_death
@@ -1050,9 +1053,21 @@ class SearchQuery
 
   def dob_quarter_number
     date_array = self.age_at_death.split('/')
-    month = predefined_month_key(date_array[1])
     date_array.unshift(1) if date_array.length == 2
-    quarter_number(year: date_array[2], quarter: get_quarter_from_month(month))
+    month = predefined_month_key(date_array[1])
+    quarter_number(year: date_array[2], quarter: get_quarter_from_month(predefined_month_key(date_array[1])))
+  end
+
+  def dob_array
+    self.age_at_death.scan(/\d+|[A-Za-z]+/)
+  end
+
+  def dob_quarter
+    quarter_number(year: date_array[2], quarter: get_quarter_from_month(get_month_name(dob_array[1])))
+  end
+
+  def get_month_name month
+    predefined_month_key(month)
   end
 
   def get_quarter_from_month month
@@ -1067,8 +1082,10 @@ class SearchQuery
   end
 
   def differentiate_aad_dob
+    if dob_array.length == 1 && dob_array[0].length <= 3
+      bmd_age_at_death_params
+    end
   end
-
 
   def quarters_months
     [[:ja,:fe,:mr],[:ap,:my,:je],[:jy,:au,:se],[:oc,:no,:de]]
