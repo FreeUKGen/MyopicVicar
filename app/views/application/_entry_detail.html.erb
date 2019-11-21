@@ -1,8 +1,10 @@
 <div class='grid'>
   <section class='island '>
-    <div class='grid__item '>
-      <table class='table--bordered table--data push--bottom t100 ' >
-        <caption class='beta'  ><%= record_type(@entry) %> entry
+    <div id='freereg_sidebar_left2_desk' class="grid__item  one-fifth  palm-one-whole text--left advert_div ">
+    </div>
+    <div class='' id='results_detail_table'>
+      <table class='table--bordered table--data push--bottom t100' >
+        <caption class='beta'><%= record_type(@entry) %> entry
           <%case%>
           <%when @display_date%>
           <span class='additional'> search made on <%=Time.now.strftime('%d %b %Y') %></span><br>
@@ -141,5 +143,33 @@
       </tbody>
     </table>
   </div>
+  <div id='freereg_sidebar_right2_desk' class="grid__item  one-fifth  palm-one-whole text--right advert_div">
+  </div>
 </section>
 </div>
+<script type="text/javascript">
+  var result = window.canRunAds;
+  function changeClass(screen_width) {
+    if (screen_width.matches) {
+      $("#results_detail_table").removeClass("grid__item  three-fifths  palm-one-whole").addClass('');
+    } else {
+      if(result === true) {
+        $("#results_detail_table").addClass("grid__item  three-fifths  palm-one-whole");
+        $('.advert_div').show();
+      } else {
+        $('.advert_div').hide();
+        $("#results_detail_table").addClass("");
+      }
+    }
+  };
+  var screen_width = window.matchMedia("(max-width: 1279px)")
+  changeClass(screen_width)
+  screen_width.addListener(changeClass);
+</script>
+<style type="text/css">
+  @media only screen and (max-width: 1279px) {
+  .advert_div {
+    display: none !important;
+  }
+  }
+</style>
