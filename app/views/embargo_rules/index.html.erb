@@ -9,6 +9,7 @@
       <th> Embargo Rule</th>
       <th> Period or end year</th>
       <th> Entity that required the rule </th>
+      <th> Reason for imposition </th>
       <th >Actions</th>
     </tr>
     <% @rules.each do |rule| %>
@@ -17,6 +18,7 @@
         <td><%= rule.rule%></td>
         <td ><%= rule.period %></td>
         <td ><%= rule.authority %></td>
+        <td ><%= rule.reason %></td>
         <td><%= link_to 'Show', embargo_rule_path(rule,county: @county, place: @place, church: @church, register: @register) %> <%= link_to 'Edit', edit_embargo_rule_path(rule, county: @county, place: @place, church: @church, register: @register) %> <%= link_to 'Destroy', embargo_rule_path(rule, county: @county, place: @place, church: @church, register: @register), method: :delete, data: { confirm: 'Are you sure?' } %></td>
       </tr>
     <% end %>

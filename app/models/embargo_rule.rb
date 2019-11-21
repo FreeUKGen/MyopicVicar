@@ -10,6 +10,8 @@ class EmbargoRule
   validates :period, numericality: { only_integer: true }
   field :authority, type: String
   validates :authority, presence: true
+  field :reason, type: String
+  validates :reason, presence: true
   belongs_to :register, index: true
   validate :only_one_rule_per_record_type
 
