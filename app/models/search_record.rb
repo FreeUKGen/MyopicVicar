@@ -33,7 +33,7 @@ class SearchRecord
 
   belongs_to :freereg1_csv_entry, index: true, optional: true
   belongs_to :freecen_individual, index: true, optional: true
-  belongs_to :place
+  belongs_to :place, index: true
 
 
   field :annotation_ids, type: Array #, :typecast => 'ObjectId'

@@ -10,35 +10,30 @@ class PlaceCache
     PlaceCache.where(:chapman_code => county).destroy_all
     # the js library expects a certain format
     county_response = {"" => []}
-    
+
     if 'freereg' == MyopicVicar::Application.config.template_set
       places = Place.chapman_code(county).data_present.not_disabled.all.order_by( place_name: 1)
       places.each do |place|
-        if place.churches.exists? && place.search_records.exists?
-          county_response[place.id] = "#{place.place_name} (#{ChapmanCode::name_from_code(place.chapman_code)})"
-        end
+        county_response[place.id] = "#{place.place_name} (#{ChapmanCode::name_from_code(place.chapman_code)})"
       end
     else #do not inspect churches for freecen
       #places = Place.where(:chapman_code => county).asc(:place_name)
       places = Place.chapman_code(county).data_present.not_disabled.all.order_by( place_name: 1)
       places.each do |place|
-        if place.data_present
-          cen_years_with_data = ""
-          Freecen::CENSUS_YEARS_ARRAY.each do |yy|
-            if !place.cen_data_years.nil? && place.cen_data_years.include?(yy)
-              if(""==cen_years_with_data)
-                cen_years_with_data += " #{yy}"
-              else
-                cen_years_with_data += ",'#{yy}"
-              end
+        cen_years_with_data = ""
+        Freecen::CENSUS_YEARS_ARRAY.each do |yy|
+          if !place.cen_data_years.nil? && place.cen_data_years.include?(yy)
+            if(""==cen_years_with_data)
+              cen_years_with_data += " #{yy}"
+            else
+              cen_years_with_data += ",'#{yy}"
             end
           end
-          county_response[place.id] = "#{place.place_name} (#{place.chapman_code}#{cen_years_with_data})"
         end
+        county_response[place.id] = "#{place.place_name} (#{place.chapman_code}#{cen_years_with_data})"
       end
     end
-    cache = PlaceCache.new
-    cache.update_attributes({ :chapman_code => county, :places_json => county_response.to_json})
+    cache = PlaceCache.new(:chapman_code => county, :places_json => county_response.to_json)
     cache.save!
   end
 
