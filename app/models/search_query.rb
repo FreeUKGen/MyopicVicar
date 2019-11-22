@@ -34,6 +34,7 @@ class SearchQuery
   field :first_name, type: String # , :required => false
   field :last_name, type: String # , :required => false
   field :spouse_first_name, type: String # , :required => false
+  field :spouses_mother_surname, type: String
   field :mother_last_name, type: String # , :required => false
   field :age_at_death, type: String # , :required => false
   field :date_of_birth, type: String # , :required => false

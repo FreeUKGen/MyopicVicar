@@ -89,18 +89,13 @@
         <%= check_box_tag 'hello', true, false %>
         <%= content_text(:small,'Identifiable spouses only') %>
       </div>
-            
+
       <div class="grid__item one-quarter lap-one-half palm-one-whole">
-        <label class="ttip" for="last_name" tabindex="0">
-          Spouses/Mothers surname
-          <i class="fa fa-info-circle"></i>
-          <span class="ttip__text">Use upper- or lower-case. If you do not enter a surname (last-name) you <em>must</em> enter a forename, select one county and choose a single record type</span>
-        </label>
-        <% if @search_query.last_name.nil? %>
-          <input id="last_name" name="search_query[mother_last_name]" type="text" class="text-input">
-        <% else %>
-          <input id="last_name" name="search_query[mother_last_name]" type="text" class="text-input" value="<%=@search_query.mother_last_name%>">
-        <% end %>
+        <div class='labels'>
+          <%= label_tag 'spouses_mother_surname', 'Spouses/Mothers surname', class: "ttip" %>
+          <%= label_tag 'spouses_mother_surname', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '0', title: info_tag_text[:firstname]%>
+        </div>
+        <%= text_field_tag 'search_query[spouses_mother_surname]', set_value(@search_query.spouses_mother_surname), class: 'text-input', placeholder: '', tabindex: '1'%>
       </div>
 
       <div class="grid__item one-quarter lap-one-half palm-one-whole">
@@ -202,6 +197,9 @@ $(document).ready(function(){
   $('.checkboxtag, .checkAll').change(function() {
     if ($(".death").is(":checked") && !$('.birth, .marriage, .checkAll').is(':checked')) {
       $('#age_at_death').prop('disabled', false)
+      $('#search_query_spouses_mother_surname').val('')
+      $('#search_query_spouses_mother_surname').prop('disabled', true)
+      $('#search_query_spouses_mother_surname').prop('placeholder', '')
       $('#age_at_death').prop('placeholder', 'Enter Age at Death or date of birth')
     }  else {
       $('#age_at_death').val('')
@@ -211,12 +209,23 @@ $(document).ready(function(){
     }
   });
 
-  if ($(".death").is(":checked") && !$('.birth, .marriage, .checkAll').is(':checked')) {
-      $('#age_at_death').prop('disabled', false)
-      $('#age_at_death').prop('placeholder', 'Enter Age at Death or date of birth')
+  $('.checkboxtag, .checkAll').change(function() {
+    if ($(".birth").is(":checked") && !$('.death, .marriage, .checkAll').is(':checked')) {
+      $('#search_query_spouses_mother_surname').prop('disabled', false)
+      $('#search_query_spouses_mother_surname').prop('placeholder', "Enter Mother's surname here")
+    }  else if ($(".marriage").is(":checked") && !$('.birth, .death, .checkAll').is(':checked')) {
+      $('#search_query_spouses_mother_surname').prop('disabled', false)
+      $('#search_query_spouses_mother_surname').prop('placeholder', "Enter Spouse's surname here")
     }
+      else {
+      $('#search_query_spouses_mother_surname').val('')
+      $('#search_query_spouses_mother_surname').prop('disabled', true)
+      $('#search_query_spouses_mother_surname').prop('placeholder', '')
 
- $('#search_form_submit').click(function() {
+    }
+  });
+
+  $('#search_form_submit').click(function() {
  // if($('#age_at_death').val()) {
     // if ($('#bmd_record_type_death').is(':checked') && $('#bmd_record_type_birth').is(':checked'))  {
        // $('#bmd_record_type_death, #bmd_record_type_birth')[0].setCustomValidity('Please choose either birth or death record type if Date of birth / Death age is provided');
