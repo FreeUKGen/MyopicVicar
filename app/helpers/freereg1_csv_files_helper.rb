@@ -1,7 +1,5 @@
 module Freereg1CsvFilesHelper
   def coordinator_index_breadcrumbs
-    p 'coordinator_index_breadcrumbs'
-    p session[:place_name]
     if session[:place_name].present?
       breadcrumb :files
     elsif session[:syndicate] && session[:sorted_by] == '; selects files with zero date records then alphabetically by userid and file name'
