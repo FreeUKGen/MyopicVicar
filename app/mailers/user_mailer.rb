@@ -378,7 +378,7 @@ class UserMailer < ActionMailer::Base
   def adjust_email_recipients(message)
     if @userid.active && @userid.email_address_valid && @userid.registration_completed(@userid) && !@userid.no_processing_messages
       if @county_coordinator == @syndicate_coordinator
-        mail(:to => @userid_email, :cc => syndicate_coordinator_email, :subject => message)
+        mail(:to => @userid_email, :cc => @syndicate_coordinator_email, :subject => message)
       else
         mail(:to => @userid_email, :cc => [@syndicate_coordinator_email, @county_coordinator_email], :subject => message)
       end
