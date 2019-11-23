@@ -8,7 +8,7 @@
       <p>
         <%= f.input :place_name, { :as => :select,  :collection => @places, :label => "Select Place in which Church is to be located :", :required => true,:input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 10 } }%>
       <% end %>
-      <%= f.button :submit,  'Relocate' %>
+      <%= f.button :submit,  'Relocate',  :button_html => {:class => "ladda-button" , "data-style" => "contract" ,"data-color" => appname_downcase , "data-size" => "s", "data-spinner-color" => "#ffffff"} %>
     <% end %>
     <p style="color:red">Please note you are changing the name in a large number of records (<%=@records%>) the processing time could be several minutes depending upon the number of batches affected. <b>Please wait for the process to complete.</b></p>
   </section>

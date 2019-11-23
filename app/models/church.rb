@@ -194,46 +194,52 @@ class Church
     end
   end
 
-  def propogate_place_change(old_place,old_church_name)
-    new_place = self.place
+  def propogate_place_change(new_place, old_place)
     new_place_name = new_place.place_name
+    new_place_id = new_place.id
+    new_chapman_code = new_place.chapman_code
     old_place_name = old_place.place_name
-    old_location= Array.new
-    new_location= Array.new
-    old_location[0] = "#{old_place_name} (#{self.church_name})"
-    new_location[0] = "#{new_place_name} (#{self.church_name})"
-    all_registers = self.registers
+    old_location = Array.new
+    new_location = Array.new
+    old_location[0] = "#{old_place_name} (#{church_name})"
+    new_location[0] = "#{new_place_name} (#{church_name})"
+    all_registers = registers
     all_registers.each do |register|
       type = register.register_type
       old_location[1] = " [#{RegisterType.display_name(type)}]"
       new_location[1] = " [#{RegisterType.display_name(type)}]"
-      result = SearchRecord.collection.update_many({place_id: old_place._id, location_names: old_location},{"$set" => {"location_names" => new_location,:place_id => new_place.id, :chapman_code => new_place.chapman_code}})
       all_files = register.freereg1_csv_files
       all_files.each do |file|
-        result = Freereg1CsvEntry.collection.find({freereg1_csv_file_id: file.id}).hint("freereg1_csv_file_id_1").update_many({"$set" => {:place => new_place_name, :church_name => self.church_name}})
-        file.update_attributes(:place => new_place_name, :church_name => self.church_name)
+        records = file.freereg1_csv_entries.count
+        file.freereg1_csv_entries.each do |entry|
+          record = entry.search_record
+          record.update(location_names: new_location, place_id: new_place_id, chapman_code: new_chapman_code )
+          entry.update(county: new_chapman_code, place: new_place_name)
+        end
+        file.update(place: new_place_name, place_name: new_place_name, county: new_chapman_code)
       end
+      register.update(last_amended: Time.zone.today.strftime("%e %b %Y"))
     end
   end
 
   def relocate_church(param)
-    unless param[:place_name].blank? || param[:place_name] == self.place.place_name
-      old_church_name = self.church_name
-      old_place = self.place
+    if param[:place_name].blank? || param[:place_name] == self.place.place_name
+      [false, 'No change in place']
+    else
+      old_place = place
       chapman_code = old_place.chapman_code
-      new_place = Place.where(:chapman_code => chapman_code, :place_name => param[:place_name]).first
+      new_place = Place.find_by(chapman_code: chapman_code, place_name: param[:place_name])
       param[:county] = chapman_code if param[:county].blank?
-      self.update_attributes(:place_id => new_place._id, :place_name => param[:place_name])
-      new_place.update_attribute(:data_present, true) if new_place.search_records.exists? && new_place.data_present == false
-      new_place.recalculate_last_amended_date
+      update(place_id: new_place.id, place_name: param[:place_name])
+      propogate_place_change(new_place, old_place)
+      update(place_id: new_place.id, place_name: param[:place_name], last_amended: Time.zone.today.strftime("%e %b %Y"))
       new_place.calculate_place_numbers
-      self.calculate_church_numbers
-      return [false, "Error in save of church; contact the webmaster"] if self.errors.any?
+      old_place.reload
+      old_place.calculate_place_numbers
+      [false, 'Error in save of church; contact the webmaster'] if self.errors.any?
+
+      PlaceCache.refresh_cache(new_place) unless new_place.blank?
+      [true, '']
     end
-    self.propogate_place_change(old_place,old_church_name)
-    PlaceCache.refresh_cache(new_place) unless new_place.blank?
-    return [true, ""]
   end
-
-
 end
