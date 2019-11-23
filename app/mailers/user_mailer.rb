@@ -56,7 +56,7 @@ class UserMailer < ActionMailer::Base
     @appname = appname
     @message = File.read(message)
     @userid, @userid_email = user_email_lookup(user)
-    @batch = batch
+    @batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
     @syndicate_coordinator, @syndicate_coordinator_email = syndicate_coordinator_email_lookup(@userid)
     @county_coordinator, @county_coordinator_email = county_coordinator_email_lookup(batch, @userid)
     subject = "#{@userid.userid}/#{batch} processed at #{Time.now} with #{@batch.error unless @batch.nil?} errors over period #{@batch.datemin unless @batch.nil?}-#{@batch.datemax unless @batch.nil?}"
