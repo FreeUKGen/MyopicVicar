@@ -56,6 +56,7 @@ class UserMailer < ActionMailer::Base
     @appname = appname
     @message = File.read(message)
     @userid, @userid_email = user_email_lookup(user)
+    @batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
     @syndicate_coordinator, @syndicate_coordinator_email = syndicate_coordinator_email_lookup(@userid)
     @county_coordinator, @county_coordinator_email = county_coordinator_email_lookup(batch, @userid)
     subject = "#{@userid.userid}/#{batch} processed at #{Time.now} with #{@batch.error unless @batch.nil?} errors over period #{@batch.datemin unless @batch.nil?}-#{@batch.datemax unless @batch.nil?}"
@@ -378,7 +379,7 @@ class UserMailer < ActionMailer::Base
   def adjust_email_recipients(message)
     if @userid.active && @userid.email_address_valid && @userid.registration_completed(@userid) && !@userid.no_processing_messages
       if @county_coordinator == @syndicate_coordinator
-        mail(:to => @userid_email, :cc => syndicate_coordinator_email, :subject => message)
+        mail(:to => @userid_email, :cc => @syndicate_coordinator_email, :subject => message)
       else
         mail(:to => @userid_email, :cc => [@syndicate_coordinator_email, @county_coordinator_email], :subject => message)
       end

@@ -9,6 +9,7 @@ class Place
   require 'net/http'
   require 'master_place_name'
   require 'register_type'
+  require 'freereg_validations'
 
 
   field :country, type: String
@@ -72,7 +73,7 @@ class Place
   index({ place_name: 1, grid_reference: 1 })
   index({ disabled: 1 })
   index({ source: 1})
-  index({ chapman_code: 1, data_present: 1,disabled: 1,error_flag: 1},{name: "chapman_data_present_disabled_error_flag"})
+  index({ chapman_code: 1, data_present: 1,disabled: 1,error_flag: 1}, {name: "chapman_data_present_disabled_error_flag"})
   index({ chapman_code: 1, _id: 1, disabled: 1, data_present: 1}, {name: "chapman_place_disabled_data_present"})
   index({ location: "2dsphere" }, { min: -200, max: 200 })
 
@@ -240,8 +241,8 @@ class Place
     transcriber_hash = FreeregContent.setup_transcriber_hash
     datemax = FreeregValidations::YEAR_MIN.to_i
     datemin = FreeregValidations::YEAR_MAX.to_i
-    last_amended = Date.new(1998,1,1)
-    individual_churches = self.churches
+    last_amended = Date.new(1998, 1, 1)
+    individual_churches = churches
     if individual_churches.present?
       individual_churches.each do |church|
         if church.records.present? && church.records.to_i > 0
@@ -258,8 +259,17 @@ class Place
     datemax = '' if datemax == FreeregValidations::YEAR_MIN
     datemin = '' if datemin == FreeregValidations::YEAR_MAX
     last_amended = last_amended.to_datetime == DateTime.new(1998, 1, 1) ? '' : last_amended.strftime("%d %b %Y")
-    self.update_attributes(records: records, datemin: datemin, datemax: datemax, daterange: total_hash, transcribers: transcriber_hash["transcriber"],
-                           last_amended: last_amended)
+    Rails.logger.warn "#{records}"
+    Rails.logger.warn "#{transcriber_hash["transcriber"]}"
+    Rails.logger.warn "#{total_hash}"
+    if records.to_i > 0
+      update(data_present: true, records: records, datemin: datemin, datemax: datemax, daterange: total_hash, transcribers: transcriber_hash["transcriber"],
+             last_amended: last_amended)
+    else
+      update(data_present: false, records: records, datemin: datemin, datemax: datemax, daterange: total_hash, transcribers: transcriber_hash["transcriber"],
+             last_amended: last_amended)
+    end
+    Rails.logger.warn "#{inspect}"
   end
 
   def change_grid_reference(grid)
