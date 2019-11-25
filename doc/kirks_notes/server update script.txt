@@ -25,3 +25,5 @@ sudo touch tmp/restart.txt
 *************on colobus
 sudo /root/bin/haproxy-freereg2.sh brazza enable
 sudo /root/bin/haproxy-freecen2.sh brazza enable
+
+Refinery transfer https://docs.google.com/document/d/1ozrJbHY074xYvwCB3j6NodDdPFPnWU4WySdnZCMeWUw/edit

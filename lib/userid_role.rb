@@ -114,7 +114,7 @@ module UseridRole
     'Manage Pieces' => '/freecen_pieces',
     'FreeCen Errors' => '/freecen_errors',
     'Manage FreeCen Coverage' => '/freecen_coverage/edit',
-    'FreeUKGenealogy  Policies' => '/cms/freeUKGenealogy-policies'
+    'FreeUKGenealogy  Policies' => '/cms/freeukgenealogy-policies'
   }
   USERID_MANAGER_OPTIONS = ['Select specific userid', 'Select specific email', 'Select specific surname/forename',
                             'Browse userids', 'Select Role', 'Select Secondary Role', 'Transcription Agreement Accepted',
