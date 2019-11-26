@@ -60,6 +60,8 @@ class SearchRecord
 
   field :search_date, type: String
   field :secondary_search_date, type: String
+  field :embargoed, type: Boolean, default: false
+  field :release_year, type: Integer
 
   # search fields
   embeds_many :search_names, :class_name => 'SearchName'
@@ -357,6 +359,8 @@ class SearchRecord
       search_record = entry.search_record
       new_search_record = SearchRecord.new(search_record_parameters)
       new_search_record[:freereg1_csv_entry_id] = entry.id
+      new_search_record[:embargoed] = entry.embargo_records.last.embargoed
+      new_search_record[:release_year] = entry.embargo_records.last.release_year if entry.embargo_records.last.embargoed
       new_search_record.transform
       new_search_record.digest = new_search_record.cal_digest
       if search_record.present?
@@ -368,6 +372,7 @@ class SearchRecord
       new_search_record.search_date = ' ' if new_search_record.search_date.nil?
       new_search_record.place_id = place.id
       new_search_record.chapman_code = place.chapman_code
+
       new_search_record.save
       #search_record.update_attributes(location_names: nil, record_type: nil) if search_record.present?
       search_record.destroy if search_record.present?
@@ -455,6 +460,8 @@ class SearchRecord
     string = string + add_search_dates_string
     string = string + add_search_date_string
     string = string + add_secondary_search_date_string
+    string = string + 'release_year_string' + release_year.to_s if embargoed
+    string
     md5 = OpenSSL::Digest::MD5.new
     if string.nil?
       p "#{self._id}, nil string for MD5"

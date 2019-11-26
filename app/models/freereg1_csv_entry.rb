@@ -16,6 +16,7 @@ class Freereg1CsvEntry
   include Mongoid::Document
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
+  include Mongoid::Attributes::Dynamic
   require 'freereg_validations'
   require 'record_type'
   require 'freereg_options_constants'
@@ -192,8 +193,10 @@ class Freereg1CsvEntry
 
   belongs_to :freereg1_csv_file, index: true, optional: true
 
-  before_save :add_digest, :captitalize_surnames, :check_register_type
+  embeds_many :embargo_records
 
+  before_save :add_digest, :captitalize_surnames, :check_register_type
+  accepts_nested_attributes_for :embargo_records, allow_destroy: false, reject_if: :all_blank
 
   before_destroy do |entry|
     SearchRecord.destroy_all(:freereg1_csv_entry_id => entry._id)
@@ -204,7 +207,6 @@ class Freereg1CsvEntry
   scope :zero_baptism_records, -> { where(:baptism_date.in => [nil, "","0"], :birth_date.in => [nil, "","0"]) }
   scope :zero_marriage_records, -> { where(:marriage_date.in => [nil,"","0"]) }
   scope :zero_burial_records, -> { where(:burial_date.in => [nil,"","0"]) }
-
 
   embeds_many :multiple_witnesses, cascade_callbacks: true
   accepts_nested_attributes_for :multiple_witnesses, allow_destroy: true, reject_if: :all_blank, limit: 8

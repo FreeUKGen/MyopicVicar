@@ -8,11 +8,7 @@
   <div style="clear:both;"> </div>
   <br>
 <% end %>
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
-  </div>
-<% end %>
+<%= render 'flash_notice' %>
 <section id="search-detail" >
   <%= render 'entry_detail' %>
 </section>
