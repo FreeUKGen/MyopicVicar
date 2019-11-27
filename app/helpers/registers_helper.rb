@@ -1,11 +1,14 @@
 module RegistersHelper
   def which_embargo_rule_link(rules)
-    if rules
-      link_to 'Embargo Rules', embargo_rules_path(county: @county, place: @place, church: @church, register: @register),
-        method: :get, :class => "btn   btn--small"
-    else
-      link_to 'Create New Embargo Rule', new_embargo_rule_path(county: @county, place: @place, church: @church, register: @register),
-        method: :get, :class => "btn   btn--small"
+    if @user.person_role == 'country_coordinator' || @user.person_role == 'county_coordinator' || @user.person_role == 'system_administrator' ||
+        @user.person_role == 'project_director'
+      if rules
+        link_to 'Embargo Rules', embargo_rules_path(county: @county, place: @place, church: @church, register: @register),
+          method: :get, :class => "btn   btn--small"
+      else
+        link_to 'Create New Embargo Rule', new_embargo_rule_path(county: @county, place: @place, church: @church, register: @register),
+          method: :get, :class => "btn   btn--small"
+      end
     end
   end
 
