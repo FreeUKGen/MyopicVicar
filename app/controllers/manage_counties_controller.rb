@@ -30,7 +30,7 @@ class ManageCountiesController < ApplicationController
     chapman_code = session[:chapman_code]
     pid1 = Kernel.spawn("rake  reports:report_on_files_for_each_register_church_place[#{chapman_code}, #{userid}]")
 
-    Process.detach pid
+    Process.detach pid1
     redirect_back(fallback_location: new_manage_resource_path, notice: 'Request submitted') && return
   end
 
