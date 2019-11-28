@@ -28,7 +28,7 @@ class ManageCountiesController < ApplicationController
     get_user_info_from_userid
     userid = @user.userid
     chapman_code = session[:chapman_code]
-    pid1 = Kernel.spawn("rake  reports:report_on_files_for_each_register_church_place[#{chapman_code}, #{userid}]")
+    pid1 = Kernel.spawn("bundle exec rake reports:report_on_files_for_each_register_church_place[#{chapman_code},#{userid}] --trace")
 
     Process.detach pid1
     redirect_back(fallback_location: new_manage_resource_path, notice: 'Request submitted') && return

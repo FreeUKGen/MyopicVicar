@@ -1,9 +1,9 @@
 namespace :reports do
 
   desc "Unapproved_place_names list"
-  task :report_on_files_for_each_register_church_place, [:chapman, :userid] => [:environment] do |t, args|
+  task :report_on_files_for_each_register_church_place, [:chapman,:userid] => [:environment] do |t, args|
     require 'report_on_files_for_each_register_church_place'
-
+    p args
     report = ReportOnFilesForEachRegisterChurchPlace.process(args.chapman)
     p userid.inspect
     user = UseridDetails.userid(args.userid)
