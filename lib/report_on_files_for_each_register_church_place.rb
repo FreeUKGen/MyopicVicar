@@ -17,7 +17,7 @@ class ReportOnFilesForEachRegisterChurchPlace
           end
         end
       else
-        result = lines_for_chapman_code(records, chapman_code)
+        result = lines_for_chapman_code(records, code)
         record << result if result.present?
       end
       record.each do |line|
