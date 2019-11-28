@@ -20,9 +20,11 @@ class ReportOnFilesForEachRegisterChurchPlace
         result = lines_for_chapman_code(records, code)
         record << result if result.present?
       end
-      record.each do |line|
-        line = line.tr('^', ',')
-        output_file.puts line
+      record.each do |result|
+        result.each do |line|
+          line = line.tr('^', ',')
+          output_file.puts line
+        end
       end
       output_file.close
       file_for_output
