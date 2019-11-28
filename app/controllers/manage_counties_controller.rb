@@ -24,6 +24,16 @@ class ManageCountiesController < ApplicationController
     redirect_to freereg1_csv_files_path
   end
 
+  def county_content_report
+    get_user_info_from_userid
+    userid = @user.userid
+    chapman_code = session[:chapman_code]
+    pid1 = Kernel.spawn("rake  reports:report_on_files_for_each_register_church_place[#{chapman_code}, #{userid}]")
+
+    Process.detach pid
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'Request submitted') && return
+  end
+
   def create
     redirect_back(fallback_location: new_manage_resource_path, notice: 'You did not selected anything') && return if params[:manage_county].blank? || params[:manage_county][:chapman_code].blank?
 

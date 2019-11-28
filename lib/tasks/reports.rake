@@ -1,5 +1,18 @@
 namespace :reports do
 
+  desc "Unapproved_place_names list"
+  task :report_on_files_for_each_register_church_place, [:chapman, :userid] => [:environment] do |t, args|
+    require 'report_on_files_for_each_register_church_place'
+
+    report = ReportOnFilesForEachRegisterChurchPlace.process(args.chapman)
+    p userid.inspect
+    user = UseridDetails.userid(args.userid)
+    p user.inspect
+    send_logs(report, user.email_address, 'place/church/register/file report is attached', 'place/church/register/file report')
+    puts "Task complete."
+  end
+
+
 
   task :check_image_availability, [:limit] => :environment do |t, args|
     require 'check_image_availability'
