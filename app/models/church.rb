@@ -213,7 +213,8 @@ class Church
         records = file.freereg1_csv_entries.count
         file.freereg1_csv_entries.each do |entry|
           record = entry.search_record
-          record.update(location_names: new_location, place_id: new_place_id, chapman_code: new_chapman_code )
+          logger.warn("FREEREG:PLACE:PROPAGATION entry #{entry.id} has no search_record ") if record.blank?
+          record.update(location_names: new_location, place_id: new_place_id, chapman_code: new_chapman_code) if record.present?
           entry.update(county: new_chapman_code, place: new_place_name)
         end
         file.update(place: new_place_name, place_name: new_place_name, county: new_chapman_code)

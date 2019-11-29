@@ -259,9 +259,6 @@ class Place
     datemax = '' if datemax == FreeregValidations::YEAR_MIN
     datemin = '' if datemin == FreeregValidations::YEAR_MAX
     last_amended = last_amended.to_datetime == DateTime.new(1998, 1, 1) ? '' : last_amended.strftime("%d %b %Y")
-    Rails.logger.warn "#{records}"
-    Rails.logger.warn "#{transcriber_hash["transcriber"]}"
-    Rails.logger.warn "#{total_hash}"
     if records.to_i > 0
       update(data_present: true, records: records, datemin: datemin, datemax: datemax, daterange: total_hash, transcribers: transcriber_hash["transcriber"],
              last_amended: last_amended)
@@ -269,7 +266,6 @@ class Place
       update(data_present: false, records: records, datemin: datemin, datemax: datemax, daterange: total_hash, transcribers: transcriber_hash["transcriber"],
              last_amended: last_amended)
     end
-    Rails.logger.warn "#{inspect}"
   end
 
   def change_grid_reference(grid)
