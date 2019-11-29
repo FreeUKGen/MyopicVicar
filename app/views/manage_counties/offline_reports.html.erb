@@ -1,0 +1,7 @@
+<% breadcrumb :offline_reports, @county%>
+<% title "Offline Reports for Manage County" %>
+<%= render partial: 'header' %>
+<%= render partial: 'flash_notice' %>
+<div style="text-align: center">
+  <%= link_to 'County Content Report', county_content_report_manage_counties_path(@chapman_code, @user.userid), method: :get,data: { confirm: 'Are you sure you want this report?' }, :class => "btn  btn--small"%>
+</div>

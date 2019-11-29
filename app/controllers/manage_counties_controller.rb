@@ -228,6 +228,12 @@ class ManageCountiesController < ApplicationController
     end
   end
 
+  def offline_reports
+    get_user_info_from_userid
+    @chapman_code = session[:chapman_code]
+    @county = session[:county]
+  end
+
   def place_range
     session[:character] = params[:params] if params[:params].present?
     redirect_back(fallback_location: new_manage_resource_path, notice: 'You did not make a range selection') && return if session[:character].blank?

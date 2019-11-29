@@ -275,7 +275,8 @@ MyopicVicar::Application.routes.draw do
   get  'manage_counties/selection',  :to => 'manage_counties#display_by_ascending_uploaded_date', constraints: ManageCountiesAscendingConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#review_a_specific_batch', constraints: ManageCountiesReviewBatchConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#manage_sources', constraints:ManageCountiesManageImagesConstraint
-  get  'manage_counties/selection',  :to => 'manage_counties#county_content_report', constraints:ManageCountiesCountyContentReportConstraint
+  get  'manage_counties/selection',  :to => 'manage_counties#offline_reports', constraints:ManageCountiesOfflineReportsConstraint
+  get  'manage_counties/county_content_report', :to =>'manage_counties#county_content_report', :as => :county_content_report_manage_counties
   get  'manage_counties/manage_image_group(.:format)', :to => 'manage_counties#manage_image_group', :as => :manage_image_group_manage_county
   get  'manage_counties/manage_unallocated_image_group(.:format)', :to => 'manage_counties#manage_unallocated_image_group', :as => :manage_unallocated_image_group_manage_county
   get  'manage_counties/manage_allocate_request_image_group(.:format)', :to => 'manage_counties#manage_allocate_request_image_group', :as => :manage_allocate_request_image_group_manage_county
