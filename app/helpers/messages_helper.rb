@@ -691,6 +691,7 @@ module MessagesHelper
   end
 
   def source(message)
+    source = ''
     case message.nature
     when 'syndicate'
       source = 'Syndicate'

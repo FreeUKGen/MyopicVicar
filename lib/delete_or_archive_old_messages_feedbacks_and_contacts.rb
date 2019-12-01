@@ -14,17 +14,18 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       @archive_records_less_than = DateTime.now - days_until_archive.days
       @report_records_less_than = @archive_records_less_than + 30.days
 
-      title = "Running the message clean up process on #{DateTime.now.strftime('%Y_%m_%d')} with #{days_until_archive} days until archive
+      title = "Running the message clean up process on #{DateTime.now} with #{days_until_archive} days until archive
     and #{days_until_delete} days until deletion."
       action_message = "To avoid cluttering the system with stale communications we have a 4 stage process.
-    1) alerting that a communication is to be archived the next next time this clean up process runs.
-    2) that it has been archived today by this process.
-    3) that it will be deleted in the next process
-    4) that it has been deleted by this process.
+    1) A communication is to be archived the next next time this clean up process runs. Older than #{@report_records_less_than.strftime("%d %b %Y")}.
+    2) It has been archived today by this process. Older than #{@archive_records_less_than.strftime("%d %b %Y")}.
+    3) It will be deleted in the next process. Older than #{@report_delete_less_than.strftime("%d %b %Y")}.
+    4) It has been deleted by this process. Older than #{@delete_records_less_than.strftime("%d %b %Y")}.
     You may of course archive a communication earlier if you wish.
-    You may also set its KEEP status and the communication will not be deleted."
+    You may also set its KEEP status and the communication will not be deleted.
+    We also provide a list of those messages that you have asked be kept"
       message_file.puts title
-
+      message_file.puts action_message
       stage = 'Feedback processing'
       message_file.puts stage
       process_feedbacks(stage, title, action_message)
@@ -48,6 +49,13 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       stage = 'Communications processing'
       message_file.puts stage
       process_individual_messages(stage, title, action_message)
+
+      stage = 'Clean up replies in Userid messages'
+      message_file.puts stage
+
+      UseridDetail.each do |user|
+        user.remove_deleted_messages
+      end
     end
 
     def process_feedbacks(stage, title, action_message)
@@ -91,6 +99,13 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
           record.update_attribute(:archived, true)
         end
       end
+      stage = 'Feedbacks that are specified as being kept'
+      feedback_message_file.puts stage
+      Feedback.keep(true).each do |record|
+        send_email = true
+        feedback_message_file.puts "#{record.identifier}, created on #{record.created_at}"
+      end
+
       feedback_message_file.close
       send_logs(send_email, file_for_feedback_messages, feedback_message_file, 'Feedback', nil)
     end
@@ -136,6 +151,15 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
           record.update_attribute(:archived, true)
         end
       end
+      stage = 'Contacts that are specified as being kept'
+      contact_message_file.puts stage
+      Contact.keep(true).each do |record|
+        if record.contact_type != 'Data Problem'
+          send_email = true
+          contact_message_file.puts "#{record.identifier}, created on #{record.created_at}"
+        end
+      end
+
       contact_message_file.close
       send_logs(send_email, file_for_contact_messages, contact_message_file, 'Contact', nil)
     end
@@ -182,6 +206,13 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
             record.update_attribute(:archived, true)
           end
         end
+        stage = 'Data Problem Contacts that are specified as being kept'
+        dp_message_file.puts stage
+        Contact.chapman_code(chapman).keep(true).each do |record|
+          send_email = true
+          dp_message_file.puts "#{record.identifier}, created on #{record.created_at}"
+        end
+
         dp_message_file.close
         send_logs(send_email, file_for_dp_messages, dp_message_file, 'Data Problem', chapman)
       end
@@ -228,6 +259,13 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
           record.update_attribute(:archived, true)
         end
       end
+      stage = 'Active general messages that are specified as being kept'
+      message_message_file.puts stage
+      Message.general.non_reply_messages.keep(false).each do |record|
+        send_email = true
+        message_message_file.puts "#{record.identifier}, created on #{record.created_at}"
+      end
+
       message_message_file.close
       send_logs(send_email, file_for_message_messages, message_message_file, 'General Message', nil)
     end
@@ -274,6 +312,13 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
             record.update_attribute(:archived, true)
           end
         end
+        stage = 'Syndicate messages being kept'
+        syndicate_message_file.puts stage
+        Message.syndicate(syndicate).non_reply_messages.keep(true).each do |record|
+          send_email = true
+          syndicate_message_file.puts "#{record.identifier}, created on #{record.created_at}"
+        end
+
         syndicate_message_file.close
         send_logs(send_email, file_for_syndicate_messages, syndicate_message_file, 'Syndicate', syndicate)
       end
@@ -321,6 +366,13 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
             record.update_attribute(:archived, true)
           end
         end
+        stage = 'Individual communications being kept'
+        individual_message_file.puts stage
+        Message.userid(individual).non_reply_messages.keep(true).each do |record|
+          send_email = true
+          individual_message_file.puts "#{record.identifier}, created on #{record.created_at}"
+        end
+
         individual_message_file.close
         send_logs(send_email, file_for_individual_messages, individual_message_file, 'Individual', individual)
       end
