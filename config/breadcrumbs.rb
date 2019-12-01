@@ -176,8 +176,13 @@ crumb :show_record do |entry, file|
 end
 crumb :edit_record do |entry, file|
   link 'Edit Record', edit_freereg1_csv_entry_path(entry)
-  parent :show_record, entry,file
+  parent :show_record, entry, file
 end
+crumb :edit_embargo_record do |entry, file|
+  link 'Edit Embargo Record', edit_embargo_freereg1_csv_entry_path(entry)
+  parent :show_record, entry, file
+end
+
 crumb :correct_error_record do |entry, file|
   link 'Correct Error Record', error_freereg1_csv_entry_path(entry._id)
   parent :error_records, file
@@ -1039,9 +1044,9 @@ crumb :show_zero_year_entry do |entry, file|
   parent :listing_of_zero_year_entries, file
 end
 
-crumb :edit_zero_year_entry do |entry,file|
+crumb :edit_zero_year_entry do |entry, file|
   link 'Edit Zero Year Entry', edit_freereg1_csv_entry_path(entry)
-  parent :show_zero_year_entry, entry,file
+  parent :show_zero_year_entry, entry, file
   parent :listing_of_zero_year_entries, file if request.referer.match(/zero_year/) unless request.referer.nil?
 end
 

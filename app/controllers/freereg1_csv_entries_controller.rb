@@ -140,6 +140,22 @@ class Freereg1CsvEntriesController < ApplicationController
     @freereg1_csv_entry.multiple_witnesses.build if @freereg1_csv_entry.multiple_witnesses.count < FreeregOptionsConstants::MAXIMUM_WINESSES
   end
 
+  def edit_embargo
+    @freereg1_csv_entry = Freereg1CsvEntry.find(params[:id]) if params[:id].present?
+
+    unless Freereg1CsvEntry.valid_freereg1_csv_entry?(@freereg1_csv_entry)
+      message = 'The entry was not correctly linked. Have your coordinator contact the web master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
+    display_info
+
+    @embargo_permitted = (@user.person_role == 'system_administrator' || @user.person_role == 'executive_director') ? true : false
+    @freereg1_csv_entry.embargo_records.build if @embargo_permitted
+    @date = DateTime.now
+    session[:freereg1_csv_entry_id] = @freereg1_csv_entry._id
+    session[:zero_listing] = true if params[:zero_listing].present?
+  end
+
   def error
     # This prepares an error file to be edited by the entry edit/create process.
     # The error file was created by the csv file processor
@@ -194,6 +210,7 @@ class Freereg1CsvEntriesController < ApplicationController
     @zero_year = 'true' if params[:zero_listing] == 'true'
     display_info
     @embargoed = @freereg1_csv_entry.embargo_records.present? ? true : false
+    @embargo_permitted = (@user.person_role == 'system_administrator' || @user.person_role == 'executive_director') ? true : false
     session[:freereg1_csv_entry_id] = @freereg1_csv_entry._id
     @search_record = @freereg1_csv_entry.search_record
     @forenames = []

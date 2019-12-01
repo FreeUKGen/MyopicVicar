@@ -338,6 +338,7 @@ MyopicVicar::Application.routes.draw do
 
   resources :toponyms
 
+  get 'freereg1_csv_entries/:id/edit_embargo(.:format)', :to => 'freereg1_csv_entries#edit_embargo', :as => :edit_embargo_freereg1_csv_entry
   get 'freereg1_csv_entries/:id/error(.:format)', :to => 'freereg1_csv_entries#error', :as => :error_freereg1_csv_entry
   resources :freereg1_csv_entries
 

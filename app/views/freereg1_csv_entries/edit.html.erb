@@ -2,7 +2,7 @@
 <% breadcrumb :edit_zero_year_record,  @freereg1_csv_entry,@freereg1_csv_file if params[:zero_record] == "true" %>
 <% breadcrumb :edit_zero_year_entry,  @freereg1_csv_entry,@freereg1_csv_file if params[:zero_listing] == "true"%>
 <p style="text-align: center">Editing record <b><%= @freereg1_csv_entry.file_line_number %></b> for batch: <b><%= @freereg1_csv_file_name %></b> (<%= @file_owner %>) in <b><%= @register_name %></b> of <b> <%= @church_name%></b> in <b><%= @place_name %></b> of <b><%= @county %></b></p>
-<div  style="text-align: center">  </div>
+<div  style="text-align: center">  <%= link_to 'Edit Embargo',  edit_embargo_freereg1_csv_entry_path(@freereg1_csv_entry, "zero_record" => @get_zero_year_records, "zero_listing" => @zero_year), method: :get, :class => "btn btn--small" if @embargo_permitted %> </div>
 <br>
 <%= render 'flash_notice' %>
 <% case @freereg1_csv_file.record_type %>

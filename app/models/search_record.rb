@@ -359,8 +359,8 @@ class SearchRecord
       search_record = entry.search_record
       new_search_record = SearchRecord.new(search_record_parameters)
       new_search_record[:freereg1_csv_entry_id] = entry.id
-      new_search_record[:embargoed] = entry.embargo_records.last.embargoed
-      new_search_record[:release_year] = entry.embargo_records.last.release_year if entry.embargo_records.last.embargoed
+      new_search_record[:embargoed] = entry.embargo_records.last.embargoed if entry.embargo_records.present?
+      new_search_record[:release_year] = entry.embargo_records.last.release_year if entry.embargo_records.present?
       new_search_record.transform
       new_search_record.digest = new_search_record.cal_digest
       if search_record.present?

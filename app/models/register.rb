@@ -31,7 +31,7 @@ class Register
   belongs_to :church, index: true
 
   has_many :sources, dependent: :restrict_with_error # includes origin server of images
-  has_many :embargo_rules, dependent: :restrict_with_error
+  has_many :embargo_rules
 
   index({ church_id: 1, register_name: 1})
   index({ register_name: 1})

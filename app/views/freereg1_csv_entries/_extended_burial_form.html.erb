@@ -26,19 +26,9 @@
   <%= f.input :record_type, :input_html => { :disabled => true  } %>
   <%= f.input :line_id, :input_html => { :disabled => true }%>
   <%= f.input :file_line_number, :input_html => { :disabled => true } %>
-  <% if @embargo_permitted %>
-    <div  style="text-align: center"><b> History of the embargo status</b></div >
-    <%= f.simple_fields_for :embargo_records do |m| %>
-      <%= m.input :embargoed , collection: [true,false],:input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 2} %>
-      <%= m.input :why, :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } %>
-      <%= m.input :release_year, :input_html => {:class => " simple_form_bgcolour  ", :size => 5} %>
-      <%= m.hidden_field :when, :value => @date %>
-      <%= m.hidden_field :who, :value => @user.userid %>
-    <% end %>
-    <%= f.hidden_field :register_type, :value=>@register_type %>
-    <%= f.hidden_field :county, :value=>@chapman_code %>
-    <%= f.hidden_field :place, :value=>@place_name %>
-    <%= f.hidden_field :church_name, :value=>@church_name %>
-    <%= f.button :submit, 'Submit'   %>
-  <% end %>
+  <%= f.hidden_field :register_type, :value=>@register_type %>
+  <%= f.hidden_field :county, :value=>@chapman_code %>
+  <%= f.hidden_field :place, :value=>@place_name %>
+  <%= f.hidden_field :church_name, :value=>@church_name %>
+  <%= f.button :submit, 'Submit'   %>
 <% end %>

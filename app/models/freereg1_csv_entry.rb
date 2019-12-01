@@ -191,25 +191,27 @@ class Freereg1CsvEntry
   field :record_type, type: String
   field :processed_date, type: DateTime
 
+  validate :errors_in_fields
+
   belongs_to :freereg1_csv_file, index: true, optional: true
 
+  embeds_many :multiple_witnesses, cascade_callbacks: true
   embeds_many :embargo_records
+  has_one :search_record, dependent: :restrict_with_error
 
   before_save :add_digest, :captitalize_surnames, :check_register_type
-  accepts_nested_attributes_for :embargo_records, allow_destroy: false, reject_if: :all_blank
-
+  after_validation :process_embargo
   before_destroy do |entry|
     SearchRecord.destroy_all(:freereg1_csv_entry_id => entry._id)
   end
 
-  has_one :search_record
+
+  accepts_nested_attributes_for :embargo_records, allow_destroy: false, reject_if: :all_blank
+  accepts_nested_attributes_for :multiple_witnesses, allow_destroy: true, reject_if: :all_blank, limit: 8
 
   scope :zero_baptism_records, -> { where(:baptism_date.in => [nil, "","0"], :birth_date.in => [nil, "","0"]) }
   scope :zero_marriage_records, -> { where(:marriage_date.in => [nil,"","0"]) }
   scope :zero_burial_records, -> { where(:burial_date.in => [nil,"","0"]) }
-
-  embeds_many :multiple_witnesses, cascade_callbacks: true
-  accepts_nested_attributes_for :multiple_witnesses, allow_destroy: true, reject_if: :all_blank, limit: 8
 
   index({ freereg1_csv_file_id: 1, year: 1 }, { name: 'freereg1_csv_file_id_year' })
   index({freereg1_csv_file_id: 1,file_line_number:1})
@@ -224,8 +226,6 @@ class Freereg1CsvEntry
   index({bride_forename: 1})
   index({bride_father_forename: 1})
   index({"multiple_witnesses.witness_forename": 1})
-
-  validate :errors_in_fields
 
   class << self
     def id(id)
@@ -752,6 +752,28 @@ class Freereg1CsvEntry
     return  order, array_of_entries, json_of_entries
   end
 
+  def process_embargo
+    p 'process_embargo'
+    p self
+    return if error_flag == 'true'
+    embargoes = self.freereg1_csv_file.register.embargo_rules
+    p embargoes
+    check_embargo = embargoes.present? ? true : false
+    p check_embargo
+    return unless check_embargo
+
+    rule = embargoes.where(record_type: record_type, period_type: 'period').first
+    p rule
+    p year
+    p DateTime.now.year.to_i
+    return if year.present? && DateTime.now.year.to_i > rule.period.to_i + year.to_i
+
+    release = rule.period.to_i + year.to_i if year.present?
+    p release
+    self.embargo_records = [EmbargoRecord.new(embargoed: true, who: 'register_rule', why: rule.reason, when: DateTime.now, release_year: rule.period, release_date: release)]
+    p self.embargo_records
+  end
+
   def same_location(record,file)
     success = true
     record_id = record.freereg1_csv_file_id
@@ -769,6 +791,11 @@ class Freereg1CsvEntry
   end
 
   def errors_in_fields
+    embargoes = self.freereg1_csv_file.register.embargo_rules
+    p 'errors_in_fields'
+    p embargoes
+    check_embargo = embargoes.present? ? true : false
+    p check_embargo
     unless FreeregValidations.cleantext(self.register_entry_number)
       errors.add(:register_entry_number, "Invalid characters")
       self.error_flag = "true"
@@ -1000,6 +1027,12 @@ class Freereg1CsvEntry
         errors.add(:contract_date, "Invalid date")
         self.error_flag = "true"
       end
+      if check_embargo
+        rule = embargoes.where(record_type: 'ma', period_type: 'period').first
+        p rule
+        errors.add(:marriage_date, 'Cannot compute end of embargo as there is no record date') if rule.present? && year.blank?
+        self.error_flag = "true"
+      end
 
     when self.record_type =='ba'
       unless FreeregValidations.cleandate(self.birth_date)
@@ -1196,6 +1229,11 @@ class Freereg1CsvEntry
         errors.add(:witness8_surname, "Invalid characters")
         self.error_flag = "true"
       end
+      if check_embargo
+        rule = embargoes.where(record_type: 'ba', period_type: 'end').first
+        errors.add(:baptism_date, 'Cannot compute end of embargo') if rule.present? && year.blank?
+        self.error_flag = "true"
+      end
 
     when self.record_type =='bu'
       unless FreeregValidations.cleantext(self.person_age)
@@ -1268,6 +1306,11 @@ class Freereg1CsvEntry
       end
       unless FreeregValidations.cleantext(self.memorial_information)
         errors.add(:memorial_information, "Invalid characters")
+        self.error_flag = "true"
+      end
+      if check_embargo
+        rule = embargoes.where(record_type: 'bu', period_type: 'end').first
+        errors.add(:burial, 'Cannot compute end of embargo') if rule.present? && year.blank?
         self.error_flag = "true"
       end
     else
