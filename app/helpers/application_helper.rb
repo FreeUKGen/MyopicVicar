@@ -626,6 +626,21 @@ module ApplicationHelper
   }
   end
 
+  def date_of_birth_or_death_age_info
+    {
+      death_age: 'The Age at Death is given as a number which is the Age at Death in years. The number may be zero indicating less than 1 year old (there are a few instances in the index of Age at Death being given in months - by suffixing with the letter "m" - but we consider these to be zero for search purposes). 
+        Because the Age at Death may not be known exactly, you can specify a range for the Age at Death, like the following:
+        56-58
+        The only restriction is that the first specified age must be less than the second.
+Alternatively, you can specify an age plus or minus a number of years and this is done using the percent symbol (%) to mean plus or minus, thus the previous example would be
+
+    57%1
+In addition to ranges being allowed in the search, some entries in the index also have a range. If the range specified in the search overlaps the range specified in the index, the entry will be shown in the search results.
+
+From June 1969 the index contains the Date of Birth instead of the Age at Death. You use the same format format for the search criterion as given above and FreeBMD works out the Date of Birth.'
+    }
+  end
+
   def content_text tag, info_text
     content_tag tag, info_text, class: 'ttip__text'
   end

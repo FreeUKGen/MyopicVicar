@@ -37,6 +37,10 @@ class SearchQuery
   field :spouses_mother_surname, type: String
   field :mother_last_name, type: String # , :required => false
   field :age_at_death, type: String # , :required => false
+  field :min_age_at_death, type: Integer # , :required => false
+  field :max_age_at_death, type: Integer # , :required => false
+  field :min_dob_at_death, type: String # , :required => false
+  field :min_dob_at_death, type: String # , :required => false
   field :date_of_birth, type: String # , :required => false
   field :match_recorded_ages_or_dates, type: Boolean # , :required => false
   field :volume, type: String # , :required => false
@@ -813,10 +817,18 @@ class SearchQuery
 
   def get_quarter
     params = {}
-    start_year = year_with_default(year:self.start_year, default: 1837)
-    end_year = year_with_default(year:self.end_year, default: 1993)
-    params[:quarternumber] = quarter_number(year: start_year, quarter: start_quarter)..quarter_number(year: end_year, quarter: end_quarter)
+    params[:quarternumber] = start_year_quarter..end_year_quarter
     params
+  end
+
+  def start_year_quarter
+    start_year = year_with_default(year:self.start_year, default: 1837)
+    quarter_number(year: start_year, quarter: start_quarter)
+  end
+
+  def end_year_quarter
+    end_year = year_with_default(year:self.end_year, default: 1993)
+    quarter_number(year: end_year, quarter: end_quarter)
   end
 
   def year_with_default(year:, default:nil)
@@ -829,6 +841,7 @@ class SearchQuery
 
   def search_records
     if MyopicVicar::Application.config.template_set = 'freebmd'
+      #raise age_at_death.is_a?nteger
       self.freebmd_search_records
     else
       self.search
@@ -1092,23 +1105,6 @@ class SearchQuery
     [[:ja,:fe,:mr],[:ap,:my,:je],[:jy,:au,:se],[:oc,:no,:de]]
   end
 
-  def bmd_dob_month_formats
-    {
-      ja: ['ja','January','jan','01','1'],
-      fe: ['fe','February','feb','02','2'],
-      mr: ['mr','March','mar','03','3'],
-      ap: ['ap','April','apr','04','4'],
-      my: ['my','May','may','05','5'],
-      je: ['je','June','jun','06','6'],
-      jy: ['jy','July','jul','07','7'],
-      au: ['au','August','aug','08','8'],
-      se: ['se','September','sep','09','9'],
-      oc: ['oc','October','oct','10','10'],
-      no: ['no','November','nov','11','11'],
-      de: ['de','December','dec','12','12']
-    }
-  end
-
   def bmd_search_params
     params = {}
     params.merge!(bmd_search_names_criteria)
@@ -1120,6 +1116,19 @@ class SearchQuery
     params.merge!(bmd_volume_params) if self.volume.present?
     params.merge!(bmd_page_params) if self.page.present?
     params
+  end
+
+  def spouse_surname_search
+    params = {}
+    if start_year_quarter >= 301
+      params[:AssociateName] = self.spouses_mother_surname
+    end
+  end
+
+  
+
+  def spouse_surname_join_condition
+    'inner join BestGuess as b on b.volume=BestGuessMarriages.volume and b.page=BestGuessMarriages.page and b.RecordtypeID= BestGuessMarriages.REcordTypeID and b.QuarterNumber=BestGuessMarriages.QuarterNumber'
   end
 
   private

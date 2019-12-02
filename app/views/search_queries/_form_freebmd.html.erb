@@ -100,10 +100,21 @@
 
       <div class="grid__item one-quarter lap-one-half palm-one-whole">
         <div class='labels'>
-          <%= label_tag 'date_of_birth_or_age_at_death', 'Date of birth / Death age', class: "ttip" %>
-          <%= label_tag 'date_of_birth_or_age_at_death', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '0', title: info_tag_text[:firstname]%>
+          <%= check_box_tag 'search_query[death_at_age]', true, false %>
+          <%= content_text(:optional_checkbox_label, 'Age / Date of Birth') %>
+         
+          <%= label_tag 'date_of_birth_or_age_at_death', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '0', title: date_of_birth_or_death_age_info[:death_age]%>
         </div>
-        <%= text_field_tag 'search_query[age_at_death]', set_value(@search_query.age_at_death), pattern: "[a-zA-Z0-9-%/]{0,10}", class: 'text-input', id: 'age_at_death', disabled: true, placeholder: '', tabindex: '4' %>
+        <span id="death_age_and_dob">
+          <span id="death_age">
+            <%= number_field_tag 'search_query[min_age_at_death]', nil, within: 0..199, placeholder: 'min age' %>
+            <%= number_field_tag 'search_query[max_age_at_death]', nil, within: 0..199, placeholder: 'max age' %>
+          </span>
+          <span id="death_dob">
+            <%= date_field_tag 'search_query[min_dob_at_death]' %>
+            <%= date_field_tag 'search_query[max_dob_at_death]' %>
+          </span>
+        </span><br/>
         <%= check_box_tag 'search_query[match_recorded_ages_or_dates]', true, false %>
         <%= content_text(:small, 'Match only recorded ages') %>
       </div>
@@ -194,18 +205,41 @@ $(document).ready(function(){
     });
   });
 
-  $('.checkboxtag, .checkAll').change(function() {
-    if ($(".death").is(":checked") && !$('.birth, .marriage, .checkAll').is(':checked')) {
-      $('#age_at_death').prop('disabled', false)
-      $('#search_query_spouses_mother_surname').val('')
-      $('#search_query_spouses_mother_surname').prop('disabled', true)
-      $('#search_query_spouses_mother_surname').prop('placeholder', '')
-      $('#age_at_death').prop('placeholder', 'Enter Age at Death or date of birth')
-    }  else {
-      $('#age_at_death').val('')
-      $('#age_at_death').prop('disabled', true)
-      $('#age_at_death').prop('placeholder', '')
+  // Show and hide the death age and death date of birth attribute
+  var show_hide_death_attributes = function() {
+    if($('#death_age_age').is(':checked')) { 
+      $('#death_age :input').show(); 
+      $('#death_dob :input').val('').hide();
+    } else {
+      $('#death_age :input').val('').hide(); 
+      $('#death_dob :input').show();
+    }
+  };
+  show_hide_death_attributes();
+  $('input[type=radio][name=death_age]').change(show_hide_death_attributes);
 
+  // Enable and disable the death age attributes
+  var enable_disable_death_attributes = function() {
+    if($("#new_search_query input:radio").is(':enabled')) {
+      $("#death_age_and_dob :input").attr("disabled", false);
+      $("#death_age_age").prop("checked", true);
+    }
+    else {
+      $("#death_age_and_dob :input").attr("disabled", true);
+    }
+  };
+  enable_disable_death_attributes();
+
+  $("#new_search_query input:radio").attr('disabled',true);
+  $("#death_age_and_dob :input").attr("disabled", true);
+  $('.checkboxtag, .checkAll').change(function() {
+    enable_disable_death_attributes();
+    show_hide_death_attributes();
+
+    if ($(".death").is(":checked") && !$('.birth, .marriage, .checkAll').is(':checked')) {
+      $("#new_search_query input:radio").attr('disabled',false);
+    }  else {
+      $("#new_search_query input:radio").attr('disabled',true);
     }
   });
 
@@ -225,34 +259,27 @@ $(document).ready(function(){
     }
   });
 
-  $('#search_form_submit').click(function() {
- // if($('#age_at_death').val()) {
-    // if ($('#bmd_record_type_death').is(':checked') && $('#bmd_record_type_birth').is(':checked'))  {
-       // $('#bmd_record_type_death, #bmd_record_type_birth')[0].setCustomValidity('Please choose either birth or death record type if Date of birth / Death age is provided');
-   // }
-   // if (!$('#bmd_record_type_death').is(':checked') && !$('#bmd_record_type_birth').is(':checked'))  {
-    //    $('#bmd_record_type_death, #bmd_record_type_birth')[0].setCustomValidity('Please choose either birth or death record type if Date of birth / Death age is provided');
-   // }
-  //}
 
-  var age_at_death = $('#age_at_death').val();
-
-  if ((age_at_death.includes('-')) && !(age_at_death.includes('%')) )  {
-    var x = age_at_death.split('-')
-    if ((x[0] >= x[1])) {
-      $('#age_at_death')[0].setCustomValidity('Invalid age range.');
+  var validate_death_age = function() {
+    var min_age = $('#min_age_at_death').val();
+    var max_age = $('#max_age_at_death').val();
+    if (max_age < min_age) {
+      $('#max_age_at_death')[0].setCustomValidity('Max death age should not lesser than Min death age');
     }
-  } else {
-    $('#age_at_death')[0].setCustomValidity('');
   };
 
-  if ((age_at_death.includes('-')) && (age_at_death.includes('%')) )  {
-    $('#age_at_death')[0].setCustomValidity('Invalid age or age-range.');
-  };
+  var validate_death_dob = function() {
+    var min_dob = new Date($('#min_dob_at_death').val()).getTime();
+    var max_dob = new Date($('#max_dob_at_death').val()).getTime();
 
-  if ((age_at_death.includes('/')) && (age_at_death.includes('%')) )  {
-    $('#age_at_death')[0].setCustomValidity('Invalid age or age-range.');
-  };
- });
+    if (max_dob < min_dob) {
+      $('#max_dob_at_death')[0].setCustomValidity('Max death date should not be lesser than Min death date');
+    }
+  }
+
+  $('#search_form_submit').click(function() {
+    validate_death_age();
+    validate_death_dob();
+  });
 });
 </script>
