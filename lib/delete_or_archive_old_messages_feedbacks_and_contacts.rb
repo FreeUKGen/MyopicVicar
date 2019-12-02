@@ -54,7 +54,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       message_file.puts stage
 
       UseridDetail.each do |user|
-        user.remove_deleted_messages
+        user.remove_deleted_messages(@delete_records_less_than)
       end
     end
 
