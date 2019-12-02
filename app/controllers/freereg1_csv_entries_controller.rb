@@ -235,7 +235,8 @@ class Freereg1CsvEntriesController < ApplicationController
     params[:freereg1_csv_entry] = @freereg1_csv_entry.adjust_parameters(params[:freereg1_csv_entry])
     proceed = @freereg1_csv_entry.update_attributes(freereg1_csv_entry_params)
     message = @freereg1_csv_entry.errors.full_messages + @freereg1_csv_entry.embargo_records.last.errors.full_messages
-
+    p proceed
+    crash
     redirect_back(fallback_location: edit_freereg1_csv_entry_path(@freereg1_csv_entry), notice: "The update of the entry failed #{message}.") && return unless proceed
 
     @freereg1_csv_entry.check_and_correct_county

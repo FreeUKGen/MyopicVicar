@@ -5,7 +5,7 @@
   <%= f.simple_fields_for :embargo_records do |m| %>
     <%= m.input :embargoed , collection: [true,false],:input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 2} %>
     <%= m.input :why, :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } %>
-    <%= m.input :release_year, :input_html => {:class => " simple_form_bgcolour  ", :size => 5} %>
+    <%= m.input :release_date, :input_html => {:class => " simple_form_bgcolour  ", :size => 5} %>
     <%= m.hidden_field :when, :value => @date %>
     <%= m.hidden_field :who, :value => @user.userid %>
   <% end %>

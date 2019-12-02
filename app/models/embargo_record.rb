@@ -8,14 +8,15 @@ class EmbargoRecord
   field :why, type: String
   validates :why, presence: true
   field :when, type: DateTime
-  field :release_year, type: Integer
-  validates :release_year, presence: true
-  validates :release_year, numericality: { only_integer: true }
+  field :release_year, type: Integer # This is the computed release year
+  field :release_date, type: Integer # This is the manual entry of a release year
   validate :release_date
-
   embedded_in :freereg1_csv_entry
 
   def release_date
-    errors.add(:release_year, ' must be in the future') if release_year <= DateTime.now.year
+    p 'validation'
+    p self
+    errors.add(:release_date, ' must be in the future') if embargoed && (release_date <= DateTime.now.year)
+
   end
 end
