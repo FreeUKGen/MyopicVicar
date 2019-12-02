@@ -86,6 +86,24 @@ class Message
       where(:nature.ne => 'syndicate')
     end
 
+    def should_be_removed_from_userid?(id, date)
+      logger.warn "should_be_removed_from_userid?"
+      logger.warn "#{id}"
+      logger.warn "#{date}"
+      if Message.find_by(_id: id).present?
+        logger.warn "#{Message.find_by(_id: id).created_at}"
+        return true if  Message.find_by(_id: id).created_at < date
+      elsif Contact.find_by(_id: id).present?
+        logger.warn "#{Contact.find_by(_id: id).created_at}"
+        return true if  Contact.find_by(_id: id).created_at < date
+      elsif Feedback.find_by(_id: id).present?
+        logger.warn "#{Feedback.find_by(_id: id).created_at}"
+        return true if  Feedback.find_by(_id: id).created_at < date
+      else
+        return true
+      end
+      false
+    end
 
     def syndicate(syndicate)
       where(:syndicate => syndicate)

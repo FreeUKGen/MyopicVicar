@@ -260,17 +260,21 @@ class UseridDetail
     self.update_attribute(:userid_messages, userid_msgs) if userid_msgs.length != self.userid_messages.length
   end
 
-  def remove_deleted_messages
+  def remove_deleted_messages(date)
+    logger.warn "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm"
+    logger.warn "#{inspect}"
     removal = []
     userid_msgs = userid_messages
     userid_msgs.each do |message_id|
-      removal << message_id if Message.find_by(source_contact_id: message_id).present? || Message.find_by(source_feedback_id: message_id).present? ||
-        Message.find_by(source_message_id: message_id).present?
+      removal << message_id if Message.should_be_removed_from_userid?(message_id, date)
     end
+    logger.warn "#{removal.inspect}"
     removal.each do |message|
       userid_msgs = userid_msgs - [message]
     end
+    logger.warn "#{userid_msgs.inspect}"
     update(userid_messages: userid_msgs) if userid_msgs.length != userid_messages.length
+    logger.warn "#{inspect}"
   end
 
   def update_userid_feedbacks
