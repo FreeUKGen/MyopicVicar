@@ -45,84 +45,22 @@ class UserMailer < ActionMailer::Base
   def batch_processing_failure(message, user, batch)
     @appname = appname
     @message = File.read(message)
-    @userid = UseridDetail.where(userid: user).first
-    if @userid.present?
-      emails = []
-      if @userid.present? && @userid.active && @userid.email_address_valid && @userid.registration_completed(@userid) && !@userid.no_processing_messages
-        user_email_with_name = @userid.email_address
-        emails << user_email_with_name
-      end
-      syndicate_coordinator = nil
-      syndicate_coordinator = Syndicate.where(syndicate_code: @userid.syndicate).first
-      if syndicate_coordinator.present?
-        syndicate_coordinator = syndicate_coordinator.syndicate_coordinator
-        sc = UseridDetail.where(userid: syndicate_coordinator, email_address_valid: true).first
-        if sc.present?
-          sc_email_with_name = sc.email_address
-          emails << sc_email_with_name unless user_email_with_name == sc_email_with_name
-        end
-      end
-      @batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
-      county = County.where(chapman_code: @batch.county).first unless @batch.nil?
-      if county.present?
-        county_coordinator = county.county_coordinator
-        cc = UseridDetail.where(userid: county_coordinator, email_address_valid: true).first
-        if cc.present?
-          cc_email_with_name = cc.email_address
-          emails << cc_email_with_name unless cc_email_with_name == sc_email_with_name
-        end
-      end
-
-      if emails.length == 1
-        mail(:to => emails[0],  :subject => "#{@userid.userid}/#{batch} processing encountered serious problem at #{Time.now}")
-      elsif emails.length == 2
-        mail(:to => emails[0], :cc => emails[1], :subject => "#{@userid.userid}/#{batch} processing encountered serious problem at at #{Time.now}")
-      elsif emails.length == 3
-        first_mail = emails.shift
-        mail(:to => first_mail, :cc => emails, :subject => "#{@userid.userid}/#{batch} processing encountered serious problem a #{Time.now}")
-      end
-    end
+    @userid, @userid_email = user_email_lookup(user)
+    @syndicate_coordinator, @syndicate_coordinator_email = syndicate_coordinator_email_lookup(@userid)
+    @county_coordinator, @county_coordinator_email = county_coordinator_email_lookup(batch, @userid)
+    subject = "#{@userid.userid}/#{batch} processing encountered serious problem at #{Time.now}"
+    adjust_email_recipients(subject)
   end
 
-  def batch_processing_success(file, user, batch)
+  def batch_processing_success(message, user, batch)
     @appname = appname
-    @message = File.read(file)
-    @userid = UseridDetail.where(userid: user).first
-    if @userid.present?
-      emails = []
-      if @userid.present? && @userid.active && @userid.email_address_valid && @userid.registration_completed(@userid) && !@userid.no_processing_messages
-        user_email_with_name =  @userid.email_address
-        emails << user_email_with_name
-      end
-      syndicate_coordinator = nil
-      syndicate_coordinator = Syndicate.where(syndicate_code: @userid.syndicate).first
-      if syndicate_coordinator.present?
-        syndicate_coordinator = syndicate_coordinator.syndicate_coordinator
-        sc = UseridDetail.where(userid: syndicate_coordinator, email_address_valid: true).first
-        if sc.present?
-          sc_email_with_name = sc.email_address
-          emails << sc_email_with_name unless user_email_with_name == sc_email_with_name
-        end
-      end
-      @batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
-      county = County.where(chapman_code: @batch.county).first unless @batch.nil?
-      if county.present?
-        county_coordinator = county.county_coordinator
-        cc = UseridDetail.where(userid: county_coordinator, email_address_valid: true).first
-        if cc.present?
-          cc_email_with_name = cc.email_address
-          emails << cc_email_with_name unless cc_email_with_name == sc_email_with_name
-        end
-      end
-      if emails.length == 1
-        mail(:to => emails[0],  :subject => "#{@userid.userid}/#{batch} processed at #{Time.now} with #{@batch.error unless @batch.nil?} errors over period #{@batch.datemin unless @batch.nil?}-#{@batch.datemax unless @batch.nil?}")
-      elsif emails.length == 2
-        mail(:to => emails[0], :cc => emails[1], :subject => "#{@userid.userid}/#{batch} processed at #{Time.now} with #{@batch.error unless @batch.nil?} errors over period #{@batch.datemin unless @batch.nil?}-#{@batch.datemax unless @batch.nil?}")
-      elsif emails.length == 3
-        first_mail = emails.shift
-        mail(:to => first_mail, :cc => emails, :subject =>"#{@userid.userid}/#{batch} processed at #{Time.now} with #{@batch.error unless @batch.nil?} errors over period #{@batch.datemin unless @batch.nil?}-#{@batch.datemax unless @batch.nil?}")
-      end
-    end
+    @message = File.read(message)
+    @userid, @userid_email = user_email_lookup(user)
+    @batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
+    @syndicate_coordinator, @syndicate_coordinator_email = syndicate_coordinator_email_lookup(@userid)
+    @county_coordinator, @county_coordinator_email = county_coordinator_email_lookup(batch, @userid)
+    subject = "#{@userid.userid}/#{batch} processed at #{Time.now} with #{@batch.error unless @batch.nil?} errors over period #{@batch.datemin unless @batch.nil?}-#{@batch.datemax unless @batch.nil?}"
+    adjust_email_recipients(subject)
   end
 
   def contact_action_request(contact, send_to, copies_to)
@@ -366,11 +304,14 @@ class UserMailer < ActionMailer::Base
     mail(:from => sc.email_address, :to => cc_email, :subject => subject, :body => email_body)
   end
 
-  def request_sc_image_server_group(transcriber, sc_email, group)
+  def request_sc_image_server_group(transcriber, sc, group, location)
     @appname = appname
-    subject = 'Transcriber request image group'
-    email_body = 'member ' + transcriber.userid + ' of your syndicate ' + transcriber.syndicate + ' requests to obtain images in ' + group
-    mail(:from => transcriber.email_address, :to => sc_email, :subject => subject, :body => email_body)
+    @subject = 'Transcriber request image group'
+    @transcriber = transcriber
+    @sc = sc
+    @group = group
+    @location = location
+    mail(:from => @transcriber.email_address, :to => @sc.email_address, :subject => @subject)
   end
 
   def request_to_volunteer(coordinator, group_name, applier_name, applier_email)
@@ -435,6 +376,22 @@ class UserMailer < ActionMailer::Base
 
   private
 
+  def adjust_email_recipients(message)
+    if @userid.active && @userid.email_address_valid && @userid.registration_completed(@userid) && !@userid.no_processing_messages
+      if @county_coordinator == @syndicate_coordinator
+        mail(:to => @userid_email, :cc => @syndicate_coordinator_email, :subject => message)
+      else
+        mail(:to => @userid_email, :cc => [@syndicate_coordinator_email, @county_coordinator_email], :subject => message)
+      end
+    else
+      if @county_coordinator == @syndicate_coordinator
+        mail(:to => @syndicate_coordinator_email, :subject => message)
+      else
+        mail(:to => @syndicate_coordinator_email, :cc => @county_coordinator_email, :subject => message)
+      end
+    end
+  end
+
   def get_email_address_array_from_array_of_userids(userids)
     array_of_email_addresses = []
     if userids.present?
@@ -458,4 +415,92 @@ class UserMailer < ActionMailer::Base
     end
     email_address
   end
+
+  def user_email_lookup(user)
+    userid = UseridDetail.userid(user).first
+    if userid.present?
+      friendly_email = "#{userid.person_forename} #{userid.person_surname} <#{userid.email_address}>"
+    else
+      friendly_email = 'FreeREG Servant <freereg-contacts@freereg.org.uk>'
+    end
+    [userid, friendly_email]
+  end
+
+  def syndicate_coordinator_email_lookup(userid)
+    if userid.present?
+      syndicate = Syndicate.where(syndicate_code: userid.syndicate).first
+      if syndicate.present?
+        syndicate_coordinator_id = syndicate.syndicate_coordinator
+        syndicate_coordinator = UseridDetail.userid(syndicate_coordinator_id).first
+        if syndicate_coordinator.present? && syndicate_coordinator.active && syndicate_coordinator.email_address_valid
+          friendly_email = "#{syndicate_coordinator.person_forename} #{syndicate_coordinator.person_surname} <#{syndicate_coordinator.email_address}>"
+        else
+          syndicate_coordinator, friendly_email = sndmanager_email_lookup
+        end
+      else
+        syndicate_coordinator, friendly_email = sndmanager_email_lookup
+      end
+    else
+      syndicate_coordinator, friendly_email = sndmanager_email_lookup
+    end
+    [syndicate_coordinator, friendly_email]
+  end
+
+  def county_coordinator_email_lookup(file_name, userid)
+    if file_name.blank? || userid.blank?
+      county_coordinator, friendly_email = regmanager_email_lookup
+    else
+      batch_id = Freereg1CsvFile.where(file_name: file_name, userid: userid).first
+      if batch_id.blank?
+        county_coordinator, friendly_email = extract_chapman_code_from_file_name(file_name)
+      else
+        county = County.where(chapman_code: batch_id.county).first
+        if county.present?
+          county_coordinator_id = county.county_coordinator
+          county_coordinator = UseridDetail.where(userid: county_coordinator_id).first
+          if county_coordinator.present? && county_coordinator.active && county_coordinator.email_address_valid
+            friendly_email = "#{county_coordinator.person_forename} #{county_coordinator.person_surname} <#{county_coordinator.email_address}>"
+          else
+            county_coordinator, friendly_email = sndmanager_email_lookup
+          end
+        else
+          county_coordinator, friendly_email = extract_chapman_code_from_file_name(file_name)
+        end
+      end
+    end
+    [county_coordinator, friendly_email]
+  end
+
+  def regmanager_email_lookup
+    regmanager = UseridDetail.userid('REGManger').first
+    friendly_email = "#{regmanager.person_forename} #{regmanager.person_surname} <#{regmanager.email_address}>"
+    [regmanager, friendly_email]
+  end
+
+  def sndmanager_email_lookup
+    sndmager = UseridDetail.userid('SNDManager').first
+    friendly_email = "#{sndmager.person_forename} #{sndmager.person_surname} <#{sndmager.email_address}>"
+    [sndmager, friendly_email]
+  end
+
+  def extract_chapman_code_from_file_name(file_name)
+    parts = file_name.split('.')
+    chapman_code = parts[0].slice(0..2)
+    if ChapmanCode.value?(chapman_code)
+      county = County.where(chapman_code: chapman_code).first
+      if county.present?
+        county_coordinator_id = county.county_coordinator
+        county_coordinator = UseridDetail.where(userid: county_coordinator_id).first
+        if county_coordinator.present? && county_coordinator.active && county_coordinator.email_address_valid
+          friendly_email = "#{county_coordinator.person_forename} #{county_coordinator.person_surname} <#{county_coordinator.email_address}>"
+        else
+          county_coordinator, friendly_email = sndmanager_email_lookup
+        end
+      else
+        county_coordinator, friendly_email = sndmanager_email_lookup
+      end
+    end
+    [county_coordinator, friendly_email]
+  end
+
 end

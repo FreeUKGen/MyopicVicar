@@ -6,19 +6,46 @@
 
 
 /**
+  * Loz and pill
+  * AO: placed here to take advantage of islet colour schemes, if desired
+  * AO: make colours accessible, increase lateral padding a little
+  */
+.loz, .pill {
+  background-color: #707070;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+}
+
+
+/**
  * Colours for islands
+ * AO: rewrite to accommodate new/accessible colour scheme
  */
-@each $colour in $colours {
+@each $colour in $isle-colours {
   .banner--#{nth($colour, 1)},
   .island--#{nth($colour, 1)},
   .islet--#{nth($colour, 1)} {
-    color: nth($colour, 5);
+    color: nth($colour, 3);
     background-color: nth($colour, 2);
     a {
       color: #fff;
       text-decoration: underline;
+      &:focus,
+      &:hover {
+        color: $focus-hover;
+        background-color: $project-color-faded;
+        outline: 3px solid $project-color-faded;
+      }
       &.btn {
         text-decoration: none;
+        color: #fff;
+        &:focus,
+        &:hover {
+          background-color: #fff;
+          border-color: $project-color;
+          color: $project-color;
+          outline: none;
+        }
       }
     }
   }
@@ -26,13 +53,50 @@
   a.banner--#{nth($colour, 1)},
   a.island--#{nth($colour, 1)},
   a.islet--#{nth($colour, 1)} {
-    color: nth($colour, 5);
+    color: nth($colour, 3);
     background-color: nth($colour, 2);
     &:active,
+    &:focus,
     &:hover {
-      color: nth($colour, 5);
-      background-color: nth($colour, 3);
+      color: $focus-hover;
+      background-color: $project-color-faded;
     }
+  }
+}
+
+.banner--light, .island--light, .islet--light {
+  color: $default-text;
+  background-color: $light;
+  a {
+    color: $project-color-on-light;
+    &:active,
+    &:focus,
+    &:hover {
+      background-color: $project-color-faded;
+      outline: 3px solid $project-color-faded;
+      color: $focus-hover;
+    }
+    &.btn {
+      color: #fff;
+      &:focus,
+      &:hover {
+        background-color: #fff;
+        border-color: $project-color;
+        color: $project-color;
+        outline: none;
+      }
+    }
+  }
+}
+
+a.banner--light, a.island--light, a.islet--light {
+  background-color: $light;
+  color: $grey;
+  &:active,
+  &:focus,
+  &:hover {
+    background-color: $project-color-faded;
+    color: $focus-hover;
   }
 }
 
@@ -41,22 +105,6 @@
 .islet--bordered {
   background-color: #fff;
   border: 1px solid $lesslight;
-}
-
-.banner--grey,
-.island--grey,
-.islet--grey {
-  color: #fff;
-  background-color: #444444;
-  &:hover { color: #fff; }
-}
-
-.banner--dark,
-.island--dark,
-.islet--dark {
-  color: #fff;
-  background-color: #333333;
-  &:hover { color: #fff; }
 }
 
 

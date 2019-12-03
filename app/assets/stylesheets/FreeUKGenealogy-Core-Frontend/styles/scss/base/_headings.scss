@@ -2,6 +2,11 @@
     $HEADINGS
 \*------------------------------------*/
 
+// AO: tone down headings from default text
+h1,h2,h3,h4,h5,h6 {
+  color: #444;
+}
+
 /**
  * Override most of the inuit ones to sort out the line-height
  */
@@ -27,6 +32,7 @@ h6,.zeta{
 
 /**
  * Title styles
+ * AO: change title-block color to navy; title-block__sub to accessible grey
  */
 
 // standard large, thin type with bottom border
@@ -41,8 +47,9 @@ h6,.zeta{
 // designed to in side an `.islet--bordered`
 .title-block {
   @include font-size(20px);
-  color: $teal;
-  font-weight: normal;
+// comment should $navy be $project-color
+  color: $navy;
+  font-weight: bold;
   padding-bottom: $b-quarter;
   border-bottom: 1px solid #dedede;
 
@@ -50,12 +57,21 @@ h6,.zeta{
     @include font-size(13px);
     font-weight: bold;
     text-transform: uppercase;
-    color: #8a8889;
+    color: #767474;
     float: right;
   }
   a.title-block__sub:active,
   a.title-block__sub:hover {
-    color: #6b6b6b;
+    color: $project-color;
+    &:active,
+    &:focus,
+    &:hover {
+      color: $focus-hover;
+    }
+    &:focus {
+      background: $project-color-faded;
+      outline: 3px solid $project-color-faded;
+    }
   }
 
 }

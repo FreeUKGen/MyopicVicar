@@ -484,7 +484,7 @@ module ApplicationHelper
                   HTML
                   if Rails.env.development?
                     banner = <<-HTML
-                    <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
+                    <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
                     HTML
                   end
                   banner.html_safe
@@ -516,7 +516,7 @@ module ApplicationHelper
                       HTML
                       if Rails.env.development?
                         banner = <<-HTML
-                        <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
+                        <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
                         HTML
                       end
                       banner.html_safe
@@ -549,7 +549,7 @@ module ApplicationHelper
                           HTML
                           if Rails.env.development?
                             banner = <<-HTML
-                            <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
+                            <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
                             HTML
                           end
                           banner.html_safe
@@ -574,14 +574,13 @@ module ApplicationHelper
                                 (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
                               }
                               };
-                              $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})});
-                              (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
-                              </script>
-
+                          $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})});
+                            (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
+                          </script>
                               HTML
                               if Rails.env.development?
                                 banner = <<-HTML
-                                <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad">
+                                <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
                                 HTML
                               end
                               banner.html_safe

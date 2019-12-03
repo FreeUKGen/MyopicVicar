@@ -83,10 +83,14 @@ class UseridDetailsController < ApplicationController
     session[:type] = 'edit'
     redirect_back(fallback_location: options_userid_details_path, notice: 'The destruction of the profile not permitted as they have batches') && return if @userid.has_files?
 
-    if MyopicVicar::Application.config.template_set != 'freecen'
+    if appname_downcase == 'freereg'
       Freereg1CsvFile.delete_userid_folder(@userid.userid)
     end
-    flash[:notice] = 'The destruction of the profile was successful'
+    if @userid.destroy
+      flash[:notice] = 'The destruction of the profile and deletion of the user folder was successful'
+    else
+      flash[:notice] = 'The destruction of the profile failed'
+    end
     redirect_to(options_userid_details_path)
   end
 
@@ -159,10 +163,15 @@ class UseridDetailsController < ApplicationController
     get_user_info_from_userid
     session[:my_own] = false
     @role = session[:role]
-    if session[:active] == 'All Members'
-      @userids = UseridDetail.get_userids_for_display(session[:syndicate])
-    else
-      @userids = UseridDetail.get_active_userids_for_display(session[:syndicate])
+    case session[:active]
+    when 'All Members'
+      @userids = UseridDetail.userids_for_display(session[:syndicate])
+    when 'Active Members'
+      @userids = UseridDetail.userids_active_for_display(session[:syndicate])
+    when 'Agreement Accepted'
+      @userids = UseridDetail.userids_agreement_signed_for_display(session[:syndicate])
+    when 'Agreement Not Accepted'
+      @userids = UseridDetail.userids_agreement_not_signed_for_display(session[:syndicate])
     end
     @syndicate = session[:syndicate]
     @sorted_by = session[:active]
@@ -666,7 +675,6 @@ class UseridDetailsController < ApplicationController
       message = @userid.email_address_validity_change_message
       case userid_details_params[:email_address_valid]
       when 'true'
-        raise 'hello'
         message << "VALID on #{Time.now.utc.strftime("%B %d, %Y")} at #{Time.now.utc.strftime("%H:%M:%S")}"
       else
         message << "INVALID on #{Time.now.utc.strftime("%B %d, %Y")} at #{Time.now.utc.strftime("%H:%M:%S")}"

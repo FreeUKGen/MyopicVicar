@@ -1,0 +1,29 @@
+*************on each server in turn brazza, drill, howler saki colobus replacing server name where appropriate
+*************on colobus
+sudo /root/bin/haproxy-freereg2.sh brazza disable
+sudo /root/bin/haproxy-freecen2.sh brazza disable
+************Check on https://www.freebmd.org.uk/haproxy?stats that server is in maintenance
+*************on each server in turn
+copy any new configuration files to the server using Filezilla or equivalent
+cd  /home/apache/hosts/freereg2/production
+git status #just to make sure we are on master
+sudo rm -R public/assets #only required when there is a restructuring of assets
+sudo bash /root/bin/update-freereg2
+f2rake assets:precompile
+f2rake assets:clean
+sudo touch tmp/restart.txt
+************* check brazza performance on reg with direct connection IF OK
+copy any new configuration files to the server using Filezilla or equivalent
+cd  /home/apache/hosts/freecen2/production
+git status #just to make sure we are on master
+sudo rm -R public/assets #only required when there is a restructuring of assets
+sudo bash /root/bin/update-freecen2
+f2rake assets:precompile
+f2rake assets:clean
+sudo touch tmp/restart.txt
+************* check brazza performance on cen with direct connection IF OK
+*************on colobus
+sudo /root/bin/haproxy-freereg2.sh brazza enable
+sudo /root/bin/haproxy-freecen2.sh brazza enable
+
+Refinery transfer https://docs.google.com/document/d/1ozrJbHY074xYvwCB3j6NodDdPFPnWU4WySdnZCMeWUw/edit

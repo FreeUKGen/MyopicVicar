@@ -5,11 +5,12 @@
         <table class="my-width-min flush--bottom" >
           <thead >
             <tr>
-              <th class="t15">UserID</th>
+              <th class="t10">UserID</th>
               <th class="t10">Forename</th>
               <th class="t13">Surname</th>
               <th class="t20">Email</th>
               <th class="t5">Active</th>
+              <th class="t5" title="Transcriber Agreement Accepted">Open</th>
               <% unless MyopicVicar::Application.config.template_set == 'freecen'%>
                 <th class="t6">Upload</th>
                 <th class="t5">Files </th>
@@ -23,11 +24,12 @@
             <tbody >
               <% @userids.each do |userid| %>
                 <tr id="<%=userid.id%>">
-                  <td class="t15"> <%= userid.userid %>  </td>
+                  <td class="t10"> <%= userid.userid %>  </td>
                   <td class="t15"> <%= userid.person_forename %>  </td>
                   <td class="t15"> <%= userid.person_surname %>  </td>
-                  <td class="t25"> <%= userid.email_address %> </td>
-                  <td class="t3">     <% if userid.active %> <%="Y" %>    <% else%>    <%="N" %>     <% end%>     </td>
+                  <td class="t22"> <%= userid.email_address %> </td>
+                  <td class="t3">  <%= active_user(userid.active)%></td>
+                  <td class="t3">  <%= agreement(userid.new_transcription_agreement)%></td>
                   <% unless MyopicVicar::Application.config.template_set == 'freecen'%>
                     <td class="t10"> <%= userid.last_upload.strftime("%d %b %Y") unless  userid.last_upload.nil?%>  </td>
                     <td class="t4"> <%= userid.freereg1_csv_files.count %>  </td>

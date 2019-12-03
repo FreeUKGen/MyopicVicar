@@ -101,7 +101,7 @@ class Freereg1CsvEntriesController < ApplicationController
     @freereg1_csv_file.freereg1_csv_entries.delete(@freereg1_csv_entry)
     @freereg1_csv_entry.destroy
     @freereg1_csv_file.update_statistics_and_access(session[:my_own])
-    flash[:notice] = 'The deletion of the entry was successful and the files is locked'
+    flash[:notice] = 'The deletion of the entry was successful and the batch is locked'
     redirect_to freereg1_csv_file_path(@freereg1_csv_file)
   end
 

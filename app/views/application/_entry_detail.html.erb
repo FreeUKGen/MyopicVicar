@@ -1,13 +1,15 @@
 <div class='grid'>
   <section class='island '>
-    <div class='grid__item '>
+    <div id='freereg_sidebar_left2_desk' class="grid__item  one-fifth  palm-one-whole text--left advert_div ">
+    </div>
+    <div class='' id='results_detail_table'>
       <table class='table--bordered table--data push--bottom t100' >
         <caption class='beta'><%= record_type(@entry) %> entry
           <%case%>
           <%when @display_date%>
           <span class='additional'> search made on <%=Time.now.strftime('%d %b %Y') %></span><br>
           <%when !current_authentication_devise_user.present?%>
-          <span class='additional'>While we have made all efforts to correctly record the information in the original document there may be different interpretations of the written words. <b>If you have access to the original document</b> and believe we have made a mistake you are encouraged to report this to us.
+          <span  class='additional'>While we have made all efforts to correctly record the information in the original document there may be different interpretations of the written words. <b>If you have access to the original document</b> and believe we have made a mistake you are encouraged to report this to us.
             <%= link_to 'Report an Error in this Data', report_error_contact_path(@search_record[:_id], :query => @search_query), class: 'btn btn--natural' unless  @search_record.blank? || @search_query.blank? %></span>
         <% end%>
       </caption>
@@ -42,20 +44,20 @@
             </tr>
             <% when 'church_name' %>
             <tr>
-              <td><%= field.gsub('_',' ').capitalize %></td>
+              <td ><%= field.gsub('_',' ').capitalize %></td>
               <% if @church_id.present? %>
-                <td><%= link_to(@entry[field], church_freereg_content_path(@church_id)) %></td>
+                <td ><%= link_to(@entry[field], church_freereg_content_path(@church_id)) %></td>
               <% else %>
-                <td><%= @entry[field] %></td>
+                <td ><%= @entry[field] %></td>
               <% end %>
             </tr>
             <% when 'register_type' %>
             <tr>
-              <td><%= field.gsub('_',' ').capitalize%></td>
+              <td ><%= field.gsub('_',' ').capitalize%></td>
               <% if @register_id.present? %>
-                <td><%= link_to(@entry[field], register_freereg_content_path(@register_id)) %></td>
+                <td ><%= link_to(@entry[field], register_freereg_content_path(@register_id)) %></td>
               <% else %>
-                <td><%= register_name_for_entry(@entry[field]) %></td>
+                <td ><%= register_name_for_entry(@entry[field]) %></td>
               <% end %>
             </tr>
             <% when 'image_file_name' %>
@@ -67,51 +69,51 @@
             <% else %>
               <tr>
                 <td ><%= field.gsub('_',' ').capitalize %></td>
-                <td>  <%= link_to 'View image', view_image_server_image_path(:object => @image_id), method: :get,:target => '_blank' , :class => 'btn btn--small' %></td>
+                <td >  <%= link_to 'View image', view_image_server_image_path(:object => @image_id), method: :get,:target => '_blank' , :class => 'btn btn--small' %></td>
               </tr>
             <% end %>
             <% when 'film' %>
             <% if  current_authentication_devise_user.present?%>
               <tr>
-                <td>Film</td>
-                <td><%= @entry.film %></td>
+                <td >Film</td>
+                <td ><%= @entry.film %></td>
               </tr>
             <% end%>
             <% when 'film_number' %>
             <% if  current_authentication_devise_user.present?%>
               <tr>
-                <td>Film Number</td>
-                <td><%= @entry.film_number %></td>
+                <td >Film Number</td>
+                <td ><%= @entry.film_number %></td>
               </tr>
             <% end%>
             <% when 'processed_date' %>
             <% if  current_authentication_devise_user.present? && @entry.processed_date.present? %>
               <tr>
-                <td><%= field.gsub('_',' ').capitalize %></td>
-                <td><%= @entry.processed_date.strftime('%d %b %Y') %></td>
+                <td ><%= field.gsub('_',' ').capitalize %></td>
+                <td ><%= @entry.processed_date.strftime('%d %b %Y') %></td>
               </tr>
             <% end%>
             <% when 'line_id' %>
             <% if  current_authentication_devise_user.present?%>
               <tr>
-                <td><%= field.gsub('_',' ').capitalize %></td>
-                <td><%= @entry.line_id %></td>
+                <td ><%= field.gsub('_',' ').capitalize %></td>
+                <td ><%= @entry.line_id %></td>
               </tr>
             <% end%>
             <% when 'credit' %>
             <%  creditable = credit(@entry) %>
             <% if creditable.present? %>
               <tr>
-                <td><%= field.gsub('_',' ').capitalize %></td>
-                <td><%= creditable %></td>
+                <td ><%= field.gsub('_',' ').capitalize %></td>
+                <td ><%= creditable %></td>
               </tr>
             <% end %>
             <% when 'transcribed_by' %>
             <%  creditable = transcriber(@entry) %>
             <% if creditable.present? %>
               <tr>
-                <td><%= field.gsub('_',' ').capitalize %></td>
-                <td><%= creditable %></td>
+                <td ><%= field.gsub('_',' ').capitalize %></td>
+                <td ><%= creditable %></td>
               </tr>
             <% end %>
             <% when 'error_flag'  %>
@@ -136,10 +138,38 @@
           <% end %>
         <% end %>
         <% if  !current_authentication_devise_user.present?%>
-          <td colspan=2><%= link_to 'Report an Error in this Data', report_error_contact_path(@search_record[:_id], :query => @search_query), class: 'btn btn--natural' unless  @search_record.blank? || @search_query.blank? %></td>
+          <td  colspan=2><%= link_to 'Report an Error in this Data', report_error_contact_path(@search_record[:_id], :query => @search_query), class: 'btn btn--natural' unless  @search_record.blank? || @search_query.blank? %></td>
         <% end %>
       </tbody>
     </table>
   </div>
+  <div id='freereg_sidebar_right2_desk' class="grid__item  one-fifth  palm-one-whole text--right advert_div">
+  </div>
 </section>
 </div>
+<script type="text/javascript">
+  var result = window.canRunAds;
+  function changeClass(screen_width) {
+    if (screen_width.matches) {
+      $("#results_detail_table").removeClass("grid__item  three-fifths  palm-one-whole").addClass('');
+    } else {
+      if(result === true) {
+        $("#results_detail_table").addClass("grid__item  three-fifths  palm-one-whole");
+        $('.advert_div').show();
+      } else {
+        $('.advert_div').hide();
+        $("#results_detail_table").addClass("");
+      }
+    }
+  };
+  var screen_width = window.matchMedia("(max-width: 1279px)")
+  changeClass(screen_width)
+  screen_width.addListener(changeClass);
+</script>
+<style type="text/css">
+  @media only screen and (max-width: 1279px) {
+  .advert_div {
+    display: none !important;
+  }
+  }
+</style>

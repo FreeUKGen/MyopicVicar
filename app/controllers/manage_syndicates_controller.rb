@@ -95,6 +95,7 @@ class ManageSyndicatesController < ApplicationController
   def display_by_zero_date
     get_user_info_from_userid
     @county = session[:syndicate]
+    session[:zero_action] = 'Main Syndicate Action'
     @who = @user.person_forename
     @sorted_by = '; selects files with zero date records then alphabetically by userid and file name'
     session[:sorted_by] = @sorted_by
@@ -252,6 +253,18 @@ class ManageSyndicatesController < ApplicationController
 
   def show
     redirect_to action: 'new'
+  end
+
+  def transcription_agreement_accepted
+    get_user_info_from_userid
+    session[:active] = 'Agreement Accepted'
+    redirect_to(userid_details_path) && return
+  end
+
+  def transcription_agreement_not_accepted
+    get_user_info_from_userid
+    session[:active] = 'Agreement Not Accepted'
+    redirect_to(userid_details_path) && return
   end
 
   def upload_batch

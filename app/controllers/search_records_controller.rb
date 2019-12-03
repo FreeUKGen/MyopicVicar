@@ -85,7 +85,11 @@ class SearchRecordsController < ApplicationController
         @ee_address = @dweling_values[11]
 
         #census database description
-        @census_database = 'General Register Office: 1891 Census Returns'
+        @census_database = "General Register Office: #{@cen_year} Census Returns database" 
+
+        if @search_record.place['country'] = 'Scotland'
+          @census_database = "Scottish General Register Office: #{@cen_year} Census Returns database"
+        end
 
         @searched_user_name = @search_record.transcript_names.first['first_name'] + " " + @search_record.transcript_names.first['last_name']
         @viewed_date = Date.today.strftime("%e %b %Y")
@@ -120,6 +124,13 @@ class SearchRecordsController < ApplicationController
         else
           @dep_series_code = nil
         end
+        if @search_query.present?
+          @search_result = @search_query.search_result
+          @viewed_records = @search_result.viewed_records
+          @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
+          @search_result.update_attribute(:viewed_records, @viewed_records)
+        end
+
       end
     elsif @appname == 'freereg'
       @display_date = false
@@ -309,7 +320,7 @@ class SearchRecordsController < ApplicationController
         @ee_address = @dweling_values[11]
 
         #census database description
-        @census_database = 'General Register Office: 1891 Census Returns'
+        @census_database = 'England, Scotland and Wales Census'
 
         @searched_user_name = @search_record.transcript_names.first['first_name'] + " " + @search_record.transcript_names.first['last_name']
         @viewed_date = Date.today.strftime("%e %b %Y")

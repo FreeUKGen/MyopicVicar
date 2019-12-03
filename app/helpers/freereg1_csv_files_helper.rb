@@ -1,9 +1,10 @@
 module Freereg1CsvFilesHelper
   def coordinator_index_breadcrumbs
-    case
-    when session[:syndicate]  && session[:sorted_by] == '; selects files with zero date records then alphabetically by userid and file name'
+    if session[:place_name].present?
+      breadcrumb :files
+    elsif session[:syndicate] && session[:sorted_by] == '; selects files with zero date records then alphabetically by userid and file name'
       breadcrumb :listing_of_zero_year_files
-    when session[:county]  && session[:sorted_by] == '; selects files with zero date records then alphabetically by userid and file name'
+    elsif session[:county] && session[:sorted_by] == '; selects files with zero date records then alphabetically by userid and file name'
       breadcrumb :listing_of_zero_year_files
     else
       breadcrumb :files
