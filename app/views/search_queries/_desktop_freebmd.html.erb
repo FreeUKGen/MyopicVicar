@@ -1,4 +1,15 @@
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
+<div class="grid search_results">
+  <div class="grid__item one-sixth lap-one-half palm-one-whole">
+    <div class='results_block'>
+      Results
+    </div>
+  </div>
+  <div class="grid__item five-sixths lap-one-half palm-one-whole">
+   <%= render 'display_search_criteria' %>
+   <%#= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  btn--small revise_search" %>
+  </div>
+</div>
 <%# raise 'hi'%>
 <div class="table-wrapper" id="search-result">
   <table class="table--bordered table--data">
