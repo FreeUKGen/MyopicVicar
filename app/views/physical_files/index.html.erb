@@ -43,7 +43,7 @@
                 <td><%= link_to 'Download', download_physical_file_path(batch,   :params=> {:loc => "FR2"}) ,  :class => "btn   btn--small" ,method: :get  %></td>
                 <td><%= link_to 'Remove file', remove_physical_file_path(batch) ,  :class => "btn   btn--small" ,method: :get, data: { confirm: 'Are you absolutely sure? This ONLY removes the entry in physical files. It DOES NOT delete the file or entries or records if they exist. They will become unaccessible' }  %></td>
                 <td><%= link_to 'Process', submit_for_processing_physical_file_path(batch,   :params=> {:loc => "base"}) ,  :class => "btn   btn--small" ,method: :get  %></td>
-                <td><%= link_to 'Delete', physical_file_path(batch),   :class => "btn   btn--small",data: { confirm: 'Are you absolutely sure? This may take a few minutes if we have to delete entries and search records as well' }, method: :delete %></td>
+                <td><%= link_to 'Delete', physical_file_path(batch),   :class => "btn   btn--small",data: { confirm: 'Are you absolutely sure yo want to DELETE ALL TRACES OF THE FILE? This may take a few minutes if we have to delete entries and search records as well' }, method: :delete %></td>
               </tr>
             <% end %>
           <% end %>
