@@ -5,44 +5,48 @@
       <div class='grid'>
         <div class='grid__item one-whole' >
           <%if @messages.present?%>
-            <table class='table--bordered table--data '>
-              <tr>
-                <th class='t5'>Source</th>
-                <th class='t15'>Subject</th>
-                <th class='t10'>Sent by</th>
-                <th class='t10'>Received</th>
-                <th class='t5'>Attach</th>
-                <th class='t5'>Sent</th>
-                <th class='t5'>Replies</th>
-                <th class='t10'>Identification</th>
-                <th class='t20'>Message begins</th>
-                <th class='t20'>Action</th>
-              </tr>
-              <% @messages.each do |message| %>
-                <tr class='<%= sent(message) %>'>
-                  <td><%= source(message) %></td>
-                  <td><%= message.subject %></td>
-                  <td><%= message.userid %></td>
-                  <td><%= message.message_time.strftime('%d %b %Y') unless message.message_time.nil?%></td>
-                  <td><%= attachment(message)%></td>
-                  <td><%= sent(message)  %></td>
-                  <% unless reply_messages_count(message) == 0 %>
-                    <td><%= reply_messages_count(message) %></td>
-                  <% else %>
-                    <td> None</td>
-                  <% end %>
-                  <td><%= message.identifier  %></td>
-                  <td><%= message.body[0,100] %>&hellip;</td>
-                  <td>
-                    <%= index_action_edit(message)%>
-                    <%= index_action_show(message)%>
-                    <%= index_action_view_replies(message)%>
-                    <%= index_action_archive(message)%>
-                    <%= index_remove_link(message)%>
-                  </td>
+            <div class="scrollable ">
+              <table class='table--bordered table--data '>
+                <tr>
+                  <th class='sticky-header'>Source</th>
+                  <th class='sticky-header'>Subject</th>
+                  <th class='sticky-header'>Sent by</th>
+                  <th class='sticky-header'>Received</th>
+                  <th class='sticky-header'>Attach</th>
+                  <th class='sticky-header'>Sent</th>
+                  <th class='sticky-header'>Replies</th>
+                  <th class='sticky-header'>Being Kept</th>
+                  <th class='sticky-header'>Identification</th>
+                  <th class='sticky-header'>Message begins</th>
+                  <th class='sticky-header'>Action</th>
                 </tr>
-              <% end %>
-            </table>
+                <% @messages.each do |message| %>
+                  <tr class='<%= sent(message) %>'>
+                    <td><%= source(message) %></td>
+                    <td><%= message.subject %></td>
+                    <td><%= message.userid %></td>
+                    <td><%= message.message_time.strftime('%d %b %Y') unless message.message_time.nil?%></td>
+                    <td><%= attachment(message)%></td>
+                    <td><%= sent(message)  %></td>
+                    <% unless reply_messages_count(message) == 0 %>
+                      <td><%= reply_messages_count(message) %></td>
+                    <% else %>
+                      <td> None</td>
+                    <% end %>
+                    <td><%= message.keep  %></td>
+                    <td><%= message.identifier  %></td>
+                    <td><%= message.body[0,100] %>&hellip;</td>
+                    <td>
+                      <%= index_action_edit(message)%>
+                      <%= index_action_show(message)%>
+                      <%= index_action_view_replies(message)%>
+                      <%= index_action_archive(message)%>
+                      <%= index_remove_link(message)%>
+                    </td>
+                  </tr>
+                <% end %>
+              </table>
+            </div>
           <% else%>
             <h4 class='text--center'> No Messages</h4>
           <% end%>

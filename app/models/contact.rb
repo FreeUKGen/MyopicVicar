@@ -50,6 +50,8 @@ class Contact
 
   before_create :url_check, :add_identifier, :add_screenshot_location
 
+  before_destroy :delete_replies
+
   class << self
     def id(id)
       where(id: id)
@@ -234,6 +236,17 @@ class Contact
     copies_of_contact_action_sent_to_userids = self.add_contact_coordinator_to_copies_of_contact_action_sent_to_userids
     UserMailer.contact_action_request(self, send_to_userid, copies_of_contact_action_sent_to_userids).deliver_now
     #copies = self.add_sender_to_copies_of_contact_action_sent_to_userids(send_to_userid)
+  end
+
+  def delete_replies
+    p self
+    replies = Message.where(source_contact_id: id).all
+    return if replies.blank?
+
+    replies.each do |reply|
+      reply.destroy
+    end
+
   end
 
   def github_issue
