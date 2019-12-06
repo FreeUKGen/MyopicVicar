@@ -10,13 +10,21 @@ class EmbargoRecord
   field :when, type: DateTime
   field :release_year, type: Integer # This is the computed release year
   field :release_date, type: Integer # This is the manual entry of a release year
-  validate :release_date
+  validate :release
   embedded_in :freereg1_csv_entry
 
-  def release_date
-    p 'validation'
-    p self
-    errors.add(:release_date, ' must be in the future') if embargoed && (release_date <= DateTime.now.year)
+  def self.process_embargo_year(rule, year)
+    end_year = DateTime.now.year.to_i
+    case rule.period_type
+    when 'end'
+      end_year = rule.period.to_i
+    when 'period'
+      end_year = rule.period.to_i + year.to_i if year.present?
+    end
+    end_year
+  end
 
+  def release
+    errors.add(:release_date, ' must be in the future') if embargoed == true && (DateTime.now.year.to_i > release_date.to_i)
   end
 end

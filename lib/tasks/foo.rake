@@ -20,9 +20,14 @@ namespace :foo do
     DeleteOrArchiveOldMessagesFeedbacksAndContacts.process
   end
 
-  task :delete_or_archive_old_messages_feedbacks_and_contacts => [:environment] do
-    require 'delete_or_archive_old_messages_feedbacks_and_contacts'
-    DeleteOrArchiveOldMessagesFeedbacksAndContacts.process
+  task :remove_stale_embargoed_flag, [:limit] => [:environment]  do |t, args|
+    require 'remove_stale_embargoed_flag'
+    RemoveStaleEmbargoedFlag.process(args.limit)
+  end
+
+  task :add_embargo_record, [:limit] => [:environment]  do |t, args|
+    require 'add_embargo_record'
+    AddEmbargoRecord.process(args.limit)
   end
 
   task :update_message_nature_field => [:environment] do
