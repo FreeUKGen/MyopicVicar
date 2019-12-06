@@ -46,8 +46,8 @@
                 <td><%= locked_by_transcriber(freereg1_csv_file)%></td>
                 <td><%= locked_by_coordinator(freereg1_csv_file)%></td>
                 <td><%= link_to 'SH', freereg1_csv_file, method: :get  %></td>
-                <td>><%= link_to 'ED', edit_freereg1_csv_file_path(freereg1_csv_file), method: :get   %></td>
-                <td>><%= link_to 'DL', download_freereg1_csv_file_path(freereg1_csv_file), data: { confirm:  'Are you sure you want to download this file?'}, method: :get  %></td>
+                <td><%= link_to 'ED', edit_freereg1_csv_file_path(freereg1_csv_file), method: :get   %></td>
+                <td><%= link_to 'DL', download_freereg1_csv_file_path(freereg1_csv_file), data: { confirm:  'Are you sure you want to download this file?'}, method: :get  %></td>
                 <td><%= link_to 'ER', error_freereg1_csv_file_path(freereg1_csv_file), method: :get %>
                   <td><%= link_to 'L/U', lock_freereg1_csv_file_path(freereg1_csv_file), method: :get, data: { confirm:  'Are you sure you want to lock/unlock all of the batches associated with this file?'} %>
                   </td>
@@ -60,7 +60,7 @@
           </tbody>
         </table>
         <br />
-        <%= paginate @freereg1_csv_files %>
+        <br>
       </div>
     </section>
   </div>

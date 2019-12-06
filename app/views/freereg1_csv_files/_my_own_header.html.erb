@@ -17,6 +17,6 @@
   <%= link_to 'Waiting for processing' , display_my_own_files_waiting_to_be_processed_freereg1_csv_file_path, method: :get , :class => "btn btn--small" %>
   <%= link_to 'Select Specific File' , display_my_own_files_by_selection_freereg1_csv_file_path, method: :get , :class => "btn btn--small" %>
 </div>
-<p class="text--center"> To replace a file: find the file in the list below and select (click) its RL option. </p>
-<p class="text--center">To upload a brand new file: use this button ... <%= link_to 'Upload new file', new_csvfile_path, method: :get , :class => "btn btn--small"%>
+<p class="text--center"> To replace a file: find the file in the list and click its RL option.
+  To upload a new file: click this <%= link_to 'Upload new file', new_csvfile_path, method: :get , :class => "btn btn--small"%>
 </p>
