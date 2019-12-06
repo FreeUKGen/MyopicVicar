@@ -203,6 +203,12 @@ crumb :place_range_options do |county, active|
   parent :county_options, county
 end
 
+crumb :offline_reports do |county|
+  link 'Select Report'
+  parent :county_options, county
+end
+
+
 crumb :manage_county_selection do |county|
   link 'Selection'
   parent :county_options, county
