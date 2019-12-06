@@ -1,59 +1,71 @@
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
-<div class="grid search_results">
-  <div class="grid__item one-sixth lap-one-half palm-one-whole">
-    <div class='results_block'>
-      Results
+<div class='grid'>
+  <div class='grid__item one-whole lap-one-half palm-one-whole'>
+    <div class='result_text'>
+      FreeBMD tries to ensure the results are an accurate transcription of the GRO Index but errors exist in the index and our transcription of it. You are advised to take this into account in your use of the information found and we have some help on doing that.
     </div>
   </div>
-  <div class="grid__item five-sixths lap-one-half palm-one-whole">
-   <%= render 'display_search_criteria' %>
-   <%#= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  btn--small revise_search" %>
-  </div>
 </div>
-<%# raise 'hi'%>
-<div class="table-wrapper" id="search-result">
-  <table class="table--bordered table--data">
-    <caption class="gamma"> <%= pluralize(@result_count, ' Search Result', ' Search Results') %>
-      <small class="additional">Select a heading to sort results on that column.<br>
-         Each link in the <q>Detail</q> column opens a page with all the information we have for that record.</small>
-    </caption>
+<section class="island" >
+  <table class="search_results_table" border='0' >
     <thead>
       <tr>
+        <% unless print_friendly %>
+          <th>Detail</th>
+        <% end %>
         <th>
-          Individual Name
+          Surname
+        </th>
+        <th>
+          Firstname
+        </th>
+        <th>
+          Date
         </th>
         <th>
           Record Type
         </th>
         <th>
-          Year
+          District
         </th>
         <th>
-          Quarter
+          M/S/A/D
         </th>
-        <% unless print_friendly %>
-          <th>Detail</th>
-        <% end %>
       </tr>
     </thead>
     <tbody>
       <% n = 0 %>
       <% search_results.each do |search_record| %>
-        <tr id="<%=search_record[:_id]%>">
-          <td>          
-            <%= "#{search_record[:GivenName]} #{search_record[:Surname]} " %>
-          </td>
-          <td>          
-            <%= "#{search_record[:RecordTypeID]}" %>
-          </td>
-          <td>          
-            <%= (search_record[:QuarterNumber]-1)/4 + 1837%>
+        <% n = n +1%>
+        <% record_type = BmdRecordType.where(RecordTypeID: search_record[:RecordTypeID]).first.RecordType%>
+        <tr id="<%=search_record[:_id]%>" class="<%= record_type.downcase %>">
+          <% unless print_friendly %>
+           <td>
+            <i class="fa fa-arrow-right view_arrow"></i>
+             <%= link_to("View #{n}", '#',rel:"nofollow")%>
+            <i><br><%= viewed(@search_query,search_record) %></i>
+           </td>
+          <% end %>
+          <td>
+            <%= "#{search_record[:Surname]} " %>
           </td>
           <td>
-            <%= (search_record[:QuarterNumber]-1)%4 + 1%>
+            <%= "#{search_record[:GivenName]}" %>
+          </td>
+          <td>
+            <%= "#{(search_record[:QuarterNumber]-1)%4 + 1} #{(search_record[:QuarterNumber]-1)/4 + 1837}"%>
+          </td>
+          <td>
+            <%= "#{record_type}" %>
+          </td>
+          <td>
+            <%= "#{search_record[:District]}" %>
+          </td>
+          <td>
+            <%= "#{search_record[:District]}" %>
           </td>
         </tr>
       <% end %>
     </tbody>
   </table>
-</div>
+</section>

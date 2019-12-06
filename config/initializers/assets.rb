@@ -31,5 +31,6 @@ Rails.application.configure do
   config.assets.precompile += %w[styles/css/donate_icon.css]
   config.assets.precompile += %w( cookie_control.js )
   config.assets.precompile += %w( advert_control.js )
+  config.assets.precompile += %w( jquery.cookiesDirective.js )
   #config.assets.precompile += %w[Chart.min.js]
 end

@@ -4,14 +4,22 @@
   <% end %>
 <% else %>
   <section class="islet islet--light soft--left hard--bottom">
-    <h2 class="epsilon flush--bottom"><em>You searched for:</em></h2>
-    <div class="criteria-group">
-      <% search_params_for_display(@search_query).each do |name, value| %>
-        <dl class="criteria">
-          <dt class="criteria__name"><%= name %></dt>
-          <dd class="criteria__value"><%= value %></dd>
-        </dl>
-      <% end %>
+    <div class='grid'>
+      <div class='grid__item one-whole lap-one-half palm-one-whole'>
+        <h2 class="epsilon flush--bottom"><em>You searched for:</em></h2>
+        <div class="criteria-group">
+          <% search_params_for_display(@search_query).each do |name, value| %>
+            <dl class="criteria">
+              <dt class="criteria__name"><%= name %></dt>
+              <dd class="criteria__value"><%= value %></dd>
+            </dl>
+          <% end %>
+        </div>
+      </div>
+    </div>
+    <div class="grid action">
+    <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  btn--small" %>
+      <%= link_to "New Search", new_search_query_path, :class => "btn  btn--small " %>
     </div>
   </section>
 <% end %>
