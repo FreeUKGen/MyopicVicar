@@ -7,7 +7,7 @@ __FreeREG | Release Notes__
 
   * Added a Reports action for county coordinators. First report produces an off line listing of their Places, Churches, Registers and Files in a new Report.
   * Added additional advertisements from partner.
-  * Added member access to FreeUKGenealogy
+  * Added member access to FreeUKGenealogy Policies.
 
 
   __Improvements__

@@ -5,7 +5,7 @@ __FreeCEN2 | Release Notes__
   __New Features__
   ----------------
 
-  * Added member access to FreeUKGenealogy
+  * Added member access to FreeUKGenealogy Policies.
 
 
   __Improvements__
