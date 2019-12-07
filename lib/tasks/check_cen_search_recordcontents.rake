@@ -86,44 +86,65 @@ task :check_cen_search_record_contents, [:limit] => :environment do |t, args|
       sex_1891 << individual.sex unless individual.sex.blank? || sex_1891.include?(individual.sex)
     end
   end
+  occupations = []
+  languages = []
+  marital_statuses = []
+  disabilities = []
+  sexes = []
+  occupations = occupation_1841 + occupation_1851 + occupation_1861 + occupation_1871 + occupation_1881 + occupation_1891
+  occupations = occupations.uniq
+  languages = language_1841 + language_1851 + language_1861 + language_1871 + language_1881 + language_1891
+  languages = languages.uniq
+  marital_statuses = marital_status_1841 + marital_status_1851 + marital_status_1861 + marital_status_1871 + marital_status_1881 + marital_status_1891
+  marital_statuses = marital_statuses.uniq
+  disabilities = disability_1841 + disability_1851 + disability_1861 + disability_1871 + disability_1881 + disability_1891
+  disabilities = disabilities.uniq
+  sexes = sex_1841 + sex_1851 + sex_1861 + sex_1871 + sex_1881 + sex_1891
+  sexes = sexes.uniq
   time_processing = Time.now - start
   message_file.puts "checked  #{number_processed} records in #{time_processing}"
   p "checked  #{number_processed} records "
   message_file.puts '1841'
-  message_file.puts "Occupations, #{occupation_1841} "
+  message_file.puts "Occupations, #{occupation_1841} ,#{occupation_1841.length}"
   message_file.puts "Language, #{language_1841}"
   message_file.puts "Marital status #{marital_status_1841}"
   message_file.puts "Disability #{disability_1841}"
   message_file.puts "Sex, #{sex_1841}"
   message_file.puts '1851'
-  message_file.puts "Occupations, #{occupation_1851} "
+  message_file.puts "Occupations, #{occupation_1851} ,#{occupation_1851.length}"
   message_file.puts "Language, #{language_1851}"
   message_file.puts "Marital status #{marital_status_1851}"
   message_file.puts "Disability #{disability_1851}"
   message_file.puts "Sex, #{sex_1851}"
   message_file.puts '1861'
-  message_file.puts "Occupations, #{occupation_1861} "
+  message_file.puts "Occupations, #{occupation_1861} ,#{occupation_1861.length}"
   message_file.puts "Language, #{language_1861}"
   message_file.puts "Marital status #{marital_status_1861}"
   message_file.puts "Disability #{disability_1861}"
   message_file.puts "Sex, #{sex_1861}"
   message_file.puts '1871'
-  message_file.puts "Occupations, #{occupation_1871} "
+  message_file.puts "Occupations, #{occupation_1871} ,#{occupation_1871.length}"
   message_file.puts "Language, #{language_1871}"
   message_file.puts "Marital status #{marital_status_1871}"
   message_file.puts "Disability #{disability_1871}"
   message_file.puts "Sex, #{sex_1871}"
   message_file.puts '1881'
-  message_file.puts "Occupations, #{occupation_1881} "
+  message_file.puts "Occupations, #{occupation_1881} ,#{occupation_1881.length}"
   message_file.puts "Language, #{language_1881}"
   message_file.puts "Marital status #{marital_status_1881}"
   message_file.puts "Disability #{disability_1881}"
   message_file.puts "Sex, #{sex_1881}"
   message_file.puts '1891'
-  message_file.puts "Occupations, #{occupation_1891} "
+  message_file.puts "Occupations, #{occupation_1891} ,#{occupation_1891.length}"
   message_file.puts "Language, #{language_1891}"
   message_file.puts "Marital status #{marital_status_1891}"
   message_file.puts "Disability #{disability_1891}"
   message_file.puts "Sex, #{sex_1891}"
+  message_file.puts 'Total'
+  message_file.puts "Occupations, #{occupations} ,#{occupations.length}"
+  message_file.puts "Language, #{languages}"
+  message_file.puts "Marital status #{marital_statuses}"
+  message_file.puts "Disability #{disabilities}"
+  message_file.puts "Sex, #{sexes}"
   message_file.close
 end
