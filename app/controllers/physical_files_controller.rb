@@ -50,6 +50,7 @@ class PhysicalFilesController < ApplicationController
     @batch.file_and_entries_delete
     @batch.delete
     flash[:notice] = 'The destruction of the physical files and all its entries and search records was successful'
+    redirect_back(fallback_location: { action: 'select_action' }) && return
   end
 
   def download
@@ -197,7 +198,7 @@ class PhysicalFilesController < ApplicationController
     clean_session_for_syndicate
     get_user_info_from_userid
     @batches = PhysicalFile.new
-    @options= UseridRole::PHYSICAL_FILES_OPTIONS
+    @options = UseridRole::PHYSICAL_FILES_OPTIONS
     @prompt = 'Select Action?'
   end
 

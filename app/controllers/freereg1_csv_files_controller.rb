@@ -351,7 +351,12 @@ class Freereg1CsvFilesController < ApplicationController
     controls(@freereg1_csv_file)
     proceed, message = @freereg1_csv_file.remove_batch
     proceed ? flash[:notice] = 'The removal of the batch entry was successful' : flash[:notice] = message
-    if @return_location.blank?
+
+    if session[:my_own]
+      redirect_to freereg1_csv_files_path
+    elsif session[:current_page]
+      redirect_to session[:current_page]
+    elsif @return_location.blank?
       redirect_to manage_resource_path(@user)
     else
       redirect_to register_path(@return_location)

@@ -24,6 +24,16 @@ class ManageCountiesController < ApplicationController
     redirect_to freereg1_csv_files_path
   end
 
+  def county_content_report
+    get_user_info_from_userid
+    userid = @user.userid
+    chapman_code = session[:chapman_code]
+    pid1 = Kernel.spawn("bundle exec rake reports:report_on_files_for_each_register_church_place[#{chapman_code},#{userid}] --trace")
+
+    Process.detach pid1
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'Request submitted') && return
+  end
+
   def create
     redirect_back(fallback_location: new_manage_resource_path, notice: 'You did not selected anything') && return if params[:manage_county].blank? || params[:manage_county][:chapman_code].blank?
 
@@ -216,6 +226,12 @@ class ManageCountiesController < ApplicationController
       @manage_county = ManageCounty.new
       @location = 'location.href= "/manage_counties/" + this.value +/selected/'
     end
+  end
+
+  def offline_reports
+    get_user_info_from_userid
+    @chapman_code = session[:chapman_code]
+    @county = session[:county]
   end
 
   def place_range

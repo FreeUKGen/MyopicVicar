@@ -33,6 +33,7 @@ class Message
   mount_uploader :attachment, AttachmentUploader
   mount_uploader :images, ScreenshotUploader
   before_create :add_identifier
+  before_destroy :delete_replies
 
   index({_id: 1, userid: 1},{name: 'id_userid'})
   index({_id: 1, sent_time: 1},{name: 'id_sent_time'})
@@ -85,6 +86,19 @@ class Message
       where(:nature.ne => 'syndicate')
     end
 
+    def should_be_removed_from_userid?(id, date)
+      date = date.to_time
+      if Message.find_by(_id: id).present?
+        return true if  Message.find_by(_id: id).created_at < date
+      elsif Contact.find_by(_id: id).present?
+        return true if  Contact.find_by(_id: id).created_at < date
+      elsif Feedback.find_by(_id: id).present?
+        return true if  Feedback.find_by(_id: id).created_at < date
+      else
+        return true
+      end
+      false
+    end
 
     def syndicate(syndicate)
       where(:syndicate => syndicate)
@@ -199,6 +213,15 @@ class Message
     reply_sent_messages(self, userid, recipients, copies)
   end
 
+  def delete_replies
+    replies = Message.where(source_message_id: id).all
+    return if replies.blank?
+
+    replies.each do |reply|
+      reply.destroy
+    end
+  end
+
   def get_actual_recipients(recipient_role, syndicate, active, open_data_status, reasons)
     ccs = Array.new
     active_user = user_status(active)
@@ -250,6 +273,10 @@ class Message
 
   def message_sent?
     sent_messages.deliveries.count != 0
+  end
+
+  def message_not_sent?
+    sent_messages.deliveries.count == 0
   end
 
   def mine?(user)
@@ -500,9 +527,8 @@ class Message
     def list_messages(action, syndicate, archived, order)
       case action
       when 'list_unsent_messages'
-        @messages = Message.non_feedback_contact_reply_messages.not_communications.all.find_all do |message|
-          !message.sent?
-        end
+        @messages = Message.non_feedback_contact_reply_messages.not_communications.all.find_all { |message|
+        message.message_not_sent? }
       when 'list_feedback_reply_message'
         @messages = Message.feedback_replies.archived(archived).order_by(order)
       when 'list_contact_reply_message'

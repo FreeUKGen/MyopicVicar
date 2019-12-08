@@ -252,14 +252,24 @@ class UseridDetail
     user = UseridDetail.userid(userid).first
   end
 
-
-
   def remove_checked_messages(msg_id)
     self.reload
     return if !(self.userid_messages.include? msg_id)
     userid_msgs = self.userid_messages
     userid_msgs = userid_msgs - [msg_id]
     self.update_attribute(:userid_messages, userid_msgs) if userid_msgs.length != self.userid_messages.length
+  end
+
+  def remove_deleted_messages(date)
+    removal = []
+    userid_msgs = userid_messages
+    userid_msgs.each do |message_id|
+      removal << message_id if Message.should_be_removed_from_userid?(message_id, date)
+    end
+    removal.each do |message|
+      userid_msgs = userid_msgs - [message]
+    end
+    update(userid_messages: userid_msgs) if userid_msgs.length != userid_messages.length
   end
 
   def update_userid_feedbacks
@@ -377,7 +387,13 @@ class UseridDetail
     users.each do |user|
       userids << user.userid
     end
-    return userids
+    userids
+  end
+
+  def self.get_userids_for_display(syndicate)
+    users = UseridDetail.all.order_by(userid_lower_case: 1) if syndicate == 'all'
+    users = UseridDetail.where(:syndicate => syndicate).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
+    users
   end
 
 

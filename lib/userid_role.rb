@@ -190,7 +190,7 @@ module UseridRole
     COUNTY_MANAGEMENT_OPTIONS = ['All Places', 'Active Places', 'Specific Place', 'Places with Unapproved Names', 'Review Batches with Errors',
                                  'Review Batches with Zero Dates', 'Review Batches by Filename', 'Review Batches by Userid then Filename',
                                  'Review Batches by Most Recent Date of Change', 'Review Batches by Oldest Date of Change', 'Review Specific Batch',
-                                 'Upload New Batch', 'Manage Images']
+                                 'Upload New Batch', 'Offline Reports', 'Manage Images']
   when 'freecen'
     COUNTY_MANAGEMENT_OPTIONS = ['Manage Pieces', 'Manage VLD Files', 'Manage Places']
   when 'freebmd'
@@ -211,7 +211,8 @@ module UseridRole
     'Manage Images' => '/manage_counties/selection?option=Manage Images',
     'Manage Pieces' => '/freecen_pieces',
     'Manage VLD Files' => '/freecen1_vld_files',
-    'Manage Places' => '/places'
+    'Manage Places' => '/places',
+    'Offline Reports' => '/manage_counties/selection?option=Offline Reports'
 
   }
   SYNDICATE_MANAGEMENT_OPTIONS =  ['Review Active Members', 'Review All Members', 'Transcription Agreement Accepted', 'Transcription Agreement Not Accepted', 'Select Specific Member by Userid',

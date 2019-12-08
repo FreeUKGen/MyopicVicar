@@ -256,12 +256,14 @@
 /* For Cookie Consent notification bar */
 
 .cookieConsent {
+  display: none;
   position: fixed;
   bottom: 0px;
   left: 0px;
   width: 100%;
   height: auto;
   text-align: center;
+
 }
 
 /**
@@ -289,12 +291,4 @@ th.sticky-header {
   top: 0;
   z-index: 10;
   box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.06);
-  &:focus,
-  &:hover {
-          background: #fff;
-          color: $project-color;
-          outline: 5px solid #fff;
-          text-decoration: none;
-        }
-
 }

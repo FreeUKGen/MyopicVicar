@@ -30,6 +30,8 @@ class Feedback
 
   before_create :url_check, :add_identifier, :add_email, :add_screenshot_location
 
+  before_destroy :delete_replies
+
   module FeedbackType
     ISSUE='issue' #log a GitHub issue
     # To be added: contact form and other problems
@@ -201,6 +203,15 @@ class Feedback
   def communicate_initial_contact
     self.acknowledge_feedback
     self.feedback_action_communication
+  end
+
+  def delete_replies
+    replies = Message.where(source_feedback_id: id).all
+    return if replies.blank?
+
+    replies.each do |reply|
+      reply.destroy
+    end
   end
 
   def feedback_action_communication
