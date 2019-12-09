@@ -53,9 +53,6 @@
         <%= select_tag( 'search_query[end_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.end_quarter)), class: 'select_month_end', id: 'date_year') %>
         <%= select_year(set_value(@search_query.end_year), {start_year: 1837, end_year: 1992, prompt: '- - - -'}, class: 'select_year_end', name: 'search_query[end_year]') %>
       </div>
-
-      <%# raise  (@search_query.bmd_record_type).inspect%>
-
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <div class='labels'>
           <%= label_tag 'record_type', 'Record Type', class: "ttip" %>
@@ -80,6 +77,7 @@
           <% end %>
         </span>
       </div>
+
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <div class='labels'>
           <%= label_tag 'spouse_first_name', 'Spouses first name(s)', class: "ttip" %>
@@ -98,23 +96,29 @@
         <%= text_field_tag 'search_query[spouses_mother_surname]', set_value(@search_query.spouses_mother_surname), class: 'text-input', placeholder: '', tabindex: '1'%>
       </div>
 
-      <div class="grid__item one-quarter lap-one-half palm-one-whole">
+      <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <div class='labels'>
-          <%= check_box_tag 'search_query[death_at_age]', true, false %>
-          <%= content_text(:optional_checkbox_label, 'Age / Date of Birth') %>
          
+          <%= label_tag 'age_at_death', 'Age at Death', class: "ttip" %>
           <%= label_tag 'date_of_birth_or_age_at_death', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '0', title: date_of_birth_or_death_age_info[:death_age]%>
         </div>
+        <%= select_tag(:death_at_age, options_for_select(SearchQuery::DEATH_AGE_OPTIONS.map { |k,v| [v,k] }), {:prompt => "-- Select Deat Age --", id: 'death_select_box'}) %>
         <span id="death_age_and_dob">
           <span id="death_age">
-            <%= number_field_tag 'search_query[min_age_at_death]', nil, within: 0..199, placeholder: 'min age' %>
-            <%= number_field_tag 'search_query[max_age_at_death]', nil, within: 0..199, placeholder: 'max age' %>
+            <%= number_field_tag 'search_query[age_at_death]', nil, within: 0..199, placeholder: 'Enter Age', class: 'text-input' %>
+          </span>
+          <span id="death_age_range">
+            <%= number_field_tag 'search_query[min_age_at_death]', nil, within: 0..199, placeholder: 'min age', class: 'text-input' %>
+            <%= number_field_tag 'search_query[max_age_at_death]', nil, within: 0..199, placeholder: 'max age', class: 'text-input' %>
           </span>
           <span id="death_dob">
-            <%= date_field_tag 'search_query[min_dob_at_death]' %>
-            <%= date_field_tag 'search_query[max_dob_at_death]' %>
+            <%= date_field_tag 'search_query[dob_at_death]', nil, class: 'text-input' %>
           </span>
-        </span><br/>
+          <span id="death_dob_range">
+            <%= date_field_tag 'search_query[min_dob_at_death]', nil, class: 'text-input' %>
+            <%= date_field_tag 'search_query[max_dob_at_death]', nil, class: 'text-input' %>
+          </span>
+        </span>
         <%= check_box_tag 'search_query[match_recorded_ages_or_dates]', true, false %>
         <%= content_text(:small, 'Match only recorded ages') %>
       </div>
@@ -135,7 +139,7 @@
         <%= text_field_tag 'search_query[page]', set_value(@search_query.page), class: 'text-input', id: 'page', placeholder: 'Enter Page', tabindex: '4' %>
       </div>
 
-      <div class="grid__item three-eighths lap-three-quarters palm-one-whole" id="search_query_chapman_codes_input">
+      <div class="grid__item three-eighths lap-one-quarters palm-one-whole" id="search_query_chapman_codes_input">
         <div class='labels'>
           <%= label_tag 'chapman_codes', 'Counties', class: "ttip" %>
           <%= label_tag 'chapman_codes', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '0', title: info_tag_text[:firstname]%>
@@ -146,7 +150,7 @@
         <%= f.select :chapman_codes, grouped_options_for_select(grouped_options, selected_key = key), {include_blank: 'All Counties'}, {multiple: true} %>
         <small class="additional">Select one place or none</small>
       </div>
-      <div class="grid__item three-eighths lap-three-quarters palm-one-whole"  id="search_query_chapman_codes_input">
+      <div class="grid__item three-eighths lap-one-quarters palm-one-whole"  id="search_query_chapman_codes_input">
         <div class='labels'>
           <%= label_tag 'districts', 'Districts', class: "ttip" %>
           <%= label_tag 'districts', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '0', title: info_tag_text[:firstname]%>
@@ -203,57 +207,54 @@ $(document).ready(function(){
     });
   });
 
-  // Show and hide the death age and death date of birth attribute
-  var show_hide_death_attributes = function() {
-    if($('#death_age_age').is(':checked')) { 
-      $('#death_age :input').show(); 
-      $('#death_dob :input').val('').hide();
-    } else {
-      $('#death_age :input').val('').hide(); 
-      $('#death_dob :input').show();
-    }
-  };
-  show_hide_death_attributes();
-  $('input[type=radio][name=death_age]').change(show_hide_death_attributes);
 
-  // Enable and disable the death age attributes
-  var enable_disable_death_attributes = function() {
-    if($("#new_search_query input:radio").is(':enabled')) {
-      $("#death_age_and_dob :input").attr("disabled", false);
-      $("#death_age_age").prop("checked", true);
-    }
-    else {
-      $("#death_age_and_dob :input").attr("disabled", true);
-    }
-  };
-  enable_disable_death_attributes();
-
-  $("#new_search_query input:radio").attr('disabled',true);
-  $("#death_age_and_dob :input").attr("disabled", true);
+  $('#death_select_box').prop('disabled', 'disabled');
   $('.checkboxtag, .checkAll').change(function() {
-    enable_disable_death_attributes();
-    show_hide_death_attributes();
-
-    if ($(".death").is(":checked") && !$('.birth, .marriage, .checkAll').is(':checked')) {
-      $("#new_search_query input:radio").attr('disabled',false);
-    }  else {
-      $("#new_search_query input:radio").attr('disabled',true);
-    }
-  });
-
-  $('.checkboxtag, .checkAll').change(function() {
+    hide_all_death_options();
     if ($(".birth").is(":checked") && !$('.death, .marriage, .checkAll').is(':checked')) {
       $('#search_query_spouses_mother_surname').prop('disabled', false)
       $('#search_query_spouses_mother_surname').prop('placeholder', "Enter Mother's surname here")
-    }  else if ($(".marriage").is(":checked") && !$('.birth, .death, .checkAll').is(':checked')) {
+      $('#death_select_box').val("").prop('disabled', 'disabled');
+    } else if ($(".marriage").is(":checked") && !$('.birth, .death, .checkAll').is(':checked')) {
       $('#search_query_spouses_mother_surname').prop('disabled', false)
       $('#search_query_spouses_mother_surname').prop('placeholder', "Enter Spouse's surname here")
-    }
-      else {
-      $('#search_query_spouses_mother_surname').val('')
-      $('#search_query_spouses_mother_surname').prop('disabled', true)
+      $('#death_select_box').val("").prop('disabled', 'disabled');
+    } else if ($(".death").is(":checked") && !$('.birth, .marriage, .checkAll').is(':checked')) {
+      $('#death_select_box').prop('disabled', false);
+    } else {
+      $('#search_query_spouses_mother_surname').val('').prop('disabled', true)
       $('#search_query_spouses_mother_surname').prop('placeholder', '')
+      $('#death_select_box').val("").prop('disabled', 'disabled');
+    }
+  });
 
+  var hide_all_death_options = function() {
+    $('#death_age_and_dob').css('display','block')
+    $('#search_query_age_at_death').val('').hide();
+    $('#search_query_min_age_at_death').val('').hide();
+    $('#search_query_max_age_at_death').val('').hide();
+    $('#search_query_dob_at_death').val('').hide();
+    $('#search_query_min_dob_at_death').val('').hide();
+    $('#search_query_max_dob_at_death').val('').hide();
+  }
+  hide_all_death_options();
+
+  $('#death_select_box').bind('click', function(){
+    hide_all_death_options();
+    var selected = $(this).val();
+    if (selected == '1') {
+      $('#search_query_age_at_death').show();
+    }
+    if (selected == '2') {
+      $('#search_query_min_age_at_death').show();
+      $('#search_query_max_age_at_death').show();
+    }
+    if (selected == '3') {
+      $('#search_query_dob_at_death').show();
+    }
+    if (selected == '4') {
+      $('#search_query_min_dob_at_death').show();
+      $('#search_query_max_dob_at_death').show();
     }
   });
 
@@ -278,6 +279,11 @@ $(document).ready(function(){
   $('#search_form_submit').click(function() {
     validate_death_age();
     validate_death_dob();
+  });
+
+  $('.clear_form').click(function() {
+    hide_all_death_options();
+    $('#death_select_box').val("").prop('disabled', 'disabled');
   });
 });
 </script>

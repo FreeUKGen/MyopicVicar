@@ -40,8 +40,8 @@ class SearchQuery
   field :min_age_at_death, type: Integer # , :required => false
   field :max_age_at_death, type: Integer # , :required => false
   field :min_dob_at_death, type: String # , :required => false
-  field :min_dob_at_death, type: String # , :required => false
-  field :date_of_birth, type: String # , :required => false
+  field :max_dob_at_death, type: String # , :required => false
+  field :dob_at_death, type: String # , :required => false
   field :match_recorded_ages_or_dates, type: Boolean # , :required => false
   field :volume, type: String # , :required => false
   field :page, type: String # , :required => false
@@ -102,6 +102,13 @@ class SearchQuery
   index({ c_at: 1},{name: 'c_at_1',background: true })
   index({day: -1,runtime: -1},{name: 'day__1_runtime__1',background: true })
   index({day: -1,result_count: -1},{name: 'day__1_result_count__1',background: true })
+
+  DEATH_AGE_OPTIONS = {
+    1 => "Age",
+    2 => "Age Range",
+    3 => "Date of Birth",
+    4 => "Date of Birth Range"
+  }
 
   class << self
 
@@ -856,8 +863,11 @@ class SearchQuery
     #raise bmd_params_hash.inspect
     @search_index = SearchQuery.get_search_table.index_hint(bmd_adjust_field_names)
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
-    records = SearchQuery.get_search_table.where(bmd_params_hash).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+    #raise bmd_params_hash.inspect
+    #raise BestGuess.where(bmd_params_hash).inspect
+    records = SearchQuery.get_search_table.joins(spouse_join_condition)#.where(bmd_params_hash).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     records = records.where(first_name_filteration) unless self.first_name_exact_match
+    records = combined_results records if date_of_birth_range?
     persist_results(records)
     records
   end
@@ -889,21 +899,16 @@ class SearchQuery
     params = {}
     params[:age_at_death] = ['',self.age_at_death]
     params[:age_at_death] = ['',define_range] if check_age_range?
-    params[:age_at_death] = self.age_at_death if match_recorded_ages_or_dates
+    params[:age_at_death] = self.age_at_death || dob_exact_match if match_recorded_ages_or_dates
     params
   end
 
   def check_age_range?
-    self.age_at_death.include?('-') || self.age_at_death.include?('%')
+    self.min_age_at_death.present? && self.max_age_at_death.present?
   end
 
   def define_range
-    case special_character
-   when '-'
-      range_to_integer[0]..range_to_integer[1] unless special_character.include?'/'
-    when '%'
-      range_to_integer[0]-range_to_integer[1]..range_to_integer[0]+range_to_integer[1]
-    end
+    self.min_age_at_death..self.max_age_at_death
   end
 
   def 
@@ -939,7 +944,7 @@ class SearchQuery
   end
 
   def first_name_filteration
-    "GivenName like '#{bmd_adjust_field_names[:GivenName]}%'"
+    "GivenName like '#{bmd_adjust_field_names[:GivenName]}%'" if self.first_name.present?
   end
 
   def bmd_params_hash
@@ -1047,29 +1052,48 @@ class SearchQuery
     self.search_result.records.respond_to?(:values)
   end
 
-  def date_of_birth_search_range_a
+  def date_of_birth_range?
+    self.min_dob_at_death.present? && self.max_dob_at_death.present?
+  end
+
+  def date_of_birth_search_range_a records
     b = []
     records.select{|r|
-      r.QuarterNumber - (r.AgeAtDeath * 4) >= dob_quarter_number
+      r.QuarterNumber - (r.AgeAtDeath * 4) >= min_dob_range_quarter
     }
   end
 
-  def date_of_birth_search_range_b
+  def date_of_birth_search_range_b records
     b = []
     records.select{|r|
-      r.QuarterNumber - ((r.AgeAtDeath + 1) * 4 + 1) <= dob_quarter_number
+      r.QuarterNumber - ((r.AgeAtDeath + 1) * 4 + 1) <= max_dob_range_quarter
     }
   end
 
-  def combined_results
-    date_of_birth_search_range_a + date_of_birth_search_range_b
+  def combined_results records
+    date_of_birth_search_range_a(records) + date_of_birth_search_range_b(records)
   end
 
-  def dob_quarter_number
-    date_array = self.age_at_death.split('/')
-    date_array.unshift(1) if date_array.length == 2
-    month = predefined_month_key(date_array[1])
-    quarter_number(year: date_array[2], quarter: get_quarter_from_month(predefined_month_key(date_array[1])))
+  def min_dob_range_quarter
+    min_dob_quarter = dob_quarter_number(self.dob_at_death)
+    min_dob_quarter = dob_quarter_number(self.min_dob_at_death) if date_of_birth_range?
+  end
+
+  def max_dob_range_quarter
+    max_dob_quarter = dob_quarter_number(self.dob_at_death)
+    max_dob_quarter = dob_quarter_number(self.max_dob_at_death) if date_of_birth_range?
+  end
+
+  def dob_quarter_number date
+    date_array = date.split('-')
+    quarter_number(year: date_array[0], quarter: date_array[1])
+  end
+
+  def dob_exact_match
+    date = self.dob_at_death.split('-').reverse
+    selected_month = month.key(date[1])
+    date[1] = selected_month
+    date.join
   end
 
   def dob_array
@@ -1115,6 +1139,7 @@ class SearchQuery
     params.merge!(bmd_age_at_death_params) if self.age_at_death.present?
     params.merge!(bmd_volume_params) if self.volume.present?
     params.merge!(bmd_page_params) if self.page.present?
+    params.merge!(spouse_surname_search) if self.spouses_mother_surname.present?
     params
   end
 
@@ -1123,12 +1148,36 @@ class SearchQuery
     if start_year_quarter >= 301
       params[:AssociateName] = self.spouses_mother_surname
     end
+    params
   end
 
-  
+  def month
+    {
+      '01': 'JA',
+      '02': 'FE',
+      '03': 'MR',
+      '04': 'AP',
+      '05': 'MY',
+      '06': 'JE',
+      '07': 'JY',
+      '08': 'AU',
+      '09': 'SE',
+      '10': 'OC',
+      '11': 'NO',
+      '12': 'DE'
+    }
+  end
+
+  def spouse_join_condition
+    if start_year_quarter < 301 && self.spouses_mother_surname.present?
+      spouse_surname_join_condition
+    else
+      ''
+    end
+  end
 
   def spouse_surname_join_condition
-    'inner join BestGuess as b on b.volume=BestGuessMarriages.volume and b.page=BestGuessMarriages.page and b.RecordtypeID= BestGuessMarriages.REcordTypeID and b.QuarterNumber=BestGuessMarriages.QuarterNumber'
+    'inner join BestGuessMarriages as b on b.volume=BestGuess.Volume and b.page=BestGuess.page and b.RecordtypeID= BestGuess.RecordTypeID and b.QuarterNumber=BestGuess.QuarterNumber'
   end
 
   private

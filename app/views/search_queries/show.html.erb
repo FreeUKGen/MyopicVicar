@@ -57,24 +57,8 @@
       <% end %>
       <div class="grid">
         <div class="grid__item one-third lap-one-half palm-one-whole">
-          <% if @result_count > 0 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
-            <svg width="100" height="70" viewBox="0 0 100 70" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g filter="url(#filter0_i)">
-<path d="M50 0C22.3828 0 0 14.5469 0 32.5C0 40.25 4.17969 47.3438 11.1328 52.9219C8.69141 60.7969 0.527344 67.8125 0.429688 67.8906C0 68.25 -0.117187 68.7812 0.136719 69.25C0.390625 69.7188 0.9375 70 1.5625 70C14.5117 70 24.2188 65.0312 29.0234 61.9688C35.4102 63.8906 42.5 65 50 65C77.6172 65 100 50.4531 100 32.5C100 14.5469 77.6172 0 50 0Z" fill="#00818A" fill-opacity="0.7"/>
-</g>
-<defs>
-<filter id="filter0_i" x="0" y="0" width="100" height="74" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-<feFlood flood-opacity="0" result="BackgroundImageFix"/>
-<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
-<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-<feOffset dy="4"/>
-<feGaussianBlur stdDeviation="2"/>
-<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
-<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
-<feBlend mode="normal" in2="shape" result="effect1_innerShadow"/>
-</filter>
-</defs>
-</svg>
+          <% if @result_count > 0 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %><center><br><%= FeedbackIconHelper::FEEDBACK_ICON.html_safe %></center>
+<p class="push-half--bottom">FreeBMD2 is a work in progress; we want your feedback on all aspects so that we can make it better.</p>
           <% end %>
         </div>
         <div class="grid__item one-third lap-one-half palm-one-whole">
@@ -84,23 +68,10 @@
         </div>
         <div class="grid__item one-third lap-one-half palm-one-whole">
           <div class="read-length push--bottom" style="margin-left: auto; margin-right: auto;">
+          <br>
           <% if @result_count > 0 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
-            <center><svg width="128" height="78" viewBox="0 0 128 78" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g filter="url(#filter0_d)">
-<path d="M95.5041 26.2493H67.0042V33.9062C67.0042 39.3343 60.9479 43.7507 53.5042 43.7507C46.0604 43.7507 40.0042 39.3343 40.0042 33.9062V17.2798L27.8355 22.6122C24.2167 24.1846 22.0042 27.0423 22.0042 30.1051V36.5724L7.00427 42.8893C4.13553 44.0926 3.14178 46.7725 4.81053 48.8644L19.8105 67.8153C21.4605 69.9072 25.1355 70.6182 28.0042 69.415L47.3917 61.2522H73.0042C79.6229 61.2522 85.0041 57.3281 85.0041 52.5015H88.0041C91.3229 52.5015 94.0041 50.5462 94.0041 48.1261V39.3754H95.5041C97.9979 39.3754 100.004 37.9124 100.004 36.0938V29.5308C100.004 27.7123 97.9979 26.2493 95.5041 26.2493ZM123.198 21.1355L108.198 2.18473C106.548 0.0927534 102.873 -0.618244 100.004 0.584983L80.6166 8.74778H61.4542C59.2042 8.74778 57.0104 9.21266 55.0979 10.0741L48.8167 12.9317C47.0542 13.7248 46.0042 15.1331 46.0042 16.6371V33.9062C46.0042 36.9279 49.3604 39.3754 53.5042 39.3754C57.6479 39.3754 61.0042 36.9279 61.0042 33.9062V21.8739H95.5041C101.298 21.8739 106.004 25.3058 106.004 29.5308V33.4276L121.004 27.1107C123.873 25.8938 124.848 23.2275 123.198 21.1355Z" fill="#00818A" fill-opacity="0.7"/>
-</g>
-<defs>
-<filter id="filter0_d" x="0" y="0" width="128" height="78" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-<feFlood flood-opacity="0" result="BackgroundImageFix"/>
-<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/>
-<feOffset dy="4"/>
-<feGaussianBlur stdDeviation="2"/>
-<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
-<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow"/>
-<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow" result="shape"/>
-</filter>
-</defs>
-</svg></center>
+            <center><br><%= VolunteerIconHelper::VOLUNTEER_ICON.html_safe %></center>
+            <p class="push-half--bottom">Have a spare 30 minutes a week? Give back by volunteering!</p>
 
           <% end %>
           </div>

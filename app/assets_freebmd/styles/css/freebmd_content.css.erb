@@ -36,12 +36,22 @@ input[type="checkbox"] {
     outline: none;
 }
 
+select {
+    display: inline-block;
+    padding: 10px;
+    background: none;
+    border: 1px solid #ccc;
+    color: black;
+    width: 100%;
+}
+
 select#date_month, select#date_year {
     display: inline-block;
     padding: 10px;
     background: none;
     border: 1px solid #ccc;
     color: black;
+    width: 40%;
 }
 
 span.optional_checkbox_label {
@@ -306,4 +316,12 @@ input:disabled:not([type="submit"]):hover {
 
 .view_arrow {
   color: #C84182;
+}
+
+#death_age_and_dob {
+  display: none;
+}
+
+#death_select_box {
+  margin-bottom: 5px;
 }
