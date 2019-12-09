@@ -5,25 +5,25 @@
   <%= pluralize(@result_count, ' Search Result', ' Search Results') %>
 <% else %>
   <div class="grid">
-    <div class="grid__item  one-third lap-one-third  palm-one-whole  push-half--top">
-      <h2 class="gamma flush--bottom"><%= pluralize(@result_count, ' Search Result', ' Search Results') %></h2>
-      <% unless defined?(@printable_format) && @printable_format%>
-        <small class="additional">Select a column heading in the table below to sort results on that column.<br>
-          Each link in the <q>Detail</q> column opens a page with all the information we have for that record.</small>
-      </div>
-      <div class="grid__item  two-thirds  lap-two-thirds  palm-one-whole push-half--top">
-        <section class="islet islet--light soft--left hard--bottom">
-          <h2 class="gamma flush--bottom"><em>When you searched for:</em></h2>
-          <div class="criteria-group">
-            <% search_params_for_display(@search_query).each do |name, value| %>
-              <dl class="criteria">
-                <dt class="criteria__name"><%= name %></dt>
-                <dd class="criteria__value"><%= value %></dd>
-              </dl>
-            <% end %>
-          </div>
-        </section>
-      <% end %>
+    <div class="grid__item  two-thirds  lap-two-thirds  palm-one-whole push-half--top">
+      <section class="islet islet--light soft--left hard--bottom">
+        <h2 class="gamma flush--bottom"><em>When you searched for:</em></h2>
+        <div class="criteria-group">
+          <% search_params_for_display(@search_query).each do |name, value| %>
+            <dl class="criteria">
+              <dt class="criteria__name"><%= name %></dt>
+              <dd class="criteria__value"><%= value %></dd>
+            </dl>
+          <% end %>
+        </div>
+      </section>
+    <% end %>
+  </div>
+  <div class="grid__item  one-third lap-one-third  palm-one-whole  push-half--top">
+    <h2 class="gamma flush--bottom"> We found <%= pluralize(@result_count, ' Result', ' Results') %></h2>
+    <% unless defined?(@printable_format) && @printable_format%>
+      <small class="additional">Select a column heading in the following table to sort results on that column.<br>
+        Each View button in the <q>Detail</q> column opens a page with all the information we have for that record.</small>
     </div>
   </div>
 <% end %>

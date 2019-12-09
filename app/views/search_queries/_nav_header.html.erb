@@ -1,6 +1,6 @@
 <% unless defined?(@printable_format) && @printable_format %>
-  <div class="text--center push--bottom">
-    <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  btn--small" %>
+  <div class="text--center push--bottom" role="navigation" aria-label="Actions for the search results">
+    <%= link_to "Revise Search", new_search_query_path(search_id: @search_query), class: "btn  btn--small"%>
     <%= link_to "New Search", new_search_query_path, :class => "btn  btn--small " %>
     <%= link_to("About This Query", about_search_query_path(@search_query, :page_number => @page_number), :class => "btn  btn--small") %>
     <% if @search_query.can_be_broadened? %>
