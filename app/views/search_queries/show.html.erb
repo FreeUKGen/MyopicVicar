@@ -16,7 +16,6 @@
         <%= render 'no_results' %>
       <% else %>
         <% if device_type == :desktop || device_type == :tablet %>
-          <%= MyopicVicar::Application.config.template_set%>
           <% case MyopicVicar::Application.config.template_set%>
           <% when 'freereg'%>
           <div class="container">
