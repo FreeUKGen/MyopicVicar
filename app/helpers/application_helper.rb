@@ -14,10 +14,82 @@
 #
 module ApplicationHelper
 
+  def nav_search_form_link
+    link_to('Search', main_app.new_search_query_path) unless controller_name.nil? || controller_name == 'search_queries' || controller_name == 'search_records'
+  end
+
+  def nav_actions_page_link
+    p 'actions'
+    return if session[:userid_detail_id].blank?
+
+    link_to 'Your Actions', main_app.new_manage_resource_path
+  end
+
+  def nav_about_page_link
+    p 'about'
+    return if session[:userid_detail_id].present?
+
+    link_to 'About', '/cms/about'
+  end
+
+  def nav_donate_page_link
+    p 'Donate'
+    link_to 'Donate', "https://www.freeukgenealogy.org.uk/help-us-keep-history-free/", id: 'donate_nav', target: :_blank
+  end
+
+  def nav_help_pages_link
+    p 'help'
+    if session[:userid_detail_id].present?
+      get_user_info_from_userid
+      if @user.present? && @user.person_role.present?
+        if @user.person_role == 'transcriber' || @user.person_role == 'trainee' || @user.person_role == 'pending'
+          link_to 'Help', '/cms/information-for-transcribers'
+        elsif @user.person_role == 'researcher'
+          link_to 'Help', '/cms/registered-researchers'
+        else
+          link_to 'Help', '/cms/information-for-coordinators'
+        end
+      end
+    else
+      link_to 'Help', '/cms/help'
+    end
+  end
+
+  def nav_member_page_link
+    p 'member'
+    if session[:userid_detail_id].present?
+      link_to 'Logout', main_app.logout_manage_resources_path
+    else
+      link_to 'Member', refinery.login_path
+    end
+  end
+
+  def nav_transcription_page_link
+    p 'transcriptiond'
+    return if controller_name == 'freecen_coverage' || controller_name == 'freecen_contents'
+
+    case appname.downcase
+    when 'freereg'
+      link_to('Transcriptions', main_app.new_freereg_content_path)
+    when 'freecen'
+      link_to('Transcriptions', main_app.freecen_coverage_path, id: 'db_coverage_nav')
+    when 'freebmd'
+      link_to('Transcriptions', 'https://www.freebmd.org.uk/progress.shtml', target: :_blank)
+    end
+  end
+
+  def nav_volunteer_page_link
+    p 'volunteer'
+    return if session[:userid_detail_id].present?
+
+    link_to 'Volunteer', "/cms/opportunities-to-volunteer-with-#{appname}"
+  end
+
   def action_manage_image_server(role)
     role == 'Manage Image Server' ? action = true : action = false
     action
   end
+
 
   def app_specific_partial(partial)
     template_set = MyopicVicar::Application.config.template_set
