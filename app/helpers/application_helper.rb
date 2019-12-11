@@ -41,26 +41,26 @@ module ApplicationHelper
       if @user.present? && @user.person_role.present?
         if @user.person_role == 'transcriber' || @user.person_role == 'trainee' || @user.person_role == 'pending'
           if controller_name == 'pages'
-            link_to 'Help', '/cms/help'
+            link_to 'Help', '/cms/help', target: :_blank
           else
-            link_to 'Help', '/cms/information-for-transcribers'
+            link_to 'Help', '/cms/information-for-transcribers', target: :_blank
           end
         elsif @user.person_role == 'researcher'
           if controller_name == 'pages'
-            link_to 'Help', '/cms/help'
+            link_to 'Help', '/cms/help', target: :_blank
           else
-            link_to 'Help', '/cms/registered-researchers'
+            link_to 'Help', '/cms/registered-researchers', target: :_blank
           end
         else
           if controller_name == 'pages'
-            link_to 'Help', '/cms/help'
+            link_to 'Help', '/cms/help', target: :_blank
           else
-            link_to 'Help', '/cms/information-for-coordinators'
+            link_to 'Help', '/cms/information-for-coordinators', target: :_blank
           end
         end
       end
     else
-      link_to 'Help', '/cms/help'
+      link_to 'Help', '/cms/help', target: :_blank
     end
   end
 

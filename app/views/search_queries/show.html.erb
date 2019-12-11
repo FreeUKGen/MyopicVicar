@@ -1,9 +1,6 @@
 <% title "Search Results" %>
-<% if flash[:notice] %>
-  <div id="notice" style="color:red;"><br>
-    <%= flash[:notice] %>  <% flash[:notice] = nil %><br>
-  </div>
-<% end %>
+<h1 class="accessibility">Search results</h1>
+<%= render 'flash_notice' %>
 <% show_contents_link%>
 <% if @search_query.present? %>
   <%= render 'nav_header' %>
