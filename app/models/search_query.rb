@@ -338,6 +338,7 @@ class SearchQuery
       search_results = self.filter_name_types(search_results)
       search_results.length.present? ? result_count = search_results.length : result_count = 0
       search_results = self.sort_results(search_results) unless search_results.nil?
+
       ucf_results = self.ucf_results unless self.ucf_results.blank?
       ucf_results = Array.new if  ucf_results.blank?
       response = true

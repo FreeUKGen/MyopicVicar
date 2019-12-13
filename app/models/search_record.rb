@@ -3,6 +3,7 @@ class SearchRecord
   include Mongoid::Document
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
+  include Mongoid::Attributes::Dynamic
   extend SharedSearchMethods
 
   require 'name_role'
