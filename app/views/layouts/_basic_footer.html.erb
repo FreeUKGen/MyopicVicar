@@ -1,0 +1,39 @@
+<div class="island  island--dark  flush--bottom  milli  text--white">
+  <div class="container">
+    <div class="grid">
+      <div class="grid__item  one-third  palm-one-whole">
+        <ul class="nav  nav--stacked  lap-and-up-flush--bottom">
+          <li><%= link_to "Cookie Policy", "/cms/about/cookie-policy" %></li>
+          <li><a href="https://www.freeukgenealogy.org.uk/files/Documents/Privacy-Notice.pdf" target="_blank">Privacy Notice<span class="accessibility">Opens in new window</span></a></li>
+          <li> <%= link_to "Usage policy", "#" %></li>
+          <li> <%= link_to "Terms and Conditions", "#" %></li>
+        </ul>
+      </div>
+      <div class="grid__item  one-third  palm-one-whole">
+        <ul class="nav  nav--stacked   lap-and-up-flush--bottom">
+          <li><a href="/contacts/new">Contact Us</a></li>
+          <li><a href="https://www.freeukgenealogy.org.uk/help-us-keep-history-free" target="_blank">Make a donation to cover our operating costse<span class="accessibility">Opens in new window</span></a></li>
+          <li> <a href="https://www.freeukgenealogy.org.uk/news/" target="_blank">News about FreeUKGenealogy<span class="accessibility">Opens in new window</span></a></li>
+        </ul>
+      </div>
+      <div class="grid__item  one-third  palm-one-whole">
+        <ul class="nav  nav--stacked   lap-and-up-flush--bottom">
+          <li> Follow us:
+            <p class="accessibility">All open in new windows</p>
+          </li>
+          <li class='social_links'>
+            <%= link_to app_icons[:news].html_safe, social_links[:news], html_options %>
+            <%= link_to app_icons[:facebook].html_safe, social_links[:facebook], html_options %>
+            <%= link_to app_icons[:twitter].html_safe, social_links[:twitter], html_options %>
+          </li>
+          <li class='social_links'>
+            <%= link_to app_icons[:instagram].html_safe, social_links[:instagram], html_options %>
+            <%= link_to app_icons[:pinterest].html_safe, social_links[:pinterest], html_options %>
+            <%= link_to app_icons[:github].html_safe, social_links[:github], html_options %>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <%= render "layouts/stats" %>
+  </div>
+</div>
