@@ -236,15 +236,12 @@ class Freereg1CsvEntriesController < ApplicationController
     proceed = @freereg1_csv_entry.update_attributes(freereg1_csv_entry_params)
     message = @freereg1_csv_entry.errors.full_messages + @freereg1_csv_entry.embargo_records.last.errors.full_messages unless @freereg1_csv_entry.embargo_records.blank?
     redirect_back(fallback_location: edit_freereg1_csv_entry_path(@freereg1_csv_entry), notice: "The update of the entry failed #{message}.") && return unless proceed
-    P 'llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll'
-    P @freereg1_csv_entry
+
     @freereg1_csv_entry.check_and_correct_county
     @freereg1_csv_entry.check_year
     search_version = calculate_software_version
     place, church, register = get_location_from_file(@freereg1_csv_file)
     SearchRecord.update_create_search_record(@freereg1_csv_entry, search_version, place)
-    P @freereg1_csv_entry.search_record
-
     @freereg1_csv_file.update_statistics_and_access(session[:my_own])
     flash[:notice] = 'The change in entry contents was successful, the file is now locked against replacement until it has been downloaded.'
     if session[:zero_listing]

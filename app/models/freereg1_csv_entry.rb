@@ -754,63 +754,24 @@ class Freereg1CsvEntry
   end
 
   def process_embargo
-    p self
-    p 'kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk'
-    p 'process_embargo'
-    p embargo_records
-    p embargo_records.last.who if  embargo_records.present?
-    p search_record
-    if embargo_records.present? && embargo_records.last.who == 'register_rule'
-      p 'register_rule update'
-      # working only with rules
-      embargoes = freereg1_csv_file.register.embargo_rules
-      if embargoes.present?
-        rule = embargoes.where(record_type: record_type).first
-        p "rule"
-        p rule
-        if rule.present?
-          end_year = EmbargoRecord.process_embargo_year(rule, year)
-          p end_year
-          if (DateTime.now.year.to_i >= end_year)
-            embargo_records << EmbargoRecord.new(embargoed: false, who: 'register_rule', why: 'register_rule_no_longer needed', when: DateTime.now, release_year: 1111)
-            #     search_record.update_attributes(embargoed: false, release_year: 1111)
-          else
-            embargo_records << EmbargoRecord.new(embargoed: true, who: 'register_rule', why: rule.reason, when: DateTime.now, release_year: end_year)
-            #   search_record.update_attributes(embargoed: embargoed, release_year: end_year) if search_record.present?
-          end
-        else
-          p specific rule deleted
-          embargo_records << EmbargoRecord.new(embargoed: false, who: 'register_rule', why: 'register_rule_deleted', when: DateTime.now, release_year: 1111)
-          #   search_record.update_attributes(embargoed: false, release_year: 1111) if search_record.present?
-        end
-      else
-        p rules all deleted
-        embargo_records << EmbargoRecord.new(embargoed: false, who: 'register_rule', why: 'register_rule_deleted', when: DateTime.now, release_year: 1111)
-        #  search_record.update_attributes(embargoed: false, release_year: 1111) if search_record.present?
-      end
-    else
-      p 'creating for the first time'
-      return if embargo_records.present?
-      #creating first rule guard should not be needed
-      return if freereg1_csv_file.register.embargo_rules.blank?
+    unless embargo_records.present? && embargo_records.last.who == 'register_rule'
+      return [false, ''] if embargo_records.present? # individual embargo present so we will no process register rule
 
-      embargoes = freereg1_csv_file.register.embargo_rules
-      rule = embargoes.find_by(record_type: record_type)
-      return if rule.blank? #no rule for this record type
+      return [false, ''] if freereg1_csv_file.register.embargo_rules.blank? # guard to avoid there being no rules!
 
-      p rule
-      end_year = EmbargoRecord.process_embargo_year(rule, year)
-      p "#{DateTime.now.year.to_i} #{end_year}"
-      return if DateTime.now.year.to_i >= end_year # return if record not to be embargoed
-
-      embargo_records << EmbargoRecord.new(embargoed: true, who: 'register_rule', why: rule.reason, when: DateTime.now, release_year: end_year)
-
-      p embargo_records
-      # search_record.update_attributes(embargoed: true, release_year: end_year) if search_record.present?
     end
+    embargoes = freereg1_csv_file.register.embargo_rules
+    return [false, ''] if embargoes.blank?
+
+    rule = embargoes.find_by(record_type: record_type)
+    return [false, ''] if rule.blank? #no rule for this record type
+
+    end_year = EmbargoRecord.process_embargo_year(rule, year)
+    return [false, ''] if DateTime.now.year.to_i >= end_year # return if record not to be embargoed
+
+    embargo_record = EmbargoRecord.new(embargoed: true, who: 'register_rule', why: rule.reason, when: DateTime.now, release_year: end_year, release_date: end_year)
+    [true, embargo_record]
   end
-
-
 
   def same_location(record, file)
     success = true
