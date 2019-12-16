@@ -549,39 +549,39 @@ namespace :build do
     db = Mongoid.clients[:default][:database]
     hosts = Mongoid.clients[:default][:hosts]
     host = hosts[0]
-    begin
-      if args.type == "individual"
-        p "FREEREG:CSV_PROCESSING: starting an individual project"
-        NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
+    #begin
+    if args.type == "individual"
+      p "FREEREG:CSV_PROCESSING: starting an individual project"
+      NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
+    else
+      rake_lock_file = File.join(Rails.root,"tmp","processing_rake_lock_file.txt")
+      processor_initiation_lock_file = File.join(Rails.root,"tmp","processor_initiation_lock_file.txt")
+      p "Initiation lock present" if File.exist?(processor_initiation_lock_file)
+      FileUtils.rm(processor_initiation_lock_file, :force => true) if File.exist?(processor_initiation_lock_file)
+      if rake_lock_file.present? && File.exist?(rake_lock_file)
+        p "FREEREG:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists. Exiting"
       else
-        rake_lock_file = File.join(Rails.root,"tmp","processing_rake_lock_file.txt")
-        processor_initiation_lock_file = File.join(Rails.root,"tmp","processor_initiation_lock_file.txt")
-        p "Initiation lock present" if File.exist?(processor_initiation_lock_file)
-        FileUtils.rm(processor_initiation_lock_file, :force => true) if File.exist?(processor_initiation_lock_file)
-        if rake_lock_file.present? && File.exist?(rake_lock_file)
-          p "FREEREG:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists. Exiting"
-        else
-          #set the processor running flag
-          locking_file = File.new(rake_lock_file, "w")
-          p "FREEREG:CSV_PROCESSING: Created rake lock file #{rake_lock_file} and processing files"
-          while PhysicalFile.waiting.exists?
-            NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
-            sleep(300)
-          end
-
+        #set the processor running flag
+        locking_file = File.new(rake_lock_file, "w")
+        p "FREEREG:CSV_PROCESSING: Created rake lock file #{rake_lock_file} and processing files"
+        while PhysicalFile.waiting.exists?
+          NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
+          sleep(300)
         end
-      end
-      p "FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
-      FileUtils.rm(rake_lock_file, :force => true) if rake_lock_file.present? && File.exist?(rake_lock_file)
-      p "Still there" if rake_lock_file.present? && File.exist?(rake_lock_file)
 
-    rescue Exception => msg
-      p "rescue"
-      p msg
-      p "FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
-      FileUtils.rm(rake_lock_file, :force => true) if rake_lock_file.present? && File.exist?(rake_lock_file)
-      p "Still there" if rake_lock_file.present? && File.exist?(rake_lock_file)
+      end
     end
+    p "FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
+    FileUtils.rm(rake_lock_file, :force => true) if rake_lock_file.present? && File.exist?(rake_lock_file)
+    p "Still there" if rake_lock_file.present? && File.exist?(rake_lock_file)
+
+    # rescue Exception => msg
+    p "rescue"
+    p msg
+    p "FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
+    FileUtils.rm(rake_lock_file, :force => true) if rake_lock_file.present? && File.exist?(rake_lock_file)
+    p "Still there" if rake_lock_file.present? && File.exist?(rake_lock_file)
+    #end
   end
   desc "build recommence search records from files.  Example arguments: [create_search_records,individual,force_rebuild,userid/filename.csv] or [create_search_records,range,force_rebuild,k]"
   task :recommence_freereg_new_update,[:search_record,:type,:force,:range] => [:environment] do |t,args|

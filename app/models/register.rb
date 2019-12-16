@@ -31,6 +31,7 @@ class Register
   belongs_to :church, index: true
 
   has_many :sources, dependent: :restrict_with_error # includes origin server of images
+  has_many :embargo_rules
 
   index({ church_id: 1, register_name: 1})
   index({ register_name: 1})
@@ -270,6 +271,11 @@ class Register
     @first_name = @user.person_forename unless @user.blank?
   end
 
+  def embargo_rules_exist?
+    embargo_rules = self.embargo_rules.present? ? true : false
+    embargo_rules
+  end
+
   def has_input?
     value = false
     value = true if (self.status.present? || self.quality.present? || self.source.present? || self.copyright.present?|| self.register_notes.present? ||
@@ -277,7 +283,7 @@ class Register
     value
   end
 
-  def image_server_exists?
+  def image_servers_exist?
     image_server = false
     unless self.sources.nil?
       self.sources.each do |source|

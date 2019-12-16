@@ -290,6 +290,15 @@ class SearchQuery
     filtered_records
   end
 
+  def filter_embargoed(search_results)
+    filtered_records = Array.new { {} }
+    search_results.each do |search_record|
+      next if search_record[:embargoed].present? && search_record[:release_year].present? && search_record[:release_year].to_i > DateTime.now.year.to_i
+      filtered_records << search_record
+    end
+    filtered_records
+  end
+
   def filter_name_types(search_results)
     filtered_records = Array.new { {} }
     search_results.each do |search_result|
@@ -312,6 +321,7 @@ class SearchQuery
     if self.search_result.records.respond_to?(:values)
       search_results = self.search_result.records.values
       search_results = self.filter_name_types(search_results)
+      search_results = self.filter_embargoed(search_results)
       search_results.length.present? ? result_count = search_results.length : result_count = 0
       search_results = self.sort_results(search_results) unless search_results.nil?
       ucf_results = self.ucf_results unless self.ucf_results.blank?

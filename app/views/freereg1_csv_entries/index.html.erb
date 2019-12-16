@@ -13,11 +13,7 @@
 <% end %>
 <div style="clear:both;"> </div>
 <br>
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
-  </div>
-<% end %>
+<%= render 'flash_notice' %>
 <div class="grid">
   <section class="island  ">
     <% case %>

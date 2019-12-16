@@ -51,7 +51,7 @@ sudo -u webserv bundle exec rake RAILS_ENV=production build:freereg_new_update[c
 trace "update county stats"
 sudo -u webserv bundle exec rake RAILS_ENV=production extract_county_stats --trace
 trace "delete entries and records for removed files"
-sudo -u webserv bundle exec rake RAILS_ENV=production delete_file[0] --trace
+sudo -u webserv bundle exec rake RAILS_ENV=production delete_file_no_slee[0] --trace
 trace "updating freeereg content"
 sudo -u webserv bundle exec rake RAILS_ENV=production freereg:calculate_freereg_content --trace
 trace "checking place cache"
