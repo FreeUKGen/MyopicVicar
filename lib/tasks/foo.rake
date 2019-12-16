@@ -27,7 +27,15 @@ namespace :foo do
 
   task :add_embargo_record, [:limit] => [:environment]  do |t, args|
     require 'add_embargo_record'
-    AddEmbargoRecord.process(args.limit)
+    rake_lock_file = File.join(Rails.root, 'tmp', 'embargo_lock_file.txt')
+    unless File.exist?(rake_lock_file)
+      lock_file = File.new(rake_lock_file, 'w')
+      AddEmbargoRecord.process(args.limit)
+      lock_file.close
+      File.delete(rake_lock_file)
+    else
+      p 'Already running'
+    end
   end
 
   task :update_message_nature_field => [:environment] do

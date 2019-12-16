@@ -21,7 +21,7 @@ class EmbargoRule
 
   module EmbargoRuleOptions
     ALL_OPTIONS = [
-      'Embargoed until the end of ', 'Embargoed for the period of '
+      'Embargoed until the beginning of ', 'Embargoed for the period of '
     ]
   end
 
@@ -37,11 +37,11 @@ class EmbargoRule
 
   def valid_period
     if rule == 'Embargoed for the period of '
-      unless period >= 1 && period <= 125
-        errors.add(:period, 'Period must be in the range of between 1 and 125')
+      unless period >= 0 && period <= 125
+        errors.add(:period, 'Period must be in the range of between 0 and 125')
       end
     else
-      unless period > Date.current.year.to_i && period < Date.current.year.to_i + 25
+      unless period >= Date.current.year.to_i && period < Date.current.year.to_i + 25
         date_future = Date.current.year.to_i + 25
         errors.add(:period, "A year between #{Date.current.year.to_i} and #{date_future}")
       end
