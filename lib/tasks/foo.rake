@@ -20,9 +20,22 @@ namespace :foo do
     DeleteOrArchiveOldMessagesFeedbacksAndContacts.process
   end
 
-  task :delete_or_archive_old_messages_feedbacks_and_contacts => [:environment] do
-    require 'delete_or_archive_old_messages_feedbacks_and_contacts'
-    DeleteOrArchiveOldMessagesFeedbacksAndContacts.process
+  task :remove_stale_embargoed_flag, [:limit] => [:environment]  do |t, args|
+    require 'remove_stale_embargoed_flag'
+    RemoveStaleEmbargoedFlag.process(args.limit)
+  end
+
+  task :add_embargo_record, [:limit] => [:environment]  do |t, args|
+    require 'add_embargo_record'
+    rake_lock_file = File.join(Rails.root, 'tmp', 'embargo_lock_file.txt')
+    unless File.exist?(rake_lock_file)
+      lock_file = File.new(rake_lock_file, 'w')
+      AddEmbargoRecord.process(args.limit)
+      lock_file.close
+      File.delete(rake_lock_file)
+    else
+      p 'Already running'
+    end
   end
 
   task :update_message_nature_field => [:environment] do

@@ -1,0 +1,15 @@
+<% breadcrumb :edit_embargo_record,  @freereg1_csv_entry,@freereg1_csv_file%>
+<p style="text-align: center">Editing record <b><%= @freereg1_csv_entry.file_line_number %></b> for batch: <b><%= @freereg1_csv_file_name %></b> (<%= @file_owner %>) in <b><%= @register_name %></b> of <b> <%= @church_name%></b> in <b><%= @place_name %></b> of <b><%= @county %></b></p>
+<%= render 'flash_notice' %>
+<%= simple_form_for @freereg1_csv_entry, :html => { :class => "grid"}  do |f| %>
+  <%= f.hidden_field :year, :value => @freereg1_csv_entry.year %>
+  <div  style="text-align: center"><b> Embargo status</b></div >
+  <%= f.simple_fields_for :embargo_records do |m| %>
+    <%= m.input :embargoed , collection: [true,false],:input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 2} %>
+    <%= m.input :why, :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } %>
+    <%= m.input :release_date, :input_html => {:class => " simple_form_bgcolour  ", :size => 5} %>
+    <%= m.hidden_field :when, :value => @date %>
+    <%= m.hidden_field :who, :value => @user.userid %>
+  <% end %>
+  <%= f.button :submit, 'Submit'   %>
+<% end %>

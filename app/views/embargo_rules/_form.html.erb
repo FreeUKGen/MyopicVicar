@@ -1,0 +1,19 @@
+<%= render 'flash_notice' %>
+<div>
+  <%= simple_form_for @rule do |f| %>
+    <%= f.hidden_field :register_id, :value => @register.id %>
+    <% if @edit %>
+      <%= f.hidden_field :record_type, :value => @rule.record_type %>
+      <%= f.hidden_field :rule, :value => @rule.rule %>
+      <%= f.input :period, :label => "Period between 0 and 125 Years" ,  :input_html => {:class => " simple_form_bgcolour  ",  :size =>5}  if @rule.rule == 'Embargoed for the period of '%>
+      <%= f.input :period, :label => "A specific year from now" ,  :input_html => {:class => " simple_form_bgcolour  ",  :size =>5}  if @rule.rule != 'Embargoed for the period of '%>
+    <%else%>
+      <%= f.input :record_type, :label => "Record Type" , :collection => @types,:include_blank => false, :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width ",  :size => 3 }  %>
+      <%= f.input :rule, :label => "Rule", :collection => @options, :include_blank => false,:input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width ",  :size => 2 }  %>
+      <%= f.input :period, :label => "Period (0 to 125 Years) or a specific year from now" ,  :input_html => {:class => " simple_form_bgcolour  ",  :size =>5}  %>
+    <%end%>
+    <%= f.input :authority, :label => "Entity that imposed rule" ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }  %>
+    <%= f.input :reason, :label => "Reason for its imposition" ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }  %>
+    <%= f.button :submit, 'Submit', :button_html => {:class => "btn   btn--small" } %>
+  <% end %>
+</div>
