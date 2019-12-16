@@ -91,5 +91,4 @@ MyopicVicar::Application.configure do
   config.citation = MyopicVicar::MongoConfig['citation']
   config.eager_load = false
   config.dragonfly_secret_code = MyopicVicar::MongoConfig['dragonfly_secret_code']
-  config.register_embargo_list = MyopicVicar::MongoConfig['register_embargo_list']
 end

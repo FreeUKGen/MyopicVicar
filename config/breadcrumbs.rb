@@ -176,13 +176,8 @@ crumb :show_record do |entry, file|
 end
 crumb :edit_record do |entry, file|
   link 'Edit Record', edit_freereg1_csv_entry_path(entry)
-  parent :show_record, entry, file
+  parent :show_record, entry,file
 end
-crumb :edit_embargo_record do |entry, file|
-  link 'Edit Embargo Record', edit_embargo_freereg1_csv_entry_path(entry)
-  parent :show_record, entry, file
-end
-
 crumb :correct_error_record do |entry, file|
   link 'Correct Error Record', error_freereg1_csv_entry_path(entry._id)
   parent :error_records, file
@@ -946,24 +941,6 @@ crumb :create_denomination do |denomination|
   link 'Create Denomination', new_denomination_path(denomination)
   parent :denominations
 end
-
-crumb :embargo_rules do |county, place, church, register|
-  link 'Embargo Rules', embargo_rules_path( :county => county, :place => place, :church => church, :register => register)
-  parent :show_register, county, place, church, register
-end
-crumb :show_embargo_rule do |county, place, church, register, embargo_rule|
-  link 'Show Embargo Rule', embargo_rule_path(embargo_rule, :county => county, :place => place, :church => church, :register => register)
-  parent :embargo_rules, county, place, church, register
-end
-crumb :edit_embargo_rule do |county, place, church, register, embargo_rule|
-  link 'Edit Embargo Rule', edit_embargo_rule_path(embargo_rule, :county => county, :place => place, :church => church, :register => register)
-  parent :show_embargo_rule, county, place, church, register, embargo_rule
-end
-crumb :new_embargo_rule do |county, place, church, register, embargo_rule|
-  link 'Create Embargo Rule', new_embargo_rule_path(embargo_rule, :county => county, :place => place, :church => church, :register => register)
-  parent :embargo_rules, county, place, church, register
-end
-
 crumb :select_attic_files do
   link 'Select Userid', select_userid_attic_files_path
   parent :root
@@ -1050,9 +1027,9 @@ crumb :show_zero_year_entry do |entry, file|
   parent :listing_of_zero_year_entries, file
 end
 
-crumb :edit_zero_year_entry do |entry, file|
+crumb :edit_zero_year_entry do |entry,file|
   link 'Edit Zero Year Entry', edit_freereg1_csv_entry_path(entry)
-  parent :show_zero_year_entry, entry, file
+  parent :show_zero_year_entry, entry,file
   parent :listing_of_zero_year_entries, file if request.referer.match(/zero_year/) unless request.referer.nil?
 end
 

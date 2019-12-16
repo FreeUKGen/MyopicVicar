@@ -296,11 +296,6 @@ class ApplicationController < ActionController::Base
     session.delete(:edit_freecen_pieces)
     session.delete(:query)
     session.delete(:zero_action)
-    session.delete(:county)
-    session.delete(:place)
-    session.delete(:church)
-    session.delete(:register)
-
   end
 
   def clean_session_for_images
@@ -369,9 +364,5 @@ class ApplicationController < ActionController::Base
     session.delete(:edit_freecen_pieces)
     session.delete(:query)
     session.delete(:zero_action)
-    session.delete(:county)
-    session.delete(:place)
-    session.delete(:church)
-    session.delete(:register)
   end
 end

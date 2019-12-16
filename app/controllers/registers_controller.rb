@@ -170,8 +170,7 @@ class RegistersController < ApplicationController
     @decade = @register.daterange
     @transcribers = @register.transcribers
     @contributors = @register.contributors
-    @image_server = @register.image_servers_exist?
-    @embargo_rules = @register.embargo_rules_exist?
+    @image_server = @register.image_server_exists?
   end
 
   def show_image_server
