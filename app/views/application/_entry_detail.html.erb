@@ -129,7 +129,7 @@
                 <tr style= 'color:black'>
                 </tr>
               <% end%>
-            <% else%>
+            <%else%>
               <tr>
                 <td ><%= field.gsub('_',' ').capitalize %></td>
                 <td ><%= @entry[field] %></td>
@@ -137,14 +137,6 @@
             <% end %>
           <% end %>
         <% end %>
-        <% if  current_authentication_devise_user.present? && @embargoed %>
-          <% @entry.embargo_records.each do |record| %>
-            <tr>
-              <td> History of embargo changes</td>
-              <td> <%= record.embargoed %> <%= record.release_year %> <%= record.who %> <%= record.when.strftime("%e %b %Y") %>  <%= record.why %> </td>
-            </tr>
-          <% end%>
-        <% end%>
         <% if  !current_authentication_devise_user.present?%>
           <td  colspan=2><%= link_to 'Report an Error in this Data', report_error_contact_path(@search_record[:_id], :query => @search_query), class: 'btn btn--natural' unless  @search_record.blank? || @search_query.blank? %></td>
         <% end %>

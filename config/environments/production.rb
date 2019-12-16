@@ -116,7 +116,6 @@ MyopicVicar::Application.configure do
   config.sendgrid_api_key = MyopicVicar::MongoConfig['sendgrid_api_key']
   config.citation = MyopicVicar::MongoConfig['citation']
   config.dragonfly_secret_code = MyopicVicar::MongoConfig['dragonfly_secret_code']
-  config.register_embargo_list = MyopicVicar::MongoConfig['register_embargo_list']
   #rails 4 changes
   config.eager_load = true
 end
