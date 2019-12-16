@@ -1,18 +1,16 @@
 <% unless defined?(@printable_format) && @printable_format %>
-  <nav class="text--center push--bottom" role="navigation" aria-label="Options for search results">
-    <ul class="nav">
-      <li><%= results_revise_search_form_link %></li>
-      <li><%= results_search_form_link %></li>
-      <li><%= results_about_search_link %></li>
-      <% if  results_broaden_search_link.present? %>
-        <li><%=results_broaden_search_link %></li>
-      <% end %>
-      <% if results_narrow_search_link.present? %>
-        <li><%= results_narrow_search_link %></li>
-      <% end %>
-      <% if results_printable_link.present? %>
-        <li><%= results_printable_link %> </li>
-      <% end %>
-    </ul>
-  </nav>
+  <div class="text--center push--bottom">
+    <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  btn--small" %>
+    <%= link_to "New Search", new_search_query_path, :class => "btn  btn--small " %>
+    <%= link_to("About This Query", about_search_query_path(@search_query, :page_number => @page_number), :class => "btn  btn--small") %>
+    <% if @search_query.can_be_broadened? %>
+      <%= link_to "Broaden Search", broaden_search_query_path(:search_id => @search_query) , :class => "btn  btn--small" %>
+    <% end %>
+    <% if @search_query.can_be_narrowed? %>
+      <%= link_to "Narrow Search", narrow_search_query_path(:search_id => @search_query), :class => "btn  btn--small" %>
+    <% end %>
+    <% if device_type == :desktop || device_type == :tablet %>
+      <%= link_to "Printable Format", show_print_version_search_query_path , :class => "btn  btn--small" %>
+    <% end %>
+  </div>
 <% end %>
