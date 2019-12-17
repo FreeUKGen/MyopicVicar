@@ -455,6 +455,33 @@ module ApplicationHelper
     MyopicVicar::Application.config.gtm_key
   end
 
+  def app_icons
+    {
+      facebook: '<i class="fa fa-facebook-square fa-2x"></i>',
+      news: '<i class="fa fa-rss-square fa-2x"></i>',
+      twitter: '<i class="fa fa-twitter-square fa-2x"></i>',
+      github: '<i class="fa fa-github-square fa-2x" aria-hidden="true"></i>',
+      info: '<i class="fa fa-info-circle"></i>',
+      pinterest: '<i class="fa fa-pinterest-square fa-2x" aria-hidden="true"></i>',
+      instagram: '<i class="fa fa-instagram fa-2x"></i>'
+    }
+  end
+
+  def social_links
+    {
+      facebook: 'https://www.facebook.com/freeukgen',
+      news: 'https://www.freeukgenealogy.org.uk/news/',
+      twitter: 'https://www.twitter.com/freeukgen',
+      github: 'https://github.com/FreeUKGen/MyopicVicar/',
+      pinterest: 'https://www.pinterest.co.uk/FreeUKGenealogy/',
+      instagram: 'https://www.instagram.com/freeukgenealogy/'
+    }
+  end
+
+  def html_options
+    {target: '_blank', rel: 'noreferrer'}
+  end
+
   def fullwidth_adsense_freereg
     banner = <<-HTML
     <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
