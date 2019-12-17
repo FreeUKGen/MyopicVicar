@@ -866,7 +866,7 @@ class SearchQuery
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
     #raise bmd_params_hash.inspect
     #raise BestGuess.where(bmd_params_hash).inspect
-    records = SearchQuery.get_search_table.joins(spouse_join_condition)#.where(bmd_params_hash).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+    records = SearchQuery.get_search_table.joins(spouse_join_condition).where(bmd_params_hash).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     records = records.where(first_name_filteration) unless self.first_name_exact_match
     records = combined_results records if date_of_birth_range?
     persist_results(records)
