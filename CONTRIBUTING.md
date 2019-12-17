@@ -13,6 +13,8 @@ Ensure you let us know what idea you might like to help develop, or indeed if yo
 
 If you are interested in Google’s Summer of Code, please read and apply here: https://summerofcode.withgoogle.com/get-started/.
 
+Next you will need to sign our CLA agreement, <a href="https://www.clahub.com/agreements/FreeUKGen/MyopicVicar">sign the Contributor License Agreement</a>. 
+
 ## Our Code of Conduct
 
 Free UK Genealogy, including its software development team, operates 

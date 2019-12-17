@@ -1,35 +1,5 @@
 require 'text'
 module SearchQueriesHelper
-
-  def results_search_form_link
-    link_to "New Search", new_search_query_path, class: "btn  btn--small "
-  end
-
-  def results_revise_search_form_link
-    link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  btn--small"
-  end
-
-  def results_about_search_link
-    link_to("About This Query", about_search_query_path(@search_query, :page_number => @page_number), :class => "btn  btn--small")
-  end
-
-  def results_broaden_search_link
-    if @search_query.can_be_broadened?
-      link_to "Broaden Search", broaden_search_query_path(:search_id => @search_query) , :class => "btn  btn--small"
-    end
-  end
-  def results_narrow_search_link
-    if @search_query.can_be_narrowed?
-      link_to "Narrow Search", narrow_search_query_path(:search_id => @search_query), :class => "btn  btn--small"
-    end
-  end
-
-  def results_printable_link
-    if device_type == :desktop || device_type == :tablet
-      link_to "Printable Format", show_print_version_search_query_path , :class => "btn  btn--small"
-    end
-  end
-
   def fuzzy(verbatim)
     Text::Soundex.soundex(verbatim)
   end
