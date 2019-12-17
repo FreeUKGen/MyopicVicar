@@ -39,18 +39,17 @@
   <% end %>
   <% when 'freecen' %>
   <%= link_to '/', class: "site__header__logo  icon__freecen" do %>
-    <h1 class="accessibility">FreeCEN</h1>
   <% end %>
   <% when 'freebmd' %>
   <%= link_to '/', class: "site__header__logo  icon__freebmd" do %>
-    <h1 class="accessibility">FreeBMD</h1>
   <% end %>
 <% end %>
-<div class="cookieConsent island island--teal flush--bottom">
-  We use cookies to ensure you get the best experience with our website. This includes carefully chosen third-party cookies for analysing traffic and advertising. Please select ‘Accept Cookies’ if you consent and wish to continue using the site. <strong><a tabindex = "1" href="/cms/about/cookie-policy" class="cookie_policy_link" id="cookie_policy">More options and information.</a></strong>
-  <div class="push-half--top">
-    <input class="btn btn--small accept_cookies" tabindex="3" type="submit" name="accept_cookies" value="Accept Cookies" />
+</div>
+<div class="cookieConsent">
+  <div id="cookieText" >
+    We use cookies to ensure you get the best experience with our website. This includes carefully chosen third-party cookies for analysing traffic and advertising. Please select ‘Accept Cookies’ if you consent and wish to continue using the site. <strong><a tabindex = "1" href="/cms/about/cookie-policy" class="cookie_policy_link" id="cookie_policy">More options and information.</a></strong>
   </div>
-</div>
-</div>
+  <div class = "cookieAcceptButton">
+    <input class="btn btn--small accept_cookies" tabindex="3" type="submit" name="accept_cookies" id="accept_cookies" value="Accept Cookies" />
+  </div>
 </header>
