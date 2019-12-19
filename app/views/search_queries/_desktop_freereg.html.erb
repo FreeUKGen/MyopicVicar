@@ -1,4 +1,5 @@
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
+<h1 class="accessibility">Search Results</h1>
 <div class="table-wrapper" id="search-result">
   <table class="table--bordered table--data ">
     <thead>
@@ -9,31 +10,31 @@
         <th>
           <% unless print_friendly %><%= link_to('Person or persons',
             reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME),
-            :title => 'Ascending sort on name') %>
+            :title => 'Initially sorted ascending') %>
           <% else%> Person or persons<% end%>
         </th>
         <th>
           <% unless print_friendly %><%= link_to('Record type',
             reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::TYPE),
-            :title => 'Ascending sort on Record type') %>
+            :title => 'Initially sorted ascending') %>
           <% else%> Record type<% end%>
         </th>
         <th>
           <% unless print_friendly %><%= link_to('Event date',
             reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DATE),
-            :title => 'Ascending sort on Event date') %>
+            :title => 'Initially sorted ascending') %>) %>
           <% else%> Event date<% end%>
         </th>
         <th>
           <% unless print_friendly %><%= link_to('County',
             reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::COUNTY),
-            :title => 'Ascending sort on County') %>
+            :title => 'Initially sorted ascending') %>
           <% else%> County<% end%>
         </th>
         <th>
           <% unless print_friendly %><%= link_to("Place : Church : Register type",
             reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::LOCATION),
-            :title => 'Ascending sort on Place') %>
+            :title => 'Initially sorted ascending') %>
           <% else%> Place : Church : Register type<% end%>
         </th>
       </tr>
