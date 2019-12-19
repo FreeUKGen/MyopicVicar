@@ -49,7 +49,7 @@ class EmbargoRule
   end
 
   def add_to_rake_register_embargo_list
-    processing_file = Rails.application.config.register_embargo_list
+    processing_file = Rails.root.join(Rails.application.config.register_embargo_list)
     File.open(processing_file, 'a') do |f|
       f.write("#{register_id},#{DateTime.now}\n")
     end

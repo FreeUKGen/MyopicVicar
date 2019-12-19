@@ -2,7 +2,7 @@ class AddEmbargoRecord
   def self.process(limit)
     file_for_warning_messages = Rails.root.join('log', 'add_embargo_records.log')
     message_file = File.new(file_for_warning_messages, 'w')
-    input_file = Rails.application.config.register_embargo_list
+    input_file = Rails.root.join(Rails.application.config.register_embargo_list)
     lines = []
     int = 0
     message_file.puts "Starting adding embargo at #{Time.now}"

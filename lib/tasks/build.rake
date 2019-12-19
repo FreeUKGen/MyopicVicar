@@ -549,117 +549,118 @@ namespace :build do
     db = Mongoid.clients[:default][:database]
     hosts = Mongoid.clients[:default][:hosts]
     host = hosts[0]
-    #begin
-    if args.type == "individual"
-      p "FREEREG:CSV_PROCESSING: starting an individual project"
-      NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
-    else
-      rake_lock_file = File.join(Rails.root,"tmp","processing_rake_lock_file.txt")
-      processor_initiation_lock_file = File.join(Rails.root,"tmp","processor_initiation_lock_file.txt")
-      p "Initiation lock present" if File.exist?(processor_initiation_lock_file)
-      FileUtils.rm(processor_initiation_lock_file, :force => true) if File.exist?(processor_initiation_lock_file)
-      if rake_lock_file.present? && File.exist?(rake_lock_file)
-        p "FREEREG:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists. Exiting"
-      else
-        #set the processor running flag
-        locking_file = File.new(rake_lock_file, "w")
-        p "FREEREG:CSV_PROCESSING: Created rake lock file #{rake_lock_file} and processing files"
-        while PhysicalFile.waiting.exists?
-          NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
-          sleep(300)
-        end
-
-      end
-    end
-    p "FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
-    FileUtils.rm(rake_lock_file, :force => true) if rake_lock_file.present? && File.exist?(rake_lock_file)
-    p "Still there" if rake_lock_file.present? && File.exist?(rake_lock_file)
-
-    # rescue Exception => msg
-    p "rescue"
-    p msg
-    p "FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
-    FileUtils.rm(rake_lock_file, :force => true) if rake_lock_file.present? && File.exist?(rake_lock_file)
-    p "Still there" if rake_lock_file.present? && File.exist?(rake_lock_file)
-    #end
-  end
-  desc "build recommence search records from files.  Example arguments: [create_search_records,individual,force_rebuild,userid/filename.csv] or [create_search_records,range,force_rebuild,k]"
-  task :recommence_freereg_new_update,[:search_record,:type,:force,:range] => [:environment] do |t,args|
-    require 'new_freereg_csv_update_processor'
-    @mongodb_bin =   Rails.application.config.mongodb_bin_location
-    Mongoid.load!("#{Rails.root}/config/mongoid.yml")
-    db = Mongoid.clients[:default][:database]
-    hosts = Mongoid.clients[:default][:hosts]
-    host = hosts[0]
     begin
       if args.type == "individual"
         p "FREEREG:CSV_PROCESSING: starting an individual project"
         NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
-      elsif args.force == "force_rebuild"
-        p "FREEREG:CSV_PROCESSING: starting a force rebuild"
-        NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
       else
         rake_lock_file = File.join(Rails.root,"tmp","processing_rake_lock_file.txt")
         processor_initiation_lock_file = File.join(Rails.root,"tmp","processor_initiation_lock_file.txt")
-        File.delete(processor_initiation_lock_file) if File.exist?(processor_initiation_lock_file)
+        p "Initiation lock present" if File.exist?(processor_initiation_lock_file)
+        FileUtils.rm(processor_initiation_lock_file, :force => true) if File.exist?(processor_initiation_lock_file)
         if rake_lock_file.present? && File.exist?(rake_lock_file)
-          p "FREEREG:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists. Continuing with processing"
-          while PhysicalFile.waiting.exists?
-            NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
-            sleep(300)
-          end
-          p "FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
-          FileUtils.rm(rake_lock_file, :force => true) if rake_lock_file.present? && File.exist?(rake_lock_file)
+          p "FREEREG:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists. Exiting"
         else
+          #set the processor running flag
           locking_file = File.new(rake_lock_file, "w")
           p "FREEREG:CSV_PROCESSING: Created rake lock file #{rake_lock_file} and processing files"
           while PhysicalFile.waiting.exists?
             NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
             sleep(300)
           end
+
         end
       end
       p "FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
       FileUtils.rm(rake_lock_file, :force => true) if rake_lock_file.present? && File.exist?(rake_lock_file)
+      rake_lock_file = File.join(Rails.root,"tmp","processing_rake_lock_file.txt")
+      p "Still there" if rake_lock_file.present? && File.exist?(rake_lock_file)
+
     rescue Exception => msg
       p "rescue"
       p msg
       p "FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
       FileUtils.rm(rake_lock_file, :force => true) if rake_lock_file.present? && File.exist?(rake_lock_file)
+      p "Still there" if rake_lock_file.present? && File.exist?(rake_lock_file)
+      #end
     end
-  end
-
-  # delete_search_queries deletes those searches that are more then Rails.application.config.days_to_retain_search_queries old
-  # limit can be used to limit the number of searches to be processed (0 is all entries)
-  # starts from oldest search query
-  # creates a log file of actions taken "#{Rails.root}/log/delete_search_queries.log"
-  task :delete_search_queries,[:limit] => [:environment] do |t, args|
-    file_for_warning_messages = "#{Rails.root}/log/delete_search_queries.log"
-    FileUtils.mkdir_p(File.dirname(file_for_warning_messages))
-    output_file = File.new(file_for_warning_messages, "w")
-    int = 0
-    output_file.puts "Starting query deletes at #{Time.now}"
-    start = Time.now
-    p "Starting queries deletes at #{start}"
-    record_number = 0
-    number_deleted = 0
-    SearchQuery.all.sort(c_at: 1).each do |query|
-      record_number = record_number + 1
-      x = DateTime.now - Rails.application.config.days_to_retain_search_queries.days
-      break if record_number == args.limit.to_i
-      if query.c_at  <= x
-        number_deleted = number_deleted +1
-        query.destroy
-        output_file.puts "#{query.id}  deleted "
-      else
-        #p query
-        output_file.puts "#{query.id} #{query.c_at} retained "
+    desc "build recommence search records from files.  Example arguments: [create_search_records,individual,force_rebuild,userid/filename.csv] or [create_search_records,range,force_rebuild,k]"
+    task :recommence_freereg_new_update,[:search_record,:type,:force,:range] => [:environment] do |t,args|
+      require 'new_freereg_csv_update_processor'
+      @mongodb_bin =   Rails.application.config.mongodb_bin_location
+      Mongoid.load!("#{Rails.root}/config/mongoid.yml")
+      db = Mongoid.clients[:default][:database]
+      hosts = Mongoid.clients[:default][:hosts]
+      host = hosts[0]
+      begin
+        if args.type == "individual"
+          p "FREEREG:CSV_PROCESSING: starting an individual project"
+          NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
+        elsif args.force == "force_rebuild"
+          p "FREEREG:CSV_PROCESSING: starting a force rebuild"
+          NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
+        else
+          rake_lock_file = File.join(Rails.root,"tmp","processing_rake_lock_file.txt")
+          processor_initiation_lock_file = File.join(Rails.root,"tmp","processor_initiation_lock_file.txt")
+          File.delete(processor_initiation_lock_file) if File.exist?(processor_initiation_lock_file)
+          if rake_lock_file.present? && File.exist?(rake_lock_file)
+            p "FREEREG:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists. Continuing with processing"
+            while PhysicalFile.waiting.exists?
+              NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
+              sleep(300)
+            end
+            p "FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
+            FileUtils.rm(rake_lock_file, :force => true) if rake_lock_file.present? && File.exist?(rake_lock_file)
+          else
+            locking_file = File.new(rake_lock_file, "w")
+            p "FREEREG:CSV_PROCESSING: Created rake lock file #{rake_lock_file} and processing files"
+            while PhysicalFile.waiting.exists?
+              NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
+              sleep(300)
+            end
+          end
+        end
+        p "FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
+        FileUtils.rm(rake_lock_file, :force => true) if rake_lock_file.present? && File.exist?(rake_lock_file)
+      rescue Exception => msg
+        p "rescue"
+        p msg
+        p "FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
+        FileUtils.rm(rake_lock_file, :force => true) if rake_lock_file.present? && File.exist?(rake_lock_file)
       end
     end
-    output_file.puts "#{record_number} queries processed #{number_deleted}  deleted  in #{Time.now - start}"
-    puts "#{record_number} queries processed #{number_deleted}  deleted  in #{Time.now - start}"
-    output_file.close
-    p "finished"
-  end
 
-end
+    # delete_search_queries deletes those searches that are more then Rails.application.config.days_to_retain_search_queries old
+    # limit can be used to limit the number of searches to be processed (0 is all entries)
+    # starts from oldest search query
+    # creates a log file of actions taken "#{Rails.root}/log/delete_search_queries.log"
+    task :delete_search_queries,[:limit] => [:environment] do |t, args|
+      file_for_warning_messages = "#{Rails.root}/log/delete_search_queries.log"
+      FileUtils.mkdir_p(File.dirname(file_for_warning_messages))
+      output_file = File.new(file_for_warning_messages, "w")
+      int = 0
+      output_file.puts "Starting query deletes at #{Time.now}"
+      start = Time.now
+      p "Starting queries deletes at #{start}"
+      record_number = 0
+      number_deleted = 0
+      SearchQuery.all.sort(c_at: 1).each do |query|
+        record_number = record_number + 1
+        x = DateTime.now - Rails.application.config.days_to_retain_search_queries.days
+        break if record_number == args.limit.to_i
+        if query.c_at  <= x
+          number_deleted = number_deleted +1
+          query.destroy
+          output_file.puts "#{query.id}  deleted "
+        else
+          #p query
+          output_file.puts "#{query.id} #{query.c_at} retained "
+        end
+      end
+      output_file.puts "#{record_number} queries processed #{number_deleted}  deleted  in #{Time.now - start}"
+      puts "#{record_number} queries processed #{number_deleted}  deleted  in #{Time.now - start}"
+      output_file.close
+      p "finished"
+    end
+
+  end
