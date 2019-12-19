@@ -3,7 +3,7 @@ task :delete_file_no_sleep,[:limit] => [:environment] do |t, args|
   FileUtils.mkdir_p(File.dirname(file_for_warning_messages))
   output_file = File.new(file_for_warning_messages, "a")
   input_file = Rails.root.join(Rails.application.config.delete_list)
-  delete_files = Array.new
+  delete_files = []
   int = 0
   output_file.puts "Starting entry deletes at #{Time.now}"
   if File.exist?(input_file)
