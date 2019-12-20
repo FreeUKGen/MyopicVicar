@@ -573,6 +573,9 @@ namespace :build do
       end
       p "FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
       FileUtils.rm(rake_lock_file, :force => true) if rake_lock_file.present? && File.exist?(rake_lock_file)
+
+      rake_lock_file = File.join(Rails.root,"tmp","processing_rake_lock_file.txt")
+
       p "Still there" if rake_lock_file.present? && File.exist?(rake_lock_file)
 
     rescue Exception => msg

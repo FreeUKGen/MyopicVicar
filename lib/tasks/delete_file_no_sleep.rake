@@ -1,10 +1,9 @@
 task :delete_file_no_sleep,[:limit] => [:environment] do |t, args|
-  Mongoid.load!("#{Rails.root}/config/mongoid.yml")
   file_for_warning_messages = "#{Rails.root}/log/delete_list_processing.txt"
   FileUtils.mkdir_p(File.dirname(file_for_warning_messages))
   output_file = File.new(file_for_warning_messages, "a")
-  input_file = Rails.application.config.delete_list
-  delete_files = Array.new
+  input_file = Rails.root.join(Rails.application.config.delete_list)
+  delete_files = []
   int = 0
   output_file.puts "Starting entry deletes at #{Time.now}"
   if File.exist?(input_file)
