@@ -541,7 +541,7 @@ namespace :build do
     DeleteEntriesRecordsForRemovedBatches.process
   end
 
-  esc "build search records from files.  Example arguments: [create_search_records,individual,force_rebuild,userid/filename.csv] or [create_search_records,range,force_rebuild,k]"
+  desc "build search records from files.  Example arguments: [create_search_records,individual,force_rebuild,userid/filename.csv] or [create_search_records,range,force_rebuild,k]"
   task :freereg_new_update,[:search_record,:type,:force,:range] => [:environment] do |t,args|
     require 'new_freereg_csv_update_processor'
     @mongodb_bin =   Rails.application.config.mongodb_bin_location
