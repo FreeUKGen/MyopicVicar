@@ -132,9 +132,28 @@ class Freereg1CsvEntriesController < ApplicationController
     end
     display_info
 
+    @embargo_permitted = (@user.person_role == 'system_administrator' || @user.person_role == 'executive_director') ? true : false
+    @freereg1_csv_entry.embargo_records.build if @embargo_permitted
+    @date = DateTime.now
     session[:freereg1_csv_entry_id] = @freereg1_csv_entry._id
     session[:zero_listing] = true if params[:zero_listing].present?
     @freereg1_csv_entry.multiple_witnesses.build if @freereg1_csv_entry.multiple_witnesses.count < FreeregOptionsConstants::MAXIMUM_WINESSES
+  end
+
+  def edit_embargo
+    @freereg1_csv_entry = Freereg1CsvEntry.find(params[:id]) if params[:id].present?
+
+    unless Freereg1CsvEntry.valid_freereg1_csv_entry?(@freereg1_csv_entry)
+      message = 'The entry was not correctly linked. Have your coordinator contact the web master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
+    display_info
+
+    @embargo_permitted = (@user.person_role == 'system_administrator' || @user.person_role == 'executive_director') ? true : false
+    @freereg1_csv_entry.embargo_records.build if @embargo_permitted
+    @date = DateTime.now
+    session[:freereg1_csv_entry_id] = @freereg1_csv_entry._id
+    session[:zero_listing] = true if params[:zero_listing].present?
   end
 
   def error
@@ -190,7 +209,8 @@ class Freereg1CsvEntriesController < ApplicationController
     @get_zero_year_records = 'true' if params[:zero_record] == 'true'
     @zero_year = 'true' if params[:zero_listing] == 'true'
     display_info
-
+    @embargoed = @freereg1_csv_entry.embargo_records.present? ? true : false
+    @embargo_permitted = (@user.person_role == 'system_administrator' || @user.person_role == 'executive_director' || @user.person_role == 'data_manager') ? true : false
     session[:freereg1_csv_entry_id] = @freereg1_csv_entry._id
     @search_record = @freereg1_csv_entry.search_record
     @forenames = []
@@ -205,7 +225,7 @@ class Freereg1CsvEntriesController < ApplicationController
   def update
     @freereg1_csv_entry = Freereg1CsvEntry.find(params[:id]) if params[:id].present?
     unless Freereg1CsvEntry.valid_freereg1_csv_entry?(@freereg1_csv_entry)
-      message = 'The entry was not correctly linked. Have your coordinator contact the web master'
+      message = 'The entry was incorrectly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
     @freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
@@ -214,7 +234,8 @@ class Freereg1CsvEntriesController < ApplicationController
 
     params[:freereg1_csv_entry] = @freereg1_csv_entry.adjust_parameters(params[:freereg1_csv_entry])
     proceed = @freereg1_csv_entry.update_attributes(freereg1_csv_entry_params)
-    redirect_back(fallback_location: edit_freereg1_csv_entry_path(@freereg1_csv_entry), notice: "The update of the entry failed #{@freereg1_csv_file.errors.full_messages}.") && return unless proceed
+    message = @freereg1_csv_entry.errors.full_messages + @freereg1_csv_entry.embargo_records.last.errors.full_messages unless @freereg1_csv_entry.embargo_records.blank?
+    redirect_back(fallback_location: edit_freereg1_csv_entry_path(@freereg1_csv_entry), notice: "The update of the entry failed #{message}.") && return unless proceed
 
     @freereg1_csv_entry.check_and_correct_county
     @freereg1_csv_entry.check_year

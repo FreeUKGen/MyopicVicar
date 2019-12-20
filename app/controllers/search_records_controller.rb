@@ -85,7 +85,7 @@ class SearchRecordsController < ApplicationController
         @ee_address = @dweling_values[11]
 
         #census database description
-        @census_database = "General Register Office: #{@cen_year} Census Returns database" 
+        @census_database = "General Register Office: #{@cen_year} Census Returns database"
 
         if @search_record.place['country'] = 'Scotland'
           @census_database = "Scottish General Register Office: #{@cen_year} Census Returns database"
@@ -146,7 +146,7 @@ class SearchRecordsController < ApplicationController
       end
       @image_id = @entry.get_the_image_id(@church, @user, session[:manage_user_origin], session[:image_server_group_id], session[:chapman_code])
       @order, @array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type], @entry.freereg1_csv_file.def, current_authentication_devise_user.present?)
-
+      @embargoed = @search_record[:embargoed]
     end
   end
 
