@@ -50,8 +50,6 @@ trace "process the waiting uploads"
 sudo -u webserv bundle exec rake RAILS_ENV=production build:freereg_new_update[create_search_records,waiting,no_force,a-9] --trace
 trace "update county stats"
 sudo -u webserv bundle exec rake RAILS_ENV=production extract_county_stats --trace
-trace "delete entries and records for removed files"
-sudo -u webserv bundle exec rake RAILS_ENV=production delete_file[0] --trace
 trace "updating freeereg content"
 sudo -u webserv bundle exec rake RAILS_ENV=production freereg:calculate_freereg_content --trace
 trace "checking place cache"
@@ -63,9 +61,10 @@ sudo -u webserv bundle exec rake RAILS_ENV=production foo:check_and_refresh_plac
 #sudo -u webserv bundle exec rake RAILS_ENV=production build:freereg_update[a-9,search_records,delta] --trace
 trace "delete log files more than +30 days old"
 sudo  -u webserv find ${ROOT}/log -mtime +30 -delete
+trace "delete entries and records for removed files"
+sudo -u webserv bundle exec rake RAILS_ENV=production delete_file_no_sleep[0] --trace
 trace "checking invalid email addresses"
 sudo -u webserv bundle exec rake RAILS_ENV=production freereg:bounced_emails_set_invalid[fix] --trace
-
 trace "finished"
 exit
 
