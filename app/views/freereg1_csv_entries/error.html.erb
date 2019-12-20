@@ -2,11 +2,7 @@
 <p style="text-align: center">Editing entry error in <b><%= @error_file.record_number %></b> for <b><%= @freereg1_csv_file.file_name %></b> (<%= userid(@freereg1_csv_file) %>) in <b><%= register_name_for_file(@freereg1_csv_file) %></b> of <b> <%= church_name(@freereg1_csv_file)%></b> in <b><%= place_name(@freereg1_csv_file) %></b> of <b><%= county(@freereg1_csv_file) %></b><br>
   <b>The Error Message(s)<%= @error_file.error_message%></p>
 </b><br>
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
-  </div>
-<% end %>
+<%= render 'flash_notice' %>
 <% case @freereg1_csv_file.record_type %>
 <% when "ba" %>
 <% if @freereg1_csv_file.def %>
