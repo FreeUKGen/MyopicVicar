@@ -20,7 +20,7 @@
           'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
           })(window,document,'script','dataLayer', '<%= "#{gtm_key_value}"%>');
     </script>
-    <!-- End Google Tag Manager -->
+    <!--End Google Tag Manager -->
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <meta charset="utf-8"/>
     <% if MyopicVicar::Application.config.template_set == 'freereg' %>
@@ -67,6 +67,7 @@
     <![endif]-->
     <%= stylesheet_link_tag "styles/css/donate_icon" %>
     <%= stylesheet_link_tag "styles/css/freereg_content" %>
+    <%= stylesheet_link_tag "styles/css/freebmd_content" if appname.downcase == 'freebmd'%>
     <!-- JavaScripts -->
     <%= javascript_include_tag "application" %>
     <%= javascript_include_tag "jquery.min.js" %>
@@ -78,6 +79,7 @@
     <%= javascript_include_tag "ladda.min.js" %>
     <%= javascript_include_tag "freecen_coverage_graph.js" %>
     <script src="/adsbygoogle.js" type="text/javascript"></script>
+    <script src="https://use.fontawesome.com/5b8044f85d.js"></script>
     <%= csrf_meta_tags %>
     <% google_analytics_tracking_id = google_analytics_tracking %>
     <script>
@@ -95,10 +97,22 @@
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NQ743M4"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
+    <%# if appname_downcase == 'freebmd'%>
+    <%#= render 'layouts/bmd_main_nav'%>
+    <%# else %>
     <%= render "layouts/main_nav" %>
+    <%# end %>
     <div class="offcanvas__primary">
       <%= render "layouts/header" %>
       <main  class="site__content  icon__honeycomb--top-right">
+        <% unless device_type == :mobile%>
+          <!--div class='side_banners' style="float: left; padding: 10px">
+            <%= side_banners%>
+          </div>
+          <div class='side_banners' style="float: right; padding: 10px; text-align: center;">
+            <%= side_banners%>
+          </div-->
+        <% end %>
         <div class="container">
           <% if session[:userid_detail_id].present?%>
             <%= breadcrumbs  :class => "delta  text--teal"  unless controller_name == "refinery" ||

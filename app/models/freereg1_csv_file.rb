@@ -395,7 +395,7 @@ class Freereg1CsvFile
 
   def add_to_rake_delete_list
     #respected as part of remove batch
-    processing_file = Rails.application.config.delete_list
+    processing_file = Rails.root.join(Rails.application.config.delete_list)
     File.open(processing_file, 'a') do |f|
       f.write("#{self.id},#{self.userid},#{self.file_name}\n")
     end
