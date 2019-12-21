@@ -353,7 +353,7 @@ class Freereg1CsvFilesController < ApplicationController
     proceed ? flash[:notice] = 'The removal of the batch entry was successful' : flash[:notice] = message
 
     if session[:my_own]
-      redirect_to freereg1_csv_files_path
+      redirect_to my_own_freereg1_csv_file_path
     elsif session[:current_page]
       redirect_to session[:current_page]
     elsif @return_location.blank?
