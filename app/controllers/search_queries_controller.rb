@@ -122,7 +122,7 @@ class SearchQueriesController < ApplicationController
   end
 
   def new
-    #@page = session[:message] == 'load' ? Refinery::Page.where(slug: 'message').first.parts.first.body.html_safe : nil
+    @page = session[:message] == 'load' ? Refinery::Page.where(slug: 'message').first.parts.first.body.html_safe : nil
 
     @search_query = SearchQuery.new
     session.delete(:query)
