@@ -49,7 +49,7 @@ class Freereg1CsvEntriesController < ApplicationController
 
     @freereg1_csv_file.check_and_augment_def(params[:freereg1_csv_entry])
     params[:freereg1_csv_entry][:record_type] = @freereg1_csv_file.record_type
-    year = @freereg1_csv_entry.get_year(params[:freereg1_csv_entry])
+    year = @freereg1_csv_entry.get_year(params[:freereg1_csv_entry], year)
     if session[:error_id].blank?
       file_line_number, line_id = @freereg1_csv_file.augment_record_number_on_creation
     else
