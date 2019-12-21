@@ -790,8 +790,19 @@ class Freereg1CsvEntry
   end
 
   def errors_in_fields
-    embargoes = freereg1_csv_file.register.embargo_rules
-    check_embargo = embargoes.present? ? true : false
+
+    if freereg1_csv_file.blank?
+      check_embargo = false
+    else
+      register = freereg1_csv_file.register
+      if register.blank?
+        check_embargo = false
+      else
+        embargoes = register.embargo_rules
+        check_embargo = embargoes.present? ? true : false
+      end
+    end
+
     unless FreeregValidations.cleantext(register_entry_number)
       errors.add(:register_entry_number, 'Invalid characters')
 
