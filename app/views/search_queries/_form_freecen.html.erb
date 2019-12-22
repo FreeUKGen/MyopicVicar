@@ -138,21 +138,91 @@
     <fieldset class="inputs">
       <legend>Search options</legend>
       <ol class="grid">
-        <li class="grid__item one-third lap-one-whole palm-one-whole">
+        <li class="grid__item one-fifth lap-one-quarter palm-one-whole">
           <%= f.label :search_nearby_places, { :class => "ttip", :tabindex => "0" } do %>
             <%= f.check_box :search_nearby_places, {}, "true", "false" %>
             Nearby places
             <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
             <span class="ttip__text">Check to search places near to your selected starting place (up to 40 places in total)</span>
-          <% end %>
-        </li>
-        <li class="grid__item one-third lap-one-whole palm-one-whole">
+          <% end %> <br>
           <%= f.label :fuzzy, { :class => "ttip", :tabindex => "0" } do %>
             <%= f.check_box :fuzzy, {}, "true", "false" %>
             Name Soundex
             <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
             <span class="ttip__text">Check to include the Soundex equivalent of the name: it is used for both surname and forename (if entered)</span>
+          <% end %><br>
+          <%= f.label :disabled, { :class => "ttip", :tabindex => "0" } do %>
+            <%= f.check_box :disabled, {}, "true", "false" %>
+            Disabled
+            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">Check to restrict the search to those who are declared disabled</span>
           <% end %>
+        </li>
+        <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="search_query_marital_status_input">
+          <label class="label ttip" for="search_query_marital_status" tabindex="0">
+            Marital Status
+            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">Select the marital status you wish to view.</span>
+            <small class="additional">Leave blank to search all</small>
+          </label>
+          <select id="search_query_marital_status" name="search_query[marital_status]" class="select" size="4" style="max-width: 10rem;">
+            <option value="">--</option>
+            <% SearchQuery::MaritalStatus::OPTIONS.each_pair do |name, value| %>
+              <%if !@search_query.marital_status.nil? && @search_query.marital_status.include?(value)%>
+                <option value="<%= value %>" selected="selected"> <%= name %></option>
+              <% else %>
+                <option value="<%= value %>"><%= name %></option>
+              <% end %>
+            <% end %>
+          </select>
+        </li>
+        <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="search_query_language_input">
+          <label class="label ttip" for="search_query_language" tabindex="0">
+            Language
+            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">Select the language status you wish to view.</span>
+            <small class="additional">Leave blank to search all</small>
+          </label>
+          <select id="search_query_language" name="search_query[language]" class="select" size="4" style="max-width: 10rem;">
+            <option value="">--</option>
+            <% SearchQuery::Language::OPTIONS.each_pair do |name, value| %>
+              <%if !@search_query.language.nil? && @search_query.language.include?(value)%>
+                <option value="<%= value %>" selected="selected"> <%= name %></option>
+              <% else %>
+                <option value="<%= value %>"><%= name %></option>
+              <% end %>
+            <% end %>
+          </select>
+        </li>
+        <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="search_query_sex_input">
+          <label class="label ttip" for="search_query_sex" tabindex="0">
+            Sex
+            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">Select the sex of the person you wish to view.</span>
+            <small class="additional">Leave blank to search both</small>
+          </label>
+          <select id="search_query_sex" name="search_query[sex]" class="select" size="4" style="max-width: 10rem;">
+            <option value="">--</option>
+            <% SearchQuery::Sex::OPTIONS.each_pair do |name, value| %>
+              <%if !@search_query.sex.nil? && @search_query.sex.include?(value)%>
+                <option value="<%= value %>" selected="selected"> <%= name %></option>
+              <% else %>
+                <option value="<%= value %>"><%= name %></option>
+              <% end %>
+            <% end %>
+          </select>
+        </li>
+          <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="search_query_sex_input">
+        <label class="ttip" for="occupation" tabindex="0">
+            Occupation
+            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">Selection will be based on the appearance of this keyword in the occupation field</span><small class="additional">Leave blank for all occupations</small>
+          </label>
+          <% if @search_query.occupation.nil? %>
+            <input id="occupation" name="search_query[occupation]" type="text" class="text-input" placeholder="Optional">
+          <%else%>
+            <input id="occupation" name="search_query[occupation]" type="text" class="text-input" value="<%=@search_query.occupation%>">
+          <%end%>
         </li>
         <%= f.action :submit,
         :as => :button,
@@ -164,6 +234,7 @@
           <small class="additional push-half--ends">Search times are limited to <%= x %> seconds.<br>
             Please do not restart the search once it is working as this will actually slow the process.</small>
         </li>
+
       </ol>
     </fieldset>
   <% end %>

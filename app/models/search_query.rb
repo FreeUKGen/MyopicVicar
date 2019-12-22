@@ -12,12 +12,12 @@ class SearchQuery
 
   # consider extracting this from entities
   module SearchOrder
-    TYPE='record_type'
-    DATE='search_date'
-    BIRTH_COUNTY='birth_chapman_code'
-    COUNTY='chapman_code'
-    LOCATION='location'
-    NAME='transcript_names'
+    TYPE = 'record_type'
+    DATE = 'search_date'
+    BIRTH_COUNTY = 'birth_chapman_code'
+    COUNTY = 'chapman_code'
+    LOCATION = 'location'
+    NAME = 'transcript_names'
 
     ALL_ORDERS = [
       TYPE,
@@ -27,6 +27,58 @@ class SearchQuery
       LOCATION,
       NAME
     ]
+  end
+
+  module Sex
+    MALE = 'M'
+    FEMALE = 'F'
+
+    ALL_SEXES = [
+      MALE,
+      FEMALE
+    ]
+    OPTIONS = {
+      'MALE' =>  MALE,
+      'FEMALE' => FEMALE
+    }
+  end
+
+  module MaritalStatus
+    MARRIED = 'M'
+    WIDOWED = 'W'
+    SINGLE = 'S'
+
+    ALL_STATUSES = [
+      MARRIED,
+      WIDOWED,
+      SINGLE
+    ]
+
+    OPTIONS = {
+      'MARRIED' => MARRIED,
+      'WIDOWED' => WIDOWED,
+      'SINGLE' => SINGLE
+    }
+  end
+
+  module Language
+    WELSH = 'W'
+    ENGLISH = 'E'
+    GAELIC = 'G'
+    BOTH = 'B'
+
+    ALL_LANGUAGES = [
+      ENGLISH,
+      WELSH,
+      GAELIC,
+      BOTH
+    ]
+    OPTIONS = {
+      'ENGLISH' => ENGLISH,
+      'WELSH' => WELSH,
+      'GAELIC' => GAELIC,
+      'BOTH' => BOTH
+    }
   end
 
   WILDCARD = /[?*]/
@@ -66,6 +118,14 @@ class SearchQuery
 
   field :birth_chapman_codes, type: Array, default: []
   field :birth_place_name, type: String
+  field :disabled, type: Boolean, default: false
+  field :marital_status, type: String
+  validates_inclusion_of :marital_status, :in => MaritalStatus::ALL_STATUSES + [nil]
+  field :sex, type: String
+  validates_inclusion_of :sex, :in => Sex::ALL_SEXES + [nil]
+  field :language, type: String
+  validates_inclusion_of :language, :in => Language::ALL_LANGUAGES + [nil]
+  field :occupation, type: String
 
   has_and_belongs_to_many :places, inverse_of: nil
 
@@ -290,6 +350,22 @@ class SearchQuery
     filtered_records
   end
 
+  def filter_census_addional_fields(search_results)
+    filtered_records = []
+    return search_results if no_additional_census_fields?
+    search_results.each do |record|
+      individual = FreecenIndividual.find(record[:freecen_individual_id])
+      next if individual.blank?
+
+      if individual_sex?(individual) && individual_marital_status?(individual) && individual_language?(individual) &&
+      	individual_disabled?(individual) && individual_occupation?(individual)
+        filtered_records << record
+      end
+    end
+    p filtered_records
+    search_results
+  end
+
   def filter_embargoed(search_results)
     filtered_records = Array.new { {} }
     search_results.each do |search_record|
@@ -322,6 +398,7 @@ class SearchQuery
       search_results = self.search_result.records.values
       search_results = self.filter_name_types(search_results)
       search_results = self.filter_embargoed(search_results)
+      search_results = self.filter_census_addional_fields(search_results) if MyopicVicar::Application.config.template_set == 'freecen'
       search_results.length.present? ? result_count = search_results.length : result_count = 0
       search_results = self.sort_results(search_results) unless search_results.nil?
 
@@ -392,6 +469,39 @@ class SearchQuery
     include_record
   end
 
+  def individual_sex?(individual)
+    p sex
+    p individual.sex
+    return true if sex.blank?
+    result = individual.sex == sex ? true : false
+    result
+  end
+
+  def individual_marital_status?(individual)
+    p marital_status
+    p individual.marital_status
+    return true if marital_status.blank?
+
+    return true if marital_status == individual.marital_status
+
+    return true if individual.marital_status == 'U' && marital_status == 'S'
+
+    false
+  end
+
+  def individual_language?(individual)
+  	return true if language.blank?
+  end
+
+def individual_disabled?(individual)
+  	return true if disabled.blank?
+  end
+
+  def individual_occupation?(individual)
+  	return true if occupation.blank?
+
+  end
+
   def locate(record_id)
     records = self.search_result.records.values
     position = locate_index(records,record_id)
@@ -459,6 +569,12 @@ class SearchQuery
       response = false
     end
     [response, next_record, previous_record]
+  end
+
+  def no_additional_census_fields?
+    result = false
+    result = true if !disabled && occupation.blank? && marital_status.blank? && language.blank? && sex.blank?
+    result
   end
 
   def persist_additional_results(results)
