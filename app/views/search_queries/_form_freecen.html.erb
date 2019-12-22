@@ -137,6 +137,7 @@
     </fieldset>
     <fieldset class="inputs">
       <legend>Search options</legend>
+      <p class="text--center">Please read the <a href="../cms/help/">Help</a> carefully BEFORE using these options as their effectiveness varies according to the year of the census<p>
       <ol class="grid">
         <li class="grid__item one-fifth lap-one-quarter palm-one-whole">
           <%= f.label :search_nearby_places, { :class => "ttip", :tabindex => "0" } do %>
@@ -155,14 +156,14 @@
             <%= f.check_box :disabled, {}, "true", "false" %>
             Disabled
             <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Check to restrict the search to those who are declared disabled</span>
+            <span class="ttip__text">Check to restrict the search to those who are declared disabled. Available from 1851 onwards.</span>
           <% end %>
         </li>
         <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="search_query_marital_status_input">
           <label class="label ttip" for="search_query_marital_status" tabindex="0">
             Marital Status
             <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Select the marital status you wish to view.</span>
+            <span class="ttip__text">Select the marital status you wish to view. Available from 1851 onwards.</span>
             <small class="additional">Leave blank to search all</small>
           </label>
           <select id="search_query_marital_status" name="search_query[marital_status]" class="select" size="4" style="max-width: 10rem;">
@@ -180,7 +181,7 @@
           <label class="label ttip" for="search_query_language" tabindex="0">
             Language
             <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Select the language status you wish to view.</span>
+            <span class="ttip__text">Select the language status you wish to view. Available only in 1891 onwards.</span>
             <small class="additional">Leave blank to search all</small>
           </label>
           <select id="search_query_language" name="search_query[language]" class="select" size="4" style="max-width: 10rem;">

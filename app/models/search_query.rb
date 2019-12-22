@@ -353,17 +353,17 @@ class SearchQuery
   def filter_census_addional_fields(search_results)
     filtered_records = []
     return search_results if no_additional_census_fields?
+
     search_results.each do |record|
       individual = FreecenIndividual.find(record[:freecen_individual_id])
       next if individual.blank?
 
       if individual_sex?(individual) && individual_marital_status?(individual) && individual_language?(individual) &&
-      	individual_disabled?(individual) && individual_occupation?(individual)
+          individual_disabled?(individual) && individual_occupation?(individual)
         filtered_records << record
       end
     end
-    p filtered_records
-    search_results
+    filtered_records
   end
 
   def filter_embargoed(search_results)
@@ -470,16 +470,13 @@ class SearchQuery
   end
 
   def individual_sex?(individual)
-    p sex
-    p individual.sex
     return true if sex.blank?
+
     result = individual.sex == sex ? true : false
     result
   end
 
   def individual_marital_status?(individual)
-    p marital_status
-    p individual.marital_status
     return true if marital_status.blank?
 
     return true if marital_status == individual.marital_status
@@ -490,16 +487,29 @@ class SearchQuery
   end
 
   def individual_language?(individual)
-  	return true if language.blank?
+    return true if language.blank?
+
+    return true if language == individual.language
+
+    false
   end
 
-def individual_disabled?(individual)
-  	return true if disabled.blank?
+  def individual_disabled?(individual)
+    return true if disabled.blank?
+
+    return true unless disabled
+
+    return true if disabled && individual.disability.present?
+
+    false
   end
 
   def individual_occupation?(individual)
-  	return true if occupation.blank?
+    return true if occupation.blank?
 
+    return true if individual.occupation.present? && "/\b#{occupation.downcase}/".match?(individual.occupation.downcase)
+
+    false
   end
 
   def locate(record_id)
@@ -574,6 +584,8 @@ def individual_disabled?(individual)
   def no_additional_census_fields?
     result = false
     result = true if !disabled && occupation.blank? && marital_status.blank? && language.blank? && sex.blank?
+    p 'no_additional_census_fields'
+    p result
     result
   end
 

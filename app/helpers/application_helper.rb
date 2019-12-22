@@ -265,6 +265,11 @@ module ApplicationHelper
       counties = search_query.chapman_codes.map{|code| ChapmanCode::name_from_code(code)}.join(" or ")
       display_map["Census Counties"] = counties if search_query.chapman_codes.size > 1
       display_map["Census County"] = counties if search_query.chapman_codes.size == 1
+      display_map["Disabled"] = 'Yes' if search_query.disabled
+      display_map["Sex"] = search_query.sex if search_query.sex.present?
+      display_map["Marital Status"] = search_query.marital_status if search_query.marital_status.present?
+      display_map["Language"] = search_query.language if search_query.language.present?
+      display_map["Occupation"] = search_query.occupation if search_query.occupation.present?
     end
 
     display_map["Include Family Members"] = "Yes" if search_query.inclusive
