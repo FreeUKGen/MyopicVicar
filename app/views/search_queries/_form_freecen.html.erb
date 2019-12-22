@@ -217,7 +217,7 @@
         <label class="ttip" for="occupation" tabindex="0">
             Occupation
             <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Selection will be based on the appearance of this keyword in the occupation field</span><small class="additional">Leave blank for all occupations</small>
+            <span class="ttip__text">Selection will be based on the appearance of these characters at the start of any word in the occupation field. Case irrelevant.</span><small class="additional">Leave blank for all occupations</small>
           </label>
           <% if @search_query.occupation.nil? %>
             <input id="occupation" name="search_query[occupation]" type="text" class="text-input" placeholder="Optional">
