@@ -506,14 +506,10 @@ class SearchQuery
 
   def individual_occupation?(individual)
     return true if occupation.blank?
-    p 'lllllllllllllllllllllllllllllllllllllllllllllllllllllll'
-    p occupation
-    reg = /\b#{occupation.downcase}/
-    p reg
-    p individual.occupation
+
     return false if individual.occupation.blank?
 
-    p individual.occupation.downcase
+    reg = /\b#{occupation.downcase}/
     return true if individual.occupation.downcase.match?(reg)
 
     false
