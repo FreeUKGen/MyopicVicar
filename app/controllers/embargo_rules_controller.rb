@@ -63,7 +63,7 @@ class EmbargoRulesController < ApplicationController
   def new
     extract_location_from_params(params)
     get_user_info_from_userid
-    reject_access(@user, 'Embargo Reason') unless @user.person_role == ('system_administrator' || 'executive_director' || 'county_coordinator' || 'data_manager' || 'country_coordinator')
+    reject_access(@user, 'Embargo Reason') unless ['system_administrator', 'executive_director', 'county_coordinator', 'data_manager', 'country_coordinator'].include?(@user.person_role)
 
     @types = RecordType.all_types
     @options = EmbargoRule::EmbargoRuleOptions::ALL_OPTIONS
