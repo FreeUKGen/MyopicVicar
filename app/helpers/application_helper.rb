@@ -722,7 +722,7 @@ module ApplicationHelper
                               <ins class="adsbygoogle adSenseBanner"
                               style="display:inline-block;width:120px;height:600px"
                               data-ad-client = "#{data_ad_client}"
-                              data-ad-slot = "#{app_advert['side_banners_slot']}">
+                              data-ad-slot = "#{app_advert['data_ad_slot_side']}">
                               </ins>
                               <script>
                               window.update_personalized_header_adverts = function (preference) {
