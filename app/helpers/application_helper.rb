@@ -270,7 +270,7 @@ module ApplicationHelper
           #{Place::MeasurementSystem::system_to_units(Place::MeasurementSystem::ENGLISH)} )"
       end
     end
-    display_map["Place"] = place if search_query_places_size > 0
+    display_map["Census Place"] = place if search_query_places_size > 0
 
     display_map["Include Family Members"] = "Yes" if search_query.inclusive
     display_map["Include Witnesses"] = "Yes" if search_query.witness
