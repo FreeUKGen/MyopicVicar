@@ -659,7 +659,7 @@ module ApplicationHelper
       (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
     </script>
     <ins class="adsbygoogle"
-      style="display:inline-block;width:120px;height:600px"
+      style="display:inline-block;width:160px;height:600px"
       data-ad-client = "#{data_ad_client}"
       data-ad-slot = "#{app_advert['data_ad_slot_side']}">
     </ins>
