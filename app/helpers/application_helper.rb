@@ -652,14 +652,14 @@ module ApplicationHelper
     banner.html_safe
   end
 
-  def adsence_side_banners
+  def adsence_right_side_banner
     banner = <<-HTML
     <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <script>
       (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
     </script>
     <ins class="adsbygoogle"
-      style="display:inline-block;width:160px;height:600px"
+      style="display:inline-block;width:300px;height:600px"
       data-ad-client = "#{data_ad_client}"
       data-ad-slot = "#{app_advert['data_ad_slot_side']}">
     </ins>
