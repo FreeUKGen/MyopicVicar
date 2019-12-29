@@ -198,7 +198,7 @@ class SearchQueriesController < ApplicationController
       @search_query.update_attributes(runtime: runtime, day: Time.now.strftime('%F')) if session[:query].present?
       logger.warn("#{appname_upcase}:SEARCH: Search #{message} #{Rails.application.config.max_search_time} ms")
       session[:query] = nil
-      flash[:notice] = 'Your search encountered an issue. Please review your search criteria. Advice is contained in the Help pages.'
+      flash[:notice] = 'Your search exceeded the maximum permitted time. Please review your search criteria. Advice is contained in the Help pages.'
     else
       logger.warn("#{appname_upcase}:SEARCH: Search #{session[:query]} had a problem #{message}") if @search_query.present? && @search_query.id.present?
       logger.warn("#{appname_upcase}:SEARCH: Search #{message}") unless @search_query.present? && @search_query.id.present?
