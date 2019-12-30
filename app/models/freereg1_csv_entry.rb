@@ -702,7 +702,10 @@ class Freereg1CsvEntry
       fields = ordered_marriage_display_fields(extended_def)
     when 'bu'
       fields = ordered_burial_display_fields(extended_def)
+    else
+      crash
     end
+    crash if fields.blank?
     fields.each do |field|
       case field
       when 'witness'
