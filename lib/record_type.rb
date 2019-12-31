@@ -25,7 +25,6 @@ module RecordType
   CENSUS_1881 = '1881'
   CENSUS_1891 = '1891'
 
-
   def self.all_types
     case MyopicVicar::Application.config.template_set
     when 'freereg'
@@ -36,7 +35,6 @@ module RecordType
       ALL_FREEREG_TYPES
     end
   end
-
 
   def self.options
     if MyopicVicar::Application.config.template_set == MyopicVicar::TemplateSet::FREEREG
@@ -62,11 +60,7 @@ module RecordType
   }
 
   FREECEN_OPTIONS = ALL_FREECEN_TYPES.inject({}) do |accum, value|
-    accum[value]=value
+    accum[value] = value
     accum
   end
-
-
-
-
 end

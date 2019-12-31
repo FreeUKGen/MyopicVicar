@@ -172,6 +172,7 @@ class RegistersController < ApplicationController
     @contributors = @register.contributors
     @image_server = @register.image_servers_exist?
     @embargo_rules = @register.embargo_rules_exist?
+    @gaps = @register.gaps_exist?
   end
 
   def show_image_server
