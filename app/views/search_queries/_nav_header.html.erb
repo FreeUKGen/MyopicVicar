@@ -18,17 +18,18 @@
         <li><%#= results_revise_search_form_link %></li>
         <li><%#= results_search_form_link %></li>
         <li><%#= results_about_search_link %></li>
-      <li><%= results_revise_search_form_link %></li>
-      <li><%= results_search_form_link %></li>
-      <li><%= results_about_search_link %></li>
+      <li><%#= results_revise_search_form_link %></li>
+      <li><%#= results_search_form_link %></li>
+      <li><%#= results_about_search_link %></li>
       <% if  results_broaden_search_link.present? %>
-        <li><%=results_broaden_search_link %></li>
+        <li><%#=results_broaden_search_link %></li>
       <% end %>
       <% if results_narrow_search_link.present? %>
-        <li><%= results_narrow_search_link %></li>
+        <li><%#= results_narrow_search_link %></li>
       <% end %>
       <% if results_printable_link.present? %>
-        <li><%= results_printable_link %> </li>
+        <li><%#= results_printable_link %> </li>
+      <% end %>
       <% end %>
     </ul>
   </nav>
