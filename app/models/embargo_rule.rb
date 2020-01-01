@@ -37,7 +37,7 @@ class EmbargoRule
 
   def valid_period
     if rule == 'Embargoed for the period of '
-      unless period >= 0 && period <= 125
+      unless period.blank? || period >= 0 && period <= 125
         errors.add(:period, 'Period must be in the range of between 0 and 125')
       end
     else
@@ -54,5 +54,4 @@ class EmbargoRule
       f.write("#{register_id},#{DateTime.now}\n")
     end
   end
-
 end

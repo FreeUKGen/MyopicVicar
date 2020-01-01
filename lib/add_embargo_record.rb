@@ -1,6 +1,7 @@
 class AddEmbargoRecord
   def self.process(limit)
-    file_for_warning_messages = Rails.root.join('log', 'add_embargo_records.log')
+    time = Time.new.strftime("%s")
+    file_for_warning_messages = Rails.root.join('log', "add_embargo_records_#{time}.log")
     message_file = File.new(file_for_warning_messages, 'w')
     input_file = Rails.root.join(Rails.application.config.register_embargo_list)
     lines = []

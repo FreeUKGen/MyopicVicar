@@ -586,6 +586,7 @@ namespace :build do
       p "Still there" if rake_lock_file.present? && File.exist?(rake_lock_file)
     end
   end
+
   desc "build recommence search records from files.  Example arguments: [create_search_records,individual,force_rebuild,userid/filename.csv] or [create_search_records,range,force_rebuild,k]"
   task :recommence_freereg_new_update,[:search_record,:type,:force,:range] => [:environment] do |t,args|
     require 'new_freereg_csv_update_processor'

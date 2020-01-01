@@ -67,7 +67,7 @@ class DenominationsController < ApplicationController
     proceed = @denomination.update_attributes(denomination_params)
     redirect_back(fallback_location: { action: 'index' }, notice: "The denomination update was unsuccessful; #{@denomination.errors.messages}") && return unless proceed
 
-    flash[:notice] = 'The creation of the new denomination was successful'
+    flash[:notice] = 'The update of the denomination was successful'
     redirect_to action: 'index'
   end
 
