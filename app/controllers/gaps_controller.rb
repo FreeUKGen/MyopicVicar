@@ -30,6 +30,7 @@ class GapsController < ApplicationController
   def display_info
     return if params[:register].blank?
 
+    @freereg1_csv_file = Freereg1CsvFile.find_by(id: params[:file]) if params[:file].present?
     @register = Register.find_by(id: params[:register])
     session[:register_id] = @register.id
     @register_type = RegisterType.display_name(@register.register_type)
@@ -88,7 +89,14 @@ class GapsController < ApplicationController
     redirect_back(fallback_location: new_manage_resource_path, notice: 'The linkages were incorrect') &&
       return if @register.blank? || @church.blank? || @place.blank?
 
-    @gaps = Gap.all
+    if @freereg1_csv_file.present?
+      @gaps = []
+      Gap.register(@register.id).each do |gap|
+        @gaps << gap if gap.record_type == 'All' || gap.record_type == @freereg1_csv_file.record_type
+      end
+    else
+      @gaps = Gap.register(@register.id).all
+    end
     redirect_back(fallback_location: new_manage_resource_path, notice: 'Attempted to display non_existent gaps') &&
       return if @gaps.blank?
 
