@@ -17,61 +17,64 @@
 
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <div class='labels'>
-          <%= label_tag 'first_name', 'First name(s)', class: "ttip" %>
-          <%= label_tag 'first_name', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '0', title: info_tag_text[:firstname]%>
+          <%= label_tag 'first_name', "First name(s) #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:firstname], 'aria-details': info_tag_text[:first_name] %>
         </div>
-        <%= text_field_tag 'search_query[first_name]', set_value(@search_query.first_name), class: 'text-input', placeholder: 'Enter first name(s) here', tabindex: '1'%>
-        <%= check_box_tag 'search_query[first_name_exact_match]', true, false %>
-        <%= content_text(:small,'Exact match on first names') %>
+        <%= text_field_tag 'search_query[first_name]', set_value(@search_query.first_name), class: 'text-input', placeholder: 'Enter first name(s) here', role: 'textbox', id: 'first_name'%>
+        <label>
+          <small class="ttip__text">
+            <%= check_box_tag 'search_query[first_name_exact_match]', true, false %>
+            Exact match on first names
+          </small>
+        </label>
       </div>
 
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <div class='labels'>
-          <%= label_tag 'last_name', 'Surname', class: "ttip" %>
-          <%= label_tag 'last_name', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '3'%>
+          <%= label_tag 'last_name', "Surname #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:lastname], 'aria-details': info_tag_text[:lastname]%>
         </div>
-        <%= text_field_tag 'search_query[last_name]', set_value(@search_query.last_name), class: 'text-input', id: 'last_name', placeholder: 'Enter Surname here', tabindex: '4' %>
-        <%= check_box_tag 'search_query[fuzzy]', true, false %>
-        <%= content_text(:small, 'Phonetic search surnames') %>
+        <%= text_field_tag 'search_query[last_name]', set_value(@search_query.last_name), class: 'text-input', id: 'last_name', placeholder: 'Enter Surname here'%>
+        <label>
+          <small class="ttip__text">
+            <%= check_box_tag 'search_query[fuzzy]', true, false %>
+            Phonetic search surnames
+          </small>
+        </label>
       </div>
 
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <div class='labels'>
-          <%= label_tag 'start_quarter', 'Date range from', class: "ttip" %>
-          <%= label_tag 'start_year', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '6'%>
+          <%= label_tag 'start_quarter', "Date range from #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:date_range_from], 'aria-details': info_tag_text[:date_range_from] %>
         </div>
-          <!--span class="ttip__text">Optional, YYYY. The first year you want to search</span-->
-          <%= select_tag( 'search_query[start_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.start_quarter)), class: 'select_month_start', id: 'date_year') %>
-          <%= select_year(set_value(@search_query.start_year), { start_year: 1837, end_year: 1992, prompt: '- - - -' }, class: 'select_year_start', name: 'search_query[start_year]') %>
+        <%= select_tag( 'search_query[start_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.start_quarter)), class: 'select_month_start date_year', id: 'start_quarter') %>
+        <%= select_year(set_value(@search_query.start_year), { start_year: 1837, end_year: 1992, prompt: '- - - -' }, class: 'select_year_start date_year', name: 'search_query[start_year]', id: 'start_quarter') %>
       </div>
 
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <div class='labels'>
-          <%= label_tag 'to_year', 'Date range to', class: "ttip" %>
-          <%= label_tag 'to_year', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '6'%>
+          <%= label_tag 'to_year', "Date range to #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:date_range_to], 'aria-details': info_tag_text[:date_range_to] %>
         </div>
-        <%= select_tag( 'search_query[end_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.end_quarter)), class: 'select_month_end', id: 'date_year') %>
-        <%= select_year(set_value(@search_query.end_year), {start_year: 1837, end_year: 1992, prompt: '- - - -'}, class: 'select_year_end', name: 'search_query[end_year]') %>
+        <%= select_tag( 'search_query[end_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.end_quarter)), class: 'select_month_end date_year', id: 'to_year') %>
+        <%= select_year(set_value(@search_query.end_year), {start_year: 1837, end_year: 1992, prompt: '- - - -'}, class: 'select_year_end date_year', name: 'search_query[end_year]', id: 'to_year') %>
       </div>
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <div class='labels'>
-          <%= label_tag 'record_type', 'Record Type', class: "ttip" %>
-          <%= label_tag 'record_type', "#{app_icons[:info]}".html_safe, class: 'ttip_text', tabindex: '0', title: info_tag_text[:record_type]%>
+          <%= label_tag 'record_type', "Record Type #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:record_type], 'aria-details': info_tag_text[:record_type] %>
         </div>
+
         <span class="stack_fields">
-          <%= f.label :select_all, { :class => "header_label", :tabindex => "0" } do %>
+          <%= f.label :select_all, { :class => "header_label"} do %>
             <%= check_box_tag 'search_query[bmd_record_type][]', '0',set_checkbox_checked_value(field_value: @search_query.bmd_record_type, value: '0'),{ multiple: true, class: 'checkAll', id: 'bmd_record_type_all' } %>
             <%= content_text(:optional_checkbox_label, 'Select All') %>
           <% end %>
-          <%= f.label :birth, { :class => "optional_attributes", :tabindex => "0" } do %>
+          <%= f.label :birth, { :class => "optional_attributes"} do %>
             <%= check_box_tag 'search_query[bmd_record_type][]', 1,set_checkbox_checked_value(field_value: @search_query.bmd_record_type, value: '1'),{ multiple: true, class: 'checkboxtag birth', id: 'bmd_record_type birth' } %>
             <%= content_text(:optional_checkbox_label, 'Birth') %>
           <% end %>
-          <%= f.label :death, { :class => "optional_attributes", :tabindex => "0" } do %>
+          <%= f.label :death, { :class => "optional_attributes"} do %>
             <%= check_box_tag 'search_query[bmd_record_type][]', 2,set_checkbox_checked_value(field_value: @search_query.bmd_record_type, value: '2'),{ multiple: true, class: 'checkboxtag death', id: 'bmd_record_type death' } %>
             <%= content_text(:optional_checkbox_label, 'Death') %>
           <% end %>
-          <%= f.label :marriage, { :class => "optional_attributes", :tabindex => "0" } do %>
+          <%= f.label :marriage, { :class => "optional_attributes"} do %>
             <%= check_box_tag 'search_query[bmd_record_type][]', 3,set_checkbox_checked_value(field_value: @search_query.bmd_record_type, value: '3'),{ multiple: true, class: 'checkboxtag marriage' , id: 'bmd_record_type marriage'} %>
             <%= content_text(:optional_checkbox_label, 'Marriage') %>
           <% end %>
@@ -80,27 +83,27 @@
 
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <div class='labels'>
-          <%= label_tag 'spouse_first_name', 'Spouses first name(s)', class: "ttip" %>
-          <%= label_tag 'spouse_first_name', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '0', title: info_tag_text[:firstname]%>
+          <%= label_tag 'spouse_first_name', "Spouses first name(s) #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:spouse_first_name], 'aria-details': info_tag_text[:spouse_first_name] %>
         </div>
-        <%= text_field_tag 'search_query[spouse_first_name]', set_value(@search_query.spouse_first_name), class: 'text-input', placeholder: 'Enter spouse first name(s) here', tabindex: '1'%>
-        <%= check_box_tag 'hello', true, false %>
-        <%= content_text(:small,'Identifiable spouses only') %>
+        <%= text_field_tag 'search_query[spouse_first_name]', set_value(@search_query.spouse_first_name), class: 'text-input', placeholder: 'Enter spouse first name(s) here', id: 'spouse_first_name'%>
+        <label>
+          <small class="ttip__text">
+            <%= check_box_tag 'search_query[identifiable_spouse_only]', true, false %>
+            Identifiable spouses only
+          </small>
+        </label>
       </div>
 
       <div class="grid__item one-quarter lap-one-half palm-one-whole">
         <div class='labels'>
-          <%= label_tag 'spouses_mother_surname', 'Spouses/Mothers surname', class: "ttip" %>
-          <%= label_tag 'spouses_mother_surname', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '0', title: info_tag_text[:firstname]%>
+          <%= label_tag 'spouses_mother_surname', "Spouses/Mothers surname #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:spouse_mother_surname], 'aria-details': info_tag_text[:spouse_mother_surname] %>
         </div>
-        <%= text_field_tag 'search_query[spouses_mother_surname]', set_value(@search_query.spouses_mother_surname), class: 'text-input', placeholder: '', tabindex: '1'%>
+        <%= text_field_tag 'search_query[spouses_mother_surname]', set_value(@search_query.spouses_mother_surname), class: 'text-input', placeholder: '', id: 'spouses_mother_surname'%>
       </div>
 
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <div class='labels'>
-         
-          <%= label_tag 'age_at_death', 'Age at Death', class: "ttip" %>
-          <%= label_tag 'date_of_birth_or_age_at_death', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '0', title: date_of_birth_or_death_age_info[:death_age]%>
+          <%= label_tag 'death_select_box', "Age at Death #{app_icons[:info]}".html_safe, class: "ttip", title: date_of_birth_or_death_age_info[:death_age], 'aria-details': date_of_birth_or_death_age_info[:death_age] %>
         </div>
         <%= select_tag(:death_at_age, options_for_select(SearchQuery::DEATH_AGE_OPTIONS.map { |k,v| [v,k] }), {:prompt => "-- Select Deat Age --", id: 'death_select_box'}) %>
         <span id="death_age_and_dob">
@@ -119,44 +122,44 @@
             <%= date_field_tag 'search_query[max_dob_at_death]', nil, class: 'text-input' %>
           </span>
         </span>
-        <%= check_box_tag 'search_query[match_recorded_ages_or_dates]', true, false %>
-        <%= content_text(:small, 'Match only recorded ages') %>
+        <label>
+          <small class="ttip__text">
+            <%= check_box_tag 'search_query[match_recorded_ages_or_dates]', true, false %>
+            Match only recorded ages
+          </small>
+        </label>
       </div>
 
       <div class="grid__item one-eighth lap-one-half palm-one-whole">
         <div class='labels'>
-          <%= label_tag 'volume', 'Volume', class: "ttip" %>
-          <%= label_tag 'volume', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '3'%>
+          <%= label_tag 'volume', "Volume #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:volume], 'aria-details': info_tag_text[:volume] %>
         </div>
-        <%= text_field_tag 'search_query[volume]', set_value(@search_query.volume), class: 'text-input', id: 'volume', placeholder: 'Enter Volume', tabindex: '4' %>
+        <%= text_field_tag 'search_query[volume]', set_value(@search_query.volume), class: 'text-input', id: 'volume', placeholder: 'Enter Volume' %>
       </div>
 
       <div class="grid__item one-eighth lap-one-half palm-one-whole">
         <div class='labels'>
-          <%= label_tag 'page', 'Page', class: "ttip" %>
-          <%= label_tag 'page', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '3'%>
+          <%= label_tag 'page', "Page #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:page], 'aria-details': info_tag_text[:page] %>
         </div>
-        <%= text_field_tag 'search_query[page]', set_value(@search_query.page), class: 'text-input', id: 'page', placeholder: 'Enter Page', tabindex: '4' %>
+        <%= text_field_tag 'search_query[page]', set_value(@search_query.page), class: 'text-input', id: 'page', placeholder: 'Enter Page'%>
       </div>
 
       <div class="grid__item three-eighths lap-one-quarters palm-one-whole" id="search_query_chapman_codes_input">
         <div class='labels'>
-          <%= label_tag 'chapman_codes', 'Counties', class: "ttip" %>
-          <%= label_tag 'chapman_codes', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '0', title: info_tag_text[:firstname]%>
+          <%= label_tag 'chapman_codes', "Counties #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:firstname], 'aria-details': info_tag_text[:first_name] %>
         </div>
         
         <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
         <% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil?%>
-        <%= f.select :chapman_codes, grouped_options_for_select(grouped_options, selected_key = key), {include_blank: 'All Counties'}, {multiple: true} %>
+        <%= f.select :chapman_codes, grouped_options_for_select(grouped_options, selected_key = key), {include_blank: 'All Counties'}, {multiple: true, id: 'chapman_codes'} %>
         <small class="additional">Select one place or none</small>
       </div>
       <div class="grid__item three-eighths lap-one-quarters palm-one-whole"  id="search_query_chapman_codes_input">
         <div class='labels'>
-          <%= label_tag 'districts', 'Districts', class: "ttip" %>
-          <%= label_tag 'districts', "#{app_icons[:info]}".html_safe, class: 'ttip', tabindex: '0', title: info_tag_text[:firstname]%>
+          <%= label_tag 'districts', "Districts #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:firstname], 'aria-details': info_tag_text[:first_name] %>
         </div>
         <% districts_names = DistrictToCounty.joins(:District).distinct.order( 'DistrictName ASC' )%>
-        <%= f.select :districts, districts_names.pluck(:DistrictName, :DistrictNumber), {include_hidden: false}, {multiple: true} %>
+        <%= f.select :districts, districts_names.pluck(:DistrictName, :DistrictNumber), {include_hidden: false}, {multiple: true, id: 'districts'} %>
         <small class="additional">Select one place or none</small>
       </div>
     </div>

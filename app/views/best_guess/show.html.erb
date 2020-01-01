@@ -1,0 +1,95 @@
+<% title "Record Details" %>
+<p class="text--right">
+  <%= link_to "New Search", new_search_query_path, :class => "btn   btn--small bordered push-half--right" %>
+  <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn   btn--small bordered push-half--right" %>
+  <%= link_to "Printable Format", '#', :class => "btn   btn--small bordered push-half--right"%>
+  <a href="#" id="citation-toggle" class="btn   btn--small bordered push-half--right citation-toggle">Generate Citation</a>
+  </p>
+<h1 class="title bmd_search_header">Entry Information</h1>
+<p>Has our search engine found the record you are seeking? The next step is to ordering your certificate ! Click on Ordering Certificates to learn what to do now.</p>
+<div class=''>
+  <i class="fa fa-arrow-left view_arrow"></i>
+  <%= link_to "Back to Results", search_query_path(@search_query, id: params[:search_id]) %>
+
+<div class="float--right">
+  <%= link_to '<i class="fa fa-chevron-left view_arrow"></i> Previous Result'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record, @previous_record.friendly_url), class: 'push-half--right' unless @previous_record.nil? %>
+  <%= link_to 'Next Result <i class="fa fa-chevron-right view_arrow"></i> '.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record, @next_record.friendly_url), class: 'push-half--right' unless @next_record.nil?%>
+</div>
+</div>
+<% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
+<section class="island" >
+  <h1 class="accessibility">Search Results</h1>
+  <div class="table-wrapper" id="search-result">
+    <table class="search_results_table" border='0' >
+      <caption class="gamma">
+      </caption>
+      <thead>
+        <tr>
+          <th>
+            Surname
+          </th>
+          <th>
+            Firstname
+          </th>
+          <th>
+            Date
+          </th>
+          <th>
+            Record Type
+          </th>
+          <th>
+            District
+          </th>
+          <th>
+            M/S/A/D
+          </th>
+          <th>
+            Volume/Page
+          </th>
+          <th>
+            Transcriber
+          </th>
+          <th>
+            Scan
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <% record_type = BmdRecordType.where(RecordTypeID: @search_record[:RecordTypeID]).first.RecordType%>
+        <tr id="<%=@search_record[:RecordNumber]%>" class="<%= record_type.downcase %>">
+          <td>
+            <%= "#{@search_record[:Surname]} " %>
+          </td>
+          <td>
+            <%= "#{@search_record[:GivenName]}" %>
+          </td>
+          <td>
+            <%= "#{(@search_record[:QuarterNumber]-1)%4 + 1} #{(@search_record[:QuarterNumber]-1)/4 + 1837}"%>
+          </td>
+          <td>
+            <%= "#{record_type}" %>
+          </td>
+          <td>
+            <%= "#{@search_record[:District]}" %>
+          </td>
+          <td>
+            <%= "#{@search_record[:AssociateName]}" %>
+          </td>
+          <td>
+            <%= "#{@search_record[:Volume]}/#{@search_record[:Page]}" %>
+          </td>
+          <td>
+            <%= "#{@search_record[:AssociateName]}" %>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+  <div class="grid">
+    <div class="grid__item one-half lap-one-half palm-one-whole">
+      If you have a correction to this entry, please submit a correction. Please note that you can view the scan from which this entry was transcribed, please click on          .Please examine this image to verify that any correction you submit is the same as in the GRO index. The objective of FreeBMD is to provide online access to this index and entries are aligned to the GRO index, not to other sources.
+    </div>
+    <div class="grid__item one-half lap-one-half palm-one-whole">
+      A Postem is a note left by someone about this record - the content of the postem is determined by the person who left it. FreeBMD can offer no assurance about the postem and will not enter into correspondence about it. 
+    </div>
+  </div>

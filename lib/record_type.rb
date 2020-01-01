@@ -40,6 +40,7 @@ module RecordType
     when 'freecen'
       FREECEN_OPTIONS
     when 'freebmd'
+      FREEBMD_OPTIONS
     end
   end
   
@@ -66,6 +67,12 @@ private
   FREECEN_OPTIONS = ALL_FREECEN_TYPES.inject({}) do |accum, value|
     accum[value]=value
     accum
-  end  
+  end
+
+  FREEBMD_OPTIONS = {
+    'BIRTHS' => BIRTHS,
+    'DEATHS' => DEATHS,
+    'MARRIAGES' => MARRIAGES
+  }
 
 end

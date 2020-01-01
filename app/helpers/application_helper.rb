@@ -192,6 +192,28 @@ module ApplicationHelper
     display_map
   end
 
+  def bmd_search_params search_query
+    #raise search_query.inspect
+    display_map = {}
+    # name fields
+    display_map["First Name"] = search_query.first_name.upcase if search_query.first_name
+    display_map["Last Name"] = search_query.last_name.upcase if search_query.last_name
+    display_map["First Name Exact Match?"] = search_query.first_name_exact_match ? 'Yes' : 'No'
+    display_map["Phonetic Surnames"] = search_query.fuzzy ? 'Yes' : 'No'
+    display_map["Search Start Date"] = "#{search_query.start_quarter} #{search_query.start_year}"
+    display_map["Search End Date"] = "#{search_query.end_quarter} #{search_query.end_year}"
+    display_map["Record Type"] = RecordType::display_name(search_query.record_type) if search_query.record_type
+    display_map["Spouse First Name"] = search_query.spouse_first_name if search_query.spouse_first_name
+    display_map["Identifiable Spouses Only"] = search_query.fuzzy ? 'Yes' : 'No'
+    display_map["Spouse/Mother Surname"] = search_query.spouses_mother_surname if search_query.spouses_mother_surname
+    display_map["Volume"] = search_query.volume if search_query.volume
+    display_map["Page"] = search_query.page if search_query.page
+    display_map["Counties"] = counties if search_query.chapman_codes.size > 1
+    display_map["Districts"] = search_query.districts if search_query.districts.size >1
+    #display_map["Record Type"] =
+    display_map
+  end
+
   def geo_near_distance(first,last,units)
     dist = Geocoder::Calculations.distance_between([first.latitude, first.longitude],[ last.latitude, last.longitude], {:units => :mi}) if units == Place::MeasurementSystem::ENGLISH
     dist = Geocoder::Calculations.distance_between([first.latitude, first.longitude],[ last.latitude, last.longitude],{:units => :km}) if units == Place::MeasurementSystem::SI
@@ -460,9 +482,9 @@ module ApplicationHelper
       facebook: '<i class="fa fa-facebook-square fa-2x"></i>',
       news: '<i class="fa fa-rss-square fa-2x"></i>',
       twitter: '<i class="fa fa-twitter-square fa-2x"></i>',
-      github: '<i class="fa fa-github-square fa-2x" aria-hidden="true"></i>',
+      github: '<i class="fa fa-github-square fa-2x"></i>',
       info: '<i class="fa fa-info-circle"></i>',
-      pinterest: '<i class="fa fa-pinterest-square fa-2x" aria-hidden="true"></i>',
+      pinterest: '<i class="fa fa-pinterest-square fa-2x"></i>',
       instagram: '<i class="fa fa-instagram fa-2x"></i>'
     }
   end
@@ -478,21 +500,27 @@ module ApplicationHelper
     }
   end
 
-  def html_options
-    {target: '_blank', rel: 'noreferrer'}
+  def html_options(alt_text:)
+    {target: '_blank', rel: 'noreferrer', alt: alt_text}
   end
 
   def info_tag_text
     {
       firstname: 'Optional. Use upper- or lower-case. Abbreviations and Latin versions of the forename (first-name) will be included automatically',
-      lastname: 'Use upper- or lower-case. If you do not enter a surname (last-name) you <em>must</em> enter a forename, select one county and choose a single record type'
+      lastname: 'Use upper- or lower-case. If you do not enter a surname (last-name) you <em>must</em> enter a forename, select one county and choose a single record type',
+      date_range_from: 'Select a month and year respectively from the drop down to specify start date range. Leaving it blank means "from the start" ',
+      date_range_to: 'Select a month and year respectively from the drop down to specify end date range. Leaving it blank means "to the end". You should always specify as small a range of dates as possible to search in order to speed up the search by reducing the number of results.',
+      record_type: 'You must specify whether you are searching for Births, Marriages, Deaths or all the three types',
+      spouse_first_name: 'Optional. Use upper- or lower-case',
+      spouse_mother_surname: 'Optional. Use upper- or lower-case. Search spouse surname for Marriage record type or mother surname for Birth Record Type. Only records from the September quarter 1911 onwards contain the mothers maiden name so entering a value in this field will return only records from the September quarter 1911 onwards.',
+      volume: 'Optional',
+      page: 'Optional'
     }
   end
 
   def date_of_birth_or_death_age_info
     {
-      death_age: 'The Age at Death is given as a number which is the Age at Death in years. The number may be zero indicating less than 1 year old (there are a few instances in the index of Age at Death being given in months - by suffixing with the letter "m" - but we consider these to be zero for search purposes).
-        Because the Age at Death may not be known exactly, you can specify a range for the Age at Death, like the following:
+      death_age: 'The Age at Death may not be known exactly, you can specify a range for the Age at Death, like the following:
         56-58
         The only restriction is that the first specified age must be less than the second.
 Alternatively, you can specify an age plus or minus a number of years and this is done using the percent symbol (%) to mean plus or minus, thus the previous example would be
@@ -508,6 +536,17 @@ From June 1969 the index contains the Date of Birth instead of the Age at Death.
     content_tag tag, info_text, class: 'ttip__text'
   end
 end
+  def viewed(search_query, search_record)
+    search_results = search_query.search_result
+    viewed_records = search_results.viewed_records
+    field = ''
+    #raise viewed_records.inspect
+    if viewed_records.present?
+      field = '(Seen)' if viewed_records.include?("#{search_record[:_id]}")
+    end
+    field
+  end
+
 def fullwidth_adsense_freereg
   banner = <<-HTML
   <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>

@@ -80,6 +80,7 @@ class SearchQuery
   field :all_radius_place_ids, type: Array, default: []
   field :wildcard_search, type: Boolean, default: false
   field :first_name_exact_match, type: Boolean, default: false
+  field :identifiable_spouse_only, type:Boolean, default: false
 
   field :birth_chapman_codes, type: Array, default: []
   field :birth_place_name, type: String
@@ -434,7 +435,8 @@ class SearchQuery
   def locate_index(records,current)
     n = 0
     records.each do |record|
-      break if record[:_id].to_s == current
+      break if record[:_id].to_s == current unless SearchQuery.app_template.downcase == 'freebmd'
+      break if record[:RecordNumber].to_s == current if SearchQuery.app_template.downcase == 'freebmd'
       n = n + 1
     end
     return n
@@ -478,15 +480,16 @@ class SearchQuery
   def next_and_previous_records(current)
     if search_result.records.respond_to?(:values)
       search_results = search_result.records.values
-      search_results = filter_name_types(search_results)
+      #search_results = filter_name_types(search_results)
       search_results = sort_results(search_results) unless search_results.nil?
       record_number = locate_index(search_results, current)
       next_record_id = nil
       previous_record_id = nil
-      next_record_id = search_results[record_number + 1][:_id] unless record_number.nil? || search_results.nil? || record_number >= search_results.length - 1
-      previous_record_id = search_results[record_number - 1][:_id] unless search_results.nil? || record_number.nil? || record_number.zero?
-      next_record = SearchRecord.find(next_record_id) if next_record_id.present?
-      previous_record = SearchRecord.find(previous_record_id) if previous_record_id.present?
+      search_id = SearchQuery.app_template.downcase == 'freebmd' ? 'RecordNumber' : '_id'
+      next_record_id = search_results[record_number + 1][search_id] unless record_number.nil? || search_results.nil? || record_number >= search_results.length - 1
+      previous_record_id = search_results[record_number - 1][search_id] unless search_results.nil? || record_number.nil? || record_number.zero?
+      next_record = SearchQuery.get_search_table.find(next_record_id) if next_record_id.present?
+      previous_record = SearchQuery.get_search_table.find(previous_record_id) if previous_record_id.present?
       response = true
     else
       response = false
@@ -865,7 +868,7 @@ class SearchQuery
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
     #raise bmd_params_hash.inspect
     #raise BestGuess.where(bmd_params_hash).inspect
-    records = SearchQuery.get_search_table.joins(spouse_join_condition).where(bmd_params_hash).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+    records = SearchQuery.get_search_table.where(bmd_params_hash).joins(spouse_join_condition).where(bmd_marriage_params).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     records = records.where(first_name_filteration) unless self.first_name_exact_match
     records = combined_results records if date_of_birth_range?
     persist_results(records)
@@ -1139,14 +1142,33 @@ class SearchQuery
     params.merge!(bmd_age_at_death_params) if self.age_at_death.present?
     params.merge!(bmd_volume_params) if self.volume.present?
     params.merge!(bmd_page_params) if self.page.present?
-    params.merge!(spouse_surname_search) if self.spouses_mother_surname.present?
+    
     params
+  end
+
+  def bmd_marriage_params
+    params = {}
+    params.merge!(spouse_surname_search) if self.spouses_mother_surname.present?
+    params.merge!(spouse_firstname_search) if self.spouse_firstname_search.present?
+    params
+  end
+
+  def spouse_firstname_search
+    params = {}
+    params[:GivenName] != self.spouse_first_name
+    params
+  end
+
+  def identifiable_spouse_only_search
+    params[:QuarterNumber] >= 301
   end
 
   def spouse_surname_search
     params = {}
     if start_year_quarter >= 301
       params[:AssociateName] = self.spouses_mother_surname
+    else
+      params[:surname] != self.spouses_mother_surname
     end
     params
   end
@@ -1177,7 +1199,7 @@ class SearchQuery
   end
 
   def spouse_surname_join_condition
-    'inner join BestGuessMarriages as b on b.volume=BestGuess.Volume and b.page=BestGuess.page and b.RecordtypeID= BestGuess.RecordTypeID and b.QuarterNumber=BestGuess.QuarterNumber'
+    'inner join BestGuessMarriages as b on b.volume=BestGuessMarriages.Volume and b.page=BestGuessMarriages.page and b.RecordtypeID!= BestGuessMarriages.RecordTypeID and b.QuarterNumber=BestGuessMarriages.QuarterNumber'
   end
 
   private

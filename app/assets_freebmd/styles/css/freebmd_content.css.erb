@@ -45,7 +45,7 @@ select {
     width: 100%;
 }
 
-select#date_month, select#date_year {
+select#date_month, select.date_year {
     display: inline-block;
     padding: 10px;
     background: none;
@@ -262,17 +262,14 @@ input:disabled:not([type="submit"]):hover {
   font-style: normal;
   font-weight: normal;
   font-size: 24px;
-  line-height: 30px;
   text-align: center;
 }
 
 .result_text {
   font-style: normal;
   font-weight: normal;
-  line-height: 30px;
   color: #000000;
-  text-align: justify;
-  font-size: 24px;
+  text-align: left;
 }
 .search_results_table thead {
   border-bottom: 1px solid #707070;
@@ -324,4 +321,15 @@ input:disabled:not([type="submit"]):hover {
 
 #death_select_box {
   margin-bottom: 5px;
+}
+
+.bordered {
+  border: 2px solid #C84182;
+  background-color: #fff;
+  color: #C84182;
+  outline: none;
+}
+
+.bordered:hover {
+  text-decoration: none;
 }
