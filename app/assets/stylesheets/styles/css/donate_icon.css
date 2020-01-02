@@ -64,35 +64,37 @@
 #donate.freeREG:hover #donateBtn, #donate.freeREG:focus #donateBtn {color: #b48282}
 
   .btn-volunteer {
-     }
+    margin-top: 25px;
+    display: block;
+    height: 70px;
+   }
 
-     .btn-feedback {
-     }
+ .btn-feedback {
+    position: absolute;
+    width: 75px;
+    margin: 20px auto 0
+ }
 
-     .volunteer_box {
-      position:absolute;
-      left: 72.24%;
-      right: 18.39%;
-      top: 72.83%;
-      bottom: 27.17%;
-     }
+ .volunteer_box {
+    margin-top: 3px;
+ }
 
-     .feedback_box {
-      position:absolute;
-      right: 72.24%;
-      left: 15.39%;
-      top: 72.83%;
-      bottom: 27.17%;
-     }
-
-     #volunteer{
-      position:relative;
+ .feedback_box {
+    position: relative;
     display: block;
     width: auto;
+    margin: 90px 0 0 45px;
     padding: 3px 45px;
-    color: #FFF;
-    font-size: 1.1em;
-    font-weight: bold;
+ }
+
+ #volunteer{
+  position:relative;
+display: block;
+width: auto;
+padding: 3px 45px;
+color: #FFF;
+font-size: 1.1em;
+font-weight: bold;
 }
 
 .laddo {

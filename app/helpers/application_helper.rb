@@ -280,8 +280,8 @@ module ApplicationHelper
     display_map["Last Name"] = search_query.last_name.upcase if search_query.last_name
     display_map["First Name Exact Match?"] = search_query.first_name_exact_match ? 'Yes' : 'No'
     display_map["Phonetic Surnames"] = search_query.fuzzy ? 'Yes' : 'No'
-    display_map["Search Start Date"] = "#{search_query.start_quarter} #{search_query.start_year}"
-    display_map["Search End Date"] = "#{search_query.end_quarter} #{search_query.end_year}"
+    display_map["Search Start Date"] = "#{QuarterDetails.quarters.key(search_query.start_quarter).upcase} #{search_query.start_year}"
+    display_map["Search End Date"] = "#{QuarterDetails.quarters.key(search_query.end_quarter).upcase} #{search_query.end_year}"
     display_map["Record Type"] = RecordType::display_name(search_query.record_type) if search_query.record_type
     display_map["Spouse First Name"] = search_query.spouse_first_name if search_query.spouse_first_name
     display_map["Identifiable Spouses Only"] = search_query.fuzzy ? 'Yes' : 'No'

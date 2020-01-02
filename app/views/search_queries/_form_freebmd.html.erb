@@ -46,7 +46,7 @@
           <%= label_tag 'start_quarter', "Date range from #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:date_range_from], 'aria-details': info_tag_text[:date_range_from] %>
         </div>
         <%= select_tag( 'search_query[start_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.start_quarter)), class: 'select_month_start date_year', id: 'start_quarter') %>
-        <%= select_year(set_value(@search_query.start_year), { start_year: 1837, end_year: 1992, prompt: '- - - -' }, class: 'select_year_start date_year', name: 'search_query[start_year]', id: 'start_quarter') %>
+        <%= select_year(set_value(@search_query.start_year), { start_year: 1837, end_year: 1992 }, class: 'select_year_start date_year', name: 'search_query[start_year]', id: 'start_quarter') %>
       </div>
 
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
@@ -54,7 +54,7 @@
           <%= label_tag 'to_year', "Date range to #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:date_range_to], 'aria-details': info_tag_text[:date_range_to] %>
         </div>
         <%= select_tag( 'search_query[end_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.end_quarter)), class: 'select_month_end date_year', id: 'to_year') %>
-        <%= select_year(set_value(@search_query.end_year), {start_year: 1837, end_year: 1992, prompt: '- - - -'}, class: 'select_year_end date_year', name: 'search_query[end_year]', id: 'to_year') %>
+        <%= select_year(set_value(@search_query.end_year), {start_year: 1837, end_year: 1992 }, class: 'select_year_end date_year', name: 'search_query[end_year]', id: 'to_year') %>
       </div>
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <div class='labels'>

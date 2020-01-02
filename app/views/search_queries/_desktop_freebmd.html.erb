@@ -13,71 +13,71 @@
     <%= link_to "Printable Format", new_search_query_path(:search_id => @search_query), :class => "btn   btn--small bordered push-half--right" %>
   </div>
 </div>
-</div>
-<section class="island" >
-  <h1 class="accessibility">Search Results</h1>
-  <div class="table-wrapper" id="search-result">
-    <table class="search_results_table" border='0' >
-      <caption class="gamma">
-      </caption>
-      <thead>
-        <tr>
-          <% unless print_friendly %>
-            <th>Detail</th>
-          <% end %>
-          <th>
-            Surname
-          </th>
-          <th>
-            Firstname
-          </th>
-          <th>
-            Date
-          </th>
-          <th>
-            Record Type
-          </th>
-          <th>
-            District
-          </th>
-          <th>
-            M/S/A/D
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <% n = 0 %>
-        <% search_results.each do |search_record| %>
-          <% n = n +1%>
-          <% record_type = BmdRecordType.where(RecordTypeID: search_record[:RecordTypeID]).first.RecordType%>
-          <tr id="<%=search_record[:_id]%>" class="<%= record_type.downcase %>">
+<section>
+  <section class="island" >
+    <h1 class="accessibility">Search Results</h1>
+    <div class="table-wrapper bmd_search_results_table" id="search-result">
+      <table class="search_results_table" border='0' >
+        <thead>
+          <tr>
             <% unless print_friendly %>
-              <td>
-                <i class="fa fa-arrow-right view_arrow"></i>
-                <%= link_to("View #{n}",friendly_bmd_record_details_path(@search_query.id,search_record.id, search_record.friendly_url), :rel => "nofollow", :title => "" )%>
-                <i><%= seen(@search_query,search_record) %></i>
-              </td>
+              <th>Detail</th>
             <% end %>
-            <td>
-              <%= "#{search_record[:Surname]} " %>
-            </td>
-            <td>
-              <%= "#{search_record[:GivenName]}" %>
-            </td>
-            <td>
-              <%= "#{(search_record[:QuarterNumber]-1)%4 + 1} #{(search_record[:QuarterNumber]-1)/4 + 1837}"%>
-            </td>
-            <td>
-              <%= "#{record_type}" %>
-            </td>
-            <td>
-              <%= "#{search_record[:District]}" %>
-            </td>
-            <td>
-              <%= "#{search_record[:AssociateName]}" %>
-            </td>
+            <th>
+              Surname
+            </th>
+            <th>
+              Firstname
+            </th>
+            <th>
+              Date
+            </th>
+            <th>
+              Record Type
+            </th>
+            <th>
+              District
+            </th>
+            <th>
+              M/S/A/D
+            </th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <% n = 0 %>
+          <% search_results.each do |search_record| %>
+            <% n = n +1%>
+            <% record_type = BmdRecordType.where(RecordTypeID: search_record[:RecordTypeID]).first.RecordType%>
+            <tr id="<%=search_record[:_id]%>" class="<%= record_type.downcase %>">
+              <% unless print_friendly %>
+                <td>
+                  <%= link_to("<i class='fa fa-arrow-right view_arrow'></i> View #{n}".html_safe,friendly_bmd_record_details_path(@search_query.id,search_record.id, search_record.friendly_url), :rel => "nofollow", :title => "" )%>
+                  <i><%= seen(@search_query,search_record) %></i>
+                </td>
+              <% end %>
+              <td>
+                <%= "#{search_record[:Surname]} " %>
+              </td>
+              <td>
+                <%= "#{search_record[:GivenName]}" %>
+              </td>
+              <td>
+              <%# raise QuarterDetails.quarters.inspect%>
+                <%= "#{QuarterDetails.quarters.key((search_record[:QuarterNumber]-1)%4 + 1).upcase} #{(search_record[:QuarterNumber]-1)/4 + 1837}"%>
+              </td>
+              <td>
+                <%= "#{record_type}" %>
+              </td>
+              <td>
+                <%= "#{search_record[:District]}" %>
+              </td>
+              <td>
+                <%= "#{search_record[:AssociateName]}" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
   </section>
+</section>
