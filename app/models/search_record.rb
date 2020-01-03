@@ -355,7 +355,12 @@ class SearchRecord
 
     def update_create_search_record(entry, search_version, place)
       #create a temporary search record with the new information
-      entry.process_embargo
+      change, embargo_record = entry.process_embargo
+      if change
+        entry.embargo_records << embargo_record
+        entry.save
+        entry.reload
+      end
       search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
       search_record = entry.search_record
       new_search_record = SearchRecord.new(search_record_parameters)

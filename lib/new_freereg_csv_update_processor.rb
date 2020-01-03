@@ -1286,7 +1286,7 @@ class CsvRecords <  CsvFile
       n = n + 1
       #p "processing line #{n}"
       @record = CsvRecord.new(line)
-      success,message = @record.extract_data_line(self,csvfile,project,n)
+      success, message = @record.extract_data_line(self, csvfile, project, n)
       #success,message = @record.add_record_to_appropriate_file(location,self,csvfile,project,n) if success.present?
       project.write_messages_to_all(message,true) if !success
       success = true
@@ -1379,7 +1379,7 @@ class CsvRecord < CsvRecords
     @data_record = Hash.new
   end
 
-  def extract_data_line(csvrecords,csvfile,project,line)
+  def extract_data_line(csvrecords, csvfile, project, line)
     #p "extracting data line"
     #p "#{line}"
     begin
@@ -1539,7 +1539,7 @@ class CsvRecord < CsvRecords
     return location
   end
 
-  def process_baptism_data_fields(csvrecords,csvfile,project,line)
+  def process_baptism_data_fields(csvrecords, csvfile, project, line)
     #p "extracting baptism"
     FreeregOptionsConstants::ORIGINAL_BAPTISM_FIELDS.each do |field|
       field_symbol = field.to_sym

@@ -765,7 +765,7 @@ class Freereg1CsvEntry
     return  order, array_of_entries, json_of_entries
   end
 
-  def process_embargo(rule)
+  def process_embargo
     unless embargo_records.present? && embargo_records.last.who == 'register_rule'
       return [false, ''] if embargo_records.present? # individual embargo present so we will not process register rule
 
@@ -774,6 +774,8 @@ class Freereg1CsvEntry
     end
     embargoes = freereg1_csv_file.register.embargo_rules
     return [false, ''] if embargoes.blank?
+
+    rule = embargoes.find_by(record_type: record_type)
 
     return [false, ''] if rule.blank? #no rule for this record type
 

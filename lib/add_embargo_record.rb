@@ -65,7 +65,7 @@ class AddEmbargoRecord
             message_file.puts entry.inspect
             message_file.puts entry.embargo_records.inspect
             message_file.puts entry.already_has_this_embargo?(rule)
-            change, embargo_record = entry.process_embargo(rule)
+            change, embargo_record = entry.process_embargo
             next unless change
 
             total_records = total_records + 1
