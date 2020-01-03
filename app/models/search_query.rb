@@ -854,8 +854,17 @@ class SearchQuery
   end
 
   def start_year_quarter
-    start_year = year_with_default(year:self.start_year, default: 1837)
+    start_year = year_with_default(year:search_start_year, default: 1837)
     quarter_number(year: start_year, quarter: start_quarter)
+  end
+
+  def search_start_year
+    if self.dob_at_death.present? || self.min_dob_quarter.present?
+      year = self.dob_at_death || self.min_dob_quarter
+    else
+      year = self.start_year
+    end
+    year
   end
 
   def end_year_quarter
