@@ -1095,16 +1095,8 @@ class SearchQuery
   end
 
   def date_of_birth_search_range_a records
-    b = []
     records.select{|r|
-      r.QuarterNumber - (r.AgeAtDeath.to_i * 4) >= min_dob_range_quarter if r.AgeAtDeath.present?
-    }
-  end
-
-  def date_of_birth_search_range_b records
-    b = []
-    records.select{|r|
-      r.QuarterNumber - ((r.AgeAtDeath.to_i + 1) * 4 + 1) <= max_dob_range_quarter if r.AgeAtDeath.present?
+      ((r.QuarterNumber - (r.AgeAtDeath.to_i * 4))..(r.QuarterNumber - ((r.AgeAtDeath.to_i + 1) * 4 + 1))).include?(min_dob_range_quarter..max_dob_quarter) if r.AgeAtDeath.present?
     }
   end
 
@@ -1128,7 +1120,7 @@ class SearchQuery
   def combined_results records
     non_dob_results = non_dob_records records
     dob_results = dob_recordss records
-    date_of_birth_search_range_a(non_dob_results) + date_of_birth_search_range_b(non_dob_results) + dob_exact_search(dob_results).to_a
+    date_of_birth_search_range_a(non_dob_results) + dob_exact_search(dob_results).to_a
   end
 
   def min_dob_range_quarter
