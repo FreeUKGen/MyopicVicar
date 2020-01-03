@@ -221,7 +221,6 @@ module ApplicationHelper
 
   # generate proper display for the search query, in display order
   def search_params_for_display(search_query)
-    p search_query.inspect
     display_map = {}
     # name fields
     display_map["First Name"] = search_query.first_name.upcase if search_query.first_name

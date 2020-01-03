@@ -138,7 +138,7 @@
           <% end %>
         <% end %>
         <% if  current_authentication_devise_user.present? && @embargoed %>
-          <% @entry.embargo_records.each do |record| %>
+          <% @entry.embargo_records.order_by(updated_at: -1).each do |record| %>
             <tr>
               <td> History of embargo changes</td>
               <td> <%= record.embargoed %> <%= record.release_year %> <%= record.who %> <%= record.when.strftime("%e %b %Y") %>  <%= record.why %> </td>

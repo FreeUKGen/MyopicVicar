@@ -2,7 +2,7 @@ class EmbargoRulesController < ApplicationController
 
   def create
     redirect_back(fallback_location: { action: 'index', county: session[:county], place: session[:place], church: session[:church], register: session[:register] },
-                  otice: 'You must enter a field ') && return if params[:embargo_rule].blank?
+                  notice: 'You must enter a complete set of fields') && return if params[:embargo_rule].blank?
 
     params[:embargo_rule][:period_type] = params[:embargo_rule][:rule] == 'Embargoed until the end of ' ? 'end' : 'period'
     @rule = EmbargoRule.new(embargo_rule_params)

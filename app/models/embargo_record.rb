@@ -8,6 +8,8 @@ class EmbargoRecord
   field :why, type: String
   validates :why, presence: true
   field :when, type: DateTime
+  field :rule_applied, type: String
+  field :rule_date, type: String
   field :release_year, type: Integer # This is the computed release year
   field :release_date, type: Integer # This is the manual entry of a release year
   validate :release
@@ -22,6 +24,12 @@ class EmbargoRecord
       end_year = rule.period.to_i + year.to_i if year.present?
     end
     end_year
+  end
+
+  def already_applied?(rule)
+    result = false
+    result = true if rule_date.present? && rule_date.to_s == rule.updated_at.utc.to_s
+    result
   end
 
   def release

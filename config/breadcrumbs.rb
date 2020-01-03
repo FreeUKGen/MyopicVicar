@@ -1043,6 +1043,10 @@ crumb :listing_of_zero_year_entries do |file|
     parent :show_file, file
   end
 end
+crumb :listing_of_embargoed_entries do |file|
+  link 'Listing of Embargoed Entries', embargoed_entries_freereg1_csv_file_path(id: "#{file.id}")
+  parent :show_file, file
+end
 
 crumb :show_zero_year_entry do |entry, file|
   @zero_year = 'true'
