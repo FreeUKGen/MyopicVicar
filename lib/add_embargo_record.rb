@@ -22,6 +22,7 @@ class AddEmbargoRecord
     total_registers = 0
     sleep_time_twenty = 20 * (Rails.application.config.sleep.to_f).to_f
     files_processed = 0
+    userids = []
     lines.each do |line|
       total_registers = total_registers + 1
       break if total_registers.to_i > limit.to_i && limit.to_i != 0
@@ -35,7 +36,6 @@ class AddEmbargoRecord
       rules = register.embargo_rules.order_by(created_at: 1)
       next if rules.blank?
 
-      userids = []
       rules.each do |rule|
         message_file.puts 'processing rule'
         record_type = rule.record_type

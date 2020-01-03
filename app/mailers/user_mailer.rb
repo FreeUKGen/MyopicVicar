@@ -2,10 +2,12 @@
 # This file is in desperate need of refactoring
 ##############################################
 class UserMailer < ActionMailer::Base
+  reg_website = MyopicVicar::Application.config.website == 'https://test3.freereg.org.uk' ? 'Test' : ''
+  cen_website = MyopicVicar::Application.config.website == 'https://test3.freecen.org.uk' ? 'Test' : ''
   if MyopicVicar::Application.config.template_set == 'freereg'
-    default from: ' FreeREG Servant <freereg-processing@freereg.org.uk>'
+    default from: "#{reg_website} FreeREG Servant <freereg-processing@freereg.org.uk>"
   elsif MyopicVicar::Application.config.template_set == 'freecen'
-    default from: "freecen-contacts@freecen.org.uk"
+    default from: "#{reg_website} FreeCEN Servant <freecen-contacts@freecen.org.uk>"
   end
 
   def appname
@@ -15,7 +17,7 @@ class UserMailer < ActionMailer::Base
   def freecen_processing_report(to_email, subj, report)
     @appname = appname
     @freecen_report = report
-    mail(:from => "freecen-processing@freecen.org.uk", :to => to_email, :subject => subj, :body => report, :content_type => "text/plain")
+    mail(:to => to_email, :subject => subj, :body => report, :content_type => "text/plain")
   end
   add_template_helper(EmailHelper)
 
