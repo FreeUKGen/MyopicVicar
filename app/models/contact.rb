@@ -239,7 +239,6 @@ class Contact
   end
 
   def delete_replies
-    p self
     replies = Message.where(source_contact_id: id).all
     return if replies.blank?
 
