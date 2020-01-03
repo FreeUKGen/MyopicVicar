@@ -40,6 +40,7 @@ class SearchQuery
   end
 
   WILDCARD = /[?*]/
+  DOB_START_QUARTER = 530
 
   field :first_name, type: String # , :required => false
   field :last_name, type: String # , :required => false
@@ -1073,7 +1074,6 @@ class SearchQuery
   end
 
   def dob_start_quarter_in_search_range
-    DOB_START_QUARTER = 530
     DOB_START_QUARTER.between?(start_year_quarter,end_year_quarter)
   end
 
@@ -1109,12 +1109,10 @@ class SearchQuery
   end
 
   def dob_recordss records
-    DOB_START_QUARTER = 530
     records.where('QuarterNumber >= ?', DOB_START_QUARTER)
   end
 
   def non_dob_records records
-    DOB_START_QUARTER = 530
     records.where('QuarterNumber < ?', DOB_START_QUARTER)
   end
 
