@@ -1125,11 +1125,13 @@ class SearchQuery
   def min_dob_range_quarter
     min_dob_quarter = dob_quarter_number(self.dob_at_death)
     min_dob_quarter = dob_quarter_number(self.min_dob_at_death) if date_of_birth_range?
+    min_dob_quarter
   end
 
   def max_dob_range_quarter
     max_dob_quarter = dob_quarter_number(self.dob_at_death)
     max_dob_quarter = dob_quarter_number(self.max_dob_at_death) if date_of_birth_range?
+    max_dob_quarter
   end
 
   def dob_quarter_number date
