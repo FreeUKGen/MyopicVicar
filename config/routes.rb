@@ -368,6 +368,7 @@ MyopicVicar::Application.routes.draw do
   get 'freereg1_csv_files/unique_names', :to => 'freereg1_csv_files#unique_names', :as => :unique_names_freereg1_csv_file
   get 'freereg1_csv_files/:id/zero_year', :to => 'freereg1_csv_files#zero_year', :as => :zero_year_freereg1_csv_file
   get 'freereg1_csv_files/:id/zero_year_entries', :to => 'freereg1_csv_files#show_zero_startyear_entries', :as => :show_zero_startyear_entries_freereg1_csv_file
+  get 'freereg1_csv_files/:id/embargoed_entries', :to => 'freereg1_csv_files#embargoed_entries', :as => :embargoed_entries_freereg1_csv_file
   resources :freereg1_csv_files
 
   resources :emendation_types

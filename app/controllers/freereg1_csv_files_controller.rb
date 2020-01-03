@@ -195,6 +195,19 @@ class Freereg1CsvFilesController < ApplicationController
     get_places_for_menu_selection
   end
 
+  def embargoed_entries
+    @freereg1_csv_file = Freereg1CsvFile.find(params[:id])
+    unless Freereg1CsvFile.valid_freereg1_csv_file?(params[:id])
+      message = 'The file was not correctly linked. Have your coordinator contact the web master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
+    @freereg1_csv_entries = @freereg1_csv_file.all_embargoed_entries
+    display_info
+
+    @embargoed_entries = true
+    render 'freereg1_csv_entries/index'
+  end
+
   def error
     @referrer = request.referer
     @freereg1_csv_file = Freereg1CsvFile.find(params[:id])
