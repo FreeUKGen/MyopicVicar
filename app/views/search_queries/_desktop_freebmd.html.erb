@@ -6,13 +6,15 @@
     </div>
   </div>
 </div>
-<div class='grid'>
-  <div class="grid__item">
-    <%= link_to "Download", new_search_query_path(:search_id => @search_query), :class => "btn btn--small bordered push-half--right" %>
-    <%= link_to "Save Search", new_search_query_path, :class => "btn   btn--small bordered push-half--right" %>
-    <%= link_to "Printable Format", new_search_query_path(:search_id => @search_query), :class => "btn   btn--small bordered push-half--right" %>
+<% unless defined?(@printable_format) && @printable_format %>
+  <div class='grid'>
+    <div class="grid__item">
+      <%= link_to "Download", '#', :class => "btn btn--small bordered push-half--right" %>
+      <%= link_to "Save Search", '#', :class => "btn   btn--small bordered push-half--right" %>
+      <%= link_to "Printable Format", show_print_version_search_query_path, :class => "btn   btn--small bordered push-half--right" %>
+    </div>
   </div>
-</div>
+<% end %>
 <section>
   <section class="island" >
     <h1 class="accessibility">Search Results</h1>
@@ -24,19 +26,24 @@
               <th>Detail</th>
             <% end %>
             <th>
-              Surname
+              <%= link_to_unless(print_friendly, 'Surname',
+            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::SURNAME)) %>
             </th>
             <th>
-              Firstname
+              <%= link_to_unless(print_friendly, 'Firstname(s)',
+            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::FIRSTNAME)) %>
             </th>
             <th>
-              Date
+              <%= link_to_unless(print_friendly, 'Date',
+            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_DATE)) %>
             </th>
             <th>
-              Record Type
+              <%= link_to_unless(print_friendly, 'Record Type',
+            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::TYPE)) %>
             </th>
             <th>
-              District
+              <%= link_to_unless(print_friendly, 'District',
+            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DISTRICT)) %>
             </th>
             <th>
               M/S/A/D

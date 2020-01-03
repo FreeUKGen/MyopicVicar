@@ -9,7 +9,7 @@
       <section class="islet islet--light soft--left hard--bottom">
         <h2 class="gamma flush--bottom"><em>When you searched for:</em></h2>
         <div class="criteria-group">
-        <% search_criteria = appname.downcase == 'freebmd' ? bmd_search_params(@search_query) : search_params_for_display(@search_query) %>
+          <% search_criteria = appname.downcase == 'freebmd' ? bmd_search_params(@search_query) : search_params_for_display(@search_query) %>
           <% search_criteria.each do |name, value| %>
             <dl class="criteria">
               <dt class="criteria__name"><%= name %></dt>
@@ -17,7 +17,7 @@
             </dl>
           <% end %>
           <% if appname.downcase == 'freebmd' %>
-            <div class="grid action">
+            <div class="grid action overflow-visible">
               <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn   btn--small " %>
               <%= link_to "New Search", new_search_query_path, :class => "btn   btn--small  " %>
             </div>

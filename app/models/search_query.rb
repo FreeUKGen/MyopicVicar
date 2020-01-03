@@ -17,6 +17,11 @@ class SearchQuery
     COUNTY='chapman_code'
     LOCATION='location'
     NAME='transcript_names'
+    SURNAME='Surname'
+    FIRSTNAME='GivenName'
+    DISTRICT='District'
+    BMD_RECORD_TYPE='RecordTypeID'
+    BMD_DATE = 'QuarterNumber'
 
 
     ALL_ORDERS = [
@@ -25,7 +30,12 @@ class SearchQuery
       DATE,
       COUNTY,
       LOCATION,
-      NAME
+      NAME,
+      SURNAME,
+      FIRSTNAME,
+      DISTRICT,
+      BMD_RECORD_TYPE,
+      BMD_DATE
     ]
   end
 
@@ -881,7 +891,7 @@ class SearchQuery
     #raise BestGuess.where(bmd_params_hash).inspect
     records = SearchQuery.get_search_table.where(bmd_params_hash).joins(spouse_join_condition).where(bmd_marriage_params).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     records = records.where(first_name_filteration) unless self.first_name_exact_match
-    records = combined_results records if date_of_birth_range?
+    records = combined_results records if date_of_birth_range? || self.dob_at_death.present?
     persist_results(records)
     records
   end
@@ -1062,6 +1072,11 @@ class SearchQuery
     self.sort_results(bmd_search_results) unless bmd_search_results.nil?
   end
 
+  def dob_start_quarter_in_search_range
+    DOB_START_QUARTER = 530
+    DOB_START_QUARTER.between?(start_year_quarter,end_year_quarter)
+  end
+
   def get_bmd_search_response
     self.search_result.records.respond_to?(:values)
   end
@@ -1084,8 +1099,29 @@ class SearchQuery
     }
   end
 
+  def dob_filteration
+    date = self.dob_at_death
+    "AgeAtDeath like '%#{date_array(date)[0]}%'"
+  end
+
+  def dob_exact_search records
+    records.where(dob_filteration)
+  end
+
+  def dob_recordss records
+    DOB_START_QUARTER = 530
+    records.where('QuarterNumber >= ?', DOB_START_QUARTER)
+  end
+
+  def non_dob_records records
+    DOB_START_QUARTER = 530
+    records.where('QuarterNumber < ?', DOB_START_QUARTER)
+  end
+
   def combined_results records
-    date_of_birth_search_range_a(records) + date_of_birth_search_range_b(records)
+    non_dob_results = non_dob_records records
+    dob_results = dob_recordss records
+    date_of_birth_search_range_a(non_dob_results) + date_of_birth_search_range_b(non_dob_results) + dob_exact_search(dob_results)
   end
 
   def min_dob_range_quarter
@@ -1099,8 +1135,11 @@ class SearchQuery
   end
 
   def dob_quarter_number date
-    date_array = date.split('-')
-    quarter_number(year: date_array[0], quarter: date_array[1])
+    quarter_number(year: date_array(date)[0], quarter: date_array(date)[1])
+  end
+
+  def date_array date
+    date.split('-')
   end
 
   def dob_exact_match
