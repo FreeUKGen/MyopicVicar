@@ -2,6 +2,7 @@
 <div>
   <%= simple_form_for @rule do |f| %>
     <%= f.hidden_field :register_id, :value => @register.id %>
+    <%= f.hidden_field :member_who_created, :value => @userid %>
     <% if @edit %>
       <%= f.hidden_field :record_type, :value => @rule.record_type %>
       <%= f.hidden_field :rule, :value => @rule.rule %>

@@ -2,6 +2,7 @@
 class EmbargoRule
   include Mongoid::Document
   include Mongoid::Timestamps
+  require 'record_type'
   field :authority, type: String
   validates :authority, presence: true
   field :period, type: Integer
@@ -10,11 +11,15 @@ class EmbargoRule
   field :reason, type: String
   validates :reason, presence: true
   field :record_type, type: String
-  validates_inclusion_of :record_type, in: RecordType::ALL_FREEREG_TYPES + [nil]
+  validates :record_type, inclusion: { in: RecordType.all_types }
   field :rule, type: String
+  field :member_who_created, type: String
+  validates :member_who_created, presence: true
   belongs_to :register, index: true
+
   validate :valid_period
   validate :only_one_rule_per_record_type, on: :create
+
   after_create  :add_to_rake_register_embargo_list
   after_update  :add_to_rake_register_embargo_list
   before_destroy :add_to_rake_register_embargo_list
