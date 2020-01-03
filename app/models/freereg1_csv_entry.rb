@@ -488,7 +488,7 @@ class Freereg1CsvEntry
 
     return search_record.record_type if search_record.present? && RecordType.all_types.include?(search_record.record_type)
 
-    logger.warn "#{appname_upcase} get_record_type missing"
+    logger.warn "#{MyopicVicar::Application.config.freexxx_display_name} get_record_type missing"
     logger.warn inspect
     crash
   end
