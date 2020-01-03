@@ -1096,7 +1096,7 @@ class SearchQuery
 
   def date_of_birth_search_range_a records
     records.select{|r|
-      ((r.QuarterNumber - (r.AgeAtDeath.to_i * 4))..(r.QuarterNumber - ((r.AgeAtDeath.to_i + 1) * 4 + 1))).include?(min_dob_range_quarter..max_dob_quarter) if r.AgeAtDeath.present?
+      ((r.QuarterNumber - (r.AgeAtDeath.to_i * 4))..(r.QuarterNumber - ((r.AgeAtDeath.to_i + 1) * 4 + 1))).include?(min_dob_range_quarter..max_dob_range_quarter) if r.AgeAtDeath.present?
     }
   end
 
