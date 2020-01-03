@@ -1088,14 +1088,14 @@ class SearchQuery
   def date_of_birth_search_range_a records
     b = []
     records.select{|r|
-      r.QuarterNumber - (r.AgeAtDeath * 4) >= min_dob_range_quarter
+      r.QuarterNumber - (r.AgeAtDeath.to_i * 4) >= min_dob_range_quarter
     }
   end
 
   def date_of_birth_search_range_b records
     b = []
     records.select{|r|
-      r.QuarterNumber - ((r.AgeAtDeath + 1) * 4 + 1) <= max_dob_range_quarter
+      r.QuarterNumber - ((r.AgeAtDeath.to_i + 1) * 4 + 1) <= max_dob_range_quarter
     }
   end
 
