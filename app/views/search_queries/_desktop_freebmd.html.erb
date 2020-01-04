@@ -1,6 +1,6 @@
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
 <div class='grid'>
-  <div class='grid__item one-whole lap-one-half palm-one-whole push-half--bottom'>
+  <div class='grid__item one-whole lap-one-whole palm-one-whole push-half--bottom'>
     <div class='result_text'>
       FreeBMD tries to ensure the results are an accurate transcription of the GRO Index but errors exist in the index and our transcription of it. You are advised to take this into account in your use of the information found and we have some help on doing that.
     </div>
@@ -48,13 +48,17 @@
             <th>
               M/S/A/D
             </th>
+            <th>
+              QuarterNumber
+            </th>
           </tr>
         </thead>
         <tbody>
           <% n = 0 %>
           <% search_results.each do |search_record| %>
             <% n = n +1%>
-            <% record_type = BmdRecordType.where(RecordTypeID: search_record[:RecordTypeID]).first.RecordType%>
+            <%# raise .inspect%>
+            <% record_type = RecordType::display_name(["#{search_record[:RecordTypeID]}"])%>
             <tr id="<%=search_record[:_id]%>" class="<%= record_type.downcase %>">
               <% unless print_friendly %>
                 <td>
@@ -80,6 +84,9 @@
               </td>
               <td>
                 <%= "#{search_record[:AssociateName]} #{search_record[:AgeAtDeath]}" %>
+              </td>
+              <td>
+                <%= search_record[:QuarterNumber]%>
               </td>
             </tr>
           <% end %>

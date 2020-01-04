@@ -5,32 +5,45 @@
   <%= pluralize(@result_count, ' Search Result', ' Search Results') %>
 <% else %>
   <div class="grid">
-    <div class="grid__item  two-thirds  lap-two-thirds  palm-one-whole push-half--top">
+    <div class="grid__item  one-sixth  lap-one-sixth  palm-one-whole push-half--top">
+      <div class="alpha results_block flush--bottom push-half--right">
+          Results
+        </div>
+        <div class='result_count'>
+          <%= pluralize(@result_count, 'Result', ' Search Results') %>
+        </div>
+    </div>
+    <div class="grid__item  seven-twelfths lap-seven-twelfths palm-one-whole push-half--top">
       <section class="islet islet--light soft--left hard--bottom">
-        <h2 class="gamma flush--bottom"><em>When you searched for:</em></h2>
-        <div class="criteria-group">
-          <% search_criteria = appname.downcase == 'freebmd' ? bmd_search_params(@search_query) : search_params_for_display(@search_query) %>
-          <% search_criteria.each do |name, value| %>
-            <dl class="criteria">
-              <dt class="criteria__name"><%= name %></dt>
-              <dd class="criteria__value"><%= value %></dd>
-            </dl>
-          <% end %>
+        <div class='grid'>
+          <div class="grid__item one-whole lap-one-whole palm-one-whole push-half--top">
+            <h2 class="gamma flush--bottom push-half--bottom"><em>When you searched for:</em></h2>
+            <div class="criteria-group">
+              <% search_criteria = appname.downcase == 'freebmd' ? bmd_search_criteria(@search_query) : search_params_for_display(@search_query) %>
+              <% search_criteria.each do |name, value| %>
+                <dl class="criteria">
+                  <dt class="criteria__name"><%= name %></dt>
+                  <dd class="criteria__value"><%= value %></dd>
+                </dl>
+              <% end %>
+            </div>
+          </div>
           <% if appname.downcase == 'freebmd' %>
-            <div class="grid action overflow-visible">
+            <div class="grid__item one-whole lap-one-whole palm-one-whole float--right text--right">
               <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn   btn--small " %>
               <%= link_to "New Search", new_search_query_path, :class => "btn   btn--small  " %>
             </div>
           <% end %>
         </div>
       </section>
-    <% end %>
-  </div>
-  <div class="grid__item  one-third lap-one-third  palm-one-whole  push-half--top">
-    <h2 class="gamma flush--bottom"> We found <%= pluralize(@result_count, ' Result', ' Results') %></h2>
-    <% unless defined?(@printable_format) && @printable_format%>
-      <small class="additional zeta">Results are presented by ascending date. Clicking a column heading sorts by that column. Another click reverses the order.<br>
-        Each View button in the <q>Detail</q> column opens a page with all the information we have for that record.</small>
+    </div>
+<% end %>
+    <div class="grid__item  three-twelfths lap-three-twelfths  palm-one-whole  push-half--top">
+      <h2 class="gamma flush--bottom"> We found <%= pluralize(@result_count, ' Result', ' Results') %></h2>
+      <% unless defined?(@printable_format) && @printable_format%>
+        <small class="additional zeta">Results are presented by ascending date. Clicking a column heading sorts by that column. Another click reverses the order.<br>
+          Each View button in the <q>Detail</q> column opens a page with all the information we have for that record.</small>
+      <% end %>
     </div>
   </div>
-<% end %>
+

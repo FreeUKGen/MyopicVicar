@@ -55,7 +55,7 @@
         </tr>
       </thead>
       <tbody>
-        <% record_type = BmdRecordType.where(RecordTypeID: @search_record[:RecordTypeID]).first.RecordType%>
+        <% record_type = RecordType::display_name(@search_record[:RecordNumber])%>
         <tr id="<%=@search_record[:RecordNumber]%>" class="<%= record_type.downcase %>">
           <td>
             <%= "#{@search_record[:Surname]} " %>

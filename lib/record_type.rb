@@ -29,6 +29,11 @@ module RecordType
   DEATHS    = 2
   MARRIAGES = 3
 
+  BIRTH_TYPE = ['1']
+  DEATH_TYPE = ['2']
+  MARRIAGE_TYPE = ['3']
+  ALL_TYPES = []
+
   def self.all_types
     ("RecordType::#{all_types_constant}").constantize
     case MyopicVicar::Application.config.template_set
@@ -78,9 +83,10 @@ module RecordType
   end
 
   FREEBMD_OPTIONS = {
-    'BIRTHS' => BIRTHS,
-    'DEATHS' => DEATHS,
-    'MARRIAGES' => MARRIAGES
+    'BIRTHS' => BIRTH_TYPE,
+    'DEATHS' => DEATH_TYPE,
+    'MARRIAGES' => MARRIAGE_TYPE,
+    'ALL' => ALL_TYPES
   }
 
 end

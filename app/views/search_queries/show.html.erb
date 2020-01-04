@@ -4,21 +4,9 @@
 <% show_contents_link%>
 <% if @search_query.present? %>
   <%= render 'nav_header' %>
-  <%= render 'display_search_criteria' unless appname_downcase='freebmd'%>
-  <% if appname_downcase='freebmd'%>
-    <div class="grid search_resu">
-      <div class="grid__item one-sixth lap-one-half palm-one-whole">
-        <div class='results_block'>
-          Results
-        </div>
-        <div class='result_count'>
-          <%= pluralize(@result_count, 'Result', ' Search Results') %>
-        </div>
-      </div>
-      <div class="grid__item five-sixths lap-one-half palm-one-whole">
-        <%= render 'display_search_criteria' %>
-      </div>
-    </div>
+  <%= render 'display_search_criteria' unless appname_downcase=='freebmd'%>
+  <% if appname_downcase=='freebmd'%>
+    <%= render 'display_search_criteria' %>
   <% end %>
   <section>
     <% if @result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>

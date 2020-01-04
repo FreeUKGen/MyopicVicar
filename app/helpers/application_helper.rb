@@ -272,7 +272,7 @@ module ApplicationHelper
     display_map
   end
 
-  def bmd_search_params search_query
+  def bmd_search_criteria search_query
     #raise search_query.inspect
     display_map = {}
     # name fields
@@ -282,9 +282,9 @@ module ApplicationHelper
     display_map["Phonetic Surnames"] = search_query.fuzzy ? 'Yes' : 'No'
     display_map["Search Start Date"] = "#{QuarterDetails.quarters.key(search_query.start_quarter).upcase} #{search_query.start_year}"
     display_map["Search End Date"] = "#{QuarterDetails.quarters.key(search_query.end_quarter).upcase} #{search_query.end_year}"
-    display_map["Record Type"] = RecordType::display_name(search_query.record_type) if search_query.record_type
+    display_map["Record Type"] = RecordType::display_name(search_query.bmd_record_type)
     display_map["Spouse First Name"] = search_query.spouse_first_name if search_query.spouse_first_name
-    display_map["Identifiable Spouses Only"] = search_query.fuzzy ? 'Yes' : 'No'
+    display_map["Identifiable Spouses Only"] = 'Yes' if  search_query.identifiable_spouse_only
     display_map["Spouse/Mother Surname"] = search_query.spouses_mother_surname if search_query.spouses_mother_surname
     display_map["Volume"] = search_query.volume if search_query.volume
     display_map["Page"] = search_query.page if search_query.page

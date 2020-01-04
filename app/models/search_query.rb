@@ -859,8 +859,8 @@ class SearchQuery
   end
 
   def search_start_year
-    if self.dob_at_death.present? || self.min_dob_quarter.present?
-      year = self.dob_at_death || self.min_dob_quarter
+    if self.dob_at_death.present? || self.min_dob_at_death.present?
+      year = self.dob_at_death || self.min_dob_at_death
     else
       year = self.start_year
     end
@@ -894,11 +894,8 @@ class SearchQuery
   end
 
   def freebmd_search_records
-    #raise bmd_params_hash.inspect
     @search_index = SearchQuery.get_search_table.index_hint(bmd_adjust_field_names)
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
-    #raise bmd_params_hash.inspect
-    #raise BestGuess.where(bmd_params_hash).inspect
     records = SearchQuery.get_search_table.where(bmd_params_hash).joins(spouse_join_condition).where(bmd_marriage_params).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     records = records.where(first_name_filteration) unless self.first_name_exact_match
     records = combined_results records if date_of_birth_range? || self.dob_at_death.present?
