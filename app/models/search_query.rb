@@ -1123,7 +1123,6 @@ class SearchQuery
   def combined_results records
     non_dob_results = non_dob_records records
     dob_results = dob_recordss records
-    raise date_of_birth_uncertain_aad(records).inspect
     date_of_birth_search_range_a(non_dob_results) + dob_exact_search(dob_results).to_a + date_of_birth_uncertain_aad(records)
   end
 
