@@ -1097,6 +1097,12 @@ class SearchQuery
     }
   end
 
+  def date_of_birth_uncertain_aad records
+    records.select{|r|
+      r.AgeAtDeath.scan(/'_'+|'*'+|'?'+|'['+|']'+|[A-Za-z]+|'-'/).length != 0
+    }
+  end
+
   def dob_filteration
     date = self.dob_at_death
     "AgeAtDeath like '%#{date_array(date)[0]}%'"
@@ -1118,7 +1124,7 @@ class SearchQuery
     non_dob_results = non_dob_records records
     dob_results = dob_recordss records
     #raise date_of_birth_search_range_a(non_dob_results).inspect
-    date_of_birth_search_range_a(non_dob_results) + dob_exact_search(dob_results).to_a
+    date_of_birth_search_range_a(non_dob_results) + dob_exact_search(dob_results).to_a + date_of_birth_uncertain_aad records
   end
 
   def min_dob_range_quarter
