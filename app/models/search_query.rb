@@ -1124,7 +1124,7 @@ class SearchQuery
     non_dob_results = non_dob_records records
     dob_results = dob_recordss records
     #raise date_of_birth_search_range_a(non_dob_results).inspect
-    date_of_birth_search_range_a(non_dob_results) + dob_exact_search(dob_results).to_a + date_of_birth_uncertain_aad records
+    date_of_birth_search_range_a(non_dob_results) + dob_exact_search(dob_results).to_a + date_of_birth_uncertain_aad(records)
   end
 
   def min_dob_range_quarter
