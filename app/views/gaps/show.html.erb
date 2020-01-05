@@ -1,13 +1,12 @@
-<% breadcrumb :show_gap, @user, @chapman_code, @county, @register %>
+<% breadcrumb :show_gap, @user, @syndicate, @county, @place, @church, @register,@freereg1_csv_file%>
 <% title "Gap - properties" %>
 <%= render partial: 'header' %>
 <%= render partial: 'flash_notice' %>
-<h2 class="text--center"> Showing Gap</h2>
 <% unless session[:userid].nil?%>
   <div style="text-align: center">
-    <%= link_to 'Create New GAP', new_gap_path(register: @register), method: :get, :class => "btn  btn--small"  %>
-    <%= link_to 'Edit GAP', edit_gap_path(@gap, register: @register), method: :get, :class => "btn  btn--small"  %>
-    <%= link_to 'Delete GAP', gap_path(@gap, register: @register), method: :delete, :class => "btn  btn--small"  %>
+    <%= link_to 'Create New GAP', new_gap_path(register: @register, freereg1_csv_file: @freereg1_csv_file), method: :get, :class => "btn  btn--small"  %>
+    <%= link_to 'Edit GAP', edit_gap_path(@gap, register: @register, freereg1_csv_file: @freereg1_csv_file), method: :get, :class => "btn  btn--small" if @gap.can_be_edited?(@user) %>
+    <%= link_to 'Delete GAP', gap_path(@gap, register: @register, freereg1_csv_file: @freereg1_csv_file), method: :delete, :class => "btn  btn--small" if @gap.can_be_deleted?(@user) %>
   </div>
   <div style="clear:both;"></div>
   <br>
@@ -39,6 +38,10 @@
         <tr>
           <td>Reason</td>
           <td class="t30"><%= @gap[:reason] %>&nbsp;</td>
+        </tr>
+        <tr>
+          <td>Batch</td>
+          <td class="t30"><%= freereg1_csv_file_name(@gap) %>&nbsp;</td>
         </tr>
         <tr>
           <td>Note</td>

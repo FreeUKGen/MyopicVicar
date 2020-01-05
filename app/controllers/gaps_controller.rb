@@ -14,6 +14,7 @@
 class GapsController < ApplicationController
   def create
     params[:register] = params[:gap][:register]
+    params[:freereg1_csv_file] = params[:gap][:freereg1_csv_file]
     display_info
     redirect_back(fallback_location: new_manage_resource_path, notice: 'The linkages were incorrect') &&
       return if @register.blank? || @church.blank? || @place.blank?
@@ -24,30 +25,28 @@ class GapsController < ApplicationController
       return if gap.errors.any?
 
     flash[:notice] = 'Addition of Gap was successful'
-    redirect_to gaps_path(register: @register)
+    redirect_to gaps_path(register: @register, freereg1_csv_file: @freereg1_csv_file)
   end
 
   def display_info
     return if params[:register].blank?
 
+    @freereg1_csv_file = Freereg1CsvFile.find_by(id: params[:freereg1_csv_file]) if params[:freereg1_csv_file].present?
+    @freereg1_csv_file_name = @freereg1_csv_file.file_name if @freereg1_csv_file.present?
+    @freereg1_csv_file_id = @freereg1_csv_file.id if @freereg1_csv_file.present?
     @register = Register.find_by(id: params[:register])
-    session[:register_id] = @register.id
     @register_type = RegisterType.display_name(@register.register_type)
-    session[:church_id] = @register.church_id
-    @church = Church.find(session[:church_id])
+    @church = @register.church
     return if @church.blank?
 
     @church_name = @church.church_name
-    session[:church_name] = @church_name
     @place = @church.place
     return if @place.blank?
 
     @place_name = @place.place_name
-    session[:place_name] = @place_name
     @county = @place.county
     @chapman_code = @place.chapman_code
-    session[:county] = @county
-    session[:chapman_code] = @syndicate if session[:chapman_code].blank? && @syndicate.present?
+    @syndicate = session[:syndicate]
     @user = get_user
   end
 
@@ -63,7 +62,7 @@ class GapsController < ApplicationController
     gap.destroy
 
     flash[:notice] = 'Deletion of GAP was successful'
-    redirect_to gaps_path(register: @register)
+    redirect_to gaps_path(register: @register, freereg1_csv_file: @freereg1_csv_file)
   end
 
   def edit
@@ -88,11 +87,16 @@ class GapsController < ApplicationController
     redirect_back(fallback_location: new_manage_resource_path, notice: 'The linkages were incorrect') &&
       return if @register.blank? || @church.blank? || @place.blank?
 
-    @gaps = Gap.all
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'Attempted to display non_existent gaps') &&
-      return if @gaps.blank?
-
-    redirect_to gap_path(@gaps.first.id, register: @register) if @gaps.count == 1
+    gaps = Gap.register(@register.id).order_by(record_type: 1, start_date: 1).all
+    @gaps = []
+    if @freereg1_csv_file.present?
+      gaps.each do |gap|
+        @gaps << gap if gap.record_type == @freereg1_csv_file.record_type
+        @gaps << gap if gap.record_type == 'All'
+      end
+    else
+      @gaps = gaps
+    end
   end
 
   def new
@@ -105,8 +109,12 @@ class GapsController < ApplicationController
     reasons.each do |reason|
       @reasons << reason.reason
     end
-    @record_types = RecordType::ALL_FREEREG_TYPES
-    @record_types = @record_types + ['All'] unless @record_types.include?('All')
+    if @freereg1_csv_file.blank?
+      @record_types = RecordType::ALL_FREEREG_TYPES
+      @record_types = @record_types + ['All'] unless @record_types.include?('All')
+    else
+      @record_types = @freereg1_csv_file.record_type
+    end
     @gap = Gap.new
   end
 
@@ -122,6 +130,7 @@ class GapsController < ApplicationController
 
   def update
     params[:register] = params[:gap][:register]
+    params[:freereg1_csv_file] = params[:gap][:freereg1_csv_file] if params[:freereg1_csv_file].blank?
     display_info
     gap = Gap.find(params[:id])
     redirect_back(fallback_location: new_manage_resource_path, notice: 'Attempted to update a non_existent gap') &&
@@ -132,7 +141,7 @@ class GapsController < ApplicationController
       return unless proceed
 
     flash[:notice] = 'Update of GAP was successful'
-    redirect_to gaps_path(register: @register)
+    redirect_to gaps_path(register: @register, freereg1_csv_file: @freereg1_csv_file)
   end
 
   private

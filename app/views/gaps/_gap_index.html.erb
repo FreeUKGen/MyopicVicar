@@ -1,6 +1,6 @@
 <% unless session[:userid].nil?%>
   <div style='text-align: center'>
-    <%= link_to 'Create New GAP', new_gap_path(register: @register), method: :get, :class => 'btn  btn--small'  %>
+    <%= link_to 'Create New GAP', new_gap_path(register: @register, freereg1_csv_file: @freereg1_csv_file), method: :get, :class => 'btn  btn--small'  %>
   </div>
   <div style='clear:both;'> </div>
   <br>
@@ -15,6 +15,7 @@
           <th class='sticky-header'>Start Date</th>
           <th class='sticky-header'>End Date</th>
           <th class='sticky-header'>Reason</th>
+          <th class='sticky-header'>Batch</th>
           <th class='sticky-header'>Notes</th>
         </tr>
       </thead>
@@ -22,14 +23,15 @@
         <% @gaps.each do |x| %>
           <tr>
             <td>
-              <%= link_to 'SH', gap_path(x, register: @register), :title=>'show GAP properties' %>
-              <%= link_to 'ED', edit_gap_path(x, register: @register), :title=>'edit image group properties' %>
-              <%= link_to 'DE', gap_path(x, register: @register), :title=>'delete gap', data: { confirm: 'Are you sure you want to delete?'}, method: :delete %>
+              <%= link_to 'SH', gap_path(x, register: @register, freereg1_csv_file: @freereg1_csv_file), :title=>'Show GAP properties' %>
+              <%= link_to 'ED', edit_gap_path(x, register: @register, freereg1_csv_file: @freereg1_csv_file), :title=>'Edit image group properties'if x.can_be_edited?(@user) %>
+              <%= link_to 'DE', gap_path(x, register: @register, freereg1_csv_file: @freereg1_csv_file), :title=>'Delete gap', data: { confirm: 'Are you sure you want to delete?'}, method: :delete if x.can_be_deleted?(@user)%>
             </td>
             <td><%= x.record_type %>&nbsp;</td>
             <td ><%= x.start_date %>&nbsp;</td>
             <td><%= x.end_date %>&nbsp;</td>
             <td><%= x.reason %>&nbsp;</td>
+            <td><%= freereg1_csv_file_name(x) %>&nbsp;</td>
             <td><%= x.note %>&nbsp;</td>
           </tr>
         <% end %>

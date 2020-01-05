@@ -90,4 +90,13 @@ module Freereg1CsvFilesHelper
     link_to 'Change owner (userid)', change_userid_freereg1_csv_file_path(@freereg1_csv_file),
       data: { confirm: 'Are you sure you want to move this file ' }, class: 'btn   btn--small', method: :get
   end
+
+  def which_file_gaps_link(gaps)
+    if gaps
+      link_to 'List Gaps', gaps_path(register: @register, freereg1_csv_file: @freereg1_csv_file), method: :get, class: 'btn   btn--small'
+    elsif @register.register_type == 'PR'
+      link_to 'Create Gap', new_gap_path(register: @register, freereg1_csv_file: @freereg1_csv_file), method: :get, class: 'btn  btn--small'
+    end
+  end
+
 end

@@ -1,7 +1,12 @@
 <section class="island  island--light">
   <div class="grid">
     <%= simple_form_for @gap do |s| %>
-      <%= s.input :record_type, :label => "Record Type" , :collection => @record_types,:include_blank => false, :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width ",  :size => 4 }  %>
+      <% if @freereg1_csv_file.present? %>
+        <%= s.hidden_field :record_type, :value=>@freereg1_csv_file.record_type %>
+        <%= s.hidden_field :freereg1_csv_file, :value=>@freereg1_csv_file.id %>
+      <% else %>
+        <%= s.input :record_type, :label => "Record Type" , :collection => @record_types,:include_blank => false, :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width ",  :size => 4 }  %>
+      <% end %>
       <%= s.input :start_date, :label=>'Start Date', :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>11} %>
       <%= s.input :end_date, :label=>'End Date', :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>11} %>
       <%= s.input :reason, :label=>'Reason', :as=>:select, :collection=>@reasons, :include_blank=>false, :input_html=>{:class=>"simple_form_bgcolour simple_form_position overide_selection_field_width", :size=>5} %>
