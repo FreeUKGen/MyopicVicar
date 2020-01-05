@@ -41,6 +41,7 @@ class SearchQuery
 
   WILDCARD = /[?*]/
   DOB_START_QUARTER = 530
+  IDENTIFIABLE_SPOUSE_ONLY_SEARCH = 301
 
   field :first_name, type: String # , :required => false
   field :last_name, type: String # , :required => false
@@ -92,6 +93,7 @@ class SearchQuery
   field :wildcard_search, type: Boolean, default: false
   field :first_name_exact_match, type: Boolean, default: false
   field :identifiable_spouse_only, type:Boolean, default: false
+  field :death_at_age, type: String
 
   field :birth_chapman_codes, type: Array, default: []
   field :birth_place_name, type: String
@@ -129,6 +131,7 @@ class SearchQuery
     end
 
     def valid_order?(value)
+      #raise SearchOrder::ALL_ORDERS.inspect
       result = SearchOrder::ALL_ORDERS.include?(value) ? true : false
       result
     end
@@ -238,6 +241,19 @@ class SearchQuery
       return x_name['last_name'].to_s <=> y_name['last_name'].to_s
     end
     return x_name['last_name'] <=> y_name['last_name']
+  end
+
+  def compare_name_bmd(x, y, order_field, next_order_field=nil)
+    if x[order_field] == y[order_field]
+      if x[next_order_field].nil? || y[next_order_field].nil?
+        return x[next_order_field].to_s <=> y[next_order_field].to_s
+      end
+      return x[next_order_field] <=> y[next_order_field]
+    end
+    if x[order_field].nil? || y[order_field].nil?
+      return x[order_field].to_s <=> y[order_field].to_s
+    end
+    return x[order_field] <=> y[order_field]
   end
 
   def county_is_valid
@@ -708,6 +724,7 @@ class SearchQuery
 
   def sort_results(results)
     # next reorder in memory
+   # raise SearchOrder::SURNAME.inspect
     if results.present?
       case self.order_field
       when *selected_sort_fields
@@ -739,6 +756,46 @@ class SearchQuery
         else
           results.sort! do |x, y|
             compare_name(y, x) # note the reverse order
+          end
+        end
+      when SearchOrder::SURNAME
+        if self.order_asc
+          results.sort! do |x, y|
+            compare_name_bmd(y, x, 'Surname','GivenName')
+          end
+        else
+          results.sort! do |x, y|
+             compare_name_bmd(x,y, 'Surname','GivenName')
+          end
+        end
+      when SearchOrder::FIRSTNAME
+        if self.order_asc
+          results.sort! do |x, y|
+            compare_name_bmd(y, x, 'GivenName','Surname')
+          end
+        else
+          results.sort! do |x, y|
+             compare_name_bmd(x,y, 'GivenName','Surname')
+          end
+        end
+      when SearchOrder::BMD_RECORD_TYPE
+        if self.order_asc
+          results.sort! do |x, y|
+            compare_name_bmd(y, x, 'RecordTypeID')
+          end
+        else
+          results.sort! do |x, y|
+             compare_name_bmd(x,y, 'RecordTypeID')
+          end
+        end
+       when SearchOrder::BMD_DATE
+        if self.order_asc
+          results.sort! do |x, y|
+            compare_name_bmd(y, x, 'QuarterNumber')
+          end
+        else
+          results.sort! do |x, y|
+             compare_name_bmd(x,y, 'QuarterNumber')
           end
         end
       end
@@ -855,7 +912,7 @@ class SearchQuery
 
   def start_year_quarter
     start_year = year_with_default(year:search_start_year, default: 1837)
-    quarter_number(year: start_year, quarter: start_quarter)
+    self.identifiable_spouse_only ? IDENTIFIABLE_SPOUSE_ONLY_SEARCH : quarter_number(year: start_year, quarter: start_quarter)
   end
 
   def search_start_year
@@ -1063,7 +1120,8 @@ class SearchQuery
   end
 
   def get_bmd_search_results
-    return get_bmd_search_response, bmd_search_results.map{|h| SearchQuery.get_search_table.new(h)}, ucf_search_results, search_result_count if get_bmd_search_response
+    search_results = self.sort_search_results
+    return get_bmd_search_response, search_results.map{|h| SearchQuery.get_search_table.new(h)}, ucf_search_results, search_result_count if get_bmd_search_response
     return get_bmd_search_response if !get_bmd_search_response
   end
 
@@ -1092,15 +1150,19 @@ class SearchQuery
   end
 
   def date_of_birth_search_range_a records
-    records.select{|r|
-      ((r.QuarterNumber - ((r.AgeAtDeath.to_i + 1) * 4 + 1))..(r.QuarterNumber - (r.AgeAtDeath.to_i * 4))).include?(min_dob_range_quarter..max_dob_range_quarter) if r.AgeAtDeath.present?
-    }
+    unless self.match_recorded_ages_or_dates
+      records.select{|r|
+        ((r.QuarterNumber - ((r.AgeAtDeath.to_i + 1) * 4 + 1))..(r.QuarterNumber - (r.AgeAtDeath.to_i * 4))).include?(min_dob_range_quarter..max_dob_range_quarter) if r.AgeAtDeath.present?
+      }
+    end
   end
 
   def date_of_birth_uncertain_aad records
-    records.select{|r|
-      r.AgeAtDeath.scan(/[A-Za-z\_\-\*\?\[\]]/).length != 0
-    }
+    unless self.match_recorded_ages_or_dates
+      records.select{|r|
+        r.AgeAtDeath.scan(/[A-Za-z\_\-\*\?\[\]]/).length != 0
+      }
+    end
   end
 
   def dob_filteration
@@ -1196,7 +1258,6 @@ class SearchQuery
     params.merge!(bmd_age_at_death_params) if self.age_at_death.present?
     params.merge!(bmd_volume_params) if self.volume.present?
     params.merge!(bmd_page_params) if self.page.present?
-    
     params
   end
 
@@ -1253,12 +1314,12 @@ class SearchQuery
   end
 
   def spouse_surname_join_condition
-    'inner join BestGuessMarriages as b on b.volume=BestGuessMarriages.Volume and b.page=BestGuessMarriages.page and b.RecordtypeID!= BestGuessMarriages.RecordTypeID and b.QuarterNumber=BestGuessMarriages.QuarterNumber'
+    'inner join BestGuessMarriages as b on b.volume=BestGuessMarriages.Volume and b.page=BestGuessMarriages.page and b.RecordTypeID!= BestGuessMarriages.RecordTypeID and b.QuarterNumber=BestGuessMarriages.QuarterNumber'
   end
 
   private
 
   def selected_sort_fields
-    [ SearchOrder::COUNTY, SearchOrder::BIRTH_COUNTY, SearchOrder::TYPE ]
+    [ SearchOrder::COUNTY, SearchOrder::BIRTH_COUNTY, SearchOrder::TYPE, SearchOrder::DISTRICT ]
   end
 end

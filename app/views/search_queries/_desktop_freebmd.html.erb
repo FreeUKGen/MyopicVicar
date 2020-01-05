@@ -39,7 +39,7 @@
             </th>
             <th>
               <%= link_to_unless(print_friendly, 'Record Type',
-            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::TYPE)) %>
+            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_RECORD_TYPE)) %>
             </th>
             <th>
               <%= link_to_unless(print_friendly, 'District',
@@ -47,9 +47,6 @@
             </th>
             <th>
               M/S/A/D
-            </th>
-            <th>
-              QuarterNumber
             </th>
           </tr>
         </thead>
@@ -84,9 +81,6 @@
               </td>
               <td>
                 <%= "#{search_record[:AssociateName]} #{search_record[:AgeAtDeath]}" %>
-              </td>
-              <td>
-                <%= search_record[:QuarterNumber]%>
               </td>
             </tr>
           <% end %>

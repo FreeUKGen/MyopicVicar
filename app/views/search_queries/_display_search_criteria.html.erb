@@ -1,5 +1,6 @@
+<% search_criteria = appname.downcase == 'freebmd' ? bmd_search_criteria(@search_query) : search_params_for_display(@search_query) %>
 <% if defined?(@printable_format) && @printable_format %>
-  <% search_params_for_display(@search_query).each do |name, value| %>
+  <% search_criteria.each do |name, value| %>
     <%= name %>: <b><%= value %></b> ;
   <% end %><br>
   <%= pluralize(@result_count, ' Search Result', ' Search Results') %>
@@ -29,7 +30,7 @@
             </div>
           </div>
           <% if appname.downcase == 'freebmd' %>
-            <div class="grid__item one-whole lap-one-whole palm-one-whole float--right text--right">
+            <div class="grid__item one-whole lap-one-whole palm-one-whole text--right">
               <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn   btn--small " %>
               <%= link_to "New Search", new_search_query_path, :class => "btn   btn--small  " %>
             </div>
