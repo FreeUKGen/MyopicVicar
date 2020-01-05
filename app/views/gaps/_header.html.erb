@@ -10,8 +10,8 @@
   <% elsif controller.action_name == 'new' && @freereg1_csv_file.present? %>
     Creating a GAP for <%= @freereg1_csv_file.file_name %> a <%= RecordType::display_name(@freereg1_csv_file.record_type) %> for <%= @register_type %> for <%= @church_name %> in <%= @place_name %> of <%= @county %>
   <% elsif %w[show edit delete].include?(controller.action_name) && @freereg1_csv_file.present? %>
-    GAP for <%= @freereg1_csv_file.file_name %> a <%= RecordType::display_name(@freereg1_csv_file.record_type) %> for <%= @register_type %> for <%= @church_name %> in <%= @place_name %> of <%= @county %>
+    GAP (<%= controller.action_name%>) for <%= @freereg1_csv_file.file_name %> a <%= RecordType::display_name(@freereg1_csv_file.record_type) %> for <%= @register_type %> for <%= @church_name %> in <%= @place_name %> of <%= @county %>
   <% elsif %w[show edit delete].include?(controller.action_name) && @freereg1_csv_file.blank? %>
-    GAP for <%= @register_type %> for <%= @church_name %> in <%= @place_name %> of <%= @county %>
+    GAP (<%= controller.action_name%>) for <%= @register_type %> for <%= @church_name %> in <%= @place_name %> of <%= @county %>
   <% end %>
 </h3>
