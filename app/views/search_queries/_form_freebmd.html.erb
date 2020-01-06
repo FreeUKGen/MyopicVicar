@@ -22,7 +22,7 @@
         <%= text_field_tag 'search_query[first_name]', set_value(@search_query.first_name), class: 'text-input', placeholder: 'Enter first name(s) here', role: 'textbox', id: 'first_name'%>
         <label>
           <small class="ttip__text">
-            <%= check_box_tag 'search_query[first_name_exact_match]', set_value(field_value: @search_query.first_name_exact_match), false %>
+            <%= check_box_tag 'search_query[first_name_exact_match]', set_value(@search_query.first_name_exact_match), false %>
             Exact match on first names
           </small>
         </label>
@@ -35,7 +35,7 @@
         <%= text_field_tag 'search_query[last_name]', set_value(@search_query.last_name), class: 'text-input', id: 'last_name', placeholder: 'Enter Surname here'%>
         <label>
           <small class="ttip__text">
-            <%= check_box_tag 'search_query[fuzzy]', set_value(field_value: @search_query.fuzzy), false %>
+            <%= check_box_tag 'search_query[fuzzy]', set_value(@search_query.fuzzy), false %>
             Phonetic search surnames
           </small>
         </label>
@@ -88,7 +88,7 @@
         <%= text_field_tag 'search_query[spouse_first_name]', set_value(@search_query.spouse_first_name), class: 'text-input', placeholder: 'Enter spouse first name(s) here', id: 'spouse_first_name'%>
         <label>
           <small class="ttip__text">
-            <%= check_box_tag 'search_query[identifiable_spouse_only]', set_value(field_value: @search_query.identifiable_spouse_only), false %>
+            <%= check_box_tag 'search_query[identifiable_spouse_only]', set_value(@search_query.identifiable_spouse_only), false %>
             Identifiable spouses only
           </small>
         </label>
@@ -124,7 +124,7 @@
         </span>
         <label>
           <small class="ttip__text">
-            <%= check_box_tag 'search_query[match_recorded_ages_or_dates]', set_value(field_value: @search_query.match_recorded_ages_or_dates), false %>
+            <%= check_box_tag 'search_query[match_recorded_ages_or_dates]', set_value(@search_query.match_recorded_ages_or_dates), false %>
             Match only recorded ages
           </small>
         </label>
