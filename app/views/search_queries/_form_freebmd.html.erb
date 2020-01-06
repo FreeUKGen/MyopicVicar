@@ -214,6 +214,65 @@ $(document).ready(function(){
     });
   });
 
+  var hide_all_death_options = function() {
+    $('#death_age_and_dob').css('display','block')
+    $('#search_query_age_at_death').hide();
+    $('#search_query_min_age_at_death').hide();
+    $('#search_query_max_age_at_death').hide();
+    $('#search_query_dob_at_death').hide();
+    $('#search_query_min_dob_at_death').hide();
+    $('#search_query_max_dob_at_death').hide();
+  }
+  hide_all_death_options();
+
+  var aad_selection_function = function() {
+    var aad_value = $('#death_select_box').val();
+    var aad_selection = document.getElementById('death_select_box');
+    var aad_select_value = aad_selection.options[0].value
+    if (aad_value === '1') {
+      $('#search_query_age_at_death').show();
+      $('#search_query_min_age_at_death').val('');
+      $('#search_query_max_age_at_death').val('');
+      $('#search_query_dob_at_death').val('');
+      $('#search_query_min_dob_at_death').val('');
+      $('#search_query_max_dob_at_death').val('');
+      }
+    else if (aad_value === '2') {
+      $('#search_query_min_age_at_death').show();
+      $('#search_query_max_age_at_death').show();
+      $('#search_query_age_at_death').val('');
+      $('#search_query_dob_at_death').val('');
+      $('#search_query_min_dob_at_death').val('');
+      $('#search_query_max_dob_at_death').val('');
+    }
+    else if (aad_value === '3') {
+      $('#search_query_dob_at_death').show();
+      $('#search_query_min_age_at_death').val('');
+      $('#search_query_max_age_at_death').val('');
+      $('#search_query_age_at_death').val('');
+      $('#search_query_min_dob_at_death').val('');
+      $('#search_query_max_dob_at_death').val('');
+    }
+    else if (aad_value === '4') {
+      $('#search_query_min_dob_at_death').show();
+      $('#search_query_max_dob_at_death').show();
+      $('#search_query_min_age_at_death').val('');
+      $('#search_query_max_age_at_death').val('');
+      $('#search_query_age_at_death').val('');
+      $('#search_query_dob_at_death').val('');
+    }
+    else if  (aad_value === '' || aad_value === null) {
+      $('#death_select_box').val(aad_select_value);
+      $('#search_query_min_dob_at_death').val('');
+      $('#search_query_max_dob_at_death').val('');
+      $('#search_query_min_age_at_death').val('');
+      $('#search_query_max_age_at_death').val('');
+      $('#search_query_age_at_death').val('');
+      $('#search_query_dob_at_death').val('');
+    }
+  };
+
+  aad_selection_function();
 
   $('#death_select_box').prop('disabled', 'disabled');
   $('.checkboxtag, .checkAll').change(function() {
@@ -235,7 +294,7 @@ $(document).ready(function(){
       $('#spouses_mother_surname').val('').prop('disabled', true)
       $('#spouses_mother_surname').css('background', '#ccc');
       $('#spouses_mother_surname').prop('placeholder', '')
-      $('#death_select_box').val(aad_select_value)
+      aad_selection_function();
       $('#death_select_box').css('background', 'white')
     } else {
       $('#spouses_mother_surname').val('').prop('disabled', true)
@@ -248,135 +307,37 @@ $(document).ready(function(){
   });
 
   if ($(".birth").is(":checked") && !$('.death, .marriage, .checkAll').is(':checked')) {
-      $('#spouses_mother_surname').prop('disabled', false)
-      $('#spouses_mother_surname').prop('placeholder', "Enter Mother's surname here")
-      $('#death_select_box').prop('disabled', 'disabled');
-      $('#death_select_box').css('background', '#ccc');
-      $('#death_select_box').val([]);
-    } else if ($(".marriage").is(":checked") && !$('.birth, .death, .checkAll').is(':checked')) {
-     $('#spouses_mother_surname').prop('disabled', false)
-      $('#spouses_mother_surname').prop('placeholder', "Enter Spouse's surname here")
-      $('#death_select_box').prop('disabled', 'disabled');
-      $('#death_select_box').css('background', '#ccc');
-      $('#death_select_box').val([]);
-    } else if ($(".death").is(":checked") && !$('.birth, .marriage, .checkAll').is(':checked')) {
-      $('#death_select_box').prop('disabled', false);
-      $('#spouses_mother_surname').val('').prop('disabled', true)
-      $('#spouses_mother_surname').css('background', '#ccc');
-      $('#spouses_mother_surname').prop('placeholder', '')
-      $('#death_select_box').val(aad_select_value)
-      $('#death_select_box').css('background', 'white')
-    } else {
-      $('#spouses_mother_surname').val('').prop('disabled', true)
-      $('#spouses_mother_surname').prop('placeholder', '')
-      $('#death_select_box').prop('disabled', 'disabled');
-      $('#death_select_box').css('background', '#ccc');
-      $('#spouses_mother_surname').css('background', '#ccc');
-      $('#death_select_box').val([]);
-    }
-
-  var hide_all_death_options = function() {
-    $('#death_age_and_dob').css('display','block')
-    $('#search_query_age_at_death').hide();
-    $('#search_query_min_age_at_death').hide();
-    $('#search_query_max_age_at_death').hide();
-    $('#search_query_dob_at_death').hide();
-    $('#search_query_min_dob_at_death').hide();
-    $('#search_query_max_dob_at_death').hide();
-  }
-  hide_all_death_options();
+    $('#spouses_mother_surname').prop('disabled', false)
+    $('#spouses_mother_surname').prop('placeholder', "Enter Mother's surname here")
+    $('#death_select_box').prop('disabled', 'disabled');
+    $('#death_select_box').css('background', '#ccc');
+    $('#death_select_box').val([]);
+  } else if ($(".marriage").is(":checked") && !$('.birth, .death, .checkAll').is(':checked')) {
+   $('#spouses_mother_surname').prop('disabled', false)
+    $('#spouses_mother_surname').prop('placeholder', "Enter Spouse's surname here")
+    $('#death_select_box').prop('disabled', 'disabled');
+    $('#death_select_box').css('background', '#ccc');
+    $('#death_select_box').val([]);
+  } else if ($(".death").is(":checked") && !$('.birth, .marriage, .checkAll').is(':checked')) {
+    $('#death_select_box').prop('disabled', false);
+    $('#spouses_mother_surname').val('').prop('disabled', true)
+    $('#spouses_mother_surname').css('background', '#ccc');
+    $('#spouses_mother_surname').prop('placeholder', '');
+    aad_selection_function();
+    $('#death_select_box').css('background', 'white');
+  } else {
+    $('#spouses_mother_surname').val('').prop('disabled', true)
+    $('#spouses_mother_surname').prop('placeholder', '')
+    $('#death_select_box').prop('disabled', 'disabled');
+    $('#death_select_box').css('background', '#ccc');
+    $('#spouses_mother_surname').css('background', '#ccc');
+    $('#death_select_box').val([]);
+  };
 
   $('#death_select_box').bind('click', function(){
     hide_all_death_options();
-    var selected = $(this).val();
-    if (selected === '1') {
-      $('#search_query_age_at_death').show();
-      $('#search_query_min_age_at_death').val('');
-      $('#search_query_max_age_at_death').val('');
-      $('#search_query_dob_at_death').val('');
-      $('#search_query_min_dob_at_death').val('');
-      $('#search_query_max_dob_at_death').val('');
-    }
-    if (selected === '2') {
-      $('#search_query_min_age_at_death').show();
-      $('#search_query_max_age_at_death').show();
-      $('#search_query_age_at_death').val('');
-      $('#search_query_dob_at_death').val('');
-      $('#search_query_min_dob_at_death').val('');
-      $('#search_query_max_dob_at_death').val('');
-    }
-    if (selected === '3') {
-      $('#search_query_dob_at_death').show();
-      $('#search_query_min_age_at_death').val('');
-      $('#search_query_max_age_at_death').val('');
-      $('#search_query_age_at_death').val('');
-      $('#search_query_min_dob_at_death').val('');
-      $('#search_query_max_dob_at_death').val('');
-    }
-    if (selected === '4') {
-      $('#search_query_min_dob_at_death').show();
-      $('#search_query_max_dob_at_death').show();
-      $('#search_query_min_age_at_death').val('');
-      $('#search_query_max_age_at_death').val('');
-      $('#search_query_age_at_death').val('');
-      $('#search_query_dob_at_death').val('');
-    }
-    if (aad_value === '') {
-      $('#death_select_box').val(aad_selection);
-      $('#search_query_min_dob_at_death').val('');
-      $('#search_query_max_dob_at_death').val('');
-      $('#search_query_min_age_at_death').val('');
-      $('#search_query_max_age_at_death').val('');
-      $('#search_query_age_at_death').val('');
-      $('#search_query_dob_at_death').val('');
-    }
+    aad_selection_function();
   });
-
-  var aad_value = $('#death_select_box').val();
-  var aad_selection = document.getElementById('death_select_box');
-  var aad_select_value = aad_selection.options[0].value
-  if (aad_value === '1') {
-    $('#search_query_age_at_death').show();
-    $('#search_query_min_age_at_death').val('');
-    $('#search_query_max_age_at_death').val('');
-    $('#search_query_dob_at_death').val('');
-    $('#search_query_min_dob_at_death').val('');
-    $('#search_query_max_dob_at_death').val('');
-    }
-  if (aad_value === '2') {
-    $('#search_query_min_age_at_death').show();
-    $('#search_query_max_age_at_death').show();
-    $('#search_query_age_at_death').val('');
-    $('#search_query_dob_at_death').val('');
-    $('#search_query_min_dob_at_death').val('');
-    $('#search_query_max_dob_at_death').val('');
-  }
-  if (aad_value === '3') {
-    $('#search_query_dob_at_death').show();
-    $('#search_query_min_age_at_death').val('');
-    $('#search_query_max_age_at_death').val('');
-    $('#search_query_age_at_death').val('');
-    $('#search_query_min_dob_at_death').val('');
-    $('#search_query_max_dob_at_death').val('');
-  }
-  if (aad_value === '4') {
-    $('#search_query_min_dob_at_death').show();
-    $('#search_query_max_dob_at_death').show();
-    $('#search_query_min_age_at_death').val('');
-    $('#search_query_max_age_at_death').val('');
-    $('#search_query_age_at_death').val('');
-    $('#search_query_dob_at_death').val('');
-  }
-
-  if (aad_value === '') {
-    $('#death_select_box').val(aad_selection);
-    $('#search_query_min_dob_at_death').val('');
-    $('#search_query_max_dob_at_death').val('');
-    $('#search_query_min_age_at_death').val('');
-    $('#search_query_max_age_at_death').val('');
-    $('#search_query_age_at_death').val('');
-    $('#search_query_dob_at_death').val('');
-  }
 
   var validate_death_age = function() {
     var min_age = $('#search_query_min_age_at_death').val();
@@ -397,7 +358,7 @@ $(document).ready(function(){
     } else {
       $('#search_query_max_dob_at_death')[0].setCustomValidity('');
     }
-  }
+  };
 
   $('#search_form_submit').click(function() {
     validate_death_age();
