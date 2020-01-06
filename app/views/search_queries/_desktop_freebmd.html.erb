@@ -45,9 +45,7 @@
               <%= link_to_unless(print_friendly, 'District',
             reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DISTRICT)) %>
             </th>
-            <th>
-              M/S/A/D
-            </th>
+              <%= content_tag(:th, "M/S/A/D #{app_icons[:info]}".html_safe, title: info_tag_text[:m_s_a_d], 'aria-details': info_tag_text[:m_s_a_d]) %>
           </tr>
         </thead>
         <tbody>

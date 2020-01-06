@@ -596,7 +596,8 @@ module ApplicationHelper
       spouse_first_name: 'Optional. Use upper- or lower-case',
       spouse_mother_surname: 'Optional. Use upper- or lower-case. Search spouse surname for Marriage record type or mother surname for Birth Record Type. Only records from the September quarter 1911 onwards contain the mothers maiden name so entering a value in this field will return only records from the September quarter 1911 onwards.',
       volume: 'Optional',
-      page: 'Optional'
+      page: 'Optional',
+      m_s_a_d: ' this column lists either mother surname or spouse surname or age at death or date of birth'
     }
   end
 
