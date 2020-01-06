@@ -1255,7 +1255,7 @@ class SearchQuery
     params.merge!(get_date_quarter_params)
     params.merge!(bmd_county_params)
     params.merge!(bmd_districts_params)
-    params.merge!(bmd_age_at_death_params) if self.age_at_death.present?
+    params.merge!(bmd_age_at_death_params) if self.age_at_death.present? || self.min_age_at_death.present?
     params.merge!(bmd_volume_params) if self.volume.present?
     params.merge!(bmd_page_params) if self.page.present?
     params
