@@ -956,7 +956,7 @@ class SearchQuery
     records = SearchQuery.get_search_table.where(bmd_params_hash).joins(spouse_join_condition).where(bmd_marriage_params).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     records = records.where(first_name_filteration) unless self.first_name_exact_match
     records = combined_results records if date_of_birth_range? || self.dob_at_death.present?
-    records = combined_age_results records if self.age_at_death.present? || self.min_age_at_death.present?
+    records = combined_age_results records if self.age_at_death.present? || check_age_range?
     persist_results(records)
     records
   end
@@ -1153,10 +1153,14 @@ class SearchQuery
   end
 
   def date_of_birth_search_range_a records
+    records.select{|r|
+      ((r.QuarterNumber - ((r.AgeAtDeath.to_i + 1) * 4 + 1))..(r.QuarterNumber - (r.AgeAtDeath.to_i * 4))).include?(min_dob_range_quarter..max_dob_range_quarter) if r.AgeAtDeath.present?
+    }
+  end
+
+  def no_aad_or_dob records
     unless self.match_recorded_ages_or_dates
-      records.select{|r|
-        ((r.QuarterNumber - ((r.AgeAtDeath.to_i + 1) * 4 + 1))..(r.QuarterNumber - (r.AgeAtDeath.to_i * 4))).include?(min_dob_range_quarter..max_dob_range_quarter) if r.AgeAtDeath.present?
-      }
+      records.where(AgeAtDeath: '').to_a
     else
       []
     end
@@ -1188,7 +1192,7 @@ class SearchQuery
   def combined_results records
     non_dob_results = non_dob_records records
     dob_results = dob_recordss records
-    date_of_birth_search_range_a(non_dob_results) + dob_exact_search(dob_results).to_a + date_of_birth_uncertain_aad(records)
+    date_of_birth_search_range_a(non_dob_results) + dob_exact_search(dob_results).to_a + date_of_birth_uncertain_aad(records) + no_aad_or_dob(records)
   end
 
   def combined_age_results records
