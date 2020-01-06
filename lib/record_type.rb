@@ -86,7 +86,10 @@ module RecordType
     'BIRTHS' => BIRTH_TYPE,
     'DEATHS' => DEATH_TYPE,
     'MARRIAGES' => MARRIAGE_TYPE,
-    'ALL' => ALL_TYPES
+    'ALL' => ALL_TYPES,
+    'BIRTH' => BIRTHS,
+    'DEATH' => DEATHS,
+    'MARRIAGE' => MARRIAGES
   }
 
 end

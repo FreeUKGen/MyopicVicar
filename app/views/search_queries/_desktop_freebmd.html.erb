@@ -52,7 +52,7 @@
           <% n = 0 %>
           <% search_results.each do |search_record| %>
             <% n = n +1%>
-            <%# raise .inspect%>
+            <%# raise search_record[:RecordTypeID].inspect%>
             <% record_type = RecordType::display_name(["#{search_record[:RecordTypeID]}"])%>
             <tr id="<%=search_record[:_id]%>" class="<%= record_type.downcase %>">
               <% unless print_friendly %>

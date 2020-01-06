@@ -55,8 +55,9 @@
         </tr>
       </thead>
       <tbody>
-        <% record_type = RecordType::display_name(@search_record[:RecordNumber])%>
-        <tr id="<%=@search_record[:RecordNumber]%>" class="<%= record_type.downcase %>">
+      <%# raise @search_record[:RecordTypeID].inspect%>
+        <% record_type = RecordType::display_name(@search_record[:RecordTypeID])%>
+        <tr id="<%=@search_record[:RecordTypeID]%>" class="<%= record_type.downcase %>">
           <td>
             <%= "#{@search_record[:Surname]} " %>
           </td>
