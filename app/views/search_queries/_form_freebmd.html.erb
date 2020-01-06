@@ -263,17 +263,35 @@ $(document).ready(function(){
     var selected = $(this).val();
     if (selected === '1') {
       $('#search_query_age_at_death').show();
+      $('#search_query_min_age_at_death').val('');
+      $('#search_query_max_age_at_death').val('');
+      $('#search_query_dob_at_death').val('');
+      $('#search_query_min_dob_at_death').val('');
+      $('#search_query_max_dob_at_death').val('');
     }
     if (selected === '2') {
       $('#search_query_min_age_at_death').show();
       $('#search_query_max_age_at_death').show();
+      $('#search_query_age_at_death').val('');
+      $('#search_query_dob_at_death').val('');
+      $('#search_query_min_dob_at_death').val('');
+      $('#search_query_max_dob_at_death').val('');
     }
     if (selected === '3') {
       $('#search_query_dob_at_death').show();
+      $('#search_query_min_age_at_death').val('');
+      $('#search_query_max_age_at_death').val('');
+      $('#search_query_age_at_death').val('');
+      $('#search_query_min_dob_at_death').val('');
+      $('#search_query_max_dob_at_death').val('');
     }
     if (selected === '4') {
       $('#search_query_min_dob_at_death').show();
       $('#search_query_max_dob_at_death').show();
+      $('#search_query_min_age_at_death').val('');
+      $('#search_query_max_age_at_death').val('');
+      $('#search_query_age_at_death').val('');
+      $('#search_query_dob_at_death').val('');
     }
   });
 
@@ -281,19 +299,36 @@ $(document).ready(function(){
   var aad_selection = document.getElementById('death_select_box');
   var aad_select_value = aad_selection.options[0].value
   if (aad_value === '1') {
-      $('#search_query_age_at_death').show();
+    $('#search_query_age_at_death').show();
+    $('#search_query_min_age_at_death').val('');
+    $('#search_query_max_age_at_death').val('');
+    $('#search_query_dob_at_death').val('');
+    $('#search_query_min_dob_at_death').val('');
+    $('#search_query_max_dob_at_death').val('');
     }
   if (aad_value === '2') {
-      $('#search_query_min_age_at_death').show();
-      $('#search_query_max_age_at_death').show();
+    $('#search_query_min_age_at_death').show();
+    $('#search_query_max_age_at_death').show();
+    $('#search_query_age_at_death').val('');
+    $('#search_query_dob_at_death').val('');
+    $('#search_query_min_dob_at_death').val('');
+    $('#search_query_max_dob_at_death').val('');
   }
   if (aad_value === '3') {
-      $('#search_query_dob_at_death').show();
-      $('#search_query_dob_at_death').val();
+    $('#search_query_dob_at_death').show();
+    $('#search_query_min_age_at_death').val('');
+    $('#search_query_max_age_at_death').val('');
+    $('#search_query_age_at_death').val('');
+    $('#search_query_min_dob_at_death').val('');
+    $('#search_query_max_dob_at_death').val('');
   }
   if (aad_value === '4') {
-      $('#search_query_min_dob_at_death').show();
-      $('#search_query_max_dob_at_death').show();
+    $('#search_query_min_dob_at_death').show();
+    $('#search_query_max_dob_at_death').show();
+    $('#search_query_min_age_at_death').val('');
+    $('#search_query_max_age_at_death').val('');
+    $('#search_query_age_at_death').val('');
+    $('#search_query_dob_at_death').val('');
   }
 
   if (aad_value === '') {
@@ -301,19 +336,19 @@ $(document).ready(function(){
   }
 
   var validate_death_age = function() {
-    var min_age = $('#min_age_at_death').val();
-    var max_age = $('#max_age_at_death').val();
+    var min_age = $('#search_query_min_age_at_death').val();
+    var max_age = $('#search_query_max_age_at_death').val();
     if (max_age < min_age) {
-      $('#max_age_at_death')[0].setCustomValidity('Max death age should not lesser than Min death age');
+      $('#search_query_max_age_at_death')[0].setCustomValidity('Max death age should not lesser than Min death age');
     }
   };
 
   var validate_death_dob = function() {
-    var min_dob = new Date($('#min_dob_at_death').val()).getTime();
-    var max_dob = new Date($('#max_dob_at_death').val()).getTime();
+    var min_dob = new Date($('#search_query_min_dob_at_death').val()).getTime();
+    var max_dob = new Date($('#search_query_max_dob_at_death').val()).getTime();
 
     if (max_dob < min_dob) {
-      $('#max_dob_at_death')[0].setCustomValidity('Max death date should not be lesser than Min death date');
+      $('#search_query_max_dob_at_death')[0].setCustomValidity('Max death date should not be lesser than Min death date');
     }
   }
 

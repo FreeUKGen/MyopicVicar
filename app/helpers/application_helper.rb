@@ -290,7 +290,8 @@ module ApplicationHelper
     display_map["Page"] = search_query.page if search_query.page
     display_map["Counties"] = counties if search_query.chapman_codes.size > 1
     display_map["Districts"] = search_query.districts if search_query.districts.size >1
-    #display_map["Record Type"] =
+    display_map["Age At Death"] = "#{search_query.age_at_death}#{search_query.dob_at_death}" if search_query.age_at_death.present? || search_query.dob_at_death.present?
+    display_map["Age At Death Range"] = "#{search_query.min_age_at_death}-#{search_query.max_age_at_death}" || "#{search_query.min_dob_at_death}-#{search_query.max_dob_at_death}" if search_query.min_age_at_death.present? || search_query.max_dob_at_death.present?
     display_map
   end
 
