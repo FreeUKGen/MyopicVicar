@@ -22,7 +22,7 @@
         <%= text_field_tag 'search_query[first_name]', set_value(@search_query.first_name), class: 'text-input', placeholder: 'Enter first name(s) here', role: 'textbox', id: 'first_name'%>
         <label>
           <small class="ttip__text">
-            <%= check_box_tag 'search_query[first_name_exact_match]', set_value(@search_query.first_name_exact_match), false %>
+            <%= check_box_tag 'search_query[first_name_exact_match]', set_value(@search_query.first_name_exact_match), set_value(@search_query.first_name_exact_match) %>
             Exact match on first names
           </small>
         </label>
@@ -35,7 +35,7 @@
         <%= text_field_tag 'search_query[last_name]', set_value(@search_query.last_name), class: 'text-input', id: 'last_name', placeholder: 'Enter Surname here'%>
         <label>
           <small class="ttip__text">
-            <%= check_box_tag 'search_query[fuzzy]', set_value(@search_query.fuzzy), false %>
+            <%= check_box_tag 'search_query[fuzzy]', set_value(@search_query.fuzzy), set_value(@search_query.fuzzy) %>
             Phonetic search surnames
           </small>
         </label>
@@ -88,7 +88,7 @@
         <%= text_field_tag 'search_query[spouse_first_name]', set_value(@search_query.spouse_first_name), class: 'text-input', placeholder: 'Enter spouse first name(s) here', id: 'spouse_first_name'%>
         <label>
           <small class="ttip__text">
-            <%= check_box_tag 'search_query[identifiable_spouse_only]', set_value(@search_query.identifiable_spouse_only), false %>
+            <%= check_box_tag 'search_query[identifiable_spouse_only]', set_value(@search_query.identifiable_spouse_only), set_value(@search_query.identifiable_spouse_only) %>
             Identifiable spouses only
           </small>
         </label>
@@ -124,7 +124,7 @@
         </span>
         <label>
           <small class="ttip__text">
-            <%= check_box_tag 'search_query[match_recorded_ages_or_dates]', set_value(@search_query.match_recorded_ages_or_dates), false %>
+            <%= check_box_tag 'search_query[match_recorded_ages_or_dates]', set_value(@search_query.match_recorded_ages_or_dates), set_value(@search_query.match_recorded_ages_or_dates) %>
             Match only recorded ages
           </small>
         </label>
@@ -197,6 +197,10 @@ $('.checkboxtag').on('change', function(){
 </script>
 
 <script>
+  var aad_value = $('#death_select_box').val();
+  var aad_selection = document.getElementById('death_select_box');
+  var aad_select_value = aad_selection.options[0].value
+
 $(document).ready(function(){
   $("#search_query_chapman_codes").change(function() {
     var counties = [];
@@ -215,36 +219,60 @@ $(document).ready(function(){
   $('.checkboxtag, .checkAll').change(function() {
     hide_all_death_options();
     if ($(".birth").is(":checked") && !$('.death, .marriage, .checkAll').is(':checked')) {
-      $('#search_query_spouses_mother_surname').prop('disabled', false)
-      $('#search_query_spouses_mother_surname').prop('placeholder', "Enter Mother's surname here")
-      $('#death_select_box').val("").prop('disabled', 'disabled');
+      $('#spouses_mother_surname').prop('disabled', false)
+      $('#spouses_mother_surname').prop('placeholder', "Enter Mother's surname here")
+      $('#death_select_box').prop('disabled', 'disabled');
+      $('#death_select_box').css('background', '#ccc');
+      $('#death_select_box').val([]);
     } else if ($(".marriage").is(":checked") && !$('.birth, .death, .checkAll').is(':checked')) {
-      $('#search_query_spouses_mother_surname').prop('disabled', false)
-      $('#search_query_spouses_mother_surname').prop('placeholder', "Enter Spouse's surname here")
-      $('#death_select_box').val("").prop('disabled', 'disabled');
+      $('#spouses_mother_surname').prop('disabled', false)
+      $('#spouses_mother_surname').prop('placeholder', "Enter Spouse's surname here")
+      $('#death_select_box').prop('disabled', 'disabled');
+      $('#death_select_box').css('background', '#ccc');
+      $('#death_select_box').val([]);
     } else if ($(".death").is(":checked") && !$('.birth, .marriage, .checkAll').is(':checked')) {
       $('#death_select_box').prop('disabled', false);
+      $('#spouses_mother_surname').val('').prop('disabled', true)
+      $('#spouses_mother_surname').css('background', '#ccc');
+      $('#spouses_mother_surname').prop('placeholder', '')
+      $('#death_select_box').val(aad_select_value)
+      $('#death_select_box').css('background', 'white')
     } else {
-      $('#search_query_spouses_mother_surname').val('').prop('disabled', true)
-      $('#search_query_spouses_mother_surname').prop('placeholder', '')
-      $('#death_select_box').val("").prop('disabled', 'disabled');
+      $('#spouses_mother_surname').val('').prop('disabled', true)
+      $('#death_select_box').css('background', '#ccc');
+      $('#spouses_mother_surname').css('background', '#ccc');
+      $('#spouses_mother_surname').prop('placeholder', '')
+      $('#death_select_box').prop('disabled', 'disabled');
+      $('#death_select_box').val([]);
     }
   });
 
   if ($(".birth").is(":checked") && !$('.death, .marriage, .checkAll').is(':checked')) {
-      $('#search_query_spouses_mother_surname').prop('disabled', false)
-      $('#search_query_spouses_mother_surname').prop('placeholder', "Enter Mother's surname here")
-      $('#death_select_box').val("").prop('disabled', 'disabled');
+      $('#spouses_mother_surname').prop('disabled', false)
+      $('#spouses_mother_surname').prop('placeholder', "Enter Mother's surname here")
+      $('#death_select_box').prop('disabled', 'disabled');
+      $('#death_select_box').css('background', '#ccc');
+      $('#death_select_box').val([]);
     } else if ($(".marriage").is(":checked") && !$('.birth, .death, .checkAll').is(':checked')) {
-      $('#search_query_spouses_mother_surname').prop('disabled', false)
-      $('#search_query_spouses_mother_surname').prop('placeholder', "Enter Spouse's surname here")
-      $('#death_select_box').val("").prop('disabled', 'disabled');
+     $('#spouses_mother_surname').prop('disabled', false)
+      $('#spouses_mother_surname').prop('placeholder', "Enter Spouse's surname here")
+      $('#death_select_box').prop('disabled', 'disabled');
+      $('#death_select_box').css('background', '#ccc');
+      $('#death_select_box').val([]);
     } else if ($(".death").is(":checked") && !$('.birth, .marriage, .checkAll').is(':checked')) {
       $('#death_select_box').prop('disabled', false);
+      $('#spouses_mother_surname').val('').prop('disabled', true)
+      $('#spouses_mother_surname').css('background', '#ccc');
+      $('#spouses_mother_surname').prop('placeholder', '')
+      $('#death_select_box').val(aad_select_value)
+      $('#death_select_box').css('background', 'white')
     } else {
-      $('#search_query_spouses_mother_surname').val('').prop('disabled', true)
-      $('#search_query_spouses_mother_surname').prop('placeholder', '')
-      $('#death_select_box').val("").prop('disabled', 'disabled');
+      $('#spouses_mother_surname').val('').prop('disabled', true)
+      $('#spouses_mother_surname').prop('placeholder', '')
+      $('#death_select_box').prop('disabled', 'disabled');
+      $('#death_select_box').css('background', '#ccc');
+      $('#spouses_mother_surname').css('background', '#ccc');
+      $('#death_select_box').val([]);
     }
 
   var hide_all_death_options = function() {
@@ -293,6 +321,15 @@ $(document).ready(function(){
       $('#search_query_age_at_death').val('');
       $('#search_query_dob_at_death').val('');
     }
+    if (aad_value === '') {
+      $('#death_select_box').val(aad_selection);
+      $('#search_query_min_dob_at_death').val('');
+      $('#search_query_max_dob_at_death').val('');
+      $('#search_query_min_age_at_death').val('');
+      $('#search_query_max_age_at_death').val('');
+      $('#search_query_age_at_death').val('');
+      $('#search_query_dob_at_death').val('');
+    }
   });
 
   var aad_value = $('#death_select_box').val();
@@ -332,7 +369,13 @@ $(document).ready(function(){
   }
 
   if (aad_value === '') {
-      $('#death_select_box').val(aad_selection);
+    $('#death_select_box').val(aad_selection);
+    $('#search_query_min_dob_at_death').val('');
+    $('#search_query_max_dob_at_death').val('');
+    $('#search_query_min_age_at_death').val('');
+    $('#search_query_max_age_at_death').val('');
+    $('#search_query_age_at_death').val('');
+    $('#search_query_dob_at_death').val('');
   }
 
   var validate_death_age = function() {

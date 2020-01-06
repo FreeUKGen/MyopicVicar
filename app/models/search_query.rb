@@ -54,7 +54,7 @@ class SearchQuery
   field :min_dob_at_death, type: String # , :required => false
   field :max_dob_at_death, type: String # , :required => false
   field :dob_at_death, type: String # , :required => false
-  field :match_recorded_ages_or_dates, type: Boolean, default: false # , :required => false
+  field :match_recorded_ages_or_dates, type: Boolean#, default: false # , :required => false
   field :volume, type: String # , :required => false
   field :page, type: String # , :required => false
   field :fuzzy, type: Boolean
@@ -956,6 +956,7 @@ class SearchQuery
     records = SearchQuery.get_search_table.where(bmd_params_hash).joins(spouse_join_condition).where(bmd_marriage_params).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     records = records.where(first_name_filteration) unless self.first_name_exact_match
     records = combined_results records if date_of_birth_range? || self.dob_at_death.present?
+    records = combined_age_results records if self.age_at_death.present? || self.min_age_at_death.present?
     persist_results(records)
     records
   end
@@ -998,7 +999,7 @@ class SearchQuery
   end
 
   def define_range
-    self.min_age_at_death..self.max_age_at_death
+    self.min_age_at_death..self.max_age_at_death if check_age_range?
   end
 
   def 
@@ -1160,11 +1161,9 @@ class SearchQuery
   end
 
   def date_of_birth_uncertain_aad records
-    unless self.match_recorded_ages_or_dates
-      records.select{|r|
-        r.AgeAtDeath.scan(/[A-Za-z\_\-\*\?\[\]]/).length != 0
-      }
-    end
+    records.select{|r|
+      r.AgeAtDeath.scan(/[A-Za-z\_\-\*\?\[\]]/).length != 0
+    }
   end
 
   def dob_filteration
@@ -1188,6 +1187,18 @@ class SearchQuery
     non_dob_results = non_dob_records records
     dob_results = dob_recordss records
     date_of_birth_search_range_a(non_dob_results) + dob_exact_search(dob_results).to_a + date_of_birth_uncertain_aad(records)
+  end
+
+  def combined_age_results records
+    aad_search(records).to_a + date_of_birth_uncertain_aad(records)
+  end
+
+  def aad_search records
+    unless self.match_recorded_ages_or_dates
+      records.where(AgeAtDeath: ['', self.age_at_death, define_range])
+    else
+      records.where(AgeAtDeath: [self.age_at_death, define_range])
+    end
   end
 
   def min_dob_range_quarter
@@ -1257,7 +1268,7 @@ class SearchQuery
     params.merge!(get_date_quarter_params)
     params.merge!(bmd_county_params)
     params.merge!(bmd_districts_params)
-    params.merge!(bmd_age_at_death_params) if self.age_at_death.present? || self.min_age_at_death.present?
+    #params.merge!(bmd_age_at_death_params) if self.age_at_death.present? || self.min_age_at_death.present?
     params.merge!(bmd_volume_params) if self.volume.present?
     params.merge!(bmd_page_params) if self.page.present?
     params
