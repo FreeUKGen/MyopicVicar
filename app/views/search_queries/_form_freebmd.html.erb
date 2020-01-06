@@ -340,6 +340,8 @@ $(document).ready(function(){
     var max_age = $('#search_query_max_age_at_death').val();
     if (max_age < min_age) {
       $('#search_query_max_age_at_death')[0].setCustomValidity('Max death age should not lesser than Min death age');
+    } else {
+      $('#search_query_max_age_at_death')[0].setCustomValidity('');
     }
   };
 
@@ -349,6 +351,8 @@ $(document).ready(function(){
 
     if (max_dob < min_dob) {
       $('#search_query_max_dob_at_death')[0].setCustomValidity('Max death date should not be lesser than Min death date');
+    } else {
+      $('#search_query_max_dob_at_death')[0].setCustomValidity('');
     }
   }
 
