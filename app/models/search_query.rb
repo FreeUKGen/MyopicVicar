@@ -1157,6 +1157,8 @@ class SearchQuery
       records.select{|r|
         ((r.QuarterNumber - ((r.AgeAtDeath.to_i + 1) * 4 + 1))..(r.QuarterNumber - (r.AgeAtDeath.to_i * 4))).include?(min_dob_range_quarter..max_dob_range_quarter) if r.AgeAtDeath.present?
       }
+    else
+      []
     end
   end
 
