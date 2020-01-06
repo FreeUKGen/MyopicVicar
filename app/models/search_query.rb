@@ -54,7 +54,7 @@ class SearchQuery
   field :min_dob_at_death, type: String # , :required => false
   field :max_dob_at_death, type: String # , :required => false
   field :dob_at_death, type: String # , :required => false
-  field :match_recorded_ages_or_dates, type: Boolean # , :required => false
+  field :match_recorded_ages_or_dates, type: Boolean, default: false # , :required => false
   field :volume, type: String # , :required => false
   field :page, type: String # , :required => false
   field :fuzzy, type: Boolean
@@ -986,8 +986,10 @@ class SearchQuery
   def bmd_age_at_death_params
     params = {}
     params[:age_at_death] = ['',self.age_at_death]
-    params[:age_at_death] = ['',define_range] if check_age_range?
-    params[:age_at_death] = self.age_at_death || dob_exact_match if match_recorded_ages_or_dates
+    if check_age_range?
+      self.match_recorded_ages_or_dates ? params[:age_at_death] = [define_range] : params[:age_at_death] = ['',define_range]
+    end
+    params[:age_at_death] = self.age_at_death || dob_exact_match if self.match_recorded_ages_or_dates && !check_age_range?
     params
   end
 
