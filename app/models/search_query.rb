@@ -999,7 +999,7 @@ class SearchQuery
   end
 
   def define_range
-    self.min_age_at_death..self.max_age_at_death if check_age_range?
+    self.min_age_at_death.to_i..self.max_age_at_death.to_i if check_age_range?
   end
 
   def 
