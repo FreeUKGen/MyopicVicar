@@ -340,8 +340,10 @@ $(document).ready(function(){
   });
 
   var validate_death_age = function() {
-    var min_age = $('#search_query_min_age_at_death').val();
-    var max_age = $('#search_query_max_age_at_death').val();
+    var min_age_value = $('#search_query_min_age_at_death').val();
+    var min_age = parseInt(min_age_value);
+    var max_age_value = $('#search_query_max_age_at_death').val();
+    var max_age = parseInt(max_age_value);
     if (max_age < min_age) {
       $('#search_query_max_age_at_death')[0].setCustomValidity('Max death age should not lesser than Min death age');
     } else {
