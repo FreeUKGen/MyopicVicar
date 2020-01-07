@@ -999,10 +999,12 @@ class SearchQuery
   end
 
   def define_range
-    self.min_age_at_death.to_i..self.max_age_at_death.to_i if check_age_range?
+    "AgeAtDeath BETWEEN #{self.min_age_at_death} AND #{self.max_age_at_death}" if check_age_range?
   end
 
-  def 
+  def age_range_search records
+    records.where(define_range)
+  end
 
   def date_of_birth
    date split_range unless special_character.include?('-')
@@ -1196,14 +1198,14 @@ class SearchQuery
   end
 
   def combined_age_results records
-    aad_search(records).to_a + date_of_birth_uncertain_aad(records)
+    aad_search(records).to_a + date_of_birth_uncertain_aad(records) + age_range_search(records)
   end
 
   def aad_search records
     unless self.match_recorded_ages_or_dates
-      records.where(AgeAtDeath: ['', self.age_at_death, define_range])
+      records.where(AgeAtDeath: ['', self.age_at_death])
     else
-      records.where(AgeAtDeath: [self.age_at_death, define_range])
+      records.where(AgeAtDeath: [self.age_at_death])
     end
   end
 
