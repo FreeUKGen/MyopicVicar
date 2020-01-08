@@ -588,28 +588,28 @@ module ApplicationHelper
         function detectAdblock(){
           console.log(window.canRunAds);
           if( window.canRunAds === undefined){
-              console.log("Adblock detected")
-              var donateBanners = document.getElementsByClassName("donations");
-              for (i = 0; i < donateBanners.length; i++) {
-                  donateBanners[i].style.display = "block";
-                  console.log("Banner displayed! " + i)
-                }
-                }
-                else {
-                    console.log(window.canRunAds);
-                    console.log("Adblock not detected");
-                  }
-                  }
-                  window.onload = detectAdblock;
-                  </script>
-                  HTML
-                  if Rails.env.development?
-                    banner = <<-HTML
-                    <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
-                    HTML
-                  end
-                  banner.html_safe
-                end
+            console.log("Adblock detected")
+            var donateBanners = document.getElementsByClassName("donations");
+            for (i = 0; i < donateBanners.length; i++) {
+              donateBanners[i].style.display = "block";
+              console.log("Banner displayed! " + i)
+              }
+            }
+          else {
+            console.log(window.canRunAds);
+            console.log("Adblock not detected");
+            }
+          }
+          window.onload = detectAdblock;
+    </script>
+    HTML
+    if Rails.env.development?
+      banner = <<-HTML
+      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
+      HTML
+    end
+    banner.html_safe
+  end
 
                 def fullwidth_adsense_freecen
                   banner = <<-HTML
@@ -717,7 +717,7 @@ module ApplicationHelper
                               <ins class="adsbygoogle adSenseBanner"
                               style="display:inline-block;width:120px;height:600px"
                               data-ad-client = "#{data_ad_client}"
-                              data-ad-slot = "#{app_advert['side_banners_slot']}">
+                              data-ad-slot = "#{app_advert['data_ad_slot_side']}">
                               </ins>
                               <script>
                               window.update_personalized_header_adverts = function (preference) {
