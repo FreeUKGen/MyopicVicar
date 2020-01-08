@@ -1189,11 +1189,19 @@ class SearchQuery
         month = r.AgeAtDeath.strip.scan(/\D+/).pop
         qn_year = (r.QuarterNumber-1)/4 + 1837
         difference = qn_year - year
-        logger.warn("#{difference}")
-        logger.warn("#{self.max_age_at_death}")
-        logger.warn("#{self.min_age_at_death}")
-        logger.warn("#{(self.min_age_at_death..self.max_age_at_death).include?(difference)}")
         (self.min_age_at_death..self.max_age_at_death).include?(difference) 
+      }
+    end
+  end
+
+  def calculate_age_for_dob records
+    if self.age_at_death.present?
+      records.select {|r|
+        year = r.AgeAtDeath.scan(/\d+/).select{|r| r.length == 4}.pop.to_i
+        month = r.AgeAtDeath.strip.scan(/\D+/).pop
+        qn_year = (r.QuarterNumber-1)/4 + 1837
+        difference = qn_year - year
+        self.age_at_death == difference
       }
     end
   end
@@ -1246,7 +1254,7 @@ class SearchQuery
     logger.warn("#{dob_records}")
     logger.warn ("#{calculate_age_range_for_dob(dob_records)}")
     invalid_age_records = invalid_age_records(records)
-    aad_search(records).to_a + date_of_birth_uncertain_aad(invalid_age_records) + age_range_search(records) + calculate_age_range_for_dob(dob_records)
+    aad_search(records).to_a + date_of_birth_uncertain_aad(invalid_age_records) + age_range_search(records) + calculate_age_range_for_dob(dob_records) + calculate_age_for_dob(dob_records)
   end
 
   def aad_search records
