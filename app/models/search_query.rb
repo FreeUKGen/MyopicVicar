@@ -1186,7 +1186,6 @@ class SearchQuery
     if check_age_range?
       records.select {|r|
         year = r.AgeAtDeath.scan(/\d+/).select{|r| r.length == 4}.pop.to_i
-        month = r.AgeAtDeath.strip.scan(/\D+/).pop
         qn_year = (r.QuarterNumber-1)/4 + 1837
         difference = qn_year - year
         (self.min_age_at_death..self.max_age_at_death).include?(difference) 
@@ -1197,17 +1196,12 @@ class SearchQuery
   end
 
   def calculate_age_for_dob records
-    if self.age_at_death.present?
-      records.select {|r|
-        year = r.AgeAtDeath.scan(/\d+/).select{|r| r.length == 4}.pop.to_i
-        month = r.AgeAtDeath.strip.scan(/\D+/).pop
-        qn_year = (r.QuarterNumber-1)/4 + 1837
-        difference = qn_year - year
-        self.age_at_death == difference
-      }
-    else
-      []
-    end
+    records.select {|r|
+      year = r.AgeAtDeath.scan(/\d+/).select{|r| r.length == 4}.pop.to_i
+      qn_year = (r.QuarterNumber-1)/4 + 1837
+      difference = qn_year - year
+      self.age_at_death == difference
+    }
   end
 
   def date_of_birth_uncertain_aad records
