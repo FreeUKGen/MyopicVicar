@@ -1178,7 +1178,7 @@ class SearchQuery
 
   def records_with_dob records
     records.select{|r|
-      month.values.any?{|v| r.AgeAtDeath.upcase[v]} #if r.QuarterNumber >= DOB_START_QUARTER
+      month.values.any?{|v| r.AgeAtDeath.upcase[v]} if r.QuarterNumber >= DOB_START_QUARTER
     }
   end
 
