@@ -1178,7 +1178,7 @@ class SearchQuery
 
   def records_with_dob records
     records.select{|r|
-      month.values.any?{|v| r.AgeAtDeath.upcase[v]}
+      month.values.any?{|v| r.AgeAtDeath.upcase[v]} if r.QuarterNumber >= DOB_START_QUARTER
     }
   end
 
@@ -1239,8 +1239,8 @@ class SearchQuery
 
   def combined_age_results records
     dob_records = records_with_dob(records)
-    puts dob_records
-    puts calculate_age_for_dob(dob_records)
+    logger.warn("#{dob_records}")
+    logger.warn ("#{calculate_age_for_dob(dob_records)}")
     invalid_age_records = invalid_age_records(records)
     aad_search(records).to_a + date_of_birth_uncertain_aad(invalid_age_records) + age_range_search(records) + calculate_age_for_dob(dob_records)
   end
