@@ -916,7 +916,7 @@ class SearchQuery
   end
 
   def search_start_year
-    [self.start_year, self.dob_at_death, self.min_dob_at_death].max
+    [self.start_year, self.dob_at_death.to_i, self.min_dob_at_death.to_i].max
   end
 
   def end_year_quarter
