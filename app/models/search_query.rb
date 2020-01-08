@@ -1240,7 +1240,7 @@ class SearchQuery
   def combined_age_results records
     dob_records = records_with_dob(records)
     invalid_age_records = invalid_age_records(records)
-    aad_search(records).to_a + date_of_birth_uncertain_aad(invalid_age_records) + age_range_search(records) + calculate_age_for_dob(records)
+    aad_search(records).to_a + date_of_birth_uncertain_aad(invalid_age_records) + age_range_search(records) + calculate_age_for_dob(dob_records)
   end
 
   def aad_search records
