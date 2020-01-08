@@ -87,7 +87,7 @@ class SearchRecordsController < ApplicationController
         #census database description
         @census_database = "General Register Office: #{@cen_year} Census Returns database"
 
-        if @search_record.place['country'] = 'Scotland'
+        if @search_record.place['country'] == 'Scotland'
           @census_database = "Scottish General Register Office: #{@cen_year} Census Returns database"
         end
 

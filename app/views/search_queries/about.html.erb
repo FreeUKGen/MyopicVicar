@@ -41,12 +41,20 @@
           and records with a last name whose Soundex is <%= fuzzy(@search_query.last_name)%>
         <% end %>
       <% end %>
-      <% if @search_query.inclusive || @search_query.witness %>
+      <% if appname.downcase == 'freereg' && (@search_query.inclusive || @search_query.witness) %>
         This search will match against the primary names in the record (i.e. baptisee, bride and groom, or deceased).  In addition, it will search
         <% if @search_query.inclusive %> for other <b>family members</b>  (father, mother, etc.) <% end %>
         <% if @search_query.inclusive && @search_query.witness %> and <% end %>
         <% if @search_query.witness %> <b>witnesses</b> <% end %>
         mentioned in a record.
+      <% end %>
+      <% unless  @search_query.no_additional_census_fields?%>
+        This search will also select those individuals who were:
+        <% if @search_query.disabled.present? %><b> disabled</b>:<% end %>
+        <% if @search_query.sex.present? %><b> <%=SearchQuery::Sex::OPTIONS.key(@search_query.sex)%>: </b><% end %>
+        <% if @search_query.marital_status.present? %><b> <%=SearchQuery::MaritalStatus::OPTIONS.key(@search_query.marital_status)%>: </b><% end %>
+        <% if @search_query.language.present? %> speak <b><%=SearchQuery::Language::OPTIONS.key(@search_query.language)%>: </b><% end %>
+        <% if @search_query.occupation? %> had an <b>occupation</b> with starting with the following characters <b><%=@search_query.occupation %></b>:<% end %>
       <% end %>
       <% if @search_query.places.present? %>
         <lb/>Additional names which our volunteers marked as partially illegible have been added below the direct results.  (For more information on our practices for encoding unclear characters, see <a href="https://www.freereg.org.uk/cms/information-for-transcribers/dealing-with-uncertainty#ucf">"Dealing with Uncertainty"</a>.)
@@ -55,8 +63,18 @@
   </section>
   <section>
     <h3>Date</h3>
-    <% unless @search_query.start_year.blank? && @search_query.end_year.blank? %>
-      <p>Search Criteria:
+    <% if appname.downcase == 'freecen'%>
+      <p>Census Criteria:
+        <% if @search_query.record_type.blank? %>
+          <b> All </b>census years were included
+        <% else%>
+          The census year <b><%= @search_query.record_type %></b> was selected.
+        <% end%>
+      </p>
+    <% end%>
+    <p>
+      <% if ['freecen', 'freebmd'].include?(appname.downcase)  %>Birth Date range or Age: <% else%> Event Date: <% end%>
+      <% unless @search_query.start_year.blank? && @search_query.end_year.blank? %>
         <% if @search_query.start_year %>
           <b>Start Year</b> is <b><i><%= @search_query.start_year %></i></b>.
         <% end %>
@@ -64,21 +82,7 @@
           <b>End Year</b> is <b><i><%= @search_query.end_year %></i></b>.
         <% end %>
       <% else %>
-        <i>No date criteria specified.</i>
-      </p>
-    <% end %>
-    <% if @search_query.start_year.present? || @search_query.end_year.present? %>
-      <p>Search Logic:<br>
-        Records with dates
-        <% if @search_query.start_year.present? %>
-          <b><i>on or after <%= format_start_date(@search_query.start_year) %></i></b> (New Style)
-          <% if @search_query.end_year.present? %>
-            and dates
-          <% end %>
-        <% end %>
-        <% if @search_query.end_year.present? %>
-          <i><b>on or before <%= format_end_date(@search_query.end_year) %></b></i> (New Style)
-        <% end %>
+        <i><b>No </b>date criteria were specified.</i>
       </p>
     <% end %>
   </section>
@@ -96,6 +100,19 @@
   <% end %>
   <section>
     <h3>Location</h3>
+    <% if appname.downcase == 'freecen'%>
+      <p>Search Criteria:
+        The following <b>birth counties</b> were included:
+        <% counties = @search_query.chapman_codes.size %>
+        <% start = 0 %>
+        <% @and = " and " %>
+        <% while start < counties do  %>
+          <b><%= ChapmanCode.name_from_code(@search_query.birth_chapman_codes[start])  %></b>
+          <% start +=1 %>
+          <%= @and unless start == counties %>
+        <% end%>.
+      </p>
+    <% end%>
     <% if @search_query.radius_search? %>
       <p>
         Search Criteria:
@@ -118,7 +135,7 @@
         <% end %>
       </ol>
     <% else %>
-      <p>The following counties were included in the search:
+      <p>The following <% if appname.downcase == 'freecen'%><b>census </b><% end%>counties were included in the search:
         <% counties = @search_query.chapman_codes.size %>
         <% start = 0 %>
         <% @and = " and " %>
@@ -129,9 +146,9 @@
         <% end%>.</p>
       <% place = @search_query.places.map {|pl| pl.place_name} %>
       <% if place.size == 0 %>
-        <b>All places</b> with data in the selected counties were included.
+        <b>All <% if appname.downcase == 'freecen'%><b>census </b><% end%>places</b> with data in the selected counties were included.
       <% else %>
-        The place with the name <b><%= place[0] %></b> was searched.
+        The <% if appname.downcase == 'freecen'%><b>census </b><% end%>place with the name <b><%= place[0] %></b> was searched.
       <% end %>
     <% end %>
   </p>

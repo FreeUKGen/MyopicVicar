@@ -32,6 +32,7 @@ class Register
 
   has_many :sources, dependent: :restrict_with_error # includes origin server of images
   has_many :embargo_rules
+  has_many :gaps
 
   index({ church_id: 1, register_name: 1})
   index({ register_name: 1})
@@ -274,6 +275,11 @@ class Register
   def embargo_rules_exist?
     embargo_rules = self.embargo_rules.present? ? true : false
     embargo_rules
+  end
+
+  def gaps_exist?
+    gaps = self.gaps.present? ? true : false
+    gaps
   end
 
   def has_input?

@@ -1,12 +1,13 @@
-<% breadcrumb :show_gap, @user, @chapman_code, @county, @register, @source %>
+<% breadcrumb :show_gap, @user, @chapman_code, @county, @register %>
 <% title "Gap - properties" %>
 <%= render partial: 'header' %>
 <%= render partial: 'flash_notice' %>
+<h2 class="text--center"> Showing Gap</h2>
 <% unless session[:userid].nil?%>
   <div style="text-align: center">
-    <%= link_to 'Create New GAP', new_gap_path, method: :get, :class => "btn  btn--small"  %>
-    <%= link_to 'Edit GAP', edit_gap_path(@gap), method: :get, :class => "btn  btn--small"  %>
-    <%= link_to 'Delete GAP', gap_path(@gap), method: :delete, :class => "btn  btn--small"  %>
+    <%= link_to 'Create New GAP', new_gap_path(register: @register), method: :get, :class => "btn  btn--small"  %>
+    <%= link_to 'Edit GAP', edit_gap_path(@gap, register: @register), method: :get, :class => "btn  btn--small"  %>
+    <%= link_to 'Delete GAP', gap_path(@gap, register: @register), method: :delete, :class => "btn  btn--small"  %>
   </div>
   <div style="clear:both;"></div>
   <br>
@@ -22,6 +23,10 @@
         <tr>
           <th class="caps">Field</th>
           <th class="caps">Value</th>
+        </tr>
+        <tr>
+          <td>Record Type</td>
+          <td class="t15"><%= @gap[:record_type] %>&nbsp;</td>
         </tr>
         <tr>
           <td>Start Date</td>

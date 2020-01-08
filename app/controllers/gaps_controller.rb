@@ -13,28 +13,25 @@
 #
 class GapsController < ApplicationController
   def create
+    params[:register] = params[:gap][:register]
     display_info
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'The linkages were incorrect') && return if @source.blank? ||
-      @register.blank? || @church.blank? || @place.blank?
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'The linkages were incorrect') &&
+      return if @register.blank? || @church.blank? || @place.blank?
 
     gap = Gap.new(gap_params)
     gap.save
-    redirect_back(fallback_location: new_manage_resource_path, notice: "Addition of the Gap failed:  #{gap.errors.full_messages}") && return if gap.errors.any?
+    redirect_back(fallback_location: new_manage_resource_path, notice: "Addition of the Gap failed:  #{gap.errors.full_messages}") &&
+      return if gap.errors.any?
 
     flash[:notice] = 'Addition of Gap was successful'
-    redirect_to index_gap_path(@source)
+    redirect_to gaps_path(register: @register)
   end
 
   def display_info
-    return if session[:source_id].blank?
+    return if params[:register].blank?
 
-    @source = Source.find(session[:source_id])
-    return if @source.blank?
-
-    session[:source_id] = @source.id
-    @register = @source.register
-    return if @register.blank?
-
+    @freereg1_csv_file = Freereg1CsvFile.find_by(id: params[:file]) if params[:file].present?
+    @register = Register.find_by(id: params[:register])
     session[:register_id] = @register.id
     @register_type = RegisterType.display_name(@register.register_type)
     session[:church_id] = @register.church_id
@@ -57,69 +54,93 @@ class GapsController < ApplicationController
 
   def destroy
     display_info
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'The linkages were incorrect') && return if @source.blank? ||
-      @register.blank? || @church.blank? || @place.blank?
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'The linkages were incorrect') &&
+      return if @register.blank? || @church.blank? || @place.blank?
 
     gap = Gap.find(params[:id])
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'The gap does not exist') && return if gap.blank?
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'The gap does not exist') &&
+      return if gap.blank?
 
-    source = gap.source
     gap.destroy
 
     flash[:notice] = 'Deletion of GAP was successful'
-    redirect_to index_gap_path(source)
+    redirect_to gaps_path(register: @register)
   end
 
   def edit
     display_info
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'The linkages were incorrect') && return if @source.blank? ||
-      @register.blank? || @church.blank? || @place.blank?
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'The linkages were incorrect') &&
+      return if @register.blank? || @church.blank? || @place.blank?
 
+    reasons = GapReason.order_by(reason: 1).all
+    @reasons = []
+    reasons.each do |reason|
+      @reasons << reason.reason
+    end
+    @record_types = RecordType::ALL_FREEREG_TYPES
+    @record_types = @record_types + ['All'] unless @record_types.include?('All')
     @gap = Gap.find(params[:id])
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'Attempted to edit a non_existent gap') && return if @gap.blank?
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'Attempted to edit a non_existent gap') &&
+      return if @gap.blank?
   end
 
   def index
     display_info
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'The linkages were incorrect') && return if @source.blank? ||
-      @register.blank? || @church.blank? || @place.blank?
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'The linkages were incorrect') &&
+      return if @register.blank? || @church.blank? || @place.blank?
 
-    params[:id] = session[:source_id] if params[:id].blank?
+    if @freereg1_csv_file.present?
+      @gaps = []
+      Gap.register(@register.id).each do |gap|
+        @gaps << gap if gap.record_type == 'All' || gap.record_type == @freereg1_csv_file.record_type
+      end
+    else
+      @gaps = Gap.register(@register.id).all
+    end
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'Attempted to display non_existent gaps') &&
+      return if @gaps.blank?
 
-    @gap = Gap.where(source_id: params[:id]).all
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'Attempted to display non_existent gaps') && return if @gap.blank?
-
-    redirect_to gap_path(@gap.first.id) if @gap.count == 1
+    redirect_to gap_path(@gaps.first.id, register: @register) if @gaps.count == 1
   end
 
   def new
     display_info
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'The linkages were incorrect') && return if @source.blank? ||
-      @register.blank? || @church.blank? || @place.blank?
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'The linkages were incorrect') &&
+      return if @register.blank? || @church.blank? || @place.blank?
 
-    @reason = GapReason.all.pluck(:reason).sort
+    reasons = GapReason.order_by(reason: 1).all
+    @reasons = []
+    reasons.each do |reason|
+      @reasons << reason.reason
+    end
+    @record_types = RecordType::ALL_FREEREG_TYPES
+    @record_types = @record_types + ['All'] unless @record_types.include?('All')
     @gap = Gap.new
   end
 
   def show
     display_info
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'The linkages were incorrect') && return if @source.blank? ||
-      @register.blank? || @church.blank? || @place.blank?
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'The linkages were incorrect') &&
+      return if @register.blank? || @church.blank? || @place.blank?
 
     @gap = Gap.find(params[:id])
-
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'Attempted to display non_existent gaps') && return if @gap.blank?
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'Attempted to display non_existent gaps') &&
+      return if @gap.blank?
   end
 
   def update
+    params[:register] = params[:gap][:register]
+    display_info
     gap = Gap.find(params[:id])
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'Attempted to update a non_existent gap') && return if gap.blank?
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'Attempted to update a non_existent gap') &&
+      return if gap.blank?
 
     proceed = gap.update_attributes(gap_params)
-    redirect_back(fallback_location: new_manage_resource_path, notice: "Update failed #{gap.errors.full_messages}") && return unless proceed
+    redirect_back(fallback_location: new_manage_resource_path, notice: "Update failed #{gap.errors.full_messages}") &&
+      return unless proceed
 
     flash[:notice] = 'Update of GAP was successful'
-    redirect_to index_gap_path(gap.source)
+    redirect_to gaps_path(register: @register)
   end
 
   private
