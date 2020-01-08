@@ -1214,7 +1214,7 @@ class SearchQuery
     if date_of_birth_range?
       records.select{|r|
         a = r.AgeAtDeath.scan(/\d+/).select{|r| r.length == 4}.pop.to_i
-        (date_array(self.max_dob_at_death)[0].to_i..date_array(self.min_dob_at_death)[0].to_i).include?a
+        (date_array(self.min_dob_at_death)[0].to_i..date_array(self.max_dob_at_death)[0].to_i).include?a
       }
     end
   end
