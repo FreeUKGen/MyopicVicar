@@ -1204,10 +1204,9 @@ class SearchQuery
         qn_year = (r.QuarterNumber-1)/4 + 1837
         difference = qn_year - year
         self.age_at_death == difference
-      else
-        []
-      end
       }
+    else
+      []
     end
   end
 
