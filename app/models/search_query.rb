@@ -1178,7 +1178,7 @@ class SearchQuery
 
   def records_with_dob records
     records.select{|r|
-      month.values.any?{|v| r.AgeAtDeath.capitalize[v]} if r.QuarterNumber >= DOB_START_QUARTER
+      month.values.any?{|v| r.AgeAtDeath.upcase[v]} if r.QuarterNumber >= DOB_START_QUARTER
     }
   end
 
@@ -1189,8 +1189,9 @@ class SearchQuery
       quarter_array = quarters_months.select{|i| i.include?month}
       quarter = quarters_months.index(quarter_array)
       dob_quarter = quarter_number(year: year, quarter: quarter)
+      logger.warn("#{dob_quarter}")
       (self.max_age_at_death.to_i..self.min_age_at_death.to_i).include?(r.QuarterNumber.to_i - dob_quarter.to_i) if check_age_range?
-      r.QuarterNumber.to_i - dob_quarter.to_i == self.age_at_death if self.age_at_death.present?
+      (r.QuarterNumber.to_i - dob_quarter.to_i) == self.age_at_death if self.age_at_death.present?
     }
   end
 
