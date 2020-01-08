@@ -2,6 +2,7 @@
 <% title "Gap - properties" %>
 <%= render partial: 'header' %>
 <%= render partial: 'flash_notice' %>
+<h2 class="text--center"> Showing Gap</h2>
 <% unless session[:userid].nil?%>
   <div style="text-align: center">
     <%= link_to 'Create New GAP', new_gap_path(register: @register, freereg1_csv_file: @freereg1_csv_file), method: :get, :class => "btn  btn--small"  %>

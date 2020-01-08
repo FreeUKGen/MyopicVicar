@@ -1365,6 +1365,7 @@ crumb :edit_image_server_image do |user,syndicate,county,register,source,group,i
 end
 
 # breadcrumb for GAP
+
 crumb :gaps do |user, syndicate, county, place, church, register, file|
   if file.present?
     link 'GAPs', gaps_path(register: register._id, freereg1_csv_file: file.id)

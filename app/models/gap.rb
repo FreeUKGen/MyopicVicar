@@ -1,6 +1,5 @@
 class Gap
   include Mongoid::Document
-
   field :start_date, type: Integer
   validates :start_date, numericality: { only_integer: true }
   field :end_date, type: Integer
@@ -18,13 +17,21 @@ class Gap
   index({ freereg1_csv_file: 1 }, name: 'batch')
 
   class << self
-    def batch(id)
-      where(freereg1_csv_file: id)
+    def id(id)
+      where(_id: id)
     end
 
     def register(id)
-      where(register: id)
+      where(register_id: id)
     end
+
+    def record_type(id)
+      where(record_type: id)
+    end
+    
+    def batch(id)
+      where(freereg1_csv_file: id)
+    end  
   end
 
   def start_and_end
