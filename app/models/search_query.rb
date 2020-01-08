@@ -1172,7 +1172,7 @@ class SearchQuery
 
   def invalid_age_records records
     records.reject{|r|
-      month.values.any?{|v| r.AgeAtDeath.upcase[v]}
+      month.values.any?{|v| r.AgeAtDeath.upcase[v]} if r.QuarterNumber >= DOB_START_QUARTER
     }
   end
 
@@ -1213,7 +1213,7 @@ class SearchQuery
   def age_at_death_with_year records
     if date_of_birth_range?
       records.select{|r|
-        a = r.AgeAtDeath.scan(/\d/).select{|r| r.length == 4}.pop.to_i
+        a = r.AgeAtDeath.scan(/\d+/).select{|r| r.length == 4}.pop.to_i
         (date_array(self.max_dob_at_death)[0].to_i..date_array(self.min_dob_at_death)[0].to_i).include?a
       }
     end
