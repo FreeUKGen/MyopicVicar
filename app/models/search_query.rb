@@ -1191,6 +1191,8 @@ class SearchQuery
         difference = qn_year - year
         (self.min_age_at_death..self.max_age_at_death).include?(difference) 
       }
+    else
+      []
     end
   end
 
@@ -1202,6 +1204,9 @@ class SearchQuery
         qn_year = (r.QuarterNumber-1)/4 + 1837
         difference = qn_year - year
         self.age_at_death == difference
+      else
+        []
+      end
       }
     end
   end
