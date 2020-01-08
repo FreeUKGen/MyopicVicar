@@ -349,6 +349,14 @@ class Freereg1CsvEntry
     param
   end
 
+  def already_has_this_embargo?(rule)
+    return false if embargo_records.blank?
+
+    return true if embargo_records.last.already_applied?(rule)
+
+    false
+  end
+
   def cal_digest
     case self.record_type
     when RecordType::BAPTISM
@@ -424,7 +432,6 @@ class Freereg1CsvEntry
     errors.add(:register_type, "Invalid register type") unless RegisterType::OPTIONS.values.include?(self.register_type)
   end
 
-
   def create_baptism_string
     fields = FreeregOptionsConstants::ORIGINAL_BAPTISM_FIELDS + FreeregOptionsConstants::ADDITIONAL_BAPTISM_FIELDS + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS + FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS
     my_string = self.create_string(fields)
@@ -477,11 +484,13 @@ class Freereg1CsvEntry
   end
 
   def get_record_type
-    return self.record_type if RecordType::ALL_FREEREG_TYPES.include?(self.record_type)
-    if self.search_record.present?
-      return  self.search_record.record_type if RecordType::ALL_FREEREG_TYPES.include?(self.search_record.record_type)
-    end
-    return ""
+    return record_type if RecordType.all_types.include?(record_type)
+
+    return search_record.record_type if search_record.present? && RecordType.all_types.include?(search_record.record_type)
+
+    logger.warn "#{MyopicVicar::Application.config.freexxx_display_name} get_record_type missing"
+    logger.warn inspect
+    crash
   end
 
   def date_beyond_cutoff?(date_string, cutoff)
@@ -703,9 +712,9 @@ class Freereg1CsvEntry
     when 'bu'
       fields = ordered_burial_display_fields(extended_def)
     else
+      logger.warn "#{appname_upcase} get_record_type missing"
       crash
     end
-    crash if fields.blank?
     fields.each do |field|
       case field
       when 'witness'
@@ -758,7 +767,7 @@ class Freereg1CsvEntry
 
   def process_embargo
     unless embargo_records.present? && embargo_records.last.who == 'register_rule'
-      return [false, ''] if embargo_records.present? # individual embargo present so we will no process register rule
+      return [false, ''] if embargo_records.present? # individual embargo present so we will not process register rule
 
       return [false, ''] if freereg1_csv_file.register.embargo_rules.blank? # guard to avoid there being no rules!
 
@@ -767,12 +776,26 @@ class Freereg1CsvEntry
     return [false, ''] if embargoes.blank?
 
     rule = embargoes.find_by(record_type: record_type)
+
     return [false, ''] if rule.blank? #no rule for this record type
 
     end_year = EmbargoRecord.process_embargo_year(rule, year)
-    return [false, ''] if DateTime.now.year.to_i >= end_year # return if record not to be embargoed
 
-    embargo_record = EmbargoRecord.new(embargoed: true, who: 'register_rule', why: rule.reason, when: DateTime.now, release_year: end_year, release_date: end_year)
+    if embargo_records.blank? && DateTime.now.year.to_i >= end_year
+      return [false, '']
+    elsif embargo_records.blank?
+      embargo_record = EmbargoRecord.new(embargoed: true, rule_date: rule.updated_at, rule_applied: rule.id, who: 'register_rule', why: rule.reason, when: DateTime.now, release_year: end_year, release_date: end_year)
+    elsif embargo_records.present? && already_has_this_embargo?(rule)
+      return [false, '']
+    elsif embargo_records.present? && embargo_records.last.embargoed == false && DateTime.now.year.to_i >= end_year
+      return [false, '']
+    elsif embargo_records.present? && embargo_records.last.embargoed == false
+      embargo_record = EmbargoRecord.new(embargoed: true, rule_date: rule.updated_at, rule_applied: rule.id, who: 'register_rule', why: rule.reason, when: DateTime.now, release_year: end_year, release_date: end_year)
+    elsif embargo_records.present? && embargo_records.last.embargoed == true && DateTime.now.year.to_i >= end_year
+      embargo_record = EmbargoRecord.new(embargoed: false, rule_date: rule.updated_at, rule_applied: rule.id, who: 'register_rule', why: rule.reason, when: DateTime.now, release_year: end_year, release_date: end_year)
+    else
+      embargo_record = EmbargoRecord.new(embargoed: true, rule_date: rule.updated_at, rule_applied: rule.id, who: 'register_rule', why: rule.reason, when: DateTime.now, release_year: end_year, release_date: end_year)
+    end
     [true, embargo_record]
   end
 
