@@ -1192,6 +1192,8 @@ class SearchQuery
       #quarter = quarters_months.index(quarter_array)
       #dob_quarter = quarter_number(year: year, quarter: quarter)
       logger.warn("#{difference}")
+      logger.warn("#{max_age_at_death}")
+      logger.warn("#{min_age_at_death}")
       logger.warn("#{(self.max_age_at_death.to_i..self.min_age_at_death.to_i).include?(difference)}")
       (self.max_age_at_death..self.min_age_at_death).include?(difference) if check_age_range?
       (r.QuarterNumber.to_i - dob_quarter.to_i) == self.age_at_death if self.age_at_death.present?
