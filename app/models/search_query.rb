@@ -916,12 +916,7 @@ class SearchQuery
   end
 
   def search_start_year
-    if self.dob_at_death.present? || self.min_dob_at_death.present?
-      year = self.dob_at_death || self.min_dob_at_death
-    else
-      year = self.start_year
-    end
-    year
+    [self.start_year, self.dob_at_death, self.min_dob_at_death].max
   end
 
   def end_year_quarter
