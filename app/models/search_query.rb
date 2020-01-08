@@ -1185,7 +1185,7 @@ class SearchQuery
   def calculate_age_for_dob records
     records.select {|r|
       year = r.AgeAtDeath.scan(/\d+/).select{|r| r.length == 4}.pop.to_i
-      month = r.AgeAtDeath.trim.scan(/\D+/).pop
+      month = r.AgeAtDeath.strip.scan(/\D+/).pop
       quarter_array = quarters_months.select{|i| i.include?month}
       quarter = quarters_months.index(quarter_array)
       dob_quarter = quarter_number(year: year, quarter: quarter)
