@@ -1188,7 +1188,7 @@ class SearchQuery
         year = r.AgeAtDeath.scan(/\d+/).select{|r| r.length == 4}.pop.to_i
         qn_year = (r.QuarterNumber-1)/4 + 1837
         difference = qn_year - year
-        (self.min_age_at_death..self.max_age_at_death).include?(difference) 
+        (self.min_age_at_death.to_i..self.max_age_at_death.to_i).include?(difference)
       }
     else
       []
@@ -1200,7 +1200,7 @@ class SearchQuery
       year = r.AgeAtDeath.scan(/\d+/).select{|r| r.length == 4}.pop.to_i
       qn_year = (r.QuarterNumber-1)/4 + 1837
       difference = qn_year - year
-      self.age_at_death == difference
+      self.age_at_death.to_i == difference
     }
   end
 
