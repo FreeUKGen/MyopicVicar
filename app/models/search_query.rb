@@ -1170,16 +1170,40 @@ class SearchQuery
     end
   end
 
+  def invalid_age_records records
+    records.reject{|r|
+      month.values.any?{|v| r.AgeAtDeath.upcase[v]}
+    }
+  end
+
+  def records_with_dob records
+    records.select{|r|
+      month.values.any?{|v| r.AgeAtDeath.upcase[v]}
+    }
+  end
+
+  def calculate_age_for_dob records
+    records.select {|r|
+      year = r.AgeAtDeath.scan(/\d+/).select{|r| r.length == 4}.pop.to_i
+      month = r.AgeAtDeath.trim.scan(/\D+/).pop
+      quarter_array = quarters_months.select{|i| i.include?month}
+      quarter = quarters_months.index(quarter_array)
+      dob_quarter = quarter_number(year: year, quarter: quarter)
+      (self.min_age_at_death.to_i..self.max_age_at_death.to_i).include?r.QuarterNumber.to_i - dob_quarter.to_i if check_age_range?
+      r.QuarterNumber.to_i - dob_quarter.to_i == self.age_at_death if self.age_at_death.present?
+    }
+  end
+
   def date_of_birth_uncertain_aad records
     records.select{|r|
-      r.AgeAtDeath.scan(/[A-Za-z\_\-\*\?\[\]]/).length != 0
+      r.AgeAtDeath.scan(/[a-z\_\-\*\?\[\]]/).length != 0
     }
   end
 
   def age_at_death_with_year records
     if date_of_birth_range?
       records.select{|r|
-        a = r.AgeAtDeath.scan(/\d+\d/).select{|r| r.length == 4}.pop.to_i
+        a = r.AgeAtDeath.scan(/\d/).select{|r| r.length == 4}.pop.to_i
         (date_array(self.max_dob_at_death)[0].to_i..date_array(self.min_dob_at_death)[0].to_i).include?a
       }
     end
@@ -1187,14 +1211,11 @@ class SearchQuery
 
   def dob_filteration
     date = self.dob_at_death #
-    min_date = self.min_dob_at_death
-    max_date = self.max_dob_at_death
-    search_condition = "AgeAtDeath like '%#{date_array(date)[0]}%'" if self.dob_at_death.present?
-    search_condition
+    "AgeAtDeath like '%#{date_array(date)[0]}%'"
   end
 
   def dob_exact_search records
-    records.where(dob_filteration)
+    records.where(dob_filteration) if self.dob_at_death.present?
   end
 
   def dob_recordss records
@@ -1212,11 +1233,14 @@ class SearchQuery
     non_dob_results = non_dob_records records
     dob_results = dob_recordss records
     age_dob_records = dob_age_search(dob_results)
-    date_of_birth_search_range_a(non_dob_results) + date_of_birth_search_range_a(age_dob_records) + dob_exact_search(dob_results).to_a + date_of_birth_uncertain_aad(records) + no_aad_or_dob(records) + age_at_death_with_year(age_dob_records)
+    invalid_age_records = invalid_age_records(records)
+    date_of_birth_search_range_a(non_dob_results) + date_of_birth_search_range_a(age_dob_records) + dob_exact_search(dob_results).to_a + date_of_birth_uncertain_aad(invalid_age_records) + no_aad_or_dob(records) + age_at_death_with_year(age_dob_records)
   end
 
   def combined_age_results records
-    aad_search(records).to_a + date_of_birth_uncertain_aad(records) + age_range_search(records)
+    dob_records = records_with_dob(records)
+    invalid_age_records = invalid_age_records(records)
+    aad_search(records).to_a + date_of_birth_uncertain_aad(invalid_age_records) + age_range_search(records) + calculate_age_for_dob(records)
   end
 
   def aad_search records
