@@ -1182,22 +1182,20 @@ class SearchQuery
     }
   end
 
-  def calculate_age_for_dob records
-    records.select {|r|
-      year = r.AgeAtDeath.scan(/\d+/).select{|r| r.length == 4}.pop.to_i
-      month = r.AgeAtDeath.strip.scan(/\D+/).pop
-      qn_year = (r.QuarterNumber-1)/4 + 1837
-      difference = qn_year - year
-      #quarter_array = quarters_months.select{|i| i.include?month}
-      #quarter = quarters_months.index(quarter_array)
-      #dob_quarter = quarter_number(year: year, quarter: quarter)
-      logger.warn("#{difference}")
-      logger.warn("#{self.max_age_at_death}")
-      logger.warn("#{self.min_age_at_death}")
-      logger.warn("#{(self.min_age_at_death..self.max_age_at_death).include?(difference)}")
-      (self.min_age_at_death..self.max_age_at_death).include?(difference) if check_age_range?
-      (r.QuarterNumber.to_i - dob_quarter.to_i) == self.age_at_death if self.age_at_death.present?
-    }
+  def calculate_age_range_for_dob records
+    if check_age_range?
+      records.select {|r|
+        year = r.AgeAtDeath.scan(/\d+/).select{|r| r.length == 4}.pop.to_i
+        month = r.AgeAtDeath.strip.scan(/\D+/).pop
+        qn_year = (r.QuarterNumber-1)/4 + 1837
+        difference = qn_year - year
+        logger.warn("#{difference}")
+        logger.warn("#{self.max_age_at_death}")
+        logger.warn("#{self.min_age_at_death}")
+        logger.warn("#{(self.min_age_at_death..self.max_age_at_death).include?(difference)}")
+        (self.min_age_at_death..self.max_age_at_death).include?(difference) 
+      }
+    end
   end
 
   def date_of_birth_uncertain_aad records
@@ -1246,9 +1244,9 @@ class SearchQuery
   def combined_age_results records
     dob_records = records_with_dob(records)
     logger.warn("#{dob_records}")
-    logger.warn ("#{calculate_age_for_dob(dob_records)}")
+    logger.warn ("#{calculate_age_range_for_dob(dob_records)}")
     invalid_age_records = invalid_age_records(records)
-    aad_search(records).to_a + date_of_birth_uncertain_aad(invalid_age_records) + age_range_search(records) + calculate_age_for_dob(dob_records)
+    aad_search(records).to_a + date_of_birth_uncertain_aad(invalid_age_records) + age_range_search(records) + calculate_age_range_for_dob(dob_records)
   end
 
   def aad_search records
