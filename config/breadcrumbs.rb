@@ -1368,24 +1368,24 @@ crumb :edit_image_server_image do |user,syndicate,county,register,source,group,i
 end
 
 # breadcrumb for GAP
-crumb :gaps do |user, syndicate, county, register, source|
-  link 'GAPs', index_gap_path(source)
-  parent :show_image_source, register,source
+crumb :gaps do |user, syndicate, county, register|
+  link 'GAPs', gaps_path(register: register._id)
+  parent :show_register, user, syndicate, county, register
 end
 
-crumb :show_gap do |user,syndicate,county,register,source|
+crumb :show_gap do |user, syndicate, county, register|
   link 'GAP'
-  parent :gaps, user,syndicate,county,register,source
+  parent :gaps, user, syndicate, county, register
 end
 
-crumb :new_gap do |user,syndicate,county,register,source|
+crumb :new_gap do |user, syndicate, county, register|
   link 'Create New GAP'
-  parent :gaps, user,syndicate,county,register,source
+  parent :gaps, user, syndicate, county, register
 end
 
-crumb :edit_gap do |user,syndicate,county,register,source|
+crumb :edit_gap do |user, syndicate, county, register|
   link 'Edit GAP'
-  parent :gaps, user,syndicate,county,register,source
+  parent :gaps, user, syndicate, county, register
 end
 
 crumb :gap_reasons do

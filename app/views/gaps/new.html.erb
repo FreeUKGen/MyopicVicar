@@ -1,9 +1,8 @@
-<% breadcrumb :new_gap, @user, @chapman_code, @county, @register, @source %>
-
+<% breadcrumb :new_gap, @user, @chapman_code, @county, @register %>
 <% title "GAP - create" %>
 <%= render partial: 'header' %>
 <%= render partial: 'flash_notice' %>
-
+<h2 class="text--center"> Create New Gap</h2>
 <div class="grid">
-	<%= render 'form' %>
+  <%= render 'form' %>
 </div>

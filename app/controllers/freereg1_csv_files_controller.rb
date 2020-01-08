@@ -50,6 +50,7 @@ class Freereg1CsvFilesController < ApplicationController
     @role = session[:role]
     @freereg1_csv_file_name = file.file_name
     session[:freereg1_csv_file_id] = file._id
+    @register = file.register
     @return_location = file.register.id if file.register.present?
   end
 
@@ -371,6 +372,7 @@ class Freereg1CsvFilesController < ApplicationController
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
     controls(@freereg1_csv_file)
+    @gaps = @register.gaps_exist?
   end
 
   def show_zero_startyear_entries
