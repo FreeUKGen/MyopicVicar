@@ -99,4 +99,13 @@ module Freereg1CsvFilesHelper
     end
 
   end
+
+  def which_file_gaps_link(gaps)
+    if gaps
+      link_to 'List Gaps', gaps_path(register: @register, freereg1_csv_file: @freereg1_csv_file), method: :get, class: 'btn   btn--small'
+    elsif @register.register_type == 'PR'
+      link_to 'Create Gap', new_gap_path(register: @register, freereg1_csv_file: @freereg1_csv_file), method: :get, class: 'btn  btn--small'
+    end
+  end
+
 end

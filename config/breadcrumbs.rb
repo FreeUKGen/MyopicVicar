@@ -60,36 +60,35 @@ crumb :my_own_files do
 end
 
 crumb :files do |file|
-  if session[:my_own].present?
-    link 'Your Batches', my_own_freereg1_csv_file_path
-    parent :root
-  end
-  if file.blank?
+  if session[:my_own]
+  elsif file.blank?
     link 'List of Batches', freereg1_csv_files_path
   else
     link 'List of Batches', freereg1_csv_files_path(:anchor => "#{file.id}", :page => "#{session[:current_page]}")
   end
-  if session[:county].present? && (session[:role] == 'county_coordinator' || session[:role] == 'system_administrator' ||
-                                   session[:role] == 'technical' || session[:role] == 'data_manager')
+
+  if session[:my_own]
+    parent :my_own_files
+  elsif session[:county].present? && %w[county_coordinator system_administrator technical data_manager].include?(session[:role])
     if session[:place_name].present?
       place = Place.where(:chapman_code => session[:chapman_code], :place_name => session[:place_name]).first
-      unless place.nil?
-        parent :show_place, session[:county], place
-      else
+      if place.nil?
         parent :county_options, session[:county]
+      else
+        parent :show_place, session[:county], place
       end
     else
       parent :county_options, session[:county]
     end
-  elsif session[:role] == 'volunteer_coordinator' || session[:role] == 'syndicate_coordinator'
+  elsif %w[volunteer_coordinator syndicate_coordinator].include?(session[:role])
     parent :userid_details_listing, session[:syndicate]
-  elsif session[:syndicate].present? && (session[:role] == 'county_coordinator' || session[:role] == 'data_manager' ||session[:role] == 'system_administrator' || session[:role] == 'technical')
-    unless  session[:userid_id].nil?
+  elsif session[:syndicate].present? && %w[county_coordinator system_administrator technical data_manager].include?(session[:role])
+    if session[:userid_id].present?
       parent :userid_detail, session[:syndicate], UseridDetail.find(session[:userid_id])
     else
       parent :syndicate_options, session[:syndicate]
     end
-  elsif session[:role] == 'system_administrator' || session[:role] == 'technical'
+  elsif %w[system_administrator technical].include?(session[:role])
     parent :regmanager_userid_options
   end
 end
@@ -98,8 +97,7 @@ crumb :show_file do |file|
   link 'Batch Information', freereg1_csv_file_path(file.id)
   if session[:my_own]
     parent :files, file
-  end
-  if session[:register_id].present? && session[:county].present? && session[:place_id].present? && session[:church_id].present? && session[:register_id].present?
+  elsif session[:register_id].present? && session[:county].present? && session[:place_id].present? && session[:church_id].present?
     place = Place.id(session[:place_id]).first
     church = Church.id(session[:church_id]).first
     register = Register.id(session[:register_id]).first
@@ -114,7 +112,6 @@ crumb :show_file do |file|
     parent :files, file
   end
 end
-
 
 crumb :unique_names do |file|
   link 'Unique Names'
@@ -150,8 +147,6 @@ crumb :select_file do |user|
     parent :files, file
   end
 end
-
-
 
 #record or entry
 crumb :show_records do |entry, file|
@@ -213,7 +208,6 @@ crumb :offline_reports do |county|
   parent :county_options, county
 end
 
-
 crumb :manage_county_selection do |county|
   link 'Selection'
   parent :county_options, county
@@ -249,7 +243,6 @@ crumb :show_place do |county, place|
   when place.present?
     parent :places, county, place
   end
-
 end
 crumb :edit_place do |county, place|
   link 'Edit Place Information', edit_place_path(place)
@@ -1372,24 +1365,33 @@ crumb :edit_image_server_image do |user,syndicate,county,register,source,group,i
 end
 
 # breadcrumb for GAP
-crumb :gaps do |user, syndicate, county, register|
-  link 'GAPs', gaps_path(register: register._id)
-  parent :show_register, user, syndicate, county, register
+
+crumb :gaps do |user, syndicate, county, place, church, register, file|
+  if file.present?
+    link 'GAPs', gaps_path(register: register._id, freereg1_csv_file: file.id)
+  else
+    link 'GAPs', gaps_path(register: register._id)
+  end
+  if file.present?
+    parent :show_file, file
+  else
+    parent :show_register, county, place, church, register
+  end
 end
 
-crumb :show_gap do |user, syndicate, county, register|
+crumb :show_gap do |user, syndicate, county, place, church, register, file|
   link 'GAP'
-  parent :gaps, user, syndicate, county, register
+  parent :gaps, user, syndicate, county, place, church, register, file
 end
 
-crumb :new_gap do |user, syndicate, county, register|
+crumb :new_gap do |user, syndicate, county, place, church, register, file|
   link 'Create New GAP'
-  parent :gaps, user, syndicate, county, register
+  parent :gaps, user, syndicate, county, place, church, register, file
 end
 
-crumb :edit_gap do |user, syndicate, county, register|
+crumb :edit_gap do |user, syndicate, county, place, church, register, file|
   link 'Edit GAP'
-  parent :gaps, user, syndicate, county, register
+  parent :gaps, user, syndicate, county, place, church, register, file
 end
 
 crumb :gap_reasons do

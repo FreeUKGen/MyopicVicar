@@ -46,7 +46,7 @@ class EmbargoRule
     errors.add(:period, 'Period must entered') if period.blank?
     errors.add(:period, 'Period must be in the range of between 0 and 125') if period.present? && rule == 'Embargoed for the period of ' && period < 0
     errors.add(:period, 'Period must be in the range of between 0 and 125') if period.present? && rule == 'Embargoed for the period of ' && period > 125
-    if period.present? && (period < Date.current.year.to_i || period > Date.current.year.to_i + 25)
+    if period.present? && rule == 'Embargoed until the beginning of ' && (period < Date.current.year.to_i || period > Date.current.year.to_i + 25)
       date_future = Date.current.year.to_i + 25
       errors.add(:period, "A year between #{Date.current.year.to_i} and #{date_future}")
     end

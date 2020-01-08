@@ -9,7 +9,9 @@
     <%= list_embargoed_entries %>
     <%= unique_names %>
     <%= remove_batch %>
-    <%= replace_batch %><br>
+    <%= replace_batch %>
+    <%= which_file_gaps_link(@gaps) %>
+    <br>
     <% if ['county_coordinator', 'country_coordinator', 'county_coordinator', 'system_administrator',
          'data_manager'].include?(@user.person_role) %>
     <%= relocate_batch  %>
@@ -23,9 +25,4 @@
 </div>
 <div style="clear:both;"> </div>
 <br>
-<% if flash[:notice] %>
-  <div id="notice" style="color:blue"><br>
-    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
-
-  </div>
-<% end %>
+<%= render partial: 'flash_notice' %>
