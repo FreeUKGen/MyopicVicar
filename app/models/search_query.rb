@@ -999,7 +999,7 @@ class SearchQuery
   end
 
   def age_range_search records
-    records.where(define_range)
+    records.where(define_range) if check_age_range?
   end
 
   def date_of_birth
@@ -1178,7 +1178,7 @@ class SearchQuery
 
   def records_with_dob records
     records.select{|r|
-      month.values.any?{|v| r.AgeAtDeath.upcase[v]} if r.QuarterNumber >= DOB_START_QUARTER
+      month.values.any?{|v| r.AgeAtDeath.upcase[v]} #if r.QuarterNumber >= DOB_START_QUARTER
     }
   end
 
@@ -1212,7 +1212,7 @@ class SearchQuery
 
   def date_of_birth_uncertain_aad records
     records.select{|r|
-      r.AgeAtDeath.scan(/[a-z\_\-\*\?\[\]]/).length != 0
+      r.AgeAtDeath.strip.scan(/[a-z\_\-\*\?\[\]]/).length != 0
     }
   end
 
@@ -1258,7 +1258,7 @@ class SearchQuery
     logger.warn("#{dob_records}")
     logger.warn ("#{calculate_age_range_for_dob(dob_records)}")
     invalid_age_records = invalid_age_records(records)
-    aad_search(records).to_a + date_of_birth_uncertain_aad(invalid_age_records) + age_range_search(records) + calculate_age_range_for_dob(dob_records) + calculate_age_for_dob(dob_records)
+    aad_search(records).to_a + date_of_birth_uncertain_aad(invalid_age_records) + age_range_search(records).to_a + calculate_age_range_for_dob(dob_records) + calculate_age_for_dob(dob_records)
   end
 
   def aad_search records
