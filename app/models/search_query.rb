@@ -948,10 +948,11 @@ class SearchQuery
   def freebmd_search_records
     @search_index = SearchQuery.get_search_table.index_hint(bmd_adjust_field_names)
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
-    records = SearchQuery.get_search_table.where(bmd_params_hash).joins(spouse_join_condition).where(bmd_marriage_params).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+    records = SearchQuery.get_search_table.where(bmd_params_hash).joins(spouse_join_condition).where(bmd_marriage_params)
     records = records.where(first_name_filteration) unless self.first_name_exact_match
     records = combined_results records if date_of_birth_range? || self.dob_at_death.present?
     records = combined_age_results records if self.age_at_death.present? || check_age_range?
+    records = records.limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     persist_results(records)
     records
   end
