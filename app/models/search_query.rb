@@ -1160,6 +1160,12 @@ class SearchQuery
     }
   end
 
+  def dob_age_search records
+    records.select{|r|
+      (1..3).include?(r.AgeAtDeath.length)
+    }
+  end
+
   def no_aad_or_dob records
     unless self.match_recorded_ages_or_dates
       records.where(AgeAtDeath: '').to_a
@@ -1174,9 +1180,21 @@ class SearchQuery
     }
   end
 
+  def age_at_death_with_year records
+    if date_of_birth_range?
+      records.select{|r|
+        a = r.AgeAtDeath.scan(/\d+\d/).select{|r| r.length == 4}.pop.to_i
+        (date_array(self.max_dob_at_death)[0].to_i..date_array(self.min_dob_at_death)[0].to_i).include?a
+      }
+    end
+  end
+
   def dob_filteration
-    date = self.dob_at_death
-    "AgeAtDeath like '%#{date_array(date)[0]}%'"
+    date = self.dob_at_death #
+    min_date = self.min_dob_at_death
+    max_date = self.max_dob_at_death
+    search_condition = "AgeAtDeath like '%#{date_array(date)[0]}%'" if self.dob_at_death.present?
+    search_condition
   end
 
   def dob_exact_search records
@@ -1187,6 +1205,9 @@ class SearchQuery
     records.where('QuarterNumber >= ?', DOB_START_QUARTER)
   end
 
+  def age_dob_records records
+  end
+
   def non_dob_records records
     records.where('QuarterNumber < ?', DOB_START_QUARTER)
   end
@@ -1194,7 +1215,8 @@ class SearchQuery
   def combined_results records
     non_dob_results = non_dob_records records
     dob_results = dob_recordss records
-    date_of_birth_search_range_a(non_dob_results) + dob_exact_search(dob_results).to_a + date_of_birth_uncertain_aad(records) + no_aad_or_dob(records)
+    age_dob_records = dob_age_search(dob_results)
+    date_of_birth_search_range_a(non_dob_results) + date_of_birth_search_range_a(age_dob_records) + dob_exact_search(dob_results).to_a + date_of_birth_uncertain_aad(records) + no_aad_or_dob(records) + age_at_death_with_year(age_dob_records)
   end
 
   def combined_age_results records
@@ -1210,13 +1232,13 @@ class SearchQuery
   end
 
   def min_dob_range_quarter
-    min_dob_quarter = dob_quarter_number(self.dob_at_death)
+    min_dob_quarter = dob_quarter_number(self.dob_at_death) if self.dob_at_death.present?
     min_dob_quarter = dob_quarter_number(self.min_dob_at_death) if date_of_birth_range?
     min_dob_quarter
   end
 
   def max_dob_range_quarter
-    max_dob_quarter = dob_quarter_number(self.dob_at_death)
+    max_dob_quarter = dob_quarter_number(self.dob_at_death) if self.dob_at_death.present?
     max_dob_quarter = dob_quarter_number(self.max_dob_at_death) if date_of_birth_range?
     max_dob_quarter
   end

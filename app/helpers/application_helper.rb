@@ -273,9 +273,7 @@ module ApplicationHelper
   end
 
   def bmd_search_criteria search_query
-    #raise search_query.inspect
     display_map = {}
-    # name fields
     display_map["First Name"] = search_query.first_name.upcase if search_query.first_name
     display_map["Last Name"] = search_query.last_name.upcase if search_query.last_name
     display_map["First Name Exact Match?"] = search_query.first_name_exact_match ? 'Yes' : 'No'
@@ -291,7 +289,8 @@ module ApplicationHelper
     display_map["Counties"] = counties if search_query.chapman_codes.size > 1
     display_map["Districts"] = search_query.districts if search_query.districts.size >1
     display_map["Age At Death"] = "#{search_query.age_at_death}#{search_query.dob_at_death}" if search_query.age_at_death.present? || search_query.dob_at_death.present?
-    display_map["Age At Death Range"] = "#{search_query.min_age_at_death}-#{search_query.max_age_at_death}" || "#{search_query.min_dob_at_death}-#{search_query.max_dob_at_death}" if search_query.min_age_at_death.present? || search_query.max_dob_at_death.present?
+    display_map["Age At Death Range"] = "#{search_query.min_age_at_death}-#{search_query.max_age_at_death}" if search_query.min_age_at_death.present?
+    display_map["Date of Birth Range"] = "(#{search_query.min_dob_at_death}) - (#{search_query.max_dob_at_death})" if search_query.max_dob_at_death.present?
     display_map["Match Recorded Ages/Date of Birth"] = 'Yes' if  search_query.match_recorded_ages_or_dates
     display_map
   end
