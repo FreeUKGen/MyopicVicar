@@ -229,7 +229,9 @@ class SearchQueriesController < ApplicationController
 
     flash[:notice] = 'Your search results are not available. Please repeat your search' if @search_query.result_count.blank?
     redirect_back(fallback_location: new_search_query_path) && return if @search_query.result_count.blank?
-    if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+    max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS unless appname_downcase == 'freebmd'
+    max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS if appname_downcase == 'freebmd'
+    if @search_query.result_count >= max_result
       @result_count = @search_query.result_count
       @search_results = []
       @ucf_results = []
