@@ -9,7 +9,9 @@
     <%= render 'display_search_criteria' %>
   <% end %>
   <section>
-    <% if @result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+  <% max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS unless appname_downcase == 'freebmd'%>
+  <% max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS if appname_downcase == 'freebmd'%>
+    <% if @result_count >= max_result %>
       <%= render 'too_many_results' %>
     <% else %>
       <% if @result_count == 0 && ( @ucf_results && @ucf_results.size == 0) %>
@@ -39,12 +41,12 @@
         <%= render 'display_ucf_results' %>
       <% end %>
     <% end%>
-    <% if @result_count > 10 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+    <% if @result_count > 10 && @result_count < max_result %>
       <br>
       <%= render 'nav_header' %>
       <a href="#" class="btn  btn--small">Go to top</a>
     <% end %>
-    <% if @result_count > 0 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+    <% if @result_count > 0 && @result_count < max_result %>
       <% if appname_downcase == 'freebmd'%>
         <%= render 'bmd_search_results_footer' %>
       <% else %>
