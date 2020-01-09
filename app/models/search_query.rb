@@ -1158,7 +1158,7 @@ class SearchQuery
 
   def dob_age_search records
     records.select{|r|
-      (1..3).include?(r.AgeAtDeath.length) if r.QuarterNumber >= DOB_START_QUARTER
+      (1..3).include?(r.AgeAtDeath.length)
     }
   end
 
@@ -1237,21 +1237,16 @@ class SearchQuery
   end
 
   def combined_results records
-    non_dob_results = non_dob_records records
-    dob_results = dob_recordss records
-    age_dob_records = dob_age_search(dob_results)
-    invalid_age_records = invalid_age_records(records)
-   # logger.warn("#{non_dob_results}")
-   # logger.warn("#{dob_results}")
-   # logger.warn("#{age_dob_records}")
-   # logger.warn("#{invalid_age_records}")
-    date_of_birth_search_range_a(non_dob_results) + date_of_birth_search_range_a(age_dob_records) + dob_exact_search(dob_results).to_a + date_of_birth_uncertain_aad(invalid_age_records) + no_aad_or_dob(records) + age_at_death_with_year(age_dob_records)
+    non_dob_results = non_dob_records records # all records before DOB_START_QUARTER
+    dob_results = dob_recordss records # All records on on or after DOB_START_QUARTER
+    age_dob_records = dob_age_search(dob_results) # filter age records from all records after DOB_START_QUARTER
+    invalid_age_records = invalid_age_records(dob_results)# non date of birth records
+    date_of_birth_records = records_with_dob(records)
+    date_of_birth_search_range_a(non_dob_results) + date_of_birth_search_range_a(invalid_age_records) + dob_exact_search(dob_results).to_a + date_of_birth_uncertain_aad(invalid_age_records) + no_aad_or_dob(records) + age_at_death_with_year(date_of_birth_records)
   end
 
   def combined_age_results records
     dob_records = records_with_dob(records)
-    logger.warn("#{dob_records}")
-    logger.warn ("#{calculate_age_range_for_dob(dob_records)}")
     invalid_age_records = invalid_age_records(records)
     aad_search(records).to_a + date_of_birth_uncertain_aad(invalid_age_records) + age_range_search(records).to_a + calculate_age_range_for_dob(dob_records) + calculate_age_for_dob(dob_records)
   end
