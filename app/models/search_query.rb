@@ -1062,7 +1062,7 @@ class SearchQuery
   end
 
   def name_fields
-    [:first_name, :last_name, :first_name_exact_match, :fuzzy]
+    [:first_name, :last_name, :fuzzy]
   end
 
   def surname_params
