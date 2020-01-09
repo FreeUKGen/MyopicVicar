@@ -1394,7 +1394,7 @@ class SearchQuery
   end
 
   def spouse_surname_join_condition
-    'inner join BestGuessMarriages as b on b.volume=BestGuessMarriages.volume and b.page=BestGuessMarriages.page and b.RecordTypeID!= BestGuessMarriages.RecordTypeID and b.QuarterNumber=BestGuessMarriages.QuarterNumber'
+    'inner join BestGuessMarriages as b on b.volume=BestGuess.volume and b.page=BestGuess.page and b.QuarterNumber=BestGuess.QuarterNumber'
   end
 
   private

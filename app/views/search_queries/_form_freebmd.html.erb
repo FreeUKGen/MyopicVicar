@@ -98,7 +98,7 @@
         <div class='labels'>
           <%= label_tag 'spouses_mother_surname', "Spouses/Mothers surname #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:spouse_mother_surname], 'aria-details': info_tag_text[:spouse_mother_surname] %>
         </div>
-        <%= text_field_tag '', set_value(@search_query.spouses_mother_surname), class: 'text-input', placeholder: '', id: 'spouses_mother_surname'%>
+        <%= text_field_tag '', set_value(@search_query.spouses_mother_surname) || set_value(@search_query.mother_last_name), class: 'text-input', placeholder: '', id: 'spouses_mother_surname'%>
       </div>
 
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
