@@ -1053,12 +1053,14 @@ class SearchQuery
   end
 
   def bmd_search_names_criteria
-    self.fuzzy.present? ? soundex_params_hash : name_search_params_bmd
+    self.fuzzy ? soundex_params_hash : name_search_params_bmd
   end
 
   def soundex_params_hash
-    name_search_params_bmd[:SurnameSx] = Text::Soundex.soundex(name_search_params_bmd[:last_name])
-    name_search_params_bmd.except!(:last_name, :fuzzy)
+    params = name_search_params_bmd
+    params[:SurnameSx] = Text::Soundex.soundex(name_search_params_bmd[:last_name])
+    params.except!(:last_name, :fuzzy)
+    params
   end
 
   def name_fields
@@ -1111,7 +1113,6 @@ class SearchQuery
   end
 
   def bmd_adjust_field_names
-    #raise symbolize_search_params_keys.inspect
     symbolize_search_params_keys.deep_transform_keys do |key|
        (fields_needs_name_update.include?key) ? key = bmd_fields_name[key].to_sym : key =key
     end
