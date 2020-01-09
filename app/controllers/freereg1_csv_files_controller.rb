@@ -385,7 +385,6 @@ class Freereg1CsvFilesController < ApplicationController
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
     controls(@freereg1_csv_file)
-
     @register = @freereg1_csv_file.register
     @gaps = @freereg1_csv_file.register.gaps_exist?
   end
