@@ -277,6 +277,7 @@ $(document).ready(function(){
   $('#death_select_box').prop('disabled', 'disabled');
   $('.checkboxtag, .checkAll').change(function() {
     hide_all_death_options();
+    $('#spouses_mother_surname').removeAttr('value');
     if ($(".birth").is(":checked") && !$('.death, .marriage, .checkAll').is(':checked')) {
       $('#spouses_mother_surname').prop('disabled', false);
       $('#spouses_mother_surname').prop('name', 'search_query[mother_last_name]');
@@ -302,7 +303,7 @@ $(document).ready(function(){
       aad_selection_function();
       $('#death_select_box').css('background', 'white')
     } else {
-      $('#spouses_mother_surname').val('').prop('disabled', true)
+      $('#spouses_mother_surname').prop('disabled', true)
       $('#death_select_box').css('background', '#ccc');
       $('#spouses_mother_surname').css('background', '#ccc');
       $('#spouses_mother_surname').prop('placeholder', '');
@@ -336,6 +337,7 @@ $(document).ready(function(){
     $('#spouses_mother_surname').prop('name', '');
     aad_selection_function();
     $('#death_select_box').css('background', 'white');
+    $('#spouses_mother_surname').val('');
   } else {
     $('#spouses_mother_surname').val('').prop('disabled', true)
     $('#spouses_mother_surname').prop('placeholder', '')
@@ -343,6 +345,7 @@ $(document).ready(function(){
     $('#death_select_box').prop('disabled', 'disabled');
     $('#death_select_box').css('background', '#ccc');
     $('#spouses_mother_surname').css('background', '#ccc');
+    $('#spouses_mother_surname').val('');
     $('#death_select_box').val([]);
   };
 
