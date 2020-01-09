@@ -91,8 +91,8 @@ class SearchQuery
   field :use_decomposed_dates, type: Boolean, default: false
   field :all_radius_place_ids, type: Array, default: []
   field :wildcard_search, type: Boolean, default: false
-  field :first_name_exact_match, type: Boolean, default: false
-  field :identifiable_spouse_only, type:Boolean, default: false
+  field :first_name_exact_match, type: Boolean
+  field :identifiable_spouse_only, type:Boolean
   field :death_at_age, type: String
 
   field :birth_chapman_codes, type: Array, default: []
