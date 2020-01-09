@@ -1158,7 +1158,7 @@ class SearchQuery
 
   def dob_age_search records
     records.select{|r|
-      (1..3).include?(r.AgeAtDeath.length)
+      (1..3).include?(r.AgeAtDeath.length) if r.QuarterNumber >= DOB_START_QUARTER
     }
   end
 
@@ -1241,10 +1241,10 @@ class SearchQuery
     dob_results = dob_recordss records
     age_dob_records = dob_age_search(dob_results)
     invalid_age_records = invalid_age_records(records)
-    logger.warn("#{non_dob_results}")
-    logger.warn("#{dob_results}")
-    logger.warn("#{age_dob_records}")
-    logger.warn("#{invalid_age_records}")
+   # logger.warn("#{non_dob_results}")
+   # logger.warn("#{dob_results}")
+   # logger.warn("#{age_dob_records}")
+   # logger.warn("#{invalid_age_records}")
     date_of_birth_search_range_a(non_dob_results) + date_of_birth_search_range_a(age_dob_records) + dob_exact_search(dob_results).to_a + date_of_birth_uncertain_aad(invalid_age_records) + no_aad_or_dob(records) + age_at_death_with_year(age_dob_records)
   end
 
