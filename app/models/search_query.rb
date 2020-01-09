@@ -910,6 +910,12 @@ class SearchQuery
     params
   end
 
+  def mother_surname_search
+    params = {}
+    params[:AssociateName] = self.mother_last_name if self.mother_last_name.present?
+    params
+  end
+
   def start_year_quarter
     start_year = year_with_default(year:search_start_year, default: 1837)
     self.identifiable_spouse_only ? IDENTIFIABLE_SPOUSE_ONLY_SEARCH : quarter_number(year: start_year, quarter: start_quarter)
@@ -1328,6 +1334,7 @@ class SearchQuery
     params.merge!(get_date_quarter_params)
     params.merge!(bmd_county_params)
     params.merge!(bmd_districts_params)
+    params.merge!(mother_surname_search)
     #params.merge!(bmd_age_at_death_params) if self.age_at_death.present? || self.min_age_at_death.present?
     params.merge!(bmd_volume_params) if self.volume.present?
     params.merge!(bmd_page_params) if self.page.present?
