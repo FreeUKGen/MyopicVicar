@@ -948,8 +948,8 @@ class SearchQuery
   def freebmd_search_records
     @search_index = SearchQuery.get_search_table.index_hint(bmd_adjust_field_names)
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
-    records = SearchQuery.get_search_table.where(bmd_params_hash).joins(spouse_join_condition).where(bmd_marriage_params)
-    records = records.where(first_name_filteration) unless self.first_name_exact_match
+    records = SearchQuery.get_search_table.where(bmd_params_hash,first_name_filteration).joins(spouse_join_condition).where(bmd_marriage_params)
+    #records = records.where(first_name_filteration) unless self.first_name_exact_match
     records = combined_results records if date_of_birth_range? || self.dob_at_death.present?
     records = combined_age_results records if self.age_at_death.present? || check_age_range?
     records = records.take(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS)
@@ -1033,7 +1033,7 @@ class SearchQuery
   end
 
   def first_name_filteration
-    "GivenName like '#{bmd_adjust_field_names[:GivenName]}%'" if self.first_name.present?
+    "GivenName like '#{bmd_adjust_field_names[:GivenName]}%'" if self.first_name.present? && !self.first_name_exact_match
   end
 
   def bmd_params_hash
