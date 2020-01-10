@@ -256,15 +256,17 @@ class SearchQueriesController < ApplicationController
 
     flash[:notice] = 'Your search results are not available. Please repeat your search' if @search_query.result_count.blank?
     redirect_back(fallback_location: new_search_query_path) && return if @search_query.result_count.blank?
-
+    max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS unless appname_downcase == 'freebmd'
+    max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS if appname_downcase == 'freebmd'
     @printable_format = true
-    if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+    if @search_query.result_count >= max_result
       @result_count = @search_query.result_count
       @search_results = []
       @ucf_results = []
     else
       response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display unless MyopicVicar::Application.config.template_set == 'freebmd'
       response, @search_results, @ucf_results, @result_count = @search_query.get_bmd_search_results if MyopicVicar::Application.config.template_set == 'freebmd'
+      @paginatable_array = @search_results
       if !response || @search_results.nil? || @search_query.result_count.nil?
         logger.warn("#{appname_upcase}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
         flash[:notice] = 'Your search results are not available. Please repeat your search'

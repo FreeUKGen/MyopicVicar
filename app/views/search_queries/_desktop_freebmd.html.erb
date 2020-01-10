@@ -59,9 +59,7 @@
         <tbody>
           <% n = 0 %>
           <% @paginatable_array.each do |search_record| %>
-          <%# raise search_record.inspect%>
             <% n = n +1%>
-            <%# raise search_record[:RecordTypeID].inspect%>
             <% record_type = RecordType::display_name(["#{search_record[:RecordTypeID]}"])%>
             <tr id="<%=search_record[:_id]%>" class="<%= record_type.downcase %>">
               <% unless print_friendly %>
@@ -94,9 +92,11 @@
         </tbody>
       </table>
     </div>
-    <div class='text--center inline-block'>
-    <%= paginate @paginatable_array %>
-    </div>
+    <% unless print_friendly %>
+      <div class='text--center inline-block'>
+        <%= paginate @paginatable_array %>
+      </div>
+    <% end %>
   </section>
 </section>
 <script type="text/javascript" >
