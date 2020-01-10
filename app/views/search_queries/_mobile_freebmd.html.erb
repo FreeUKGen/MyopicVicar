@@ -8,13 +8,18 @@
 </div>
 <% unless defined?(@printable_format) && @printable_format %>
   <div class='grid'>
-    <div class="grid__item one-half lap-one-whole palm-one-whole">
-      <%= link_to "Download", '#', :class => "btn btn--small bordered push-half--right" %>
-      <%= link_to "Save Search", '#', :class => "btn   btn--small bordered push-half--right" %>
-      <%= link_to "Printable Format", show_print_version_search_query_path, class: "btn   btn--small bordered push-half--right" %>
+    <div class="grid__item one-half lap-one-half palm-one-whole">
+      <%= link_to "Download", '#', :class => "btn btn--small bordered push-half--right push-half--top" %>
+      <%= link_to "Save Search", '#', :class => "btn   btn--small bordered push-half--right push-half--top" %>
+      <%= link_to "Printable Format", show_print_version_search_query_path, class: "btn   btn--small bordered push-half--right push-half--top" %>
     </div>
-    <div class="grid__item one-quarter lap-one-whole palm-one-whole">
-      Display <%= select_tag :per_page, options_for_select([10,20,50], :selected=>params[:per_page]), class: 'date_year'%> per page.
+    <div class="grid__item one-quarter lap-one-quarter palm-one-whole">
+      <%= form_tag search_query_path(@search_query), method: :get, id: 'limit_form' do %>
+        Display <%= select_tag :results_per_page, options_for_select([20,40,60,80,100], selected: @results_per_page), class: 'date_year'%> per page.
+      <% end %>
+    </div>
+    <div class="grid__item one-quarter lap-one-quarter palm-one-whole text--right push-half--top informative">
+      <%= link_to "Results Help", "https://test.freebmd.org.uk/search-results-help.html", target: "_blank" %>
     </div>
   </div>
 <% end %>
@@ -53,7 +58,8 @@
         </thead>
         <tbody>
           <% n = 0 %>
-          <% search_results.each do |search_record| %>
+          <% @paginatable_array.each do |search_record| %>
+          <%# raise search_record.inspect%>
             <% n = n +1%>
             <%# raise search_record[:RecordTypeID].inspect%>
             <% record_type = RecordType::display_name(["#{search_record[:RecordTypeID]}"])%>
@@ -88,5 +94,16 @@
         </tbody>
       </table>
     </div>
+    <div class='text--center inline-block'>
+    <%= paginate @paginatable_array %>
+    </div>
   </section>
 </section>
+<script type="text/javascript" >
+  $(function(){
+    $('#results_per_page').change(
+      function() {
+       $('#limit_form').submit();
+      });
+  });
+</script>
