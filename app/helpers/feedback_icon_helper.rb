@@ -40,5 +40,5 @@ module FeedbackIconHelper
 </svg>'  
 
   FEEDBACK_ICON = '<span class="btn-feedback">'+FEEDBACK+'</span>
-                  <span class="btn-feedback feedback_box">'+FEEDBACK_BTN+'</span>'
+                  <span class="feedback_box">'+FEEDBACK_BTN+'</span>'
 end
