@@ -54,7 +54,7 @@
           <%= label_tag 'to_year', "Date range to #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:date_range_to], 'aria-details': info_tag_text[:date_range_to] %>
         </div>
         <%= select_tag( 'search_query[end_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.end_quarter)), class: 'select_month_end date_year', 'aria-labelledby': 'to_year', id: 'to_quarter') %>
-        <%= select_year(set_value(@search_query.end_year), {start_year: 1837, end_year: 1992 }, class: 'select_year_end date_year', name: 'search_query[end_year]', 'aria-labelledby': 'to_year', id: 'end_year') %>
+        <%= select_year(set_value(@search_query.end_year), {start_year: 1992, end_year: 1837 }, class: 'select_year_end date_year', name: 'search_query[end_year]', 'aria-labelledby': 'to_year', id: 'end_year') %>
       </div>
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <div class='labels'>
@@ -144,22 +144,22 @@
         <%= text_field_tag 'search_query[page]', set_value(@search_query.page), class: 'text-input', id: 'page', placeholder: 'Enter Page'%>
       </div>
 
-      <div class="grid__item three-eighths lap-one-quarters palm-one-whole" id="search_query_chapman_codes_input">
+      <div class="grid__item three-eighths lap-one-quarters palm-one-whole">
         <div class='labels'>
-          <%= label_tag 'chapman_codes', "Counties #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:firstname], 'aria-details': info_tag_text[:first_name] %>
+          <%= label_tag 'chapman_codes', "Counties #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:firstname], 'aria-details': info_tag_text[:first_name], id: 'chapman_codes' %>
         </div>
         
         <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
         <% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil?%>
-        <%= f.select :chapman_codes, grouped_options_for_select(grouped_options, selected_key = key), {include_blank: 'All Counties'}, {multiple: true, id: 'chapman_codes'} %>
+        <%= f.select :chapman_codes, grouped_options_for_select(grouped_options, selected_key = key), {include_blank: 'All Counties'}, {multiple: true, id: 'search_query_chapman_codes', "aria-labelledby": 'chapman_codes'} %>
         <small class="additional">Select one place or none</small>
       </div>
-      <div class="grid__item three-eighths lap-one-quarters palm-one-whole"  id="search_query_chapman_codes_input">
+      <div class="grid__item three-eighths lap-one-quarters palm-one-whole">
         <div class='labels'>
           <%= label_tag 'districts', "Districts #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:firstname], 'aria-details': info_tag_text[:first_name] %>
         </div>
-        <% districts_names = DistrictToCounty.joins(:District).distinct.order( 'DistrictName ASC' )%>
-        <%= f.select :districts, districts_names.pluck(:DistrictName, :DistrictNumber), {include_hidden: false}, {multiple: true, id: 'districts'} %>
+        <% @districts = DistrictToCounty.joins(:District).distinct.order( 'DistrictName ASC' )%>
+        <%= f.select :districts, @districts.pluck(:DistrictName, :DistrictNumber), {include_hidden: false}, {multiple: true, id: 'search_query_districts', "aria-labelledby": 'districts'} %>
         <small class="additional">Select one place or none</small>
       </div>
     </div>
@@ -197,22 +197,37 @@ $('.checkboxtag').on('change', function(){
 </script>
 
 <script>
+  $('#search_query_districts').empty();
+  $(document).ready(function(){
+    $("#search_query_chapman_codes").change(function() {
+      var counties = [];
+      $.each($("#search_query_chapman_codes option:selected"), function(){
+        counties.push($(this).val())
+      });
+      $.ajax({
+        url:  "/search_queries/districts_of_selected_counties",
+        type: "GET",
+        data: { selected_counties: counties }
+      });
+    });
+
+    if ($("#search_query_chapman_codes option:selected").length ) {
+      var counties = [];
+      $.each($("#search_query_chapman_codes option:selected"), function(){
+        counties.push($(this).val())
+      });
+      $.ajax({
+        url:  "/search_queries/districts_of_selected_counties",
+        type: "GET",
+        data: { selected_counties: counties }
+      });
+    };
+
+
   var aad_value = $('#death_select_box').val();
   var aad_selection = document.getElementById('death_select_box');
   var aad_select_value = aad_selection.options[0].value
 
-$(document).ready(function(){
-  $("#search_query_chapman_codes").change(function() {
-    var counties = [];
-    $.each($("#search_query_chapman_codes option:selected"), function(){
-      counties.push($(this).val())
-    });
-    $.ajax({
-      url:  "/search_queries/districts_of_selected_counties",
-      type: "GET",
-      data: { selected_counties: counties }
-    });
-  });
 
   var hide_all_death_options = function() {
     $('#death_age_and_dob').css('display','block')
@@ -278,6 +293,14 @@ $(document).ready(function(){
   $('.checkboxtag, .checkAll').change(function() {
     hide_all_death_options();
     $('#spouses_mother_surname').removeAttr('value');
+    $('#spouse_first_name').removeAttr('value');
+    $('#spouses_mother_surname').val('').prop('disabled', true)
+    $('#spouses_mother_surname').css('background', '#ccc');
+    $('#spouses_mother_surname').prop('placeholder', '')
+    $('#spouses_mother_surname').prop('name', '')
+    $('#spouse_first_name').prop('disabled',true)
+    $('#spouse_first_name').prop('placeholder',"")
+    $('#spouse_first_name').css('background', '#ccc');
     if ($(".birth").is(":checked") && !$('.death, .marriage, .checkAll').is(':checked')) {
       $('#spouses_mother_surname').prop('disabled', false);
       $('#spouses_mother_surname').prop('name', 'search_query[mother_last_name]');
@@ -294,20 +317,15 @@ $(document).ready(function(){
       $('#death_select_box').prop('disabled', 'disabled');
       $('#death_select_box').css('background', '#ccc');
       $('#death_select_box').val([]);
+      $('#spouses_mother_surname').prop('placeholder', "Enter Spouse's surname here")
+      $('#spouses_mother_surname').prop('name', 'search_query[spouses_mother_surname]');
+      $('#spouse_first_name').css('background', 'white');
     } else if ($(".death").is(":checked") && !$('.birth, .marriage, .checkAll').is(':checked')) {
       $('#death_select_box').prop('disabled', false);
-      $('#spouses_mother_surname').val('').prop('disabled', true)
-      $('#spouses_mother_surname').css('background', '#ccc');
-      $('#spouses_mother_surname').prop('placeholder', '')
-      $('#spouses_mother_surname').prop('name', '')
       aad_selection_function();
       $('#death_select_box').css('background', 'white')
     } else {
-      $('#spouses_mother_surname').prop('disabled', true)
       $('#death_select_box').css('background', '#ccc');
-      $('#spouses_mother_surname').css('background', '#ccc');
-      $('#spouses_mother_surname').prop('placeholder', '');
-      $('#spouses_mother_surname').prop('name', '')
       $('#death_select_box').prop('disabled', 'disabled');
       $('#death_select_box').val([]);
     }
@@ -322,13 +340,16 @@ $(document).ready(function(){
     $('#death_select_box').css('background', '#ccc');
     $('#death_select_box').val([]);
   } else if ($(".marriage").is(":checked") && !$('.birth, .death, .checkAll').is(':checked')) {
-   $('#spouses_mother_surname').prop('disabled', false)
+    $('#spouses_mother_surname').prop('disabled', false)
+    $('#spouse_first_name').prop('disabled',false)
+    $('#spouse_first_name').prop('placeholder',"Enter Spouse First Name(s) here ")
     $('#spouses_mother_surname').prop('placeholder', "Enter Spouse's surname here")
     $('#spouses_mother_surname').prop('name', 'search_query[spouses_mother_surname]');
     $('#spouses_mother_surname').css('background', 'white');
     $('#death_select_box').prop('disabled', 'disabled');
     $('#death_select_box').css('background', '#ccc');
     $('#death_select_box').val([]);
+    $('#spouse_first_name').css('background', 'white');
   } else if ($(".death").is(":checked") && !$('.birth, .marriage, .checkAll').is(':checked')) {
     $('#death_select_box').prop('disabled', false);
     $('#spouses_mother_surname').val('').prop('disabled', true)
@@ -347,6 +368,9 @@ $(document).ready(function(){
     $('#spouses_mother_surname').css('background', '#ccc');
     $('#spouses_mother_surname').val('');
     $('#death_select_box').val([]);
+    $('#spouse_first_name').prop('disabled',true)
+    $('#spouse_first_name').prop('placeholder',"")
+    $('#spouse_first_name').css('background', '#ccc');
   };
 
   $('#death_select_box').bind('click', function(){

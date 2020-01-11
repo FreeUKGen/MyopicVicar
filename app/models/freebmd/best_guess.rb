@@ -3,6 +3,7 @@ class BestGuess < ActiveRecord::Base
   self.pluralize_table_names = false
   self.table_name = 'BestGuess'
   has_many :BestGuessMarriage, foreign_key: :RecordTypeID#, :volume, :page, :QuarterNumber
+  belongs_to :CountyCombos, foreign_key: 'CountyComboID', primary_key: 'CountyComboID', class_name: '::CountyCombo'
   extend SharedSearchMethods
 
   def friendly_url

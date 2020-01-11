@@ -954,7 +954,7 @@ class SearchQuery
   def freebmd_search_records
     @search_index = SearchQuery.get_search_table.index_hint(bmd_adjust_field_names)
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
-    records = SearchQuery.get_search_table.where(bmd_params_hash).joins(spouse_join_condition).where(bmd_marriage_params)
+    records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash).joins(spouse_join_condition).where(bmd_marriage_params)
     records = records.where(first_name_filteration) unless self.first_name_exact_match
     records = combined_results records if date_of_birth_range? || self.dob_at_death.present?
     records = combined_age_results records if self.age_at_death.present? || check_age_range?
@@ -973,7 +973,7 @@ class SearchQuery
 
   def bmd_county_params
     params = {}
-    params[:chapman_codes] = CountyCombo.where(county: self.chapman_codes).pluck(:CountyComboID) if self.chapman_codes.present?
+    params[:chapman_codes] = {County: chapman_codes} if self.chapman_codes.present?
     params
   end
 
@@ -1039,7 +1039,7 @@ class SearchQuery
   end
 
   def first_name_filteration
-    "GivenName like '#{self.first_name}%'" if self.first_name.present? && !self.first_name_exact_match
+    "BestGuess.GivenName like '#{self.first_name}%'" if self.first_name.present? && !self.first_name_exact_match
   end
 
   def bmd_params_hash
@@ -1101,7 +1101,7 @@ class SearchQuery
       last_name: 'Surname',
       bmd_record_type: 'RecordTypeID',
       SurnameSx: 'SurnameSx',
-      chapman_codes: 'CountyComboID',
+      chapman_codes: 'CountyCombos',
       districts: 'DistrictNumber',
       age_at_death: 'AgeAtDeath',
       volume: 'Volume',
@@ -1229,7 +1229,7 @@ class SearchQuery
 
   def dob_filteration
     date = self.dob_at_death #
-    "AgeAtDeath like '%#{date_array(date)[0]}%'"
+    "BestGuess.AgeAtDeath like '%#{date_array(date)[0]}%'"
   end
 
   def dob_exact_search records
@@ -1386,7 +1386,7 @@ class SearchQuery
   end
 
   def spouse_join_condition
-    if start_year_quarter < 301 && self.spouses_mother_surname.present?
+    if self.spouses_mother_surname.present? || self.spouse_first_name.present?#&& start_year_quarter < 301
       spouse_surname_join_condition
     else
       ''
