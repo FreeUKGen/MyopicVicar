@@ -96,7 +96,7 @@
 
       <div class="grid__item one-quarter lap-one-half palm-one-whole">
         <div class='labels'>
-          <%= label_tag 'spouses_mother_surname', "Spouses/Mothers surname #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:spouse_mother_surname], 'aria-details': info_tag_text[:spouse_mother_surname] %>
+          <%= label_tag 'spouses_mother_surname', "Spouses/Mothers surname #{app_icons[:info]}".html_safe, class: "ttip spouse_or_mother_surname_label", title: info_tag_text[:spouse_mother_surname], 'aria-details': info_tag_text[:spouse_mother_surname] %>
         </div>
         <%= text_field_tag '', set_value(@search_query.spouses_mother_surname) || set_value(@search_query.mother_last_name), class: 'text-input', placeholder: '', id: 'spouses_mother_surname'%>
       </div>
@@ -146,7 +146,7 @@
 
       <div class="grid__item three-eighths lap-one-quarters palm-one-whole">
         <div class='labels'>
-          <%= label_tag 'chapman_codes', "Counties #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:firstname], 'aria-details': info_tag_text[:first_name], id: 'chapman_codes' %>
+          <%= label_tag 'chapman_codes', "Counties #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:counties], 'aria-details': info_tag_text[:counties], id: 'chapman_codes' %>
         </div>
         
         <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
@@ -156,7 +156,7 @@
       </div>
       <div class="grid__item three-eighths lap-one-quarters palm-one-whole">
         <div class='labels'>
-          <%= label_tag 'districts', "Districts #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:firstname], 'aria-details': info_tag_text[:first_name] %>
+          <%= label_tag 'districts', "Districts #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:districts], 'aria-details': info_tag_text[:districts] %>
         </div>
         <% @districts = DistrictToCounty.joins(:District).distinct.order( 'DistrictName ASC' )%>
         <%= f.select :districts, @districts.pluck(:DistrictName, :DistrictNumber), {include_hidden: false}, {multiple: true, id: 'search_query_districts', "aria-labelledby": 'districts'} %>
@@ -294,6 +294,7 @@ $('.checkboxtag').on('change', function(){
     hide_all_death_options();
     $('#spouses_mother_surname').removeAttr('value');
     $('#spouse_first_name').removeAttr('value');
+    $('.spouse_or_mother_surname_label').text("Spouses/Mothers surname").append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
     $('#spouses_mother_surname').val('').prop('disabled', true)
     $('#spouses_mother_surname').css('background', '#ccc');
     $('#spouses_mother_surname').prop('placeholder', '')
@@ -306,6 +307,7 @@ $('.checkboxtag').on('change', function(){
       $('#spouses_mother_surname').prop('name', 'search_query[mother_last_name]');
       $('#spouses_mother_surname').css('background', 'white');
       $('#spouses_mother_surname').prop('placeholder', "Enter Mother's surname here");
+      $('.spouse_or_mother_surname_label').text("Mothers Surname").append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
       $('#death_select_box').prop('disabled', 'disabled');
       $('#death_select_box').css('background', '#ccc');
       $('#death_select_box').val([]);
@@ -314,6 +316,7 @@ $('.checkboxtag').on('change', function(){
       $('#spouses_mother_surname').prop('name', 'search_query[spouses_mother_surname]');
       $('#spouses_mother_surname').css('background', 'white');
       $('#spouses_mother_surname').prop('placeholder', "Enter Spouse's surname here")
+      $('.spouse_or_mother_surname_label').text("Spouses Surname").append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
       $('#death_select_box').prop('disabled', 'disabled');
       $('#death_select_box').css('background', '#ccc');
       $('#death_select_box').val([]);
@@ -335,6 +338,7 @@ $('.checkboxtag').on('change', function(){
     $('#spouses_mother_surname').prop('disabled', false)
     $('#spouses_mother_surname').prop('placeholder', "Enter Mother's surname here")
     $('#spouses_mother_surname').prop('name', 'search_query[mother_last_name]');
+    $('.spouse_or_mother_surname_label').text("Mothers Surname").append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
     $('#spouses_mother_surname').css('background', 'white');
     $('#death_select_box').prop('disabled', 'disabled');
     $('#death_select_box').css('background', '#ccc');
@@ -345,6 +349,7 @@ $('.checkboxtag').on('change', function(){
     $('#spouse_first_name').prop('placeholder',"Enter Spouse First Name(s) here ")
     $('#spouses_mother_surname').prop('placeholder', "Enter Spouse's surname here")
     $('#spouses_mother_surname').prop('name', 'search_query[spouses_mother_surname]');
+    $('.spouse_or_mother_surname_label').text("Spouses Surname").append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
     $('#spouses_mother_surname').css('background', 'white');
     $('#death_select_box').prop('disabled', 'disabled');
     $('#death_select_box').css('background', '#ccc');

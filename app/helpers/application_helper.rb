@@ -590,7 +590,7 @@ module ApplicationHelper
   def info_tag_text
     {
       firstname: 'Optional. Use upper- or lower-case. Abbreviations and Latin versions of the forename (first-name) will be included automatically',
-      lastname: 'Use upper- or lower-case. If you do not enter a surname (last-name) you <em>must</em> enter a forename, select one county and choose a single record type',
+      lastname: 'Optional.Use upper- or lower-case. If you do not enter a surname (last-name) you <em>must</em> enter a forename, select one county and choose a single record type',
       date_range_from: 'Select a month and year respectively from the drop down to specify start date range. Leaving it blank means "from the start" ',
       date_range_to: 'Select a month and year respectively from the drop down to specify end date range. Leaving it blank means "to the end". You should always specify as small a range of dates as possible to search in order to speed up the search by reducing the number of results.',
       record_type: 'You must specify whether you are searching for Births, Marriages, Deaths or all the three types',
@@ -598,6 +598,8 @@ module ApplicationHelper
       spouse_mother_surname: 'Optional. Use upper- or lower-case. Search spouse surname for Marriage record type or mother surname for Birth Record Type. Only records from the September quarter 1911 onwards contain the mothers maiden name so entering a value in this field will return only records from the September quarter 1911 onwards.',
       volume: 'Optional',
       page: 'Optional',
+      counties: 'Optional',
+      districts: 'Optional',
       m_s_a_d: ' this column lists either mother surname or spouse surname or age at death or date of birth'
     }
   end
