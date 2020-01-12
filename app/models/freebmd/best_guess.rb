@@ -2,7 +2,7 @@ class BestGuess < ActiveRecord::Base
   establish_connection FREEBMD_DB
   self.pluralize_table_names = false
   self.table_name = 'BestGuess'
-  has_many :BestGuessMarriage, foreign_key: :RecordTypeID#, :volume, :page, :QuarterNumber
+  has_one :best_guess_maariages, class_name: '::BestGuessMarriage', foreign_key: 'RecordNumber'
   belongs_to :CountyCombos, foreign_key: 'CountyComboID', primary_key: 'CountyComboID', class_name: '::CountyCombo'
   extend SharedSearchMethods
 

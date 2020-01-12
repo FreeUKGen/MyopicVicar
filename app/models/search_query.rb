@@ -41,7 +41,7 @@ class SearchQuery
 
   WILDCARD = /[?*]/
   DOB_START_QUARTER = 530
-  IDENTIFIABLE_SPOUSE_ONLY_SEARCH = 301
+  SPOUSE_SURNAME_START_QUARTER = 301
 
   field :first_name, type: String # , :required => false
   field :last_name, type: String # , :required => false
@@ -954,8 +954,10 @@ class SearchQuery
   def freebmd_search_records
     @search_index = SearchQuery.get_search_table.index_hint(bmd_adjust_field_names)
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
-    records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash).joins(spouse_join_condition).where(bmd_marriage_params)
+    records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)#.joins(spouse_join_condition).where(bmd_marriage_params)
     records = records.where(first_name_filteration) unless self.first_name_exact_match
+    records = marriage_surname_filteration(records) if self.spouses_mother_surname.present? and self.bmd_record_type == ['3']
+    records = spouse_given_name_filter(records) if self.spouse_first_name.present?
     records = combined_results records if date_of_birth_range? || self.dob_at_death.present?
     records = combined_age_results records if self.age_at_death.present? || check_age_range?
     records = records.take(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS)
@@ -1355,17 +1357,55 @@ class SearchQuery
   end
 
   def identifiable_spouse_only_search
-    params[:QuarterNumber] >= 301
+    records.select{|r|
+      r.pick[:Surname].include? r
+    }
   end
 
-  def spouse_surname_search
-    params = {}
-    if start_year_quarter >= 301
-      params[:AssociateName] = self.spouses_mother_surname
-    else
-      params[:surname] != self.spouses_mother_surname
-    end
-    params
+  def marriage_surname_filteration(records)
+    records_with_spouse_surname = spouse_surname_records(records)
+    records_without_spouse_surname = non_spouse_surname_records(records)
+    spouse_surname_search(records_with_spouse_surname) + search_pre_spouse_surname(records_without_spouse_surname) if self.spouses_mother_surname.present?
+  end
+
+  def spouse_given_name_filter records
+    search_rec = self.identifiable_spouse_only ? reject_unidentified_spouses_records(records) : records
+    spouse_first_name_filteration(search_rec)
+  end
+
+  def spouse_first_name_filteration(records)
+    records.select{|r|
+      first_name_array = BestGuessMarriage.where(Volume: r[:Volume], Page: r[:Page], QuarterNumber: r[:QuarterNumber]).pluck(:GivenName)
+      first_name_array.include?self.spouse_first_name unless self.identifiable_spouse_only?
+      first_name_array.include?self.spouse_first_name
+    }
+  end
+
+  def reject_unidentified_spouses_records (records)
+    records.reject{|r|
+      last_name_array = BestGuessMarriage.where(Volume: r[:Volume], Page: r[:Page], QuarterNumber: r[:QuarterNumber]).pluck(:Surname)
+      last_name_array.exclude?r[:AssociateName]
+    }
+  end
+
+  def spouse_surname_records(records)
+    records.where('BestGuess.QuarterNumber >= ?', SPOUSE_SURNAME_START_QUARTER)
+  end
+
+  def non_spouse_surname_records(records)
+    records.where('BestGuess.QuarterNumber < ?', SPOUSE_SURNAME_START_QUARTER)
+  end
+
+  def spouse_surname_search(records)
+    records.select{|r|
+      r[:AssociateName] == self.spouses_mother_surname if r[:AssociateName].present?
+    }
+  end
+
+  def search_pre_spouse_surname records
+    records.joins(spouse_join_condition).select {|r|
+      r[:Surname].downcase == self.spouses_mother_surname.downcase
+    }
   end
 
   def month
@@ -1394,7 +1434,7 @@ class SearchQuery
   end
 
   def spouse_surname_join_condition
-    'inner join BestGuessMarriages as b on b.volume=BestGuess.volume and b.page=BestGuess.page and b.QuarterNumber=BestGuess.QuarterNumber'
+    'inner join BestGuessMarriages as b on b.volume=BestGuess.volume and b.page=BestGuess.page and b.QuarterNumber=BestGuess.QuarterNumber and b.RecordNumber!= BestGuess.RecordNumber'
   end
 
   private
