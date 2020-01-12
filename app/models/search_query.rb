@@ -1314,9 +1314,11 @@ class SearchQuery
   end
 
   def get_quarter_from_month month
-    quarter_index = quarters_months.each {|q|
-      quarters_months.find_index(q) if q.include?month
+    quarter_index = 0
+    quarters_months.each {|q|
+      quarter_index = quarters_months.find_index(q) if q.include?month
     }
+    raise quarter_index.inspect
     quarter_index + 1
   end
 
