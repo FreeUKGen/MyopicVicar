@@ -1376,15 +1376,15 @@ class SearchQuery
   def spouse_first_name_filteration(records)
     records.select{|r|
       first_name_array = BestGuessMarriage.where(Volume: r[:Volume], Page: r[:Page], QuarterNumber: r[:QuarterNumber]).pluck(:GivenName)
-      first_name_array.include?self.spouse_first_name unless self.identifiable_spouse_only?
-      first_name_array.include?self.spouse_first_name
+      #first_name_array.map(&:downcase).include?self.spouse_first_name.downcase unless self.identifiable_spouse_only?
+      first_name_array.map(&:downcase).include?self.spouse_first_name.downcase
     }
   end
 
   def reject_unidentified_spouses_records (records)
     records.reject{|r|
       last_name_array = BestGuessMarriage.where(Volume: r[:Volume], Page: r[:Page], QuarterNumber: r[:QuarterNumber]).pluck(:Surname)
-      last_name_array.exclude?r[:AssociateName]
+      last_name_array.map(&:downcase).exclude?r[:AssociateName].downcase
     }
   end
 
@@ -1398,7 +1398,7 @@ class SearchQuery
 
   def spouse_surname_search(records)
     records.select{|r|
-      r[:AssociateName] == self.spouses_mother_surname if r[:AssociateName].present?
+      r[:AssociateName].downcase == self.spouses_mother_surname.downcase if r[:AssociateName].present?
     }
   end
 
