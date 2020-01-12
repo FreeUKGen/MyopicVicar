@@ -919,7 +919,7 @@ class SearchQuery
   def start_year_quarter
     start_year = year_with_default(year:self.start_year, default: 1837)
     st_quarter = quarter_number(year: start_year, quarter: start_quarter)
-    [start_year_quarter,min_dob_range_quarter].map(&:to_i).max
+    [st_quarter,min_dob_range_quarter].map(&:to_i).max
   end
 
   def search_start_year
