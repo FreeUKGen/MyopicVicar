@@ -1287,7 +1287,7 @@ class SearchQuery
   end
 
   def dob_quarter_number date
-    quarter_number(year: date_array(date)[0], quarter: date_array(date)[1])
+    quarter_number(year: date_array(date)[0], quarter: get_quarter_from_month(date_array(date)[1]))
   end
 
   def date_array date
@@ -1305,8 +1305,8 @@ class SearchQuery
     self.age_at_death.scan(/\d+|[A-Za-z]+/)
   end
 
-  def dob_quarter
-    quarter_number(year: date_array[2], quarter: get_quarter_from_month(get_month_name(dob_array[1])))
+  def dob_quarter(date)
+    quarter_number(year: date_array(date)[2], quarter: get_quarter_from_month((dob_array(date)[1])))
   end
 
   def get_month_name month
@@ -1331,7 +1331,7 @@ class SearchQuery
   end
 
   def quarters_months
-    [[:ja,:fe,:mr],[:ap,:my,:je],[:jy,:au,:se],[:oc,:no,:de]]
+    [[:ja,:fe,:mr,'01','02','03'],[:ap,:my,:je,'04','05','06'],[:jy,:au,:se,'07','08','09'],[:oc,:no,:de,'10','11','12']]
   end
 
   def bmd_search_params
