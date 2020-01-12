@@ -922,7 +922,9 @@ class SearchQuery
   end
 
   def search_start_year
-    [self.start_year, self.dob_at_death.to_i, self.min_dob_at_death.to_i].max
+    dob_start_year = date_array(self.dob_at_death)[0] if self.dob_at_death.present?
+    min_dob_start_year = date_array(self.min_dob_at_death)[0] if self.min_dob_at_death.present?
+    [self.start_year, dob_start_year.to_i, min_dob_start_year.to_i].max
   end
 
   def end_year_quarter
@@ -1162,7 +1164,9 @@ class SearchQuery
 
   def date_of_birth_search_range_a records
     records.select{|r|
-      ((r.QuarterNumber - ((r.AgeAtDeath.to_i + 1) * 4 + 1))..(r.QuarterNumber - (r.AgeAtDeath.to_i * 4))).include?(min_dob_range_quarter..max_dob_range_quarter) if r.AgeAtDeath.present?
+      range_a = (r.QuarterNumber - ((r.AgeAtDeath.to_i + 1) * 4 + 1))..(r.QuarterNumber - (r.AgeAtDeath.to_i * 4))
+      range_b = min_dob_range_quarter..max_dob_range_quarter
+      (range_a).include?(range_b) || (range_b).include?(range_a) if r.AgeAtDeath.present?
     }
   end
 
