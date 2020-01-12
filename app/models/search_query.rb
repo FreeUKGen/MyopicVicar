@@ -917,8 +917,9 @@ class SearchQuery
   end
 
   def start_year_quarter
-    start_year = year_with_default(year:search_start_year, default: 1837)
-    self.identifiable_spouse_only ? IDENTIFIABLE_SPOUSE_ONLY_SEARCH : quarter_number(year: start_year, quarter: start_quarter)
+    start_year = year_with_default(year:self.start_year, default: 1837)
+    st_quarter = quarter_number(year: start_year, quarter: start_quarter)
+    [start_year_quarter,min_dob_range_quarter].map(&:to_i).max
   end
 
   def search_start_year
