@@ -589,11 +589,11 @@ module ApplicationHelper
 
   def info_tag_text
     {
-      firstname: 'Optional. Use upper- or lower-case. Abbreviations and Latin versions of the forename (first-name) will be included automatically',
-      lastname: 'Optional.Use upper- or lower-case. If you do not enter a surname (last-name) you <em>must</em> enter a forename, select one county and choose a single record type',
-      date_range_from: 'Select a month and year respectively from the drop down to specify start date range. Leaving it blank means "from the start" ',
-      date_range_to: 'Select a month and year respectively from the drop down to specify end date range. Leaving it blank means "to the end". You should always specify as small a range of dates as possible to search in order to speed up the search by reducing the number of results.',
-      record_type: 'You must specify whether you are searching for Births, Marriages, Deaths or all the three types',
+      firstname: 'Optional. Use upper- or lower-case. If this box is checked the search for the First Name is done on the characters as typed.',
+      lastname: 'Optional.Use upper- or lower-case.Check Phonetic search surnames to enable Phonetic seaches on surname ',
+      date_range_from: 'Select a Quarter and Year respectively from the drop down to specify start date range. Leaving it blank means "from the start" ',
+      date_range_to: 'Select a Quarter and Year respectively from the drop down to specify end date range. Leaving it blank means "to the end". You should always specify as small a range of dates as possible to search in order to speed up the search by reducing the number of results.',
+      record_type: 'Specify whether you are searching for Births, Marriages, Deaths. If no checkboxes are checked means all the three types',
       spouse_first_name: 'Optional. Use upper- or lower-case',
       spouse_mother_surname: 'Optional. Use upper- or lower-case. Search spouse surname for Marriage record type or mother surname for Birth Record Type. Only records from the September quarter 1911 onwards contain the mothers maiden name so entering a value in this field will return only records from the September quarter 1911 onwards.',
       volume: 'Optional',
