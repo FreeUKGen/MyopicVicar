@@ -1,19 +1,158 @@
 <% title "#{RegisterType.display_name(@register.register_type)} #{@church_name} #{@place_name} #{@county} transcriptions" %>
 <%#= This is a view used by the showing of a register from the Transcriptions link %>
-<div class="container"></div>
-<section class="island ">
-  <div class="text--center">
-    <%= link_to 'County Selection', new_freereg_content_path, method: :get, :class => "btn   btn--small"%>
-    <% if @character.present? %>
-      <%= link_to 'Alphabet Place Selection', freereg_contents_path, :class => "btn  btn--small "%>
-      <%= link_to 'These Alphabet Places', select_places_freereg_content_path, :class => "btn  btn--small "%>
-    <% else %>
-      <%= link_to 'This County', freereg_contents_path, method: :get, :class => "btn   btn--small"%>
-    <% end%>
-    <%= link_to 'Place for this Church', show_place_freereg_content_path(@place_name), :class => "btn   btn--small" %>
-    <%= link_to 'Church for this Register', show_church_freereg_content_path( @register.church), :class => "btn   btn--small" %>
-  </div>
-  <br>
-  <%= render 'register_body' %>
+<div class="container">
+  <section class="island ">
+    <div class="text--center">
+      <%= link_to 'County Selection', new_freereg_content_path, method: :get, :class => "btn   btn--small"%>
+      <%= link_to 'Another Place in this County', freereg_contents_path, method: :get, :class => "btn   btn--small"%>
+      <%= link_to 'Place for this Church and Register', show_place_freereg_content_path(@place_name), :class => "btn   btn--small" %>
+      <%= link_to 'Church for this Register', show_church_freereg_content_path( @register.church), :class => "btn   btn--small" %>
+    </div>
+    <br>
+    <table class="table--bordered table--data table--striped"  style="display: inline-block;width:
+    40%; float: left;">
+      <thead>
+        <tr>
+          <th class="caps t20">Field</th>
+          <th class="caps t15">Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Register Type :</td>
+          <td class="weight--semibold"><%= RegisterType.display_name(@register.register_type) %></td>
+        </tr>
+        <tr>
+          <td>Quality :</td>
+          <td class="weight--semibold"> <%= @register.quality%></td>
+        </tr>
+        <tr>
+          <td>Source :</td>
+          <td class="weight--semibold"> <%= @register.source %> </td>
+        </tr>
+        <tr>
+          <td>Copyright :</td>
+          <td class="weight--semibold"> <%= @register.copyright %>  </td>
+        </tr>
+        <tr>
+          <td>Special acknowledgement to :</td>
+          <td class="weight--semibold"> <%= @register.credit %>  </td>
+        </tr>
+        <tr>
+          <td>Register notes :</td>
+          <td class="weight--semibold"> <%= @register.register_notes %>  </td>
+        </tr>
+        <tr>
+          <td>Status of the transcriptions :</td>
+          <td class="weight--semibold"><%= @register.status %> </td>
+        </tr>
+        <td>Latest date a transcription changed:</td>
+        <td class="weight--semibold"> <%= @register.last_amended %></td>
+      </tr>
+      <tr>
+        <td>Number of entries</td>
+        <td class="weight--semibold"><%= @register.records %></td>
+      </tr>
+      <tr>
+        <td>First actual year of entries</td>
+        <td class="weight--semibold"><%= @register.datemin %></td>
+      </tr>
+      <tr>
+        <td>Last actual year of entries</td>
+        <td class="weight--semibold"><%= @register.datemax %></td>
+      </tr>
+      <tr>
+        <td>First permitted year :</td>
+        <td class="weight--semibold"><%= @register.minimum_year_for_register%> </td>
+      </tr>
+      <tr>
+        <td>Last permitted year :</td>
+        <td class="weight--semibold"><%= @register.maximum_year_for_register %> </td>
+      </tr>
+    </tbody>
+  </table>
+  <table class="table--bordered table--striped table--data" style="display: inline-block;width: 60%; float: right;" >
+    <thead >
+      <tr >
+        <th class="caps t12">Period</th>
+        <th class="caps t12">Baptisms</th>
+        <th class="caps t12">Marriages</th>
+        <th class="caps t12">Burials</th>
+        <th class="caps t12">Total</th>
+      </tr>
+    </thead>
+    <tbody >
+      <tr >
+        <td>Transcribed by</td>
+        <% if @transcribers.present? %>
+          <td ><%= @transcribers["ba"].join(",")  unless  @transcribers["ba"].nil? %></td>
+          <td ><%= @transcribers["ma"].join(",") unless  @transcribers["ma"].nil?%></td>
+          <td ><%= @transcribers["bu"].join(",") unless  @transcribers["bu"].nil?%></td>
+          <td ><%= @transcribers["total"].join(",") unless  @transcribers["total"].nil?%></td>
+        <% else %>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        <% end%>
+      </tr>
+      <% decade_start = 1530%>
+      <% decade_end = 1539%>
+      <% current_index = 0 %>
+      <% next_index = 0 %>
+      <% decade_total = 0 %>
+      <% next_total = 0 %>
+      <% unless @decade.nil? %>
+        <% while current_index < @decade["ba"].count %>
+          <% decade_total = @decade["total"][current_index] %>
+          <% if decade_total > 0 then %>
+            <tr >
+              <td><%= decade_start %><%= "\u2013" %><%= decade_end %></td>
+              <td><%= display_number(@decade["ba"][current_index].to_s.sub(/^0$/, " ")) %></td>
+              <td><%= display_number(@decade["ma"][current_index].to_s.sub(/^0$/, " ")) %></td>
+              <td><%= display_number(@decade["bu"][current_index].to_s.sub(/^0$/, " ")) %></td>
+              <td><%= display_number(@decade["total"][current_index].to_s.sub(/^0$/, " ")) %></td>
+            </tr>
+            <% decade_start += 10 %>
+            <% decade_end += 10 %>
+            <% current_index += 1 %>
+          <% else %>
+            <% next_index = current_index + 1 %>
+            <% if next_index < @decade["ba"].count then %>
+              <% next_total = @decade["total"][next_index]  %>
+              <% if next_total > 0 then %>
+                <tr>
+                  <td><%= decade_start %><%= "\u2013"%><%= decade_end %></td>
+                  <td><%= display_number(@decade["ba"][current_index].to_s.sub(/^0$/, " "))%></td>
+                  <td><%= display_number(@decade["ma"][current_index].to_s.sub(/^0$/, " "))%></td>
+                  <td><%= display_number(@decade["bu"][current_index].to_s.sub(/^0$/, " ")) %></td>
+                  <td><%= display_number(@decade["total"][current_index].to_s.sub(/^0$/, " ")) %></td>
+                </tr>
+                <% current_index += 1 %>
+                <% decade_start = decade_end + 1 %>
+                <% decade_end += 10 %>
+              <% else %>
+                <% decade_end += 10 %>
+                <% current_index = next_index %>
+              <% end %>
+            <% else %>
+              <tr>
+                <td><%= decade_start %><%= "\u2013" %><%= decade_end %></td>
+                <td><%= display_number(@decade["ba"][current_index].to_s.sub(/^0$/, " ")) %></td>
+                <td><%= display_number(@decade["ma"][current_index].to_s.sub(/^0$/, " ")) %></td>
+                <td><%= display_number(@decade["bu"][current_index].to_s.sub(/^0$/, " ")) %></td>
+                <td><%= display_number(@decade["total"][current_index].to_s.sub(/^0$/, " ")) %></td>
+              </tr>
+              <% current_index += 1 %>
+              <% decade_start = decade_end + 1 %>
+              <% decade_end += 10 %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <%else%>
+        <td colspan= "4"> No entries </td>
+      <% end %>
+    </tbody>
+  </table>
 </section>
 </div>

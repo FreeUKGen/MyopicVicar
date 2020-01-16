@@ -4,6 +4,7 @@ class Church
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
   require 'register_type'
+  require 'freereg_options_constants'
   field :church_name,type: String
   field :last_amended, type: String
   field :denomination, type: String
@@ -176,6 +177,16 @@ class Church
     end
     self.calculate_church_numbers
     return [true, '']
+  end
+
+  def my_registers
+    ordered_registers = []
+    FreeregOptionsConstants::REGISTER_TYPE_ORDER.each do |type|
+      registers.each do |register|
+        ordered_registers << register if type == RegisterType.display_name(register.register_type)
+      end
+    end
+    ordered_registers
   end
 
   def propogate_church_name_change(old_church_name)

@@ -1,53 +1,33 @@
 <% title "#{@county} Contents" %>
 <div class="text--center push-half--bottom">
   <%= link_to 'Choose new County', new_freereg_content_path, :class => "btn  btn--small" %>
-  <% if @character  %>
-    <%= link_to 'Choose new Place', freereg_contents_path, :class => "btn  btn--small", :title => "in this county" %>
-  <% end %>
+  <%= link_to 'Choose new Place', freereg_contents_path, :class => "btn  btn--small", :title => "in this county" if @character %>
 </div>
 <h1 class="title text--center"><%= @county %></h1>
-<% if flash[:notice] %>
-  <div class="push-half--bottom" id="notice" role="alert" style="color:#a1185a;">
-    <%= flash[:notice] %> <% flash[:notice] = nil %>
-  </div>
-<% end %>
-<h2 class="accessibility">Places with records</h2>
+<%= render 'flash_notice' %>
+<h2 class="accessibility">Places for which we have information</h2>
 <% loc = (@character) ? "#{@county} (#{@character})" : @county %>
-<p class="read-length">These Places in <%= loc %> have transcribed records. Click on the Place name for more details. (On a smart-phone, try <q>landscape</q> view for Place details page.)</p>
-<div class="fixed-headers push--bottom">
-  <table class="flush--bottom" role="presentation">
-    <colgroup>
-      <col span="5" class="t20">
-    </colgroup>
-    <thead>
-      <tr>
-        <th>Place</th>
-        <th>Last Changed</th>
-        <th>Number of Records</th>
-        <th>First Year</th>
-        <th>Last Year</th>
-      </tr>
-    </thead>
-  </table>
-  <div class="scrollable" role="region" aria-label="Places with transcribed records for <%= loc %> - table with one level of column and row headers" tabindex="0">
-    <table class="table--data">
+<p >Click on the Place name for more details. (On a smart-phone, try <q>landscape</q> view for Place details page.)</p>
+<div class=" push--bottom">
+  <div class="scrollable" role="region" aria-label="Places with information for <%= loc %> - table with one level of column and row headers" tabindex="0">
+    <table class="table--bordered  table--data table--striped just--center">
       <colgroup>
         <col span="5" class="t20">
       </colgroup>
-      <thead class="accessibility">
+      <thead >
         <tr>
-          <th scope="col">Place</th>
-          <th scope="col">Last Changed</th>
-          <th scope="col">Number of Records</th>
-          <th scope="col">First Year</th>
-          <th scope="col">Last Year</th>
+          <th scope="col" class='sticky-header'>Place</th>
+          <th scope="col" class='sticky-header'>Last Changed</th>
+          <th scope="col" class='sticky-header'>Number of Records</th>
+          <th scope="col" class='sticky-header'>First Year</th>
+          <th scope="col" class='sticky-header'>Last Year</th>
         </tr>
       </thead>
       <tbody>
         <% @places.each do |place| %>
           <% session[:placeid] = place.id%>
           <tr id="<%=place.id%>">
-            <th scope="row" aria-label="place"><%= link_to(place.place_name, show_place_freereg_content_path(place.place_name)) %> </th>
+            <td scope="row" aria-label="place"><%= link_to(place.place_name, show_place_freereg_content_path(place.place_name)) %> </td>
             <td aria-label="date last changed"><%= place.last_amended %> </td>
             <td aria-label="number of records"><%= display_number(place.records) %> </td>
             <td aria-label="first year of records"><%= place.datemin %> </td>

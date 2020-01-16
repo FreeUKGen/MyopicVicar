@@ -6,6 +6,9 @@
       <%= link_to 'Back to Search Record', :back, :class => "btn   btn--small"%>
     </div>
     <br>
-    <%= render 'register_body' %>
+    <%= render 'register' %>
+    <h3 class=" text--center">Numbers of transcriptions for this place</h3>
+    <p class=" text--center">Those periods with zero data may span several decades. The first period may include pre 1530 records. </p>
+    <%= render 'decade' %>
   </section>
 </div>

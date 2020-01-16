@@ -26,8 +26,7 @@ class FreeregContentsController < ApplicationController
   end
 
   def create
-    case
-    when params.present? && params[:freereg_content].present? && params[:freereg_content][:chapman_codes].present?#params[:commit] == "Select"
+    if params.present? && params[:freereg_content].present? && params[:freereg_content][:chapman_codes].present?#params[:commit] == "Select"
       @freereg_content = FreeregContent.new(freereg_content_params)
       @chapman_code = params[:freereg_content][:chapman_codes][1]
       session[:chapman_code] = @chapman_code
@@ -37,47 +36,23 @@ class FreeregContentsController < ApplicationController
         redirect_to freereg_contents_path
         return
       else
-        @freereg_content.chapman_codes = []
-        @options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES))
-        render :new
+        redirect_to new_freereg_contents_path
       end
-    when params[:action] == 'create'
-      proceed = FreeregContent.check_how_to_proceed(params[:freereg_content])
-      case proceed
-      when 'dual'
-        flash[:notice] = 'Choose a place or a letter \u2014 you cannot choose both.'
-        redirect_to(freereg_contents_path) && return
-      when 'no option'
-        flash[:notice] = 'Choose a place or a letter \u2014 you must choose something.'
-        redirect_to(freereg_contents_path) && return
-      when 'place'
-        redirect_to(freereg_content_path(params[:freereg_content][:place])) && return
-      when 'character'
-        session[:character] = params[:freereg_content][:character]
-        redirect_to(action: :select_places) && return
-      end
+    elsif params.present? && params[:freereg_content].present? && params[:freereg_content][:place].present?
+      redirect_to(freereg_content_path(params[:freereg_content][:place])) && return
     end
   end
 
   def index
-    session[:character] = nil
     redirect_back(fallback_location: { action: 'new' }, notice: 'Non existent County has been selected.') && return if session[:chapman_code].blank? || !ChapmanCode::values.include?(session[:chapman_code])
 
-    @show_alphabet = FreeregContent.determine_if_selection_needed(session[:chapman_code],session[:character])
     @page = FreeregContent.get_header_information(session[:chapman_code])
     @coordinator = County.coordinator_name(session[:chapman_code])
     @records = FreeregContent.number_of_records_in_county(session[:chapman_code])
-    if @show_alphabet.zero?
-      @places = FreeregContent.get_records_for_display(session[:chapman_code])
-    else
-      @freereg_content = FreeregContent.new
-      @options = FreeregOptionsConstants::ALPHABETS[@show_alphabet]
-      @places = FreeregContent.get_places_for_display(session[:chapman_code])
-    end
-    session[:show_alphabet] = @show_alphabet
+    @places = FreeregContent.get_records_for_display(session[:chapman_code])
     @county = session[:county]
     @chapman_code = session[:chapman_code]
-    @character = session[:character]
+    @freereg_content = FreeregContent.new
   end
 
   def new
@@ -170,10 +145,9 @@ class FreeregContentsController < ApplicationController
 
     @county = session[:county]
     @chapman_code = session[:chapman_code]
-    @character = session[:character]
     redirect_back(fallback_location: { action: 'new' }, notice: 'Non existent County has been selected.') && return if session[:chapman_code].blank? || !ChapmanCode::values.include?(session[:chapman_code])
 
-    @place = Place.chapman_code(@chapman_code).place(params[:id]).not_disabled.data_present.first
+    @place = Place.id(params[:id]).not_disabled.first
     redirect_back(fallback_location: { action: 'new' }, notice: 'Non existent place has been selected.') && return if @place.blank?
 
     @page = FreeregContent.get_header_information(session[:chapman_code])
@@ -196,7 +170,7 @@ class FreeregContentsController < ApplicationController
   def show_place
     @county = session[:county]
     @chapman_code = session[:chapman_code]
-    @place = Place.chapman_code(@chapman_code).place(params[:id]).not_disabled.data_present.first
+    @place = Place.chapman_code(@chapman_code).place(params[:id]).not_disabled.first
     redirect_back(fallback_location: { action: 'new' }, notice: 'Non existent place has been selected.') && return if @place.blank?
 
     variables_for_place_show

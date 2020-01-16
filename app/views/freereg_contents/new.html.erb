@@ -5,34 +5,26 @@
     <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
   </div>
 <% end %>
+<h2 class="accessibility">Database contents</h2>
+<p>These pages contain information about each County, Place, Church and Register in the database: everything from a detailed county listing right down to how many records the database holds for every ten-year period of an individual register. In some cases it may also contains information about why there are no records available including known Gaps and Embargoes imposed by our sources.</p>
 <div class="grid">
   <div  class="grid__item two-thirds lap-one-half palm-one-whole">
-    <div class="read-length">
-      <h2 class="accessibility">Database contents</h2>
-      <p>These pages contain information about our transcriptions for each County, Place, Church and Register in the database: everything from a detailed county listing right down to how many records the database holds for every ten-year period of an individual register.</p>
-      <p>To get started, choose a county from the list below. We use the 1831 county boundaries.</p>
-      <%= semantic_form_for @freereg_content do |f| %>
-        <ol class="grid">
-          <li class="grid__item one-whole push--bottom text--center" id="freereg_content_chapman_codes_input">
-            <input name="freereg_content[chapman_codes][]" type="hidden" value="" />
-            <label class="accessibility" for="freereg_content_chapman_codes">County</label>
-            <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
-            <select  id="freereg_content_chapman_codes"  name="freereg_content[chapman_codes][]" size="6">
-              <% key = @freereg_content.chapman_codes unless @freereg_content.chapman_codes.nil?%>
-              <%= grouped_options_for_select(grouped_options, selected_key = key) %>
-            </select>
-          </li>
-          <%= f.action :submit, :as => :button,  :label =>  "Go", :button_html => { :class => "ladda-button" , "data-style" => "contract" ,"data-color" => appname_downcase , "data-size" => "s", "data-spinner-color" => "#ffffff"  }, :wrapper_html => { :class => "grid__item one-whole push--bottom text--center" } %>
-        </ol>
-      <% end %>
-      <hr class="rule" />
-      <h2 class="accessibility">Information and help</h2>
-      <p>The information in these pages is accurate and up-to-date, something we were never able to do with the old &ldquo;Counties and Parishes Coverage&rdquo; pages. If you don&rsquo;t find a Place and Church on these pages, we have not transcribed it yet.</p>
-      <p> If you would like more guidance on finding exactly what you want to know, please see the <a href="<%=Rails.application.config.website%>/cms/help" title="Researcher Help">Help</a> page.</p>
-    </div>
+    <p>To get started, choose a county from the list below. We use the <b>1831 </b> county boundaries.</p>
+    <%= semantic_form_for @freereg_content do |f| %>
+      <ol class="grid">
+        <li class="grid__item one-whole push--bottom text--center" id="freereg_content_chapman_codes_input">
+          <input name="freereg_content[chapman_codes][]" type="hidden" value="" />
+          <label class="accessibility" for="freereg_content_chapman_codes">County</label>
+          <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
+          <select  id="freereg_content_chapman_codes"  name="freereg_content[chapman_codes][]" size="6">
+            <% key = @freereg_content.chapman_codes unless @freereg_content.chapman_codes.nil?%>
+            <%= grouped_options_for_select(grouped_options, selected_key = key) %>
+          </select>
+        </li>
+        <%= f.action :submit, :as => :button,  :label =>  "Go", :button_html => { :class => "ladda-button" , "data-style" => "contract" ,"data-color" => appname_downcase , "data-size" => "s", "data-spinner-color" => "#ffffff"  }, :wrapper_html => { :class => "grid__item one-whole push--bottom text--center" } %>
+      </ol>
+    <% end %>
   </div>
-  <aside id='freereg_rectangle_btf_desk' class="grid__item one-third lap-one-half palm-one-whole">
-  </aside>
   <aside class="grid__item one-third lap-one-half palm-one-whole">
     <div class="island island--bordered">
       <h2 class="delta push-half--bottom">Yesterday by numbers</h2>
@@ -59,6 +51,10 @@
     </div>
   </aside>
 </div>
+<hr class="rule" />
+<h2 class="accessibility">Information and help</h2>
+<p>The information in these pages is recreated each night. If you don&rsquo;t find a Place and Church on these pages, we do not have access to the registers.<br>
+  If you would like more guidance on finding exactly what you want to know about our database, please see the <a href="<%=Rails.application.config.website%>/cms/help#dbContents" title="Exploring the transcriptions">Exploring the transcriptions help</a> page.</p>
 <script type="text/javascript">
   Ladda.bind( 'button[type=submit]' );
 </script>
