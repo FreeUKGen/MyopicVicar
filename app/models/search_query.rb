@@ -1383,6 +1383,7 @@ class SearchQuery
     records.select{|r|
       first_name_array = BestGuessMarriage.where(Volume: r[:Volume], Page: r[:Page], QuarterNumber: r[:QuarterNumber]).pluck(:GivenName)
       #first_name_array.map(&:downcase).include?self.spouse_first_name.downcase unless self.identifiable_spouse_only?
+      #raise first_name_array.inspect
       first_name_array.map(&:downcase).include?self.spouse_first_name.downcase
     }
   end
@@ -1390,6 +1391,7 @@ class SearchQuery
   def reject_unidentified_spouses_records (records)
     records.reject{|r|
       last_name_array = BestGuessMarriage.where(Volume: r[:Volume], Page: r[:Page], QuarterNumber: r[:QuarterNumber]).pluck(:Surname)
+      #raise last_name_array.inspect
       last_name_array.map(&:downcase).exclude?r[:AssociateName].downcase
     }
   end
@@ -1403,15 +1405,17 @@ class SearchQuery
   end
 
   def spouse_surname_search(records)
-    records.select{|r|
-      r[:AssociateName].downcase == self.spouses_mother_surname.downcase if r[:AssociateName].present?
-    }
+    records.where(AssociateName: self.spouses_mother_surname)
+    #records.select{|r|
+    #  r[:AssociateName].downcase == self.spouses_mother_surname.downcase if r[:AssociateName].present?
+    #}
   end
 
   def search_pre_spouse_surname records
-    records.joins(spouse_join_condition).select {|r|
-      r[:Surname].downcase == self.spouses_mother_surname.downcase
-    }
+    records.joins(spouse_join_condition).where(Surname: self.spouses_mother_surname)
+   # records.joins(spouse_join_condition).select {|r|
+    #  r[:Surname].downcase == self.spouses_mother_surname.downcase
+    #}
   end
 
   def month

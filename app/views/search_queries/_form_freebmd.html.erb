@@ -323,6 +323,8 @@ $('.checkboxtag').on('change', function(){
       $('#spouses_mother_surname').prop('placeholder', "Enter Spouse's surname here")
       $('#spouses_mother_surname').prop('name', 'search_query[spouses_mother_surname]');
       $('#spouse_first_name').css('background', 'white');
+      $('#spouse_first_name').prop('disabled',false)
+      $('#spouse_first_name').prop('placeholder', "Enter Spouse's First Name(s) here")
     } else if ($(".death").is(":checked") && !$('.birth, .marriage, .checkAll').is(':checked')) {
       $('#death_select_box').prop('disabled', false);
       aad_selection_function();
