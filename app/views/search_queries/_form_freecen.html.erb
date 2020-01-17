@@ -65,6 +65,14 @@
             <input id="end_year" name="search_query[end_year]" type="text" class="text-input" value="<%=@search_query.end_year%>">
           <%end%>
         </li>
+     <li class="grid__item one-whole">
+
+          <%= f.label :fuzzy, { :class => "ttip", :tabindex => "0" } do %>
+            <%= f.check_box :fuzzy, {}, "true", "false" %>
+            Name Soundex
+            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">Check to include the Soundex equivalent of the name: it is used for both surname and forename (if entered)</span>
+          <% end %><br></li>
         <li class="grid__item three-eighths lap-three-quarters palm-one-whole" id="search_query_birth_chapman_codes_input">
           <input name="search_query[birth_chapman_codes][]" type="hidden" value="">
           <label class="label ttip" for="search_query_birth_chapman_codes" tabindex="0">
@@ -136,24 +144,9 @@
       </ol>
     </fieldset>
     <fieldset class="inputs">
-      <legend>Search options and filters</legend>
-      <p class="text--center">Please read the <a href="../cms/help/">Help</a> carefully BEFORE using the filters as their effectiveness varies according to the year of the census and how you conduct the search.<p>
+      <legend>Filters</legend>
+      <p class="text--center">These filters are applied to the results produced by the above search criteria. Please read the <a href="../cms/help#filters/">Help</a> carefully BEFORE using the filters as their effectiveness varies according to the year of the census.<p>
       <ol class="grid">
-        <li class="grid__item one-fifth lap-one-quarter palm-one-whole">
-
-          <%= f.label :fuzzy, { :class => "ttip", :tabindex => "0" } do %>
-            <%= f.check_box :fuzzy, {}, "true", "false" %>
-            Name Soundex
-            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Check to include the Soundex equivalent of the name: it is used for both surname and forename (if entered)</span>
-          <% end %><br>
-          <%= f.label :disabled, { :class => "ttip", :tabindex => "0" } do %>
-            <%= f.check_box :disabled, {}, "true", "false" %>
-            Disabled
-            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Check to restrict the search to those who are declared disabled. Available from 1851 onwards.</span>
-          <% end %>
-        </li>
         <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="search_query_marital_status_input">
           <label class="label ttip" for="search_query_marital_status" tabindex="0">
             Marital Status
@@ -219,6 +212,14 @@
           <%else%>
             <input id="occupation" name="search_query[occupation]" type="text" class="text-input" value="<%=@search_query.occupation%>">
           <%end%>
+        </li>
+        <li class="grid__item one-fifth lap-one-quarter palm-one-whole">
+          <%= f.label :disabled, { :class => "ttip", :tabindex => "0" } do %>
+            <%= f.check_box :disabled, {}, "true", "false" %>
+            Disabled
+            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">Check to restrict the search to those who are declared disabled. Available from 1851 onwards.</span>
+          <% end %>
         </li>
         <%= f.action :submit,
         :as => :button,
