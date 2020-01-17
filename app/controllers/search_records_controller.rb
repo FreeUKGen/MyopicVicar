@@ -218,7 +218,6 @@ class SearchRecordsController < ApplicationController
     if params[:id].blank?
       flash[:notice] = messagea
       logger.warn(warninga)
-      logger.warn "params[:id].blank?"
       logger.warn " #{params[:id]} no longer exists"
       flash.keep
       return false
@@ -237,14 +236,12 @@ class SearchRecordsController < ApplicationController
       if @search_record.blank?
         flash[:notice] = messagea
         logger.warn(warning)
-        logger.warn " @search_record.blank?"
         logger.warn "#{@search_record} no longer exists"
         flash.keep
         return false
       end
       if @search_record[:freereg1_csv_entry_id].blank?
         logger.warn(warning)
-        logger.warn " @search_record[:freereg1_csv_entry_id].blank?"
         logger.warn "#{@search_record} no longer exists"
         flash[:notice] = messagea
         flash.keep
@@ -253,7 +250,6 @@ class SearchRecordsController < ApplicationController
       @entry = Freereg1CsvEntry.find(@search_record[:freereg1_csv_entry_id])
       if @entry.blank?
         logger.warn(warning)
-        logger.warn " @entry.blank?"
         logger.warn "#{@search_record} no longer exists"
         flash[:notice] = messagea
         flash.keep
@@ -261,7 +257,6 @@ class SearchRecordsController < ApplicationController
       end
       if @entry.freereg1_csv_file.blank?
         logger.warn(warning)
-        logger.warn "@entry.freereg1_csv_file.blank?"
         logger.warn "#{@search_record} no longer exists"
         flash[:notice] = messagea
         flash.keep
