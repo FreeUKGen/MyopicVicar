@@ -10,8 +10,8 @@
 .adblck-background {
  background-image: url(image-path('header-donate.png')) !important;
 }
- 
- 
+
+
 .bnner-horz {
   display: block;
   text-align: center;
@@ -27,17 +27,28 @@
       @include manual-media-query(890px) {
       width: 468px;
       height: 60px;
-      background-position: -60px; 
+      background-position: -60px;
     }
         @include manual-media-query(610px) {
     width: 320px;
     height: 50px;
-    background-position: -60px; 
+    background-position: -60px;
     background-size: 170%;
   }
 }
 
 .adsense_center {
+  margin: 0 auto;
+  font-weight: bold;
+  margin-bottom: 20px;
+  border: 1px solid #c0c0c0;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.fullwidth_adsense_freecen {
   margin: 0 auto;
   font-weight: bold;
   margin-bottom: 20px;
