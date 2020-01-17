@@ -1,43 +1,42 @@
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
-<div class="table-wrapper" id="search-result">
-  <table class="table--bordered table--data ">
-    <thead>
-      <tr>
-        <% unless print_friendly %>
-          <th >Details</th>
-        <% end %>
-        <th>
-          <% unless print_friendly %><%= link_to('Person or persons',
+<table class="table--bordered table--data ">
+  <thead>
+    <tr>
+      <% unless print_friendly %>
+        <th >Details</th>
+      <% end %>
+      <th>
+        <% unless print_friendly %><%= link_to('Person or persons',
             reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME)) %>
-          <% else%> Person or persons<% end%>
-        </th>
-        <th>
-          <% unless print_friendly %><%= link_to('Record type',
+        <% else%> Person or persons<% end%>
+      </th>
+      <th>
+        <% unless print_friendly %><%= link_to('Record type',
             reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::TYPE)) %>
-          <% else%> Record type<% end%>
-        </th>
-        <th>
-          <% unless print_friendly %><%= link_to('Event date',
+        <% else%> Record type<% end%>
+      </th>
+      <th>
+        <% unless print_friendly %><%= link_to('Event date',
             reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DATE)) %>
-          <% else%> Event date<% end%>
-        </th>
-        <th>
-          <% unless print_friendly %><%= link_to('County',
+        <% else%> Event date<% end%>
+      </th>
+      <th>
+        <% unless print_friendly %><%= link_to('County',
             reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::COUNTY)) %>
-          <% else%> County<% end%>
-        </th>
-        <th>
-          <% unless print_friendly %><%= link_to("Place : Church : Register type",
+        <% else%> County<% end%>
+      </th>
+      <th>
+        <% unless print_friendly %><%= link_to("Place : Church : Register type",
             reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::LOCATION)) %>
-          <% else%> Place : Church : Register type<% end%>
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <% n = 0 %>
-      <% search_results.each do |search_record| %>
-        <% n = n + 1 %>
-        <tr id="<%=search_record[:_id]%>">
+        <% else%> Place : Church : Register type<% end%>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <% n = 0 %>
+    <% search_results.each do |search_record| %>
+      <% n = n + 1 %>
+      <tr id="<%=search_record[:_id]%>">
           <% unless print_friendly %>
            <td>
              <%= link_to("View #{n}", friendly_search_record_path(search_record.id, search_record.friendly_url),rel:"nofollow", :class => "btn  btn--small" )%>
@@ -49,10 +48,10 @@
             <% if  name['type'] == 'primary' %>
               <% if i > 0 %>
               <br />
-      <% end%>
-      <%= "#{name['first_name']} #{name['last_name']} " %>
-    <% end %>
-  <% end%>
+    <% end%>
+    <%= "#{name['first_name']} #{name['last_name']} " %>
+  <% end %>
+<% end%>
 </td>
 <td  >
   <%= RecordType::display_name(search_record.record_type) %>
@@ -70,4 +69,3 @@
 <% end %>
 </tbody>
 </table>
-</div>
