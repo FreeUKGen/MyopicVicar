@@ -1128,7 +1128,7 @@ class CsvRecords <  CsvFile
       process_header_line_four_block(header_field,csvfile)
     when (number_of_fields == 1 && header_field[0] =~FreeregOptionsConstants::HEADER_FLAG)
       # an empty line follows the #
-      csvfile.header_error << "The fourth header line has no usable fields. <br>"
+      csvfile.header[:modification_date] = Date.today.strftime("%d %b %Y")
     when (number_of_fields == 1 && !(header_field[0] =~FreeregOptionsConstants::HEADER_FLAG))
       # is an # followed by something either  date or a comment
       process_header_line_four_date_or_comment(header_field,csvfile)
