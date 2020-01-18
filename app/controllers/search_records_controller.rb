@@ -30,6 +30,7 @@ class SearchRecordsController < ApplicationController
 
   def show
     redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
+    p 'show................................................................................'
 
     @appname = appname_downcase
     @page_number = params[:page_number].to_i
@@ -133,6 +134,7 @@ class SearchRecordsController < ApplicationController
 
       end
     elsif @appname == 'freereg'
+      @show_navigation = params[:friendly].present? ? true : false
       @display_date = false
       @entry.display_fields(@search_record)
       @entry.acknowledge
@@ -222,17 +224,10 @@ class SearchRecordsController < ApplicationController
       flash.keep
       return false
     end
-    @search_query = SearchQuery.find(session[:query]) if session[:query].present?
+    @search_query = SearchQuery.find(session[:query]) if session[:query].present? && params[:friendly].present?
 
     if appname_downcase == 'freereg'
-      if session[:query].blank? || params[:ucf] == 'true'
-        @search_record = SearchRecord.find(params[:id])
-      else
-        response, @next_record, @previous_record = @search_query.next_and_previous_records(params[:id])
-
-        @search_record = response ? @search_query.locate(params[:id]) : nil
-        return false unless response
-      end
+      @search_record = SearchRecord.find_by(_id: params[:id])
       if @search_record.blank?
         flash[:notice] = messagea
         logger.warn(warning)
@@ -261,6 +256,11 @@ class SearchRecordsController < ApplicationController
         flash[:notice] = messagea
         flash.keep
         return false
+      end
+      if session[:query].present? && !params[:ucf] == 'true'
+        response, @next_record, @previous_record = @search_query.next_and_previous_records(params[:id])
+        @search_record = response ? @search_query.locate(params[:id]) : nil
+        return false unless response
       end
     end
     true
