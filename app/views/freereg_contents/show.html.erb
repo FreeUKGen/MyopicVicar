@@ -1,4 +1,4 @@
-<% title "#{@county} Contents" %>
+<% title "#{@county} information" %>
 <div class="text--center push-half--bottom">
   <%= link_to 'Choose new County', new_freereg_content_path, :class => "btn  btn--small" %>
   <%= link_to 'Choose new Place', freereg_contents_path, :class => "btn  btn--small", :title => "in this county"%>
@@ -9,53 +9,5 @@
 <% loc = (@character) ? "#{@county} (#{@character})" : @county %>
 <p >Click on the Place, Church or Register name for more details at that level. (On a smart-phone, try <q>landscape</q> view for Place details page.)</p>
 <div class="scrollable ">
-  <table class="table--bordered my-width table--data table--striped">
-    <thead >
-      <tr>
-        <th scope="col" class='sticky-header'>Place <a href="#" class="bottom_tooltip"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %>
-            <span>A Place for which information should exist.</span></a></th>
-        <th scope="col" class='sticky-header'>Churches <a href="#" class="bottom_tooltip"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %>
-            <span>There can be multiple churches or organizations for which records might exist in a specific place.</span></a></th>
-        <th scope="col" class='sticky-header'>Registers <a href="#" class="bottom_tooltip"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %>
-            <span>A church can have multiple registers. A register can be: Parish Register; Archdeacon's Transcripts; Bishop's Transcripts; Phillimore's Transcripts (made from a parish register); Extract of the Parish Registers (incomplete set of records); Dwelly's Transcript (made from a parish register); Other Register (original document); Transcript (another person's transcription); Unknown; or Unspecified.</span></a></th>
-        <th scope="col" class='sticky-header'>Changed <a href="#" class="bottom_tooltip"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %>
-            <span>Latest date a transcription file loaded.</span></a></th>
-        <th scope="col" class='sticky-header'>Records <a href="#" class="bottom_tooltip"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %>
-            <span>The number of actual transcriptions.</span></a></th>
-        <th scope="col" class='sticky-header'>First <a href="#" class="bottom_tooltip"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %>
-            <span>First and last years in the register.</span></a></th>
-        <th scope="col" class='sticky-header'>Last</th>
-      </tr>
-    </thead>
-    <tbody >
-      <% unless churches_for_place?(@place) %>
-        <tr class="weight--semibold" >
-          <td scope="row" aria-label="place"> <%= link_to(@place.place_name, show_place_freereg_content_path(@place.place_name)) %> </td>
-        </tr>
-      <% else%>
-        <% @place.churches.order_by(church_name: 1).each do |church| %>
-          <% unless registers_for_church?(church) %>
-            <tr class="weight--semibold" >
-              <td scope="row" aria-label="place"> <%= link_to(@place.place_name, show_place_freereg_content_path(@place.place_name)) %> </td>
-              <td aria-label="church"> <%= link_to(church.church_name, show_church_freereg_content_path(church)) %> </td>
-            </tr>
-          <% else%>
-            <% church.my_registers.each do |register| %>
-              <tr class="weight--semibold" >
-                <td scope="row" aria-label="place"> <%= link_to(@place.place_name, show_place_freereg_content_path(@place.place_name)) %> </td>
-                <td aria-label="church"> <%= link_to(church.church_name, show_church_freereg_content_path(church)) %> </td>
-                <td aria-label="register"> <% registertype = RegisterType.display_name(register.register_type)%>
-                  <%= link_to(registertype, show_register_freereg_content_path(register)) %></td>
-                <td aria-label="date last changed"> <%= register.last_amended %> </td>
-                <td aria-label="number of records"> <%= display_number(register.records) %> </td>
-                <td aria-label="first year of records"> <%= register.datemin %> </td>
-                <td aria-label="last year of records"> <%= register.datemax %> </td>
-                <% clear(register) %>
-              </tr>
-            <% end%>
-          <% end%>
-        <% end%>
-      <% end%>
-    </tbody>
-  </table>
+  <%= render 'show_body' %>
 </div>

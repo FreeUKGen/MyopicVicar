@@ -37,4 +37,9 @@ module FreeregContentsHelper
     result = church.registers.count.zero? ? false : true
     result
   end
+
+  def gap_record_type(gap)
+    return 'All' if gap == 'All'
+    RecordType.display_name(gap)
+  end
 end

@@ -6,9 +6,8 @@
       <%= link_to 'Back to Search Record', :back, :class => "btn   btn--small"%>
     </div>
     <br>
+    <h3 class=" text--center">Information about the <%=RegisterType.display_name(@register.register_type) %> from <%=@church.church_name %> of <%= @place_name %> in <%= @county %> </h3>
     <%= render 'register' %>
-    <h3 class=" text--center">Numbers of transcriptions for this place</h3>
-    <p class=" text--center">Those periods with zero data may span several decades. The first period may include pre 1530 records. </p>
     <%= render 'decade' %>
   </section>
 </div>

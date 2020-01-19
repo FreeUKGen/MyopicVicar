@@ -43,6 +43,17 @@ class FreeregContentsController < ApplicationController
     end
   end
 
+  def gaps_and_embargoes
+    @register = Register.id(params[:id]).first
+    redirect_back(fallback_location: { action: 'new' }, notice: 'Non existent register has been selected.') && return if @register.blank?
+
+    variables_for_register_show
+    redirect_back(fallback_location: { action: 'new' }, notice: 'Non existent register has been selected.') && return unless @proceed
+
+    @gaps = Gap.register(@register.id).all.order_by(record_type: 1, start_date: 1)
+    @rules = EmbargoRule.where(register_id: @register.id).all.order_by(record_type: 1, rule: 1)
+  end
+
   def index
     redirect_back(fallback_location: { action: 'new' }, notice: 'Non existent County has been selected.') && return if session[:chapman_code].blank? || !ChapmanCode::values.include?(session[:chapman_code])
 
@@ -143,45 +154,35 @@ class FreeregContentsController < ApplicationController
   def show
     redirect_back(fallback_location: { action: 'new' }, notice: 'Non existent place has been selected.') && return if params[:id].blank?
 
-    @county = session[:county]
-    @chapman_code = session[:chapman_code]
-    redirect_back(fallback_location: { action: 'new' }, notice: 'Non existent County has been selected.') && return if session[:chapman_code].blank? || !ChapmanCode::values.include?(session[:chapman_code])
-
     @place = Place.id(params[:id]).not_disabled.first
     redirect_back(fallback_location: { action: 'new' }, notice: 'Non existent place has been selected.') && return if @place.blank?
 
+    @county = @place.county
+    @chapman_code = @place.chapman_code
     @page = FreeregContent.get_header_information(session[:chapman_code])
     @coordinator = County.coordinator_name(session[:chapman_code])
     @records = FreeregContent.number_of_records_in_county(session[:chapman_code])
   end
 
   def show_church
-    @church = Church.id(params[:id]).first
+    @church = Church.find_by(_id: params[:id])
     redirect_back(fallback_location: { action: 'new' }, notice: 'Non existent church has been selected.') && return if @church.blank?
 
     variables_for_church_show
     redirect_back(fallback_location: { action: 'new' }, notice: 'Non existent place for this church.') && return unless @proceed
-
-    @character = session[:character]
-    @county = session[:county]
-    @chapman_code = session[:chapman_code]
   end
 
   def show_place
-    @county = session[:county]
-    @chapman_code = session[:chapman_code]
-    @place = Place.chapman_code(@chapman_code).place(params[:id]).not_disabled.first
+    @place = Place.find_by(_id: params[:id])
     redirect_back(fallback_location: { action: 'new' }, notice: 'Non existent place has been selected.') && return if @place.blank?
 
     variables_for_place_show
-    @character = session[:character]
-    @county = session[:county]
-    @chapman_code = session[:chapman_code]
+    redirect_back(fallback_location: { action: 'new' }, notice: 'Non existent place has been selected.') && return unless @proceed
   end
 
   def show_register
     # this is the Transcription entry for a register
-    @register = Register.id(params[:id]).first
+    @register = Register.find_by(_id: params[:id])
     redirect_back(fallback_location: { action: 'new' }, notice: 'No register was selected while reviewing the content; you will need to start again') && return if @register.blank?
 
     @images = Register.image_transcriptions_calculation(params[:id])
@@ -189,11 +190,34 @@ class FreeregContentsController < ApplicationController
     redirect_back(fallback_location: { action: 'new' }, notice: 'The register has no church; you will need to start again') && return if @church.blank?
 
     variables_for_register_show
-    redirect_back(fallback_location: { action: 'new' }, notice: 'The register has no place; you will need to start again') && return unless @proceed
+    redirect_back(fallback_location: { action: 'new' }, notice: 'The register has no church; you will need to start again') && return unless @proceed
+  end
 
-    @character = session[:character]
-    @county = session[:county]
-    @chapman_code = session[:chapman_code]
+  def unique_church_names
+    @church = Church.find_by(_id: params[:id])
+    redirect_back(fallback_location: { action: 'new' }, notice: 'That place does not exist') && return if @church.blank?
+
+    @unique_forenames = @church.unique_forenames.sort if @church.unique_forenames.present?
+    @unique_surnames = @church.unique_surnames.sort if @church.unique_surnames.present?
+    variables_for_church_show
+  end
+
+  def unique_register_names
+    @register = Register.find_by(_id: params[:id])
+    redirect_back(fallback_location: { action: 'new' }, notice: 'That register does not exist') && return if @register.blank?
+
+    @unique_forenames = @register.unique_forenames.sort if @register.unique_forenames.present?
+    @unique_surnames = @register.unique_surnames.sort if @register.unique_surnames.present?
+    variables_for_register_show
+  end
+
+  def unique_place_names
+    @place = Place.find_by(_id: params[:id])
+    redirect_back(fallback_location: { action: 'new' }, notice: 'That place does not exist') && return if @place.blank?
+
+    @unique_forenames = @place.unique_forenames.sort if @place.unique_forenames.present?
+    @unique_surnames = @place.unique_surnames.sort if @place.unique_surnames.present?
+    variables_for_place_show
   end
 
   def variables_for_church_show
@@ -222,8 +246,9 @@ class FreeregContentsController < ApplicationController
   end
 
   def variables_for_place_show
+    @proceed = true
     @character = nil
-    @county = @place.place_name
+    @county = @place.county
     @chapman_code = @place.chapman_code
     @coordinator = County.coordinator_name(@chapman_code)
     @place_name = @place.place_name

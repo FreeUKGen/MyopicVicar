@@ -1,159 +1,48 @@
-class SurnamesReport
-
-
- 
-require 'chapman_code'
-
-include Mongoid::Document
- 
-
-
- 
-  def initialize
-    Mongoid.load!("#{Rails.root}/config/mongoid.yml")
-    
-  end
-
-
+class ExtractUniqueNames
+  require 'chapman_code'
   def self.process(limit)
+    file_for_messages = 'log/extract_names_report.log'
+    message_file = File.new(file_for_messages, 'w')
+    limit = limit.to_i
 
-  	file_for_messages = "log/surnames_report.log" 
-    File.delete(file_for_messages) if File.exists?(file_for_messages)
-    FileUtils.mkdir_p(File.dirname(file_for_messages) )
-    message_file = File.new(file_for_messages, "w")
-  	limit = limit.to_i
- 
     puts "Producing report of the population of surnames"
     message_file.puts "Field,Surname,Number of Records\n"
+    num = 0
+    distinct_register_forenames = []
+    distinct_register_surnames = []
+    distinct_church_forenames = []
+    distinct_church_surnames = []
+    distinct_place_forenames = []
+    distinct_place_surnames = []
+    unique_names = {}
+    Places.data_present.each.no_timeout do |place|
+      place.churches.each.no_timeout do |church|
+        church.registers.each.no_timeout do |register|
+          register.freereg1_csv_files.each.no_timeout do |file|
+            unique_names = file.get_unique_names
+          end
+          distinct_register_forenames = unique_names.extract_unique_forenames
+          distinct_register_surnames = unique_names.extract_unique_surnames
+          register.update(unique_forenames: distinct_register_surnames, unique_surnames: distinct_register_surnames)
+          distinct_church_forenames << distinct_register_forenames
+          distinct_church_surnames << distinct_register_surnames
+        end
+        distinct_church_forenames = distinct_church_forenames.uniq
+        distinct_church_surnames = distinct_church_surnames.uniq
+        church.update(unique_forenames: distinct_church_forenames, unique_surnames: distinct_church_surnames)
+        distinct_place_forenames << distinct_place_forenames
+        distinct_place_surnames << distinct_place_forenames
+      end
+      distinct_place_forenames = distinct_place_forenames.uniq
+      distinct_place_surnames = distinct_place_forenames.uniq
+      place.update(unique_forenames: distinct_place_forenames, unique_surnames: distinct_place_surnames)
+      num = num + 1
+      break if num == limit
+    end
 
-    record_number = 0
-  	
-    names = Freereg1CsvEntry.all.distinct(:bride_father_surname)
 
-    puts "#{names.length} distinct :bride_father_surname"
 
-   names.each do |name|
-  
-    num = Freereg1CsvEntry.where(:bride_father_surname => name ).only().count unless record_number == 0
-    name = "nil" if record_number == 0
-    name = "empty" if record_number == 1
-      message_file.puts "Bride father surname,\"#{name}\",#{num}\n" 
-      record_number = record_number + 1
-      break if record_number == limit
-    end #names
-     record_number = 0
- names = Freereg1CsvEntry.all.distinct(:bride_surname)
- puts "#{names.length} distinct :bride_surname"
-   names.each do |name|
-       num = Freereg1CsvEntry.where(:bride_surname => name ).only().count unless record_number == 0
-    name = "nil" if record_number == 0
-    name = "empty" if record_number == 1
-      message_file.puts "Bride surname,\"#{name}\",#{num}\n" 
-      record_number = record_number + 1
-      break if record_number == limit
-    end #names
-  
-        record_number = 0
-  names = Freereg1CsvEntry.all.distinct(:groom_father_surname)
-  puts "#{names.length} distinct :groom_father_surname"
+    p "Finished #{limit} records"
 
-   names.each do |name|
-    num = Freereg1CsvEntry.where(:groom_father_surname => name ).only().count unless record_number == 0
-    name = "nil" if record_number == 0
-    name = "empty" if record_number == 1
-      message_file.puts "Groom father surname,\"#{name}\",#{num}\n" 
-      record_number = record_number + 1
-      break if record_number == limit
-    end #names
-     record_number = 0
-  names = Freereg1CsvEntry.all.distinct(:groom_surname)
-  puts "#{names.length} distinct :groom_surname"
-
-   names.each do |name|
-    num = Freereg1CsvEntry.where(:groom_surname => name ).only().count unless record_number == 0
-    name = "nil" if record_number == 0
-    name = "empty" if record_number == 1
-      message_file.puts "Groom surname,\"#{name}\",#{num}\n" 
-      record_number = record_number + 1
-      break if record_number == limit
-    end #names
-       record_number = 0
-  names = Freereg1CsvEntry.all.distinct(:witness1_surname)
-  puts "#{names.length} distinct :witness1_surname"
-
-   names.each do |name|
-    num = Freereg1CsvEntry.where(:witness1_surname => name ).only().count unless record_number == 0
-    name = "nil" if record_number == 0
-    name = "empty" if record_number == 1
-      message_file.puts "Witness1 surname,\"#{name}\",#{num}\n" 
-      record_number = record_number + 1
-      break if record_number == limit
-    end #names
-     record_number = 0
-  names = Freereg1CsvEntry.all.distinct(:witness2_surname)
-  puts "#{names.length} distinct :witness2_surname"
-
-   names.each do |name|
-    num = Freereg1CsvEntry.where(:witness2_surname => name ).only().count unless record_number == 0
-    name = "nil" if record_number == 0
-    name = "empty" if record_number == 1
-      message_file.puts "Witness2 surname,\"#{name}\",#{num}\n" 
-      record_number = record_number + 1
-      break if record_number == limit
-    end #names
-       record_number = 0
-  names = Freereg1CsvEntry.all.distinct(:burial_person_surname)
-  puts "#{names.length} distinct :burial_person_surname"
-
-   names.each do |name|
-    num = Freereg1CsvEntry.where(:burial_person_surname => name ).only().count unless record_number == 0
-    name = "nil" if record_number == 0
-    name = "empty" if record_number == 1
-      message_file.puts "Burial Person Surname,\"#{name}\",#{num}\n" 
-      record_number = record_number + 1
-      break if record_number == limit
-    end #names
-       record_number = 0
-  names = Freereg1CsvEntry.all.distinct(:relative_surname)
-  puts "#{names.length} distinct :relative_surname"
-
-   names.each do |name|
-    num = Freereg1CsvEntry.where(:relative_surname => name ).only().count unless record_number == 0
-    name = "nil" if record_number == 0
-    name = "empty" if record_number == 1
-      message_file.puts "Relative Surname,\"#{name}\",#{num}\n" 
-      record_number = record_number + 1
-      break if record_number == limit
-    end #names
- 
-          
-          record_number = 0
-  names = Freereg1CsvEntry.all.distinct(:father_surname)
-  puts "#{names.length} :father_surname"
-
-   names.each do |name|
-    num = Freereg1CsvEntry.where(:father_surname => name ).only().count unless record_number == 0
-    name = "nil" if record_number == 0
-    name = "empty" if record_number == 1
-      message_file.puts "Father Surname,\"#{name}\",#{num}\n"  
-      record_number = record_number + 1
-      break if record_number == limit
-    end #names
-   
-       record_number = 0
-  names = Freereg1CsvEntry.all.distinct(:mother_surname)
-  puts "#{names.length} distinct mother_surname:"
-
-   names.each do |name|
-    num = Freereg1CsvEntry.where(:mother_surname => name ).only().count unless record_number == 0
-    name = "nil" if record_number == 0
-    name = "empty" if record_number == 1
-      message_file.puts "Mother Surname,\"#{name}\",#{num}\n" 
-      record_number = record_number + 1
-      break if record_number == limit
-    end #names
-
-  p "Finished #{limit} records"
-    
   end
 end

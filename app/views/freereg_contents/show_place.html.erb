@@ -1,10 +1,12 @@
-<% title "#{@place.place_name} #{@county} transcriptions " %>
+<% title "#{@place.place_name} #{@county} information" %>
 <div class="container">
   <section class="island ">
     <div class="text--center">
       <%= link_to 'County Selection', new_freereg_content_path, method: :get, :class => "btn   btn--small"%>
       <%= link_to 'Another Place in this County', freereg_contents_path, method: :get, :class => "btn   btn--small"%>
+      <%= link_to 'Unique Names', unique_place_names_path(@place.id), method: :get, :class => "btn   btn--small"%>
     </div>
+    <%= render 'flash_notice' %>
     <br>
     <h2 class=" text--center">Information about <%= @place.place_name %> in <%= @county %> </h2>
     <h3 class=" text--center"><%= @place.place_name %> has the following <%= 'church'.pluralize(@churches_count) %>:
@@ -12,8 +14,6 @@
         <%= link_to church.church_name, show_church_freereg_content_path(church), :class => "btn   btn--small"  %>
       <% end %></h3>
     <%= render 'place' %>
-    <h3 class=" text--center">Numbers of transcriptions for <%= @place.place_name %></h3>
-    <p class=" text--center">Those periods with zero data may span several decades. The first period may include pre 1530 records. </p>
     <%= render 'decade' %>
   </section>
 </div>
