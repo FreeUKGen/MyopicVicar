@@ -36,7 +36,7 @@ class ExtractUniqueNames
         distinct_place_forenames = distinct_place_forenames.uniq.reject(&:empty?)
         distinct_place_surnames = distinct_place_surnames.uniq.reject(&:empty?)
         place.update_attributes(unique_forenames: distinct_place_forenames, unique_surnames: distinct_place_surnames) if distinct_place_forenames.present? || distinct_place_surnames.present?
-        message_file.puts place.inspect if distinct_place_forenames.present? || distinct_place_surnames.present?
+        message_file.puts "#{place.id}, #{place.place_name},#{place.chapman_code}" if distinct_place_forenames.present? || distinct_place_surnames.present?
         num = num + 1
         break if num == limit
       end
