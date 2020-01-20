@@ -41,7 +41,7 @@ class ExtractUniqueNames
         break if num == limit
       end
       time_elapsed = Time.now - time_start
-      p "Finished #{limit} records in #{time_elapsed}"
+      p "Finished #{num} places in #{time_elapsed}"
     end
 
     def extract_unique_forenames(names)

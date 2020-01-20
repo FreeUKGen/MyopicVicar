@@ -19,59 +19,37 @@
         <%end%>
       <%end%>
     <%end%>
-    <% if @church.denomination.present?%>
-      <tr>
-        <td>Denomination of the Church</td>
-        <td class='weight--semibold' ><%= (@church.denomination) %></td>
-      </tr>
-    <% end%>
-    <% if @church.website.present?%>
-      <tr>
-        <td>The Church Website </td>
-        <td class='weight--semibold'><%= (@church.website) %></td>
-      </tr>
-    <% end%>
-    <% if @church.church_notes.present?%>
-      <tr>
-        <td>Notes about the Church </td>
-        <td class='weight--semibold' > <%= (@church.church_notes) %> </td>
-      </tr>
-    <% end%>
-    <% if @church.records.present?%>
-      <tr>
-        <td>Number of transcriptions</td>
-        <td class='weight--semibold'><%= @church.records %></td>
-      </tr>
-    <% end%>
-    <% if @church.datemin.present?%>
-      <tr>
-        <td>First year for a transcription</td>
-        <td class='weight--semibold'><%= @church.datemin %></td>
-      </tr>
-    <% end%>
-    <% if @church.datemax.present?%>
-      <tr>
-        <td>Last year for a transcription</td>
-        <td class='weight--semibold'><%= @church.datemax %></td>
-      </tr>
-    <% end%>
-    <% if @church.last_amended.present?%>
-      <tr>
-        <td>Last date a transcription added</td>
-        <td class='weight--semibold' > <%= @church.last_amended %></td>
-      </tr>
-    <% end%>
-    <% if @church.u_at.present?%>
-      <tr>
-        <td>Last date church information changed</td>
-        <td class='weight--semibold'><%= @church.u_at.strftime("%d %b %Y") %></td>
-      </tr>
-    <% end%>
-    <% if @church.church_notes.present?%>
-      <tr>
-        <td>Notes about the Church </td>
-        <td class='weight--semibold' > <%= (@church.church_notes) %> </td>
-      </tr>
-    <% end%>
+    <tr>
+      <td>Denomination of the Church</td>
+      <td class='weight--semibold' ><%= (@church.denomination) %></td>
+    </tr>
+    <tr>
+      <td>The Church Website </td>
+      <td class='weight--semibold'><%= (@church.website) %></td>
+    </tr>
+    <tr>
+      <td>Number of transcriptions</td>
+      <td class='weight--semibold'><%= @church.records %></td>
+    </tr>
+    <tr>
+      <td>First year for a transcription</td>
+      <td class='weight--semibold'><%= @church.datemin %></td>
+    </tr>
+    <tr>
+      <td>Last year for a transcription</td>
+      <td class='weight--semibold'><%= @church.datemax %></td>
+    </tr>
+    <tr>
+      <td>Last date a transcription added</td>
+      <td class='weight--semibold' > <%= @church.last_amended %></td>
+    </tr>
+    <tr>
+      <td>Last date church information changed</td>
+      <td class='weight--semibold'><%= @church.u_at.strftime("%d %b %Y") %></td>
+    </tr>
+    <tr>
+      <td>Notes about the Church </td>
+      <td class='weight--semibold' > <%= (@church.church_notes) %> </td>
+    </tr>
   </tbody>
 </table>

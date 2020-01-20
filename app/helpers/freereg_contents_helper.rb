@@ -42,4 +42,8 @@ module FreeregContentsHelper
     return 'All' if gap == 'All'
     RecordType.display_name(gap)
   end
+
+  def locate(latitude, longitude)
+    link_to 'Location', "https://www.google.com/maps/@?api=1&map_action=map&center=#{latitude},#{longitude}&zoom=13", target: :_blank
+  end
 end

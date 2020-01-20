@@ -30,35 +30,36 @@
       <td class="weight--semibold"> <%= @register.credit %>  </td>
     </tr>
     <tr>
-      <td>Register notes :</td>
-      <td class="weight--semibold"> <%= @register.register_notes %>  </td>
-    </tr>
-    <tr>
       <td>Status of the transcriptions :</td>
       <td class="weight--semibold"><%= @register.status %> </td>
     </tr>
-    <td>Latest date a transcription changed:</td>
-    <td class="weight--semibold"> <%= @register.last_amended %></td>
-  </tr>
-  <tr>
-    <td>Number of entries</td>
-    <td class="weight--semibold"><%= @register.records %></td>
-  </tr>
-  <tr>
-    <td>First actual year of entries</td>
-    <td class="weight--semibold"><%= @register.datemin %></td>
-  </tr>
-  <tr>
-    <td>Last actual year of entries</td>
-    <td class="weight--semibold"><%= @register.datemax %></td>
-  </tr>
-  <tr>
-    <td>First permitted year :</td>
-    <td class="weight--semibold"><%= @register.minimum_year_for_register%> </td>
-  </tr>
-  <tr>
-    <td>Last permitted year :</td>
-    <td class="weight--semibold"><%= @register.maximum_year_for_register %> </td>
-  </tr>
-</tbody>
+    <tr>
+      <td>Latest date a transcription changed:</td>
+      <td class="weight--semibold"> <%= @register.last_amended %></td>
+    </tr>
+    <tr>
+      <td>Number of entries</td>
+      <td class="weight--semibold"><%= @register.records %></td>
+    </tr>
+    <tr>
+      <td>First actual year of entries</td>
+      <td class="weight--semibold"><%= @register.datemin %></td>
+    </tr>
+    <tr>
+      <td>Last actual year of entries</td>
+      <td class="weight--semibold"><%= @register.datemax %></td>
+    </tr>
+    <tr>
+      <td>First year in register :</td>
+      <td class="weight--semibold"><%= @register.minimum_year_for_register%> </td>
+    </tr>
+    <tr>
+      <td>Last year in register:</td>
+      <td class="weight--semibold"><%= @register.maximum_year_for_register %> </td>
+    </tr>
+    <tr>
+      <td>Register notes :</td>
+      <td class="weight--semibold"> <%= @register.register_notes %>  </td>
+    </tr>
+  </tbody>
 </table>
