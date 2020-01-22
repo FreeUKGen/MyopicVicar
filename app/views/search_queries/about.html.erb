@@ -103,7 +103,7 @@
     <% if appname.downcase == 'freecen'%>
       <p>Search Criteria:
         The following <b>birth counties</b> were included:
-        <% counties = @search_query.chapman_codes.size %>
+        <% counties = @search_query.birth_chapman_codes.size %>
         <% start = 0 %>
         <% @and = " and " %>
         <% while start < counties do  %>
