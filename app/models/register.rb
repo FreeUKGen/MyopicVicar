@@ -27,6 +27,8 @@ class Register
   field :daterange, type: Hash
   field :transcribers, type: Hash
   field :contributors, type: Hash
+  field :unique_surnames, type: Array
+  field :unique_forenames, type: Array
   has_many :freereg1_csv_files, dependent: :restrict_with_error
   belongs_to :church, index: true
 

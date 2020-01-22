@@ -51,6 +51,8 @@ class Place
   field :transcribers, type: Hash
   field :contributors, type: Hash
   field :open_record_count, type: Integer, default: 0
+  field :unique_surnames, type: Array
+  field :unique_forenames, type: Array
 
   embeds_many :alternateplacenames
 

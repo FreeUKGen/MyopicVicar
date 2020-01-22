@@ -1,0 +1,15 @@
+<% title "#{RegisterType.display_name(@register.register_type)} #{@church_name} #{@place_name} #{@county} gaps and embargoes" %>
+<div class="text--center">
+  <%= link_to 'County Selection', new_freereg_content_path, method: :get, :class => "btn   btn--small"%>
+  <%= link_to 'Another Place in this County', freereg_contents_path, method: :get, :class => "btn   btn--small"%>
+  <%= link_to 'Place for this Church and Register', show_place_freereg_content_path(@place.id), :class => "btn   btn--small" %>
+  <%= link_to 'Church for this Register', show_church_freereg_content_path( @church.id), :class => "btn   btn--small" %>
+  <%= link_to 'This Register', show_register_freereg_content_path( @register.id), :class => "btn   btn--small" %>
+</div>
+<br>
+<h3 class="text--center"> List of Gaps and Embargo Rules for <b><%= @register_type %></b> for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b></h3>
+<%= render 'flash_notice' %>
+<section class="island ">
+  <%= render 'embargo' %>
+  <%= render 'gaps' %>
+</section>

@@ -4,12 +4,9 @@
     <div class="text--center">
       <%= link_to 'Back to Search Record', :back, :class => "btn   btn--small"%>
     </div>
-     <br>
+    <br>
     <h2 class=" text--center"><%= @place.place_name %> in <%= @place.county %> </h2>
-    <h3 class=" text--center">Information about the place  </h3>
     <%= render 'place' %>
-    <h3 class=" text--center">Numbers of transcriptions for this place</h3>
-    <p class=" text--center">Those periods with zero data may span several decades. The first period may include pre 1530 records. </p>
     <%= render 'decade' %>
   </section>
 </div>

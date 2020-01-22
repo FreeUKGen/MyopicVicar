@@ -1,72 +1,65 @@
-<table  class=' table--bordered table--data push--bottom center50'>
+<table class="table--bordered table--data table--striped"  style="display: inline-block;width:
+    40%; float: left;">
+  <caption class="gamma text--center"><b> Details about the place</b> <br>
+  </caption>
   <thead>
     <tr>
-      <th >Field</th>
-      <th >Value</th>
+      <th  scope="col" class="caps t20">Field</th>
+      <th  scope="col" class="caps t15">Value</th>
     </tr>
   </thead>
   <tbody>
-    <tr>
-      <td>Place </td>
-      <td class='weight--semibold'> <%= @place.place_name %>  </td>
-    </tr>
-    <tr>
-      <td>County</td>
-      <td class='weight--semibold'><%= @place.county %></td>
-    </tr>
-    <tr>
-      <td>Country</td>
-      <td class='weight--semibold'><%= @place.country %></td>
-    </tr>
-    <% if @names%>
+    <% if @names %>
       <%  @names.each do |name| %>
         <tr>
           <td>Other possible place names</td>
           <td class='weight--semibold'><%= name %>  </td>
         </tr>
-      <%end%>
-    <%end%>
-    <% if @place.genuki_url.present?%>
+      <% end%>
+    <% end%>
+    <tr>
+      <td>Show on map<br>
+        <small> Opens in a new tab</small></td>
+      <td > <%= locate(@place.latitude,@place.longitude) %></td>
+    </tr>
+    <% if @place.grid_reference.present?%>
       <tr>
-        <td>Location on map</td>
-        <td  ><%= link_to('Location', @place.genuki_url, :class => 'btn   btn--small',target: '_blank')  if @place.genuki_url.present? || @place.genuki_url == "no url" %></td>
+        <td>Grid Reference:</td>
+        <td class="weight--semibold"> <%= @place.grid_reference %></td>
       </tr>
     <% end%>
-    <% if @place.records.present?%>
-      <tr>
-        <td>Number of transcriptions</td>
-        <td class='weight--semibold'><%= @place.records %></td>
-      </tr>
-    <% end%>
-    <% if @place.datemin.present?%>
-      <tr>
-        <td>First year for a transcription</td>
-        <td class='weight--semibold'><%= @place.datemin %></td>
-      </tr>
-    <% end%>
-    <% if @place.datemax.present?%>
-      <tr>
-        <td>Last year for a transcription</td>
-        <td class='weight--semibold'><%= @place.datemax %></td>
-      </tr>
-    <% end%>
-    <% if @place.last_amended.present?%>
-      <tr>
-        <td>Last date a transcription added</td>
-        <td class='weight--semibold'><%= @place.last_amended %></td>
-      </tr>
-    <% end%>
-    <% if @place.u_at.present?%>
-      <tr>
-        <td>Last date place information changed</td>
-        <td class='weight--semibold'><%= @place.u_at.strftime("%d %b %Y") %></td>
-      </tr>
-    <% end%>
-    <% if @place.place_notes.present?%>
-      <tr>
-        <td>Notes about the place</td>
-        <td class='weight--semibold'><%= @place.place_notes %> </td>
-      </tr>
-    <% end%>
+    <tr>
+      <td>Latitude:</td>
+      <td class="weight--semibold"> <%= @place.latitude%></td>
+    </tr>
+    <tr>
+      <td>Longitude:</td>
+      <td class="weight--semibold"> <%= @place.longitude%></td>
+    </tr>
+    <tr>
+      <td>Number of transcriptions</td>
+      <td class='weight--semibold'><%= @place.records %></td>
+    </tr>
+    <tr>
+      <td>First actual year for a transcription<br>
+        <small> If zero there are records without a date present</small></td>
+      <td class='weight--semibold'><%= @place.datemin %></td>
+    </tr>
+    <tr>
+      <td>Last actual year for a transcription</td>
+      <td class='weight--semibold'><%= @place.datemax %></td>
+    </tr>
+    <tr>
+      <td>Latest date a transcription changed:</td>
+      <td class="weight--semibold"> <%= @place.last_amended %></td>
+    </tr>
+    <tr>
+      <td>Last date place information changed</td>
+      <td class='weight--semibold'><%= @place.u_at.strftime("%d %b %Y") %></td>
+    </tr>
+    <tr>
+      <td>Notes about the place</td>
+      <td class='weight--semibold'><%= @place.place_notes %> </td>
+    </tr>
   </tbody>
 </table>

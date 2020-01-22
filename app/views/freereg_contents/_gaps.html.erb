@@ -1,0 +1,29 @@
+<table class="table--bordered table--data table--striped"  style="display: inline-block;width:
+    50%; float: left;">
+  <caption class="gamma text--center"><b> Details about the Gaps</b> <br>
+  </caption>
+  <thead>
+    <tr>
+      <th scope="col" class='t15'>Record Type</th>
+      <th scope="col" class='t10'>Start Date</th>
+      <th scope="col" class='t10'>End Date</th>
+      <th scope="col" class='t15'>Reason for the gap to be recorded</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if @gaps.present? %>
+      <% @gaps.each do |x| %>
+        <tr>
+          <td scope="row" aria-label='record type'><%= gap_record_type(x.record_type) %>&nbsp;</td>
+          <td aria-label='starting year for gap'><%= x.start_date %>&nbsp;</td>
+          <td aria-label='ending year for gap'><%= x.end_date %>&nbsp;</td>
+          <td aria-label='reason for the gap'><%= x.reason %>&nbsp;</td>
+        </tr>
+      <% end %>
+    <% else%>
+      <tr>
+        <td scope="row" aria-label='gaps' colspan="4">NONE RECORDED</td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

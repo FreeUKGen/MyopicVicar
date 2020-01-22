@@ -7,6 +7,14 @@ namespace :foo do
 
   # eg foo:check_search_records[100000]
   #num is the number of records to be checked
+  task :extract_unique_names, [:limit] => [:environment] do |t, args|
+    require 'extract_unique_names'
+    limit = args.limit
+    puts "Extracting unique names"
+    ExtractUniqueNames.process(limit)
+    puts "Completed Checking #{limit} unique names"
+  end
+
   task :check_search_records_with_null_entry, [:num, :fix] => [:environment] do |t, args|
     require 'check_search_records_with_null_entry'
     limit = args.num
