@@ -1,16 +1,6 @@
 <div class="grid">
   <section class="island ">
     <div >
-      <h3 class=" text--center">FORENAMES</h3>
-      <p>
-        <% if @unique_forenames.present? %>
-          <% @unique_forenames.each do |name| %>
-            <%= name %>&emsp;
-          <% end%>
-        <% end%>
-      </p>
-    </div>
-    <div >
       <h3 class=" text--center">SURNAMES</h3>
       <p>
         <% if @unique_surnames.present? %>
@@ -20,5 +10,15 @@
         <% end%>
       </p>
     </div>
+    <h3 class=" text--center">FORENAMES</h3>
+    <p>
+      <% if @unique_forenames.present? %>
+        <% @unique_forenames.each do |name| %>
+          <%= name %>&emsp;
+        <% end%>
+      <% end%>
+    </p>
+  </div>
+  <div >
   </section>
 </div>
