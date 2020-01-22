@@ -1,26 +1,20 @@
-<% title "#{@church_name} #{@place_name} #{@county} transcriptions" %>
+<% title "#{@church_name} #{@place_name} #{@county} information" %>
 <div class="container">
   <section class="island ">
     <div style="text-align: center">
       <%= link_to 'County Selection', new_freereg_content_path, method: :get, :class => "btn   btn--small"%>
-      <% if @character.present? %>
-        <%= link_to 'Alphabet Place Selection', freereg_contents_path, :class => "btn  btn--small "%>
-        <%= link_to 'These Alphabet Places', select_places_freereg_content_path, :class => "btn  btn--small "%>
-      <% else %>
-        <%= link_to 'This County', freereg_contents_path, method: :get, :class => "btn   btn--small"%>
-      <% end%>
-      <%= link_to 'Place for this Church', show_place_freereg_content_path(@place_name), :class => "btn   btn--small" %>
+      <%= link_to 'Another Place in this County', freereg_contents_path, method: :get, :class => "btn   btn--small"%>
+      <%= link_to 'This Place', show_place_freereg_content_path(@place.id), :class => "btn   btn--small" %>
+      <%= link_to 'Unique Names', unique_church_names_path(@church.id), method: :get, :class => "btn   btn--small"%>
     </div>
+    <%= render 'flash_notice' %>
     <br>
-    <h2 class=" text--center">Transcriptions for <%=@church.church_name %> of <%= @place_name %> in <%= @county %> </h2>
-    <h3 class=" text--center">Information about this church  </h3>
-    <h4 class=" text--center">This church has the following <%= pluralize(@registers_count, 'register', 'registers') %>:
-      <% @registers.each do |register| %>
+    <h3 class=" text--center">Information about <%=@church.church_name %> of <%= @place_name %> in <%= @county %> </h3>
+    <h4 class=" text--center"><%=@church.church_name %> has the following <%= 'register'.pluralize(@registers_count) %>:
+      <% @church.my_registers.each do |register| %>
         <%= link_to(RegisterType.display_name(register.register_type), show_register_freereg_content_path(register), :class => "btn   btn--small") %>
       <% end %></h4>
     <%= render 'church' %>
-    <h3 class=" text--center">Numbers of transcriptions for this church </h3>
-    <p class=" text--center">Those periods with zero data may span several decades. The first period may include pre 1530 records. </p>
     <%= render 'decade' %>
   </section>
 </div>

@@ -154,7 +154,7 @@ MyopicVicar::Application.routes.draw do
   get 'contacts/list_by_identifier',  :to => 'contacts#list_by_identifier', :as => :list_by_identifier_contacts
   get 'contacts/list_archived',  :to => 'contacts#list_archived', :as => :list_archived_contacts
   get 'contacts/select_by_identifier',  :to => 'contacts#select_by_identifier', :as => :select_by_identifier_contacts
-  get  'contacts/:id(.:format)/report_error', :to => 'contacts#report_error', :as => :report_error_contact
+  get 'contacts/:id(.:format)/report_error', :to => 'contacts#report_error', :as => :report_error_contact
   get 'contacts/:source_contact_id/reply',  :to => 'contacts#reply_contact', :as => :reply_contact
   get 'contacts/:id/contact_reply_messages', to: 'contacts#contact_reply_messages', as: :contact_reply_messages
   get 'contacts/:id/force_destroy',  :to => 'contacts#force_destroy', :as => :force_destroy_contact
@@ -301,7 +301,10 @@ MyopicVicar::Application.routes.draw do
   resources :coordinators
 
   resources :alias_place_churches
-
+  get 'freereg_contents/:id/gaps_and_embargoes(.:format)', :to => 'freereg_contents#gaps_and_embargoes', :as => :gaps_and_embargoes_freereg_content
+  get 'freereg_contents/:id/unique_place_names(.:format)', :to => 'freereg_contents#unique_place_names', :as => :unique_place_names
+  get 'freereg_contents/:id/unique_register_names(.:format)', :to => 'freereg_contents#unique_register_names', :as => :unique_register_names
+  get 'freereg_contents/:id/unique_church_names(.:format)', :to => 'freereg_contents#unique_church_names', :as => :unique_church_names
   get 'freereg_contents/:id/show(.:format)', :to => 'freereg_contents#show', :as => :show_freereg_content
   get 'freereg_contents/:id/show_place(.:format)', :to => 'freereg_contents#show_place', :as => :show_place_freereg_content
   get 'freereg_contents/:id/show_church(.:format)', :to => 'freereg_contents#show_church', :as => :show_church_freereg_content
@@ -313,10 +316,12 @@ MyopicVicar::Application.routes.draw do
   post 'freereg_contents/send_request_email(.:format)', :to => 'freereg_contents#send_request_email', :as => :send_request_email_freereg_content
   resources :freereg_contents
 
+
   get 'churches/:id/rename', :to => 'churches#rename', :as => :rename_church
   get 'churches/:id/merge(.:format)', :to => 'churches#merge', :as => :merge_church
   get 'churches/:id/relocate(.:format)', :to => 'churches#relocate', :as => :relocate_church
   resources :churches
+
 
   get 'registers/:id/rename', :to => 'registers#rename', :as => :rename_register
   get 'registers/:id/merge(.:format)', :to => 'registers#merge', :as => :merge_register
@@ -327,6 +332,7 @@ MyopicVicar::Application.routes.draw do
   resources :registers
 
   resources :master_place_names
+
 
   get 'places/:id/approve', :to => 'places#approve', :as => :approve_place
   get 'places/:id/rename', :to => 'places#rename', :as => :rename_place

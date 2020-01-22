@@ -1,37 +1,13 @@
-<% title "#{@county} Coverage" %>
-<div class="grid">
-  <header class="grid__item one-whole">
-    <div class="text--center push-half--bottom">
-      <%= link_to 'County Selection', new_freereg_content_path, :class => "btn  btn--small "%>
-      <% if  @character  %>
-        <%= link_to 'Alphabet Place Selection', freereg_contents_path, :class => "btn  btn--small "%>
-      <% end%>
-    </div>
-    <h1 class="title  text--center"> <%= @county %> General Information</h1>
-    <h2 class="text--center">Coordinator: <%= @coordinator %> </h2>
-  </header>
-  <div class="grid__item one-third palm-one-whole float--right ">
-    <div class="island island--blue push-half--top">
-      <strong>As of today…</strong><br />
-       <%= @county %> has <%= display_number(@records[0])%> records:
-      <ul>
-        <li><%= display_number(@records[1])%> baptisms</li>
-        <li><%=display_number(@records[2])%> burials</li>
-        <li><%= display_number(@records[3])%> marriages</li>
-      </ul>
-    </div>
-  </div>
-  <div class="grid__item two-thirds palm-one-whole ">
-    <%= county_content(@page)%>
-  </div>
-  <div class="grid__item one-whole">
-    <hr class="rule">
-    <% if flash[:notice] %>
-      <div id="notice" style="color:blue"><br>
-        <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
-      </div>
-    <% end %>
-    <p>These Places have data records. Click on the name for more information. (Smart-phone users should display the latter with a landscape view)</p>
-  </div>
+<% title "#{@county} information" %>
+<div class="text--center push-half--bottom">
+  <%= link_to 'Choose new County', new_freereg_content_path, :class => "btn  btn--small" %>
+  <%= link_to 'Choose new Place', freereg_contents_path, :class => "btn  btn--small", :title => "in this county"%>
 </div>
-<%= render 'show_first_body' %>
+<h1 class="title text--center"><%= @county %></h1>
+<%= render 'flash_notice' %>
+<h2 class="accessibility">Places for which information should exist</h2>
+<% loc = (@character) ? "#{@county} (#{@character})" : @county %>
+<p >Click on the Place, Church or Register name for more details at that level. (On a smart-phone, try <q>landscape</q> view for Place details page.)</p>
+<div class="scrollable ">
+  <%= render 'show_body' %>
+</div>
