@@ -744,6 +744,8 @@ class SearchQuery
     persist_results(records)
     persist_additional_results(secondary_date_results) if App.name == 'FreeREG' && (result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     search_ucf if can_query_ucf? && result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+    p 'after ucf'
+    p records
     records
   end
 
@@ -768,15 +770,26 @@ class SearchQuery
   end
 
   def search_ucf
+
+    p 'search_ucf'
+    p self
     start_ucf_time = Time.now.utc
     ucf_index = SearchRecord.index_hint(ucf_params)
     logger.warn("#{App.name_upcase}:UCF_SEARCH_HINT: #{ucf_index}")
+
     ucf_records = SearchRecord.collection.find(ucf_params).hint(ucf_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+    p 'ucf_results'
+    p ucf_records.inspect
+    p 'filter ucf'
     ucf_records = filter_ucf_records(ucf_records)
+    p ucf_records.inspect
     ucf_filtered_count = ucf_records.length
+    p ucf_records.inspect
     search_result.ucf_records = ucf_records.map { |sr| sr.id }
+
     runtime_ucf = (Time.now.utc - start_ucf_time) * 1000
     save
+    p self
   end
 
   def sort_results(results)
@@ -829,6 +842,8 @@ class SearchQuery
   end
 
   def ucf_results
+    p 'ucf_results'
+    p can_query_ucf?
     if self.can_query_ucf?
       SearchRecord.find(self.search_result.ucf_records)
     else

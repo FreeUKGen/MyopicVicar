@@ -608,8 +608,12 @@ class Place
   end
 
   def update_ucf_list(file)
+    p 'update_ucf_list'
+    p self.inspect
     ids = file.search_record_ids_with_wildcard_ucf
     self.ucf_list[file.id.to_s] = ids if ids && ids.size > 0
+    p 'after'
+    p self.inspect
   end
 
 end

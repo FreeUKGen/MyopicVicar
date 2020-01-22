@@ -745,9 +745,14 @@ class CsvFile < CsvFiles
 
 
   def update_place_after_processing(freereg1_csv_file, chapman_code, place_name)
+    p 'update_place_after_processing'
+
     place = Place.where(:chapman_code => chapman_code, :place_name => place_name).first
+    p place.inspect
     place.update_ucf_list(freereg1_csv_file)
+    p place.save
     place.save
+    p place.inspect
   end
 
 

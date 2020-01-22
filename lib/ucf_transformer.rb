@@ -75,6 +75,8 @@ module UcfTransformer
   end
 
   def self.contains_wildcard_ucf?(name_part)
+    p 'contains_wildcard_ucf?'
+    p name_part
     # print "\tcontains_wildcard_ucf?(#{name_part}) => #{name_part.match(/[\*_]/) ? 'true' : 'false'}\n"
     if name_part.blank?
       false

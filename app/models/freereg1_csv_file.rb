@@ -822,10 +822,15 @@ class Freereg1CsvFile
   end
 
   def search_record_ids_with_wildcard_ucf
+    p 'search_record_ids_with_wildcard_ucf'
     ids = []
     self.freereg1_csv_entries.each do |entry|
+      entry.reload
+      p entry
+      p entry.search_record if entry.search_record.present?
       ids << entry.search_record.id if entry.search_record && entry.search_record.contains_wildcard_ucf?
     end
+    p  ids.inspect
     ids
   end
 
