@@ -29,36 +29,35 @@ class FreecenIndividual
 
   # labels/values for dwelling page table body (header in freecen_dwelling)
   def self.individual_display_labels(year, chapman_code)
-    if '1841' == year
-      return ['Surname','Forenames','Sex','Age','Occupation','Birth County','Notes']
-    elsif '1891' == year
+    if year == '1841'
+      return ['Surname', 'Forenames', 'Sex', 'Age', 'Occupation', 'Birth County', 'Notes']
+    elsif year == '1891'
       # only Wales 1891 has language field
-      if ChapmanCode::CODES['Wales'].member?(chapman_code)
-        return ['Surname','Forenames','Relationship','Marital Status','Sex','Age','Occupation','Birth County','Birth Place','Disability','Language','Notes']
+      if ChapmanCode::CODES['Wales'].values.member?(chapman_code) || ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        return ['Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Birth County', 'Birth Place', 'Disability', 'Language', 'Notes']
       end
-      return ['Surname','Forenames','Relationship','Marital Status','Sex','Age','Occupation','Birth County','Birth Place','Disability','Notes']
+      return ['Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Birth County', 'Birth Place', 'Disability', 'Notes']
     end
     #return standard fields for 1851 - 1881
-    ['Surname','Forenames','Relationship','Marital Status','Sex','Age','Occupation','Birth County','Birth Place','Disability','Notes']
+    ['Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Birth County', 'Birth Place', 'Disability', 'Notes']
   end
 
   def individual_display_values(year, chapman_code)
-    disp_age = self.age
-    if self.age_unit && !self.age_unit.empty? && 'y' != self.age_unit
-      disp_age = self.age + self.age_unit
+    disp_age = age
+    if age_unit.present? && 'y' != age_unit
+      disp_age = age + age_unit
     end
-    disp_occupation = self.occupation
-    if '1841' == year
-      return [self.surname, self.forenames, self.sex, disp_age, disp_occupation, self.verbatim_birth_county, self.notes]
-    elsif '1891' == year
+    disp_occupation = occupation
+    if year == '1841'
+      return [surname, forenames, sex, disp_age, disp_occupation, verbatim_birth_county, notes]
+    elsif year == '1891'
       # only Wales 1891 has language field
-      if ChapmanCode::CODES['Wales'].member?(chapman_code)
-        return [self.surname, self.forenames, self.relationship, self.marital_status, self.sex, disp_age, disp_occupation, self.verbatim_birth_county, self.verbatim_birth_place, self.disability, self.language, self.notes]
+      if ChapmanCode::CODES['Wales'].values.member?(chapman_code) || ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        return [surname, forenames, relationship, marital_status, sex, disp_age, disp_occupation, verbatim_birth_county, verbatim_birth_place, disability, language, notes]
       end
-      return [self.surname, self.forenames, self.relationship, self.marital_status, self.sex, disp_age, disp_occupation, self.verbatim_birth_county, self.verbatim_birth_place, self.disability, self.notes]
+      return [surname, forenames, relationship, marital_status, sex, disp_age, disp_occupation, verbatim_birth_county, verbatim_birth_place, disability, notes]
     end
     # standard fields for 1851 - 1881
-    [self.surname, self.forenames, self.relationship, self.marital_status, self.sex, disp_age, disp_occupation, self.verbatim_birth_county, self.verbatim_birth_place, self.disability, self.notes]
+    [surname, forenames, relationship, marital_status, sex, disp_age, disp_occupation, verbatim_birth_county, verbatim_birth_place, disability, notes]
   end
-
 end
