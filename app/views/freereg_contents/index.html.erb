@@ -6,14 +6,15 @@
 <h2 class="accessibility">Database contents</h2>
 <%= render 'flash_notice' %>
 <div class="grid">
-  <%= semantic_form_for @freereg_content do |f| %>
-    <li class="grid__item one-half palm-one-whole" id="freereg_content_place_input">
+  <%= simple_form_for @freereg_content do |f| %>
+    <li class="grid__item one-half palm-one-whole" >
       <h2 class="text--center">Choose a Specific Place </h2>
       <select id="freereg_content_place" name="freereg_content[place]" class="select" size="11">
         <%  @places.each do | value| %>
           <option value="<%= value.id %>"><%= value.place_name %></option>
         <% end %>
       </select>
+      <%= f.button :submit,  'Select' , :button_html => {:class => 'btn--small' }  %>
     </li>
     <li class="grid__item one-half palm-one-whole">
       <h2 class="text--center">General County Information</h2>
@@ -31,6 +32,5 @@
         </ul>
       </div>
     </li>
-    <%= f.action :submit, :as => :input,  :label => 'Select' , :button_html => {:class => 'btn btn--small' }  %>
   <% end %>
 </div>
