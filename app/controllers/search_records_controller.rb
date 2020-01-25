@@ -30,8 +30,7 @@ class SearchRecordsController < ApplicationController
 
   def show
     redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
-    p 'show................................................................................'
-
+    @show_navigation = params[:friendly].present? || params[:dwel].present? ? true : false
     @appname = appname_downcase
     @page_number = params[:page_number].to_i
     if @appname == 'freecen'
@@ -134,7 +133,6 @@ class SearchRecordsController < ApplicationController
 
       end
     elsif @appname == 'freereg'
-      @show_navigation = params[:friendly].present? ? true : false
       @display_date = false
       @entry.display_fields(@search_record)
       @entry.acknowledge
@@ -224,7 +222,7 @@ class SearchRecordsController < ApplicationController
       flash.keep
       return false
     end
-    @search_query = SearchQuery.find(session[:query]) if session[:query].present? && params[:friendly].present?
+    @search_query = SearchQuery.find(session[:query]) if session[:query].present? && (params[:friendly].present? || params[:dwel].present?)
 
     if appname_downcase == 'freereg'
       @search_record = SearchRecord.find_by(_id: params[:id])
