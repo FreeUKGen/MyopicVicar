@@ -107,6 +107,13 @@ class SearchQuery
   validate :radius_is_valid
   validate :county_is_valid
   validate :wildcard_is_appropriate
+  validates_presence_of :last_name || :spouses_mother_surname if :spouse_first_name
+  validates_presence_of :last_name if :age_at_death
+  validates_presence_of :last_name if :min_age_at_death
+  validates_presence_of :last_name if :max_age_at_death
+  validates_presence_of :last_name if :min_dob_at_death
+  validates_presence_of :last_name if :max_dob_at_death
+  validates_presence_of :last_name if :dob_at_death
   # probably not necessary in FreeCEN
   #  validate :all_counties_have_both_surname_and_firstname
 
@@ -1013,25 +1020,25 @@ class SearchQuery
     records.where(define_range) if check_age_range?
   end
 
-  def date_of_birth
-   date split_range unless special_character.include?('-')
-  end
+  #def date_of_birth
+   #date split_range unless special_character.include?('-')
+  #end
 
-  def range_to_integer
-    split_range.map(&:to_i)
-    split_range.map{|r| r.dob_quarter_number}
-  end
+  #def range_to_integer
+    #split_range.map(&:to_i)
+    #split_range.map{|r| r.dob_quarter_number}
+  #end
 
-  def split_range
-    self.age_at_death.split(special_character)
-  end
+  #def split_range
+   # self.age_at_death.split(special_character)
+  #end
 
-  def special_character
-    self.age_at_death.remove(/[0-9a-zA-Z]/,'/')
-  end
+  #def special_character
+   # self.age_at_death.remove(/[0-9a-zA-Z]/,'/')
+  #end
 
-  def validate_age_at_death
-  end
+  #def validate_age_at_death
+  #end
 
   def bmd_volume_params
     params = {}

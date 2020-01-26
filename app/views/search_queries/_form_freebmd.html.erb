@@ -14,11 +14,17 @@
 <div class="bmd_search_form">
   <%= semantic_form_for(@search_query) do |f| %>
     <div class="grid search_form">
-
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
-        <div class='labels'>
-          <%= label_tag 'first_name', "First name(s) #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:firstname], 'aria-details': info_tag_text[:first_name] %>
-        </div>
+          <div class='labels'>
+            <a href='/cms/help#forename' class="firstnamelabel" target='_blank'>
+              <%= label_tag 'first_name', "First name(s) #{app_icons[:info]}".html_safe, class: "ttip", 'aria-details': info_tag_text[:first_name] %>
+              <div id='iframeDiv'>
+                <iframe class='firstnamehelp' title='First Name(s) Help Page' src="/cms/help#forename"></iframe>
+              </div>
+            </a>
+          </div>
+          <!--div><a href="/cms/help#birth" target="iframe_a">W3Schools.com</a></div-->
+          <!--iframe height="300px" width="100%" src="demo_iframe.htm" name="iframe_a"></iframe-->
         <%= text_field_tag 'search_query[first_name]', set_value(@search_query.first_name), class: 'text-input', placeholder: 'Enter first name(s) here', role: 'textbox', id: 'first_name'%>
         <label>
           <small class="ttip__text">
@@ -30,7 +36,12 @@
 
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <div class='labels'>
-          <%= label_tag 'last_name', "Surname #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:lastname], 'aria-details': info_tag_text[:lastname]%>
+          <a href='/cms/help#surname' class="surnamelabel" target='_blank'>
+            <%= label_tag 'last_name', "Surname #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:lastname], 'aria-details': info_tag_text[:lastname]%>
+            <div id='iframeDiv'>
+              <iframe class='surnamehelp' title='Surname Help Page' src="/cms/help#surname"></iframe>
+            </div>
+          </a>
         </div>
         <%= text_field_tag 'search_query[last_name]', set_value(@search_query.last_name), class: 'text-input', id: 'last_name', placeholder: 'Enter Surname here'%>
         <label>
@@ -43,7 +54,12 @@
 
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <div class='labels'>
-          <%= label_tag 'start_quarter', "Date range from #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:date_range_from], 'aria-details': info_tag_text[:date_range_from] %>
+          <a href='/cms/help#from_date_range' class="datereangefromlabel" target='_blank'>
+            <%= label_tag 'start_quarter', "Date range from #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:date_range_from], 'aria-details': info_tag_text[:date_range_from] %>
+            <div id='iframeDiv'>
+              <iframe class='from_date_range_help' title='Date Range From Help Page' src="/cms/help#from_date_range"></iframe>
+            </div>
+          </a>
         </div>
         <%= select_tag( 'search_query[start_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.start_quarter)), class: 'select_month_start date_year', 'aria-labelledby': 'start_quarter', id: 'from_quarter') %>
         <%= select_year(set_value(@search_query.start_year), { start_year: 1837, end_year: 1992 }, class: 'select_year_start date_year', name: 'search_query[start_year]', 'aria-labelledby': 'start_quarter', id: 'from_year') %>
@@ -51,14 +67,24 @@
 
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <div class='labels'>
-          <%= label_tag 'to_year', "Date range to #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:date_range_to], 'aria-details': info_tag_text[:date_range_to] %>
+          <a href='/cms/help#to_date_range' class="todaterangelabel" target='_blank'>
+            <%= label_tag 'to_year', "Date range to #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:date_range_to], 'aria-details': info_tag_text[:date_range_to] %>
+            <div id='iframeDiv'>
+              <iframe class='to_date_range_help' title='Date Range To Help Page' src="/cms/help#to_date_range"></iframe>
+            </div>
+          </a>
         </div>
         <%= select_tag( 'search_query[end_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.end_quarter)), class: 'select_month_end date_year', 'aria-labelledby': 'to_year', id: 'to_quarter') %>
         <%= select_year(set_value(@search_query.end_year), {start_year: 1992, end_year: 1837 }, class: 'select_year_end date_year', name: 'search_query[end_year]', 'aria-labelledby': 'to_year', id: 'end_year') %>
       </div>
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <div class='labels'>
-          <%= label_tag 'record_type', "Record Type #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:record_type], 'aria-details': info_tag_text[:record_type] %>
+          <a href='/cms/help#record_type' class="recordtypelabel" target='_blank'>
+            <%= label_tag 'record_type', "Record Type #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:record_type], 'aria-details': info_tag_text[:record_type] %>
+            <div id='iframeDiv'>
+              <iframe class='recordtypehelp' title='Record Type Help Page' src="/cms/help#record_type"></iframe>
+            </div>
+          </a>
         </div>
 
         <span class="stack_fields">
@@ -83,7 +109,12 @@
 
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <div class='labels'>
-          <%= label_tag 'spouse_first_name', "Spouses first name(s) #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:spouse_first_name], 'aria-details': info_tag_text[:spouse_first_name] %>
+          <a href='/cms/help#spouse_surname_givenname' class="spousefirstnamelabel" target='_blank'>
+            <%= label_tag 'spouse_first_name', "Spouses first name(s) #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:spouse_first_name], 'aria-details': info_tag_text[:spouse_first_name] %>
+            <div id='iframeDiv'>
+              <iframe class='spousefirstnamehelp' title='Spouse First Name Help Page' src="/cms/help#spouse_surname_givenname"></iframe>
+            </div>
+          </a>
         </div>
         <%= text_field_tag 'search_query[spouse_first_name]', set_value(@search_query.spouse_first_name), class: 'text-input', placeholder: 'Enter spouse first name(s) here', id: 'spouse_first_name'%>
         <label>
@@ -96,14 +127,24 @@
 
       <div class="grid__item one-quarter lap-one-half palm-one-whole">
         <div class='labels'>
-          <%= label_tag 'spouses_mother_surname', "Spouses/Mothers surname #{app_icons[:info]}".html_safe, class: "ttip spouse_or_mother_surname_label", title: info_tag_text[:spouse_mother_surname], 'aria-details': info_tag_text[:spouse_mother_surname] %>
+          <a href='/cms/help#spouse_or_mother_surnames' class="spouseormothersurnamelabel" target='_blank'>
+            <%= label_tag 'spouses_mother_surname', "Spouses/Mothers surname #{app_icons[:info]}".html_safe, class: "ttip spouse_or_mother_surname_label", title: info_tag_text[:spouse_mother_surname], 'aria-details': info_tag_text[:spouse_mother_surname] %>
+            <div id='iframeDiv'>
+              <iframe class='spouseormothersurnamehelp' title='Spouse/Mother Surname Help Page' src="/cms/help#spouse_or_mother_surnames"></iframe>
+            </div>
+          </a>
         </div>
         <%= text_field_tag '', set_value(@search_query.spouses_mother_surname) || set_value(@search_query.mother_last_name), class: 'text-input', placeholder: '', id: 'spouses_mother_surname'%>
       </div>
 
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <div class='labels'>
-          <%= label_tag 'death_select_box', "Age at Death #{app_icons[:info]}".html_safe, class: "ttip", title: date_of_birth_or_death_age_info[:death_age], 'aria-details': date_of_birth_or_death_age_info[:death_age], id: 'age_at_death_label'%>
+          <a href='/cms/help#age_at_death' class="ageatdeathlabel" target='_blank'>
+            <%= label_tag 'death_select_box', "Age at Death #{app_icons[:info]}".html_safe, class: "ttip", title: date_of_birth_or_death_age_info[:death_age], 'aria-details': date_of_birth_or_death_age_info[:death_age], id: 'age_at_death_label'%>
+            <div id='iframeDiv'>
+              <iframe class='ageatdeathhelp' title='Age at Death Help Page' src="/cms/help#age_at_death"></iframe>
+            </div>
+          </a>
         </div>
         <%= select_tag('search_query[death_at_age]', options_for_select(SearchQuery::DEATH_AGE_OPTIONS.map { |k,v| [v,k]}, set_value(@search_query.death_at_age)), {:prompt => "Select Death Age", id: 'death_select_box', 'aria-labelledby':'age_at_death_label'}) %>
         <span id="death_age_and_dob">
@@ -132,21 +173,36 @@
 
       <div class="grid__item one-eighth lap-one-half palm-one-whole">
         <div class='labels'>
-          <%= label_tag 'volume', "Volume #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:volume], 'aria-details': info_tag_text[:volume] %>
+          <a href='/cms/help#volume' class="volumelabel" target='_blank'>
+            <%= label_tag 'volume', "Volume #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:volume], 'aria-details': info_tag_text[:volume] %>
+            <div id='iframeDiv'>
+              <iframe class='volumehelp' title='Volume Help Page' src="/cms/help#volume"></iframe>
+            </div>
+          </a>
         </div>
         <%= text_field_tag 'search_query[volume]', set_value(@search_query.volume), class: 'text-input', id: 'volume', placeholder: 'Enter Volume' %>
       </div>
 
       <div class="grid__item one-eighth lap-one-half palm-one-whole">
         <div class='labels'>
-          <%= label_tag 'page', "Page #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:page], 'aria-details': info_tag_text[:page] %>
+          <a href='/cms/help#page' class="pagelabel" target='_blank'>
+            <%= label_tag 'page', "Page #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:page], 'aria-details': info_tag_text[:page] %>
+            <div id='iframeDiv'>
+              <iframe class='pagehelp' title='Age at Death Help Page' src="/cms/help#page"></iframe>
+            </div>
+          </a>
         </div>
         <%= text_field_tag 'search_query[page]', set_value(@search_query.page), class: 'text-input', id: 'page', placeholder: 'Enter Page'%>
       </div>
 
       <div class="grid__item three-eighths lap-one-quarters palm-one-whole">
         <div class='labels'>
-          <%= label_tag 'chapman_codes', "Counties #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:counties], 'aria-details': info_tag_text[:counties], id: 'chapman_codes' %>
+          <a href='/cms/help#counties' class="countieslabel" target='_blank'>
+            <%= label_tag 'chapman_codes', "Counties #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:counties], 'aria-details': info_tag_text[:counties], id: 'chapman_codes' %>
+            <div id='iframeDiv'>
+              <iframe class='countieshelp' title='Counties Help Page' src="/cms/help#counties"></iframe>
+            </div>
+          </a>
         </div>
         
         <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
@@ -156,7 +212,12 @@
       </div>
       <div class="grid__item three-eighths lap-one-quarters palm-one-whole">
         <div class='labels'>
-          <%= label_tag 'districts', "Districts #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:districts], 'aria-details': info_tag_text[:districts] %>
+          <a href='/cms/help#districts' class="districtslabel" target='_blank'>
+            <%= label_tag 'districts', "Districts #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:districts], 'aria-details': info_tag_text[:districts] %>
+            <div id='iframeDiv'>
+              <iframe class='districtshelp' title='Counties Help Page' src="/cms/help#districts"></iframe>
+            </div>
+          </a>
         </div>
         <% @districts = DistrictToCounty.joins(:District).distinct.order( 'DistrictName ASC' )%>
         <%= f.select :districts, @districts.pluck(:DistrictName, :DistrictNumber), {include_hidden: false}, {multiple: true, id: 'search_query_districts', "aria-labelledby": 'districts'} %>
@@ -441,5 +502,82 @@ $('.checkboxtag').on('change', function(){
     $('#death_select_box').prop('disabled', 'disabled');
     $('#death_select_box').css('background', '#ccc');
   });
+
+  //$(".firstnamehelp").hide();
+
+  $(".firstnamelabel").mouseover(function() {
+    $(".firstnamehelp").css('visibility', 'visible');
+  }).mouseout(function() {
+      $(".firstnamehelp").css('visibility', 'hidden');
+  });
+
+  $(".surnamelabel").mouseover(function() {
+    $(".surnamehelp").css('visibility', 'visible');
+  }).mouseout(function() {
+      $(".surnamehelp").css('visibility', 'hidden');
+  });
+
+  $(".datereangefromlabel").mouseover(function() {
+    $(".from_date_range_help").css('visibility', 'visible');
+  }).mouseout(function() {
+      $(".from_date_range_help").css('visibility', 'hidden');
+  });
+
+  $(".todaterangelabel").mouseover(function() {
+    $(".to_date_range_help").css('visibility', 'visible');
+  }).mouseout(function() {
+      $(".to_date_range_help").css('visibility', 'hidden');
+  });
+
+  $(".recordtypelabel").mouseover(function() {
+    $(".recordtypehelp").css('visibility', 'visible');
+  }).mouseout(function() {
+      $(".recordtypehelp").css('visibility', 'hidden');
+  });
+
+  $(".spousefirstnamelabel").mouseover(function() {
+    $(".spousefirstnamehelp").css('visibility', 'visible');
+  }).mouseout(function() {
+      $(".spousefirstnamehelp").css('visibility', 'hidden');
+  });
+
+  $(".spouseormothersurnamelabel").mouseover(function() {
+    $(".spouseormothersurnamehelp").css('visibility', 'visible');
+  }).mouseout(function() {
+      $(".spouseormothersurnamehelp").css('visibility', 'hidden');
+  });
+
+  $(".ageatdeathlabel").mouseover(function() {
+    $(".ageatdeathhelp").css('visibility', 'visible');
+  }).mouseout(function() {
+      $(".ageatdeathhelp").css('visibility', 'hidden');
+  });
+
+  $(".volumelabel").mouseover(function() {
+    $(".volumehelp").css('visibility', 'visible');
+  }).mouseout(function() {
+      $(".volumehelp").css('visibility', 'hidden');
+  });
+
+  $(".pagelabel").mouseover(function() {
+    $(".pagehelp").css('visibility', 'visible');
+  }).mouseout(function() {
+      $(".pagehelp").css('visibility', 'hidden');
+  });
+
+  $(".countieslabel").mouseover(function() {
+    $(".countieshelp").css('visibility', 'visible');
+  }).mouseout(function() {
+      $(".countieshelp").css('visibility', 'hidden');
+  });
+
+  $(".districtslabel").mouseover(function() {
+    $(".districtshelp").css('visibility', 'visible');
+  }).mouseout(function() {
+      $(".districtshelp").css('visibility', 'hidden');
+  });
+
 });
+
+
 </script>
