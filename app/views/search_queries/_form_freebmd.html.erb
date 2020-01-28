@@ -62,20 +62,24 @@
 
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <div class='labels'>
-          <a href='/cms/help#to_date_range' class="todaterangelabel" target='_blank'>
+          <div class="todaterangelabel">
             <%= label_tag 'to_year', "Date range to #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:date_range_to], 'aria-details': info_tag_text[:date_range_to] %>
-            <div class='iframeDiv' id="todate_div"></div>
-          </a>
+            <a href='/cms/help#to_date_range' target='_blank'>
+                <div class='iframeDiv' id="todate_div"></div>
+            </a>
+          </div>
         </div>
         <%= select_tag( 'search_query[end_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.end_quarter)), class: 'select_month_end date_year', 'aria-labelledby': 'to_year', id: 'to_quarter') %>
         <%= select_year(set_value(@search_query.end_year), {start_year: 1992, end_year: 1837 }, class: 'select_year_end date_year', name: 'search_query[end_year]', 'aria-labelledby': 'to_year', id: 'end_year') %>
       </div>
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <div class='labels'>
-          <a href='/cms/help#record_type' class="recordtypelabel" target='_blank'>
+          <div class="recordtypelabel">
             <%= label_tag 'record_type', "Record Type #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:record_type], 'aria-details': info_tag_text[:record_type] %>
-            <div id='iframeDiv' class="recordtype_div"></div>
-          </a>
+            <a href='/cms/help#record_type' target='_blank'>
+              <div id='iframeDiv' class="recordtype_div"></div>
+            </a>
+          </div>
         </div>
 
         <span class="stack_fields">
@@ -178,10 +182,12 @@
 
       <div class="grid__item three-eighths lap-one-quarters palm-one-whole">
         <div class='labels'>
-          <a href='/cms/help#counties' class="countieslabel" target='_blank'>
+         <div class="countieslabel">
             <%= label_tag 'chapman_codes', "Counties #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:counties], 'aria-details': info_tag_text[:counties], id: 'chapman_codes' %>
-            <div class='iframeDiv' id="counties_div"></div>
-          </a>
+            <a href='/cms/help#counties' target='_blank'>
+              <div class='iframeDiv' id="counties_div"></div>
+            </a>
+          </div>
         </div>
         
         <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
@@ -191,10 +197,12 @@
       </div>
       <div class="grid__item three-eighths lap-one-quarters palm-one-whole">
         <div class='labels'>
-          <a href='/cms/help#districts' class="districtslabel" target='_blank'>
+          <div class='districtslabel'>
             <%= label_tag 'districts', "Districts #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:districts], 'aria-details': info_tag_text[:districts] %>
-            <div class='iframeDiv' id="districts_div"></div>
-          </a>
+            <a href='/cms/help#districts' target='_blank'>
+              <div class='iframeDiv' id="districts_div"></div>
+            </a>
+          </div>
         </div>
         <% @districts = DistrictToCounty.joins(:District).distinct.order( 'DistrictName ASC' )%>
         <%= f.select :districts, @districts.pluck(:DistrictName, :DistrictNumber), {include_hidden: false}, {multiple: true, id: 'search_query_districts', "aria-labelledby": 'districts'} %>
