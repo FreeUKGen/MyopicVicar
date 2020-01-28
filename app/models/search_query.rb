@@ -107,13 +107,13 @@ class SearchQuery
   validate :radius_is_valid
   validate :county_is_valid
   validate :wildcard_is_appropriate
-  validates_presence_of :last_name || :spouses_mother_surname if :spouse_first_name
-  validates_presence_of :last_name if :age_at_death
-  validates_presence_of :last_name if :min_age_at_death
-  validates_presence_of :last_name if :max_age_at_death
-  validates_presence_of :last_name if :min_dob_at_death
-  validates_presence_of :last_name if :max_dob_at_death
-  validates_presence_of :last_name if :dob_at_death
+  #validates_presence_of :last_name || :spouses_mother_surname, allow_blank: true if :spouse_first_name.present?
+  #validates_presence_of :last_name, allow_blank: true if :age_at_death
+  #validates_presence_of :last_name, allow_blank: true if :min_age_at_death.present?
+  #validates_presence_of :last_name, allow_blank: true if :max_age_at_death.present?
+  #validates_presence_of :last_name, allow_blank: true if :min_dob_at_death.present?
+  #validates_presence_of :last_name, allow_blank: true if :max_dob_at_death.present?
+  #validates_presence_of :last_name, allow_blank: true if :dob_at_death.present?
   # probably not necessary in FreeCEN
   #  validate :all_counties_have_both_surname_and_firstname
 
@@ -857,7 +857,7 @@ class SearchQuery
       if fuzzy && ((first_name && first_name.match(WILDCARD)) || (last_name && last_name.match(WILDCARD)))
         errors.add(:last_name, 'You cannot use both wildcards and soundex in a search')
       end
-      if place_search?
+      if place_search? || self.districts.present?
         if last_name && last_name.match(WILDCARD) && last_name.index(WILDCARD) < 2
           errors.add(:last_name, 'Two letters must precede any wildcard in a surname.')
         end
@@ -866,7 +866,7 @@ class SearchQuery
         end
         # place_id is an adequate index -- all is well; do nothing
       else
-        errors.add(:last_name, 'Wildcard can only be used with a specific place.')
+        errors.add(:last_name, 'Wildcard can only be used with a specific place/district.')
         #if last_name.match(WILDCARD)
         #if last_name.index(WILDCARD) < 3
         #errors.add(:last_name, 'Three letters must precede any wildcard in a surname unless a specific place is also chosen.')
@@ -919,7 +919,9 @@ class SearchQuery
 
   def mother_surname_search
     params = {}
-    params[:AssociateName] = self.mother_last_name if self.mother_last_name.present?
+    if self.mother_last_name.present?
+      params[:AssociateName] = self.mother_last_name  unless do_wildcard_seach?self.mother_last_name
+    end
     params
   end
 
@@ -965,7 +967,7 @@ class SearchQuery
     @search_index = SearchQuery.get_search_table.index_hint(bmd_adjust_field_names)
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
     records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)#.joins(spouse_join_condition).where(bmd_marriage_params)
-    records = records.where(first_name_filteration) unless self.first_name_exact_match
+    records = records.where(search_conditions) #unless self.first_name_exact_match
     records = marriage_surname_filteration(records) if self.spouses_mother_surname.present? and self.bmd_record_type == ['3']
     records = spouse_given_name_filter(records) if self.spouse_first_name.present?
     records = combined_results records if date_of_birth_range? || self.dob_at_death.present?
@@ -1051,7 +1053,43 @@ class SearchQuery
   end
 
   def first_name_filteration
-    "BestGuess.GivenName like '#{self.first_name}%'" if self.first_name.present? && !self.first_name_exact_match
+    if self.first_name.present? && !self.first_name_exact_match
+      "BestGuess.GivenName like '#{self.first_name}%'" unless do_wildcard_seach?(self.first_name)
+    end
+  end
+
+  def first_name_wildcard_query
+    if self.first_name.present? && !self.first_name_exact_match
+      if do_wildcard_seach?(self.first_name)
+        unless second_name_wildcard
+          query = "BestGuess.GivenName like '#{name_wildcard_search(self.first_name)}'"
+        else
+          name = self.first_name.slice!(0)
+          query = "BestGuess.OtherNames like '#{name_wildcard_search(self.first_name)}'"
+        end
+      end
+    end
+    query
+  end
+
+  def second_name_wildcard
+    self.first_name.start_with?('*') && !self.first_name.start_with?('**')
+  end
+
+  def surname_wildcard_query
+    if self.last_name.present?
+      "BestGuess.Surname like '#{name_wildcard_search(self.last_name)}'" if do_wildcard_seach?(self.last_name)
+    end
+  end
+
+  def mother_surname_wildcard_query
+    if self.mother_last_name.present?
+      "BestGuess.AssociateName like '#{name_wildcard_search(self.mother_last_name)}'" if do_wildcard_seach?self.mother_last_name
+    end
+  end
+
+  def search_conditions
+    [first_name_filteration, surname_wildcard_query, mother_surname_wildcard_query, first_name_wildcard_query].compact.to_sentence
   end
 
   def bmd_params_hash
@@ -1059,7 +1097,11 @@ class SearchQuery
   end
 
   def name_search_params_bmd
-    self.attributes.symbolize_keys.except(:_id).keep_if {|k,v|  name_fields.include?(k) && v.present?}
+    name_hash = self.attributes.symbolize_keys.except(:_id).keep_if {|k,v|  name_fields.include?(k) && v.present?}
+    if name_hash.has_key?(:last_name)
+      name_hash.except!(:last_name) if do_wildcard_seach?(self.last_name)
+    end
+    name_hash
   end
 
   def is_soundex_search?
@@ -1416,6 +1458,7 @@ class SearchQuery
     #records.select{|r|
     #  r[:AssociateName].downcase == self.spouses_mother_surname.downcase if r[:AssociateName].present?
     #}
+    records.where("BestGuess.AssociateName like '#{name_wildcard_search(self.spouses_mother_surname)}'") if do_wildcard_seach?self.spouses_mother_surname
   end
 
   def search_pre_spouse_surname records
@@ -1423,6 +1466,20 @@ class SearchQuery
    # records.joins(spouse_join_condition).select {|r|
     #  r[:Surname].downcase == self.spouses_mother_surname.downcase
     #}
+    records.where("BestGuess.Surname like '#{name_wildcard_search(self.spouses_mother_surname)}'") if do_wildcard_seach?self.spouses_mother_surname
+  end
+
+  def has_wildcard? name
+    name.match?(/[*?]/)
+  end
+
+  def do_wildcard_seach?name
+    !name.start_with?('#') if has_wildcard?(name)
+  end
+
+  def name_wildcard_search name_field
+    name_field.gsub(/[*?]/, '*' => '%', '?' => '_')
+    #query = "BestGuess.Surname like '#{surname}'"
   end
 
   def month
