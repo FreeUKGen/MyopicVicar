@@ -50,10 +50,11 @@
 
       <div class="grid__item one-fifth lap-one-half palm-one-whole">
         <div class='labels'>
-          <a href='/cms/help#from_date_range' class="datereangefromlabel" target='_blank'>
+          <div class="datereangefromlabel">
             <%= label_tag 'start_quarter', "Date range from #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:date_range_from], 'aria-details': info_tag_text[:date_range_from] %>
-            <div class='iframeDiv' id='fromdate_div'></div>
-          </a>
+            <a href='/cms/help#from_date_range' target='_blank'><div class='iframeDiv' id='fromdate_div'></div>
+            </a>
+          </div>
         </div>
         <%= select_tag( 'search_query[start_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.start_quarter)), class: 'select_month_start date_year', 'aria-labelledby': 'start_quarter', id: 'from_quarter') %>
         <%= select_year(set_value(@search_query.start_year), { start_year: 1837, end_year: 1992 }, class: 'select_year_start date_year', name: 'search_query[start_year]', 'aria-labelledby': 'start_quarter', id: 'from_year') %>
@@ -496,6 +497,9 @@ $('.checkboxtag').on('change', function(){
     if ($('.firstnamehelp').length) {
     $("#forename_div").html('');
     } else {
+      if ($('.iframeDiv').length) {
+        $(".iframeDiv").html('');
+      }
       $("#forename_div").html('<object data="/cms/help#forename" class="firstnamehelp" title="First Name(s) Help Page"></object>');
     }
   });
@@ -504,6 +508,9 @@ $('.checkboxtag').on('change', function(){
     if ($('.surnamehelp').length) {
     $("#surname_div").html('');
     } else {
+      if ($('.iframeDiv').length) {
+        $(".iframeDiv").html('');
+      }
       $("#surname_div").html('<object class="surnamehelp" title="Surname Help Page" data="/cms/help#surname"></object>');
     }
   });
@@ -512,6 +519,9 @@ $('.checkboxtag').on('change', function(){
     if ($('.from_date_range_help').length) {
     $("#fromdate_div").html('');
     } else {
+      if ($('.iframeDiv').length) {
+        $(".iframeDiv").html('');
+      }
       $("#fromdate_div").html('<object class="from_date_range_help" title="Date Range From Help Page" data="/cms/help#from_date_range"></object>');
     }
   });
@@ -520,6 +530,9 @@ $('.checkboxtag').on('change', function(){
     if ($('.to_date_range_help').length) {
     $("#todate_div").html('');
     } else {
+      if ($('.iframeDiv').length) {
+        $(".iframeDiv").html('');
+      }
       $("#todate_div").html('<object class="to_date_range_help" title="Date Range To Help Page" data="/cms/help#to_date_range"></object>');
     }
   });
@@ -528,6 +541,9 @@ $('.checkboxtag').on('change', function(){
     if ($('.recordtypehelp').length) {
     $("#recordtype_div").html('');
     } else {
+      if ($('.iframeDiv').length) {
+        $(".iframeDiv").html('');
+      }
       $("#recordtype_div").html('<object class="recordtypehelp" title="Record Type Help Page" data="/cms/help#record_type"></object>');
     }
   });
@@ -536,6 +552,9 @@ $('.checkboxtag').on('change', function(){
     if ($('.spousefirstnamehelp').length) {
     $("#spousefirstname_div").html('');
     } else {
+      if ($('.iframeDiv').length) {
+        $(".iframeDiv").html('');
+      }
       $("#spousefirstname_div").html('<object class="spousefirstnamehelp" title="Spouse First Name Help Page" data="/cms/help#spouse_surname_givenname"></object>');
     }
   });
@@ -544,6 +563,9 @@ $('.checkboxtag').on('change', function(){
     if ($('.spouseormothersurnamehelp').length) {
     $("#spousemothersurname_div").html('');
     } else {
+      if ($('.iframeDiv').length) {
+        $(".iframeDiv").html('');
+      }
       $("#spousemothersurname_div").html('<object class="spouseormothersurnamehelp" title="Spouse/Mother Surname Help Page" data="/cms/help#spouse_or_mother_surnames"></object>');
     }
   });
@@ -552,6 +574,9 @@ $('.checkboxtag').on('change', function(){
     if ($('.ageatdeathhelp').length) {
     $("#ageatdeath_div").html('');
     } else {
+      if ($('.iframeDiv').length) {
+        $(".iframeDiv").html('');
+      }
       $("#ageatdeath_div").html('<object class="ageatdeathhelp" title="Age at Death Help Page" data="/cms/help#age_at_death"></object>');
     }
   });
@@ -560,6 +585,9 @@ $('.checkboxtag').on('change', function(){
     if ($('.volumehelp').length) {
     $("#volume_div").html('');
     } else {
+      if ($('.iframeDiv').length) {
+        $(".iframeDiv").html('');
+      }
       $("#volume_div").html('<object class="volumehelp" title="Volume Help Page" data="/cms/help#volume"></object>');
     }
   });
@@ -568,6 +596,9 @@ $('.checkboxtag').on('change', function(){
     if ($('.pagehelp').length) {
     $("#page_div").html('');
     } else {
+      if ($('.iframeDiv').length) {
+        $(".iframeDiv").html('');
+      }
       $("#page_div").html('<object class="pagehelp" title="Age at Death Help Page" data="/cms/help#page"></object>');
     }
   });
@@ -576,6 +607,9 @@ $('.checkboxtag').on('change', function(){
     if ($('.countieshelp').length) {
     $("#counties_div").html('');
     } else {
+      if ($('.iframeDiv').length) {
+        $(".iframeDiv").html('');
+      }
       $("#counties_div").html('<object class="countieshelp" title="Counties Help Page" data="/cms/help#counties"></object>');
     }
   });
@@ -584,6 +618,9 @@ $('.checkboxtag').on('change', function(){
     if ($('.districtshelp').length) {
     $("#districts_div").html('');
     } else {
+      if ($('.iframeDiv').length) {
+        $(".iframeDiv").html('');
+      }
       $("#districts_div").html('<object class="districtshelp" title="Counties Help Page" data="/cms/help#districts"></object>');
     }
   });
