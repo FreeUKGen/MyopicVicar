@@ -50,13 +50,19 @@
             </tr>
           </thead>
           <tbody>
-            <% @dwelling.freecen_individuals.asc(:sequence_in_household).each do |individual| %>
+            <% if @dwelling.freecen_individuals.present? %>
               <tr>
-                <% individual.individual_display_values(@cen_year,@cen_chapman_code).each do |field_val| %>
-                  <td>
-                    <%= field_val %>
-                  </td>
-                <% end %>
+                <% @dwelling.freecen_individuals.asc(:sequence_in_household).each do |individual| %>
+                  <tr>
+                    <% individual.individual_display_values(@cen_year,@cen_chapman_code).each do |field_val| %>
+                      <td>
+                        <%= field_val %>
+                      </td>
+                    <% end %>
+                  <% end %>
+                </tr>
+              <% else%>
+                <p class="text--center">Uninhabited</p>
               </tr>
             <% end %>
           </tbody>

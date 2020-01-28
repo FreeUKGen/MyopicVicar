@@ -102,7 +102,9 @@ class SearchRecordsController < ApplicationController
         if @individual.individual_display_values(@cen_year,@cen_chapman_code)[2].eql? "Head"
           @is_family_head = true
         else
-          @family_head_name = @dwelling.freecen_individuals.asc(:sequence_in_household).first['forenames'] + " " + @dwelling.freecen_individuals.asc(:sequence_in_household).first['surname']
+          if @dwelling.freecen_individuals.present?
+            @family_head_name = @dwelling.freecen_individuals.asc(:sequence_in_household).first['forenames'] + " " + @dwelling.freecen_individuals.asc(:sequence_in_household).first['surname']
+          end
         end
 
         #Adds the department and series codes based on the citation year
