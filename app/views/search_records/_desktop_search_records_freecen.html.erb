@@ -43,12 +43,14 @@
         </tr>
       </thead>
       <tbody>
-        <% @dwelling.freecen_individuals.asc(:sequence_in_household).each do |individual| %>
-          <tr>
-            <% individual.individual_display_values(@cen_year,@cen_chapman_code).each do |field_val| %>
-              <td>
-                <%= field_val %>
-              </td>
+        <% if @dwelling.freecen_individuals.present? %>
+          <% @dwelling.freecen_individuals.asc(:sequence_in_household).each do |individual| %>
+            <tr>
+              <% individual.individual_display_values(@cen_year,@cen_chapman_code).each do |field_val| %>
+                <td>
+                  <%= field_val %>
+                </td>
+              <% end %>
             <% end %>
           </tr>
         <% end %>
