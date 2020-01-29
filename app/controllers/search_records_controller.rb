@@ -225,7 +225,6 @@ class SearchRecordsController < ApplicationController
       return false
     end
     @search_query = SearchQuery.find(session[:query]) if session[:query].present? && (params[:friendly].present? || params[:dwel].present?)
-
     if appname_downcase == 'freereg'
       @search_record = SearchRecord.find_by(_id: params[:id])
       if @search_record.blank?
@@ -257,7 +256,7 @@ class SearchRecordsController < ApplicationController
         flash.keep
         return false
       end
-      if session[:query].present? && !params[:ucf] == 'true'
+      if session[:query].present? && params[:ucf].blank?
         response, @next_record, @previous_record = @search_query.next_and_previous_records(params[:id])
         @search_record = response ? @search_query.locate(params[:id]) : nil
         return false unless response
