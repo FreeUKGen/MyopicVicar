@@ -2,7 +2,7 @@
   <ul class="nav">
     <li> <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn   btn--small" %></li>
     <li><%= link_to "New Search", new_search_query_path, :class => "btn   btn--small" %></li>
-    <li> <%= link_to "Back to Results", search_query_path(@search_query, :anchor => "#{@search_record[:_id]}"), :class => "btn  btn--small"%></li>
+    <li> <%= link_to "Back to Results", search_query_path(@search_query, :anchor => "#{@search_record.id}"), :class => "btn  btn--small"%></li>
     <li><%= link_to "Previous Result", friendly_search_record_path(@previous_record, @previous_record.friendly_url), :class => "btn  btn--small" unless @previous_record.nil?%></li>
     <li> <%= link_to "Next Result", friendly_search_record_path(@next_record, @next_record.friendly_url), :class => "btn  btn--small" unless @next_record.nil?%></li>
     <li> <%= link_to "Printable Format", show_print_version_search_record_path(@search_record[:_id]), :class => "btn  btn--small"%></li>
