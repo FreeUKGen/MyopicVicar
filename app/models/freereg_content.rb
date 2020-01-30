@@ -151,10 +151,17 @@ class FreeregContent
     def number_of_records_in_county(chapman)
       county = County.chapman_code(chapman).first
       record = Array.new
-      record[0] = county.total_records
-      record[1] = county.baptism_records
-      record[2] = county.burial_records
-      record[3] = county.marriage_records
+      if county.present?
+        record[0] = county.total_records
+        record[1] = county.baptism_records
+        record[2] = county.burial_records
+        record[3] = county.marriage_records
+      else
+        record[0] = 0
+        record[1] = 0
+        record[2] = 0
+        record[3] = 0
+      end
       record
     end
     def setup_array
