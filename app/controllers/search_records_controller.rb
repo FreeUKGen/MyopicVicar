@@ -258,7 +258,7 @@ class SearchRecordsController < ApplicationController
         flash.keep
         return false
       end
-      if session[:query].present? && params[:ucf].blank?
+      if @search_query.present? && params[:ucf].blank?
         response, @next_record, @previous_record = @search_query.next_and_previous_records(params[:id])
         @search_record = response ? @search_query.locate(params[:id]) : nil
         return false unless response
