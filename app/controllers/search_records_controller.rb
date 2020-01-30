@@ -30,6 +30,7 @@ class SearchRecordsController < ApplicationController
 
   def show
     redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
+
     @show_navigation = params[:friendly].present? || params[:dwel].present? ? true : false
     @appname = appname_downcase
     @page_number = params[:page_number].to_i
@@ -155,6 +156,7 @@ class SearchRecordsController < ApplicationController
   def show_print_version
     redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
 
+    @show_navigation = params[:friendly].present? || params[:dwel].present? ? true : false
     @appname = appname_downcase
     if @appname == 'freecen'
       @search_record = SearchRecord.record_id(params[:id]).first
@@ -224,9 +226,9 @@ class SearchRecordsController < ApplicationController
       flash.keep
       return false
     end
-    @search_query = SearchQuery.find(session[:query]) if session[:query].present? && (params[:friendly].present? || params[:dwel].present?)
+    @search_query = SearchQuery.find(session[:query]) if params[:action] == 'show_print_version' || (session[:query].present? && (params[:friendly].present? || params[:dwel].present?))
     if appname_downcase == 'freereg'
-      @search_record = SearchRecord.find_by(_id: params[:id])
+      @search_record = SearchRecord.record_id(params[:id]).first
       if @search_record.blank?
         flash[:notice] = messagea
         logger.warn(warning)
