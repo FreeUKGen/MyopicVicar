@@ -124,7 +124,7 @@ class SearchRecord
 
   }
 
-  SharedSearchMethods.apply_index
+  INDEXES = SearchRecord.apply_index
 
   INDEXES.each_pair do |name, fields|
     field_spec = {}

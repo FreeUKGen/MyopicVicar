@@ -629,7 +629,7 @@ From June 1969 the index contains the Date of Birth instead of the Age at Death.
   def content_text tag, info_text
     content_tag tag, info_text, class: 'ttip__text'
   end
-end
+  
   def viewed(search_query, search_record)
     search_results = search_query.search_result
     viewed_records = search_results.viewed_records
@@ -785,8 +785,6 @@ def fullwidth_adsense_freereg
                             end
                             banner.html_safe
                           end
-
-
                           def side_banners
                             banner = <<-HTML
                             <img src="http://dummyimage.com/120x600/000/fff?text=banner+ad">
