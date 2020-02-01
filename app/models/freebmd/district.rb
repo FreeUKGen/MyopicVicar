@@ -1,5 +1,4 @@
-class District < ActiveRecord::Base
-  establish_connection FREEBMD_DB
+class District < FreebmdDbBase
   self.table_name = 'Districts'
   has_many :DistrictToCounty, foreign_key: :DistrictNumber
 end

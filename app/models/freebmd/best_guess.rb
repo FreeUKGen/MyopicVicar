@@ -1,5 +1,4 @@
-class BestGuess < ActiveRecord::Base
-  establish_connection FREEBMD_DB
+class BestGuess < FreebmdDbBase
   self.pluralize_table_names = false
   self.table_name = 'BestGuess'
   has_one :best_guess_maariages, class_name: '::BestGuessMarriage', foreign_key: 'RecordNumber'

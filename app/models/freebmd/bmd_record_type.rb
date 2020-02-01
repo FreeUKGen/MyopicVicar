@@ -1,5 +1,4 @@
-class BmdRecordType < ActiveRecord::Base
-  establish_connection FREEBMD_DB
+class BmdRecordType < FreebmdDbBase
   self.pluralize_table_names = false
   self.table_name = 'RecordTypes'
 end
