@@ -4,10 +4,13 @@
 class UserMailer < ActionMailer::Base
   reg_website = MyopicVicar::Application.config.website == 'https://test3.freereg.org.uk' ? 'Test' : ''
   cen_website = MyopicVicar::Application.config.website == 'https://test3.freecen.org.uk' ? 'Test' : ''
+  bmd_website = MyopicVicar::Application.config.website == 'https://test3.freebmd.org.uk' ? 'Test' : ''
   if MyopicVicar::Application.config.template_set == 'freereg'
     default from: "#{reg_website} FreeREG Servant <freereg-processing@freereg.org.uk>"
   elsif MyopicVicar::Application.config.template_set == 'freecen'
-    default from: "#{reg_website} FreeCEN Servant <freecen-contacts@freecen.org.uk>"
+    default from: "#{cen_website} FreeCEN Servant <freecen-contacts@freecen.org.uk>"
+  elsif MyopicVicar::Application.config.template_set == 'freebmd'
+    default from: "#{reg_bmdsite} FreeCEN Servant <freebmd-contacts@freebmd.org.uk>"
   end
 
   def appname
@@ -196,14 +199,14 @@ class UserMailer < ActionMailer::Base
       manager = UseridDetail.userid("Captainkirk").first
     end
     get_coordinator_name
-    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{manager.person_forename} <#{manager.email_address}>", :subject => "#{appname} transcriber registration") unless @coordinator.nil?
+    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk", :to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{manager.person_forename} <#{manager.email_address}>", :subject => "#{appname} transcriber registration") unless @coordinator.nil?
   end
 
   def notification_of_researcher_registration(user)
     @appname = appname
     @user = user
     get_coordinator_name
-    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} research registration") unless @coordinator.nil?
+    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk", :to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} research registration") unless @coordinator.nil?
   end
 
   def notify_cc_assignment_complete(user, group_id, chapman_code)
