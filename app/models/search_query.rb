@@ -861,8 +861,10 @@ class SearchQuery
         if last_name && last_name.match(WILDCARD) && last_name.index(WILDCARD) < 2
           errors.add(:last_name, 'Two letters must precede any wildcard in a surname.')
         end
-        if first_name && first_name.match(WILDCARD) && first_name.index(WILDCARD) < 2
-          errors.add(:last_name, 'Two letters must precede any wildcard in a forename.')
+        unless MyopicVicar::Application.config.template_set == 'freebmd'
+          if first_name && first_name.match(WILDCARD) && first_name.index(WILDCARD) < 2
+            errors.add(:last_name, 'Two letters must precede any wildcard in a forename.')
+          end
         end
         # place_id is an adequate index -- all is well; do nothing
       else
