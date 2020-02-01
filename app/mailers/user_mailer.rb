@@ -192,6 +192,8 @@ class UserMailer < ActionMailer::Base
       manager = UseridDetail.userid("REGManager").first
     elsif appname.downcase == 'freecen'
       manager = UseridDetail.userid("CENManager").first
+    elsif appname.downcase == 'freebmd'
+      manager = UseridDetail.userid("Captainkirk").first
     end
     get_coordinator_name
     mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{manager.person_forename} <#{manager.email_address}>", :subject => "#{appname} transcriber registration") unless @coordinator.nil?
