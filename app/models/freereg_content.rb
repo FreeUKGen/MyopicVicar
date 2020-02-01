@@ -69,13 +69,13 @@ class FreeregContent
       end
     end
 
-    def determine_if_selection_needed(chapman,alphabet)
+    def determine_if_selection_needed(chapman, alphabet)
       number = 0
       if alphabet.blank?
         county = County.chapman_code(chapman).first
         if county.present?
           number = county.total_records.to_i
-          number = (number/FreeregOptionsConstants::RECORDS_PER_RANGE).to_i
+          number = (number / FreeregOptionsConstants::RECORDS_PER_RANGE).to_i
           number = FreeregOptionsConstants::ALPHABETS.length - 1 if number >= FreeregOptionsConstants::ALPHABETS.length
         else
           number = 26
@@ -110,8 +110,8 @@ class FreeregContent
     end
 
     def get_places_for_display(chapman)
-      places = Place.where(:chapman_code => chapman, :data_present => true,:disabled => 'false' ).all.order_by(place_name: 1)
-      place_names = Array.new
+      places = Place.where(chapman_code: chapman, disabled: 'false').all.order_by(place_name: 1)
+      place_names = []
       places.each do |place|
         place_names << place.place_name
       end
@@ -119,7 +119,7 @@ class FreeregContent
     end
 
     def get_records_for_display(chapman)
-      places = Place.where(:chapman_code => chapman, :data_present => true, :disabled => 'false').all.order_by(place_name: 1)
+      places = Place.where(chapman_code: chapman, disabled: 'false').all.order_by(place_name: 1)
     end
 
     def get_transcribers(individual, my_hash, file)
@@ -151,10 +151,17 @@ class FreeregContent
     def number_of_records_in_county(chapman)
       county = County.chapman_code(chapman).first
       record = Array.new
-      record[0] = county.total_records
-      record[1] = county.baptism_records
-      record[2] = county.burial_records
-      record[3] = county.marriage_records
+      if county.present?
+        record[0] = county.total_records
+        record[1] = county.baptism_records
+        record[2] = county.burial_records
+        record[3] = county.marriage_records
+      else
+        record[0] = 0
+        record[1] = 0
+        record[2] = 0
+        record[3] = 0
+      end
       record
     end
     def setup_array

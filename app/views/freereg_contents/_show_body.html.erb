@@ -1,89 +1,53 @@
-<% title "#{@county} Contents" %>
-<div class="text--center push-half--bottom">
-  <%= link_to 'Choose new County', new_freereg_content_path, :class => "btn  btn--small" %>
-  <% if @character  %>
-    <%= link_to 'Choose new Place', freereg_contents_path, :class => "btn  btn--small", :title => "in this county" %>
-  <% end %>
-</div>
-<h1 class="title text--center"><%= @county %></h1>
-<% if flash[:notice] %>
-  <div class="push-half--bottom" id="notice" role="alert" style="color:#a1185a;">
-    <%= flash[:notice] %> <% flash[:notice] = nil %>
-  </div>
-<% end %>
-<h2 class="accessibility">Places with records</h2>
-<% loc = (@character) ? "#{@county} (#{@character})" : @county %>
-<p class="read-length">These Places in <%= loc %> have transcribed records. Click on the Place name for more details. (On a smart-phone, try <q>landscape</q> view for Place details page.)</p>
-<div class="fixed-headers push--bottom">
-  <table class="flush--bottom" role="presentation">
-    <colgroup>
-      <col span="5" class="t20">
-    </colgroup>
-    <thead>
-      <tr>
-        <th>Place</th>
-        <th>Last Changed</th>
-        <th>Number of Records</th>
-        <th>First Year</th>
-        <th>Last Year</th>
-      </tr>
-    </thead>
-  </table>
-  <div class="scrollable" role="region" aria-label="Places with transcribed records for <%= loc %> - table with one level of column and row headers" tabindex="0">
-    <table class="table--data">
-      <colgroup>
-        <col span="5" class="t20">
-      </colgroup>
-      <thead class="accessibility">
+<div class="container">
+  <div class="scrollable ">
+    <table class="table--bordered table--data table--striped">
+      <thead >
         <tr>
-          <th scope="col">Place</th>
-          <th scope="col">Last Changed</th>
-          <th scope="col">Number of Records</th>
-          <th scope="col">First Year</th>
-          <th scope="col">Last Year</th>
+          <th scope="col" class='sticky-header'>Place <a href="#" class="bottom_tooltip" ><%= image_tag 'png/info.png', alt: 'Information', height: '16' %>
+              <span >A Place for which information should exist.</span></a></th>
+          <th scope="col" class='sticky-header'>Churches <a href="#" class="bottom_tooltip"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %>
+              <span>There can be multiple churches or organizations for which records might exist in a specific place.</span></a></th>
+          <th scope="col" class='sticky-header'>Registers <a href="#" class="bottom_tooltip"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %>
+              <span>A church can have multiple registers. A register can be: Parish Register; Archdeacon's Transcripts; Bishop's Transcripts; Phillimore's Transcripts (made from a parish register); Extract of the Parish Registers (incomplete set of records); Dwelly's Transcript (made from a parish register); Other Register (original document); Transcript (another person's transcription); Unknown; or Unspecified.</span></a></th>
+          <th scope="col" class='sticky-header'>Changed <a href="#" class="bottom_tooltip"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %>
+              <span>Latest date a transcription file loaded.</span></a></th>
+          <th scope="col" class='sticky-header'>Records <a href="#" class="bottom_tooltip"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %>
+              <span>The number of actual transcriptions.</span></a></th>
+          <th scope="col" class='sticky-header'>First <a href="#" class="left_tooltip"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %>
+              <span>First and last years in the register.</span></a></th>
+          <th scope="col" class='sticky-header'>Last</th>
         </tr>
       </thead>
-      <tbody>
-        <% @places.each do |place| %>
-          <% session[:placeid] = place.id%>
-          <tr id="<%=place.id%>">
-            <th scope="row" aria-label="place"><%= link_to(place.place_name, show_place_freereg_content_path(place.place_name)) %> </th>
-            <td aria-label="date last changed"><%= place.last_amended %> </td>
-            <td aria-label="number of records"><%= display_number(place.records) %> </td>
-            <td aria-label="first year of records"><%= place.datemin %> </td>
-            <td aria-label="last year of records"><%= place.datemax %> </td>
+      <tbody >
+        <% unless churches_for_place?(@place) %>
+          <tr class="weight--semibold" >
+            <td scope="row" aria-label="place"> <%= link_to(@place.place_name, show_place_freereg_content_path(@place.id)) %> </td>
           </tr>
-        <% end %>
+        <% else%>
+          <% @place.churches.order_by(church_name: 1).each do |church| %>
+            <% unless registers_for_church?(church) %>
+              <tr class="weight--semibold" >
+                <td scope="row" aria-label="place"> <%= link_to(@place.id, show_place_freereg_content_path(@place.id)) %> </td>
+                <td aria-label="church"> <%= link_to(church.church_name, show_church_freereg_content_path(church.id)) %> </td>
+              </tr>
+            <% else%>
+              <% church.my_registers.each do |register| %>
+                <tr class="weight--semibold" >
+                  <td scope="row" aria-label="place"> <%= link_to(@place.place_name, show_place_freereg_content_path(@place.id)) %> </td>
+                  <td aria-label="church"> <%= link_to(church.church_name, show_church_freereg_content_path(church.id)) %> </td>
+                  <td aria-label="register"> <% registertype = RegisterType.display_name(register.register_type)%>
+                    <%= link_to(registertype, show_register_freereg_content_path(register.id)) %></td>
+                  <td aria-label="date last changed"> <%= register.last_amended %> </td>
+                  <td aria-label="number of records"> <%= display_number(register.records) %> </td>
+                  <td aria-label="first year of records"> <%= register.datemin %> </td>
+                  <td aria-label="last year of records"> <%= register.datemax %> </td>
+                  <% clear(register) %>
+                </tr>
+              <% end%>
+            <% end%>
+          <% end%>
+        <% end%>
       </tbody>
     </table>
-  </div>
-</div>
-<hr class="rule">
-<section class="read-length">
-  <h3 class="push-half--bottom">Table notes</h3>
-  <ul>
-    <li><b>Place</b> names and locations are as defined in the <a class="go" href="http://www.gazetteer.org.uk/" title="external link">Association of British Counties&rsquo; Gazetteer</a>.</li>
-    <li><b>First Year</b> and <b>Last Year</b>: the first or last year with a record transcribed for that Place.</li>
-  </ul>
-</section>
-<hr class="rule">
-<h2 class="text--center">General County Information</h2>
-<div class="grid">
-  <div class="grid__item two-thirds lap-one-half palm-one-whole">
-    <p class="gamma">Coordinator: <b><%= @coordinator %></b></p>
-    <div class="read-length">
-      <%= county_content(@page)%>
-    </div>
-  </div>
-  <div class="grid__item one-third lap-one-half palm-one-whole">
-    <div class="island island--bordered">
-      <h3 class="push-half--bottom">As of today …</h3>
-      <p class="push-half--bottom"><%= @county %> has <%= display_number(@records[0])%> records:</p>
-      <ul class="push--left">
-        <li><%= display_number(@records[1])%> baptisms</li>
-        <li><%=display_number(@records[2])%> burials</li>
-        <li><%= display_number(@records[3])%> marriages</li>
-      </ul>
-    </div>
   </div>
 </div>

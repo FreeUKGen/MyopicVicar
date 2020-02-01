@@ -1,0 +1,31 @@
+<table class="table--bordered table--data table--striped"  style="display: inline-block;width:
+    50%; float: left;">
+  <caption class="gamma text--center"><b> Details about the Embargoes</b> <br>
+  </caption>
+  <thead>
+    <tr>
+      <th scope="col" class='t10'> Record Type </th>
+      <th scope="col" class='t10'> Embargo Rule</th>
+      <th scope="col" class='t10'> Period or end year</th>
+      <th scope="col" class='t10'> Entity that required the rule </th>
+      <th scope="col" class='t10'> Reason for imposition </th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if @rules.present? %>
+      <% @rules.each do |rule| %>
+        <tr>
+          <td scope="row" aria-label='record type'><%= RecordType.display_name(rule.record_type) %></td>
+          <td aria-label='type of rule'><%= rule.rule%></td>
+          <td aria-label='period or ending year'><%= rule.period %></td>
+          <td aria-label='entity that required the rule'><%= rule.authority %></td>
+          <td aria-label='why rule was imposed'><%= rule.reason %></td>
+        </tr>
+      <% end %>
+    <% else%>
+      <tr>
+        <td scope="row" aria-label='embargoes' colspan="5">NONE</td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

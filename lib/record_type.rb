@@ -78,7 +78,7 @@ module RecordType
   }
 
   FREECEN_OPTIONS = ALL_FREECEN_TYPES.inject({}) do |accum, value|
-    accum[value]=value
+    accum[value] = value
     accum
   end
 

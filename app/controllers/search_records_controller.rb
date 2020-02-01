@@ -31,6 +31,7 @@ class SearchRecordsController < ApplicationController
   def show
     redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
 
+    @show_navigation = params[:friendly].present? || params[:dwel].present? ? true : false
     @appname = appname_downcase
     @page_number = params[:page_number].to_i
     if @appname == 'freecen'
@@ -87,7 +88,7 @@ class SearchRecordsController < ApplicationController
         #census database description
         @census_database = "General Register Office: #{@cen_year} Census Returns database"
 
-        if @search_record.place['country'] = 'Scotland'
+        if @search_record.place['country'] == 'Scotland'
           @census_database = "Scottish General Register Office: #{@cen_year} Census Returns database"
         end
 
@@ -102,7 +103,9 @@ class SearchRecordsController < ApplicationController
         if @individual.individual_display_values(@cen_year,@cen_chapman_code)[2].eql? "Head"
           @is_family_head = true
         else
-          @family_head_name = @dwelling.freecen_individuals.asc(:sequence_in_household).first['forenames'] + " " + @dwelling.freecen_individuals.asc(:sequence_in_household).first['surname']
+          if @dwelling.freecen_individuals.present?
+            @family_head_name = @dwelling.freecen_individuals.asc(:sequence_in_household).first['forenames'] + " " + @dwelling.freecen_individuals.asc(:sequence_in_household).first['surname']
+          end
         end
 
         #Adds the department and series codes based on the citation year
@@ -153,6 +156,7 @@ class SearchRecordsController < ApplicationController
   def show_print_version
     redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
 
+    @show_navigation = params[:friendly].present? || params[:dwel].present? ? true : false
     @appname = appname_downcase
     if @appname == 'freecen'
       @search_record = SearchRecord.record_id(params[:id]).first
@@ -222,17 +226,9 @@ class SearchRecordsController < ApplicationController
       flash.keep
       return false
     end
-    @search_query = SearchQuery.find(session[:query]) if session[:query].present?
-
+    @search_query = SearchQuery.find(session[:query]) if params[:action] == 'show_print_version' || (session[:query].present? && (params[:friendly].present? || params[:dwel].present?))
     if appname_downcase == 'freereg'
-      if session[:query].blank? || params[:ucf] == 'true'
-        @search_record = SearchRecord.find(params[:id])
-      else
-        response, @next_record, @previous_record = @search_query.next_and_previous_records(params[:id])
-
-        @search_record = response ? @search_query.locate(params[:id]) : nil
-        return false unless response
-      end
+      @search_record = SearchRecord.record_id(params[:id]).first
       if @search_record.blank?
         flash[:notice] = messagea
         logger.warn(warning)
@@ -261,6 +257,11 @@ class SearchRecordsController < ApplicationController
         flash[:notice] = messagea
         flash.keep
         return false
+      end
+      if @search_query.present? && params[:ucf].blank?
+        response, @next_record, @previous_record = @search_query.next_and_previous_records(params[:id])
+        @search_record = response ? @search_query.locate(params[:id]) : nil
+        return false unless response
       end
     end
     true

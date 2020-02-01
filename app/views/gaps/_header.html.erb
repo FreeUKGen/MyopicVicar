@@ -1,7 +1,17 @@
-<% if controller.action_name == 'index' %>
-	<div style="clear:both;"></div><br>
-	<p style="text-align: center"><b>GAPs</b> for <b><%= @source.source_name %></b> source for <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
-<% else %>
-	<div style="clear:both;"></div><br>
-	<p style="text-align: center"><b>GAP</b> for <b><%= @source.source_name %></b> source for <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
-<% end %>
+<div style="clear:both;"></div>
+<br>
+<h3 style="text-align: center">
+  <% if controller.action_name == 'index' && @freereg1_csv_file.blank? %>
+    GAPs for <%= @register_type %> register for <%= @church_name %> in <%= @place_name %> of <%= @county %>
+  <% elsif controller.action_name == 'index' && @freereg1_csv_file.present? %>
+    GAPs for <%= @freereg1_csv_file.file_name %> for <%= @register_type %> for <%= @church_name %> in <%= @place_name %> of <%= @county %>
+  <% elsif controller.action_name == 'new' && @freereg1_csv_file.blank? %>
+    Creating a GAP for <%= @register_type %> for <%= @church_name %> in <%= @place_name %> of <%= @county %>
+  <% elsif controller.action_name == 'new' && @freereg1_csv_file.present? %>
+    Creating a GAP for <%= @freereg1_csv_file.file_name %> a <%= RecordType::display_name(@freereg1_csv_file.record_type) %> for <%= @register_type %> for <%= @church_name %> in <%= @place_name %> of <%= @county %>
+  <% elsif %w[show edit delete].include?(controller.action_name) && @freereg1_csv_file.present? %>
+    GAP (<%= controller.action_name%>) for <%= @freereg1_csv_file.file_name %> a <%= RecordType::display_name(@freereg1_csv_file.record_type) %> for <%= @register_type %> for <%= @church_name %> in <%= @place_name %> of <%= @county %>
+  <% elsif %w[show edit delete].include?(controller.action_name) && @freereg1_csv_file.blank? %>
+    GAP (<%= controller.action_name%>) for <%= @register_type %> for <%= @church_name %> in <%= @place_name %> of <%= @county %>
+  <% end %>
+</h3>

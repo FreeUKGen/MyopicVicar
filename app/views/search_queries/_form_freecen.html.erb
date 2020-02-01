@@ -65,6 +65,14 @@
             <input id="end_year" name="search_query[end_year]" type="text" class="text-input" value="<%=@search_query.end_year%>">
           <%end%>
         </li>
+        <li class="grid__item one-whole">
+          <%= f.label :fuzzy, { :class => "ttip", :tabindex => "0" } do %>
+            <%= f.check_box :fuzzy, {}, "true", "false" %>
+            Name Soundex
+            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">Check to include the Soundex equivalent of the name: it is used for both surname and forename (if entered)</span>
+          <% end %><br>
+        </li>
         <li class="grid__item three-eighths lap-three-quarters palm-one-whole" id="search_query_birth_chapman_codes_input">
           <input name="search_query[birth_chapman_codes][]" type="hidden" value="">
           <label class="label ttip" for="search_query_birth_chapman_codes" tabindex="0">
@@ -136,63 +144,123 @@
       </ol>
     </fieldset>
     <fieldset class="inputs">
-      <legend>Search options</legend>
-      <ol class="grid">
-        <li class="grid__item one-third lap-one-whole palm-one-whole">
-          <%= f.label :search_nearby_places, { :class => "ttip", :tabindex => "0" } do %>
-            <%= f.check_box :search_nearby_places, {}, "true", "false" %>
-            Nearby places
-            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Check to search places near to your selected starting place (up to 40 places in total)</span>
-          <% end %>
-        </li>
-        <li class="grid__item one-third lap-one-whole palm-one-whole">
-          <%= f.label :fuzzy, { :class => "ttip", :tabindex => "0" } do %>
-            <%= f.check_box :fuzzy, {}, "true", "false" %>
-            Name Soundex
-            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Check to include the Soundex equivalent of the name: it is used for both surname and forename (if entered)</span>
-          <% end %>
-        </li>
-        <%= f.action :submit,
+      <legend>Filters</legend>
+      <p class="text--left">Filters are applied to the results of the specified search, they are not search criteria. (Those people who use spreadsheets will likely be familiar with the concept). The best way of proceeding is to run a search without applying any until you get a good "sample" of results (e.g. 3-400) and then apply filters to those results by revising the previous search.  Please read the <a href="../cms/help#filters/">Help</a> carefully BEFORE using the filters as their usefulness varies according to the year of the census.
+        <p>
+          <ol class="grid">
+            <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="search_query_marital_status_input">
+              <label class="label ttip" for="search_query_marital_status" tabindex="0">
+                Marital Status
+                <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
+                <span class="ttip__text">Select the marital status you wish to view. Available from 1851 onwards.</span>
+                <small class="additional">Leave blank to search all</small>
+              </label>
+              <select id="search_query_marital_status" name="search_query[marital_status]" class="select" size="4" style="max-width: 10rem;">
+                <option value="">--</option>
+                <% SearchQuery::MaritalStatus::OPTIONS.each_pair do |name, value| %>
+                  <%if !@search_query.marital_status.nil? && @search_query.marital_status.include?(value)%>
+                    <option value="<%= value %>" selected="selected"> <%= name %></option>
+                  <% else %>
+                    <option value="<%= value %>"><%= name %></option>
+                  <% end %>
+                <% end %>
+              </select>
+            </li>
+            <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="search_query_language_input">
+              <label class="label ttip" for="search_query_language" tabindex="0">
+                Language
+                <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
+                <span class="ttip__text">Select the language status you wish to view. Available only in 1891 onwards.</span>
+                <small class="additional">Leave blank to search all</small>
+              </label>
+              <select id="search_query_language" name="search_query[language]" class="select" size="4" style="max-width: 10rem;">
+                <option value="">--</option>
+                <% SearchQuery::Language::OPTIONS.each_pair do |name, value| %>
+                  <%if !@search_query.language.nil? && @search_query.language.include?(value)%>
+                    <option value="<%= value %>" selected="selected"> <%= name %></option>
+                  <% else %>
+                    <option value="<%= value %>"><%= name %></option>
+                  <% end %>
+                <% end %>
+              </select>
+            </li>
+            <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="search_query_sex_input">
+              <label class="label ttip" for="search_query_sex" tabindex="0">
+                Sex
+                <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
+                <span class="ttip__text">Select the sex of the person you wish to view.</span>
+                <small class="additional">Leave blank to search both</small>
+              </label>
+              <select id="search_query_sex" name="search_query[sex]" class="select" size="4" style="max-width: 10rem;">
+                <option value="">--</option>
+                <% SearchQuery::Sex::OPTIONS.each_pair do |name, value| %>
+                  <%if !@search_query.sex.nil? && @search_query.sex.include?(value)%>
+                    <option value="<%= value %>" selected="selected"> <%= name %></option>
+                  <% else %>
+                    <option value="<%= value %>"><%= name %></option>
+                  <% end %>
+                <% end %>
+              </select>
+            </li>
+            <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="search_query_sex_input">
+              <label class="ttip" for="occupation" tabindex="0">
+                Occupation
+                <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
+                <span class="ttip__text">Selection will be based on the appearance of these characters at the start of any word in the occupation field. Case irrelevant.</span><small class="additional">Leave blank for all occupations</small>
+              </label>
+              <% if @search_query.occupation.nil? %>
+                <input id="occupation" name="search_query[occupation]" type="text" class="text-input" placeholder="Optional">
+              <%else%>
+                <input id="occupation" name="search_query[occupation]" type="text" class="text-input" value="<%=@search_query.occupation%>">
+              <%end%>
+            </li>
+            <li class="grid__item one-fifth lap-one-quarter palm-one-whole">
+              <%= f.label :disabled, { :class => "ttip", :tabindex => "0" } do %>
+                <%= f.check_box :disabled, {}, "true", "false" %>
+                Disabled
+                <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
+                <span class="ttip__text">Check to restrict the search to those who are declared disabled. Available from 1851 onwards.</span>
+              <% end %>
+            </li>
+            <%= f.action :submit,
         :as => :button,
         :label => 'Search ',
         :button_html => { :class => "ladda-button" , "data-style" => "contract" ,"data-color" => appname.downcase, "data-size" => "s", "data-spinner-color" => "#ffffff" },
         :wrapper_html => { :class => "grid__item one-whole push-half--ends" } %>
-        <li class="grid__item one-whole">
-          <% x = Rails.application.config.max_search_time/1000 %>
-          <small class="additional push-half--ends">Search times are limited to <%= x %> seconds.<br>
-            Please do not restart the search once it is working as this will actually slow the process.</small>
-        </li>
-      </ol>
-    </fieldset>
-  <% end %>
-  <div class="adsense_center cen_unit cen_unit_page">
-    <span>Advertisement</span>
-    <div class="bnner-horz-secondary">
-      <a href ="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/?_ga=2.145101431.251616756.1548792447-1735478806.1548792447"><%= image_tag 'png/header-donate.png', :class => "donations", :alt => "Donations - FreeUKGenealogy" %></a>
-      <%= google_advert %>
-    </div>
-  </div>
-</div>
-<script type="text/javascript">
-  Ladda.bind( 'button[type=submit]' );
-</script>
-<% if true %>
-  <script type="text/javascript" charset="utf-8" >
-    <% if @search_query && @search_query.chapman_codes.size > 0 %>
-      var selection=<%= raw(PlaceCache.where(:chapman_code => @search_query.chapman_codes.first).first.places_json) %>;
-      <% if @search_query.places.size > 0 %>
-        selection["selected"]="<%= @search_query.places.first.id %>";
+            <li class="grid__item one-whole">
+              <% x = Rails.application.config.max_search_time/1000 %>
+              <small class="additional push-half--ends">Search times are limited to <%= x %> seconds.<br>
+                Please do not restart the search once it is working as this will actually slow the process.</small>
+            </li>
+          </ol>
+        </fieldset>
       <% end %>
+      <div class="adsense_center cen_unit cen_unit_page">
+        <span>Advertisement</span>
+        <div class="bnner-horz-secondary">
+          <a href ="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/?_ga=2.145101431.251616756.1548792447-1735478806.1548792447"><%= image_tag 'png/header-donate.png', :class => "donations", :alt => "Donations - FreeUKGenealogy" %></a>
+          <%= google_advert %>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      Ladda.bind( 'button[type=submit]' );
+    </script>
+    <% if true %>
+      <script type="text/javascript" charset="utf-8" >
+        <% if @search_query && @search_query.chapman_codes.size > 0 %>
+          var selection=<%= raw(PlaceCache.where(:chapman_code => @search_query.chapman_codes.first).first.places_json) %>;
+          <% if @search_query.places.size > 0 %>
+            selection["selected"]="<%= @search_query.places.first.id %>";
+          <% end %>
+        <% end %>
+        (function($) {$("#search_query_place_ids").remoteChained({
+        parents : "#search_query_chapman_codes",
+        url : "/places/for_search_form.json",
+        loading : "Loading..."
+        <% if @search_query && @search_query.chapman_codes.size == 1 %>
+        , bootstrap: selection
+        <% end %>
+        });})(jQuery);
+      </script>
     <% end %>
-    (function($) {$("#search_query_place_ids").remoteChained({
-    parents : "#search_query_chapman_codes",
-    url : "/places/for_search_form.json",
-    loading : "Loading..."
-    <% if @search_query && @search_query.chapman_codes.size == 1 %>
-    , bootstrap: selection
-    <% end %>
-    });})(jQuery);
-  </script>
-<% end %>

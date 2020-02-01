@@ -1,9 +1,7 @@
 <section>
-  <% if @search_query.present? %>
-    <%= render 'nav_header'%>
-  <% end%>
+  <%= render 'nav_header_freereg' if  @show_navigation %>
 </section>
-<section id="search-detail" >
+<section  >
   <% if @entry %>
     <% if @entry && @annotations && @annotations.length %>
       <h2>Offline Transcriptions</h2>
@@ -125,7 +123,7 @@
   window.addEventListener("load", function(){
     const no_javascript_elements = document.getElementsByClassName("no-javascript");
     const javascript_elements = document.getElementsByClassName("javascript");
-
+  
     for(let i = 0; i < no_javascript_elements.length; i++){
       no_javascript_elements[i].remove();
     }

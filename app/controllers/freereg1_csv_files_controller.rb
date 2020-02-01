@@ -50,6 +50,7 @@ class Freereg1CsvFilesController < ApplicationController
     @role = session[:role]
     @freereg1_csv_file_name = file.file_name
     session[:freereg1_csv_file_id] = file._id
+    @register = file.register
     @return_location = file.register.id if file.register.present?
   end
 
@@ -193,6 +194,19 @@ class Freereg1CsvFilesController < ApplicationController
     controls(@freereg1_csv_file)
     @role = session[:role]
     get_places_for_menu_selection
+  end
+
+  def embargoed_entries
+    @freereg1_csv_file = Freereg1CsvFile.find(params[:id])
+    unless Freereg1CsvFile.valid_freereg1_csv_file?(params[:id])
+      message = 'The file was not correctly linked. Have your coordinator contact the web master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
+    @freereg1_csv_entries = @freereg1_csv_file.all_embargoed_entries
+    display_info
+
+    @embargoed_entries = true
+    render 'freereg1_csv_entries/index'
   end
 
   def error
@@ -371,6 +385,8 @@ class Freereg1CsvFilesController < ApplicationController
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
     controls(@freereg1_csv_file)
+    @register = @freereg1_csv_file.register
+    @gaps = @freereg1_csv_file.register.gaps_exist?
   end
 
   def show_zero_startyear_entries

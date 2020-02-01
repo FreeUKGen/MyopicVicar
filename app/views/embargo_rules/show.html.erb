@@ -33,5 +33,17 @@
       <td>Reason for imposition :</td>
       <td class="weight--semibold"><%= @rule.reason %></td>
     </tr>
+    <tr>
+      <td>Member who created/edited :</td>
+      <td class="weight--semibold"><%= user(@rule.member_who_created) %></td>
+    </tr>
+    <tr>
+      <td>Updated :</td>
+      <td class="weight--semibold"><%= @rule.updated_at.strftime("%d %b %Y") %></td>
+    </tr>
+    <tr>
+      <td>Created :</td>
+      <td class="weight--semibold"><%= @rule.created_at.strftime("%d %b %Y") %></td>
+    </tr>
   </table>
 </div>

@@ -313,6 +313,9 @@ module FreeregOptionsConstants
     'MA' => RecordType::MARRIAGE,
   'BU' => RecordType::BURIAL }
 
+  REGISTER_TYPE_ORDER = ['Parish Register', "Archdeacon's Transcript", "Bishop's Transcript", 'Other Register', 'Extract of a Register',
+                         'Other Document', "Phillimore's Transcript", "Dwelly's Transcript", 'Other Transcript', 'Memorial Inscription', 'Unknown', 'Unspecified']
+
   SOURCE_NAME = ['Image Server', 'Other Server1', 'Other Server2', 'Other Server3']
 
   ST_PERIOD = /\A[Ss][Tt]\z/

@@ -9,6 +9,8 @@ Metrics/LineLength:
 # the code easier to read (by naming things), but can also clutter the class
 Metrics/MethodLength:
   Max: 50
+Metrics/ModuleLength:
+  Max: 1500
 
 # The guiding principle of classes is SRP, SRP can't be accurately measured by LoC
 Metrics/ClassLength:

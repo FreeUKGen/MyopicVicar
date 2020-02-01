@@ -14,7 +14,7 @@
     <%= f.input :userid, :collection => @people,:required => true , :label => "Userid where file is to be stored .Your own has been preselected. Select another if you wish.",
       :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 },:selected => @user.userid unless session[:my_own] %><br>
     <p class="text--center text--negative push-half--bottom"> <b>
-        Click the Upload button after selecting your file and it will be submitted for processing</b><br>
+        Click the Replace button after selecting your file and it will be submitted for processing</b><br>
       <%= f.button :button, 'Replace' ,:button_html => {:class => "btn  btn-small" } %></p>
   <% end %>
 </div>
