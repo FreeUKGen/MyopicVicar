@@ -62,7 +62,7 @@ class ApplicationController < ActionController::Base
     # This tells system there is a message to display
     if session[:message].blank?
       session[:message] = 'no'
-      session[:message] = 'load' if Refinery::Page.where(slug: 'message').exists?
+      #session[:message] = 'load' if Refinery::Page.present? && Refinery::Page.where(slug: 'message').exists?
     end
   end
 
