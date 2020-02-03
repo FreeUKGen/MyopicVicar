@@ -712,7 +712,7 @@ class Freereg1CsvEntry
     when 'bu'
       fields = ordered_burial_display_fields(extended_def)
     else
-      logger.warn "#{appname_upcase} get_record_type missing"
+      logger.warn "#{MyopicVicar::Application.config.freexxx_display_name.upcase} get_record_type missing"
       crash
     end
     fields.each do |field|

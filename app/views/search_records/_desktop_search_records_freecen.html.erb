@@ -215,10 +215,10 @@
         range.select();
         document.execCommand('copy');
       }
-      //Change button value to "copied" for 1 sec and then change back to "copy".
+      //Change button value to "copied" for 10 sec and then change back to "copy".
       button.innerHTML = "Copied"
       setTimeout(function(){
         button.innerHTML = "Copy"
-      }, 1000);
+      }, 10000);
     }
 </script>

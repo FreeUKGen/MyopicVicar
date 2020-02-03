@@ -12,7 +12,8 @@ copy any new configuration files to the server using Filezilla or equivalent
 
 cd  /home/apache/hosts/freereg2/production
 f2rake tmp:cache:clear # do occasionally
-git status #just to make sure we are on master
+git status # just to make sure we are on master
+git stash # to remove any local change (there should not be any)
 sudo rm -R public/assets # only required when there is a restructuring of assets
 sudo bash /root/bin/update-freereg2
 f2rake assets:precompile
@@ -23,6 +24,7 @@ copy any new configuration files to the server using Filezilla or equivalent
 cd  /home/apache/hosts/freecen2/production
 f2rake tmp:cache:clear # do occasionally
 git status #just to make sure we are on master
+git stash # to remove any local change (there should not be any)
 sudo rm -R public/assets # only required when there is a restructuring of assets
 sudo bash /root/bin/update-freecen2
 f2rake assets:precompile
