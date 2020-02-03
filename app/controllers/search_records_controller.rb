@@ -47,10 +47,11 @@ class SearchRecordsController < ApplicationController
   end
 
   def show_freebmd
-
+    # common code for the three show versions
   end
 
   def show_freecen
+    # common code for the three show versions
     @individual = @search_record.freecen_individual
     @dwelling = @individual.freecen_dwelling if @individual
     @cen_year = ' '
@@ -75,6 +76,7 @@ class SearchRecordsController < ApplicationController
       @cen_prev_dwelling = prev_next_dwellings[0]
       @cen_next_dwelling = prev_next_dwellings[1]
       @dweling_values = @dwelling.dwelling_display_values(@cen_year,@cen_chapman_code)
+
       #   ------------------------ Fields required for citation generation ------------------------
       @user_address = ""
       unless @dweling_values[11] == "-" || @dweling_values[11].nil? || @dweling_values[11].empty?
@@ -90,6 +92,7 @@ class SearchRecordsController < ApplicationController
       @user_address += @search_record.place["country"]
 
       #evidence explained
+
       @piece = @dweling_values[5]
       @place = @dweling_values[2]
       @enumeration_district = @dweling_values[6]
@@ -101,6 +104,7 @@ class SearchRecordsController < ApplicationController
       @ee_address = @dweling_values[11]
 
       #census database description
+
       @census_database = "General Register Office: #{@cen_year} Census Returns database"
 
       if @search_record.place['country'] == 'Scotland'
@@ -115,7 +119,7 @@ class SearchRecordsController < ApplicationController
       @family_head_name = nil
 
       #checks whether the head of the house is the same person searched for
-      if @individual.individual_display_values(@cen_year,@cen_chapman_code)[2].eql? "Head"
+      if @individual.individual_display_values(@cen_year, @cen_chapman_code)[2].eql? "Head"
         @is_family_head = true
       else
         if @dwelling.freecen_individuals.present?
@@ -152,6 +156,7 @@ class SearchRecordsController < ApplicationController
   end
 
   def show_freereg
+    # common code for the three show versions
     @entry = @search_record.freereg1_csv_entry
     @entry.display_fields(@search_record)
     @entry.acknowledge
