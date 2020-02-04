@@ -200,6 +200,7 @@ class FreeregContentsController < ApplicationController
     @unique_forenames = @church.unique_forenames.sort if @church.unique_forenames.present?
     @unique_surnames = @church.unique_surnames.sort if @church.unique_surnames.present?
     variables_for_church_show
+    @referer = params[:ref] if params[:ref].present?
   end
 
   def unique_register_names
@@ -209,6 +210,7 @@ class FreeregContentsController < ApplicationController
     @unique_forenames = @register.unique_forenames.sort if @register.unique_forenames.present?
     @unique_surnames = @register.unique_surnames.sort if @register.unique_surnames.present?
     variables_for_register_show
+    @referer = params[:ref] if params[:ref].present?
   end
 
   def unique_place_names
@@ -217,7 +219,9 @@ class FreeregContentsController < ApplicationController
 
     @unique_forenames = @place.unique_forenames.sort if @place.unique_forenames.present?
     @unique_surnames = @place.unique_surnames.sort if @place.unique_surnames.present?
+
     variables_for_place_show
+    @referer = params[:ref] if params[:ref].present?
   end
 
   def variables_for_church_show
@@ -241,6 +245,7 @@ class FreeregContentsController < ApplicationController
         @transcribers = @church.transcribers
         @contributors = @church.contributors
         @registers = Register.where(church_id: params[:id]).order_by(:record_types.asc, :register_type.asc, :start_year.asc).all
+        @referer = request.referer
       end
     end
   end
@@ -257,6 +262,7 @@ class FreeregContentsController < ApplicationController
     @decade = @place.daterange
     @transcribers = @place.transcribers
     @contributors = @place.contributors
+    @referer = request.referer
   end
 
   def variables_for_register_show
@@ -279,6 +285,7 @@ class FreeregContentsController < ApplicationController
         @decade = @register.daterange
         @transcribers = @register.transcribers
         @contributors = @register.credit
+        @referer = request.referer
       end
     end
   end
