@@ -160,6 +160,45 @@ class SearchRecord
       where(id: id)
     end
 
+    def check_show_parameters(search, param)
+      appname = MyopicVicar::Application.config.freexxx_display_name
+      messagea = 'We are sorry but the record you requested no longer exists; possibly as a result of some data being edited. You will need to redo the search with the original criteria to obtain the updated version.'
+      warning = "#{appname.upcase}::SEARCH::ERROR Missing entry for search record"
+      warninga = "#{appname.upcase}::SEARCH::ERROR Missing parameter"
+      if param[:id].blank?
+        logger.warn(warninga)
+        logger.warn " #{param[:id]} no longer exists"
+        return [false, search_query, search_record, messagea]
+      end
+      search_query = search.present? ? SearchQuery.search_id(search).first : ''
+      search_record = SearchRecord.record_id(param[:id]).first
+      if search_record.blank?
+        logger.warn(warning)
+        logger.warn "#{search_record} no longer exists"
+        return [false, search_query, search_record, messagea]
+      end
+
+      if appname.downcase == 'freereg'
+        if search_record[:freereg1_csv_entry_id].blank?
+          logger.warn(warning)
+          logger.warn "Entry id for #{search_record} no longer exists"
+          return [false, search_query, search_record, messagea]
+        end
+        entry = Freereg1CsvEntry.find(search_record[:freereg1_csv_entry_id])
+        if entry.blank?
+          logger.warn(warning)
+          logger.warn "Entry for #{search_record} no longer exists"
+          return [false, search_query, search_record, messagea]
+        end
+        if entry.freereg1_csv_file.blank?
+          logger.warn(warning)
+          logger.warn "File for #{search_record} no longer exists"
+          return [false, search_query, search_record, messagea]
+        end
+      end
+      [true, search_query, search_record, '']
+    end
+
     def comparable_name(record)
       record[:transcript_names].uniq.detect do |name| # mirrors display logic in app/views/search_queries/show.html.erb
         name['type'] == 'primary'

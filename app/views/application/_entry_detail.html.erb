@@ -1,9 +1,7 @@
 <div class='grid'>
   <section class='island '>
-    <div id='freereg_sidebar_left2_desk' class="grid__item  one-fifth  palm-one-whole text--left advert_div ">
-    </div>
     <div class='' id='results_detail_table'>
-      <table class='table--bordered table--data push--bottom t100' >
+      <table class='table--bordered table--data push--bottom t90' >
         <caption class='beta'><%= record_type(@entry) %> entry
           <%case%>
           <%when @display_date%>
@@ -35,7 +33,8 @@
             </tr>
             <% when 'place' %>
             <tr>
-              <td ><%= field.gsub('_',' ').capitalize %></td>
+              <td ><%= field.gsub('_',' ').capitalize %>
+                <small> (Links to more information)</small></td>
               <% if @place_id.present? %>
                 <td ><%= link_to(@entry[field], place_freereg_content_path(@place_id)) %></td>
               <% else %>
@@ -44,7 +43,8 @@
             </tr>
             <% when 'church_name' %>
             <tr>
-              <td ><%= field.gsub('_',' ').capitalize %></td>
+              <td ><%= field.gsub('_',' ').capitalize %>
+                <small> (Links to more information)</small></td>
               <% if @church_id.present? %>
                 <td ><%= link_to(@entry[field], church_freereg_content_path(@church_id)) %></td>
               <% else %>
@@ -53,7 +53,8 @@
             </tr>
             <% when 'register_type' %>
             <tr>
-              <td ><%= field.gsub('_',' ').capitalize%></td>
+              <td ><%= field.gsub('_',' ').capitalize%>
+                <small> (Links to more information)</small></td>
               <% if @register_id.present? %>
                 <td ><%= link_to(@entry[field], register_freereg_content_path(@register_id)) %></td>
               <% else %>
@@ -151,7 +152,10 @@
       </tbody>
     </table>
   </div>
-  <div id='freereg_sidebar_right2_desk' class="grid__item  one-fifth  palm-one-whole text--right advert_div">
+  <div class="grid__item  two-fifths  palm-one-whole text--right advert_div">
+    <span> Advertisement</span>
+    <div id='freereg_sidebar_right2_desk'>
+    </div>
   </div>
 </section>
 </div>
@@ -170,12 +174,12 @@
       }
     }
   };
-  var screen_width = window.matchMedia("(max-width: 1279px)")
+  var screen_width = window.matchMedia("(max-width: 800px)")
   changeClass(screen_width)
   screen_width.addListener(changeClass);
 </script>
 <style type="text/css">
-  @media only screen and (max-width: 1279px) {
+  @media only screen and (max-width: 800px) {
   .advert_div {
     display: none !important;
   }

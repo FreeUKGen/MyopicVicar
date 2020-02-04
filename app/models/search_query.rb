@@ -522,7 +522,7 @@ class SearchQuery
     record
   end
 
-  def locate_index(records,current)
+  def locate_index(records, current)
     n = 0
     records.each do |record|
       break if record[:_id].to_s == current
