@@ -33,7 +33,8 @@
             </tr>
             <% when 'place' %>
             <tr>
-              <td ><%= field.gsub('_',' ').capitalize %></td>
+              <td ><%= field.gsub('_',' ').capitalize %>
+                <small> (Links to more information)</small></td>
               <% if @place_id.present? %>
                 <td ><%= link_to(@entry[field], place_freereg_content_path(@place_id)) %></td>
               <% else %>
@@ -42,7 +43,8 @@
             </tr>
             <% when 'church_name' %>
             <tr>
-              <td ><%= field.gsub('_',' ').capitalize %></td>
+              <td ><%= field.gsub('_',' ').capitalize %>
+                <small> (Links to more information)</small></td>
               <% if @church_id.present? %>
                 <td ><%= link_to(@entry[field], church_freereg_content_path(@church_id)) %></td>
               <% else %>
@@ -51,7 +53,8 @@
             </tr>
             <% when 'register_type' %>
             <tr>
-              <td ><%= field.gsub('_',' ').capitalize%></td>
+              <td ><%= field.gsub('_',' ').capitalize%>
+                <small> (Links to more information)</small></td>
               <% if @register_id.present? %>
                 <td ><%= link_to(@entry[field], register_freereg_content_path(@register_id)) %></td>
               <% else %>

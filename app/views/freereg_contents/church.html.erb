@@ -3,6 +3,7 @@
   <section class="island ">
     <div style="text-align: center">
       <%= link_to 'Back to Search Record', :back, :class => "btn   btn--small"%>
+      <%= link_to 'Unique Names', unique_church_names_path(@church.id,ref: @referer), method: :get, :class => "btn   btn--small"%>
     </div>
     <br>
     <h2 class=" text--center"><%=@church.church_name %> of <%= @place_name %> in <%= @county %> </h2>
