@@ -17,22 +17,22 @@ class ExtractUniqueCenFieldName
       diff_verbatim_birth_county = verbatim_birth_county - birth_county
       diff_birth_verbatim_place = birth_place - verbatim_birth_place
       diff_verbatim_birth_place = verbatim_birth_place - birth_place
-      message_file.puts 'Birth County'
-      message_file.puts birth_county
-      message_file.puts 'Verbatim Birth County'
-      message_file.puts verbatim_birth_county
-      message_file.puts 'Birth County NOT in Verbatim Birth County'
-      message_file.puts diff_birth_verbatim_county
-      message_file.puts 'Verbatim Birth County NOT in Birth County '
-      message_file.puts diff_verbatim_birth_county
-      message_file.puts 'Birth Place'
-      message_file.puts birth_place
-      message_file.puts 'Verbatim Birth Place'
-      message_file.puts verbatim_birth_place
-      message_file.puts 'Birth Place NOT in Verbatim Birth Place'
-      message_file.puts diff_birth_verbatim_place
-      message_file.puts 'Verbatim Birth Place NOT in Birth Place '
-      message_file.puts diff_verbatim_birth_place
+      message_file.puts "Birth County #{birth_county.length} values "
+      message_file.puts birth_county.inspect
+      message_file.puts "Verbatim Birth County #{verbatim_birth_county.length} values "
+      message_file.puts verbatim_birth_county.inspect
+      message_file.puts "Birth County NOT in Verbatim Birth County #{diff_birth_verbatim_county.length} values "
+      message_file.puts diff_birth_verbatim_county.inspect
+      message_file.puts "Verbatim Birth County NOT in Birth County #{diff_verbatim_birth_county.length} values "
+      message_file.puts diff_verbatim_birth_county.inspect
+      message_file.puts "Birth Place #{birth_place.length} values "
+      message_file.puts birth_place.inspect
+      message_file.puts "Verbatim Birth Place #{verbatim_birth_place.length} values "
+      message_file.puts verbatim_birth_place.inspect
+      message_file.puts "Birth Place NOT in Verbatim Birth Place #{diff_birth_verbatim_place.length} values "
+      message_file.puts diff_birth_verbatim_place.inspect
+      message_file.puts "Verbatim Birth Place NOT in Birth Place #{diff_verbatim_birth_place.length} values "
+      message_file.puts diff_verbatim_birth_place.inspect
 
       time_elapsed = Time.now - time_start
       p "Finished #{num} places in #{time_elapsed}"
