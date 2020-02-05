@@ -36,7 +36,7 @@ class FreeregContentsController < ApplicationController
         redirect_to freereg_contents_path
         return
       else
-        redirect_to new_freereg_contents_path
+        redirect_to new_freereg_content_path
       end
     elsif params.present? && params[:freereg_content].present? && params[:freereg_content][:place].present?
       redirect_to(freereg_content_path(params[:freereg_content][:place])) && return
