@@ -197,7 +197,17 @@ class Message
     add_message_to_userid_messages(UseridDetail.look_up_id(sender)) unless sender.blank? || ccs.include?(sender)
     ccs << sender
     ccs = ccs.uniq
-    UserMailer.send_message(self, ccs, sender, host).deliver_now
+    slice_size = 100
+    slices = ccs.length / slice_size
+    first = 0
+    last = slice_size - 1
+    while slices >= 0
+      slice_ccs = ccs[first..last]
+      UserMailer.send_message(self, slice_ccs, sender, host).deliver_now unless slice_ccs.blank?
+      first = first + slice_size
+      last = last + slice_size
+      slices = slices - 1
+    end
   end
 
   def communicate_message_reply(original_message)
