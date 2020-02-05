@@ -200,7 +200,7 @@ class FreeregContentsController < ApplicationController
     @unique_forenames = @church.unique_forenames.sort if @church.unique_forenames.present?
     @unique_surnames = @church.unique_surnames.sort if @church.unique_surnames.present?
     variables_for_church_show
-    @referer = params[:ref] if params[:ref].present?
+    @referer = params[:ref].presence || ' '
   end
 
   def unique_register_names
@@ -210,7 +210,7 @@ class FreeregContentsController < ApplicationController
     @unique_forenames = @register.unique_forenames.sort if @register.unique_forenames.present?
     @unique_surnames = @register.unique_surnames.sort if @register.unique_surnames.present?
     variables_for_register_show
-    @referer = params[:ref] if params[:ref].present?
+    @referer = params[:ref].presence || ' '
   end
 
   def unique_place_names
@@ -221,7 +221,7 @@ class FreeregContentsController < ApplicationController
     @unique_surnames = @place.unique_surnames.sort if @place.unique_surnames.present?
 
     variables_for_place_show
-    @referer = params[:ref] if params[:ref].present?
+    @referer = params[:ref].presence || ' '
   end
 
   def variables_for_church_show
