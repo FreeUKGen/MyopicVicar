@@ -722,7 +722,7 @@ class MessagesController < ApplicationController
       return
     when 'Send Communication'
       send_communication
-    when 'Send Message'
+    else
       send_message
     end
     redirect_to message_path(@message.id, source: 'original')
