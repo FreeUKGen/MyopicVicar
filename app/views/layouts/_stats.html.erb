@@ -19,6 +19,6 @@
   <p style="text-align: center" ><% if @site_stat.present? %><%= number_with_delimiter(@site_stat[:n_searches])%><% end%> searches were performed yesterday on <% if @site_stat.present? %><%= number_with_delimiter(@site_stat[:n_records]) %><% end%> records. <br>
     The database was last updated on<%= FreecenUtility.display_date_and_time %>.</p>
   <% when 'freebmd' %>
-  <p style="text-align: center" class="micro">searches were performed yesterday</p>
+  <p style="text-align: center" >searches were performed yesterday</p>
 <% end%>
 </div>
