@@ -1,4 +1,12 @@
 namespace :reports do
+  desc "count_valentines_marriages"
+  task :count_valentines_marriages, [:limit] => [:environment] do |t, args|
+    require 'count_valentines_marriages'
+    limit = args.limit
+    puts "count_valentines_marriages"
+    CountValentinesMarriages.process(limit)
+    puts "Completed Checking #{limit} years"
+  end
 
   desc "extract_unique_names"
   task :extract_unique_names, [:limit] => [:environment] do |t, args|
