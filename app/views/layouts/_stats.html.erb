@@ -1,21 +1,24 @@
-<% case appname.downcase %>
-<% when 'freereg' %>
-<% if @site_stat %>
-  <p style="text-align: center" class="micro"> <%= number_with_delimiter(@site_stat[:n_searches])%> searches were performed on <%= number_with_delimiter(@site_stat[:n_records]) %> records
-    (<%= number_with_delimiter(@site_stat[:n_records_baptisms]) %> baptisms, <%= number_with_delimiter(@site_stat[:n_records_marriages]) %> marriages and
-    <%= number_with_delimiter(@site_stat[:n_records_burials]) %> burials)<br>
-    <% if @site_stat[:n_records_added]  %>
-      <%= number_with_delimiter(@site_stat[:n_records_added]) %> records  (<%= number_with_delimiter(@site_stat[:n_records_added_baptisms]) %> baptisms, <%= number_with_delimiter(@site_stat[:n_records_added_marriages]) %> marriages and
-      <%= number_with_delimiter(@site_stat[:n_records_added_burials]) %> burials) were added
-    <% else %>
-      No records were added
+<div>
+  <br>
+  <% case appname.downcase %>
+  <% when 'freereg' %>
+  <% if @site_stat %>
+    <p style="text-align: left" > <%= number_with_delimiter(@site_stat[:n_searches])%> searches were performed on <%= number_with_delimiter(@site_stat[:n_records]) %> records
+      (<%= number_with_delimiter(@site_stat[:n_records_baptisms]) %> baptisms, <%= number_with_delimiter(@site_stat[:n_records_marriages]) %> marriages and
+      <%= number_with_delimiter(@site_stat[:n_records_burials]) %> burials)<br>
+      <% if @site_stat[:n_records_added]  %>
+        <%= number_with_delimiter(@site_stat[:n_records_added]) %> records  (<%= number_with_delimiter(@site_stat[:n_records_added_baptisms]) %> baptisms, <%= number_with_delimiter(@site_stat[:n_records_added_marriages]) %> marriages and
+        <%= number_with_delimiter(@site_stat[:n_records_added_burials]) %> burials) were added
+      <% else %>
+        No records were added
+      <% end %>
+      in the 24 hrs ending at midnight GMT.
     <% end %>
-    in the 24 hrs ending at midnight GMT.
-  <% end %>
-</p>
-<% when 'freecen' %>
-<p style="text-align: center" class="micro"><% if @site_stat.present? %><%= number_with_delimiter(@site_stat[:n_searches])%><% end%> searches were performed yesterday on <% if @site_stat.present? %><%= number_with_delimiter(@site_stat[:n_records]) %><% end%> records. <br>
-  The database was last updated on <b><%= FreecenUtility.display_date_and_time %>.</p>
+  </p>
+  <% when 'freecen' %>
+  <p style="text-align: left" ><% if @site_stat.present? %><%= number_with_delimiter(@site_stat[:n_searches])%><% end%> searches were performed yesterday on <% if @site_stat.present? %><%= number_with_delimiter(@site_stat[:n_records]) %><% end%> records. <br>
+    The database was last updated on<%= FreecenUtility.display_date_and_time %>.</p>
   <% when 'freebmd' %>
-  <p style="text-align: center" class="micro">searches were performed yesterday</p>
+  <p style="text-align: left" >searches were performed yesterday</p>
 <% end%>
+</div>
