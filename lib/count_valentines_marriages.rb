@@ -20,6 +20,7 @@ class CountValentinesMarriages
         break if num == limit
       end
       p "#{total} marriages for the period 1500-#{start} "
+      message_file.puts "#{total} marriages for the period 1500-#{start} "
       time_elapsed = Time.now - time_start
       p "Finished #{num} years in #{time_elapsed}"
     end
