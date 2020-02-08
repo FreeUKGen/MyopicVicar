@@ -10,8 +10,8 @@
   <div class='grid'>
     <div class="grid__item one-half lap-one-half palm-one-whole">
       <%= link_to "Download", '#', :class => "btn btn--small bordered push-half--right push-half--top" %>
-      <%= link_to "Save Search", '#', :class => "btn   btn--small bordered push-half--right push-half--top" %>
-      <%= link_to "Printable Format", show_print_version_search_query_path, class: "btn   btn--small bordered push-half--right push-half--top" %>
+      <%= link_to "About this Query", about_search_query_path(@search_query, :page_number => @page_number), :class => "btn   btn--small bordered push-half--right push-half--top" %>
+      <%= link_to "Printable Format", show_print_version_search_query_path, class: "btn   btn--small bordered push-half--right push-half--top", title: "Click to view results in printable format", "aria-details": "Click to view results in printable format"  %>
     </div>
     <div class="grid__item one-quarter lap-one-quarter palm-one-whole">
       <%= form_tag search_query_path(@search_query), method: :get, id: 'limit_form' do %>
