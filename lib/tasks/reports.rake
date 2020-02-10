@@ -1,4 +1,30 @@
 namespace :reports do
+  desc "count_valentines_marriages"
+  task :count_valentines_marriages, [:limit] => [:environment] do |t, args|
+    require 'count_valentines_marriages'
+    limit = args.limit
+    puts "count_valentines_marriages"
+    CountValentinesMarriages.process(limit)
+    puts "Completed Checking #{limit} years"
+  end
+
+  desc "extract_unique_names"
+  task :extract_unique_names, [:limit] => [:environment] do |t, args|
+    require 'extract_unique_names'
+    limit = args.limit
+    puts "Extracting unique names"
+    ExtractUniqueNames.process(limit)
+    puts "Completed Checking #{limit} unique names"
+  end
+
+  desc "extract_unique_cen_field_name"
+  task :extract_unique_cen_field_name, [:limit] => [:environment] do |t, args|
+    require 'extract_unique_cen_field_name'
+    limit = args.limit
+    puts "Extracting unique cen field names"
+    ExtractUniqueCenFieldName.process(limit)
+    puts "Completed Checking #{limit} unique names"
+  end
 
   desc "Unapproved_place_names list"
   task :report_on_files_for_each_register_church_place, [:chapman,:userid] => [:environment] do |t, args|
@@ -11,7 +37,7 @@ namespace :reports do
   end
 
 
-
+  desc "check_image_availability"
   task :check_image_availability, [:limit] => :environment do |t, args|
     require 'check_image_availability'
 
@@ -84,6 +110,7 @@ namespace :reports do
       puts "Task complete."
     end
   end
+
   desc "Create a report of Unapproved Places with no data"
   # eg foo:create_search_records_docs[rebuild,e:/csvaug/a*/*.csv]
   #valid options for type are rebuild, replace, add

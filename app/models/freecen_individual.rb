@@ -25,7 +25,11 @@ class FreecenIndividual
   belongs_to :freecen1_vld_entry, index: true
   has_one :search_record
 
-  index(freecen_dwelling_id:1)
+  index(freecen_dwelling_id: 1)
+  index({ birth_county: 1, birth_place: 1 }, name: 'birth_county_birth_place')
+  index({ birth_county: 1, verbatim_birth_place: 1 }, name: 'birth_county_verbatim_birth_place')
+  index({ verbatim_birth_county: 1, birth_place: 1 }, name: 'verbatim_birth_county_birth_place')
+  index({ verbatim_birth_county: 1, verbatim_birth_place: 1 }, name: 'verbatim_birth_county_verbatim_birth_place')
 
   # labels/values for dwelling page table body (header in freecen_dwelling)
   def self.individual_display_labels(year, chapman_code)

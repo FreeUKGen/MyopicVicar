@@ -1,5 +1,5 @@
 <% content_for :header, t('enter_email_address', :scope => 'refinery.authentication.devise.users.forgot') %>
-<h2 class=" text--center">Request a reset of your FreeCEN password</h2>
+<h2 class=" text--center">Request a reset of your <%= MyopicVicar::Application.config.freexxx_display_name %> password</h2>
 <% if flash.now[:error] %>
   <div class="push-half--bottom" id="notice" style="color:blue;">
     <%= flash.now[:error] %>  <% flash.now[:error]%><br>
@@ -8,16 +8,16 @@
 <%= form_for resource, :as => resource_name,
                        :url => refinery.authentication_devise_user_password_path,
                        :html => { :method => :post } do |f| %>
-<p></p>
+  <p></p>
   <div class='field'>
     <%= f.text_field :email, :class => "larger widest",
                      :placeholder => t('email_address', :scope => 'refinery.authentication.devise.users.forgot') %>
   </div>
-<p></p>
+  <p></p>
   <%= render '/refinery/admin/form_actions', :f => f,
              :continue_editing => false,
              :submit_button_text => t('reset_password', :scope => 'refinery.authentication.devise.users.forgot'),
              :cancel_url => refinery.authentication_devise_user_session_path,
              :cancel_title => nil -%>
-  <p></p>           
+  <p></p>
 <% end -%>
