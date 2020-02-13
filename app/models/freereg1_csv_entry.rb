@@ -205,7 +205,6 @@ class Freereg1CsvEntry
     SearchRecord.destroy_all(:freereg1_csv_entry_id => entry._id)
   end
 
-
   accepts_nested_attributes_for :embargo_records, allow_destroy: false, reject_if: :all_blank
   accepts_nested_attributes_for :multiple_witnesses, allow_destroy: true, reject_if: :all_blank, limit: 8
 
@@ -430,6 +429,20 @@ class Freereg1CsvEntry
 
   def check_register_type
     errors.add(:register_type, "Invalid register type") unless RegisterType::OPTIONS.values.include?(self.register_type)
+  end
+
+  def clean_up_ucf_list
+    entry = self
+    file = entry.freereg1_csv_file
+    place, _church, _register = file.location_from_file
+    search_record = entry.search_record
+    file.ucf_list.delete_if { |record| record.to_s == search_record.id.to_s }
+    file.ucf_updated = DateTime.now.to_date
+    file.save
+    if place.present?
+      place.ucf_list[file.id.to_s].delete_if { |record| record.to_s == search_record.id.to_s }
+      place.save
+    end
   end
 
   def create_baptism_string
@@ -813,6 +826,45 @@ class Freereg1CsvEntry
 
   def update_location(record, file)
     update(freereg1_csv_file_id: file.id, place: record[:place], church_name: record[:church_name], register_type: record[:register_type])
+  end
+
+  def update_place_ucf_list(place, file, old_search_record)
+    file_in_ucf_list = place.ucf_list.has_key?(file.id.to_s)
+    search_record_has_ucf = search_record.contains_wildcard_ucf?.present? ? true : false
+    # No change
+    return if !file_in_ucf_list && !search_record_has_ucf
+
+    # list there and record has
+    if file_in_ucf_list && search_record_has_ucf
+      return if place.ucf_list[file.id.to_s].include?(search_record.id.to_s)
+      place.ucf_list[file.id.to_s].delete_if { |record| record.to_s == old_search_record.id.to_s } if old_search_record.present?
+      file.ucf_list.delete_if { |record| record.to_s == old_search_record.id.to_s } if old_search_record.present?
+      place.ucf_list[file.id.to_s] << search_record.id
+      file.ucf_list << search_record.id
+      file.ucf_updated = DateTime.now.to_date
+      file.save
+      place.save
+      return
+    end
+    if file_in_ucf_list && !search_record_has_ucf
+      place.ucf_list[file.id.to_s].delete_if { |record| record.to_s == old_search_record.id.to_s } if old_search_record.present?
+      place.ucf_list[file.id.to_s].delete_if { |record| record.to_s == search_record.id.to_s }
+      file.ucf_list.delete_if { |record| record.to_s == old_search_record.id.to_s } if old_search_record.present?
+      file.ucf_list.delete_if { |record| record.to_s == search_record.id.to_s }
+      file.ucf_updated = DateTime.now.to_date
+      file.save
+      place.save
+      return
+    end
+
+    if !file_in_ucf_list && search_record_has_ucf
+      place.ucf_list[file.id.to_s] = []
+      place.ucf_list[file.id.to_s] << search_record.id
+      file.ucf_list << search_record.id
+      file.ucf_updated = DateTime.now.to_date
+      file.save
+      place.save
+    end
   end
 
   def errors_in_fields

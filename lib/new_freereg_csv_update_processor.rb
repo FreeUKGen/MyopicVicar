@@ -743,20 +743,14 @@ class CsvFile < CsvFiles
     end
   end
 
-
   def update_place_after_processing(freereg1_csv_file, chapman_code, place_name)
-    p 'update_place_after_processing'
-
     place = Place.where(:chapman_code => chapman_code, :place_name => place_name).first
-    p place.inspect
-    place.update_ucf_list(freereg1_csv_file)
-    p place.save
+    place.ucf_list[freereg1_csv_file.id.to_s] = []
     place.save
-    p place.inspect
+    place.update_ucf_list(freereg1_csv_file)
+    place.save
+    freereg1_csv_file.save
   end
-
-
-
 
   def process_the_data(project)
     #p "Processing the data records"

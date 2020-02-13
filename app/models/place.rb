@@ -143,6 +143,17 @@ class Place
       where(:modified_place_name => place)
     end
 
+    def extract_ucf_records(place_ids)
+      records = []
+      place_ids.each do |place|
+
+        Place.id(place).first.ucf_list.each_value do |value|
+          records << value
+        end
+      end
+      records = records.flatten.compact
+    end
+
     def valid_chapman_code?(chapman_code)
       result = ChapmanCode.values.include?(chapman_code) ? true : false
       logger.warn("FREEREG:LOCATION:VALIDATION invalid Chapman code #{chapman_code} ") unless result
@@ -610,12 +621,10 @@ class Place
   end
 
   def update_ucf_list(file)
-    p 'update_ucf_list'
-    p self.inspect
     ids = file.search_record_ids_with_wildcard_ucf
     self.ucf_list[file.id.to_s] = ids if ids && ids.size > 0
-    p 'after'
-    p self.inspect
+    file.ucf_list = ids if ids && ids.size > 0
+    file.ucf_updated = DateTime.now.to_date
   end
 
 end

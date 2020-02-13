@@ -318,24 +318,27 @@ class SearchQuery
   def filter_ucf_records(records)
     filtered_records = []
     records.each do |record|
-      record = SearchRecord.new(record)
+      record = SearchRecord.record_id(record.to_s).first
+      next if record.blank?
+
       record.search_names.each do |name|
         if name.type == SearchRecord::PersonType::PRIMARY || self.inclusive || self.witness
           begin
             if name.contains_wildcard_ucf?
               if self.first_name.blank?
+                transformed = UcfTransformer.ucf_to_regex(name.last_name.downcase)
+                testing = self.last_name.downcase.match(transformed).present? ? true : false
                 # test surname
-                if self.last_name.match(UcfTransformer.ucf_to_regex(name.last_name.downcase))
+                if testing
                   filtered_records << record
                 end
               elsif self.last_name.blank?
+                testing = self.first_name.downcase.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))
                 # test forename
-                if self.first_name.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))
+                if testing
                   filtered_records << record
                 end
               else
-                # test both
-                #             print "#{self.last_name.downcase}.match(#{UcfTransformer.ucf_to_regex(name.last_name.downcase).inspect}) && #{self.first_name.downcase}.match(#{UcfTransformer.ucf_to_regex(name.first_name.downcase).inspect}) => #{self.last_name.downcase.match(UcfTransformer.ucf_to_regex(name.last_name.downcase)) && self.first_name.downcase.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))}\n"
                 if self.last_name.downcase.match(UcfTransformer.ucf_to_regex(name.last_name.downcase)) && self.first_name.downcase.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))
                   filtered_records << record
                 end
@@ -402,10 +405,10 @@ class SearchQuery
       search_results.length.present? ? result_count = search_results.length : result_count = 0
       search_results = self.sort_results(search_results) unless search_results.nil?
 
-      ucf_results = self.ucf_results unless self.ucf_results.blank?
-      ucf_results = Array.new if  ucf_results.blank?
+      ucf_results = self.ucf_results if self.ucf_results.present?
+      ucf_results = [] if ucf_results.blank?
       response = true
-      return response, search_results.map{|h| SearchRecord.new(h)}, ucf_results, result_count
+      return response, search_results.map{ |h| SearchRecord.new(h) }, ucf_results, result_count
     else
       response = false
       return response
@@ -587,8 +590,6 @@ class SearchQuery
   def no_additional_census_fields?
     result = false
     result = true if !disabled && occupation.blank? && marital_status.blank? && language.blank? && sex.blank?
-    p 'no_additional_census_fields'
-    p result
     result
   end
 
@@ -743,9 +744,7 @@ class SearchQuery
     records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     persist_results(records)
     persist_additional_results(secondary_date_results) if App.name == 'FreeREG' && (result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
-    search_ucf if can_query_ucf? && result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
-    p 'after ucf'
-    p records
+    records = search_ucf if can_query_ucf? && result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
     records
   end
 
@@ -770,26 +769,19 @@ class SearchQuery
   end
 
   def search_ucf
-
-    p 'search_ucf'
-    p self
     start_ucf_time = Time.now.utc
-    ucf_index = SearchRecord.index_hint(ucf_params)
-    logger.warn("#{App.name_upcase}:UCF_SEARCH_HINT: #{ucf_index}")
-
-    ucf_records = SearchRecord.collection.find(ucf_params).hint(ucf_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
-    p 'ucf_results'
-    p ucf_records.inspect
-    p 'filter ucf'
+    ucf_records = Place.extract_ucf_records(place_ids)
     ucf_records = filter_ucf_records(ucf_records)
-    p ucf_records.inspect
-    ucf_filtered_count = ucf_records.length
-    p ucf_records.inspect
-    search_result.ucf_records = ucf_records.map { |sr| sr.id }
-
+    if ucf_records.present?
+      ucf_filtered_count = ucf_records.length
+      search_result.ucf_records = ucf_records.map { |sr| sr.id }
+    else
+      ucf_filtered_count = 0
+    end
+    self.ucf_filtered_count = ucf_filtered_count
     runtime_ucf = (Time.now.utc - start_ucf_time) * 1000
+    self.runtime_ucf = runtime_ucf
     save
-    p self
   end
 
   def sort_results(results)
@@ -842,8 +834,6 @@ class SearchQuery
   end
 
   def ucf_results
-    p 'ucf_results'
-    p can_query_ucf?
     if self.can_query_ucf?
       SearchRecord.find(self.search_result.ucf_records)
     else

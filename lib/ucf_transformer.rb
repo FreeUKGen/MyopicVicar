@@ -75,19 +75,24 @@ module UcfTransformer
   end
 
   def self.contains_wildcard_ucf?(name_part)
-    p 'contains_wildcard_ucf?'
-    p name_part
     # print "\tcontains_wildcard_ucf?(#{name_part}) => #{name_part.match(/[\*_]/) ? 'true' : 'false'}\n"
     if name_part.blank?
-      false
+      result = false
     else
-      name_part.match(/[\*_]/)
+      result = name_part.match(/[\*_]/).present? ? true : false
     end
+    result
   end
 
   def self.ucf_to_regex(name_part)
+    if name_part.match(/(.{.,\d?})/).present?
+      # _{2,3}
+      name_part = name_part.gsub(/(.{.,\d?})/, '\w+')
+    else
+      name_part = name_part.gsub(/\./, '\.').gsub(/_/, ".").gsub(/\*/, '\w+')
+    end
     begin
-      ::Regexp.new(name_part.gsub(/\./, '\.').gsub(/_/, ".").gsub(/\*/, '\w+'))
+      ::Regexp.new(name_part)
     rescue RegexpError
       name_part
     end

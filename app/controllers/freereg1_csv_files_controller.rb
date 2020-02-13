@@ -69,6 +69,7 @@ class Freereg1CsvFilesController < ApplicationController
 
     redirect_back(fallback_location: new_manage_resource_path, notice: 'The physical file entry no longer exists. Perhaps you have already deleted it.') && return  if @physical_file.blank?
 
+    @freereg1_csv_file.remove_from_ucf_list
     # save a copy to attic and delete all batches
     @physical_file.file_and_entries_delete
     @freereg1_csv_file.update_freereg_contents_after_processing

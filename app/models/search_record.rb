@@ -519,10 +519,7 @@ class SearchRecord
   end
 
   def contains_wildcard_ucf?
-    p "search recordp "
-    p 'contains_wildcard_ucf?'
     search_names.detect do |name|
-      p  name.contains_wildcard_ucf?
       name.contains_wildcard_ucf?
     end
   end

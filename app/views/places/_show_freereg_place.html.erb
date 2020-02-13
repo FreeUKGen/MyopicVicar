@@ -44,8 +44,9 @@
           </tr>
         <% end%>
         <tr>
-          <td>Genuki page :</td>
-          <td ><%= link_to('Location', @place.genuki_url, :class => "btn   btn--small",:target => "_blank") unless @place.genuki_url.nil? || @place.genuki_url == "no url" %></td>
+          <td>Show on map<br>
+            <small> Opens in a new tab</small></td>
+          <td > <%= locate(@place.latitude,@place.longitude) %></td>
         </tr>
         <tr>
           <td>Notes about the place :</td>
@@ -127,6 +128,15 @@
           <td>Another reason for changes:</td>
           <td class="weight--semibold"> <%= @place.other_reason_for_change %></td>
         </tr>
+        <% @place.ucf_list.each_pair do |place, records| %>
+          <tr>
+            <td>Entries with UCF for <%= place_name_from_ucf_list(place) %>:</td>
+            <td ><% records.each do |record| %>
+                <%= place_format_ucf_list(record) %><br>
+              <% end%>
+            </td>
+          </tr>
+        <% end%>
       </table>
     </div>
     <h3 class=" text--center">Numbers of transcriptions </h4>

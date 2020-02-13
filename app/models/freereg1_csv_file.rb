@@ -72,6 +72,8 @@ class Freereg1CsvFile
   field :order, type: Hash
   field :software_version, type: String
   field :search_record_version, type: String
+  field :ucf_list, type: Array
+  field :ucf_updated, type: DateTime
 
   index({ file_name: 1, userid: 1, county: 1, place: 1, church_name: 1, register_type: 1 })
   index({ county: 1, place: 1, church_name: 1, register_type: 1, record_type: 1 })
@@ -90,8 +92,6 @@ class Freereg1CsvFile
     file.save_to_attic
     Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).delete_all
   end
-
-  after_destroy :clean_up
 
   belongs_to :register, index: true
   belongs_to :userid_detail, index: true, optional: true
@@ -525,7 +525,7 @@ class Freereg1CsvFile
       success[0] = false
       success[1] = success[1] + "batch has a null church #{batch} "
     when register.church.place.blank?
-      success[0] =  false
+      success[0] = false
       success[1] = success[1] + "batch has a null church #{batch} "
     end
     success
@@ -580,7 +580,12 @@ class Freereg1CsvFile
   end
 
   def clean_up
-    self.update_number_of_files
+    update_statistics
+    clean_up_place_ucf_list
+  end
+
+  def update_statistics
+    update_number_of_files
     register = self.register
     if register.nil?
       logger.warn("FREEREG:#{self.id} does not belong to a register ")
@@ -588,17 +593,26 @@ class Freereg1CsvFile
     else
       church = register.church
       if church.nil?
-        logger.warn( "FREEREG:#{register.id} does not belong to a church ")
+        logger.warn("FREEREG:#{register.id} does not belong to a church ")
         return
       else
         place = church.place
         if place.nil?
-          logger.warn( "FREEREG:#{church.id} does not belong to a place ")
+          logger.warn("FREEREG:#{church.id} does not belong to a place ")
           return
         else
           place.recalculate_last_amended_date
         end
       end
+    end
+  end
+
+  def clean_up_place_ucf_list
+    place, _church, _register = self.location_from_file
+    if place.present?
+      ucf_list = place.ucf_list
+      ucf_list = ucf_list.delete_if {|key, value| key.to_s == self.id.to_s}
+      place.update(ucf_list: ucf_list)
     end
   end
 
@@ -808,29 +822,32 @@ class Freereg1CsvFile
       when self.records.to_i > 5000
         UserMailer.report_to_data_manger_of_large_file( self.file_name,self.userid).deliver_now
         return false,'There are too many records for a simple removal. Please discuss with your coordinator or the data managers how best to deal with its restructuring'
-      when self.locked_by_transcriber  ||  self.locked_by_coordinator
+      when self.locked_by_transcriber || self.locked_by_coordinator
         return false,'The removal of the batch was unsuccessful; the batch is locked'
       else
         # deal with file and its records
-        self.add_to_rake_delete_list
-        self.save_to_attic
-        self.delete
+        add_to_rake_delete_list
+        save_to_attic
+        clean_up_place_ucf_list
+        delete
                    # deal with the Physical Files collection
         PhysicalFile.delete_document(self.userid, self.file_name)
-        return true, 'The removal of the batch entry was successful'
+       [true, 'The removal of the batch entry was successful']
       end
   end
 
+  def remove_from_ucf_list
+    place, _church, _register = location_from_file
+    place.ucf_list.delete_if { |key, value| key.to_s == id.to_s }
+    place.save
+  end
+
   def search_record_ids_with_wildcard_ucf
-    p 'search_record_ids_with_wildcard_ucf'
     ids = []
     self.freereg1_csv_entries.each do |entry|
       entry.reload
-      p entry
-      p entry.search_record if entry.search_record.present?
       ids << entry.search_record.id if entry.search_record && entry.search_record.contains_wildcard_ucf?
     end
-    p  ids.inspect
     ids
   end
 

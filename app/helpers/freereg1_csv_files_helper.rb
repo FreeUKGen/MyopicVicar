@@ -99,4 +99,12 @@ module Freereg1CsvFilesHelper
       link_to 'Create Gap', new_gap_path(register: @register, freereg1_csv_file: file), method: :get, class: 'btn  btn--small'
     end
   end
+
+  def file_format_ucf_list(record)
+    search = SearchRecord.find_by(_id: record.to_s)
+    entry = search.freereg1_csv_entry if search.present?
+    if entry.present?
+      link_to "#{entry.id.to_s}", freereg1_csv_entry_path(entry.id.to_s, from: 'batch'), method: :get
+    end
+  end
 end

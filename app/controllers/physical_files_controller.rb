@@ -48,6 +48,7 @@ class PhysicalFilesController < ApplicationController
     redirect_back(fallback_location: { action: 'select_action' }) && return if @batch.blank?
 
     @batch.file_and_entries_delete
+
     @batch.delete
     flash[:notice] = 'The destruction of the physical files and all its entries and search records was successful'
     redirect_back(fallback_location: { action: 'select_action' }) && return

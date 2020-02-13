@@ -5,6 +5,8 @@
 </h3>
 <% unless session[:userid].nil?%>
   <div  style="text-align: center">
+    <%= link_to 'Return to file', freereg1_csv_file_path(@freereg1_csv_file), method: :get, :class => "btn btn--small" if @from == 'batch' %>
+    <%= link_to 'Return to place', place_path(@place), method: :get, :class => "btn btn--small" if @from == 'place' %>
     <%= link_to 'Edit Record',  edit_freereg1_csv_entry_path(@freereg1_csv_entry, "zero_record" => @get_zero_year_records, "zero_listing" => @zero_year), method: :get, :class => "btn btn--small"  %>
     <%= link_to 'Destroy', freereg1_csv_entry_path(@freereg1_csv_entry), data: { confirm:  'Are you sure?'}, method: :delete , :class => "btn btn--small"  %>
     <%= link_to 'Edit Embargo',  edit_embargo_freereg1_csv_entry_path(@freereg1_csv_entry, "zero_record" => @get_zero_year_records, "zero_listing" => @zero_year), method: :get, :class => "btn btn--small" if @embargo_permitted %>
