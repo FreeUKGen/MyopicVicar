@@ -425,6 +425,7 @@ namespace :foo do
       place_time = time_process / i unless i == 0
       p " #{place_time}, #{i}"
       message_file.puts " #{place_time}, #{i}"
+      sleep 20
     end
 
   end
