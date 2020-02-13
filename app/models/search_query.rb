@@ -1438,13 +1438,13 @@ class SearchQuery
     age_dob_records = dob_age_search(dob_results) # filter age records from all records after DOB_START_QUARTER
     invalid_age_records = invalid_age_records(dob_results)# non date of birth records
     date_of_birth_records = records_with_dob(records)
-    date_of_birth_search_range_a(non_dob_results) + date_of_birth_search_range_a(invalid_age_records) + dob_exact_search(dob_results).to_a + date_of_birth_uncertain_aad(invalid_age_records) + no_aad_or_dob(records) + age_at_death_with_year(date_of_birth_records)
+    date_of_birth_search_range_a(non_dob_results).to_a + date_of_birth_search_range_a(invalid_age_records).to_a + dob_exact_search(dob_results).to_a + date_of_birth_uncertain_aad(invalid_age_records).to_a + no_aad_or_dob(records).to_a + age_at_death_with_year(date_of_birth_records).to_a
   end
 
   def combined_age_results records
     dob_records = records_with_dob(records)
     invalid_age_records = invalid_age_records(records)
-    aad_search(records).to_a + date_of_birth_uncertain_aad(invalid_age_records) + age_range_search(records).to_a + calculate_age_range_for_dob(dob_records) + calculate_age_for_dob(dob_records)
+    aad_search(records).to_a + date_of_birth_uncertain_aad(invalid_age_records).to_a + age_range_search(records).to_a + calculate_age_range_for_dob(dob_records).to_a + calculate_age_for_dob(dob_records).to_a
   end
 
   def aad_search records
