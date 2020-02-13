@@ -26,14 +26,15 @@
       <% unless defined?(@printable_format) && @printable_format%>
         <small class="additional zeta">Results are presented by ascending date. Clicking a column heading sorts by that column. Another click reverses the order.<br>
           Each View button in the <q>Detail</q> column opens a page with all the information we have for that record.</small>
-      </div>
-    <% else%>
-      <div class="grid__item  one-third lap-one-third  palm-one-whole  push-half--top">
-        <h2 class="gamma flush--bottom"> We found <%= pluralize(@result_count, ' Result', ' Results') %></h2>
-        <% unless defined?(@printable_format) && @printable_format%>
-          <small class="additional zeta">Results are presented by ascending date. Clicking a column heading sorts by that column. Another click reverses the order.<br>
-            Each View button in the <q>Detail</q> column opens a page with all the information we have for that record.</small>
-        </div>
       <% end %>
     </div>
-  <% end %>
+  <% else%>
+    <div class="grid__item  one-third lap-one-third  palm-one-whole  push-half--top">
+      <h2 class="gamma flush--bottom"> We found <%= pluralize(@result_count, ' Result', ' Results') %></h2>
+      <% unless defined?(@printable_format) && @printable_format%>
+        <small class="additional zeta">Results are presented by ascending date. Clicking a column heading sorts by that column. Another click reverses the order.<br>
+          Each View button in the <q>Detail</q> column opens a page with all the information we have for that record.</small>
+      </div>
+    <% end %>
+  </div>
+<% end %>
