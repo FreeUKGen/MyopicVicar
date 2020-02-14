@@ -420,12 +420,13 @@ namespace :foo do
           place.update_ucf_list(file)
         end
         place.save!
+        sleep 2
       end
       time_process = Time.now - time_start
       place_time = time_process / i unless i == 0
       p " #{place_time}, #{i}"
       message_file.puts " #{place_time}, #{i}"
-      sleep 20
+
     end
 
   end
