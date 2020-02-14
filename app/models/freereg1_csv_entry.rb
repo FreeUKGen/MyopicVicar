@@ -838,8 +838,11 @@ class Freereg1CsvEntry
     if file_in_ucf_list && search_record_has_ucf
       return if place.ucf_list[file.id.to_s].include?(search_record.id.to_s)
       place.ucf_list[file.id.to_s].delete_if { |record| record.to_s == old_search_record.id.to_s } if old_search_record.present?
-      file.ucf_list.delete_if { |record| record.to_s == old_search_record.id.to_s } if old_search_record.present?
+      file.ucf_list.delete_if { |record| record.to_s == old_search_record.id.to_s } if old_search_record.present? && file.ucf_list.present?
       place.ucf_list[file.id.to_s] << search_record.id
+      if file.ucf_list.blank?
+        file.ucf_list = []
+      end
       file.ucf_list << search_record.id
       file.ucf_updated = DateTime.now.to_date
       file.save
@@ -849,8 +852,8 @@ class Freereg1CsvEntry
     if file_in_ucf_list && !search_record_has_ucf
       place.ucf_list[file.id.to_s].delete_if { |record| record.to_s == old_search_record.id.to_s } if old_search_record.present?
       place.ucf_list[file.id.to_s].delete_if { |record| record.to_s == search_record.id.to_s }
-      file.ucf_list.delete_if { |record| record.to_s == old_search_record.id.to_s } if old_search_record.present?
-      file.ucf_list.delete_if { |record| record.to_s == search_record.id.to_s }
+      file.ucf_list.delete_if { |record| record.to_s == old_search_record.id.to_s } if old_search_record.present? && file.ucf_list.present?
+      file.ucf_list.delete_if { |record| record.to_s == search_record.id.to_s } if file.ucf_list.present?
       file.ucf_updated = DateTime.now.to_date
       file.save
       place.save
@@ -860,6 +863,9 @@ class Freereg1CsvEntry
     if !file_in_ucf_list && search_record_has_ucf
       place.ucf_list[file.id.to_s] = []
       place.ucf_list[file.id.to_s] << search_record.id
+      if file.ucf_list.blank?
+        file.ucf_list = []
+      end
       file.ucf_list << search_record.id
       file.ucf_updated = DateTime.now.to_date
       file.save

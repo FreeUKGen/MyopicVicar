@@ -151,8 +151,12 @@
             <tr>
               <td>Ucf entries</td>
               <td >
-                <% @freereg1_csv_file.ucf_list.each do |record| %>
-                  <%= file_format_ucf_list(record) %><br>
+                <% if @freereg1_csv_file.ucf_list.present? %>
+                  <% @freereg1_csv_file.ucf_list.each do |record| %>
+                    <%= file_format_ucf_list(record) %><br>
+                  <% end%>
+                <% else%>
+                  None
                 <% end%>
               </td>
             </tr>
