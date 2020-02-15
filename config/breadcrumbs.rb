@@ -97,19 +97,20 @@ crumb :show_file do |file|
   link 'Batch Information', freereg1_csv_file_path(file.id)
   if session[:my_own]
     parent :files, file
-  elsif session[:zero_action].present?
-    parent :listing_of_zero_year_files, file
+  elsif session[:place_id].present? && session[:from].present? && session[:from] == 'place'
+    place = Place.id(session[:place_id]).first
+    parent :show_place, session[:county], place
   elsif session[:register_id].present? && session[:county].present? && session[:place_id].present? && session[:church_id].present?
     place = Place.id(session[:place_id]).first
     church = Church.id(session[:church_id]).first
     register = Register.id(session[:register_id]).first
-    if place.present? &&  session[:from].present? && session[:from] == 'place'
-      parent :show_place, session[:county], place
-    elsif place.present? && church.present? && register.present?
+    if place.present? && church.present? && register.present?
       parent :show_register, session[:county], place, church, register
     else
       parent :files, file
     end
+  elsif session[:zero_action].present?
+    parent :listing_of_zero_year_files, file
   else
     parent :files, file
   end
