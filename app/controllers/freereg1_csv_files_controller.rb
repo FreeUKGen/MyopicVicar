@@ -385,6 +385,7 @@ class Freereg1CsvFilesController < ApplicationController
       message = 'The file was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
+    session[:from] = 'place' if params[:from].present? && params[:from] == 'place'
     controls(@freereg1_csv_file)
     @register = @freereg1_csv_file.register
     @gaps = @freereg1_csv_file.register.gaps_exist?

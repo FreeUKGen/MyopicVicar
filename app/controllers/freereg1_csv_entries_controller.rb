@@ -213,7 +213,7 @@ class Freereg1CsvEntriesController < ApplicationController
     @get_zero_year_records = 'true' if params[:zero_record] == 'true'
     @zero_year = 'true' if params[:zero_listing] == 'true'
     display_info
-    @from = params[:from]
+    session[:from] = 'file' if params[:from].present? && params[:from] == 'file'
     @embargoed = @freereg1_csv_entry.embargo_records.present? ? true : false
     @embargo_permitted = (@user.present? && (@user.person_role == 'system_administrator' || @user.person_role == 'executive_director' || @user.person_role == 'data_manager')) ? true : false
     session[:freereg1_csv_entry_id] = @freereg1_csv_entry._id

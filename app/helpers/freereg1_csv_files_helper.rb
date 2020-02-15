@@ -101,10 +101,11 @@ module Freereg1CsvFilesHelper
   end
 
   def file_format_ucf_list(record)
+    file = session[:from].present? && session[:from] == 'place' ? 'place' : 'file'
     search = SearchRecord.find_by(_id: record.to_s)
     entry = search.freereg1_csv_entry if search.present?
     if entry.present?
-      link_to "#{entry.id.to_s}", freereg1_csv_entry_path(entry.id.to_s, from: 'batch'), method: :get
+      link_to "#{entry.id.to_s}", freereg1_csv_entry_path(entry.id.to_s, from: file), method: :get
     end
   end
 end

@@ -252,7 +252,7 @@ class PlacesController < ApplicationController
   def show
     load(params[:id])
     redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'That place does not exist') && return if @place.blank?
-
+    session.delete(:from)
     @decade = @place.daterange
     @transcribers = @place.transcribers
     @contributors = @place.contributors

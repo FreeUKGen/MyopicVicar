@@ -128,15 +128,14 @@
           <td>Another reason for changes:</td>
           <td class="weight--semibold"> <%= @place.other_reason_for_change %></td>
         </tr>
-        <% @place.ucf_list.each_pair do |place, records| %>
-          <tr>
-            <td>Entries with UCF for <%= place_name_from_ucf_list(place) %>:</td>
-            <td ><% records.each do |record| %>
-                <%= place_format_ucf_list(record) %><br>
-              <% end%>
-            </td>
-          </tr>
-        <% end%>
+        <tr>
+          <td>Entries with UCF for:</td>
+          <td >
+            <% @place.ucf_list.each_key do |place| %>
+              <%= place_name_from_ucf_list(place) %><br>
+            <% end%>
+          </td>
+        </tr>
       </table>
     </div>
     <h3 class=" text--center">Numbers of transcriptions </h4>
