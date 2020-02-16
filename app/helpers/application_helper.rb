@@ -219,6 +219,21 @@ module ApplicationHelper
 
   # generate proper display for the search query, in display order
   def search_params_for_display(search_query)
+    search_query[:place_ids].present? ? search_query_places_size = search_query[:place_ids].length : search_query_places_size = 0
+    if search_query_places_size > 0
+      first_place = search_query[:place_ids][0]
+      first_place = Place.find(first_place)
+      place = first_place.place_name
+      if search_query.all_radius_place_ids.length > 1
+        last_place = search_query.all_radius_place_ids[-2]
+        last_place = Place.find(last_place)
+        additional = search_query.all_radius_place_ids.length - 1
+        place <<
+        " (including #{additional} additional places within
+          #{geo_near_distance(first_place,last_place,Place::MeasurementSystem::ENGLISH).round(1)}
+          #{Place::MeasurementSystem::system_to_units(Place::MeasurementSystem::ENGLISH)} )"
+      end
+    end
     display_map = {}
     # name fields
     display_map['First Name'] = search_query.first_name.upcase if search_query.first_name
@@ -254,21 +269,6 @@ module ApplicationHelper
       display_map['Marital Status'] = search_query.marital_status if search_query.marital_status.present?
       display_map['Language'] = search_query.language if search_query.language.present?
       display_map['Occupation'] = search_query.occupation if search_query.occupation.present?
-    end
-    search_query[:place_ids].present? ? search_query_places_size = search_query[:place_ids].length : search_query_places_size = 0
-    if search_query_places_size > 0
-      first_place = search_query[:place_ids][0]
-      first_place = Place.find(first_place)
-      place = first_place.place_name
-      if search_query.all_radius_place_ids.length > 1
-        last_place = search_query.all_radius_place_ids[-2]
-        last_place = Place.find(last_place)
-        additional = search_query.all_radius_place_ids.length - 1
-        place <<
-        " (including #{additional} additional places within
-          #{geo_near_distance(first_place,last_place,Place::MeasurementSystem::ENGLISH).round(1)}
-          #{Place::MeasurementSystem::system_to_units(Place::MeasurementSystem::ENGLISH)} )"
-      end
     end
     display_map
   end
