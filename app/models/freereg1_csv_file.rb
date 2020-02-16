@@ -43,6 +43,7 @@ class Freereg1CsvFile
   field :records, type: String
   field :datemin, type: String
   field :datemax, type: String
+  field :zero_entries, type: Boolean, default: false
   field :daterange, type: Array
   field :userid, type: String
   field :userid_lower_case, type: String
@@ -183,15 +184,22 @@ class Freereg1CsvFile
 
     def calculate_min_year(entries)
       datemin = FreeregValidations::YEAR_MAX.to_i
+      zero_entries = false
       entries.each do |entry|
-        datemin = entry.year.to_i if ((entry.year.to_i < datemin))
+        if entry.year.blank?
+          zero_entries = true
+          next
+        else
+          datemin = entry.year.to_i if ((entry.year.to_i < datemin))
+        end
       end
-      datemin
+      [datemin, zero_entries]
     end
 
     def calculate_max_year(entries)
       datemax = FreeregValidations::YEAR_MIN.to_i
       entries.each do |entry|
+        next if entry.year.blank?
         datemax = entry.year.to_i if entry.year.to_i > datemax
       end
       datemax
@@ -204,14 +212,14 @@ class Freereg1CsvFile
         xx = entry.year
         if xx.present? && entry.enough_name_fields?
           xx = xx.to_i
-          bin = ((xx-FreeregOptionsConstants::DATERANGE_MINIMUM)/10).to_i
+          bin = ((xx-FreeregOptionsConstants::DATERANGE_MINIMUM) / 10).to_i
           bin = 0 if bin < 0
           bin = 49 if bin > 49
           daterange[bin] = daterange[bin] + 1
         end
-        number_of_records =  number_of_records + 1
+        number_of_records = number_of_records + 1
       end
-      return number_of_records,daterange
+      return number_of_records, daterange
     end
 
     def convert_date(date_field)
@@ -374,7 +382,7 @@ class Freereg1CsvFile
     end
   end # self
 
-    # ######################################################################### instance methods
+  # ######################################################################### instance methods
 
   def add_country_to_file
     # rspec tested during  csv processing
@@ -430,14 +438,14 @@ class Freereg1CsvFile
   end
 
   def calculate_distribution
-    entries = self.freereg1_csv_entries
-    datemin = Freereg1CsvFile.calculate_min_year(entries)
+    entries = freereg1_csv_entries
+    datemin, zero_entries = Freereg1CsvFile.calculate_min_year(entries)
     datemax = Freereg1CsvFile.calculate_max_year(entries)
     number_of_records, daterange = Freereg1CsvFile.calculate_range_distribution(entries)
-    self.update_attributes(:datemin => datemin,:datemax => datemax,:daterange => daterange,:records =>  number_of_records )
+    update(datemin: datemin, datemax: datemax, daterange: daterange, records: number_of_records, zero_entries: zero_entries)
     success = true
-    success = false if self.errors.any?
-    return success
+    success = false if errors.any?
+    success
   end
 
   def change_owner_of_file(new_userid)
@@ -617,20 +625,20 @@ class Freereg1CsvFile
   end
 
   def define_colour
-   # need to consider storing the processed rather than a look up
+    # need to consider storing the processed rather than a look up
     case
     when self.error != 0 && !self.locked_by_coordinator  && !self.locked_by_transcriber
-     color = "color:red"
+      color = "color:red"
     when !self.processed
-     color = "color:orange"
+      color = "color:orange"
     when self.error == 0 && !self.locked_by_coordinator && !self.locked_by_transcriber
-     color ="color:green"
+      color ="color:green"
     when self.error == 0 && (self.locked_by_coordinator || self.locked_by_transcriber )
-     color = "color:blue"
+      color = "color:blue"
     when self.error != 0 && (self.locked_by_coordinator || self.locked_by_transcriber)
-     color = "color:maroon"
+      color = "color:maroon"
     else
-     color = "color:black"
+      color = "color:black"
     end
     color
   end
@@ -704,11 +712,11 @@ class Freereg1CsvFile
 
   def marriage_record(place,church_name,rec,witness1,witness2,note,file)
     csv_hold = ["#{place.chapman_code}","#{place.place_name}","#{church_name}",
-               "#{rec.register_entry_number}","#{rec.marriage_date}","#{rec.groom_forename}","#{rec.groom_surname}","#{rec.groom_age}","#{rec.groom_parish}",
-               "#{rec.groom_condition}","#{rec.groom_occupation}","#{rec.groom_abode}","#{rec.bride_forename}","#{rec.bride_surname}","#{rec.bride_age}",
-               "#{rec.bride_parish}","#{rec.bride_condition}","#{rec.bride_occupation}","#{rec.bride_abode}","#{rec.groom_father_forename}","#{rec.groom_father_surname}",
-               "#{rec.groom_father_occupation}","#{rec.bride_father_forename}","#{rec.bride_father_surname}","#{rec.bride_father_occupation}",
-               "#{witness1[0]}","#{witness1[1]}","#{witness2[0]}","#{witness2[1]}","#{rec.notes}#{note}"]
+                "#{rec.register_entry_number}","#{rec.marriage_date}","#{rec.groom_forename}","#{rec.groom_surname}","#{rec.groom_age}","#{rec.groom_parish}",
+                "#{rec.groom_condition}","#{rec.groom_occupation}","#{rec.groom_abode}","#{rec.bride_forename}","#{rec.bride_surname}","#{rec.bride_age}",
+                "#{rec.bride_parish}","#{rec.bride_condition}","#{rec.bride_occupation}","#{rec.bride_abode}","#{rec.groom_father_forename}","#{rec.groom_father_surname}",
+                "#{rec.groom_father_occupation}","#{rec.bride_father_forename}","#{rec.bride_father_surname}","#{rec.bride_father_occupation}",
+                "#{witness1[0]}","#{witness1[1]}","#{witness2[0]}","#{witness2[1]}","#{rec.notes}#{note}"]
     csv_hold = csv_hold + ["#{rec.film}", "#{rec.film_number}"] if file.lds =='yes'
     csv_hold
   end
@@ -819,21 +827,21 @@ class Freereg1CsvFile
 
   def remove_batch
     case
-      when self.records.to_i > 5000
-        UserMailer.report_to_data_manger_of_large_file( self.file_name,self.userid).deliver_now
-        return false,'There are too many records for a simple removal. Please discuss with your coordinator or the data managers how best to deal with its restructuring'
-      when self.locked_by_transcriber || self.locked_by_coordinator
-        return false,'The removal of the batch was unsuccessful; the batch is locked'
-      else
-        # deal with file and its records
-        add_to_rake_delete_list
-        save_to_attic
-        clean_up_place_ucf_list
-        delete
-                   # deal with the Physical Files collection
-        PhysicalFile.delete_document(self.userid, self.file_name)
-       [true, 'The removal of the batch entry was successful']
-      end
+    when self.records.to_i > 5000
+      UserMailer.report_to_data_manger_of_large_file( self.file_name,self.userid).deliver_now
+      return false,'There are too many records for a simple removal. Please discuss with your coordinator or the data managers how best to deal with its restructuring'
+    when self.locked_by_transcriber || self.locked_by_coordinator
+      return false,'The removal of the batch was unsuccessful; the batch is locked'
+    else
+      # deal with file and its records
+      add_to_rake_delete_list
+      save_to_attic
+      clean_up_place_ucf_list
+      delete
+      # deal with the Physical Files collection
+      PhysicalFile.delete_document(self.userid, self.file_name)
+      [true, 'The removal of the batch entry was successful']
+    end
   end
 
   def remove_from_ucf_list
@@ -860,364 +868,364 @@ class Freereg1CsvFile
       :last_amended => modification_date,
       :transcription_date => transcription_date,
       :record_types => [record_type]
-    }
+      }
   end
-def update_freereg_contents_after_processing
-  register = self.register
-  register.calculate_register_numbers
-  church = register.church
-  church.calculate_church_numbers
-  place = church.place
-  place.calculate_place_numbers
-end
+  def update_freereg_contents_after_processing
+    register = self.register
+    register.calculate_register_numbers
+    church = register.church
+    church.calculate_church_numbers
+    place = church.place
+    place.calculate_place_numbers
+  end
 
-def update_statistics_and_access(who_actioned)
-  Rails.logger.debug 'update_statistics_and_access'
-  self.locked_by_transcriber = true if who_actioned
-  self.locked_by_coordinator = true unless who_actioned
-  self.modification_date = Time.now.strftime("%d %b %Y")
-  calculate_distribution
-  recalculate_last_amended
-  update_number_of_files
-  save
-  place, church, register = location_from_file
-  register.calculate_register_numbers
-  church.calculate_church_numbers
-  place.calculate_place_numbers
-end
+  def update_statistics_and_access(who_actioned)
+    Rails.logger.debug 'update_statistics_and_access'
+    self.locked_by_transcriber = true if who_actioned
+    self.locked_by_coordinator = true unless who_actioned
+    self.modification_date = Time.now.strftime("%d %b %Y")
+    calculate_distribution
+    recalculate_last_amended
+    update_number_of_files
+    save
+    place, church, register = location_from_file
+    register.calculate_register_numbers
+    church.calculate_church_numbers
+    place.calculate_place_numbers
+  end
 
-def update_number_of_files
-  # this code although here and works produces values in fields that are no longer being used
-  userid = UseridDetail.where(:userid => self.userid).first
-  return if userid.nil?
-  files = userid.freereg1_csv_files
-  if files.length.nil?
-    number = 0
-    records = 0
-    last_uploaded = DateTime.new(1998,1,1)
-  else
-    number = files.length
-    last_uploaded = DateTime.new(1998,1,1)
-    records = 0
-    files.each do |file|
-      records = records + file.records.to_i
-      last_uploaded = file.uploaded_date if last_uploaded.nil? || file.uploaded_date >= last_uploaded
+  def update_number_of_files
+    # this code although here and works produces values in fields that are no longer being used
+    userid = UseridDetail.where(:userid => self.userid).first
+    return if userid.nil?
+    files = userid.freereg1_csv_files
+    if files.length.nil?
+      number = 0
+      records = 0
+      last_uploaded = DateTime.new(1998,1,1)
+    else
+      number = files.length
+      last_uploaded = DateTime.new(1998,1,1)
+      records = 0
+      files.each do |file|
+        records = records + file.records.to_i
+        last_uploaded = file.uploaded_date if last_uploaded.nil? || file.uploaded_date >= last_uploaded
+      end
+      userid.update_attributes(:number_of_files  => number, :number_of_records => records, :last_upload => last_uploaded)
     end
-    userid.update_attributes(:number_of_files  => number, :number_of_records => records, :last_upload => last_uploaded)
+  end
+
+  def update_register
+    Register.update_or_create_register(self)
+  end
+
+  def calculate_transcriber_name(key)
+    if record_type == key && userid_detail.present? && (userid_detail.person_surname.present? || userid_detail.person_forename.present?)
+      answer, transcriber =  UseridDetail.can_we_acknowledge_the_transcriber(userid_detail)
+      transcriber = nil unless answer
+    end
+    transcriber
+  end
+
+  def write_csv_file(file_location)
+    file = self
+    # since there can be multiple places/churches in a single file we must combine the records for all those back into the single file
+    chapman_code, place_name, church_name, register_type, proceed = file.write_csv_get_location
+    fields = file.field_order_of_csv
+    CSV.open(file_location, "wb", { :row_sep => "\r\n"}) do |csv|
+      file.write_csv_headers(csv,fields)
+      # eg +INFO,David@davejo.eclipse.co.uk,password,SEQUENCED,BURIALS,cp850,,,,,,,
+      records = file.freereg1_csv_entries
+      records.each do |rec|
+        case
+        when file.record_type == "ba"
+          file.write_csv_baptism(csv,rec,fields,chapman_code, place_name, church_name, register_type)
+        when file.record_type == "bu"
+          file.write_csv_burial(csv,rec,fields,chapman_code, place_name, church_name, register_type)
+        when file.record_type == "ma"
+          file.write_csv_marriage(csv,rec,fields,chapman_code, place_name, church_name, register_type)
+        end #end case
+      end #end records
+    end #end csv
+  end #end method
+
+  def write_csv_baptism(csv,rec,fields,chapman_code, place_name, church_name, register_type)
+    record = Array.new
+    fields.each do |field|
+      case field
+      when :chapman_code
+        record = record.push(chapman_code.to_s)
+      when :place_name
+        record = record.push(place_name.to_s)
+      when :church_name
+        record = record.push(church_name.to_s)
+      else
+        record = record.push(rec[field.to_sym].to_s)
+      end
+    end
+    csv << record
+  end
+
+  def write_csv_burial(csv,rec,fields,chapman_code, place_name, church_name, register_type)
+    record = Array.new
+    fields.each do |field|
+      case field
+      when :chapman_code
+        record = record.push(chapman_code.to_s)
+      when :place_name
+        record = record.push(place_name.to_s)
+      when :church_name
+        record = record.push(church_name.to_s)
+      else
+        record = record.push(rec[field.to_sym].to_s)
+      end
+    end
+    csv << record
+  end
+
+  def write_csv_marriage(csv,rec,fields,chapman_code, place_name, church_name, register_type)
+    number_of_witnesses = rec.multiple_witnesses.count
+    case
+    when !self.def
+      self.write_csv_marriage_standard(csv,rec,fields,chapman_code, place_name, church_name, register_type)
+    when self.def &&  number_of_witnesses <= 2
+      self.write_csv_marriage_standard(csv,rec,fields,chapman_code, place_name, church_name, register_type)
+    when self.def && (number_of_witnesses >2 && number_of_witnesses <= 10)
+      self.write_csv_marriage_flexible(csv,rec,fields,chapman_code, place_name, church_name, register_type)
+    end
+  end
+
+  def write_csv_marriage_standard(csv,rec,fields,chapman_code, place_name, church_name, register_type)
+    witnesses = rec.get_listing_of_witnesses
+    number_of_witnesses = witnesses.length
+    if number_of_witnesses == 0
+      self.write_csv_marriage_standard_line(csv,rec,fields,chapman_code, place_name, church_name, register_type,witnesses)
+    else
+      while number_of_witnesses > 0
+        self.write_csv_marriage_standard_line(csv,rec,fields,chapman_code, place_name, church_name, register_type,witnesses)
+        number_of_witnesses = number_of_witnesses - 2
+        witnesses = witnesses.drop(2)
+      end
+    end
+  end
+
+  def write_csv_marriage_standard_line(csv,rec,fields,chapman_code, place_name, church_name, register_type,witnesses)
+    witnesses.length > 2 ? dup_notice = true : dup_notice = false
+    record = Array.new
+    fields.each do |field|
+      case field
+      when :chapman_code
+        record = record.push(chapman_code.to_s)
+      when :place_name
+        record = record.push(place_name.to_s)
+      when :church_name
+        record = record.push(church_name.to_s)
+      when :witness1_forename
+        witnesses.blank? || witnesses[0].nil? ? record = record.push('') : record = record.push(witnesses[0][0].to_s)
+      when :witness1_surname
+        witnesses.blank? || witnesses[0].nil? ? record = record.push('') : record = record.push(witnesses[0][1].to_s)
+      when :witness2_forename
+        witnesses.blank? || witnesses[1].nil? ? record = record.push('') : record = record.push(witnesses[1][0].to_s)
+      when :witness2_surname
+        witnesses.blank? || witnesses[1].nil? ? record = record.push('') : record = record.push(witnesses[1][1].to_s)
+      when :notes
+        dup_notice ? notes = rec[field.to_sym].to_s + ' duplicated record for other witnesses' : notes = rec[field.to_sym].to_s
+        record = record.push(notes)
+      else
+        record = record.push(rec[field.to_sym].to_s)
+      end
+    end
+    csv << record
+  end
+
+  def write_csv_marriage_flexible(csv,rec,fields,chapman_code, place_name, church_name, register_type)
+    witnesses = rec.get_listing_of_witnesses
+    record = Array.new
+    fields.each do |field|
+      case field
+      when :chapman_code
+        record = record.push(chapman_code.to_s)
+      when :place_name
+        record = record.push(place_name.to_s)
+      when :church_name
+        record = record.push(church_name.to_s)
+      when :witness1_forename
+        witnesses.blank? || witnesses[0].nil? ? record = record.push('') : record = record.push(witnesses[0][0].to_s)
+      when :witness1_surname
+        witnesses.blank? || witnesses[0].nil? ? record = record.push('') : record = record.push(witnesses[0][1].to_s)
+      when :witness2_forename
+        witnesses.blank? || witnesses[1].nil? ? record = record.push('') : record = record.push(witnesses[1][0].to_s)
+      when :witness2_surname
+        witnesses.blank? || witnesses[1].nil? ? record = record.push('') : record = record.push(witnesses[1][1].to_s)
+      when :witness3_forename
+        witnesses.blank? || witnesses[2].nil? ? record = record.push('') : record = record.push(witnesses[2][0].to_s)
+      when :witness3_forename_surname
+        witnesses.blank? || witnesses[2].nil? ? record = record.push('') : record = record.push(witnesses[2][1].to_s)
+      when :witness4_forename
+        witnesses.blank? || witnesses[3].nil? ? record = record.push('') : record = record.push(witnesses[3][0].to_s)
+      when :witness4_surname
+        witnesses.blank? || witnesses[3].nil? ? record = record.push('') : record = record.push(witnesses[3][1].to_s)
+      when :witness5_forename
+        witnesses.blank? || witnesses[4].nil? ? record = record.push('') : record = record.push(witnesses[4][0].to_s)
+      when :witness5_surname
+        witnesses.blank? || witnesses[4].nil? ? record = record.push('') : record = record.push(witnesses[4][1].to_s)
+      when :witness6_forename
+        witnesses.blank? || witnesses[5].nil? ? record = record.push('') : record = record.push(witnesses[5][0].to_s)
+      when :witness6_surname
+        witnesses.blank? || witnesses[5].nil? ? record = record.push('') : record = record.push(witnesses[5][1].to_s)
+      when :witness7_forename
+        witnesses.blank? || witnesses[6].nil? ? record = record.push('') : record = record.push(witnesses[6][0].to_s)
+      when :witness7_surname
+        witnesses.blank? || witnesses[6].nil? ? record = record.push('') : record = record.push(witnesses[6][1].to_s)
+      when :witness8_forename
+        witnesses.blank? || witnesses[7].nil? ? record = record.push('') : record = record.push(witnesses[7][0].to_s)
+      when :witness8_surname
+        witnesses.blank? || witnesses[7].nil? ? record = record.push('') : record = record.push(witnesses[7][1].to_s)
+      when :witness9_forename
+        witnesses.blank? || witnesses[8].nil? ? record = record.push('') : record = record.push(witnesses[8][0].to_s)
+      when :witness9_surname
+        witnesses.blank? || witnesses[8].nil? ? record = record.push('') : record = record.push(witnesses[8][1].to_s)
+      when :witness10_forename
+        witnesses.blank? || witnesses[9].nil? ? record = record.push('') : record = record.push(witnesses[9][0].to_s)
+      when :witness10_surname
+        witnesses.blank? || witnesses[9].nil? ? record = record.push('') : record = record.push(witnesses[9][1].to_s)
+      when :witness8_forename
+      when :notes
+        notes = rec[field.to_sym].to_s
+        record = record.push(notes)
+      else
+        record = record.push(rec[field.to_sym].to_s)
+      end
+    end
+    csv << record
+  end
+
+  def write_csv_headers(csv,fields)
+    file = self
+    record_type = RecordType.display_name(file.record_type).upcase + 'S' unless file.record_type.blank?
+    csv << ["+INFO","#{file.transcriber_email}","PASSWORD","SEQUENCED","#{record_type}","#{file.characterset}"]
+    # eg #,CCCC,David Newbury,Derbyshire,dbysmalbur.CSV,02-Mar-05,,,,,,,
+    csv << ['#','CCC',file.transcriber_name,file.transcriber_syndicate,file.file_name,file.transcription_date]
+    # eg #,Credit,Libby,email address,,,,,,
+    csv << ['#','CREDIT',file.credit_name,file.credit_email]
+    # eg #,05-Feb-2006,data taken from computer records and converted using Excel, LDS
+    csv << ['#',Time.now.strftime("%d-%b-%Y"),file.first_comment,file.second_comment]
+    #eg +LDS,,,,
+    csv << ['+LDS'] unless file.def
+    if file.def
+      csv << ['#','DEF']
+      csv << fields
+    end
+  end
+
+  def field_order_of_csv
+    if self.order.present?
+      hash_of_fields = self.order
+    else
+      hash_of_fields =  FreeregOptionsConstants::ENTRY_ORDER_DEFINITION[self.record_type]
+    end
+    hash_of_fields = hash_of_fields.symbolize_keys
+    fields = Array.new
+    hash_of_fields.values.sort.each do |val|
+      fields << hash_of_fields.key(val)
+    end
+    return fields
+  end
+
+  def write_csv_get_location
+    register = self.register
+    church = register.church
+    place = church.place
+    proceed = true
+    chapman_code = place.chapman_code
+    place_name = place.place_name
+    church_name = church.church_name
+    register_type = register.register_type
+    church_name = church_name.to_s + " " + register_type.to_s if !self.def || (self.order.present? && !self.order.stringify_keys.has_key?('register_type'))
+    proceed = false if (chapman_code.blank? || place_name.blank? || church_name.blank?)
+    return chapman_code, place_name, church_name, register_type, proceed
+  end
+
+  def get_unique_names
+    entries = Hash.new
+    all_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => self.id)
+    case self.record_type
+    when "ba"
+      entries["Father's Surname"] = all_entries.distinct(:father_surname).delete_if{|x| x == nil}.sort
+      entries["Mother's Surname"] = all_entries.distinct(:mother_surname).delete_if{|x| x == nil}.sort
+      entries["Father's Forename"] = all_entries.distinct(:father_forename).delete_if{|x| x == nil}.sort
+      entries["Mother's Forename"] = all_entries.distinct(:mother_forename).delete_if{|x| x == nil}.sort
+      entries["Person's Forename"] = all_entries.distinct(:person_forename).delete_if{|x| x == nil}.sort
+      entries["Person's Surname"] = all_entries.distinct(:person_surname).delete_if{|x| x == nil}.sort
+    when "bu"
+      entries["Burial Person's Surname"] = all_entries.distinct(:burial_person_surname).delete_if{|x| x == nil}.sort
+      entries["Burial Person's Forename"] = all_entries.distinct(:burial_person_forename).delete_if{|x| x == nil}.sort
+      entries["Relative's Surname"] = all_entries.distinct(:relative_surname).delete_if{|x| x == nil}.sort
+      entries["Male Relative's Forename"] = all_entries.distinct(:male_relative_forename).delete_if{|x| x == nil}.sort
+      entries["Female Relative's Forename"] = all_entries.distinct(:female_relative_forename).delete_if{|x| x == nil}.sort
+      entries["Female Relative's Surname"] = all_entries.distinct(:female_relative_surname).delete_if{|x| x == nil}.sort
+    when "ma"
+      entries["Groom's Surname"] = all_entries.distinct(:groom_surname).delete_if{|x| x == nil}.sort
+      entries["Groom's Forename"] = all_entries.distinct(:groom_forename).delete_if{|x| x == nil}.sort
+      entries["Bride's Surname"] = all_entries.distinct(:bride_surname).delete_if{|x| x == nil}.sort
+      entries["Bride's Forename"] = all_entries.distinct(:bride_forename).delete_if{|x| x == nil}.sort
+      entries["Groom's Father's Surname"] = all_entries.distinct(:groom_father_surname).delete_if{|x| x == nil}.sort
+      entries["Groom's Father's Forename"] = all_entries.distinct(:groom_father_forename).delete_if{|x| x == nil}.sort
+      entries["Bride's Father's Surname"] = all_entries.distinct(:bride_father_surname).delete_if{|x| x == nil}.sort
+      entries["Bride's Father's Forename"] = all_entries.distinct(:bride_father_forename).delete_if{|x| x == nil}.sort
+      entries["Groom's Mother's Surname"] = all_entries.distinct(:groom_mother_surname).delete_if{|x| x == nil}.sort
+      entries["Groom's Mother's Forename"] = all_entries.distinct(:groom_mother_forename).delete_if{|x| x == nil}.sort
+      entries["Bride's Mother's Surname"] = all_entries.distinct(:bride_motherr_surname).delete_if{|x| x == nil}.sort
+      entries["Bride's Mother's Forename"] = all_entries.distinct(:bride_mother_forename).delete_if{|x| x == nil}.sort
+      entries["Witness Surname"] = all_entries.distinct('multiple_witness.witness_surname').delete_if{|x| x == nil}.sort
+      entries["Witness Forename"] = all_entries.distinct('multiple_witness.witness_forename').delete_if{|x| x == nil}.sort
+
+    end
+    entries
+  end
+
+  def zero_year_entries
+    freereg1_csv_entries = Array.new
+    Freereg1CsvEntry.freereg1_csv_file(id).year(nil).each do |entry|
+      freereg1_csv_entries << entry
+    end
+    freereg1_csv_entries
+  end
+
+  def date_change(transcription_date, modification_date)
+    error = self.error
+    if error > 0
+      lines = self.batch_errors.all
+      lines.each do |line|
+        if line.error_type == 'Header_Error'
+          if /^Header_Error,The transcription date/ =~ line.error_message
+            unless self.transcription_date == transcription_date
+              line.destroy
+              error = error - 1
+              self.update_attributes(:error => error)
+            end
+          end
+          if /^Header_Error,The modification date/ =~ line.error_message
+            unless self.modification_date == modification_date
+              line.destroy
+              error = error - 1
+              self.update_attributes(:error => error)
+            end
+          end
+        end
+      end
+    end
+  end
+
+  def determine_number_of_def_witnesses
+    fields = order
+    witnesses = 0
+    fields.each_key do |key|
+      if key.include?("witness") && (key.include?("_forename") || key.include?("_surname"))
+        witnesses = witnesses + 1
+      end
+    end
+    witnesses = witnesses / 2.0
+    witnesses.to_i
   end
 end
-
-def update_register
-  Register.update_or_create_register(self)
-end
-
-def calculate_transcriber_name(key)
-  if record_type == key && userid_detail.present? && (userid_detail.person_surname.present? || userid_detail.person_forename.present?)
-    answer, transcriber =  UseridDetail.can_we_acknowledge_the_transcriber(userid_detail)
-    transcriber = nil unless answer
-  end
-  transcriber
-end
-
-      def write_csv_file(file_location)
-        file = self
-        # since there can be multiple places/churches in a single file we must combine the records for all those back into the single file
-                 chapman_code, place_name, church_name, register_type, proceed = file.write_csv_get_location
-                 fields = file.field_order_of_csv
-                 CSV.open(file_location, "wb", { :row_sep => "\r\n"}) do |csv|
-                   file.write_csv_headers(csv,fields)
-                   # eg +INFO,David@davejo.eclipse.co.uk,password,SEQUENCED,BURIALS,cp850,,,,,,,
-                   records = file.freereg1_csv_entries
-                   records.each do |rec|
-                     case
-                     when file.record_type == "ba"
-                       file.write_csv_baptism(csv,rec,fields,chapman_code, place_name, church_name, register_type)
-                     when file.record_type == "bu"
-                       file.write_csv_burial(csv,rec,fields,chapman_code, place_name, church_name, register_type)
-                     when file.record_type == "ma"
-                       file.write_csv_marriage(csv,rec,fields,chapman_code, place_name, church_name, register_type)
-                     end #end case
-                   end #end records
-                 end #end csv
-                 end #end method
-
-                 def write_csv_baptism(csv,rec,fields,chapman_code, place_name, church_name, register_type)
-                   record = Array.new
-                   fields.each do |field|
-                     case field
-                     when :chapman_code
-                       record = record.push(chapman_code.to_s)
-                     when :place_name
-                       record = record.push(place_name.to_s)
-                     when :church_name
-                       record = record.push(church_name.to_s)
-                     else
-                       record = record.push(rec[field.to_sym].to_s)
-                     end
-                   end
-                   csv << record
-                 end
-
-                 def write_csv_burial(csv,rec,fields,chapman_code, place_name, church_name, register_type)
-                   record = Array.new
-                   fields.each do |field|
-                     case field
-                     when :chapman_code
-                       record = record.push(chapman_code.to_s)
-                     when :place_name
-                       record = record.push(place_name.to_s)
-                     when :church_name
-                       record = record.push(church_name.to_s)
-                     else
-                       record = record.push(rec[field.to_sym].to_s)
-                     end
-                   end
-                   csv << record
-                 end
-
-                 def write_csv_marriage(csv,rec,fields,chapman_code, place_name, church_name, register_type)
-                   number_of_witnesses = rec.multiple_witnesses.count
-                   case
-                   when !self.def
-                     self.write_csv_marriage_standard(csv,rec,fields,chapman_code, place_name, church_name, register_type)
-                   when self.def &&  number_of_witnesses <= 2
-                     self.write_csv_marriage_standard(csv,rec,fields,chapman_code, place_name, church_name, register_type)
-                   when self.def && (number_of_witnesses >2 && number_of_witnesses <= 10)
-                     self.write_csv_marriage_flexible(csv,rec,fields,chapman_code, place_name, church_name, register_type)
-                   end
-                 end
-
-                 def write_csv_marriage_standard(csv,rec,fields,chapman_code, place_name, church_name, register_type)
-                   witnesses = rec.get_listing_of_witnesses
-                   number_of_witnesses = witnesses.length
-                   if number_of_witnesses == 0
-                     self.write_csv_marriage_standard_line(csv,rec,fields,chapman_code, place_name, church_name, register_type,witnesses)
-                   else
-                     while number_of_witnesses > 0
-                       self.write_csv_marriage_standard_line(csv,rec,fields,chapman_code, place_name, church_name, register_type,witnesses)
-                       number_of_witnesses = number_of_witnesses - 2
-                       witnesses = witnesses.drop(2)
-                     end
-                   end
-                 end
-
-                 def write_csv_marriage_standard_line(csv,rec,fields,chapman_code, place_name, church_name, register_type,witnesses)
-                   witnesses.length > 2 ? dup_notice = true : dup_notice = false
-                   record = Array.new
-                   fields.each do |field|
-                     case field
-                     when :chapman_code
-                       record = record.push(chapman_code.to_s)
-                     when :place_name
-                       record = record.push(place_name.to_s)
-                     when :church_name
-                       record = record.push(church_name.to_s)
-                     when :witness1_forename
-                       witnesses.blank? || witnesses[0].nil? ? record = record.push('') : record = record.push(witnesses[0][0].to_s)
-                     when :witness1_surname
-                       witnesses.blank? || witnesses[0].nil? ? record = record.push('') : record = record.push(witnesses[0][1].to_s)
-                     when :witness2_forename
-                       witnesses.blank? || witnesses[1].nil? ? record = record.push('') : record = record.push(witnesses[1][0].to_s)
-                     when :witness2_surname
-                       witnesses.blank? || witnesses[1].nil? ? record = record.push('') : record = record.push(witnesses[1][1].to_s)
-                     when :notes
-                       dup_notice ? notes = rec[field.to_sym].to_s + ' duplicated record for other witnesses' : notes = rec[field.to_sym].to_s
-                       record = record.push(notes)
-                     else
-                       record = record.push(rec[field.to_sym].to_s)
-                     end
-                   end
-                   csv << record
-                 end
-
-                 def write_csv_marriage_flexible(csv,rec,fields,chapman_code, place_name, church_name, register_type)
-                   witnesses = rec.get_listing_of_witnesses
-                   record = Array.new
-                   fields.each do |field|
-                     case field
-                     when :chapman_code
-                       record = record.push(chapman_code.to_s)
-                     when :place_name
-                       record = record.push(place_name.to_s)
-                     when :church_name
-                       record = record.push(church_name.to_s)
-                     when :witness1_forename
-                       witnesses.blank? || witnesses[0].nil? ? record = record.push('') : record = record.push(witnesses[0][0].to_s)
-                     when :witness1_surname
-                       witnesses.blank? || witnesses[0].nil? ? record = record.push('') : record = record.push(witnesses[0][1].to_s)
-                     when :witness2_forename
-                       witnesses.blank? || witnesses[1].nil? ? record = record.push('') : record = record.push(witnesses[1][0].to_s)
-                     when :witness2_surname
-                       witnesses.blank? || witnesses[1].nil? ? record = record.push('') : record = record.push(witnesses[1][1].to_s)
-                     when :witness3_forename
-                       witnesses.blank? || witnesses[2].nil? ? record = record.push('') : record = record.push(witnesses[2][0].to_s)
-                     when :witness3_forename_surname
-                       witnesses.blank? || witnesses[2].nil? ? record = record.push('') : record = record.push(witnesses[2][1].to_s)
-                     when :witness4_forename
-                       witnesses.blank? || witnesses[3].nil? ? record = record.push('') : record = record.push(witnesses[3][0].to_s)
-                     when :witness4_surname
-                       witnesses.blank? || witnesses[3].nil? ? record = record.push('') : record = record.push(witnesses[3][1].to_s)
-                     when :witness5_forename
-                       witnesses.blank? || witnesses[4].nil? ? record = record.push('') : record = record.push(witnesses[4][0].to_s)
-                     when :witness5_surname
-                       witnesses.blank? || witnesses[4].nil? ? record = record.push('') : record = record.push(witnesses[4][1].to_s)
-                     when :witness6_forename
-                       witnesses.blank? || witnesses[5].nil? ? record = record.push('') : record = record.push(witnesses[5][0].to_s)
-                     when :witness6_surname
-                       witnesses.blank? || witnesses[5].nil? ? record = record.push('') : record = record.push(witnesses[5][1].to_s)
-                     when :witness7_forename
-                       witnesses.blank? || witnesses[6].nil? ? record = record.push('') : record = record.push(witnesses[6][0].to_s)
-                     when :witness7_surname
-                       witnesses.blank? || witnesses[6].nil? ? record = record.push('') : record = record.push(witnesses[6][1].to_s)
-                     when :witness8_forename
-                       witnesses.blank? || witnesses[7].nil? ? record = record.push('') : record = record.push(witnesses[7][0].to_s)
-                     when :witness8_surname
-                       witnesses.blank? || witnesses[7].nil? ? record = record.push('') : record = record.push(witnesses[7][1].to_s)
-                     when :witness9_forename
-                       witnesses.blank? || witnesses[8].nil? ? record = record.push('') : record = record.push(witnesses[8][0].to_s)
-                     when :witness9_surname
-                       witnesses.blank? || witnesses[8].nil? ? record = record.push('') : record = record.push(witnesses[8][1].to_s)
-                     when :witness10_forename
-                       witnesses.blank? || witnesses[9].nil? ? record = record.push('') : record = record.push(witnesses[9][0].to_s)
-                     when :witness10_surname
-                       witnesses.blank? || witnesses[9].nil? ? record = record.push('') : record = record.push(witnesses[9][1].to_s)
-                     when :witness8_forename
-                     when :notes
-                       notes = rec[field.to_sym].to_s
-                       record = record.push(notes)
-                     else
-                       record = record.push(rec[field.to_sym].to_s)
-                     end
-                   end
-                   csv << record
-                 end
-
-                 def write_csv_headers(csv,fields)
-                   file = self
-                   record_type = RecordType.display_name(file.record_type).upcase + 'S' unless file.record_type.blank?
-                   csv << ["+INFO","#{file.transcriber_email}","PASSWORD","SEQUENCED","#{record_type}","#{file.characterset}"]
-                   # eg #,CCCC,David Newbury,Derbyshire,dbysmalbur.CSV,02-Mar-05,,,,,,,
-                   csv << ['#','CCC',file.transcriber_name,file.transcriber_syndicate,file.file_name,file.transcription_date]
-                   # eg #,Credit,Libby,email address,,,,,,
-                   csv << ['#','CREDIT',file.credit_name,file.credit_email]
-                   # eg #,05-Feb-2006,data taken from computer records and converted using Excel, LDS
-                   csv << ['#',Time.now.strftime("%d-%b-%Y"),file.first_comment,file.second_comment]
-                   #eg +LDS,,,,
-                   csv << ['+LDS'] unless file.def
-                   if file.def
-                     csv << ['#','DEF']
-                     csv << fields
-                   end
-                 end
-
-                 def field_order_of_csv
-                   if self.order.present?
-                     hash_of_fields = self.order
-                   else
-                     hash_of_fields =  FreeregOptionsConstants::ENTRY_ORDER_DEFINITION[self.record_type]
-                   end
-                   hash_of_fields = hash_of_fields.symbolize_keys
-                   fields = Array.new
-                   hash_of_fields.values.sort.each do |val|
-                     fields << hash_of_fields.key(val)
-                   end
-                   return fields
-                 end
-
-                 def write_csv_get_location
-                   register = self.register
-                   church = register.church
-                   place = church.place
-                   proceed = true
-                   chapman_code = place.chapman_code
-                   place_name = place.place_name
-                   church_name = church.church_name
-                   register_type = register.register_type
-                   church_name = church_name.to_s + " " + register_type.to_s if !self.def || (self.order.present? && !self.order.stringify_keys.has_key?('register_type'))
-                   proceed = false if (chapman_code.blank? || place_name.blank? || church_name.blank?)
-                   return chapman_code, place_name, church_name, register_type, proceed
-                 end
-
-                 def get_unique_names
-                   entries = Hash.new
-                   all_entries = Freereg1CsvEntry.where(:freereg1_csv_file_id => self.id)
-                   case self.record_type
-                   when "ba"
-                     entries["Father's Surname"] = all_entries.distinct(:father_surname).delete_if{|x| x == nil}.sort
-                     entries["Mother's Surname"] = all_entries.distinct(:mother_surname).delete_if{|x| x == nil}.sort
-                     entries["Father's Forename"] = all_entries.distinct(:father_forename).delete_if{|x| x == nil}.sort
-                     entries["Mother's Forename"] = all_entries.distinct(:mother_forename).delete_if{|x| x == nil}.sort
-                     entries["Person's Forename"] = all_entries.distinct(:person_forename).delete_if{|x| x == nil}.sort
-                     entries["Person's Surname"] = all_entries.distinct(:person_surname).delete_if{|x| x == nil}.sort
-                   when "bu"
-                     entries["Burial Person's Surname"] = all_entries.distinct(:burial_person_surname).delete_if{|x| x == nil}.sort
-                     entries["Burial Person's Forename"] = all_entries.distinct(:burial_person_forename).delete_if{|x| x == nil}.sort
-                     entries["Relative's Surname"] = all_entries.distinct(:relative_surname).delete_if{|x| x == nil}.sort
-                     entries["Male Relative's Forename"] = all_entries.distinct(:male_relative_forename).delete_if{|x| x == nil}.sort
-                     entries["Female Relative's Forename"] = all_entries.distinct(:female_relative_forename).delete_if{|x| x == nil}.sort
-                     entries["Female Relative's Surname"] = all_entries.distinct(:female_relative_surname).delete_if{|x| x == nil}.sort
-                   when "ma"
-                     entries["Groom's Surname"] = all_entries.distinct(:groom_surname).delete_if{|x| x == nil}.sort
-                     entries["Groom's Forename"] = all_entries.distinct(:groom_forename).delete_if{|x| x == nil}.sort
-                     entries["Bride's Surname"] = all_entries.distinct(:bride_surname).delete_if{|x| x == nil}.sort
-                     entries["Bride's Forename"] = all_entries.distinct(:bride_forename).delete_if{|x| x == nil}.sort
-                     entries["Groom's Father's Surname"] = all_entries.distinct(:groom_father_surname).delete_if{|x| x == nil}.sort
-                     entries["Groom's Father's Forename"] = all_entries.distinct(:groom_father_forename).delete_if{|x| x == nil}.sort
-                     entries["Bride's Father's Surname"] = all_entries.distinct(:bride_father_surname).delete_if{|x| x == nil}.sort
-                     entries["Bride's Father's Forename"] = all_entries.distinct(:bride_father_forename).delete_if{|x| x == nil}.sort
-                     entries["Groom's Mother's Surname"] = all_entries.distinct(:groom_mother_surname).delete_if{|x| x == nil}.sort
-                     entries["Groom's Mother's Forename"] = all_entries.distinct(:groom_mother_forename).delete_if{|x| x == nil}.sort
-                     entries["Bride's Mother's Surname"] = all_entries.distinct(:bride_motherr_surname).delete_if{|x| x == nil}.sort
-                     entries["Bride's Mother's Forename"] = all_entries.distinct(:bride_mother_forename).delete_if{|x| x == nil}.sort
-                     entries["Witness Surname"] = all_entries.distinct('multiple_witness.witness_surname').delete_if{|x| x == nil}.sort
-                     entries["Witness Forename"] = all_entries.distinct('multiple_witness.witness_forename').delete_if{|x| x == nil}.sort
-
-                   end
-                   entries
-                 end
-
-                 def zero_year_entries
-                   freereg1_csv_entries = Array.new
-                   Freereg1CsvEntry.freereg1_csv_file(id).year(nil).each do |entry|
-                     freereg1_csv_entries << entry
-                   end
-                   freereg1_csv_entries
-                 end
-
-                 def date_change(transcription_date, modification_date)
-                   error = self.error
-                   if error > 0
-                     lines = self.batch_errors.all
-                     lines.each do |line|
-                       if line.error_type == 'Header_Error'
-                         if /^Header_Error,The transcription date/ =~ line.error_message
-                           unless self.transcription_date == transcription_date
-                             line.destroy
-                             error = error - 1
-                             self.update_attributes(:error => error)
-                           end
-                         end
-                         if /^Header_Error,The modification date/ =~ line.error_message
-                           unless self.modification_date == modification_date
-                             line.destroy
-                             error = error - 1
-                             self.update_attributes(:error => error)
-                           end
-                         end
-                       end
-                     end
-                   end
-                 end
-
-                 def determine_number_of_def_witnesses
-                   fields = order
-                   witnesses = 0
-                   fields.each_key do |key|
-                     if key.include?("witness") && (key.include?("_forename") || key.include?("_surname"))
-                       witnesses = witnesses + 1
-                     end
-                   end
-                   witnesses = witnesses / 2.0
-                   witnesses.to_i
-                 end
-                 end

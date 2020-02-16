@@ -108,4 +108,30 @@ module Freereg1CsvFilesHelper
       link_to "#{entry.id.to_s}", freereg1_csv_entry_path(entry.id.to_s, from: file), method: :get
     end
   end
+
+  def mindata(file)
+    zero_entry = file.zero_entries
+    if zero_entry || file.datemin == '0'
+      link_to "#{file.datemin}", zero_year_freereg1_csv_file_path(id: file.id), method: :get, class: "btn btn--small"
+    else
+      "#{file.datemin}"
+    end
+  end
+
+  def zero_entry(file)
+    zero_entry = file.zero_entries
+    if zero_entry || file.datemin == '0'
+      link_to 'Yes', zero_year_freereg1_csv_file_path(id: file.id), method: :get, class: "btn btn--small"
+    else
+      'No'
+    end
+  end
+
+  def file_errors(file)
+    if file.error > 0
+      link_to "#{file.error}", error_freereg1_csv_file_path(file.id)
+    else
+      'Zero'
+    end
+  end
 end

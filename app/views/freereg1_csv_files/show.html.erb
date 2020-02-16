@@ -45,6 +45,10 @@
           <td class="weight--semibold"> <%= @freereg1_csv_file.datemax %></td>
         </tr>
         <tr>
+          <td>Zero_entries in dataset </td>
+          <td class="weight--semibold"> <%= zero_entry(@freereg1_csv_file) %></td>
+        </tr>
+        <tr>
           <td>Number of records in each decade starting in 1530<br>
             The first decade will also contain any record of a year less than 1530<br>
             The last decade will also contain any record of a year after the current decade<br>
@@ -75,30 +79,30 @@
           <td>Date of upload </td>
           <td class="weight--semibold"> <%= @freereg1_csv_file.uploaded_date.strftime("%d %b %Y") unless @freereg1_csv_file.uploaded_date.nil? %></td>
         </tr>
-        <%case%>
-        <%when @freereg1_csv_file.error == 0%>
+        <% case%>
+        <% when @freereg1_csv_file.error == 0%>
         <tr id="<%= @freereg1_csv_file.id%>"  style="color:black" >
           <% when  @freereg1_csv_file.error > 0 %>
           <tr id="<%= @freereg1_csv_file.id%>"  style="color:red" >
           <% end %>
           <td>Number of errors</td>
-          <td class="weight--semibold"> <%= link_to(errors(@freereg1_csv_file) , error_freereg1_csv_file_path(@freereg1_csv_file))%></td>
+          <td class="weight--semibold"> <%= file_errors(@freereg1_csv_file)%></td>
         </tr>
-        <%if @freereg1_csv_file.locked_by_transcriber ||  !@freereg1_csv_file.locked_by_transcriber == "false"%>
+        <% if @freereg1_csv_file.locked_by_transcriber ||  !@freereg1_csv_file.locked_by_transcriber == "false"%>
           <tr id="<%= @freereg1_csv_file.id%>"  style="color:darkviolet" >
-          <%else%>
+          <% else%>
             <tr id="<%= @freereg1_csv_file.id%>"  style="color:black" >
             <% end %>
             <td>Batch is locked from overriding by Transcriber</td>
-            <td class="weight--semibold"> <%= @freereg1_csv_file.locked_by_transcriber %></td>
+            <td class="weight--semibold"> <%= transform_boolean(@freereg1_csv_file.locked_by_transcriber) %></td>
           </tr>
-          <%if !@freereg1_csv_file.locked_by_coordinator == "false" || @freereg1_csv_file.locked_by_coordinator  %>
+          <% if !@freereg1_csv_file.locked_by_coordinator == "false" || @freereg1_csv_file.locked_by_coordinator  %>
             <tr id="<%= @freereg1_csv_file.id%>"  style="color:darkviolet" >
-            <%else%>
+            <% else%>
               <tr id="<%= @freereg1_csv_file.id%>"  style="color:black" >
               <% end %>
               <td>Batch is locked from overriding by Coordinator</td>
-              <td class="weight--semibold"> <%= @freereg1_csv_file.locked_by_coordinator %></td>
+              <td class="weight--semibold"> <%= transform_boolean(@freereg1_csv_file.locked_by_coordinator) %></td>
             </tr>
             <tr>
               <td>Credit the following for the transcription</td>
@@ -133,8 +137,8 @@
               <td class="weight--semibold"><%= @freereg1_csv_file.characterset %></td>
             </tr>
             <tr>
-              <td>Processed (False means that it was only verified for errors and its contents are NOT in the searchable database)</td>
-              <td class="weight--semibold"><%= @freereg1_csv_file.processed %></td>
+              <td>Processed (No means that it was only verified for errors and its contents are NOT in the searchable database)</td>
+              <td class="weight--semibold"><%= transform_boolean(@freereg1_csv_file.processed) %></td>
             </tr>
             <tr>
               <td>Processed Date</td>
@@ -142,7 +146,7 @@
             </tr>
             <tr>
               <td>Flexible CSV Used</td>
-              <td class="weight--semibold"><%= @freereg1_csv_file.def %></td>
+              <td class="weight--semibold"><%= transform_boolean(@freereg1_csv_file.def) %></td>
             </tr>
             <tr>
               <td>Column Order</td>

@@ -37,7 +37,7 @@
                 <td><%= freereg1_csv_file.church_name %></td>
                 <td><%= register_name_for_file(freereg1_csv_file) %></td>
                 <td><%= freereg1_csv_file.freereg1_csv_entries.count %></td>
-                <td><%= freereg1_csv_file.datemin == "0" ? button_to("0",zero_year_freereg1_csv_file_path(:id => freereg1_csv_file.id), :method=>:get, :class => "btn btn--soft") : freereg1_csv_file.datemin %></td>
+                <td><%= mindata(freereg1_csv_file)%></td>
                 <td><%= freereg1_csv_file.datemax %></td>
                 <% unless session[:my_own]%>
                   <td><%= freereg1_csv_file.userid %></td>
