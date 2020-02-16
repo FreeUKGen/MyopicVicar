@@ -663,7 +663,7 @@ module ApplicationHelper
                       <script>
                       (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
                       </script>
-                      <ins class="adsbygoogle"
+                      <ins class="adsbygoogle float--right"
                       style="display:inline-block;width:300px;height:600px"
                       data-ad-client = "#{data_ad_client}"
                       data-ad-slot = "#{app_advert['data_ad_slot_side']}">
