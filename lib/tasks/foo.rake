@@ -25,8 +25,8 @@ namespace :foo do
   task :update_file_distribution, [:sleep_time] => [:environment] do |t, args|
     p args.sleep_time.to_f
     Freereg1CsvFile.no_timeout.each_with_index do |file, loop_index|
+      next unless file.datemin == '0'
       file.calculate_distribution
-      p loop_index if ((loop_index / 1000) * 1000) == loop_index
       p loop_index
       sleep args.sleep_time.to_f
     end
