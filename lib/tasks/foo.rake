@@ -7,6 +7,8 @@ namespace :foo do
 
   # eg foo:check_search_records[100000]
 
+
+
   task :check_search_records_with_null_entry, [:num, :fix] => [:environment] do |t, args|
     require 'check_search_records_with_null_entry'
     limit = args.num
@@ -20,7 +22,15 @@ namespace :foo do
     DeleteOrArchiveOldMessagesFeedbacksAndContacts.process
   end
 
-  task :remove_stale_embargoed_flag, [:limit] => [:environment]  do |t, args|
+  task :update_file_distribution, [:sleep_time] => [:environment] do |t, args|
+    Freereg1CsvFile.no_timeout.each_with_index do |file, loop_index|
+      file.calculate_distribution
+      p loop_index if ((loop_index / 1000) * 1000) == loop_index
+      sleep(args.sleep_time.to_f)
+    end
+  end
+
+  task :remove_stale_embargoed_flag, [:limit] => [:environment] do |t, args|
     require 'remove_stale_embargoed_flag'
     RemoveStaleEmbargoedFlag.process(args.limit)
   end
