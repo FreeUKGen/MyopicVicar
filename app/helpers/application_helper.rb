@@ -235,6 +235,9 @@ module ApplicationHelper
       counties = search_query.chapman_codes.map{|code| ChapmanCode::name_from_code(code)}.join(' or ')
       display_map['Counties'] = counties if search_query.chapman_codes.size > 1
       display_map['County'] = counties if search_query.chapman_codes.size == 1
+      display_map['Place'] = place if search_query_places_size > 0
+      display_map['Include Family Members'] = 'Yes' if search_query.inclusive
+      display_map['Include Witnesses'] = 'Yes' if search_query.witness
     when 'freecen'
       display_map['Birth Year'] = "#{search_query.start_year} - #{search_query.end_year}" if search_query.start_year || search_query.end_year
       display_map['Census Year'] = RecordType::display_name(search_query.record_type) if search_query.record_type
@@ -245,6 +248,7 @@ module ApplicationHelper
       counties = search_query.chapman_codes.map{|code| ChapmanCode::name_from_code(code)}.join(' or ')
       display_map['Census Counties'] = counties if search_query.chapman_codes.size > 1
       display_map['Census County'] = counties if search_query.chapman_codes.size == 1
+      display_map['Census Place'] = place if search_query_places_size > 0
       display_map['Disabled'] = 'Yes' if search_query.disabled
       display_map['Sex'] = search_query.sex if search_query.sex.present?
       display_map['Marital Status'] = search_query.marital_status if search_query.marital_status.present?
@@ -266,9 +270,6 @@ module ApplicationHelper
           #{Place::MeasurementSystem::system_to_units(Place::MeasurementSystem::ENGLISH)} )"
       end
     end
-    display_map['Census Place'] = place if search_query_places_size > 0
-    display_map['Include Family Members'] = 'Yes' if search_query.inclusive
-    display_map['Include Witnesses'] = 'Yes' if search_query.witness
     display_map
   end
 
