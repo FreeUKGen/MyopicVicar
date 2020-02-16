@@ -26,8 +26,9 @@ namespace :foo do
     p args.sleep_time.to_f
     Freereg1CsvFile.no_timeout.each_with_index do |file, loop_index|
       next unless file.datemin == '0'
-      file.calculate_distribution
       p loop_index
+      file.calculate_distribution
+
       sleep args.sleep_time.to_f
     end
   end
