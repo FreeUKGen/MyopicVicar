@@ -38,3 +38,6 @@ sudo /root/bin/haproxy-freecen2.sh brazza enable
 Refinery transfer https://docs.google.com/document/d/1ozrJbHY074xYvwCB3j6NodDdPFPnWU4WySdnZCMeWUw/edit
 
 alias f2rake='sudo -u webserv bundle exec rake RAILS_ENV=production'
+
+f2rake foo:update_file_distribution[0.1] --trace
+f2rake foo:refresh_ucf_lists[0,0] --trace

@@ -82,6 +82,7 @@ class SearchQuery
   end
 
   WILDCARD = /[?*]/
+  UCF = /[\[\{}_\*\?]/
 
   field :first_name, type: String # , :required => false
   field :last_name, type: String # , :required => false
@@ -320,6 +321,15 @@ class SearchQuery
     records.each do |record|
       record = SearchRecord.record_id(record.to_s).first
       next if record.blank?
+      p 'filetering mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm'
+      p self
+      p record.search_date
+      p record.search_date.to_i
+      p record.search_date.match(UCF)
+      p record.search_date.match(UCF).blank?
+      next if record_type.present? && record.record_type != record_type
+
+      next if start_year.present? && ((record.search_date.to_i < start_year || record.search_date.to_i > end_year) && record.search_date.match(UCF).blank?)
 
       record.search_names.each do |name|
         if name.type == SearchRecord::PersonType::PRIMARY || self.inclusive || self.witness
