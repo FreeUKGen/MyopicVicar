@@ -321,12 +321,7 @@ class SearchQuery
     records.each do |record|
       record = SearchRecord.record_id(record.to_s).first
       next if record.blank?
-      p 'filetering mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm'
-      p self
-      p record.search_date
-      p record.search_date.to_i
-      p record.search_date.match(UCF)
-      p record.search_date.match(UCF).blank?
+
       next if record_type.present? && record.record_type != record_type
 
       next if start_year.present? && ((record.search_date.to_i < start_year || record.search_date.to_i > end_year) && record.search_date.match(UCF).blank?)
