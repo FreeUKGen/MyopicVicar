@@ -37,15 +37,15 @@
           <td class="weight--semibold"> <%= @freereg1_csv_file.records %> </td>
         </tr>
         <tr>
-          <td>Minimum year in dataset </td>
+          <td>Earliest year in batch </td>
           <td class="weight--semibold"><%= @freereg1_csv_file.datemin %> </td>
         </tr>
         <tr>
-          <td>Maximum year in dataset </td>
+          <td>Latest year in batch </td>
           <td class="weight--semibold"> <%= @freereg1_csv_file.datemax %></td>
         </tr>
         <tr>
-          <td>Zero_entries in dataset </td>
+          <td>Number of zero date entries in batch </td>
           <td class="weight--semibold"> <%= zero_entry(@freereg1_csv_file) %></td>
         </tr>
         <tr>
