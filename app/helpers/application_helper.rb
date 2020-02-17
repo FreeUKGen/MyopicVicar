@@ -627,10 +627,7 @@ module ApplicationHelper
                 def fullwidth_adsense_freecen
                   banner = <<-HTML
                   <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-                  <script>
-                  (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
-                  </script>
-                  <!-- FreeCEN2 Transcriber Registration (Responsive) -->
+
                   <ins class="adsbygoogle adSenseBanner"
                   style="display:inline-block;width:728px;height:90px"
                   data-ad-client="#{data_ad_client}"
