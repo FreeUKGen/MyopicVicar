@@ -544,33 +544,35 @@ class Freereg1CsvFile
     success[0] = true
     success[1] = ""
     Freereg1CsvFile.file_name(self.file_name).userid(self.userid).hint("file_name_1_userid_1_county_1_place_1_church_name_1_register_type_1").each do |batch|
-      case batch
-      when nil?
+      case
+      when batch.nil?
         success[0] = false
-        success[1] = success[1] + "file #{batch} does not exist"
-      when file_name.blank?
+        success[1] = success[1] + "file #{batch.file_name} does not exist"
+      when batch.file_name.blank?
         success[0] = false
-        success[1] = success[1] + "file name is missing #{batch} "
-      when userid.blank?
+        success[1] = success[1] + "file name is missing #{batch.file_name} "
+      when batch.userid.blank?
         success[0] = false
-        success[1] = success[1] + "userid is missing #{batch} "
-      when record_type.blank?
+        success[1] = success[1] + "userid is missing #{batch.file_name} "
+      when batch.record_type.blank?
         success[0] = false
-        success[1] = success[1] + "record type is missing #{batch} "
-      when freereg1_csv_entries.count == 0
+        success[1] = success[1] + "record type is missing #{batch.file_name} "
+      when batch.freereg1_csv_entries.count == 0
         success[0] = false
-        success[1] = success[1] + "file has no entries #{batch} "
-      when register.blank?
+        success[1] = success[1] + "file has no entries #{batch.file_name} "
+      when batch.register.blank?
         success[0] = false
-        success[1] = success[1] + "file has a null register #{batch} "
-      when register.church.blank?
+        success[1] = success[1] + "file has a null register #{batch.file_name} "
+      when batch.register.church.blank?
         success[0] = false
-        success[1] = success[1] + "file has a null church #{batch} "
-      when register.church.place.blank?
+        success[1] = success[1] + "file has a null church #{batch.file_name} "
+      when batch.register.church.place.blank?
         success[0] =  false
-        success[1] = success[1] + "file has a null church #{batch} "
+        success[1] = success[1] + "file has a null church #{batch.file_name} "
+      when batch.error > 0
+        success[0] =  false
+        success[1] = success[1] + "file has error records that would be lost for #{batch.file_name} "
       end
-      return success if !success[0]
     end
     success
   end
