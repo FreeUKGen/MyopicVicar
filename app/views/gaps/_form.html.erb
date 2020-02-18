@@ -7,8 +7,8 @@
       <% else %>
         <%= s.input :record_type, :label => "Record Type" , :collection => @record_types,:include_blank => false, :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width ",  :size => 4 }  %>
       <% end %>
-      <%= s.input :start_date, :label=>'Start Date', :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>11} %>
-      <%= s.input :end_date, :label=>'End Date', :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>11} %>
+      <%= s.input :start_date, :label=>'Start Year', :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>11} %>
+      <%= s.input :end_date, :label=>'End Year', :input_html=>{:class=>"simple_form_bgcolour simple_form_position", :size=>11} %>
       <%= s.input :reason, :label=>'Reason', :as=>:select, :collection=>@reasons, :include_blank=>false, :input_html=>{:class=>"simple_form_bgcolour simple_form_position overide_selection_field_width", :size=>5} %>
       <%= s.input :note, :label => 'Note', :as=>:text, :input_html=>{:class=>"simple_form_bgcolour simple_form_position overide_selection_field_width"} %>
       <%= s.hidden_field :register, :value=>@register.id %>
