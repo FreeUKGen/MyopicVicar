@@ -101,6 +101,8 @@ class Freereg1CsvEntriesController < ApplicationController
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
     @freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
+
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'File is currently awaiting processing and should not be edited') && return unless @freereg1_csv_file.can_we_edit?
     @freereg1_csv_entry.clean_up_ucf_list
     @freereg1_csv_file.freereg1_csv_entries.delete(@freereg1_csv_entry)
     @freereg1_csv_entry.destroy
@@ -134,6 +136,8 @@ class Freereg1CsvEntriesController < ApplicationController
       message = 'The entry was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
+    @freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'File is currently awaiting processing and should not be edited') && return unless @freereg1_csv_file.can_we_edit?
     display_info
 
     @embargo_permitted = (@user.person_role == 'system_administrator' || @user.person_role == 'executive_director') ? true : false
@@ -151,6 +155,9 @@ class Freereg1CsvEntriesController < ApplicationController
       message = 'The entry was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
+    @freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'File is currently awaiting processing and should not be edited') && return unless @freereg1_csv_file.can_we_edit?
+
     display_info
 
     @embargo_permitted = (@user.person_role == 'system_administrator' || @user.person_role == 'executive_director') ? true : false
@@ -194,8 +201,11 @@ class Freereg1CsvEntriesController < ApplicationController
       flash[:notice] = 'The entry was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
+
     display_info
     file_line_number = @freereg1_csv_file.records.to_i + 1
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'File is currently awaiting processing and should not be edited') && return unless @freereg1_csv_file.can_we_edit?
+
     line_id = @freereg1_csv_file.userid + '.' + @freereg1_csv_file.file_name.upcase + '.' + file_line_number.to_s
     @freereg1_csv_entry = Freereg1CsvEntry.new(record_type: @freereg1_csv_file.record_type, line_id: line_id, file_line_number: file_line_number)
     @freereg1_csv_entry.multiple_witnesses.build

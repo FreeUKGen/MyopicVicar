@@ -448,6 +448,10 @@ class Freereg1CsvFile
     success
   end
 
+  def can_we_edit?
+    result = PhysicalFile.userid(userid).file_name(file_name).waiting.blank? ? true : false
+  end
+
   def change_owner_of_file(new_userid)
     # rspec tested
     # first step is to move the files

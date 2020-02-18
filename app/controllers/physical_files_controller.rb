@@ -177,6 +177,8 @@ class PhysicalFilesController < ApplicationController
     file = Freereg1CsvFile.find(params[:id])
     redirect_back(fallback_location: { action: 'select_action' }, notice: 'No such file') && return if file.blank?
 
+    redirect_back(fallback_location: { action: 'select_action' }, notice: 'File is currently awaiting processing and should not be edited') && return unless file.can_we_edit?
+
     #we write a new copy of the file from current on-line contents
     proceed, message = file.check_file
     redirect_back(fallback_location: { action: 'select_action' }, notice: "There is a problem with the file you are attempting to reprocess #{message}. Contact a system administrator if you are concerned.") && return unless proceed
