@@ -179,7 +179,7 @@ class Freereg1CsvFilesController < ApplicationController
         flash[:notice] = 'There was a problem saving the file prior to download. Please take this message to your coordinator'
       end
     else
-      flash[:notice] = "There is a problem with the file you are attempting to download; #{message}. Contact a system administrator if you are concerned."
+      flash[:notice] = "We cannot download the file: #{message}. Contact your coordinator if you need advise."
     end
     redirect_back(fallback_location: new_manage_resource_path) && return
   end
