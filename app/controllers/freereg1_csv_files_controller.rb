@@ -36,6 +36,7 @@ class Freereg1CsvFilesController < ApplicationController
       message = 'The file was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
+    redirect_back(fallback_location: freereg1_csv_file_path(@freereg1_csv_file), notice: 'File is currently awaiting processing and should not be edited') && return unless @freereg1_csv_file.can_we_edit?
 
     session[:return_to] = request.original_url
     controls(@freereg1_csv_file)
@@ -64,11 +65,14 @@ class Freereg1CsvFilesController < ApplicationController
       message = 'The file was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
+
+    redirect_back(fallback_location: freereg1_csv_file_path(@freereg1_csv_file), notice: 'File is currently awaiting processing and should not be edited') && return unless @freereg1_csv_file.can_we_edit?
     controls(@freereg1_csv_file)
     redirect_back(fallback_location: new_manage_resource_path, notice: 'The batch cannot be deleted it is locked') && return if @freereg1_csv_file.locked_by_transcriber || @freereg1_csv_file.locked_by_coordinator
 
     redirect_back(fallback_location: new_manage_resource_path, notice: 'The physical file entry no longer exists. Perhaps you have already deleted it.') && return  if @physical_file.blank?
 
+    @freereg1_csv_file.remove_from_ucf_list
     # save a copy to attic and delete all batches
     @physical_file.file_and_entries_delete
     @freereg1_csv_file.update_freereg_contents_after_processing
@@ -175,7 +179,7 @@ class Freereg1CsvFilesController < ApplicationController
         flash[:notice] = 'There was a problem saving the file prior to download. Please take this message to your coordinator'
       end
     else
-      flash[:notice] = "There is a problem with the file you are attempting to download; #{message}. Contact a system administrator if you are concerned."
+      flash[:notice] = "We cannot download the file: #{message}. Contact your coordinator if you need advise."
     end
     redirect_back(fallback_location: new_manage_resource_path) && return
   end
@@ -190,10 +194,15 @@ class Freereg1CsvFilesController < ApplicationController
       message = 'Header and Place name errors can only be corrected by correcting the file and either replacing or uploading a new file'
       redirect_back(fallback_location: {:action => 'show'}, notice: message) && return
     end
-    session[:return_to] = request.original_url
-    controls(@freereg1_csv_file)
-    @role = session[:role]
-    get_places_for_menu_selection
+    if @freereg1_csv_file.can_we_edit?
+      session[:return_to] = request.original_url
+      controls(@freereg1_csv_file)
+      @role = session[:role]
+      get_places_for_menu_selection
+    else
+      message = 'File is currently awaiting processing and should not be edited'
+      redirect_back(fallback_location: { action: 'show' }, notice: message) && return
+    end
   end
 
   def embargoed_entries
@@ -290,6 +299,8 @@ class Freereg1CsvFilesController < ApplicationController
       message = 'The file was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
+    redirect_back(fallback_location: freereg1_csv_file_path(@freereg1_csv_file), notice: 'File is currently awaiting processing and should not be edited') && return unless @freereg1_csv_file.can_we_edit?
+
     controls(@freereg1_csv_file)
     proceed, message = @freereg1_csv_file.merge_batches
     redirect_back(fallback_location: { action: 'show' }, notice: "Merge unsuccessful; #{message}") && return unless proceed
@@ -323,6 +334,8 @@ class Freereg1CsvFilesController < ApplicationController
       message = 'The file was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
+    redirect_back(fallback_location: freereg1_csv_file_path(@freereg1_csv_file), notice: 'File is currently awaiting processing and should not be edited') && return unless @freereg1_csv_file.can_we_edit?
+
     session[:return_to] = request.original_url
     controls(@freereg1_csv_file)
     session[:initial_page] = @return_location
@@ -362,6 +375,8 @@ class Freereg1CsvFilesController < ApplicationController
       message = 'The file was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
+
+    redirect_back(fallback_location: freereg1_csv_file_path(@freereg1_csv_file), notice: 'File is currently awaiting processing and should not be edited') && return unless @freereg1_csv_file.can_we_edit?
     controls(@freereg1_csv_file)
     proceed, message = @freereg1_csv_file.remove_batch
     proceed ? flash[:notice] = 'The removal of the batch entry was successful' : flash[:notice] = message
@@ -384,6 +399,7 @@ class Freereg1CsvFilesController < ApplicationController
       message = 'The file was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
+    session[:from] = 'place' if params[:from].present? && params[:from] == 'place'
     controls(@freereg1_csv_file)
     @register = @freereg1_csv_file.register
     @gaps = @freereg1_csv_file.register.gaps_exist?
@@ -537,6 +553,7 @@ class Freereg1CsvFilesController < ApplicationController
       message = 'The file was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
+    redirect_back(fallback_location: freereg1_csv_file_path(@freereg1_csv_file), notice: 'File is currently awaiting processing and should not be edited') && return unless @freereg1_csv_file.can_we_edit?
     controls(@freereg1_csv_file)
     case params[:commit]
     when 'Change Userid'

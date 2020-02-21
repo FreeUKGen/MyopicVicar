@@ -5,8 +5,8 @@ module UseridDetailsHelper
   end
 
   def active_user(status)
-    result = 'Y' if status
-    result = 'N' unless status
+    result = 'Yes' if status
+    result = 'No' unless status
     result
   end
 

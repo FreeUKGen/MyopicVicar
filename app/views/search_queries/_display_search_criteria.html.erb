@@ -17,13 +17,20 @@
           <% end %>
         </div>
       </section>
-    <% end %>
-  </div>
-  <div class="grid__item  one-third lap-one-third  palm-one-whole  push-half--top">
-    <h2 class="gamma flush--bottom"> We found <%= pluralize(@result_count, ' Result', ' Results') %></h2>
-    <% unless defined?(@printable_format) && @printable_format%>
-      <small class="additional zeta">Results are presented by ascending date. Clicking a column heading sorts by that column. Another click reverses the order.<br>
-        Each View button in the <q>Detail</q> column opens a page with all the information we have for that record.</small>
+    </div>
+    <div class="grid__item  one-third lap-one-third  palm-one-whole  push-half--top">
+      <section class="islet islet--light soft--left hard--bottom">
+        <% if @ucf_results.size > 0 %>
+          <h2 class="gamma flush--bottom"> We found <%= pluralize(@result_count, ' Exact Result', ' Exact Results') %> and <br>
+            <%= pluralize(@ucf_results.size, ' Uncertain Result', ' Uncertain Results')%></h2>
+        <% else%>
+          <h2 class="gamma flush--bottom"> We found <%= pluralize(@result_count, ' Result', ' Results') %></h2>
+        <% end%>
+        <% unless defined?(@printable_format) && @printable_format%>
+          <small class="additional zeta">Results are presented by ascending date. Clicking a column heading sorts by that column. Another click reverses the order.<br>
+            Each View button in the <q>Detail</q> column opens a page with all the information we have for that record.</small>
+        <% end %>
+      </section>
     </div>
   </div>
 <% end %>

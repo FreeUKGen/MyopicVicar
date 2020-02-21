@@ -7,6 +7,8 @@ namespace :foo do
 
   # eg foo:check_search_records[100000]
 
+
+
   task :check_search_records_with_null_entry, [:num, :fix] => [:environment] do |t, args|
     require 'check_search_records_with_null_entry'
     limit = args.num
@@ -20,7 +22,18 @@ namespace :foo do
     DeleteOrArchiveOldMessagesFeedbacksAndContacts.process
   end
 
-  task :remove_stale_embargoed_flag, [:limit] => [:environment]  do |t, args|
+  task :update_file_distribution, [:sleep_time] => [:environment] do |t, args|
+    p args.sleep_time.to_f
+    Freereg1CsvFile.no_timeout.each_with_index do |file, loop_index|
+      next unless file.datemin == '0'
+      p loop_index
+      file.calculate_distribution
+
+      sleep args.sleep_time.to_f
+    end
+  end
+
+  task :remove_stale_embargoed_flag, [:limit] => [:environment] do |t, args|
     require 'remove_stale_embargoed_flag'
     RemoveStaleEmbargoedFlag.process(args.limit)
   end
@@ -404,17 +417,36 @@ namespace :foo do
 
 
   desc "Refresh UCF lists on places"
-  task :refresh_ucf_lists, [:skip] => [:environment] do |t,args|
+  task :refresh_ucf_lists, [:skip, :sleep_time] => [:environment] do |t,args|
+
+    file_for_messages = 'log/refresh_ucf_lists.log'
+    message_file = File.new(file_for_messages, 'w')
     p "starting with a skip of #{args.skip.to_i}"
-    Place.data_present.order(:chapman_code => :asc, :place_name => :asc).no_timeout.all.each_with_index do |place, i|
+    message_file.puts "starting with a skip of #{args.skip.to_i}"
+    time_start = Time.now
+
+    Place.data_present.order(:chapman_code => :asc, :place_name => :asc).no_timeout.each_with_index do |place, i|
+      time_place_start = Time.now
       unless args.skip && i < args.skip.to_i
-        Freereg1CsvFile.where(:place_name => place.place_name).order(:file_name => :asc).all.each do |file|
+        place.ucf_list = {}
+        Freereg1CsvFile.where(:place_name => place.place_name).order(:file_name => :asc).all.no_timeout.each do |file|
           print "#{i}\tUpdating\t#{place.chapman_code}\t#{place.place_name}\t#{file.file_name}\n"
+          message_file.puts "#{i}\tUpdating\t#{place.chapman_code}\t#{place.place_name}\t#{file.file_name}\n"
           place.update_ucf_list(file)
+          file.save
         end
         place.save!
+        sleep args.sleep_time.to_f
       end
+      time_place_process = Time.now - time_place_start
+      place_time = (Time.now - time_start) / i unless i == 0
+      p " #{time_place_process}, #{place_time}, #{i}"
+      message_file.puts "#{time_place_process}, #{place_time}, #{i}"
+
     end
+    time_process = Time.now - time_start
+    p " #{time_process}"
+    message_file.puts "#{time_process}"
   end
 
   desc "Recalculate SearchRecord for Freereg1CsvEntry ids in a file"

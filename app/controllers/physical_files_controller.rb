@@ -48,6 +48,7 @@ class PhysicalFilesController < ApplicationController
     redirect_back(fallback_location: { action: 'select_action' }) && return if @batch.blank?
 
     @batch.file_and_entries_delete
+
     @batch.delete
     flash[:notice] = 'The destruction of the physical files and all its entries and search records was successful'
     redirect_back(fallback_location: { action: 'select_action' }) && return
@@ -175,6 +176,8 @@ class PhysicalFilesController < ApplicationController
   def reprocess
     file = Freereg1CsvFile.find(params[:id])
     redirect_back(fallback_location: { action: 'select_action' }, notice: 'No such file') && return if file.blank?
+
+    redirect_back(fallback_location: { action: 'select_action' }, notice: 'File is currently awaiting processing and should not be edited') && return unless file.can_we_edit?
 
     #we write a new copy of the file from current on-line contents
     proceed, message = file.check_file

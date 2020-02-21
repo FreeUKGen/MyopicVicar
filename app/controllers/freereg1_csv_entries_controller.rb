@@ -81,6 +81,9 @@ class Freereg1CsvEntriesController < ApplicationController
     end
 
     # WE update the place, church and register distributions
+    @freereg1_csv_entry.reload
+    old_search_record = nil
+    @freereg1_csv_entry.update_place_ucf_list(place, @freereg1_csv_file, old_search_record)
     update_other_statistics(place, church, register)
 
     # clean up if  it was a batch error creation
@@ -98,6 +101,9 @@ class Freereg1CsvEntriesController < ApplicationController
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
     @freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
+
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'File is currently awaiting processing and should not be edited') && return unless @freereg1_csv_file.can_we_edit?
+    @freereg1_csv_entry.clean_up_ucf_list
     @freereg1_csv_file.freereg1_csv_entries.delete(@freereg1_csv_entry)
     @freereg1_csv_entry.destroy
     @freereg1_csv_file.update_statistics_and_access(session[:my_own])
@@ -130,6 +136,8 @@ class Freereg1CsvEntriesController < ApplicationController
       message = 'The entry was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
+    @freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'File is currently awaiting processing and should not be edited') && return unless @freereg1_csv_file.can_we_edit?
     display_info
 
     @embargo_permitted = (@user.person_role == 'system_administrator' || @user.person_role == 'executive_director') ? true : false
@@ -147,6 +155,9 @@ class Freereg1CsvEntriesController < ApplicationController
       message = 'The entry was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
+    @freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'File is currently awaiting processing and should not be edited') && return unless @freereg1_csv_file.can_we_edit?
+
     display_info
 
     @embargo_permitted = (@user.person_role == 'system_administrator' || @user.person_role == 'executive_director') ? true : false
@@ -190,8 +201,11 @@ class Freereg1CsvEntriesController < ApplicationController
       flash[:notice] = 'The entry was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
+
     display_info
     file_line_number = @freereg1_csv_file.records.to_i + 1
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'File is currently awaiting processing and should not be edited') && return unless @freereg1_csv_file.can_we_edit?
+
     line_id = @freereg1_csv_file.userid + '.' + @freereg1_csv_file.file_name.upcase + '.' + file_line_number.to_s
     @freereg1_csv_entry = Freereg1CsvEntry.new(record_type: @freereg1_csv_file.record_type, line_id: line_id, file_line_number: file_line_number)
     @freereg1_csv_entry.multiple_witnesses.build
@@ -209,6 +223,7 @@ class Freereg1CsvEntriesController < ApplicationController
     @get_zero_year_records = 'true' if params[:zero_record] == 'true'
     @zero_year = 'true' if params[:zero_listing] == 'true'
     display_info
+    session[:from] = 'file' if params[:from].present? && params[:from] == 'file'
     @embargoed = @freereg1_csv_entry.embargo_records.present? ? true : false
     @embargo_permitted = (@user.present? && (@user.person_role == 'system_administrator' || @user.person_role == 'executive_director' || @user.person_role == 'data_manager')) ? true : false
     session[:freereg1_csv_entry_id] = @freereg1_csv_entry._id
@@ -228,6 +243,7 @@ class Freereg1CsvEntriesController < ApplicationController
       message = 'The entry was incorrectly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
+    old_search_record = @freereg1_csv_entry.search_record
     @freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
     params[:freereg1_csv_entry][:record_type] = @freereg1_csv_file.record_type
     @freereg1_csv_file.check_and_augment_def(params[:freereg1_csv_entry])
@@ -240,9 +256,11 @@ class Freereg1CsvEntriesController < ApplicationController
     @freereg1_csv_entry.check_and_correct_county
     @freereg1_csv_entry.check_year
     search_version = calculate_software_version
-    place, church, register = get_location_from_file(@freereg1_csv_file)
+    place, _church, _register = get_location_from_file(@freereg1_csv_file)
     SearchRecord.update_create_search_record(@freereg1_csv_entry, search_version, place)
     @freereg1_csv_file.update_statistics_and_access(session[:my_own])
+    @freereg1_csv_entry.reload
+    @freereg1_csv_entry.update_place_ucf_list(place, @freereg1_csv_file, old_search_record)
     flash[:notice] = 'The change in entry contents was successful, the file is now locked against replacement until it has been downloaded.'
     if session[:zero_listing]
       session.delete(:zero_listing)

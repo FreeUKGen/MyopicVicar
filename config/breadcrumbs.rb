@@ -97,6 +97,9 @@ crumb :show_file do |file|
   link 'Batch Information', freereg1_csv_file_path(file.id)
   if session[:my_own]
     parent :files, file
+  elsif session[:place_id].present? && session[:from].present? && session[:from] == 'place'
+    place = Place.id(session[:place_id]).first
+    parent :show_place, session[:county], place
   elsif session[:register_id].present? && session[:county].present? && session[:place_id].present? && session[:church_id].present?
     place = Place.id(session[:place_id]).first
     church = Church.id(session[:church_id]).first
@@ -167,7 +170,11 @@ crumb :error_records do |file|
 end
 crumb :show_record do |entry, file|
   link 'Record Contents', freereg1_csv_entry_path(entry)
-  parent :show_records, entry,file
+  if session[:from].present? && %w[place file].include?(session[:from])
+    parent :show_file, file
+  else
+    parent :show_records, entry, file
+  end
 end
 crumb :edit_record do |entry, file|
   link 'Edit Record', edit_freereg1_csv_entry_path(entry)

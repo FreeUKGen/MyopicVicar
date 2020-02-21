@@ -38,7 +38,7 @@ class FreeregContent
       end
     end
 
-    def calculate_date_range(individual,my_hash,file)
+    def calculate_date_range(individual, my_hash, file)
       keys = ['ba','bu','ma','total']
       if file == 'file'
         individual.record_type = 'ba' unless keys.include?(individual.record_type)

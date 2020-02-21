@@ -72,10 +72,12 @@ class PhysicalFile
       batch = PhysicalFile.userid(id).file_name(file).first
       batch.update_attributes(:file_processed => true) if batch.present?
     end
+
     def delete_document(userid,file_name)
       physical_file = PhysicalFile.userid(userid).file_name(file_name).first
       physical_file.destroy if physical_file.present?
     end
+
     def as_csv(batch,sorted,who,county)
       header = Array.new
       row = 0
@@ -158,6 +160,7 @@ class PhysicalFile
 
   def file_and_entries_delete
     file = Freereg1CsvFile.where(file_name: file_name, userid: userid).first
+    file.remove_from_ucf_list unless file.blank?
     file.save_to_attic unless file.blank?
     Freereg1CsvFile.where(file_name: file_name, userid: userid).destroy_all unless file.blank?
     if file_name.present?

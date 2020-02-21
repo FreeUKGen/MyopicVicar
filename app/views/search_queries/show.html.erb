@@ -18,11 +18,11 @@
           <div class="container">
             <div class="grid">
               <div class="" id='results_table'>
-                <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @search_results, :inclusive => @search_query.inclusive, :witness =>@search_query.witness, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => false})  %>
+                <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @search_results, :inclusive => @search_query.inclusive, :witness =>@search_query.witness, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => @ucf_results})  %>
               </div>
               <div id='results_table_ad'>
-                <span>  Advertisement</span>
-                <div id='freereg_sidebar_left_desk'>
+                <span class='float--right'>  Advertisement</span><br>
+                <div id='freereg_sidebar_left_desk' class='float--right'>
                 </div>
               </div>
             </div>
@@ -33,20 +33,17 @@
               <div class="grid__item  palm-one-whole " id='results_table'>
                 <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @search_results, :inclusive => @search_query.inclusive, :witness =>@search_query.witness, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => false})  %>
               </div>
-              <div  id='results_table_ad'>
-                <span>Advertisement</span>
+              <div  id='results_table_ad' class='float--right'>
+                <span class='float--right'>Advertisement</span><br>
                 <%= adsence_right_side_banner %>
               </div>
             </div>
           </div>
-        <% else %>
+          <% when 'freebmd'%>
           <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @search_results, :inclusive => @search_query.inclusive, :witness =>@search_query.witness, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => false})  %>
         <% end%>
       <% else %>
-        <%= render(:partial => app_specific_partial("mobile"), :locals => {:search_results => @search_results, :ucf_results => false}) %>
-      <% end %>
-      <% if ucf_wildcards_enabled? && @ucf_results && @ucf_results.size >= 1 %>
-        <%= render 'display_ucf_results' %>
+        <%= render(:partial => app_specific_partial("mobile"), :locals => {:search_results => @search_results, :ucf_results =>  @ucf_results}) %>
       <% end %>
     <% end%>
     <% if @result_count > 10 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
@@ -66,11 +63,11 @@
   var result = window.canRunAds;
   function changeClass(screen_width) {
     if (screen_width.matches) {
-      $("#results_table").removeClass("grid__item  three-fifths  palm-one-whole").addClass('');
+      $("#results_table").removeClass("grid__item  seven-tenths  palm-one-whole").addClass('');
     } else {
       if(result === true) {
-        $("#results_table").addClass("grid__item  three-fifths  palm-one-whole");
-        $("#results_table_ad").addClass("grid__item  two-fifths  palm-one-whole");
+        $("#results_table").addClass("grid__item  seven-tenths lap-six-tenths palm-one-whole");
+        $("#results_table_ad").addClass("grid__item  three-tenths  palm-one-whole");
       } else {
         $("#results_table_ad").hide();
         $("#results_table").addClass("");
