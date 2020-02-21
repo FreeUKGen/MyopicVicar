@@ -1,23 +1,24 @@
 class FreecenPiecesController < ApplicationController
   require 'freecen_constants'
-
-
-
-  #transform the params before checking them.
+  # transform the params before checking them.
   def check_piece_params(piece_params)
     error_list = []
     unless ChapmanCode::values.include? piece_params['chapman_code']
       error_list << "Unknown Chapman code '#{piece_params['chapman_code']}'."
     end
+
     unless Freecen::CENSUS_YEARS_ARRAY.include? piece_params['year']
       error_list << "Invalid census year '#{piece_params['year']}'."
     end
+
     unless piece_params['piece_number'].to_i.to_s==piece_params['piece_number'] && piece_params['piece_number'].to_i > 0
       error_list << "Piece Number should be a positive integer."
     end
+
     unless piece_params['district_name'].present? && piece_params['district_name'].length > 0
       error_list << "District name is required."
     end
+
     sp_names_err = false
     sp_lat_err = false
     sp_long_err = false
@@ -47,15 +48,11 @@ class FreecenPiecesController < ApplicationController
         error_list << "Par number seems to disagree with FreeCEN1 Filename"
       end
     end
-    return error_list
+    error_list
   end
 
-
-
-
-
   def create
-    #puts "\n\n*** create ***\n\n"
+    # puts "\n\n*** create ***\n\n"
     unless params[:freecen_piece].blank?
       piece_params = transform_piece_params(params[:freecen_piece])
       @piece_params_errors = check_piece_params(params[:freecen_piece])
@@ -66,9 +63,10 @@ class FreecenPiecesController < ApplicationController
         render :new and return
       end
     end
+
     if @freecen_piece.present?
-      #puts "@freecen_piece present _id=#{@freecen_piece['_id']}"
-      #puts "@freecen_piece.inspect #{@freecen_piece.inspect}"
+      # puts "@freecen_piece present _id=#{@freecen_piece['_id']}"
+      # puts "@freecen_piece.inspect #{@freecen_piece.inspect}"
       unless @freecen_piece.save
         flash[:notice] = 'There was an error while saving the new piece'
         puts "\n\n***could not save @freecen_piece in create method!!\n\n"
@@ -76,21 +74,17 @@ class FreecenPiecesController < ApplicationController
       end
       # clear cached database coverage so it picks up the change for display
       Rails.cache.delete("freecen_coverage_index")
-      #redirect to the right page
-      next_page = freecen_coverage_path+"/#{@freecen_piece.chapman_code}##{@freecen_piece.year}"
-      redirect_to next_page and return
+      # redirect to the right page
+      next_page = freecen_coverage_path + "/#{@freecen_piece.chapman_code}##{@freecen_piece.year}"
+      redirect_to next_page && return
     end
     flash[:notice] = 'There was an error while attempting to save the new piece'
     puts "\n\n***could not find freecen_piece in create method!!\n\n"
     redirect_to freecen_coverage_path
   end
 
-
-
-
-
   def edit
-    #puts "\n\n*** edit ***\n\n"
+    # puts "\n\n*** edit ***\n\n"
     if params[:id].present?
       @freecen_piece = FreecenPiece.where('_id' => params[:id])
       @freecen_piece = @freecen_piece.first if @freecen_piece.present?
@@ -115,8 +109,8 @@ class FreecenPiecesController < ApplicationController
     @freecen_piece.year = params[:year] if params[:year].present? &&
       Freecen::CENSUS_YEARS_ARRAY.include?(params[:year])
     @freecen_piece.chapman_code = params[:chapman_code].upcase if params[:chapman_code].present?
-    @freecen_piece.subplaces = [{'name'=>'','lat'=>'0.0','long'=>'0.0'}]
-    #puts "\n\n*** new *** yy=#{@freecen_piece.year} chap=#{@freecen_piece.chapman_code}\n\n"
+    @freecen_piece.subplaces = [{ 'name' => '', 'lat' => '0.0', 'long' => '0.0' }]
+    # puts "\n\n*** new *** yy=#{@freecen_piece.year} chap=#{@freecen_piece.chapman_code}\n\n"
   end
 
   def select_new_county
@@ -139,8 +133,8 @@ class FreecenPiecesController < ApplicationController
   end
 
   def set_piece_place(piece)
-    place = Place.where(:chapman_code => piece.chapman_code, :place_name => piece.district_name).first
-    unless place #create the new place
+    place = Place.where(chapman_code: piece.chapman_code, place_name: piece.district_name).first
+    unless place # create the new place
       place = Place.new
       place.chapman_code = piece.chapman_code
       place.place_name = piece.district_name
@@ -150,6 +144,7 @@ class FreecenPiecesController < ApplicationController
     end
     piece.place = place
   end
+
   def show
     if params[:id].present?
       @freecen_piece = FreecenPiece.where('_id' => params[:id])
@@ -159,9 +154,9 @@ class FreecenPiecesController < ApplicationController
     redirect_to freecen_pieces_path if @freecen_piece.blank?
   end
 
-
   def transform_piece_params(piece_params)
     return piece_params if piece_params.blank?
+
     subplaces = []
     (0..piece_params[:subplaces_max_id].to_i).each do |ii|
       unless piece_params["subplaces_#{ii}_name"].nil?
@@ -193,7 +188,7 @@ class FreecenPiecesController < ApplicationController
     piece_params[:subplaces] = subplaces
     piece_params[:subplaces_sort] = subplaces_sort
     piece_params.delete('subplaces_max_id') if piece_params['subplaces_max_id'].present?
-    #strip stray whitespace from parameters
+    # strip stray whitespace from parameters
     piece_params[:district_name].strip! unless piece_params[:district_name].nil?
     piece_params[:place_latitude].strip! unless piece_params[:place_latitude].nil?
     piece_params[:place_longitude].strip! unless piece_params[:place_longitude].nil?
@@ -203,24 +198,24 @@ class FreecenPiecesController < ApplicationController
     piece_params[:status].strip! unless piece_params[:status].nil?
     piece_params[:remarks].strip! unless piece_params[:remarks].nil?
     piece_params[:remarks_coord].strip! unless piece_params[:remarks_coord].nil?
-    return piece_params
+    piece_params
   end
 
   def update
-    #puts "\n\n*** update ***\n"
-    redirect_to :back and return if params[:id].blank?
+    # puts "\n\n*** update ***\n"
+    redirect_to :back && return if params[:id].blank?
     @freecen_piece = FreecenPiece.where('_id' => params[:id]).first
     if @freecen_piece.blank?
       flash[:notice] = "Could not update the piece! (piece not found)"
       puts "\n*** piece not found! in freecen_pieces_controller update\n"
-      redirect_to :back and return
+      redirect_to :back && return
     end
     unless params[:freecen_piece].blank?
       piece_params = transform_piece_params(params[:freecen_piece])
       @piece_params_errors = check_piece_params(params[:freecen_piece])
       if @piece_params_errors.present? && @piece_params_errors.any?
         flash[:notice] = "Could not update the piece (errors present)"
-        render :edit and return
+        render :edit && return
       end
       # update the fields
       @freecen_piece.chapman_code = piece_params['chapman_code']
@@ -236,20 +231,20 @@ class FreecenPiecesController < ApplicationController
       @freecen_piece.status = piece_params['status']
       @freecen_piece.remarks = piece_params['remarks']
       @freecen_piece.remarks_coord = piece_params['remarks_coord']
-      #online_time not editable by coords for now
-      #num_individuals not editable by coords for now
-      set_piece_place(@freecen_piece) #update the place / create one if needed
+      # online_time not editable by coords for now
+      # num_individuals not editable by coords for now
+      set_piece_place(@freecen_piece) # update the place / create one if needed
       if !@freecen_piece.save
         flash[:notice] = "Could not update the piece (save returned false)"
-        render :edit and return
+        render :edit && return
       end
       # bust database coverage cache so it picks up the change for display
       Rails.cache.delete("freecen_coverage_index")
       next_page = freecen_coverage_path+"/#{@freecen_piece.chapman_code}##{@freecen_piece.year}"
-      redirect_to next_page and return
+      redirect_to next_page && return
     end
     flash[:notice] = 'There was an error while updating the piece (parameters)'
-    render :edit and return
+    render :edit && return
   end
 
   private
@@ -257,5 +252,4 @@ class FreecenPiecesController < ApplicationController
   def freecen_piece_params
     params.require(:freecen_piece).permit!
   end
-
 end
