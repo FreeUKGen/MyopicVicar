@@ -1,103 +1,6 @@
 class FreecenPiecesController < ApplicationController
   require 'freecen_constants'
 
-  def freecen_piece_params
-    params.require(:freecen_piece).permit!
-  end
-
-  def index
-    if session[:chapman_code].present?
-      @freecen_pieces = FreecenPiece.chapman_code(session[:chapman_code]).order_by(year: 1, piece_number: 1)
-      @chapman_code = session[:chapman_code]
-      @totals_pieces, @totals_pieces_online, @totals_individuals, @totals_dwellings = FreecenPiece.county_year_totals(@chapman_code)
-      @grand_totals_pieces, @grand_totals_pieces_online, @grand_totals_individuals, @grand_totals_dwellings = FreecenPiece.grand_totals(@totals_pieces, @totals_pieces_online, @totals_individuals, @totals_dwellings)
-    else
-      redirect_to manage_resources_path && return
-    end
-    session.delete(:manage_places)
-  end
-
-
-
-  def show
-    if params[:id].present?
-      @freecen_piece = FreecenPiece.where('_id' => params[:id])
-      @freecen_piece = @freecen_piece.first if @freecen_piece.present?
-      @chapman_code = session[:chapman_code]
-    end
-    redirect_to freecen_pieces_path if @freecen_piece.blank?
-  end
-
-
-
-  def new
-    @freecen_piece = FreecenPiece.new
-    @freecen_piece.year = params[:year] if params[:year].present? &&
-      Freecen::CENSUS_YEARS_ARRAY.include?(params[:year])
-    @freecen_piece.chapman_code = params[:chapman_code].upcase if params[:chapman_code].present?
-    @freecen_piece.subplaces = [{'name'=>'','lat'=>'0.0','long'=>'0.0'}]
-    #puts "\n\n*** new *** yy=#{@freecen_piece.year} chap=#{@freecen_piece.chapman_code}\n\n"
-  end
-
-  def select_new_county
-    @county = ''
-    if Freecen::CENSUS_YEARS_ARRAY.include?(params[:year])
-      @year = params[:year]
-      year_pieces = FreecenPiece.only(:chapman_code).where('year'=>@year).entries
-      existing_year_counties = []
-      if year_pieces.present?
-        year_pieces.each do |yp|
-          existing_year_counties << yp[:chapman_code]
-        end
-      end
-      @year_counties = (ChapmanCode::values - existing_year_counties).sort
-    else
-      puts "year parameter missing in freecen_pieces_controller select_new_county"
-      flash[:notice] = 'Invalid or blank census year'
-      redirect_to :back
-    end
-  end
-
-  def edit
-    #puts "\n\n*** edit ***\n\n"
-    if params[:id].present?
-      @freecen_piece = FreecenPiece.where('_id' => params[:id])
-      @freecen_piece = @freecen_piece.first if @freecen_piece.present?
-    end
-    redirect_to freecen_pieces_path if @freecen_piece.blank?
-  end
-
-  def create
-    #puts "\n\n*** create ***\n\n"
-    unless params[:freecen_piece].blank?
-      piece_params = transform_piece_params(params[:freecen_piece])
-      @piece_params_errors = check_piece_params(params[:freecen_piece])
-      @freecen_piece = FreecenPiece.new(piece_params.permit!) unless piece_params.blank?
-      set_piece_place(@freecen_piece)
-      if @piece_params_errors.present? && @piece_params_errors.any?
-        flash[:notice] = "***Could not create the new piece"
-        render :new and return
-      end
-    end
-    if @freecen_piece.present?
-      #puts "@freecen_piece present _id=#{@freecen_piece['_id']}"
-      #puts "@freecen_piece.inspect #{@freecen_piece.inspect}"
-      unless @freecen_piece.save
-        flash[:notice] = 'There was an error while saving the new piece'
-        puts "\n\n***could not save @freecen_piece in create method!!\n\n"
-        render :new and return
-      end
-      # clear cached database coverage so it picks up the change for display
-      Rails.cache.delete("freecen_coverage_index")
-      #redirect to the right page
-      next_page = freecen_coverage_path+"/#{@freecen_piece.chapman_code}##{@freecen_piece.year}"
-      redirect_to next_page and return
-    end
-    flash[:notice] = 'There was an error while attempting to save the new piece'
-    puts "\n\n***could not find freecen_piece in create method!!\n\n"
-    redirect_to freecen_coverage_path
-  end
-
 
 
   #transform the params before checking them.
@@ -146,6 +49,116 @@ class FreecenPiecesController < ApplicationController
     end
     return error_list
   end
+
+
+
+
+
+  def create
+    #puts "\n\n*** create ***\n\n"
+    unless params[:freecen_piece].blank?
+      piece_params = transform_piece_params(params[:freecen_piece])
+      @piece_params_errors = check_piece_params(params[:freecen_piece])
+      @freecen_piece = FreecenPiece.new(piece_params.permit!) unless piece_params.blank?
+      set_piece_place(@freecen_piece)
+      if @piece_params_errors.present? && @piece_params_errors.any?
+        flash[:notice] = "***Could not create the new piece"
+        render :new and return
+      end
+    end
+    if @freecen_piece.present?
+      #puts "@freecen_piece present _id=#{@freecen_piece['_id']}"
+      #puts "@freecen_piece.inspect #{@freecen_piece.inspect}"
+      unless @freecen_piece.save
+        flash[:notice] = 'There was an error while saving the new piece'
+        puts "\n\n***could not save @freecen_piece in create method!!\n\n"
+        render :new and return
+      end
+      # clear cached database coverage so it picks up the change for display
+      Rails.cache.delete("freecen_coverage_index")
+      #redirect to the right page
+      next_page = freecen_coverage_path+"/#{@freecen_piece.chapman_code}##{@freecen_piece.year}"
+      redirect_to next_page and return
+    end
+    flash[:notice] = 'There was an error while attempting to save the new piece'
+    puts "\n\n***could not find freecen_piece in create method!!\n\n"
+    redirect_to freecen_coverage_path
+  end
+
+
+
+
+
+  def edit
+    #puts "\n\n*** edit ***\n\n"
+    if params[:id].present?
+      @freecen_piece = FreecenPiece.where('_id' => params[:id])
+      @freecen_piece = @freecen_piece.first if @freecen_piece.present?
+    end
+    redirect_to freecen_pieces_path if @freecen_piece.blank?
+  end
+
+  def index
+    if session[:chapman_code].present?
+      @freecen_pieces = FreecenPiece.chapman_code(session[:chapman_code]).order_by(year: 1, piece_number: 1)
+      @chapman_code = session[:chapman_code]
+      @totals_pieces, @totals_pieces_online, @totals_individuals, @totals_dwellings = FreecenPiece.county_year_totals(@chapman_code)
+      @grand_totals_pieces, @grand_totals_pieces_online, @grand_totals_individuals, @grand_totals_dwellings = FreecenPiece.grand_totals(@totals_pieces, @totals_pieces_online, @totals_individuals, @totals_dwellings)
+    else
+      redirect_to manage_resources_path && return
+    end
+    session.delete(:manage_places)
+  end
+
+  def new
+    @freecen_piece = FreecenPiece.new
+    @freecen_piece.year = params[:year] if params[:year].present? &&
+      Freecen::CENSUS_YEARS_ARRAY.include?(params[:year])
+    @freecen_piece.chapman_code = params[:chapman_code].upcase if params[:chapman_code].present?
+    @freecen_piece.subplaces = [{'name'=>'','lat'=>'0.0','long'=>'0.0'}]
+    #puts "\n\n*** new *** yy=#{@freecen_piece.year} chap=#{@freecen_piece.chapman_code}\n\n"
+  end
+
+  def select_new_county
+    @county = ''
+    if Freecen::CENSUS_YEARS_ARRAY.include?(params[:year])
+      @year = params[:year]
+      year_pieces = FreecenPiece.only(:chapman_code).where('year'=>@year).entries
+      existing_year_counties = []
+      if year_pieces.present?
+        year_pieces.each do |yp|
+          existing_year_counties << yp[:chapman_code]
+        end
+      end
+      @year_counties = (ChapmanCode::values - existing_year_counties).sort
+    else
+      puts "year parameter missing in freecen_pieces_controller select_new_county"
+      flash[:notice] = 'Invalid or blank census year'
+      redirect_to :back
+    end
+  end
+
+  def set_piece_place(piece)
+    place = Place.where(:chapman_code => piece.chapman_code, :place_name => piece.district_name).first
+    unless place #create the new place
+      place = Place.new
+      place.chapman_code = piece.chapman_code
+      place.place_name = piece.district_name
+      place.latitude = 0
+      place.longitude = 0
+      place.save!
+    end
+    piece.place = place
+  end
+  def show
+    if params[:id].present?
+      @freecen_piece = FreecenPiece.where('_id' => params[:id])
+      @freecen_piece = @freecen_piece.first if @freecen_piece.present?
+      @chapman_code = session[:chapman_code]
+    end
+    redirect_to freecen_pieces_path if @freecen_piece.blank?
+  end
+
 
   def transform_piece_params(piece_params)
     return piece_params if piece_params.blank?
@@ -239,18 +252,10 @@ class FreecenPiecesController < ApplicationController
     render :edit and return
   end
 
-  def set_piece_place(piece)
-    place = Place.where(:chapman_code => piece.chapman_code, :place_name => piece.district_name).first
-    unless place #create the new place
-      place = Place.new
-      place.chapman_code = piece.chapman_code
-      place.place_name = piece.district_name
-      place.latitude = 0
-      place.longitude = 0
-      place.save!
-    end
-    piece.place = place
-  end
+  private
 
+  def freecen_piece_params
+    params.require(:freecen_piece).permit!
+  end
 
 end
