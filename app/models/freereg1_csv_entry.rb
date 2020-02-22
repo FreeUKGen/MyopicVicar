@@ -434,6 +434,8 @@ class Freereg1CsvEntry
   def clean_up_ucf_list
     entry = self
     file = entry.freereg1_csv_file
+    return if file.blank? || file.ucf_list.blank?
+
     place, _church, _register = file.location_from_file
     search_record = entry.search_record
     file.ucf_list.delete_if { |record| record.to_s == search_record.id.to_s }
