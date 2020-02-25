@@ -29,11 +29,10 @@ input[type="checkbox"] {
   height: 17px;
   border: 1px solid gray !important;
   vertical-align: bottom;
-  outline: 0;
 }
 
 *:focus {
-    outline: none;
+  /*  outline: none;*/
 }
 
 select {
@@ -356,6 +355,19 @@ input:disabled:not([type="submit"]):hover {
 .countieshelp,
 .districtshelp {
   position: absolute;
+}
+
+
+.help_box {
+  width: 100%;
+  overflow-y: scroll;
+  height:150px;
+  scrollbar-color: #C84182 white ;
+  border: 2px solid #C84182;
+}
+
+
+.focus_checkbox {
 }
 
 
