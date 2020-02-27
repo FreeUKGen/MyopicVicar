@@ -441,7 +441,7 @@ class Freereg1CsvEntry
     file.ucf_list.delete_if { |record| record.to_s == search_record.id.to_s }
     file.ucf_updated = DateTime.now.to_date
     file.save
-    if place.present? && place.ucf_list.present?
+    if place.present? && place.ucf_list.present? && place.ucf_list[file.id.to_s].present?
       place.ucf_list[file.id.to_s].delete_if { |record| record.to_s == search_record.id.to_s }
       place.save
     end
