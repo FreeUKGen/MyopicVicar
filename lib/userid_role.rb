@@ -38,40 +38,40 @@ module UseridRole
     }
   when 'freecen'
     OPTIONS = {
-      'checker' => ['Communicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
-      'computer' => ['Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
+      'checker' => ['CSV Batches', 'Communicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
+      'computer' => ['CSV Batches', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
       'researcher' => ['Communicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
       'pending' => ['Profile', 'FreeUKGenealogy  Policies'],
-      'contacts_coordinator' => ['Communicate', 'Contacts', 'Display County Coordinators',
+      'contacts_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Display County Coordinators',
                                  'Display Syndicate Coordinators', 'Display Userids', 'Feedback', 'Manage Counties', 'Profile', 'System Documentation', 'Roadmap', 'FreeUKGenealogy  Policies'],
-      'county_coordinator' => ['Communicate', 'Contacts', 'Display Userids', 'Manage County', 'Manage Syndicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies', 'FreeUKGenealogy  Policies'],
-      'data_manager' => ['Communicate', 'Contacts', 'Database Statistics', 'Display Userids', 'Display Syndicate Coordinators', 'Display County Coordinators', 'Manage Counties', 'Manage Syndicates', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies' ],
-      'documentation_coordinator' => ['Communicate', 'Display Userids', 'Feedback', 'Manage Syndicates',
+      'county_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Display Userids', 'Manage County', 'Manage Syndicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies', 'FreeUKGenealogy  Policies'],
+      'data_manager' => ['CSV Batches', 'Communicate', 'Contacts', 'Database Statistics', 'Display Userids', 'Display Syndicate Coordinators', 'Display County Coordinators', 'Manage Counties', 'Manage Syndicates',
+                         'Physical Files', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
+      'documentation_coordinator' => ['CSV Batches', 'Communicate', 'Display Userids', 'Feedback', 'Manage Syndicates',
                                       'Manage Counties', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
-      'engagement_coordinator' => ['Communicate', 'Contacts', 'Database Statistics', 'Manage Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
+      'engagement_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Database Statistics', 'Manage Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
 
-      'executive_director' => ['Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Database Statistics',
+      'executive_director' => ['CSV Batches', 'Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Database Statistics',
                                'Feedback', 'FreeCen Errors', 'Profile', 'Manage FreeCen Coverage', 'Manage Userids', 'Message System', 'RefineryCMS', 'Roadmap',
                                'Site Statistics', 'Search Performance', 'Syndicate Coordinators', 'System Documentation', 'FreeUKGenealogy  Policies'],
-      'genealogy_coordinator' => ['Communicate', 'Contacts', 'Profile', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
-      'general_communication_coordinator' => ['Communicate', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
-
-      'project_manager' => ['Communicate', 'Contacts', 'Database Statistics', 'FreeCen Errors', 'Manage Userids', 'Manage FreeCen Coverage', 'Feedback', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
+      'genealogy_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Profile', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
+      'general_communication_coordinator' => ['CSV Batches', 'Communicate', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
+      'project_manager' => ['CSV Batches', 'Communicate', 'Contacts', 'Database Statistics', 'FreeCen Errors', 'Manage Userids', 'Manage FreeCen Coverage', 'Feedback', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
                             'System Documentation', 'FreeUKGenealogy  Policies'],
-      'publicity_coordinator' => ['Communicate', 'Contacts', 'Profile', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
+      'publicity_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Profile', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
 
-      'syndicate_coordinator' => ['Communicate', 'Manage Syndicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
-      'system_administrator' => ['Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Database Statistics', 'Feedback', 'FreeCen Errors',
-                                 'Manage Counties', 'Manage FreeCen Coverage', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
+      'syndicate_coordinator' => ['CSV Batches', 'Communicate', 'Manage Syndicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
+      'system_administrator' => ['CSV Batches', 'Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Database Statistics', 'Feedback', 'FreeCen Errors',
+                                 'Manage Counties', 'Manage FreeCen Coverage', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Physical Files', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
                                  'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'FreeUKGenealogy  Policies'],
-      'trainee' => ['Communicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
-      'technical' => ['Communicate', 'Contacts', 'Database Statistics', 'Feedback', 'FreeCen Errors', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
+      'trainee' => ['CSV Batches', 'Communicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
+      'technical' => ['CSV Batches', 'Communicate', 'Contacts', 'Database Statistics', 'Feedback', 'FreeCen Errors', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
                       'System Documentation', 'FreeUKGenealogy  Policies'],
 
-      'transcriber' => ['Communicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
-      'validator' => ['Communicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
-      'volunteer_coordinator' => ['Communicate', 'Contacts', 'Manage Syndicates', 'Manage Userids', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
-      'website_coordinator' => ['Communicate', 'Contacts', 'Database Statistics', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies']
+      'transcriber' => ['CSV Batches', 'Communicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
+      'validator' => ['CSV Batches', 'Communicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
+      'volunteer_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Manage Syndicates', 'Manage Userids', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
+      'website_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Database Statistics', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies']
 
     }
   end
@@ -111,6 +111,7 @@ module UseridRole
     'Message System' => '/messages',
     'Manage Images' => '/sources',
     'Assignments' => '/assignments/my_own',
+    'CSV Batches' => '/freecen_csv_files/my_own',
     'Manage Pieces' => '/freecen_pieces',
     'FreeCen Errors' => '/freecen_errors',
     'Manage FreeCen Coverage' => '/freecen_coverage/edit',

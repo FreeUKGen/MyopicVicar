@@ -1,0 +1,17 @@
+<% breadcrumb :change_userid,  @freecen_csv_file%>
+<p style="text-align: center"><b><%= file_name(@freecen_csv_file) %> (<%= userid(@freecen_csv_file) %>) in <b><%= register_name_for_file(@freecen_csv_file) %></b> of <b> <%= church_name(@freecen_csv_file)%></b> in <b><%= place_name(@freecen_csv_file) %></b> of <b><%= county_name(@freecen_csv_file) %></b><br>
+  </p>
+  <% if flash[:notice] %>
+    <div id="notice" style="color:blue"><br>
+      <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+    </div>
+  <% end %>
+  <section class="island  island--light">
+    <p><b>You may change the following parameters but do so with care as it will change the owner of the file and all batches </b></p>
+    You are changing <%= @records%> records so it may take some time.
+    <%= simple_form_for @freecen_csv_file,:html => { :class =>  "grid"} do |f| %>
+      <%= f.input :userid,{ :as => :select,:label => "Select userid",:include_blank => false,
+  :required => true, :collection => @userids, :size => 15,:input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 10}  } %>
+      <%= f.button :submit, 'Change Userid'   %>
+    <% end %>
+  </section>

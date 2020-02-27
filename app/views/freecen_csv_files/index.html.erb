@@ -1,0 +1,60 @@
+<%= render 'freecen_csv_files/my_own_header' if session[:my_own]%>
+<%= render 'freecen_csv_files/coordinator_header' unless session[:my_own]%>
+<div style="text-align: center">Batches are colour coded. <FONT COLOR="green">Teal: OK;</FONT><FONT color='red'> Red: Errors;</FONT><FONT color='blue'> Blue: Locked and OK;</FONT><FONT color="maroon"> Maroon: Locked with errors,</FONT><FONT color='orange'> Orange: Just Verified</FONT></div>
+<div class="grid__item ">
+  <section class="island ">
+    <div class="scrollable " >
+      <table class=' table--bordered my-width table--data table--striped just--left'>
+        <thead >
+          <tr>
+            <th class='sticky-header'>File</th>
+            <th class='sticky-header'>Cty</th>
+            <th class='sticky-header'>Place</th>
+            <th class='sticky-header'>Entries</th>
+            <th class='sticky-header'>Start year</th>
+            <th class='sticky-header'>End year</th>
+            <% unless session[:my_own]%>
+              <th class='sticky-header'>User ID</th>
+            <% end%>
+            <th class='sticky-header' >Processed</th>
+            <th colspan = "2" class='sticky-header'>Locked<br>
+              TR SC</th>
+            <th colspan="7" class='sticky-header'>Action <a href="#" class="left_tooltip" onclick="return false;"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %><span>SH: Show file info; ED: Edit file info; DL: Download batch; ER: Errors in batch; L: Lock batch; U: Unlock batch; DE: Delete batch; RL:Replace batch </span></a></th>
+          </tr>
+        </thead>
+        <!--/table-->
+        <!--table class=" table--bordered my-width table--data just--left"-->
+        <tbody >
+          <% @freecen_csv_files.each do |freecen_csv_file| %>
+            <tr id="<%= freecen_csv_file.id %>" style="<%=freecen_csv_file.define_colour%>">
+              <td><%= file_name(freecen_csv_file)%></td>
+              <td><%= freecen_csv_file.county %></td>
+              <td><%= freecen_csv_file.place %></td>
+              <td><%= freecen_csv_file.freereg1_csv_entries.count %></td>
+              <td><%= mindata(freecen_csv_file)%></td>
+              <td><%= freecen_csv_file.datemax %></td>
+              <% unless session[:my_own]%>
+                <td><%= freecen_csv_file.userid %></td>
+              <% end %>
+              <td><%= processed_date(freecen_csv_file)%></td>
+              <td><%= locked_by_transcriber(freecen_csv_file)%></td>
+              <td><%= locked_by_coordinator(freecen_csv_file)%></td>
+              <td><%= link_to 'SH', freecen_csv_file, method: :get  %></td>
+              <td><%= link_to 'ED', edit_freecen_csv_file_path(freecen_csv_file), method: :get   %></td>
+              <td><%= link_to 'DL', download_freecen_csv_file_path(freecen_csv_file), data: { confirm:  'Are you sure you want to download this file?'}, method: :get  %></td>
+              <td><%= link_to 'ER', error_freecen_csv_file_path(freecen_csv_file), method: :get %>
+                <td><%= link_to 'L/U', lock_freecen_csv_file_path(freecen_csv_file), method: :get, data: { confirm:  'Are you sure you want to lock/unlock all of the batches associated with this file?'} %>
+                </td>
+                <td><%= link_to 'DE', remove_freecen_csv_file_path(freecen_csv_file), data: { confirm:  'Are you sure you want to delete this file? This may take a few minutes if there are many records'}, method: :get   %></td>
+              </td>
+              <td><%= link_to 'RL', edit_csvfile_path(freecen_csv_file), method: :get, data: { confirm:  'Are you sure you want to replace these records?' }%>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <br />
+      <br>
+    </div>
+  </section>
+</div>

@@ -6,7 +6,7 @@ class Csvfile < CarrierWave::Uploader::Base
   field :file_name, type: String
   field :process, type: String, default: 'Process tonight'
   field :action, type: String
-  # files are stored in Rails.application.config.datafiles_changeset
+  # files are stored in Rails.application.config.datafiles
   mount_uploader :csvfile, CsvfileUploader
 
   def check_for_existing_file_and_save
@@ -80,28 +80,35 @@ class Csvfile < CarrierWave::Uploader::Base
     return [false, message] if batch_processing.present?
 
     processing_time = estimate_time
-    if user.person_role == 'trainee'
-      pid1 = Kernel.spawn("rake build:freereg_new_update[\"no_search_records\",\"individual\",\"no\",#{range}]")
+    case MyopicVicar::Application.config.template_set
+    when 'freereg'
+      if user.person_role == 'trainee'
+        pid1 = Kernel.spawn("rake build:freereg_new_update[\"no_search_records\",\"individual\",\"no\",#{range}]")
+        message = "The csv file #{file_name} is being checked. You will receive an email when it has been completed."
+        process = true
+      elsif processing_time < 600
+        batch.update_attributes(waiting_to_be_processed: true, waiting_date: Time.now)
+        # check to see if rake task running
+        rake_lock_file = File.join(Rails.root, 'tmp', 'processing_rake_lock_file.txt')
+        processor_initiation_lock_file = File.join(Rails.root, 'tmp', 'processor_initiation_lock_file.txt')
+        if File.exist?(rake_lock_file) || File.exist?(processor_initiation_lock_file)
+          message = "The csv file #{file_name} has been sent for processing . You will receive an email when it has been completed."
+        else
+          initiation_locking_file = File.new(processor_initiation_lock_file, 'w')
+          pid1 = Kernel.spawn("rake build:freereg_new_update[\"create_search_records\",\"waiting\",\"no\",\"a-9\"]")
+          message = "The csv file #{file_name} is being processed . You will receive an email when it has been completed."
+        end
+        process = true
+      elsif processing_time >= 600
+        batch.update_attributes(base: true, base_uploaded_date: Time.now, file_processed: false)
+        message =  "Your file #{file_name} is not being processed in its current form as it is too large. Your coordinator and the data managers have been informed. Please discuss with them how to proceed. "
+        UserMailer.report_to_data_manger_of_large_file(file_name, userid).deliver_now
+        process = false
+      end
+    when 'freecen'
+      pid1 = Kernel.spawn("rake build:freecen_csv_process[\"no_search_records\",\"individual\",\"no\",#{range}]")
       message = "The csv file #{file_name} is being checked. You will receive an email when it has been completed."
       process = true
-    elsif processing_time < 600
-      batch.update_attributes(waiting_to_be_processed: true, waiting_date: Time.now)
-      # check to see if rake task running
-      rake_lock_file = File.join(Rails.root, 'tmp', 'processing_rake_lock_file.txt')
-      processor_initiation_lock_file = File.join(Rails.root, 'tmp', 'processor_initiation_lock_file.txt')
-      if File.exist?(rake_lock_file) || File.exist?(processor_initiation_lock_file)
-        message = "The csv file #{file_name} has been sent for processing . You will receive an email when it has been completed."
-      else
-        initiation_locking_file = File.new(processor_initiation_lock_file, 'w')
-        pid1 = Kernel.spawn("rake build:freereg_new_update[\"create_search_records\",\"waiting\",\"no\",\"a-9\"]")
-        message = "The csv file #{file_name} is being processed . You will receive an email when it has been completed."
-      end
-      process = true
-    elsif processing_time >= 600
-      batch.update_attributes(base: true, base_uploaded_date: Time.now, file_processed: false)
-      message =  "Your file #{file_name} is not being processed in its current form as it is too large. Your coordinator and the data managers have been informed. Please discuss with them how to proceed. "
-      UserMailer.report_to_data_manger_of_large_file(file_name, userid).deliver_now
-      process = false
     end
     [process, message]
   end

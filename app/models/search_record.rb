@@ -224,6 +224,11 @@ class SearchRecord
       SearchRecord.where(:freereg1_csv_entry_id.exists => true).delete_all
     end
 
+    def delete_freecen_individual_entries
+      SearchRecord.where(:freecen_individual_id.exists => true).delete_all
+    end
+
+
     def extract_fields(fields, params, current_field)
       if params.is_a?(Hash)
         # walk down the syntax tree

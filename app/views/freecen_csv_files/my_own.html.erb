@@ -1,0 +1,10 @@
+<% breadcrumb :my_options%>
+<p style="text-align: center"><b> <%= @first_name%> how would you like to display your files? Select one of the following options.</p>
+</b>
+<%= render partial: 'flash_notice' %>
+<div>
+  <%@options.each do |option| %>
+    <%= link_to option, UseridRole::FILE_OPTIONS_TRANSLATION[option],  method: :get, :class => "btn btn--small" %> <br>
+  <%end%>
+</div>
+<%= render "resource_sidebar" %>

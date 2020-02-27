@@ -1,0 +1,28 @@
+<h3 style="text-align: center"><b><%= file_name(@freecen_csv_file) %> (<%= userid(@freecen_csv_file) %>) in <b><%= register_name_for_file(@freecen_csv_file) %></b> of <b> <%= church_name(@freecen_csv_file)%></b> in <b><%= place_name(@freecen_csv_file) %></b> of <b><%= county_name(@freecen_csv_file) %></b><br>
+  </h3>
+  <div  style="text-align: center">
+    <%= edit_headers %>
+    <%= download_batch %>
+    <%= browse_batch_entries%>
+    <%= list_error_entries %>
+    <%= list_zero_year_entries %>
+    <%= list_embargoed_entries %>
+    <%= unique_names %>
+    <%= remove_batch %>
+    <%= replace_batch %>
+    <%= which_file_gaps_link(@gaps) %>
+    <br>
+    <% if ['county_coordinator', 'country_coordinator', 'county_coordinator', 'system_administrator',
+         'data_manager'].include?(@user.person_role) %>
+    <%= relocate_batch  %>
+    <%= merge_batches %>
+    <%= reprocess_batch %>
+  <% end%>
+  <% if ['system_administrator','data_manager'].include?(@user.person_role) %>
+    <%= delete_file %>
+    <%= change_owner  %>
+  <% end%>
+</div>
+<div style="clear:both;"> </div>
+<br>
+<%= render partial: 'flash_notice' %>
