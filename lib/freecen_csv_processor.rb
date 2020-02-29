@@ -34,7 +34,7 @@ class FreecenCsvProcessor
   # CsvFile has a_single_file_process method that controls the ingest and processing of the data from the file
   # through methods contained in CsvRecords and CsvRecord.
   # CsvRecords looks after the extraction of the header information including the new DEF header which is used
-  # to permit different CsvFile field structures. It also extracts the data lines.
+  # to permit different CsvFile field structures. It also extracts the data @data_lines.
   # CsvRecord is used to convert the csvrecord into a freereg1_csv_entry
 
   # note each class inherits from its superior
@@ -256,13 +256,16 @@ class CsvFile < CsvFiles
     @csv_records = CsvRecords.new(@array_of_data_lines)
     success, reduction = @csv_records.process_header_fields(self, project)
 
-    return [false, "initial lines made no sense extracted #{message}. <br>"] unless success || [1, 2].include?(reduction)
+    return [false, "initial @data_lines made no sense extracted #{message}. <br>"] unless success || [1, 2].include?(reduction)
 
     success, message = @csv_records.extract_the_data(self, project, reduction)
 
 
     # p "finished data"
     return [success, "Data not extracted #{@records_processed}. <br>"] unless success
+
+
+    crash
 
     success, @records_processed, @data_errors = process_the_data(project) if success
 
@@ -457,7 +460,7 @@ class CsvFile < CsvFiles
   end
 
   def create_db_record_for_entry(project,data_record,freereg1_csv_file)
-    # TODO: bring data_record hash keys in line with those in FreecenCsvEntry
+    # TODO: bring data_record hash keys in @data_line with those in FreecenCsvEntry
     #p "creating new entry"
     data_record.delete(:chapman_code)
     entry = FreecenCsvEntry.new(data_record)
@@ -592,24 +595,6 @@ class CsvFile < CsvFiles
     true
   end
 
-  def get_batch_locations_and_records_for_existing_file
-    #p "getting existing locations"
-    locations = Hash.new
-    all_records_hash = Hash.new
-    freereg1_csv_files = FreecenCsvFile.where(:file_name => @header[:file_name], :userid => @header[:userid]).all
-    freereg1_csv_files.each do |batch|
-      args = {:chapman_code => batch.county,:place_name => batch.place,:church_name =>
-              batch.church_name,:register_type => batch.register_type, :record_type => batch.record_type, :id => batch.id}
-      key = sum_the_header(args)
-      locations[key] = args
-      batch.batch_errors.delete_all
-      batch.freereg1_csv_entries.each do |entry|
-        all_records_hash[entry.id] = entry.record_digest
-      end
-    end
-    return locations,all_records_hash
-  end
-
   def get_codeset_from_header(code_set,csvtxt,project)
     @slurp_fail_message = "CSV parse failure on first line. <br>"
     first_data_line = CSV.parse_line(csvtxt)
@@ -627,12 +612,6 @@ class CsvFile < CsvFiles
     end
     return code_set
   end
-  def get_place_id_from_file(freereg1_csv_file)
-    register = freereg1_csv_file.register
-    church = register.church
-    place = church.place
-    return place.id
-  end
 
   def physical_file_clean_up_on_success(project)
     #p "physical file clean up on success"
@@ -648,110 +627,6 @@ class CsvFile < CsvFiles
       #only checked for errors so file is not processed into search database
       batch.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => false, :waiting_date => nil)
     end
-  end
-
-  def update_place_after_processing(freereg1_csv_file, chapman_code, place_name)
-    place = Place.where(:chapman_code => chapman_code, :place_name => place_name).first
-    place.ucf_list[freereg1_csv_file.id.to_s] = []
-    place.save
-    place.update_ucf_list(freereg1_csv_file)
-    place.save
-    freereg1_csv_file.save
-  end
-
-  def process_the_data(project)
-    #p "Processing the data records"
-    @unique_existing_locations, @all_existing_records = self.get_batch_locations_and_records_for_existing_file
-    message = "There are #{@unique_locations.length} locations and #{@all_existing_records.length} existing records corresponding to the new file. <p>"
-    project.write_messages_to_all(message,false) if @unique_locations.length >= 2 || @all_existing_records.length >= 1
-    @unique_locations.each do |key,value|
-      place_cache_refresh = self.refresh_place_cache?(key,value)
-      freereg1_csv_file = self.setup_batch_for_processing(project,key,value)
-      records, batch_errors, not_changed = self.process_the_records_for_this_batch_into_the_database(project,key,freereg1_csv_file)
-      self.update_the_file_information(project,freereg1_csv_file,records,batch_errors)
-      changed = 0
-      changed =   records -   not_changed unless records.blank?
-      message = "#{records} records were processed of which #{changed} were updated/added and #{batch_errors} had data errors. <p>"
-      project.write_messages_to_all(message,true)
-      PlaceCache.refresh(freereg1_csv_file.chapman_code) if place_cache_refresh
-      project.write_messages_to_all("Place cache refreshed",false) if place_cache_refresh
-      update_place_after_processing(freereg1_csv_file, value[:chapman_code],value[:place_name])
-      freereg1_csv_file.update_freereg_contents_after_processing
-    end
-    #p "after process"
-    counter = self.clean_up_unused_batches(project)
-    message = "There were #{counter} entries in the original file that did not exist in the new one and hence were deleted. <br>"
-    project.write_messages_to_all(message,false) unless counter == 0
-    return true, @total_records, @total_data_errors
-  end
-
-  def refresh_place_cache?(key,value)
-    refresh = true
-    place = Place.chapman_code(value[:chapman_code]).place(value[:place_name]).first
-    refresh = false if place.search_records.exists?
-    return refresh
-  end
-
-  def process_the_records_for_this_batch_into_the_database(project,key,freereg1_csv_file)
-    #p "processing batch records"
-    not_changed = 0
-    batch_errors = 0
-    records = 0
-    #write the data records for each place/church
-    @data.each do |datakey,datarecord|
-      if datarecord[:location] == key
-        datarecord[:place] = datarecord[:place_name] #entry uses place
-        datarecord.delete(:place_name)
-        records = records + 1
-        success = self.check_and_create_db_record_for_entry(project,datarecord,freereg1_csv_file)
-        #p "#{success} after check and create"
-        if success.nil? || success == "change" || success == "new"
-          #p "ok to proceed"
-        elsif success == "nochange"
-          #p "nochange"
-          not_changed = not_changed + 1
-        else
-          #p "deal with batch error"
-          batch_error = BatchError.new(error_type: 'Data_Error', record_number: datarecord[:file_line_number], error_message: success, record_type: freereg1_csv_file.record_type, data_line: datarecord)
-          batch_error.freereg1_csv_file = freereg1_csv_file
-          batch_error.save
-          batch_errors = batch_errors + 1
-          message = "Data Error in line #{datarecord[:file_line_number]} problem was #{success}.<br>"
-          project.write_messages_to_all(message,true)
-        end #end success  no change
-      end #end record
-    end
-    #p "this batch processed"
-    return records, batch_errors, not_changed
-  end
-
-  def setup_batch_for_processing(project,thiskey,thisvalue)
-    #p "setting up the batch"
-    batch_header = @header
-    batch_header[:county] = thisvalue[:chapman_code]
-    batch_header[:chapman_code] = thisvalue[:chapman_code]
-    batch_header[:place] = thisvalue[:place_name]
-    batch_header[:place_name] = thisvalue[:place_name]
-    batch_header[:church_name] = thisvalue[:church_name]
-    batch_header[:register_type] = thisvalue[:register_type]
-    batch_header[:alternate_register_name] = thisvalue[:church_name].to_s + ' ' + thisvalue[:register_type].to_s
-    freereg1_csv_file = FreecenCsvFile.where(:userid => @header[:userid],:file_name => @header[:file_name],:county => thisvalue[:chapman_code], :place => thisvalue[:place_name], :church_name => thisvalue[:church_name], :register_type => thisvalue[:register_type], :record_type =>@header[:record_type]).first
-    #:place => value[:place_name], :church_name => value[:church_name], :register_type => value[:register_type], :record_type =>@header[:record_type]
-    if freereg1_csv_file.nil?
-      freereg1_csv_file = FreecenCsvFile.new(batch_header)
-      freereg1_csv_file.update_register
-      message = "Creating a new batch for #{batch_header[:chapman_code]}, #{batch_header[:place_name]}, #{batch_header[:church_name]}, #{RegisterType::display_name(batch_header[:register_type])}. <br>"
-    else
-      freereg1_csv_file.update_attributes(:uploaded_date => self.uploaded_date, :lds => self.header[:lds], :def => self.header[:def], :order => self.header[:order])
-      message = "Updating the current batch for #{batch_header[:chapman_code]}, #{batch_header[:place_name]}, #{batch_header[:church_name]}, #{RegisterType::display_name(batch_header[:register_type])}. <br>"
-      #remove batch errors for this location
-      freereg1_csv_file.error = 0
-      #remove this location from the total locations
-      @unique_existing_locations.delete_if {|key,value| key == thiskey}
-    end
-    self.place_id = get_place_id_from_file(freereg1_csv_file)
-    project.write_messages_to_all(message,true)
-    return freereg1_csv_file
   end
 
   def slurp_the_csv_file(project)
@@ -777,24 +652,7 @@ class CsvFile < CsvFiles
     return xxx
   end
 
-  #creates a unique key based of the location fields
-  def sum_the_header(args)
-    key = args[:chapman_code].to_s + args[:place_name].gsub(/\s+/, '').to_s + args[:church_name].gsub(/\s+/, '').to_s +
-      args[:register_type].to_s + args[:record_type].to_s
-    return key
-  end
-
-  def update_the_file_information(project,freereg1_csv_file,records,batch_errors)
-    #p "update_the_file_information"
-    @total_records = @total_records + records
-    @total_data_errors = @total_data_errors + batch_errors
-    freereg1_csv_file.calculate_distribution
-    freereg1_csv_file.update_attribute(:processed, false) if !project.create_search_records
-    freereg1_csv_file.update_attributes(:processed => true, :processed_date => Time.new) if project.create_search_records
-    freereg1_csv_file.update_attributes(:error => batch_errors)
-  end
 end
-
 
 class CsvRecords < CsvFile
 
@@ -802,7 +660,7 @@ class CsvRecords < CsvFile
 
   def initialize(data_array)
     @array_of_lines = data_array
-    @data_lines = Array.new {Array.new}
+    @data_lines = Array.new { Array.new }
   end
 
   def process_header_fields(csvfile, project)
@@ -810,28 +668,47 @@ class CsvRecords < CsvFile
     reduction = 0
     n = 0
     while n <= 2
-      line = @array_of_lines[n]
-      project.write_messages_to_all("Error: line #{n} is empty", true) if line[0..24].all?(&:blank?)
+      p 'looping'
+      p n
+      project.write_messages_to_all("Error: line #{n} is empty", true) if @array_of_lines[n][0..24].all?(&:blank?)
       case n
       when 0
-        @piece, success, message = line_one(line)
+        p 'one'
+        @piece, success, message = line_one(@array_of_lines[n])
+        p @piece
+        p success
+        p message
         project.write_messages_to_all(message, true) unless success
-        reduction = 1 unless success
+        reduction = 1 if success
       when 1
-        success, message = line_two(line)
-        unless success
+        p 'two'
+        success, message = line_two(@array_of_lines[n])
+
+        p success
+        p message
+        if success
+          p 'nn'
           reduction = reduction + 1
+        else
           project.write_messages_to_all(message, true)
         end
       when 2
-        success, message = line_three(line)
-        unless success
+        p 'three'
+        success, message = line_three(@array_of_lines[n])
+
+        p success
+        p message
+        if success
+
           reduction = reduction + 1
+        else
           project.write_messages_to_all(message, true)
         end
       end
       n = n + 1
     end
+    p 'heading'
+    p reduction
     [success, reduction]
   end
 
@@ -852,20 +729,22 @@ class CsvRecords < CsvFile
   end
 
   def line_two(line)
-    if line[0..24].all?(&:present?)
+    p line
+    if line[0..20].all?(&:present?) && line[22..24].all?(&:present?)
       success = true
     else
-      message = 'INFO: line 2 containing field names is not present <br>'
+      message = 'INFO: line 2 or 3 containing SSCENS Field information is missing<br>'
       success = false
     end
     [success, message]
   end
 
   def line_three(line)
-    if line[0..24].all?(&:present?)
+    p line
+    if line[0..20].all?(&:present?) && line[22..24].all?(&:present?)
       success = true
     else
-      message = 'INFO: line 3 containing field names is not present <br>'
+      message = 'INFO: both 2 or 3 with SSCENS Field information is missing<br>'
       success = false
     end
     [success, message]
@@ -873,12 +752,16 @@ class CsvRecords < CsvFile
 
   # This extracts the header and entry information from the file and adds it to the database
   def extract_the_data(csvfile, project, reduction)
-    reduction = 3 - reduction
+
+    p reduction
     success = true
+    data_lines = 0
+    @data_records = []
     @array_of_lines.each_with_index do |line, n|
       next if n < reduction
       @record = CsvRecord.new(line)
-      success, message = @record.extract_data_line(project, n)
+      success, message, result = @record.extract_data_line(project, n)
+      @data_records << result
       project.write_messages_to_all(message, true) unless success
       success = true
       data_lines = data_lines + 1
@@ -886,28 +769,34 @@ class CsvRecords < CsvFile
     [success, data_lines]
   end
 
-  def inform_the_user(csvfile,project)
+  def inform_the_user(csvfile, project)
     csvfile.header_error.each do |error|
       project.write_messages_to_all(error,true)
     end
   end
-
-
 end
 
 class CsvRecord < CsvRecords
 
-  attr_accessor :data_line, :data_record
+  attr_accessor :data_line, :data_record, :data_records
 
   def initialize(data_line)
     @data_line = data_line
     @data_record = {}
     @data_records = []
+    @civil_parish = ''
+    @folio = ''
+    @page = ''
+    @dwelling = ''
+    @individual = ''
   end
 
   def extract_data_line(project, num)
-    @data_line << Freecen::FIELD_NAMES[first_field_present]
-    load_data_record(project, num)
+    @data_record[:data_transition] = Freecen::FIELD_NAMES[first_field_present]
+    load_data_record(project, Freecen::FIELD_NAMES[first_field_present], num)
+    p  @data_record
+    crash
+    [true, " ", @data_record]
   end
 
   def first_field_present
@@ -918,35 +807,21 @@ class CsvRecord < CsvRecords
     @x
   end
 
-  def load_data_record(project, num)
-    p @piece
-    @data_record[:civil_parish] = line[0]
-    @data_record[:ecclesiastical_parish] = line[1]
-    @data_record[:folio_number] = line[2]
-    @data_record[:page_number] = line[3]
-    @data_record[:schedule_number] = line[4]
-    @data_record[:house_number] = line[5]
-    @data_record[:house_or_street_name] = line[6]
-    @data_record[:uncertainy_location] = line[7]
-    @data_record[:surname] = line[8]
-    @data_record[:forenames] = line[9]
-    @data_record[:uncertainty_name] = line[10]
-    @data_record[:relationship] = line[11]
-    @data_record[:marital_status] = line[12]
-    @data_record[:sex] = line[13]
-    @data_record[:age] = line[14]
-    @data_record[:uncertainty_status] = line[15]
-    @data_record[:occupation] = line[16]
-    @data_record[:occupation_category] = line[17]
-    @data_record[:uncertainty_occupation] = line[18]
-    @data_record[:verbatim_birth_county] = line[19]
-    @data_record[:verbatim_birth_place] = line[20]
-    @data_record[:uncertainy_birth] = line[21]
-    @data_record[:disability] = line[22]
-    @data_record[:language] = line[23]
-    @data_record[:notes] = line[24]
-    @data_record[:record_number] = num
-    @data_records << @data_record
+  def load_data_record(project, record_type, num)
+    case record_type
+    when 'Civil Parish'
+      extract_civil_parish_fields
+    when 'Folio'
+      extract_folio_fields
+    when 'Page'
+      extract_page_fields
+    when 'Dwelling'
+      extract_dwelling_fields
+    when 'Individual'
+      extract_individual_fields
+    when 'Error'
+      error_in_fields
+    end
     # following are computed or added
     # field :deleted_flag, type: Boolean
     # field :dwelling_number, type: Integer
@@ -961,162 +836,137 @@ class CsvRecord < CsvRecords
     # field :birth_county, type: String
     # field :birth_place, type: String
     # field :birth_place_flag, type: String
-  end
-
-
-  def extract_dwelling(csvrecords, csvfile, project, line)
-    #p "extracting baptism"
-    FreeregOptionsConstants::ORIGINAL_BAPTISM_FIELDS.each do |field|
-      field_symbol = field.to_sym
-      @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
-    end
-    if csvfile.header[:def]
-      FreeregOptionsConstants::ADDITIONAL_BAPTISM_FIELDS.each do |field|
-        field_symbol = field.to_sym
-        @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
-      end
-    end
-    FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS.each do |field|
-      field_symbol = field.to_sym
-      @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
-    end
-    if csvfile.header[:def]
-      FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS.each do |field|
-        field_symbol = field.to_sym
-        @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
-      end
-    end
-    @data_record[:line_id] = csvfile.header[:userid] + "." + csvfile.header[:file_name] + "." + line.to_s
-    @data_record[:file_line_number] = line
-    @data_record[:year] = FreeregValidations.year_extract(@data_record[:baptism_date])
-    @data_record[:year] = FreeregValidations.year_extract(@data_record[:birth_date]) if @data_record[:year].blank?
-    @data_record[:year] = FreeregValidations.year_extract(@data_record[:confirmation_date]) if @data_record[:year].blank?
-    @data_record[:year] = FreeregValidations.year_extract(@data_record[:received_into_church_date]) if @data_record[:year].blank?
-    (@data_record[:private_baptism].present? && FreeregOptionsConstants::PRIVATE_BAPTISM_OPTIONS.include?(@data_record[:private_baptism].downcase)) ? @data_record[:private_baptism] = true : @data_record[:private_baptism] = false
-    @data_record[:person_sex] = process_baptism_sex_field(@data_record[:person_sex])
-    @data_record[:father_surname] = Unicode::upcase(@data_record[:father_surname] ) unless @data_record[:father_surname] .nil?
-    @data_record[:mother_surname] = Unicode::upcase(@data_record[:mother_surname]) unless  @data_record[:mother_surname].nil?
-    @data_record[:processed_date] = Time.now
-    csvfile.data[line] = @data_record
-  end
-
-  def process_burial_data_fields(csvrecords,csvfile,project,line)
-    #p "Extracting burial"
-    FreeregOptionsConstants::ORIGINAL_BURIAL_FIELDS.each do |field|
-      field_symbol = field.to_sym
-      @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
-    end
-    if csvfile.header[:def]
-      FreeregOptionsConstants::ADDITIONAL_BURIAL_FIELDS.each do |field|
-        field_symbol = field.to_sym
-        @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
-      end
-    end
-    FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS.each do |field|
-      field_symbol = field.to_sym
-      @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
-    end
-    if csvfile.header[:def]
-      FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS.each do |field|
-        field_symbol = field.to_sym
-        @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
-      end
-    end
-    @data_record[:line_id] = csvfile.header[:userid] + "." + csvfile.header[:file_name] + "." + line.to_s
-    @data_record[:file_line_number] = line
-    @data_record[:year] = FreeregValidations.year_extract(@data_record[:burial_date])
-    @data_record[:year] = FreeregValidations.year_extract(@data_record[:death_date]) if @data_record[:year].blank?
-    @data_record[:relative_surname] = Unicode::upcase(@data_record[:relative_surname]) unless @data_record[:relative_surname].nil?
-    @data_record[:burial_person_surname] = Unicode::upcase( @data_record[:burial_person_surname])  unless @data_record[:burial_person_surname].nil?
-    @data_record[:female_relative_surname] = Unicode::upcase( @data_record[:female_relative_surname])  unless @data_record[:female_relative_surname].nil?
-    @data_record[:processed_date] = Time.now
-    csvfile.data[line] = @data_record
 
   end
 
-  def process_marriage_data_fields(csvrecords,csvfile,project,line)
-    #p "extracting marriage"
-    FreeregOptionsConstants::ORIGINAL_MARRIAGE_FIELDS.each do |field|
-      field_symbol = field.to_sym
-      @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
-    end
-    if csvfile.header[:def]
-      FreeregOptionsConstants::ADDITIONAL_MARRIAGE_FIELDS.each do |field|
-        field_symbol = field.to_sym
-        @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
-      end
-    end
-    FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS.each do |field|
-      field_symbol = field.to_sym
-      @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
-    end
-    if csvfile.header[:def]
-      FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS.each do |field|
-        field_symbol = field.to_sym
-        @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
-      end
-    end
-    @data_record[:line_id] = csvfile.header[:userid] + "." + csvfile.header[:file_name] + "." + line.to_s
-    @data_record[:file_line_number] = line
-    @data_record[:year] = FreeregValidations.year_extract(@data_record[:marriage_date])
-    @data_record[:year] = FreeregValidations.year_extract(@data_record[:contract_date]) if @data_record[:year].blank?
-    (@data_record[:marriage_by_licence].present? && FreeregOptionsConstants::MARRIAGE_BY_LICENCE_OPTIONS.include?(@data_record[:marriage_by_licence].downcase)) ? @data_record[:marriage_by_licence] = true : @data_record[:marriage_by_licence] = false
-    (@data_record[:groom_marked].present? && FreeregOptionsConstants::MARKED_OPTIONS.include?(@data_record[:groom_marked].downcase)) ? @data_record[:groom_marked] = true : @data_record[:groom_marked] = false
-    (@data_record[:bride_marked].present? && FreeregOptionsConstants::MARKED_OPTIONS.include?(@data_record[:bride_marked].downcase)) ? @data_record[:bride_marked] = true : @data_record[:bride_marked] = false
-    @data_record[:processed_date] = Time.now
-    csvfile.data[line] = @data_record
+  def extract_civil_parish_fields
+    @data_record[:civil_parish] = @data_line[0]
+    @data_record[:ecclesiastical_parish] = @data_line[1]
+    @data_record[:folio_number] = @data_line[2]
+    @data_record[:page_number] = @data_line[3]
+    @data_record[:schedule_number] = @data_line[4]
+    @data_record[:house_number] = @data_line[5]
+    @data_record[:house_or_street_name] = @data_line[6]
+    @data_record[:uncertainy_location] = @data_line[7]
+    @data_record[:surname] = @data_line[8]
+    @data_record[:forenames] = @data_line[9]
+    @data_record[:uncertainty_name] = @data_line[10]
+    @data_record[:relationship] = @data_line[11]
+    @data_record[:marital_status] = @data_line[12]
+    @data_record[:sex] = @data_line[13]
+    @data_record[:age] = @data_line[14]
+    @data_record[:uncertainty_status] = @data_line[15]
+    @data_record[:occupation] = @data_line[16]
+    @data_record[:occupation_category] = @data_line[17]
+    @data_record[:uncertainty_occupation] = @data_line[18]
+    @data_record[:verbatim_birth_county] = @data_line[19]
+    @data_record[:verbatim_birth_place] = @data_line[20]
+    @data_record[:uncertainy_birth] = @data_line[21]
+    @data_record[:disability] = @data_line[22]
+    @data_record[:language] = @data_line[23]
+    @data_record[:notes] = @data_line[24]
+  end
+  def extract_folio_fields
+    @data_record[:folio_number] = @data_line[2]
+    @data_record[:page_number] = @data_line[3]
+    @data_record[:schedule_number] = @data_line[4]
+    @data_record[:house_number] = @data_line[5]
+    @data_record[:house_or_street_name] = @data_line[6]
+    @data_record[:uncertainy_location] = @data_line[7]
+    @data_record[:surname] = @data_line[8]
+    @data_record[:forenames] = @data_line[9]
+    @data_record[:uncertainty_name] = @data_line[10]
+    @data_record[:relationship] = @data_line[11]
+    @data_record[:marital_status] = @data_line[12]
+    @data_record[:sex] = @data_line[13]
+    @data_record[:age] = @data_line[14]
+    @data_record[:uncertainty_status] = @data_line[15]
+    @data_record[:occupation] = @data_line[16]
+    @data_record[:occupation_category] = @data_line[17]
+    @data_record[:uncertainty_occupation] = @data_line[18]
+    @data_record[:verbatim_birth_county] = @data_line[19]
+    @data_record[:verbatim_birth_place] = @data_line[20]
+    @data_record[:uncertainy_birth] = @data_line[21]
+    @data_record[:disability] = @data_line[22]
+    @data_record[:language] = @data_line[23]
+    @data_record[:notes] = @data_line[24]
+
   end
 
-  def  process_baptism_sex_field(field)
-    case
-    when field.nil?
-      return_field = "?"
-    when FreeregValidations::UNCERTAIN_SEX.include?(field.upcase)
-      return_field = field
-    when FreeregValidations::VALID_MALE_SEX.include?(field.upcase)
-      return_field = "M"
-    when FreeregValidations::UNCERTAIN_MALE_SEX.include?(field.upcase)
-      return_field = "M?"
-    when FreeregValidations::VALID_FEMALE_SEX.include?(field.upcase)
-      return_field = "F"
-    when FreeregValidations::UNCERTAIN_FEMALE_SEX.include?(field.upcase)
-      return_field = "F?"
-    when field =~ FreeregValidations::VALID_UCF
-      return_field = "?"
-    else
-      return_field = field
-    end
-    return return_field
+  def extract_page_fields
+    @data_record[:page_number] = @data_line[3]
+    @data_record[:schedule_number] = @data_line[4]
+    @data_record[:house_number] = @data_line[5]
+    @data_record[:house_or_street_name] = @data_line[6]
+    @data_record[:uncertainy_location] = @data_line[7]
+    @data_record[:surname] = @data_line[8]
+    @data_record[:forenames] = @data_line[9]
+    @data_record[:uncertainty_name] = @data_line[10]
+    @data_record[:relationship] = @data_line[11]
+    @data_record[:marital_status] = @data_line[12]
+    @data_record[:sex] = @data_line[13]
+    @data_record[:age] = @data_line[14]
+    @data_record[:uncertainty_status] = @data_line[15]
+    @data_record[:occupation] = @data_line[16]
+    @data_record[:occupation_category] = @data_line[17]
+    @data_record[:uncertainty_occupation] = @data_line[18]
+    @data_record[:verbatim_birth_county] = @data_line[19]
+    @data_record[:verbatim_birth_place] = @data_line[20]
+    @data_record[:uncertainy_birth] = @data_line[21]
+    @data_record[:disability] = @data_line[22]
+    @data_record[:language] = @data_line[23]
+    @data_record[:notes] = @data_line[24]
   end
 
-
-  def validate_church_and_set(church_name,chapman_code,place_name)
-    place = Place.chapman_code(chapman_code).place(place_name).not_disabled.first
-    return false, "No match" if place.blank? || place.churches.blank?
-    place.churches.each do |church|
-      if church.church_name.downcase == church_name.downcase
-        return true, church.church_name
-      end
-    end
-    return false, "No match"
-  end
-  def validate_place_and_set(field,chapman)
-    field = field.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase unless field.blank?
-    place = Place.chapman_code(chapman).modified_place_name(field).not_disabled.first
-    return false unless place.present?
-    return true, place.place_name
-  end
-
-  def field_actually_exists_in_def(field,csvrecords)
-    csvrecords.data_entry_order.has_key?(field) ? result = true : result = false
-    result
-  end
-
-  def avoid_look_up_of_nil_field(line,record,csvrecords)
-    record = record.to_sym
-    field_actually_exists_in_def(record,csvrecords) ? result = line[csvrecords.data_entry_order[record]] : result = nil
-    result
+  def extract_dwelling_fields
+    @data_record[:schedule_number] = @data_line[4]
+    @data_record[:house_number] = @data_line[5]
+    @data_record[:house_or_street_name] = @data_line[6]
+    @data_record[:uncertainy_location] = @data_line[7]
+    @data_record[:surname] = @data_line[8]
+    @data_record[:forenames] = @data_line[9]
+    @data_record[:uncertainty_name] = @data_line[10]
+    @data_record[:relationship] = @data_line[11]
+    @data_record[:marital_status] = @data_line[12]
+    @data_record[:sex] = @data_line[13]
+    @data_record[:age] = @data_line[14]
+    @data_record[:uncertainty_status] = @data_line[15]
+    @data_record[:occupation] = @data_line[16]
+    @data_record[:occupation_category] = @data_line[17]
+    @data_record[:uncertainty_occupation] = @data_line[18]
+    @data_record[:verbatim_birth_county] = @data_line[19]
+    @data_record[:verbatim_birth_place] = @data_line[20]
+    @data_record[:uncertainy_birth] = @data_line[21]
+    @data_record[:disability] = @data_line[22]
+    @data_record[:language] = @data_line[23]
+    @data_record[:notes] = @data_line[24]
   end
 
+  def extract_individual_fields
+    @data_record[:schedule_number] = @data_line[4]
+    @data_record[:house_number] = @data_line[5]
+    @data_record[:house_or_street_name] = @data_line[6]
+    @data_record[:uncertainy_location] = @data_line[7]
+    @data_record[:surname] = @data_line[8]
+    @data_record[:forenames] = @data_line[9]
+    @data_record[:uncertainty_name] = @data_line[10]
+    @data_record[:relationship] = @data_line[11]
+    @data_record[:marital_status] = @data_line[12]
+    @data_record[:sex] = @data_line[13]
+    @data_record[:age] = @data_line[14]
+    @data_record[:uncertainty_status] = @data_line[15]
+    @data_record[:occupation] = @data_line[16]
+    @data_record[:occupation_category] = @data_line[17]
+    @data_record[:uncertainty_occupation] = @data_line[18]
+    @data_record[:verbatim_birth_county] = @data_line[19]
+    @data_record[:verbatim_birth_place] = @data_line[20]
+    @data_record[:uncertainy_birth] = @data_line[21]
+    @data_record[:disability] = @data_line[22]
+    @data_record[:language] = @data_line[23]
+    @data_record[:notes] = @data_line[24]
+  end
 
+  def error_in_fields
+
+  end
 end

@@ -2,12 +2,34 @@ class FreecenPiece
   include Mongoid::Document
   include Mongoid::Timestamps::Short
   require 'freecen_constants'
+  # 1841       HO107 plus 3 digits for the piece number
+  #              HS4 plus 5 digits; 3 for the piece number and the 2 (most significant digits) for the Parish number
+
+  # 1851       HO107 plus 4 digits for the piece number. So this year starts at 1000. It is uploaded to FreeCEN as HO51 to comply with the old 8 digit filename standard.
+  #              HS5 plus 5 digits; 3 for the piece number and the 2 (most significant digits) for the Parish number
+
+  # 1861       RG9 or RG09 plus 4 digits for the piece number
+  #               RS6 plus 5 digits  3 for the piece number and the 2 (most significant digits) for the Parish number
+
+  # 1871       RG10 plus 4 digits
+  #                RS7 plus 5 digits  3 for the piece number and the 2 (most significant digits) for the Parish number
+
+  # 1881       RG11 plus 4 digits
+  #                RS8 plus 5 digits  3 for the piece number and the 2 (most significant digits) for the Parish number
+
+  # 1891       RG12 plus 4 digits
+  #              There are none for Scotland but I would anticipate RS9
+
+  #1901       RG13 plus 4 digits
+
+  #1911       RG14 plus 4 digits
+
   field :chapman_code, type: String
   field :piece_number, type: Integer
-  field :district_name, type: String #same as place.name, copied for performance
-  field :place_latitude, type: String #copy from place for performance
-  field :place_longitude, type: String #copy from place for performance
-  field :place_country, type: String #copy from place for performance
+  field :district_name, type: String # same as place.name, copied for performance
+  field :place_latitude, type: String # copy from place for performance
+  field :place_longitude, type: String # copy from place for performance
+  field :place_country, type: String # copy from place for performance
   field :subplaces, type: Array
   field :subplaces_sort, type: String
   field :parish_number, type: Integer

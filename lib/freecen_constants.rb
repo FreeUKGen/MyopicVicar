@@ -51,10 +51,10 @@ module Freecen
     }
   end
 
-  FIELD_NAMES = ['Civil Parish', 'Electoral District', 'Folio', 'Page', 'Schedule', 'House', 'Address', 'X']
+  FIELD_NAMES = ['Civil Parish', 'Folio', 'Page', 'Dwelling', 'Individual', 'Error']
 
 
-  CENSUS_YEARS_ARRAY = ['1841','1851','1861','1871','1881','1891']
+  CENSUS_YEARS_ARRAY = ['1841', '1851', '1861', '1871', '1881', '1891']
   CHAPMAN_CODE_ELIMINATIONS = ['England', 'Scotland', 'Wales', 'Ireland', 'Unknown', 'Clwyd', 'Dyfed', 'Gwent', 'Gwynedd', 'Powys', 'Mid Glamorgan',
                                'South Glamorgan', 'West Glamorgan', 'Borders', 'Central', 'Dumfries and Galloway', 'Grampian', 'Highland', 'Lothian',
                                'Orkney Isles', 'Shetland Isles', 'Strathclyde', 'Tayside', 'Western Isles', 'Other Locations']
