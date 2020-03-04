@@ -269,11 +269,11 @@ class CsvFile < CsvFiles
     return [success, "Data not extracted #{@records_processed}. <br>"] unless success
 
 
-    crash
 
-    success, @records_processed, @data_errors = process_the_data(project) if success
 
-    return [success, "Data not processed #{@records_processed}. <br>"] unless success
+    # success, @records_processed, @data_errors = process_the_data(project) if success
+
+    # return [success, "Data not processed #{@records_processed}. <br>"] unless success
 
     success, message = clean_up_supporting_information(project)
     # p "finished clean up"

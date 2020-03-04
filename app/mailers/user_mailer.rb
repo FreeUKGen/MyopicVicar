@@ -481,28 +481,33 @@ class UserMailer < ActionMailer::Base
 
   def sndmanager_email_lookup
     sndmager = UseridDetail.userid('SNDManager').first
-    friendly_email = "#{sndmager.person_forename} #{sndmager.person_surname} <#{sndmager.email_address}>"
-    [sndmager, friendly_email]
-  end
+    if sndmager.present?
+      friendly_email = "#{sndmager.person_forename} #{sndmager.person_surname} <#{sndmager.email_address}>"
+      [sndmager, friendly_email]
 
-  def extract_chapman_code_from_file_name(file_name)
-    parts = file_name.split('.')
-    chapman_code = parts[0].slice(0..2)
-    if ChapmanCode.value?(chapman_code)
-      county = County.where(chapman_code: chapman_code).first
-      if county.present?
-        county_coordinator_id = county.county_coordinator
-        county_coordinator = UseridDetail.where(userid: county_coordinator_id).first
-        if county_coordinator.present? && county_coordinator.active && county_coordinator.email_address_valid
-          friendly_email = "#{county_coordinator.person_forename} #{county_coordinator.person_surname} <#{county_coordinator.email_address}>"
+    else
+      sndmager = UseridDetail.userid('vinodhini')
+      [sndmanger, "Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>"]
+    end
+
+    def extract_chapman_code_from_file_name(file_name)
+      parts = file_name.split('.')
+      chapman_code = parts[0].slice(0..2)
+      if ChapmanCode.value?(chapman_code)
+        county = County.where(chapman_code: chapman_code).first
+        if county.present?
+          county_coordinator_id = county.county_coordinator
+          county_coordinator = UseridDetail.where(userid: county_coordinator_id).first
+          if county_coordinator.present? && county_coordinator.active && county_coordinator.email_address_valid
+            friendly_email = "#{county_coordinator.person_forename} #{county_coordinator.person_surname} <#{county_coordinator.email_address}>"
+          else
+            county_coordinator, friendly_email = sndmanager_email_lookup
+          end
         else
           county_coordinator, friendly_email = sndmanager_email_lookup
         end
-      else
-        county_coordinator, friendly_email = sndmanager_email_lookup
       end
+      [county_coordinator, friendly_email]
     end
-    [county_coordinator, friendly_email]
-  end
 
-end
+  end
