@@ -45,6 +45,13 @@ module ChapmanCode
       hsh
     end
 
+    def freecen_birth_codes
+      birth_codes = []
+      birth_codes = ChapmanCode.values
+    end
+
+
+
     def codes_for_cen_county()
       hsh = {}
       codes = ChapmanCode.remove_codes(ChapmanCode::CODES)
@@ -202,6 +209,7 @@ module ChapmanCode
      'Yorkshire, West Riding' => 'WRY'
      },
     "Ireland" => {
+      'Ireland' => 'IRL',
       'County Antrim' => 'ANT',
       'County Armagh' => 'ARM',
       'County Carlow' => 'CAR',
@@ -319,6 +327,7 @@ module ChapmanCode
       'Overseas British' => 'OVB',
       'Overseas Foreign' => 'OVF',
       'Scottish Shipping' => 'SCS',
-    'Other Locations' => 'OTH' }
+      'Other Locations' => 'OTH'
+    }
   }
 end

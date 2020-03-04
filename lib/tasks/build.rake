@@ -668,7 +668,7 @@ namespace :build do
 
 
   desc "Process freecen csv file.  Example arguments: [create_search_records,individual,force_rebuild,userid/filename.csv] or [create_search_records,range,force_rebuild,k]"
-  task :freecen_csv_process, [:search_record, :type, :force, :range] => [:environment] do |t, args|
+  task :freecen_csv_process, [:search_record, :type, :force, :range, :field, :processing] => [:environment] do |t, args|
     require 'freecen_csv_processor'
     @mongodb_bin =   Rails.application.config.mongodb_bin_location
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
@@ -678,7 +678,7 @@ namespace :build do
 
     if args.type == 'individual'
       p "FREECEN:CSV_PROCESSING: starting an individual project"
-      FreecenCsvProcessor.activate_project(args.search_record, args.type, args.force, args.range)
+      FreecenCsvProcessor.activate_project(args.search_record, args.type, args.force, args.range, args.field, args.processing)
     else
       rake_lock_file = Rails.root.join('tmp', 'freecen_processing_rake_lock_file.txt')
       processor_initiation_lock_file = Rails.root.join('tmp', 'freecen_processor_initiation_lock_file.txt')
@@ -691,7 +691,7 @@ namespace :build do
         locking_file = File.new(rake_lock_file, "w")
         p "FREECEN:CSV_PROCESSING: Created rake lock file #{rake_lock_file} and processing files"
         while PhysicalFile.waiting.exists?
-          FreecenCsvProcessor.activate_project(args.search_record, args.type, args.force, args.range)
+          FreecenCsvProcessor.activate_project(args.search_record, args.type, args.force, args.range, args.field, args.processing)
           sleep(300)
         end
 

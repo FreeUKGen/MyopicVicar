@@ -5,6 +5,8 @@ class Csvfile < CarrierWave::Uploader::Base
   field :userid, type: String
   field :file_name, type: String
   field :process, type: String, default: 'Process tonight'
+  field :type_of_field, type: String, default: 'Traditional' # CEN
+  field :type_of_processing, type: String, default: 'Checking' # CEN
   field :action, type: String
   # files are stored in Rails.application.config.datafiles
   mount_uploader :csvfile, CsvfileUploader
@@ -101,12 +103,12 @@ class Csvfile < CarrierWave::Uploader::Base
         process = true
       elsif processing_time >= 600
         batch.update_attributes(base: true, base_uploaded_date: Time.now, file_processed: false)
-        message =  "Your file #{file_name} is not being processed in its current form as it is too large. Your coordinator and the data managers have been informed. Please discuss with them how to proceed. "
+        message = "Your file #{file_name} is not being processed in its current form as it is too large. Your coordinator and the data managers have been informed. Please discuss with them how to proceed. "
         UserMailer.report_to_data_manger_of_large_file(file_name, userid).deliver_now
         process = false
       end
     when 'freecen'
-      pid1 = Kernel.spawn("rake build:freecen_csv_process[\"no_search_records\",\"individual\",\"no\",#{range}]")
+      pid1 = Kernel.spawn("rake build:freecen_csv_process[\"no_search_records\",\"individual\",\"no\",#{range},#{type_of_field},#{type_of_processing}]")
       message = "The csv file #{file_name} is being checked. You will receive an email when it has been completed."
       process = true
     end

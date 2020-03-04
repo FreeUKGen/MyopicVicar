@@ -44,23 +44,26 @@ class FreecenCsvProcessor
     :file_range, :message_file, :member_message_file, :project_start_time, :total_records, :total_files, :total_data_errors
 
   def initialize(arg1, arg2, arg3, arg4, arg5, arg6)
-    @create_search_records = arg2
-    @file_range = arg5
-    @force_rebuild = arg4
-    @freecen_files_directory = arg1
+    @create_search_records = arg1
+    @file_range = arg4
+    @force_rebuild = arg3
+    @freecen_files_directory = Rails.application.config.datafiles
     @message_file = define_message_file
-    @project_start_time = arg6
+    @project_start_time = Time.now
     @total_data_errors = 0
     @total_files = 0
     @total_records = 0
-    @type_of_project = arg3
+    @type_of_project = arg2
+    @type_of_field = arg5
+    @type_of_processing = arg6
     EmailVeracity::Config[:skip_lookup] = true
   end
 
-  def self.activate_project(create_search_records, type, force, range)
+  def self.activate_project(create_search_records, type, force, range, type_of_field, type_of_processing )
     force, create_search_records = FreecenCsvProcessor.convert_to_bolean(create_search_records, force)
-    @project = FreecenCsvProcessor.new(Rails.application.config.datafiles, create_search_records, type, force, range, Time.new)
+    @project = FreecenCsvProcessor.new(create_search_records, type, force, range, type_of_field, type_of_processing)
     @project.write_log_file("Started freecen csv file processor project. #{@project.inspect} using website #{Rails.application.config.website}. <br>")
+
     @csvfiles = CsvFiles.new
     success, files_to_be_processed = @csvfiles.get_the_files_to_be_processed(@project)
     if !success || (files_to_be_processed.present? && files_to_be_processed.length.zero?)
@@ -137,8 +140,8 @@ class FreecenCsvProcessor
 
   def write_messages_to_all(message, no_member_message)
     # avoids sending the message to the member if no_member_message is false
-    write_log_file(message)
-    write_member_message_file(message) if no_member_message
+    write_log_file(message) if message.present?
+    write_member_message_file(message) if no_member_message && message.present?
   end
 
   def write_log_file(message)
@@ -231,6 +234,11 @@ class CsvFile < CsvFiles
     @total_header_errors = 0
     @total_records = 0
     @@uploaded_file_is_flexible_format = false
+    @@civil_parish = ''
+    @@folio = 0
+    @@page = 0
+    @dwelling = 0
+    @individual = 0
   end
 
   def a_single_csv_file_process(project)
@@ -238,11 +246,7 @@ class CsvFile < CsvFiles
     success = true
     project.member_message_file = define_member_message_file
     @file_start = Time.new
-    p self
     p "FREECEN:CSV_PROCESSING: Started on the file #{@header[:file_name]} for #{@header[:userid]} at #{@file_start}"
-    p @@uploaded_file_is_flexible_format
-
-
     project.write_log_file("******************************************************************* <br>")
     project.write_messages_to_all("Started on the file #{@header[:file_name]} for #{@header[:userid]} at #{@file_start}. <p>", true)
     success, message = ensure_processable?(project) unless project.force_rebuild
@@ -721,7 +725,7 @@ class CsvRecords < CsvFile
       next if line[0..24].all?(&:blank?)
 
       @record = CsvRecord.new(line)
-      success, message, result = @record.extract_data_line(project, n)
+      success, message, result = @record.extract_data_line(project, n + 1)
       @data_records << result
       project.write_messages_to_all(message, true) unless success
       success = true
@@ -744,19 +748,14 @@ class CsvRecord < CsvRecords
   def initialize(data_line)
     @data_line = data_line
     @data_record = {}
-    @civil_parish = ''
-    @folio = 0
-    @page = 0
-    @dwelling = 0
-    @individual = 0
   end
 
   def extract_data_line(project, num)
     @data_record[:data_transition] = Freecen::FIELD_NAMES[first_field_present]
-    p Freecen::FIELD_NAMES[first_field_present]
     load_data_record(project, Freecen::FIELD_NAMES[first_field_present], num)
     p @data_record
-    crash if num == 30
+
+
     [true, " ", @data_record]
   end
 
@@ -801,7 +800,6 @@ class CsvRecord < CsvRecords
   end
 
   def extract_civil_parish_fields(project, num)
-    p 'extract_civil_parish_fields'
     @data_record[:civil_parish] = @data_line[0]
     @data_record[:enumeration_district] = @data_line[1]
     @data_record[:folio_number] = @data_line[2]
@@ -827,27 +825,29 @@ class CsvRecord < CsvRecords
     @data_record[:disability] = @data_line[22]
     @data_record[:language] = @data_line[23]
     @data_record[:notes] = @data_line[24]
+    success, message = valid_parish_change(@data_record[:civil_parish], @data_record[:data_transition], project, num)
+    @@civil_parish = @data_record[:civil_parish] if success
+    project.write_messages_to_all(message, true)
+    success, message = valid_folio_change(@data_record[:folio_number], @data_record[:data_transition], project, num)
+    @@folio = @data_record[:folio_number].to_i if success
+    project.write_messages_to_all(message, true)
+    success, message = valid_page_change(@data_record[:page_number], @data_record[:data_transition], project, num)
+    @@page = @data_record[:page_number].to_i if success
+    project.write_messages_to_all(message, true)
+    new_dwelling = FreecenCsvEntry.calculate_dwelling_digest(@data_record)
+    new_individual = FreecenCsvEntry.calculate_individual_digest(@data_record)
+    @dwelling = new_dwelling unless new_dwelling == @dwelling
+    @individual = new_individual unless new_individual == @individual
     success, message = FreecenCsvEntry.validate_header(@data_record, num, @uploaded_file_is_flexible_format)
     project.write_messages_to_all(message, true) unless success
     success, message = FreecenCsvEntry.validate_dwelling(@data_record, num, @uploaded_file_is_flexible_format)
     project.write_messages_to_all(message, true) unless success
     success, message = FreecenCsvEntry.validate_individual(@data_record, num, @uploaded_file_is_flexible_format)
     project.write_messages_to_all(message, true) unless success
-    success = valid_parish_change(@data_record[:civil_parish], project, num)
-    @civil_parish = @data_record[:civil_parish] if success
-    success = valid_folio_change(@data_record[:folio_number], project, num)
-    @folio = @data_record[:folio_number] if success
-    success = valid_page_change(@data_record[:page_number], project, num)
-    @page = @data_record[:page_number] if success
-    new_dwelling = FreecenCsvEntry.calculate_dwelling_digest(@data_record)
-    new_individual = FreecenCsvEntry.calculate_individual_digest(@data_record)
-    @dwelling = new_dwelling unless new_dwelling == @dwelling
-    @individual = new_individual unless new_individual == @individual
+
 
   end
   def extract_folio_fields(project, num)
-    p 'folio'
-
     @data_record[:folio_number] = @data_line[2]
     @data_record[:page_number] = @data_line[3]
     @data_record[:schedule_number] = @data_line[4]
@@ -871,25 +871,27 @@ class CsvRecord < CsvRecords
     @data_record[:disability] = @data_line[22]
     @data_record[:language] = @data_line[23]
     @data_record[:notes] = @data_line[24]
+    success, message = valid_folio_change(@data_record[:folio_number], @data_record[:data_transition], project, num)
+    @@folio = @data_record[:folio_number].to_i if success
+    project.write_messages_to_all(message, true)
+    success, message = valid_page_change(@data_record[:page_number], @data_record[:data_transition], project, num)
+    @@page = @data_record[:page_number].to_i if success
+    project.write_messages_to_all(message, true)
+    new_dwelling = FreecenCsvEntry.calculate_dwelling_digest(@data_record)
+    new_individual = FreecenCsvEntry.calculate_individual_digest(@data_record)
+    @dwelling = new_dwelling unless new_dwelling == @dwelling
+    @individual = new_individual unless new_individual == @individual
     success, message = FreecenCsvEntry.validate_header(@data_record, num, @uploaded_file_is_flexible_format)
     project.write_messages_to_all(message, true) unless success
     success, message = FreecenCsvEntry.validate_dwelling(@data_record, num, @uploaded_file_is_flexible_format)
     project.write_messages_to_all(message, true) unless success
     success, message = FreecenCsvEntry.validate_individual(@data_record, num, @uploaded_file_is_flexible_format)
     project.write_messages_to_all(message, true) unless success
-    success = valid_folio_change(@data_record[:folio_number], project, num)
-    @folio = @data_record[:folio_number] if success
-    success = valid_page_change(@data_record[:page_number], project, num)
-    @page = @data_record[:page_number] if success
-    new_dwelling = FreecenCsvEntry.calculate_dwelling_digest(@data_record)
-    new_individual = FreecenCsvEntry.calculate_individual_digest(@data_record)
-    @dwelling = new_dwelling unless new_dwelling == @dwelling
-    @individual = new_individual unless new_individual == @individual
+
 
   end
 
   def extract_page_fields(project, num)
-    p 'page'
     @data_record[:page_number] = @data_line[3]
     @data_record[:schedule_number] = @data_line[4]
     @data_record[:house_number] = @data_line[5]
@@ -912,23 +914,23 @@ class CsvRecord < CsvRecords
     @data_record[:disability] = @data_line[22]
     @data_record[:language] = @data_line[23]
     @data_record[:notes] = @data_line[24]
+    success, message = valid_page_change(@data_record[:page_number], @data_record[:data_transition], project, num)
+    @@page = @data_record[:page_number].to_i if success
+    project.write_messages_to_all(message, true)
+    new_dwelling = FreecenCsvEntry.calculate_dwelling_digest(@data_record)
+    new_individual = FreecenCsvEntry.calculate_individual_digest(@data_record)
+    @dwelling = new_dwelling unless new_dwelling == @dwelling
+    @individual = new_individual unless new_individual == @individual
     success, message = FreecenCsvEntry.validate_header(@data_record, num, @uploaded_file_is_flexible_format)
     project.write_messages_to_all(message, true) unless success
     success, message = FreecenCsvEntry.validate_dwelling(@data_record, num, @uploaded_file_is_flexible_format)
     project.write_messages_to_all(message, true) unless success
     success, message = FreecenCsvEntry.validate_individual(@data_record, num, @uploaded_file_is_flexible_format)
     project.write_messages_to_all(message, true) unless success
-    success = valid_page_change(@data_record[:page_number], project, num)
-    @page = @data_record[:page_number] if success
-    new_dwelling = FreecenCsvEntry.calculate_dwelling_digest(@data_record)
-    new_individual = FreecenCsvEntry.calculate_individual_digest(@data_record)
-    @dwelling = new_dwelling unless new_dwelling == @dwelling
-    @individual = new_individual unless new_individual == @individual
 
   end
 
   def extract_dwelling_fields(project, num)
-    p 'dwelling'
     @data_record[:schedule_number] = @data_line[4]
     @data_record[:house_number] = @data_line[5]
     @data_record[:house_or_street_name] = @data_line[6]
@@ -962,8 +964,6 @@ class CsvRecord < CsvRecords
   end
 
   def extract_individual_fields(project, num)
-    p 'ind'
-
     @data_record[:surname] = @data_line[8]
     @data_record[:forenames] = @data_line[9]
     @data_record[:uncertainty_name] = @data_line[10]
@@ -988,50 +988,77 @@ class CsvRecord < CsvRecords
     @individual = new_individual unless new_individual == @individual
   end
 
-  def valid_folio_change(folio_number, project, num)
-    if @folio == 0
-      project.write_messages_to_all("Info: Initial Folio number set to #{folio_number} at line #{num}", true)
+  def valid_folio_change(folio_number, transition, project, num)
+    p 'jolio number change valid'
+    p @@folio
+    p folio_number
+    if @@folio == 0
+      message = "Info: line #{num} Initial Folio number set to #{folio_number}"
       result = true
-    elsif folio_number > @folio + 1
-      project.write_messages_to_all("Warning: New Folio number increment larger than 1 #{folio_number} at line #{num}", true)
-      result = true
-    elsif folio_number == @folio
-      project.write_messages_to_all("Warning: New Folio number is the same as the previous number #{folio_number} at line #{num}", true)
+    elsif  folio_number.blank? && ['Folio', 'Page'].include?(transition)
+      message = ''
       result = false
-    elsif folio_number < @folio
-      project.write_messages_to_all("Warning: New Folio number is less than the previous number #{folio_number} at line #{num}", true)
+    elsif  folio_number.blank?
+      message = "Warning: line #{num} New Folio number is blank"
+      result = false
+    elsif folio_number.to_i > @@folio + 1
+      message = "Warning: line #{num} New Folio number increment larger than 1 #{folio_number}"
+      result = true
+    elsif folio_number.to_i == @@folio
+      message = "Warning: line #{num} New Folio number is the same as the previous number #{folio_number}"
+      result = false
+    elsif folio_number.to_i < @@folio
+      message = "Warning: line #{num} New Folio number is less than the previous number #{folio_number}"
+      result = true
+    else
+      message = "Info: line #{num} New Folio number #{folio_number}"
       result = true
     end
-    result
+    [result, message]
   end
 
-  def valid_page_change(page_number, project, num)
-    if @page == 0
-      project.write_messages_to_all("Info: Initial Page number set to #{page_number} at line #{num}", true)
+  def valid_page_change(page_number, transition, project, num)
+    p 'page number change valid'
+    p @@page
+    p page_number
+    if @@page == 0
+      message = "Info: line #{num} Initial Page number set to #{page_number}"
       result = true
-    elsif page_number > @page + 1
-      project.write_messages_to_all("Warning: New Page number increment larger than 1 #{page_number} at line #{num}", true)
-      result = true
-    elsif page_number == @page
-      project.write_messages_to_all("Warning: New Page number is the same as the previous number #{page_number} at line #{num}", true)
+    elsif  page_number.blank? && ['Folio', 'Page'].include?(transition)
+      message = ''
       result = false
-    elsif page_number < @page
-      project.write_messages_to_all("Warning: New Page number is less than the previous number #{page_number} at line #{num}", true)
+    elsif  page_number.blank?
+      message = "Warning: line #{num} New Page number is blank"
+      result = false
+    elsif page_number.to_i > @@page + 1
+      message = "Warning: line #{num} New Page number increment larger than 1 #{page_number}"
+      result = true
+    elsif page_number.to_i == @@page
+      message = "Warning: line #{num} New Page number is the same as the previous number #{page_number}"
+      result = false
+    elsif page_number.to_i < @@page
+      message = "Warning: line #{num} New Page number is less than the previous number #{page_number}"
+      result = true
+    else
+      message = "Info: line #{num} New Page number #{page_number}"
       result = true
     end
-    result
+    [result, message]
   end
 
-  def valid_parish_change(civil_parish, project, num)
-    if @civil_parish == ''
-      project.write_messages_to_all("Info: New Civil Parish #{civil_parish} at line #{num}", true)
+  def valid_parish_change(civil_parish, transition, project, num)
+    if @@civil_parish == ''
+      message = "Info: line #{num} New Civil Parish #{civil_parish}"
       result = true
-    elsif @civil_parish == civil_parish
-      project.write_messages_to_all("Warning: New Civil Parish is the same as the previous one #{civil_parish} at line #{num}", true)
+    elsif @@civil_parish == civil_parish
+      message = "Warning: line #{num} next Civil Parish is the same as the previous one #{civil_parish}"
       result = false
-    elsif @civil_parish != civil_parish
+    elsif @@civil_parish != civil_parish
       result = true
+    else
+      message = "Error: line #{num} problem with Civil Parish #{civil_parish}"
+      result = false
     end
-    result
+    [result, message]
   end
 end
