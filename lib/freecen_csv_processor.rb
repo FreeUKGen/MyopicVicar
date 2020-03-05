@@ -392,7 +392,7 @@ class CsvFile < CsvFiles
 
   def clean_up_message(project)
 
-    File.delete(project.message_file) if project.type_of_project == 'individual' && File.exists?(project.message_file) && !Rails.env.test?
+    #File.delete(project.message_file) if project.type_of_project == 'individual' && File.exists?(project.message_file) && !Rails.env.test?
 
   end
 
