@@ -277,4 +277,21 @@ module FreecenValidations
 
     [false, 'invalid value']
   end
+  def FreecenValidations.at_home?(field)
+    return [true, ''] if field.blank?
+
+    return [true, ''] if field.downcase == 'h' && field.length == 1
+
+    [false, 'invalid value']
+  end
+  def FreecenValidations.rooms?(field, year)
+    return [true, ''] if field.blank?
+
+    return [true, ''] if field =~ VALID_NUMBER && year == '1901' && field.to_i <= 5
+
+    return [true, ''] if field =~ VALID_NUMBER && year == '1911' && field.to_i <= 19
+
+    [false, 'invalid value']
+
+  end
 end

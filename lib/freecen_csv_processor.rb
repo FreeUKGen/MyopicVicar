@@ -56,14 +56,16 @@ class FreecenCsvProcessor
     @type_of_project = arg2
     @type_of_field = arg5
     @type_of_processing = arg6
+    @@year = ''
+    @@piece = nil
     EmailVeracity::Config[:skip_lookup] = true
   end
 
-  def self.activate_project(create_search_records, type, force, range, type_of_field, type_of_processing )
+  def self.activate_project(create_search_records, type, force, range, type_of_field, type_of_processing)
     force, create_search_records = FreecenCsvProcessor.convert_to_bolean(create_search_records, force)
     @project = FreecenCsvProcessor.new(create_search_records, type, force, range, type_of_field, type_of_processing)
     @project.write_log_file("Started freecen csv file processor project. #{@project.inspect} using website #{Rails.application.config.website}. <br>")
-
+    @@uploaded_file_is_flexible_format = type_of_field == 'Traditional' ? false : true
     @csvfiles = CsvFiles.new
     success, files_to_be_processed = @csvfiles.get_the_files_to_be_processed(@project)
     if !success || (files_to_be_processed.present? && files_to_be_processed.length.zero?)
@@ -233,8 +235,8 @@ class CsvFile < CsvFiles
     @total_files = 0
     @total_header_errors = 0
     @total_records = 0
-    @@uploaded_file_is_flexible_format = false
     @@civil_parish = ''
+    @@enumeration_district = ''
     @@folio = 0
     @@page = 0
     @dwelling = 0
@@ -574,7 +576,7 @@ class CsvFile < CsvFiles
     true
   end
 
-  def get_codeset_from_header(code_set,csvtxt,project)
+  def get_codeset_from_header(code_set, csvtxt, project)
     @slurp_fail_message = "CSV parse failure on first line. <br>"
     first_data_line = CSV.parse_line(csvtxt)
     @slurp_fail_message = nil # no exception thrown
@@ -642,7 +644,7 @@ class CsvRecords < CsvFile
     @data_lines = Array.new { Array.new }
   end
 
-  def process_header_fields( project)
+  def process_header_fields(project)
     # p "Getting header
     reduction = 3
     n = 0
@@ -650,10 +652,10 @@ class CsvRecords < CsvFile
       project.write_messages_to_all("Error: line #{n} is empty", true) if @array_of_lines[n][0..24].all?(&:blank?)
       case n
       when 0
-        @piece, success, message = line_one(@array_of_lines[n])
-
-        project.write_messages_to_all("Working on #{@piece}", true) if success
-        reduction = reduction - 1 unless success
+        @@year, @@piece, success, message = line_one(@array_of_lines[n])
+        project.write_messages_to_all(message, true) unless success
+        project.write_messages_to_all("Working on #{@@piece.district_name} for #{@@year}, in #{@@piece.chapman_code}", true) if success
+        reduction = reduction - 1 unless success || message =~ /Error: line 1 of batch does not have a valid piece number/
       when 1
         success, message = line_two(@array_of_lines[n])
         unless success
@@ -677,9 +679,8 @@ class CsvRecords < CsvFile
     if FreecenValidations.fixed_valid_piece?(line[0])
       success = true
       piece = line[0]
-      @@uploaded_file_is_flexible_format = true if line[2].present?
-
-      piece = FreecenPiece.where(freecen1_filename: "#{line[0].downcase}.vld").first
+      year, piece = FreecenPiece.extract_year_and_piece(line[0])
+      piece = FreecenPiece.where(year: year, piece_number: piece).first
       if piece.blank?
         message = "Error: there is no piece with #{line[0]} in the database}. <br>"
         success = false
@@ -688,7 +689,7 @@ class CsvRecords < CsvFile
       message = "Error: line 1 of batch does not have a valid piece number. It has #{line[0]}. <br>"
       success = false
     end
-    [piece, success, message]
+    [year, piece, success, message]
   end
 
   def line_two(line)
@@ -751,11 +752,11 @@ class CsvRecord < CsvRecords
   end
 
   def extract_data_line(project, num)
+
     @data_record[:data_transition] = Freecen::FIELD_NAMES[first_field_present]
     load_data_record(project, Freecen::FIELD_NAMES[first_field_present], num)
+
     p @data_record
-
-
     [true, " ", @data_record]
   end
 
@@ -771,6 +772,8 @@ class CsvRecord < CsvRecords
     case record_type
     when 'Civil Parish'
       extract_civil_parish_fields(project, num)
+    when 'Enumeration District'
+      extract_enumeration_district_fields(project, num)
     when 'Folio'
       extract_folio_fields(project, num)
     when 'Page'
@@ -801,133 +804,36 @@ class CsvRecord < CsvRecords
 
   def extract_civil_parish_fields(project, num)
     @data_record[:civil_parish] = @data_line[0]
-    @data_record[:enumeration_district] = @data_line[1]
-    @data_record[:folio_number] = @data_line[2]
-    @data_record[:page_number] = @data_line[3]
-    @data_record[:schedule_number] = @data_line[4]
-    @data_record[:house_number] = @data_line[5]
-    @data_record[:house_or_street_name] = @data_line[6]
-    @data_record[:uncertainy_location] = @data_line[7]
-    @data_record[:surname] = @data_line[8]
-    @data_record[:forenames] = @data_line[9]
-    @data_record[:uncertainty_name] = @data_line[10]
-    @data_record[:relationship] = @data_line[11]
-    @data_record[:marital_status] = @data_line[12]
-    @data_record[:sex] = @data_line[13]
-    @data_record[:age] = @data_line[14]
-    @data_record[:uncertainty_status] = @data_line[15]
-    @data_record[:occupation] = @data_line[16]
-    @data_record[:occupation_category] = @data_line[17]
-    @data_record[:uncertainty_occupation] = @data_line[18]
-    @data_record[:verbatim_birth_county] = @data_line[19]
-    @data_record[:verbatim_birth_place] = @data_line[20]
-    @data_record[:uncertainy_birth] = @data_line[21]
-    @data_record[:disability] = @data_line[22]
-    @data_record[:language] = @data_line[23]
-    @data_record[:notes] = @data_line[24]
-    success, message = valid_parish_change(@data_record[:civil_parish], @data_record[:data_transition], project, num)
+    success, message = valid_parish_change(@data_record[:civil_parish], num)
     @@civil_parish = @data_record[:civil_parish] if success
     project.write_messages_to_all(message, true)
-    success, message = valid_folio_change(@data_record[:folio_number], @data_record[:data_transition], project, num)
-    @@folio = @data_record[:folio_number].to_i if success
-    project.write_messages_to_all(message, true)
-    success, message = valid_page_change(@data_record[:page_number], @data_record[:data_transition], project, num)
-    @@page = @data_record[:page_number].to_i if success
-    project.write_messages_to_all(message, true)
-    new_dwelling = FreecenCsvEntry.calculate_dwelling_digest(@data_record)
-    new_individual = FreecenCsvEntry.calculate_individual_digest(@data_record)
-    @dwelling = new_dwelling unless new_dwelling == @dwelling
-    @individual = new_individual unless new_individual == @individual
-    success, message = FreecenCsvEntry.validate_header(@data_record, num, @uploaded_file_is_flexible_format)
-    project.write_messages_to_all(message, true) unless success
-    success, message = FreecenCsvEntry.validate_dwelling(@data_record, num, @uploaded_file_is_flexible_format)
-    project.write_messages_to_all(message, true) unless success
-    success, message = FreecenCsvEntry.validate_individual(@data_record, num, @uploaded_file_is_flexible_format)
-    project.write_messages_to_all(message, true) unless success
-
-
+    extract_enumeration_district_fields(project, num)
   end
+
+  def extract_enumeration_district_fields(project, num)
+    @data_record[:enumeration_district] = @data_line[1]
+    success, message = valid_enumeration_change(@data_record[:enumeration_district], num)
+    @@enumeration_district = @data_record[:enumeration_district] if success
+    project.write_messages_to_all(message, true)
+    extract_folio_fields(project, num)
+  end
+
   def extract_folio_fields(project, num)
     @data_record[:folio_number] = @data_line[2]
-    @data_record[:page_number] = @data_line[3]
-    @data_record[:schedule_number] = @data_line[4]
-    @data_record[:house_number] = @data_line[5]
-    @data_record[:house_or_street_name] = @data_line[6]
-    @data_record[:uncertainy_location] = @data_line[7]
-    @data_record[:surname] = @data_line[8]
-    @data_record[:forenames] = @data_line[9]
-    @data_record[:uncertainty_name] = @data_line[10]
-    @data_record[:relationship] = @data_line[11]
-    @data_record[:marital_status] = @data_line[12]
-    @data_record[:sex] = @data_line[13]
-    @data_record[:age] = @data_line[14]
-    @data_record[:uncertainty_status] = @data_line[15]
-    @data_record[:occupation] = @data_line[16]
-    @data_record[:occupation_category] = @data_line[17]
-    @data_record[:uncertainty_occupation] = @data_line[18]
-    @data_record[:verbatim_birth_county] = @data_line[19]
-    @data_record[:verbatim_birth_place] = @data_line[20]
-    @data_record[:uncertainy_birth] = @data_line[21]
-    @data_record[:disability] = @data_line[22]
-    @data_record[:language] = @data_line[23]
-    @data_record[:notes] = @data_line[24]
-    success, message = valid_folio_change(@data_record[:folio_number], @data_record[:data_transition], project, num)
+    success, message = valid_folio_change(@data_record[:folio_number], @data_record[:data_transition], num)
     @@folio = @data_record[:folio_number].to_i if success
     project.write_messages_to_all(message, true)
-    success, message = valid_page_change(@data_record[:page_number], @data_record[:data_transition], project, num)
-    @@page = @data_record[:page_number].to_i if success
-    project.write_messages_to_all(message, true)
-    new_dwelling = FreecenCsvEntry.calculate_dwelling_digest(@data_record)
-    new_individual = FreecenCsvEntry.calculate_individual_digest(@data_record)
-    @dwelling = new_dwelling unless new_dwelling == @dwelling
-    @individual = new_individual unless new_individual == @individual
-    success, message = FreecenCsvEntry.validate_header(@data_record, num, @uploaded_file_is_flexible_format)
-    project.write_messages_to_all(message, true) unless success
-    success, message = FreecenCsvEntry.validate_dwelling(@data_record, num, @uploaded_file_is_flexible_format)
-    project.write_messages_to_all(message, true) unless success
-    success, message = FreecenCsvEntry.validate_individual(@data_record, num, @uploaded_file_is_flexible_format)
-    project.write_messages_to_all(message, true) unless success
-
-
+    extract_page_fields(project, num)
   end
 
   def extract_page_fields(project, num)
     @data_record[:page_number] = @data_line[3]
-    @data_record[:schedule_number] = @data_line[4]
-    @data_record[:house_number] = @data_line[5]
-    @data_record[:house_or_street_name] = @data_line[6]
-    @data_record[:uncertainy_location] = @data_line[7]
-    @data_record[:surname] = @data_line[8]
-    @data_record[:forenames] = @data_line[9]
-    @data_record[:uncertainty_name] = @data_line[10]
-    @data_record[:relationship] = @data_line[11]
-    @data_record[:marital_status] = @data_line[12]
-    @data_record[:sex] = @data_line[13]
-    @data_record[:age] = @data_line[14]
-    @data_record[:uncertainty_status] = @data_line[15]
-    @data_record[:occupation] = @data_line[16]
-    @data_record[:occupation_category] = @data_line[17]
-    @data_record[:uncertainty_occupation] = @data_line[18]
-    @data_record[:verbatim_birth_county] = @data_line[19]
-    @data_record[:verbatim_birth_place] = @data_line[20]
-    @data_record[:uncertainy_birth] = @data_line[21]
-    @data_record[:disability] = @data_line[22]
-    @data_record[:language] = @data_line[23]
-    @data_record[:notes] = @data_line[24]
-    success, message = valid_page_change(@data_record[:page_number], @data_record[:data_transition], project, num)
+    success, message = valid_page_change(@data_record[:page_number], @data_record[:data_transition], num)
     @@page = @data_record[:page_number].to_i if success
     project.write_messages_to_all(message, true)
-    new_dwelling = FreecenCsvEntry.calculate_dwelling_digest(@data_record)
-    new_individual = FreecenCsvEntry.calculate_individual_digest(@data_record)
-    @dwelling = new_dwelling unless new_dwelling == @dwelling
-    @individual = new_individual unless new_individual == @individual
-    success, message = FreecenCsvEntry.validate_header(@data_record, num, @uploaded_file_is_flexible_format)
+    success, message = FreecenCsvEntry.validate_header(@data_record, num, @@uploaded_file_is_flexible_format)
     project.write_messages_to_all(message, true) unless success
-    success, message = FreecenCsvEntry.validate_dwelling(@data_record, num, @uploaded_file_is_flexible_format)
-    project.write_messages_to_all(message, true) unless success
-    success, message = FreecenCsvEntry.validate_individual(@data_record, num, @uploaded_file_is_flexible_format)
-    project.write_messages_to_all(message, true) unless success
-
+    extract_dwelling_fields(project, num)
   end
 
   def extract_dwelling_fields(project, num)
@@ -935,32 +841,9 @@ class CsvRecord < CsvRecords
     @data_record[:house_number] = @data_line[5]
     @data_record[:house_or_street_name] = @data_line[6]
     @data_record[:uncertainy_location] = @data_line[7]
-    @data_record[:surname] = @data_line[8]
-    @data_record[:forenames] = @data_line[9]
-    @data_record[:uncertainty_name] = @data_line[10]
-    @data_record[:relationship] = @data_line[11]
-    @data_record[:marital_status] = @data_line[12]
-    @data_record[:sex] = @data_line[13]
-    @data_record[:age] = @data_line[14]
-    @data_record[:uncertainty_status] = @data_line[15]
-    @data_record[:occupation] = @data_line[16]
-    @data_record[:occupation_category] = @data_line[17]
-    @data_record[:uncertainty_occupation] = @data_line[18]
-    @data_record[:verbatim_birth_county] = @data_line[19]
-    @data_record[:verbatim_birth_place] = @data_line[20]
-    @data_record[:uncertainy_birth] = @data_line[21]
-    @data_record[:disability] = @data_line[22]
-    @data_record[:language] = @data_line[23]
-    @data_record[:notes] = @data_line[24]
-    success, message = FreecenCsvEntry.validate_dwelling(@data_record, num, @uploaded_file_is_flexible_format)
+    success, message = FreecenCsvEntry.validate_dwelling(@data_record, num, @@uploaded_file_is_flexible_format)
     project.write_messages_to_all(message, true) unless success
-    success, message = FreecenCsvEntry.validate_individual(@data_record, num, @uploaded_file_is_flexible_format)
-    project.write_messages_to_all(message, true) unless success
-    new_dwelling = FreecenCsvEntry.calculate_dwelling_digest(@data_record)
-    new_individual = FreecenCsvEntry.calculate_individual_digest(@data_record)
-    @dwelling = new_dwelling unless new_dwelling == @dwelling
-    @individual = new_individual unless new_individual == @individual
-
+    extract_individual_fields(project, num)
   end
 
   def extract_individual_fields(project, num)
@@ -981,14 +864,49 @@ class CsvRecord < CsvRecords
     @data_record[:disability] = @data_line[22]
     @data_record[:language] = @data_line[23]
     @data_record[:notes] = @data_line[24]
-
-    success, message = FreecenCsvEntry.validate_individual(@data_record, num, @uploaded_file_is_flexible_format)
+    if ['1901', '1911'].include?(@@year)
+      @data_record[:at_home] = @data_line[25]
+      @data_record[:rooms] = @data_line[26]
+    end
+    success, message = FreecenCsvEntry.validate_individual(@data_record, num, @@uploaded_file_is_flexible_format)
     project.write_messages_to_all(message, true) unless success
     new_individual = FreecenCsvEntry.calculate_individual_digest(@data_record)
     @individual = new_individual unless new_individual == @individual
   end
 
-  def valid_folio_change(folio_number, transition, project, num)
+  def valid_parish_change(civil_parish, num)
+    p 'civil_parish change valid'
+    p  @@civil_parish
+    p civil_parish
+    if @@civil_parish == ''
+      message = "Info: line #{num} New Civil Parish #{civil_parish}"
+      result = true
+    elsif @@civil_parish == civil_parish
+      result = true
+    else
+      message = "Info: line #{num} Civil Parish has changed to #{civil_parish}"
+      result = false
+    end
+    [result, message]
+  end
+
+  def valid_enumeration_change(enumeration_district, num)
+    p 'enumeration_district change valid'
+    p  @@enumeration_district
+    p enumeration_district
+    if @@enumeration_district == ''
+      message = "Info: line #{num} New Enumeration District #{enumeration_district}"
+      result = true
+    elsif @@enumeration_district == enumeration_district
+      result = true
+    else
+      message = "Info: line #{num} Enumeration District changed to #{enumeration_district}"
+      result = false
+    end
+    [result, message]
+  end
+
+  def valid_folio_change(folio_number, transition, num)
     p 'jolio number change valid'
     p @@folio
     p folio_number
@@ -1017,7 +935,7 @@ class CsvRecord < CsvRecords
     [result, message]
   end
 
-  def valid_page_change(page_number, transition, project, num)
+  def valid_page_change(page_number, transition, num)
     p 'page number change valid'
     p @@page
     p page_number
@@ -1046,19 +964,5 @@ class CsvRecord < CsvRecords
     [result, message]
   end
 
-  def valid_parish_change(civil_parish, transition, project, num)
-    if @@civil_parish == ''
-      message = "Info: line #{num} New Civil Parish #{civil_parish}"
-      result = true
-    elsif @@civil_parish == civil_parish
-      message = "Warning: line #{num} next Civil Parish is the same as the previous one #{civil_parish}"
-      result = false
-    elsif @@civil_parish != civil_parish
-      result = true
-    else
-      message = "Error: line #{num} problem with Civil Parish #{civil_parish}"
-      result = false
-    end
-    [result, message]
-  end
+
 end

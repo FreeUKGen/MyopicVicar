@@ -339,6 +339,18 @@ class FreecenCsvEntry
           overall_success = false
           message = message + "Error: line #{num} Notes #{record[:notes]} is #{messagea}\r\n"
         end
+        if ['1901', '1911'].include?(record[:year])
+          success, messagea = FreecenValidations.at_home?(record[:at_home])
+          unless success
+            overall_success = false
+            message = message + "Error: line #{num} At Home #{record[:at_home]} is #{messagea}\r\n"
+          end
+          success, messagea = FreecenValidations.rooms?(record[:rooms], record[:year] )
+          unless success
+            overall_success = false
+            message = message + "Error: line #{num} Rooms #{record[:rooms]} is #{messagea}\r\n"
+          end
+        end
         [overall_success, message]
       end
     end

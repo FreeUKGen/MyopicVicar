@@ -79,6 +79,76 @@ class FreecenPiece
       [totals_pieces, totals_pieces_online, totals_individuals, totals_dwellings]
     end
 
+    def extract_year_and_piece(description)
+      first_two_characters = description.slice(0, 2).upcase if description.slice(0, 2).present?
+      third_character = description.slice(2, 1)
+      third_and_fourth = description.slice(2, 2)
+      last_three = description.chars.last(3).join
+      last_four = description.chars.last(4).join
+      case first_two_characters
+      when 'RG'
+        if third_character == '9' || third_and_fourth == '09'
+          year = '1861'
+          piece = last_four
+        elsif third_and_fourth == '10'
+          piece = last_four
+          year = '1871'
+        elsif third_and_fourth == '11'
+          piece = last_four
+          year = '1881'
+        elsif third_and_fourth == '12'
+          piece = last_four
+          year = '1891'
+        elsif third_and_fourth == '13'
+          piece = last_four
+          year = '1901'
+        elsif third_and_fourth == '14'
+          piece = last_four
+          year = '1911'
+        end
+      when 'HO'
+        if third_and_fourth == '51'
+          piece = last_four
+          year = '1851'
+        else
+          piece = last_three
+          year = '1841'
+        end
+      when 'HS'
+        if third_and_fourth == '51'
+          piece = last_three
+          year = '1851'
+        else
+          piece = last_three
+          year = '1841'
+        end
+      when 'RS'
+        if third_character == '6'
+          year = '1861'
+          piece = last_three
+        elsif third_and_fourth == '7'
+          piece = last_three
+          year = '1871'
+        elsif third_and_fourth == '8'
+          piece = last_three
+          year = '1881'
+        elsif third_and_fourth == '9'
+          piece = last_three
+          year = '1891'
+        elsif third_and_fourth == '10'
+          piece = last_three
+          year = '1901'
+        elsif third_and_fourth == '11'
+          piece = last_three
+          year = '1911'
+        else
+          year = ''
+          piece = ''
+        end
+      end
+      [year, piece.to_i]
+    end
+
     def grand_totals(pieces, pieces_online, individuals, dwellings)
       grand_pieces = pieces.values.sum
       grand_pieces_online = pieces_online.values.sum
