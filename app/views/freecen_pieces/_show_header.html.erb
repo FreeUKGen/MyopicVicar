@@ -3,7 +3,7 @@
 <h1 style="text-align: center">Listing of FreeCen Piece <% @freecen_piece.piece_number%> for <%=@chapman_code%></h1>
 <div style="text-align: center"> <%= link_to 'Edit Piece Information', edit_freecen_piece_path(@freecen_piece.id), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" unless @user.person_role == "contacts_coordinator" %>    
   <% if  ['data_manager', 'system_administrator'].include?(@user.person_role)%>
-    <%= link_to 'Create New Piece', new_freecen_piece_path, method: :get, :class => "btn   btn--small" %>      <%= link_to 'Destroy Piece', freecen_piece_path(@freecen_piece.id), method: :delete,  data: { confirm: 'Are you sure you want to destroy this Piece.? It will not happen if there are dependents!' }, :class => "btn   btn--small" %> 
+    <%= link_to 'Create New Piece', piece_new_freecen_piece_path, method: :get, :class => "btn   btn--small" %>      <%= link_to 'Destroy Piece', freecen_piece_path(@freecen_piece.id), method: :delete,  data: { confirm: 'Are you sure you want to destroy this Piece.? It will not happen if there are dependents!' }, :class => "btn   btn--small" %> 
   <% end%>
 </div>
 <div style="clear:both;"> </div>
