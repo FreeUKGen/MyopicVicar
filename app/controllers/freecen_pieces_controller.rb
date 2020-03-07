@@ -85,6 +85,7 @@ class FreecenPiecesController < ApplicationController
 
   def edit
     # puts "\n\n*** edit ***\n\n"
+    get_user_info_from_userid
     if params[:id].present?
       @freecen_piece = FreecenPiece.where('_id' => params[:id])
       @freecen_piece = @freecen_piece.first if @freecen_piece.present?
@@ -93,6 +94,7 @@ class FreecenPiecesController < ApplicationController
   end
 
   def index
+    get_user_info_from_userid
     if session[:chapman_code].present?
       @freecen_pieces = FreecenPiece.chapman_code(session[:chapman_code]).order_by(year: 1, piece_number: 1)
       @chapman_code = session[:chapman_code]
@@ -105,6 +107,7 @@ class FreecenPiecesController < ApplicationController
   end
 
   def new
+    get_user_info_from_userid
     @freecen_piece = FreecenPiece.new
     @freecen_piece.year = params[:year] if params[:year].present? &&
       Freecen::CENSUS_YEARS_ARRAY.include?(params[:year])
@@ -146,6 +149,7 @@ class FreecenPiecesController < ApplicationController
   end
 
   def show
+    get_user_info_from_userid
     if params[:id].present?
       @freecen_piece = FreecenPiece.where('_id' => params[:id])
       @freecen_piece = @freecen_piece.first if @freecen_piece.present?
