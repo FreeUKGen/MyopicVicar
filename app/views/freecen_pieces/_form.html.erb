@@ -1,14 +1,9 @@
 <%= semantic_form_for(@freecen_piece) do |f| %>
   <div class="form-inputs">
-
+<%= render 'flash_notice' %>
 
 
 <%= f.inputs do %>
-<% if @piece_params_errors.present? && @piece_params_errors.any? %>
-  <% @piece_params_errors.each do |ee| %>
-  <span style="color:red;"><%= ee %></span>
-  <% end %><br>
-<% end %>
 
 Year: <%= @freecen_piece[:year]%><br>
 <input id="freecen_piece_year" name="freecen_piece[year]" type="hidden" value="<%= @freecen_piece[:year]%>">
