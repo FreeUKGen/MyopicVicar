@@ -108,11 +108,14 @@ class FreecenPiecesController < ApplicationController
 
   def new
     get_user_info_from_userid
+    p params
     @freecen_piece = FreecenPiece.new
     @freecen_piece.year = params[:year] if params[:year].present? &&
       Freecen::CENSUS_YEARS_ARRAY.include?(params[:year])
     @freecen_piece.chapman_code = params[:chapman_code].upcase if params[:chapman_code].present?
     @freecen_piece.subplaces = [{ 'name' => '', 'lat' => '0.0', 'long' => '0.0' }]
+    @places = Place.chapman_code(params[:chapman_code].upcase) if params[:chapman_code].present?
+    @years = Freecen::CENSUS_YEARS_ARRAY if params[:year].present?
     # puts "\n\n*** new *** yy=#{@freecen_piece.year} chap=#{@freecen_piece.chapman_code}\n\n"
   end
 

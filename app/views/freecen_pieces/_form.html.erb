@@ -6,12 +6,16 @@
 <%= f.inputs do %>
 
 Year: <%= @freecen_piece[:year]%><br>
+
 <input id="freecen_piece_year" name="freecen_piece[year]"  value="<%= @freecen_piece[:year]%>">
 Chapman Code: <%= @freecen_piece[:chapman_code]%><br>
 <input id="freecen_piece_chapman_code" name="freecen_piece[chapman_code]"  value="<%= @freecen_piece[:chapman_code]%>">
 Piece Number: <input id="freecen_piece_piece_number" name="freecen_piece[piece_number]" value="<%= @freecen_piece[:piece_number].to_i %>"> ex: for piece '168/b' enter '168'<br>
 Piece Number Suffix: <input id="freecen_piece_suffix" name="freecen_piece[suffix]" value="<%= @freecen_piece[:suffix].blank? ? '' : @freecen_piece[:suffix] %>"> ex: for piece '168/b' enter 'b' (leave blank if no suffix)<br>
 Par number: <input id="freecen_piece_parish_number" name="freecen_piece[parish_number]" value="<%= @freecen_piece[:parish_number].blank? ? '' : @freecen_piece[:parish_number] %>"> (currently only used for Scotland, leave blank for ENG/WLS)<br>
+<%= f.input :chap, { :as => :select, :label => 'Which year would you like to create a piece for?', :include_blank => false, :prompt => 'Select place', :required => true, :collection => @years, :size => 10
+
+
 District name (Place for search): <input id="freecen_piece_district_name" name="freecen_piece[district_name]" value="<%= @freecen_piece[:district_name].blank? ? '' : @freecen_piece[:district_name] %>" onchange="update_place();" required>
 <div id="place_message_div" name="place_message_div" style="margin-left:2em;inline:block;">&nbsp;</div>
 LDS Film Number: <input id="freecen_piece_film_number" name="freecen_piece[film_number]" value="<%= @freecen_piece[:film_number].blank? ? '' : @freecen_piece[:film_number] %>"><br>

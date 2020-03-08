@@ -3,6 +3,6 @@
 <h1 style="text-align: center">Listing of FreeCen Pieces for <%=@chapman_code%></h1>
 <div style="text-align: center">     
   <% if  ['data_manager','county_coordinator','system_administrator'].include?(@user.person_role)%>
-    <%= link_to 'Create New Piece', piece_new_freecen_piece_path(chapman: @chapman_code), method: :get, :class => "btn   btn--small" %>      
+    <%= link_to 'Create New Piece', piece_new_freecen_piece_path(chapman_code: @chapman_code), method: :get, :class => "btn   btn--small" %>      
   <% end%>
 <%= render 'flash_notice' %>
