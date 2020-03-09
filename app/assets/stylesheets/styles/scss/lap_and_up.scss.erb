@@ -60,9 +60,9 @@
 }
 
 .site__header {
-  padding-top: 40px;
+  padding-top: $site-header-padding-top;
   padding-bottom: 40px;
-  height: 170px;
+  height: $site-header-height;
   @include vendor(box-shadow, 0 0 0 rgba(0, 0, 0, 0));
 
   @include manual-media-query(890px) {
@@ -142,6 +142,7 @@
       ul {
         float: left;
         margin: 0;
+        z-index: 999999 !important;
       }
 
       li {

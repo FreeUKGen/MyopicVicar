@@ -1,0 +1,373 @@
+.bmd_search_form {
+  background: rgba(13, 195, 195, 0.05);
+  padding: 20px !important;
+  margin: 10px 28px 28px 28px !important;
+}
+
+.search_form li {
+  margin-bottom: 25px;
+}
+
+input {
+  padding: 10px !important;
+  margin-bottom: 5px !important;
+}
+
+label {
+  font-size: 1em !important;
+  margin-bottom: 5px !important;
+}
+
+label.optional_attributes {
+  font-weight: 200;
+  vertical-align: bottom;
+  margin-bottom: 5px !important;
+}
+
+input[type="checkbox"] {
+  width: 17px;
+  height: 17px;
+  border: 1px solid gray !important;
+  vertical-align: bottom;
+}
+
+*:focus {
+  /*  outline: none;*/
+}
+
+select {
+    display: inline-block;
+    padding: 10px;
+    background: none;
+    border: 1px solid #ccc;
+    color: black;
+    width: 100%;
+}
+
+select#date_month, select.date_year {
+    display: inline-block;
+    padding: 10px;
+    background: none;
+    border: 1px solid #ccc;
+    color: black;
+    width: 40%;
+}
+
+span.optional_checkbox_label {
+  font-size: 0.8em;
+  vertical-align: bottom;
+}
+
+.stack_fields label {
+  margin-bottom: -10px;
+  padding-bottom: 10px;
+}
+
+.header_label {
+  border-bottom: 1px solid gray;
+  margin-bottom: 2px !important;
+  width: 50%;
+  font-weight: 200;
+}
+
+ol li label i {
+  cursor: help;
+  padding: 0 2px;
+  color: #a1185a;
+  font-size: 0.8em !important;
+}
+
+input.search_form_submit_button {
+  background-color: #a1185a;
+  color: white;
+  font-weight: bold;
+  border-radius: 8px;
+  padding: 20px;
+  width: 100px;
+  border: none !important;
+}
+
+.grid.action {
+    text-align: right;
+}
+
+.clear_form {
+  margin-right: 30px;
+  color: #a1185a;
+  text-decoration: none;
+  background: none!important;
+  border: none;
+}
+
+select[multiple]:focus option:checked {
+  background: #a1185a linear-gradient(0deg, #a1185a 0%, #a1185a 100%);
+  color: white !important;;
+}
+
+.bmd_search_header {
+  line-height: 1 !important;
+  padding-bottom: 7px !important;
+  margin-bottom: 5px !important;
+  font-size: 2.5rem !important;
+}
+
+
+/* **BMD Navigation Banner Layouts** */
+
+/* Positioning BMD Logo */
+.brand_logo_left {
+  margin-left: 2.5pc !important;
+  top: -30px !important;
+  max-width: 20pc !important;
+  min-width: 18.2pc !important;
+}
+
+.Navbar {
+  display: flex;
+  padding-top: 11px !important;
+  padding: 16px;
+  font-family: sans-serif;
+  color: white !important;
+  background: #a1185a;
+  overflow: none;
+  height: 46px; 
+  position: absolute; 
+  right: 0; 
+  left: 0; 
+  top: 110px; 
+  z-index: 2;
+
+}
+
+.flex_container {
+  margin-left: auto;
+  display: flex;
+}
+
+/*.Navbar__Items {
+  display:flex;
+}*/
+.Navbar__Link {
+  padding-right: 35px;
+  font-weight: bold;
+}
+/*.Navbar__Items--right {
+  margin-left:auto;
+}*/
+
+.Navbar__Link-toggle {
+  display: none;
+}
+
+.Navbar__Link a {
+  color:#f4f4f4;
+}
+@media only screen and (max-width: 870px) {
+  .Navbar__Items,
+  .Navbar,
+  .copyright_banner {
+    flex-direction: column;
+    }
+  .Navbar__Items--right {
+    margin-left: 0;
+  }
+  .Navbar__Items {
+    display:none;
+  }
+
+  .Navbar__Link-toggle {
+    align-self: flex-end;
+    display: initial;
+    position: absolute;
+  }
+
+  .brand_logo_footer {
+    text-align: center;
+  }
+
+  .Navbar__Link-toggle i {
+    cursor: default !important;
+    color: #f4f4f4;
+  }
+
+  .Navbar__ToggleShow {
+    display:flex;
+    border: 5px solid #a1185a;    
+    background-color: #ab0354;
+  }
+
+  .Navbar__ToggleShow .Navbar__Link a {
+    color: #f4f4f4;
+    font-size: 0.8em;
+    font-weight: bold;
+    height: 50px;    
+  }
+
+  .Navbar__ToggleShow .Navbar__Link {
+    text-align: center;
+  }
+}
+
+@media only screen and (max-width: 572px) {
+  .Navbar {
+    display: none;
+  }
+}
+
+@media only screen and (max-width: 1300px) {
+  .side_banners {
+    display: none;
+  }
+}
+
+/* **BMD Footer Styles** */
+
+li i {
+  padding-right: 1px;
+}
+
+.copyright_banner {
+  display: flex !important;
+}
+
+.social_links a {
+  display:inline-block !important;
+}
+
+.labels label {
+  display: inline-block !important;
+}
+
+input:disabled {
+  background: #dddddd;
+}
+input:disabled:not([type="submit"]):hover {
+  background: #dddddd;
+}
+
+.results_block {
+  text-align: center;
+  color: #3E3E3E;
+  border-bottom: 1px solid #707070;
+}
+
+.result_count {
+  color: #A1185A;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 24px;
+  text-align: center;
+}
+
+.result_text {
+  font-style: normal;
+  font-weight: normal;
+  color: #000000;
+  text-align: left;
+}
+
+.bmd_search_results_table table {
+  border-top: 0;
+}
+.search_results_table thead {
+  border-bottom: 1px solid #707070;
+}
+
+.search_results_table thead tr th {
+  padding: 0 !important;
+}
+
+.search_results_table tbody tr td{
+  padding: 0 !important;
+}
+/* Vector */
+.marriages {
+  background-color: #99CC99;
+}
+
+.births {
+  background: #CC9999;
+}
+
+.deaths {
+  background: #999999;
+}
+
+.search_results_table tbody tr.births:hover {
+  background:  #FFCCCC !important;
+}
+
+.search_results_table tbody tr.marriages:hover {
+  background:  #CCFFCC !important;
+}
+
+.search_results_table tbody tr.deaths:hover {
+  background: #CCCCCC !important;
+}
+
+.search_results_table tbody tr td:nth-child(1) {
+  background-color: white;
+}
+
+.view_arrow {
+  color: #C84182;
+}
+
+#death_age_and_dob {
+  display: none;
+}
+
+#death_select_box {
+  margin-bottom: 5px;
+}
+
+.bordered {
+  border: 2px solid #C84182;
+  background-color: #fff;
+  color: #C84182;
+  outline: none;
+}
+
+.bordered:hover {
+  text-decoration: none;
+}
+
+.overflow-visible {
+  overflow: visible !important;
+}
+
+.volunteering:hover, .feedbck:hover {
+  background-color: transparent;
+  outline: 2px dashed #C84182;
+  outline-offset: 7px;
+}
+
+.firstnamehelp,
+.surnamehelp,
+.from_date_range_help,
+.to_date_range_help,
+.recordtypehelp,
+.spousefirstnamehelp,
+.spouseormothersurnamehelp,
+.ageatdeathhelp,
+.volumehelp,
+.pagehelp,
+.countieshelp,
+.districtshelp {
+  position: absolute;
+}
+
+
+.help_box {
+  width: 100%;
+  overflow-y: scroll;
+  height:150px;
+  scrollbar-color: #C84182 white ;
+  border: 2px solid #C84182;
+}
+
+
+.focus_checkbox {
+}
+
+

@@ -8,16 +8,20 @@ class SearchQuery
   require 'name_role'
   require 'date_parser'
   require 'app'
-
-
+  extend SharedSearchMethods
   # consider extracting this from entities
   module SearchOrder
-    TYPE = 'record_type'
-    DATE = 'search_date'
-    BIRTH_COUNTY = 'birth_chapman_code'
-    COUNTY = 'chapman_code'
-    LOCATION = 'location'
-    NAME = 'transcript_names'
+    TYPE='record_type'
+    DATE='search_date'
+    BIRTH_COUNTY='birth_chapman_code'
+    COUNTY='chapman_code'
+    LOCATION='location'
+    NAME='transcript_names'
+    SURNAME='Surname'
+    FIRSTNAME='GivenName'
+    DISTRICT='District'
+    BMD_RECORD_TYPE='RecordTypeID'
+    BMD_DATE = 'QuarterNumber'
 
     ALL_ORDERS = [
       TYPE,
@@ -25,7 +29,12 @@ class SearchQuery
       DATE,
       COUNTY,
       LOCATION,
-      NAME
+      NAME,
+      SURNAME,
+      FIRSTNAME,
+      DISTRICT,
+      BMD_RECORD_TYPE,
+      BMD_DATE
     ]
   end
 
@@ -83,20 +92,38 @@ class SearchQuery
 
   WILDCARD = /[?*]/
   UCF = /[\[\{}_\*\?]/
+  DOB_START_QUARTER = 530
+  SPOUSE_SURNAME_START_QUARTER = 301
 
   field :first_name, type: String # , :required => false
   field :last_name, type: String # , :required => false
+  field :spouse_first_name, type: String # , :required => false
+  field :spouses_mother_surname, type: String
+  field :mother_last_name, type: String # , :required => false
+  field :age_at_death, type: String # , :required => false
+  field :min_age_at_death, type: Integer # , :required => false
+  field :max_age_at_death, type: Integer # , :required => false
+  field :min_dob_at_death, type: String # , :required => false
+  field :max_dob_at_death, type: String # , :required => false
+  field :dob_at_death, type: String # , :required => false
+  field :match_recorded_ages_or_dates, type: Boolean#, default: false # , :required => false
+  field :volume, type: String # , :required => false
+  field :page, type: String # , :required => false
   field :fuzzy, type: Boolean
   field :role, type: String # , :required => false
   validates_inclusion_of :role, :in => NameRole::ALL_ROLES + [nil]
   field :record_type, type: String#, :required => false
   validates_inclusion_of :record_type, :in => RecordType.all_types + [nil]
+  field :bmd_record_type, type: Array, default: []#, :required => false
   field :chapman_codes, type: Array, default: [] # , :required => false
+  field :districts, type: Array, default: []
   #  validates_inclusion_of :chapman_codes, :in => ChapmanCode::values+[nil]
   #field :extern_ref, type: String
   field :inclusive, type: Boolean
   field :witness, type: Boolean
   field :start_year, type: Integer
+  field :start_quarter, type: Integer
+  field :end_quarter, type: Integer
   field :end_year, type: Integer
   field :radius_factor, type: Integer, default: 101
   field :search_nearby_places, type: Boolean
@@ -116,6 +143,9 @@ class SearchQuery
   field :use_decomposed_dates, type: Boolean, default: false
   field :all_radius_place_ids, type: Array, default: []
   field :wildcard_search, type: Boolean, default: false
+  field :first_name_exact_match, type: Boolean
+  field :identifiable_spouse_only, type:Boolean
+  field :death_at_age, type: String
 
   field :birth_chapman_codes, type: Array, default: []
   field :birth_place_name, type: String
@@ -132,11 +162,18 @@ class SearchQuery
 
   embeds_one :search_result
 
-  validate :name_not_blank
+  validate :name_not_blank unless MyopicVicar::Application.config.template_set == 'freebmd'
   validate :date_range_is_valid
   validate :radius_is_valid
   validate :county_is_valid
   validate :wildcard_is_appropriate
+  #validates_presence_of :last_name || :spouses_mother_surname, allow_blank: true if :spouse_first_name.present?
+  #validates_presence_of :last_name, allow_blank: true if :age_at_death
+  #validates_presence_of :last_name, allow_blank: true if :min_age_at_death.present?
+  #validates_presence_of :last_name, allow_blank: true if :max_age_at_death.present?
+  #validates_presence_of :last_name, allow_blank: true if :min_dob_at_death.present?
+  #validates_presence_of :last_name, allow_blank: true if :max_dob_at_death.present?
+  #validates_presence_of :last_name, allow_blank: true if :dob_at_death.present?
   # probably not necessary in FreeCEN
   #  validate :all_counties_have_both_surname_and_firstname
 
@@ -147,6 +184,13 @@ class SearchQuery
   index({day: -1,runtime: -1},{name: 'day__1_runtime__1',background: true })
   index({day: -1,result_count: -1},{name: 'day__1_result_count__1',background: true })
 
+  DEATH_AGE_OPTIONS = {
+    1 => "Age",
+    2 => "Age Range",
+    3 => "Date of Birth",
+    4 => "Date of Birth Range"
+  }
+
   class << self
 
     def search_id(name)
@@ -154,6 +198,7 @@ class SearchQuery
     end
 
     def valid_order?(value)
+      #raise SearchOrder::ALL_ORDERS.inspect
       result = SearchOrder::ALL_ORDERS.include?(value) ? true : false
       result
     end
@@ -263,6 +308,19 @@ class SearchQuery
       return x_name['last_name'].to_s <=> y_name['last_name'].to_s
     end
     return x_name['last_name'] <=> y_name['last_name']
+  end
+
+  def compare_name_bmd(x, y, order_field, next_order_field=nil)
+    if x[order_field] == y[order_field]
+      if x[next_order_field].nil? || y[next_order_field].nil?
+        return x[next_order_field].to_s <=> y[next_order_field].to_s
+      end
+      return x[next_order_field] <=> y[next_order_field]
+    end
+    if x[order_field].nil? || y[order_field].nil?
+      return x[order_field].to_s <=> y[order_field].to_s
+    end
+    return x[order_field] <=> y[order_field]
   end
 
   def county_is_valid
@@ -420,6 +478,25 @@ class SearchQuery
     end
   end
 
+  
+   def filter_name_types(search_results)
+    filtered_records = Array.new { {} }
+    search_results.each do |search_result|
+      search_result[:search_names].each do |search_name|
+        if fuzzy
+          include_record = include_record_for_fuzzy_search(search_name)
+        elsif wildcard_search
+          include_record = include_record_for_wildcard_search(search_name)
+        else
+          include_record = include_record_for_standard_search(search_name)
+        end
+        filtered_records << search_result if include_record
+        break filtered_records if include_record
+      end
+    end
+    filtered_records
+  end
+
   def include_record_for_fuzzy_search(search_name)
     include_record = false
     if last_name.present? && first_name.blank? && Text::Soundex.soundex(search_name[:last_name]) == Text::Soundex.soundex(last_name)
@@ -533,7 +610,8 @@ class SearchQuery
   def locate_index(records, current)
     n = 0
     records.each do |record|
-      break if record[:_id].to_s == current
+      break if record[:_id].to_s == current unless SearchQuery.app_template.downcase == 'freebmd'
+      break if record[:RecordNumber].to_s == current if SearchQuery.app_template.downcase == 'freebmd'
       n = n + 1
     end
     return n
@@ -568,6 +646,7 @@ class SearchQuery
         name_params['first_name'] = first_name.downcase if first_name
         name_params['last_name'] = last_name.downcase if last_name.present?
         params['search_names'] =  { '$elemMatch' => name_params}
+        params =   name_params if SearchQuery.app_template == 'freebmd'
       end
     end
     params
@@ -576,15 +655,16 @@ class SearchQuery
   def next_and_previous_records(current)
     if search_result.records.respond_to?(:values)
       search_results = search_result.records.values
-      search_results = filter_name_types(search_results)
+      #search_results = filter_name_types(search_results)
       search_results = sort_results(search_results) unless search_results.nil?
       record_number = locate_index(search_results, current)
       next_record_id = nil
       previous_record_id = nil
-      next_record_id = search_results[record_number + 1][:_id] unless record_number.nil? || search_results.nil? || record_number >= search_results.length - 1
-      previous_record_id = search_results[record_number - 1][:_id] unless search_results.nil? || record_number.nil? || record_number.zero?
-      next_record = SearchRecord.find(next_record_id) if next_record_id.present?
-      previous_record = SearchRecord.find(previous_record_id) if previous_record_id.present?
+      search_id = SearchQuery.app_template.downcase == 'freebmd' ? 'RecordNumber' : '_id'
+      next_record_id = search_results[record_number + 1][search_id] unless record_number.nil? || search_results.nil? || record_number >= search_results.length - 1
+      previous_record_id = search_results[record_number - 1][search_id] unless search_results.nil? || record_number.nil? || record_number.zero?
+      next_record = SearchQuery.get_search_table.find(next_record_id) if next_record_id.present?
+      previous_record = SearchQuery.get_search_table.find(previous_record_id) if previous_record_id.present?
       response = true
     else
       response = false
@@ -614,14 +694,15 @@ class SearchQuery
 
   def persist_results(results)
     return unless results
+
     # finally extract the records IDs and persist them
-    records = Hash.new
+    records = {}
     results.each do |rec|
       record = rec # should be a SearchRecord despite Mongoid bug
-      rec_id = record['_id'].to_s
-      records[rec_id] = record
+      rec_id = SearchQuery.app_template == 'freebmd' ? record[:RecordNumber].to_s : record['_id'].to_s
+      records[rec_id] = SearchQuery.app_template == 'freebmd' ? record.attributes : record
     end
-    self.search_result =  SearchResult.new
+    self.search_result = SearchResult.new
     self.search_result.records = records
     self.result_count = records.length
     self.runtime = (Time.now.utc - self.updated_at) * 1000
@@ -740,16 +821,15 @@ class SearchQuery
 
   def search
     @search_parameters = search_params
-    @search_index = SearchRecord.index_hint(@search_parameters)
+    @search_parameters = bmd_params_hash if SearchQuery.app_template == 'freebmd'
+    @search_index = SearchQuery.get_search_table.index_hint(@search_parameters)
     # @search_index = 'place_rt_sd_ssd' if query_contains_wildcard?
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
     update_attribute(:search_index, @search_index)
-
-    # logger.warn @search_parameters.inspect
-    records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+    records = SearchQuery.get_search_table.where(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     persist_results(records)
     persist_additional_results(secondary_date_results) if App.name == 'FreeREG' && (result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
-    records = search_ucf if can_query_ucf? && result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+    #search_ucf if can_query_ucf? && result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
     records
   end
 
@@ -767,11 +847,11 @@ class SearchQuery
   def search_params
     params = {}
     params.merge!(name_search_params)
-    params.merge!(place_search_params)
-    params.merge!(record_type_params)
+    #params.merge!(place_search_params)
+    params.merge!(record_type_params) unless MyopicVicar::Application::config.template_set == 'freebmd'
     params.merge!(date_search_params)
     params
-  end
+  end  
 
   def search_ucf
     start_ucf_time = Time.now.utc
@@ -791,6 +871,7 @@ class SearchQuery
 
   def sort_results(results)
     # next reorder in memory
+   # raise SearchOrder::SURNAME.inspect
     if results.present?
       case self.order_field
       when *selected_sort_fields
@@ -822,6 +903,46 @@ class SearchQuery
         else
           results.sort! do |x, y|
             compare_name(y, x) # note the reverse order
+          end
+        end
+      when SearchOrder::SURNAME
+        if self.order_asc
+          results.sort! do |x, y|
+            compare_name_bmd(y, x, 'Surname','GivenName')
+          end
+        else
+          results.sort! do |x, y|
+             compare_name_bmd(x,y, 'Surname','GivenName')
+          end
+        end
+      when SearchOrder::FIRSTNAME
+        if self.order_asc
+          results.sort! do |x, y|
+            compare_name_bmd(y, x, 'GivenName','Surname')
+          end
+        else
+          results.sort! do |x, y|
+             compare_name_bmd(x,y, 'GivenName','Surname')
+          end
+        end
+      when SearchOrder::BMD_RECORD_TYPE
+        if self.order_asc
+          results.sort! do |x, y|
+            compare_name_bmd(y, x, 'RecordTypeID')
+          end
+        else
+          results.sort! do |x, y|
+             compare_name_bmd(x,y, 'RecordTypeID')
+          end
+        end
+       when SearchOrder::BMD_DATE
+        if self.order_asc
+          results.sort! do |x, y|
+            compare_name_bmd(y, x, 'QuarterNumber')
+          end
+        else
+          results.sort! do |x, y|
+             compare_name_bmd(x,y, 'QuarterNumber')
           end
         end
       end
@@ -876,16 +997,18 @@ class SearchQuery
       if fuzzy && ((first_name && first_name.match(WILDCARD)) || (last_name && last_name.match(WILDCARD)))
         errors.add(:last_name, 'You cannot use both wildcards and soundex in a search')
       end
-      if place_search?
+      if place_search? || self.districts.present?
         if last_name && last_name.match(WILDCARD) && last_name.index(WILDCARD) < 2
           errors.add(:last_name, 'Two letters must precede any wildcard in a surname.')
         end
-        if first_name && first_name.match(WILDCARD) && first_name.index(WILDCARD) < 2
-          errors.add(:last_name, 'Two letters must precede any wildcard in a forename.')
+        unless MyopicVicar::Application.config.template_set == 'freebmd'
+          if first_name && first_name.match(WILDCARD) && first_name.index(WILDCARD) < 2
+            errors.add(:last_name, 'Two letters must precede any wildcard in a forename.')
+          end
         end
         # place_id is an adequate index -- all is well; do nothing
       else
-        errors.add(:last_name, 'Wildcard can only be used with a specific place.')
+        errors.add(:last_name, 'Wildcard can only be used with a specific place/district.')
         #if last_name.match(WILDCARD)
         #if last_name.index(WILDCARD) < 3
         #errors.add(:last_name, 'Three letters must precede any wildcard in a surname unless a specific place is also chosen.')
@@ -925,9 +1048,614 @@ class SearchQuery
     end
   end
 
+##############################FreeBMD code changes############################################
+  def get_date_quarter_params
+    get_quarter
+  end
+
+  def get_quarter
+    params = {}
+    params[:quarternumber] = start_year_quarter..end_year_quarter
+    params
+  end
+
+  def mother_surname_search
+    params = {}
+    if self.mother_last_name.present?
+      params[:AssociateName] = self.mother_last_name  unless do_wildcard_seach?self.mother_last_name
+    end
+    params
+  end
+
+  def start_year_quarter
+    start_year = year_with_default(year:self.start_year, default: 1837)
+    st_quarter = quarter_number(year: start_year, quarter: start_quarter)
+    [st_quarter,min_dob_range_quarter].map(&:to_i).max
+  end
+
+  def search_start_year
+    dob_start_year = date_array(self.dob_at_death)[0] if self.dob_at_death.present?
+    min_dob_start_year = date_array(self.min_dob_at_death)[0] if self.min_dob_at_death.present?
+    [self.start_year, dob_start_year.to_i, min_dob_start_year.to_i].max
+  end
+
+  def end_year_quarter
+    end_year = year_with_default(year:self.end_year, default: 1993)
+    quarter_number(year: end_year, quarter: end_quarter)
+  end
+
+  def year_with_default(year:, default:nil)
+    year.blank? ? default : year
+  end
+
+  def quarter_number(year:, quarter:)
+    (year.to_i-1837)*4 + quarter.to_i
+  end
+
+  def search_records
+    if MyopicVicar::Application.config.template_set = 'freebmd'
+      #raise age_at_death.is_a?nteger
+      self.freebmd_search_records
+    else
+      self.search
+    end
+  end
+
+  def move_to_array hash
+    [] << hash.select{|key, value| value.present?}
+  end
+
+  def freebmd_search_records
+    @search_index = SearchQuery.get_search_table.index_hint(bmd_adjust_field_names)
+    logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
+    records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)#.joins(spouse_join_condition).where(bmd_marriage_params)
+    records = records.where(search_conditions) #unless self.first_name_exact_match
+    records = marriage_surname_filteration(records) if self.spouses_mother_surname.present? and self.bmd_record_type == ['3']
+    records = spouse_given_name_filter(records) if self.spouse_first_name.present?
+    records = combined_results records if date_of_birth_range? || self.dob_at_death.present?
+    records = combined_age_results records if self.age_at_death.present? || check_age_range?
+    records = records.take(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS)
+    persist_results(records)
+    records
+  end
+
+
+  def bmd_record_type_params
+    params = {}
+    params[:RecordTypeID] = bmd_record_type.map(&:to_i) if bmd_record_type.present?
+    params[:RecordTypeID] = RecordType.all_types if bmd_record_type.blank? || bmd_record_type == ['0']
+    params
+  end
+
+  def bmd_county_params
+    params = {}
+    params[:chapman_codes] = {County: chapman_codes} if self.chapman_codes.present?
+    params
+  end
+
+  def bmd_districts_params
+    params = {}
+    params[:districts] = self.districts if self.districts.present?
+    params
+  end
+
+  def get_district_code
+  end
+
+  def bmd_age_at_death_params
+    params = {}
+    params[:age_at_death] = ['',self.age_at_death]
+    if check_age_range?
+      self.match_recorded_ages_or_dates ? params[:age_at_death] = [define_range] : params[:age_at_death] = ['',define_range]
+    end
+    params[:age_at_death] = self.age_at_death || dob_exact_match if self.match_recorded_ages_or_dates && !check_age_range?
+    params
+  end
+
+  def check_age_range?
+    self.min_age_at_death.present? && self.max_age_at_death.present?
+  end
+
+  def define_range
+    "AgeAtDeath BETWEEN #{self.min_age_at_death} AND #{self.max_age_at_death}" if check_age_range?
+  end
+
+  def age_range_search records
+    records.where(define_range) if check_age_range?
+  end
+
+  #def date_of_birth
+   #date split_range unless special_character.include?('-')
+  #end
+
+  #def range_to_integer
+    #split_range.map(&:to_i)
+    #split_range.map{|r| r.dob_quarter_number}
+  #end
+
+  #def split_range
+   # self.age_at_death.split(special_character)
+  #end
+
+  #def special_character
+   # self.age_at_death.remove(/[0-9a-zA-Z]/,'/')
+  #end
+
+  #def validate_age_at_death
+  #end
+
+  def bmd_volume_params
+    params = {}
+    params[:volume] = self.volume
+  end
+
+  def bmd_page_params
+    params = {}
+    params[:page] = self.page
+  end
+
+  def first_name_filteration
+    if self.first_name.present? && !self.first_name_exact_match
+      "BestGuess.GivenName like '#{self.first_name}%'" unless do_wildcard_seach?(self.first_name)
+    end
+  end
+
+  def first_name_wildcard_query
+    if self.first_name.present? && !self.first_name_exact_match
+      if do_wildcard_seach?(self.first_name)
+        unless second_name_wildcard
+          query = "BestGuess.GivenName like '#{name_wildcard_search(self.first_name)}'"
+        else
+          name = self.first_name.slice!(0)
+          query = "BestGuess.OtherNames like '#{name_wildcard_search(self.first_name)}'"
+        end
+      end
+    end
+    query
+  end
+
+  def second_name_wildcard
+    self.first_name.start_with?('*') && !self.first_name.start_with?('**')
+  end
+
+  def surname_wildcard_query
+    if self.last_name.present?
+      "BestGuess.Surname like '#{name_wildcard_search(self.last_name)}'" if do_wildcard_seach?(self.last_name)
+    end
+  end
+
+  def mother_surname_wildcard_query
+    if self.mother_last_name.present?
+      "BestGuess.AssociateName like '#{name_wildcard_search(self.mother_last_name)}'" if do_wildcard_seach?self.mother_last_name
+    end
+  end
+
+  def search_conditions
+    [first_name_filteration, surname_wildcard_query, mother_surname_wildcard_query, first_name_wildcard_query].compact.to_sentence
+  end
+
+  def bmd_params_hash
+    self.first_name_exact_match ? bmd_adjust_field_names : bmd_adjust_field_names.except!(:GivenName)
+  end
+
+  def name_search_params_bmd
+    name_hash = self.attributes.symbolize_keys.except(:_id).keep_if {|k,v|  name_fields.include?(k) && v.present?}
+    if name_hash.has_key?(:last_name)
+      name_hash.except!(:last_name) if do_wildcard_seach?(self.last_name)
+    end
+    name_hash
+  end
+
+  def is_soundex_search?
+    name_search_params_bmd.has_key?(:fuzzy)
+  end
+
+  def do_soundex_search
+    name_search_params_bmd.merge!
+  end
+
+  def bmd_search_names_criteria
+    self.fuzzy ? soundex_params_hash : name_search_params_bmd
+  end
+
+  def soundex_params_hash
+    params = name_search_params_bmd
+    params[:SurnameSx] = Text::Soundex.soundex(name_search_params_bmd[:last_name])
+    params.except!(:last_name, :fuzzy)
+    params
+  end
+
+  def name_fields
+    [:first_name, :last_name, :fuzzy]
+  end
+
+  def surname_params
+    if fuzzy
+      surname_param = Text::Soundex.soundex(last_name)
+    else
+      surname_param = last_name.downcase
+    end
+    surname_param
+  end
+
+  def soundex_param
+    params = {}
+    params[:SurnameSx] = Text::Soundex.soundex(last_name)
+    params
+  end
+
+  def refresh_name_params(name:, replacement_name:, params_hash:)
+    if name.present?
+      params_hash["#{name}"] = name.downcase
+      params_hash["#{replacement_name}"] = params_hash.delete("#{name}") if SearchQuery.app_template == 'freebmd'
+    end
+  end
+
+  def bmd_fields_name
+    {
+      first_name: 'GivenName',
+      last_name: 'Surname',
+      bmd_record_type: 'RecordTypeID',
+      SurnameSx: 'SurnameSx',
+      chapman_codes: 'CountyCombos',
+      districts: 'DistrictNumber',
+      age_at_death: 'AgeAtDeath',
+      volume: 'Volume',
+      page: 'Page',
+      quarternumber: 'QuarterNumber'
+    }
+  end
+
+  def symbolize_search_params_keys
+    bmd_search_params.symbolize_keys
+  end
+
+  def fields_needs_name_update
+    bmd_fields_name.keys & symbolize_search_params_keys.keys
+  end
+
+  def bmd_adjust_field_names
+    symbolize_search_params_keys.deep_transform_keys do |key|
+       (fields_needs_name_update.include?key) ? key = bmd_fields_name[key].to_sym : key =key
+    end
+  end
+
+  def bmd_search_results
+    self.search_result.records.values
+  end
+
+  def get_bmd_search_results
+    search_results = self.sort_search_results
+    return get_bmd_search_response, search_results.map{|h| SearchQuery.get_search_table.new(h)}, ucf_search_results, search_result_count if get_bmd_search_response
+    return get_bmd_search_response if !get_bmd_search_response
+  end
+
+  def ucf_search_results
+    []
+  end
+
+  def search_result_count
+    bmd_search_results.length
+  end
+
+  def sort_search_results
+    self.sort_results(bmd_search_results) unless bmd_search_results.nil?
+  end
+
+  def dob_start_quarter_in_search_range
+    DOB_START_QUARTER.between?(start_year_quarter,end_year_quarter)
+  end
+
+  def get_bmd_search_response
+    self.search_result.records.respond_to?(:values)
+  end
+
+  def date_of_birth_range?
+    self.min_dob_at_death.present? && self.max_dob_at_death.present?
+  end
+
+  def date_of_birth_search_range_a records
+    records.select{|r|
+      range_a = (r.QuarterNumber - ((r.AgeAtDeath.to_i + 1) * 4 + 1))..(r.QuarterNumber - (r.AgeAtDeath.to_i * 4))
+      range_b = min_dob_range_quarter..max_dob_range_quarter
+      (range_a).include?(range_b) || (range_b).include?(range_a) if r.AgeAtDeath.present?
+    }
+  end
+
+  def dob_age_search records
+    records.select{|r|
+      (1..3).include?(r.AgeAtDeath.length)
+    }
+  end
+
+  def no_aad_or_dob records
+    unless self.match_recorded_ages_or_dates
+      records.where(AgeAtDeath: '').to_a
+    else
+      []
+    end
+  end
+
+  def invalid_age_records records
+    records.reject{|r|
+      month.values.any?{|v| r.AgeAtDeath.upcase[v]} if r.QuarterNumber >= DOB_START_QUARTER
+    }
+  end
+
+  def records_with_dob records
+    records.select{|r|
+      month.values.any?{|v| r.AgeAtDeath.upcase[v]} if r.QuarterNumber >= DOB_START_QUARTER
+    }
+  end
+
+  def calculate_age_range_for_dob records
+    if check_age_range?
+      records.select {|r|
+        year = r.AgeAtDeath.scan(/\d+/).select{|r| r.length == 4}.pop.to_i
+        qn_year = (r.QuarterNumber-1)/4 + 1837
+        difference = qn_year - year
+        (self.min_age_at_death..self.max_age_at_death).include?(difference)
+      }
+    else
+      []
+    end
+  end
+
+  def calculate_age_for_dob records
+    records.select {|r|
+      year = r.AgeAtDeath.scan(/\d+/).select{|r| r.length == 4}.pop.to_i
+      qn_year = (r.QuarterNumber-1)/4 + 1837
+      difference = qn_year - year
+      self.age_at_death.to_i == difference
+    }
+  end
+
+  def date_of_birth_uncertain_aad records
+    records.select{|r|
+      r.AgeAtDeath.strip.scan(/[a-z\_\-\*\?\[\]]/).length != 0
+    }
+  end
+
+  def age_at_death_with_year records
+    if date_of_birth_range?
+      records.select{|r|
+        a = r.AgeAtDeath.scan(/\d+\d/).select{|r| r.length == 4}.pop.to_i
+        (date_array(self.min_dob_at_death)[0].to_i..date_array(self.max_dob_at_death)[0].to_i).include?a
+      }
+    end
+  end
+
+  def dob_filteration
+    date = self.dob_at_death #
+    "BestGuess.AgeAtDeath like '%#{date_array(date)[0]}%'"
+  end
+
+  def dob_exact_search records
+    records.where(dob_filteration) if self.dob_at_death.present?
+  end
+
+  def dob_recordss records
+    records.where('QuarterNumber >= ?', DOB_START_QUARTER)
+  end
+
+  def non_dob_records records
+    records.where('QuarterNumber < ?', DOB_START_QUARTER)
+  end
+
+  def combined_results records
+    non_dob_results = non_dob_records records # all records before DOB_START_QUARTER
+    dob_results = dob_recordss records # All records on on or after DOB_START_QUARTER
+    age_dob_records = dob_age_search(dob_results) # filter age records from all records after DOB_START_QUARTER
+    invalid_age_records = invalid_age_records(dob_results)# non date of birth records
+    date_of_birth_records = records_with_dob(records)
+    date_of_birth_search_range_a(non_dob_results).to_a + date_of_birth_search_range_a(invalid_age_records).to_a + dob_exact_search(dob_results).to_a + date_of_birth_uncertain_aad(invalid_age_records).to_a + no_aad_or_dob(records).to_a + age_at_death_with_year(date_of_birth_records).to_a
+  end
+
+  def combined_age_results records
+    dob_records = records_with_dob(records)
+    invalid_age_records = invalid_age_records(records)
+    aad_search(records).to_a + date_of_birth_uncertain_aad(invalid_age_records).to_a + age_range_search(records).to_a + calculate_age_range_for_dob(dob_records).to_a + calculate_age_for_dob(dob_records).to_a
+  end
+
+  def aad_search records
+    unless self.match_recorded_ages_or_dates
+      records.where(AgeAtDeath: ['', self.age_at_death])
+    else
+      records.where(AgeAtDeath: [self.age_at_death])
+    end
+  end
+
+  def min_dob_range_quarter
+    min_dob_quarter = dob_quarter_number(self.dob_at_death) if self.dob_at_death.present?
+    min_dob_quarter = dob_quarter_number(self.min_dob_at_death) if date_of_birth_range?
+    min_dob_quarter
+  end
+
+  def max_dob_range_quarter
+    max_dob_quarter = dob_quarter_number(self.dob_at_death) if self.dob_at_death.present?
+    max_dob_quarter = dob_quarter_number(self.max_dob_at_death) if date_of_birth_range?
+    max_dob_quarter
+  end
+
+  def dob_quarter_number date
+    quarter_number(year: date_array(date)[0], quarter: get_quarter_from_month(date_array(date)[1]))
+  end
+
+  def date_array date
+    date.split('-')
+  end
+
+  def dob_exact_match
+    date = self.dob_at_death.split('-').reverse
+    selected_month = month.key(date[1])
+    date[1] = selected_month
+    date.join
+  end
+
+  def dob_array
+    self.age_at_death.scan(/\d+|[A-Za-z]+/)
+  end
+
+  def dob_quarter(date)
+    quarter_number(year: date_array(date)[2], quarter: get_quarter_from_month((dob_array(date)[1])))
+  end
+
+  def get_month_name month
+    predefined_month_key(month)
+  end
+
+  def get_quarter_from_month month
+    quarter_index = 0
+    quarters_months.each {|q|
+      quarter_index = quarters_months.find_index(q) if q.include?month
+    }
+    quarter_index + 1
+  end
+
+  def predefined_month_key month
+    bmd_dob_month_formats.key(month)
+  end
+
+  def differentiate_aad_dob
+    if dob_array.length == 1 && dob_array[0].length <= 3
+      bmd_age_at_death_params
+    end
+  end
+
+  def quarters_months
+    [[:ja,:fe,:mr,'01','02','03'],[:ap,:my,:je,'04','05','06'],[:jy,:au,:se,'07','08','09'],[:oc,:no,:de,'10','11','12']]
+  end
+
+  def bmd_search_params
+    params = {}
+    params.merge!(bmd_search_names_criteria)
+    params.merge!(bmd_record_type_params)
+    params.merge!(get_date_quarter_params)
+    params.merge!(bmd_county_params)
+    params.merge!(bmd_districts_params)
+    params.merge!(mother_surname_search)
+    #params.merge!(bmd_age_at_death_params) if self.age_at_death.present? || self.min_age_at_death.present?
+    params.merge!(bmd_volume_params) if self.volume.present?
+    params.merge!(bmd_page_params) if self.page.present?
+    params
+  end
+
+  def bmd_marriage_params
+    params = {}
+    params.merge!(spouse_surname_search) if self.spouses_mother_surname.present?
+    params.merge!(spouse_firstname_search) if self.spouse_firstname_search.present?
+    params
+  end
+
+  def spouse_firstname_search
+    params = {}
+    params[:GivenName] != self.spouse_first_name
+    params
+  end
+
+  def identifiable_spouse_only_search
+    records.select{|r|
+      r.pick[:Surname].include? r
+    }
+  end
+
+  def marriage_surname_filteration(records)
+    records_with_spouse_surname = spouse_surname_records(records)
+    records_without_spouse_surname = non_spouse_surname_records(records)
+    spouse_surname_search(records_with_spouse_surname) + search_pre_spouse_surname(records_without_spouse_surname) if self.spouses_mother_surname.present?
+  end
+
+  def spouse_given_name_filter records
+    search_rec = self.identifiable_spouse_only ? reject_unidentified_spouses_records(records) : records
+    spouse_first_name_filteration(search_rec)
+  end
+
+  def spouse_first_name_filteration(records)
+    records.select{|r|
+      first_name_array = BestGuessMarriage.where(Volume: r[:Volume], Page: r[:Page], QuarterNumber: r[:QuarterNumber]).pluck(:GivenName)
+      #first_name_array.map(&:downcase).include?self.spouse_first_name.downcase unless self.identifiable_spouse_only?
+      #raise first_name_array.inspect
+      first_name_array.map(&:downcase).include?self.spouse_first_name.downcase
+    }
+  end
+
+  def reject_unidentified_spouses_records (records)
+    records.reject{|r|
+      last_name_array = BestGuessMarriage.where(Volume: r[:Volume], Page: r[:Page], QuarterNumber: r[:QuarterNumber]).pluck(:Surname)
+      #raise last_name_array.inspect
+      last_name_array.map(&:downcase).exclude?r[:AssociateName].downcase
+    }
+  end
+
+  def spouse_surname_records(records)
+    records.where('BestGuess.QuarterNumber >= ?', SPOUSE_SURNAME_START_QUARTER)
+  end
+
+  def non_spouse_surname_records(records)
+    records.where('BestGuess.QuarterNumber < ?', SPOUSE_SURNAME_START_QUARTER)
+  end
+
+  def spouse_surname_search(records)
+    records.where(AssociateName: self.spouses_mother_surname)
+    #records.select{|r|
+    #  r[:AssociateName].downcase == self.spouses_mother_surname.downcase if r[:AssociateName].present?
+    #}
+    records.where("BestGuess.AssociateName like '#{name_wildcard_search(self.spouses_mother_surname)}'") if do_wildcard_seach?self.spouses_mother_surname
+  end
+
+  def search_pre_spouse_surname records
+    records.joins(spouse_join_condition).where(Surname: self.spouses_mother_surname)
+   # records.joins(spouse_join_condition).select {|r|
+    #  r[:Surname].downcase == self.spouses_mother_surname.downcase
+    #}
+    records.where("BestGuess.Surname like '#{name_wildcard_search(self.spouses_mother_surname)}'") if do_wildcard_seach?self.spouses_mother_surname
+  end
+
+  def has_wildcard? name
+    name.match?(/[*?]/)
+  end
+
+  def do_wildcard_seach?name
+    !name.start_with?('#') if has_wildcard?(name)
+  end
+
+  def name_wildcard_search name_field
+    name_field.gsub(/[*?]/, '*' => '%', '?' => '_')
+    #query = "BestGuess.Surname like '#{surname}'"
+  end
+
+  def month
+    {
+      '01': 'JA',
+      '02': 'FE',
+      '03': 'MR',
+      '04': 'AP',
+      '05': 'MY',
+      '06': 'JE',
+      '07': 'JY',
+      '08': 'AU',
+      '09': 'SE',
+      '10': 'OC',
+      '11': 'NO',
+      '12': 'DE'
+    }
+  end
+
+  def spouse_join_condition
+    if self.spouses_mother_surname.present? || self.spouse_first_name.present?#&& start_year_quarter < 301
+      spouse_surname_join_condition
+    else
+      ''
+    end
+  end
+
+  def spouse_surname_join_condition
+    'inner join BestGuessMarriages as b on b.volume=BestGuess.volume and b.page=BestGuess.page and b.QuarterNumber=BestGuess.QuarterNumber and b.RecordNumber!= BestGuess.RecordNumber'
+  end
+
   private
 
   def selected_sort_fields
-    [ SearchOrder::COUNTY, SearchOrder::BIRTH_COUNTY, SearchOrder::TYPE ]
+    [ SearchOrder::COUNTY, SearchOrder::BIRTH_COUNTY, SearchOrder::TYPE, SearchOrder::DISTRICT ]
   end
 end

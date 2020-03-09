@@ -131,7 +131,15 @@ module SearchQueriesHelper
     elsif MyopicVicar::Application.config.template_set == 'freecen'
       contents_link = link_to "Database Coverage" , freecen_coverage_path, :title => "Database Coverage"
     elsif MyopicVicar::Application.config.template_set == 'freebmd'
-      contents_link = link_to "Database Coverage" , freebmd_coverage_path, :title => "Database Coverage"
+      contents_link = link_to "Database Coverage" , freecen_coverage_path, :title => "Database Coverage"
     end
+  end
+
+  def set_value field_value=nil
+    return field_value
+  end
+
+  def set_checkbox_checked_value field_value:, value: nil
+    return field_value.include?value
   end
 end

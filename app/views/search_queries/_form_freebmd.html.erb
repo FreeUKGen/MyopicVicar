@@ -10,205 +10,664 @@
       <li class="validation-list__error text--center" ><%= msg[0] %></li>
     <% end %>
   </ul>
-  <% @search_query.errors.clear %>
 <% end %>
-<div class="push soft--top palm-flush--bottom">
+<div class="bmd_search_form">
   <%= semantic_form_for(@search_query) do |f| %>
-    <fieldset class="inputs">
-      <legend>Search fields</legend>
-      <ol class="grid">
-        <li class="grid__item one-quarter lap-one-half palm-one-whole">
-          <label class="ttip" for="last_name" tabindex="0">
-            Surname
-            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Use upper- or lower-case. If you do not enter a surname (last-name) you <em>must</em> enter a forename, select one county and choose a single record type</span>
-          </label>
-          <% if @search_query.last_name.nil? %>
-            <input id="last_name" name="search_query[last_name]" type="text" class="text-input" placeholder="Optional">
-          <% else %>
-            <input id="last_name" name="search_query[last_name]" type="text" class="text-input" value="<%=@search_query.last_name%>">
+    <div class="grid search_form">
+      <div class="grid__item one-fifth lap-one-half palm-one-whole">
+          <div class='labels'>
+            <a href='/cms/help#forename' class="firstnamelabel" target='_blank' tabindex="0">
+              <div class='iframeDiv' id='forename_div' tabindex="-1"></div>
+              <%= label_tag 'first_name', "First name(s) #{app_icons[:info]}".html_safe, class: "ttip", 'aria-details': info_tag_text[:firstname], title: info_tag_text[:firstname], tabindex: "-1" %>
+            </a>
+          </div>
+        <%= text_field_tag 'search_query[first_name]', set_value(@search_query.first_name), class: 'text-input', placeholder: 'Enter first name(s) here', role: 'textbox', id: 'first_name', tabindex: "0"%>
+        <label>
+          <small>
+            <%= check_box_tag 'search_query[first_name_exact_match]', set_value(@search_query.first_name_exact_match), set_value(@search_query.first_name_exact_match),tabindex: "0" %>
+            Exact match on first names
+          </small>
+        </label>
+      </div>
+
+      <div class="grid__item one-fifth lap-one-half palm-one-whole">
+        <div class='labels'>
+          <a href='/cms/help#surname' class="surnamelabel" target='_blank'tabindex="0">
+            <%= label_tag 'last_name', "Surname #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:lastname], 'aria-details': info_tag_text[:lastname], tabindex: "-1"%>
+            <div class='iframeDiv' id='surname_div'></div>
+          </a>
+        </div>
+        <%= text_field_tag 'search_query[last_name]', set_value(@search_query.last_name), class: 'text-input', id: 'last_name', placeholder: 'Enter Surname here', tabindex: "0"%>
+        <label>
+          <small class="ttip__text">
+            <%= check_box_tag 'search_query[fuzzy]', set_value(@search_query.fuzzy), set_value(@search_query.fuzzy), tabindex: "0" %>
+            Phonetic search surnames
+          </small>
+        </label>
+      </div>
+
+      <div class="grid__item one-fifth lap-one-half palm-one-whole">
+        <div class='labels'>
+          <div class="datereangefromlabel">
+            <a href='/cms/help#from_date_range' target='_blank' tabindex="0">
+              <%= label_tag 'start_quarter', "Date range from #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:date_range_from], 'aria-details': info_tag_text[:date_range_from], tabindex: "-1"%>
+              <div class='iframeDiv' id='fromdate_div'></div>
+            </a>
+          </div>
+        </div>
+        <%= select_tag( 'search_query[start_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.start_quarter)), class: 'select_month_start date_year', 'aria-labelledby': 'start_quarter', id: 'from_quarter', tabindex: "0")%>
+        <%= select_year(set_value(@search_query.start_year), { start_year: 1837, end_year: 1992 }, class: 'select_year_start date_year', name: 'search_query[start_year]', 'aria-labelledby': 'start_quarter', id: 'from_year', tabindex: "0") %>
+      </div>
+
+      <div class="grid__item one-fifth lap-one-half palm-one-whole">
+        <div class='labels'>
+          <div class="todaterangelabel">
+            <a href='/cms/help#to_date_range' target='_blank' tabindex="0">
+              <%= label_tag 'to_year', "Date range to #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:date_range_to], 'aria-details': info_tag_text[:date_range_to], tabindex: "-1" %>
+              <div class='iframeDiv' id="todate_div"></div>
+            </a>
+          </div>
+        </div>
+        <%= select_tag( 'search_query[end_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.end_quarter)), class: 'select_month_end date_year', 'aria-labelledby': 'to_year', id: 'to_quarter', tabindex: "0") %>
+        <%= select_year(set_value(@search_query.end_year), {start_year: 1992, end_year: 1837 }, class: 'select_year_end date_year', name: 'search_query[end_year]', 'aria-labelledby': 'to_year', id: 'end_year', tabindex: "0") %>
+      </div>
+      <div class="grid__item one-fifth lap-one-half palm-one-whole">
+        <div class='labels'>
+          <div class="recordtypelabel">
+            <a href='/cms/help#record_type' target='_blank' tabindex="0">
+              <%= label_tag 'record_type', "Record Type #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:record_type], 'aria-details': info_tag_text[:record_type], tabindex: "-1" %>
+              <div id='iframeDiv' class="recordtype_div"></div>
+            </a>
+          </div>
+        </div>
+
+        <span class="stack_fields">
+          <%= f.label :select_all, { :class => "header_label", id: 'all_record_types_label'} do %>
+            <%= check_box_tag 'search_query[bmd_record_type][]', '0',set_checkbox_checked_value(field_value: @search_query.bmd_record_type, value: '0'),{ multiple: true, class: 'checkAll', id: 'bmd_record_type_all', 'aria-labelledby': 'all_record_types_label', tabindex: "0" } %>
+            <%= content_text(:optional_checkbox_label, 'Select All') %>
           <% end %>
-        </li>
-        <li class="grid__item one-quarter lap-one-half palm-one-whole">
-          <label class="ttip" for="first_name" tabindex="0">
-            Forename(s)
-            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Optional. Use upper- or lower-case. Abbreviations and Latin versions of the forename (first-name) will be included automatically</span>
-          </label>
-          <% if @search_query.first_name.nil? %>
-            <input id="first_name" name="search_query[first_name]" type="text" class="text-input" placeholder="Optional">
-          <% else %>
-            <input id="first_name" name="search_query[first_name]" type="text" class="text-input" value="<%=@search_query.first_name%>">
+          <%= f.label :birth, { :class => "optional_attributes", id: 'birth_record_type_label'} do %>
+            <%= check_box_tag 'search_query[bmd_record_type][]', 1,set_checkbox_checked_value(field_value: @search_query.bmd_record_type, value: '1'),{ multiple: true, class: 'checkboxtag birth', id: 'bmd_record_type_birth', 'aria-labelledby': 'birth_record_type_label', tabindex: "0" } %>
+            <%= content_text(:optional_checkbox_label, 'Birth') %>
           <% end %>
-        </li>
-        <li class="grid__item one-quarter lap-one-half palm-one-whole">
-          <label class="ttip" for="start_year" tabindex="0">
-            First year
-            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Optional, YYYY. The first year you want to search</span>
-          </label>
-          <% if @search_query.start_year.nil? %>
-            <input id="start_year" name="search_query[start_year]" type="text"  size="4" class="text-input" placeholder="YYYY Optional">
-          <% else %>
-            <input id="start_year" name="search_query[start_year]" type="text" class="text-input" value="<%=@search_query.start_year%>">
+          <%= f.label :death, { :class => "optional_attributes", id: 'death_record_type_label'} do %>
+            <%= check_box_tag 'search_query[bmd_record_type][]', 2,set_checkbox_checked_value(field_value: @search_query.bmd_record_type, value: '2'),{ multiple: true, class: 'checkboxtag death', id: 'bmd_record_type_death', 'aria-labelledby': 'death_record_type_label', tabindex: "0" } %>
+            <%= content_text(:optional_checkbox_label, 'Death') %>
           <% end %>
-        </li>
-        <li class="grid__item one-quarter lap-one-half palm-one-whole">
-          <label class="ttip" for="end_year" tabindex="0">
-            Last year
-            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Optional, YYYY. The last year you want to search</span>
-          </label>
-          <% if @search_query.end_year.nil? %>
-            <input id="end_year" name="search_query[end_year]" type="text"  size="4" class="text-input" placeholder="YYYY Optional">
-          <% else %>
-            <input id="end_year" name="search_query[end_year]" type="text" class="text-input" value="<%=@search_query.end_year%>">
+          <%= f.label :marriage, { :class => "optional_attributes", id: 'marriage_record_type_label'} do %>
+            <%= check_box_tag 'search_query[bmd_record_type][]', 3,set_checkbox_checked_value(field_value: @search_query.bmd_record_type, value: '3'),{ multiple: true, class: 'checkboxtag marriage' , id: 'bmd_record_type_marriage', 'aria-labelledby': 'marriage_record_type_label', tabindex: "0"} %>
+            <%= content_text(:optional_checkbox_label, 'Marriage') %>
           <% end %>
-        </li>
-        <li class="grid__item three-eighths lap-three-quarters palm-one-whole" id="search_query_chapman_codes_input">
-          <input name="search_query[chapman_codes][]" type="hidden" value="">
-          <label class="ttip label" for="search_query_chapman_codes" tabindex="0">
-            County
-            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">If you select multiple counties, <em>all</em> places within those counties will be searched. We use the county boundaries as they were in 1831</span>
-            <small class="additional">Select one to three (hold Ctrl for multiple)</small>
-          </label>
-          <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
-          <select class="select" id="search_query_chapman_codes" multiple="multiple" name="search_query[chapman_codes][]">
-            <option value="" id="default">All Counties</option>
-            <% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil?%>
-            <%= grouped_options_for_select(grouped_options, selected_key = key) %>
-          </select>
-        </li>
-        <li class="grid__item three-eighths lap-three-quarters palm-one-whole"  id="search_query_places_input">
-          <label class="ttip label" for="search_query_place_ids" tabindex="0">
-            Places for which we have data
-            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">This box fills only when a <em>single</em> county is selected. Leave blank for <em>all</em> the places in a county. See also the &ldquo;Nearby places&rdquo; option, below</span>
-            <small class="additional">Select one place or none</small>
-          </label>
-          <select id="search_query_place_ids" name="search_query[place_ids][]" class="select" size="4">
-            <option value="" >List fills when you select one county</option>
-          </select>
-          <select id="search_query_place" name="search_query[place_ids][]" class="select" size="4">
-            <option value="" >All places with records have been selected</option>
-          </select>
-        </li>
-        <li class="grid__item one-quarter lap-one-whole palm-one-whole" id="search_query_record_type_input">
-          <fieldset class="choices">
-            <legend class="label">Record type</legend>
-            <ol class="choices-group">
-              <li class="choice">
-                <label for="all">
-                  <% if @search_query.record_type.blank?  %>
-                    <input id="all" name="search_query[record_type]" type="radio" value="" checked>
-                  <% else %>
-                    <input id="all" name="search_query[record_type]" type="radio" value="">
-                  <% end %>
-                  All three types
-                </label>
-              </li>
-              <% RecordType.options.each_pair do |name, value| %>
-                <li class="choice">
-                  <label for="<%= value %>">
-                    <% if @search_query.record_type.present? && @search_query.record_type.include?(value) %>
-                      <input id="<%= value %>" name="search_query[record_type]" type="radio" value="<%= value %>" checked>
-                    <% else %>
-                      <input id="<%= value %>" name="search_query[record_type]" type="radio" value="<%= value %>">
-                    <% end %>
-                    <%= name %>
-                  </label>
-                </li>
-              <% end %>
-            </ol>
-          </fieldset>
-        </li>
-      </ol>
-    </fieldset>
-    <fieldset class="inputs">
-      <legend>Search options</legend>
-      <ol class="grid">
-        <li class="grid__item one-third lap-one-whole palm-one-whole">
-          <%= f.label :inclusive, { :class => "ttip", :tabindex => "0" } do %>
-            <%= f.check_box :inclusive, {}, true, false %>
-            Family members
-            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Check to extend the search to include the person&rsquo;s role as a family member or relative: for example, a spouse or parent</span>
-          <% end %>
-        </li>
-        <% if witness_search_enabled? %>
-          <li class="grid__item one-third lap-one-whole palm-one-whole">
-            <%= f.label :witness, { :class => "ttip", :tabindex => "0" } do %>
-              <%= f.check_box :witness, {}, true, false  %>
-              Witnesses
-              <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-              <span class="ttip__text">Check to extend the search to include the person&rsquo;s role as a witness to a marriage or baptism</span>
-            <% end %>
-          </li>
-        <% end %>
-        <li class="grid__item one-third lap-one-whole palm-one-whole">
-          <%= f.label :search_nearby_places, { :class => "ttip", :tabindex => "0" } do %>
-            <%= f.check_box :search_nearby_places, {},  true, false %>
-            Nearby places
-            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Check to search places near to your selected starting place (up to 40 places in total). You can narrow your search after it has run</span>
-          <% end %>
-        </li>
-        <li class="grid__item one-third lap-one-whole palm-one-whole">
-          <%= f.label :fuzzy, { :class => "ttip", :tabindex => "0" } do %>
-            <%= f.check_box :fuzzy, {},  true, false %>
-            Name Soundex
-            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Check to include the Soundex equivalent of the name: it is used for both surname and forename (if entered)</span>
-          <% end %>
-        </li>
-        <li class="betterstyling grid__item  one-quarter  palm-one-whole">
-          <label for="region"> Region </label> <input id="region" name="search_query[region]" type="text">
-        </li>
-        <%= f.action :submit,
-        :as => :button,
-        :label => 'Search ',
-        :button_html => { :class => "ladda-button" , "data-style" => "contract" ,"data-color" => appname.downcase , "data-size" => "s", "data-spinner-color" => "#ffffff" },
-        :wrapper_html => { :class => "grid__item one-whole push-half--ends" } %>
-        <li class="grid__item one-whole clear--left">
-          <% x = Rails.application.config.max_search_time/1000 %>
-          <small class="additional push-half--ends">Search times are limited to <%= x %> seconds. <br>
-            Please do not restart the search once it is working as this will actually slow the process.</small>
-        </li>
-      </ol>
-    </fieldset>
+        </span>
+      </div>
+
+      <div class="grid__item one-fifth lap-one-half palm-one-whole">
+        <div class='labels'>
+          <a href='/cms/help#spouse_surname_givenname' class="spousefirstnamelabel" target='_blank' tabindex="0">
+            <%= label_tag 'spouse_first_name', "Spouses first name(s) #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:spouse_first_name], 'aria-details': info_tag_text[:spouse_first_name], tabindex: "-1" %>
+            <div class='iframeDiv' id="spousefirstname_div"></div>
+          </a>
+        </div>
+        <%= text_field_tag 'search_query[spouse_first_name]', set_value(@search_query.spouse_first_name), class: 'text-input', placeholder: 'Enter spouse first name(s) here', id: 'spouse_first_name', tabindex: "0"%>
+        <label>
+          <small class="ttip__text">
+            <%= check_box_tag 'search_query[identifiable_spouse_only]', set_value(@search_query.identifiable_spouse_only), set_value(@search_query.identifiable_spouse_only), tabindex: "0" %>
+            Identifiable spouses only
+          </small>
+        </label>
+      </div>
+
+      <div class="grid__item one-quarter lap-one-half palm-one-whole">
+        <div class='labels'>
+          <a href='/cms/help#spouse_or_mother_surnames' class="spouseormothersurnamelabel" target='_blank' tabindex="0">
+            <%= label_tag 'spouses_mother_surname', "Spouses/Mothers surname #{app_icons[:info]}".html_safe, class: "ttip spouse_or_mother_surname_label", title: info_tag_text[:spouse_mother_surname], 'aria-details': info_tag_text[:spouse_mother_surname], tabindex: "-1" %>
+            <div class='iframeDiv' id="spousemothersurname_div"></div>
+          </a>
+        </div>
+        <%= text_field_tag '', set_value(@search_query.spouses_mother_surname) || set_value(@search_query.mother_last_name), class: 'text-input', placeholder: '', id: 'spouses_mother_surname' , tabindex: "0"%>
+      </div>
+
+      <div class="grid__item one-fifth lap-one-half palm-one-whole">
+        <div class='labels'>
+          <a href='/cms/help#age_at_death' class="ageatdeathlabel" target='_blank' tabindex="0">
+            <%= label_tag 'death_select_box', "Age at Death #{app_icons[:info]}".html_safe, class: "ttip", title: date_of_birth_or_death_age_info[:death_age], 'aria-details': date_of_birth_or_death_age_info[:death_age], id: 'age_at_death_label', tabindex: "-1"%>
+            <div class='iframeDiv' id="ageatdeath_div"></div>
+          </a>
+        </div>
+        <%= select_tag('search_query[death_at_age]', options_for_select(SearchQuery::DEATH_AGE_OPTIONS.map { |k,v| [v,k]}, set_value(@search_query.death_at_age)), {:prompt => "Select Death Age", id: 'death_select_box', 'aria-labelledby':'age_at_death_label', tabindex: "0"}) %>
+        <span id="death_age_and_dob">
+          <span id="death_age">
+            <%= number_field_tag 'search_query[age_at_death]', set_value(@search_query.age_at_death), within: 0..199, placeholder: 'Enter Age', class: 'text-input', 'aria-labelledby':'age_at_death_label', tabindex: "0" %>
+          </span>
+          <span id="death_age_range">
+            <%= number_field_tag 'search_query[min_age_at_death]', set_value(@search_query.min_age_at_death), within: 0..199, placeholder: 'min age', class: 'text-input', 'aria-labelledby':'age_at_death_label', tabindex: "0" %>
+            <%= number_field_tag 'search_query[max_age_at_death]', set_value(@search_query.max_age_at_death), within: 0..199, placeholder: 'max age', class: 'text-input', 'aria-labelledby':'age_at_death_label', tabindex: "0" %>
+          </span>
+          <span id="death_dob">
+            <%= date_field_tag 'search_query[dob_at_death]', set_value(@search_query.dob_at_death), class: 'text-input', 'aria-labelledby':'age_at_death_label', tabindex: "0" %>
+          </span>
+          <span id="death_dob_range">
+            <%= date_field_tag 'search_query[min_dob_at_death]', set_value(@search_query.min_dob_at_death), class: 'text-input', 'aria-labelledby':'age_at_death_label', tabindex: "0" %>
+            <%= date_field_tag 'search_query[max_dob_at_death]', set_value(@search_query.max_dob_at_death), class: 'text-input', 'aria-labelledby':'age_at_death_label', tabindex: "0" %>
+          </span>
+        </span>
+        <label>
+          <small class="ttip__text">
+            <%= check_box_tag 'search_query[match_recorded_ages_or_dates]', set_value(@search_query.match_recorded_ages_or_dates), set_value(@search_query.match_recorded_ages_or_dates), tabindex: "0" %>
+            Match only recorded ages
+          </small>
+        </label>
+      </div>
+
+      <div class="grid__item one-eighth lap-one-half palm-one-whole">
+        <div class='labels'>
+          <a href='/cms/help#volume' class="volumelabel" target='_blank' tabindex="0">
+            <%= label_tag 'volume', "Volume #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:volume], 'aria-details': info_tag_text[:volume], tabindex: "-1" %>
+            <div class='iframeDiv' id="volume_div"></div>
+          </a>
+        </div>
+        <%= text_field_tag 'search_query[volume]', set_value(@search_query.volume), class: 'text-input', id: 'volume', placeholder: 'Enter Volume', tabindex: "0" %>
+      </div>
+
+      <div class="grid__item one-eighth lap-one-half palm-one-whole">
+        <div class='labels'>
+          <a href='/cms/help#page' class="pagelabel" target='_blank' tabindex="0">
+            <%= label_tag 'page', "Page #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:page], 'aria-details': info_tag_text[:page], tabindex: "-1" %>
+            <div class='iframeDiv' id="page_div"></div>
+          </a>
+        </div>
+        <%= text_field_tag 'search_query[page]', set_value(@search_query.page), class: 'text-input', id: 'page', placeholder: 'Enter Page', tabindex: "0"%>
+      </div>
+
+      <div class="grid__item three-eighths lap-one-quarters palm-one-whole">
+        <div class='labels'>
+         <div class="countieslabel">
+          <a href='/cms/help#counties' target='_blank'>
+            <%= label_tag 'chapman_codes', "Counties #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:counties], 'aria-details': info_tag_text[:counties], id: 'chapman_codes', tabindex: "-1" %>
+            <div class='iframeDiv' id="counties_div" tabindex="0"></div>
+          </a>
+          </div>
+        </div>
+        
+        <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
+        <% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil?%>
+        <%= f.select :chapman_codes, grouped_options_for_select(grouped_options, selected_key = key), {include_blank: 'All Counties'}, {multiple: true, id: 'search_query_chapman_codes', "aria-labelledby": 'chapman_codes', tabindex: "0"} %>
+        <small class="additional">Select one place or none</small>
+      </div>
+      <div class="grid__item three-eighths lap-one-quarters palm-one-whole">
+        <div class='labels'>
+          <div class='districtslabel'>
+            <a href='/cms/help#districts' target='_blank' tabindex="0">
+              <%= label_tag 'districts', "Districts #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:districts], 'aria-details': info_tag_text[:districts], tabindex: "-1" %>
+              <div class='iframeDiv' id="districts_div"></div>
+            </a>
+          </div>
+        </div>
+        <% @districts = DistrictToCounty.joins(:District).distinct.order( 'DistrictName ASC' )%>
+        <%= f.select :districts, @districts.pluck(:DistrictName, :DistrictNumber), {include_hidden: false}, {multiple: true, id: 'search_query_districts', "aria-labelledby": 'districts', tabindex: "0"} %>
+        <small class="additional">Select one place or none</small>
+      </div>
+    </div>
+    <div class="grid action">
+      <%#= f.action :submit,
+      :as => :button,
+      :label => 'Search ',
+      :button_html => { :class => "ladda-button" , "data-style" => "contract" ,"data-color" =>"#a1185a" , "data-size" => "l", "data-spinner-color" => "#ffffff" },
+      :wrapper_html => { :class => "grid__item one-whole push-half--ends" } %>
+      <%= button_tag 'Clear Form', type: :reset, class: 'clear_form' %>
+      <%= submit_tag 'Search', class: 'search_form_submit_button' , id: 'search_form_submit'%>
   <% end %>
 </div>
 <script type="text/javascript">
   Ladda.bind( 'button[type=submit]' );
 </script>
-<script type="text/javascript" >
-  <% if @search_query && @search_query.chapman_codes.size > 0 %>
-    var selection=<%= raw(PlaceCache.where(:chapman_code => @search_query.chapman_codes.first).first.places_json) %>;
-    <% if @search_query.places.size > 0 %>
-      selection["selected"]="<%= @search_query.places.first.id %>";
-    <% end %>
-  <% end %>
-  (function($) {$("#search_query_place_ids").remoteChained({
-    parents : "#search_query_chapman_codes",
-    url : "/places/for_search_form.json",
-    loading : "Loading..."
-    <% if @search_query && @search_query.chapman_codes.size == 1 %>
-      , bootstrap: selection
-    <% end %>
-  });})(jQuery);
-  $(function(){
-    $("#search_query_place").hide();  // By default use jQuery to hide the second modal
-  
-    // We can use the change(); function to watch the state of the select box and run some conditional logic every time it's changes to hide or show the second select box
-    $("#search_query_chapman_codes").change(function(){
-        if( $("#default").is(':selected') ){
-            $("#search_query_place").show();
-            $("#search_query_place_ids").hide();
-        } else {
-            $("#search_query_place").hide();
-            $("#search_query_place_ids").show();
-        }
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+  $('.checkAll').on('change', function(e) {
+    var $inputs = $('.checkboxtag');
+    if(e.originalEvent === undefined) {
+        var allChecked = true;
+        $inputs.each(function(){
+            allChecked = allChecked && this.checked;
+        });
+        this.checked = allChecked;
+    } else {
+        $inputs.prop('checked', this.checked);
+    }
+});
+
+$('.checkboxtag').on('change', function(){
+    $('.checkAll').trigger('change');
+});
+</script>
+
+<script>
+  $('#search_query_districts').empty();
+  $(document).ready(function(){
+    $("#search_query_chapman_codes").change(function() {
+      var counties = [];
+      $.each($("#search_query_chapman_codes option:selected"), function(){
+        counties.push($(this).val())
+      });
+      $.ajax({
+        url:  "/search_queries/districts_of_selected_counties",
+        type: "GET",
+        data: { selected_counties: counties }
+      });
     });
-  })
+
+    if ($("#search_query_chapman_codes option:selected").length ) {
+      var counties = [];
+      $.each($("#search_query_chapman_codes option:selected"), function(){
+        counties.push($(this).val())
+      });
+      $.ajax({
+        url:  "/search_queries/districts_of_selected_counties",
+        type: "GET",
+        data: { selected_counties: counties }
+      });
+    };
+
+
+  var aad_value = $('#death_select_box').val();
+  var aad_selection = document.getElementById('death_select_box');
+  var aad_select_value = aad_selection.options[0].value
+
+
+  var hide_all_death_options = function() {
+    $('#death_age_and_dob').css('display','block')
+    $('#search_query_age_at_death').hide();
+    $('#search_query_min_age_at_death').hide();
+    $('#search_query_max_age_at_death').hide();
+    $('#search_query_dob_at_death').hide();
+    $('#search_query_min_dob_at_death').hide();
+    $('#search_query_max_dob_at_death').hide();
+  }
+  hide_all_death_options();
+
+  var aad_selection_function = function() {
+    var aad_value = $('#death_select_box').val();
+    var aad_selection = document.getElementById('death_select_box');
+    var aad_select_value = aad_selection.options[0].value
+    if (aad_value === '1') {
+      $('#search_query_age_at_death').show();
+      $('#search_query_min_age_at_death').val('');
+      $('#search_query_max_age_at_death').val('');
+      $('#search_query_dob_at_death').val('');
+      $('#search_query_min_dob_at_death').val('');
+      $('#search_query_max_dob_at_death').val('');
+      }
+    else if (aad_value === '2') {
+      $('#search_query_min_age_at_death').show();
+      $('#search_query_max_age_at_death').show();
+      $('#search_query_age_at_death').val('');
+      $('#search_query_dob_at_death').val('');
+      $('#search_query_min_dob_at_death').val('');
+      $('#search_query_max_dob_at_death').val('');
+    }
+    else if (aad_value === '3') {
+      $('#search_query_dob_at_death').show();
+      $('#search_query_min_age_at_death').val('');
+      $('#search_query_max_age_at_death').val('');
+      $('#search_query_age_at_death').val('');
+      $('#search_query_min_dob_at_death').val('');
+      $('#search_query_max_dob_at_death').val('');
+    }
+    else if (aad_value === '4') {
+      $('#search_query_min_dob_at_death').show();
+      $('#search_query_max_dob_at_death').show();
+      $('#search_query_min_age_at_death').val('');
+      $('#search_query_max_age_at_death').val('');
+      $('#search_query_age_at_death').val('');
+      $('#search_query_dob_at_death').val('');
+    }
+    else if  (aad_value === '' || aad_value === null) {
+      $('#death_select_box').val(aad_select_value);
+      $('#search_query_min_dob_at_death').val('');
+      $('#search_query_max_dob_at_death').val('');
+      $('#search_query_min_age_at_death').val('');
+      $('#search_query_max_age_at_death').val('');
+      $('#search_query_age_at_death').val('');
+      $('#search_query_dob_at_death').val('');
+    }
+  };
+
+  aad_selection_function();
+
+  $('#death_select_box').prop('disabled', 'disabled');
+  $('.checkboxtag, .checkAll').change(function() {
+    hide_all_death_options();
+    $('#spouses_mother_surname').removeAttr('value');
+    $('#spouse_first_name').removeAttr('value');
+    $('.spouse_or_mother_surname_label').text("Spouses/Mothers surname").append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
+    $('#spouses_mother_surname').val('').prop('disabled', true)
+    $('#spouses_mother_surname').css('background', '#ccc');
+    $('#spouses_mother_surname').prop('placeholder', '')
+    $('#spouses_mother_surname').prop('name', '')
+    $('#spouse_first_name').prop('disabled',true)
+    $('#spouse_first_name').prop('placeholder',"")
+    $('#spouse_first_name').css('background', '#ccc');
+    if ($(".birth").is(":checked") && !$('.death, .marriage, .checkAll').is(':checked')) {
+      $('#spouses_mother_surname').prop('disabled', false);
+      $('#spouses_mother_surname').prop('name', 'search_query[mother_last_name]');
+      $('#spouses_mother_surname').css('background', 'white');
+      $('#spouses_mother_surname').prop('placeholder', "Enter Mother's surname here");
+      $('.spouse_or_mother_surname_label').text("Mothers Surname").append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
+      $('#death_select_box').prop('disabled', 'disabled');
+      $('#death_select_box').css('background', '#ccc');
+      $('#death_select_box').val([]);
+    } else if ($(".marriage").is(":checked") && !$('.birth, .death, .checkAll').is(':checked')) {
+      $('#spouses_mother_surname').prop('disabled', false)
+      $('#spouses_mother_surname').prop('name', 'search_query[spouses_mother_surname]');
+      $('#spouses_mother_surname').css('background', 'white');
+      $('#spouses_mother_surname').prop('placeholder', "Enter Spouse's surname here")
+      $('.spouse_or_mother_surname_label').text("Spouses Surname").append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
+      $('#death_select_box').prop('disabled', 'disabled');
+      $('#death_select_box').css('background', '#ccc');
+      $('#death_select_box').val([]);
+      $('#spouses_mother_surname').prop('placeholder', "Enter Spouse's surname here")
+      $('#spouses_mother_surname').prop('name', 'search_query[spouses_mother_surname]');
+      $('#spouse_first_name').css('background', 'white');
+      $('#spouse_first_name').prop('disabled',false)
+      $('#spouse_first_name').prop('placeholder', "Enter Spouse's First Name(s) here")
+    } else if ($(".death").is(":checked") && !$('.birth, .marriage, .checkAll').is(':checked')) {
+      $('#death_select_box').prop('disabled', false);
+      aad_selection_function();
+      $('#death_select_box').css('background', 'white')
+    } else {
+      $('#death_select_box').css('background', '#ccc');
+      $('#death_select_box').prop('disabled', 'disabled');
+      $('#death_select_box').val([]);
+    }
+  });
+
+  if ($(".birth").is(":checked") && !$('.death, .marriage, .checkAll').is(':checked')) {
+    $('#spouses_mother_surname').prop('disabled', false)
+    $('#spouses_mother_surname').prop('placeholder', "Enter Mother's surname here")
+    $('#spouses_mother_surname').prop('name', 'search_query[mother_last_name]');
+    $('.spouse_or_mother_surname_label').text("Mothers Surname").append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
+    $('#spouses_mother_surname').css('background', 'white');
+    $('#death_select_box').prop('disabled', 'disabled');
+    $('#death_select_box').css('background', '#ccc');
+    $('#death_select_box').val([]);
+  } else if ($(".marriage").is(":checked") && !$('.birth, .death, .checkAll').is(':checked')) {
+    $('#spouses_mother_surname').prop('disabled', false)
+    $('#spouse_first_name').prop('disabled',false)
+    $('#spouse_first_name').prop('placeholder',"Enter Spouse First Name(s) here ")
+    $('#spouses_mother_surname').prop('placeholder', "Enter Spouse's surname here")
+    $('#spouses_mother_surname').prop('name', 'search_query[spouses_mother_surname]');
+    $('.spouse_or_mother_surname_label').text("Spouses Surname").append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
+    $('#spouses_mother_surname').css('background', 'white');
+    $('#death_select_box').prop('disabled', 'disabled');
+    $('#death_select_box').css('background', '#ccc');
+    $('#death_select_box').val([]);
+    $('#spouse_first_name').css('background', 'white');
+  } else if ($(".death").is(":checked") && !$('.birth, .marriage, .checkAll').is(':checked')) {
+    $('#death_select_box').prop('disabled', false);
+    $('#spouses_mother_surname').val('').prop('disabled', true)
+    $('#spouses_mother_surname').css('background', '#ccc');
+    $('#spouses_mother_surname').prop('placeholder', '');
+    $('#spouses_mother_surname').prop('name', '');
+    aad_selection_function();
+    $('#death_select_box').css('background', 'white');
+    $('#spouses_mother_surname').val('');
+  } else {
+    $('#spouses_mother_surname').val('').prop('disabled', true)
+    $('#spouses_mother_surname').prop('placeholder', '')
+    $('#spouses_mother_surname').prop('name', '');
+    $('#death_select_box').prop('disabled', 'disabled');
+    $('#death_select_box').css('background', '#ccc');
+    $('#spouses_mother_surname').css('background', '#ccc');
+    $('#spouses_mother_surname').val('');
+    $('#death_select_box').val([]);
+    $('#spouse_first_name').prop('disabled',true)
+    $('#spouse_first_name').prop('placeholder',"")
+    $('#spouse_first_name').css('background', '#ccc');
+  };
+
+  $('#death_select_box').bind('click', function(){
+    hide_all_death_options();
+    aad_selection_function();
+  });
+
+  var validate_death_age = function() {
+    var min_age_value = $('#search_query_min_age_at_death').val();
+    var min_age = parseInt(min_age_value);
+    var max_age_value = $('#search_query_max_age_at_death').val();
+    var max_age = parseInt(max_age_value);
+    if (max_age < min_age) {
+      $('#search_query_max_age_at_death')[0].setCustomValidity('Max death age should not lesser than Min death age');
+    } else {
+      $('#search_query_max_age_at_death')[0].setCustomValidity('');
+    }
+  };
+
+  var validate_nonphonetic_wildcard_search = function() {
+    var lastnameValue = $('#last_name').val();
+    var fuzzyValue = $('#search_query_fuzzy').is(":checked")
+    var hasWildcard = lastnameValue.includes('*') || lastnameValue.includes('?')
+    if ( hasWildcard && fuzzyValue ) {
+      $('#search_query_fuzzy')[0].setCustomValidity('Phonetic Search can not be used with wildcards');
+      } else {
+        $('#search_query_fuzzy')[0].setCustomValidity('');
+      }
+  };
+
+  var validate_death_dob = function() {
+    var min_dob = new Date($('#search_query_min_dob_at_death').val()).getTime();
+    var max_dob = new Date($('#search_query_max_dob_at_death').val()).getTime();
+
+    if (max_dob < min_dob) {
+      $('#search_query_max_dob_at_death')[0].setCustomValidity('Max death date should not be lesser than Min death date');
+    } else {
+      $('#search_query_max_dob_at_death')[0].setCustomValidity('');
+    }
+  };
+
+  $('#search_form_submit').click(function() {
+    validate_death_age();
+    validate_death_dob();
+    validate_nonphonetic_wildcard_search();
+  });
+
+  $('#bmd_record_type_death').change(function() {
+    var aad_disabled = $('#death_select_box').prop('disabled');
+    var aad_selection = document.getElementById('death_select_box');
+    var aad_select_value = aad_selection.options[0].value
+    if (aad_disabled === true) {
+      $('#death_select_box').css('background', '#ccc')
+      $('#death_select_box').val([])
+    } else {
+      $('#death_select_box').val(aad_select_value)
+      $('#death_select_box').css('background', 'white')
+    }
+  });
+
+  var aad_disable = $('#death_select_box').prop('disabled');
+    if (aad_disable === true) {
+      $('#death_select_box').css('background', '#ccc');
+      $('#death_select_box').val([]);
+    } else {
+      //$('#death_select_box').val(aad_selection);
+      $('#death_select_box').css('background', 'white');
+    }
+
+  $('.clear_form').click(function() {
+    hide_all_death_options();
+    $('#death_select_box').val([]);
+    $('#death_select_box').prop('disabled', 'disabled');
+    $('#death_select_box').css('background', '#ccc');
+  });
+
+  $(".firstnamelabel").click(function() {
+    if ($('#forename_help').length) {
+    $("#forename_div").empty();
+    $("#forename_div").removeClass('help_box');
+    } else {
+      if ($('.search_help_text').length) {
+        $(".iframeDiv").empty('');
+        $(".iframeDiv").removeClass('help_box');
+      }
+      $("#forename_div").addClass('help_box');
+      //$("#forename_div").html('<div id="forename_info" class="firstnamehelp"></div>');
+      $("#forename_div").load('/cms/help #forename_help');
+    }
+  });
+/*
+  $(".surnamelabel").click(function() {
+    if ($('#surname_help').length) {
+    $("#surname_div").empty();
+    $("#surname_div").removeClass('help_box');
+    } else {
+      if ($('.search_help_text').length) {
+        $(".iframeDiv").empty('');
+        $(".iframeDiv").removeClass('help_box');
+      }
+      $("#surname_div").addClass('help_box');
+      $("#surname_div").load('/cms/help #surname_help');
+    }
+  });
+
+  $(".datereangefromlabel").click(function() {
+    if ($('#from_date_range_help').length) {
+    $("#fromdate_div").empty();
+    $("#fromdate_div").removeClass('help_box');
+    } else {
+      if ($('.search_help_text').length) {
+        $(".iframeDiv").empty('');
+        $(".iframeDiv").removeClass('help_box');
+      }
+      $("#fromdate_div").addClass('help_box');
+      $("#fromdate_div").load('/cms/help #from_date_range');
+    }
+  });
+
+  $(".todaterangelabel").click(function() {
+    if ($('#to_date_range_help').length) {
+    $("#todate_div").empty();
+    $("#todate_div").removeClass('help_box');
+    } else {
+      if ($('.search_help_text').length) {
+        $(".iframeDiv").empty('');
+        $(".iframeDiv").removeClass('help_box');
+      }
+      $("#todate_div").addClass('help_box');
+      $("#todate_div").load('/cms/help #to_date_range');
+    }
+  });
+
+  $(".recordtypelabel").click(function() {
+    if ($('#recordtypehelp').length) {
+    $("#recordtype_div").empty();
+    $("#recordtype_div").removeClass('help_box');
+    } else {
+      if ($('.search_help_text').length) {
+        $(".iframeDiv").empty('');
+        $(".iframeDiv").removeClass('help_box');
+      }
+      $("#recordtype_div").addClass('help_box');
+      $("#recordtype_div").load('/cms/help #record_type');
+    }
+  });
+
+  $(".spousefirstnamelabel").click(function() {
+    if ($('#spousefirstnamehelp').length) {
+    $("#spousefirstname_div").empty();
+    $("#spousefirstname_div").removeClass('help_box');
+    } else {
+      if ($('.search_help_text').length) {
+        $(".iframeDiv").empty('');
+        $(".iframeDiv").removeClass('help_box');
+      }
+      $("#spousefirstname_div").addClass('help_box');
+      $("#spousefirstname_div").load('/cms/help #spouse_surname_givenname');
+    }
+  });
+
+  $(".spouseormothersurnamelabel").click(function() {
+    if ($('#spouseormothersurnamehelp').length) {
+    $("#spousemothersurname_div").empty();
+    $("#spousemothersurname_div").removeClass('help_box');
+    } else {
+      if ($('.search_help_text').length) {
+        $(".iframeDiv").empty('');
+        $(".iframeDiv").removeClass('help_box');
+      }
+      $("#spousemothersurname_div").addClass('help_box');
+      $("#spousemothersurname_div").load('/cms/help #spouse_or_mother_surnames');
+    }
+  });
+
+  $(".ageatdeathlabel").click(function() {
+    if ($('#ageatdeathhelp').length) {
+    $("#ageatdeath_div").empty();
+    $("#ageatdeath_div").removeClass('help_box');
+    } else {
+      if ($('.search_help_text').length) {
+        $(".iframeDiv").empty('');
+        $(".iframeDiv").removeClass('help_box');
+      }
+      $("#ageatdeath_div").addClass('help_box');
+      $("#ageatdeath_div").load('/cms/help #age_at_death');
+    }
+  });
+
+  $(".volumelabel").click(function() {
+    if ($('#volumehelp').length) {
+    $("#volume_div").empty();
+    $("#volume_div").removeClass('help_box');
+    } else {
+      if ($('.search_help_text').length) {
+        $(".iframeDiv").empty('');
+        $(".iframeDiv").removeClass('help_box');
+      }
+      $("#volume_div").addClass('help_box');
+      $("#volume_div").load('/cms/help #volume');
+    }
+  });
+
+  $(".pagelabel").click(function() {
+    if ($('#pagehelp').length) {
+    $("#page_div").empty();
+    $("#page_div").removeClass('help_box');
+    } else {
+      if ($('.search_help_text').length) {
+        $(".iframeDiv").empty('');
+        $(".iframeDiv").removeClass('help_box');
+      }
+      $("#page_div").addClass('help_box');
+      $("#page_div").load('/cms/help #page');
+    }
+  });
+
+  $(".countieslabel").click(function() {
+    if ($('#countieshelp').length) {
+    $("#counties_div").empty();
+    $("#counties_div").removeClass('help_box');
+    } else {
+      if ($('.search_help_text').length) {
+        $(".iframeDiv").empty('');
+        $(".iframeDiv").removeClass('help_box');
+      }
+      $("#counties_div").addClass('help_box');
+      $("#counties_div").load('/cms/help #counties');
+    }
+  });
+
+  $(".districtslabel").click(function() {
+    if ($('#districtshelp').length) {
+    $("#districts_div").empty();
+    $("#districts_div").removeClass('help_box');
+    } else {
+      if ($('.search_help_text').length) {
+        $(".iframeDiv").empty('');
+        $(".iframeDiv").removeClass('help_box');
+      }
+      $("#districts_div").addClass('help_box');
+      $("#districts_div").load('/cms/help #districts');
+    }
+  });
+});*/
+
 </script>

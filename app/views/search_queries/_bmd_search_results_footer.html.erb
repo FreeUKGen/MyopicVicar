@@ -1,0 +1,25 @@
+<% unless defined?(@printable_format) && @printable_format %>
+  <div class="grid">
+    <div class="grid__item one-third lap-one-third palm-one-whole">
+      <% if @result_count > 0 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+        <div class="read-length push--bottom" ><br>
+          <center class="feedbck"><%= link_to FeedbackIconHelper::FEEDBACK_ICON.html_safe, "#"%></center>
+          <p class="push-half--bottom push-half--top">FreeBMD2 is a work in progress; we want your feedback on all aspects so that we can make it better.</p>
+        </div>
+      <% end %>
+    </div>
+    <div class="grid__item one-third lap-one-third palm-one-whole">
+      <% if @result_count > 0 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+        <%= render 'please_donate' %>
+      <% end %>
+    </div>
+    <div class="grid__item one-third lap-one-third palm-one-whole">
+      <% if @result_count > 0 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+        <div class="read-length push--bottom"><br>
+          <center><%= link_to VolunteerIconHelper::VOLUNTEER_ICON.html_safe, "/cms/opportunities-to-volunteer-with-#{appname}", class: "freeBMD volunteering", id:"donate" %></center>
+          <p class="push-half--bottom">Have a spare 30 minutes a week? Give back by volunteering!</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

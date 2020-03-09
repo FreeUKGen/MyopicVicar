@@ -1,12 +1,18 @@
+<% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
 <% title "Search Results" %>
 <h1 class="accessibility">Search results</h1>
 <%= render 'flash_notice' %>
 <% show_contents_link%>
 <% if @search_query.present? %>
   <%= render 'nav_header' %>
-  <%= render 'display_search_criteria' %>
+  <%= render 'display_search_criteria' unless appname_downcase=='freebmd'%>
+  <% if appname_downcase=='freebmd'%>
+    <%= render 'display_search_criteria' %>
+  <% end %>
   <section>
-    <% if @result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+  <% max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS unless appname_downcase == 'freebmd'%>
+  <% max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS if appname_downcase == 'freebmd'%>
+    <% if @result_count >= max_result %>
       <%= render 'too_many_results' %>
     <% else %>
       <% if @result_count == 0 && ( @ucf_results && @ucf_results.size == 0) %>
@@ -15,44 +21,48 @@
         <% if device_type == :desktop || device_type == :tablet %>
           <% case MyopicVicar::Application.config.template_set%>
           <% when 'freereg'%>
-          <div class="container">
-            <div class="grid">
-              <div class="" id='results_table'>
-                <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @search_results, :inclusive => @search_query.inclusive, :witness =>@search_query.witness, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => @ucf_results})  %>
-              </div>
-              <div id='results_table_ad'>
-                <span class='float--right'>  Advertisement</span><br>
-                <div id='freereg_sidebar_left_desk' class='float--right'>
+            <div class="container">
+              <div class="grid">
+                <div class="" id='results_table'>
+                  <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @search_results, :inclusive => @search_query.inclusive, :witness =>@search_query.witness, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => false})  %>
+                </div>
+                <div id='results_table_ad'>
+                  <span>  Advertisement</span>
+                  <div id='freereg_sidebar_left_desk'>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
           <% when 'freecen'%>
-          <div class="container">
-            <div class="grid">
-              <div class="grid__item  palm-one-whole " id='results_table'>
-                <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @search_results, :inclusive => @search_query.inclusive, :witness =>@search_query.witness, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => false})  %>
-              </div>
-              <div  id='results_table_ad' class='float--right'>
-                <span class='float--right'>Advertisement</span><br>
-                <%= adsence_right_side_banner %>
+            <div class="container">
+              <div class="grid">
+                <div class="grid__item  palm-one-whole " id='results_table'>
+                  <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @search_results, :inclusive => @search_query.inclusive, :witness =>@search_query.witness, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => false})  %>
+                </div>
+                <div  id='results_table_ad'>
+                  <span>Advertisement</span>
+                  <%= adsence_right_side_banner %>
+                </div>
               </div>
             </div>
-          </div>
-          <% when 'freebmd'%>
-          <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @search_results, :inclusive => @search_query.inclusive, :witness =>@search_query.witness, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => false})  %>
-        <% end%>
+          <% else %>
+            <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @search_results, :inclusive => @search_query.inclusive, :witness =>@search_query.witness, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => false})  %>
+          <% end%>
       <% else %>
         <%= render(:partial => app_specific_partial("mobile"), :locals => {:search_results => @search_results, :ucf_results =>  @ucf_results}) %>
       <% end %>
     <% end%>
-    <% if @result_count > 10 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+    <% if @result_count > 10 && @result_count < max_result %>
       <br>
       <%= render 'nav_header' %>
       <a href="#" class="btn  btn--small">Go to top</a>
     <% end %>
-    <% if @result_count > 0 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
-      <%= render 'please_donate' %>
+    <% if @result_count > 0 && @result_count < max_result %>
+      <% if appname_downcase == 'freebmd'%>
+        <%= render 'bmd_search_results_footer' %>
+      <% else %>
+        <%= render 'please_donate' %>
+      <% end %>
     <% end %>
   <% end %>
 </section>

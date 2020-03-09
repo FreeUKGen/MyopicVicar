@@ -17,6 +17,7 @@ config/mongo_config.yml
 config/mongoid.yml
 config/secrets.yml
 config/freeukgen_application.yml
+config/freebmd_database.yml
 config/newrelic.yml
 # assets copied into app/assets/ from app/assets_free[reg/cen/bmd]
 

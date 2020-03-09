@@ -25,25 +25,38 @@ module RecordType
   CENSUS_1881 = '1881'
   CENSUS_1891 = '1891'
 
+  BIRTHS    = 1
+  DEATHS    = 2
+  MARRIAGES = 3
+
+  BIRTH_TYPE = ['1']
+  DEATH_TYPE = ['2']
+  MARRIAGE_TYPE = ['3']
+  ALL_TYPES = []
+
   def self.all_types
+    ("RecordType::#{all_types_constant}").constantize
     case MyopicVicar::Application.config.template_set
     when 'freereg'
       ALL_FREEREG_TYPES
     when 'freecen'
       ALL_FREECEN_TYPES
     when 'freebmd'
-      ALL_FREEREG_TYPES
+      ALL_FREEBMD_TYPES
     end
   end
 
   def self.options
-    if MyopicVicar::Application.config.template_set == MyopicVicar::TemplateSet::FREEREG
+    case MyopicVicar::Application.config.template_set
+    when 'freereg'
       FREEREG_OPTIONS
-    else
+    when 'freecen'
       FREECEN_OPTIONS
+    when 'freebmd'
+      FREEBMD_OPTIONS
     end
   end
-
+  
   def self.display_name(value)
     # binding.pry
     self.options.key(value)
@@ -51,6 +64,11 @@ module RecordType
 
   ALL_FREEREG_TYPES = [BURIAL, MARRIAGE, BAPTISM]
   ALL_FREECEN_TYPES = [CENSUS_1841, CENSUS_1851, CENSUS_1861, CENSUS_1871, CENSUS_1881, CENSUS_1891]
+  ALL_FREEBMD_TYPES = [BIRTHS, DEATHS, MARRIAGES]
+
+  def self.all_types_constant
+    ("ALL_#{MyopicVicar::Application.config.template_set}_types").upcase
+  end
 
   private
   FREEREG_OPTIONS = {
@@ -63,4 +81,15 @@ module RecordType
     accum[value] = value
     accum
   end
+
+  FREEBMD_OPTIONS = {
+    'BIRTHS' => BIRTH_TYPE,
+    'DEATHS' => DEATH_TYPE,
+    'MARRIAGES' => MARRIAGE_TYPE,
+    'ALL' => ALL_TYPES,
+    'BIRTH' => BIRTHS,
+    'DEATH' => DEATHS,
+    'MARRIAGE' => MARRIAGES
+  }
+
 end

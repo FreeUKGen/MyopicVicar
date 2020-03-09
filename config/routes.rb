@@ -398,6 +398,7 @@ MyopicVicar::Application.routes.draw do
   get 'search_queries/:id/reorder(.:format)', :to => 'search_queries#reorder', :as => :reorder_search_query
   get 'search_queries/report(.:format)', :to => 'search_queries#report', :as => :search_query_report
   get 'search_queries/selection',  :to => 'search_queries#selection', :as => :select_search_query_report
+  get 'search_queries/districts_of_selected_counties' => 'search_queries#districts_of_selected_counties'
   post 'search_queries/:id/analyze(.:format)', :to => 'search_queries#analyze', :as => :analyze_search_query
   resources :search_queries
 
@@ -462,7 +463,8 @@ MyopicVicar::Application.routes.draw do
   get 'gap_reasons/:id/index(.:format)', :to => 'gap_reasons#index', :as => :index_gap_reason
   resources :gap_reasons
 
-
+  get 'best_guess/:search_id/:id/:friendly(.:format)', :to => 'best_guess#show', :as => :friendly_bmd_record_details
+  resources :best_guess
 
   # This line mounts Refinery's routes at the root of your application.
   # This means, any requests to the root URL of your application will go to Refinery::PagesController#home.
