@@ -5,7 +5,7 @@ class FreecenPiecesController < ApplicationController
     redirect_to(freecen_pieces_path, notice: 'No information in the creation') && return if params[:freecen_piece].blank?
 
     @new_piece_params = FreecenPiece.transform_piece_params(params[:freecen_piece])
-    @piece_params_errors = FreecenPiece.check_piece_params(@new_piece_params)
+    @piece_params_errors = FreecenPiece.check_piece_params(@new_piece_params, controller_name)
     redirect_to(piece_new_freecen_piece_path(chapman_code:@new_piece_params[:chapman_code]), notice: "Could not create the new piece #{@piece_params_errors}") &&
       return if @piece_params_errors.present? && @piece_params_errors.any?
 
@@ -122,7 +122,7 @@ class FreecenPiecesController < ApplicationController
     redirect_back(fallback_location: new_manage_resource_path, notice: 'Piece not found') && return if @freecen_piece.blank?
 
     @new_piece_params = FreecenPiece.transform_piece_params(params[:freecen_piece])
-    @piece_params_errors = FreecenPiece.check_piece_params(@new_piece_params)
+    @piece_params_errors = FreecenPiece.check_piece_params(@new_piece_params, controller_name)
     redirect_to(edit_freecen_piece_path(@freecen_piece.id), notice: "Could not update the piece #{@piece_params_errors}") if @piece_params_errors.present? && @piece_params_errors.any?
 
     # update the fields

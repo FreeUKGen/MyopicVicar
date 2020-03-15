@@ -180,7 +180,7 @@ class FreecenPiece
       [totals_pieces, totals_pieces_online, totals_individuals, totals_dwellings]
     end
 
-    def check_piece_params(piece_params)
+    def check_piece_params(piece_params, controller_name)
       error_list = []
       piece = FreecenPiece.find_by(year: piece_params[:year], chapman_code: piece_params[:chapman_code], piece_number: piece_params[:piece_number])
       error_list << 'The piece number must be unique for a year and county' if piece.present? && controller_name == 'create'
