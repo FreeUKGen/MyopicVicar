@@ -6,7 +6,7 @@ class FreecenPiecesController < ApplicationController
 
     @new_piece_params = FreecenPiece.transform_piece_params(params[:freecen_piece])
     @piece_params_errors = FreecenPiece.check_piece_params(@new_piece_params)
-    redirect_to(piece_new_freecen_piece_path(chapman_code: @freecen_piece[:chapman_code]), notice: "Could not create the new piece #{@piece_params_errors}") &&
+    redirect_to(piece_new_freecen_piece_path(chapman_code:@new_piece_params[:chapman_code]), notice: "Could not create the new piece #{@piece_params_errors}") &&
       return if @piece_params_errors.present? && @piece_params_errors.any?
 
     @freecen_piece = FreecenPiece.new(@new_piece_params)
