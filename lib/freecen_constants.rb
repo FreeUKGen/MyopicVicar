@@ -51,6 +51,11 @@ module Freecen
     }
   end
 
+  module SpecialEnumerationDistricts
+    CODES = ['None', 'Barracks & Military Quarters', 'HM Ships, at Home', 'Workhouses & Pauper Schools', 'Hospitals (Sick, Convalescent, Incurables)',
+             'Lunatic Asylums', 'Prisons', 'Certified Reformatory & Industrial Schools', 'Merchant Vessels & Lighthouses', 'Schools']
+  end
+
   FIELD_NAMES = { "0" => 'Civil Parish', "1" => 'Enumeration District', "2" => 'Folio', "3" => 'Page', "4" => 'Dwelling', "8" => 'Individual' }
 
 

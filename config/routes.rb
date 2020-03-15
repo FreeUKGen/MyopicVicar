@@ -232,9 +232,10 @@ MyopicVicar::Application.routes.draw do
   resources :freecen_parms
   get 'freecen_parms/:year/:chapman_code/download(.:format)', :to => 'freecen_parms#download', :as => :download_freecen_parms
   get 'freecen_pieces/new', :to => 'freecen_pieces#new', :as => :piece_new_freecen_piece
+
   resources :freecen_pieces, except: :new
   get 'freecen_pieces/:chapman_code/:year/new', :to => 'freecen_pieces#new', :as => :new_freecen_piece
-
+  get 'freecen_pieces/:chapman_code/:year/index', :to => 'freecen_pieces#chapman_year_index', :as => :chapman_year_index
   get 'freecen_pieces/:year/select_new_county', :to => 'freecen_pieces#select_new_county', :as => :select_new_county_freecen_piece
 
   get 'freecen_coverage/grand_totals', to: 'freecen_coverage#grand_totals', as: :grand_totals_freecen_coverage

@@ -8,7 +8,7 @@ module FreecenValidations
   VALID_ENUMERATOR_SPECIAL = /\A\d#\d\z/
   VALID_SPECIAL_LOCATION_CODES = ['b', 'n', 'u', 'v', 'x', '']
   VALID_TEXT = /(\w*|-)/
-  VALID_PIECE = /\A(R|H)(G|O|S)/
+  VALID_PIECE = /\A(R|H)(G|O|S)/i
   VALID_AGE_MAXIMUM = {'d' => 100, 'w' => 100 , 'm' => 100 , 'y' => 120 , 'h' => 100, '?' => 100, 'years' => 120, 'months' => 100, 'weeks' => 100, 'days' => 100, 'hours' => 100}
   VALID_DATE = /\A\d{1,2}[\s+\/\-][A-Za-z\d]{0,3}[\s+\/\-]\d{2,4}\z/ #modern date no UCF or wildcard
   VALID_DAY = /\A\d{1,2}\z/
@@ -44,7 +44,7 @@ module FreecenValidations
   end
 
   def FreecenValidations.fixed_enumeration_district?(field)
-    return [false, 'blank'] if field.blank?
+    return [true, ''] if field.blank?
 
     return [true, ''] if field =~ VALID_NUMBER
 
@@ -56,38 +56,33 @@ module FreecenValidations
   end
 
   def FreecenValidations.fixed_folio_number?(field)
-    return [false, 'blank'] if field.blank?
+    return [true, ''] if field.blank?
 
     return [true, ''] if field =~ VALID_NUMBER && field.length <= 4
-
-    shorten_field = field.slice(0, 4)
+    shorten_field = field
+    shorten_field = field.slice(0..-2) if (/\D/ =~ field.slice(-1, 1)).present?
     return [true, ''] if shorten_field =~ VALID_NUMBER && shorten_field.length <= 4
 
     [false, 'invalid number']
   end
 
   def FreecenValidations.fixed_page_number?(field)
-    return [false, 'blank'] if field.blank?
-
     return [true, ''] if field =~ VALID_NUMBER && field.length <= 4
 
     [false, 'invalid number']
   end
 
-  def FreecenValidations.fixed_schedule_number?(field, transition)
+  def FreecenValidations.fixed_schedule_number?(field)
     return [true, ''] if field.present? && field =~ VALID_NUMBER && field.length <= 3
 
     return [true, ''] if field.present? && field =~ VALID_NUMBER_PLUS_SUFFIX
 
-    if ['Folio', 'Page'].include?(transition)
-      return [true, ''] if field.blank?
-    else
-      return [false, 'blank'] if field.blank?
-    end
+    return [false, 'blank'] if field.blank?
+
     [false, 'invalid number']
   end
 
-  def FreecenValidations.fixed_house_number?(field, transition)
+  def FreecenValidations.fixed_house_number?(field)
     return [true, ''] if field.present? && field =~ VALID_NUMBER && field.length <= 4
 
     return [true, ''] if field.present? && field =~ VALID_NUMBER_PLUS_SUFFIX
@@ -97,17 +92,12 @@ module FreecenValidations
     [false, 'invalid number']
   end
 
-  def FreecenValidations.fixed_house_address?(field, transition)
+  def FreecenValidations.fixed_house_address?(field)
     return [false, '?'] if field.present? && field.slice(-1).downcase == '?' && field =~ VALID_TEXT && field.length <= 30
 
     return [true, ''] if field.present? && field =~ VALID_TEXT && field.length <= 30
 
-
-    if ['Folio', 'Page'].include?(transition)
-      return [true, ''] if field.blank?
-    else
-      return [false, 'blank'] if field.blank?
-    end
+    return [false, 'blank'] if field.blank?
 
     [false, 'invalid address']
   end
@@ -281,6 +271,8 @@ module FreecenValidations
     return [true, ''] if field.blank?
 
     return [true, ''] if field.downcase == 'h' && field.length == 1
+
+    return [true, ''] if field.downcase == 'at home' && field.length == 7
 
     [false, 'invalid value']
   end

@@ -1460,13 +1460,28 @@ end
 # ...................................FreeCEN>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 crumb :freecen_pieces do |county|
-  link 'FreeCen Pieces', freecen_pieces_path(county: county)
-  parent :county_options, session[:county]
+  link 'FreeCen Pieces Total', freecen_pieces_path(county: county)
+  parent :county_options, county
+end
+
+crumb :freecen_pieces_chapman do |county, year|
+  link 'FreeCen Pieces by year', chapman_year_index_path(chapman_code: county, year: year)
+  parent :freecen_pieces, county
 end
 
 crumb :show_freecen_piece do |file|
-  link 'FreeCen Pieces', freecen_piece_path(file.id)
+  link 'Show FreeCen Piece', freecen_piece_path(file)
   parent :freecen_pieces, session[:county]
+end
+
+crumb :edit_freecen_piece do |file, county|
+  link 'Edit FreeCen Piece', freecen_piece_path(file)
+  parent :freecen_pieces, county
+end
+
+crumb :new_freecen_piece do |county|
+  link 'Create FreeCen Piece'
+  parent :freecen_pieces, county
 end
 
 crumb :freecen1_fixed_dat_entry do |file|

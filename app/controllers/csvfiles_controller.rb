@@ -100,8 +100,8 @@ class CsvfilesController < ApplicationController
     get_user_info_from_userid
     @csvfile = Csvfile.new(userid: session[:userid])
     userids_and_transcribers
-    @types_of_processing = ['Check', 'Add', 'Replace']
-    @type_of_processing = 'Check'
+    @types_of_processing = ['Check(Info)', 'Check(Warn)', 'Add', 'Replace']
+    @type_of_processing = 'Check(Info)'
     @types_of_field = ['Traditional', 'Modern']
     @type_of_field = 'Traditional'
     @action = 'Upload'
