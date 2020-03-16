@@ -150,7 +150,7 @@ class PhysicalFile
       else
         logger.warn("FREECEN:CSV_PROCESSING: Starting rake task for #{self.userid} #{self.file_name}")
         pid1 = Kernel.spawn("rake build:freecen_csv_process[\"no_search_records\",\"individual\",\"no\",#{File.join(userid, file_name)},'Traditional', 'Check(Info)']")
-        message = "The csv file #{ self.file_name} is being processed . You will receive an email when it has been completed."
+        message = "The csv file #{ self.file_name} with #{pid1}is being processed . You will receive an email when it has been completed."
       end
     end
     [success, message]

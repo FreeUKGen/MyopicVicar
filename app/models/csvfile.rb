@@ -114,7 +114,7 @@ class Csvfile < CarrierWave::Uploader::Base
     when 'freecen'
       p 'in freecen kernel'
       logger.warn("FREECEN:CSV_PROCESSING: Starting rake task for #{userid} #{file_name}")
-      pid1 = Kernel.spawn("rake build:freecen_csv_process[\"no_search_records\",\"individual\",\"no\",#{range},#{type_of_field},#{type_of_processing}]")
+      pid1 = system("rake build:freecen_csv_process[\"no_search_records\",\"individual\",\"no\",#{range},#{type_of_field},#{type_of_processing}]")
       message = "The csv file #{file_name} with #{pid1}is being checked. You will receive an email when it has been completed."
       logger.warn("FREECEN:CSV_PROCESSING: rake task for #{pid1}")
       p pid1
