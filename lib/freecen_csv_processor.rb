@@ -112,7 +112,7 @@ class FreecenCsvProcessor
   def communicate_to_managers
     records = @total_records
     average_time = records == 0 ? 0 : average_time = (Time.new.to_i - @project_start_time.to_i) * 1000 / records
-    write_messages_to_all("Created  #{records} entries at an average time of #{average_time}ms per record at #{Time.new}. <br>" false)
+    write_messages_to_all("Created  #{records} entries at an average time of #{average_time}ms per record at #{Time.new}. <br>", false)
     file = @message_file
     #@message_file.close if @project.type_of_project == "individual"
     user = UseridDetail.where(userid: "Captkirk").first
@@ -142,7 +142,7 @@ class FreecenCsvProcessor
 
   def write_messages_to_all(message, no_member_message)
     # avoids sending the message to the member if no_member_message is false
-    message = message.encode(message.encoding, universal_newline: true)
+    message = message.encode(message.encoding, universal_newline: true) if message.present?
     write_log_file(message) if message.present?
     write_member_message_file(message) if no_member_message && message.present?
   end
@@ -654,12 +654,9 @@ class CsvRecords < CsvFile
 
   def line_one(line)
     if FreecenValidations.fixed_valid_piece?(line[0])
-      p 'line_one'
       success = true
       piece = line[0]
       year, piece = FreecenPiece.extract_year_and_piece(line[0])
-      p year
-      p piece
       piece = FreecenPiece.where(year: year, piece_number: piece).first
       if piece.blank?
         message = "Error: there is no piece with #{line[0]} in the database}. <br>"
