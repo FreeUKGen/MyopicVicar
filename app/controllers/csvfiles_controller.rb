@@ -7,6 +7,10 @@ class CsvfilesController < ApplicationController
 
     get_user_info_from_userid
     @csvfile = Csvfile.new(csvfile_params)
+    message = 'creation............................................................'
+    logger.warn("#{appname_upcase}:CSV_PROCESSING: " + message)
+    message = "#{@csvfile.inspect}"
+    logger.warn("#{appname_upcase}:CSV_PROCESSING: " + message)
     # if the process does not have a userid then the process has been initiated by the user on his own batches
     @csvfile.userid = session[:userid] if params[:csvfile][:userid].blank?
     redirect_back(fallback_location: new_csvfile_path, notice: 'There was no userid') && return if @csvfile.userid.blank?

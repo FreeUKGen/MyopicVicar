@@ -54,7 +54,7 @@ class FreecenCsvProcessor
     @total_files = 0
     @total_records = 0
     @type_of_project = arg2
-    @flexible = arg5
+    @flexible = arg5 == 'Traditional' ? false : true
     @type_of_processing = arg6
     @info_messages = @type_of_processing == 'Check(Info)' ? true : false
     EmailVeracity::Config[:skip_lookup] = true
@@ -62,8 +62,7 @@ class FreecenCsvProcessor
 
   def self.activate_project(create_search_records, type, force, range, type_of_field, type_of_processing)
     force, create_search_records = FreecenCsvProcessor.convert_to_bolean(create_search_records, force)
-    @flexible = type_of_field == 'Traditional' ? false : true
-    @project = FreecenCsvProcessor.new(create_search_records, type, force, range, @flexible, type_of_processing)
+    @project = FreecenCsvProcessor.new(create_search_records, type, force, range, type_of_field, type_of_processing)
     @project.write_log_file("Started freecen csv file processor project. #{@project.inspect} using website #{Rails.application.config.website}. <br>")
 
     @csvfiles = CsvFiles.new(@project)
@@ -654,9 +653,12 @@ class CsvRecords < CsvFile
 
   def line_one(line)
     if FreecenValidations.fixed_valid_piece?(line[0])
+      p 'line_one'
       success = true
       piece = line[0]
       year, piece = FreecenPiece.extract_year_and_piece(line[0])
+      p year
+      p piece
       piece = FreecenPiece.where(year: year, piece_number: piece).first
       if piece.blank?
         message = "Error: there is no piece with #{line[0]} in the database}. <br>"
