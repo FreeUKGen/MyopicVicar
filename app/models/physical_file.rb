@@ -148,9 +148,11 @@ class PhysicalFile
         logger.warn("FREECEN:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists")
         message = "The csv file #{ self.file_name} has been sent for processing . You will receive an email when it has been completed."
       else
+
         logger.warn("FREECEN:CSV_PROCESSING: Starting rake task for #{self.userid} #{self.file_name}")
-        pid1 = Kernel.spawn("rake build:freecen_csv_process[\"no_search_records\",\"individual\",\"no\",#{File.join(userid, file_name)},'Traditional', 'Check(Info)']")
-        message = "The csv file #{ self.file_name} with #{pid1}is being processed . You will receive an email when it has been completed."
+        pid1 = system("rake build:freecen_csv_process[\"no_search_records\",\"individual\",\"no\",\"#{File.join(userid, file_name)}\",\"Traditional\",\"Check(Warn)\"]")
+        message = "The csv file #{ self.file_name} is being processed . You will receive an email when it has been completed."
+        logger.warn("FREECEN:CSV_PROCESSING: #{pid1}")
       end
     end
     [success, message]

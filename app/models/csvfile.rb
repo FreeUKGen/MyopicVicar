@@ -70,10 +70,6 @@ class Csvfile < CarrierWave::Uploader::Base
   end
 
   def process_the_batch(user)
-    p 'process_the_batch'
-    p self
-    p type_of_field
-    p type_of_processing
     proceed = check_for_existing_file_and_save
     save if proceed
     message = "The upload with file name #{file_name} was unsuccessful because #{errors.messages}" if errors.any?
@@ -112,12 +108,10 @@ class Csvfile < CarrierWave::Uploader::Base
         process = false
       end
     when 'freecen'
-      p 'in freecen kernel'
       logger.warn("FREECEN:CSV_PROCESSING: Starting rake task for #{userid} #{file_name}")
-      pid1 = system("rake build:freecen_csv_process[\"no_search_records\",\"individual\",\"no\",#{range},#{type_of_field},#{type_of_processing}]")
-      message = "The csv file #{file_name} with #{pid1}is being checked. You will receive an email when it has been completed."
+      pid1 =  system("rake build:freecen_csv_process[\"no_search_records\",\"individual\",\"no\",\"#{range}\",\"#{type_of_field}\",\"#{type_of_processing}\"]")
+      message = "The csv file #{file_name}is being checked. You will receive an email when it has been completed."
       logger.warn("FREECEN:CSV_PROCESSING: rake task for #{pid1}")
-      p pid1
       process = true
     end
     [process, message]
