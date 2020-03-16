@@ -139,7 +139,7 @@ class PhysicalFile
         message = "The csv file #{ self.file_name} has been sent for processing . You will receive an email when it has been completed."
       else
         logger.warn("FREEREG:CSV_PROCESSING: Starting rake task for #{self.userid} #{self.file_name}")
-        pid1 = Kernel.spawn("rake build:freereg_new_update[\"create_search_records\",\"waiting\",\"no\",\"a-9\"]")
+        pid1 = spawn("rake build:freereg_new_update[\"create_search_records\",\"waiting\",\"no\",\"a-9\"]")
         message = "The csv file #{ self.file_name} is being processed . You will receive an email when it has been completed."
       end
     when 'freecen'
@@ -150,7 +150,7 @@ class PhysicalFile
       else
 
         logger.warn("FREECEN:CSV_PROCESSING: Starting rake task for #{self.userid} #{self.file_name}")
-        pid1 = system("rake build:freecen_csv_process[\"no_search_records\",\"individual\",\"no\",\"#{File.join(userid, file_name)}\",\"Traditional\",\"Check(Warn)\"]")
+        pid1 = spawn("rake build:freecen_csv_process[\"no_search_records\",\"individual\",\"no\",\"#{File.join(userid, file_name)}\",\"Traditional\",\"Check(Warn)\"]")
         message = "The csv file #{ self.file_name} is being processed . You will receive an email when it has been completed."
         logger.warn("FREECEN:CSV_PROCESSING: #{pid1}")
       end
