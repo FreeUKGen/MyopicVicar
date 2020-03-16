@@ -112,7 +112,7 @@ class FreecenCsvProcessor
   def communicate_to_managers
     records = @total_records
     average_time = records == 0 ? 0 : average_time = (Time.new.to_i - @project_start_time.to_i) * 1000 / records
-    write_messages_to_all("Created  #{records} entries at an average time of #{average_time}ms per record at #{Time.new}. <br>",false)
+    write_messages_to_all("Created  #{records} entries at an average time of #{average_time}ms per record at #{Time.new}. <br>" false)
     file = @message_file
     #@message_file.close if @project.type_of_project == "individual"
     user = UseridDetail.where(userid: "Captkirk").first
@@ -142,6 +142,7 @@ class FreecenCsvProcessor
 
   def write_messages_to_all(message, no_member_message)
     # avoids sending the message to the member if no_member_message is false
+    message = message.encode(s.encoding, universal_newline: true)
     write_log_file(message) if message.present?
     write_member_message_file(message) if no_member_message && message.present?
   end
