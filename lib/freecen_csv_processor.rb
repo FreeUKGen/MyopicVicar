@@ -142,7 +142,7 @@ class FreecenCsvProcessor
 
   def write_messages_to_all(message, no_member_message)
     # avoids sending the message to the member if no_member_message is false
-    message = message.encode(s.encoding, universal_newline: true)
+    message = message.encode(message.encoding, universal_newline: true)
     write_log_file(message) if message.present?
     write_member_message_file(message) if no_member_message && message.present?
   end
