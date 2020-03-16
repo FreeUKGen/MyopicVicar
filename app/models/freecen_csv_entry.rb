@@ -129,7 +129,7 @@ class FreecenCsvEntry
 
       freecen_csv_entry_object = FreecenCsvEntry.find(freecen_csv_entry)
       result = true if freecen_csv_entry_object.present? && FreecenCsvFile.valid_freecen_csv_file?(freecen_csv_entry_object.freecen_csv_file_id)
-      logger.warn("FREEREG:LOCATION:VALIDATION invalid freecen_csv_entry id #{freecen_csv_entry} ") unless result
+      logger.warn("FREEREG:LOCATION:VALIDATION invalid freecen_csv_entry id #{freecen_csv_entry}.<br> ") unless result
       result
     end
 
@@ -150,9 +150,9 @@ class FreecenCsvEntry
         success, messagea = FreecenValidations.fixed_valid_civil_parish?(civil_parish)
         unless success
           result = false
-          message = message + "ERROR: line #{num} Civil Parish has too many characters #{civil_parish}\r\n " if messagea == 'field length'
-          message = message + "ERROR: line #{num} Civil Parish is blank.\r\n " if messagea == 'blank'
-          message = message + "ERROR: line #{num} Civil Parish has invalid text #{civil_parish}\r\n" if messagea == 'VALID_TEXT'
+          message = message + "ERROR: line #{num} Civil Parish has too many characters #{civil_parish}.<br>" if messagea == 'field length'
+          message = message + "ERROR: line #{num} Civil Parish is blank.<br> " if messagea == 'blank'
+          message = message + "ERROR: line #{num} Civil Parish has invalid text #{civil_parish}.<br>" if messagea == 'VALID_TEXT'
           new_civil_parish = previous_civil_parish
           return [result, message, new_civil_parish]
         end
@@ -163,18 +163,18 @@ class FreecenCsvEntry
         break if valid
       end
       if previous_civil_parish == ''
-        message = "Warning: line #{num} New Civil Parish #{civil_parish}\r\n"
+        message = "Warning: line #{num} New Civil Parish #{civil_parish}.<br>"
         result = true
       elsif previous_civil_parish == civil_parish
         result = true
       elsif !valid
-        message = "ERROR: line #{num} Civil Parish has changed to #{civil_parish} which is not in the list of subplaces\r\n"
+        message = "ERROR: line #{num} Civil Parish has changed to #{civil_parish} which is not in the list of subplaces.<br>"
         result = false
       elsif valid
-        message = "Warning: line #{num} Civil Parish has changed to #{civil_parish}\r\n"
+        message = "Warning: line #{num} Civil Parish has changed to #{civil_parish}.<br>"
         result = false
       else
-        message = "ERROR: line #{num} Civil Parish has changed to #{civil_parish} but failed all tests\r\n"
+        message = "ERROR: line #{num} Civil Parish has changed to #{civil_parish} but failed all tests.<br>"
         result = false
       end
       [result, message, new_civil_parish]
@@ -198,7 +198,7 @@ class FreecenCsvEntry
         unless success
           result = false
           new_enumeration_district = previous_enumeration_district
-          message = message + "ERROR: line #{num} Enumeration District #{enumeration_district} is #{messagea}\r\n"
+          message = message + "ERROR: line #{num} Enumeration District #{enumeration_district} is #{messagea}.<br>"
           return [result, message, new_enumeration_district]
         end
       end
@@ -207,15 +207,15 @@ class FreecenCsvEntry
       # p parts
       special = parts.length > 0 ? parts[1] : nil
       if previous_enumeration_district == ''
-        message = "Info: line #{num} New Enumeration District #{enumeration_district}\r\n" if info_messages
+        message = "Info: line #{num} New Enumeration District #{enumeration_district}.<br>" if info_messages
         new_enumeration_district = enumeration_district
         result = true
       elsif previous_enumeration_district == enumeration_district
         result = true
       else
-        message = "Warning: line #{num} Enumeration District changed to #{enumeration_district}\r\n" if special.blank? && enumeration_district.present?
-        message = "Info: line #{num} Enumeration District changed to blank\r\n" if special.blank? && enumeration_district.blank? && info_messages
-        message = "Info: line #{num} Enumeration District changed to #{Freecen::SpecialEnumerationDistricts::CODES[special.to_i]}\r\n" if special.present? && info_messages
+        message = "Warning: line #{num} Enumeration District changed to #{enumeration_district}.<br>" if special.blank? && enumeration_district.present?
+        message = "Info: line #{num} Enumeration District changed to blank.<br>" if special.blank? && enumeration_district.blank? && info_messages
+        message = "Info: line #{num} Enumeration District changed to #{Freecen::SpecialEnumerationDistricts::CODES[special.to_i]}.<br>" if special.present? && info_messages
 
         new_enumeration_district = enumeration_district
         new_folio_number, new_folio_suffix = suffix_extract(record[:folio_number])
@@ -267,12 +267,12 @@ class FreecenCsvEntry
         success, messagea = FreecenValidations.fixed_folio_number?(record[:folio_number])
         unless success
           result = false
-          message = message + "ERROR: line #{num} Folio number #{record[:folio_number]} is #{messagea}\r\n"
+          message = message + "ERROR: line #{num} Folio number #{record[:folio_number]} is #{messagea}.<br>"
           return [result, message, new_folio_number, new_folio_suffix]
         end
       end
       if previous_folio_number == 0
-        message = "Info: line #{num} Initial Folio number set to #{folio_number}" if info_messages
+        message = "Info: line #{num} Initial Folio number set to #{folio_number}.<br>" if info_messages
         new_folio_number = folio_number.to_i
         new_folio_suffix = folio_suffix
         result = true
@@ -280,28 +280,28 @@ class FreecenCsvEntry
         message = ''
         result = false
       elsif  folio_number.blank? && year == '1841' && page_number.to_i.even?
-        message = "Warning: line #{num} New Folio number is blank"
+        message = "Warning: line #{num} New Folio number is blank.<br>"
         result = false
       elsif folio_number.blank? && year != '1841' && page_number.to_i.odd?
-        message = "Warning: line #{num} New Folio number is blank"
+        message = "Warning: line #{num} New Folio number is blank.<br>"
         result = false
       elsif folio_number.blank?
         result = true
       elsif previous_folio_number.present? && (folio_number.to_i > (previous_folio_number.to_i + 1))
-        message = "Warning: line #{num} New Folio number increment larger than 1 #{folio_number}"
+        message = "Warning: line #{num} New Folio number increment larger than 1 #{folio_number}.<br>"
         new_folio_number = folio_number.to_i
         new_folio_suffix = folio_suffix
         result = true
       elsif folio_number.to_i == previous_folio_number.to_i
-        message = "Warning: line #{num} New Folio number is the same as the previous number #{folio_number}"
+        message = "Warning: line #{num} New Folio number is the same as the previous number #{folio_number}.<br>"
         result = false
       elsif previous_folio_number.present? && (folio_number.to_i < previous_folio_number.to_i)
-        message = "Warning: line #{num} New Folio number is less than the previous number #{folio_number}"
+        message = "Warning: line #{num} New Folio number is less than the previous number #{folio_number}.<br>"
         new_folio_number = folio_number.to_i
         new_folio_suffix = folio_suffix
         result = true
       else
-        message = "Info: line #{num} New Folio number #{folio_number}" if info_messages
+        message = "Info: line #{num} New Folio number #{folio_number}.<br>" if info_messages
         new_folio_number = folio_number
         new_folio_suffix = folio_suffix
         result = true
@@ -327,37 +327,37 @@ class FreecenCsvEntry
         unless success
           result = false
           new_page_number = previous_page_number
-          message = message + "ERROR: line #{num} Page number #{page_number} is #{messagea}\r\n"
+          message = message + "ERROR: line #{num} Page number #{page_number} is #{messagea}.<br>"
           return [result, message, new_page_number]
         end
       end
       if previous_page_number == 0
-        message = "Info: line #{num} Initial Page number set to #{page_number}" if info_messages
+        message = "Info: line #{num} Initial Page number set to #{page_number}.<br>" if info_messages
         new_page_number = page_number.to_i
         result = true
       elsif  page_number.blank? && ['Folio', 'Page'].include?(transition)
         message = ''
         result = true
       elsif  page_number.blank?
-        message = "Warning: line #{num} New Page number is blank"
+        message = "Warning: line #{num} New Page number is blank.<br>"
         result = false
       elsif page_number.to_i > previous_page_number + 1
-        message = "Warning: line #{num} New Page number increment larger than 1 #{page_number}"
+        message = "Warning: line #{num} New Page number increment larger than 1 #{page_number}.<br>"
         new_page_number = page_number.to_i
         result = true
       elsif page_number.to_i == previous_page_number
-        message = "Warning: line #{num} New Page number is the same as the previous number #{page_number}"
+        message = "Warning: line #{num} New Page number is the same as the previous number #{page_number}.<br>"
         result = false
       elsif page_number.to_i < previous_page_number && page_number.to_i != 1
-        message = "Warning: line #{num} New Page number is less than the previous number #{page_number}"
+        message = "Warning: line #{num} New Page number is less than the previous number #{page_number}.<br>"
         new_page_number = page_number.to_i
         result = false
       elsif page_number.to_i < previous_page_number && page_number.to_i == 1
-        message = "Info: line #{num} reset Page number to 1" if info_messages
+        message = "Info: line #{num} reset Page number to 1.<br>" if info_messages
         new_page_number = 1
         result = true
       else
-        message = "Info: line #{num} New Page number #{page_number}" if info_messages
+        message = "Info: line #{num} New Page number #{page_number}.<br>" if info_messages
         new_page_number = page_number.to_i
         result = true
       end
@@ -383,7 +383,7 @@ class FreecenCsvEntry
       if flexible
         # new code tests
         p 'flexible not coded'
-        message = 'mine'
+        message = 'mine<br>'
       else
         message = ''
         success, messagea = FreecenValidations.fixed_schedule_number?(record[:schedule_number])
@@ -391,21 +391,21 @@ class FreecenCsvEntry
           new_schedule_number = previous_schedule_number
           new_schedule_suffix = previous_schedule_suffix
           if messagea == 'blank' && ['Civil Parish', 'Enumeration District', 'Folio', 'Page'].include?(transition) && house_number.blank?
-            message = "Info: line #{num} Schedule number retained at #{new_schedule_number}" if info_messages
+            message = "Info: line #{num} Schedule number retained at #{new_schedule_number}.<br>" if info_messages
             result = true
           elsif messagea == 'blank'
             result = false
-            message = message + "ERROR: line #{num} Schedule number is blank and not a page transition\r\n"
+            message = message + "ERROR: line #{num} Schedule number is blank and not a page transition.<br>"
           else
             result = false
-            message = message + "ERROR: line #{num} Schedule number #{record[:schedule_number]} is #{messagea}\r\n"
+            message = message + "ERROR: line #{num} Schedule number #{record[:schedule_number]} is #{messagea}.<br>"
           end
         elsif schedule_number.to_i > (previous_schedule_number.to_i + 1)
-          message = "Warning: line #{num} Schedule number #{record[:schedule_number]} increments more than 1 "
+          message = "Warning: line #{num} Schedule number #{record[:schedule_number]} increments more than 1 .<br>"
         elsif schedule_number.to_i < previous_schedule_number.to_i
           new_schedule_number = previous_schedule_number if ['b', 'n', 'u', 'v'].include?(uncertainy_location)
           new_schedule_suffix = previous_schedule_suffix if ['b', 'n', 'u', 'v'].include?(uncertainy_location)
-          message = "Warning: line #{num} Schedule number #{record[:schedule_number]} is less than the previous one " unless ['u', 'v'].include?(uncertainy_location)
+          message = "Warning: line #{num} Schedule number #{record[:schedule_number]} is less than the previous one .<br>" unless ['u', 'v'].include?(uncertainy_location)
         end
 
         overall_result = false if result == false
@@ -413,7 +413,7 @@ class FreecenCsvEntry
         success, messagea = FreecenValidations.fixed_house_number?(house_number)
         if !success
           result = false
-          message = message + "ERROR: line #{num} House number #{house_number} is #{messagea}\r\n"
+          message = message + "ERROR: line #{num} House number #{house_number} is #{messagea}.<br>"
         end
         overall_result = false if result == false
 
@@ -421,14 +421,14 @@ class FreecenCsvEntry
         unless success
           result = false
           if messagea == '?'
-            message = message + "Warning: line #{num} House address #{record[:house_or_street_name]}  has trailing ?. Removed and flag set"
+            message = message + "Warning: line #{num} House address #{record[:house_or_street_name]}  has trailing ?. Removed and flag set.<br>"
             record[:uncertainy_location] = 'x' unless ['b', 'n', 'u', 'v'].include?(uncertainy_location)
             record[:house_or_street_name] = record[:house_or_street_name][0...-1]
           elsif messagea == 'blank'
             result = true
           else
             result = false
-            message = message + "ERROR: line #{num} House address #{record[:house_or_street_name]} is #{messagea}\r\n"
+            message = message + "ERROR: line #{num} House address #{record[:house_or_street_name]} is #{messagea}.<br>"
           end
         end
         overall_result = false if result == false
@@ -436,10 +436,10 @@ class FreecenCsvEntry
         success, messagea = FreecenValidations.fixed_uncertainy_location?(uncertainy_location)
         unless success
           result = false
-          message = message + "ERROR: line #{num} Special use #{uncertainy_location} is #{messagea}\r\n"
+          message = message + "ERROR: line #{num} Special use #{uncertainy_location} is #{messagea}.<br>"
         else
           if ['u', 'v'].include?(uncertainy_location) && schedule_number.blank?
-            message = message + "Warning: line #{num} has special #{uncertainy_location} but no schedule number"
+            message = message + "Warning: line #{num} has special #{uncertainy_location} but no schedule number.<br>"
           end
         end
       end
@@ -465,115 +465,115 @@ class FreecenCsvEntry
         unless success
           result = false
           if messagea == '?'
-            message = message + "Warning: line #{num} Surname  #{record[:surname]} has trailing ?. Removed and flag set"
+            message = message + "Warning: line #{num} Surname  #{record[:surname]} has trailing ?. Removed and flag set.<br>"
             record[:uncertainty_name] = 'x'
             record[:surname] = record[:surname][0...-1]
           else
-            message = message + "ERROR: line #{num} Surname #{record[:surname]} is #{messagea}\r\n"
+            message = message + "ERROR: line #{num} Surname #{record[:surname]} is #{messagea}.<br>"
           end
         end
         success, messagea = FreecenValidations.fixed_forenames?(record[:forenames])
         unless success
           result = false
           if messagea == '?'
-            message = message + "Warning: line #{num} Forenames  #{record[:forenames]} has trailing ?. Removed and flag set"
+            message = message + "Warning: line #{num} Forenames  #{record[:forenames]} has trailing ?. Removed and flag set.<br>"
             record[:uncertainty_name] = 'x'
             record[:forenames] = record[:forenames][0...-1]
           else
-            message = message + "ERROR: line #{num} Forenames #{record[:forenames]} is #{messagea}\r\n"
+            message = message + "ERROR: line #{num} Forenames #{record[:forenames]} is #{messagea}.<br>"
           end
         end
         success, messagea = FreecenValidations.fixed_name_question?(record[:uncertainty_name])
         unless success
           result = false
-          message = message + "ERROR: line #{num} Uncertainty #{record[:uncertainty_name]} is #{messagea}\r\n"
+          message = message + "ERROR: line #{num} Uncertainty #{record[:uncertainty_name]} is #{messagea}.<br>"
         end
         success, messagea = FreecenValidations.fixed_relationship?(record[:relationship])
         unless success
           result = false
-          message = message + "ERROR: line #{num} Relationship #{record[:relationship]} is #{messagea}\r\n"
+          message = message + "ERROR: line #{num} Relationship #{record[:relationship]} is #{messagea}.<br>"
         end
         success, messagea = FreecenValidations.fixed_marital_status?(record[:marital_status])
         unless success
           result = false
-          message = message + "ERROR: line #{num} Marital status #{record[:marital_status]} is #{messagea}\r\n"
+          message = message + "ERROR: line #{num} Marital status #{record[:marital_status]} is #{messagea}.<br>"
         end
         success, messagea = FreecenValidations.fixed_sex?(record[:sex])
         unless success
           result = false
-          message = message + "ERROR: line #{num} Sex #{record[:sex]} is #{messagea}\r\n"
+          message = message + "ERROR: line #{num} Sex #{record[:sex]} is #{messagea}.<br>"
         end
         success, messagea = FreecenValidations.fixed_age?(record[:age], record[:marital_status], record[:sex])
         unless success
           result = false
-          message = message + "ERROR: line #{num} Age #{record[:age]} is #{messagea}\r\n"
+          message = message + "ERROR: line #{num} Age #{record[:age]} is #{messagea}.<br>"
         end
         success, messagea = FreecenValidations.fixed_uncertainty_status?(record[:uncertainty_status])
         unless success
           result = false
-          message = message + "ERROR: line #{num} Query #{record[:uncertainty_status]} is #{messagea}\r\n"
+          message = message + "ERROR: line #{num} Query #{record[:uncertainty_status]} is #{messagea}.<br>"
         end
         success, messagea = FreecenValidations.fixed_occupation?(record[:occupation], record[:age])
         unless success
           result = false
           if messagea == '?'
-            message = message + "Warning: line #{num} Occupation #{record[:occupation]} has trailing ?. Removed and flag set"
+            message = message + "Warning: line #{num} Occupation #{record[:occupation]} has trailing ?. Removed and flag set.<br>"
             record[:uncertainty_occupation] = 'x'
             record[:occupation] = record[:occupation][0...-1]
           else
-            message = message + "ERROR: line #{num} Occupation #{record[:occupation]} is #{messagea} \r\n"
+            message = message + "ERROR: line #{num} Occupation #{record[:occupation]} is #{messagea}.<br>"
           end
         end
         success, messagea = FreecenValidations.fixed_occupation_category?(record[:occupation_category])
         unless success
           result = false
-          message = message + "ERROR: line #{num} Occupation category #{record[:occupation_category]} is #{messagea}\r\n"
+          message = message + "ERROR: line #{num} Occupation category #{record[:occupation_category]} is #{messagea}.<br>"
         end
         success, messagea = FreecenValidations.fixed_uncertainty_occupation?(record[:uncertainty_occupation])
         unless success
           result = false
-          message = message + "ERROR: line #{num} Occupation uncertainty #{record[:uncertainty_occupation]} is #{messagea}\r\n"
+          message = message + "ERROR: line #{num} Occupation uncertainty #{record[:uncertainty_occupation]} is #{messagea}.<br>"
         end
         success, messagea = FreecenValidations.fixed_verbatim_birth_county?(record[:verbatim_birth_county])
         unless success
           result = false
-          message = message + "ERROR: line #{num} Birth County #{record[:verbatim_birth_county]} is #{messagea}\r\n"
+          message = message + "ERROR: line #{num} Birth County #{record[:verbatim_birth_county]} is #{messagea}.<br>"
         end
         success, messagea = FreecenValidations.fixed_verbatim_birth_place?(record[:verbatim_birth_place])
         unless success
           result = false
-          message = message + "ERROR: line #{num} Birth Place #{record[:verbatim_birth_place]} is #{messagea}\r\n"
+          message = message + "ERROR: line #{num} Birth Place #{record[:verbatim_birth_place]} is #{messagea}.<br>"
         end
         success, messagea = FreecenValidations.fixed_uncertainy_birth?(record[:uncertainy_birth])
         unless success
           result = false
-          message = message + "ERROR: line #{num} Birth uncertainty #{record[:uncertainy_birth]} is #{messagea}\r\n"
+          message = message + "ERROR: line #{num} Birth uncertainty #{record[:uncertainy_birth]} is #{messagea}.<br>"
         end
         success, messagea = FreecenValidations.fixed_disability?(record[:disability])
         unless success
           result = false
-          message = message + "ERROR: line #{num} Disability #{record[:disability]} is #{messagea}\r\n"
+          message = message + "ERROR: line #{num} Disability #{record[:disability]} is #{messagea}.<br>"
         end
         success, messagea = FreecenValidations.fixed_language?(record[:language])
         unless success
           result = false
-          message = message + "ERROR: line #{num} Language #{record[:language]} is #{messagea}\r\n"
+          message = message + "ERROR: line #{num} Language #{record[:language]} is #{messagea}.<br>"
         end
         success, messagea = FreecenValidations.fixed_notes?(record[:notes])
         unless success
           result = false
-          message = message + "ERROR: line #{num} Notes #{record[:notes]} is #{messagea}\r\n"
+          message = message + "ERROR: line #{num} Notes #{record[:notes]} is #{messagea}.<br>"
         end
         if ['1901', '1911'].include?(record[:year])
           success, messagea = FreecenValidations.at_home?(record[:at_home])
           unless success
             result = false
-            message = message + "ERROR: line #{num} At Home #{record[:at_home]} is #{messagea}\r\n"
+            message = message + "ERROR: line #{num} At Home #{record[:at_home]} is #{messagea}.<br>"
           end
-          success, messagea = FreecenValidations.rooms?(record[:rooms], record[:year] )
+          success, messagea = FreecenValidations.rooms?(record[:rooms], record[:year])
           unless success
             result = false
-            message = message + "ERROR: line #{num} Rooms #{record[:rooms]} is #{messagea}\r\n"
+            message = message + "ERROR: line #{num} Rooms #{record[:rooms]} is #{messagea}.<br>"
           end
         end
         [result, message]

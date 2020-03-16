@@ -699,7 +699,7 @@ class CsvRecords < CsvFile
     @array_of_lines.each_with_index do |line, n|
       next if n <= skip
 
-      @project.write_messages_to_all("Error: line #{n} is empty", true) if line[0..24].all?(&:blank?)
+      @project.write_messages_to_all("Error: line #{n} is empty.<br>", true) if line[0..24].all?(&:blank?)
       next if line[0..24].all?(&:blank?)
 
       @record = CsvRecord.new(line, @csvfile, @project)
