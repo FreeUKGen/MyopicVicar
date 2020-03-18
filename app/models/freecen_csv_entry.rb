@@ -22,16 +22,55 @@ class FreecenCsvEntry
   require 'freecen_constants'
   require 'chapman_code'
 
+  field :age, type: String
+  field :age_unit, type: String	#  Created from age
+  field :at_home, type: String
+  field :birth_county, type: String
+  field :birth_place, type: String
+  field :birth_place_flag, type: String
+  field :civil_parish, type: String
+  field :data_transition, type: String
+  field :disability, type: String
+  field :dwelling_number, type: Integer	# derived
+  field :ecclesiastical_parish, type: String
+  field :enumeration_district, type: String
+  field :flexible, type: Boolean, default: false
+  field :folio_number, type: String
+  field :forenames, type: String
+  field :house_number, type: String
+  field :house_or_street_name, type: String
+  field :individual_flag, type: String
+  field :language, type: String
+  field :marital_status, type: String
+  field :name_flag, type: String
+  field :notes, type: String
+  field :occupation, type: String
+  field :occupation_category, type: String
+  field :occupation_flag, type: String
+  field :page_number, type: String
+  field :piece_number, type: Integer
+  field :record_number, type: Integer
+  field :relationship, type: String
+  field :rooms, type: String
+  field :schedule_number, type: String
+  field :sequence_in_household, type: Integer	# derived
+  field :sex, type: String
+  field :surname, type: String
+  field :uncertainy_location, type: String
+  field :verbatim_birth_county, type: String
+  field :verbatim_birth_place, type: String
+  field :year, type: String
+
+
 
   validate :errors_in_fields
 
   belongs_to :freecen_csv_file, index: true, optional: true
 
-  embeds_many :multiple_witnesses, cascade_callbacks: true
-  embeds_many :embargo_records
+
   has_one :search_record, dependent: :restrict_with_error
 
-  before_save :add_digest, :captitalize_surnames, :check_register_type
+  before_save :captitalize_surnames, :check_register_type
 
   before_destroy do |entry|
     SearchRecord.destroy_all(:freecen_csv_entry_id => entry._id)
@@ -55,35 +94,7 @@ class FreecenCsvEntry
       where(year: year)
     end
 
-    def compare_baptism_fields?(one, two)
-      # used in  task check_record_digest
-      fields = FreeregOptionsConstants::ORIGINAL_BAPTISM_FIELDS + FreeregOptionsConstants::ADDITIONAL_BAPTISM_FIELDS + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS + FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS
-      equal = true
-      fields.each do |field|
-        one[field.to_sym] == two[field.to_sym] && equal ? equal = true : equal = false
-      end
-      equal
-    end
 
-    def compare_marriage_fields?(one, two)
-      # used in  task check_record_digest
-      fields = FreeregOptionsConstants::ORIGINAL_MARRIAGE_FIELDS + FreeregOptionsConstants::ADDITIONAL_MARRIAGE_FIELDS + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS + FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS
-      equal = true
-      fields.each do |field|
-        one[field.to_sym] == two[field.to_sym] && equal ? equal = true : equal = false
-      end
-      equal
-    end
-
-    def compare_burial_fields?(one, two)
-      # used in  task check_record_digest
-      fields = FreeregOptionsConstants::ORIGINAL_BURIAL_FIELDS + FreeregOptionsConstants::ADDITIONAL_BURIAL_FIELDS + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS + FreeregOptionsConstants::ADDITIONAL_COMMON_FIELDS
-      equal = true
-      fields.each do |field|
-        one[field.to_sym] == two[field.to_sym] && equal ? equal = true : equal = false
-      end
-      equal
-    end
 
     def delete_entries_for_a_file(fileid)
       entries = FreecenCsvEntry.where(freecen_csv_file_id: fileid).all.no_timeout

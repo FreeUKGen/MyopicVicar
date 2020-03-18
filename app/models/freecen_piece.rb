@@ -51,7 +51,7 @@ class FreecenPiece
   belongs_to :freecen1_fixed_dat_entry, index: true, optional: true
   belongs_to :place, optional: true, index: true
   has_many :freecen_dwellings
-
+  has_many :freecen_csv_files
   index(:piece_number => 1, :chapman_code => 1)
   index(:piece_number => 1, :chapman_code => 1, :year => 1, :suffix => 1, :parish_number => 1)
 
