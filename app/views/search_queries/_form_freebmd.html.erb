@@ -426,7 +426,7 @@ $('.checkboxtag').on('change', function(){
     $('#spouse_first_name').css('background', '#ccc');
   };
 
-  $('#death_select_box').bind('click', function(){
+  $('#death_select_box').on('change', function(){
     hide_all_death_options();
     aad_selection_function();
   });
