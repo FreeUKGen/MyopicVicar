@@ -78,6 +78,7 @@ class CsvfilesController < ApplicationController
     redirect_back(fallback_location: new_csvfile_path, notice: 'There was no file to replace') && return if @file.blank?
 
     get_user_info_from_userid
+    @app = appname_downcase
     @person = @file.userid
     @file_name = @file.file_name
     # there can be multiple batches only one of which might be locked
@@ -104,10 +105,13 @@ class CsvfilesController < ApplicationController
     get_user_info_from_userid
     @csvfile = Csvfile.new(userid: session[:userid])
     userids_and_transcribers
-    @types_of_processing = ['Check(Info)', 'Check(Warn)', 'Add', 'Replace']
-    @type_of_processing = 'Check(Info)'
-    @types_of_field = ['Traditional', 'Modern']
-    @type_of_field = 'Traditional'
+    @app = appname_downcase
+    if @app == 'freecen'
+      @types_of_processing = ['Check(Info)', 'Check(Warn)', 'Add', 'Replace']
+      @type_of_processing = 'Check(Info)'
+      @types_of_field = ['Traditional', 'Modern']
+      @type_of_field = 'Traditional'
+    end
     @action = 'Upload'
   end
 

@@ -1,26 +1,22 @@
-<h3 style="text-align: center"><b><%= file_name(@freecen_csv_file) %> (<%= userid(@freecen_csv_file) %>) in <b><%= register_name_for_file(@freecen_csv_file) %></b> of <b> <%= church_name(@freecen_csv_file)%></b> in <b><%= place_name(@freecen_csv_file) %></b> of <b><%= county_name(@freecen_csv_file) %></b><br>
+<h3 style="text-align: center"><b><%= file_name(@freecen_csv_file) %> (<%= userid(@freecen_csv_file) %>) in <b><%= @piece.district_name %></b> of <b><%= @piece.chapman_code %></b><br>
   </h3>
   <div  style="text-align: center">
-    <%= edit_headers %>
-    <%= download_batch %>
-    <%= browse_batch_entries%>
-    <%= list_error_entries %>
-    <%= list_zero_year_entries %>
-    <%= list_embargoed_entries %>
-    <%= unique_names %>
-    <%= remove_batch %>
-    <%= replace_batch %>
-    <%= which_file_gaps_link(@gaps) %>
+    <%= edit_freecen_file %>
+    <%= download_freecen_file %>
+    <%= browse_freecen_file_entries%>
+    <%= list_freecen_file_error_entries %>
+    <%= remove_freecen_file %>
+    <%= replace_freecen_file %>
     <br>
     <% if ['county_coordinator', 'country_coordinator', 'county_coordinator', 'system_administrator',
          'data_manager'].include?(@user.person_role) %>
-    <%= relocate_batch  %>
-    <%= merge_batches %>
-    <%= reprocess_batch %>
+    <%= relocate_freecen_file  %>
+    <%= merge_freecen_files %>
+    <%= reprocess_freecen_file %>
   <% end%>
   <% if ['system_administrator','data_manager'].include?(@user.person_role) %>
-    <%= delete_file %>
-    <%= change_owner  %>
+    <%= delete_freecen_file %>
+    <%= change_freecen_file_owner  %>
   <% end%>
 </div>
 <div style="clear:both;"> </div>

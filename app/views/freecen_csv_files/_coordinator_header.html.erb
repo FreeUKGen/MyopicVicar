@@ -1,4 +1,4 @@
-<% coordinator_index_breadcrumbs %>
+<% breadcrumb :freecen_csv_files, @freecen_csv_file %>
 <% if session[:syndicate].present? %>
   <h3 style="text-align: center"> Syndicate Files for  <%= session[:syndicate]%><%=@sorted_by%></h3>
 <% elsif session[:county].present? %>

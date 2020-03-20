@@ -116,15 +116,9 @@ class FreecenCsvEntriesController < ApplicationController
     @freecen_csv_file_id = @freecen_csv_file.id
     @freecen_csv_file_name = @freecen_csv_file.file_name
     @file_owner = @freecen_csv_file.userid
-    @register = @freecen_csv_file.register
-    @register_type = @register.register_type
-    @register_name = RegisterType.display_name(@register.register_type)
-    @church = @register.church
-    @church_name = @church.church_name
-    @place = @church.place
-    @county = @place.county
-    @chapman_code = @place.chapman_code
-    @place_name = @place.place_name
+    @piece = @freecen_csv_file.freecen_piece
+    @chapman_code = @piece.chapman_code
+    @place_name = @piece.district_name
     @user = get_user
     @first_name = @user.person_forename if @user.present?
   end
@@ -146,25 +140,6 @@ class FreecenCsvEntriesController < ApplicationController
     session[:freecen_csv_entry_id] = @freecen_csv_entry._id
     session[:zero_listing] = true if params[:zero_listing].present?
     @freecen_csv_entry.multiple_witnesses.build if @freecen_csv_entry.multiple_witnesses.count < FreeregOptionsConstants::MAXIMUM_WINESSES
-  end
-
-  def edit_embargo
-    @freecen_csv_entry = FreecenCsvEntry.find(params[:id]) if params[:id].present?
-
-    unless FreecenCsvEntry.valid_freecen_csv_entry?(@freecen_csv_entry)
-      message = 'The entry was not correctly linked. Have your coordinator contact the web master'
-      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
-    end
-    @freecen_csv_file = @freecen_csv_entry.freecen_csv_file
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'File is currently awaiting processing and should not be edited') && return unless @freecen_csv_file.can_we_edit?
-
-    display_info
-
-    @embargo_permitted = (@user.person_role == 'system_administrator' || @user.person_role == 'executive_director') ? true : false
-    @freecen_csv_entry.embargo_records.build if @embargo_permitted
-    @date = DateTime.now
-    session[:freecen_csv_entry_id] = @freecen_csv_entry._id
-    session[:zero_listing] = true if params[:zero_listing].present?
   end
 
   def error
@@ -192,7 +167,7 @@ class FreecenCsvEntriesController < ApplicationController
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
     display_info
-    @freereg1_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).all.order_by(file_line_number: 1)
+    @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).all.order_by(file_line_number: 1)
   end
 
   def new

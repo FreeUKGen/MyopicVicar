@@ -161,7 +161,6 @@ class PhysicalFile
   def file_and_entries_delete
     file = Freereg1CsvFile.where(file_name: file_name, userid: userid).first
     file.remove_from_ucf_list unless file.blank?
-    file.save_to_attic unless file.blank?
     Freereg1CsvFile.where(file_name: file_name, userid: userid).destroy_all unless file.blank?
     if file_name.present?
       base_file_location = File.join(Rails.application.config.datafiles, userid, file_name)
@@ -169,8 +168,17 @@ class PhysicalFile
     end
   end
 
+  def freecen_csv_file_and_entries_delete
+    file = FreecenCsvFile.where(file_name: file_name, userid: userid).first
+    FreecenCsvFile.where(file_name: file_name, userid: userid).destroy_all unless file.blank?
+    if file_name.present?
+      base_file_location = File.join(Rails.application.config.datafiles, userid, file_name)
+      File.delete(base_file_location) if File.file?(base_file_location)
+    end
+  end
+
   def file_delete
-    location = File.join(Rails.application.config.datafiles,self.userid,self.file_name)
+    location = File.join(Rails.application.config.datafiles, self.userid, self.file_name)
     File.delete(location) if File.file?(location)
   end
 

@@ -455,22 +455,24 @@ crumb :show_physical_files do |physical_file|
 end
 
 #csvfiles
-crumb :new_csvfile do |csvfile|
+crumb :new_csvfile do |csvfile, app|
   link 'Upload New File', new_csvfile_path
   case
   when session[:my_own]
-    parent :files, nil
+    parent :files, nil if app == 'freereg'
+    parent :freecen_csv_files, nil if app == 'freereg'
   when session[:county]
     parent :county_options, session[:county]
   when session[:syndicate]
     parent :syndicate_options, session[:syndicate]
   end
 end
-crumb :edit_csvfile do |csvfile, file|
+crumb :edit_csvfile do |csvfile, file, app|
   link 'Replace File', edit_csvfile_path
   case
   when session[:my_own]
-    parent :files, file
+    parent :files, file if app == 'freereg'
+    parent :freecen_csv_files, file if app == 'freecen'
   when session[:county]
     parent :files, file
     #parent :county_options, session[:county]
@@ -1526,6 +1528,118 @@ end
 crumb :freecen1_vld_entry do |county, file|
   link 'FreeCen1 VLD Entry', freecen1_vld_entry_path(id: file, county: county)
   parent :freecen1_vld_entries, session[:freecen1_vld_file], session[:entry_page]
+end
+
+# ...............................................freecen_csv_files .....................................
+crumb :my_own_freecen_csv_files do
+  link 'Your Files', my_own_freecen_csv_file_path
+end
+
+crumb :freecen_csv_files do |file|
+  if session[:my_own]
+  elsif file.blank?
+    link 'List of Files', freecen_csv_files_path
+  else
+    link 'List of Files', freecen_csv_files_path(anchor: "#{file.id}", page: "#{session[:current_page]}")
+  end
+
+  if session[:my_own]
+    parent :my_own_freecen_csv_files
+  elsif session[:county].present? && %w[county_coordinator system_administrator technical data_manager].include?(session[:role])
+    if session[:piece_id].present?
+      piece = Piece.find_by(_id: piece_id).first
+      if piece.nil?
+        parent :county_options, session[:county]
+      else
+        parent :show_piece, session[:county], piece
+      end
+    else
+      parent :county_options, session[:county]
+    end
+  elsif %w[volunteer_coordinator syndicate_coordinator].include?(session[:role])
+    parent :userid_details_listing, session[:syndicate]
+  elsif session[:syndicate].present? && %w[county_coordinator system_administrator technical data_manager].include?(session[:role])
+    if session[:userid_id].present?
+      parent :userid_detail, session[:syndicate], UseridDetail.find(session[:userid_id])
+    else
+      parent :syndicate_options, session[:syndicate]
+    end
+  elsif %w[system_administrator technical].include?(session[:role])
+    parent :cenmanager_userid_options
+  end
+end
+
+crumb :show_freecen_csv_file do |file|
+  link 'File Information', freecen_csv_file_path(file.id)
+  if session[:my_own]
+    parent :my_own_freecen_csv_files, file
+  else
+    parent :freecen_csv_files, file
+  end
+end
+
+crumb :edit_freecen_csv_file do |file|
+  link 'Editing File Information', edit_freecen_csv_file_path(file)
+
+  parent :show_freecen_csv_file, file
+end
+
+crumb :relocate_freecen_csv_file do |file|
+  link 'Relocating File', relocate_freecen_csv_file_path(file)
+  parent :show_freecen_csv_file, file
+end
+
+crumb :waiting do |file|
+  link 'Files waiting to be processed'
+  if session[:my_own]
+    parent :my_own_freecen_csv_files
+  else
+    parent :freecen_csv_files, file
+  end
+end
+
+crumb :change_userid_freecen_csv_file do |file|
+  link 'Changing owner'
+  parent :show_freecen_csv_file, file
+end
+crumb :select_freecen_csv_file do |user|
+  link 'Selecting file'
+  if session[:my_own]
+    parent :my_own_freecen_csv_files
+  else
+    parent :freecen_csv_files, file
+  end
+end
+
+crumb :show_freecen_csv_entries do |entry, file|
+  if entry.nil?
+    link 'List of Records', freecen_csv_entries_path
+  else
+    link 'List of Records', freecen_csv_entries_path(anchor: "#{entry.id}")
+  end
+  parent :show_freecen_csv_file, file
+end
+
+crumb :new_record do |entry, file|
+  link 'Create New Record', new_freereg1_csv_entry_path
+  parent :show_records, entry, file
+end
+crumb :error_freecen_csv_entries do |file|
+  link 'List of Errors', error_freecen_csv_file_path(file)
+  parent :show_freecen_csv_file, file
+end
+crumb :show_freecen_csv_entry do |entry, file|
+  link 'Record Contents', freecen_csv_entry_path(entry)
+  parent :show_freecen_csv_entries, entry, file
+end
+crumb :edit_freecen_csv_entry do |entry, file|
+  link 'Edit Record', edit_freeceen_csv_entry_path(entry)
+  parent :show_freecen_csv_entry, entry, file
+end
+
+crumb :correct_freecen_csv_entry do |entry, file|
+  link 'Correct Error Record', error_freecen_csv_entry_path(entry._id)
+  parent :error_freecen_csv_entries, file
 end
 
 # crumb :projects do

@@ -272,31 +272,36 @@ class CsvFile < CsvFiles
 
     return [false, "initial @data_lines made no sense extracted #{message}. <br>"] unless success || [1, 2].include?(reduction)
 
-    success, message = @csv_records.extract_the_data(reduction)
+    success, records_processed, data_records = @csv_records.extract_the_data(reduction)
 
+    successa, freecen_csv_file = write_freecen_csv_file if success
+
+    return [successa, "File not saved. <br>"] unless successa
 
     # p "finished data"
-    return [success, "Data not extracted #{@records_processed}. <br>"] unless success
+    return [success, "Data not extracted #{records_processed}. <br>"] unless success
+
+    successb = write_freecen_csv_entries(data_records, freecen_csv_file) if successa
+
     # success, @records_processed, @data_errors = process_the_data if success
 
     # return [success, "Data not processed #{@records_processed}. <br>"] unless success
 
     success, message = clean_up_supporting_information
-    # p "finished clean up"
-    records = @total_records
-    time = ((Time.new.to_i - @file_start.to_i) * 1000) / records unless records == 0
-    @project.write_messages_to_all("Created  #{@total_records} entries at an average time of #{time}ms per record at #{Time.new}. <br>",true)
-    return [success,"clean up failed #{message}. <br>"] unless success
+    # p "finished clean up
+    time = ((Time.new.to_i - @file_start.to_i) * 1000) / records_processed unless records_processed == 0
+    @project.write_messages_to_all("Created  #{records_processed} entries at an average time of #{time}ms per record at #{Time.new}. <br>",true)
+    return [success, "clean up failed #{message}. <br>"] unless success
 
     success, message = communicate_file_processing_results
     # p "finished com"
     return [success, "communication failed #{message}. <br>"] unless success
 
-    [true, @total_records, @total_data_errors]
+    [true, records_processed, @total_data_errors]
   end
 
 
-  def check_and_create_db_record_for_entry(data_record, freereg1_csv_file)
+  def check_and_create_db_record_for_entry(data_record, freeren_csv_file)
     #p " check and create"
     if !@project.force_rebuild
       # p "processing create_db_record_for_entry"
@@ -608,6 +613,34 @@ class CsvFile < CsvFiles
     return xxx
   end
 
+  def write_freecen_csv_file
+    new_file = FreecenCsvFile.new
+    new_file.file_name = @file_name
+    new_file.uploaded_date = @uploaded_date
+    new_file.software_version = @software_version
+    new_file.userid = @userid
+    new_file.total_records = @total_records.to_i
+    new_file.file_errors = @file_errors
+    new_file.total_errors = @errors.to_i
+    piece.freecen_csv_files << new_file
+    success = piece.save
+    [success, new_file]
+  end
+
+  def write_freecen_csv_entries(records, file)
+    records.each do |record|
+      record[:piece_numer] = record[:piece].piece_number.to_i
+      record[:piece] = nil
+      record = record.delete_if {|key, value| key == :piece }
+      freecen_csv_entry = FreecenCsvEntry.new(record)
+      freecen_csv_entry.freecen_csv_file_id = file.id
+      freecen_csv_entry.save
+    end
+    file.update(total_records: records.length) if records.present?
+    true
+  end
+
+
 end
 
 class CsvRecords < CsvFile
@@ -657,8 +690,8 @@ class CsvRecords < CsvFile
       success = true
       piece = line[0]
       year, piece = FreecenPiece.extract_year_and_piece(line[0])
-      piece = FreecenPiece.where(year: year, piece_number: piece).first
-      if piece.blank?
+      actual_piece = FreecenPiece.where(year: year, piece_number: piece).first
+      if actual_piece.blank?
         message = "Error: there is no piece with #{line[0]} in the database}. <br>"
         success = false
       end
@@ -666,7 +699,7 @@ class CsvRecords < CsvFile
       message = "Error: line 1 of batch does not have a valid piece number. It has #{line[0]}. <br>"
       success = false
     end
-    [year, piece, success, message]
+    [year, actual_piece, success, message]
   end
 
   def line_two(line)
@@ -695,7 +728,7 @@ class CsvRecords < CsvFile
     skip = skip - 1
     success = true
     data_lines = 0
-    @data_records = []
+    data_records = []
     @array_of_lines.each_with_index do |line, n|
       next if n <= skip
 
@@ -704,13 +737,13 @@ class CsvRecords < CsvFile
 
       @record = CsvRecord.new(line, @csvfile, @project)
       success, message, result = @record.extract_data_line(n + 1)
-      @data_records << result
+      data_records << result
 
       @project.write_messages_to_all(message, true) unless success
       success = true
       data_lines = data_lines + 1
     end
-    [success, data_lines]
+    [success, data_lines, data_records]
   end
 
   def inform_the_user

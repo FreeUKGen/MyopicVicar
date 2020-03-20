@@ -23,7 +23,7 @@ class FreecenCsvEntry
   require 'chapman_code'
 
   field :age, type: String
-  field :age_unit, type: String	#  Created from age
+  field :age_unit, type: String #  Created from age
   field :at_home, type: String
   field :birth_county, type: String
   field :birth_place, type: String
@@ -31,15 +31,17 @@ class FreecenCsvEntry
   field :civil_parish, type: String
   field :data_transition, type: String
   field :disability, type: String
-  field :dwelling_number, type: Integer	# derived
+  field :dwelling_number, type: Integer # derived
   field :ecclesiastical_parish, type: String
   field :enumeration_district, type: String
+  field :error, type: String
   field :flexible, type: Boolean, default: false
   field :folio_number, type: String
   field :forenames, type: String
   field :house_number, type: String
   field :house_or_street_name, type: String
   field :individual_flag, type: String
+  field :individual_number, type: Integer
   field :language, type: String
   field :marital_status, type: String
   field :name_flag, type: String
@@ -53,7 +55,7 @@ class FreecenCsvEntry
   field :relationship, type: String
   field :rooms, type: String
   field :schedule_number, type: String
-  field :sequence_in_household, type: Integer	# derived
+  field :sequence_in_household, type: Integer # derived
   field :sex, type: String
   field :surname, type: String
   field :uncertainy_location, type: String
@@ -61,16 +63,12 @@ class FreecenCsvEntry
   field :verbatim_birth_place, type: String
   field :year, type: String
 
-
-
-  validate :errors_in_fields
-
   belongs_to :freecen_csv_file, index: true, optional: true
 
 
   has_one :search_record, dependent: :restrict_with_error
 
-  before_save :captitalize_surnames, :check_register_type
+
 
   before_destroy do |entry|
     SearchRecord.destroy_all(:freecen_csv_entry_id => entry._id)

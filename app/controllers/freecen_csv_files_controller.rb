@@ -51,8 +51,8 @@ class FreecenCsvFilesController < ApplicationController
     @role = session[:role]
     @freecen_csv_file_name = file.file_name
     session[:freecen_csv_file_id] = file._id
-    @register = file.register
-    @return_location = file.register.id if file.register.present?
+    @piece = file.freecen_piece
+    @return_location = file.freecen_piece.id if file.freecen_piece.present?
   end
 
   def create
@@ -72,10 +72,10 @@ class FreecenCsvFilesController < ApplicationController
 
     redirect_back(fallback_location: new_manage_resource_path, notice: 'The physical file entry no longer exists. Perhaps you have already deleted it.') && return  if @physical_file.blank?
 
-    @freecen_csv_file.remove_from_ucf_list
+
     # save a copy to attic and delete all batches
-    @physical_file.file_and_entries_delete
-    @freecen_csv_file.update_freereg_contents_after_processing
+    @physical_file.freecen_csv_file_and_entries_delete
+
     @physical_file.delete
     session[:type] = 'edit'
     flash[:notice] = 'The deletion of the batches was successful'
@@ -203,19 +203,6 @@ class FreecenCsvFilesController < ApplicationController
       message = 'File is currently awaiting processing and should not be edited'
       redirect_back(fallback_location: { action: 'show' }, notice: message) && return
     end
-  end
-
-  def embargoed_entries
-    @freecen_csv_file = FreecenCsvFile.find(params[:id])
-    unless FreecenCsvFile.valid_freecen_csv_file?(params[:id])
-      message = 'The file was not correctly linked. Have your coordinator contact the web master'
-      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
-    end
-    @freecen_csv_entries = @freecen_csv_file.all_embargoed_entries
-    display_info
-
-    @embargoed_entries = true
-    render 'freecen_csv_entries/index'
   end
 
   def error
@@ -388,7 +375,7 @@ class FreecenCsvFilesController < ApplicationController
     elsif @return_location.blank?
       redirect_to manage_resource_path(@user)
     else
-      redirect_to register_path(@return_location)
+      redirect_to piece_path(@return_location)
     end
   end
 
@@ -399,23 +386,8 @@ class FreecenCsvFilesController < ApplicationController
       message = 'The file was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
-    session[:from] = 'place' if params[:from].present? && params[:from] == 'place'
     controls(@freecen_csv_file)
-    @register = @freecen_csv_file.register
-    @gaps = @freecen_csv_file.register.gaps_exist?
-  end
-
-  def show_zero_startyear_entries
-    @freecen_csv_file = FreecenCsvFile.find(params[:id])
-    unless FreecenCsvFile.valid_freecen_csv_file?(params[:id])
-      message = 'The file was not correctly linked. Have your coordinator contact the web master'
-      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
-    end
-    @freecen_csv_entries = @freecen_csv_file.get_zero_year_records
-    display_info
-
-    @get_zero_year_records = true
-    render 'freecen_csv_entries/index'
+    @piece = @freecen_csv_file.freecen_piece
   end
 
   def update_churches

@@ -8,15 +8,17 @@
         <thead >
           <tr>
             <th class='sticky-header'>File</th>
-            <th class='sticky-header'>Cty</th>
-            <th class='sticky-header'>Place</th>
+            <th class='sticky-header'>Chap</th>
+            <th class='sticky-header'>Year</th>
+            <th class='sticky-header'>Piece</th>
+            <th class='sticky-header'>District</th>
             <th class='sticky-header'>Entries</th>
-            <th class='sticky-header'>Start year</th>
-            <th class='sticky-header'>End year</th>
+            <th class='sticky-header'>Errors</th>
+            <th class='sticky-header'>Flexible</th>
             <% unless session[:my_own]%>
               <th class='sticky-header'>User ID</th>
             <% end%>
-            <th class='sticky-header' >Processed</th>
+            <th class='sticky-header' >Uploaded</th>
             <th colspan = "2" class='sticky-header'>Locked<br>
               TR SC</th>
             <th colspan="7" class='sticky-header'>Action <a href="#" class="left_tooltip" onclick="return false;"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %><span>SH: Show file info; ED: Edit file info; DL: Download batch; ER: Errors in batch; L: Lock batch; U: Unlock batch; DE: Delete batch; RL:Replace batch </span></a></th>
@@ -28,15 +30,17 @@
           <% @freecen_csv_files.each do |freecen_csv_file| %>
             <tr id="<%= freecen_csv_file.id %>" style="<%=freecen_csv_file.define_colour%>">
               <td><%= file_name(freecen_csv_file)%></td>
-              <td><%= freecen_csv_file.county %></td>
-              <td><%= freecen_csv_file.place %></td>
-              <td><%= freecen_csv_file.freereg1_csv_entries.count %></td>
-              <td><%= mindata(freecen_csv_file)%></td>
-              <td><%= freecen_csv_file.datemax %></td>
+              <td><%= chapman(freecen_csv_file) %></td>
+              <td><%= year(freecen_csv_file) %></td>
+              <td><%= piece_number(freecen_csv_file) %></td>
+              <td><%= district_name(freecen_csv_file) %></td>
+              <td><%= freecen_csv_file.total_records %></td>
+              <td><%= freecen_csv_file.total_errors%></td>
+              <td><%= freecen_csv_file.flexible %></td>
               <% unless session[:my_own]%>
                 <td><%= freecen_csv_file.userid %></td>
               <% end %>
-              <td><%= processed_date(freecen_csv_file)%></td>
+              <td><%= uploaded_date(freecen_csv_file)%></td>
               <td><%= locked_by_transcriber(freecen_csv_file)%></td>
               <td><%= locked_by_coordinator(freecen_csv_file)%></td>
               <td><%= link_to 'SH', freecen_csv_file, method: :get  %></td>
