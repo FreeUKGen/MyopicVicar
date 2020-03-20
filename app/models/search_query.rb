@@ -756,7 +756,7 @@ class SearchQuery
   end
 
   def query_contains_wildcard?
-    (first_name && first_name.match(WILDCARD)) || (last_name && last_name.match(WILDCARD))? wildcard_search = true : wildcard_search = false
+    (first_name && (first_name.match(WILDCARD) && !second_name_wildcard)) || (last_name && last_name.match(WILDCARD))? wildcard_search = true : wildcard_search = false
     self.wildcard_search = wildcard_search
     return wildcard_search
   end
@@ -991,17 +991,25 @@ class SearchQuery
     begins_with_wildcard(name_string) ? /#{regex_string}/ : /^#{regex_string}/
   end
 
+  def freebmd_app?
+    app_template == 'freebmd'
+  end
+
+  def app_template
+    MyopicVicar::Application.config.template_set
+  end
+
   def wildcard_is_appropriate
     # allow promiscuous wildcards if place is defined
     if query_contains_wildcard?
-      if fuzzy && ((first_name && first_name.match(WILDCARD)) || (last_name && last_name.match(WILDCARD)))
+      if fuzzy && ((first_name && (first_name.match(WILDCARD) && !second_name_wildcard)) || (last_name && last_name.match(WILDCARD)))
         errors.add(:last_name, 'You cannot use both wildcards and soundex in a search')
       end
       if place_search? || self.districts.present?
         if last_name && last_name.match(WILDCARD) && last_name.index(WILDCARD) < 2
           errors.add(:last_name, 'Two letters must precede any wildcard in a surname.')
         end
-        unless MyopicVicar::Application.config.template_set == 'freebmd'
+        unless freebmd_app?
           if first_name && first_name.match(WILDCARD) && first_name.index(WILDCARD) < 2
             errors.add(:last_name, 'Two letters must precede any wildcard in a forename.')
           end
@@ -1214,7 +1222,9 @@ class SearchQuery
   end
 
   def second_name_wildcard
-    self.first_name.start_with?('*') && !self.first_name.start_with?('**')
+    if freebmd_app?
+      self.first_name.start_with?('*') && !self.first_name.start_with?('**')
+    end
   end
 
   def surname_wildcard_query
