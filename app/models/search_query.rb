@@ -1020,7 +1020,6 @@ class SearchQuery
     end
   end
 
-
   def county_is_valid
     if MyopicVicar::Application.config.template_set == 'freereg'
       if chapman_codes[0].nil? && !(record_type.present? && start_year.present? && end_year.present?)
@@ -1204,10 +1203,10 @@ class SearchQuery
     if self.first_name.present? && !self.first_name_exact_match
       if do_wildcard_seach?(self.first_name)
         unless second_name_wildcard
-          query = "BestGuess.GivenName like '#{name_wildcard_search(self.first_name)}'"
+          query = "BestGuess.GivenName like '#{name_wildcard_search(self.first_name)}%'"
         else
           name = self.first_name.slice!(0)
-          query = "BestGuess.OtherNames like '#{name_wildcard_search(self.first_name)}'"
+          query = "BestGuess.OtherNames like '#{name_wildcard_search(self.first_name)}%'"
         end
       end
     end
@@ -1622,6 +1621,10 @@ class SearchQuery
   def name_wildcard_search name_field
     name_field.gsub(/[*?]/, '*' => '%', '?' => '_')
     #query = "BestGuess.Surname like '#{surname}'"
+  end
+
+  def allow_firstname_beginwith_asterick
+    self.firstname.start_with('*')
   end
 
   def month
