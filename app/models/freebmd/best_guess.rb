@@ -3,6 +3,7 @@ class BestGuess < FreebmdDbBase
   self.table_name = 'BestGuess'
   has_one :best_guess_maariages, class_name: '::BestGuessMarriage', foreign_key: 'RecordNumber'
   belongs_to :CountyCombos, foreign_key: 'CountyComboID', primary_key: 'CountyComboID', class_name: '::CountyCombo'
+  has_many :ScanLinks, primary_key: 'ChunkNumber', foreign_key: 'ChunkNumber'
   extend SharedSearchMethods
 
   def friendly_url
