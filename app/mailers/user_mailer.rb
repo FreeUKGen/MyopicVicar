@@ -7,7 +7,7 @@ class UserMailer < ActionMailer::Base
   if MyopicVicar::Application.config.template_set == 'freereg'
     default from: "#{reg_website} FreeREG Servant <freereg-processing@freereg.org.uk>"
   elsif MyopicVicar::Application.config.template_set == 'freecen'
-    default from: "#{reg_website} FreeCEN Servant <freecen-contacts@freecen.org.uk>"
+    default from: "#{cen_website} FreeCEN Servant <freecen-contacts@freecen.org.uk>"
   end
 
   def appname
