@@ -5,10 +5,10 @@ class UserMailer < ActionMailer::Base
   @website = ['https://test3.freereg.org.uk', 'https://test3.freecen.org.uk', 'https://test3.freebmd.org.uk'].include?(MyopicVicar::Application.config.website) ? 'Test' : ''
   if MyopicVicar::Application.config.template_set == 'freereg'
     default from: "#{@website} FreeREG Servant <freereg-processing@freereg.org.uk>"
-  elsif MyopicVicar::Application.config.template_set == 'freecen'
-    default from: "#{@website} FreeCEN Servant <freecen-contacts@freecen.org.uk>"
   elsif MyopicVicar::Application.config.template_set == 'freebmd'
     default from: "#{@website} FreeBMD Servant <freebmd-contacts@freebmd.org.uk>"
+  elsif MyopicVicar::Application.config.template_set == 'freecen'
+    default from: "#{cen_website} FreeCEN Servant <freecen-contacts@freecen.org.uk>"
   end
 
   def appname
