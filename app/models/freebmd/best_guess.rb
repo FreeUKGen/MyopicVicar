@@ -26,4 +26,7 @@ class BestGuess < FreebmdDbBase
     friendly.gsub!(/-+/, '-')
     friendly.downcase!
   end
+  def hello
+    puts 'hello'
+  end
 end

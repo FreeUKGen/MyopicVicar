@@ -3,4 +3,5 @@ class ScanLink < FreebmdDbBase
   self.table_name = 'ScanLink'
   belongs_to :BestGuess, foreign_key: 'ChunkNumber'
   #belongs_to :ScanList
+  #test
 end
