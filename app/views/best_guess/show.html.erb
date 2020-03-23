@@ -91,7 +91,7 @@
       <h4>Scan Information</h4>
       <% @scan_ids = BestGuess.includes(:ScanLinks).where(RecordNumber: @search_record[:RecordNumber]).pluck(:ScanID)%>
       <% ScanList.where(ScanID: @scan_ids).each do |s| %>
-        <%= image_tag("#{s.SeriesRangeFileName}" %>
+        <%= image_tag("#{s.SeriesRangeFileName}") %>
       <% end %>
     </div>
   </div>
