@@ -1,0 +1,66 @@
+<section>
+  <table class="table--bordered " style="background-color:#ffffff;">
+    <thead>
+      <tr>
+        <% FreecenCsvEntry.dwelling_display_labels(@cen_year,@cen_chapman_code).each do |lbl| %>
+          <td>
+            <%= lbl %>
+          </td>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <% @freecen_csv_entry.dwelling_display_values(@cen_year,@cen_chapman_code).each do |field_val| %>
+          <td>
+            <%= field_val %>
+          </td>
+        <% end %>
+      </tr>
+    </tbody>
+  </table>
+  <table class="table--bordered " style="background-color:#ffffff;">
+    <thead>
+      <tr>
+        <% FreecenCsvEntry.individual_display_labels(@cen_year,@cen_chapman_code).each do |lbl| %>
+          <td>
+            <%= lbl %>
+          </td>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <% if @freecen_csv_entry.individual_flag.blank? %>
+          <% @freecen_csv_entry.individual_display_values(@cen_year,@cen_chapman_code).each do |field_val| %>
+            <td>
+              <%= field_val %>
+            </td>
+          <% end %>
+        <% else%>
+          <p class="text--center">Uninhabited</p>
+        <% end %>
+      </tr>
+    </tbody>
+  </table>
+  <table class="table--bordered " style="background-color:#ffffff;">
+    <thead>
+      <tr>
+        <% FreecenCsvEntry.management_display_labels.each do |lbl| %>
+          <td>
+            <%= lbl %>
+          </td>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <% @freecen_csv_entry.management_display_values.each do |field_val| %>
+          <td>
+            <%= field_val %>
+          </td>
+        <% end %>
+      </tr>
+    </tbody>
+  </table>
+</section>

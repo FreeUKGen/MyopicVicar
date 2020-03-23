@@ -1611,7 +1611,7 @@ crumb :select_freecen_csv_file do |user|
   end
 end
 
-crumb :show_freecen_csv_entries do |entry, file|
+crumb :freecen_csv_entries do |entry, file|
   if entry.nil?
     link 'List of Records', freecen_csv_entries_path
   else
@@ -1620,7 +1620,7 @@ crumb :show_freecen_csv_entries do |entry, file|
   parent :show_freecen_csv_file, file
 end
 
-crumb :new_record do |entry, file|
+crumb :new_freecen_csv_entry do |entry, file|
   link 'Create New Record', new_freereg1_csv_entry_path
   parent :show_records, entry, file
 end
@@ -1630,10 +1630,10 @@ crumb :error_freecen_csv_entries do |file|
 end
 crumb :show_freecen_csv_entry do |entry, file|
   link 'Record Contents', freecen_csv_entry_path(entry)
-  parent :show_freecen_csv_entries, entry, file
+  parent :freecen_csv_entries, entry, file
 end
 crumb :edit_freecen_csv_entry do |entry, file|
-  link 'Edit Record', edit_freeceen_csv_entry_path(entry)
+  link 'Edit Record', edit_freecen_csv_entry_path(entry)
   parent :show_freecen_csv_entry, entry, file
 end
 

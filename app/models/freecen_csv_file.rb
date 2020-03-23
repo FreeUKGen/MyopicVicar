@@ -617,11 +617,9 @@ class FreecenCsvFile
     self.locked_by_coordinator = true unless who_actioned
     self.modification_date = Time.now.strftime("%d %b %Y")
     recalculate_last_amended
-    update_number_of_files
+
     save
-    freecen_piece, place = location_from_file
-    freecen_piece.calculate_freecen_piece_numbers
-    place.calculate_place_numbers
+
   end
 
   def update_number_of_files
