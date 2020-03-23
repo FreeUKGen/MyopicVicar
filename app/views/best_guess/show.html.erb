@@ -88,7 +88,7 @@
   </section>
   <div class="grid">
     <div class="grid__item one-whole lap-one-whole palm-one-whole">
-      <h4>Scan Information</h4>
+      <h4>Scan Info:</h4>
       <% @scan_ids = BestGuess.includes(:ScanLinks).where(RecordNumber: @search_record[:RecordNumber]).pluck(:ScanID)%>
       <% ScanList.where(ScanID: @scan_ids).each do |s| %>
         <%= image_tag("#{s.SeriesRangeFileName}") %>
