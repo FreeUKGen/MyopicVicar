@@ -87,10 +87,21 @@
     </table>
   </section>
   <div class="grid">
+    <div class="grid__item one-whole lap-one-whole palm-one-whole">
+      <h4>Scan Information</h4>
+      <% @scan_ids = BestGuess.includes(:ScanLinks).where(RecordNumber: @search_record[:RecordNumber]).pluck(:ScanID)%>
+      <% ScanList.where(ScanID: @scan_ids).each do |s| %>
+        <%= image_tag("#{s.SeriesRangeFileName}" %>
+      <% end %>
+    </div>
+  </div>
+  <div class="grid">
     <div class="grid__item one-half lap-one-half palm-one-whole">
-      If you have a correction to this entry, please submit a correction. Please note that you can view the scan from which this entry was transcribed, please click on          .Please examine this image to verify that any correction you submit is the same as in the GRO index. The objective of FreeBMD is to provide online access to this index and entries are aligned to the GRO index, not to other sources.
+      <h4>Corrections</h4>
+      <p>If you have a correction to this entry, please submit a correction. Please note that you can view the scan from which this entry was transcribed, please click on          .Please examine this image to verify that any correction you submit is the same as in the GRO index. The objective of FreeBMD is to provide online access to this index and entries are aligned to the GRO index, not to other sources.</p>
     </div>
     <div class="grid__item one-half lap-one-half palm-one-whole">
-      A Postem is a note left by someone about this record - the content of the postem is determined by the person who left it. FreeBMD can offer no assurance about the postem and will not enter into correspondence about it. 
+      <h4>Postems</h4>
+      <p>A Postem is a note left by someone about this record - the content of the postem is determined by the person who left it. FreeBMD can offer no assurance about the postem and will not enter into correspondence about it.</p>
     </div>
   </div>
