@@ -174,14 +174,14 @@ class UserMailer < ActionMailer::Base
       manager = UseridDetail.userid("CENManager").first
     end
     get_coordinator_name
-    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{manager.person_forename} <#{manager.email_address}>", :subject => "#{appname} technical registration notification") unless @coordinator.nil?
+    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{manager.person_forename} <#{manager.email_address}>", :subject => "#{appname} technical registration notification") unless @coordinator.nil?
   end
 
   def notification_of_transcriber_creation(user)
     @appname = appname
     @user = user
     get_coordinator_name
-    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} userid creation") unless @coordinator.nil?
+    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} userid creation") unless @coordinator.nil?
   end
 
   def notification_of_transcriber_registration(user)
@@ -194,14 +194,14 @@ class UserMailer < ActionMailer::Base
       manager = UseridDetail.userid("CENManager").first
     end
     get_coordinator_name
-    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{manager.person_forename} <#{manager.email_address}>", :subject => "#{appname} transcriber registration") unless @coordinator.nil?
+    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{manager.person_forename} <#{manager.email_address}>", :subject => "#{appname} transcriber registration") unless @coordinator.nil?
   end
 
   def notification_of_researcher_registration(user)
     @appname = appname
     @user = user
     get_coordinator_name
-    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} research registration") unless @coordinator.nil?
+    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} research registration") unless @coordinator.nil?
   end
 
   def notify_cc_assignment_complete(user, group_id, chapman_code)
