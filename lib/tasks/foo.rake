@@ -27,6 +27,9 @@ namespace :foo do
     Freereg1CsvFile.no_timeout.each_with_index do |file, loop_index|
       next unless file.datemin == '0'
       p loop_index
+      p "#{file.file_name} #{file.userid}"
+      next if file.file_name == 'SOMFSJBA.csv' && file.userid == 'YvonneScrivener' # This file has 48,000 entries
+
       file.calculate_distribution
 
       sleep args.sleep_time.to_f
@@ -430,6 +433,7 @@ namespace :foo do
       unless args.skip && i < args.skip.to_i
         place.ucf_list = {}
         Freereg1CsvFile.where(:place_name => place.place_name).order(:file_name => :asc).all.no_timeout.each do |file|
+          next if file.file_name == 'SOMFSJBA.csv' && file.userid == 'YvonneScrivener' # This file has 48,000 entries
           print "#{i}\tUpdating\t#{place.chapman_code}\t#{place.place_name}\t#{file.file_name}\n"
           message_file.puts "#{i}\tUpdating\t#{place.chapman_code}\t#{place.place_name}\t#{file.file_name}\n"
           place.update_ucf_list(file)

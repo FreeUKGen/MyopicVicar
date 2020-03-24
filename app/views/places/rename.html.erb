@@ -5,6 +5,7 @@
 <section class="island  island--light">
   <%= simple_form_for  @place, :html => { :class => "grid"}  do |f| %>
     <%= f.input :place_name, :label => "Enter the new Place Name", :input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width"}%>
+    <%= f.hidden_field :chapman_code,  :value=>@chapman_code%>
     <%= f.button :submit, 'Rename' %>
   <% end %>
   <p style="color:red">Please note you are changing the name in a large number of records (<%=@records%>) the processing time could be several minutes depending upon the number of batches affected. <b>Please wait for the process to complete.</b></p>
