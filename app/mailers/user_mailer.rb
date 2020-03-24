@@ -114,7 +114,7 @@ class UserMailer < ActionMailer::Base
     sender_email = UseridDetail.create_friendly_from_email(sender_userid)
     to_email = UseridDetail.create_friendly_from_email(to_userid)
     copy_to_email = UseridDetail.create_friendly_from_email(copy_to_userid)
-    mail(from: sender_email, to: to_email, cc: copy_to_email, subject: "#{@sending.person_forename} #{@sending.person_surname} of FreeREG sent a message #{@reply.subject} in response to reference #{@original_message.identifier}")
+    mail(to: [to_email, sender_email, copy_to_email],  subject: "#{@sending.person_forename} #{@sending.person_surname} of #{@appname} sent a message #{@reply.subject} in response to reference #{@original_message.identifier}")
   end
 
   def feedback_action_request(contact, send_to, copies_to)
@@ -132,7 +132,7 @@ class UserMailer < ActionMailer::Base
       end
     end
     get_attachment(@contact)
-    mail(to: "#{@send_to.email_address}", cc: @cc_email_addresses, subject: "This is a feedback action request for reference #{@contact.identifier}")
+    mail(to: "#{@send_to.email_address}", cc: @cc_email_addresses, subject: "This is a feedback action request for reference #{@contact.identifier} on #{@appname}")
   end
 
   def get_attachment(contact)
@@ -413,7 +413,7 @@ class UserMailer < ActionMailer::Base
     if userid_object.present?
       email_address = userid_object.email_address
     else
-      email_address = "#{appname} Servant <freereg-processing@freereg.org.uk>"
+      email_address = "#{appname} Servant <#{appname}-processing@#{appname}.org.uk>"
     end
     email_address
   end
@@ -423,7 +423,7 @@ class UserMailer < ActionMailer::Base
     if userid.present?
       friendly_email = "#{userid.person_forename} #{userid.person_surname} <#{userid.email_address}>"
     else
-      friendly_email = 'FreeREG Servant <freereg-contacts@freereg.org.uk>'
+      friendly_email = "#{appname} Servant <#{appname}-processing@#{appname}.org.uk>"
     end
     [userid, friendly_email]
   end
