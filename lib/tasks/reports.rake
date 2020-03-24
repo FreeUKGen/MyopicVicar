@@ -1,4 +1,13 @@
 namespace :reports do
+
+  desc "extract_null_place_locations"
+  task :extract_null_place_locations, [:limit] => [:environment] do |t, args|
+    require 'extract_null_place_locations'
+    limit = args.limit
+    puts "extract_null_place_locations"
+    ExtractNullPlaceLocations.process(limit)
+    puts "Completed Checking #{limit} unique names"
+  end
   desc "count_valentines_marriages"
   task :count_valentines_marriages, [:limit] => [:environment] do |t, args|
     require 'count_valentines_marriages'

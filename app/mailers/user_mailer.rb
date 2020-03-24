@@ -7,7 +7,7 @@ class UserMailer < ActionMailer::Base
   if MyopicVicar::Application.config.template_set == 'freereg'
     default from: "#{reg_website} FreeREG Servant <freereg-processing@freereg.org.uk>"
   elsif MyopicVicar::Application.config.template_set == 'freecen'
-    default from: "#{reg_website} FreeCEN Servant <freecen-contacts@freecen.org.uk>"
+    default from: "#{cen_website} FreeCEN Servant <freecen-contacts@freecen.org.uk>"
   end
 
   def appname
@@ -114,7 +114,7 @@ class UserMailer < ActionMailer::Base
     sender_email = UseridDetail.create_friendly_from_email(sender_userid)
     to_email = UseridDetail.create_friendly_from_email(to_userid)
     copy_to_email = UseridDetail.create_friendly_from_email(copy_to_userid)
-    mail(from: sender_email, to: to_email, cc: copy_to_email, subject: "#{@sending.person_forename} #{@sending.person_surname} of FreeREG sent a message #{@reply.subject} in response to reference #{@original_message.identifier}")
+    mail(to: [to_email, sender_email, copy_to_email],  subject: "#{@sending.person_forename} #{@sending.person_surname} of #{@appname} sent a message #{@reply.subject} in response to reference #{@original_message.identifier}")
   end
 
   def feedback_action_request(contact, send_to, copies_to)
@@ -132,7 +132,7 @@ class UserMailer < ActionMailer::Base
       end
     end
     get_attachment(@contact)
-    mail(to: "#{@send_to.email_address}", cc: @cc_email_addresses, subject: "This is a feedback action request for reference #{@contact.identifier}")
+    mail(to: "#{@send_to.email_address}", cc: @cc_email_addresses, subject: "This is a feedback action request for reference #{@contact.identifier} on #{@appname}")
   end
 
   def get_attachment(contact)
@@ -174,14 +174,14 @@ class UserMailer < ActionMailer::Base
       manager = UseridDetail.userid("CENManager").first
     end
     get_coordinator_name
-    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{manager.person_forename} <#{manager.email_address}>", :subject => "#{appname} technical registration notification") unless @coordinator.nil?
+    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{manager.person_forename} <#{manager.email_address}>", :subject => "#{appname} technical registration notification") unless @coordinator.nil?
   end
 
   def notification_of_transcriber_creation(user)
     @appname = appname
     @user = user
     get_coordinator_name
-    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} userid creation") unless @coordinator.nil?
+    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} userid creation") unless @coordinator.nil?
   end
 
   def notification_of_transcriber_registration(user)
@@ -194,14 +194,14 @@ class UserMailer < ActionMailer::Base
       manager = UseridDetail.userid("CENManager").first
     end
     get_coordinator_name
-    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{manager.person_forename} <#{manager.email_address}>", :subject => "#{appname} transcriber registration") unless @coordinator.nil?
+    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{manager.person_forename} <#{manager.email_address}>", :subject => "#{appname} transcriber registration") unless @coordinator.nil?
   end
 
   def notification_of_researcher_registration(user)
     @appname = appname
     @user = user
     get_coordinator_name
-    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} research registration") unless @coordinator.nil?
+    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} research registration") unless @coordinator.nil?
   end
 
   def notify_cc_assignment_complete(user, group_id, chapman_code)
@@ -413,7 +413,7 @@ class UserMailer < ActionMailer::Base
     if userid_object.present?
       email_address = userid_object.email_address
     else
-      email_address = "#{appname} Servant <freereg-processing@freereg.org.uk>"
+      email_address = "#{appname} Servant <#{appname}-processing@#{appname}.org.uk>"
     end
     email_address
   end
@@ -423,7 +423,7 @@ class UserMailer < ActionMailer::Base
     if userid.present?
       friendly_email = "#{userid.person_forename} #{userid.person_surname} <#{userid.email_address}>"
     else
-      friendly_email = 'FreeREG Servant <freereg-contacts@freereg.org.uk>'
+      friendly_email = "#{appname} Servant <#{appname}-processing@#{appname}.org.uk>"
     end
     [userid, friendly_email]
   end
