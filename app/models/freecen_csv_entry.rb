@@ -30,6 +30,8 @@ class FreecenCsvEntry
   field :birth_place_flag, type: String
   field :civil_parish, type: String
   field :data_transition, type: String
+  field :deleted_flag, type: String
+  field :detail_flag, type: String
   field :disability, type: String
   field :dwelling_number, type: Integer # derived
   field :ecclesiastical_parish, type: String
@@ -58,6 +60,7 @@ class FreecenCsvEntry
   field :sequence_in_household, type: Integer # derived
   field :sex, type: String
   field :surname, type: String
+  field :uninhabited_flag, type: String
   field :uncertainy_location, type: String
   field :verbatim_birth_county, type: String
   field :verbatim_birth_place, type: String
