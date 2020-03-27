@@ -5,22 +5,13 @@
   <%= link_to "Printable Format", '#', :class => "btn   btn--small bordered push-half--right"%>
   <a href="#" id="citation-toggle" class="btn   btn--small bordered push-half--right citation-toggle">Generate Citation</a>
   </p>
-<h1 class="title bmd_search_header">Entry Information</h1>
+<h1 class="title">Entry Information</h1>
 <p>Has our search engine found the record you are seeking? The next step is to ordering your certificate ! Click on Ordering Certificates to learn what to do now.</p>
-<div class=''>
-  <i class="fa fa-arrow-left view_arrow"></i>
-  <%= link_to "Back to Results", search_query_path(@search_query, id: params[:search_id]) %>
 
-<div class="float--right">
-  <%= link_to '<i class="fa fa-chevron-left view_arrow"></i> Previous Result'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record, @previous_record.friendly_url), class: 'push-half--right' unless @previous_record.nil? %>
-  <%= link_to 'Next Result <i class="fa fa-chevron-right view_arrow"></i> '.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record, @next_record.friendly_url), class: 'push-half--right' unless @next_record.nil?%>
-</div>
-</div>
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
-<section class="island" >
-  <h1 class="accessibility">Search Results</h1>
+  <h1 class="accessibility">Entry Information</h1>
   <div class="table-wrapper" id="search-result">
-    <table class="search_results_table" border='0' >
+    <table class="search_results_table scrollable" border='0' >
       <caption class="gamma">
       </caption>
       <thead>
@@ -46,12 +37,6 @@
           <th>
             Volume/Page
           </th>
-          <th>
-            Transcriber
-          </th>
-          <th>
-            Scan
-          </th>
         </tr>
       </thead>
       <tbody>
@@ -65,7 +50,7 @@
             <%= "#{@search_record[:GivenName]}" %>
           </td>
           <td>
-            <%= "#{(@search_record[:QuarterNumber]-1)%4 + 1} #{(@search_record[:QuarterNumber]-1)/4 + 1837}"%>
+            <%= "#{QuarterDetails.quarters.key((@search_record[:QuarterNumber]-1)%4 + 1).upcase} #{(@search_record[:QuarterNumber]-1)/4 + 1837}"%>
           </td>
           <td>
             <%= "#{record_type}" %>
@@ -79,30 +64,161 @@
           <td>
             <%= "#{@search_record[:Volume]}/#{@search_record[:Page]}" %>
           </td>
-          <td>
-            <%= "#{@search_record[:AssociateName]}" %>
-          </td>
         </tr>
       </tbody>
     </table>
-  </section>
+  
   <div class="grid">
-    <div class="grid__item one-whole lap-one-whole palm-one-whole">
-      <h4>Scan Info:</h4>
-      <% @scan_ids = BestGuess.includes(:ScanLinks).where(RecordNumber: @search_record[:RecordNumber]).pluck(:ScanID)%>
-      <% ScanList.where(ScanID: @scan_ids).each do |s| %>
-        <%= image_tag("#{s.SeriesRangeFileName}") %>
-      <% end %>
+    <ul>
+      <li class="grid__item one-third lap-one-third palm-one-whole click_scan text--center border_text">
+        <%= link_to  "Scan(s)", '#', :class => "push-half--right push-half--down", title: "Please Click here to view Scan Information. Scan Info is shown by default"%>
+      </li>
+      <li class="grid__item one-third lap-one-third palm-one-whole click_postem text--center border_text">
+        <%= link_to  "Postem(s)", '#', :class => "push-half--right push-half--down", title: "Please Click here to view or create Postem(s)"%>
+      </li>
+      <li class="grid__item one-third lap-one-third palm-one-whole click_transcriber text--center border_text">
+        <%= link_to  "Transcriber(s)", '#', :class => "push-half--right push-half--down", title: "Please Click here to view Transcriber(s) who transcribed the record" %>
+      </li>
+  </div>
+  <div class='scan_info' id="scan_information">
+    <div class="grid">
+      <div class="grid__item one-whole lap-one-whole palm-one-whole">
+        <h4>Scan Info:</h4>
+        This entry was transcribed from the below scan(s).
+        <% @scan_ids = BestGuess.includes(:ScanLinks).where(RecordNumber: @search_record[:RecordNumber]).pluck(:ScanID)%>
+        <ul>
+          <% ScanList.where(ScanID: @scan_ids).each do |s| %>
+            <li><%= s.SeriesRangeFileName %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+    <div class="grid">
+      <div class="grid__item one-sixth lap-one-whole palm-one-whole thumbnail">
+        <%= image_tag('1837B3-B-0017.jpg', size:"50x50", alt: '1837B3-B-0017.jpg')%>
+      </div>
+      <div class="img-zoom-container">
+        <div class="grid__item three-sixths lap-one-whole palm-one-whole whole_image">
+          <%= image_tag('1837B3-B-0017.jpg', height: "350", width: '350', class: 'whole_image1', id:'myimage')%>
+        </div>
+        <div class="grid__item two-sixths lap-one-whole palm-one-whole whole_image1">
+          <div id="myresult" class="img-zoom-result"></div>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="grid">
-    <div class="grid__item one-half lap-one-half palm-one-whole">
-      <h4>Corrections</h4>
-      <p>If you have a correction to this entry, please submit a correction. Please note that you can view the scan from which this entry was transcribed, please click on          .Please examine this image to verify that any correction you submit is the same as in the GRO index. The objective of FreeBMD is to provide online access to this index and entries are aligned to the GRO index, not to other sources.</p>
+  <div class='postems' id='postem_info'>
+    <div class="grid">
+      <div class="grid__item one-whole lap-one-half palm-one-whole">
+        <h4>Postems</h4>
+        <p>A Postem is a note left by someone about this record - the content of the postem is determined by the person who left it. FreeBMD can offer no assurance about the postem and will not enter into correspondence about it.</p>
+      </div>
     </div>
-    <div class="grid__item one-half lap-one-half palm-one-whole">
-      <h4>Postems</h4>
-      <p>A Postem is a note left by someone about this record - the content of the postem is determined by the person who left it. FreeBMD can offer no assurance about the postem and will not enter into correspondence about it.</p>
+    <div class="text--center">
+      <a href="#" id="create_postem" class="btn btn--small">Create Postem</a>
     </div>
   </div>
-  <div></div>
+  <div class="push-half--topVB">
+    <h5> If you believe there to be an error in this transcription then please <%= link_to "report", report_error_contact_path(@search_record, :query => @search_query), target: "_blank" %> it to our data manager (link opens in a new tab or window).</h5>
+  </div>
+  <div class='push-half--top'>
+    <%= link_to "#{app_icons[:left_arrow_pink]} Back to Results".html_safe, search_query_path(@search_query, id: params[:search_id]), class: " push-half--top" %>
+    <div class="float--right">
+      <%= link_to '<i class="fa fa-chevron-left view_arrow"></i> Previous Result'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record, @previous_record.friendly_url), class: 'push-half--right push-half--top' unless @previous_record.nil? %>
+      <%= link_to 'Next Result <i class="fa fa-chevron-right view_arrow"></i> '.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record, @next_record.friendly_url), class: 'push-half--right push-half--top' unless @next_record.nil?%>
+    </div>
+  </div>
+  <script>
+    $('.whole_image1').hide();
+    $('.postems, .transcribers').hide();
+    $('.click_scan').css('border', "none")
+    $('.click_postem, .click_transcriber').css('border', "1px solid grey")
+
+    $('.click_scan').click(function() {
+        $('.scan_info').show();
+        //$('.click_postem, .click_transcriber').css('background', "#ccc")
+        $('.click_scan').css('background', "white")
+        $('.click_scan').css('border', "none")
+        $('.click_postem, .click_transcriber').css('border', "1px solid grey")
+        $('.postems, .transcribers').hide();
+    });
+    $('.click_postem').click(function() {
+        $('.postems').toggle();
+        //$('.click_scan, .click_transcriber').css('background', "#ccc")
+        $('.click_postem').css('background', "white")
+        $('.click_postem').css('border', "none")
+        $('.click_scan, .click_transcriber').css('border', "1px solid grey")
+        $('.scan_info, .transcribers').hide();
+    });
+    $('.click_transcriber').click(function() {
+        $('.transcribers').toggle();
+        //$('.click_postem, .click_scan').css('background', "#ccc")
+        $('.click_transcriber').css('background', "white")
+        $('.click_transcriber').css('border', "none")
+        $('.click_postem, .click_scan').css('border', "1px solid grey")
+        $('.scan_info, .postems').hide();
+    });
+
+    $('.thumbnail').click(function() {
+        $('.whole_image1').toggle();
+        imageZoom("myimage", "myresult");
+    });
+
+    function imageZoom(imgID, resultID) {
+      var img, lens, result, cx, cy;
+      img = document.getElementById(imgID);
+      result = document.getElementById(resultID);
+      /* Create lens: */
+      lens = document.createElement("DIV");
+      lens.setAttribute("class", "img-zoom-lens");
+      /* Insert lens: */
+      img.parentElement.insertBefore(lens, img);
+      /* Calculate the ratio between result DIV and lens: */
+      cx = result.offsetWidth / lens.offsetWidth;
+      cy = result.offsetHeight / lens.offsetHeight;
+      /* Set background properties for the result DIV */
+      result.style.backgroundImage = "url('" + img.src + "')";
+      result.style.backgroundSize = (img.width * cx) + "px " + (img.height * cy) + "px";
+      /* Execute a function when someone moves the cursor over the image, or the lens: */
+      lens.addEventListener("mousemove", moveLens);
+      img.addEventListener("mousemove", moveLens);
+      /* And also for touch screens: */
+      lens.addEventListener("touchmove", moveLens);
+      img.addEventListener("touchmove", moveLens);
+
+      function moveLens(e) {
+        var pos, x, y;
+        /* Prevent any other actions that may occur when moving over the image */
+        e.preventDefault();
+        /* Get the cursor's x and y positions: */
+        pos = getCursorPos(e);
+        /* Calculate the position of the lens: */
+        x = pos.x - (lens.offsetWidth / 2);
+        y = pos.y - (lens.offsetHeight / 2);
+        /* Prevent the lens from being positioned outside the image: */
+        if (x > img.width - lens.offsetWidth) {x = img.width - lens.offsetWidth;}
+        if (x < 0) {x = 0;}
+        if (y > img.height - lens.offsetHeight) {y = img.height - lens.offsetHeight;}
+        if (y < 0) {y = 0;}
+        /* Set the position of the lens: */
+        lens.style.left = x + "px";
+        lens.style.top = y + "px";
+        /* Display what the lens "sees": */
+        result.style.backgroundPosition = "-" + (x * cx) + "px -" + (y * cy) + "px";
+      }
+
+      function getCursorPos(e) {
+        var a, x = 0, y = 0;
+        e = e || window.event;
+        /* Get the x and y positions of the image: */
+        a = img.getBoundingClientRect();
+        /* Calculate the cursor's x and y coordinates, relative to the image: */
+        x = e.pageX - a.left;
+        y = e.pageY - a.top;
+        /* Consider any page scrolling: */
+        x = x - window.pageXOffset;
+        y = y - window.pageYOffset;
+        return {x : x, y : y};
+      }
+    }
+  </script>
