@@ -4,14 +4,13 @@
 </h3>
 <% if session[:userid].present?%>
   <div  style="text-align: center">
-    <%= link_to 'Next Record',  freecen_csv_entry_path(@next_entry), method: :get, :class => "btn btn--small" if @next_entry.present?%>
-    <%= link_to 'Previous Record',  freecen_csv_entry_path(@previous_entry), method: :get, :class => "btn btn--small" if @previous_entry.present? %>
-    <%= link_to 'Edit Record',  edit_freecen_csv_entry_path(@freecen_csv_entry), method: :get, :class => "btn btn--small" %>
-    <%= link_to 'Destroy', freecen_csv_entry_path(@freecen_csv_entry), data: { confirm:  'Are you sure?'}, method: :delete , :class => "btn btn--small"  %>
+    <%= link_to 'Next entry',  freecen_csv_entry_path(@next_entry), method: :get, :class => "btn btn--small" if @next_entry.present?%>
+    <%= link_to 'Previous entry',  freecen_csv_entry_path(@previous_entry), method: :get, :class => "btn btn--small" if @previous_entry.present? %>
+    <%= link_to 'Edit Entry',  edit_freecen_csv_entry_path(@freecen_csv_entry), method: :get, :class => "btn btn--small" %>
   </div>
-  <div style="clear:both;color:'black'"> </div>
   <br>
 <% end %>
 <%= render 'flash_notice' %>
+<div style="clear:both;color:'black'"> </div>
 <%= render 'freecen_csv_entry' %>
 <br>

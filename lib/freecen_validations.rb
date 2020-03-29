@@ -38,8 +38,6 @@ module FreecenValidations
 
     return [false, 'VALID_TEXT'] unless field =~ VALID_TEXT
 
-    return [false, 'field length'] if field.length > 20
-
     [true, '']
   end
 
@@ -73,7 +71,7 @@ module FreecenValidations
   end
 
   def FreecenValidations.fixed_schedule_number?(field)
-    return [true, ''] if field.present? && field =~ VALID_NUMBER && field.length <= 3
+    return [true, ''] if field.present? && field =~ VALID_NUMBER
 
     return [true, ''] if field.present? && field =~ VALID_NUMBER_PLUS_SUFFIX
 
@@ -83,7 +81,7 @@ module FreecenValidations
   end
 
   def FreecenValidations.fixed_house_number?(field)
-    return [true, ''] if field.present? && field =~ VALID_NUMBER && field.length <= 4
+    return [true, ''] if field.present? && field =~ VALID_NUMBER
 
     return [true, ''] if field.present? && field =~ VALID_NUMBER_PLUS_SUFFIX
 
@@ -93,16 +91,16 @@ module FreecenValidations
   end
 
   def FreecenValidations.fixed_house_address?(field)
-    return [false, '?'] if field.present? && field.slice(-1).downcase == '?' && field =~ VALID_TEXT && field.length <= 30
+    return [false, '?'] if field.present? && field.slice(-1).downcase == '?' && field =~ VALID_TEXT
 
-    return [true, ''] if field.present? && field =~ VALID_TEXT && field.length <= 30
+    return [true, ''] if field.present? && field =~ VALID_TEXT
 
     return [false, 'blank'] if field.blank?
 
     [false, 'invalid address']
   end
 
-  def FreecenValidations.fixed_uncertainy_location?(field)
+  def FreecenValidations.fixed_uninhabited_flag?(field)
     return [true, ''] if field.blank?
 
     return [true, ''] if VALID_SPECIAL_LOCATION_CODES.include?(field.downcase)
@@ -113,9 +111,9 @@ module FreecenValidations
   def FreecenValidations.fixed_surname?(field)
     return [false, 'blank'] if field.blank?
 
-    return [false, '?'] if field.present? && field.slice(-1).downcase == '?' && field =~ VALID_TEXT && field.length <= 24
+    return [false, '?'] if field.present? && field.slice(-1).downcase == '?' && field =~ VALID_TEXT
 
-    return [true, ''] if field =~ VALID_TEXT && field.length <= 24
+    return [true, ''] if field =~ VALID_TEXT
 
     [false, 'invalid value']
   end
@@ -123,9 +121,9 @@ module FreecenValidations
   def FreecenValidations.fixed_forenames?(field)
     return [false, 'blank'] if field.blank?
 
-    return [false, '?'] if field.present? && field.slice(-1).downcase == '?' && field =~ VALID_TEXT && field.length <= 24
+    return [false, '?'] if field.present? && field.slice(-1).downcase == '?' && field =~ VALID_TEXT
 
-    return [true, ''] if field =~ VALID_TEXT && field.length <= 24
+    return [true, ''] if field =~ VALID_TEXT
 
     [false, 'invalid value']
   end
@@ -133,7 +131,7 @@ module FreecenValidations
   def FreecenValidations.fixed_name_question?(field)
     return [true, ''] if field.blank?
 
-    return [true, ''] if field =~ VALID_TEXT && field.length <= 1
+    return [true, ''] if field =~ VALID_TEXT
 
     [false, 'invalid value']
   end
@@ -141,7 +139,7 @@ module FreecenValidations
   def FreecenValidations.fixed_relationship?(field)
     return [false, 'blank'] if field.blank?
 
-    return [true, ''] if field =~ VALID_TEXT && field.length <= 6
+    return [true, ''] if field =~ VALID_TEXT
 
     [false, 'invalid value']
   end
@@ -197,13 +195,10 @@ module FreecenValidations
 
     return [false, 'invalid use of Scholar'] if age.slice(-1).downcase == 'y' && (age[0...-1].to_i < 2 || age[0...-1].to_i > 17) && field.downcase =~ /(scholar)/
 
-    return [false, "field too long #{field.length}"] if field.length > 30
+    return [false, '?'] if field.slice(-1).downcase == '?'
 
-    return [false, '?'] if field.slice(-1).downcase == '?' && field.length <= 30
+    return [true, '']
 
-    return [true, ''] if field.length <= 30
-
-    [false, 'invalid value']
   end
 
   def FreecenValidations.fixed_occupation_category?(field)
@@ -232,7 +227,7 @@ module FreecenValidations
   def FreecenValidations.fixed_verbatim_birth_place?(field)
     return [false, 'blank'] if field.blank?
 
-    return [true, ''] if field =~ VALID_TEXT && field.length <= 20
+    return [true, ''] if field =~ VALID_TEXT
 
     [false, 'invalid value']
   end
@@ -255,7 +250,7 @@ module FreecenValidations
   def FreecenValidations.fixed_disability?(field)
     return [true, ''] if field.blank?
 
-    return [true, ''] if field =~ VALID_TEXT && field.length <= 6
+    return [true, ''] if field =~ VALID_TEXT
 
     [false, 'invalid value']
   end
@@ -263,7 +258,7 @@ module FreecenValidations
   def FreecenValidations.fixed_notes?(field)
     return [true, ''] if field.blank?
 
-    return [true, ''] if field =~ VALID_TEXT && field.length <= 44
+    return [true, ''] if field =~ VALID_TEXT
 
     [false, 'invalid value']
   end

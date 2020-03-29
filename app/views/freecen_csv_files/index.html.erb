@@ -13,8 +13,8 @@
             <th class='sticky-header'>Piece</th>
             <th class='sticky-header'>District</th>
             <th class='sticky-header'>Entries</th>
-            <th class='sticky-header'>Errors</th>
-            <th class='sticky-header'>Flexible</th>
+            <th colspan = "3" class='sticky-header'>Messges<br>
+              E W I  <a href="#" class="left_tooltip" onclick="return false;"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %><span>E: Errors W: Warnings I: Info </span></a></th>
             <% unless session[:my_own]%>
               <th class='sticky-header'>User ID</th>
             <% end%>
@@ -36,7 +36,8 @@
               <td><%= district_name(freecen_csv_file) %></td>
               <td><%= freecen_csv_file.total_records %></td>
               <td><%= freecen_csv_file.total_errors%></td>
-              <td><%= freecen_csv_file.flexible %></td>
+              <td><%= freecen_csv_file.total_warnings%></td>
+              <td><%= freecen_csv_file.total_info%></td>
               <% unless session[:my_own]%>
                 <td><%= freecen_csv_file.userid %></td>
               <% end %>
@@ -46,19 +47,19 @@
               <td><%= link_to 'SH', freecen_csv_file, method: :get  %></td>
               <td><%= link_to 'ED', edit_freecen_csv_file_path(freecen_csv_file), method: :get   %></td>
               <td><%= link_to 'DL', download_freecen_csv_file_path(freecen_csv_file), data: { confirm:  'Are you sure you want to download this file?'}, method: :get  %></td>
-              <td><%= link_to 'ER', error_freecen_csv_file_path(freecen_csv_file), method: :get %>
-                <td><%= link_to 'L/U', lock_freecen_csv_file_path(freecen_csv_file), method: :get, data: { confirm:  'Are you sure you want to lock/unlock all of the batches associated with this file?'} %>
-                </td>
-                <td><%= link_to 'DE', remove_freecen_csv_file_path(freecen_csv_file), data: { confirm:  'Are you sure you want to delete this file? This may take a few minutes if there are many records'}, method: :get   %></td>
+              <td><%= link_to 'ER', freecen_csv_entries_path(type: 'Err'), method: :get %></td>
+              <td><%= link_to 'L/U', lock_freecen_csv_file_path(freecen_csv_file), method: :get, data: { confirm:  'Are you sure you want to lock/unlock all of the batches associated with this file?'} %>
               </td>
-              <td><%= link_to 'RL', edit_csvfile_path(freecen_csv_file), method: :get, data: { confirm:  'Are you sure you want to replace these records?' }%>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-      <br />
-      <br>
-    </div>
-  </section>
+              <td><%= link_to 'DE', remove_freecen_csv_file_path(freecen_csv_file), data: { confirm:  'Are you sure you want to delete this file? This may take a few minutes if there are many records'}, method: :get   %></td>
+            </td>
+            <td><%= link_to 'RL', edit_csvfile_path(freecen_csv_file), method: :get, data: { confirm:  'Are you sure you want to replace these records?' }%>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <br />
+    <br>
+  </div>
+</section>
 </div>

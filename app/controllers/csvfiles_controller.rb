@@ -107,10 +107,8 @@ class CsvfilesController < ApplicationController
     userids_and_transcribers
     @app = appname_downcase
     if @app == 'freecen'
-      @types_of_processing = ['Check(Info)', 'Check(Warn)', 'Add', 'Replace']
+      @types_of_processing = ['Check(Info)', 'Check(Warn)']
       @type_of_processing = 'Check(Info)'
-      @types_of_field = ['Traditional', 'Modern']
-      @type_of_field = 'Traditional'
     end
     @action = 'Upload'
   end

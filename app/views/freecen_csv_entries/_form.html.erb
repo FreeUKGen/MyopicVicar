@@ -1,9 +1,9 @@
 <%= simple_form_for @freecen_csv_entry, :html => { :class => "grid"}  do |f| %>
   <% %>
-  <%= f.input :civil_parish,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @data_transition == 'Civil Parish'  %>
+  <%= f.input :civil_parish, collection: @subplaces, :input_html =>{:class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 10} if @data_transition == 'Civil Parish'  %>
   <%if ['Civil Parish', 'Enumeration District'].include?(@data_transition) %>
-    <%= f.input :ecclesiastical_parish,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }  %>
     <%= f.input :enumeration_district ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } %>
+    <%= f.input :ecclesiastical_parish,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }  %>
   <% end %>
   <% if ['Civil Parish', 'Enumeration District', 'Folio'].include?(@data_transition) %>
     <%= f.input :folio_number ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }  %>
@@ -15,26 +15,32 @@
     <%= f.input :schedule_number ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
     <%= f.input :house_number ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
     <%= f.input :house_or_street_name ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
+    <%= f.input :rooms,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if ['1901','1911'].include?(@year)%>
+    <%= f.input :uninhabited_flag, selected: '', collection: ['b', 'n', 'u', 'v', 'x', ''], :input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 5} %>
   <% end %>
   <% if ['Civil Parish', 'Enumeration District', 'Folio', 'Page', 'Dwelling', 'Individual'].include?(@data_transition) %>
     <%= f.input :surname ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
     <%= f.input :forenames ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
+    <%= f.input :name_flag, selected: '', collection: ['x', ''], :input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 2} %>
     <%= f.input :relationship ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
-    <%= f.input :marital_status , collection: ['m', 's', 'u', 'w', ''] ,:input_html =>{:class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3}%>
-    <%= f.input :sex, collection: ['m','f','-'],:input_html =>{:class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3}%>
+    <%= f.input :marital_status , selected: '', collection: ['m', 's', 'u', 'w', ''] ,:input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 3}%>
+    <%= f.input :sex, selected: '-', collection: ['m','f','-'],:input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 3}%>
     <%= f.input :age ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
-    <%= f.input :age_unit , collection: ['y','m','w', 'd', ''], :input_html =>{:class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3}%>
+    <%= f.input :age_unit, selected: '', collection: ['y','m','w', 'd', ''], :input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 3}%>
+    <%= f.input :individual_flag, selected: '', collection: ['x', ''], :input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 2} %>
     <%= f.input :occupation ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
-    <%= f.input :occupation_category ,  collection: ['e','r','n', ''],:input_html =>{:class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
-    <%= f.input :verbatim_birth_county ,  :input_html => {:disabled => true,   :size => 30 }%>
+    <%= f.input :occupation_category , selected: '', collection: ['e','r','n', ''],:input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 3} %>
+    <%= f.input :occupation_flag, selected: '', collection: ['x', ''], :input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 2} %>
+    <%= f.input :verbatim_birth_county ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
     <%= f.input :birth_county ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
-    <%= f.input :verbatim_birth_place ,  :input_html => {:disabled => true,   :size => 30 }%>
+    <%= f.input :verbatim_birth_place ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
     <%= f.input :birth_place ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
+    <%= f.input :birth_place_flag, selected: '', collection: ['x', ''], :input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 2} %>
     <%= f.input :disability ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
-    <%= f.input :language, collection: ['w', 'e', 'g', 'b', ''], :input_html =>{:class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
-    <%= f.input :rooms,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @year == '1901' || '1911'%>
-    <%= f.input :at_home,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @year == '1901' || '1911'%>
+    <%= f.input :language, selected: '', collection: ['w', 'e', 'g', 'b', ''], :input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 3} %>
+    <%= f.input :at_home,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if ['1901','1911'].include?(@year)%>
     <%= f.input :notes, :label => 'Notes', :as => :text, :input_html => {:class => " simple_form_bgcolour  ",   :placeholder => "Enter notes from register",  :size => "29x5" }%>
+    <%= f.input :deleted_flag, selected: '', collection: ['d', ''], :input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 2} %>
   <% end%>
   <%= f.button :submit, 'Submit',:button_html => {:class => 'btn btn--small' }  %>
 <% end %>

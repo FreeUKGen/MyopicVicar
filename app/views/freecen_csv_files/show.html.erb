@@ -68,36 +68,52 @@
             <td>Number of errors</td>
             <td class="weight--semibold"> <%= @freecen_csv_file.total_errors%></td>
           </tr>
-          <% if @freecen_csv_file.locked_by_transcriber ||  !@freecen_csv_file.locked_by_transcriber == "false"%>
-            <tr id="<%= @freecen_csv_file.id%>"  style="color:darkviolet" >
-            <% else%>
-              <tr id="<%= @freecen_csv_file.id%>"  style="color:black" >
+          <% if @freecen_csv_file.total_warnings.zero?%>
+            <tr id="<%= @freecen_csv_file.id%>"  style="color:black" >
+            <% else %>
+              <tr id="<%= @freecen_csv_file.id%>"  style="color:blue" >
               <% end %>
-              <td>Batch is locked from overriding by Transcriber</td>
-              <td class="weight--semibold"> <%= transform_boolean(@freecen_csv_file.locked_by_transcriber) %></td>
+              <td>Number of warnings</td>
+              <td class="weight--semibold"> <%= @freecen_csv_file.total_warnings%></td>
             </tr>
-            <% if !@freecen_csv_file.locked_by_coordinator == "false" || @freecen_csv_file.locked_by_coordinator  %>
-              <tr id="<%= @freecen_csv_file.id%>"  style="color:darkviolet" >
-              <% else%>
-                <tr id="<%= @freecen_csv_file.id%>"  style="color:black" >
+            <% if @freecen_csv_file.total_info.zero?%>
+              <tr id="<%= @freecen_csv_file.id%>"  style="color:black" >
+              <% else %>
+                <tr id="<%= @freecen_csv_file.id%>"  style="color:magenta" >
                 <% end %>
-                <td>Batch is locked from overriding by Coordinator</td>
-                <td class="weight--semibold"> <%= transform_boolean(@freecen_csv_file.locked_by_coordinator) %></td>
+                <td>Number of info messages</td>
+                <td class="weight--semibold"> <%= @freecen_csv_file.total_info%></td>
               </tr>
-              <tr>
-                <td>Date transcribed </td>
-                <td class="weight--semibold">  <%= @freecen_csv_file.transcription_date %></td>
-              </tr>
-              <tr>
-                <td>Processed (No means that it was only verified for errors and its contents are NOT in the searchable database)</td>
-                <td class="weight--semibold"><%= transform_boolean(@freecen_csv_file.processed) %></td>
-              </tr>
-              <tr>
-                <td>Processed Date</td>
-                <td class="weight--semibold"><%= @freecen_csv_file.processed_date.strftime("%d %b %Y") unless @freecen_csv_file.processed_date.nil? %></td>
-              </tr>
-            </table>
+              <% if @freecen_csv_file.locked_by_transcriber ||  !@freecen_csv_file.locked_by_transcriber == "false"%>
+                <tr id="<%= @freecen_csv_file.id%>"  style="color:darkviolet" >
+                <% else%>
+                  <tr id="<%= @freecen_csv_file.id%>"  style="color:black" >
+                  <% end %>
+                  <td>Batch is locked from overriding by Transcriber</td>
+                  <td class="weight--semibold"> <%= transform_boolean(@freecen_csv_file.locked_by_transcriber) %></td>
+                </tr>
+                <% if !@freecen_csv_file.locked_by_coordinator == "false" || @freecen_csv_file.locked_by_coordinator  %>
+                  <tr id="<%= @freecen_csv_file.id%>"  style="color:darkviolet" >
+                  <% else%>
+                    <tr id="<%= @freecen_csv_file.id%>"  style="color:black" >
+                    <% end %>
+                    <td>Batch is locked from overriding by Coordinator</td>
+                    <td class="weight--semibold"> <%= transform_boolean(@freecen_csv_file.locked_by_coordinator) %></td>
+                  </tr>
+                  <tr>
+                    <td>Date transcribed </td>
+                    <td class="weight--semibold">  <%= @freecen_csv_file.transcription_date %></td>
+                  </tr>
+                  <tr>
+                    <td>Processed (No means that it was only verified for errors and its contents are NOT in the searchable database)</td>
+                    <td class="weight--semibold"><%= transform_boolean(@freecen_csv_file.processed) %></td>
+                  </tr>
+                  <tr>
+                    <td>Processed Date</td>
+                    <td class="weight--semibold"><%= @freecen_csv_file.processed_date.strftime("%d %b %Y") unless @freecen_csv_file.processed_date.nil? %></td>
+                  </tr>
+                </table>
+              </div>
+            </section>
           </div>
-        </section>
-      </div>
-      <br>
+          <br>

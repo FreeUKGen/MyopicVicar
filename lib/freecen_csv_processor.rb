@@ -199,11 +199,11 @@ class CsvFile < CsvFiles
   # initializes variables
   # gets information on the file to be processed
 
-  attr_accessor :header, :list_of_registers, :header_error, :system_error, :data_hold,
-    :array_of_data_lines, :default_charset, :file, :file_name, :userid, :uploaded_date, :slurp_fail_message,
+  attr_accessor :header, :list_of_registers, :header_error, :system_error, :data_hold,:dwelling_number, :sequence_in_household,
+    :array_of_data_lines, :default_charset, :file, :file_name, :userid, :uploaded_date, :slurp_fail_message, :augmented,
     :file_start, :file_locations, :data, :unique_locations, :unique_existing_locations,
     :all_existing_records, :total_files, :total_records, :total_data_errors, :total_header_errors, :place_id, :civil_parish,
-    :enumeration_district, :folio, :page, :year, :piece, :schedule, :folio_suffix, :schedule_suffix
+    :enumeration_district, :folio, :page, :year, :piece, :schedule, :folio_suffix, :schedule_suffix, :total_errors, :total_warnings, :total_info
 
   def initialize(file_location, project)
     @project = project
@@ -249,6 +249,12 @@ class CsvFile < CsvFiles
     @page = 0
     @schedule = 0
     @schedule_suffix = nil
+    @total_errors = 0
+    @total_warnings = 0
+    @total_info = 0
+    @dwelling_number = 0
+    @sequence_in_household = 0
+    @augmented = {}
 
   end
 
@@ -274,63 +280,26 @@ class CsvFile < CsvFiles
 
     success, records_processed, data_records = @csv_records.extract_the_data(reduction)
 
-    successa, freecen_csv_file = write_freecen_csv_file if success
-
-    return [successa, "File not saved. <br>"] unless successa
-
-    # p "finished data"
     return [success, "Data not extracted #{records_processed}. <br>"] unless success
 
-    successb = write_freecen_csv_entries(data_records, freecen_csv_file) if successa
+    success, freecen_csv_file = write_freecen_csv_file if success
 
-    # success, @records_processed, @data_errors = process_the_data if success
+    return [success, "File not saved. <br>"] unless success
 
-    # return [success, "Data not processed #{@records_processed}. <br>"] unless success
+    success = write_freecen_csv_entries(data_records, freecen_csv_file) if success
 
-    success, message = clean_up_supporting_information
-    # p "finished clean up
-    time = ((Time.new.to_i - @file_start.to_i) * 1000) / records_processed unless records_processed == 0
-    @project.write_messages_to_all("Created  #{records_processed} entries at an average time of #{time}ms per record at #{Time.new}. <br>",true)
+    success, message = clean_up_supporting_information(records_processed) if success
+
     return [success, "clean up failed #{message}. <br>"] unless success
+    # p "finished clean up
+    time = ((Time.new.to_i - @file_start.to_i) * 1000) / records_processed unless records_processed.zero?
+    @project.write_messages_to_all("Created  #{records_processed} entries at an average time of #{time}ms per record at #{Time.new}. <br>",true)
 
     success, message = communicate_file_processing_results
     # p "finished com"
     return [success, "communication failed #{message}. <br>"] unless success
 
     [true, records_processed, @total_data_errors]
-  end
-
-
-  def check_and_create_db_record_for_entry(data_record, freeren_csv_file)
-    #p " check and create"
-    if !@project.force_rebuild
-      # p "processing create_db_record_for_entry"
-      data_record.delete(:chapman_code)
-      entry = FreecenCsvEntry.new(data_record)
-      # p "new entry"
-      # p entry
-      new_digest = entry.cal_digest
-      if @all_existing_records.has_value?(new_digest)
-        #p "we have an existing record but may be for different location"
-        existing_record = FreecenCsvEntry.id(@all_existing_records.key(new_digest)).first
-        if existing_record.present?
-          #p "yes we have a record"
-          #we need to eliminate this record from hash
-          #p "dropping hash entry"
-          @all_existing_records.delete(@all_existing_records.key(existing_record.record_digest))
-        else
-          #p "No record existed"
-          success = self.create_db_record_for_entry(data_record,freereg1_csv_file)
-        end
-      else
-        #p "no digest"
-        success = self.create_db_record_for_entry(data_record,freereg1_csv_file)
-      end
-    else
-      #p "rebuild"
-      success = self.create_db_record_for_entry(data_record,freereg1_csv_file)
-    end
-    return success
   end
 
   def check_and_set_characterset(code_set, csvtxt)
@@ -408,22 +377,23 @@ class CsvFile < CsvFiles
   end
 
   def clean_up_physical_files_after_failure(message)
-    #p "clean up after failure"
     batch = PhysicalFile.userid(@userid).file_name(@file_name).first
     return true if batch.blank? || message.blank?
+
     PhysicalFile.remove_waiting_flag(@userid,@file_name)
     batch.delete if message.include?("header errors") || message.include?("does not exist. ") || message.include?("userid does not exist. ")
   end
 
-  def clean_up_supporting_information
-    if @records_processed.blank? ||  @records_processed == 0
+  def clean_up_supporting_information(records_processed)
+    if records_processed.blank? || records_processed.zero?
       batch = PhysicalFile.userid(@userid).file_name(@file_name).first
       return true if batch.blank?
+
       batch.delete
     else
-      self.physical_file_clean_up_on_success
+      physical_file_clean_up_on_success
     end
-    return true
+    true
   end
 
   def communicate_failure_to_member(message)
@@ -431,8 +401,8 @@ class CsvFile < CsvFiles
     file = @project.member_message_file
     file.close
     UserMailer.batch_processing_failure(file, @userid, @file_name).deliver_now unless @project.type_of_project == "special_selection_1" ||  @project.type_of_project == "special_selection_2"
-    self.clean_up_message
-    return true
+    clean_up_message
+    true
   end
 
   def communicate_file_processing_results
@@ -440,45 +410,8 @@ class CsvFile < CsvFiles
     file = @project.member_message_file
     file.close
     UserMailer.batch_processing_success(file,@header[:userid],@header[:file_name]).deliver_now unless @project.type_of_project == "special_selection_1" ||  @project.type_of_project == "special_selection_2"
-    self.clean_up_message
-    return true
-  end
-
-  def create_db_record_for_entry(data_record, freereg1_csv_file)
-    # TODO: bring data_record hash keys in @data_line with those in FreecenCsvEntry
-    #p "creating new entry"
-    data_record.delete(:chapman_code)
-    entry = FreecenCsvEntry.new(data_record)
-    if data_record[:record_type] == "ma" || data_record[:record_type] == "ba"
-      entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness1_forename],:witness_surname => data_record[:witness1_surname]) unless data_record[:witness1_forename].blank? && data_record[:witness1_surname].blank?
-      entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness2_forename],:witness_surname => data_record[:witness2_surname]) unless data_record[:witness2_forename].blank? && data_record[:witness2_surname].blank?
-      entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness3_forename], :witness_surname => data_record[:witness3_surname]) unless data_record[:witness3_forename].blank? &&  data_record[:witness3_surname].blank?
-      entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness4_forename], :witness_surname => data_record[:witness4_surname]) unless data_record[:witness4_forename].blank? &&  data_record[:witness4_surname].blank?
-      entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness5_forename], :witness_surname => data_record[:witness5_surname]) unless data_record[:witness5_forename].blank? &&  data_record[:witness5_surname].blank?
-      entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness6_forename], :witness_surname => data_record[:witness6_surname]) unless data_record[:witness6_forename].blank? &&  data_record[:witness6_surname].blank?
-      entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness7_forename], :witness_surname => data_record[:witness7_surname]) unless data_record[:witness7_forename].blank? &&  data_record[:witness7_surname].blank?
-      entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness8_forename], :witness_surname => data_record[:witness8_surname]) unless data_record[:witness8_forename].blank? &&  data_record[:witness8_surname].blank?
-    end
-    entry.multiple_witnesses.each do |witness|
-      witness.witness_surname = witness.witness_surname.upcase if witness.witness_surname.present?
-    end
-
-    entry.freereg1_csv_file = freereg1_csv_file
-    #p "creating entry"
-    entry.save
-    #p entry
-    if entry.errors.any?
-      success = entry.errors.messages
-    else
-      place_id = self.place_id
-      place = Place.id(place_id).first
-      SearchRecord.update_create_search_record(entry,self.header[:search_record_version],place) if  @project.create_search_records && entry.enough_name_fields?
-      success = "new"
-    end
-    sleep_time = (Rails.application.config.sleep.to_f).to_f
-    sleep(sleep_time)
-    # p entry.search_record
-    return success
+    clean_up_message
+    true
   end
 
   def define_member_message_file
@@ -576,17 +509,17 @@ class CsvFile < CsvFiles
 
   def physical_file_clean_up_on_success
     #p "physical file clean up on success"
-    batch = PhysicalFile.userid(@header[:userid]).file_name( @header[:file_name] ).first
-    if batch.nil?
-      batch = PhysicalFile.new(:userid => @header[:userid], :file_name => @header[:file_name],:base => true, :base_uploaded_date => Time.new)
+    batch = PhysicalFile.userid(@userid).file_name(@file_name).first
+    if batch.blank?
+      batch = PhysicalFile.new(userid: @userid, file_name: @file_name, base: true, base_uploaded_date: Time.new)
       batch.save
     end
     if @project.create_search_records
       # we created search records so its in the search database database
-      batch.update_attributes( :file_processed => true, :file_processed_date => Time.new,:waiting_to_be_processed => false, :waiting_date => nil)
+      batch.update(file_processed: true, file_processed_date: Time.new, waiting_to_be_processed: false, waiting_date: nil)
     else
       #only checked for errors so file is not processed into search database
-      batch.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => false, :waiting_date => nil)
+      batch.update(file_processed: false, file_processed_date: nil, waiting_to_be_processed: false, waiting_date: nil)
     end
   end
 
@@ -614,16 +547,26 @@ class CsvFile < CsvFiles
   end
 
   def write_freecen_csv_file
+    old_file = FreecenCsvFile.find_by(file_name: @file_name, chapman_code: @chapman_code)
+    if old_file.present?
+      FreecenCsvEntry.where(freecen_csv_file_id: old_file.id).destroy_all
+      old_file.delete
+    end
     new_file = FreecenCsvFile.new
     new_file.file_name = @file_name
     new_file.uploaded_date = @uploaded_date
     new_file.software_version = @software_version
     new_file.userid = @userid
+    new_file.chapman_code = @chapman_code
     new_file.total_records = @total_records.to_i
-    new_file.file_errors = @file_errors
-    new_file.total_errors = @errors.to_i
+    new_file.total_errors = @total_errors
+    new_file.total_warnings = @total_warnings
+    new_file.flexible = @project.flexible
+    new_file.total_info = @total_info
+    new_file.year = @year
     piece.freecen_csv_files << new_file
     success = piece.save
+    p new_file
     [success, new_file]
   end
 
@@ -639,13 +582,13 @@ class CsvFile < CsvFiles
     file.update(total_records: records.length) if records.present?
     true
   end
-
-
 end
 
 class CsvRecords < CsvFile
+  require 'freecen_constants'
 
   attr_accessor :array_of_lines, :data_lines
+  NEWHEADERS = ['deleted', 'ecclesiastical', 'at home', 'home', 'rooms']
 
   def initialize(data_array, csvfile, project)
     @project = project
@@ -667,7 +610,8 @@ class CsvRecords < CsvFile
         @project.write_messages_to_all("Working on #{@csvfile.piece.district_name} for #{@csvfile.year}, in #{@csvfile.piece.chapman_code}", true) if success
         reduction = reduction - 1 unless success || message =~ /Error: line 1 of batch does not have a valid piece number/
       when 1
-        success, message = line_two(@array_of_lines[n])
+        success, message, @csvfile.augmented = line_two(@array_of_lines[n])
+        @project.write_messages_to_all(message, true) if message.present?
         unless success
           reduction = reduction - 1
           @project.write_messages_to_all(message, true)
@@ -703,23 +647,46 @@ class CsvRecords < CsvFile
   end
 
   def line_two(line)
-    if line[0..20].all?(&:present?) && line[22..24].all?(&:present?)
+    augmented = nil
+    if line[0..25].all?(&:present?)
+      success, message, augmented = extract_additonal_field_headers(line)
+      message = "INFO: Augmented headers #{augmented}" if success
+    elsif line[0..24].all?(&:present?)
       success = true
+      message = ''
     else
-      message = 'INFO: line 2 or 3 containing SSCENS Field information is missing<br>'
+      message = 'INFO: line 2 containing Column specification is missing. Assuming the old standard.<br>'
       success = false
     end
-    [success, message]
+    [success, message, augmented]
   end
 
   def line_three(line)
     if line[0..20].all?(&:present?) && line[22..24].all?(&:present?)
       success = true
     else
-      message = 'INFO: both lines with SSCENS Field information are missing<br>'
+      message = 'INFO: line 3 containing field information is missing<br>'
       success = false
     end
     [success, message]
+  end
+
+  def extract_additonal_field_headers(line)
+    n = 25
+    augmented_headers = {}
+    success = true
+    message = ''
+    while line[n].present?
+      if NEWHEADERS.include?(line[n].downcase)
+        num = NEWHEADERS.index(line[n].downcase)
+        augmented_headers[NEWHEADERS[num]] = n
+      else
+        success = false
+        message = message + "ERROR: header at position #{n} invalid  #{line[n]} "
+      end
+      n = n + 1
+    end
+    [success, message, augmented_headers]
   end
 
   # This extracts the header and entry information from the file and adds it to the database
@@ -737,8 +704,12 @@ class CsvRecords < CsvFile
 
       @record = CsvRecord.new(line, @csvfile, @project)
       success, message, result = @record.extract_data_line(n + 1)
+      result[:flag] = true if result[:birth_place_flag].present? || result[:deleted_flag].present? || result[:detail_flag].present? || result[:individual_flag].present? ||
+        result[:name_flag].present? || result[:occupation_flag].present? || (result[:uninhabited_flag].present? && result[:uninhabited_flag].downcase == 'x')
       data_records << result
-
+      @csvfile.total_errors = @csvfile.total_errors + 1 if result[:error_messages].present?
+      @csvfile.total_warnings = @csvfile.total_warnings + 1 if result[:warning_messages].present?
+      @csvfile.total_info = @csvfile.total_info + 1 if result[:info_messages].present?
       @project.write_messages_to_all(message, true) unless success
       success = true
       data_lines = data_lines + 1
@@ -765,15 +736,18 @@ class CsvRecord < CsvRecords
     @data_record[:year] = @csvfile.year
     @data_record[:piece] = @csvfile.piece
     @data_record[:flexible] = @project.flexible
+    @data_record[:error_messages] = ''
+    @data_record[:warning_messages] = ''
+    @data_record[:info_messages] = ''
   end
 
   def extract_data_line(num)
-    @data_record[:info_messages] = @project.info_messages
+    @data_record[:messages] = @project.info_messages
     @data_record[:data_transition] = Freecen::FIELD_NAMES[first_field_present]
     load_data_record(Freecen::FIELD_NAMES[first_field_present], num)
 
     # p @data_record
-    # crash if num == 300
+    # crash if num == 25
     [true, " ", @data_record]
   end
 
@@ -821,7 +795,7 @@ class CsvRecord < CsvRecords
   end
 
   def extract_civil_parish_fields
-    @data_record[:civil_parish] = @data_line[0]
+    @data_record[:civil_parish] = @data_line[0].titleize if @data_line[0].present?
     success, message, @csvfile.civil_parish = FreecenCsvEntry.validate_civil_parish(@data_record, @csvfile.civil_parish)
     @project.write_messages_to_all(message, true) unless message == ''
     extract_enumeration_district_fields
@@ -860,38 +834,56 @@ class CsvRecord < CsvRecords
   def extract_dwelling_fields
     @data_record[:schedule_number] = @data_line[4]
     @data_record[:house_number] = @data_line[5]
-    @data_record[:house_or_street_name] = @data_line[6]
-    @data_record[:uncertainy_location] = @data_line[7]
+    @data_record[:house_or_street_name] = @data_line[6].titleize if @data_line[6].present?
+    @data_record[:uninhabited_flag] = @data_line[7]
+    unless @data_line[5].blank? && @data_line[6].blank? && (@data_line[4].blank? || @data_line[4] == '0')
+      @data_record[:dwelling_number] = @csvfile.dwelling_number + 1
+      @csvfile.dwelling_number = @data_record[:dwelling_number]
+      @csvfile.sequence_in_household = 1
+    end
     success, message, @csvfile.schedule, @csvfile.schedule_suffix = FreecenCsvEntry.validate_dwelling(@data_record, @csvfile.schedule, @csvfile.schedule_suffix)
     @project.write_messages_to_all(message, true) unless message == ''
     extract_individual_fields
   end
 
   def extract_individual_fields
-    return if ['b', 'n', 'u', 'v'].include?(@data_record[:uncertainy_location])
+    return if ['b', 'n', 'u', 'v'].include?(@data_record[:uninhabited_flag])
 
-    @data_record[:surname] = @data_line[8]
-    @data_record[:forenames] = @data_line[9]
-    @data_record[:uncertainty_name] = @data_line[10]
-    @data_record[:relationship] = @data_line[11]
-    @data_record[:marital_status] = @data_line[12]
-    @data_record[:sex] = @data_line[13]
-    @data_record[:age] = @data_line[14]
-    @data_record[:uncertainty_status] = @data_line[15]
-    @data_record[:occupation] = @data_line[16]
-    @data_record[:occupation_category] = @data_line[17]
-    @data_record[:uncertainty_occupation] = @data_line[18]
-    @data_record[:verbatim_birth_county] = @data_line[19]
-    @data_record[:verbatim_birth_place] = @data_line[20]
+    @csvfile.sequence_in_household = @csvfile.sequence_in_household + 1 if @data_line[5].blank? && @data_line[6].blank? && (@data_line[4].blank? || @data_line[4] == '0')
+    @data_record[:sequence_in_household] = @csvfile.sequence_in_household
+    @data_record[:surname] = @data_line[8].upcase if @data_line[8].present?
+    @data_record[:forenames] = @data_line[9].titleize if @data_line[9].present?
+    @data_record[:name_flag] = @data_line[10]
+    @data_record[:relationship] = @data_line[11].upcase if @data_line[11].present?
+    @data_record[:marital_status] = @data_line[12].upcase if @data_line[12].present?
+    @data_record[:sex] = @data_line[13].upcase if @data_line[13].present?
+    @data_record[:age] = @data_line[14].upcase if @data_line[14].present?
+    @data_record[:individual_flag] = @data_line[15]
+    @data_record[:occupation] = @data_line[16].titleize if @data_line[16].present?
+    @data_record[:occupation_category] = @data_line[17].upcase if @data_line[17].present?
+    @data_record[:occupation_flag] = @data_line[18]
+    @data_record[:verbatim_birth_county] = @data_line[19].upcase if @data_line[19].present?
+    @data_record[:verbatim_birth_place] = @data_line[20].titleize if @data_line[20].present?
     @data_record[:uncertainy_birth] = @data_line[21]
-    @data_record[:disability] = @data_line[22]
-    @data_record[:language] = @data_line[23]
-    @data_record[:notes] = @data_line[24]
-    if ['1901', '1911'].include?(@data_record[:year])
-      @data_record[:at_home] = @data_line[25]
-      @data_record[:rooms] = @data_line[26]
-    end
+    @data_record[:disability] = @data_line[22].titleize if @data_line[22].present?
+    @data_record[:language] = @data_line[23].upcase if @data_line[23].present?
+    @data_record[:notes] = @data_line[24].titleize if @data_line[24].present?
     success, message = FreecenCsvEntry.validate_individual(@data_record)
     @project.write_messages_to_all(message, true) unless message == ''
+    extract_augmented_fields if @csvfile.augmented.present?
+  end
+
+  def extract_augmented_fields
+    @csvfile.augmented.each_pair do |header, column|
+      if header == 'deleted'
+        @data_record[:deleted_flag] = @data_line[column].upcase if @data_line[column].present?
+      elsif header == 'ecclesiastical'
+        @data_record[:ecclesiastical_parish] = @data_line[column].titleize if @data_line[column].present?
+      elsif ['at home', 'home'].include?(header)
+        @data_record[:at_home] = @data_line[column].upcase if @data_line[column].present?
+      elsif header == 'rooms'
+        @data_record[:rooms] = @data_line[column]
+      end
+    end
   end
 end

@@ -11,8 +11,6 @@
     <%= f.input :action, :as => :hidden, :input_html => { :value => @action } %>
     <%= f.input :csvfile, :label => "Select the file to be uploaded from a folder on your computer", :input_html => {  :class => " simple_form_bgcolour simple_form_position_left"} %><br>
     <% if appname.downcase == 'freecen' %>
-      <%= f.input :type_of_field, :collection => @types_of_field, :required => true , :label => "Type of field formatting.",
-      :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width ", :size => 2 },:selected => @type_of_field %>
       <%= f.input :type_of_processing, :collection => @types_of_processing, :required => true , :label => "Type of processing.",
       :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width ", :size => 3 },:selected => @type_of_processing %>
     <% end%>

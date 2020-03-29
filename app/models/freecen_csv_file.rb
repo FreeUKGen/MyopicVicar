@@ -36,6 +36,8 @@ class FreecenCsvFile
   field :county, type: String # note in headers this is actually a Chapman code
   field :digest, type: String
   field :total_errors, type: Integer, default: 0
+  field :total_warnings, type: Integer, default: 0
+  field :total_info, type: Integer, default: 0
   field :file_digest, type: String
   field :file_errors, type: Array
   field :file_name, type: String

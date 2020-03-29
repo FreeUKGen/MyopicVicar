@@ -96,9 +96,6 @@ MyopicVicar::Application.routes.draw do
   get 'freecen_csv_files/display_my_own_zero_years', :to => 'freecen_csv_files#display_my_own_zero_years', :as => :display_my_own_zero_years_freecen_csv_files
   get 'freecen_csv_files/:id/download(.:format)', :to => 'freecen_csv_files#download', :as => :download_freecen_csv_file
   get 'freecen_csv_files/unique_names', :to => 'freecen_csv_files#unique_names', :as => :unique_names_freecen_csv_file
-  get 'freecen_csv_files/:id/zero_year', :to => 'freecen_csv_files#zero_year', :as => :zero_year_frecen_csv_file
-  get 'freecen_csv_files/:id/zero_year_entries', :to => 'freecen_csv_files#show_zero_startyear_entries', :as => :show_zero_startyear_entries_freecen_csv_file
-  get 'freecen_csv_files/:id/embargoed_entries', :to => 'freecen_csv_files#embargoed_entries', :as => :embargoed_entries_freecen_csv_file
   resources :freecen_csv_files
 
   get 'freecen_csv_entries/:id/edit_embargo(.:format)', :to => 'freecen_csv_entries#edit_embargo', :as => :edit_embargo_freecen_csv_entry

@@ -1611,11 +1611,11 @@ crumb :select_freecen_csv_file do |user|
   end
 end
 
-crumb :freecen_csv_entries do |entry, file|
+crumb :freecen_csv_entries do |entry, file, type|
   if entry.nil?
     link 'List of Records', freecen_csv_entries_path
   else
-    link 'List of Records', freecen_csv_entries_path(anchor: "#{entry.id}")
+    link 'List of Records', freecen_csv_entries_path(type: type, anchor: "#{entry.id}")
   end
   parent :show_freecen_csv_file, file
 end
@@ -1630,7 +1630,7 @@ crumb :error_freecen_csv_entries do |file|
 end
 crumb :show_freecen_csv_entry do |entry, file|
   link 'Record Contents', freecen_csv_entry_path(entry)
-  parent :freecen_csv_entries, entry, file
+  parent :freecen_csv_entries, entry, file, session[:cen_index_type]
 end
 crumb :edit_freecen_csv_entry do |entry, file|
   link 'Edit Record', edit_freecen_csv_entry_path(entry)

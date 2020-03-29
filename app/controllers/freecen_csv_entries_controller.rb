@@ -47,11 +47,6 @@ class FreecenCsvEntriesController < ApplicationController
     @freecen_csv_file = FreecenCsvFile.find(session[:freecen_csv_file_id])
     @freecen_csv_entry = FreecenCsvEntry.new(freecen_csv_entry_params)
 
-    unless proceed
-      message = "The entry update failed #{@freecen_csv_entry.errors.full_messages}"
-      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
-    end
-
     # need to deal with change in place
     @freecen_csv_file.freereg1_csv_entries << @freecen_csv_entry
     @freecen_csv_file.save
@@ -63,7 +58,7 @@ class FreecenCsvEntriesController < ApplicationController
     # We need to update the file statistics and update the search record
     # WE update the place, church and register distributions
 
-    flash[:notice] = 'The creation/update in entry contents was successful, a backup of file made and locked'
+    flash[:notice] = 'The creation was successful, a backup of file made and locked'
     redirect_to(freecen_csv_entry_path(@freecen_csv_entry)) && return
   end
 
@@ -111,6 +106,11 @@ class FreecenCsvEntriesController < ApplicationController
     @data_transition = @freecen_csv_entry.data_transition
     @date = DateTime.now
     session[:freecen_csv_entry_id] = @freecen_csv_entry._id
+    @deleted_flag = ''
+    @subplaces = []
+    @piece.subplaces.each do |place|
+      @subplaces << place[:name]
+    end
   end
 
   def index
@@ -118,8 +118,31 @@ class FreecenCsvEntriesController < ApplicationController
       message = 'The file was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
+
     display_info
-    @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).all.order_by(file_line_number: 1)
+    @type = params[:type]
+
+    @type = session[:cen_index_type] if @type.blank? && session[:cen_index_type].present?
+    session[:cen_index_type] = params[:type]
+    if @type.blank?
+      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).all.order_by(file_line_number: 1)
+    elsif @type == 'Civ'
+      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).in(data_transition: ['Civil Parish', 'Enumeration District']).all.order_by(file_line_number: 1)
+    elsif @type == 'Pag'
+      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).in(data_transition: ['Civil Parish', 'Enumeration District', 'Folio', 'Page']).all.order_by(file_line_number: 1)
+    elsif @type == 'Dwe'
+      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).in(data_transition: ['Civil Parish', 'Enumeration District', 'Folio', 'Page', 'Dwelling']).all.order_by(file_line_number: 1)
+    elsif @type == 'Ind'
+      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).all.order_by(file_line_number: 1)
+    elsif @type == 'Err'
+      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).where(:error_messages.gte => 1).all.order_by(file_line_number: 1)
+    elsif @type == 'War'
+      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).where(:warning_messages.gte => 1).all.order_by(file_line_number: 1)
+    elsif @type == 'Inf'
+      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).where(:info_messages.gte => 1).all.order_by(file_line_number: 1)
+    elsif @type == 'Fla'
+      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).where(flag: true).all.order_by(file_line_number: 1)
+    end
   end
 
   def new
@@ -130,13 +153,17 @@ class FreecenCsvEntriesController < ApplicationController
     end
 
     display_info
-    @freecen_csv_file = @freecen_csv_entry.freecen_csv_file
+    @freecen_csv_file = FreecenCsvFile.find_by(_id: session[:freecen_csv_file_id])
     record_number = @freecen_csv_file.total_records.to_i + 1
     redirect_back(fallback_location: new_manage_resource_path, notice: 'File is currently awaiting processing and should not be edited') && return unless @freecen_csv_file.can_we_edit?
 
     @freecen_csv_entry = FreecenCsvEntry.new(freecen_csv_file_id: session[:freecen_csv_file_id], record_number: record_number)
     @data_transition = "Civil Parish"
     session[:freecen_csv_entry_id] = @freecen_csv_entry._id
+    @subplaces = []
+    @piece.subplaces.each do |place|
+      @subplaces << place[:name]
+    end
   end
 
   def show
