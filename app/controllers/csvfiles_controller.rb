@@ -93,6 +93,11 @@ class CsvfilesController < ApplicationController
     session[:file_name] = @file_name
     userids_and_transcribers
     @action = 'Replace'
+    @app = appname_downcase
+    if @app == 'freecen'
+      @types_of_processing = ['Check(Info)', 'Check(Warn)']
+      @type_of_processing = 'Check(Info)'
+    end
   end
 
   def load_people(userids)
