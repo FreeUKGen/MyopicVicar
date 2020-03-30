@@ -564,6 +564,7 @@ class CsvFile < CsvFiles
     new_file.flexible = @project.flexible
     new_file.total_info = @total_info
     new_file.year = @year
+    new_file.augmented = @augmented
     piece.freecen_csv_files << new_file
     success = piece.save
     p new_file

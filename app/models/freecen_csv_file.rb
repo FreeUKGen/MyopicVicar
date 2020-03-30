@@ -22,6 +22,7 @@ class FreecenCsvFile
   require 'chapman_code'
   require 'userid_role'
   require 'register_type'
+  require 'freecen_constants'
   require 'freecen_validations'
   require 'csv'
   # Fields correspond to cells in CSV headers
@@ -30,7 +31,8 @@ class FreecenCsvFile
   # They are NOT USED we use the county and country from the Place collection the church_name from the church collection
   # and the register information from the register collection
   field :action, type: String
-  field :chapman_code,  type: String
+  field :augmented, type: Hash
+  field :chapman_code, type: String
   field :characterset, type: String
   field :country, type: String
   field :county, type: String # note in headers this is actually a Chapman code
@@ -659,6 +661,9 @@ class FreecenCsvFile
   end
 
   def write_csv_file(file_location)
+    p 'write_csv_file'
+    p self
+    p 'lines'
     # since there can be multiple places/churches in a single file we must combine the records for all those back into the single file
     piece = freecen_piece
     CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
@@ -666,15 +671,42 @@ class FreecenCsvFile
       # eg +INFO,David@davejo.eclipse.co.uk,password,SEQUENCED,BURIALS,cp850,,,,,,,
       records = freecen_csv_entries
       records.each do |rec|
-        # needs coding
-      end #end records
-    end #end csv
-  end #end method
+        line = []
+        line = add_fields(line, Freecen::STANDARD_FIELD_NAMES, rec)
+        line = add_fields(line, Freecen::ADDITIONAL_FIELD_NAMES, rec)
+        line = add_fields(line, Freecen::FIELD_NAMES_1901, rec) if year == '1901'
+        p line
+        csv << line
+      end
+    end
+  end
+
+  def add_fields(line, fields, rec)
+    fields.each do |field|
+      line << rec[field]
+    end
+    line
+  end
 
   def write_csv_headers(csv, piece)
-    p file_name
+    line1 = Freecen::LINE1
+    line2 = Freecen::LINE2
+    if augmented.present? && year == '1901'
+      augmented.each_key do |column|
+        case column.downcase
+        when 'at home'
+          line1 = line1 + ["#{column}"]
+          line2 = line2 + ['a']
+        when 'rooms'
+          line1 = line1 + ["#{column}"]
+          line2 = line2 + ['abcdefgh']
+        end
+      end
+    end
     parts = file_name.split('.')
-    csv << ["#{parts[0]},,,,,,,,,,,,,,,,,,,,,,,,,,,,"]
+    csv << ["#{parts[0]}"]
+    csv << line1
+    csv << line2
   end
 
 end
