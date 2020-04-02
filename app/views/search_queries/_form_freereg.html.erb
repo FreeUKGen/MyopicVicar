@@ -165,8 +165,8 @@
         <%= f.action :submit,
         :as => :button,
         :label => 'Search ',
-        :button_html => { :class => "ladda-button" , "data-style" => "contract" ,"data-color" => appname.downcase , "data-size" => "s", "data-spinner-color" => "#ffffff" },
-        :wrapper_html => { class: "grid__item one-whole push-half--ends", id:"freereg_search_button" } %>
+        :button_html => {id:"freereg_search_button" , :class => "ladda-button" , "data-style" => "contract" ,"data-color" => appname.downcase , "data-size" => "s", "data-spinner-color" => "#ffffff" },
+        :wrapper_html => { class: "grid__item one-whole push-half--ends" } %>
         <li class="grid__item one-whole clear--left">
           <% x = Rails.application.config.max_search_time/1000 %>
           <small class="additional push-half--ends">Search times are limited to <%= x %> seconds. <br>
