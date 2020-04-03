@@ -27,7 +27,7 @@
     <%= f.input :sex, selected: '-', collection: ['m','f','-'],:input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 3}%>
     <%= f.input :age ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
     <%= f.input :age_unit, selected: '', collection: ['y','m','w', 'd', ''], :input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 3}%>
-    <%= f.input :individual_flag, selected: '', collection: ['x', ''], :input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 2} %>
+    <%= f.input :detail_flag, selected: '', collection: ['x', ''], :input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 2} %>
     <%= f.input :occupation ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
     <%= f.input :occupation_category , selected: '', collection: ['e','r','n', ''],:input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 3} %>
     <%= f.input :occupation_flag, selected: '', collection: ['x', ''], :input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 2} %>

@@ -64,7 +64,7 @@ module Freecen
 
   STANDARD_FIELD_NAMES = ['civil_parish', 'enumeration_district', 'folio_number', 'page_number', 'schedule_number', 'house_number',
                           'house_or_street_name', 'uninhabited_flag', 'surname', 'forenames', 'name_flag', 'relationship', 'marital_status', 'sex', 'age',
-                          'individual_flag', 'occupation', 'occupation_category', 'occupation_flag', 'verbatim_birth_county', 'verbatim_birth_place',
+                          'detail_flag', 'occupation', 'occupation_category', 'occupation_flag', 'verbatim_birth_county', 'verbatim_birth_place',
                           'birth_place_flag', 'disability', 'language', 'notes'].freeze
   ADDITIONAL_FIELD_NAMES = ['deleted_flag', 'ecclesiastical_parish'].freeze
 

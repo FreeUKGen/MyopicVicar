@@ -705,7 +705,7 @@ class CsvRecords < CsvFile
 
       @record = CsvRecord.new(line, @csvfile, @project)
       success, message, result = @record.extract_data_line(n + 1)
-      result[:flag] = true if result[:birth_place_flag].present? || result[:deleted_flag].present? || result[:detail_flag].present? || result[:individual_flag].present? ||
+      result[:flag] = true if result[:birth_place_flag].present? || result[:deleted_flag].present? || result[:detail_flag].present? ||
         result[:name_flag].present? || result[:occupation_flag].present? || (result[:uninhabited_flag].present? && result[:uninhabited_flag].downcase == 'x')
       data_records << result
       @csvfile.total_errors = @csvfile.total_errors + 1 if result[:error_messages].present?
@@ -778,21 +778,6 @@ class CsvRecord < CsvRecords
     when 'Error'
       error_in_fields
     end
-    # following are computed or added
-    # field :deleted_flag, type: Boolean
-    # field :dwelling_number, type: Integer
-    # field :sequence_in_household, type: Integer
-    # field :uninhabited_flag, type: String
-    # field :unoccupied_notes, type: String
-    # field :individual_flag, type: String
-    # field :name_flag, type: String
-    # field :age_unit, type: String
-    # field :detail_flag, type: String
-    # field :occupation_flag, type: String
-    # field :birth_county, type: String
-    # field :birth_place, type: String
-    # field :birth_place_flag, type: String
-
   end
 
   def extract_civil_parish_fields
@@ -859,7 +844,7 @@ class CsvRecord < CsvRecords
     @data_record[:marital_status] = @data_line[12].upcase if @data_line[12].present?
     @data_record[:sex] = @data_line[13].upcase if @data_line[13].present?
     @data_record[:age] = @data_line[14].upcase if @data_line[14].present?
-    @data_record[:individual_flag] = @data_line[15]
+    @data_record[:detail_flag] = @data_line[15]
     @data_record[:occupation] = @data_line[16].titleize if @data_line[16].present?
     @data_record[:occupation_category] = @data_line[17].upcase if @data_line[17].present?
     @data_record[:occupation_flag] = @data_line[18]

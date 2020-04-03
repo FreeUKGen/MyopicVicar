@@ -31,7 +31,7 @@
     </thead>
     <tbody>
       <tr>
-        <% if @freecen_csv_entry.individual_flag.blank? %>
+        <% if @freecen_csv_entry.uninhabited_flag.blank? %>
           <% @freecen_csv_entry.individual_display_values(@year,@chapman_code).each do |field_val| %>
             <td>
               <%= field_val %>

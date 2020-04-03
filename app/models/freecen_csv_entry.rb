@@ -43,7 +43,6 @@ class FreecenCsvEntry
   field :forenames, type: String
   field :house_number, type: String
   field :house_or_street_name, type: String
-  field :individual_flag, type: String
   field :individual_number, type: Integer
   field :info_messages, type: String
   field :language, type: String
@@ -562,10 +561,10 @@ class FreecenCsvEntry
         message = message + messageb
         record[:error_messages] = record[:error_messages] + messageb
       end
-      success, messagea = FreecenValidations.fixed_uncertainty_status?(record[:individual_flag])
+      success, messagea = FreecenValidations.fixed_uncertainty_status?(record[:detail_flag])
       unless success
         result = false
-        messageb = "ERROR: line #{num} Query #{record[:individual_flag]} is #{messagea}.<br>"
+        messageb = "ERROR: line #{num} Query #{record[:detail_flag]} is #{messagea}.<br>"
         message = message + messageb
         record[:error_messages] = record[:error_messages] + messageb
       end
@@ -807,14 +806,14 @@ class FreecenCsvEntry
     #1841 doesn't have ecclesiastical parish or schedule number
     #Scotland doesn't have folio
 
-    ['Transition', 'Verbatim Birth County', 'Verbatim Birth Place', 'Birth Place Flag', 'Deleted Flag', 'Individual Flag', 'Name Flag', 'Occupation Flag', 'Uninhabited Flag']
+    ['Transition', 'Verbatim Birth County', 'Verbatim Birth Place', 'Birth Place Flag', 'Deleted Flag', 'Detail Flag', 'Name Flag', 'Occupation Flag', 'Uninhabited Flag']
   end
 
   def management_display_values
     #1841 doesn't have ecclesiastical parish or schedule number
     #Scotland doesn't have folio
 
-    [data_transition, verbatim_birth_county, verbatim_birth_place, birth_place_flag, deleted_flag, individual_flag, name_flag, occupation_flag, uninhabited_flag]
+    [data_transition, verbatim_birth_county, verbatim_birth_place, birth_place_flag, deleted_flag, detail_flag, name_flag, occupation_flag, uninhabited_flag]
   end
 
   def self.error_display_labels
