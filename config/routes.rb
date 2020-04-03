@@ -301,6 +301,7 @@ MyopicVicar::Application.routes.draw do
   resources :coordinators
 
   resources :alias_place_churches
+  get 'freereg_contents/recent_additions', :to => 'freereg_contents#recent_additions', :as => :recent_additions_freereg_content
   get 'freereg_contents/:id/gaps_and_embargoes(.:format)', :to => 'freereg_contents#gaps_and_embargoes', :as => :gaps_and_embargoes_freereg_content
   get 'freereg_contents/:id/unique_place_names(.:format)', :to => 'freereg_contents#unique_place_names', :as => :unique_place_names
   get 'freereg_contents/:id/unique_register_names(.:format)', :to => 'freereg_contents#unique_register_names', :as => :unique_register_names
