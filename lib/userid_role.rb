@@ -50,14 +50,15 @@ module UseridRole
                                       'Manage Counties', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
       'engagement_coordinator' => ['Communicate', 'Contacts', 'Database Statistics', 'Manage Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
 
-      'executive_director' => ['Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Database Statistics',
-                               'Feedback', 'FreeCen Errors', 'Profile', 'Manage FreeCen Coverage', 'Manage Userids', 'Message System', 'RefineryCMS', 'Roadmap',
-                               'Site Statistics', 'Search Performance', 'Syndicate Coordinators', 'System Documentation', 'FreeUKGenealogy  Policies'],
+      'executive_director' => ['Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Database Statistics', 'Feedback', 'FreeCen Errors',
+                               'Manage Counties', 'Manage FreeCen Coverage', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
+                               'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'FreeUKGenealogy  Policies'],
       'genealogy_coordinator' => ['Communicate', 'Contacts', 'Profile', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
       'general_communication_coordinator' => ['Communicate', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
 
-      'project_manager' => ['Communicate', 'Contacts', 'Database Statistics', 'FreeCen Errors', 'Manage Userids', 'Manage FreeCen Coverage', 'Feedback', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
-                            'System Documentation', 'FreeUKGenealogy  Policies'],
+      'project_manager' => ['Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Database Statistics', 'Feedback', 'FreeCen Errors',
+                            'Manage Counties', 'Manage FreeCen Coverage', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
+                            'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'FreeUKGenealogy  Policies'],
       'publicity_coordinator' => ['Communicate', 'Contacts', 'Profile', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
 
       'syndicate_coordinator' => ['Communicate', 'Manage Syndicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
