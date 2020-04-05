@@ -201,7 +201,7 @@ class CsvFile < CsvFiles
 
   attr_accessor :header, :list_of_registers, :header_error, :system_error, :data_hold,:dwelling_number, :sequence_in_household,
     :array_of_data_lines, :default_charset, :file, :file_name, :userid, :uploaded_date, :slurp_fail_message, :augmented,
-    :file_start, :file_locations, :data, :unique_locations, :unique_existing_locations,
+    :file_start, :file_locations, :data, :unique_locations, :unique_existing_locations, :full_dirname,
     :all_existing_records, :total_files, :total_records, :total_data_errors, :total_header_errors, :place_id, :civil_parish,
     :enumeration_district, :folio, :page, :year, :piece, :schedule, :folio_suffix, :schedule_suffix, :total_errors, :total_warnings, :total_info
 
@@ -209,9 +209,9 @@ class CsvFile < CsvFiles
     @project = project
     @file_location = file_location
     standalone_filename = File.basename(@file_location)
-    full_dirname = File.dirname(@file_location)
-    parent_dirname = File.dirname(full_dirname)
-    user_dirname = full_dirname.sub(parent_dirname, '').gsub(File::SEPARATOR, '')
+    @full_dirname = File.dirname(@file_location)
+    parent_dirname = File.dirname(@full_dirname)
+    user_dirname = @full_dirname.sub(parent_dirname, '').gsub(File::SEPARATOR, '')
     @all_existing_records = {}
     @array_of_data_lines = Array.new {Array.new}
     @data = {}
@@ -400,6 +400,9 @@ class CsvFile < CsvFiles
     #p "communicating failure"
     file = @project.member_message_file
     file.close
+    copy_file_name = "#{@header[:file_name]}.txt"
+    to = File.join(@full_dirname, copy_file_name)
+    FileUtils.cp_r(file, to, remove_destination: true)
     UserMailer.batch_processing_failure(file, @userid, @file_name).deliver_now unless @project.type_of_project == "special_selection_1" ||  @project.type_of_project == "special_selection_2"
     clean_up_message
     true
@@ -409,7 +412,10 @@ class CsvFile < CsvFiles
     #p "communicating success"
     file = @project.member_message_file
     file.close
-    UserMailer.batch_processing_success(file,@header[:userid],@header[:file_name]).deliver_now unless @project.type_of_project == "special_selection_1" ||  @project.type_of_project == "special_selection_2"
+    copy_file_name = "#{@header[:file_name]}.txt"
+    to = File.join(@full_dirname, copy_file_name)
+    FileUtils.cp_r(file, to, remove_destination: true)
+    UserMailer.batch_processing_success(file, @header[:userid],@header[:file_name]).deliver_now unless @project.type_of_project == "special_selection_1" ||  @project.type_of_project == "special_selection_2"
     clean_up_message
     true
   end
@@ -781,7 +787,7 @@ class CsvRecord < CsvRecords
   end
 
   def extract_civil_parish_fields
-    @data_record[:civil_parish] = @data_line[0].titleize if @data_line[0].present?
+    @data_record[:civil_parish] = @data_line[0]
     success, message, @csvfile.civil_parish = FreecenCsvEntry.validate_civil_parish(@data_record, @csvfile.civil_parish)
     @project.write_messages_to_all(message, true) unless message == ''
     extract_enumeration_district_fields
@@ -820,7 +826,7 @@ class CsvRecord < CsvRecords
   def extract_dwelling_fields
     @data_record[:schedule_number] = @data_line[4]
     @data_record[:house_number] = @data_line[5]
-    @data_record[:house_or_street_name] = @data_line[6].titleize if @data_line[6].present?
+    @data_record[:house_or_street_name] = @data_line[6]
     @data_record[:uninhabited_flag] = @data_line[7]
     unless @data_line[5].blank? && @data_line[6].blank? && (@data_line[4].blank? || @data_line[4] == '0')
       @data_record[:dwelling_number] = @csvfile.dwelling_number + 1
@@ -833,27 +839,29 @@ class CsvRecord < CsvRecords
   end
 
   def extract_individual_fields
-    return if ['b', 'n', 'u', 'v'].include?(@data_record[:uninhabited_flag])
+    @data_record[:notes] = @data_line[24]
+    @data_record[:notes] = '' if @data_record[:notes] =~ /\[see mynotes.txt\]/
+    return if ['b', 'n', 'u', 'v', 'x'].include?(@data_record[:uninhabited_flag])
 
     @csvfile.sequence_in_household = @csvfile.sequence_in_household + 1 if @data_line[5].blank? && @data_line[6].blank? && (@data_line[4].blank? || @data_line[4] == '0')
     @data_record[:sequence_in_household] = @csvfile.sequence_in_household
-    @data_record[:surname] = @data_line[8].upcase if @data_line[8].present?
-    @data_record[:forenames] = @data_line[9].titleize if @data_line[9].present?
+    @data_record[:surname] = @data_line[8]
+    @data_record[:forenames] = @data_line[9]
     @data_record[:name_flag] = @data_line[10]
-    @data_record[:relationship] = @data_line[11].upcase if @data_line[11].present?
-    @data_record[:marital_status] = @data_line[12].upcase if @data_line[12].present?
-    @data_record[:sex] = @data_line[13].upcase if @data_line[13].present?
-    @data_record[:age] = @data_line[14].upcase if @data_line[14].present?
+    @data_record[:relationship] = @data_line[11]
+    @data_record[:marital_status] = @data_line[12]
+    @data_record[:sex] = @data_line[13]
+    @data_record[:age] = @data_line[14]
     @data_record[:detail_flag] = @data_line[15]
-    @data_record[:occupation] = @data_line[16].titleize if @data_line[16].present?
-    @data_record[:occupation_category] = @data_line[17].upcase if @data_line[17].present?
+    @data_record[:occupation] = @data_line[16]
+    @data_record[:occupation_category] = @data_line[17]
     @data_record[:occupation_flag] = @data_line[18]
-    @data_record[:verbatim_birth_county] = @data_line[19].upcase if @data_line[19].present?
-    @data_record[:verbatim_birth_place] = @data_line[20].titleize if @data_line[20].present?
+    @data_record[:verbatim_birth_county] = @data_line[19]
+    @data_record[:verbatim_birth_place] = @data_line[20]
     @data_record[:uncertainy_birth] = @data_line[21]
-    @data_record[:disability] = @data_line[22].titleize if @data_line[22].present?
-    @data_record[:language] = @data_line[23].upcase if @data_line[23].present?
-    @data_record[:notes] = @data_line[24].titleize if @data_line[24].present?
+    @data_record[:disability] = @data_line[22]
+    @data_record[:language] = @data_line[23]
+
     success, message = FreecenCsvEntry.validate_individual(@data_record)
     @project.write_messages_to_all(message, true) unless message == ''
     extract_augmented_fields if @csvfile.augmented.present?
@@ -862,11 +870,11 @@ class CsvRecord < CsvRecords
   def extract_augmented_fields
     @csvfile.augmented.each_pair do |header, column|
       if header == 'deleted'
-        @data_record[:deleted_flag] = @data_line[column].upcase if @data_line[column].present?
+        @data_record[:deleted_flag] = @data_line[column]
       elsif header == 'ecclesiastical'
-        @data_record[:ecclesiastical_parish] = @data_line[column].titleize if @data_line[column].present?
+        @data_record[:ecclesiastical_parish] = @data_line[column]
       elsif ['at home', 'home'].include?(header)
-        @data_record[:at_home] = @data_line[column].upcase if @data_line[column].present?
+        @data_record[:at_home] = @data_line[column]
       elsif header == 'rooms'
         @data_record[:rooms] = @data_line[column]
       end

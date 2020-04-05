@@ -4,5 +4,8 @@
 <% elsif session[:county].present? %>
   <h3 style="text-align: center"> County Files for  <%= session[:county]%><%=@sorted_by%></h3>
 <% end%>
+<div  class=" text--center push--bottom">
+  <%= link_to 'Download Spreadsheet' , downnload_spreadsheet_freecen_csv_file_path, method: :get , :class => "btn btn--small" %>
+</div>
 <%= render partial: 'flash_notice' %>
 <% end %>

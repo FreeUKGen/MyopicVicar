@@ -331,27 +331,18 @@ class FreecenCsvFile
   def change_owner_of_file(new_userid)
     # rspec tested
     # first step is to move the files
-    old_userid = self.userid
-    file_name = self.file_name
     result = [true, '']
     new_userid_folder_location = physical_userid_location(new_userid)
-    old_userid_folder_location = physical_userid_location(old_userid)
-    if Dir.exist?(old_userid_folder_location)
-      unless Dir.exist?(new_userid_folder_location)
-        Dir.mkdir(new_userid_folder_location, 0774)
-      end
-      save_to_attic
-      new_physical_file_location = physical_file_location(new_userid, file_name)
-      old_physical_file_location = physical_file_location(old_userid, file_name)
-      write_csv_file(new_physical_file_location)
-      FileUtils.remove(old_physical_file_location, force: true, verbose: true) if File.exist?(old_physical_file_location)
-    else
-      result = [false, 'Old userid does not exist']
+    old_userid_folder_location = physical_userid_location(userid)
+    unless Dir.exist?(new_userid_folder_location)
+      Dir.mkdir(new_userid_folder_location, 0774)
     end
+    new_physical_file_location = physical_file_location(new_userid, file_name)
+    write_csv_file(new_physical_file_location)
     if result[0]
-      physical_file = PhysicalFile.userid(old_userid).file_name(file_name).first
-      physical_file.update_userid(new_userid)  if physical_file.present?
-      promulgate_userid_change(new_userid, old_userid)
+      physical_file = PhysicalFile.new(userid: new_userid, file_name: file_name, base: true, base_uploaded_date: Time.new)
+      physical_file.save
+      physical_file.add_file('reprocessing')
     end
     result
   end
@@ -407,10 +398,10 @@ class FreecenCsvFile
         success[1] = success[1] + "file has no entries #{batch.file_name} "
       when freecen_piece.blank?
         success[0] = false
-        success[1] = success[1] + "file has a null register #{batch.file_name} "
+        success[1] = success[1] + "file has a null piece #{batch.file_name} "
       when freecen_piece.place.blank?
         success[0] = false
-        success[1] = success[1] + "file has a null church #{batch.file_name} "
+        success[1] = success[1] + "file has a null place #{batch.file_name} "
       end
     end
     success
@@ -661,9 +652,6 @@ class FreecenCsvFile
   end
 
   def write_csv_file(file_location)
-    p 'write_csv_file'
-    p self
-    p 'lines'
     # since there can be multiple places/churches in a single file we must combine the records for all those back into the single file
     piece = freecen_piece
     CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
@@ -675,7 +663,6 @@ class FreecenCsvFile
         line = add_fields(line, Freecen::STANDARD_FIELD_NAMES, rec)
         line = add_fields(line, Freecen::ADDITIONAL_FIELD_NAMES, rec)
         line = add_fields(line, Freecen::FIELD_NAMES_1901, rec) if year == '1901'
-        p line
         csv << line
       end
     end

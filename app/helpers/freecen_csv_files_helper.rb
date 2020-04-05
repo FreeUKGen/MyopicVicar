@@ -1,12 +1,12 @@
 module FreecenCsvFilesHelper
 
   def edit_freecen_file
-    link_to 'Edit', edit_freecen_csv_file_path(@freecen_csv_file), method: :get, class: 'btn   btn--small'
+    link_to 'Edit Header', edit_freecen_csv_file_path(@freecen_csv_file), method: :get, class: 'btn   btn--small'
   end
 
   def download_freecen_file
     link_to 'Download file', download_freecen_csv_file_path(@freecen_csv_file),
-      data: { confirm: 'Are you sure you want to download these records?' }, method: :get, class: 'btn   btn--small'
+      data: { confirm: 'Are you sure you want to download these entries?' }, method: :get, class: 'btn   btn--small'
   end
 
   def browse_freecen_file_individuals
@@ -34,6 +34,14 @@ module FreecenCsvFilesHelper
 
   def list_freecen_file_information_entries
     link_to 'Browse information messages', freecen_csv_entries_path(type: 'Inf'), method: :get, class: 'btn   btn--small'
+  end
+
+  def download_spreadsheet
+    link_to 'Download Spreadsheet', download_spresdsheet_freecen_csv_file_path, method: :get, class: 'btn   btn--small'
+  end
+
+  def download_messages
+    link_to 'Download Message Report', download_message_report_freecen_csv_file_path(@freecen_csv_file), method: :get, class: 'btn   btn--small'
   end
 
   def list_freecen_file_flags
@@ -70,8 +78,8 @@ module FreecenCsvFilesHelper
   end
 
   def change_freecen_file_owner
-    link_to 'Change owner (userid)', change_userid_freecen_csv_file_path(@freecen_csv_file),
-      data: { confirm: 'Are you sure you want to move this file ' }, class: 'btn   btn--small', method: :get
+    link_to 'Copy to Another Person', change_userid_freecen_csv_file_path(@freecen_csv_file),
+      data: { confirm: 'Are you sure you want to copy this file ' }, class: 'btn   btn--small', method: :get
   end
 
   def freecen_file_errors(file)

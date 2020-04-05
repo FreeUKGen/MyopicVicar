@@ -33,7 +33,7 @@ class FreecenCsvFilesController < ApplicationController
   def change_userid
     @freecen_csv_file = FreecenCsvFile.find(params[:id])
     unless FreecenCsvFile.valid_freecen_csv_file?(params[:id])
-      message = 'The file was not correctly linked. Have your coordinator contact the web master'
+      message = 'The file was not correctly linked. Contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
     redirect_back(fallback_location: freecen_csv_file_path(@freecen_csv_file), notice: 'File is currently awaiting processing and should not be edited') && return unless @freecen_csv_file.can_we_edit?
@@ -42,7 +42,7 @@ class FreecenCsvFilesController < ApplicationController
     controls(@freecen_csv_file)
     locations
     @records = @freecen_csv_file.freecen_csv_entries.count
-    @userids = UseridDetail.get_userids_for_selection('all')
+    @userids = UseridDetail.get_userids_for_selection(@user.syndicate)
   end
 
   def controls(file)
@@ -181,6 +181,35 @@ class FreecenCsvFilesController < ApplicationController
     else
       flash[:notice] = "We cannot download the file: #{message}. Contact your coordinator if you need advise."
     end
+    redirect_back(fallback_location: new_manage_resource_path) && return
+  end
+
+  def download_message_report
+    @freecen_csv_file = FreecenCsvFile.find(params[:id])
+    unless FreecenCsvFile.valid_freecen_csv_file?(params[:id])
+      message = 'The file was not correctly linked. Have your coordinator contact the web master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
+
+    proceed, message = @freecen_csv_file.check_file
+    if proceed
+      text_file = "#{@freecen_csv_file.file_name}.txt"
+      my_file = File.join(Rails.application.config.datafiles, @freecen_csv_file.userid, text_file)
+      if File.file?(my_file)
+        flash[:notice] = 'The file has been downloaded to your computer'
+        send_file(my_file, filename: text_file, x_sendfile: true) and return
+      else
+        flash[:notice] = 'The message file does not exist.'
+      end
+    else
+      flash[:notice] = "We cannot download the message file: #{message}. Contact your coordinator if you need advise."
+    end
+    redirect_back(fallback_location: new_manage_resource_path) && return
+  end
+
+  def download_spreadsheet
+
+
     redirect_back(fallback_location: new_manage_resource_path) && return
   end
 
@@ -528,16 +557,16 @@ class FreecenCsvFilesController < ApplicationController
     redirect_back(fallback_location: freecen_csv_file_path(@freecen_csv_file), notice: 'File is currently awaiting processing and should not be edited') && return unless @freecen_csv_file.can_we_edit?
     controls(@freecen_csv_file)
     case params[:commit]
-    when 'Change Userid'
+    when 'Copy to Userid'
       flash[:notice] = 'Cannot select a blank userid' if params[:freecen_csv_file][:userid].blank?
       redirect_to(action: 'change_userid') && return if params[:freecen_csv_file][:userid].blank?
 
       proceed, message = @freecen_csv_file.change_owner_of_file(params[:freecen_csv_file][:userid])
       if proceed
-        flash[:notice] = 'The change of userid was successful'
+        flash[:notice] = 'The copy of the file to userid is being processed'
         redirect_to(freecen_csv_file_path(@freecen_csv_file)) && return
       else
-        flash[:notice] = "The change of userid was unsuccessful: #{message}"
+        flash[:notice] = "The copy of the file to userid was unsuccessful: #{message}"
         redirect_to(change_userid_freecen_csv_file_path(@freecen_csv_file)) && return
       end
     when 'Submit'

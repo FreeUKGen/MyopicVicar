@@ -74,7 +74,8 @@ MyopicVicar::Application.routes.draw do
   resources :freecen1_vld_entries
 
   resources :freecen1_vld_files
-
+  get 'freecen_csv_files/download_spreadsheet', :to => 'freecen_csv_files#download_spreadsheet', :as => :download_spreadsheet_freecen_csv_file
+  get 'freecen_csv_files/:id/download_message_report(.:format)', :to => 'freecen_csv_files#download_message_report', :as => :download_message_report_freecen_csv_file
   get 'freecen_csv_files/:id/change_userid', :to => 'freecen_csv_files#change_userid', :as => :change_userid_freecen_csv_file
   get 'freecen_csv_files/update_counties', :to => 'freecen_csv_files#update_counties', :as => :update_counties_freecen_csv_file
   get 'freecen_csv_files/update_places', :to => 'freecen_csv_files#update_places', :as => :update_places_freecen_csv_file
