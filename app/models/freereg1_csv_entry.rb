@@ -833,7 +833,7 @@ class Freereg1CsvEntry
   end
 
   def update_seach_record_location
-    search_record.update_location(self, freereg1_csv_file)
+    search_record.update_location(self, freereg1_csv_file) if search_record.present?
   end
 
   def update_place_ucf_list(place, file, old_search_record)
