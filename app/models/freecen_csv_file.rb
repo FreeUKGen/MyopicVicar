@@ -31,7 +31,7 @@ class FreecenCsvFile
   # They are NOT USED we use the county and country from the Place collection the church_name from the church collection
   # and the register information from the register collection
   field :action, type: String
-  field :augmented, type: Hash
+  field :field_specification, type: Hash
   field :chapman_code, type: String
   field :characterset, type: String
   field :country, type: String

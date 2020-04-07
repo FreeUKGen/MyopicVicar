@@ -89,8 +89,10 @@ class FreecenPiece
       first_two_characters = description.slice(0, 2).upcase if description.slice(0, 2).present?
       third_character = description.slice(2, 1)
       third_and_fourth = description.slice(2, 2)
-      last_three = description.chars.last(3).join
-      last_four = description.chars.last(4).join
+      parts = description.split('.')
+      stem = parts[0]
+      last_three = stem.chars.last(3).join
+      last_four = stem.chars.last(4).join
       case first_two_characters
       when 'RG'
         if third_character == '9' || third_and_fourth == '09'

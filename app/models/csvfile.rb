@@ -122,8 +122,13 @@ class Csvfile < CarrierWave::Uploader::Base
 
     proceed = true
     proceed = physical_file_for_user_exists
+    p 'setup_batch_on_replac'
+    p proceed
+    p userid
+    p file_name
     #lets check that the file has indeed been processed previously.
     PhysicalFile.where(userid: userid, file_name: file_name).exists? ? batch_entries_present = true : batch_entries_present = false
+    p
     if !proceed
       message = 'You are attempting to replace a file you do not have. Likely you are a coordinator replacing a file belonging to someone else. You must replace into their userid.'
 

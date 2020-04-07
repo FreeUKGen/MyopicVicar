@@ -22,6 +22,7 @@ class FreecenCsvEntry
   require 'freecen_constants'
   require 'chapman_code'
 
+  field :address_flag, type: String
   field :age, type: String
   field :age_unit, type: String #  Created from age
   field :at_home, type: String
@@ -46,6 +47,7 @@ class FreecenCsvEntry
   field :individual_number, type: Integer
   field :info_messages, type: String
   field :language, type: String
+  field :location_flag,  type: String
   field :marital_status, type: String
   field :name_flag, type: String
   field :notes, type: String
@@ -143,7 +145,6 @@ class FreecenCsvEntry
     def validate_civil_parish(record, previous_civil_parish)
       # p 'civil_parish change validate'
       # p previous_civil_parish
-
       civil_parish = record[:civil_parish]
       # p civil_parish
       flexible = record[:flexible]
@@ -157,10 +158,9 @@ class FreecenCsvEntry
         result = false
         messagea = "ERROR: line #{num} Civil Parish is blank.<br> " if messagea == 'blank'
         messagea = "ERROR: line #{num} Civil Parish has invalid text #{civil_parish}.<br>" if messagea == 'VALID_TEXT'
-        message = message + messagea
         record[:error_messages] = record[:error_messages] + messagea
         new_civil_parish = previous_civil_parish
-        return [result, message, new_civil_parish]
+        return [result, messagea, new_civil_parish]
       end
 
       valid = false
@@ -207,7 +207,7 @@ class FreecenCsvEntry
         result = false
         new_enumeration_district = previous_enumeration_district
         messageb = "ERROR: line #{num} Enumeration District #{enumeration_district} is #{messagea}.<br>"
-        message = message + messageb
+        message = messagea + messageb
         record[:error_messages] = record[:error_messages] + messageb
         return [result, message, new_enumeration_district]
       end
@@ -231,12 +231,9 @@ class FreecenCsvEntry
         message = "Info: line #{num} Enumeration District changed to #{Freecen::SpecialEnumerationDistricts::CODES[special.to_i]}.<br>" if special.present? && info_messages
         record[:info_messages] = record[:info_messages] + message if special.present?  && info_messages
         new_enumeration_district = enumeration_district
-        new_folio_number, new_folio_suffix = suffix_extract(record[:folio_number])
-        new_page_number = record[:page_number]
-        new_schedule_number, new_schedule_suffix = suffix_extract(record[:schedule_number])
         result = false
       end
-      [result, message, new_enumeration_district, new_folio_number, new_folio_suffix, new_page_number, new_schedule_number, new_schedule_suffix]
+      [result, message, new_enumeration_district]
     end
 
     def suffix_present?(field)
@@ -260,9 +257,9 @@ class FreecenCsvEntry
     def validate_folio(record, previous_folio_number, previous_folio_suffix)
       # p 'validate_folio'
       folio_number, folio_suffix = suffix_extract(record[:folio_number])
-      page_number = record[:page_number]
       flexible = record[:flexible]
       num = record[:record_number]
+      page_number = record[:page_number]
       transition = record[:data_transition]
       info_messages = record[:messages]
       year = record[:year]
@@ -279,9 +276,8 @@ class FreecenCsvEntry
       unless success
         result = false
         messagea = "ERROR: line #{num} Folio number #{record[:folio_number]} is #{messagea}.<br>"
-        message = message + messagea
         record[:error_messages] = record[:error_messages] + messagea
-        return [result, message, new_folio_number, new_folio_suffix]
+        return [result, messagea, new_folio_number, new_folio_suffix]
       end
 
       if previous_folio_number == 0
@@ -340,15 +336,13 @@ class FreecenCsvEntry
       # p page_number
       result = true
       new_page_number = previous_page_number
-
       success, messagea = FreecenValidations.fixed_page_number?(page_number)
       unless success
         result = false
         new_page_number = previous_page_number
         messagea = "ERROR: line #{num} Page number #{page_number} is #{messagea}.<br>"
-        message = message + messagea
         record[:error_messages] = record[:error_messages] + messagea
-        return [result, message, new_page_number]
+        return [result, messagea, new_page_number]
       end
 
       if previous_page_number == 0
@@ -388,7 +382,7 @@ class FreecenCsvEntry
         new_page_number = page_number.to_i
         result = true
       end
-      [result, message, new_page_number]
+      [result, message, new_page_number.to_i]
     end
 
     def validate_dwelling(record, previous_schedule_number, previous_schedule_suffix)

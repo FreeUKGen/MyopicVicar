@@ -200,7 +200,7 @@ class CsvFile < CsvFiles
   # gets information on the file to be processed
 
   attr_accessor :header, :list_of_registers, :header_error, :system_error, :data_hold,:dwelling_number, :sequence_in_household,
-    :array_of_data_lines, :default_charset, :file, :file_name, :userid, :uploaded_date, :slurp_fail_message, :augmented,
+    :array_of_data_lines, :default_charset, :file, :file_name, :userid, :uploaded_date, :slurp_fail_message, :field_specification,
     :file_start, :file_locations, :data, :unique_locations, :unique_existing_locations, :full_dirname,
     :all_existing_records, :total_files, :total_records, :total_data_errors, :total_header_errors, :place_id, :civil_parish,
     :enumeration_district, :folio, :page, :year, :piece, :schedule, :folio_suffix, :schedule_suffix, :total_errors, :total_warnings, :total_info
@@ -254,7 +254,7 @@ class CsvFile < CsvFiles
     @total_info = 0
     @dwelling_number = 0
     @sequence_in_household = 0
-    @augmented = {}
+    @field_specication = {}
 
   end
 
@@ -270,9 +270,15 @@ class CsvFile < CsvFiles
     # p "finished file checking #{message}. <br>"
     return [false, message] unless success
 
+    success, message, @year, @piece = extract_piece_year_from_file_name(@file_name)
+    @project.write_messages_to_all(message, true) unless success
+    @project.write_messages_to_all("Working on #{@piece.district_name} for #{@year}, in #{@piece.chapman_code}", true) if success
+    return [false, message] unless success
+
     success, message = slurp_the_csv_file
     # p "finished slurp #{success} #{message}"
     return [false, message] unless success
+
     @csv_records = CsvRecords.new(@array_of_data_lines, self, @project)
     success, reduction = @csv_records.process_header_fields
 
@@ -300,6 +306,23 @@ class CsvFile < CsvFiles
     return [success, "communication failed #{message}. <br>"] unless success
 
     [true, records_processed, @total_data_errors]
+  end
+
+  def extract_piece_year_from_file_name(file_name)
+    if FreecenValidations.fixed_valid_piece?(file_name)
+      success = true
+      year, piece = FreecenPiece.extract_year_and_piece(file_name)
+      actual_piece = FreecenPiece.where(year: year, piece_number: piece).first
+      if actual_piece.blank?
+        message = "Error: there is no piece for #{file_name} in the database}. <br>"
+        success = false
+      end
+    else
+      message = "Error: File name does not have a valid piece number. It is #{file_name}. <br>"
+      success = false
+    end
+
+    [success, message, year, actual_piece]
   end
 
   def check_and_set_characterset(code_set, csvtxt)
@@ -570,10 +593,9 @@ class CsvFile < CsvFiles
     new_file.flexible = @project.flexible
     new_file.total_info = @total_info
     new_file.year = @year
-    new_file.augmented = @augmented
+    new_file.field_specification = @field_specification
     piece.freecen_csv_files << new_file
     success = piece.save
-    p new_file
     [success, new_file]
   end
 
@@ -595,7 +617,6 @@ class CsvRecords < CsvFile
   require 'freecen_constants'
 
   attr_accessor :array_of_lines, :data_lines
-  NEWHEADERS = ['deleted', 'ecclesiastical', 'at home', 'home', 'rooms']
 
   def initialize(data_array, csvfile, project)
     @project = project
@@ -606,100 +627,88 @@ class CsvRecords < CsvFile
 
   def process_header_fields
     # p "Getting header
-    reduction = 3
+    reduction = 0
     n = 0
-    while n <= 2
-      @project.write_messages_to_all("Error: line #{n} is empty", true) if @array_of_lines[n][0..24].all?(&:blank?)
-      case n
-      when 0
-        @csvfile.year, @csvfile.piece, success, message = line_one(@array_of_lines[n])
-        @project.write_messages_to_all(message, true) unless success
-        @project.write_messages_to_all("Working on #{@csvfile.piece.district_name} for #{@csvfile.year}, in #{@csvfile.piece.chapman_code}", true) if success
-        reduction = reduction - 1 unless success || message =~ /Error: line 1 of batch does not have a valid piece number/
-      when 1
-        success, message, @csvfile.augmented = line_two(@array_of_lines[n])
-        @project.write_messages_to_all(message, true) if message.present?
-        unless success
-          reduction = reduction - 1
-          @project.write_messages_to_all(message, true)
-        end
-      when 2
-        success, message = line_three(@array_of_lines[n])
-        unless success
+    @project.write_messages_to_all("Error: line #{n} is empty", true) if @array_of_lines[n][0..24].all?(&:blank?)
+    return [false, n] if @array_of_lines[n][0..24].all?(&:blank?)
 
-          reduction = reduction - 1
-          @project.write_messages_to_all(message, true)
-        end
-      end
-      n = n + 1
+    success, message, @csvfile.field_specification = line_one(@array_of_lines[n])
+    if success
+      reduction = reduction + 1
+    else
+      @project.write_messages_to_all(message, true)
+      return [success, reduction]
+    end
+    success, message = line_two(@array_of_lines[n])
+    if success
+      reduction = reduction + 1
+      @project.write_messages_to_all(message, true)
     end
     [success, reduction]
   end
 
   def line_one(line)
-    if FreecenValidations.fixed_valid_piece?(line[0])
-      success = true
-      piece = line[0]
-      year, piece = FreecenPiece.extract_year_and_piece(line[0])
-      actual_piece = FreecenPiece.where(year: year, piece_number: piece).first
-      if actual_piece.blank?
-        message = "Error: there is no piece with #{line[0]} in the database}. <br>"
-        success = false
-      end
+    if line[0..24].all?(&:present?)
+      success, message, field_specification = extract_field_headers(line)
     else
-      message = "Error: line 1 of batch does not have a valid piece number. It has #{line[0]}. <br>"
+      message = 'INFO: line 1 Column field specification is missing.<br>'
       success = false
     end
-    [year, actual_piece, success, message]
+    [success, message, field_specification]
   end
 
   def line_two(line)
-    augmented = nil
-    if line[0..25].all?(&:present?)
-      success, message, augmented = extract_additonal_field_headers(line)
-      message = "INFO: Augmented headers #{augmented}" if success
-    elsif line[0..24].all?(&:present?)
+    success = false
+    if line[0].casecmp?('abcdefghijklmnopqrst')
+      message = 'Info: line 2 field width specification detected and ignored'
       success = true
-      message = ''
-    else
-      message = 'INFO: line 2 containing Column specification is missing. Assuming the old standard.<br>'
-      success = false
-    end
-    [success, message, augmented]
-  end
-
-  def line_three(line)
-    if line[0..20].all?(&:present?) && line[22..24].all?(&:present?)
-      success = true
-    else
-      message = 'INFO: line 3 containing field information is missing<br>'
-      success = false
     end
     [success, message]
   end
 
-  def extract_additonal_field_headers(line)
-    n = 25
-    augmented_headers = {}
+  def extract_field_headers(line)
+    line = line
+    n = 0
+    field_specification = {}
     success = true
     message = ''
+    if these_are_these_old_headers?(line)
+      line = convert_old_to_modern(line)
+    end
+
     while line[n].present?
-      if NEWHEADERS.include?(line[n].downcase)
-        num = NEWHEADERS.index(line[n].downcase)
-        augmented_headers[NEWHEADERS[num]] = n
+      Freecen::FIELD_NAMES_CONVERSION.key(line[n].downcase)
+      if Freecen::FIELD_NAMES_CONVERSION.key?(line[n].downcase)
+        field_specification[n] = Freecen::FIELD_NAMES_CONVERSION[line[n].downcase]
       else
         success = false
-        message = message + "ERROR: header at position #{n} invalid  #{line[n]} "
+        message = message + "ERROR: column header at position #{n} is invalid  #{line[n]} "
       end
       n = n + 1
     end
-    [success, message, augmented_headers]
+    p field_specification
+    [success, message, field_specification]
+  end
+
+  def these_are_these_old_headers?(line)
+    result = false
+    result = true if line[0].casecmp?('civil parish') && line[1].casecmp?('ed') && line[4].casecmp?('Schd')
+    result
+  end
+
+  def convert_old_to_modern(line)
+    line[7] = 'xu'
+    line[10] = 'xn'
+    line[15] = 'xd'
+    line[18] = 'xo'
+    line[21] = 'xb'
+    line
   end
 
   # This extracts the header and entry information from the file and adds it to the database
 
   def extract_the_data(skip)
-    skip = skip - 1
+    skip = skip
     success = true
     data_lines = 0
     data_records = []
@@ -746,15 +755,17 @@ class CsvRecord < CsvRecords
     @data_record[:error_messages] = ''
     @data_record[:warning_messages] = ''
     @data_record[:info_messages] = ''
+    @data_record[:field_specification] = @csvfile.field_specification
   end
 
   def extract_data_line(num)
+    @data_record[:record_number] = num
     @data_record[:messages] = @project.info_messages
     @data_record[:data_transition] = Freecen::FIELD_NAMES[first_field_present]
-    load_data_record(Freecen::FIELD_NAMES[first_field_present], num)
-
+    @data_record = load_data_record
+    process_data_record(@data_record[:data_transition], num)
     # p @data_record
-    # crash if num == 25
+    # crash if num == 10
     [true, " ", @data_record]
   end
 
@@ -766,8 +777,15 @@ class CsvRecord < CsvRecords
     @x
   end
 
-  def load_data_record(record_type, num)
-    @data_record[:record_number] = num
+  def load_data_record
+    @data_record[:field_specification].each_with_index do |(_key, field), n|
+      break if field.blank?
+      @data_record[field.to_sym] = @data_line[n]
+    end
+    @data_record
+  end
+
+  def process_data_record(record_type, num)
     case record_type
     when 'Civil Parish'
       extract_civil_parish_fields
@@ -787,48 +805,31 @@ class CsvRecord < CsvRecords
   end
 
   def extract_civil_parish_fields
-    @data_record[:civil_parish] = @data_line[0]
     success, message, @csvfile.civil_parish = FreecenCsvEntry.validate_civil_parish(@data_record, @csvfile.civil_parish)
     @project.write_messages_to_all(message, true) unless message == ''
     extract_enumeration_district_fields
   end
 
   def extract_enumeration_district_fields
-    @data_record[:enumeration_district] = @data_line[1]
-    success, message, enumeration_district, folio_number, folio_suffix, page_namber, schedule_number, schedule_suffix = FreecenCsvEntry.validate_enumeration_district(@data_record, @csvfile.enumeration_district)
-    unless enumeration_district == @csvfile.enumeration_district
-      @csvfile.enumeration_district = enumeration_district
-      @csvfile.folio = folio_number if folio_number.present?
-      @csvfile.folio_suffix = folio_suffix if folio_suffix.present?
-      @csvfile.page = page_namber if page_namber.present?
-      @csvfile.schedule = schedule_number if schedule_number.present?
-      @csvfile.schedule_suffix = schedule_suffix if schedule_suffix.present?
-    end
-
+    success, message, @csvfile.enumeration_district = FreecenCsvEntry.validate_enumeration_district(@data_record, @csvfile.enumeration_district)
     @project.write_messages_to_all(message, true) unless message == ''
     extract_folio_fields
   end
 
   def extract_folio_fields
-    @data_record[:folio_number] = @data_line[2]
     success, message, @csvfile.folio, @csvfile.folio_suffix = FreecenCsvEntry.validate_folio(@data_record, @csvfile.folio, @csvfile.folio_suffix)
     @project.write_messages_to_all(message, true) unless message == ''
     extract_page_fields
   end
 
   def extract_page_fields
-    @data_record[:page_number] = @data_line[3]
     success, message, @csvfile.page = FreecenCsvEntry.validate_page(@data_record, @csvfile.page)
     @project.write_messages_to_all(message, true) unless message == ''
     extract_dwelling_fields
   end
 
   def extract_dwelling_fields
-    @data_record[:schedule_number] = @data_line[4]
-    @data_record[:house_number] = @data_line[5]
-    @data_record[:house_or_street_name] = @data_line[6]
-    @data_record[:uninhabited_flag] = @data_line[7]
-    unless @data_line[5].blank? && @data_line[6].blank? && (@data_line[4].blank? || @data_line[4] == '0')
+    unless @data_record[:house_number].blank? && @data_record[:house_or_street_name].blank? && (@data_record[:schedule_number].blank? || @data_record[:schedule_number] == '0')
       @data_record[:dwelling_number] = @csvfile.dwelling_number + 1
       @csvfile.dwelling_number = @data_record[:dwelling_number]
       @csvfile.sequence_in_household = 1
@@ -839,45 +840,13 @@ class CsvRecord < CsvRecords
   end
 
   def extract_individual_fields
-    @data_record[:notes] = @data_line[24]
     @data_record[:notes] = '' if @data_record[:notes] =~ /\[see mynotes.txt\]/
-    return if ['b', 'n', 'u', 'v', 'x'].include?(@data_record[:uninhabited_flag])
+    return if ['b', 'n', 'u', 'v'].include?(@data_record[:uninhabited_flag])
 
-    @csvfile.sequence_in_household = @csvfile.sequence_in_household + 1 if @data_line[5].blank? && @data_line[6].blank? && (@data_line[4].blank? || @data_line[4] == '0')
+    @data_record[:location_flag] = 'x' if @data_record[:uninhabited_flag] == 'x'
+    @csvfile.sequence_in_household = @csvfile.sequence_in_household + 1 if @data_record[:house_number].blank? && @data_record[:house_or_street_name].blank? && (@data_record[:schedule_number].blank? || @data_record[:schedule_number] == '0')
     @data_record[:sequence_in_household] = @csvfile.sequence_in_household
-    @data_record[:surname] = @data_line[8]
-    @data_record[:forenames] = @data_line[9]
-    @data_record[:name_flag] = @data_line[10]
-    @data_record[:relationship] = @data_line[11]
-    @data_record[:marital_status] = @data_line[12]
-    @data_record[:sex] = @data_line[13]
-    @data_record[:age] = @data_line[14]
-    @data_record[:detail_flag] = @data_line[15]
-    @data_record[:occupation] = @data_line[16]
-    @data_record[:occupation_category] = @data_line[17]
-    @data_record[:occupation_flag] = @data_line[18]
-    @data_record[:verbatim_birth_county] = @data_line[19]
-    @data_record[:verbatim_birth_place] = @data_line[20]
-    @data_record[:uncertainy_birth] = @data_line[21]
-    @data_record[:disability] = @data_line[22]
-    @data_record[:language] = @data_line[23]
-
     success, message = FreecenCsvEntry.validate_individual(@data_record)
     @project.write_messages_to_all(message, true) unless message == ''
-    extract_augmented_fields if @csvfile.augmented.present?
-  end
-
-  def extract_augmented_fields
-    @csvfile.augmented.each_pair do |header, column|
-      if header == 'deleted'
-        @data_record[:deleted_flag] = @data_line[column]
-      elsif header == 'ecclesiastical'
-        @data_record[:ecclesiastical_parish] = @data_line[column]
-      elsif ['at home', 'home'].include?(header)
-        @data_record[:at_home] = @data_line[column]
-      elsif header == 'rooms'
-        @data_record[:rooms] = @data_line[column]
-      end
-    end
   end
 end
