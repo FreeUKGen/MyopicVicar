@@ -73,7 +73,7 @@ class FreecenCsvEntry
   field :sanitary_district, type: String
   field :schedule_number, type: String
   field :school_board, type: String
-  Field :school_children, type: Integer
+  field :school_children, type: Integer
   field :sequence_in_household, type: Integer # derived
   field :sex, type: String
   field :surname, type: String
