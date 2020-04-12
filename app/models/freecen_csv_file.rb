@@ -61,6 +61,7 @@ class FreecenCsvFile
   field :userid, type: String
   field :userid_lower_case, type: String
   field :year, type: String
+  field :traditional, type: Integer
 
 
   index({ file_name: 1, userid: 1, county: 1, place: 1, register_type: 1 })
@@ -407,11 +408,11 @@ class FreecenCsvFile
     success
   end
 
-  def check_locking_and_set(param, sess)
+  def check_locking_and_set(_param, sess)
     if sess[:my_own]
       update(locked_by_transcriber: true)
     else
-      update_attributes(locked_by_coordinator: true)
+      update(locked_by_coordinator: true)
     end
   end
 
@@ -425,8 +426,7 @@ class FreecenCsvFile
     if piece_id.blank?
       logger.warn("FREECEN:#{id} does not belong to a piece ")
       return
-    elsif
-      place = piece_id.place
+    elsif place == piece_id.place
       if place.blank?
         logger.warn("FREECEN:#{freecen_piece_id.id} does not belong to a place ")
         return
@@ -552,7 +552,6 @@ class FreecenCsvFile
     end
   end
 
-
   def recalculate_last_amended
     my_piece = freecen_piece
     return if my_piece.blank?
@@ -654,46 +653,45 @@ class FreecenCsvFile
   def write_csv_file(file_location)
     # since there can be multiple places/churches in a single file we must combine the records for all those back into the single file
     piece = freecen_piece
+    if field_specification.value?('school_board')
+      @column_headers = Freecen::HEADER_OPTIONS[5]
+    elsif field_specification.value?('municipal_borough')
+      @column_headers = Freecen::HEADER_OPTIONS[4]
+    elsif field_specification.value?('rooms')
+      @column_headers = Freecen::HEADER_OPTIONS[3]
+    elsif field_specification.value?('rooms')
+      @column_headers = Freecen::HEADER_OPTIONS[2]
+    elsif traditional == 1
+      @column_headers = Freecen::HEADER_OPTIONS[1]
+    elsif traditional == 0
+      @column_headers = Freecen::HEADER_OPTIONS[1]
+    else
+      @column_headers = Freecen::HEADER_OPTIONS[2]
+    end
     CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
-      write_csv_headers(csv, piece)
+      csv << @column_headers
       # eg +INFO,David@davejo.eclipse.co.uk,password,SEQUENCED,BURIALS,cp850,,,,,,,
       records = freecen_csv_entries
       records.each do |rec|
         line = []
-        line = add_fields(line, Freecen::STANDARD_FIELD_NAMES, rec)
-        line = add_fields(line, Freecen::ADDITIONAL_FIELD_NAMES, rec)
-        line = add_fields(line, Freecen::FIELD_NAMES_1901, rec) if year == '1901'
+        line = add_fields(line, rec)
         csv << line
       end
     end
   end
 
-  def add_fields(line, fields, rec)
-    fields.each do |field|
+  def write_spreadsheet_header(header)
+    file_location = File.join(Rails.root, 'tmp', 'spreadersheet_header.csv')
+    CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+      csv << header
+    end
+    file_location
+  end
+
+  def add_fields(line, rec)
+    field_specification.values.each do |field|
       line << rec[field]
     end
     line
   end
-
-  def write_csv_headers(csv, piece)
-    line1 = Freecen::LINE1
-    line2 = Freecen::LINE2
-    if augmented.present? && year == '1901'
-      augmented.each_key do |column|
-        case column.downcase
-        when 'at home'
-          line1 = line1 + ["#{column}"]
-          line2 = line2 + ['a']
-        when 'rooms'
-          line1 = line1 + ["#{column}"]
-          line2 = line2 + ['abcdefgh']
-        end
-      end
-    end
-    parts = file_name.split('.')
-    csv << ["#{parts[0]}"]
-    csv << line1
-    csv << line2
-  end
-
 end

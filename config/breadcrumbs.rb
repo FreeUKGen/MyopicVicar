@@ -1602,6 +1602,7 @@ crumb :change_userid_freecen_csv_file do |file|
   link 'Changing owner'
   parent :show_freecen_csv_file, file
 end
+
 crumb :select_freecen_csv_file do |user|
   link 'Selecting file'
   if session[:my_own]
@@ -1610,6 +1611,15 @@ crumb :select_freecen_csv_file do |user|
     parent :freecen_csv_files, file
   end
 end
+crumb :spreadsheet_selection do |file|
+  link 'Spreadsheet selection'
+  if session[:my_own]
+    parent :my_own_freecen_csv_files
+  else
+    parent :freecen_csv_files, file
+  end
+end
+
 
 crumb :freecen_csv_entries do |entry, file, type|
   if entry.nil?

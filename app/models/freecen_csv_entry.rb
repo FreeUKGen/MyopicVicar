@@ -29,11 +29,15 @@ class FreecenCsvEntry
   field :birth_county, type: String
   field :birth_place, type: String
   field :birth_place_flag, type: String
+  field :children_born_alive, type: Integer
+  field :children_deceased, type: Integer
+  field :children_living, type: Integer
   field :civil_parish, type: String
   field :data_transition, type: String
   field :deleted_flag, type: String
-  field :detail_flag, type: String
+  field :individual_flag, type: String
   field :disability, type: String
+  field :disability_notes, type: String
   field :dwelling_number, type: Integer # derived
   field :ecclesiastical_parish, type: String
   field :enumeration_district, type: String
@@ -47,27 +51,40 @@ class FreecenCsvEntry
   field :individual_number, type: Integer
   field :info_messages, type: String
   field :language, type: String
-  field :location_flag,  type: String
+  field :address_flag,  type: String
   field :marital_status, type: String
+  field :municipal_borough, type: String
   field :name_flag, type: String
+  field :nationality, type: String
   field :notes, type: String
   field :occupation, type: String
   field :occupation_category, type: String
   field :occupation_flag, type: String
   field :page_number, type: String
+  field :parliamentary_constituency, type: String
   field :piece_number, type: Integer
+  field :read_write, type: String
   field :record_number, type: Integer
   field :relationship, type: String
+  field :religion, type: String
+  field :roof_type, type: String
   field :rooms, type: String
+  field :rooms_with_windows, type: String
+  field :sanitary_district, type: String
   field :schedule_number, type: String
+  field :school_board, type: String
+  Field :school_children, type: Integer
   field :sequence_in_household, type: Integer # derived
   field :sex, type: String
   field :surname, type: String
+  field :surname_maiden, type: String
   field :uninhabited_flag, type: String
   field :verbatim_birth_county, type: String
   field :verbatim_birth_place, type: String
+  field :ward, type: String
   field :warning_messages, type: String
   field :year, type: String
+  field :years_married, type: String
 
   belongs_to :freecen_csv_file, index: true, optional: true
 
@@ -447,10 +464,10 @@ class FreecenCsvEntry
       unless success
         result = false
         if messagea == '?'
-          messagea = "Warning: line #{num} House address #{record[:house_or_street_name]}  has trailing ?. Removed and flag set.<br>"
+          messagea = "Warning: line #{num} House address #{record[:house_or_street_name]}  has trailing ?. Removed and address_flag set.<br>"
           message = message + messagea
           record[:warning_messages] = record[:warning_messages] + messagea
-          record[:uninhabited_flag] = 'x' unless ['b', 'n', 'u', 'v'].include?(uninhabited_flag)
+          record[:address_flag] = 'x'
           record[:house_or_street_name] = record[:house_or_street_name][0...-1]
         elsif messagea == 'blank'
           result = true
@@ -474,6 +491,11 @@ class FreecenCsvEntry
           messageb = "Warning: line #{num} has special #{uninhabited_flag} but no schedule number.<br>"
           message = message + messageb
           record[:warning_messages] = record[:warning_messages] + messageb
+        end
+        if uninhabited_flag == 'x'
+          record[:address_flag] = 'x'
+          record[:uninhabited_flag] = ''
+          messageb = "Info: line #{num} uninhabited_flag if x is moved to loaction_flag.<br>"
         end
       end
       overall_result = false if result == false
@@ -555,10 +577,10 @@ class FreecenCsvEntry
         message = message + messageb
         record[:error_messages] = record[:error_messages] + messageb
       end
-      success, messagea = FreecenValidations.fixed_uncertainty_status?(record[:detail_flag])
+      success, messagea = FreecenValidations.fixed_uncertainty_status?(record[:individual_flag])
       unless success
         result = false
-        messageb = "ERROR: line #{num} Query #{record[:detail_flag]} is #{messagea}.<br>"
+        messageb = "ERROR: line #{num} Query #{record[:individual_flag]} is #{messagea}.<br>"
         message = message + messageb
         record[:error_messages] = record[:error_messages] + messageb
       end
@@ -810,14 +832,14 @@ class FreecenCsvEntry
     #1841 doesn't have ecclesiastical parish or schedule number
     #Scotland doesn't have folio
 
-    ['Transition', 'Verbatim Birth County', 'Verbatim Birth Place', 'Birth Place Flag', 'Deleted Flag', 'Detail Flag', 'Name Flag', 'Occupation Flag', 'Uninhabited Flag']
+    ['Transition', 'Alt. Birth County', 'Alt. Birth Place', 'Location', 'Address', 'Name', 'Individual', 'Occupation', 'Birth Place', 'Deleted']
   end
 
   def management_display_values
     #1841 doesn't have ecclesiastical parish or schedule number
     #Scotland doesn't have folio
     birth = verbatim_birth_place.titleize if verbatim_birth_place.present?
-    [data_transition, verbatim_birth_county, birth, birth_place_flag, deleted_flag, detail_flag, name_flag, occupation_flag, uninhabited_flag]
+    [data_transition, birth_county, birth_birth, locaton_flag, address_flag, name_flag, individual_flag, occupation_flag, birth_place_flag, deleted_flag]
   end
 
   def self.error_display_labels

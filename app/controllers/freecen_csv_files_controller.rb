@@ -208,9 +208,13 @@ class FreecenCsvFilesController < ApplicationController
   end
 
   def download_spreadsheet
-
-
-    redirect_back(fallback_location: new_manage_resource_path) && return
+    @freecen_csv_file = FreecenCsvFile.new
+    @options = {}
+    Freecen::HEADER_OPTIONS.each_with_index do |value, index|
+      @options[value.to_sym] = index
+    end
+    @location = 'location.href= "/freecen_csv_files/spreadsheet/" + this.value'
+    @prompt = 'Select spreadsheet'
   end
 
   def edit
@@ -288,13 +292,6 @@ class FreecenCsvFilesController < ApplicationController
       @freecen_csv_files = FreecenCsvFile.county(session[:chapman_code]).no_timeout.order_by(session[:sort]).all.page(params[:page]).per(batches)
     end
     session[:current_page] = @freecen_csv_files.current_page if @freecen_csv_files.present?
-  end
-
-  def locations
-    @update_counties_location = 'location.href= "/freecen_csv_files/update_counties?country=" + this.value'
-    @update_places_location = 'location.href= "/freecen_csv_files/update_places?county=" + this.value'
-    @update_churches_location = 'location.href= "/freecen_csv_files/update_churches?place=" + this.value'
-    @update_registers_location = 'location.href= "/freecen_csv_files/update_registers?church=" + this.value'
   end
 
   def lock
@@ -419,132 +416,17 @@ class FreecenCsvFilesController < ApplicationController
     @piece = @freecen_csv_file.freecen_piece
   end
 
-  def update_churches
-    if update_churches_not_ok?(params[:place])
-      flash[:notice] = 'You made an incorrect place selection '
-      redirect_to(relocate_freecen_csv_file_path(session[:freecen_csv_file_id])) && return
+  def spreadsheet
+    @freecen_csv_file = FreecenCsvFile.new
+    header = Freecen::HEADER_OPTIONS_TRANSLATION[params[:id].to_i]
+    file_name = "#{Freecen::HEADER_OPTIONS[params[:id].to_i]}_spreadersheet_header.csv"
+    my_file = @freecen_csv_file.write_spreadsheet_header(header)
+    if File.file?(my_file)
+      flash[:notice] = 'The spreadsheet header has been downloaded to your computer'
+      send_file(my_file, filename: file_name, x_sendfile: true) && return
     else
-      get_user_info_from_userid
-      locations
-      @freecen_csv_file = FreecenCsvFile.find(session[:freecen_csv_file_id])
-      @countries = [session[:selectcountry]]
-      @counties = [session[:selectcounty]]
-      place = Place.id(params[:place]).first
-      session[:selectplace] = params[:place]
-      @placenames = []
-      @placenames << place.place_name
-      @churches = place.churches.map{ |a| [a.church_name, a.id] }.insert(0, 'Select Church')
-      @churches[1] = 'Has no churches' if place.churches.blank?
-      @freecen_csv_file.county == session[:selectcounty] && session[:selectplace] == @freecen_csv_file.place ? @selected_church = @freecen_csv_file.church_name : @selected_place = ''
-      @selected_place = session[:selectplace]
-      @register_types = RegisterType::APPROVED_OPTIONS
-      @selected_register = ''
+      flash[:notice] = 'The message file does not exist.'
     end
-  end
-
-  def update_churches_not_ok?(param)
-    result = false
-    result = true if param.blank? || param == 'Select Place' || session[:selectcountry].blank? || session[:selectcounty].blank? || session[:freecen_csv_file_id].blank?
-    result
-  end
-
-  def update_counties
-    if update_counties_not_ok?(params[:country])
-      flash[:notice] = 'You made an incorrect country selection '
-      redirect_to(relocate_freecen_csv_file_path(session[:freecen_csv_file_id])) && return
-    else
-      get_user_info_from_userid
-      locations
-      @freecen_csv_file = FreecenCsvFile.find(session[:freecen_csv_file_id])
-      @countries = [params[:country]]
-      session[:selectcountry] = params[:country]
-      @counties = ChapmanCode::CODES[params[:country]].keys.insert(0, 'Select County')
-      @placenames = []
-      @churches = []
-      @register_types = RegisterType::APPROVED_OPTIONS
-      @selected_county = @freecen_csv_file.county
-      @selected_place = @selected_church = @selected_register = ''
-    end
-  end
-
-  def update_counties_not_ok?(param)
-    result = false
-    result = true if param.blank? || param == 'Select Country'  || session[:freecen_csv_file_id].blank?
-    result
-  end
-
-  def update_places
-    get_user_info_from_userid
-    if (@user.person_role == 'system_administrator' || @user.person_role == 'data_manager')
-      if update_places_not_ok?(params[:county])
-        flash[:notice] = 'You made an incorrect county selection '
-        redirect_to(relocate_freecen_csv_file_path(session[:freecen_csv_file_id])) && return
-      end
-    end
-    locations
-    @freecen_csv_file = FreecenCsvFile.find(session[:freecen_csv_file_id])
-    @countries = [session[:selectcountry]]
-    if session[:selectcounty].blank?
-      #means we are a DM selecting the county
-      session[:selectcounty] = ChapmanCode::CODES[session[:selectcountry]][params[:county]]
-      places = Place.chapman_code(session[:selectcounty]).not_disabled.all.order_by(place_name: 1)
-    else
-      #we are a CC
-      places = Place.chapman_code(session[:selectcounty]).not_disabled.all.order_by(place_name: 1)
-    end
-    @counties = []
-    if @freecen_csv_file.county == session[:selectcounty]
-      @selected_place = @freecen_csv_file.place
-      @selected_church = @freecen_csv_file.church_name
-    else
-      @selected_place = @selected_church = ''
-    end
-    @counties << session[:selectcounty]
-    @placenames = places.map { |a| [a.place_name, a.id] }.insert(0, 'Select Place')
-    @placechurches = Place.chapman_code(session[:selectcounty]).place(@freecen_csv_file.place).not_disabled.first
-    if @placechurches.present?
-      @churches = @placechurches.churches.map { |a| [a.church_name, a.id] }
-    else
-      @churches = []
-    end
-    @register_types = RegisterType::APPROVED_OPTIONS
-    @selected_register = ''
-  end
-
-  def update_places_not_ok?(param)
-    result = false
-    result = true if param.blank? || param == 'Select County' || session[:selectcountry].blank?  || session[:freecen_csv_file_id].blank?
-    result
-  end
-
-  def update_registers
-    if update_registers_not_ok?(params[:church])
-      flash[:notice] = 'You made an incorrect church selection '
-      redirect_to(relocate_freecen_csv_file_path(session[:freecen_csv_file_id])) && return
-    else
-      get_user_info_from_userid
-      locations
-      @freecen_csv_file = FreecenCsvFile.find(session[:freecen_csv_file_id])
-      @countries = [session[:selectcountry]]
-      @counties = [session[:selectcounty]]
-      church = Church.id(params[:church]).first
-      session[:selectchurch] = params[:church]
-      place = church.place
-      @placenames = []
-      @placenames << place.place_name
-      @churches = []
-      @churches << church.church_name
-      @register_types = RegisterType::APPROVED_OPTIONS
-      @selected_place = session[:selectplace]
-      @selected_church = session[:selectchurch]
-      @selected_register = ''
-    end
-  end
-
-  def update_registers_not_ok?(param)
-    result = false
-    result = true if param.blank? || param == 'Has no churches' || param == 'Select Church' || session[:selectcountry].blank? || session[:selectcounty].blank? || session[:selectplace].blank? || session[:freecen_csv_file_id].blank?
-    result
   end
 
   def update
@@ -571,8 +453,8 @@ class FreecenCsvFilesController < ApplicationController
       end
     when 'Submit'
       # lets see if we are moving the file
-      @freecen_csv_file.date_change(params[:freecen_csv_file][:transcription_date],params[:freecen_csv_file][:modification_date])
-      @freecen_csv_file.check_locking_and_set(params[:freecen_csv_file],session)
+      @freecen_csv_file.date_change(params[:freecen_csv_file][:transcription_date], params[:freecen_csv_file][:modification_date])
+      @freecen_csv_file.check_locking_and_set(params[:freecen_csv_file], session)
       @freecen_csv_file.update_attributes(:alternate_register_name => (params[:freecen_csv_file][:church_name].to_s + ' ' + params[:freecen_csv_file][:register_type].to_s ))
       @freecen_csv_file.update_attributes(freecen_csv_file_params)
       @freecen_csv_file.update_attributes(:modification_date => Time.now.strftime('%d %b %Y'))
@@ -610,31 +492,6 @@ class FreecenCsvFilesController < ApplicationController
       end
     end
     redirect_to session[:return_to]
-  end
-
-  def unique_names
-    @freecen_csv_file = FreecenCsvFile.find(params[:object])
-    unless FreecenCsvFile.valid_freecen_csv_file?(params[:object])
-      message = 'The file was not correctly linked. Have your coordinator contact the web master'
-      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
-    end
-    controls(@freecen_csv_file)
-    @freecen_csv_entries = @freecen_csv_file.get_unique_names
-  end
-
-  def zero_year
-    # get the entries with a zero year
-    @freecen_csv_file = FreecenCsvFile.find(params[:id])
-    unless FreecenCsvFile.valid_freecen_csv_file?(params[:id])
-      message = 'The file was not correctly linked. Have your coordinator contact the web master'
-      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
-    end
-    controls(@freecen_csv_file)
-    @freecen_csv_entries = @freecen_csv_file.zero_year_entries
-    display_info
-
-    @zero_year = true
-    render 'freecen_csv_entries/index'
   end
 
   private

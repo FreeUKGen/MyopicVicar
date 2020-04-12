@@ -201,7 +201,7 @@ class CsvFile < CsvFiles
 
   attr_accessor :header, :list_of_registers, :header_error, :system_error, :data_hold,:dwelling_number, :sequence_in_household,
     :array_of_data_lines, :default_charset, :file, :file_name, :userid, :uploaded_date, :slurp_fail_message, :field_specification,
-    :file_start, :file_locations, :data, :unique_locations, :unique_existing_locations, :full_dirname,
+    :file_start, :file_locations, :data, :unique_locations, :unique_existing_locations, :full_dirname, :chapman_code, :traditional,
     :all_existing_records, :total_files, :total_records, :total_data_errors, :total_header_errors, :place_id, :civil_parish,
     :enumeration_district, :folio, :page, :year, :piece, :schedule, :folio_suffix, :schedule_suffix, :total_errors, :total_warnings, :total_info
 
@@ -242,6 +242,7 @@ class CsvFile < CsvFiles
     @total_records = 0
     @year = ''
     @piece = nil
+    @chapman_code
     @civil_parish = ''
     @enumeration_district = ''
     @folio = 0
@@ -255,6 +256,7 @@ class CsvFile < CsvFiles
     @dwelling_number = 0
     @sequence_in_household = 0
     @field_specication = {}
+    @traditional = 2
 
   end
 
@@ -271,6 +273,7 @@ class CsvFile < CsvFiles
     return [false, message] unless success
 
     success, message, @year, @piece = extract_piece_year_from_file_name(@file_name)
+    @chapman_code = @piece.chapman_code
     @project.write_messages_to_all(message, true) unless success
     @project.write_messages_to_all("Working on #{@piece.district_name} for #{@year}, in #{@piece.chapman_code}", true) if success
     return [false, message] unless success
@@ -576,7 +579,11 @@ class CsvFile < CsvFiles
   end
 
   def write_freecen_csv_file
+    p 'writing'
+    p @file_name
+    p @chapman_code
     old_file = FreecenCsvFile.find_by(file_name: @file_name, chapman_code: @chapman_code)
+    p old_file
     if old_file.present?
       FreecenCsvEntry.where(freecen_csv_file_id: old_file.id).destroy_all
       old_file.delete
@@ -592,10 +599,12 @@ class CsvFile < CsvFiles
     new_file.total_warnings = @total_warnings
     new_file.flexible = @project.flexible
     new_file.total_info = @total_info
+    new_file.traditional = @traditional
     new_file.year = @year
     new_file.field_specification = @field_specification
     piece.freecen_csv_files << new_file
     success = piece.save
+    p new_file
     [success, new_file]
   end
 
@@ -632,7 +641,7 @@ class CsvRecords < CsvFile
     @project.write_messages_to_all("Error: line #{n} is empty", true) if @array_of_lines[n][0..24].all?(&:blank?)
     return [false, n] if @array_of_lines[n][0..24].all?(&:blank?)
 
-    success, message, @csvfile.field_specification = line_one(@array_of_lines[n])
+    success, message, @csvfile.field_specification, @csvfile.traditional = line_one(@array_of_lines[n])
     if success
       reduction = reduction + 1
     else
@@ -649,12 +658,13 @@ class CsvRecords < CsvFile
 
   def line_one(line)
     if line[0..24].all?(&:present?)
+      traditional = extract_traditonal_headers(line)
       success, message, field_specification = extract_field_headers(line)
     else
       message = 'INFO: line 1 Column field specification is missing.<br>'
       success = false
     end
-    [success, message, field_specification]
+    [success, message, field_specification, traditional]
   end
 
   def line_two(line)
@@ -664,6 +674,17 @@ class CsvRecords < CsvFile
       success = true
     end
     [success, message]
+  end
+
+  def extract_traditonal_headers(line)
+    if line.length == 25
+      traditional = 0
+    elsif line.length > 25 && line[1] == 'ED'
+      traditional = 1
+    else
+      traditional = 2
+    end
+    traditional
   end
 
   def extract_field_headers(line)
@@ -720,7 +741,7 @@ class CsvRecords < CsvFile
 
       @record = CsvRecord.new(line, @csvfile, @project)
       success, message, result = @record.extract_data_line(n + 1)
-      result[:flag] = true if result[:birth_place_flag].present? || result[:deleted_flag].present? || result[:detail_flag].present? ||
+      result[:flag] = true if result[:birth_place_flag].present? || result[:deleted_flag].present? || result[:individual_flag].present? ||
         result[:name_flag].present? || result[:occupation_flag].present? || (result[:uninhabited_flag].present? && result[:uninhabited_flag].downcase == 'x')
       data_records << result
       @csvfile.total_errors = @csvfile.total_errors + 1 if result[:error_messages].present?
@@ -843,7 +864,7 @@ class CsvRecord < CsvRecords
     @data_record[:notes] = '' if @data_record[:notes] =~ /\[see mynotes.txt\]/
     return if ['b', 'n', 'u', 'v'].include?(@data_record[:uninhabited_flag])
 
-    @data_record[:location_flag] = 'x' if @data_record[:uninhabited_flag] == 'x'
+    @data_record[:address_flag] = 'x' if @data_record[:uninhabited_flag] == 'x'
     @csvfile.sequence_in_household = @csvfile.sequence_in_household + 1 if @data_record[:house_number].blank? && @data_record[:house_or_street_name].blank? && (@data_record[:schedule_number].blank? || @data_record[:schedule_number] == '0')
     @data_record[:sequence_in_household] = @csvfile.sequence_in_household
     success, message = FreecenCsvEntry.validate_individual(@data_record)

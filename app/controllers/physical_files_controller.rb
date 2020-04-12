@@ -47,8 +47,8 @@ class PhysicalFilesController < ApplicationController
     load(params[:id])
     redirect_back(fallback_location: { action: 'select_action' }) && return if @batch.blank?
 
-    @batch.file_and_entries_delete
-
+    @batch.file_and_entries_delete if appname_downcase == 'freereg'
+    @batch.freecen_csv_file_and_entries_delete if appname_downcase == 'freecen'
     @batch.delete
     flash[:notice] = 'The destruction of the physical files and all its entries and search records was successful'
     redirect_back(fallback_location: { action: 'select_action' }) && return
@@ -169,7 +169,7 @@ class PhysicalFilesController < ApplicationController
 
     @batch.file_delete
     @batch.delete
-    flash[:notice] = 'The file and physical files entry was removed'
+    flash[:notice] = 'The physical files entry was removed'
     redirect_back(fallback_location: { action: 'select_action' }) && return
   end
 

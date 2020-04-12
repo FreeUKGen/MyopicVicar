@@ -7,10 +7,10 @@
           <th class='sticky-header'>Entry Number</th>
           <th class='sticky-header'>Birth Place Flag</th>
           <th class='sticky-header'>Deleted Flag</th>
-          <th class='sticky-header'>Detail Flag</th>
+          <th class='sticky-header'>Individual Flag</th>
+          <th class='sticky-header'>Location Flag</th>
           <th class='sticky-header'>Name Flag</th>
           <th class='sticky-header'>Occupation Flag</th>
-          <th class='sticky-header'>Uninhabited Flag</th>
           <th class='sticky-header'>Action</th>
         </tr>
       </thead>
@@ -20,10 +20,10 @@
             <td><%= freecen_csv_entry.record_number%></td>
             <td><%= freecen_csv_entry.birth_place_flag %></td>
             <td><%= freecen_csv_entry.deleted_flag %></td>
-            <td><%= freecen_csv_entry.detail_flag %></td>
+            <td><%= freecen_csv_entry.individual_flag %></td>
+            <td><%= freecen_csv_entry.address_flag  %></td>
             <td><%= freecen_csv_entry.name_flag %></td>
             <td><%= freecen_csv_entry.occupation_flag %></td>
-            <td><%= freecen_csv_entry.uninhabited_flag if freecen_csv_entry.uninhabited_flag.present? && freecen_csv_entry.uninhabited_flag.downcase == 'x' %></td>
             <td><%= link_to 'SH', freecen_csv_entry_path(freecen_csv_entry) %> <%= link_to 'ED', edit_freecen_csv_entry_path(freecen_csv_entry) %></td>
           </tr>
         <% end %>
