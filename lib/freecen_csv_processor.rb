@@ -579,11 +579,7 @@ class CsvFile < CsvFiles
   end
 
   def write_freecen_csv_file
-    p 'writing'
-    p @file_name
-    p @chapman_code
     old_file = FreecenCsvFile.find_by(file_name: @file_name, chapman_code: @chapman_code)
-    p old_file
     if old_file.present?
       FreecenCsvEntry.where(freecen_csv_file_id: old_file.id).destroy_all
       old_file.delete
@@ -729,18 +725,20 @@ class CsvRecords < CsvFile
   # This extracts the header and entry information from the file and adds it to the database
 
   def extract_the_data(skip)
+    p 'data'
+    p skip
     skip = skip
     success = true
     data_lines = 0
     data_records = []
     @array_of_lines.each_with_index do |line, n|
-      next if n <= skip
+      next if n < skip
 
       @project.write_messages_to_all("Error: line #{n} is empty.<br>", true) if line[0..24].all?(&:blank?)
       next if line[0..24].all?(&:blank?)
 
       @record = CsvRecord.new(line, @csvfile, @project)
-      success, message, result = @record.extract_data_line(n + 1)
+      success, message, result = @record.extract_data_line(n)
       result[:flag] = true if result[:birth_place_flag].present? || result[:deleted_flag].present? || result[:individual_flag].present? ||
         result[:name_flag].present? || result[:occupation_flag].present? || (result[:uninhabited_flag].present? && result[:uninhabited_flag].downcase == 'x')
       data_records << result
@@ -782,17 +780,35 @@ class CsvRecord < CsvRecords
   def extract_data_line(num)
     @data_record[:record_number] = num
     @data_record[:messages] = @project.info_messages
-    @data_record[:data_transition] = Freecen::FIELD_NAMES[first_field_present]
+    @data_record[:data_transition] = @csvfile.field_specification[first_field_present]
+    convert_transition
     @data_record = load_data_record
-    process_data_record(@data_record[:data_transition], num)
+    process_data_record(@data_record[:data_transition])
     # p @data_record
     # crash if num == 10
-    [true, " ", @data_record]
+    [true, ' ', @data_record]
+  end
+
+  def convert_transition
+    if @data_record[:data_transition] == 'civil_parish'
+      @data_record[:data_transition] = 'Civil Parish'
+    elsif %w[enumeration_district ecclesiastical_parish municipal_borough ward parliamentary_constituency
+             school_board location_flag].include?(@data_record[:data_transition])
+      @data_record[:data_transition] = 'Enumeration District'
+    elsif @data_record[:data_transition] == 'folio_number'
+      @data_record[:data_transition] = 'Folio'
+    elsif @data_record[:data_transition] == 'page_number'
+      @data_record[:data_transition] = 'Page'
+    elsif %w[schedule_number house_number house_or_street_name uninhabited_flag address_flag].include?(@data_record[:data_transition])
+      @data_record[:data_transition] = 'Dwelling'
+    else
+      @data_record[:data_transition] = 'Individual'
+    end
   end
 
   def first_field_present
     @data_line.each_with_index do |field, n|
-      @x = n.to_s
+      @x = n
       break if field.present?
     end
     @x
@@ -806,7 +822,7 @@ class CsvRecord < CsvRecords
     @data_record
   end
 
-  def process_data_record(record_type, num)
+  def process_data_record(record_type)
     case record_type
     when 'Civil Parish'
       extract_civil_parish_fields
@@ -850,10 +866,19 @@ class CsvRecord < CsvRecords
   end
 
   def extract_dwelling_fields
-    unless @data_record[:house_number].blank? && @data_record[:house_or_street_name].blank? && (@data_record[:schedule_number].blank? || @data_record[:schedule_number] == '0')
+    if @data_record[:house_number].blank? && @data_record[:house_or_street_name].blank? && @data_record[:schedule_number].blank?
+      @data_record[:dwelling_number] = @csvfile.dwelling_number
+
+    elsif['b', 'n', 'u', 'v'].include?(@data_record[:uninhabited_flag])
       @data_record[:dwelling_number] = @csvfile.dwelling_number + 1
       @csvfile.dwelling_number = @data_record[:dwelling_number]
-      @csvfile.sequence_in_household = 1
+    elsif @data_record[:house_number].blank? && @data_record[:house_or_street_name] == '-' && @data_record[:schedule_number] == '0'
+      @data_record[:dwelling_number] = @csvfile.dwelling_number + 1
+      @csvfile.dwelling_number = @data_record[:dwelling_number]
+    else
+      @data_record[:dwelling_number] = @csvfile.dwelling_number + 1
+      @csvfile.dwelling_number = @data_record[:dwelling_number]
+      @csvfile.sequence_in_household = 0
     end
     success, message, @csvfile.schedule, @csvfile.schedule_suffix = FreecenCsvEntry.validate_dwelling(@data_record, @csvfile.schedule, @csvfile.schedule_suffix)
     @project.write_messages_to_all(message, true) unless message == ''
@@ -865,7 +890,8 @@ class CsvRecord < CsvRecords
     return if ['b', 'n', 'u', 'v'].include?(@data_record[:uninhabited_flag])
 
     @data_record[:address_flag] = 'x' if @data_record[:uninhabited_flag] == 'x'
-    @csvfile.sequence_in_household = @csvfile.sequence_in_household + 1 if @data_record[:house_number].blank? && @data_record[:house_or_street_name].blank? && (@data_record[:schedule_number].blank? || @data_record[:schedule_number] == '0')
+    @data_record[:dwelling_number] = @csvfile.dwelling_number
+    @csvfile.sequence_in_household = @csvfile.sequence_in_household + 1
     @data_record[:sequence_in_household] = @csvfile.sequence_in_household
     success, message = FreecenCsvEntry.validate_individual(@data_record)
     @project.write_messages_to_all(message, true) unless message == ''

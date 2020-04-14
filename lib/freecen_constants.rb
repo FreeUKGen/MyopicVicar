@@ -262,7 +262,7 @@ module Freecen
     'industry' => 'industry',
     'occupation_flag' => 'occupation_flag',
     'verbatim_birth_county' => 'verbatim_birth_county',
-    'verbatim_birth_place_of_birth' => 'verbatim_birth_place',
+    'verbatim_birth_place' => 'verbatim_birth_place',
     'birth_place_flag' => 'birth_place_flag',
     'disability' => 'disability',
     'municipal_borough' => 'municipal_borough',

@@ -51,7 +51,8 @@ class FreecenCsvEntry
   field :individual_number, type: Integer
   field :info_messages, type: String
   field :language, type: String
-  field :address_flag,  type: String
+  field :locaton_flag, type: String
+  field :address_flag, type: String
   field :marital_status, type: String
   field :municipal_borough, type: String
   field :name_flag, type: String
@@ -439,10 +440,10 @@ class FreecenCsvEntry
           message = message + messagea
           record[:error_messages] = record[:error_messages] + messagea
         end
-      elsif schedule_number.to_i > (previous_schedule_number.to_i + 1)
+      elsif (schedule_number.to_i > (previous_schedule_number.to_i + 1)) && previous_schedule_number.to_i != 0
         message = "Warning: line #{num} Schedule number #{record[:schedule_number]} increments more than 1 .<br>"
         record[:warning_messages] = record[:warning_messages] + message
-      elsif schedule_number.to_i < previous_schedule_number.to_i
+      elsif (schedule_number.to_i < previous_schedule_number.to_i) && schedule_number.to_i != 0
         new_schedule_number = previous_schedule_number if ['b', 'n', 'u', 'v'].include?(uninhabited_flag)
         new_schedule_suffix = previous_schedule_suffix if ['b', 'n', 'u', 'v'].include?(uninhabited_flag)
         message = "Warning: line #{num} Schedule number #{record[:schedule_number]} is less than the previous one .<br>" unless ['u', 'v'].include?(uninhabited_flag)
@@ -503,12 +504,12 @@ class FreecenCsvEntry
     end
 
     def validate_individual(record)
+
       # p 'validate_individual'
       flexible = record[:flexible]
       num = record[:record_number]
       info_messages = record[:messages]
       result = true
-
       return [true, ''] if ['b', 'n', 'u', 'v'].include?(record[:uninhabited_flag])
 
       message = ''
@@ -670,9 +671,8 @@ class FreecenCsvEntry
           message = message + messageb
           record[:error_messages] = record[:error_messages] + messageb
         end
-
-        [result, message]
       end
+      [result, message]
     end
   end
 
@@ -839,7 +839,7 @@ class FreecenCsvEntry
     #1841 doesn't have ecclesiastical parish or schedule number
     #Scotland doesn't have folio
     birth = verbatim_birth_place.titleize if verbatim_birth_place.present?
-    [data_transition, birth_county, birth_birth, locaton_flag, address_flag, name_flag, individual_flag, occupation_flag, birth_place_flag, deleted_flag]
+    [data_transition, birth_county, birth_place, locaton_flag, address_flag, name_flag, individual_flag, occupation_flag, birth_place_flag, deleted_flag]
   end
 
   def self.error_display_labels
