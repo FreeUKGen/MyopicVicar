@@ -1,0 +1,35 @@
+<% title "#{@county} additions" %>
+<div class="container">
+  <section class="island ">
+    <div class="text--center">
+      <%= link_to "#{@county} selections", freereg_contents_path, method: :get, :class => "btn   btn--small"%>
+    </div>
+    <%= render 'flash_notice' %>
+    <br>
+    <h2 class=" text--center">Latest additions to <%= @county %> </h2>
+    <div style="overflow: hidden;">
+      <div class="scrollable ">
+        <table class="table--bordered my-width table--data just--left">
+          <thead  >
+            <tr >
+              <th class='sticky-header'>Place</th>
+              <th class='sticky-header'>Last Amended</th>
+              <th class='sticky-header'>Total records in Place</th>
+            </tr>
+          </thead>
+          <tbody >
+            <% @places.each do |place| %>
+              <tr>
+                <% if place.records.present? && place.records.to_i > 0 %>
+                  <td><%= link_to "#{place.place_name}", place_freereg_content_path(place.id) %> </td>
+                  <td><%= place.last_amended%></td>
+                  <td><%= place.records%></td>
+                <% end %>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>

@@ -4,6 +4,7 @@
 </div>
 <h1 class="title text--center"><%= @county %></h1>
 <h2 class="accessibility">Database contents</h2>
+<div class="text--center push-half--bottom"><%= link_to 'Latest Additions', recent_additions_freereg_content_path(county: @chapman_code), :class => "btn  btn--small" %></div>
 <%= render 'flash_notice' %>
 <div class="grid">
   <%= simple_form_for @freereg_content do |f| %>
