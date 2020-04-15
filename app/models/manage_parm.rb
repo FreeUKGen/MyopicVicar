@@ -9,7 +9,7 @@ class ManageParm
   validate :validate_file_type#x, on: :save
   validates_presence_of :chapman_code
 
-  DESTINATION = '/Users/krish/Downloads/'
+  DESTINATION = '/raid/freecen2/freecen1/fixed/'
 	ALLOWED_FILE_TYPES = ['.dat', '.DAT', '.csv', '.CSV']
 
   def self.load_parm_files(files, year)
@@ -26,8 +26,6 @@ class ManageParm
   		else
   			wrong_files << file.original_filename
   		end
-  	
-
   	return {invalid_files: wrong_files, valid_files_count: number_of_uploaded_files}
   end
 
