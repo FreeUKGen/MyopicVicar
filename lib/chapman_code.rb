@@ -15,6 +15,7 @@
 module ChapmanCode
   require 'freereg_options_constants'
   require 'freecen_constants'
+  require 'app'
   ###################
   #Note the actual list of codes is the merge_counties or select_hash
   #######################
