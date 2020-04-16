@@ -63,9 +63,10 @@ module UseridRole
                             'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'FreeUKGenealogy  Policies'],
       'publicity_coordinator' => ['Communicate', 'Contacts', 'Profile', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
 
+
       'syndicate_coordinator' => ['CSV Batches', 'Communicate', 'Manage Syndicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
       'system_administrator' => ['CSV Batches', 'Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Database Statistics', 'Feedback', 'FreeCen Errors',
-                                 'Manage Counties', 'Manage FreeCen Coverage', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Physical Files', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
+                                 'Manage Counties', 'Manage FreeCen Coverage', 'Manage Parms', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Physical Files', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
                                  'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'FreeUKGenealogy  Policies'],
       'trainee' => ['CSV Batches', 'Communicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
       'technical' => ['CSV Batches', 'Communicate', 'Contacts', 'Database Statistics', 'Feedback', 'FreeCen Errors', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
@@ -89,6 +90,7 @@ module UseridRole
     'Batches' => '/freereg1_csv_files/my_own',
     'Manage Syndicate' => '/manage_syndicates',
     'Manage Syndicates' => '/manage_syndicates',
+    'Manage Parms' => '/manage_parms/select_year',
     'Manage County' => '/manage_counties',
     'Manage Counties' => '/manage_counties',
     'Manage Image Server' => '/sources/access_image_server',
