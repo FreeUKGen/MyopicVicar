@@ -242,8 +242,8 @@ class FreecenCsvEntry
       elsif previous_enumeration_district == enumeration_district
         result = true
       else
-        message = "Warning: line #{num} Enumeration District changed to #{enumeration_district}.<br>" if special.blank? && enumeration_district.present?
-        record[:warning_messages] = record[:warning_messages] + message if special.blank? && enumeration_district.present?
+        message = "Info: line #{num} Enumeration District changed to #{enumeration_district}.<br>" if special.blank? && enumeration_district.present? && info_messages
+        record[:info_messages] = record[:info_messages] + message if special.blank? && enumeration_district.present? && info_messages
         message = "Info: line #{num} Enumeration District changed to blank.<br>" if special.blank? && enumeration_district.blank? && info_messages
         record[:info_messages] = record[:info_messages] + message if special.blank? && enumeration_district.blank?  && info_messages
         message = "Info: line #{num} Enumeration District changed to #{Freecen::SpecialEnumerationDistricts::CODES[special.to_i]}.<br>" if special.present? && info_messages
@@ -317,17 +317,17 @@ class FreecenCsvEntry
         result = false
       elsif folio_number.blank?
         result = true
-      elsif previous_folio_number.present? && (folio_number.to_i > (previous_folio_number.to_i + 1))
+      elsif previous_folio_number.present? && (folio_number.to_i > (previous_folio_number.to_i + 1)) && ['Folio', 'Page'].include?(transition)
         message = "Warning: line #{num} New Folio number increment larger than 1 #{folio_number}.<br>"
         record[:warning_messages] = record[:warning_messages] + message
         new_folio_number = folio_number.to_i
         new_folio_suffix = folio_suffix
         result = true
-      elsif folio_number.to_i == previous_folio_number.to_i
+      elsif (folio_number.to_i == previous_folio_number.to_i) && ['Folio', 'Page'].include?(transition)
         message = "Warning: line #{num} New Folio number is the same as the previous number #{folio_number}.<br>"
         record[:warning_messages] = record[:warning_messages] + message
         result = false
-      elsif previous_folio_number.present? && (folio_number.to_i < previous_folio_number.to_i)
+      elsif previous_folio_number.present? && (folio_number.to_i < previous_folio_number.to_i) && ['Folio', 'Page'].include?(transition)
         message = "Warning: line #{num} New Folio number is less than the previous number #{folio_number}.<br>"
         record[:warning_messages] = record[:warning_messages] + message
         new_folio_number = folio_number.to_i
@@ -375,16 +375,16 @@ class FreecenCsvEntry
         message = "Warning: line #{num} New Page number is blank.<br>"
         record[:warning_messages] = record[:warning_messages] + message
         result = false
-      elsif page_number.to_i > previous_page_number + 1
+      elsif (page_number.to_i > previous_page_number + 1) && ['Folio', 'Page'].include?(transition)
         message = "Warning: line #{num} New Page number increment larger than 1 #{page_number}.<br>"
         record[:warning_messages] = record[:warning_messages] + message
         new_page_number = page_number.to_i
         result = true
-      elsif page_number.to_i == previous_page_number
+      elsif (page_number.to_i == previous_page_number) && ['Folio', 'Page'].include?(transition)
         message = "Warning: line #{num} New Page number is the same as the previous number #{page_number}.<br>"
         record[:warning_messages] = record[:warning_messages] + message
         result = false
-      elsif page_number.to_i < previous_page_number && page_number.to_i != 1
+      elsif page_number.to_i < previous_page_number && page_number.to_i != 1  && ['Folio', 'Page'].include?(transition)
         message = "Warning: line #{num} New Page number is less than the previous number #{page_number}.<br>"
         record[:warning_messages] = record[:warning_messages] + message
         new_page_number = page_number.to_i
@@ -419,7 +419,6 @@ class FreecenCsvEntry
       overall_result = true
       new_schedule_number = schedule_number
       new_schedule_suffix = schedule_suffix
-
       message = ''
       success, messagea = FreecenValidations.fixed_schedule_number?(record[:schedule_number])
       if !success
@@ -446,8 +445,10 @@ class FreecenCsvEntry
       elsif (schedule_number.to_i < previous_schedule_number.to_i) && schedule_number.to_i != 0
         new_schedule_number = previous_schedule_number if ['b', 'n', 'u', 'v'].include?(uninhabited_flag)
         new_schedule_suffix = previous_schedule_suffix if ['b', 'n', 'u', 'v'].include?(uninhabited_flag)
-        message = "Warning: line #{num} Schedule number #{record[:schedule_number]} is less than the previous one .<br>" unless ['u', 'v'].include?(uninhabited_flag)
-        record[:warning_messages] = record[:warning_messages] + message
+        unless ['u', 'v'].include?(uninhabited_flag) || ['Civil Parish', 'Enumeration District'].include?(transition)
+          message = "Warning: line #{num} Schedule number #{record[:schedule_number]} is less than the previous one .<br>"
+          record[:warning_messages] = record[:warning_messages] + message
+        end
       end
 
       overall_result = false if result == false
@@ -594,6 +595,10 @@ class FreecenCsvEntry
           record[:warning_messages] = record[:warning_messages] + messageb
           record[:occupation_flag] = 'x'
           record[:occupation] = record[:occupation][0...-1]
+        elsif messagea == 'invalid use of Scholar'
+          messageb = "Warning: line #{num} Occupation #{record[:occupation]} is #{messagea}.<br>"
+          message = message + messageb
+          record[:warning_messages] = record[:warning_messages] + messageb
         else
           messageb = "ERROR: line #{num} Occupation #{record[:occupation]} is #{messagea}.<br>"
           message = message + messageb
