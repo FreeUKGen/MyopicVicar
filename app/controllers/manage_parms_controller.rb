@@ -15,13 +15,12 @@ class ManageParmsController < ApplicationController
 	end
 
   def upload_files
-  	@parm = ManageParm.new(year: params[:year], userid: params[:user], file_name: params[:parm_files].original_filename, chapman_code: params[:chapman_code])
-  	@parm.save
-  	if @parm.save
+  	parm = ManageParm.new(year: params[:year], userid: params[:user], file_name: params[:parm_files].original_filename, chapman_code: params[:chapman_code])
+  	if parm.save
 		  load_parms = ManageParm.load_parm_files(params[:parm_files], params[:year])
 	 	else
-	 		session[:parm_errors] = @parm.errors
-	 		flash[:notice] = "File cannot be loaded. Please try again"#{}"Files Uploaded! invalid_filenames: #{load_parms[:invalid_files]}, Number of valid files: #{load_parms[:valid_files_count]}"
+	 		session[:parm_errors] = parm.errors
+	 		flash[:notice] = "File cannot be loaded. Please try again"
 		end
 		redirect_to get_dat_files_of_census_year_manage_parm_path(year: params[:year])
   end

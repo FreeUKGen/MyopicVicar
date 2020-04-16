@@ -6,27 +6,18 @@ class ManageParm
   field :chapman_code, type: String
   field :userid, type: String
   field :file_name, type: String
+  # => §1	field :actual_file_name, type: String
   validate :validate_file_type#x, on: :save
   validates_presence_of :chapman_code
 
   DESTINATION = '/raid/freecen2/freecen1/fixed/'
 	ALLOWED_FILE_TYPES = ['.dat', '.DAT', '.csv', '.CSV']
 
-  def self.load_parm_files(files, year)
-  	wrong_files = []
-  	number_of_uploaded_files = 0
+  def self.load_parm_files(file, year)
+		file_name = file.original_filename
+  	file_path = file.tempfile.path
 
-  	#files.each do |file|
-  	file_name = files.original_filename
-  	file_path = files.tempfile.path
-
-  		if ALLOWED_FILE_TYPES.include? File.extname(file_name)
-  			number_of_uploaded_files += 1
-  			move_parm_files(file_path, file_name, year)
-  		else
-  			wrong_files << file.original_filename
-  		end
-  	return {invalid_files: wrong_files, valid_files_count: number_of_uploaded_files}
+		move_parm_files(file_path, file_name, year)
   end
 
   def validate_file_type
