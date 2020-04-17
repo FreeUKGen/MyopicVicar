@@ -79,10 +79,6 @@ MyopicVicar::Application.routes.draw do
   get 'freecen_csv_files/download_spreadsheet', :to => 'freecen_csv_files#download_spreadsheet', :as => :download_spreadsheet_freecen_csv_file
   get 'freecen_csv_files/:id/download_message_report(.:format)', :to => 'freecen_csv_files#download_message_report', :as => :download_message_report_freecen_csv_file
   get 'freecen_csv_files/:id/change_userid', :to => 'freecen_csv_files#change_userid', :as => :change_userid_freecen_csv_file
-  get 'freecen_csv_files/update_counties', :to => 'freecen_csv_files#update_counties', :as => :update_counties_freecen_csv_file
-  get 'freecen_csv_files/update_places', :to => 'freecen_csv_files#update_places', :as => :update_places_freecen_csv_file
-  get 'freecen_csv_files/update_churches', :to => 'freecen_csv_files#update_churches', :as => :update_churches_freecen_csv_file
-  get 'freecen_csv_files/update_registers', :to => 'freecen_csv_files#update_registers', :as => :update_registers_freecen_csv_file
   get 'freecen_csv_files/:id/merge', :to => 'freecen_csv_files#merge', :as => :merge_freecen_csv_file
   get 'freecen_csv_files/:id/remove', :to => 'freecen_csv_files#remove', :as => :remove_freecen_csv_file
   get 'freecen_csv_files/:id/relocate(.:format)', :to => 'freecen_csv_files#relocate', :as => :relocate_freecen_csv_file
@@ -96,9 +92,8 @@ MyopicVicar::Application.routes.draw do
   get 'freecen_csv_files/display_my_own_files_by_ascending_uploaded_date',  :to => 'freecen_csv_files#display_my_own_files_by_ascending_uploaded_date', :as => :display_my_own_files_by_ascending_uploaded_date_freecen_csv_file
   get 'freecen_csv_files/display_my_own_files_by_selection',  :to => 'freecen_csv_files#display_my_own_files_by_selection', :as => :display_my_own_files_by_selection_freecen_csv_file
   get 'freecen_csv_files/display_my_own_files_waiting_to_be_processed',  :to => 'freecen_csv_files#display_my_own_files_waiting_to_be_processed', :as => :display_my_own_files_waiting_to_be_processed_freecen_csv_file
-  get 'freecen_csv_files/display_my_own_zero_years', :to => 'freecen_csv_files#display_my_own_zero_years', :as => :display_my_own_zero_years_freecen_csv_files
   get 'freecen_csv_files/:id/download(.:format)', :to => 'freecen_csv_files#download', :as => :download_freecen_csv_file
-  get 'freecen_csv_files/unique_names', :to => 'freecen_csv_files#unique_names', :as => :unique_names_freecen_csv_file
+
   resources :freecen_csv_files
 
   get 'freecen_csv_entries/:id/edit_embargo(.:format)', :to => 'freecen_csv_entries#edit_embargo', :as => :edit_embargo_freecen_csv_entry

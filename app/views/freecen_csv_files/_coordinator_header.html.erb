@@ -5,7 +5,9 @@
   <h3 style="text-align: center"> County Files for  <%= session[:county]%><%=@sorted_by%></h3>
 <% end%>
 <div  class=" text--center push--bottom">
-  <%= link_to 'Download Spreadsheet' , downnload_spreadsheet_freecen_csv_file_path, method: :get , :class => "btn btn--small" %>
+  <%= link_to 'Download Spreadsheet' , download_spreadsheet_freecen_csv_file_path, method: :get , :class => "btn btn--small" %>
 </div>
 <%= render partial: 'flash_notice' %>
-<% end %>
+<p class="text--center"> To replace a file: find the file in the list and click its RL option.
+  To upload a new file: click this <%= link_to 'Upload new file', new_csvfile_path, method: :get , :class => "btn btn--small"%>
+</p>

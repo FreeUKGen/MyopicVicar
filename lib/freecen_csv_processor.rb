@@ -273,7 +273,7 @@ class CsvFile < CsvFiles
     return [false, message] unless success
 
     success, message, @year, @piece = extract_piece_year_from_file_name(@file_name)
-    @chapman_code = @piece.chapman_code
+    @chapman_code = @piece.chapman_code if @piece.present?
     @project.write_messages_to_all(message, true) unless success
     @project.write_messages_to_all("Working on #{@piece.district_name} for #{@year}, in #{@piece.chapman_code}", true) if success
     return [false, message] unless success
@@ -423,12 +423,13 @@ class CsvFile < CsvFiles
   end
 
   def communicate_failure_to_member(message)
-    #p "communicating failure"
+    p "communicating failure"
     file = @project.member_message_file
     file.close
     copy_file_name = "#{@header[:file_name]}.txt"
     to = File.join(@full_dirname, copy_file_name)
     FileUtils.cp_r(file, to, remove_destination: true)
+    p 'calling mailer'
     UserMailer.batch_processing_failure(file, @userid, @file_name).deliver_now unless @project.type_of_project == "special_selection_1" ||  @project.type_of_project == "special_selection_2"
     clean_up_message
     true
