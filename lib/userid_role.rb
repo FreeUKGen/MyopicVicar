@@ -160,7 +160,10 @@ module UseridRole
                                  'Review Batches by Most Recent Date of Change', 'Review Batches by Oldest Date of Change', 'Review Specific Batch',
                                  'Upload New Batch', 'Offline Reports', 'Manage Images']
   when 'freecen'
-    COUNTY_MANAGEMENT_OPTIONS = ['Manage Pieces', 'Manage VLD Files', 'Manage Places']
+    COUNTY_MANAGEMENT_OPTIONS = ['Manage Pieces', 'Manage VLD Files', 'Manage Places', 'Review Batches with Errors', 'Review Batches by Filename',
+                                 'Review Batches by Userid then Filename', 'Review Batches by Most Recent Date of Change',
+                                 'Review Batches by Oldest Date of Change', 'Review Specific Batch', 'List files waiting to be processed',
+                                 'List files NOT processed', 'Upload New Batch']
   when 'freebmd'
   end
   COUNTY_OPTIONS_TRANSLATION = {
@@ -183,11 +186,26 @@ module UseridRole
     'Offline Reports' => '/manage_counties/selection?option=Offline Reports'
 
   }
-  SYNDICATE_MANAGEMENT_OPTIONS =  ['Review Active Members', 'Review All Members', 'Transcription Agreement Accepted', 'Transcription Agreement Not Accepted', 'Select Specific Member by Userid',
-                                   'Select Specific Member by Email Address', 'Select Specific Member by Surname/Forename', 'Incomplete Registrations', 'Create Userid',
-                                   'Syndicate Messages', 'Review Batches with Errors', 'Review Batches with Zero Dates', 'Review Batches by Filename',
-                                   'Review Batches by Userid then Filename', 'Review Batches by Most Recent Date of Change', 'Review Batches by Oldest Date of Change',
-                                   'Review Specific Batch', 'List files waiting to be processed', 'List files NOT processed', 'Upload New Batch', 'Change Recruiting Status', 'Manage Images']
+  case MyopicVicar::Application.config.template_set
+  when 'freereg'
+    SYNDICATE_MANAGEMENT_OPTIONS =  ['Review Active Members', 'Review All Members', 'Transcription Agreement Accepted',
+                                     'Transcription Agreement Not Accepted', 'Select Specific Member by Userid',
+                                     'Select Specific Member by Email Address', 'Select Specific Member by Surname/Forename',
+                                     'Incomplete Registrations', 'Create Userid', 'Syndicate Messages', 'Review Batches with Errors',
+                                     'Review Batches with Zero Dates', 'Review Batches by Filename', 'Review Batches by Userid then Filename',
+                                     'Review Batches by Most Recent Date of Change', 'Review Batches by Oldest Date of Change',
+                                     'Review Specific Batch', 'List files waiting to be processed', 'List files NOT processed', 'Upload New Batch',
+                                     'Change Recruiting Status', 'Manage Images']
+  when 'freecen'
+    SYNDICATE_MANAGEMENT_OPTIONS = ['Review Active Members', 'Review All Members', 'Transcription Agreement Accepted',
+                                    'Transcription Agreement Not Accepted', 'Select Specific Member by Userid',
+                                    'Select Specific Member by Email Address', 'Select Specific Member by Surname/Forename',
+                                    'Incomplete Registrations', 'Create Userid', 'Syndicate Messages', 'Change Recruiting Status']
+  when 'freebmd'
+  end
+
+
+
   SYNDICATE_OPTIONS_TRANSLATION = {
     'Review Active Members' => '/manage_syndicates/selection?option=Review Active Members',
     'Review All Members' => '/manage_syndicates/selection?option=Review All Members',
