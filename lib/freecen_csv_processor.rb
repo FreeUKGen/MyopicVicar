@@ -595,7 +595,7 @@ class CsvFile < CsvFiles
     new_file.flexible = @project.flexible
     new_file.total_info = @total_info
     new_file.traditional = @traditional
-    new_file.processed = @create_search_records
+    new_file.processed = @project.create_search_records
     new_file.year = @year
     new_file.field_specification = @field_specification
     piece.freecen_csv_files << new_file

@@ -275,7 +275,6 @@ class FreecenCsvFilesController < ApplicationController
     if (@county.blank? && @syndicate.blank?) || @role.blank? || @sorted_by.blank?
       redirect_back(fallback_location: new_manage_resource_path, notice: 'Missing parameters') && return
     end
-
     batches = FreeregOptionsConstants::FILES_PER_PAGE
     get_user_info_from_userid
     if session[:syndicate].present? && session[:userid_id].blank? && helpers.can_view_files?(session[:role]) && helpers.sorted_by?(session[:sorted_by])
@@ -287,9 +286,9 @@ class FreecenCsvFilesController < ApplicationController
     elsif session[:syndicate].present? && session[:userid_id].present? && helpers.can_view_files?(session[:role])
       @freecen_csv_files = FreecenCsvFile.userid(UseridDetail.find(session[:userid_id]).userid).no_timeout.order_by(session[:sort]).all.page(params[:page]).per(batches)
     elsif session[:county].present? && helpers.can_view_files?(session[:role]) && session[:sorted_by] == '; sorted by descending number of errors and then file name'
-      @freecen_csv_files = FreecenCsvFile.county(session[:chapman_code]).gt(error: 0).order_by(session[:sort]).all.page(params[:page]).per(batches)
+      @freecen_csv_files = FreecenCsvFile.chapman_code(session[:chapman_code]).gt(error: 0).order_by(session[:sort]).all.page(params[:page]).per(batches)
     elsif session[:county].present? && helpers.can_view_files?(session[:role])
-      @freecen_csv_files = FreecenCsvFile.county(session[:chapman_code]).no_timeout.order_by(session[:sort]).all.page(params[:page]).per(batches)
+      @freecen_csv_files = FreecenCsvFile.chapman_code(session[:chapman_code]).no_timeout.order_by(session[:sort]).all.page(params[:page]).per(batches)
     end
     session[:current_page] = @freecen_csv_files.current_page if @freecen_csv_files.present?
   end

@@ -115,7 +115,7 @@ class FreecenCsvFile
 
     def chapman_code(name)
       #note chapman is county in file
-      where(:county => name)
+      where(:chapman_code => name)
     end
 
     def coordinator_lock
