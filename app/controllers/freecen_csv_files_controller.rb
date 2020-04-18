@@ -391,16 +391,15 @@ class FreecenCsvFilesController < ApplicationController
     redirect_back(fallback_location: freecen_csv_file_path(@freecen_csv_file), notice: 'File is currently awaiting processing and should not be edited') && return unless @freecen_csv_file.can_we_edit?
     controls(@freecen_csv_file)
     proceed, message = @freecen_csv_file.remove_batch
-    proceed ? flash[:notice] = 'The removal of the batch entry was successful' : flash[:notice] = message
-
+    flash[:notice] = proceed ? 'The removal of the batch was successful' : message
     if session[:my_own]
       redirect_to my_own_freecen_csv_file_path
-    elsif session[:current_page]
-      redirect_to session[:current_page]
-    elsif @return_location.blank?
-      redirect_to manage_resource_path(@user)
+    elsif session[:page]
+      redirect_to session[:page]
+    elsif session[:return_to].present?
+      redirect_to session[:return_to]
     else
-      redirect_to piece_path(@return_location)
+      redirect_to manage_resource_path(@user)
     end
   end
 
