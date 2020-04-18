@@ -644,7 +644,7 @@ class CsvRecords < CsvFile
       @project.write_messages_to_all(message, true)
       return [success, reduction]
     end
-    success, message = line_two(@array_of_lines[n])
+    success, message = line_two(@array_of_lines[n + 1])
     if success
       reduction = reduction + 1
       @project.write_messages_to_all(message, true)
