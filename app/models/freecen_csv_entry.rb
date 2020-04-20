@@ -779,22 +779,22 @@ class FreecenCsvEntry
     #Scotland doesn't have folio
     if year == '1841'
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        return ['Census Year', 'County', 'Place', 'Civil Parish', 'Piece', 'Enumeration District', 'Page', 'House Number', 'House or Street Name', 'Dwelling Number']
+        return ['Census Year', 'County', 'Census District', 'Civil Parish', 'Piece', 'Enumeration District', 'Page', 'House Number', 'House or Street Name', 'Dwelling Number']
       end
-      return ['Census Year', 'County', 'Place', 'Civil Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'House Number', 'House or Street Name', 'Dwelling Number']
+      return ['Census Year', 'County', 'Census District', 'Civil Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'House Number', 'House or Street Name', 'Dwelling Number']
 
     elsif year == '1901'
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        return ['Census Year', 'County', 'Place', 'Civil Parish', 'Ecclesiastical Parish', 'Piece', 'Enumeration District', 'Page', 'Schedule', 'House Number', 'House or Street Name', 'Dwelling Number', 'Rooms']
+        return ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Piece', 'Enumeration District', 'Page', 'Schedule', 'House Number', 'House or Street Name', 'Dwelling Number', 'Rooms']
       end
 
-      ['Census Year', 'County', 'Place', 'Civil Parish', 'Ecclesiastical Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'Schedule', 'House Number', 'House or Street Name', 'Dwelling Number', 'Rooms']
+      ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'Schedule', 'House Number', 'House or Street Name', 'Dwelling Number', 'Rooms']
     else
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        return ['Census Year', 'County', 'Place', 'Civil Parish', 'Ecclesiastical Parish', 'Piece', 'Enumeration District', 'Page', 'Schedule', 'House Number', 'House or Street Name', 'Dwelling Number']
+        return ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Piece', 'Enumeration District', 'Page', 'Schedule', 'House Number', 'House or Street Name', 'Dwelling Number']
       end
 
-      ['Census Year', 'County', 'Place', 'Civil Parish', 'Ecclesiastical Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'Schedule', 'House Number', 'House or Street Name', 'Dwelling Number']
+      ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'Schedule', 'House Number', 'House or Street Name', 'Dwelling Number']
     end
   end
 

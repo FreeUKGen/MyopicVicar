@@ -86,13 +86,13 @@ class FreecenPiece
     end
 
     def extract_year_and_piece(description)
-      first_two_characters = description.slice(0, 2).upcase if description.slice(0, 2).present?
-      third_character = description.slice(2, 1)
-      third_and_fourth = description.slice(2, 2)
       parts = description.split('.')
       stem = parts[0]
-      last_three = stem.chars.last(3).join
-      last_four = stem.chars.last(4).join
+      first_two_characters = stem.slice(0, 2).upcase if stem.slice(0, 2).present?
+      third_character = stem.slice(2, 1)
+      third_and_fourth = stem.slice(2, 2)
+      last_three = stem.slice(5, 3)
+      last_four = stem.slice(4, 4)
       case first_two_characters
       when 'RG'
         if third_character == '9' || third_and_fourth == '09'
