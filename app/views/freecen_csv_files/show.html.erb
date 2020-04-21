@@ -45,16 +45,8 @@
           <td class="weight--semibold"> <%= @freecen_csv_file.flexible %></td>
         </tr>
         <tr>
-          <td>Transcribed by </td>
+          <td>Transcribed by (Can only be entered by an edit)</td>
           <td class="weight--semibold">  <%= @freecen_csv_file.transcriber_name %></td>
-        </tr>
-        <tr>
-          <td>Transcribers email address </td>
-          <td class="weight--semibold"> <%= @freecen_csv_file.transcriber_email %></td>
-        </tr>
-        <tr>
-          <td>Syndicate transcribed for </td>
-          <td class="weight--semibold">  <%= @freecen_csv_file.transcriber_syndicate %></td>
         </tr>
         <tr>
           <td>Date of upload </td>
@@ -99,10 +91,6 @@
                     <% end %>
                     <td>Batch is locked from overriding by Coordinator</td>
                     <td class="weight--semibold"> <%= transform_boolean(@freecen_csv_file.locked_by_coordinator) %></td>
-                  </tr>
-                  <tr>
-                    <td>Date transcribed </td>
-                    <td class="weight--semibold">  <%= @freecen_csv_file.transcription_date %></td>
                   </tr>
                   <tr>
                     <td>Processed (No means that it was only verified for errors and its contents are NOT in the searchable database)</td>

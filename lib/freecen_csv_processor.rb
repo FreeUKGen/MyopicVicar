@@ -665,8 +665,11 @@ class CsvRecords < CsvFile
 
   def line_two(line)
     success = false
-    if line[0].casecmp?('abcdefghijklmnopqrst')
-      message = 'Info: line 2 field width specification detected and ignored'
+    if line[0..15].all?(&:blank?)
+      @project.write_messages_to_all("Warning: line 2 is empty", true)
+      success = true
+    elsif  line[0].casecmp?('abcdefghijklmnopqrst')
+      message = 'Info: line 2 old field width specification detected and ignored'
       success = true
     end
     [success, message]
@@ -778,7 +781,7 @@ class CsvRecord < CsvRecords
   end
 
   def extract_data_line(num)
-    @data_record[:record_number] = num
+    @data_record[:record_number] = num + 1
     @data_record[:messages] = @project.info_messages
     @data_record[:data_transition] = @csvfile.field_specification[first_field_present]
     convert_transition
