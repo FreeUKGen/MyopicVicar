@@ -33,6 +33,7 @@ class FreecenCsvEntry
   field :children_deceased, type: Integer
   field :children_living, type: Integer
   field :civil_parish, type: String
+  field :class_of_house, type: String
   field :data_transition, type: String
   field :deleted_flag, type: String
   field :individual_flag, type: String
@@ -50,6 +51,7 @@ class FreecenCsvEntry
   field :house_or_street_name, type: String
   field :individual_number, type: Integer
   field :info_messages, type: String
+  field :industry, type: String
   field :language, type: String
   field :locaton_flag, type: String
   field :address_flag, type: String
@@ -64,6 +66,8 @@ class FreecenCsvEntry
   field :page_number, type: String
   field :parliamentary_constituency, type: String
   field :piece_number, type: Integer
+  field :police_district, type: String
+  field :poor_law_union, type: String
   field :read_write, type: String
   field :record_number, type: Integer
   field :relationship, type: String
@@ -72,16 +76,20 @@ class FreecenCsvEntry
   field :rooms, type: String
   field :rooms_with_windows, type: String
   field :sanitary_district, type: String
+  field :scavenging_district, type: String
   field :schedule_number, type: String
   field :school_board, type: String
   field :school_children, type: Integer
   field :sequence_in_household, type: Integer # derived
   field :sex, type: String
+  field :special_lighting_district, type: String
+  field :special_water_district, type: String
   field :surname, type: String
   field :surname_maiden, type: String
   field :uninhabited_flag, type: String
   field :verbatim_birth_county, type: String
   field :verbatim_birth_place, type: String
+  field :walls, type: Integer
   field :ward, type: String
   field :warning_messages, type: String
   field :year, type: String
@@ -843,8 +851,8 @@ class FreecenCsvEntry
   def management_display_values
     #1841 doesn't have ecclesiastical parish or schedule number
     #Scotland doesn't have folio
-    birth = verbatim_birth_place.titleize if verbatim_birth_place.present?
-    [data_transition, birth_county, birth_place, locaton_flag, address_flag, name_flag, individual_flag, occupation_flag, birth_place_flag, deleted_flag]
+    birth = birth_place.titleize if birth_place.present?
+    [data_transition, birth_county, birth, locaton_flag, address_flag, name_flag, individual_flag, occupation_flag, birth_place_flag, deleted_flag]
   end
 
   def self.error_display_labels
@@ -863,21 +871,21 @@ class FreecenCsvEntry
 
   def self.individual_display_labels(year, chapman_code)
     if year == '1841'
-      return ['Sequence', 'Surname', 'Forenames', 'Sex', 'Age', 'Occupation', 'Birth County', 'Notes']
+      return ['Sequence', 'Surname', 'Forenames', 'Sex', 'Age', 'Occupation', 'Verbatim Birth County', 'Notes']
     elsif year == '1891'
       # only Wales 1891 has language field
       if ChapmanCode::CODES['Wales'].values.member?(chapman_code) || ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        return ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category', 'Birth County', 'Birth Place', 'Disability', 'Language', 'Notes']
+        return ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category', 'Verbatim Birth County', 'Verbatim Birth Place', 'Disability', 'Language', 'Notes']
       end
-      return ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category', 'Birth County', 'Birth Place', 'Disability', 'Notes']
+      return ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category', 'Verbatim Birth County', 'Verbatim Birth Place', 'Disability', 'Notes']
     elsif year == '1901'
       if ChapmanCode::CODES['Wales'].values.member?(chapman_code) || ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        return ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category', 'Birth County', 'Birth Place', 'Disability', 'Language', 'At Home', 'Notes']
+        return ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category', 'Verbatim Birth County', 'Verbatim Birth Place', 'Disability', 'Language', 'At Home', 'Notes']
       end
-      return ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category', 'Birth County', 'Birth Place', 'Disability', 'At Home', 'Notes']
+      return ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category', 'Verbatim Birth County', 'Verbatim Birth Place', 'Disability', 'At Home', 'Notes']
     end
     #return standard fields for 1851 - 1881
-    ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category', 'Birth County', 'Birth Place', 'Disability', 'Notes']
+    ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category', 'Verbatim Birth County', 'Verbatim Birth Place', 'Disability', 'Notes']
   end
 
   def individual_display_values(year, chapman_code)
@@ -890,29 +898,29 @@ class FreecenCsvEntry
     fore = forenames.titleize if forenames.present?
     relation = relationship.titleize if relationship.present?
     marital = marital_status.upcase if marital_status.present?
-    birth = birth_place.titleize if birth_place.present?
+    birth = verbatim_birth_place.titleize if verbatim_birth_place.present?
     note = notes.titleize if notes.present?
     sx = sex.upcase if sex.present?
     if year == '1841'
-      return [sequence_in_household, sur, fore, sx, disp_age, disp_occupation, birth_county, notes]
+      return [sequence_in_household, sur, fore, sx, disp_age, disp_occupation, verbatim_birth_county, notes]
     elsif year == '1891'
       # only Wales 1891 has language field
       if ChapmanCode::CODES['Wales'].values.member?(chapman_code) || ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        return [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation, occupation_category, birth_county, birth,
+        return [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation, occupation_category, verbatim_birth_county, birth,
                 disability, language, note]
       end
-      return [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation, occupation_category, birth_county, birth,
+      return [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation, occupation_category, verbatim_birth_county, birth,
               disability, note]
     elsif year == '1901'
       if ChapmanCode::CODES['Wales'].values.member?(chapman_code) || ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        return [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation, occupation_category, birth_county, birth,
+        return [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation, occupation_category, verbatim_birth_county, birth,
                 disability, language, at_home, note]
       end
-      return [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation, occupation_category, birth_county, birth,
+      return [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation, occupation_category, verbatim_birth_county, birth,
               disability, at_home, note]
     end
     # standard fields for 1851 - 1881
-    [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation, occupation_category, birth_county, birth, disability,
+    [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation, occupation_category, verbatim_birth_county, birth, disability,
      note]
   end
 
