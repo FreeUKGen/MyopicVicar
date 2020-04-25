@@ -126,17 +126,6 @@ class FreecenCsvFilesController < ApplicationController
     render 'index'
   end
 
-  def display_my_own_zero_years
-    get_user_info_from_userid
-    @who = @first_name
-    session[:zero_action] = 'My Own Action'
-    @sorted_by = 'Zero years'
-    session[:sort] = 'uploaded_date ASC'
-    session[:sorted_by] = @sorted_by
-    @freecen_csv_files = FreecenCsvFile.userid(session[:userid]).datemin('0').order_by(session[:sort]).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
-    render 'index'
-  end
-
   def display_my_own_files_by_selection
     get_user_info_from_userid
     @who = @first_name

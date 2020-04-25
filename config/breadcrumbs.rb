@@ -460,7 +460,7 @@ crumb :new_csvfile do |csvfile, app|
   case
   when session[:my_own]
     parent :files, nil if app == 'freereg'
-    parent :freecen_csv_files, nil if app == 'freereg'
+    parent :freecen_csv_files, nil if app == 'freecen'
   when session[:county]
     parent :county_options, session[:county]
   when session[:syndicate]

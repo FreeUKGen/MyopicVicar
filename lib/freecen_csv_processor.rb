@@ -142,9 +142,19 @@ class FreecenCsvProcessor
 
   def write_messages_to_all(message, no_member_message)
     # avoids sending the message to the member if no_member_message is false
-    message = message.encode(message.encoding, universal_newline: true) if message.present?
-    write_log_file(message) if message.present?
-    write_member_message_file(message) if no_member_message && message.present?
+    if message.present?
+      if message.is_a?(Array)
+        message.each do |mess|
+          messa = mess.encode(mess.encoding, universal_newline: true)
+          write_log_file(messa)
+          write_member_message_file(messa) if no_member_message
+        end
+      else
+        message = message.encode(message.encoding, universal_newline: true)
+        write_log_file(message)
+        write_member_message_file(message) if no_member_message
+      end
+    end
   end
 
   def write_log_file(message)
@@ -668,8 +678,8 @@ class CsvRecords < CsvFile
     if line[0..15].all?(&:blank?)
       @project.write_messages_to_all("Warning: line 2 is empty", true)
       success = true
-    elsif  line[0].casecmp?('abcdefghijklmnopqrst')
-      message = 'Info: line 2 old field width specification detected and ignored'
+    elsif line[0].present? && line[0].casecmp?('abcdefghijklmnopqrst')
+      message = '"Warning: line 2 old field width specification detected and ignored'
       success = true
     end
     [success, message]
@@ -845,45 +855,43 @@ class CsvRecord < CsvRecords
   end
 
   def extract_civil_parish_fields
-    success, message, @csvfile.civil_parish = FreecenCsvEntry.validate_civil_parish(@data_record, @csvfile.civil_parish)
+    message, @csvfile.civil_parish = FreecenCsvEntry.validate_civil_parish(@data_record, @csvfile.civil_parish)
     @project.write_messages_to_all(message, true) unless message == ''
     extract_enumeration_district_fields
   end
 
   def extract_enumeration_district_fields
-    success, message, @csvfile.enumeration_district = FreecenCsvEntry.validate_enumeration_district(@data_record, @csvfile.enumeration_district)
+    message, @csvfile.enumeration_district = FreecenCsvEntry.validate_enumeration_district(@data_record, @csvfile.enumeration_district)
     @project.write_messages_to_all(message, true) unless message == ''
     extract_folio_fields
   end
 
   def extract_folio_fields
-    success, message, @csvfile.folio, @csvfile.folio_suffix = FreecenCsvEntry.validate_folio(@data_record, @csvfile.folio, @csvfile.folio_suffix)
+    message, @csvfile.folio, @csvfile.folio_suffix = FreecenCsvEntry.validate_folio(@data_record, @csvfile.folio, @csvfile.folio_suffix)
     @project.write_messages_to_all(message, true) unless message == ''
     extract_page_fields
   end
 
   def extract_page_fields
-    success, message, @csvfile.page = FreecenCsvEntry.validate_page(@data_record, @csvfile.page)
+    message, @csvfile.page = FreecenCsvEntry.validate_page(@data_record, @csvfile.page)
     @project.write_messages_to_all(message, true) unless message == ''
     extract_dwelling_fields
   end
 
   def extract_dwelling_fields
-    if @data_record[:house_number].blank? && @data_record[:house_or_street_name].blank? && @data_record[:schedule_number].blank?
+    if ['b', 'n', 'u', 'v'].include?(@data_record[:uninhabited_flag])
+      @data_record[:dwelling_number] = @csvfile.dwelling_number + 1
+      @csvfile.dwelling_number = @data_record[:dwelling_number]
+    elsif @data_record[:house_number].blank? && @data_record[:house_or_street_name].blank? && @data_record[:schedule_number].blank?
       @data_record[:dwelling_number] = @csvfile.dwelling_number
-
-    elsif['b', 'n', 'u', 'v'].include?(@data_record[:uninhabited_flag])
-      @data_record[:dwelling_number] = @csvfile.dwelling_number + 1
-      @csvfile.dwelling_number = @data_record[:dwelling_number]
-    elsif @data_record[:house_number].blank? && @data_record[:house_or_street_name] == '-' && @data_record[:schedule_number] == '0'
-      @data_record[:dwelling_number] = @csvfile.dwelling_number + 1
-      @csvfile.dwelling_number = @data_record[:dwelling_number]
+    elsif @data_record[:house_number].blank? && @data_record[:house_or_street_name] == '-' && @data_record[:schedule_number].blank?
+      @data_record[:dwelling_number] = @csvfile.dwelling_number
     else
       @data_record[:dwelling_number] = @csvfile.dwelling_number + 1
       @csvfile.dwelling_number = @data_record[:dwelling_number]
       @csvfile.sequence_in_household = 0
     end
-    success, message, @csvfile.schedule, @csvfile.schedule_suffix = FreecenCsvEntry.validate_dwelling(@data_record, @csvfile.schedule, @csvfile.schedule_suffix)
+    message, @csvfile.schedule, @csvfile.schedule_suffix = FreecenCsvEntry.validate_dwelling(@data_record, @csvfile.schedule, @csvfile.schedule_suffix)
     @project.write_messages_to_all(message, true) unless message == ''
     extract_individual_fields
   end
@@ -896,7 +904,7 @@ class CsvRecord < CsvRecords
     @data_record[:dwelling_number] = @csvfile.dwelling_number
     @csvfile.sequence_in_household = @csvfile.sequence_in_household + 1
     @data_record[:sequence_in_household] = @csvfile.sequence_in_household
-    success, message = FreecenCsvEntry.validate_individual(@data_record)
+    message = FreecenCsvEntry.validate_individual(@data_record)
     @project.write_messages_to_all(message, true) unless message == ''
   end
 end
