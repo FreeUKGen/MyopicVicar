@@ -53,10 +53,10 @@ module Freecen
 
   module SpecialEnumerationDistricts
     CODES = ['None', 'Barracks & Military Quarters', 'HM Ships, at Home', 'Workhouses & Pauper Schools', 'Hospitals (Sick, Convalescent, Incurables)',
-             'Lunatic Asylums', 'Prisons', 'Certified Reformatory & Industrial Schools', 'Merchant Vessels & Lighthouses', 'Schools']
+             'Lunatic Asylums', 'Prisons', 'Certified Reformatory & Industrial Schools', 'Merchant Vessels & Lighthouses', 'Schools'].freeze
   end
 
-  FIELD_NAMES = { "0" => 'Civil Parish', "1" => 'Enumeration District', "2" => 'Folio', "3" => 'Page', "4" => 'Dwelling', "8" => 'Individual' }
+  FIELD_NAMES = { '0' => 'Civil Parish', '1' => 'Enumeration District', '2' => 'Folio', '3' => 'Page', '4' => 'Dwelling', '8' => 'Individual' }.freeze
   CENSUS_YEARS_ARRAY = ['1841', '1851', '1861', '1871', '1881', '1891', '1901', '1911'].freeze
   CHAPMAN_CODE_ELIMINATIONS = ['England', 'Scotland', 'Wales', 'Ireland', 'Unknown', 'Clwyd', 'Dyfed', 'Gwent', 'Gwynedd', 'Powys', 'Mid Glamorgan',
                                'South Glamorgan', 'West Glamorgan', 'Borders', 'Central', 'Dumfries and Galloway', 'Grampian', 'Highland', 'Lothian',

@@ -6,22 +6,21 @@ module FreecenValidations
   VALID_NUMBER  = /\A\d+\z/
   VALID_NUMBER_PLUS_SUFFIX = /\A\d+\D\z/
   VALID_ENUMERATOR_SPECIAL = /\A\d#\d\z/
-  VALID_SPECIAL_LOCATION_CODES = ['b', 'n', 'u', 'v', 'x', '']
+  VALID_SPECIAL_LOCATION_CODES = ['b', 'n', 'u', 'v', 'x', ''].freeze
   VALID_TEXT = /(\w*|-)/
   VALID_PIECE = /\A(R|H)(G|O|S)/i
-  VALID_AGE_MAXIMUM = {'d' => 100, 'w' => 100 , 'm' => 100 , 'y' => 120 , 'h' => 100, '?' => 100, 'years' => 120, 'months' => 100, 'weeks' => 100, 'days' => 100, 'hours' => 100}
+  VALID_AGE_MAXIMUM = { 'd' => 100, 'w' => 100, 'm' => 100, 'y' => 120, 'h' => 100, '?' => 100, 'years' => 120, 'months' => 100, 'weeks' => 100,
+                        'days' => 100, 'hours' => 100 }.freeze
   VALID_DATE = /\A\d{1,2}[\s+\/\-][A-Za-z\d]{0,3}[\s+\/\-]\d{2,4}\z/ #modern date no UCF or wildcard
   VALID_DAY = /\A\d{1,2}\z/
-  VALID_MONTH = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP","SEPT", "OCT", "NOV", "DEC", "*","JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
+  VALID_MONTH = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'SEPT', 'OCT', 'NOV', 'DEC', '*', 'JANUARY', 'FEBRUARY', 'MARCH',
+                 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'].freeze
   VALID_NUMERIC_MONTH = /\A\d{1,2}\z/
   VALID_YEAR = /\A\d{4,5}\z/
-  DATE_SPLITS = {
-    " " => /\s/,
-    "-" => /\-/,
-  "/" => /\\/}
+  DATE_SPLITS = { ' ' => /\s/, '-' => /\-/, '/' => /\\/ }.freeze
   WILD_CHARACTER = /[\*\[\]\-\_\?]/
-  VALID_MARITAL_STATUS = ['m', 's', 'u', 'w', '-']
-  VALID_SEX = ['M', 'F', '-']
+  VALID_MARITAL_STATUS = ['m', 's', 'u', 'w', 'd', '-'].freeze
+  VALID_SEX = ['M', 'F', '-'].freeze
 
   def FreecenValidations.fixed_valid_piece?(field)
     return false if field.blank?
