@@ -40,6 +40,13 @@ class Csvfile < CarrierWave::Uploader::Base
     decision
   end
 
+  def clean_up
+    batch = PhysicalFile.find_by(userid: userid, file_name: file_name, base: true)
+    file_location = File.join(Rails.application.config.datafiles, userid, file_name)
+    File.delete(file_location) if File.file?(file_location)
+    batch.delete if batch.present?
+  end
+
   def create_batch_unless_exists
     batch = PhysicalFile.where(userid: userid, file_name: file_name).first
     if batch.present?
@@ -58,6 +65,12 @@ class Csvfile < CarrierWave::Uploader::Base
     unit = 0.001
     processing_time = (size.to_i * unit).to_i
     processing_time
+  end
+
+  def estimate_size
+    place = File.join(Rails.application.config.datafiles, userid, file_name)
+    size = File.size?(place)
+    size
   end
 
   def physical_file_for_user_exists
@@ -80,6 +93,14 @@ class Csvfile < CarrierWave::Uploader::Base
     batch_processing = PhysicalFile.where(userid: userid, file_name: file_name, waiting_to_be_processed: true).exists?
     message = 'Your file is already waiting to be processed. It cannot reprocess it until that one is finished' if batch_processing.present?
     return [false, message] if batch_processing.present?
+
+    size = estimate_size
+    if size.blank? || size.present? && size < 500
+      proceed = false
+      message = 'The file either does not exist or is too small to be a valid file.'
+      clean_up
+      return [proceed, message]
+    end
 
     processing_time = estimate_time
     case MyopicVicar::Application.config.template_set

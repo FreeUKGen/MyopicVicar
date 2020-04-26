@@ -169,9 +169,6 @@ class PhysicalFile
   end
 
   def freecen_csv_file_and_entries_delete
-    p 'wlete'
-    p file_name
-    p userid
     file = FreecenCsvFile.where(file_name: file_name, userid: userid).first
     FreecenCsvFile.where(file_name: file_name, userid: userid).destroy_all if file.present?
     if file_name.present?
