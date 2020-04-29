@@ -56,7 +56,7 @@ class Place
 
   embeds_many :alternateplacenames
 
-  accepts_nested_attributes_for :alternateplacenames, allow_destroy: true,  reject_if: :all_blank
+  accepts_nested_attributes_for :alternateplacenames, allow_destroy: true, reject_if: :all_blank
 
 
   validates_inclusion_of :chapman_code, :in => ChapmanCode::values+[nil]

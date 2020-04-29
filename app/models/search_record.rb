@@ -224,6 +224,11 @@ class SearchRecord
       SearchRecord.where(:freereg1_csv_entry_id.exists => true).delete_all
     end
 
+    def delete_freecen_individual_entries
+      SearchRecord.where(:freecen_individual_id.exists => true).delete_all
+    end
+
+
     def extract_fields(fields, params, current_field)
       if params.is_a?(Hash)
         # walk down the syntax tree
@@ -946,19 +951,15 @@ class SearchRecord
     result
   end
 
-  def update_location(entry,file)
+  def update_location(entry, file)
     place = file.register.church.place
-    location_names =[]
+    location_names = []
     place_name = entry[:place]
     church_name = entry[:church_name]
     register_type = RegisterType.display_name(entry[:register_type])
     location_names << "#{place_name} (#{church_name})"
-    location_names  << " [#{register_type}]"
-    self.update_attribute(:location_names, location_names)
-    if self.place_id != place.id
-      self.update_attribute(:place_id, place.id)
-    end
-
+    location_names << " [#{register_type}]"
+    update(location_names: location_names, freereg1_csv_entry_id: entry.id, place_id: place.id)
   end
 
   def upgrade_search_date!(search_version)

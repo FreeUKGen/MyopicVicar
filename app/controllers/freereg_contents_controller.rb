@@ -124,6 +124,19 @@ class FreeregContentsController < ApplicationController
     variables_for_place_show
   end
 
+  def recent_additions
+    @chapman_code = params[:county]
+    redirect_back(fallback_location: { action: 'new' }, notice: 'No county code.') && return if @chapman_code.blank?
+    @all_places = Place.chapman_code(@chapman_code).data_present.all
+    @places = []
+    @all_places.each do |place|
+      @places << place if place.last_amended.present?
+    end
+    @county = ChapmanCode.has_key(@chapman_code)
+    @places.sort! { |x, y| (Date.strptime(y[:last_amended], "%d %b %Y") || '') <=> (Date.strptime(x[:last_amended], "%d %b %Y") || '') }
+    session[:chapman_code] = @chapman_code
+  end
+
   def register
     # this is the search details entry for a register
     @register = Register.id(params[:id]).first

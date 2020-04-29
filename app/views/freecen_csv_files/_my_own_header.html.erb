@@ -1,0 +1,18 @@
+<% breadcrumb :freecen_csv_files %>
+<h2 class=" text--center"> <%=@who%> these are your files
+</h2>
+<%= render partial: 'flash_notice' %>
+<p class=" text--center"> <%=@sorted_by%>: select a link below to change the order of display
+</p>
+<div  class=" text--center push--bottom">
+  <%= link_to 'Alphabetical file name', display_my_own_files_freecen_csv_file_path, method: :get , :class => "btn btn--small" %>
+  <%= link_to 'Oldest' , display_my_own_files_by_ascending_uploaded_date_freecen_csv_file_path, method: :get , :class => "btn btn--small"%>
+  <%= link_to 'Most Recent' , display_my_own_files_by_descending_uploaded_date_freecen_csv_file_path, method: :get , :class => "btn btn--small" %>
+  <%= link_to 'Files with errors' , display_my_error_freecen_csv_files_path, method: :get , :class => "btn btn--small" %>
+  <%= link_to 'Waiting for processing' , display_my_own_files_waiting_to_be_processed_freecen_csv_file_path, method: :get , :class => "btn btn--small" %>
+  <%= link_to 'Select Specific File' , display_my_own_files_by_selection_freecen_csv_file_path, method: :get , :class => "btn btn--small" %>
+  <%= link_to 'Download Spreadsheet' , download_spreadsheet_freecen_csv_file_path, method: :get , :class => "btn btn--small" %>
+</div>
+<p class="text--center"> To replace a file: find the file in the list and click its RL option.
+  To upload a new file: click this <%= link_to 'Upload new file', new_csvfile_path, method: :get , :class => "btn btn--small"%>
+</p>

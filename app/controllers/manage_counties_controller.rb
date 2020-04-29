@@ -21,10 +21,16 @@ class ManageCountiesController < ApplicationController
     @sorted_by = '; sorted by descending number of errors and then file name'
     session[:sorted_by] = @sorted_by
     session[:sort] = 'error DESC, file_name ASC'
-    redirect_to freereg1_csv_files_path
+    case appname_downcase
+    when 'freereg'
+      redirect_to freereg1_csv_files_path
+    when 'freecen'
+      redirect_to freecen_csv_files_path
+    end
   end
 
   def county_content_report
+    # not yet implemented for CEN
     get_user_info_from_userid
     userid = @user.userid
     chapman_code = session[:chapman_code]
@@ -50,7 +56,12 @@ class ManageCountiesController < ApplicationController
     @sorted_by = '; sorted by ascending date of uploading'
     session[:sorted_by] = @sorted_by
     session[:sort] = 'uploaded_date ASC'
-    redirect_to freereg1_csv_files_path
+    case appname_downcase
+    when 'freereg'
+      redirect_to freereg1_csv_files_path
+    when 'freecen'
+      redirect_to freecen_csv_files_path
+    end
   end
 
   def display_by_descending_uploaded_date
@@ -60,7 +71,12 @@ class ManageCountiesController < ApplicationController
     @sorted_by = '; sorted by descending date of uploading'
     session[:sorted_by] = @sorted_by
     session[:sort] = 'uploaded_date DESC'
-    redirect_to freereg1_csv_files_path
+    case appname_downcase
+    when 'freereg'
+      redirect_to freereg1_csv_files_path
+    when 'freecen'
+      redirect_to freecen_csv_files_path
+    end
   end
 
   def display_by_filename
@@ -70,7 +86,12 @@ class ManageCountiesController < ApplicationController
     @sorted_by = '; sorted alphabetically by file name'
     session[:sorted_by] = @sorted_by
     session[:sort] = 'file_name ASC'
-    redirect_to freereg1_csv_files_path
+    case appname_downcase
+    when 'freereg'
+      redirect_to freereg1_csv_files_path
+    when 'freecen'
+      redirect_to freecen_csv_files_path
+    end
   end
 
   def display_by_userid_filename
@@ -80,10 +101,16 @@ class ManageCountiesController < ApplicationController
     @sorted_by = '; sorted by userid then alphabetically by file name'
     session[:sorted_by] = @sorted_by
     session[:sort] = 'userid_lower_case ASC, file_name ASC'
-    redirect_to freereg1_csv_files_path
+    case appname_downcase
+    when 'freereg'
+      redirect_to freereg1_csv_files_path
+    when 'freecen'
+      redirect_to freecen_csv_files_path
+    end
   end
 
   def display_by_zero_date
+    # not applicable for CEN
     get_user_info_from_userid
     @county = session[:county]
     session[:zero_action] = 'Main County Action'
@@ -98,12 +125,23 @@ class ManageCountiesController < ApplicationController
   def files
     get_user_info_from_userid
     @county = session[:county]
-    @freereg1_csv_files = Freereg1CsvFile.where(county: session[:chapman_code], file_name: params[:params]).all
-    if @freereg1_csv_files.length == 1
-      file = Freereg1CsvFile.where(county: session[:chapman_code], file_name: params[:params]).first
-      redirect_to(freereg1_csv_file_path(file)) && return
-    else
-      redirect_to(freereg1_csv_files_path) && return
+    case appname_downcase
+    when 'freereg'
+      @freereg1_csv_files = Freereg1CsvFile.where(county: session[:chapman_code], file_name: params[:params]).all
+      if @freereg1_csv_files.length == 1
+        file = Freereg1CsvFile.where(county: session[:chapman_code], file_name: params[:params]).first
+        redirect_to(freereg1_csv_file_path(file)) && return
+      else
+        redirect_to(freereg1_csv_files_path) && return
+      end
+    when 'freecen'
+      @freecen_csv_files = FreecenCsvFile.where(county: session[:chapman_code], file_name: params[:params]).all
+      if @freecen_csv_files.length == 1
+        file = FreecenCsvFile.where(county: session[:chapman_code], file_name: params[:params]).first
+        redirect_to(freecen_csv_files_path(file)) && return
+      else
+        redirect_to(freecen_csv_files_path) && return
+      end
     end
   end
 
@@ -134,6 +172,7 @@ class ManageCountiesController < ApplicationController
   end
 
   def manage_completion_submitted_image_group
+    # not applicable for CEN
     redirect_back(fallback_location: new_manage_resource_path, notice: 'Your other actions cleared the county information, please select county again') && return if session[:chapman_code].blank?
 
     get_user_info_from_userid
@@ -151,6 +190,7 @@ class ManageCountiesController < ApplicationController
   end
 
   def manage_image_group
+    # not applicable for CEN
     redirect_back(fallback_location: new_manage_resource_path, notice: 'Your other actions cleared the county information, please select county again') && return if session[:chapman_code].blank?
 
     get_user_info_from_userid
@@ -164,6 +204,7 @@ class ManageCountiesController < ApplicationController
   end
 
   def manage_unallocated_image_group
+    # not applicable for CEN
     redirect_back(fallback_location: new_manage_resource_path, notice: 'Your other actions cleared the county information, please select county again') && return if session[:chapman_code].blank?
 
     get_user_info_from_userid
@@ -177,6 +218,7 @@ class ManageCountiesController < ApplicationController
   end
 
   def manage_allocate_request_image_group
+    # not applicable for CEN
     redirect_back(fallback_location: new_manage_resource_path, notice: 'Your other actions cleared the county information, please select county again') && return if session[:chapman_code].blank?
 
     get_user_info_from_userid
@@ -190,6 +232,7 @@ class ManageCountiesController < ApplicationController
   end
 
   def manage_sources
+    # not applicable for CEN
     redirect_back(fallback_location: new_manage_resource_path, notice: 'Your other actions cleared the county information, please select county again') && return if session[:chapman_code].blank?
 
     get_user_info_from_userid
@@ -229,6 +272,7 @@ class ManageCountiesController < ApplicationController
   end
 
   def offline_reports
+    # not available for CEN
     get_user_info_from_userid
     @chapman_code = session[:chapman_code]
     @county = session[:county]
@@ -288,11 +332,19 @@ class ManageCountiesController < ApplicationController
     @manage_county = ManageCounty.new
     @county = session[:county]
     @files = {}
-    Freereg1CsvFile.county(session[:chapman_code]).order_by(file_name: 1).each do |file|
-      @files["#{file.file_name}:#{file.userid}"] = file._id if file.file_name.present?
+    case appname_downcase
+    when 'freereg'
+      Freereg1CsvFile.county(session[:chapman_code]).order_by(file_name: 1).each do |file|
+        @files["#{file.file_name}:#{file.userid}"] = file._id if file.file_name.present?
+      end
+      @location = 'location.href= "/freereg1_csv_files/" + this.value'
+    when 'freecen'
+      FreecenCsvFile.county(session[:chapman_code]).order_by(file_name: 1).each do |file|
+        @files["#{file.file_name}:#{file.userid}"] = file._id if file.file_name.present?
+      end
+      @location = 'location.href= "/freecen_csv_files/" + this.value'
     end
     @options = @files
-    @location = 'location.href= "/freereg1_csv_files/" + this.value'
     @prompt = 'Select batch'
     render '_form_for_selection'
   end
@@ -322,6 +374,7 @@ class ManageCountiesController < ApplicationController
   end
 
   def sort_image_group_by_place
+    # not applicable for CEN
     redirect_back(fallback_location: new_manage_resource_path, notice: 'Your other actions cleared the county information, please select county again') && return if session[:chapman_code].blank?
 
     get_user_info_from_userid
@@ -335,6 +388,7 @@ class ManageCountiesController < ApplicationController
   end
 
   def sort_image_group_by_syndicate
+    # not applicable for CEN
     redirect_back(fallback_location: new_manage_resource_path, notice: 'Your other actions cleared the county information, please select county again') && return if session[:chapman_code].blank?
 
     get_user_info_from_userid
@@ -348,6 +402,7 @@ class ManageCountiesController < ApplicationController
   end
 
   def uninitialized_source_list
+    # not applicable for CEN
     redirect_back(fallback_location: new_manage_resource_path, notice: 'Your other actions cleared the county information, please select county again') && return if session[:chapman_code].blank?
 
     get_user_info_from_userid
@@ -409,6 +464,7 @@ class ManageCountiesController < ApplicationController
   end
 
   def select_year
+    # not applicable for REG
     @manage_county = ManageCounty.new
     @county = session[:county]
     @chapman_code = session[:chapman_code]
@@ -420,6 +476,7 @@ class ManageCountiesController < ApplicationController
   end
 
   def piece_statistics
+    # not applicable for REG
     @chapman_code = session[:chapman_code]
     @rec_type = params[:params]
     @freecen_piece = FreecenPiece.where(chapman_code: @chapman_code, year: @rec_type)

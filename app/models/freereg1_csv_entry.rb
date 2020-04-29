@@ -205,6 +205,8 @@ class Freereg1CsvEntry
     SearchRecord.destroy_all(:freereg1_csv_entry_id => entry._id)
   end
 
+  after_update :update_seach_record_location
+
   accepts_nested_attributes_for :embargo_records, allow_destroy: false, reject_if: :all_blank
   accepts_nested_attributes_for :multiple_witnesses, allow_destroy: true, reject_if: :all_blank, limit: 8
 
@@ -828,6 +830,10 @@ class Freereg1CsvEntry
 
   def update_location(record, file)
     update(freereg1_csv_file_id: file.id, place: record[:place], church_name: record[:church_name], register_type: record[:register_type])
+  end
+
+  def update_seach_record_location
+    search_record.update_location(self, freereg1_csv_file) if search_record.present?
   end
 
   def update_place_ucf_list(place, file, old_search_record)

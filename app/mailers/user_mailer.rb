@@ -481,8 +481,14 @@ class UserMailer < ActionMailer::Base
 
   def sndmanager_email_lookup
     sndmager = UseridDetail.userid('SNDManager').first
-    friendly_email = "#{sndmager.person_forename} #{sndmager.person_surname} <#{sndmager.email_address}>"
-    [sndmager, friendly_email]
+    if sndmager.present?
+      friendly_email = "#{sndmager.person_forename} #{sndmager.person_surname} <#{sndmager.email_address}>"
+      [sndmager, friendly_email]
+
+    else
+      sndmager = UseridDetail.userid('vinodhini')
+      [sndmanger, "Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>"]
+    end
   end
 
   def extract_chapman_code_from_file_name(file_name)

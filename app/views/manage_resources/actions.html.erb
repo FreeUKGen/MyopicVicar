@@ -1,8 +1,10 @@
 <% breadcrumb :root %>
 <% title "Action Page" %>
-<% if  @user.new_transcription_agreement.blank? || @user.new_transcription_agreement == 'Unknown' || @user.new_transcription_agreement == 'Pending' %>
-  <b><%= @user.person_forename %></b><br>
-  <%= @acceptance %>
+<% if ['https://www.freecen.org.uk', 'https://www.freereg.org.uk', 'https://www.freebmd.org.uk'].include?(MyopicVicar::Application.config.website) %>
+  <% if  @user.new_transcription_agreement.blank? || @user.new_transcription_agreement == 'Unknown' || @user.new_transcription_agreement == 'Pending' %>
+    <b><%= @user.person_forename %></b><br>
+    <%= @acceptance %>
+  <% end%>
 <% end%>
 <%# raise @current_user.inspect %>
 <% if flash[:notice] %>

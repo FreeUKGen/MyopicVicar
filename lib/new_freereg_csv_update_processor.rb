@@ -340,23 +340,16 @@ class CsvFile < CsvFiles
     success, message = self.communicate_file_processing_results(project)
     #p "finished com"
     return success,"communication failed #{message}. <br>" unless success
-    return true,@total_records ,@total_data_errors
+    [true, @total_records, @total_data_errors]
   end
 
-  def change_location_for_existing_entry_and_record(existing_record,data_record,project,freereg1_csv_file)
-    #change of location
-    existing_record.update_location(data_record,freereg1_csv_file)
+  def change_location_for_existing_entry_and_record(existing_record, data_record, project, freereg1_csv_file)
+    existing_record.update_location(data_record, freereg1_csv_file)
     #update location of record
     record = existing_record.search_record
-    if  record.present?
-      success = "nochange"
-      #p "updating record"
-      # need to update search record  with location
-      record.update_location(data_record,freereg1_csv_file)
-      #p "updated record"
-    else
-      #p "created record"
-      success = "change"
+    success = 'change'
+    if  record.blank?
+      success = 'change'
       #transform_search_record is a method in freereg1_csv_entry.rb.rb
       # enough_name_fields is a method in freereg1_csv_entry.rb that ensures we have names to create a search record on
       place_id = self.place_id
@@ -365,7 +358,7 @@ class CsvFile < CsvFiles
       sleep_time = (Rails.application.config.sleep.to_f).to_f
       sleep(sleep_time)
     end
-    return success
+    success
   end
 
   def check_and_create_db_record_for_entry(project,data_record,freereg1_csv_file)
@@ -378,24 +371,24 @@ class CsvFile < CsvFiles
       #p entry
       new_digest = entry.cal_digest
       if @all_existing_records.has_value?(new_digest)
-        #p "we have an existing record but may be for different location"
+        # p "we have an existing record but may be for different location"
         existing_record = Freereg1CsvEntry.id(@all_existing_records.key(new_digest)).first
         if existing_record.present?
-          #p "yes we have a record"
+          # p "yes we have a record"
           success = self.existing_entry_may_be_same_location(existing_record,data_record,project,freereg1_csv_file)
           #we need to eliminate this record from hash
-          #p "dropping hash entry"
+          # p "dropping hash entry"
           @all_existing_records.delete(@all_existing_records.key(existing_record.record_digest))
         else
-          #p "No record existed"
+          # p "No record existed"
           success = self.create_db_record_for_entry(project,data_record,freereg1_csv_file)
         end
       else
-        #p "no digest"
+        # p "no digest"
         success = self.create_db_record_for_entry(project,data_record,freereg1_csv_file)
       end
     else
-      #p "rebuild"
+      # p "rebuild"
       success = self.create_db_record_for_entry(project,data_record,freereg1_csv_file)
     end
     return success
@@ -503,7 +496,7 @@ class CsvFile < CsvFiles
   end
 
   def clean_up_unused_batches(project)
-    #p "cleaning up batches and records"
+    # p "cleaning up batches and records"
     counter = 0
     files = Array.new
     @all_existing_records.each do |record,value|
@@ -515,12 +508,12 @@ class CsvFile < CsvFiles
       sleep_time =  sleep_time = (Rails.application.config.sleep.to_f).to_f
       sleep(sleep_time) unless actual_record.nil?
     end
-    #recalculate distribution after clean up
+    #p 'recalculate distribution after clean up'
     files.each do |file|
       actual_batch = Freereg1CsvFile.id(file).first
       actual_batch.calculate_distribution if actual_batch.present?
     end
-    @unique_existing_locations.each do |key,value|
+    @unique_existing_locations.each do |key, value|
       file = Freereg1CsvFile.id(value[:id]).first
       if file.present?
         message = "Removing batch #{file.county}, #{file.place}, #{file.church_name}, #{file.register_type}, #{file.record_type} for #{file.userid} #{file.file_name}. <br>"
@@ -528,10 +521,10 @@ class CsvFile < CsvFiles
         file.delete
       end
     end
-    return counter
+    counter
   end
 
-  def communicate_failure_to_member(project,message)
+  def communicate_failure_to_member(project, message)
     #p "communicating failure"
     file = project.member_message_file
     file.close
@@ -567,7 +560,6 @@ class CsvFile < CsvFiles
     entry.multiple_witnesses.each do |witness|
       witness.witness_surname = witness.witness_surname.upcase if witness.witness_surname.present?
     end
-
     entry.freereg1_csv_file = freereg1_csv_file
     #p "creating entry"
     entry.save
@@ -649,10 +641,10 @@ class CsvFile < CsvFiles
     return false, message unless success
   end
 
-  def existing_entry_may_be_same_location(existing_record,data_record,project,freereg1_csv_file)
+  def existing_entry_may_be_same_location(existing_record, data_record, project, freereg1_csv_file)
     if existing_record.same_location(existing_record,freereg1_csv_file)
       # this method is located in entry model
-      #p "same location"
+      # p "same location"
       #record location is OK
       if existing_record.search_record.present?
         # search record and entry are OK
@@ -668,7 +660,7 @@ class CsvFile < CsvFiles
         sleep(sleep_time)
       end
     else
-      success = self.change_location_for_existing_entry_and_record(existing_record,data_record,project,freereg1_csv_file)
+      success = self.change_location_for_existing_entry_and_record(existing_record, data_record, project, freereg1_csv_file)
     end
     success
   end
@@ -771,7 +763,6 @@ class CsvFile < CsvFiles
       update_place_after_processing(freereg1_csv_file, value[:chapman_code],value[:place_name])
       freereg1_csv_file.update_freereg_contents_after_processing
     end
-    #p "after process"
     counter = self.clean_up_unused_batches(project)
     message = "There were #{counter} entries in the original file that did not exist in the new one and hence were deleted. <br>"
     project.write_messages_to_all(message,false) unless counter == 0
@@ -814,7 +805,6 @@ class CsvFile < CsvFiles
         end #end success  no change
       end #end record
     end
-    #p "this batch processed"
     return records, batch_errors, not_changed
   end
 
@@ -887,7 +877,6 @@ class CsvFile < CsvFiles
   end
 
   def update_the_file_information(project,freereg1_csv_file,records,batch_errors)
-    #p "update_the_file_information"
     @total_records = @total_records + records
     @total_data_errors = @total_data_errors + batch_errors
     freereg1_csv_file.calculate_distribution

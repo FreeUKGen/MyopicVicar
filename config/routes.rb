@@ -75,6 +75,31 @@ MyopicVicar::Application.routes.draw do
 
   resources :freecen1_vld_files
 
+  get 'freecen_csv_files/spreadsheet/:id', :to => 'freecen_csv_files#spreadsheet', :as => :spreadsheet_freecen_csv_file
+  get 'freecen_csv_files/download_spreadsheet', :to => 'freecen_csv_files#download_spreadsheet', :as => :download_spreadsheet_freecen_csv_file
+  get 'freecen_csv_files/:id/download_message_report(.:format)', :to => 'freecen_csv_files#download_message_report', :as => :download_message_report_freecen_csv_file
+  get 'freecen_csv_files/:id/change_userid', :to => 'freecen_csv_files#change_userid', :as => :change_userid_freecen_csv_file
+  get 'freecen_csv_files/:id/merge', :to => 'freecen_csv_files#merge', :as => :merge_freecen_csv_file
+  get 'freecen_csv_files/:id/remove', :to => 'freecen_csv_files#remove', :as => :remove_freecen_csv_file
+  get 'freecen_csv_files/:id/relocate(.:format)', :to => 'freecen_csv_files#relocate', :as => :relocate_freecen_csv_file
+  get 'freecen_csv_files/:id/lock(.:format)', :to => 'freecen_csv_files#lock', :as => :lock_freecen_csv_file
+  get 'freecen_csv_files/:id/error(.:format)', :to => 'freecen_csv_files#error', :as => :error_freecen_csv_file
+  get 'freecen_csv_files/my_own',  :to => 'freecen_csv_files#my_own', :as => :my_own_freecen_csv_file
+  get 'freecen_csv_files/:id/by_userid',  :to => 'freecen_csv_files#by_userid', :as => :by_userid_freecen_csv_file
+  get 'freecen_csv_files/display_my_error_files',  :to => 'freecen_csv_files#display_my_error_files', :as => :display_my_error_freecen_csv_files
+  get 'freecen_csv_files/display_my_own_files',  :to => 'freecen_csv_files#display_my_own_files', :as => :display_my_own_files_freecen_csv_file
+  get 'freecen_csv_files/display_my_own_files_by_descending_uploaded_date',  :to => 'freecen_csv_files#display_my_own_files_by_descending_uploaded_date',  :as => :display_my_own_files_by_descending_uploaded_date_freecen_csv_file
+  get 'freecen_csv_files/display_my_own_files_by_ascending_uploaded_date',  :to => 'freecen_csv_files#display_my_own_files_by_ascending_uploaded_date', :as => :display_my_own_files_by_ascending_uploaded_date_freecen_csv_file
+  get 'freecen_csv_files/display_my_own_files_by_selection',  :to => 'freecen_csv_files#display_my_own_files_by_selection', :as => :display_my_own_files_by_selection_freecen_csv_file
+  get 'freecen_csv_files/display_my_own_files_waiting_to_be_processed',  :to => 'freecen_csv_files#display_my_own_files_waiting_to_be_processed', :as => :display_my_own_files_waiting_to_be_processed_freecen_csv_file
+  get 'freecen_csv_files/:id/download(.:format)', :to => 'freecen_csv_files#download', :as => :download_freecen_csv_file
+
+  resources :freecen_csv_files
+
+  get 'freecen_csv_entries/:id/edit_embargo(.:format)', :to => 'freecen_csv_entries#edit_embargo', :as => :edit_embargo_freecen_csv_entry
+  get 'freecen_csv_entries/:id/error(.:format)', :to => 'freecen_csv_entries#error', :as => :error_freecen_csv_entry
+  resources :freecen_csv_entries
+
   get 'messages/:id/show_waitlist_msg',:to => 'messages#show_waitlist_msg', :as => :show_waitlist_msg
   delete 'messages/:id/remove_from_useriddetail_waitlist(.:format)',:to => 'messages#remove_from_useriddetail_waitlist', :as => :remove_from_useriddetail_waitlist
   delete 'messages/:id/remove_from_userid_detail(.:format)', :to => 'messages#remove_from_userid_detail', :as => :remove_from_userid_detail
@@ -210,9 +235,11 @@ MyopicVicar::Application.routes.draw do
 
   resources :freecen_parms
   get 'freecen_parms/:year/:chapman_code/download(.:format)', :to => 'freecen_parms#download', :as => :download_freecen_parms
+  get 'freecen_pieces/new', :to => 'freecen_pieces#new', :as => :piece_new_freecen_piece
 
   resources :freecen_pieces, except: :new
   get 'freecen_pieces/:chapman_code/:year/new', :to => 'freecen_pieces#new', :as => :new_freecen_piece
+  get 'freecen_pieces/:chapman_code/:year/index', :to => 'freecen_pieces#chapman_year_index', :as => :chapman_year_index
   get 'freecen_pieces/:year/select_new_county', :to => 'freecen_pieces#select_new_county', :as => :select_new_county_freecen_piece
 
   get 'freecen_coverage/grand_totals', to: 'freecen_coverage#grand_totals', as: :grand_totals_freecen_coverage
@@ -310,6 +337,7 @@ MyopicVicar::Application.routes.draw do
   resources :coordinators
 
   resources :alias_place_churches
+  get 'freereg_contents/recent_additions', :to => 'freereg_contents#recent_additions', :as => :recent_additions_freereg_content
   get 'freereg_contents/:id/gaps_and_embargoes(.:format)', :to => 'freereg_contents#gaps_and_embargoes', :as => :gaps_and_embargoes_freereg_content
   get 'freereg_contents/:id/unique_place_names(.:format)', :to => 'freereg_contents#unique_place_names', :as => :unique_place_names
   get 'freereg_contents/:id/unique_register_names(.:format)', :to => 'freereg_contents#unique_register_names', :as => :unique_register_names

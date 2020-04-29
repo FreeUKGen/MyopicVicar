@@ -1,0 +1,35 @@
+<h4 style="text-align: center">Flags Index</h4>
+<div style="overflow: hidden;">
+  <div class="scrollable ">
+    <table class="table--bordered my-width table--data just--left">
+      <thead  >
+        <tr >
+          <th class='sticky-header'>Entry Number</th>
+          <th class='sticky-header'>Location Flag</th>
+          <th class='sticky-header'>Address Flag</th>
+          <th class='sticky-header'>Name Flag</th>
+          <th class='sticky-header'>Individual Flag</th>
+          <th class='sticky-header'>Occupation Flag</th>
+          <th class='sticky-header'>Birth Place Flag</th>
+          <th class='sticky-header'>Deleted Flag</th>
+          <th class='sticky-header'>Action</th>
+        </tr>
+      </thead>
+      <tbody >
+        <% @freecen_csv_entries.each do |freecen_csv_entry| %>
+          <tr id="<%= freecen_csv_entry.id %>" >
+            <td><%= freecen_csv_entry.record_number%></td>
+            <td><%= freecen_csv_entry.location_flag %></td>
+            <td><%= freecen_csv_entry.address_flag  %></td>
+            <td><%= freecen_csv_entry.name_flag %></td>
+            <td><%= freecen_csv_entry.individual_flag %></td>
+            <td><%= freecen_csv_entry.occupation_flag %></td>
+            <td><%= freecen_csv_entry.birth_place_flag %></td>
+            <td><%= freecen_csv_entry.deleted_flag %></td>
+            <td><%= link_to 'SH', freecen_csv_entry_path(freecen_csv_entry) %> <%= link_to 'ED', edit_freecen_csv_entry_path(freecen_csv_entry) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

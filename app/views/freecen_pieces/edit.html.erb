@@ -1,5 +1,8 @@
-<h1>Editing FreeCEN Piece</h1>
-
+<% breadcrumb :edit_freecen_piece, @freecen_piece.id, @freecen_piece.chapman_code %>
+<h1 style="text-align: center">Editing FreeCEN Piece Number <%= @freecen_piece.piece_number%> for <%= @freecen_piece.chapman_code%></h1>
+<%= render 'flash_notice' %>
+<% if @freecen_piece.errors.any? %>
+  <%= @freecen_piece.errors.full_messages%>
+<% end%>
 <%= render 'form' %>
-
 <br>

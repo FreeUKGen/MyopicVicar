@@ -1,0 +1,107 @@
+<% breadcrumb :show_freecen_csv_file,  @freecen_csv_file %>
+<%= render 'show_header' %>
+<div class="grid">
+  <section class="island ">
+    <div class="grid__item ">
+      <table   class="table--bordered  table--data">
+        <colgroup >
+          <col class=t40>
+          <col class=t60>
+        </colgroup>
+        <tr>
+          <th class="caps">Field</th>
+          <th  class="caps">Value</th>
+        </tr>
+        <tr>
+          <td>Chapman </td>
+          <td class="weight--semibold"> <%=  chapman(@freecen_csv_file)%>  </td>
+        </tr>
+        <tr>
+          <td> Year </td>
+          <td class="weight--semibold"> <%= year(@freecen_csv_file) %>  </td>
+        </tr>
+        <tr>
+          <td>Piece number </td>
+          <td class="weight--semibold">  <%= piece_number(@freecen_csv_file) %> </td>
+        </tr>
+        <tr>
+          <td>District name </td>
+          <td class="weight--semibold"><%= district_name(@freecen_csv_file)%> </td>
+        </tr>
+        <tr>
+          <td>Number of records </td>
+          <td class="weight--semibold"> <%= @freecen_csv_file.total_records %> </td>
+        </tr>
+        <tr>
+          <td>File name </td>
+          <td class="weight--semibold"> <%= @freecen_csv_file.file_name %></td>
+        </tr>
+        <tr>
+          <td>Uploaded by userid </td>
+          <td class="weight--semibold"> <%= @freecen_csv_file.userid %> </td>
+        </tr>
+        <tr>
+          <td>Flexible </td>
+          <td class="weight--semibold"> <%= @freecen_csv_file.flexible %></td>
+        </tr>
+        <tr>
+          <td>Transcribed by (Can only be entered by an edit)</td>
+          <td class="weight--semibold">  <%= @freecen_csv_file.transcriber_name %></td>
+        </tr>
+        <tr>
+          <td>Date of upload </td>
+          <td class="weight--semibold"> <%= uploaded_date(@freecen_csv_file)unless @freecen_csv_file.uploaded_date.blank? %></td>
+        </tr>
+        <% if @freecen_csv_file.total_errors.zero?%>
+          <tr id="<%= @freecen_csv_file.id%>"  style="color:black" >
+          <% else %>
+            <tr id="<%= @freecen_csv_file.id%>"  style="color:red" >
+            <% end %>
+            <td>Number of errors</td>
+            <td class="weight--semibold"> <%= @freecen_csv_file.total_errors%></td>
+          </tr>
+          <% if @freecen_csv_file.total_warnings.zero?%>
+            <tr id="<%= @freecen_csv_file.id%>"  style="color:black" >
+            <% else %>
+              <tr id="<%= @freecen_csv_file.id%>"  style="color:blue" >
+              <% end %>
+              <td>Number of warnings</td>
+              <td class="weight--semibold"> <%= @freecen_csv_file.total_warnings%></td>
+            </tr>
+            <% if @freecen_csv_file.total_info.zero?%>
+              <tr id="<%= @freecen_csv_file.id%>"  style="color:black" >
+              <% else %>
+                <tr id="<%= @freecen_csv_file.id%>"  style="color:magenta" >
+                <% end %>
+                <td>Number of info messages</td>
+                <td class="weight--semibold"> <%= @freecen_csv_file.total_info%></td>
+              </tr>
+              <% if @freecen_csv_file.locked_by_transcriber ||  !@freecen_csv_file.locked_by_transcriber == "false"%>
+                <tr id="<%= @freecen_csv_file.id%>"  style="color:darkviolet" >
+                <% else%>
+                  <tr id="<%= @freecen_csv_file.id%>"  style="color:black" >
+                  <% end %>
+                  <td>Batch is locked from overriding by Transcriber</td>
+                  <td class="weight--semibold"> <%= transform_boolean(@freecen_csv_file.locked_by_transcriber) %></td>
+                </tr>
+                <% if !@freecen_csv_file.locked_by_coordinator == "false" || @freecen_csv_file.locked_by_coordinator  %>
+                  <tr id="<%= @freecen_csv_file.id%>"  style="color:darkviolet" >
+                  <% else%>
+                    <tr id="<%= @freecen_csv_file.id%>"  style="color:black" >
+                    <% end %>
+                    <td>Batch is locked from overriding by Coordinator</td>
+                    <td class="weight--semibold"> <%= transform_boolean(@freecen_csv_file.locked_by_coordinator) %></td>
+                  </tr>
+                  <tr>
+                    <td>Processed (No means that it was only verified for errors and its contents are NOT in the searchable database)</td>
+                    <td class="weight--semibold"><%= transform_boolean(@freecen_csv_file.processed) %></td>
+                  </tr>
+                  <tr>
+                    <td>Processed Date</td>
+                    <td class="weight--semibold"><%= @freecen_csv_file.processed_date.strftime("%d %b %Y") unless @freecen_csv_file.processed_date.nil? %></td>
+                  </tr>
+                </table>
+              </div>
+            </section>
+          </div>
+          <br>

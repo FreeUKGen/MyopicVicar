@@ -1,0 +1,16 @@
+<% breadcrumb :show_freecen_csv_entry,  @freecen_csv_entry,  @freecen_csv_file %>
+<h3 style="text-align: center">Showing record <b><%= @freecen_csv_entry.record_number %></b> for <%= file_name(@freecen_csv_file) %></b> (<%= @freecen_csv_file.userid %>) in <b><%= @place_name %></b> of <b><%= @chapman_code %></b><br>
+</h3>
+</h3>
+<% if session[:userid].present?%>
+  <div  style="text-align: center">
+    <%= link_to 'Next entry',  freecen_csv_entry_path(@next_entry), method: :get, :class => "btn btn--small" if @next_entry.present?%>
+    <%= link_to 'Previous entry',  freecen_csv_entry_path(@previous_entry), method: :get, :class => "btn btn--small" if @previous_entry.present? %>
+    <%= link_to 'Edit Entry',  edit_freecen_csv_entry_path(@freecen_csv_entry), method: :get, :class => "btn btn--small" %>
+  </div>
+  <br>
+<% end %>
+<%= render 'flash_notice' %>
+<div style="clear:both;color:'black'"> </div>
+<%= render 'freecen_csv_entry' %>
+<br>
