@@ -61,7 +61,7 @@ module UseridRole
       'publicity_coordinator' => ['Communicate', 'Contacts', 'Profile', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
 
       'syndicate_coordinator' => ['Communicate', 'Manage Syndicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
-      'system_administrator' => ['Communicate', 'Manage Parms', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Database Statistics', 'Feedback', 'FreeCen Errors',
+      'system_administrator' => ['Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Database Statistics', 'Feedback', 'FreeCen Errors',
                                  'Manage Counties', 'Manage FreeCen Coverage', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
                                  'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'FreeUKGenealogy  Policies'],
       'trainee' => ['Communicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
@@ -86,7 +86,6 @@ module UseridRole
     'Batches' => '/freereg1_csv_files/my_own',
     'Manage Syndicate' => '/manage_syndicates',
     'Manage Syndicates' => '/manage_syndicates',
-    'Manage Parms' => '/manage_parms/select_year',
     'Manage County' => '/manage_counties',
     'Manage Counties' => '/manage_counties',
     'Manage Image Server' => '/sources/access_image_server',
@@ -155,7 +154,7 @@ module UseridRole
                                  'Review Batches by Most Recent Date of Change', 'Review Batches by Oldest Date of Change', 'Review Specific Batch',
                                  'Upload New Batch', 'Offline Reports', 'Manage Images']
   when 'freecen'
-    COUNTY_MANAGEMENT_OPTIONS = ['Manage Pieces', 'Manage VLD Files', 'Manage Places']
+    COUNTY_MANAGEMENT_OPTIONS = ['Manage Pieces', 'Manage VLD Files', 'Manage Places', 'Manage Parms']
   when 'freebmd'
   end
   COUNTY_OPTIONS_TRANSLATION = {
@@ -175,7 +174,8 @@ module UseridRole
     'Manage Pieces' => '/freecen_pieces',
     'Manage VLD Files' => '/freecen1_vld_files',
     'Manage Places' => '/places',
-    'Offline Reports' => '/manage_counties/selection?option=Offline Reports'
+    'Offline Reports' => '/manage_counties/selection?option=Offline Reports',
+    'Manage Parms' => '/manage_parms/'
 
   }
   SYNDICATE_MANAGEMENT_OPTIONS =  ['Review Active Members', 'Review All Members', 'Transcription Agreement Accepted', 'Transcription Agreement Not Accepted', 'Select Specific Member by Userid',

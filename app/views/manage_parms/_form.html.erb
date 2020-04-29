@@ -1,15 +1,25 @@
-<% if flash[:notice] %>
-  <div id="notice" style="color:red"><br>
-    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
-  </div>
-<% end %>
-<%= form_tag '#' do %>
-	<div class='grid'>
-		<div class="grid__item one-half lap-one-half palm-one-whole">
-			<%= label_tag 'year', "Select Year", class: "select required control-label" %>
-		</div>
-		<div class="grid__item one-half lap-one-half palm-one-whole">
-			<%= select_tag "year", options_for_select(@options), class: " simple_form_bgcolour overide_selection_field_width", id: "select_census_year", size: 5, "onchange" => @location %>
-		</div>
-	</div> 
-<% end %>
+<fieldset>
+  <legend>Please upload only the '.dat' or '.csv' files for the year <%= params[:year] %></legend>
+	<%= simple_form_for(@manage_parm) do |f| %>
+	  <%= form_error(f) %>
+
+	  <div class="form-inputs">
+	  	<%= label_tag do%>
+	  	  Select a Census Year:
+	  		<%= f.select :year, options_for_select(Freecen::CENSUS_YEARS) %>
+	  	<% end %>
+	  	<%#  session[:chapman_code].inspect %>
+	    <%= f.hidden_field :chapman_code, value: session[:chapman_code] %>
+	    <%= f.hidden_field :userid, value: @user.userid %>
+	    <%= f.hidden_field :date_of_addition, value: DateTime.now.to_formatted_s(:long) %>
+	    <%= label_tag do%>
+	    	Choose a Parm File to Upload:
+	    	<%= f.file_field :parm_file, required: true %>
+	    <% end %>
+	  </div>
+
+	  <div class="form-actions">
+	    <%= f.button :submit, "Upload File" %>
+	  </div>
+	<% end %>
+</fieldset>
