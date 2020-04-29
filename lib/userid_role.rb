@@ -62,8 +62,6 @@ module UseridRole
                             'Manage Counties', 'Manage FreeCen Coverage', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
                             'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'FreeUKGenealogy  Policies'],
       'publicity_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Profile', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
-
-
       'syndicate_coordinator' => ['CSV Batches', 'Communicate', 'Manage Syndicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
       'system_administrator' => ['CSV Batches', 'Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Database Statistics', 'Feedback', 'FreeCen Errors',
                                  'Manage Counties', 'Manage FreeCen Coverage', 'Manage Parms', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Physical Files', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
@@ -90,7 +88,6 @@ module UseridRole
     'Batches' => '/freereg1_csv_files/my_own',
     'Manage Syndicate' => '/manage_syndicates',
     'Manage Syndicates' => '/manage_syndicates',
-    'Manage Parms' => '/manage_parms/select_year',
     'Manage County' => '/manage_counties',
     'Manage Counties' => '/manage_counties',
     'Manage Image Server' => '/sources/access_image_server',
@@ -163,7 +160,7 @@ module UseridRole
     COUNTY_MANAGEMENT_OPTIONS = ['Manage Pieces', 'Manage VLD Files', 'Manage Places', 'Review Batches with Errors', 'Review Batches by Filename',
                                  'Review Batches by Userid then Filename', 'Review Batches by Most Recent Date of Change',
                                  'Review Batches by Oldest Date of Change', 'Review Specific Batch', 'List files waiting to be processed',
-                                 'List files NOT processed', 'Upload New Batch']
+                                 'List files NOT processed', 'Upload New Batch', 'Manage Parms']
   when 'freebmd'
   end
   COUNTY_OPTIONS_TRANSLATION = {
@@ -183,7 +180,8 @@ module UseridRole
     'Manage Pieces' => '/freecen_pieces',
     'Manage VLD Files' => '/freecen1_vld_files',
     'Manage Places' => '/places',
-    'Offline Reports' => '/manage_counties/selection?option=Offline Reports'
+    'Offline Reports' => '/manage_counties/selection?option=Offline Reports',
+    'Manage Parms' => '/manage_parms/'
 
   }
   case MyopicVicar::Application.config.template_set
@@ -203,9 +201,7 @@ module UseridRole
                                     'Incomplete Registrations', 'Create Userid', 'Syndicate Messages', 'Change Recruiting Status']
   when 'freebmd'
   end
-
-
-
+  
   SYNDICATE_OPTIONS_TRANSLATION = {
     'Review Active Members' => '/manage_syndicates/selection?option=Review Active Members',
     'Review All Members' => '/manage_syndicates/selection?option=Review All Members',

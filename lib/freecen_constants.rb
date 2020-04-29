@@ -51,6 +51,11 @@ module Freecen
     }
   end
 
+  CENSUS_START_YEAR = "1831"
+  CENSUS_END_YEAR = "1931"
+  CENSUS_YEARS = (CENSUS_START_YEAR..CENSUS_END_YEAR).step(10).to_a
+
+  CENSUS_YEARS_ARRAY = ['1841','1851','1861','1871','1881','1891', '1901', '1911']
   module SpecialEnumerationDistricts
     CODES = ['None', 'Barracks & Military Quarters', 'HM Ships, at Home', 'Workhouses & Pauper Schools', 'Hospitals (Sick, Convalescent, Incurables)',
              'Lunatic Asylums', 'Prisons', 'Certified Reformatory & Industrial Schools', 'Merchant Vessels & Lighthouses', 'Schools'].freeze
