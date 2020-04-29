@@ -57,7 +57,7 @@ class FreecenCsvEntry
   field :locaton_flag, type: String
   field :address_flag, type: String
   field :marital_status, type: String
-  field :municipal_borough, type: String
+  field :where_census_taken, type: String
   field :name_flag, type: String
   field :nationality, type: String
   field :notes, type: String
@@ -178,7 +178,7 @@ class FreecenCsvEntry
 
       unless success
         messagea = "ERROR: line #{num} Civil Parish is blank.<br> " if messagea == 'blank'
-        messagea = "ERROR: line #{num} Civil Parish has invalid text #{civil_parish}.<br>" if messagea == 'VALID_TEXT'
+        messagea = "ERROR: line #{num} Civil Parish has invalid text #{civil_parish}.<br>" if messagea == 'INVALID_TEXT'
         record[:error_messages] = record[:error_messages] + messagea
         new_civil_parish = previous_civil_parish
         return [messagea, new_civil_parish]
@@ -199,7 +199,7 @@ class FreecenCsvEntry
         record[:info_messages] = record[:info_messages] + message if info_messages
       elsif previous_civil_parish == civil_parish
         message = "Info: line #{num} Civil Parish has remained the same #{civil_parish}.<br>"
-        record[:error_messages] = record[:error_messages] + message
+        record[:info_messages] = record[:info_messages] + message if info_messages
       else
         message = "Info: line #{num} Civil Parish has changed to #{civil_parish}.<br>"
         record[:info_messages] = record[:info_messages] + message if info_messages
@@ -263,6 +263,293 @@ class FreecenCsvEntry
         suffix = nil
       end
       [stem, suffix]
+    end
+
+    def validate_ecclesiastical_parish(record, previous_ecclesiastical_parish)
+      ecclesiastical_parish = record[:ecclesiastical_parish]
+      num = record[:num]
+      new_ecclesiastical_parish = previous_ecclesiastical_parish
+      success, messagea = FreecenValidations.text?(ecclesiastical_parish)
+      unless success
+        messageb = "ERROR: line #{num} Ecclesiastical Parish #{ecclesiastical_parish} is #{messagea}.<br>"
+        message = messagea + messageb
+        record[:error_messages] = record[:error_messages] + messageb
+        return [message, new_ecclesiastical_parish]
+      end
+      if previous_ecclesiastical_parish == ''
+        message = "Info: line #{num} New Ecclesiastical Parish #{ecclesiastical_parish}.<br>" if info_messages
+        record[:info_messages] = record[:info_messages] + message if info_messages
+        new_ecclesiastical_parish = ecclesiastical_parish
+      elsif ecclesiastical_parish.blank?
+      elsif previous_ecclesiastical_parish == ecclesiastical_parish
+      else
+        message = "Info: line #{num} Ecclesiastical Parish changed to #{ecclesiastical_parish}.<br>" if info_messages
+        record[:info_messages] = record[:info_messages] + message if info_messages
+        new_ecclesiastical_parish = ecclesiastical_parish
+      end
+      [message, new_ecclesiastical_parish]
+    end
+
+    def validate_where_census_taken(record, previous_where_census_taken)
+      where_census_taken = record[:where_census_taken]
+      num = record[:num]
+      new_where_census_taken = previous_where_census_taken
+      success, messagea = FreecenValidations.text?(where_census_taken)
+      unless success
+        messageb = "ERROR: line #{num} Municipal Borough #{where_census_taken} is #{messagea}.<br>"
+        message = messagea + messageb
+        record[:error_messages] = record[:error_messages] + messageb
+        return [message, new_where_census_taken]
+      end
+      if previous_where_census_taken == ''
+        message = "Info: line #{num} New Municipal Borough #{where_census_taken}.<br>" if info_messages
+        record[:info_messages] = record[:info_messages] + message if info_messages
+        new_where_census_taken = where_census_taken
+      elsif where_census_taken.blank?
+      elsif previous_where_census_taken == where_census_taken
+      else
+        message = "Info: line #{num} Municipal Borough changed to #{where_census_taken}.<br>" if info_messages
+        record[:info_messages] = record[:info_messages] + message if info_messages
+        new_where_census_taken = where_census_taken
+      end
+      [message, new_where_census_taken]
+    end
+
+    def validate_ward(record, previous_ward)
+      ward = record[:ward]
+      num = record[:num]
+      new_ward = previous_ward
+      success, messagea = FreecenValidations.text?(ward)
+      unless success
+        messageb = "ERROR: line #{num} Ward #{ward} is #{messagea}.<br>"
+        message = messagea + messageb
+        record[:error_messages] = record[:error_messages] + messageb
+        return [message, new_ward]
+      end
+      if previous_ward == ''
+        message = "Info: line #{num} New Ward #{ward}.<br>" if info_messages
+        record[:info_messages] = record[:info_messages] + message if info_messages
+        new_ward = ward
+      elsif ward.blank?
+      elsif previous_ward == ward
+      else
+        message = "Info: line #{num} Municipal Borough changed to #{ward}.<br>" if info_messages
+        record[:info_messages] = record[:info_messages] + message if info_messages
+        new_ward = ward
+      end
+      [message, new_ward]
+    end
+
+    def validate_parliamentary_constituency(record, previous_parliamentary_constituency)
+      parliamentary_constituency = record[:parliamentary_constituency]
+      num = record[:num]
+      new_parliamentary_constituency = previous_parliamentary_constituency
+      success, messagea = FreecenValidations.text?(parliamentary_constituency)
+      unless success
+        messageb = "ERROR: line #{num} Parliamentary Constituency #{parliamentary_constituency} is #{messagea}.<br>"
+        message = messagea + messageb
+        record[:error_messages] = record[:error_messages] + messageb
+        return [message, new_parliamentary_constituency]
+      end
+      if previous_parliamentary_constituency == ''
+        message = "Info: line #{num} New Parliamentary Constituency #{parliamentary_constituency}.<br>" if info_messages
+        record[:info_messages] = record[:info_messages] + message if info_messages
+        new_parliamentary_constituency = parliamentary_constituency
+      elsif parliamentary_constituency.blank?
+      elsif previous_parliamentary_constituency == parliamentary_constituency
+      else
+        message = "Info: line #{num} Parliamentary Constituency changed to #{parliamentary_constituency}.<br>" if info_messages
+        record[:info_messages] = record[:info_messages] + message if info_messages
+        new_parliamentary_constituency = parliamentary_constituency
+      end
+      [message, new_parliamentary_constituency]
+    end
+
+    def validate_poor_law_union(record, previous_poor_law_union)
+      poor_law_union = record[:poor_law_union]
+      num = record[:num]
+      new_poor_law_union = previous_poor_law_union
+      success, messagea = FreecenValidations.text?(poor_law_union)
+      unless success
+        messageb = "ERROR: line #{num} Poor Law Union #{poor_law_union} is #{messagea}.<br>"
+        message = messagea + messageb
+        record[:error_messages] = record[:error_messages] + messageb
+        return [message, new_poor_law_union]
+      end
+      if previous_poor_law_union == ''
+        message = "Info: line #{num} New Poor Law Union #{poor_law_union}.<br>" if info_messages
+        record[:info_messages] = record[:info_messages] + message if info_messages
+        new_poor_law_union = poor_law_union
+      elsif poor_law_union.blank?
+      elsif previous_poor_law_union == poor_law_union
+      else
+        message = "Info: line #{num} Poor Law Union changed to #{poor_law_union}.<br>" if info_messages
+        record[:info_messages] = record[:info_messages] + message if info_messages
+        new_poor_law_union = poor_law_union
+      end
+      [message, new_poor_law_union]
+    end
+
+    def validate_police_district(record, previous_police_district)
+      police_district = record[:police_district]
+      num = record[:num]
+      new_police_district = previous_police_district
+      success, messagea = FreecenValidations.text?(police_district)
+      unless success
+        messageb = "ERROR: line #{num} Police District #{police_district} is #{messagea}.<br>"
+        message = messagea + messageb
+        record[:error_messages] = record[:error_messages] + messageb
+        return [message, new_police_district]
+      end
+      if previous_police_district == ''
+        message = "Info: line #{num} New Police District #{police_district}.<br>" if info_messages
+        record[:info_messages] = record[:info_messages] + message if info_messages
+        new_police_district = police_district
+      elsif police_district.blank?
+      elsif previous_police_district == police_district
+      else
+        message = "Info: line #{num} Police District changed to #{police_district}.<br>" if info_messages
+        record[:info_messages] = record[:info_messages] + message if info_messages
+        new_police_district = police_district
+      end
+      [message, new_police_district]
+    end
+
+    def validate_sanitary_district(record, previous_sanitary_district)
+      sanitary_district = record[:sanitary_district]
+      num = record[:num]
+      new_sanitary_district = previous_sanitary_district
+      success, messagea = FreecenValidations.text?(sanitary_district)
+      unless success
+        messageb = "ERROR: line #{num} Sanitary District #{sanitary_district} is #{messagea}.<br>"
+        message = messagea + messageb
+        record[:error_messages] = record[:error_messages] + messageb
+        return [message, new_sanitary_district]
+      end
+      if previous_sanitary_district == ''
+        message = "Info: line #{num} New Sanitary District #{sanitary_district}.<br>" if info_messages
+        record[:info_messages] = record[:info_messages] + message if info_messages
+        new_sanitary_district = sanitary_district
+      elsif sanitary_district.blank?
+      elsif previous_sanitary_district == sanitary_district
+      else
+        message = "Info: line #{num} Sanitary District changed to #{sanitary_district}.<br>" if info_messages
+        record[:info_messages] = record[:info_messages] + message if info_messages
+        new_sanitary_district = sanitary_district
+      end
+      [message, new_sanitary_district]
+    end
+
+    def validate_special_water_district(record, previous_special_water_district)
+      special_water_district = record[:special_water_district]
+      num = record[:num]
+      new_special_water_district = previous_special_water_district
+      success, messagea = FreecenValidations.text?(special_water_district)
+      unless success
+        messageb = "ERROR: line #{num} Special Water District #{special_water_district} is #{messagea}.<br>"
+        message = messagea + messageb
+        record[:error_messages] = record[:error_messages] + messageb
+        return [message, new_special_water_district]
+      end
+      if previous_special_water_district == ''
+        message = "Info: line #{num} New Special Water District #{special_water_district}.<br>" if info_messages
+        record[:info_messages] = record[:info_messages] + message if info_messages
+        new_special_water_district = special_water_district
+      elsif special_water_district.blank?
+      elsif previous_special_water_district == special_water_district
+      else
+        message = "Info: line #{num} Special Water District changed to #{special_water_district}.<br>" if info_messages
+        record[:info_messages] = record[:info_messages] + message if info_messages
+        new_special_water_district = special_water_district
+      end
+      [message, new_special_water_district]
+    end
+
+    def validate_scavenging_district(record, previous_scavenging_district)
+      scavenging_district = record[:scavenging_district]
+      num = record[:num]
+      new_scavenging_district = previous_scavenging_district
+      success, messagea = FreecenValidations.text?(scavenging_district)
+      unless success
+        messageb = "ERROR: line #{num} Scavenging District #{scavenging_district} is #{messagea}.<br>"
+        message = messagea + messageb
+        record[:error_messages] = record[:error_messages] + messageb
+        return [message, new_scavenging_district]
+      end
+      if previous_scavenging_district == ''
+        message = "Info: line #{num} New Scavenging District #{scavenging_district}.<br>" if info_messages
+        record[:info_messages] = record[:info_messages] + message if info_messages
+        new_scavenging_district = scavenging_district
+      elsif scavenging_district.blank?
+      elsif previous_scavenging_district == scavenging_district
+      else
+        message = "Info: line #{num} Scavenging District changed to #{scavenging_district}.<br>" if info_messages
+        record[:info_messages] = record[:info_messages] + message if info_messages
+        new_scavenging_district = scavenging_district
+      end
+      [message, new_scavenging_district]
+    end
+
+    def validate_special_lighting_district(record, previous_special_lighting_district)
+      special_lighting_district = record[:special_lighting_district]
+      num = record[:num]
+      new_special_lighting_district = previous_special_lighting_district
+      success, messagea = FreecenValidations.text?(special_lighting_district)
+      unless success
+        messageb = "ERROR: line #{num} Special Lighting District #{special_lighting_district} is #{messagea}.<br>"
+        message = messagea + messageb
+        record[:error_messages] = record[:error_messages] + messageb
+        return [message, new_special_lighting_district]
+      end
+      if previous_special_lighting_district == ''
+        message = "Info: line #{num} New Special Lighting District #{special_lighting_district}.<br>" if info_messages
+        record[:info_messages] = record[:info_messages] + message if info_messages
+        new_special_lighting_district = special_lighting_district
+      elsif special_lighting_district.blank?
+      elsif previous_special_lighting_district == special_lighting_district
+      else
+        message = "Info: line #{num} Special Lighting District changed to #{special_lighting_district}.<br>" if info_messages
+        record[:info_messages] = record[:info_messages] + message if info_messages
+        new_special_lighting_district = special_lighting_district
+      end
+      [message, new_special_lighting_district]
+    end
+
+    def validate_school_board(record, previous_school_board)
+      school_board = record[:school_board]
+      num = record[:num]
+      new_school_board = previous_school_board
+      success, messagea = FreecenValidations.text?(school_board)
+      unless success
+        messageb = "ERROR: line #{num} School Board #{school_board} is #{messagea}.<br>"
+        message = messagea + messageb
+        record[:error_messages] = record[:error_messages] + messageb
+        return [message, new_school_board]
+      end
+      if previous_school_board == ''
+        message = "Info: line #{num} New School Board #{school_board}.<br>" if info_messages
+        record[:info_messages] = record[:info_messages] + message if info_messages
+        new_school_board = school_board
+      elsif school_board.blank?
+      elsif previous_school_board == school_board
+      else
+        message = "Info: line #{num} School Board changed to #{school_board}.<br>" if info_messages
+        record[:info_messages] = record[:info_messages] + message if info_messages
+        new_school_board = school_board
+      end
+      [message, new_school_board]
+    end
+
+    def validate_location_flag(record)
+      flag = record[:location_flag]
+      num = record[:num]
+      success, messagea = FreecenValidations.flag?(flag)
+      unless success
+        messageb = "ERROR: line #{num} Location Flag #{flag} is #{messagea}.<br>"
+        message = messagea + messageb
+        record[:error_messages] = record[:error_messages] + messageb
+        return [message]
+      end
     end
 
     def validate_folio(record, previous_folio_number, previous_folio_suffix)

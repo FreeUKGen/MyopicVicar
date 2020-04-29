@@ -209,11 +209,13 @@ class CsvFile < CsvFiles
   # initializes variables
   # gets information on the file to be processed
 
-  attr_accessor :header, :list_of_registers, :header_error, :system_error, :data_hold,:dwelling_number, :sequence_in_household,
+  attr_accessor :header, :list_of_registers, :header_error, :system_error, :data_hold, :dwelling_number, :sequence_in_household,
     :array_of_data_lines, :default_charset, :file, :file_name, :userid, :uploaded_date, :slurp_fail_message, :field_specification,
     :file_start, :file_locations, :data, :unique_locations, :unique_existing_locations, :full_dirname, :chapman_code, :traditional,
     :all_existing_records, :total_files, :total_records, :total_data_errors, :total_header_errors, :place_id, :civil_parish,
-    :enumeration_district, :folio, :page, :year, :piece, :schedule, :folio_suffix, :schedule_suffix, :total_errors, :total_warnings, :total_info
+    :enumeration_district, :ecclesiastical_parish, :where_census_taken, :ward, :parliamentary_constituency, :poor_law_union, :police_district,
+    :sanitary_district, :special_water_district, :scavenging_district, :special_lighting_district, :school_board, :folio, :page, :year,
+    :piece, :schedule, :folio_suffix, :schedule_suffix, :total_errors, :total_warnings, :total_info
 
   def initialize(file_location, project)
     @project = project
@@ -223,18 +225,18 @@ class CsvFile < CsvFiles
     parent_dirname = File.dirname(@full_dirname)
     user_dirname = @full_dirname.sub(parent_dirname, '').gsub(File::SEPARATOR, '')
     @all_existing_records = {}
-    @array_of_data_lines = Array.new {Array.new}
+    @array_of_data_lines = Array.new { Array.new }
     @data = {}
-    @default_charset = "UTF-8"
+    @default_charset = 'UTF-8'
     @file_locations = {}
     @file_name = standalone_filename
     @file_start =  nil
     @uploaded_date = Time.new
-    @uploaded_date = File.mtime(@file_location) if File.exists?(@file_location)
+    @uploaded_date = File.mtime(@file_location) if File.exist?(@file_location)
     @header_error = []
     @header = {}
-    @header[:digest] = Digest::MD5.file(@file_location).hexdigest if File.exists?(@file_location)
-    @header[:file_name] = standalone_filename #do not capitalize filenames
+    @header[:digest] = Digest::MD5.file(@file_location).hexdigest if File.exist?(@file_location)
+    @header[:file_name] = standalone_filename # do not capitalize filenames
     @header[:userid] = user_dirname
     @header[:uploaded_date] = @uploaded_date
     server = SoftwareVersion.extract_server(Socket.gethostname)
@@ -252,9 +254,20 @@ class CsvFile < CsvFiles
     @total_records = 0
     @year = ''
     @piece = nil
-    @chapman_code
+    @chapman_code = ''
     @civil_parish = ''
     @enumeration_district = ''
+    @ecclesiastical_parish = ''
+    @where_census_taken = ''
+    @ward = ''
+    @parliamentary_constituency = ''
+    @poor_law_union = ''
+    @police_district = ''
+    @sanitary_district = ''
+    @special_water_district = ''
+    @scavenging_district = ''
+    @special_lighting_district = ''
+    @school_board = ''
     @folio = 0
     @folio_suffix = nil
     @page = 0
@@ -267,7 +280,6 @@ class CsvFile < CsvFiles
     @sequence_in_household = 0
     @field_specication = {}
     @traditional = 2
-
   end
 
   def a_single_csv_file_process
@@ -310,6 +322,7 @@ class CsvFile < CsvFiles
     success, message = clean_up_supporting_information(records_processed) if success
 
     return [success, "clean up failed #{message}. <br>"] unless success
+
     # p "finished clean up
     time = ((Time.new.to_i - @file_start.to_i) * 1000) / records_processed unless records_processed.zero?
     @project.write_messages_to_all("Created  #{records_processed} entries at an average time of #{time}ms per record at #{Time.new}. <br>",true)
@@ -416,7 +429,7 @@ class CsvFile < CsvFiles
     batch = PhysicalFile.userid(@userid).file_name(@file_name).first
     return true if batch.blank? || message.blank?
 
-    PhysicalFile.remove_waiting_flag(@userid,@file_name)
+    PhysicalFile.remove_waiting_flag(@userid, @file_name)
     batch.delete if message.include?("header errors") || message.include?("does not exist. ") || message.include?("userid does not exist. ")
   end
 
@@ -803,11 +816,9 @@ class CsvRecord < CsvRecords
   end
 
   def convert_transition
-    if @data_record[:data_transition] == 'civil_parish'
-      @data_record[:data_transition] = 'Civil Parish'
-    elsif %w[enumeration_district ecclesiastical_parish municipal_borough ward parliamentary_constituency
-             school_board location_flag].include?(@data_record[:data_transition])
-      @data_record[:data_transition] = 'Enumeration District'
+
+    if Freecen::LOCATION_FIELDS.include?(@data_record[:data_transition])
+      @data_record[:data_transition] = 'Location'
     elsif @data_record[:data_transition] == 'folio_number'
       @data_record[:data_transition] = 'Folio'
     elsif @data_record[:data_transition] == 'page_number'
@@ -837,10 +848,8 @@ class CsvRecord < CsvRecords
 
   def process_data_record(record_type)
     case record_type
-    when 'Civil Parish'
-      extract_civil_parish_fields
-    when 'Enumeration District'
-      extract_enumeration_district_fields
+    when 'Location'
+      extract_location_fields
     when 'Folio'
       extract_folio_fields
     when 'Page'
@@ -854,16 +863,92 @@ class CsvRecord < CsvRecords
     end
   end
 
-  def extract_civil_parish_fields
-    message, @csvfile.civil_parish = FreecenCsvEntry.validate_civil_parish(@data_record, @csvfile.civil_parish)
-    @project.write_messages_to_all(message, true) unless message == ''
-    extract_enumeration_district_fields
+  def extract_location_fields
+    extract_enumeration_district if @data_record[:enumeration_district].present?
+    extract_civil_parish if @data_record[:civil_parish].present?
+    extract_ecclesiastical_parish if @data_record[:ecclesiastical_parish].present?
+    extract_where_census_taken if @data_record[:where_census_taken].present?
+    extract_ward if @data_record[:ward].present?
+    extract_parliamentary_constituency if @data_record[:parliamentary_constituency].present?
+    extract_poor_law_union if @data_record[:poor_law_union].present?
+    extract_police_district if @data_record[:police_district].present?
+    extract_sanitary_district if @data_record[:sanitary_district].present?
+    extract_special_water_district if @data_record[:special_water_district].present?
+    extract_scavenging_district if @data_record[:scavenging_district].present?
+    extract_special_lighting_district if @data_record[:special_lighting_district].present?
+    extract_school_board if @data_record[:school_board].present?
+    extract_location_flag if @data_record[:location_flag].present?
+    extract_folio_fields
   end
 
-  def extract_enumeration_district_fields
+  def extract_enumeration_district
     message, @csvfile.enumeration_district = FreecenCsvEntry.validate_enumeration_district(@data_record, @csvfile.enumeration_district)
     @project.write_messages_to_all(message, true) unless message == ''
-    extract_folio_fields
+  end
+
+  def extract_civil_parish
+    message, @csvfile.civil_parish = FreecenCsvEntry.validate_civil_parish(@data_record, @csvfile.civil_parish)
+    @project.write_messages_to_all(message, true) unless message == ''
+  end
+
+  def extract_ecclesiastical_parish
+    message, @csvfile.ecclesiastical_parish = FreecenCsvEntry.validate_ecclesiastical_parish(@data_record, @csvfile.ecclesiastical_parish)
+    @project.write_messages_to_all(message, true) unless message == ''
+  end
+
+  def extract_where_census_taken
+    message, @csvfile.where_census_taken = FreecenCsvEntry.validate_where_census_taken(@data_record, @csvfile.where_census_taken)
+    @project.write_messages_to_all(message, true) unless message == ''
+  end
+
+  def extract_ward
+    message, @csvfile.ward = FreecenCsvEntry.validate_ward(@data_record, @csvfile.ward)
+    @project.write_messages_to_all(message, true) unless message == ''
+  end
+
+  def extract_parliamentary_constituency
+    message, @csvfile.parliamentary_constituency = FreecenCsvEntry.validate_parliamentary_constituency(@data_record, @csvfile.parliamentary_constituency)
+    @project.write_messages_to_all(message, true) unless message == ''
+  end
+
+  def extract_poor_law_union
+    message, @csvfile.poor_law_union = FreecenCsvEntry.validate_poor_law_union(@data_record, @csvfile.poor_law_union)
+    @project.write_messages_to_all(message, true) unless message == ''
+  end
+
+  def extract_police_district
+    message, @csvfile.police_district = FreecenCsvEntry.validate_police_district(@data_record, @csvfile.police_district)
+    @project.write_messages_to_all(message, true) unless message == ''
+  end
+
+  def extract_sanitary_district
+    message, @csvfile.sanitary_district = FreecenCsvEntry.validate_sanitary_district(@data_record, @csvfile.sanitary_district)
+    @project.write_messages_to_all(message, true) unless message == ''
+  end
+
+  def extract_special_water_district
+    message, @csvfile.special_water_district = FreecenCsvEntry.validate_special_water_district(@data_record, @csvfile.special_water_district)
+    @project.write_messages_to_all(message, true) unless message == ''
+  end
+
+  def extract_scavenging_district
+    message, @csvfile.scavenging_district = FreecenCsvEntry.validate_scavenging_district(@data_record, @csvfile.scavenging_district)
+    @project.write_messages_to_all(message, true) unless message == ''
+  end
+
+  def extract_special_lighting_district
+    message, @csvfile.special_lighting_district = FreecenCsvEntry.validate_special_lighting_district(@data_record, @csvfile.special_lighting_district)
+    @project.write_messages_to_all(message, true) unless message == ''
+  end
+
+  def extract_school_board
+    message, @csvfile.school_board = FreecenCsvEntry.validate_school_board(@data_record, @csvfile.school_board)
+    @project.write_messages_to_all(message, true) unless message == ''
+  end
+
+  def extract_location_flag
+    message = FreecenCsvEntry.validate_location_flag(@data_record)
+    @project.write_messages_to_all(message, true) unless message == ''
   end
 
   def extract_folio_fields
