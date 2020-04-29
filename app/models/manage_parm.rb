@@ -15,7 +15,7 @@ class ManageParm
   validate :validate_file_content, on: :create
   attr_accessor :parm_file, :file_path
 
-  DESTINATION = '/raid/freecen2/freecen1/fixed/'
+  DESTINATION = "#{Rails.root}/parms_files/"
 	ALLOWED_FILE_TYPES = ['.dat', '.DAT', '.csv', '.CSV']
 
 	def import
@@ -61,7 +61,7 @@ class ManageParm
   	end
   end
 
-  def self.move_parm_files(origin_file_path, file_name, year)
+  def move_parm_files(origin_file_path, file_name, year)
   	destination_file_path = "#{DESTINATION}#{year}"
   	# Create directory if not exists
   	FileUtils.mkdir_p(File.dirname(File.join(destination_file_path, file_name)))
