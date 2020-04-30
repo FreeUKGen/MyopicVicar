@@ -71,7 +71,7 @@ class ManageParm
 			# Add 1- if the filename already exists
   		FileUtils.move origin_file_path, File.join(destination_file_path, "1-#{file_name}")
   	else
-  		FileUtils.move origin_file_path, File.join(destination_file_path, file_name)
+  		FileUtils.move origin_file_path, "#{destination_file_path}/#{file_name}"
   	end
   end
 
