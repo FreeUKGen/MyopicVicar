@@ -21,6 +21,7 @@ module FreecenValidations
   WILD_CHARACTER = /[\*\[\]\-\_\?]/
   VALID_MARITAL_STATUS = ['m', 's', 'u', 'w', 'd', '-'].freeze
   VALID_SEX = ['M', 'F', '-'].freeze
+  VALID_LANGUAGE = ['E', 'G', 'GE', 'I', 'IE', 'M', 'ME', 'W', 'WE', 'B'].freeze
   class << self
     def fixed_valid_piece?(field)
       return false if field.blank?
@@ -107,6 +108,31 @@ module FreecenValidations
       [false, 'invalid address']
     end
 
+    def walls?(field)
+      return [true, ''] if [0, 1].include?(field.to_i)
+
+      [false, 'Not 0 or 1']
+    end
+
+    def roof_type?(field)
+      return [true, ''] if [0, 1].include?(field.to_i)
+
+      [false, 'Not 0 or 1']
+    end
+
+    def rooms_with_windows?(field)
+      return [true, ''] if field.VALID_NUMBER
+
+      [false, 'Not valid number']
+    end
+
+    def class_of_house?(field)
+      return [true, ''] if field.VALID_TEXT
+
+      [false, 'Not valid number']
+    end
+
+
     def fixed_uninhabited_flag?(field)
       return [true, ''] if field.blank?
 
@@ -187,6 +213,48 @@ module FreecenValidations
       [false, 'invalid value, check age, marital status and sex fields']
     end
 
+    def school_children?(field)
+      return [true, ''] if field.VALID_NUMBER
+
+      [false, 'Not valid number']
+    end
+
+    def years_married?(field)
+      return [true, ''] if field.VALID_NUMBER && field.to_i <= 100
+
+      [false, 'Not valid number']
+    end
+
+    def children_born_alive?(field)
+      return [true, ''] if field.VALID_NUMBER && field.to_i <= 30
+
+      [false, 'Not valid number']
+    end
+
+    def children_living?(field)
+      return [true, ''] if field.VALID_NUMBER && field.to_i <= 30
+
+      [false, 'Not valid number']
+    end
+
+    def children_deceased?(field)
+      return [true, ''] if field.VALID_NUMBER && field.to_i <= 30
+
+      [false, 'Not valid number']
+    end
+
+    def religion?(field)
+      return [true, ''] if field.VALID_TEXT
+
+      [false, 'Not valid text']
+    end
+
+    def read_write?(field)
+      return [true, ''] if field.VALID_TEXT
+
+      [false, 'Not valid text']
+    end
+
     def fixed_uncertainty_status?(field)
       return [true, ''] if field.blank?
 
@@ -204,8 +272,13 @@ module FreecenValidations
 
       return [false, '?'] if field.slice(-1).downcase == '?'
 
-      return [true, '']
+      [true, '']
+    end
 
+    def industry?(field)
+      return [true, ''] if field.VALID_TEXT
+
+      [false, 'Not valid text']
     end
 
     def fixed_occupation_category?(field)
@@ -223,6 +296,7 @@ module FreecenValidations
 
       [false, 'invalid value']
     end
+
     def fixed_verbatim_birth_county?(field)
       return [false, 'blank'] if field.blank?
 
@@ -238,6 +312,19 @@ module FreecenValidations
 
       [false, 'invalid value']
     end
+
+    def nationality?(field)
+      return [true, ''] if field.VALID_TEXT
+
+      [false, 'Not valid text']
+    end
+
+    def father_place_of_birth?(field)
+      return [true, ''] if field.VALID_TEXT
+
+      [false, 'Not valid text']
+    end
+
     def fixed_uncertainy_birth?(field)
       return [true, ''] if field.blank?
 
@@ -249,7 +336,7 @@ module FreecenValidations
     def fixed_language?(field)
       return [true, ''] if field.blank?
 
-      return [true, ''] if ['w', 'e', 'g', 'b'].include?(field.downcase)
+      return [true, ''] if VALID_LANGUAGE.include?(field.upcase)
 
       [false, 'invalid value']
     end
@@ -269,24 +356,21 @@ module FreecenValidations
 
       [false, 'invalid value']
     end
-    def at_home?(field)
-      return [true, ''] if field.blank?
 
+    def at_home?(field)
       return [true, ''] if field.downcase == 'h' && field.length == 1
 
       return [true, ''] if field.downcase == 'at home' && field.length == 7
 
       [false, 'invalid value']
     end
-    def rooms?(field, year)
-      return [true, ''] if field.blank?
 
+    def rooms?(field, year)
       return [true, ''] if field =~ VALID_NUMBER && year == '1901' && field.to_i <= 5
 
       return [true, ''] if field =~ VALID_NUMBER && year == '1911' && field.to_i <= 19
 
       [false, 'invalid value']
-
     end
   end
 end

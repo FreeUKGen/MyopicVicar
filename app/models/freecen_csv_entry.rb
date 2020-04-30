@@ -105,8 +105,8 @@ class FreecenCsvEntry
   end
 
   index({ freecen_csv_file_id: 1, year: 1 }, { name: 'freecen_csv_file_id_year' })
-  index({freecen_csv_file_id: 1,file_line_number:1})
-  index({freecen_csv_file_id: 1, record_digest:1})
+  index({ freecen_csv_file_id: 1, file_line_number: 1 })
+  index({ freecen_csv_file_id: 1, record_digest: 1 })
 
   class << self
     def id(id)
@@ -722,6 +722,51 @@ class FreecenCsvEntry
           record[:error_messages] = record[:error_messages] + messageb
         end
       end
+      if record[:walls].present?
+        success, messagea = FreecenValidations.walls?(record[:walls])
+        unless success
+          messageb = "ERROR: line #{num} Number of walls #{record[:walls]} is #{messagea}.<br>"
+          message = message + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+        end
+      end
+
+      if record[:roof_type].present?
+        success, messagea = FreecenValidations.roof_type?(record[:roof_type])
+        unless success
+          messageb = "ERROR: line #{num} Roof type #{record[:roof_type]} is #{messagea}.<br>"
+          message = message + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+        end
+      end
+
+      if record[:rooms].present?
+        success, messagea = FreecenValidations.rooms?(record[:rooms], record[:year])
+        unless success
+          messageb = "ERROR: line #{num} Rooms #{record[:rooms]} is #{messagea}.<br>"
+          message = message + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+        end
+      end
+
+      if record[:rooms_with_windows].present?
+        success, messagea = FreecenValidations.rooms_with_windows?(record[:rooms_with_windows])
+        unless success
+          messageb = "ERROR: line #{num} Rooms with windows #{record[:rooms_with_windows]} is #{messagea}.<br>"
+          message = message + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+        end
+      end
+
+      if record[:class_of_house].present?
+        success, messagea = FreecenValidations.class_of_house?(record[:class_of_house])
+        unless success
+          messageb = "ERROR: line #{num} Class of house #{record[:class_of_house]} is #{messagea}.<br>"
+          message = message + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+        end
+      end
+
       success, messagea = FreecenValidations.fixed_uninhabited_flag?(uninhabited_flag)
       unless success
         messageb = "ERROR: line #{num} Special use #{uninhabited_flag} is #{messagea}.<br>"
@@ -741,6 +786,8 @@ class FreecenCsvEntry
           record[:info_messages] = record[:info_messages] + messageb  if info_messages
         end
       end
+
+
       [message, new_schedule_number, new_schedule_suffix]
     end
 
@@ -811,12 +858,76 @@ class FreecenCsvEntry
         message = message + messageb
         record[:error_messages] = record[:error_messages] + messageb
       end
+      if record[:school_children].present?
+        success, messagea = FreecenValidations.school_children?(record[:aschool_childrene])
+        unless success
+          messageb = "ERROR: line #{num} Number of school children #{record[:school_children]} is #{messagea}.<br>"
+          message = message + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+        end
+      end
+
+      if record[:years_married].present?
+        success, messagea = FreecenValidations.years_married?(record[:years_married])
+        unless success
+          messageb = "ERROR: line #{num} Years married #{record[:years_married]} is #{messagea}.<br>"
+          message = message + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+        end
+      end
+
+      if record[:children_born_alive].present?
+        success, messagea = FreecenValidations.children_born_alive?(record[:children_born_alive])
+        unless success
+          messageb = "ERROR: line #{num} Number of children born alive #{record[:children_born_alive]} is #{messagea}.<br>"
+          message = message + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+        end
+      end
+
+      if record[:children_living].present?
+        success, messagea = FreecenValidations.children_living?(record[:children_living])
+        unless success
+          messageb = "ERROR: line #{num} Number of children living #{record[:children_living]} is #{messagea}.<br>"
+          message = message + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+        end
+      end
+
+      if record[:children_deceased].present?
+        success, messagea = FreecenValidations.children_deceased?(record[:children_deceased])
+        unless success
+          messageb = "ERROR: line #{num} Number of children deceased #{record[:children_deceased]} is #{messagea}.<br>"
+          message = message + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+        end
+      end
+
+      if record[:religion].present?
+        success, messagea = FreecenValidations.religion?(record[:religion])
+        unless success
+          messageb = "ERROR: line #{num} Religion #{record[:religion]} is #{messagea}.<br>"
+          message = message + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+        end
+      end
+
+      if record[:read_write].present?
+        success, messagea = FreecenValidations.read_write?(record[:read_write])
+        unless success
+          messageb = "ERROR: line #{num} Ability to read and write #{record[:read_write]} is #{messagea}.<br>"
+          message = message + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+        end
+      end
+
       success, messagea = FreecenValidations.fixed_uncertainty_status?(record[:individual_flag])
       unless success
         messageb = "ERROR: line #{num} Query #{record[:individual_flag]} is #{messagea}.<br>"
         message = message + messageb
         record[:error_messages] = record[:error_messages] + messageb
       end
+
       success, messagea = FreecenValidations.fixed_occupation?(record[:occupation], record[:age])
       unless success
         if messagea == '?'
@@ -835,67 +946,111 @@ class FreecenCsvEntry
           record[:error_messages] = record[:error_messages] + messageb
         end
       end
+
+      if record[:industry].present?
+        success, messagea = FreecenValidations.industry?(record[:industry])
+        unless success
+          messageb = "ERROR: line #{num} Industry #{record[:industry]} is #{messagea}.<br>"
+          message = message + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+        end
+      end
+
       success, messagea = FreecenValidations.fixed_occupation_category?(record[:occupation_category])
       unless success
         messageb = "ERROR: line #{num} Occupation category #{record[:occupation_category]} is #{messagea}.<br>"
         message = message + messageb
         record[:error_messages] = record[:error_messages] + messageb
       end
+
+      if record[:at_home].present?
+        success, messagea = FreecenValidations.at_home?(record[:at_home])
+        unless success
+          messageb = "ERROR: line #{num} Working at home #{record[:at_home]} is #{messagea}.<br>"
+          message = message + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+        end
+      end
+
       success, messagea = FreecenValidations.fixed_uncertainty_occupation?(record[:occupation_flag])
       unless success
         messageb = "ERROR: line #{num} Occupation uncertainty #{record[:occupation_flag]} is #{messagea}.<br>"
         message = message + messageb
         record[:error_messages] = record[:error_messages] + messageb
       end
+
       success, messagea = FreecenValidations.fixed_verbatim_birth_county?(record[:verbatim_birth_county])
       unless success
         messageb = "ERROR: line #{num} Verbatim Birth County #{record[:verbatim_birth_county]} is #{messagea}.<br>"
         message = message + messageb
         record[:error_messages] = record[:error_messages] + messageb
       end
+
       success, messagea = FreecenValidations.fixed_verbatim_birth_place?(record[:verbatim_birth_place])
       if !success && !record[:year] == '1841'
         messageb = "ERROR: line #{num} Verbatim Birth Place #{record[:verbatim_birth_place]} is #{messagea}.<br>"
         message = message + messageb
         record[:error_messages] = record[:error_messages] + messageb
       end
+
+      if record[:nationality].present?
+        success, messagea = FreecenValidations.nationality?(record[:nationality])
+        unless success
+          messageb = "ERROR: line #{num} Nationality #{record[:nationality]} is #{messagea}.<br>"
+          message = message + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+        end
+      end
+
+      success, messagea = FreecenValidations.fixed_verbatim_birth_county?(record[:birth_county])
+      unless success
+        messageb = "ERROR: line #{num} Birth County #{record[:birth_county]} is #{messagea}.<br>"
+        message = message + messageb
+        record[:error_messages] = record[:error_messages] + messageb
+      end
+
+      success, messagea = FreecenValidations.fixed_verbatim_birth_place?(record[:birth_place])
+      if !success && !record[:year] == '1841'
+        messageb = "ERROR: line #{num} Birth Place #{record[:birth_place]} is #{messagea}.<br>"
+        message = message + messageb
+        record[:error_messages] = record[:error_messages] + messageb
+      end
+
+      if record[:father_place_of_birth].present?
+        success, messagea = FreecenValidations.father_place_of_birth?(record[:father_place_of_birth])
+        unless success
+          messageb = "ERROR: line #{num} Father's place of birth #{record[:father_place_of_birth]} is #{messagea}.<br>"
+          message = message + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+        end
+      end
+
       success, messagea = FreecenValidations.fixed_uncertainy_birth?(record[:uncertainy_birth])
       unless success
         messageb = "ERROR: line #{num} Birth uncertainty #{record[:uncertainy_birth]} is #{messagea}.<br>"
         message = message + messageb
         record[:error_messages] = record[:error_messages] + messageb
       end
+
       success, messagea = FreecenValidations.fixed_disability?(record[:disability])
       unless success
         messageb = "ERROR: line #{num} Disability #{record[:disability]} is #{messagea}.<br>"
         message = message + messageb
         record[:error_messages] = record[:error_messages] + messageb
       end
+
       success, messagea = FreecenValidations.fixed_language?(record[:language])
       unless success
         messageb = "ERROR: line #{num} Language #{record[:language]} is #{messagea}.<br>"
         message = message + messageb
         record[:error_messages] = record[:error_messages] + messageb
       end
+
       success, messagea = FreecenValidations.fixed_notes?(record[:notes])
       unless success
         messageb = "ERROR: line #{num} Notes #{record[:notes]} is #{messagea}.<br>"
         message = message + messageb
         record[:error_messages] = record[:error_messages] + messageb
-      end
-      if ['1901', '1911'].include?(record[:year])
-        success, messagea = FreecenValidations.at_home?(record[:at_home])
-        unless success
-          messageb = "ERROR: line #{num} At Home #{record[:at_home]} is #{messagea}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
-        end
-        success, messagea = FreecenValidations.rooms?(record[:rooms], record[:year])
-        unless success
-          messageb = "ERROR: line #{num} Rooms #{record[:rooms]} is #{messagea}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
-        end
       end
       [message]
     end

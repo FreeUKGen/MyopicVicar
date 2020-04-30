@@ -55,7 +55,6 @@ module Freecen
   CENSUS_END_YEAR = "1931"
   CENSUS_YEARS = (CENSUS_START_YEAR..CENSUS_END_YEAR).step(10).to_a
 
-  CENSUS_YEARS_ARRAY = ['1841','1851','1861','1871','1881','1891', '1901', '1911']
   module SpecialEnumerationDistricts
     CODES = ['None', 'Barracks & Military Quarters', 'HM Ships, at Home', 'Workhouses & Pauper Schools', 'Hospitals (Sick, Convalescent, Incurables)',
              'Lunatic Asylums', 'Prisons', 'Certified Reformatory & Industrial Schools', 'Merchant Vessels & Lighthouses', 'Schools'].freeze
@@ -68,12 +67,13 @@ module Freecen
                                'Orkney Isles', 'Shetland Isles', 'Strathclyde', 'Tayside', 'Western Isles', 'Other Locations'].freeze
 
   LOCATION_FIELDS = %w[enumeration_district civil_parish ecclesiastical_parish where_census_taken ward parliamentary_constituency poor_law_union
-  	police_district sanitary_district special_water_district scavenging_district special_lighting_district school_board location_flag].freeze
+                       police_district sanitary_district special_water_district scavenging_district special_lighting_district school_board
+                       location_flag].freeze
 
   HOUSEHOLD_FIELDS = %w[folio_number page_number schedule_number uninhabited_flag house_number house_or_street_name address_flag].freeze
 
-  IRE_HOUSEHOLD_FIELDS = %w[folio_number page_number schedule_number uninhabited_flag house_number house_or_street_name rooms_with_windows roof_type
-                            address_flag].freeze
+  IRE_HOUSEHOLD_FIELDS = %w[folio_number page_number schedule_number uninhabited_flag house_number house_or_street_name walls roof_type rooms
+                            rooms_with_windows class_of_house address_flag].freeze
 
   SCT_HOUSEHOLD_FIELDS = %w[folio_number page_number schedule_number uninhabited_flag house_number house_or_street_name rooms_with_windows
                             address_flag].freeze
@@ -127,6 +127,8 @@ module Freecen
     page_number uninhabited_flag address_flag] + %w[rooms address_flag] + ADDITIONAL_INDIVIDUAL_FIELDS - %w[surname_maiden school_children] +
     OCCUPATION_FIELDS + BIRTH_FIELDS + ADDITIONAL_FIELDS
 
+  CEN2_CHANNEL_ISLANDS_1911_FIELD_COLUMN_HEADER_LINE = CEN2_1911_FIELD_COLUMN_HEADER_LINE - ADDITIONAL_FIELDS + %w[father_place_of_birth] + ADDITIONAL_FIELDS
+
   CEN2_SCT_1841_FIELD_COLUMN_HEADER_LINE = LOCATION_FIELDS - %w[ward poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district school_board] +
     HOUSEHOLD_FIELDS + INDIVIDUAL_FIELDS - %w[relationship marital_status] + OCCUPATION_FIELDS - %w[industry occupation_category at_home] +
     BIRTH_FIELDS - %w[verbatim_birth_place nationality birth_county birth_place] + %w[notes]
@@ -140,7 +142,7 @@ module Freecen
     ADDITIONAL_FIELDS - %w[disability_notes]
 
   CEN2_SCT_1871_FIELD_COLUMN_HEADER_LINE = LOCATION_FIELDS - %w[ward poor_law_union sanitary_district special_water_district scavenging_district special_lighting_district school_board] + SCT_HOUSEHOLD_FIELDS +
-    INDIVIDUAL_FIELDS + OCCUPATION_FIELDS - %w[industry occupation_category at_home] + BIRTH_FIELDS +
+    INDIVIDUAL_FIELDS - %w[individual_flag] + %w[school_children individual_flag] + OCCUPATION_FIELDS - %w[industry occupation_category at_home] + BIRTH_FIELDS +
     ADDITIONAL_FIELDS - %w[disability_notes language]
 
   CEN2_SCT_1881_FIELD_COLUMN_HEADER_LINE = LOCATION_FIELDS - %w[ward poor_law_union sanitary_district special_water_district scavenging_district special_lighting_district] + SCT_HOUSEHOLD_FIELDS +
@@ -194,9 +196,9 @@ module Freecen
            'abcdefghijklmnopqrst', 'X', 'abcdef,W,abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqr', 'd', 'abcdefgh'].freeze
 
   HEADER_OPTIONS_TRANSLATION = [
-    FREECEN1_COLUMN_HEADER_LINE, CEN2_TRADITIONAL_COLUMN_HEADER_LINE, CEN2_1841_FIELD_COLUMN_HEADER_LINE, CEN2_1851_FIELD_COLUMN_HEADER_LINE,
+    CEN2_TRADITIONAL_COLUMN_HEADER_LINE, CEN2_1841_FIELD_COLUMN_HEADER_LINE, CEN2_1851_FIELD_COLUMN_HEADER_LINE,
     CEN2_1861_FIELD_COLUMN_HEADER_LINE, CEN2_1871_FIELD_COLUMN_HEADER_LINE, CEN2_1881_FIELD_COLUMN_HEADER_LINE, CEN2_1891_FIELD_COLUMN_HEADER_LINE,
-    CEN2_1901_FIELD_COLUMN_HEADER_LINE, CEN2_1911_FIELD_COLUMN_HEADER_LINE,
+    CEN2_1901_FIELD_COLUMN_HEADER_LINE, CEN2_1911_FIELD_COLUMN_HEADER_LINE, CEN2_CHANNEL_ISLANDS_1911_FIELD_COLUMN_HEADER_LINE,
     CEN2_SCT_1841_FIELD_COLUMN_HEADER_LINE, CEN2_SCT_1851_FIELD_COLUMN_HEADER_LINE, CEN2_SCT_1861_FIELD_COLUMN_HEADER_LINE,
     CEN2_SCT_1871_FIELD_COLUMN_HEADER_LINE, CEN2_SCT_1881_FIELD_COLUMN_HEADER_LINE, CEN2_SCT_1891_FIELD_COLUMN_HEADER_LINE,
     CEN2_SCT_1901_FIELD_COLUMN_HEADER_LINE, CEN2_SCT_1911_FIELD_COLUMN_HEADER_LINE,
@@ -204,7 +206,7 @@ module Freecen
     CEN2_IRL_1871_FIELD_COLUMN_HEADER_LINE, CEN2_IRL_1881_FIELD_COLUMN_HEADER_LINE, CEN2_IRL_1891_FIELD_COLUMN_HEADER_LINE,
     CEN2_IRL_1901_FIELD_COLUMN_HEADER_LINE, CEN2_IRL_1911_FIELD_COLUMN_HEADER_LINE
   ].freeze
-  HEADER_OPTIONS = %w[Freecen1 Freecen2_traditional 1841 1851 1861 1871 1881 1891 1901 1911 Scotland_1841 Scotland_1851 Scotland_1861 Scotland_1871
+  HEADER_OPTIONS = %w[Freecen2_traditional 1841 1851 1861 1871 1881 1891 1901 1911 Channel_Islands_1911 Scotland_1841 Scotland_1851 Scotland_1861 Scotland_1871
     Scotland_1881 Scotland_1891 Scotland_1901 Scotland_1911 Ireland_1901 Ireland_1911].freeze
 
 
@@ -233,52 +235,56 @@ module Freecen
     'w' => 'language',
     'language' => 'language',
     'notes' => 'notes',
-    'deleted' => 'deleted_flag',
-    'deleted_flag' => 'deleted_flag',
-    'ecclesiastical_parish' => 'ecclesiastical_parish',
-    'ecclesiastical' => 'ecclesiastical_parish',
+    'address_flag' => 'address_flag',
     'at home' => 'at_home',
-    'rooms' => 'rooms',
     'birth_county' => 'birth_county',
     'birth_place' => 'birth_place',
-    'address_flag' => 'address_flag',
-    'civil_parish' => 'civil_parish',
-    'enumeration_district' => 'enumeration_district',
-    'folio_number' => 'folio_number',
-    'page_number' => 'page_number',
-    'schedule_number' => 'schedule_number',
-    'house_number' => 'house_number',
-    'house_or_street_name' => 'house_or_street_name',
-    'uninhabited_flag' => 'uninhabited_flag',
-    'forenames' => 'forenames',
-    'surname' => 'surname',
-    'surname_maiden' => 'surname_maiden',
-    'location_flag' => 'location_flag',
-    'name_flag' => 'name_flag',
-    'relationship' => 'relationship',
-    'marital_status' => 'marital_status',
-    'individual_flag' => 'individual_flag',
-    'occupation_category' => 'occupation_category',
-    'industry' => 'industry',
-    'occupation_flag' => 'occupation_flag',
-    'verbatim_birth_county' => 'verbatim_birth_county',
-    'verbatim_birth_place' => 'verbatim_birth_place',
     'birth_place_flag' => 'birth_place_flag',
-    'disability' => 'disability',
-    'where_census_taken' => 'where_census_taken',
-    'ward' => 'ward',
-    'parliamentary_constituency' => 'parliamentary_constituency',
-    'school_board' => 'school_board',
-    'school_children' => 'school_children',
-    'years_married' => 'years_married',
     'children_born_alive' => 'children_born_alive',
     'children_deceased' => 'children_deceased',
     'children_living' => 'children_living',
-    'nationality' => 'nationality',
+    'civil_parish' => 'civil_parish',
+    'class_of_house' => 'class_of_house',
+    'deleted' => 'deleted_flag',
+    'deleted_flag' => 'deleted_flag',
+    'disability' => 'disability',
     'disability_notes' => 'disability_notes',
-    'religion' => 'religion',
+    'ecclesiastical' => 'ecclesiastical_parish',
+    'ecclesiastical_parish' => 'ecclesiastical_parish',
+    'enumeration_district' => 'enumeration_district',
+    'father_place_of_birth' => 'father_place_of_birth',
+    'folio_number' => 'folio_number',
+    'forenames' => 'forenames',
+    'house_number' => 'house_number',
+    'house_or_street_name' => 'house_or_street_name',
+    'individual_flag' => 'individual_flag',
+    'industry' => 'industry',
+    'location_flag' => 'location_flag',
+    'marital_status' => 'marital_status',
+    'name_flag' => 'name_flag',
+    'nationality' => 'nationality',
+    'occupation_category' => 'occupation_category',
+    'occupation_flag' => 'occupation_flag',
+    'page_number' => 'page_number',
+    'parliamentary_constituency' => 'parliamentary_constituency',
     'read_write' => 'read_write',
+    'relationship' => 'relationship',
+    'religion' => 'religion',
+    'roof_type' => 'roof_type',
+    'rooms' => 'rooms',
+    'rooms_with_windows' => 'rooms_with_windows',
     'sanitary_district' => 'sanitary_district',
-    'rooms_with_windows' => 'rooms_with_windows'
+    'schedule_number' => 'schedule_number',
+    'school_board' => 'school_board',
+    'school_children' => 'school_children',
+    'surname' => 'surname',
+    'surname_maiden' => 'surname_maiden',
+    'uninhabited_flag' => 'uninhabited_flag',
+    'verbatim_birth_county' => 'verbatim_birth_county',
+    'verbatim_birth_place' => 'verbatim_birth_place',
+    'walls' => 'walls',
+    'ward' => 'ward',
+    'where_census_taken' => 'where_census_taken',
+    'years_married' => 'years_married'
   }
 end
