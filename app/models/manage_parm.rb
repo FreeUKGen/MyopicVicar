@@ -121,41 +121,6 @@ class ManageParm
   	end
   end
 
-  def parms_changes#(parms_dir, log_messages = true)
-      deleted_parms = [] # parms no longer found in file list
-      multiple_parms = [] # if the parm has been added multiple times to database, all versions need to be removed and re-loaded
-      new_parms = [] # for new parms.dat files
-      modified_parms = [] # if digests don't match
-      unchanged_parms = []
-
-      parms_info = get_parms_files_info(parms_dir, log_messages) rescue []
-      # p "#{parms_info.length} ctyPARMS.DAT files found"
-
-      # for each yy/cty pair parms file in database, if not found in the
-      # parms_info list then add it to deleted (the file is no longer there)
-      all_db_files = Freecen1FixedDatFile.all
-      all_db_files.each do |db_file|
-        found = false
-        parms_info.each_with_index do |pinfo, idx|
-          #if db_file.year == pinfo['year'] && db_file.chapman_code == pinfo['chapman']
-            #if pinfo['stat']
-              # puts "***WARNING: multiple Freecen1FixedDatFiles for #{pinfo['year']}-#{pinfo['chapman']} in database. Will drop all then reload to try to fix."
-            #  multiple_parms << { 'year' => pinfo['year'], 'chapman' => pinfo['chapman'] }
-           # end
-            parms_info[idx]['stat'] = 'ok'
-            found = true
-            # compare digests to see if file has been modified
-            if db_file.file_digest.blank? || (db_file.file_digest != pinfo['digest'])
-              modified_parms << pinfo
-              parms_info[idx]['stat'] = 'modified'
-            else
-              unchanged_parms << pinfo
-            end
-          end
-        end
-        deleted_parms << { 'year' => db_file.year, 'chapman' => db_file.chapman_code } unless found
-      end
-
   def deleted_parms
   	parm_file_info
   end
@@ -168,6 +133,7 @@ class ManageParm
     year = parms_header[2].to_s[0,4]
     chapman = parms_header[2].to_s[4,3]
     errors.add(:parm_file, "Invalid year specified in header. Third column of .csv header should have the county chapman code and year, for example 'CON1841' for Cornwall 1841.") unless Freecen::CENSUS_YEARS.include? year
+    errors.add(:parm_file, "Please upload #{self.year} parm file. The year in current parm file(#{year}) does not match the year selected") unless year == self.year
     errors.add(:parm_file, "Invalid chapman code specified in header. Third column of .csv header should have the county chapman code and year, for example 'CON1841' for Cornwall 1841.") unless ChapmanCode.values.include? chapman
   end
 
