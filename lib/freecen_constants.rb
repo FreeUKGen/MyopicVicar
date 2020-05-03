@@ -125,11 +125,11 @@ module Freecen
   CEN2_CHANNEL_ISLANDS_1911 = CEN2_1911 - FINAL - %w[poor_law_union police_district sanitary_district special_water_district scavenging_district
                               special_lighting_district school_board] - %w[birth_place_flag] + %w[father_place_of_birth birth_place_flag] + FINAL
 
-  CEN2_SCT_1841 = LOCATION - %w[ward poor_law_union police_district sanitary_district special_water_district scavenging_district
+  CEN2_SCT_1841 = LOCATION - %w[poor_law_union police_district sanitary_district special_water_district scavenging_district
                   special_lighting_district school_board] + HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH -
     %w[nationality] + %w[disability notes]
 
-  CEN2_SCT_1851 = LOCATION - %w[ward poor_law_union police_district sanitary_district special_water_district scavenging_district
+  CEN2_SCT_1851 = LOCATION - %w[poor_law_union police_district sanitary_district special_water_district scavenging_district
                   special_lighting_district school_board] + HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH +
     FINAL - %w[disability_notes language]
 
@@ -141,7 +141,7 @@ module Freecen
                   school_board] + SCT_HOUSEHOLD + INDIVIDUAL - %w[individual_flag] + %w[school_children individual_flag] + OCCUPATION - %w[industry
                   occupation_category at_home] + BIRTH + FINAL - %w[disability_notes language]
 
-  CEN2_SCT_1881 = LOCATION - %w[ward poor_law_union sanitary_district special_water_district scavenging_district special_lighting_district] +
+  CEN2_SCT_1881 = LOCATION - %w[poor_law_union sanitary_district special_water_district scavenging_district special_lighting_district] +
     SCT_HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes language]
 
   CEN2_SCT_1891 = LOCATION - %w[poor_law_union police_district sanitary_district special_water_district scavenging_district
