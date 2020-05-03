@@ -66,145 +66,114 @@ module Freecen
                                'South Glamorgan', 'West Glamorgan', 'Borders', 'Central', 'Dumfries and Galloway', 'Grampian', 'Highland', 'Lothian',
                                'Orkney Isles', 'Shetland Isles', 'Strathclyde', 'Tayside', 'Western Isles', 'Other Locations'].freeze
 
-  LOCATION_FIELDS = %w[enumeration_district civil_parish ecclesiastical_parish where_census_taken ward parliamentary_constituency poor_law_union
+  LOCATION = %w[enumeration_district civil_parish ecclesiastical_parish where_census_taken ward parliamentary_constituency poor_law_union
                        police_district sanitary_district special_water_district scavenging_district special_lighting_district school_board
                        location_flag].freeze
 
-  HOUSEHOLD_FIELDS = %w[folio_number page_number schedule_number uninhabited_flag house_number house_or_street_name address_flag].freeze
+  HOUSEHOLD = %w[folio_number page_number schedule_number uninhabited_flag house_number house_or_street_name address_flag].freeze
 
-  IRE_HOUSEHOLD_FIELDS = %w[folio_number page_number schedule_number uninhabited_flag house_number house_or_street_name walls roof_type rooms
+  IRE_HOUSEHOLD = %w[schedule_number uninhabited_flag house_number house_or_street_name walls roof_type rooms
                             rooms_with_windows class_of_house address_flag].freeze
 
-  SCT_HOUSEHOLD_FIELDS = %w[folio_number page_number schedule_number uninhabited_flag house_number house_or_street_name rooms_with_windows
+  SCT_HOUSEHOLD = %w[folio_number page_number schedule_number uninhabited_flag house_number house_or_street_name rooms_with_windows
                             address_flag].freeze
 
-  INDIVIDUAL_FIELDS = %w[surname forenames name_flag relationship marital_status sex age individual_flag].freeze
+  INDIVIDUAL = %w[surname forenames name_flag relationship marital_status sex age individual_flag].freeze
 
-  ADDITIONAL_INDIVIDUAL_FIELDS = %w[surname forenames name_flag relationship marital_status sex age years_married children_born_alive children_living
+  EXTRA_INDIVIDUAL = %w[surname forenames name_flag relationship marital_status sex age years_married children_born_alive children_living
                                     children_deceased individual_flag].freeze
-  OCCUPATION_FIELDS = %w[occupation industry occupation_category at_home occupation_flag].freeze
+  OCCUPATION = %w[occupation industry occupation_category at_home occupation_flag].freeze
 
-  BIRTH_FIELDS = %w[verbatim_birth_county verbatim_birth_place nationality birth_county birth_place birth_place_flag].freeze
+  BIRTH = %w[verbatim_birth_county verbatim_birth_place nationality birth_county birth_place birth_place_flag].freeze
 
-  ADDITIONAL_FIELDS = %w[disability disability_notes language notes].freeze
+  FINAL = %w[disability disability_notes language notes].freeze
 
-  FREECEN1_COLUMN_HEADER_LINE = ['Civil Parish', 'ED', 'Folio', 'Page', 'Schd', 'House', 'Address', 'X', 'Surname', 'Forenames', 'X', 'Rel.', 'C',
-                                 'Sex', 'Age', 'X', 'Occupation', 'E', 'X', 'CHP', 'Place of birth', 'X', 'Dis.', 'W', 'Notes'].freeze
-  CEN2_TRADITIONAL_COLUMN_HEADER_LINE = [
+  FREECEN1_HEADER = ['Civil Parish', 'ED', 'Folio', 'Page', 'Schd', 'House', 'Address', 'X', 'Surname', 'Forenames', 'X', 'Rel.', 'C',
+                     'Sex', 'Age', 'X', 'Occupation', 'E', 'X', 'CHP', 'Place of birth', 'X', 'Dis.', 'W', 'Notes'].freeze
+  CEN2_TRADITIONAL = [
     'Civil Parish', 'ED', 'Folio', 'Page', 'Schd', 'House', 'Address', 'X', 'Surname', 'Forenames', 'X', 'Rel.', 'C', 'Sex', 'Age', 'X', 'Occupation',
     'E', 'X', 'CHP', 'Place of birth', 'X', 'Dis.', 'W', 'Notes', 'Alt. CHP', 'Alt. POB', 'deleted', 'ecclesiastical', 'address_flag'
   ].freeze
 
-  CEN2_1841_FIELD_COLUMN_HEADER_LINE = LOCATION_FIELDS - %w[ward poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district school_board] + HOUSEHOLD_FIELDS +
-    INDIVIDUAL_FIELDS - %w[relationship marital_status] + OCCUPATION_FIELDS - %w[industry occupation_category at_home] + BIRTH_FIELDS -
-    %w[verbatim_birth_place nationality birth_place] + %w[notes]
+  CEN2_1841 = LOCATION - %w[ecclesiastical_parish ward poor_law_union police_district sanitary_district special_water_district scavenging_district
+              special_lighting_district school_board] + HOUSEHOLD + INDIVIDUAL - %w[relationship marital_status] + OCCUPATION - %w[industry
+              occupation_category at_home] + BIRTH - %w[verbatim_birth_place nationality birth_place] + %w[notes]
 
-  CEN2_1851_FIELD_COLUMN_HEADER_LINE = LOCATION_FIELDS - %w[ward poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district school_board] + HOUSEHOLD_FIELDS +
-    INDIVIDUAL_FIELDS + OCCUPATION_FIELDS - %w[industry occupation_category at_home] + BIRTH_FIELDS +
-    ADDITIONAL_FIELDS - %w[disability_notes]
+  CEN2_1851 = LOCATION - %w[ward poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district
+              school_board] + HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes]
 
-  CEN2_1861_FIELD_COLUMN_HEADER_LINE = LOCATION_FIELDS - %w[poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district school_board] + HOUSEHOLD_FIELDS +
-    INDIVIDUAL_FIELDS + OCCUPATION_FIELDS - %w[industry occupation_category at_home] + BIRTH_FIELDS +
-    ADDITIONAL_FIELDS - %w[disability_notes]
+  CEN2_1861 = LOCATION - %w[poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district
+              school_board] + HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes]
 
-  CEN2_1871_FIELD_COLUMN_HEADER_LINE = LOCATION_FIELDS - %w[poor_law_union police_district special_water_district scavenging_district special_lighting_district school_board school_board] + HOUSEHOLD_FIELDS +
-    INDIVIDUAL_FIELDS + OCCUPATION_FIELDS - %w[industry occupation_category at_home] + BIRTH_FIELDS +
-    ADDITIONAL_FIELDS - %w[disability_notes]
+  CEN2_1871 = LOCATION - %w[poor_law_union police_district special_water_district scavenging_district special_lighting_district school_board
+              school_board] + HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes]
 
-  CEN2_1881_FIELD_COLUMN_HEADER_LINE = LOCATION_FIELDS - %w[poor_law_union police_district special_water_district scavenging_district special_lighting_district school_board school_board] + HOUSEHOLD_FIELDS +
-    INDIVIDUAL_FIELDS + OCCUPATION_FIELDS - %w[industry occupation_category at_home] + BIRTH_FIELDS +
-    ADDITIONAL_FIELDS - %w[disability_notes]
+  CEN2_1881 = LOCATION - %w[poor_law_union police_district special_water_district scavenging_district special_lighting_district school_board
+              school_board] + HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes]
 
-  CEN2_1891_FIELD_COLUMN_HEADER_LINE = LOCATION_FIELDS - %w[poor_law_union police_district special_water_district scavenging_district special_lighting_district school_board school_board] + HOUSEHOLD_FIELDS +
-    INDIVIDUAL_FIELDS + OCCUPATION_FIELDS - %w[industry at_home] + BIRTH_FIELDS +
-    ADDITIONAL_FIELDS - %w[disability_notes]
+  CEN2_1891 = LOCATION - %w[poor_law_union police_district special_water_district scavenging_district special_lighting_district school_board] +
+    HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry at_home] + BIRTH + FINAL - %w[disability_notes]
 
-  CEN2_1901_FIELD_COLUMN_HEADER_LINE = LOCATION_FIELDS - %w[poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district school_board] + HOUSEHOLD_FIELDS - %w[address_flag] +
-    %w[rooms address_flag] + INDIVIDUAL_FIELDS + OCCUPATION_FIELDS - %w[industry] + BIRTH_FIELDS + ADDITIONAL_FIELDS -
-    %w[disability_notes]
+  CEN2_1901 = LOCATION - %w[poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district
+              school_board] + HOUSEHOLD - %w[address_flag] + %w[rooms address_flag] + INDIVIDUAL + OCCUPATION - %w[industry] + BIRTH +
+    FINAL - %w[disability_notes]
 
-  CEN2_1911_FIELD_COLUMN_HEADER_LINE = LOCATION_FIELDS - %w[sanitary_district school_board] + HOUSEHOLD_FIELDS - %w[folio_number
-    page_number uninhabited_flag address_flag] + %w[rooms address_flag] + ADDITIONAL_INDIVIDUAL_FIELDS - %w[surname_maiden school_children] +
-    OCCUPATION_FIELDS + BIRTH_FIELDS + ADDITIONAL_FIELDS
+  CEN2_1911 = LOCATION - %w[poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district
+              school_board] + HOUSEHOLD - %w[folio_number page_number uninhabited_flag address_flag] + %w[rooms address_flag] + EXTRA_INDIVIDUAL -
+    %w[surname_maiden school_children] + OCCUPATION + BIRTH + FINAL
 
-  CEN2_CHANNEL_ISLANDS_1911_FIELD_COLUMN_HEADER_LINE = CEN2_1911_FIELD_COLUMN_HEADER_LINE - ADDITIONAL_FIELDS + %w[father_place_of_birth] + ADDITIONAL_FIELDS
+  CEN2_CHANNEL_ISLANDS_1911 = CEN2_1911 - FINAL - %w[poor_law_union police_district sanitary_district special_water_district scavenging_district
+                              special_lighting_district school_board] - %w[birth_place_flag] + %w[father_place_of_birth birth_place_flag] + FINAL
 
-  CEN2_SCT_1841_FIELD_COLUMN_HEADER_LINE = LOCATION_FIELDS - %w[ward poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district school_board] +
-    HOUSEHOLD_FIELDS + INDIVIDUAL_FIELDS - %w[relationship marital_status] + OCCUPATION_FIELDS - %w[industry occupation_category at_home] +
-    BIRTH_FIELDS - %w[verbatim_birth_place nationality birth_county birth_place] + %w[notes]
+  CEN2_SCT_1841 = LOCATION - %w[ward poor_law_union police_district sanitary_district special_water_district scavenging_district
+                  special_lighting_district school_board] + HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH -
+    %w[nationality] + %w[disability notes]
 
-  CEN2_SCT_1851_FIELD_COLUMN_HEADER_LINE = LOCATION_FIELDS - %w[ward poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district school_board] + HOUSEHOLD_FIELDS +
-    INDIVIDUAL_FIELDS + OCCUPATION_FIELDS - %w[industry occupation_category at_home] + BIRTH_FIELDS +
-    ADDITIONAL_FIELDS - %w[disability_notes language]
+  CEN2_SCT_1851 = LOCATION - %w[ward poor_law_union police_district sanitary_district special_water_district scavenging_district
+                  special_lighting_district school_board] + HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH +
+    FINAL - %w[disability_notes language]
 
-  CEN2_SCT_1861_FIELD_COLUMN_HEADER_LINE = LOCATION_FIELDS - %w[ward poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district school_board] + SCT_HOUSEHOLD_FIELDS +
-    INDIVIDUAL_FIELDS - %w[individual_flag] + %w[school_children individual_flag] + OCCUPATION_FIELDS - %w[industry occupation_category at_home] + BIRTH_FIELDS +
-    ADDITIONAL_FIELDS - %w[disability_notes]
+  CEN2_SCT_1861 = LOCATION - %w[poor_law_union police_district sanitary_district special_water_district scavenging_district
+                  special_lighting_district school_board] + SCT_HOUSEHOLD + INDIVIDUAL - %w[individual_flag] + %w[school_children individual_flag] +
+    OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes language]
 
-  CEN2_SCT_1871_FIELD_COLUMN_HEADER_LINE = LOCATION_FIELDS - %w[ward poor_law_union sanitary_district special_water_district scavenging_district special_lighting_district school_board] + SCT_HOUSEHOLD_FIELDS +
-    INDIVIDUAL_FIELDS - %w[individual_flag] + %w[school_children individual_flag] + OCCUPATION_FIELDS - %w[industry occupation_category at_home] + BIRTH_FIELDS +
-    ADDITIONAL_FIELDS - %w[disability_notes language]
+  CEN2_SCT_1871 = LOCATION - %w[poor_law_union sanitary_district special_water_district scavenging_district special_lighting_district
+                  school_board] + SCT_HOUSEHOLD + INDIVIDUAL - %w[individual_flag] + %w[school_children individual_flag] + OCCUPATION - %w[industry
+                  occupation_category at_home] + BIRTH + FINAL - %w[disability_notes language]
 
-  CEN2_SCT_1881_FIELD_COLUMN_HEADER_LINE = LOCATION_FIELDS - %w[ward poor_law_union sanitary_district special_water_district scavenging_district special_lighting_district] + SCT_HOUSEHOLD_FIELDS +
-    INDIVIDUAL_FIELDS + OCCUPATION_FIELDS - %w[industry occupation_category at_home] + BIRTH_FIELDS +
-    ADDITIONAL_FIELDS - %w[disability_notes]
+  CEN2_SCT_1881 = LOCATION - %w[ward poor_law_union sanitary_district special_water_district scavenging_district special_lighting_district] +
+    SCT_HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes language]
 
-  CEN2_SCT_1891_FIELD_COLUMN_HEADER_LINE = LOCATION_FIELDS - %w[ward poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district school_board] + SCT_HOUSEHOLD_FIELDS +
-    INDIVIDUAL_FIELDS + OCCUPATION_FIELDS - %w[industry at_home] + BIRTH_FIELDS +
-    ADDITIONAL_FIELDS - %w[disability_notes]
+  CEN2_SCT_1891 = LOCATION - %w[poor_law_union police_district sanitary_district special_water_district scavenging_district
+                  special_lighting_district school_board] + SCT_HOUSEHOLD - %w[rooms_with_windows] + INDIVIDUAL + OCCUPATION - %w[industry
+                  occupation_category at_home] + BIRTH + FINAL - %w[disability_notes]
 
-  CEN2_SCT_1901_FIELD_COLUMN_HEADER_LINE = LOCATION_FIELDS - %w[poor_law_union sanitary_district special_water_district scavenging_district special_lighting_district] + SCT_HOUSEHOLD_FIELDS +
-    INDIVIDUAL_FIELDS + OCCUPATION_FIELDS - %w[industry] + BIRTH_FIELDS + ADDITIONAL_FIELDS - %w[disability_notes]
+  CEN2_SCT_1901 = LOCATION - %w[poor_law_union sanitary_district special_water_district scavenging_district special_lighting_district] +
+    SCT_HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry] + BIRTH + FINAL - %w[disability_notes]
 
-  CEN2_SCT_1911_FIELD_COLUMN_HEADER_LINE = LOCATION_FIELDS - %w[poor_law_union police_district] + SCT_HOUSEHOLD_FIELDS - %w[uninhabited_flag] +
-    ADDITIONAL_INDIVIDUAL_FIELDS + OCCUPATION_FIELDS + BIRTH_FIELDS + ADDITIONAL_FIELDS
+  CEN2_SCT_1911 = LOCATION - %w[poor_law_union police_district] + SCT_HOUSEHOLD + EXTRA_INDIVIDUAL - %w[children_deceased] + OCCUPATION + BIRTH +
+    FINAL - %w[disability_notes]
 
-  CEN2_IRL_1841_FIELD_COLUMN_HEADER_LINE = LOCATION_FIELDS - %w[ecclesiastical_parish ward sanitary_district school_board] +
-    HOUSEHOLD_FIELDS + INDIVIDUAL_FIELDS - %w[relationship marital_status] + OCCUPATION_FIELDS - %w[industry occupation_category at_home] + BIRTH_FIELDS -
-    %w[verbatim_birth_place nationality birth_county birth_place] + %w[notes]
+  CEN2_IRL_1901 = LOCATION - %w[enumeration_district ecclesiastical_parish ward sanitary_district special_water_district scavenging_district
+                  special_lighting_district school_board] + IRE_HOUSEHOLD + INDIVIDUAL - %w[individual_flag] + %w[religion read_write individual_flag] +
+    OCCUPATION - %w[industry occupation_category at_home] + BIRTH - %w[nationality] + FINAL - %w[disability_notes]
 
-  CEN2_IRL_1851_FIELD_COLUMN_HEADER_LINE = LOCATION_FIELDS - %w[ward sanitary_district school_board] + HOUSEHOLD_FIELDS +
-    INDIVIDUAL_FIELDS + OCCUPATION_FIELDS - %w[industry occupation_category at_home] + BIRTH_FIELDS +
-    ADDITIONAL_FIELDS - %w[disability_notes language]
-
-  CEN2_IRL_1861_FIELD_COLUMN_HEADER_LINE = LOCATION_FIELDS - %w[sanitary_district school_board] + HOUSEHOLD_FIELDS +
-    INDIVIDUAL_FIELDS + OCCUPATION_FIELDS - %w[industry occupation_category at_home] + BIRTH_FIELDS +
-    ADDITIONAL_FIELDS - %w[disability_notes]
-
-  CEN2_IRL_1871_FIELD_COLUMN_HEADER_LINE = LOCATION_FIELDS - %w[sanitary_district school_board] + HOUSEHOLD_FIELDS +
-    INDIVIDUAL_FIELDS + OCCUPATION_FIELDS - %w[industry occupation_category at_home] + BIRTH_FIELDS +
-    ADDITIONAL_FIELDS - %w[disability_notes language]
-
-  CEN2_IRL_1881_FIELD_COLUMN_HEADER_LINE = LOCATION_FIELDS - %w[sanitary_district school_board] + HOUSEHOLD_FIELDS +
-    INDIVIDUAL_FIELDS + OCCUPATION_FIELDS - %w[industry occupation_category at_home] + BIRTH_FIELDS +
-    ADDITIONAL_FIELDS - %w[disability_notes]
-
-  CEN2_IRL_1891_FIELD_COLUMN_HEADER_LINE = LOCATION_FIELDS - %w[sanitary_district school_board] + HOUSEHOLD_FIELDS +
-    INDIVIDUAL_FIELDS + OCCUPATION_FIELDS - %w[industry at_home] + BIRTH_FIELDS +
-    ADDITIONAL_FIELDS - %w[disability_notes]
-
-  CEN2_IRL_1901_FIELD_COLUMN_HEADER_LINE = LOCATION_FIELDS - %w[ward sanitary_district special_water_district scavenging_district special_lighting_district school_board] + IRE_HOUSEHOLD_FIELDS +
-    INDIVIDUAL_FIELDS - %w[individual_flag] + %w[religion read_write individual_flag] + OCCUPATION_FIELDS -
-    %w[industry] + BIRTH_FIELDS + ADDITIONAL_FIELDS - %w[disability_notes]
-
-  CEN2_IRL_1911_FIELD_COLUMN_HEADER_LINE = LOCATION_FIELDS - %w[ward sanitary_district special_water_district scavenging_district special_lighting_district school_board] + IRE_HOUSEHOLD_FIELDS - %w[folio_number
-    page_number uninhabited_flag] + ADDITIONAL_INDIVIDUAL_FIELDS - %w[individual_flag] + %w[religion read_write individual_flag] +
-    OCCUPATION_FIELDS + BIRTH_FIELDS + ADDITIONAL_FIELDS
+  CEN2_IRL_1911 = LOCATION - %w[enumeration_district ecclesiastical_parish ward sanitary_district special_water_district scavenging_district
+                  special_lighting_district school_board] + IRE_HOUSEHOLD + EXTRA_INDIVIDUAL - %w[children_deceased individual_flag] + %w[religion
+                  read_write individual_flag] + OCCUPATION - %w[industry occupation_category at_home] + BIRTH - %w[nationality] + FINAL - %w[disability_notes]
 
   LINE2 = ['abcdefghijklmnopqrst', '###a', '####a', '####', '###a', '####a', 'abcdefghijklmnopqrstuvwxyzabcd', 'X', 'abcdefghijklmnopqrstuvwx',
            'abcdefghijklmnopqrstuvwx', 'X', 'abcdef', 'C', 'S', '###a', 'X', 'abcdefghijklmnopqrstuvwxyzabcd', 'E', 'X', 'abc',
            'abcdefghijklmnopqrst', 'X', 'abcdef,W,abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqr', 'd', 'abcdefgh'].freeze
 
   HEADER_OPTIONS_TRANSLATION = [
-    CEN2_TRADITIONAL_COLUMN_HEADER_LINE, CEN2_1841_FIELD_COLUMN_HEADER_LINE, CEN2_1851_FIELD_COLUMN_HEADER_LINE,
-    CEN2_1861_FIELD_COLUMN_HEADER_LINE, CEN2_1871_FIELD_COLUMN_HEADER_LINE, CEN2_1881_FIELD_COLUMN_HEADER_LINE, CEN2_1891_FIELD_COLUMN_HEADER_LINE,
-    CEN2_1901_FIELD_COLUMN_HEADER_LINE, CEN2_1911_FIELD_COLUMN_HEADER_LINE, CEN2_CHANNEL_ISLANDS_1911_FIELD_COLUMN_HEADER_LINE,
-    CEN2_SCT_1841_FIELD_COLUMN_HEADER_LINE, CEN2_SCT_1851_FIELD_COLUMN_HEADER_LINE, CEN2_SCT_1861_FIELD_COLUMN_HEADER_LINE,
-    CEN2_SCT_1871_FIELD_COLUMN_HEADER_LINE, CEN2_SCT_1881_FIELD_COLUMN_HEADER_LINE, CEN2_SCT_1891_FIELD_COLUMN_HEADER_LINE,
-    CEN2_SCT_1901_FIELD_COLUMN_HEADER_LINE, CEN2_SCT_1911_FIELD_COLUMN_HEADER_LINE,
-    CEN2_IRL_1841_FIELD_COLUMN_HEADER_LINE, CEN2_IRL_1851_FIELD_COLUMN_HEADER_LINE, CEN2_IRL_1861_FIELD_COLUMN_HEADER_LINE,
-    CEN2_IRL_1871_FIELD_COLUMN_HEADER_LINE, CEN2_IRL_1881_FIELD_COLUMN_HEADER_LINE, CEN2_IRL_1891_FIELD_COLUMN_HEADER_LINE,
-    CEN2_IRL_1901_FIELD_COLUMN_HEADER_LINE, CEN2_IRL_1911_FIELD_COLUMN_HEADER_LINE
+    CEN2_TRADITIONAL, CEN2_1841, CEN2_1851,
+    CEN2_1861, CEN2_1871, CEN2_1881, CEN2_1891,
+    CEN2_1901, CEN2_1911, CEN2_CHANNEL_ISLANDS_1911,
+    CEN2_SCT_1841, CEN2_SCT_1851, CEN2_SCT_1861,
+    CEN2_SCT_1871, CEN2_SCT_1881, CEN2_SCT_1891,
+    CEN2_SCT_1901, CEN2_SCT_1911,
+    CEN2_IRL_1901, CEN2_IRL_1911
   ].freeze
   HEADER_OPTIONS = %w[Freecen2_traditional 1841 1851 1861 1871 1881 1891 1901 1911 Channel_Islands_1911 Scotland_1841 Scotland_1851 Scotland_1861 Scotland_1871
     Scotland_1881 Scotland_1891 Scotland_1901 Scotland_1911 Ireland_1901 Ireland_1911].freeze
