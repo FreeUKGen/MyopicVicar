@@ -69,7 +69,7 @@ class EmbargoRulesController < ApplicationController
     @options = EmbargoRule::EmbargoRuleOptions::ALL_OPTIONS
     rules = EmbargoRule.where(register_id: @register.id).all.order_by(rule: 1)
     rules.each do |rule|
-      @types.delete(rule.record_type)
+      @types.delete_if { |type| type == rule.record_type }
     end
     @rule = EmbargoRule.new
     @edit = false
