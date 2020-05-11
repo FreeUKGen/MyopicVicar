@@ -89,7 +89,7 @@ class Freereg1CsvFilesController < ApplicationController
   def display_my_own_files
     get_user_info_from_userid
     @who = @first_name
-    @sorted_by = 'Alphabetical by file name'
+    @sorted_by = ' Alphabetical by file name'
     session[:sort] = 'file_name ASC'
     session[:sorted_by] = @sorted_by
     @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(session[:sort]).all.page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
@@ -99,7 +99,7 @@ class Freereg1CsvFilesController < ApplicationController
   def display_my_error_files
     get_user_info_from_userid
     @who = @first_name
-    @sorted_by = 'Ordered by number of errors'
+    @sorted_by = ' Ordered by number of errors'
     session[:sorted_by] = @sorted_by
     session[:sort] = 'error DESC, file_name ASC'
     @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).errors.order_by(session[:sort]).all.page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
@@ -109,7 +109,7 @@ class Freereg1CsvFilesController < ApplicationController
   def display_my_own_files_by_descending_uploaded_date
     get_user_info_from_userid
     @who = @first_name
-    @sorted_by = 'Ordered by most recent'
+    @sorted_by = ' Ordered by most recent'
     session[:sorted_by] = @sorted_by
     session[:sort] = 'uploaded_date DESC'
     @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(session[:sort]).all.page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
@@ -119,7 +119,7 @@ class Freereg1CsvFilesController < ApplicationController
   def display_my_own_files_by_ascending_uploaded_date
     get_user_info_from_userid
     @who = @first_name
-    @sorted_by = 'Ordered by oldest'
+    @sorted_by = ' Ordered by oldest'
     session[:sort] = 'uploaded_date ASC'
     session[:sorted_by] = @sorted_by
     @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(session[:sort]).all.page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
@@ -130,7 +130,7 @@ class Freereg1CsvFilesController < ApplicationController
     get_user_info_from_userid
     @who = @first_name
     session[:zero_action] = 'My Own Action'
-    @sorted_by = 'Zero years'
+    @sorted_by = ' Zero years'
     session[:sort] = 'uploaded_date ASC'
     session[:sorted_by] = @sorted_by
     @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).datemin('0').order_by(session[:sort]).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
@@ -251,7 +251,7 @@ class Freereg1CsvFilesController < ApplicationController
     @county =  session[:county]
     @syndicate =  session[:syndicate]
     @role = session[:role]
-    @sorted_by = session[:sorted_by].presence || 'Ordered by most recent'
+    @sorted_by = session[:sorted_by].presence || ' Ordered by most recent'
     if (@county.blank? && @syndicate.blank?) || @role.blank? || @sorted_by.blank?
       redirect_back(fallback_location: new_manage_resource_path, notice: 'Missing parameters') && return
     end
@@ -271,7 +271,6 @@ class Freereg1CsvFilesController < ApplicationController
     elsif session[:county].present? && helpers.can_view_files?(session[:role])
       @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).no_timeout.order_by(session[:sort]).all.page(params[:page]).per(batches)
     end
-    session[:current_page] = @freereg1_csv_files.current_page if @freereg1_csv_files.present?
   end
 
   def locations
@@ -321,7 +320,7 @@ class Freereg1CsvFilesController < ApplicationController
     get_user_info_from_userid
     session[:my_own] = true
     @who = @first_name
-    @sorted_by = 'Ordered by most recent'
+    @sorted_by = ' Ordered by most recent'
     session[:sorted_by] = @sorted_by
     session[:sort] = 'uploaded_date DESC'
     @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(session[:sort]).all.page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
