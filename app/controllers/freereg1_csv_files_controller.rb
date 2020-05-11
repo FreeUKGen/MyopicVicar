@@ -383,8 +383,6 @@ class Freereg1CsvFilesController < ApplicationController
 
     if session[:my_own]
       redirect_to my_own_freereg1_csv_file_path
-    elsif session[:current_page]
-      redirect_to session[:current_page]
     elsif @return_location.blank?
       redirect_to manage_resource_path(@user)
     else
