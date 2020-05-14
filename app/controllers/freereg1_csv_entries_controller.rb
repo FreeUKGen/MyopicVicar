@@ -233,7 +233,7 @@ class Freereg1CsvEntriesController < ApplicationController
     @entry = @freereg1_csv_entry
     @image_id = @entry.get_the_image_id(@church, @user, session[:manage_user_origin], session[:image_server_group_id], session[:chapman_code])
     @all_data = true
-    record_type = @freereg1_csv_entry.get_record_type
+    record_type = @freereg1_csv_entry.lookup_record_type
     @order, @array_of_entries, @json_of_entries = @freereg1_csv_entry.order_fields_for_record_type(record_type, @entry.freereg1_csv_file.def, current_authentication_devise_user.present?)
   end
 
@@ -250,7 +250,8 @@ class Freereg1CsvEntriesController < ApplicationController
 
     params[:freereg1_csv_entry] = @freereg1_csv_entry.adjust_parameters(params[:freereg1_csv_entry])
     proceed = @freereg1_csv_entry.update_attributes(freereg1_csv_entry_params)
-    message = @freereg1_csv_entry.errors.full_messages + @freereg1_csv_entry.embargo_records.last.errors.full_messages unless @freereg1_csv_entry.embargo_records.blank?
+    message = @freereg1_csv_entry.errors.full_messages
+    message = message + @freereg1_csv_entry.embargo_records.last.errors.full_messages unless @freereg1_csv_entry.embargo_records.blank?
     redirect_back(fallback_location: edit_freereg1_csv_entry_path(@freereg1_csv_entry), notice: "The update of the entry failed #{message}.") && return unless proceed
 
     @freereg1_csv_entry.check_and_correct_county

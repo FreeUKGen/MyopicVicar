@@ -38,12 +38,13 @@ module RecordType
     ("RecordType::#{all_types_constant}").constantize
     case MyopicVicar::Application.config.template_set
     when 'freereg'
-      ALL_FREEREG_TYPES
+      all_types = RecordType::ALL_FREEREG_TYPES
     when 'freecen'
-      ALL_FREECEN_TYPES
+      all_types = RecordType::ALL_FREECEN_TYPES
     when 'freebmd'
-      ALL_FREEBMD_TYPES
+      all_types = RecordType::ALL_FREEBMD_TYPES
     end
+    all_types
   end
 
   def self.options
@@ -62,7 +63,7 @@ module RecordType
     self.options.key(value)
   end
 
-  ALL_FREEREG_TYPES = [BURIAL, MARRIAGE, BAPTISM]
+  ALL_FREEREG_TYPES = [BURIAL, MARRIAGE, BAPTISM].freeze
   ALL_FREECEN_TYPES = [CENSUS_1841, CENSUS_1851, CENSUS_1861, CENSUS_1871, CENSUS_1881, CENSUS_1891]
   ALL_FREEBMD_TYPES = [BIRTHS, DEATHS, MARRIAGES]
 

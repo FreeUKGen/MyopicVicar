@@ -33,7 +33,7 @@ class EmbargoRulesController < ApplicationController
     @rule = EmbargoRule.find(params[:id])
     redirect_back(fallback_location: { action: 'index', county: session[:county], place: session[:place], church: session[:church], register: session[:register] },
                   notice: 'The embargo rule was not found ') && return if @rule.blank?
-    @types = RecordType.all_types
+    @types = RecordType::ALL_FREEREG_TYPES
     @options = EmbargoRule::EmbargoRuleOptions::ALL_OPTIONS
     @edit = true
     get_user_info_from_userid
@@ -65,12 +65,12 @@ class EmbargoRulesController < ApplicationController
     get_user_info_from_userid
     reject_access(@user, 'Embargo Reason') unless ['system_administrator', 'executive_director', 'county_coordinator', 'data_manager', 'country_coordinator'].include?(@user.person_role)
 
-    @types = RecordType.all_types
     @options = EmbargoRule::EmbargoRuleOptions::ALL_OPTIONS
-    rules = EmbargoRule.where(register_id: @register.id).all.order_by(rule: 1)
-    rules.each do |rule|
-      @types.delete(rule.record_type)
+    rules = []
+    EmbargoRule.where(register_id: @register.id).all.order_by(rule: 1).all.each do |rule|
+      rules << rule.record_type
     end
+    @types = RecordType.all_types - rules
     @rule = EmbargoRule.new
     @edit = false
   end

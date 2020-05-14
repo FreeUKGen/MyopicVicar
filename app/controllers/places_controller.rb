@@ -241,6 +241,7 @@ class PlacesController < ApplicationController
     get_user_info_from_userid
     places_counties_and_countries
     @county = session[:county]
+    @chapman_code = @place.chapman_code
     @records = @place.records
     max_records = get_max_records(@user)
     if @records.present? && @records.to_i >= max_records

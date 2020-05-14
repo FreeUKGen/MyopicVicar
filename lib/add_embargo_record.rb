@@ -32,7 +32,7 @@ class AddEmbargoRecord
       next if register.blank?
 
       message_file.puts 'processing register'
-      message_file.puts register.inspect
+      message_file.puts register.alternate_register_name
       rules = register.embargo_rules.order_by(created_at: 1)
       next if rules.blank?
 
@@ -47,13 +47,13 @@ class AddEmbargoRecord
         all_files.each do |file|
           files_for_record_type << file if file.record_type == record_type
         end
-        message_file.puts files_for_record_type.inspect
 
         next if files_for_record_type.blank?
 
         files_for_record_type.each do |file|
           message_file.puts 'processing file'
-          message_file.puts file.inspect
+          message_file.puts "#{file.id} #{file.file_name} #{file.county} #{file.place_name} #{file.church_name} #{file.register_type} #{file.userid}"
+
           files_processed = files_processed + 1
           total_files = total_files + 1
           entries_processed = 0
@@ -74,9 +74,6 @@ class AddEmbargoRecord
             message_file.puts "save failed #{entry.embargo_records.last.errors.full_messages}" unless saved
             entry.search_record.update(embargoed: entry.embargo_records.last.embargoed, release_year: end_year)
             entry.save
-            message_file.puts 'final entry and search record'
-            message_file.puts entry.inspect
-            message_file.puts entry.search_record.inspect
           end
           message_file.puts "#{entries_processed} were processed for file"
           sleep sleep_time_twenty

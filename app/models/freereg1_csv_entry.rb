@@ -205,6 +205,8 @@ class Freereg1CsvEntry
     SearchRecord.destroy_all(:freereg1_csv_entry_id => entry._id)
   end
 
+  after_update :update_seach_record_location
+
   accepts_nested_attributes_for :embargo_records, allow_destroy: false, reject_if: :all_blank
   accepts_nested_attributes_for :multiple_witnesses, allow_destroy: true, reject_if: :all_blank, limit: 8
 
@@ -495,11 +497,11 @@ class Freereg1CsvEntry
         end
       end
     end
-    return place_id, church_id, register_id,extended_def
+    [place_id, church_id, register_id, extended_def]
   end
 
-  def get_record_type
-    return record_type if RecordType.all_types.include?(record_type)
+  def lookup_record_type
+    return freereg1_csv_file.record_type if RecordType.all_types.include?(freereg1_csv_file.record_type)
 
     return search_record.record_type if search_record.present? && RecordType.all_types.include?(search_record.record_type)
 
@@ -830,6 +832,10 @@ class Freereg1CsvEntry
     update(freereg1_csv_file_id: file.id, place: record[:place], church_name: record[:church_name], register_type: record[:register_type])
   end
 
+  def update_seach_record_location
+    search_record.update_location(self, freereg1_csv_file) if search_record.present? && freereg1_csv_file.present?
+  end
+
   def update_place_ucf_list(place, file, old_search_record)
     file_in_ucf_list = place.ucf_list.has_key?(file.id.to_s)
     search_record_has_ucf = search_record.contains_wildcard_ucf?.present? ? true : false
@@ -876,7 +882,6 @@ class Freereg1CsvEntry
   end
 
   def errors_in_fields
-
     if freereg1_csv_file.blank?
       check_embargo = false
     else
@@ -915,7 +920,7 @@ class Freereg1CsvEntry
     end
 
     case
-    when record_type =='ma'
+    when record_type == 'ma'
       unless FreeregValidations.cleanage(bride_age)
         errors.add(:bride_age, 'Invalid age')
 
@@ -1126,7 +1131,7 @@ class Freereg1CsvEntry
 
       end
 
-    when record_type =='ba'
+    when record_type == 'ba'
       unless FreeregValidations.cleandate(birth_date)
         errors.add(:birth_date, 'Invalid date')
 
@@ -1185,7 +1190,6 @@ class Freereg1CsvEntry
       end
       unless FreeregValidations.cleanage(person_age)
         errors.add(:groom_age, 'Invalid age')
-
       end
 
       #following is disabled until check is improved
@@ -1327,7 +1331,7 @@ class Freereg1CsvEntry
 
       end
 
-    when record_type =='bu'
+    when record_type == 'bu'
       unless FreeregValidations.cleantext(person_age)
         errors.add(:person_age, 'Invalid age')
 
@@ -1399,6 +1403,9 @@ class Freereg1CsvEntry
       unless FreeregValidations.cleantext(memorial_information)
         errors.add(:memorial_information, 'Invalid characters')
 
+      end
+      unless FreeregValidations.cleanage(person_age)
+        errors.add(:person_age, 'Invalid age')
       end
       if check_embargo
         rule = embargoes.where(record_type: 'bu', period_type: 'period').first

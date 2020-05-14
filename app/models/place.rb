@@ -56,7 +56,7 @@ class Place
 
   embeds_many :alternateplacenames
 
-  accepts_nested_attributes_for :alternateplacenames, allow_destroy: true,  reject_if: :all_blank
+  accepts_nested_attributes_for :alternateplacenames, allow_destroy: true, reject_if: :all_blank
 
 
   validates_inclusion_of :chapman_code, :in => ChapmanCode::values+[nil]
@@ -314,14 +314,16 @@ class Place
   def change_name(param)
     place_name = param[:place_name]
     old_place_name = self.place_name
-    return [false, "That place name is already in use"] if Place.place(place_name).exists?
+    return [false, 'That place name is already in use'] if Place.place(place_name).chapman_code(param[:chapman_code]).exists?
+
     unless old_place_name == place_name
-      self.save_to_original
-      self.update_attributes(:place_name => place_name, :modified_place_name => place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase )
-      return [false, "Error in save of place; contact the webmaster"] if self.errors.any?
-      self.propogate_place_name_change(old_place_name)
-      self.propogate_batch_lock
-      self.recalculate_last_amended_date
+      save_to_original
+      update(place_name: place_name, modified_place_name: place_name.gsub(/-/, ' ').gsub(/\./, '').gsub(/\'/, '').downcase)
+      return [false, 'Error in save of place; contact the webmaster'] if errors.any?
+
+      propogate_place_name_change(old_place_name)
+      propogate_batch_lock
+      recalculate_last_amended_date
       PlaceCache.refresh_cache(self)
     end
     [true, '']

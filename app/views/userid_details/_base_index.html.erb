@@ -10,9 +10,9 @@
               <th class='sticky-header'>Surname</th>
               <th class='sticky-header'>Email</th>
               <th class='sticky-header'>Active</th>
-              <th class='sticky-header' title="Transcriber Agreement Accepted">Open</th>
+              <th class='sticky-header' title="Transcriber Agreement Accepted">Open <a href="#" class="left_tooltip" onclick="return false;"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %><span>A: Accepted; U: Unknown</span></a></th>
               <% unless MyopicVicar::Application.config.template_set == 'freecen'%>
-                <th class='sticky-header'>Upload</th>
+                <th class='sticky-header'>Last Upload</th>
                 <th class='sticky-header'>Files </th>
               <% end %>
               <th colspan="4" class='sticky-header'>Action <a href="#" class="left_tooltip" onclick="return false;"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %><span>SH: Show profile details; ED: Edit the profile; LB: List their batches; IN: Inactivate the userid OR ACT:Activate the userid. (You will have either IN or ACT in the field)</span></a></th>
@@ -29,7 +29,6 @@
                   <td > <%= userid.person_forename %>  </td>
                   <td > <%= userid.person_surname %>  </td>
                   <td > <%= userid.email_address %> </td>
-                  <td >  <%= active_user(userid.active)%></td>
                   <td >  <%= active_user(userid.active)%></td>
                   <td >  <%= agreement(userid.new_transcription_agreement)%></td>
                   <% unless MyopicVicar::Application.config.template_set == 'freecen'%>
