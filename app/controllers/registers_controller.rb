@@ -65,8 +65,8 @@ class RegistersController < ApplicationController
       @church.blank? || @place.blank?
 
     return_location = @register.church
-    @register.destroy
-    flash[:notice] = 'The deletion of the Register was successful'
+    result = @register.destroy
+    flash[:notice] = result ? 'The deletion of the Register was successful' : "The deletion failed because #{@register.errors.full_messages}"
     redirect_to church_path(return_location)
   end
 
