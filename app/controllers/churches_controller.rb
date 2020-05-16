@@ -56,8 +56,8 @@ class ChurchesController < ApplicationController
     redirect_back(fallback_location: new_manage_resource_path, notice: 'Your church was not found') && return if @church.blank?
 
     return_place = @church.place
-    @church.destroy
-    flash[:notice] = 'The deletion of the Church was successful'
+    result = @church.destroy
+    flash[:notice] = result ? 'The deletion of the Church was successful' : "The deletion failed because #{@church.errors.full_messages}"
     redirect_to place_path(return_place)
   end
 
