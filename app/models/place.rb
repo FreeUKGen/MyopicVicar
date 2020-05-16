@@ -172,7 +172,7 @@ class Place
 
       place_object = Place.find(id: place)
       if place_object.present?
-        result = true if Place.valid_chapman_code?(place_object.chapman_code) && Place.valid_county?(place_object.county)
+        result = true if Place.valid_chapman_code?(place_object.chapman_code)
       end
       logger.warn("FREEREG:LOCATION:VALIDATION invalid place id #{place} ") unless result
       result
