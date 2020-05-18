@@ -18,9 +18,11 @@ module DateParser
 
   def self.searchable(verbatim)
     return verbatim unless verbatim
+
     unless verbatim.match(/\d\d/)  #at least most of a year
       return verbatim
     end
+
     if verbatim.match(/(\S+)\s(\S+)\s(\S+)/)
       d = $1
       vm = $2
@@ -69,7 +71,7 @@ module DateParser
 
     # zero-pad
     if d.match(/\b\d\b/)
-      d = "0"+d
+      d = "0" + d
     end
 
     "#{y}-#{m}-#{d}"
