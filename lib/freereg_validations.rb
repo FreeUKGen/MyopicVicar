@@ -20,7 +20,7 @@ module FreeregValidations
   #\A[\d{1,2}\*\-\?][\s+\/][A-Za-z\d\*\-\?]{0,3}[\s+\/][\d\*\-\?]{0,4}\/?[\d\*\-\?]{0,2}?\z
   VALID_DATE = /\A\d{1,2}[\s+\/\-][A-Za-z\d]{0,3}[\s+\/\-]\d{2,4}\z/ #modern date no UCF or wildcard
   VALID_DAY = /\A\d{1,2}\z/
-  VALID_MONTH = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP","SEPT", "OCT", "NOV", "DEC", "*","JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
+  VALID_MONTH = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "*"]
   VALID_NUMERIC_MONTH = /\A\d{1,2}\z/
   VALID_YEAR = /\A\d{4,5}\z/
   DATE_SPLITS = {
@@ -217,26 +217,24 @@ module FreeregValidations
   def FreeregValidations.cleandate(field)
     return true if field.nil? || field.empty?
 
-    return false unless FreeregValidations.cleannumeric(field)
-
     a = field.split(' ')
     case
     when a.length == 3
-      # work with  dd mmm yyyy/y
+      # work with  dd Mmm yyyy/y
       # firstly deal with the dd and allow the wild character
-      return false unless a[0].to_s =~ VALID_DAY || a[0].to_s =~ WILD_CHARACTER
+      return false unless a[0].to_s =~ VALID_DAY || a[0] == '*'
 
-      return false if a[0].to_i > 31 && a[0].to_s !~ WILD_CHARACTER
+      return false if a[0].to_i > 31 || a[0].to_i <= 0
 
       # deal with the month allowing for the wild character
-      return false unless VALID_MONTH.include?(Unicode.upcase(a[1])) || a[1].to_s =~ WILD_CHARACTER
+      return false unless VALID_MONTH.include?(a[1]) || a[1] == '*'
 
       # deal with the year and split year
       check = FreeregValidations.check_year(a[2])
       return check
     when a.length == 2
-      # deal with dates that are mmm yyyy firstly the mmm then the split year
-      return false unless VALID_MONTH.include?(Unicode::upcase(a[0])) || a[0].to_s =~ WILD_CHARACTER
+      # deal with dates that are mmm yyyy firstly the Mmm then the split year
+      return false unless VALID_MONTH.include?(a[0]) || a[0] == '*'
 
       check = FreeregValidations.check_year(a[1])
       return check
@@ -250,20 +248,19 @@ module FreeregValidations
     end
   end
 
-  def self.check_year(a)
-    return true if a =~ VALID_UCF
+  def self.check_year(yyyy)
+    return true if yyyy =~ /\d{2}\*/ || yyyy =~ /\d{3}_/ || yyyy =~ /\d{2}_{2}/
 
-    characters = a.split('')
-    if characters.length == 4 # deal with the yyyy and permit the wild character
+    characters = yyyy.split('')
+    if characters.length == 4
+      # deal with the yyyy and permit the wild character
 
-      return false unless (a.to_s =~ VALID_YEAR)
-
-      unless a.nil?
-        return false if a.to_i > YEAR_MAX || YEAR_MIN > a.to_i
+      if yyyy.present?
+        return false if yyyy.to_i > YEAR_MAX || YEAR_MIN > yyyy.to_i
       end
       return true
     end
-    if ((characters.length >= 6 && characters.length <= 9) && characters[4] == "/" )
+    if (characters.length >= 6 && characters.length <= 9) && characters[4] == "/"
       #deal with the split year
       year = characters
       last = 2
@@ -272,7 +269,7 @@ module FreeregValidations
       last = 5 if characters.length == 9
       year = characters.reverse.drop(last).reverse.join
       ext = characters.drop(5).join
-      return false unless (year.to_s =~ VALID_YEAR)
+      return false unless year.to_s =~ VALID_YEAR
 
       return false if year.to_i > YEAR_MAX || 1753 < year.to_i
 
@@ -280,11 +277,9 @@ module FreeregValidations
 
       return true
     else
-      p  "greater than 9 digits and character position 5 was not / "
+      p 'greater than 9 digits and character position 5 was not / '
       return false
     end
-    p "less than 4 and greater than 9"
-    false
   end
 
   def FreeregValidations.year_extract(field)
