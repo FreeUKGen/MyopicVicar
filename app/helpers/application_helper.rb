@@ -778,10 +778,10 @@ module ApplicationHelper
       record_type: 'Specify whether you are searching for Births, Marriages, Deaths. If no checkboxes are checked means all the three types.Please click on the label for more information. Please click on the label again to close it',
       spouse_first_name: 'Optional. Use upper- or lower-case.Please click on the label for more information. Please click on the label again to close it',
       spouse_mother_surname: 'Optional. Use upper- or lower-case. Search spouse surname for Marriage record type or mother surname for Birth Record Type. Only records from the September quarter 1911 onwards contain the mothers maiden name so entering a value in this field will return only records from the September quarter 1911 onwards.Please click on the label for more information. Please click on the label again to close it',
-      volume: 'Optional.Please click on the label for more information. Please click on the label again to close it',
-      page: 'Optional.Please click on the label for more information. Please click on the label again to close it',
-      counties: 'Optional.Please click on the label for more information. Please click on the label again to close it',
-      districts: 'Optional.Please click on the label for more information. Please click on the label again to close it',
+      volume: 'Optional.',
+      page: 'Optional.',
+      counties: 'Optional.',
+      districts: 'Optional.',
       m_s_a_d: ' this column lists either mother surname or spouse surname or age at death or date of birth'
     }
   end

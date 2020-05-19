@@ -7,9 +7,12 @@
 <html lang="en">
   <!--<![endif]-->
   <head>
-    <% if appname_downcase == 'freereg' %>
-      <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found') || current_page?('/cms/refinery/users/login') %>
+    <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found') || current_page?('/cms/refinery/users/login') %>
+      <% case appname_downcase %>
+      <% when 'freereg'%>
         <script type="text/javascript" src="//m2d.m2.ai/pg.freereg.js" async></script>
+      <% when 'freebmd' %>
+        <script data-ad-client="ca-pub-7825403497160061" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
       <% end %>
     <% end %>
     <!-- Google Tag Manager -->
@@ -78,6 +81,10 @@
     <%= javascript_include_tag "spin.min.js" %>
     <%= javascript_include_tag "ladda.min.js" %>
     <%= javascript_include_tag "freecen_coverage_graph.js" %>
+    <%# if MyopicVicar::Application.config.template_set == 'freebmd' %>
+      <%#= stylesheet_link_tag "styles/scss/search_queries_bs" %>
+      <%#= javascript_include_tag "freecen_coverage_graph.js" %>
+    <%# end %>
     <script src="/adsbygoogle.js" type="text/javascript"></script>
     <script src="https://use.fontawesome.com/5b8044f85d.js"></script>
     <%= csrf_meta_tags %>

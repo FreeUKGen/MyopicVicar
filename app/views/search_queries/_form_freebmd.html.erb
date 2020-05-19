@@ -162,11 +162,12 @@
             </label>
         </div>
 
+
         <div class="grid__item one-eighth lap-one-half palm-one-whole">
             <div class='labels'>
-                <%= label_tag 'volume', "Volume #{app_icons[:info]}".html_safe, class: "ttip", title: info_tag_text[:volume], 'aria-details': info_tag_text[:volume], tabindex: "0" do %>
-                <%= "Volume #{app_icons[:info]}".html_safe %>
-                <span class="ttip__text"><%= info_tag_text[:volume]%></span>
+                <%= label_tag 'volume', "Volume #{app_icons[:info]}".html_safe, class: "ttip", tabindex: "0" do %>
+                    <%= "Volume #{app_icons[:info]}".html_safe %>
+                    <span class="ttip__text"><%= info_tag_text[:volume].html_safe %></span>
                 <% end %>
             </div>
             <%= text_field_tag 'search_query[volume]', set_value(@search_query.volume), class: 'text-input', id: 'volume', placeholder: 'Enter Volume', tabindex: "0" %>
@@ -504,20 +505,6 @@
                 $('#death_select_box').css('background', '#ccc');
             });
 
-            $(".firstnamelabel").click(function() {
-                if ($('#forename_help').length) {
-                    $("#forename_div").empty();
-                    $("#forename_div").removeClass('help_box');
-                } else {
-                    if ($('.search_help_text').length) {
-                        $(".iframeDiv").empty('');
-                        $(".iframeDiv").removeClass('help_box');
-                    }
-                    $("#forename_div").addClass('help_box');
-                    //$("#forename_div").html('<div id="forename_info" class="firstnamehelp"></div>');
-                    $("#forename_div").load('/cms/help #forename_help');
-                }
-            });
             /*
               $(".surnamelabel").click(function() {
                 if ($('#surname_help').length) {
@@ -614,34 +601,6 @@
                   }
                   $("#ageatdeath_div").addClass('help_box');
                   $("#ageatdeath_div").load('/cms/help #age_at_death');
-                }
-              });
-
-              $(".volumelabel").click(function() {
-                if ($('#volumehelp').length) {
-                $("#volume_div").empty();
-                $("#volume_div").removeClass('help_box');
-                } else {
-                  if ($('.search_help_text').length) {
-                    $(".iframeDiv").empty('');
-                    $(".iframeDiv").removeClass('help_box');
-                  }
-                  $("#volume_div").addClass('help_box');
-                  $("#volume_div").load('/cms/help #volume');
-                }
-              });
-
-              $(".pagelabel").click(function() {
-                if ($('#pagehelp').length) {
-                $("#page_div").empty();
-                $("#page_div").removeClass('help_box');
-                } else {
-                  if ($('.search_help_text').length) {
-                    $(".iframeDiv").empty('');
-                    $(".iframeDiv").removeClass('help_box');
-                  }
-                  $("#page_div").addClass('help_box');
-                  $("#page_div").load('/cms/help #page');
                 }
               });
 
