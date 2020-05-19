@@ -771,18 +771,20 @@ module ApplicationHelper
                                             end
   def info_tag_text
     {
-      firstname: 'Use upper- or lower-case. If Exact match on first names check-box is checked the search for the First Name is done on the characters as typed.',
+      firstname: 'Use upper- or lower-case. Check the Exact match on first names check-box to search the First Name exactly as the characters typed.',
       lastname: 'Use upper- or lower-case.Check Phonetic search surnames to enable Phonetic seaches on surname.',
-      date_range_from: 'Select a Quarter and Year respectively from the drop down to specify start date range. Leaving it blank means "from the start".Please click on the label for more information. Please click on the label again to close it ',
-      date_range_to: 'Select a Quarter and Year respectively from the drop down to specify end date range. Leaving it blank means "to the end". You should always specify as small a range of dates as possible to search in order to speed up the search by reducing the number of results.Please click on the label for more information. Please click on the label again to close it',
-      record_type: 'Specify whether you are searching for Births, Marriages, Deaths. If no checkboxes are checked means all the three types.Please click on the label for more information. Please click on the label again to close it',
-      spouse_first_name: 'Optional. Use upper- or lower-case.Please click on the label for more information. Please click on the label again to close it',
-      spouse_mother_surname: 'Optional. Use upper- or lower-case. Search spouse surname for Marriage record type or mother surname for Birth Record Type. Only records from the September quarter 1911 onwards contain the mothers maiden name so entering a value in this field will return only records from the September quarter 1911 onwards.Please click on the label for more information. Please click on the label again to close it',
+      date_range_from: 'Select a  start Quarter and Year respectively from the drop down to specify start date range. Leaving it blank means "from the start". ',
+      date_range_to: 'Select an end Quarter and Year respectively from the drop down to specify end date range. Leaving it blank means "to the end". Specify as small a range of dates as possible to search in order to speed up the search by reducing the number of results.',
+      record_type: 'Specify whether you are searching for Births, Marriages or Death records. If no checkboxes are checked means all the three types.',
+      spouse_first_name: 'Optional. Use upper- or lower-case.',
+      spouse_mother_surname: 'Optional. Use upper- or lower-case. Enter Spouse surname for Marriage record type or Mother surname for Birth Record Type. Search start year is reset to Sep 1911 when Mother Surname is entered.',
       volume: 'Optional.',
       page: 'Optional.',
       counties: 'Optional.',
       districts: 'Optional.',
-      m_s_a_d: ' this column lists either mother surname or spouse surname or age at death or date of birth'
+      m_s_a_d: ' this column lists either mother surname or spouse surname or age at death or date of birth',
+      age_at_death: 'Optional. Age can also be entered Number(range) or Date of Birth(range)'
+
     }
   end
 
