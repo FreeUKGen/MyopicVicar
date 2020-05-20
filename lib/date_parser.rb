@@ -95,18 +95,18 @@ module DateParser
 
   def self.start_search_date(year)
     # zero-pad for completionist users inputting three-digit years
-    year.to_s.rjust(4,"0")
+    year.to_s.rjust(4, '0')
   end
 
   def self.end_search_date(year)
     # make the year inclusive
     next_year = year + 1
-    next_year = next_year.to_s.rjust(4,"0")
+    next_year = next_year.to_s.rjust(4, '0')
     # calculate new year
     if next_year.to_i < 1753
       next_year = "#{next_year}-03-25"
     else
-      next_year = "#{year}-12-31"
+      next_year = "#{next_year}-01-01"
     end
     next_year
   end
