@@ -14,7 +14,7 @@ class AddEmbargoRecord
         int = int + 1
       end
     end
-    File.truncate(input_file, 0)
+
     message_file.puts "Processing #{lines.length} registers with a limit of #{limit}"
     message_file.puts lines
     total_records = 0
@@ -84,7 +84,7 @@ class AddEmbargoRecord
         userids << rule.member_who_created unless userids.include?(rule.member_who_created)
       end
     end
-
+    File.truncate(input_file, 0)
     message_file.puts " #{total_files} files processed and #{total_records} records were embargoed"
     message_file.close
     emails = []

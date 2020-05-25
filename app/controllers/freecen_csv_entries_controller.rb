@@ -111,6 +111,7 @@ class FreecenCsvEntriesController < ApplicationController
     @piece.subplaces.each do |place|
       @subplaces << place[:name]
     end
+    @languages = FreecenValidations::VALID_LANGUAGE
   end
 
   def index
@@ -127,11 +128,11 @@ class FreecenCsvEntriesController < ApplicationController
     if @type.blank?
       @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).all.order_by(file_line_number: 1)
     elsif @type == 'Civ'
-      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).in(data_transition: ['Civil Parish', 'Enumeration District']).all.order_by(file_line_number: 1)
+      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).in(data_transition: Freecen::LOCATION).all.order_by(file_line_number: 1)
     elsif @type == 'Pag'
-      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).in(data_transition: ['Civil Parish', 'Enumeration District', 'Folio', 'Page']).all.order_by(file_line_number: 1)
+      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).in(data_transition: Freecen::LOCATION_PAGE).all.order_by(file_line_number: 1)
     elsif @type == 'Dwe'
-      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).in(data_transition: ['Civil Parish', 'Enumeration District', 'Folio', 'Page', 'Dwelling']).all.order_by(file_line_number: 1)
+      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).in(data_transition: Freecen::LOCATION_DWELLING).all.order_by(file_line_number: 1)
     elsif @type == 'Ind'
       @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).all.order_by(file_line_number: 1)
     elsif @type == 'Err'
@@ -146,6 +147,7 @@ class FreecenCsvEntriesController < ApplicationController
   end
 
   def new
+    # NOT CURRENTLY IN USE
     session[:error_id] = nil
     unless FreecenCsvFile.valid_freecen_csv_file?(session[:freecen_csv_file_id])
       flash[:notice] = 'The entry was not correctly linked. Have your coordinator contact the web master'
@@ -158,12 +160,12 @@ class FreecenCsvEntriesController < ApplicationController
     redirect_back(fallback_location: new_manage_resource_path, notice: 'File is currently awaiting processing and should not be edited') && return unless @freecen_csv_file.can_we_edit?
 
     @freecen_csv_entry = FreecenCsvEntry.new(freecen_csv_file_id: session[:freecen_csv_file_id], record_number: record_number)
-    @data_transition = "Civil Parish"
     session[:freecen_csv_entry_id] = @freecen_csv_entry._id
     @subplaces = []
     @piece.subplaces.each do |place|
       @subplaces << place[:name]
     end
+    @languages = FreecenValidations::VALID_LANGUAGE
   end
 
   def show

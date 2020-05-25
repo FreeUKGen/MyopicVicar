@@ -54,10 +54,9 @@ class FreecenCsvEntry
   field :info_messages, type: String
   field :industry, type: String
   field :language, type: String
-  field :locaton_flag, type: String
+  field :location_flag, type: String
   field :address_flag, type: String
   field :marital_status, type: String
-  field :where_census_taken, type: String
   field :name_flag, type: String
   field :nationality, type: String
   field :notes, type: String
@@ -93,6 +92,7 @@ class FreecenCsvEntry
   field :walls, type: Integer
   field :ward, type: String
   field :warning_messages, type: String
+  field :where_census_taken, type: String
   field :year, type: String
   field :years_married, type: String
 
@@ -269,6 +269,7 @@ class FreecenCsvEntry
       ecclesiastical_parish = record[:ecclesiastical_parish]
       num = record[:num]
       new_ecclesiastical_parish = previous_ecclesiastical_parish
+      info_messages = record[:messages]
       success, messagea = FreecenValidations.text?(ecclesiastical_parish)
       unless success
         messageb = "ERROR: line #{num} Ecclesiastical Parish #{ecclesiastical_parish} is #{messagea}.<br>"
@@ -294,6 +295,7 @@ class FreecenCsvEntry
       where_census_taken = record[:where_census_taken]
       num = record[:num]
       new_where_census_taken = previous_where_census_taken
+      info_messages = record[:messages]
       success, messagea = FreecenValidations.text?(where_census_taken)
       unless success
         messageb = "ERROR: line #{num} Municipal Borough #{where_census_taken} is #{messagea}.<br>"
@@ -319,6 +321,7 @@ class FreecenCsvEntry
       ward = record[:ward]
       num = record[:num]
       new_ward = previous_ward
+      info_messages = record[:messages]
       success, messagea = FreecenValidations.text?(ward)
       unless success
         messageb = "ERROR: line #{num} Ward #{ward} is #{messagea}.<br>"
@@ -344,6 +347,7 @@ class FreecenCsvEntry
       parliamentary_constituency = record[:parliamentary_constituency]
       num = record[:num]
       new_parliamentary_constituency = previous_parliamentary_constituency
+      info_messages = record[:messages]
       success, messagea = FreecenValidations.text?(parliamentary_constituency)
       unless success
         messageb = "ERROR: line #{num} Parliamentary Constituency #{parliamentary_constituency} is #{messagea}.<br>"
@@ -369,6 +373,7 @@ class FreecenCsvEntry
       poor_law_union = record[:poor_law_union]
       num = record[:num]
       new_poor_law_union = previous_poor_law_union
+      info_messages = record[:messages]
       success, messagea = FreecenValidations.text?(poor_law_union)
       unless success
         messageb = "ERROR: line #{num} Poor Law Union #{poor_law_union} is #{messagea}.<br>"
@@ -394,6 +399,7 @@ class FreecenCsvEntry
       police_district = record[:police_district]
       num = record[:num]
       new_police_district = previous_police_district
+      info_messages = record[:messages]
       success, messagea = FreecenValidations.text?(police_district)
       unless success
         messageb = "ERROR: line #{num} Police District #{police_district} is #{messagea}.<br>"
@@ -419,6 +425,7 @@ class FreecenCsvEntry
       sanitary_district = record[:sanitary_district]
       num = record[:num]
       new_sanitary_district = previous_sanitary_district
+      info_messages = record[:messages]
       success, messagea = FreecenValidations.text?(sanitary_district)
       unless success
         messageb = "ERROR: line #{num} Sanitary District #{sanitary_district} is #{messagea}.<br>"
@@ -444,6 +451,7 @@ class FreecenCsvEntry
       special_water_district = record[:special_water_district]
       num = record[:num]
       new_special_water_district = previous_special_water_district
+      info_messages = record[:messages]
       success, messagea = FreecenValidations.text?(special_water_district)
       unless success
         messageb = "ERROR: line #{num} Special Water District #{special_water_district} is #{messagea}.<br>"
@@ -469,6 +477,7 @@ class FreecenCsvEntry
       scavenging_district = record[:scavenging_district]
       num = record[:num]
       new_scavenging_district = previous_scavenging_district
+      info_messages = record[:messages]
       success, messagea = FreecenValidations.text?(scavenging_district)
       unless success
         messageb = "ERROR: line #{num} Scavenging District #{scavenging_district} is #{messagea}.<br>"
@@ -494,6 +503,7 @@ class FreecenCsvEntry
       special_lighting_district = record[:special_lighting_district]
       num = record[:num]
       new_special_lighting_district = previous_special_lighting_district
+      info_messages = record[:messages]
       success, messagea = FreecenValidations.text?(special_lighting_district)
       unless success
         messageb = "ERROR: line #{num} Special Lighting District #{special_lighting_district} is #{messagea}.<br>"
@@ -519,6 +529,7 @@ class FreecenCsvEntry
       school_board = record[:school_board]
       num = record[:num]
       new_school_board = previous_school_board
+      info_messages = record[:messages]
       success, messagea = FreecenValidations.text?(school_board)
       unless success
         messageb = "ERROR: line #{num} School Board #{school_board} is #{messagea}.<br>"
@@ -543,7 +554,8 @@ class FreecenCsvEntry
     def validate_location_flag(record)
       flag = record[:location_flag]
       num = record[:num]
-      success, messagea = FreecenValidations.flag?(flag)
+      info_messages = record[:messages]
+      success, messagea = FreecenValidations.location_flag?(flag)
       unless success
         messageb = "ERROR: line #{num} Location Flag #{flag} is #{messagea}.<br>"
         message = messagea + messageb
@@ -674,12 +686,14 @@ class FreecenCsvEntry
       if !success
         new_schedule_number = previous_schedule_number
         new_schedule_suffix = previous_schedule_suffix
-        if messagea == 'blank' && ['Civil Parish', 'Enumeration District', 'Folio', 'Page'].include?(transition) && house_number.blank?
+        if messagea == 'blank' && Freecen::LOCATION_PAGE.include?(transition) && house_number.blank?
           message = "Info: line #{num} Schedule number retained at #{new_schedule_number}.<br>" if info_messages
           record[:info_messages] = record[:info_messages] + message if info_messages
         elsif messagea == 'blank' && record[:house_or_street_name] == '-' && house_number.blank?
           message = "Info: line #{num} Schedule number retained at #{new_schedule_number}.<br>" if info_messages
           record[:info_messages] = record[:info_messages] + message if info_messages
+        elsif messagea == 'blank' && record[:year] == '1841'
+
         elsif messagea == 'blank'
           messagea = "ERROR: line #{num} Schedule number is blank and not a page transition.<br>"
           message = message + messagea
@@ -695,7 +709,7 @@ class FreecenCsvEntry
       elsif (schedule_number.to_i < previous_schedule_number.to_i) && schedule_number.to_i != 0
         new_schedule_number = previous_schedule_number if ['b', 'n', 'u', 'v'].include?(uninhabited_flag)
         new_schedule_suffix = previous_schedule_suffix if ['b', 'n', 'u', 'v'].include?(uninhabited_flag)
-        unless ['u', 'v'].include?(uninhabited_flag) || ['Civil Parish', 'Enumeration District'].include?(transition)
+        unless ['u', 'v'].include?(uninhabited_flag) || Freecen::LOCATION.include?(transition)
           message = "Warning: line #{num} Schedule number #{record[:schedule_number]} is less than the previous one .<br>"
           record[:warning_messages] = record[:warning_messages] + message
         end
@@ -722,50 +736,6 @@ class FreecenCsvEntry
           record[:error_messages] = record[:error_messages] + messageb
         end
       end
-      if record[:walls].present?
-        success, messagea = FreecenValidations.walls?(record[:walls])
-        unless success
-          messageb = "ERROR: line #{num} Number of walls #{record[:walls]} is #{messagea}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
-        end
-      end
-
-      if record[:roof_type].present?
-        success, messagea = FreecenValidations.roof_type?(record[:roof_type])
-        unless success
-          messageb = "ERROR: line #{num} Roof type #{record[:roof_type]} is #{messagea}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
-        end
-      end
-
-      if record[:rooms].present?
-        success, messagea = FreecenValidations.rooms?(record[:rooms], record[:year])
-        unless success
-          messageb = "ERROR: line #{num} Rooms #{record[:rooms]} is #{messagea}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
-        end
-      end
-
-      if record[:rooms_with_windows].present?
-        success, messagea = FreecenValidations.rooms_with_windows?(record[:rooms_with_windows])
-        unless success
-          messageb = "ERROR: line #{num} Rooms with windows #{record[:rooms_with_windows]} is #{messagea}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
-        end
-      end
-
-      if record[:class_of_house].present?
-        success, messagea = FreecenValidations.class_of_house?(record[:class_of_house])
-        unless success
-          messageb = "ERROR: line #{num} Class of house #{record[:class_of_house]} is #{messagea}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
-        end
-      end
 
       success, messagea = FreecenValidations.fixed_uninhabited_flag?(uninhabited_flag)
       unless success
@@ -773,7 +743,7 @@ class FreecenCsvEntry
         message = message + messageb
         record[:error_messages] = record[:error_messages] + messageb
       else
-        if ['u', 'v'].include?(uninhabited_flag) && schedule_number.blank?
+        if %w[u v].include?(uninhabited_flag) && schedule_number.blank?
           messageb = "Warning: line #{num} has special #{uninhabited_flag} but no schedule number.<br>"
           message = message + messageb
           record[:warning_messages] = record[:warning_messages] + messageb
@@ -787,14 +757,89 @@ class FreecenCsvEntry
         end
       end
 
+      unless %w[b n u v].include?(uninhabited_flag)
+        if record[:walls].present?
+          if %w[1901 1911].include?(record[:year])
+            success, messagea = FreecenValidations.walls?(record[:walls])
+            unless success
+              messageb = "ERROR: line #{num} Number of walls #{record[:walls]} is #{messagea}.<br>"
+              message = message + messageb
+              record[:error_messages] = record[:error_messages] + messageb
+            end
+          else
+            messageb = "ERROR: line #{num} Number of walls #{record[:walls]} should not be included for #{record[:year]}.<br>"
+            message = message + messageb
+            record[:error_messages] = record[:error_messages] + messageb
+          end
+        end
 
+        if record[:roof_type].present?
+          if %w[1901 1911].include?(record[:year])
+            success, messagea = FreecenValidations.roof_type?(record[:roof_type])
+            unless success
+              messageb = "ERROR: line #{num} Roof type #{record[:roof_type]} is #{messagea}.<br>"
+              message = message + messageb
+              record[:error_messages] = record[:error_messages] + messageb
+            end
+          else
+            messageb = "ERROR: line #{num} Roof type #{record[:roof_type]} should not be included for #{record[:year]}.<br>"
+            message = message + messageb
+            record[:error_messages] = record[:error_messages] + messageb
+          end
+        end
+
+        if record[:rooms].present?
+          if %w[1901 1911].include?(record[:year])
+            success, messagea = FreecenValidations.rooms?(record[:rooms], record[:year])
+            unless success
+              messageb = "ERROR: line #{num} Rooms #{record[:rooms]} is #{messagea}.<br>"
+              message = message + messageb
+              record[:error_messages] = record[:error_messages] + messageb
+            end
+          else
+            messageb = "ERROR: line #{num} Rooms #{record[:rooms]}} should not be included for #{record[:year]}.<br>"
+            message = message + messageb
+            record[:error_messages] = record[:error_messages] + messageb
+          end
+        end
+
+        if record[:rooms_with_windows].present?
+          if %w[1861 1871 1881 1891 1901 1911].include?(record[:year])
+            success, messagea = FreecenValidations.rooms_with_windows?(record[:rooms_with_windows])
+            unless success
+              messageb = "ERROR: line #{num} Rooms with windows #{record[:rooms_with_windows]} is #{messagea}.<br>"
+              message = message + messageb
+              record[:error_messages] = record[:error_messages] + messageb
+            end
+          else
+            messageb = "ERROR: line #{num} Rooms with windows #{record[:rooms_with_windows]} should not be included for #{record[:year]}.<br>"
+            message = message + messageb
+            record[:error_messages] = record[:error_messages] + messageb
+          end
+        end
+
+        if record[:class_of_house].present?
+          if %w[1901 1911].include?(record[:year])
+            success, messagea = FreecenValidations.class_of_house?(record[:class_of_house])
+            unless success
+              messageb = "ERROR: line #{num} Class of house #{record[:class_of_house]} is #{messagea}.<br>"
+              message = message + messageb
+              record[:error_messages] = record[:error_messages] + messageb
+            end
+          else
+            messageb = "ERROR: line #{num} Class of house #{record[:class_of_house]}  should not be included for #{record[:year]}.<br>"
+            message = message + messageb
+            record[:error_messages] = record[:error_messages] + messageb
+          end
+        end
+      end
       [message, new_schedule_number, new_schedule_suffix]
     end
 
     def validate_individual(record)
       # p 'validate_individual'
       num = record[:record_number]
-      return [true, ''] if ['b', 'n', 'u', 'v'].include?(record[:uninhabited_flag])
+      return [true, ''] if %w[b n u v].include?(record[:uninhabited_flag])
 
       message = ''
       success, messagea = FreecenValidations.fixed_surname?(record[:surname])
@@ -811,6 +856,7 @@ class FreecenCsvEntry
           record[:error_messages] = record[:error_messages] + messageb
         end
       end
+
       success, messagea = FreecenValidations.fixed_forenames?(record[:forenames])
       unless success
         if messagea == '?'
@@ -825,97 +871,146 @@ class FreecenCsvEntry
           record[:error_messages] = record[:error_messages] + messageb
         end
       end
+
       success, messagea = FreecenValidations.fixed_name_question?(record[:name_flag])
       unless success
         messageb = "ERROR: line #{num} Uncertainty #{record[:name_flag]} is #{messagea}.<br>"
         message = message + messageb
         record[:error_messages] = record[:error_messages] + messageb
       end
-      success, messagea = FreecenValidations.fixed_relationship?(record[:relationship])
-      if !success && !record[:year] == '1841'
-        p 'testing' if num == 5
-        p success if num == 5
-        p record[:year] == '1841' if num == 5
-        messageb = "ERROR: line #{num} Relationship #{record[:relationship]} is #{messagea}.<br>"
-        message = message + messageb
-        record[:error_messages] = record[:error_messages] + messageb
+
+      unless record[:year] == '1841'
+        success, messagea = FreecenValidations.fixed_relationship?(record[:relationship])
+        unless success
+          messageb = "ERROR: line #{num} Relationship #{record[:relationship]} is #{messagea}.<br>"
+          message = message + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+        end
       end
-      success, messagea = FreecenValidations.fixed_marital_status?(record[:marital_status])
-      unless success
-        messageb = "ERROR: line #{num} Marital status #{record[:marital_status]} is #{messagea}.<br>"
-        message = message + messageb
-        record[:error_messages] = record[:error_messages] + messageb
+
+      unless record[:year] == '1841'
+        success, messagea = FreecenValidations.fixed_marital_status?(record[:marital_status])
+        unless success
+          messageb = "ERROR: line #{num} Marital status #{record[:marital_status]} is #{messagea}.<br>"
+          message = message + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+        end
       end
+
       success, messagea = FreecenValidations.fixed_sex?(record[:sex])
       unless success
         messageb = "ERROR: line #{num} Sex #{record[:sex]} is #{messagea}.<br>"
         message = message + messageb
         record[:error_messages] = record[:error_messages] + messageb
       end
+
       success, messagea = FreecenValidations.fixed_age?(record[:age], record[:marital_status], record[:sex])
       unless success
         messageb = "ERROR: line #{num} Age #{record[:age]} is #{messagea}.<br>"
         message = message + messageb
         record[:error_messages] = record[:error_messages] + messageb
       end
+
       if record[:school_children].present?
-        success, messagea = FreecenValidations.school_children?(record[:aschool_childrene])
-        unless success
-          messageb = "ERROR: line #{num} Number of school children #{record[:school_children]} is #{messagea}.<br>"
+        if %w[1861 1871].include?(record[:year])
+          success, messagea = FreecenValidations.school_children?(record[:aschool_childrene])
+          unless success
+            messageb = "ERROR: line #{num}  is #{messagea}.<br>"
+            message = message + messageb
+            record[:error_messages] = record[:error_messages] + messageb
+          end
+        else
+          messageb = "ERROR: line #{num} Number of school children #{record[:school_children]} should not be included for #{record[:year]}.<br>"
           message = message + messageb
           record[:error_messages] = record[:error_messages] + messageb
         end
       end
 
       if record[:years_married].present?
-        success, messagea = FreecenValidations.years_married?(record[:years_married])
-        unless success
-          messageb = "ERROR: line #{num} Years married #{record[:years_married]} is #{messagea}.<br>"
+        if %w[1911].include?(record[:year])
+          success, messagea = FreecenValidations.years_married?(record[:years_married])
+          unless success
+            messageb = "ERROR: line #{num} Years married #{record[:years_married]} is #{messagea}.<br>"
+            message = message + messageb
+            record[:error_messages] = record[:error_messages] + messageb
+          end
+        else
+          messageb = "ERROR: line #{num} Years married #{record[:years_married]} should not be included for #{record[:year]}.<br>"
           message = message + messageb
           record[:error_messages] = record[:error_messages] + messageb
         end
       end
 
       if record[:children_born_alive].present?
-        success, messagea = FreecenValidations.children_born_alive?(record[:children_born_alive])
-        unless success
-          messageb = "ERROR: line #{num} Number of children born alive #{record[:children_born_alive]} is #{messagea}.<br>"
+        if %w[1911].include?(record[:year])
+          success, messagea = FreecenValidations.children_born_alive?(record[:children_born_alive])
+          unless success
+            messageb = "ERROR: line #{num} Number of children born alive #{record[:children_born_alive]} is #{messagea}.<br>"
+            message = message + messageb
+            record[:error_messages] = record[:error_messages] + messageb
+          end
+        else
+          messageb = "ERROR: line #{num} Number of children born alive #{record[:children_born_alive]} should not be included for #{record[:year]}.<br>"
           message = message + messageb
           record[:error_messages] = record[:error_messages] + messageb
         end
       end
 
       if record[:children_living].present?
-        success, messagea = FreecenValidations.children_living?(record[:children_living])
-        unless success
-          messageb = "ERROR: line #{num} Number of children living #{record[:children_living]} is #{messagea}.<br>"
+        if %w[1911].include?(record[:year])
+          success, messagea = FreecenValidations.children_living?(record[:children_living])
+          unless success
+            messageb = "ERROR: line #{num} Number of children living #{record[:children_living]} is #{messagea}.<br>"
+            message = message + messageb
+            record[:error_messages] = record[:error_messages] + messageb
+          end
+        else
+          messageb = "ERROR: line #{num} Number of children living #{record[:children_living]} should not be included for #{record[:year]}.<br>"
           message = message + messageb
           record[:error_messages] = record[:error_messages] + messageb
         end
       end
 
       if record[:children_deceased].present?
-        success, messagea = FreecenValidations.children_deceased?(record[:children_deceased])
-        unless success
-          messageb = "ERROR: line #{num} Number of children deceased #{record[:children_deceased]} is #{messagea}.<br>"
+        if %w[1911].include?(record[:year])
+          success, messagea = FreecenValidations.children_deceased?(record[:children_deceased])
+          unless success
+            messageb = "ERROR: line #{num} Number of children deceased #{record[:children_deceased]} is #{messagea}.<br>"
+            message = message + messageb
+            record[:error_messages] = record[:error_messages] + messageb
+          end
+        else
+          messageb = "ERROR: line #{num} Number of children deceased #{record[:children_deceased]} should not be included for #{record[:year]}.<br>"
           message = message + messageb
           record[:error_messages] = record[:error_messages] + messageb
         end
       end
 
       if record[:religion].present?
-        success, messagea = FreecenValidations.religion?(record[:religion])
-        unless success
-          messageb = "ERROR: line #{num} Religion #{record[:religion]} is #{messagea}.<br>"
+        if %w[1901 1911].include?(record[:year])
+          success, messagea = FreecenValidations.religion?(record[:religion])
+          unless success
+            messageb = "ERROR: line #{num} Religion #{record[:religion]} is #{messagea}.<br>"
+            message = message + messageb
+            record[:error_messages] = record[:error_messages] + messageb
+          end
+        else
+          messageb = "ERROR: line #{num} Religion #{record[:religion]} should not be included for #{record[:year]}.<br>"
           message = message + messageb
           record[:error_messages] = record[:error_messages] + messageb
         end
       end
 
       if record[:read_write].present?
-        success, messagea = FreecenValidations.read_write?(record[:read_write])
-        unless success
-          messageb = "ERROR: line #{num} Ability to read and write #{record[:read_write]} is #{messagea}.<br>"
+        if %w[1901 1911].include?(record[:year])
+          success, messagea = FreecenValidations.read_write?(record[:read_write])
+          unless success
+            messageb = "ERROR: line #{num} Ability to read and write #{record[:read_write]} is #{messagea}.<br>"
+            message = message + messageb
+            record[:error_messages] = record[:error_messages] + messageb
+          end
+        else
+          messageb = "ERROR: line #{num} Ability to read and write #{record[:read_write]} should not be included for #{record[:year]}.<br>"
           message = message + messageb
           record[:error_messages] = record[:error_messages] + messageb
         end
@@ -948,25 +1043,45 @@ class FreecenCsvEntry
       end
 
       if record[:industry].present?
-        success, messagea = FreecenValidations.industry?(record[:industry])
-        unless success
-          messageb = "ERROR: line #{num} Industry #{record[:industry]} is #{messagea}.<br>"
+        if %w[1911].include?(record[:year])
+          success, messagea = FreecenValidations.industry?(record[:industry])
+          unless success
+            messageb = "ERROR: line #{num} Industry #{record[:industry]} is #{messagea}.<br>"
+            message = message + messageb
+            record[:error_messages] = record[:error_messages] + messageb
+          end
+        else
+          messageb = "ERROR: line #{num} Industry #{record[:industry]} should not be included for #{record[:year]}.<br>"
           message = message + messageb
           record[:error_messages] = record[:error_messages] + messageb
         end
       end
 
-      success, messagea = FreecenValidations.fixed_occupation_category?(record[:occupation_category])
-      unless success
-        messageb = "ERROR: line #{num} Occupation category #{record[:occupation_category]} is #{messagea}.<br>"
-        message = message + messageb
-        record[:error_messages] = record[:error_messages] + messageb
+      if record[:occupation_category].present?
+        if %w[1891 1901 1911].include?(record[:year])
+          success, messagea = FreecenValidations.fixed_occupation_category?(record[:occupation_category])
+          unless success
+            messageb = "ERROR: line #{num} Occupation category #{record[:occupation_category]} is #{messagea}.<br>"
+            message = message + messageb
+            record[:error_messages] = record[:error_messages] + messageb
+          end
+        else
+          messageb = "ERROR: line #{num} Occupation category #{record[:occupation_category]} should not be included for #{record[:year]}.<br>"
+          message = message + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+        end
       end
 
       if record[:at_home].present?
-        success, messagea = FreecenValidations.at_home?(record[:at_home])
-        unless success
-          messageb = "ERROR: line #{num} Working at home #{record[:at_home]} is #{messagea}.<br>"
+        if %w[1901 1911].include?(record[:year])
+          success, messagea = FreecenValidations.at_home?(record[:at_home])
+          unless success
+            messageb = "ERROR: line #{num} Working at home #{record[:at_home]} is #{messagea}.<br>"
+            message = message + messageb
+            record[:error_messages] = record[:error_messages] + messageb
+          end
+        else
+          messageb = "ERROR: line #{num} Working at home #{record[:at_home]} should not be included for #{record[:year]}.<br>"
           message = message + messageb
           record[:error_messages] = record[:error_messages] + messageb
         end
@@ -986,40 +1101,70 @@ class FreecenCsvEntry
         record[:error_messages] = record[:error_messages] + messageb
       end
 
-      success, messagea = FreecenValidations.fixed_verbatim_birth_place?(record[:verbatim_birth_place])
-      if !success && !record[:year] == '1841'
-        messageb = "ERROR: line #{num} Verbatim Birth Place #{record[:verbatim_birth_place]} is #{messagea}.<br>"
-        message = message + messageb
-        record[:error_messages] = record[:error_messages] + messageb
+
+      if record[:year] == '1841'
+        if record[:verbatim_birth_place].present?
+          messageb = "ERROR: line #{num} Verbatim Birth Place #{record[:verbatim_birth_place]} should not be included for #{record[:year]}.<br>"
+          message = message + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+        end
+      else
+        success, messagea = FreecenValidations.fixed_verbatim_birth_place?(record[:verbatim_birth_place])
+        unless success
+          messageb = "ERROR: line #{num} Verbatim Birth Place #{record[:verbatim_birth_place]} is #{messagea}.<br>"
+          message = message + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+        end
       end
 
       if record[:nationality].present?
-        success, messagea = FreecenValidations.nationality?(record[:nationality])
-        unless success
-          messageb = "ERROR: line #{num} Nationality #{record[:nationality]} is #{messagea}.<br>"
+        unless %w[1841].include?(record[:year])
+          success, messagea = FreecenValidations.nationality?(record[:nationality])
+          unless success
+            messageb = "ERROR: line #{num} Nationality #{record[:nationality]} is #{messagea}.<br>"
+            message = message + messageb
+            record[:error_messages] = record[:error_messages] + messageb
+          end
+        else
+          messageb = "ERROR: line #{num} Nationality #{record[:nationality]} should not be included for #{record[:year]}.<br>"
           message = message + messageb
           record[:error_messages] = record[:error_messages] + messageb
         end
       end
 
       success, messagea = FreecenValidations.fixed_verbatim_birth_county?(record[:birth_county])
-      unless success
+      unless success || messagea == 'blank'
         messageb = "ERROR: line #{num} Birth County #{record[:birth_county]} is #{messagea}.<br>"
         message = message + messageb
         record[:error_messages] = record[:error_messages] + messageb
       end
 
-      success, messagea = FreecenValidations.fixed_verbatim_birth_place?(record[:birth_place])
-      if !success && !record[:year] == '1841'
-        messageb = "ERROR: line #{num} Birth Place #{record[:birth_place]} is #{messagea}.<br>"
-        message = message + messageb
-        record[:error_messages] = record[:error_messages] + messageb
+      if record[:year] == '1841'
+        if record[:birth_place].present?
+          messageb = "ERROR: line #{num} Birth Place #{record[:birth_place]} should not be included for #{record[:year]}.<br>"
+          message = message + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+        end
+      else
+        success, messagea = FreecenValidations.fixed_verbatim_birth_place?(record[:birth_place])
+        unless success || messagea == 'blank'
+          messageb = "ERROR: line #{num} Birth Place #{record[:birth_place]} is #{messagea}.<br>"
+          message = message + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+        end
+
       end
 
       if record[:father_place_of_birth].present?
-        success, messagea = FreecenValidations.father_place_of_birth?(record[:father_place_of_birth])
-        unless success
-          messageb = "ERROR: line #{num} Father's place of birth #{record[:father_place_of_birth]} is #{messagea}.<br>"
+        if record[:year] == '1911'
+          success, messagea = FreecenValidations.father_place_of_birth?(record[:father_place_of_birth])
+          unless success
+            messageb = "ERROR: line #{num} Father's place of birth #{record[:father_place_of_birth]} is #{messagea}.<br>"
+            message = message + messageb
+            record[:error_messages] = record[:error_messages] + messageb
+          end
+        else
+          messageb = "ERROR: line #{num} Father's place of birth #{record[:father_place_of_birth]} should not be included for #{record[:year]}.<br>"
           message = message + messageb
           record[:error_messages] = record[:error_messages] + messageb
         end
@@ -1032,18 +1177,49 @@ class FreecenCsvEntry
         record[:error_messages] = record[:error_messages] + messageb
       end
 
-      success, messagea = FreecenValidations.fixed_disability?(record[:disability])
-      unless success
-        messageb = "ERROR: line #{num} Disability #{record[:disability]} is #{messagea}.<br>"
-        message = message + messageb
-        record[:error_messages] = record[:error_messages] + messageb
+      if record[:year] == '1841'
+        if record[:disability].present?
+          messageb = "ERROR: line #{num} Disability #{record[:disability]} should not be included for #{record[:year]}.<br>"
+          message = message + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+        end
+      else
+        success, messagea = FreecenValidations.fixed_disability?(record[:disability])
+        unless success
+          messageb = "ERROR: line #{num} Disability #{record[:disability]} is #{messagea}.<br>"
+          message = message + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+        end
       end
 
-      success, messagea = FreecenValidations.fixed_language?(record[:language])
-      unless success
-        messageb = "ERROR: line #{num} Language #{record[:language]} is #{messagea}.<br>"
-        message = message + messageb
-        record[:error_messages] = record[:error_messages] + messageb
+      if record[:disability_notes].present?
+        if record[:year] == '1911'
+          success, messagea = FreecenValidations.disability_notes?(record[:disability_notes])
+          unless success
+            messageb = "ERROR: line #{num} Disability Notes #{record[:disability_notes]} is #{messagea}.<br>"
+            message = message + messageb
+            record[:error_messages] = record[:error_messages] + messageb
+          end
+        else
+          messageb = "ERROR: line #{num} Disability Notes #{record[:disability_notes]} should not be included for #{record[:year]}.<br>"
+          message = message + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+        end
+      end
+
+      if record[:language].present?
+        if %w[1881 1891 1901 1911].include?(record[:year])
+          success, messagea = FreecenValidations.fixed_language?(record[:language])
+          unless success
+            messageb = "ERROR: line #{num} Language #{record[:language]} is #{messagea}.<br>"
+            message = message + messageb
+            record[:error_messages] = record[:error_messages] + messageb
+          end
+        else
+          messageb = "ERROR: line #{num} Language #{record[:language]} should not be included for #{record[:year]}.<br>"
+          message = message + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+        end
       end
 
       success, messagea = FreecenValidations.fixed_notes?(record[:notes])
@@ -1149,31 +1325,66 @@ class FreecenCsvEntry
   end
 
   # labels/vals for dwelling page header section (body in freecen_individuals)
-  def self.dwelling_display_labels(year, chapman_code)
-    #1841 doesn't have ecclesiastical parish or schedule number
-    #Scotland doesn't have folio
-    if year == '1841'
+  def self.census_display_labels(year, chapman_code)
+    # 1841 doesn't have ecclesiastical parish or schedule number
+    # Scotland doesn't have folio
+    case year
+    when '1841'
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        return ['Census Year', 'County', 'Census District', 'Civil Parish', 'Piece', 'Enumeration District', 'Page', 'House Number', 'House or Street Name', 'Dwelling Number']
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Quaord Sacra', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Folio', 'Page']
+      else
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Census Place', 'Piece', 'Enumeration District', 'Constituency', 'Folio', 'Page']
       end
-      return ['Census Year', 'County', 'Census District', 'Civil Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'House Number', 'House or Street Name', 'Dwelling Number']
-
-    elsif year == '1901'
+    when '1851'
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        return ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Piece', 'Enumeration District', 'Page', 'Schedule', 'House Number', 'House or Street Name', 'Dwelling Number', 'Rooms']
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency','Folio', 'Page']
+      else
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Census Place', 'Piece', 'Enumeration District', 'Constituency', 'Folio', 'Page']
       end
-
-      ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'Schedule', 'House Number', 'House or Street Name', 'Dwelling Number', 'Rooms']
-    else
+    when '1861'
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        return ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Piece', 'Enumeration District', 'Page', 'Schedule', 'House Number', 'House or Street Name', 'Dwelling Number']
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Quaord Sacra', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Page']
+      else
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Folio', 'Page']
       end
-
-      ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'Schedule', 'House Number', 'House or Street Name', 'Dwelling Number']
+    when '1871'
+      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Quaord Sacra', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Police District', 'Page']
+      else
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Folio', 'Page']
+      end
+    when '1881'
+      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Quaord Sacra', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Police District', 'School Board', 'Folio', 'Page']
+      else
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Sanitary District', 'Folio', 'Page']
+      end
+    when '1891'
+      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Quaord Sacra', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Police District', 'School Board', 'Folio', 'Page']
+      else
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Sanitary District', 'Folio', 'Page']
+      end
+    when '1901'
+      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Quaord Sacra', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Police District',  'School Board', 'Folio', 'Page']
+      elsif ChapmanCode::CODES['Ireland'].member?(chapman_code)
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Poor Law Union', 'Police District', 'Page']
+      else
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Folio', 'Page']
+      end
+    when '1911'
+      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Quaord Sacra', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Sanitary District', 'Scavenging District', 'Special Lighting District', 'School Board', 'Page']
+      elsif ChapmanCode::CODES['Ireland'].member?(chapman_code)
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Poor Law Union', 'Police District', 'Page']
+      else
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Folio', 'Page']
+      end
     end
   end
 
-  def dwelling_display_values(year, chapman_code)
+  def census_display_values(year, chapman_code)
     #1841 doesn't have ecclesiastical parish or schedule number
     #Scotland doesn't have folio
     freecen_piece = freecen_csv_file.freecen_piece
@@ -1182,77 +1393,273 @@ class FreecenCsvEntry
     civil = civil_parish.titleize if civil_parish.present?
     address = house_or_street_name.titleize if house_or_street_name.present?
     disp_county = '' + ChapmanCode.name_from_code(chapman_code) + ' (' + chapman_code + ')' unless chapman_code.nil?
-    if year == '1841'
+    case year
+    when '1841'
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        return [freecen_piece.year, disp_county, district_name, civil, freecen_piece.piece_number.to_s, enumeration_district, page_number,
-                house_number, address, dwelling_number]
+        [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, where_census_taken, freecen_piece.piece_number.to_s,
+         enumeration_district, ward, parliamentary_constituency, folio_number, page_number]
+      else
+        [freecen_piece.year, disp_county, district_name, civil, where_census_taken, freecen_piece.piece_number.to_s,
+         enumeration_district, parliamentary_constituency, folio_number, page_number]
       end
-
-      return [freecen_piece.year, disp_county, district_name, civil, freecen_piece.piece_number.to_s, enumeration_district, folio_number,
-              page_number, house_number, address, dwelling_number]
-    elsif year == '1901'
+    when '1851'
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        return [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, freecen_piece.piece_number.to_s,
-                enumeration_district, folio_number, page_number, schedule_number, house_number, address, dwelling_number, rooms]
+        [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, where_census_taken, freecen_piece.piece_number.to_s,
+         enumeration_district, ward, parliamentary_constituency, folio_number, page_number]
+      else
+        [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, where_census_taken, freecen_piece.piece_number.to_s,
+         enumeration_district, parliamentary_constituency, folio_number, page_number]
       end
-      [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, freecen_piece.piece_number.to_s, enumeration_district,
-       folio_number, page_number, schedule_number, house_number, address, dwelling_number, rooms]
-    else
+    when '1861'
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        return [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, freecen_piece.piece_number.to_s, enumeration_district,
-                folio_number, page_number, schedule_number, house_number, address, dwelling_number]
+        [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, where_census_taken, freecen_piece.piece_number.to_s,
+         enumeration_district, ward, parliamentary_constituency, folio_number, page_number]
+      else
+        [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, where_census_taken, freecen_piece.piece_number.to_s,
+         enumeration_district, ward, parliamentary_constituency, folio_number, page_number]
       end
-      [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, freecen_piece.piece_number.to_s, enumeration_district, folio_number,
-       page_number, schedule_number, house_number, address, dwelling_number]
-
+    when '1871'
+      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+        [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, where_census_taken, freecen_piece.piece_number.to_s,
+         enumeration_district, ward, parliamentary_constituency, police_district, folio_number, page_number]
+      else
+        [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, where_census_taken, freecen_piece.piece_number.to_s,
+         enumeration_district, ward, parliamentary_constituency, folio_number, page_number]
+      end
+    when '1881'
+      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+        [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, where_census_taken, freecen_piece.piece_number.to_s,
+         enumeration_district, ward, parliamentary_constituency, police_district, school_board, folio_number, page_number]
+      else
+        [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, where_census_taken, freecen_piece.piece_number.to_s,
+         enumeration_district, ward, parliamentary_constituency, sanitary_district, folio_number, page_number]
+      end
+    when '1891'
+      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+        [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, where_census_taken, freecen_piece.piece_number.to_s,
+         enumeration_district, ward, parliamentary_constituency, police_district, school_board, folio_number, page_number]
+      else
+        [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, where_census_taken, freecen_piece.piece_number.to_s,
+         enumeration_district, ward, parliamentary_constituency, sanitary_district, folio_number, page_number]
+      end
+    when '1901'
+      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+        [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, where_census_taken, freecen_piece.piece_number.to_s,
+         enumeration_district, ward, parliamentary_constituency, police_district, school_board, folio_number, page_number]
+      elsif ChapmanCode::CODES['Ireland'].member?(chapman_code)
+        [freecen_piece.year, disp_county, district_name, civil, where_census_taken, freecen_piece.piece_number.to_s, enumeration_district,
+         ward, parliamentary_constituency, poor_law_union, police_district, folio_number, page_number]
+      else
+        [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, where_census_taken, freecen_piece.piece_number.to_s,
+         enumeration_district, ward, parliamentary_constituency, folio_number, page_number]
+      end
+    when '1911'
+      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+        [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, where_census_taken, freecen_piece.piece_number.to_s,
+         enumeration_district, ward, parliamentary_constituency, sanitary_district, scavenging_district, special_lighting_district, school_board, folio_number, page_number]
+      elsif ChapmanCode::CODES['Ireland'].member?(chapman_code)
+        [freecen_piece.year, disp_county, district_name, civil, where_census_taken, freecen_piece.piece_number.to_s, enumeration_district,
+         ward, parliamentary_constituency, poor_law_union, police_district, folio_number, page_number]
+      else
+        [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, where_census_taken, freecen_piece.piece_number.to_s,
+         enumeration_district, ward, parliamentary_constituency, folio_number, page_number]
+      end
     end
   end
 
-  def self.management_display_labels
-    #1841 doesn't have ecclesiastical parish or schedule number
-    #Scotland doesn't have folio
+  def self.dwelling_display_labels(year, chapman_code)
+    case year
+    when '1841'
+      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+        ['House Number', 'House or Street Name', 'Dwelling Number (Comp)']
+      else
+        ['House Number', 'House or Street Name', 'Dwelling Number (Comp)']
+      end
+    when '1851'
+      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+        ['Schedule', 'House Number', 'House or Street Name', 'Dwelling Number (Comp)']
+      else
+        ['Schedule', 'House Number', 'House or Street Name', 'Dwelling Number (Comp)']
+      end
+    when '1861'
+      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+        ['Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows', 'Dwelling Number (Comp)']
+      else
+        ['Schedule', 'House Number', 'House or Street Name', 'Dwelling Number (Comp)']
+      end
+    when '1871'
+      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+        ['Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows', 'Dwelling Number (Comp)']
+      else
+        ['Schedule', 'House Number', 'House or Street Name', 'Dwelling Number (Comp)']
+      end
+    when '1881'
+      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+        ['Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows', 'Dwelling Number (Comp)']
+      else
+        ['Schedule', 'House Number', 'House or Street Name', 'Dwelling Number (Comp)']
+      end
+    when '1891'
+      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+        ['Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows', 'Dwelling Number (Comp)']
+      else
+        ['Schedule', 'House Number', 'House or Street Name', 'Dwelling Number (Comp)']
+      end
+    when '1901'
+      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+        ['Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows', 'Dwelling Number (Comp)']
+      elsif ChapmanCode::CODES['Ireland'].member?(chapman_code)
+        ['Schedule', 'House Number', 'House or Street Name', 'Walls', 'Roof Type', 'Rooms', 'Rooms with Windows', 'Class of House', 'Dwelling Number (Comp)']
+      else
+        ['Schedule', 'House Number', 'House or Street Name', 'Rooms', 'Dwelling Number (Comp)']
+      end
+    when '1911'
+      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+        ['Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows', 'Dwelling Number (Comp)']
+      elsif ChapmanCode::CODES['Ireland'].member?(chapman_code)
+        ['Schedule', 'House Number', 'House or Street Name', 'Walls', 'Roof Type', 'Rooms', 'Rooms with Windows', 'Class of House', 'Dwelling Number (Comp)']
+      else
+        ['Schedule', 'House Number', 'House or Street Name', 'Rooms', 'Dwelling Number (Comp)']
+      end
+    end
+  end
 
-    ['Transition', 'Alt. Birth County', 'Alt. Birth Place', 'Location Flag', 'Address Flag', 'Name Flag', 'Individual Flag', 'Occupation Flag', 'Birth Place Flag', 'Deleted Flag']
+  def dwelling_display_values(year, chapman_code)
+    address = house_or_street_name.titleize if house_or_street_name.present?
+    case year
+    when '1841'
+      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+        [house_number, address, dwelling_number]
+      else
+        [house_number, address, dwelling_number]
+      end
+    when '1851'
+      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+        [schedule_number, house_number, address, dwelling_number]
+      else
+        [schedule_number, house_number, address, dwelling_number]
+      end
+    when '1861'
+      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+        [schedule_number, house_number, address, rooms_with_windows, dwelling_number]
+      else
+        [schedule_number, house_number, address, dwelling_number]
+      end
+    when '1871'
+      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+        [schedule_number, house_number, address, rooms_with_windows, dwelling_number]
+      else
+        [schedule_number, house_number, address, dwelling_number]
+      end
+    when '1881'
+      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+        [schedule_number, house_number, address, rooms_with_windows, dwelling_number]
+      else
+        [schedule_number, house_number, address, dwelling_number]
+      end
+    when '1891'
+      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+        [schedule_number, house_number, address, rooms_with_windows, dwelling_number]
+      else
+        [schedule_number, house_number, address, dwelling_number]
+      end
+    when '1901'
+      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+        [schedule_number, house_number, address, rooms_with_windows, dwelling_number]
+      elsif ChapmanCode::CODES['Ireland'].member?(chapman_code)
+        [schedule_number, house_number, address, walls, roof_type, rooms, rooms_with_windows, class_of_house, dwelling_number]
+      else
+        [schedule_number, house_number, address, rooms, dwelling_number]
+      end
+    when '1911'
+      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+        [schedule_number, house_number, address, rooms_with_windows, dwelling_number]
+      elsif ChapmanCode::CODES['Ireland'].member?(chapman_code)
+        [schedule_number, house_number, address, walls, roof_type, rooms, rooms_with_windows, class_of_house, dwelling_number]
+      else
+        [schedule_number, house_number, address, rooms, dwelling_number]
+      end
+    end
+  end
+
+
+  def self.management_display_labels
+    ['Transition', 'Location Flag', 'Address Flag', 'Name Flag', 'Individual Flag', 'Occupation Flag', 'Birth Place Flag', 'Deleted Flag']
   end
 
   def management_display_values
-    #1841 doesn't have ecclesiastical parish or schedule number
-    #Scotland doesn't have folio
-    birth = birth_place.titleize if birth_place.present?
-    [data_transition, birth_county, birth, locaton_flag, address_flag, name_flag, individual_flag, occupation_flag, birth_place_flag, deleted_flag]
+    [data_transition, location_flag, address_flag, name_flag, individual_flag, occupation_flag, birth_place_flag, deleted_flag]
   end
 
   def self.error_display_labels
-    #1841 doesn't have ecclesiastical parish or schedule number
-    #Scotland doesn't have folio
-
-    ['ErrorsMessages', 'Warning Messages', 'Info Messages']
+    ['Errors Messages', 'Warning Messages', 'Info Messages']
   end
 
   def error_display_values
-    #1841 doesn't have ecclesiastical parish or schedule number
-    #Scotland doesn't have folio
-
-    [error_messages, warning_messages, info_messages]
+    error_message = error_messages.gsub(/\<br\>/, '').gsub(/ERROR:/i, '').titleize if error_messages.present?
+    warning_message = warning_messages.gsub(/\<br\>/, '').gsub(/Warning:/i, '').titleize if warning_messages.present?
+    info_message = info_messages.gsub(/\<br\>/, '').gsub(/Info:/i, '').titleize if info_messages.present?
+    [error_message, warning_message, info_message]
   end
 
   def self.individual_display_labels(year, chapman_code)
-    if year == '1841'
-      return ['Sequence', 'Surname', 'Forenames', 'Sex', 'Age', 'Occupation', 'Verbatim Birth County', 'Notes']
-    elsif year == '1891'
+    case year
+    when '1841'
+      ['Sequence (Comp)', 'Surname', 'Forenames', 'Sex', 'Age', 'Occupation', 'Verbatim Birth County', 'Notes']
+    when '1851'
+      ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation']
+    when '1861'
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'School Children' 'Occupation']
+      else
+        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation']
+      end
+    when '1871'
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'School Children' 'Occupation']
+      else
+        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation']
+      end
+    when '1881'
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'School Children' 'Occupation']
+      else
+        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation']
+      end
+    when '1891'
       # only Wales 1891 has language field
-      if ChapmanCode::CODES['Wales'].values.member?(chapman_code) || ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        return ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category', 'Verbatim Birth County', 'Verbatim Birth Place', 'Disability', 'Language', 'Notes']
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category']
+      elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code)
+        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category']
+      elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
+        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category']
+      else
+        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category']
       end
-      return ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category', 'Verbatim Birth County', 'Verbatim Birth Place', 'Disability', 'Notes']
-    elsif year == '1901'
-      if ChapmanCode::CODES['Wales'].values.member?(chapman_code) || ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        return ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category', 'Verbatim Birth County', 'Verbatim Birth Place', 'Disability', 'Language', 'At Home', 'Notes']
+    when '1901'
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category', 'At Home']
+      elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code)
+        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category', 'At Home']
+      elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
+        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Religion', 'Read and Write', 'Occupation', 'Occ Category']
+      else
+        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category', 'At Home']
       end
-      return ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category', 'Verbatim Birth County', 'Verbatim Birth Place', 'Disability', 'At Home', 'Notes']
+    when '1911'
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Years Married', 'Children Born Alive', 'Children Living', 'Occupation', 'Occ Category', 'Industry', 'At Home']
+      elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code) || chapman_code == 'IOM'
+        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Years Married', 'Children Born Alive', 'Children Living', 'Children Deceased', 'Occupation', 'Occ Category', 'Industry', 'At Home']
+      elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
+        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Years Married', 'Children Born Alive', 'Children Living', 'Religion', 'Read and Write', 'Occupation', 'Occ Category']
+      elsif  %w[CHI ALD GSY JSY].include?(chapman_code)
+        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Years Married', 'Children Born Alive', 'Children Living', 'Children Deceased', 'Occupation', 'Occ Category', 'Industry', 'At Home']
+      else
+        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Years Married', 'Children Born Alive', 'Children Living', 'Children Deceased', 'Occupation', 'Occ Category', 'Industry', 'At Home']
+      end
     end
-    #return standard fields for 1851 - 1881
-    ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category', 'Verbatim Birth County', 'Verbatim Birth Place', 'Disability', 'Notes']
   end
 
   def individual_display_values(year, chapman_code)
@@ -1265,30 +1672,184 @@ class FreecenCsvEntry
     fore = forenames.titleize if forenames.present?
     relation = relationship.titleize if relationship.present?
     marital = marital_status.upcase if marital_status.present?
-    birth = verbatim_birth_place.titleize if verbatim_birth_place.present?
-    note = notes.titleize if notes.present?
+    verbatim_county = verbatim_birth_county.upcase if verbatim_birth_county.present?
+    note = notes.gsub(/\<br\>/, '').titleize if notes.present?
     sx = sex.upcase if sex.present?
-    if year == '1841'
-      return [sequence_in_household, sur, fore, sx, disp_age, disp_occupation, verbatim_birth_county, notes]
-    elsif year == '1891'
+    case year
+    when '1841'
+      [sequence_in_household, sur, fore, sx, disp_age, disp_occupation, verbatim_county, note]
+    when '1851'
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, school_children, disp_occupation]
+      else
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation]
+      end
+    when '1861'
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, school_children, disp_occupation]
+      else
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation]
+      end
+    when '1871'
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, school_children, disp_occupation]
+      else
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation]
+      end
+    when '1881'
+      [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation]
+
+    when '1891'
       # only Wales 1891 has language field
       if ChapmanCode::CODES['Wales'].values.member?(chapman_code) || ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        return [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation, occupation_category, verbatim_birth_county, birth,
-                disability, language, note]
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation, occupation_category]
+      else
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation, occupation_category]
       end
-      return [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation, occupation_category, verbatim_birth_county, birth,
-              disability, note]
-    elsif year == '1901'
-      if ChapmanCode::CODES['Wales'].values.member?(chapman_code) || ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        return [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation, occupation_category, verbatim_birth_county, birth,
-                disability, language, at_home, note]
+    when '1901'
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation, occupation_category, at_home]
+      elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code)
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation, occupation_category, at_home]
+      elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, religion, read_and_write, disp_occupation, occupation_category]
+      else
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation, occupation_category, at_home]
       end
-      return [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation, occupation_category, verbatim_birth_county, birth,
-              disability, at_home, note]
+    when '1911'
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, years_married, children_born_alive, children_living, disp_occupation, occupation_category, industry, at_home]
+      elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code) || chapman_code == 'IOM'
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, years_married, children_born_alive, children_living, disp_occupation, occupation_category, industry, at_home]
+      elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, years_married, children_born_alive, children_living, religion, read_and_write, disp_occupation, occupation_category]
+      elsif  %w[CHI ALD GSY JSY].include?(chapman_code)
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, years_married, children_born_alive, children_living, children_deceased, disp_occupation, occupation_category, industry, at_home]
+      else
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, years_married, children_born_alive, children_living, children_deceased, disp_occupation, occupation_category, industry, at_home]
+      end
     end
-    # standard fields for 1851 - 1881
-    [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation, occupation_category, verbatim_birth_county, birth, disability,
-     note]
+  end
+
+  def self.part2_individual_display_labels(year, chapman_code)
+    case year
+    when '1851'
+      ['Nationality', 'Verbatim Birth County', 'Verbatim Birth Place', 'Alt. Birth County', 'Alt. Birth Place', 'Disability', 'Notes']
+    when '1861'
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        ['Verbatim Birth County', 'Verbatim Birth Place', 'Alt. Birth County', 'Alt. Birth Place',  'Disability', 'Notes']
+      else
+        ['Nationality', 'Verbatim Birth County', 'Verbatim Birth Place', 'Alt. Birth County', 'Alt. Birth Place', 'Disability', 'Notes']
+      end
+    when '1871'
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        ['Verbatim Birth County', 'Verbatim Birth Place', 'Alt. Birth County', 'Alt. Birth Place', 'Disability', 'Notes']
+      else
+        ['Nationality', 'Verbatim Birth County', 'Verbatim Birth Place', 'Alt. Birth County', 'Alt. Birth Place', 'Disability', 'Notes']
+      end
+    when '1881'
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        ['Verbatim Birth County', 'Verbatim Birth Place', 'Alt. Birth County', 'Alt. Birth Place', 'Disability', 'Notes']
+      else
+        ['Nationality', 'Verbatim Birth County', 'Verbatim Birth Place', 'Alt. Birth County', 'Alt. Birth Place', 'Disability', 'Notes']
+      end
+    when '1891'
+      # only Wales 1891 has language field
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        ['Verbatim Birth County', 'Verbatim Birth Place', 'Alt. Birth County', 'Alt. Birth Place', 'Disability', 'Language', 'Notes']
+      elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code)
+        ['Nationality', 'Verbatim Birth County', 'Verbatim Birth Place', 'Alt. Birth County', 'Alt. Birth Place', 'Disability', 'Notes']
+      elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
+        ['Verbatim Birth County', 'Verbatim Birth Place', 'Alt. Birth County', 'Alt. Birth Place', 'Disability', 'Notes']
+      else
+        ['Nationality', 'Verbatim Birth County', 'Verbatim Birth Place', 'Alt. Birth County', 'Alt. Birth Place', 'Disability', 'Notes']
+      end
+    when '1901'
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        ['Verbatim Birth County', 'Verbatim Birth Place', 'Alt. Birth County', 'Alt. Birth Place', 'Disability', 'Language', 'Notes']
+      elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code)
+        ['Nationality', 'Verbatim Birth County', 'Verbatim Birth Place', 'Alt. Birth County', 'Alt. Birth Place', 'Disability', 'Language', 'Notes']
+      elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
+        ['Verbatim Birth County', 'Verbatim Birth Place', 'Alt. Birth County', 'Alt. Birth Place', 'Disability', 'Notes']
+      else
+        ['Nationality', 'Verbatim Birth County', 'Verbatim Birth Place', 'Alt. Birth County', 'Alt. Birth Place', 'Disability', 'Notes']
+      end
+    when '1911'
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        ['Nationality', 'Verbatim Birth County', 'Verbatim Birth Place', 'Alt. Birth County', 'Alt. Birth Place', 'Disability', 'Language', 'Notes']
+      elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code) || chapman_code == 'IOM'
+        ['Verbatim Birth County', 'Verbatim Birth Place', 'Disability', 'Alt. Birth County', 'Alt. Birth Place', 'Disability Notes', 'Language', 'Notes']
+      elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
+        ['Nationality', 'Verbatim Birth County', 'Verbatim Birth Place', 'Alt. Birth County', 'Alt. Birth Place', 'Disability', 'Notes']
+      elsif %w[CHI ALD GSY JSY].include?(chapman_code)
+        ['Nationality', 'Verbatim Birth County', 'Verbatim Birth Place', 'Alt. Birth County', 'Alt. Birth Place', "Father's Place of Birth", 'Disability', 'Notes']
+      else
+        ['Nationality', 'Verbatim Birth County', 'Verbatim Birth Place', 'Alt. Birth County', 'Alt. Birth Place', 'Disability', 'Disability Notes', 'Notes']
+      end
+    end
+  end
+
+  def part2_individual_display_values(year, chapman_code)
+    birth = verbatim_birth_place.titleize if verbatim_birth_place.present?
+    selected_birth = birth_place.titleize if birth_place.present?
+    verbatim_county = verbatim_birth_county.upcase if verbatim_birth_county.present?
+    note = notes.gsub(/\<br\>/, '').titleize if notes.present?
+    case year
+    when '1851'
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        [verbatim_county, birth, birth_county, selected_birth, disability, note]
+      else
+        [nationality, verbatim_county, birth, birth_county, selected_birth, disability, note]
+      end
+    when '1861'
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        [verbatim_county, birth, birth_county, selected_birth, disability, note]
+      else
+        [nationality, verbatim_county, birth, birth_county, selected_birth, disability, note]
+      end
+    when '1871'
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        [verbatim_county, birth, birth_county, selected_birth, disability, note]
+      else
+        [nationality, verbatim_county, birth, birth_county, selected_birth, disability, note]
+      end
+    when '1881'
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        [verbatim_county, birth, birth_county, selected_birth, disability, note]
+      else
+        [nationality, verbatim_county, birth, birth_county, selected_birth, disability, note]
+      end
+
+    when '1891'
+      # only Wales 1891 has language field
+      if ChapmanCode::CODES['Wales'].values.member?(chapman_code) || ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        [verbatim_county, birth, birth_county, selected_birth, disability, language, note]
+      else
+        [nationality, verbatim_county, birth, birth_county, selected_birth, disability, note]
+      end
+    when '1901'
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        [verbatim_county, birth, birth_county, selected_birth, disability, language, note]
+      elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code)
+        [nationality, verbatim_county, birth, birth_county, selected_birth, disability, language, note]
+      elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
+        [verbatim_county, birth, birth_county, selected_birth, disability, language, note]
+      else
+        [nationality, verbatim_county, birth, birth_county, selected_birth, disability, note]
+      end
+    when '1911'
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        [nationality, verbatim_county, birth, birth_county, selected_birth, disability, language, note]
+      elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code) || chapman_code == 'IOM'
+        [nationality, verbatim_county, birth, birth_county, selected_birth, disability, diability_notes, language, note]
+      elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
+        [verbatim_county, birth, birth_county, selected_birth, disability, language, note]
+      elsif %w[CHI ALD GSY JSY].include?(chapman_code)
+        [nationality, verbatim_county, birth, birth_county, selected_birth, father_place_of_birth, disability, disability_notes, language, note]
+      else
+        [nationality, verbatim_county, birth, birth_county, selected_birth, disability, disability_notes, note]
+      end
+    end
   end
 
   def next_and_previous_entries

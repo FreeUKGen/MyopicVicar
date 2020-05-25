@@ -13,7 +13,7 @@
         <% @freecen_csv_entries.each do |freecen_csv_entry| %>
           <tr id="<%= freecen_csv_entry.id %>" >
             <td><%= freecen_csv_entry.record_number%></td>
-            <td><%= freecen_csv_entry.warning_messages %></td>
+            <td><%= freecen_csv_entry.warning_messages.gsub(/\<br\>/, '').gsub(/Warning:/i, '').titleize if freecen_csv_entry.warning_messages.present? %></td>
             <td><%= link_to 'SH', freecen_csv_entry_path(freecen_csv_entry) %> <%= link_to 'ED', edit_freecen_csv_entry_path(freecen_csv_entry) %></td>
           </tr>
         <% end %>

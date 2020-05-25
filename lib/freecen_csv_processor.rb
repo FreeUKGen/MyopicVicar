@@ -751,8 +751,6 @@ class CsvRecords < CsvFile
   # This extracts the header and entry information from the file and adds it to the database
 
   def extract_the_data(skip)
-    p 'data'
-    p skip
     skip = skip
     success = true
     data_lines = 0
@@ -786,7 +784,6 @@ class CsvRecords < CsvFile
 end
 
 class CsvRecord < CsvRecords
-
   attr_accessor :data_line, :data_record, :civil_parish, :folio, :page, :dwelling, :individual
 
   def initialize(data_line, csvfile, project)
@@ -810,15 +807,14 @@ class CsvRecord < CsvRecords
     convert_transition
     @data_record = load_data_record
     process_data_record(@data_record[:data_transition])
-    # p @data_record
-    # crash if num == 10
+    #p @data_record
+    #crash if num == 10
     [true, ' ', @data_record]
   end
 
   def convert_transition
-
-    if Freecen::LOCATION_FIELDS.include?(@data_record[:data_transition])
-      @data_record[:data_transition] = 'Location'
+    if Freecen::LOCATION.include?(@data_record[:data_transition])
+      @data_record[:data_transition] = @data_record[:data_transition]
     elsif @data_record[:data_transition] == 'folio_number'
       @data_record[:data_transition] = 'Folio'
     elsif @data_record[:data_transition] == 'page_number'
@@ -848,7 +844,9 @@ class CsvRecord < CsvRecords
 
   def process_data_record(record_type)
     case record_type
-    when 'Location'
+    when 'enumeration_district', 'civil_parish', 'ecclesiastical_parish', 'where_census_taken', 'ward', 'parliamentary_constituency',
+        'poor_law_union', 'police_district', 'sanitary_district', 'special_water_district', 'scavenging_district', 'special_lighting_district',
+        'school_board', 'location_flag'
       extract_location_fields
     when 'Folio'
       extract_folio_fields
@@ -864,21 +862,20 @@ class CsvRecord < CsvRecords
   end
 
   def extract_location_fields
-    extract_enumeration_district if @data_record[:enumeration_district].present?
-    extract_civil_parish if @data_record[:civil_parish].present?
-    extract_ecclesiastical_parish if @data_record[:ecclesiastical_parish].present?
-    extract_where_census_taken if @data_record[:where_census_taken].present?
-    extract_ward if @data_record[:ward].present?
-    extract_parliamentary_constituency if @data_record[:parliamentary_constituency].present?
-    extract_poor_law_union if @data_record[:poor_law_union].present?
-    extract_police_district if @data_record[:police_district].present?
-    extract_sanitary_district if @data_record[:sanitary_district].present?
-    extract_special_water_district if @data_record[:special_water_district].present?
-    extract_scavenging_district if @data_record[:scavenging_district].present?
-    extract_special_lighting_district if @data_record[:special_lighting_district].present?
-    extract_school_board if @data_record[:school_board].present?
-    extract_location_flag if @data_record[:location_flag].present?
-    extract_folio_fields
+    extract_enumeration_district
+    extract_civil_parish
+    extract_ecclesiastical_parish
+    extract_where_census_taken
+    extract_ward
+    extract_parliamentary_constituency
+    extract_poor_law_union
+    extract_police_district
+    extract_sanitary_district
+    extract_special_water_district
+    extract_scavenging_district
+    extract_special_lighting_district
+    extract_school_board
+    extract_location_flag
   end
 
   def extract_enumeration_district
@@ -949,6 +946,7 @@ class CsvRecord < CsvRecords
   def extract_location_flag
     message = FreecenCsvEntry.validate_location_flag(@data_record)
     @project.write_messages_to_all(message, true) unless message == ''
+    extract_folio_fields
   end
 
   def extract_folio_fields
@@ -983,6 +981,7 @@ class CsvRecord < CsvRecords
 
   def extract_individual_fields
     @data_record[:notes] = '' if @data_record[:notes] =~ /\[see mynotes.txt\]/
+    propagate_records
     return if ['b', 'n', 'u', 'v'].include?(@data_record[:uninhabited_flag])
 
     @data_record[:address_flag] = 'x' if @data_record[:uninhabited_flag] == 'x'
@@ -991,5 +990,23 @@ class CsvRecord < CsvRecords
     @data_record[:sequence_in_household] = @csvfile.sequence_in_household
     message = FreecenCsvEntry.validate_individual(@data_record)
     @project.write_messages_to_all(message, true) unless message == ''
+  end
+
+  def propagate_records
+    data_record[:enumeration_district] = @csvfile.enumeration_district if data_record[:enumeration_district].blank? && data_record[:field_specification].value?('enumeration_district')
+    data_record[:civil_parish] = @csvfile.civil_parish if data_record[:civil_parish].blank? && data_record[:field_specification].value?('civil_parish')
+    data_record[:ecclesiastical_parish] = @csvfile.ecclesiastical_parish if data_record[:ecclesiastical_parish].blank? && data_record[:field_specification].value?('ecclesiastical_parish')
+    data_record[:where_census_taken] = @csvfile.where_census_taken if data_record[:where_census_taken].blank? && data_record[:field_specification].value?('where_census_taken')
+    data_record[:ward] = @csvfile.ward if data_record[:ward].blank? && data_record[:field_specification].value?('ward')
+    data_record[:parliamentary_constituency] = @csvfile.parliamentary_constituency if data_record[:parliamentary_constituency].blank? && data_record[:field_specification].value?('parliamentary_constituency')
+    data_record[:poor_law_union] = @csvfile.poor_law_union if data_record[:poor_law_union].blank? && data_record[:field_specification].value?('poor_law_union')
+    data_record[:police_district] = @csvfile.police_district if data_record[:police_district].blank? && data_record[:field_specification].value?('police_district')
+    data_record[:sanitary_district] = @csvfile.sanitary_district if data_record[:sanitary_district].blank? && data_record[:field_specification].value?('sanitary_district')
+    data_record[:special_water_district] = @csvfile.special_water_district if data_record[:special_water_district].blank? && data_record[:field_specification].value?('special_water_district')
+    data_record[:scavenging_district] = @csvfile.scavenging_district if data_record[:scavenging_district].blank? && data_record[:field_specification].value?('scavenging_district')
+    data_record[:special_lighting_district] = @csvfile.special_lighting_district if data_record[:special_lighting_district].blank? && data_record[:field_specification].value?('special_lighting_district')
+    data_record[:school_board] = @csvfile.school_board if data_record[:school_board].blank? && data_record[:field_specification].value?('school_board')
+    data_record[:folio_number] = @csvfile.folio.to_s + @csvfile.folio_suffix.to_s if data_record[:folio_number].blank? && data_record[:field_specification].value?('folio_number')
+    data_record[:page_number] = @csvfile.page if data_record[:page_number].blank? && data_record[:field_specification].value?('page_number')
   end
 end

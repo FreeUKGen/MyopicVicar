@@ -69,7 +69,12 @@ module Freecen
   LOCATION = %w[enumeration_district civil_parish ecclesiastical_parish where_census_taken ward parliamentary_constituency poor_law_union
                        police_district sanitary_district special_water_district scavenging_district special_lighting_district school_board
                        location_flag].freeze
-
+  LOCATION_PAGE = %w[enumeration_district civil_parish ecclesiastical_parish where_census_taken ward parliamentary_constituency poor_law_union
+                       police_district sanitary_district special_water_district scavenging_district special_lighting_district school_board
+                       location_flag Folio Page].freeze
+  LOCATION_DWELLING = %w[enumeration_district civil_parish ecclesiastical_parish where_census_taken ward parliamentary_constituency poor_law_union
+                       police_district sanitary_district special_water_district scavenging_district special_lighting_district school_board
+                       location_flag Folio Page Dwelling ].freeze
   HOUSEHOLD = %w[folio_number page_number schedule_number uninhabited_flag house_number house_or_street_name address_flag].freeze
 
   IRE_HOUSEHOLD = %w[schedule_number uninhabited_flag house_number house_or_street_name walls roof_type rooms
@@ -100,16 +105,16 @@ module Freecen
               occupation_category at_home] + BIRTH - %w[verbatim_birth_place nationality birth_place] + %w[notes]
 
   CEN2_1851 = LOCATION - %w[ward poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district
-              school_board] + HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes]
+              school_board] + HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes language]
 
   CEN2_1861 = LOCATION - %w[poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district
-              school_board] + HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes]
+              school_board] + HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes language]
 
   CEN2_1871 = LOCATION - %w[poor_law_union police_district special_water_district scavenging_district special_lighting_district school_board
-              school_board] + HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes]
+              school_board] + HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes language]
 
   CEN2_1881 = LOCATION - %w[poor_law_union police_district special_water_district scavenging_district special_lighting_district school_board
-              school_board] + HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes]
+              school_board] + HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes language]
 
   CEN2_1891 = LOCATION - %w[poor_law_union police_district special_water_district scavenging_district special_lighting_district school_board] +
     HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry at_home] + BIRTH + FINAL - %w[disability_notes]
@@ -143,7 +148,7 @@ module Freecen
                   occupation_category at_home] + BIRTH + FINAL - %w[disability_notes language]
 
   CEN2_SCT_1881 = LOCATION - %w[poor_law_union sanitary_district special_water_district scavenging_district special_lighting_district] +
-    SCT_HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes language]
+    SCT_HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes]
 
   CEN2_SCT_1891 = LOCATION - %w[poor_law_union police_district sanitary_district special_water_district scavenging_district
                   special_lighting_district school_board] + SCT_HOUSEHOLD - %w[rooms_with_windows] + INDIVIDUAL + OCCUPATION - %w[industry

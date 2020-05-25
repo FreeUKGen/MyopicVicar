@@ -4,24 +4,24 @@ module FreecenValidations
   VALID_NAME = /[\w\'\"\ \.\;\:]/
   VALID_NUMERIC = /\d/
   VALID_NUMBER  = /\A\d+\z/
-  VALID_NUMBER_PLUS_SUFFIX = /\A\d+\D\z/
+  VALID_NUMBER_PLUS_SUFFIX = /\A\d+/
   VALID_ENUMERATOR_SPECIAL = /\A\d#\d\z/
-  VALID_SPECIAL_LOCATION_CODES = ['b', 'n', 'u', 'v', 'x', ''].freeze
+  VALID_SPECIAL_LOCATION_CODES = %w[b n u v x].freeze
   VALID_TEXT = /(\w*|-)/
   VALID_PIECE = /\A(R|H)(G|O|S)/i
   VALID_AGE_MAXIMUM = { 'd' => 100, 'w' => 100, 'm' => 100, 'y' => 120, 'h' => 100, '?' => 100, 'years' => 120, 'months' => 100, 'weeks' => 100,
                         'days' => 100, 'hours' => 100 }.freeze
   VALID_DATE = /\A\d{1,2}[\s+\/\-][A-Za-z\d]{0,3}[\s+\/\-]\d{2,4}\z/ #modern date no UCF or wildcard
   VALID_DAY = /\A\d{1,2}\z/
-  VALID_MONTH = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'SEPT', 'OCT', 'NOV', 'DEC', '*', 'JANUARY', 'FEBRUARY', 'MARCH',
-                 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'].freeze
+  VALID_MONTH = %w[JAN FEB MAR APR MAY JUN JUL AUG SEP SEPT OCT NOV DEC * JANUARY FEBRUARY MARCH APRIL MAY JUNE JULY AUGUST SEPTEMBER
+                   OCTOBER NOVEMBER DECEMBER].freeze
   VALID_NUMERIC_MONTH = /\A\d{1,2}\z/
   VALID_YEAR = /\A\d{4,5}\z/
   DATE_SPLITS = { ' ' => /\s/, '-' => /\-/, '/' => /\\/ }.freeze
   WILD_CHARACTER = /[\*\[\]\-\_\?]/
-  VALID_MARITAL_STATUS = ['m', 's', 'u', 'w', 'd', '-'].freeze
-  VALID_SEX = ['M', 'F', '-'].freeze
-  VALID_LANGUAGE = ['E', 'G', 'GE', 'I', 'IE', 'M', 'ME', 'W', 'WE', 'B'].freeze
+  VALID_MARITAL_STATUS = %w[m s u w d -].freeze
+  VALID_SEX = %w[M F -].freeze
+  VALID_LANGUAGE = %w[E G GE I IE M ME W WE].freeze
   class << self
     def fixed_valid_piece?(field)
       return false if field.blank?
@@ -61,6 +61,14 @@ module FreecenValidations
       [true, '']
     end
 
+    def location_flag?(field)
+      return [true, ''] if field.blank?
+
+      return [true, ''] if field.downcase == 'x'
+
+      [false, 'invalid value']
+    end
+
     def fixed_folio_number?(field)
       return [true, ''] if field.blank?
 
@@ -89,49 +97,56 @@ module FreecenValidations
     end
 
     def fixed_house_number?(field)
+      return [true, ''] if field.blank?
+
       return [true, ''] if field.present? && field =~ VALID_NUMBER
 
       return [true, ''] if field.present? && field =~ VALID_NUMBER_PLUS_SUFFIX
-
-      return [true, ''] if field.blank?
 
       [false, 'invalid number']
     end
 
     def fixed_house_address?(field)
-      return [false, '?'] if field.present? && field.slice(-1).downcase == '?' && field =~ VALID_TEXT
+      return [true, ''] if field.blank?
 
       return [true, ''] if field.present? && field =~ VALID_TEXT
 
-      return [false, 'blank'] if field.blank?
+      return [false, '?'] if field.present? && field.slice(-1).downcase == '?' && field =~ VALID_TEXT
 
       [false, 'invalid address']
     end
 
     def walls?(field)
+      return [true, ''] if field.blank?
+
       return [true, ''] if [0, 1].include?(field.to_i)
 
-      [false, 'Not 0 or 1']
+      [false, 'Not 0 or 1 or blank']
     end
 
     def roof_type?(field)
+      return [true, ''] if field.blank?
+
       return [true, ''] if [0, 1].include?(field.to_i)
 
-      [false, 'Not 0 or 1']
+      [false, 'Not 0 or 1 or blank']
     end
 
     def rooms_with_windows?(field)
+      return [true, ''] if field.blank?
+
       return [true, ''] if field.VALID_NUMBER
 
       [false, 'Not valid number']
     end
 
     def class_of_house?(field)
+      return [true, ''] if field.blank?
+
       return [true, ''] if field.VALID_TEXT
 
-      [false, 'Not valid number']
+      [false, 'Not valid class']
     end
-
 
     def fixed_uninhabited_flag?(field)
       return [true, ''] if field.blank?
@@ -342,6 +357,14 @@ module FreecenValidations
     end
 
     def fixed_disability?(field)
+      return [true, ''] if field.blank?
+
+      return [true, ''] if field =~ VALID_TEXT
+
+      [false, 'invalid value']
+    end
+
+    def fixed_disability_notes?(field)
       return [true, ''] if field.blank?
 
       return [true, ''] if field =~ VALID_TEXT

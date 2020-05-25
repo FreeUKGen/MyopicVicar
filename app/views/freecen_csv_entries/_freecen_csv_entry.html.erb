@@ -2,17 +2,37 @@
   <table class="table--bordered " style="background-color:#ffffff;">
     <thead>
       <tr>
-        <% FreecenCsvEntry.dwelling_display_labels(@year,@chapman_code).each do |lbl| %>
-          <td>
-            <%= lbl %>
+        <% FreecenCsvEntry.census_display_labels(@year,@chapman_code).each do |lbl| %>
+          <td><small>
+              <%= lbl %>
+            </small></td>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <% @freecen_csv_entry.census_display_values(@year,@chapman_code).each do |field_val| %>
+          <td class="weight--semibold">
+            <%= field_val %>
           </td>
+        <% end %>
+      </tr>
+    </tbody>
+  </table>
+  <table class="table--bordered " style="background-color:#ffffff;">
+    <thead>
+      <tr>
+        <% FreecenCsvEntry.dwelling_display_labels(@year,@chapman_code).each do |lbl| %>
+          <td><small>
+              <%= lbl %>
+            </small></td>
         <% end %>
       </tr>
     </thead>
     <tbody>
       <tr>
         <% @freecen_csv_entry.dwelling_display_values(@year,@chapman_code).each do |field_val| %>
-          <td>
+          <td class="weight--semibold">
             <%= field_val %>
           </td>
         <% end %>
@@ -23,9 +43,9 @@
     <thead>
       <tr>
         <% FreecenCsvEntry.individual_display_labels(@year,@chapman_code).each do |lbl| %>
-          <td>
-            <%= lbl %>
-          </td>
+          <td><small>
+              <%= lbl %>
+            </small></td>
         <% end %>
       </tr>
     </thead>
@@ -33,7 +53,7 @@
       <tr>
         <% if @freecen_csv_entry.uninhabited_flag.blank? %>
           <% @freecen_csv_entry.individual_display_values(@year,@chapman_code).each do |field_val| %>
-            <td>
+            <td class="weight--semibold">
               <%= field_val %>
             </td>
           <% end %>
@@ -43,20 +63,46 @@
       </tr>
     </tbody>
   </table>
+  <% if FreecenCsvEntry.part2_individual_display_labels(@year,@chapman_code).present? %>
+    <table class="table--bordered " style="background-color:#ffffff;">
+      <thead>
+        <tr>
+          <% FreecenCsvEntry.part2_individual_display_labels(@year,@chapman_code).each do |lbl| %>
+            <td><small>
+                <%= lbl %>
+              </small></td>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <% if @freecen_csv_entry.uninhabited_flag.blank? %>
+            <% @freecen_csv_entry.part2_individual_display_values(@year,@chapman_code).each do |field_val| %>
+              <td class="weight--semibold">
+                <%= field_val %>
+              </td>
+            <% end %>
+          <% else%>
+            <p class="text--center">Uninhabited</p>
+          <% end %>
+        </tr>
+      </tbody>
+    </table>
+  <% end%>
   <table class="table--bordered " style="background-color:#ffffff;">
     <thead>
       <tr>
         <% FreecenCsvEntry.management_display_labels.each do |lbl| %>
-          <td>
-            <%= lbl %>
-          </td>
+          <td><small>
+              <%= lbl %>
+            </small></td>
         <% end %>
       </tr>
     </thead>
     <tbody>
       <tr>
         <% @freecen_csv_entry.management_display_values.each do |field_val| %>
-          <td>
+          <td class="weight--semibold">
             <%= field_val %>
           </td>
         <% end %>
@@ -67,16 +113,16 @@
     <thead>
       <tr>
         <% FreecenCsvEntry.error_display_labels.each do |lbl| %>
-          <td>
-            <%= lbl %>
-          </td>
+          <td><small>
+              <%= lbl %>
+            </small></td>
         <% end %>
       </tr>
     </thead>
     <tbody>
       <tr>
         <% @freecen_csv_entry.error_display_values.each do |field_val| %>
-          <td>
+          <td class="weight--semibold">
             <%= field_val %>
           </td>
         <% end %>
