@@ -214,13 +214,13 @@
             </div>
             <div class="grid action">
                 <%= button_tag 'Clear Form', type: :reset, class: 'clear_form' %>
-                <%= submit_tag 'Search', class: 'search_form_submit_button ladda-button' , id: 'search_form_submit', data: {style: "contract" ,color: appname.downcase, size: "s", "spinner-color" => "#ffffff" }%>
+                <%= button_tag 'Search', type: :submit, class: 'ladda-button' , id: 'search_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
             </div>
         <% end %>
     </div>
 <% end %>
     <script type="text/javascript">
-        Ladda.bind('input[type=submit]');
+        Ladda.bind( 'button[type=submit]' );
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
