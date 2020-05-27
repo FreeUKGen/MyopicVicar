@@ -587,10 +587,6 @@ class FreecenCsvFile
 
   def remove_batch
     case
-    when total_records.to_i > 5000
-      UserMailer.report_to_data_manger_of_large_file(file_name, userid).deliver_now
-      return false, 'There are too many records for a simple removal. Please discuss with your coordinator or the data managers how best to deal with its restructuring'
-
     when locked_by_transcriber || locked_by_coordinator
       return false, 'The removal of the batch was unsuccessful; the batch is locked'
 
