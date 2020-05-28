@@ -639,19 +639,19 @@ class FreecenCsvEntry
         message = "Info: line #{num} Initial Page number set to #{page_number}.<br>" if info_messages
         record[:info_messages] = record[:info_messages] + message if info_messages
         new_page_number = page_number.to_i
-      elsif  page_number.blank? && ['Folio', 'Page'].include?(transition)
+      elsif  page_number.blank? && Freecen::LOCATION_PAGE.include?(transition)
         message = ''
       elsif  page_number.blank?
         message = "Warning: line #{num} New Page number is blank.<br>"
         record[:warning_messages] = record[:warning_messages] + message
-      elsif (page_number.to_i > previous_page_number + 1) && ['Folio', 'Page'].include?(transition)
+      elsif (page_number.to_i > previous_page_number + 1) && Freecen::LOCATION_PAGE.include?(transition)
         message = "Warning: line #{num} New Page number increment larger than 1 #{page_number}.<br>"
         record[:warning_messages] = record[:warning_messages] + message
         new_page_number = page_number.to_i
-      elsif (page_number.to_i == previous_page_number) && ['Folio', 'Page'].include?(transition)
+      elsif (page_number.to_i == previous_page_number) && Freecen::LOCATION_PAGE.include?(transition)
         message = "Warning: line #{num} New Page number is the same as the previous number #{page_number}.<br>"
         record[:warning_messages] = record[:warning_messages] + message
-      elsif page_number.to_i < previous_page_number && page_number.to_i != 1 && ['Folio', 'Page'].include?(transition)
+      elsif page_number.to_i < previous_page_number && page_number.to_i != 1 && Freecen::LOCATION_PAGE.include?(transition)
         message = "Warning: line #{num} New Page number is less than the previous number #{page_number}.<br>"
         record[:warning_messages] = record[:warning_messages] + message
         new_page_number = page_number.to_i
