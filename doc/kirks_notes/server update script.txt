@@ -1,17 +1,18 @@
 
 Create release notes https://docs.google.com/document/d/1xo8E4SXVw4NSCYoX4gcsveOqOqeVmtUkutaU5qtFZyM/edit
-Write release info to refinery on test3 REG and CEN
+Post to sprint channel
+Write release info to Information for Members page on refinery on test3 REG and CEN
 
 *************on each server in turn brazza, drill, howler saki colobus replacing server name where appropriate
-*************on colobus
+Step a *************on colobus
 sudo /root/bin/haproxy-freereg2.sh brazza disable
 sudo /root/bin/haproxy-freecen2.sh brazza disable
 ************Check on https://www.freebmd.org.uk/haproxy?stats that server is in maintenance
 *************on each server in turn
-copy any new configuration files to the server using Filezilla or equivalent
 
 cd  /home/apache/hosts/freereg2/production
-f2rake tmp:cache:clear # do occasionally
+copy any new configuration files to the server using Filezilla or equivalent ( Rarely required)
+f2rake tmp:cache:clear # do occasionally (Once every quarter)
 git status # just to make sure we are on master
 git stash # to remove any local change (there should not be any)
 sudo rm -R public/assets # only required when there is a restructuring of assets
@@ -20,8 +21,9 @@ f2rake assets:precompile
 f2rake assets:clean
 sudo touch tmp/restart.txt
 ************* check brazza performance on reg with direct connection IF OK
-copy any new configuration files to the server using Filezilla or equivalent
+
 cd  /home/apache/hosts/freecen2/production
+copy any new configuration files to the server using Filezilla or equivalent
 f2rake tmp:cache:clear # do occasionally
 git status #just to make sure we are on master
 git stash # to remove any local change (there should not be any)
@@ -31,13 +33,21 @@ f2rake assets:precompile
 f2rake assets:clean
 sudo touch tmp/restart.txt
 ************* check brazza performance on cen with direct connection IF OK
+
 *************on colobus
 sudo /root/bin/haproxy-freereg2.sh brazza enable
 sudo /root/bin/haproxy-freecen2.sh brazza enable
+
+Back to Step a abd repeat for next server
+
+When complete update refinery
 
 Refinery transfer https://docs.google.com/document/d/1ozrJbHY074xYvwCB3j6NodDdPFPnWU4WySdnZCMeWUw/edit
 
 alias f2rake='sudo -u webserv bundle exec rake RAILS_ENV=production'
 
-f2rake foo:update_file_distribution[0.1] --trace
-f2rake foo:refresh_ucf_lists[0,0] --trace
+
+Reminder for me
+ mongoexport --ssl --sslAllowInvalidCertificates --host "mongo5.freeukgen.org.uk:27017" --db freecen_production_2017 --collection freecen_pieces --out pieces.json
+ mongoimport --port 27017 --db freecen_20170426 --collection freecen_pieces --file d:/mongo5/pieces.json
+
