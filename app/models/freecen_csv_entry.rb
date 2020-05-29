@@ -1333,53 +1333,53 @@ class FreecenCsvEntry
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
         ['Census Year', 'County', 'Census District', 'Civil Parish', 'Quaord Sacra', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Folio', 'Page']
       else
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Census Place', 'Piece', 'Enumeration District', 'Constituency', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Where Census Taken', 'Piece', 'Enumeration District', 'Constituency', 'Folio', 'Page']
       end
     when '1851'
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency','Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Where Census Taken', 'Piece', 'Enumeration District', 'Ward', 'Constituency','Folio', 'Page']
       else
         ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Census Place', 'Piece', 'Enumeration District', 'Constituency', 'Folio', 'Page']
       end
     when '1861'
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Quaord Sacra', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Page']
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Page']
       else
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Folio', 'Page']
       end
     when '1871'
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Quaord Sacra', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Police District', 'Page']
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Police District', 'Page']
       else
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Folio', 'Page']
       end
     when '1881'
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Quaord Sacra', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Police District', 'School Board', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Police District', 'School Board', 'Folio', 'Page']
       else
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Sanitary District', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Sanitary District', 'Folio', 'Page']
       end
     when '1891'
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Quaord Sacra', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Police District', 'School Board', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Police District', 'School Board', 'Folio', 'Page']
       else
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Sanitary District', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Sanitary District', 'Folio', 'Page']
       end
     when '1901'
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Quaord Sacra', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Police District',  'School Board', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Police District',  'School Board', 'Folio', 'Page']
       elsif ChapmanCode::CODES['Ireland'].member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Poor Law Union', 'Police District', 'Page']
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Where Census Taken', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Poor Law Union', 'Police District', 'Page']
       else
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Folio', 'Page']
       end
     when '1911'
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Quaord Sacra', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Sanitary District', 'Scavenging District', 'Special Lighting District', 'School Board', 'Page']
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Sanitary District', 'Scavenging District', 'Special Lighting District', 'School Board', 'Page']
       elsif ChapmanCode::CODES['Ireland'].member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Poor Law Union', 'Police District', 'Page']
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Where Census Taken', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Poor Law Union', 'Police District', 'Page']
       else
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Folio', 'Page']
       end
     end
   end
