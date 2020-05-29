@@ -15,6 +15,13 @@
 
 }
 
+.bmd_logo {
+        top: 90px;
+    left: 15px;
+    position: absolute;
+    background-color: #ffffff !important;
+}
+
 .bmd_search_header {
     line-height: 1 !important;
     padding-bottom: 7px !important;
@@ -23,22 +30,37 @@
     margin-top: 50px;
 }
 
-/* Large devices (laptops/desktops, 992px and up) */
-@media only screen and (min-width: 1200px) {
+@media (min-width: 992px) {
 
-    /* Positioning BMD Logo */
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+/*@media only screen and (min-width: 1200px) {
+
+    /* Positioning BMD Logo 
     .icon__freebmd {
         outline: 10px solid white;
         margin-left: 20px;
     }
 
 
-}
+}*/
 
+/*// Small devices (landscape phones, 576px and up)
+@media (min-width: 576px) { ... }
+
+// Medium devices (tablets, 768px and up)
+@media (min-width: 768px) { ... }
+
+// Large devices (desktops, 992px and up)
+@media (min-width: 992px) { ... }
+
+// Extra large devices (large desktops, 1200px and up)
+@media (min-width: 1200px) { ... }
 @media only screen and (min-width: 992px) {
 
     /* Positioning BMD Logo */
-    .icon__freebmd {
+    /*.icon__freebmd {
         outline: 10px solid white;
         margin-left: 20px;
         width: 287.144px;
@@ -54,7 +76,7 @@
 }
 
 /* Medium devices (landscape tablets, 768px and up) */
-@media only screen and (max-width: 768px) {
+/*@media only screen and (max-width: 768px) {
     .icon__freebmd {
         outline: 10px solid white;
         margin-left: 20px;
@@ -96,7 +118,7 @@
         padding: 5px;
     }
 
-}
+}*/
 
 .bmd_search_form {
     background: rgba(13, 195, 195, 0.05);
@@ -244,17 +266,17 @@ select[multiple]:focus option:checked {
 
 @media only screen and (max-width: 870px) {
 
-    .Navbar__Items,
+    .flex_container,
     .Navbar,
     .copyright_banner {
         flex-direction: column;
     }
 
-    .Navbar__Items--right {
+    .flex_container {
         margin-left: 0;
     }
 
-    .Navbar__Items {
+    .flex_container {
         display: none;
     }
 

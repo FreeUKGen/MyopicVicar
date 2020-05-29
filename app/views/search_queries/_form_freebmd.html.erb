@@ -1,18 +1,18 @@
 <% if flash[:notice] %>
-<div class="weight--semibold text--center"><br>
-    <%= flash[:notice] %> <% flash[:notice] = nil %><br>
-</div>
+    <div class="weight--semibold text--center"><br>
+        <%= flash[:notice] %> <% flash[:notice] = nil %><br>
+    </div>
 <% end %>
 <% if @search_query.present? && (@search_query.errors.present? || @search_query.errors.any?) %>
-<h2 class="gamma text--center"><%= pluralize(@search_query.errors.count, "error") %> prohibited this search from being processed:</h2>
-<ul class="validation-list">
-    <% @search_query.errors.messages.each do |key, msg| %>
-    <li class="validation-list__error text--center"><%= msg[0] %></li>
-    <% end %>
-</ul>
+    <h2 class="gamma text--center"><%= pluralize(@search_query.errors.count, "error") %> prohibited this search from being processed:</h2>
+    <ul class="validation-list">
+        <% @search_query.errors.messages.each do |key, msg| %>
+            <li class="validation-list__error text--center"><%= msg[0] %></li>
+        <% end %>
+    </ul>
 <% end %>
 <% if device_type == :mobile%>
-<%= render 'mobile_freebmd_form'%>
+    <%= render 'mobile_freebmd_form'%>
 <% else %>
     <div class="bmd_search_form">
         <%= semantic_form_for(@search_query) do |f| %>
