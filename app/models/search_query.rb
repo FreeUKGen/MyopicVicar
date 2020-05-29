@@ -294,8 +294,8 @@ class SearchQuery
     params = {}
     if start_year || end_year
       date_params = {}
-      date_params['$gt'] = DateParser::start_search_date(start_year) if start_year
-      date_params['$lte'] = DateParser::end_search_date(end_year) if end_year
+      date_params['$gte'] = DateParser::start_search_date(start_year) if start_year
+      date_params['$lt'] = DateParser::end_search_date(end_year) if end_year
       params[:search_date] = date_params
     end
     params

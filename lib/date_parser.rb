@@ -2,18 +2,29 @@
 module DateParser
 
   MONTHS = {
-    'Jan' => '01',
-    'Feb' => '02',
-    'Mar' => '03',
-    'Apr' => '04',
-    'May' => '05',
-    'Jun' => '06',
-    'Jul' => '07',
-    'Aug' => '08',
-    'Sep' => '09',
-    'Oct' => '10',
-    'Nov' => '11',
-    'Dec' => '12'
+    'jan' => '01',
+    'feb' => '02',
+    'mar' => '03',
+    'apr' => '04',
+    'may' => '05',
+    'jun' => '06',
+    'jul' => '07',
+    'aug' => '08',
+    'sep' => '09',
+    'oct' => '10',
+    'nov' => '11',
+    'dec' => '12',
+    'january' => '01',
+    'february' => '02',
+    'march' => '03',
+    'april' => '04',
+    'june' => '06',
+    'july' => '07',
+    'august' => '08',
+    'september' => '09',
+    'october' => '10',
+    'november' => '11',
+    'december' => '12'
   }
 
   def self.searchable(verbatim)
@@ -51,8 +62,13 @@ module DateParser
     if vy.match(/(\d\d\d)[_*]/)
       vy = $1 + '5'
     end
+
     if vy.match(/(\d\d)__/) || vy.match(/(\d\d)\*/)
       vy = $1 + '50'
+    end
+
+    if vy.match(/(\d\d\d\d)?/)
+      vy = $1.gsub(/\?/, '')
     end
 
     # handle split years
@@ -63,8 +79,8 @@ module DateParser
     end
 
     # convert month names to numbers
-    if MONTHS[vm]
-      m = MONTHS[vm]
+    if MONTHS[vm.downcase]
+      m = MONTHS[vm.downcase]
     else
       m = vm
     end
@@ -79,18 +95,18 @@ module DateParser
 
   def self.start_search_date(year)
     # zero-pad for completionist users inputting three-digit years
-    year.to_s.rjust(4,"0")
+    year.to_s.rjust(4, '0')
   end
 
   def self.end_search_date(year)
     # make the year inclusive
     next_year = year + 1
-    next_year = next_year.to_s.rjust(4,"0")
+    next_year = next_year.to_s.rjust(4, '0')
     # calculate new year
     if next_year.to_i < 1753
       next_year = "#{next_year}-03-25"
     else
-      next_year = "#{year}-12-31"
+      next_year = "#{next_year}-01-01"
     end
     next_year
   end
