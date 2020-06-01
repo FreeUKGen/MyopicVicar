@@ -2,29 +2,18 @@
 module DateParser
 
   MONTHS = {
-    'jan' => '01',
-    'feb' => '02',
-    'mar' => '03',
-    'apr' => '04',
-    'may' => '05',
-    'jun' => '06',
-    'jul' => '07',
-    'aug' => '08',
-    'sep' => '09',
-    'oct' => '10',
-    'nov' => '11',
-    'dec' => '12',
-    'january' => '01',
-    'february' => '02',
-    'march' => '03',
-    'april' => '04',
-    'june' => '06',
-    'july' => '07',
-    'august' => '08',
-    'september' => '09',
-    'october' => '10',
-    'november' => '11',
-    'december' => '12'
+    'Jan' => '01',
+    'Feb' => '02',
+    'Mar' => '03',
+    'Apr' => '04',
+    'May' => '05',
+    'Jun' => '06',
+    'Jul' => '07',
+    'Aug' => '08',
+    'Sep' => '09',
+    'Oct' => '10',
+    'Nov' => '11',
+    'Dec' => '12'
   }
 
   def self.searchable(verbatim)
@@ -58,6 +47,8 @@ module DateParser
       return verbatim
     end
 
+    return verbatim if vy == '*'
+
     # handle unclear years
     if vy.match(/(\d\d\d)[_*]/)
       vy = $1 + '5'
@@ -79,8 +70,8 @@ module DateParser
     end
 
     # convert month names to numbers
-    if MONTHS[vm.downcase]
-      m = MONTHS[vm.downcase]
+    if MONTHS[vm]
+      m = MONTHS[vm]
     else
       m = vm
     end

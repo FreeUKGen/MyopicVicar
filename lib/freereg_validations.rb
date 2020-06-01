@@ -20,8 +20,7 @@ module FreeregValidations
   #\A[\d{1,2}\*\-\?][\s+\/][A-Za-z\d\*\-\?]{0,3}[\s+\/][\d\*\-\?]{0,4}\/?[\d\*\-\?]{0,2}?\z
   VALID_DATE = /\A\d{1,2}[\s+\/\-][A-Za-z\d]{0,3}[\s+\/\-]\d{2,4}\z/ #modern date no UCF or wildcard
   VALID_DAY = /\A\d{1,2}\z/
-  VALID_MONTH = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "*",
-                 'january', 'february', 'march', 'april', 'june', 'july', 'august', 'september', 'october', 'november', 'december']
+  VALID_MONTH = %w[Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec *].freeze
   VALID_NUMERIC_MONTH = /\A\d{1,2}\z/
   VALID_YEAR = /\A\d{4,5}\z/
   DATE_SPLITS = {
@@ -195,7 +194,6 @@ module FreeregValidations
     end
   end
 
-
   def FreeregValidations.cleancondition(field)
     return true if field.nil? || field.empty?
     field = field.capitalize
@@ -226,23 +224,26 @@ module FreeregValidations
       return false unless a[0].to_s =~ VALID_DAY || a[0] == '*'
 
       return false if a[0].to_i > 31 || a[0].to_i <= 0
-
       # deal with the month allowing for the wild character
-      return false unless VALID_MONTH.include?(a[1].downcase) || a[1] == '*'
+
+      return false unless VALID_MONTH.include?(a[1]) || a[1] == '*'
 
       # deal with the year and split year
       check = FreeregValidations.check_year(a[2])
       return check
+
     when a.length == 2
       # deal with dates that are mmm yyyy firstly the Mmm then the split year
-      return false unless VALID_MONTH.include?(a[0].downcase) || a[0] == '*'
+      return false unless VALID_MONTH.include?(a[0]) || a[0] == '*'
 
       check = FreeregValidations.check_year(a[1])
       return check
+
     when a.length == 1
       # deal with dates that are year only
       check = FreeregValidations.check_year(a[0])
       return check
+
     else
       p 'unknown date format'
       return false
@@ -250,7 +251,7 @@ module FreeregValidations
   end
 
   def self.check_year(yyyy)
-    return true if yyyy =~ /\d{2}\*/ || yyyy =~ /\d{3}_/ || yyyy =~ /\d{2}_{2}/ || yyyy =~ /\d{4}\?/
+    return true if yyyy == '*' || yyyy =~ /\d{2}\*/ || yyyy =~ /\d{3}_/ || yyyy =~ /\d{2}_{2}/ || yyyy =~ /\d{4}\?/
 
     characters = yyyy.split('')
     if characters.length == 4
