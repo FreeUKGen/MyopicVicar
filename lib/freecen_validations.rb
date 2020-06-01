@@ -185,7 +185,7 @@ module FreecenValidations
     end
 
     def fixed_relationship?(field)
-      return [false, 'blank'] if field.blank?
+      return [true, ''] if field.blank?
 
       return [true, ''] if field =~ VALID_TEXT
 

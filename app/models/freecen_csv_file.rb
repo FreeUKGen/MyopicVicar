@@ -265,7 +265,7 @@ class FreecenCsvFile
 
       freecen_csv_file = FreecenCsvFile.find(freecen_csv_file)
       result = true if freecen_csv_file.present? && freecen_csv_file.freecen_piece_id.present?
-      logger.warn("FREEREG:LOCATION:VALIDATION invalid freecen_csv_file id #{freecen_csv_file} ") unless result
+      logger.warn("FREEREG:LOCATION:VALIDATION invalid freecen_csv_file #{freecen_csv_file} ") unless result
       result
     end
   end # self

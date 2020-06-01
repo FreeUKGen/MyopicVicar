@@ -739,7 +739,7 @@ class FreecenCsvEntry
 
       success, messagea = FreecenValidations.fixed_uninhabited_flag?(uninhabited_flag)
       unless success
-        messageb = "ERROR: line #{num} Special use #{uninhabited_flag} is #{messagea}.<br>"
+        messageb = "ERROR: line #{num} Uninhabited Flag #{uninhabited_flag} is #{messagea}.<br>"
         message = message + messageb
         record[:error_messages] = record[:error_messages] + messageb
       else
@@ -1018,7 +1018,7 @@ class FreecenCsvEntry
 
       success, messagea = FreecenValidations.fixed_uncertainty_status?(record[:individual_flag])
       unless success
-        messageb = "ERROR: line #{num} Query #{record[:individual_flag]} is #{messagea}.<br>"
+        messageb = "ERROR: line #{num} Individual Flag #{record[:individual_flag]} is #{messagea}.<br>"
         message = message + messageb
         record[:error_messages] = record[:error_messages] + messageb
       end
@@ -1089,7 +1089,7 @@ class FreecenCsvEntry
 
       success, messagea = FreecenValidations.fixed_uncertainty_occupation?(record[:occupation_flag])
       unless success
-        messageb = "ERROR: line #{num} Occupation uncertainty #{record[:occupation_flag]} is #{messagea}.<br>"
+        messageb = "ERROR: line #{num} Occupation Flag #{record[:occupation_flag]} is #{messagea}.<br>"
         message = message + messageb
         record[:error_messages] = record[:error_messages] + messageb
       end

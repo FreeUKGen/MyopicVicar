@@ -212,6 +212,7 @@ module Freecen
     'notes' => 'notes',
     'address_flag' => 'address_flag',
     'at home' => 'at_home',
+    'at_home' => 'at_home',
     'birth_county' => 'birth_county',
     'birth_place' => 'birth_place',
     'birth_place_flag' => 'birth_place_flag',

@@ -427,10 +427,10 @@ class CsvFile < CsvFiles
 
   def clean_up_physical_files_after_failure(message)
     batch = PhysicalFile.userid(@userid).file_name(@file_name).first
-    return true if batch.blank? || message.blank?
+    return true if batch.blank?
 
     PhysicalFile.remove_waiting_flag(@userid, @file_name)
-    batch.delete if message.include?("header errors") || message.include?("does not exist. ") || message.include?("userid does not exist. ")
+    batch.delete
   end
 
   def clean_up_supporting_information(records_processed)
@@ -962,71 +962,72 @@ class CsvRecord < CsvRecords
       message, @csvfile.school_board = FreecenCsvEntry.validate_school_board(@data_record, @csvfile.school_board)
       @project.write_messages_to_all(message, true) unless message == ''
     end
-
-    def extract_location_flag
-      message = FreecenCsvEntry.validate_location_flag(@data_record)
-      @project.write_messages_to_all(message, true) unless message == ''
-      extract_folio_fields
-    end
-
-    def extract_folio_fields
-      message, @csvfile.folio, @csvfile.folio_suffix = FreecenCsvEntry.validate_folio(@data_record, @csvfile.folio, @csvfile.folio_suffix)
-      @project.write_messages_to_all(message, true) unless message == ''
-      extract_page_fields
-    end
-
-    def extract_page_fields
-      message, @csvfile.page = FreecenCsvEntry.validate_page(@data_record, @csvfile.page)
-      @project.write_messages_to_all(message, true) unless message == ''
-      extract_dwelling_fields
-    end
-
-    def extract_dwelling_fields
-      if ['b', 'n', 'u', 'v'].include?(@data_record[:uninhabited_flag])
-        @data_record[:dwelling_number] = @csvfile.dwelling_number + 1
-        @csvfile.dwelling_number = @data_record[:dwelling_number]
-      elsif @data_record[:house_number].blank? && @data_record[:house_or_street_name].blank? && @data_record[:schedule_number].blank?
-        @data_record[:dwelling_number] = @csvfile.dwelling_number
-      elsif @data_record[:house_number].blank? && @data_record[:house_or_street_name] == '-' && @data_record[:schedule_number].blank?
-        @data_record[:dwelling_number] = @csvfile.dwelling_number
-      else
-        @data_record[:dwelling_number] = @csvfile.dwelling_number + 1
-        @csvfile.dwelling_number = @data_record[:dwelling_number]
-        @csvfile.sequence_in_household = 0
-      end
-      message, @csvfile.schedule, @csvfile.schedule_suffix = FreecenCsvEntry.validate_dwelling(@data_record, @csvfile.schedule, @csvfile.schedule_suffix)
-      @project.write_messages_to_all(message, true) unless message == ''
-      extract_individual_fields
-    end
-
-    def extract_individual_fields
-      @data_record[:notes] = '' if @data_record[:notes] =~ /\[see mynotes.txt\]/
-      propagate_records
-      return if ['b', 'n', 'u', 'v'].include?(@data_record[:uninhabited_flag])
-
-      @data_record[:address_flag] = 'x' if @data_record[:uninhabited_flag] == 'x'
-      @data_record[:dwelling_number] = @csvfile.dwelling_number
-      @csvfile.sequence_in_household = @csvfile.sequence_in_household + 1
-      @data_record[:sequence_in_household] = @csvfile.sequence_in_household
-      message = FreecenCsvEntry.validate_individual(@data_record)
-      @project.write_messages_to_all(message, true) unless message == ''
-    end
-
-    def propagate_records
-      data_record[:enumeration_district] = @csvfile.enumeration_district if data_record[:enumeration_district].blank? && data_record[:field_specification].value?('enumeration_district')
-      data_record[:civil_parish] = @csvfile.civil_parish if data_record[:civil_parish].blank? && data_record[:field_specification].value?('civil_parish')
-      data_record[:ecclesiastical_parish] = @csvfile.ecclesiastical_parish if data_record[:ecclesiastical_parish].blank? && data_record[:field_specification].value?('ecclesiastical_parish')
-      data_record[:where_census_taken] = @csvfile.where_census_taken if data_record[:where_census_taken].blank? && data_record[:field_specification].value?('where_census_taken')
-      data_record[:ward] = @csvfile.ward if data_record[:ward].blank? && data_record[:field_specification].value?('ward')
-      data_record[:parliamentary_constituency] = @csvfile.parliamentary_constituency if data_record[:parliamentary_constituency].blank? && data_record[:field_specification].value?('parliamentary_constituency')
-      data_record[:poor_law_union] = @csvfile.poor_law_union if data_record[:poor_law_union].blank? && data_record[:field_specification].value?('poor_law_union')
-      data_record[:police_district] = @csvfile.police_district if data_record[:police_district].blank? && data_record[:field_specification].value?('police_district')
-      data_record[:sanitary_district] = @csvfile.sanitary_district if data_record[:sanitary_district].blank? && data_record[:field_specification].value?('sanitary_district')
-      data_record[:special_water_district] = @csvfile.special_water_district if data_record[:special_water_district].blank? && data_record[:field_specification].value?('special_water_district')
-      data_record[:scavenging_district] = @csvfile.scavenging_district if data_record[:scavenging_district].blank? && data_record[:field_specification].value?('scavenging_district')
-      data_record[:special_lighting_district] = @csvfile.special_lighting_district if data_record[:special_lighting_district].blank? && data_record[:field_specification].value?('special_lighting_district')
-      data_record[:school_board] = @csvfile.school_board if data_record[:school_board].blank? && data_record[:field_specification].value?('school_board')
-      data_record[:folio_number] = @csvfile.folio.to_s + @csvfile.folio_suffix.to_s if data_record[:folio_number].blank? && data_record[:field_specification].value?('folio_number')
-      data_record[:page_number] = @csvfile.page if data_record[:page_number].blank? && data_record[:field_specification].value?('page_number')
-    end
   end
+
+  def extract_location_flag
+    message = FreecenCsvEntry.validate_location_flag(@data_record)
+    @project.write_messages_to_all(message, true) unless message == ''
+    extract_folio_fields
+  end
+
+  def extract_folio_fields
+    message, @csvfile.folio, @csvfile.folio_suffix = FreecenCsvEntry.validate_folio(@data_record, @csvfile.folio, @csvfile.folio_suffix)
+    @project.write_messages_to_all(message, true) unless message == ''
+    extract_page_fields
+  end
+
+  def extract_page_fields
+    message, @csvfile.page = FreecenCsvEntry.validate_page(@data_record, @csvfile.page)
+    @project.write_messages_to_all(message, true) unless message == ''
+    extract_dwelling_fields
+  end
+
+  def extract_dwelling_fields
+    if ['b', 'n', 'u', 'v'].include?(@data_record[:uninhabited_flag])
+      @data_record[:dwelling_number] = @csvfile.dwelling_number + 1
+      @csvfile.dwelling_number = @data_record[:dwelling_number]
+    elsif @data_record[:house_number].blank? && @data_record[:house_or_street_name].blank? && @data_record[:schedule_number].blank?
+      @data_record[:dwelling_number] = @csvfile.dwelling_number
+    elsif @data_record[:house_number].blank? && @data_record[:house_or_street_name] == '-' && @data_record[:schedule_number].blank?
+      @data_record[:dwelling_number] = @csvfile.dwelling_number
+    else
+      @data_record[:dwelling_number] = @csvfile.dwelling_number + 1
+      @csvfile.dwelling_number = @data_record[:dwelling_number]
+      @csvfile.sequence_in_household = 0
+    end
+    message, @csvfile.schedule, @csvfile.schedule_suffix = FreecenCsvEntry.validate_dwelling(@data_record, @csvfile.schedule, @csvfile.schedule_suffix)
+    @project.write_messages_to_all(message, true) unless message == ''
+    extract_individual_fields
+  end
+
+  def extract_individual_fields
+    @data_record[:notes] = '' if @data_record[:notes] =~ /\[see mynotes.txt\]/
+    propagate_records
+    return if ['b', 'n', 'u', 'v'].include?(@data_record[:uninhabited_flag])
+
+    @data_record[:address_flag] = 'x' if @data_record[:uninhabited_flag] == 'x'
+    @data_record[:dwelling_number] = @csvfile.dwelling_number
+    @csvfile.sequence_in_household = @csvfile.sequence_in_household + 1
+    @data_record[:sequence_in_household] = @csvfile.sequence_in_household
+    message = FreecenCsvEntry.validate_individual(@data_record)
+    @project.write_messages_to_all(message, true) unless message == ''
+  end
+
+  def propagate_records
+    data_record[:enumeration_district] = @csvfile.enumeration_district if data_record[:enumeration_district].blank? && data_record[:field_specification].value?('enumeration_district')
+    data_record[:civil_parish] = @csvfile.civil_parish if data_record[:civil_parish].blank? && data_record[:field_specification].value?('civil_parish')
+    data_record[:ecclesiastical_parish] = @csvfile.ecclesiastical_parish if data_record[:ecclesiastical_parish].blank? && data_record[:field_specification].value?('ecclesiastical_parish')
+    data_record[:where_census_taken] = @csvfile.where_census_taken if data_record[:where_census_taken].blank? && data_record[:field_specification].value?('where_census_taken')
+    data_record[:ward] = @csvfile.ward if data_record[:ward].blank? && data_record[:field_specification].value?('ward')
+    data_record[:parliamentary_constituency] = @csvfile.parliamentary_constituency if data_record[:parliamentary_constituency].blank? && data_record[:field_specification].value?('parliamentary_constituency')
+    data_record[:poor_law_union] = @csvfile.poor_law_union if data_record[:poor_law_union].blank? && data_record[:field_specification].value?('poor_law_union')
+    data_record[:police_district] = @csvfile.police_district if data_record[:police_district].blank? && data_record[:field_specification].value?('police_district')
+    data_record[:sanitary_district] = @csvfile.sanitary_district if data_record[:sanitary_district].blank? && data_record[:field_specification].value?('sanitary_district')
+    data_record[:special_water_district] = @csvfile.special_water_district if data_record[:special_water_district].blank? && data_record[:field_specification].value?('special_water_district')
+    data_record[:scavenging_district] = @csvfile.scavenging_district if data_record[:scavenging_district].blank? && data_record[:field_specification].value?('scavenging_district')
+    data_record[:special_lighting_district] = @csvfile.special_lighting_district if data_record[:special_lighting_district].blank? && data_record[:field_specification].value?('special_lighting_district')
+    data_record[:school_board] = @csvfile.school_board if data_record[:school_board].blank? && data_record[:field_specification].value?('school_board')
+    data_record[:folio_number] = @csvfile.folio.to_s + @csvfile.folio_suffix.to_s if data_record[:folio_number].blank? && data_record[:field_specification].value?('folio_number')
+    data_record[:page_number] = @csvfile.page if data_record[:page_number].blank? && data_record[:field_specification].value?('page_number')
+  end
+end
