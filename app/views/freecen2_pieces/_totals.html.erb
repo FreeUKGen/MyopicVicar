@@ -1,0 +1,28 @@
+<h2 style="text-align: center">Totals for <%=@chapman_code%></h2>
+<table style="margin-left:25%" class="table--bordered t50 table--data table--striped " >
+  <thead >
+    <tr >
+      <th >Year</th>
+      <th >Pieces</th>
+      <th >Pieces Online</th>
+      <th >Individuals</th>
+      <th >Dwellings</th>
+    </tr>
+  </thead>
+  <% Freecen::CENSUS_YEARS_ARRAY.each.each do |year| %>
+    <tr >
+      <td> <%=  link_to "#{year}", freecen2_pieces_chapman_year_index_path(chapman_code:"#{@chapman_code}",year:"#{year}"), method: :get, class: 'btn   btn--small'%> </td>
+      <td> <%= @totals_pieces[year] %></td>
+      <td> <%= @totals_pieces_online[year] %></td>
+      <td> <%= @totals_individuals[year] %></td>
+      <td> <%= @totals_dwellings[year] %></td>
+    </tr>
+  <% end%>
+  <tr >
+    <td> Total</td>
+    <td> <%= @grand_totals_pieces %></td>
+    <td> <%= @grand_totals_pieces_online %></td>
+    <td> <%= @grand_totals_individuals %></td>
+    <td> <%= @grand_totals_dwellings %></td>
+  </tr>
+</table>

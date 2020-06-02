@@ -86,6 +86,8 @@ class Place
   has_many :freecen_dwellings
   has_many :sources
 
+  has_many :freecen2_districts
+
   has_many :image_server_groups
   has_many :gaps
 

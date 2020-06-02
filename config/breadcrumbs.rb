@@ -1530,6 +1530,31 @@ crumb :freecen1_vld_entry do |county, file|
   parent :freecen1_vld_entries, session[:freecen1_vld_file], session[:entry_page]
 end
 
+
+crumb :freecen2_pieces do |county|
+  link 'FreeCen2 Pieces Total', freecen2_pieces_path(county: county)
+  parent :county_options, county
+end
+
+crumb :freecen2_pieces_chapman do |county, year|
+  link 'FreeCen2 Pieces by year', freecen2_pieces_chapman_year_index_path(chapman_code: county, year: year)
+  parent :freecen2_pieces, county
+end
+
+crumb :show_freecen2_piece do |file|
+  link 'Show FreeCen2 Piece', freecen2_piece_path(file)
+  parent :freecen2_pieces, session[:county]
+end
+
+crumb :edit_freecen2_piece do |file, county|
+  link 'Edit FreeCen2 Piece', freecen2_piece_path(file)
+  parent :freecen2_pieces, county
+end
+
+crumb :new_freecen2_piece do |county|
+  link 'Create FreeCen2 Piece'
+  parent :freecen2_pieces, county
+end
 # ...............................................freecen_csv_files .....................................
 crumb :my_own_freecen_csv_files do
   link 'Your Files', my_own_freecen_csv_file_path

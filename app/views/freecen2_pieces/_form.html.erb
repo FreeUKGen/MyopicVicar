@@ -1,0 +1,62 @@
+<%= simple_form_for @freecen2_piece, :html => { :class => "grid"}  do |f| %>
+  <% if @freecen2_piece[:num_individuals].to_i>0 %>
+    <div style="color:red;">Warning: Records are already loaded for this piece. Edits could impact existing records.</div>
+  <% end %>
+  <%= f.hidden_field :chapman_code, value: @freecen2_piece.chapman_code %>
+  <%= f.input :year, label: 'Census Year', selected: @year, include_blank: false, collection: @years, input_html: {class: " simple_form_bgcolour simple_form_position overide_selection_field_width", size: 3 } %>
+  <%= f.input :district_name ,  label: 'District name: as used in the search', selected: @freecen2_piece.district_name, include_blank: false, collection: @places, input_html: {class: " simple_form_bgcolour simple_form_position overide_selection_field_width", size:3 }%>
+  <%= f.input :piece_number, label: "Piece number; ex: for piece '168/b' enter '168'", value: @freecen2_piece.piece_number, :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } %>
+  <%= f.input :suffix, label: "Suffix: ex: for piece '168/b' enter 'b' (leave blank if no suffix)", value: @freecen2_piece.suffix,:input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } %>
+  <%= f.input :parish_number , label: "Parish number: used for Scotland, leave blank for ENG/WLS", value: @freecen2_piece.parish_number, :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
+  <%= f.input :film_number, label: 'Film', value: @freecen2_piece.film_number, :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } %>
+  <%= f.input :remarks, label: 'Notes in register', value: @freecen2_piece.remarks, :as => :text, :input_html => {:class => " simple_form_bgcolour  ",   :placeholder => "Enter public notes",  :size => "30x3" }%>
+  <%= f.input :remarks_coord, label: 'Notes in register', value: @freecen2_piece.remarks_coord, :as => :text, :input_html => {:class => " simple_form_bgcolour  ",   :placeholder => "Enter management notes",  :size => "30x3" }%>
+  <%= f.input :freecen1_filename, label: 'File name', value: @freecen2_piece.freecen1_filename,:input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } %>
+  <div id="freecen2_pieces_form_subplaces_div" style="border:thin;">
+    <h3>Sub-places:</h3>
+    <input id="freecen2_piece_subplaces_max_id" name="freecen2_piece[subplaces_max_id]" type="hidden" value="<%= @freecen2_piece[:subplaces].blank? ? -1 : (@freecen2_piece[:subplaces].length-1) %>">
+    <% @freecen2_piece[:subplaces].each_with_index do |sp,sp_idx| %>
+      <div id="freecen2_piece_sp_<%=sp_idx%>_div">
+        <% next if sp.blank? %>
+        <% sp_name = sp['name'] %>
+        <% sp_lat = sp['lat'] %>
+        <% sp_long = sp['long'] %>
+        Name: <input id="freecen2_piece_subplaces_<%=sp_idx%>_name]" name="freecen2_piece[subplaces_<%=sp_idx%>_name]" type="text" value="<%=sp_name%>">
+        Lat: <input id="freecen2_piece_subplaces_<%=sp_idx%>_lat]" name="freecen2_piece[subplaces_<%=sp_idx%>_lat]" type="text" value="<%=sp_lat%>">
+        Long: <input id="freecen2_piece_subplaces_<%=sp_idx%>_long]" name="freecen2_piece[subplaces_<%=sp_idx%>_long]" type="text" value="<%=sp_long%>">
+        <a href="#" onclick="remove_subplace_from_form('freecen2_piece_sp_<%=sp_idx%>_div');return false;">Remove this subplace</a>
+      </div>
+    <% end %>
+  </div>
+  <br>
+  <a href="#" onclick="add_subplace_to_form();return false;">Add a new subplace</a><br>
+  <%= f.button :submit, 'Submit'   %>
+<% end %>
+<script>
+  var first_place_check=true, freecen2_piece_form_subplace_max_id=<%= @freecen2_piece[:subplaces].present? ? (@freecen2_piece[:subplaces].length-1) : -1 %>;
+  function add_subplace_to_form(){
+    var sp_div=document.getElementById('freecen2_pieces_form_subplaces_div'),sp_max_id_field=document.getElementById('freecen2_piece_subplaces_max_id'), new_div=null,new_html='',sp_id=null;
+    if(sp_div){
+      ++freecen2_piece_form_subplace_max_id;
+      sp_id = freecen2_piece_form_subplace_max_id;
+      new_div = document.createElement('div');
+      new_html='Name: <input id="freecen2_piece_subplaces_'+sp_id+'_name]" name="freecen2_piece[subplaces_'+sp_id+'_name]" type="text" value=""> ';
+      new_html+='Lat: <input id="freecen2_piece_subplaces_'+sp_id+'_lat]" name="freecen2_piece[subplaces_'+sp_id+'_lat]" type="text" value="0.0"> ';
+      new_html+='Long: <input id="freecen2_piece_subplaces_'+sp_id+'_long]" name="freecen2_piece[subplaces_'+sp_id+'_long]" type="text" value="0.0"> ';
+      new_html+='<a href="#" onclick="remove_subplace_from_form(\'freecen2_piece_sp_'+sp_id+'_div\');return false;">Remove this subplace</a> ';
+      new_div.innerHTML = new_html;
+      new_div.id = 'freecen2_piece_sp_'+sp_id+'_div';
+      sp_div.appendChild(new_div);
+      if(sp_max_id_field)
+        sp_max_id_field.value = ''+freecen2_piece_form_subplace_max_id;
+    }
+  }
+  function remove_subplace_from_form(stDivNode){
+    var e=document.getElementById('freecen2_pieces_form_subplaces_div'),sp=document.getElementById(stDivNode);
+    if(e && sp){
+      e.removeChild(sp);
+      sp=null;
+    }
+  }
+  $('document').ready(update_place);
+</script>

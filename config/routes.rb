@@ -235,8 +235,8 @@ MyopicVicar::Application.routes.draw do
 
   resources :freecen_parms
   get 'freecen_parms/:year/:chapman_code/download(.:format)', :to => 'freecen_parms#download', :as => :download_freecen_parms
-  get 'freecen_pieces/new', :to => 'freecen_pieces#new', :as => :piece_new_freecen_piece
 
+  get 'freecen_pieces/new', :to => 'freecen_pieces#new', :as => :piece_new_freecen_piece
   resources :freecen_pieces, except: :new
   get 'freecen_pieces/:chapman_code/:year/new', :to => 'freecen_pieces#new', :as => :new_freecen_piece
   get 'freecen_pieces/:chapman_code/:year/index', :to => 'freecen_pieces#chapman_year_index', :as => :chapman_year_index
@@ -249,6 +249,12 @@ MyopicVicar::Application.routes.draw do
   get 'freecen_coverage/:chapman_code/:act', :to => 'freecen_coverage#show', :as => :show_edit_freecen_coverage
   get 'freecen_coverage_graph/:type/:chapman_code/:year', :to => 'freecen_coverage#graph', :as => :graph_freecen_coverage
   get 'freecen_errors', :to => 'freecen_errors#index', :as => :freecen_errors
+
+  get 'freecen2_pieces/new', :to => 'freecen2_pieces#new', :as => :piece_new_freecen2_piece
+  resources :freecen2_pieces, except: :new
+  get 'freecen2_pieces/:chapman_code/:year/new', :to => 'freecen2_pieces#new', :as => :new_freecen2_piece
+  get 'freecen2_pieces/:chapman_code/:year/index', :to => 'freecen2_pieces#chapman_year_index', :as => :freecen2_pieces_chapman_year_index
+  get 'freecen2_pieces/:year/select_new_county', :to => 'freecen2_pieces#select_new_county', :as => :select_new_county_freecen2_piece
 
   resources :countries
 

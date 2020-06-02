@@ -157,7 +157,7 @@ module UseridRole
                                  'Review Batches by Most Recent Date of Change', 'Review Batches by Oldest Date of Change', 'Review Specific Batch',
                                  'Upload New Batch', 'Offline Reports', 'Manage Images']
   when 'freecen'
-    COUNTY_MANAGEMENT_OPTIONS = ['Manage Pieces', 'Manage VLD Files', 'Manage Places', 'Review Batches with Errors', 'Review Batches by Filename',
+    COUNTY_MANAGEMENT_OPTIONS = ['Manage FreeCEN1 Pieces', 'Manage FreeCEN2 Pieces', 'Manage VLD Files', 'Manage Places', 'Review Batches with Errors', 'Review Batches by Filename',
                                  'Review Batches by Userid then Filename', 'Review Batches by Most Recent Date of Change',
                                  'Review Batches by Oldest Date of Change', 'Review Specific Batch', 'List files waiting to be processed',
                                  'List files NOT processed', 'Upload New Batch', 'Manage Parms']
@@ -177,7 +177,8 @@ module UseridRole
     'Review Specific Batch' => '/manage_counties/selection?option=Review Specific Batch',
     'Upload New Batch' => '/csvfiles/new',
     'Manage Images' => '/manage_counties/selection?option=Manage Images',
-    'Manage Pieces' => '/freecen_pieces',
+    'Manage FreeCEN1 Pieces' => '/freecen_pieces',
+    'Manage FreeCEN2 Pieces' => '/freecen2_pieces',
     'Manage VLD Files' => '/freecen1_vld_files',
     'Manage Places' => '/places',
     'Offline Reports' => '/manage_counties/selection?option=Offline Reports',
@@ -201,7 +202,7 @@ module UseridRole
                                     'Incomplete Registrations', 'Create Userid', 'Syndicate Messages', 'Change Recruiting Status']
   when 'freebmd'
   end
-  
+
   SYNDICATE_OPTIONS_TRANSLATION = {
     'Review Active Members' => '/manage_syndicates/selection?option=Review Active Members',
     'Review All Members' => '/manage_syndicates/selection?option=Review All Members',
