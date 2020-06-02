@@ -19,7 +19,7 @@ module FreeregValidations
   #\A\d{1,2}[\s+\/][A-Za-z\d]{0,3}[\s+\/]\d{2,4}\/?\d{0,2}?\z checks 01 mmm 1567/8
   #\A[\d{1,2}\*\-\?][\s+\/][A-Za-z\d\*\-\?]{0,3}[\s+\/][\d\*\-\?]{0,4}\/?[\d\*\-\?]{0,2}?\z
   VALID_DATE = /\A\d{1,2}[\s+\/\-][A-Za-z\d]{0,3}[\s+\/\-]\d{2,4}\z/ #modern date no UCF or wildcard
-  VALID_DAY = /\A\d{1,2}\z/
+  VALID_DAY = /\A(\d*|_)(\d|_)\z/
   VALID_MONTH = %w[Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec *].freeze
   VALID_NUMERIC_MONTH = /\A\d{1,2}\z/
   VALID_YEAR = /\A\d{4,5}\z/
@@ -223,9 +223,10 @@ module FreeregValidations
       # firstly deal with the dd and allow the wild character
       return false unless a[0].to_s =~ VALID_DAY || a[0] == '*'
 
-      return false if a[0].to_i > 31 || a[0].to_i <= 0
+      if a[0] =~ /\A\d{1,2}\z/
+        return false if a[0].to_i > 31 || a[0].to_i <= 0
+      end
       # deal with the month allowing for the wild character
-
       return false unless VALID_MONTH.include?(a[1]) || a[1] == '*'
 
       # deal with the year and split year
@@ -251,7 +252,7 @@ module FreeregValidations
   end
 
   def self.check_year(yyyy)
-    return true if yyyy == '*' || yyyy =~ /\d{2}\*/ || yyyy =~ /\d{3}_/ || yyyy =~ /\d{2}_{2}/ || yyyy =~ /\d{4}\?/
+    return true if yyyy == '*' || yyyy =~ /\d{2}\*/ || yyyy =~ /\d{3}_/ || yyyy =~ /\d{2}_{1}/ || yyyy =~ /\d{4}\?/
 
     characters = yyyy.split('')
     if characters.length == 4

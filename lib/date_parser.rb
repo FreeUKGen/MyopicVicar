@@ -54,8 +54,12 @@ module DateParser
       vy = $1 + '5'
     end
 
-    if vy.match(/(\d\d)__/) || vy.match(/(\d\d)\*/)
+    if vy.match(/(\d\d__)/) || vy.match(/(\d\d)\*/)
       vy = $1 + '50'
+    end
+
+    if vy.match(/(\d\d_(\d|_))/)
+      vy = $1.gsub(/\_/, '5')
     end
 
     if vy.match(/(\d\d\d\d)?/)
