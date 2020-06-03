@@ -19,7 +19,7 @@ class PhysicalFilesController < ApplicationController
     session[:sorted_by] = @sorted_by
     session[:who] = @selection
     session[:by_userid] = false
-    @batches = PhysicalFile.all.order_by(userid: 1,batch_name: 1).page(params[:page]).per(1000)
+    @batches = PhysicalFile.all.order_by(userid: 1,batch_name: 1)
     @number =  @batches.length
     @number =  @batches.length
     @has_access = ((@user.person_role == 'data_manager') || (@user.person_role == 'system_administrator'))
@@ -96,22 +96,22 @@ class PhysicalFilesController < ApplicationController
     @has_access = ((@user.person_role == 'data_manager') || (@user.person_role == 'system_administrator'))
     case
     when @sorted_by ==  'All files by userid then batch name' && @has_access && !session[:by_userid]
-      @batches = PhysicalFile.all.order_by(userid: 1, file_name: 1).page(params[:page]).per(1000)
+      @batches = PhysicalFile.all.order_by(userid: 1, file_name: 1)
       @number =  @batches.length
       @selection = 'all'
       @paginate = true
     when @sorted_by ==  'Not processed' && @has_access && !session[:by_userid]
-      @batches = PhysicalFile.uploaded_into_base.not_processed.all.order_by(base_uploaded_date: -1, userid: 1).page(params[:page]).per(1000)
+      @batches = PhysicalFile.uploaded_into_base.not_processed.all.order_by(base_uploaded_date: -1, userid: 1)
       @number =  @batches.length
       @selection = 'all'
       @paginate = false
     when @sorted_by == 'All files' && @has_access && !session[:by_userid]
-      @batches = PhysicalFile.all.order_by(userid: 1, base_uploaded_date: 1).page(params[:page]).per(1000)
+      @batches = PhysicalFile.all.order_by(userid: 1, base_uploaded_date: 1)
       @number =  @batches.length
       @selection = 'all'
       @paginate = true
     when @sorted_by == 'Processed but no file' && @has_access && !session[:by_userid]
-      @batches = PhysicalFile.processed.not_uploaded_into_base.all.order_by(userid: 1, file_processed_date: 1).page(params[:page]).per(1000)
+      @batches = PhysicalFile.processed.not_uploaded_into_base.all.order_by(userid: 1, file_processed_date: 1)
       @number =  @batches.length
       @selection = 'all'
       @paginate = false
@@ -121,17 +121,17 @@ class PhysicalFilesController < ApplicationController
       @selection = 'all'
       @paginate = false
     when @sorted_by == 'Not processed' && session[:who].present?
-      @batches = PhysicalFile.userid(session[:who]).uploaded_into_base.not_processed.all.order_by(base_uploaded_date: -1, userid: 1).page(params[:page]).per(1000)
+      @batches = PhysicalFile.userid(session[:who]).uploaded_into_base.not_processed.all.order_by(base_uploaded_date: -1, userid: 1)
       @number =  @batches.length
       @selection = session[:who]
       @paginate = false
     when @sorted_by == 'All files' && session[:who].present?
-      @batches = PhysicalFile.userid(session[:who]).all.order_by(userid: 1,base_uploaded_date: 1).page(params[:page]).per(1000)
+      @batches = PhysicalFile.userid(session[:who]).all.order_by(userid: 1,base_uploaded_date: 1)
       @number =  @batches.length
       @selection = session[:who]
       @paginate = true
     when @sorted_by == 'Processed but no file' && session[:who].present?
-      @batches = PhysicalFile.userid(session[:who]).processed.not_uploaded_into_base.all.order_by(userid: 1, file_processed_date: 1).page(params[:page]).per(1000)
+      @batches = PhysicalFile.userid(session[:who]).processed.not_uploaded_into_base.all.order_by(userid: 1, file_processed_date: 1)
       @number =  @batches.length
       @selection = session[:who]
       @paginate = false
@@ -231,7 +231,7 @@ class PhysicalFilesController < ApplicationController
         cmp
       end
     }
-    #batches = Kaminari.paginate_array(batches).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
+
     @paginate = false
     batches
   end

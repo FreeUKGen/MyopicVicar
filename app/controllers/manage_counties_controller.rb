@@ -91,7 +91,7 @@ class ManageCountiesController < ApplicationController
     @sorted_by = '; selects files with zero date records then alphabetically by userid and file name'
     session[:sorted_by] = @sorted_by
     session[:sort] = 'userid_lower_case ASC, file_name ASC'
-    @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).datemin('0').no_timeout.order_by(session[:sort]).page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
+    @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).datemin('0').no_timeout.order_by(session[:sort])
     render 'freereg1_csv_files/index'
   end
 
