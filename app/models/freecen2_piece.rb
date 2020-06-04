@@ -37,8 +37,6 @@ class Freecen2Piece
   field :civil_parish_names_sort, type: String
 
 
-
-
   field :film_number, type: String
   field :freecen1_filename, type: String
   field :status, type: String
