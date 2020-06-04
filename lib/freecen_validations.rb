@@ -135,7 +135,7 @@ module FreecenValidations
     def rooms_with_windows?(field)
       return [true, ''] if field.blank?
 
-      return [true, ''] if field.VALID_NUMBER
+      return [true, ''] if field =~ VALID_NUMBER
 
       [false, 'Not valid number']
     end
@@ -143,7 +143,7 @@ module FreecenValidations
     def class_of_house?(field)
       return [true, ''] if field.blank?
 
-      return [true, ''] if field.VALID_TEXT
+      return [true, ''] if field =~ VALID_TEXT
 
       [false, 'Not valid class']
     end
@@ -229,43 +229,43 @@ module FreecenValidations
     end
 
     def school_children?(field)
-      return [true, ''] if field.VALID_NUMBER
+      return [true, ''] if field =~ VALID_NUMBER
 
       [false, 'Not valid number']
     end
 
     def years_married?(field)
-      return [true, ''] if field.VALID_NUMBER && field.to_i <= 100
+      return [true, ''] if field =~ VALID_NUMBER && field.to_i <= 100
 
       [false, 'Not valid number']
     end
 
     def children_born_alive?(field)
-      return [true, ''] if field.VALID_NUMBER && field.to_i <= 30
+      return [true, ''] if field =~ VALID_NUMBER && field.to_i <= 30
 
       [false, 'Not valid number']
     end
 
     def children_living?(field)
-      return [true, ''] if field.VALID_NUMBER && field.to_i <= 30
+      return [true, ''] if field =~ VALID_NUMBER && field.to_i <= 30
 
       [false, 'Not valid number']
     end
 
     def children_deceased?(field)
-      return [true, ''] if field.VALID_NUMBER && field.to_i <= 30
+      return [true, ''] if field =~ VALID_NUMBER && field.to_i <= 30
 
       [false, 'Not valid number']
     end
 
     def religion?(field)
-      return [true, ''] if field.VALID_TEXT
+      return [true, ''] if field =~ VALID_TEXT
 
       [false, 'Not valid text']
     end
 
     def read_write?(field)
-      return [true, ''] if field.VALID_TEXT
+      return [true, ''] if field =~ VALID_TEXT
 
       [false, 'Not valid text']
     end
@@ -291,7 +291,7 @@ module FreecenValidations
     end
 
     def industry?(field)
-      return [true, ''] if field.VALID_TEXT
+      return [true, ''] if field =~ VALID_TEXT
 
       [false, 'Not valid text']
     end
@@ -329,13 +329,13 @@ module FreecenValidations
     end
 
     def nationality?(field)
-      return [true, ''] if field.VALID_TEXT
+      return [true, ''] if field =~ VALID_TEXT
 
       [false, 'Not valid text']
     end
 
     def father_place_of_birth?(field)
-      return [true, ''] if field.VALID_TEXT
+      return [true, ''] if field =~ VALID_TEXT
 
       [false, 'Not valid text']
     end
