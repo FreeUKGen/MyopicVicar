@@ -983,7 +983,7 @@ class CsvRecord < CsvRecords
   end
 
   def extract_dwelling_fields
-    if ['b', 'n', 'u', 'v'].include?(@data_record[:uninhabited_flag])
+    if @data_record[:uninhabited_flag].present? && ['b', 'n', 'u', 'v'].include?(@data_record[:uninhabited_flag].downcase)
       @data_record[:dwelling_number] = @csvfile.dwelling_number + 1
       @csvfile.dwelling_number = @data_record[:dwelling_number]
     elsif @data_record[:house_number].blank? && @data_record[:house_or_street_name].blank? && @data_record[:schedule_number].blank?
@@ -1003,7 +1003,7 @@ class CsvRecord < CsvRecords
   def extract_individual_fields
     @data_record[:notes] = '' if @data_record[:notes] =~ /\[see mynotes.txt\]/
     propagate_records
-    return if ['b', 'n', 'u', 'v'].include?(@data_record[:uninhabited_flag])
+    return if @data_record[:uninhabited_flag].present? && ['b', 'n', 'u', 'v'].include?(@data_record[:uninhabited_flag].downcase)
 
     @data_record[:address_flag] = 'x' if @data_record[:uninhabited_flag] == 'x'
     @data_record[:dwelling_number] = @csvfile.dwelling_number
