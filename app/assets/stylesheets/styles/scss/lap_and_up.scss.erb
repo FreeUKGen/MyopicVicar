@@ -15,7 +15,7 @@
 /**
  * Site header
  */
-
+<% unless MyopicVicar::Application.config.template_set == 'freebmd'%>
 .icon__<%=MyopicVicar::Application.config.template_set %> {
     @include vendor(background-size, 100%);
     background-repeat: no-repeat;
@@ -60,6 +60,7 @@
         margin: 0;
     }
 }
+<% end %>
 
 .site__header {
     padding-top: $site-header-padding-top;

@@ -86,6 +86,7 @@ module MyopicVicar
     config.filter_parameters += [:password]
 
     config.middleware.use Mobvious::Manager
+    config.middleware.use Rack::Deflater
 
     # Use SQL instead of Active Record's schema dumper when creating the database.
     # This is necessary if your schema can't be completely dumped by the schema dumper,
