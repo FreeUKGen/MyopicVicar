@@ -21,6 +21,12 @@
     top: 100px;
     z-index: 2;
     width: 100%;
+    @include manual-media-query(760px) {
+        width: 700px;
+    }
+    @include manual-media-query(570px) {
+        width: 570px;
+    }
 
 }
 
@@ -230,6 +236,15 @@ input.search_form_submit_button {
     text-decoration: none;
     background: none !important;
     border: none;
+}
+
+.clear_form:hover {
+    background: #fff;
+    color: #C84182;
+    border: 2px solid #C84182;
+    border-radius: 4px;
+    transition: 0.1s;
+    padding: 4px 4px;
 }
 
 select[multiple]:focus option:checked {

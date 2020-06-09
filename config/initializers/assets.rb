@@ -19,7 +19,7 @@ Rails.application.configure do
   config.assets.precompile += %w[styles/css/icons.data.png.css]
   config.assets.precompile += %w[styles/css/icons.fallback.css]
   config.assets.precompile += %w[styles/css/freereg_content.css]
-  config.assets.precompile += %w[styles/css/freebmd_content.css]
+  config.assets.precompile += %w[styles/scss/freebmd_content.scss.erb]
   config.assets.precompile += %w[styles/css/ladda.min.css]
   config.assets.precompile += %w[jquery.min.js]
   config.assets.precompile += %w[jquery.chained.remote.js]

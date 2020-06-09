@@ -63,7 +63,7 @@
     <%#= stylesheet_link_tag 'styles/css/icons.data.svg.css',rel: "preload", onload: "this.onload=null;this.rel='stylesheet'", as:'style' %>
     <%= stylesheet_link_tag "styles/css/donate_icon",rel: "preload", onload: "this.onload=null;this.rel='stylesheet'", as:'style' %>
       <%= stylesheet_link_tag "styles/css/freereg_content",rel: "preload", onload: "this.onload=null;this.rel='stylesheet'", as:'style' %>
-      <%= stylesheet_link_tag "styles/css/freebmd_content",rel: "preload", onload: "this.onload=null;this.rel='stylesheet'", as:'style' if appname.downcase == 'freebmd'%>
+      <%= stylesheet_link_tag "styles/scss/freebmd_content",rel: "preload", onload: "this.onload=null;this.rel='stylesheet'", as:'style' if appname.downcase == 'freebmd'%>
       <%= stylesheet_link_tag "styles/scss/lap_and_up", media:"(min-width:571px)",rel: "preload", onload: "this.onload=null;this.rel='stylesheet'", as:'style' %>
       <%= stylesheet_link_tag "styles/scss/ladda",rel: "preload", onload: "this.onload=null;this.rel='stylesheet'", as:'style' %>
     <noscript>
@@ -72,7 +72,7 @@
       <%#= stylesheet_link_tag 'styles/css/icons.data.svg.css' %>
       <%= stylesheet_link_tag "styles/css/donate_icon" %>
       <%= stylesheet_link_tag "styles/css/freereg_content" %>
-      <%= stylesheet_link_tag "styles/css/freebmd_content" if appname.downcase == 'freebmd'%>
+      <%= stylesheet_link_tag "styles/scss/freebmd_content" if appname.downcase == 'freebmd'%>
       <%= stylesheet_link_tag "styles/scss/lap_and_up", media:"(min-width:571px)" %>
       <%= stylesheet_link_tag "styles/scss/ladda" %>
     </noscript>
