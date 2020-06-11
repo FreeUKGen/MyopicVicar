@@ -5,6 +5,5 @@ class Freecen2Hamlet
   field :name, type: String
   field :note, type: String
 
-  embedded_in :freecen2_civil_parish, class_name: 'CivilParish'
-
+  embedded_in :freecen2_civil_parish
 end

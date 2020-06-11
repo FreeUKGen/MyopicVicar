@@ -2,13 +2,17 @@ class Freecen2CivilParish
   include Mongoid::Document
   include Mongoid::Timestamps::Short
   require 'freecen_constants'
-  field :civil_parish_name, type: String
-  field :civil_parish_note, type: String
-  field :parish_number, type: Integer
-  validates :parish_number, numericality: { only_integer: true }, allow_blank: true
-  field :parish_suffix, type: String
+  field :name, type: String
+  field :note, type: String
+  field :number, type: Integer
+  validates :number, numericality: { only_integer: true }, allow_blank: true
+  field :suffix, type: String
 
-  embedded_in :freecen2_piece, class_name: 'Piece'
+  belongs_to  :freecen2_piece, optional: true, index: true
 
   embeds_many :freecen2_hamlets
+
+  delegate :year, :name, :tnaid, :number, :code, :note, to: :freecen2_piece, prefix: :piece, allow_nil: true
+
+  index(piece_name: 1, piece_year: 1, name: 1)
 end

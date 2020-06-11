@@ -1,0 +1,46 @@
+<%= render 'show_header' %>
+<div class="grid">
+  <section class="island ">
+    <div class="grid__item ">
+      <table   class="table--bordered table--striped  table--data">
+        <colgroup >
+          <col class=t40>
+          <col class=t60>
+        </colgroup>
+        <tr>
+          <th class="caps">Field</th>
+          <th  class="caps">Value</th>
+        </tr>
+        <tr>
+          <td>Civil parish</td>
+          <td class="weight--semibold"> <%=  @freecen2_civil_parish.name %> </td>
+        </tr>
+        <tr>
+          <td>Notes</td>
+          <td class="weight--semibold"> <%=  @freecen2_civil_parish.note %> </td>
+        </tr>
+        <tr>
+          <td>Parish Number</td>
+          <td class="weight--semibold"> <%=  @freecen2_civil_parish.number %> </td>
+        </tr>
+        <tr>
+          <td>Suffix</td>
+          <td class="weight--semibold"> <%=  @freecen2_civil_parish.suffix %> </td>
+        </tr>
+        <% if @freecen2_civil_parish.freecen2_hamlets.length > 0 %>
+          <% @freecen2_civil_parish.freecen2_hamlets.each do |hamlet| %>
+            <tr>
+              <td>Hamlet name</td>
+              <td class="weight--semibold"> <%=  hamlet.name %> </td>
+            </tr>
+            <tr>
+              <td>Hamlet Notes</td>
+              <td class="weight--semibold"> <%=  hamlet.note  %> </td>
+            </tr>
+          <% end%>
+        <% end%>
+      </table>
+    </div>
+  </section>
+</div>
+<br>

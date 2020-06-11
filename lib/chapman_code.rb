@@ -328,7 +328,9 @@ module ChapmanCode
       'Overseas British' => 'OVB',
       'Overseas Foreign' => 'OVF',
       'Scottish Shipping' => 'SCS',
-      'Other Locations' => 'OTH'
+      'Other Locations' => 'OTH',
+      'Royal Navy Ships' => 'RNS',
+      'Military' => 'MIL'
     }
   }
 end

@@ -1,0 +1,15 @@
+<%= render 'index_header' %>
+<table style="margin-left:25%" class="table--bordered t50 table--data table--striped " >
+  <thead >
+    <tr >
+      <th >Civil Parish</th>
+    </tr>
+  </thead>
+  <tbody >
+    <% @freecen2_civil_parishes.each do |freecen2_civil_parish| %>
+      <tr >
+        <td> <%= individual_civil_link(freecen2_civil_parish)%></td>
+      </tr>
+    <% end%>
+  </tbody >
+</table>

@@ -12,70 +12,40 @@
           <th  class="caps">Value</th>
         </tr>
         <tr>
-          <td>Chapman code</td>
-          <td class="weight--semibold"> <%=  @freecen2_piece.chapman_code %> </td>
-        </tr>
-        <tr>
           <td>Piece number</td>
-          <td class="weight--semibold"> <%=  @freecen2_piece.piece_number %> </td>
+          <td class="weight--semibold"> <%=  @freecen2_piece.number %> </td>
         </tr>
         <tr>
-          <td>District name</td>
-          <td class="weight--semibold"> <%= link_to "#{@freecen2_piece.district_name}" , place_path(@freecen2_piece.place_id) %> </td>
-        </tr>
-        <tr>
-          <td>Subplaces</td>
-          <td class="weight--semibold"> <%= sub_pieces(@freecen2_piece.subplaces)  %></td>
-        </tr>
-        <tr>
-          <td>Parish number</td>
-          <td class="weight--semibold"> <%=  @freecen2_piece.parish_number %> </td>
-        </tr>
-        <tr>
-          <td>Suffix</td>
-          <td class="weight--semibold"> <%=  @freecen2_piece.suffix %> </td>
+          <td>Sub District name</td>
+          <td class="weight--semibold"> <%= @freecen2_piece.name %> </td>
         </tr>
         <tr>
           <td>Year</td>
           <td class="weight--semibold"> <%=  @freecen2_piece.year %> </td>
         </tr>
         <tr>
+          <td>Chapman code</td>
+          <td class="weight--semibold"> <%= @freecen2_piece.district_chapman_code%> </td>
+        </tr>
+        <tr>
+          <td>District name</td>
+          <td class="weight--semibold"> <%= district_link(@freecen2_piece.freecen2_district) %> </td>
+        </tr>
+        <tr>
+          <td>Civil Districts</td>
+          <td class="weight--semibold"> <%= civil_link(@freecen2_piece)  %></td>
+        </tr>
+        <tr>
+          <td>National Archives Link <small> (Opens in a new tab)</small></td>
+          <td class="weight--semibold"><%= tna(@freecen2_piece.tnaid) %> </td>
+        </tr>
+        <tr>
           <td>Film Number</td>
           <td class="weight--semibold"> <%=  @freecen2_piece.film_number %> </td>
         </tr>
         <tr>
-          <td>Freecen1 filename</td>
-          <td class="weight--semibold"> <%=  @freecen2_piece.freecen1_filename %> </td>
-        </tr>
-        <tr>
-          <td>Status</td>
-          <td class="weight--semibold"> <%=  @freecen2_piece.status %> </td>
-        </tr>
-        <tr>
-          <td>Remarks</td>
-          <td class="weight--semibold"> <%=  @freecen2_piece.remarks %> </td>
-        </tr>
-        <tr>
-          <td>Remarks Coord</td>
-          <td class="weight--semibold"> <%=  @freecen2_piece.remarks_coord %> </td>
-        </tr>
-        <tr>
-          <td>Online time</td>
-          <td class="weight--semibold"> <%=  @freecen2_piece.online_time %> </td>
-        </tr>
-        <tr>
           <td>Number of individuals</td>
           <td class="weight--semibold"> <%=  @freecen2_piece.num_individuals %> </td>
-        </tr>
-        <tr>
-          <td>Freecen1 fixed DAT entry</td>
-          <td class="weight--semibold">
-            <% if @freecen2_piece.freecen1_fixed_dat_entry.present? %>
-              <%= link_to 'dat_entry', freecen1_fixed_dat_entry_path(@freecen2_piece.freecen1_fixed_dat_entry)  %>
-            <% else %>
-              Entry created on line
-            <% end%>
-          </td>
         </tr>
       </table>
     </div>

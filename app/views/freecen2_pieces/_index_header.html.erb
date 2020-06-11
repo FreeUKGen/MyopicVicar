@@ -1,8 +1,6 @@
 <% breadcrumb :freecen2_pieces,  @chapman_code, params[:page] %>
 <% session[:page] = params[:page]%>
-<h1 style="text-align: center">Listing of FreeCen2 Pieces for <%=@chapman_code%></h1>
+<h1 style="text-align: center">FreeCen2 Pieces for <%=@chapman_code%></h1>
 <div style="text-align: center">
-  <% if  ['data_manager','county_coordinator','system_administrator'].include?(@user.person_role)%>
-    <%= link_to 'Create New Piece', piece_new_freecen2_piece_path(chapman_code: @chapman_code), method: :get, :class => "btn   btn--small" %>
-  <% end%>
   <%= render 'flash_notice' %>
+</div>

@@ -18,6 +18,7 @@ class County
   field :baptism_records, type: String
   field :burial_records, type: String
   field :marriage_records, type: String
+  has_many :freecen2_districts, dependent: :restrict_with_error
 
   before_save :add_lower_case_and_change_userid_fields
 

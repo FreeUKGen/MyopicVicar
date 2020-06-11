@@ -1530,6 +1530,15 @@ crumb :freecen1_vld_entry do |county, file|
   parent :freecen1_vld_entries, session[:freecen1_vld_file], session[:entry_page]
 end
 
+crumb :freecen2_civil_parishes do |piece|
+  link 'FreeCen2 Civil Parishes', freecen2_civil_parishes_path(piece_id: piece.id)
+  parent :show_freecen2_piece, piece
+end
+
+crumb :show_freecen2_civil_parish do |file|
+  link 'Show FreeCen2 Civil Parish', freecen2_civil_parish_path(file)
+  parent :freecen2_civil_parishes, file.freecen2_piece
+end
 
 crumb :freecen2_pieces do |county|
   link 'FreeCen2 Pieces Total', freecen2_pieces_path(county: county)
@@ -1546,15 +1555,16 @@ crumb :show_freecen2_piece do |file|
   parent :freecen2_pieces, session[:county]
 end
 
-crumb :edit_freecen2_piece do |file, county|
-  link 'Edit FreeCen2 Piece', freecen2_piece_path(file)
-  parent :freecen2_pieces, county
+crumb :freecen2_districts do |county|
+  link 'FreeCen2 Districts', freecen2_districts_path(county: county)
+  parent :county_options, county
 end
 
-crumb :new_freecen2_piece do |county|
-  link 'Create FreeCen2 Piece'
-  parent :freecen2_pieces, county
+crumb :show_freecen2_district do |file|
+  link 'Show FreeCen2 District', freecen2_district_path(file)
+  parent :freecen2_districts, session[:county]
 end
+
 # ...............................................freecen_csv_files .....................................
 crumb :my_own_freecen_csv_files do
   link 'Your Files', my_own_freecen_csv_file_path

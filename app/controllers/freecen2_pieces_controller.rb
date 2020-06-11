@@ -35,7 +35,14 @@ class Freecen2PiecesController < ApplicationController
     get_user_info_from_userid
     @chapman_code = params[:chapman_code]
     @year = params[:year]
-    @freecen2_pieces = Freecen2Piece.chapman_code(@chapman_code).year(@year).order_by(piece_number: 1)
+    @freecen2_districts = Freecen2District.chapman_code(@chapman_code).year(@year).order_by(year: 1, piece_number: 1)
+    @freecen2_pieces = []
+    @freecen2_districts.each do |district|
+      pieces = district.freecen2_pieces
+      pieces.each do |piece|
+        @freecen2_pieces << piece
+      end
+    end
   end
 
   def destroy
@@ -66,10 +73,17 @@ class Freecen2PiecesController < ApplicationController
   def index
     get_user_info_from_userid
     if session[:chapman_code].present?
-      @freecen2_pieces = Freecen2Piece.chapman_code(session[:chapman_code]).order_by(year: 1, piece_number: 1)
       @chapman_code = session[:chapman_code]
-      @totals_pieces, @totals_pieces_online, @totals_individuals, @totals_dwellings = Freecen2Piece.county_year_totals(@chapman_code)
-      @grand_totals_pieces, @grand_totals_pieces_online, @grand_totals_individuals, @grand_totals_dwellings = Freecen2Piece.grand_totals(@totals_pieces, @totals_pieces_online, @totals_individuals, @totals_dwellings)
+      @freecen2_districts = Freecen2District.chapman_code(session[:chapman_code]).order_by(year: 1, piece_number: 1)
+      @freecen2_pieces = []
+      @freecen2_districts.each do |district|
+        pieces = district.freecen2_pieces
+        pieces.each do |piece|
+          @freecen2_pieces << piece.id
+        end
+      end
+      @totals_pieces, @totals_csv_files, @totals_individuals, @totals_dwellings = Freecen2District.county_year_totals(@chapman_code)
+      @grand_totals_pieces, @grand_totals_csv_files, @grand_totals_individuals, @grand_totals_dwellings = Freecen2District.grand_totals(@totals_pieces, @totals_csv_files, @totals_individuals, @totals_dwellings)
     else
       redirect_to manage_resources_path && return
     end

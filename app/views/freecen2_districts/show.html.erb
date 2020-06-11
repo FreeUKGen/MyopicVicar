@@ -1,0 +1,46 @@
+<%= render 'show_header' %>
+<div class="grid">
+  <section class="island ">
+    <div class="grid__item ">
+      <table   class="table--bordered table--striped  table--data">
+        <colgroup >
+          <col class=t40>
+          <col class=t60>
+        </colgroup>
+        <tr>
+          <th class="caps">Field</th>
+          <th  class="caps">Value</th>
+        </tr>
+        <tr>
+          <td>Year</td>
+          <td class="weight--semibold"> <%=  @freecen2_district.year %> </td>
+        </tr>
+        <tr>
+          <td>Chapman code</td>
+          <td class="weight--semibold"> <%=  @freecen2_district.chapman_code %> </td>
+        </tr>
+        <tr>
+          <td>District name</td>
+          <td class="weight--semibold"> <%= @freecen2_district.name %> </td>
+        </tr>
+        <tr>
+          <td>Type</td>
+          <td class="weight--semibold"> <%=  @freecen2_district.type %> </td>
+        </tr>
+        <tr>
+          <td>Registration District Number</td>
+          <td class="weight--semibold"> <%=  @freecen2_district.code %> </td>
+        </tr>
+        <tr>
+          <td>Notes</td>
+          <td class="weight--semibold"> <%=  @freecen2_district.notes %> </td>
+        </tr>
+        <tr>
+          <td>National Archives Link <small> (Opens in a new tab)</small></td>
+          <td class="weight--semibold"><%= tna(@freecen2_district.tnaid) %> </td>
+        </tr>
+      </table>
+    </div>
+  </section>
+</div>
+<br>
