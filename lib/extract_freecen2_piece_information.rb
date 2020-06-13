@@ -201,7 +201,6 @@ class ExtractFreecen2PieceInformation
       subdistrict_name = district['name'] if subdistrict_name.blank? && district['name'].present?
       subdistrict_piece = district['piece'] if subdistrict_piece.blank? && district['piece'].present?
 
-
       place = Place.find_by(place_name: subdistrict_name.titleize) if subdistrict_name.present?
       if place.blank?
         @missing_place_names << subdistrict_name
