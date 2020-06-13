@@ -110,7 +110,7 @@ class ExtractFreecen2PieceInformation
             chapman_code = ExtractFreecen2PieceInformation.correct_chapman_code(value)
             active_county = County.find_by(chapman_code: chapman_code)
           end
-          district_object = ExtractFreecen2PieceInformation.process_district(value, chapman_code)
+          district_object = ExtractFreecen2PieceInformation.process_district(value, chapman_code, year)
           active_county.freecen2_districts << district_object
         else
           value.each do |district|
@@ -118,7 +118,7 @@ class ExtractFreecen2PieceInformation
               chapman_code = ExtractFreecen2PieceInformation.correct_chapman_code(district)
               active_county = County.find_by(chapman_code: chapman_code)
             end
-            district_object = ExtractFreecen2PieceInformation.process_district(district, chapman_code)
+            district_object = ExtractFreecen2PieceInformation.process_district(district, chapman_code, year)
             active_county.freecen2_districts << district_object
           end
         end
@@ -133,12 +133,13 @@ class ExtractFreecen2PieceInformation
       end
     end
 
-    def process_district(district, chapman_code)
+    def process_district(district, chapman_code, year)
       district_tnaid = district['tnaid']
       district_name = district['name']
       district_code = district['code']
       district_type = district['type']
       district_year = district['year']
+      district_year = year if district_year.blank?
       if district_name.blank?
         @output_file.puts "Blank name for district #{district_tnaid} #{district_code}"
         return nil
@@ -192,13 +193,14 @@ class ExtractFreecen2PieceInformation
       subdistrict_piece = subdistrict['piece']
       subdistrict_year = subdistrict['year']
       subdistrict_prenote = subdistrict['prenote']
-      subdistrict_year = year if year == '1851' || year == '1841'
+      subdistrict_year = year if subdistrict_year.blank?
       if subdistrict_name.blank?
         @output_file.puts "Blank name for piece #{subdistrict_tnaid} #{subdistrict_piece} #{subdistrict_code}"
         return nil
       end
-
+      subdistrict_name = district['name'] if subdistrict_name.blank? && district['name'].present?
       subdistrict_piece = district['piece'] if subdistrict_piece.blank? && district['piece'].present?
+
 
       place = Place.find_by(place_name: subdistrict_name.titleize) if subdistrict_name.present?
       if place.blank?
