@@ -106,10 +106,18 @@ class ExtractFreecen2PieceInformation
       value = county['district']
       if value.present?
         if value.respond_to?('each_pair')
+          if year == '1851' && county_name == "Islands in the British seas"
+            chapman_code = ExtractFreecen2PieceInformation.correct_chapman_code(value)
+            active_county = County.find_by(chapman_code: chapman_code)
+          end
           district_object = ExtractFreecen2PieceInformation.process_district(value, chapman_code)
           active_county.freecen2_districts << district_object
         else
           value.each do |district|
+            if year == '1851' && county_name == "Islands in the British seas"
+              chapman_code = ExtractFreecen2PieceInformation.correct_chapman_code(district)
+              active_county = County.find_by(chapman_code: chapman_code)
+            end
             district_object = ExtractFreecen2PieceInformation.process_district(district, chapman_code)
             active_county.freecen2_districts << district_object
           end
@@ -145,22 +153,27 @@ class ExtractFreecen2PieceInformation
       district_object = Freecen2District.new(name: district_name, code: district_code, tnaid: district_tnaid, chapman_code: chapman_code,
                                              year: district_year, place_id: place_id, type: district_type)
       if district_year == '1841'
-        piece_object = ExtractFreecen2PieceInformation.process_subdistrict(district, district_year, district_object)
+        piece_object = ExtractFreecen2PieceInformation.process_subdistrict(district, district_year, district_object, district)
         district_object.freecen2_pieces << piece_object
       else
         value = district['subdistrict']
         if value.present?
           if value.respond_to?('each_pair')
-            piece_object = ExtractFreecen2PieceInformation.process_subdistrict(value, district_year, district_object)
+            piece_object = ExtractFreecen2PieceInformation.process_subdistrict(value, district_year, district_object, district)
             district_object.freecen2_pieces << piece_object
           else
             value.each do |subdistrict|
-              piece_object = ExtractFreecen2PieceInformation.process_subdistrict(subdistrict, district_year, district_object)
+              piece_object = ExtractFreecen2PieceInformation.process_subdistrict(subdistrict, district_year, district_object, district)
               district_object.freecen2_pieces << piece_object
             end
           end
         else
-          @output_file.puts " No pieces for district #{district_name} #{district_tnaid} "
+          if district['parish'].present?
+            piece_object = ExtractFreecen2PieceInformation.process_subdistrict(district, district_year, district_object, district)
+            district_object.freecen2_pieces << piece_object
+          else
+            @output_file.puts " No pieces or parishes for district #{district_name} #{district_tnaid} "
+          end
         end
       end
       result = district_object.save
@@ -172,7 +185,7 @@ class ExtractFreecen2PieceInformation
       district_object
     end
 
-    def process_subdistrict(subdistrict, year, district_object)
+    def process_subdistrict(subdistrict, year, district_object, district)
       subdistrict_tnaid = subdistrict['tnaid']
       subdistrict_name = subdistrict['name']
       subdistrict_code = subdistrict['code']
@@ -180,11 +193,12 @@ class ExtractFreecen2PieceInformation
       subdistrict_year = subdistrict['year']
       subdistrict_prenote = subdistrict['prenote']
       subdistrict_year = year if year == '1851' || year == '1841'
-
       if subdistrict_name.blank?
         @output_file.puts "Blank name for piece #{subdistrict_tnaid} #{subdistrict_piece} #{subdistrict_code}"
         return nil
       end
+
+      subdistrict_piece = district['piece'] if subdistrict_piece.blank? && district['piece'].present?
 
       place = Place.find_by(place_name: subdistrict_name.titleize) if subdistrict_name.present?
       if place.blank?
@@ -289,6 +303,13 @@ class ExtractFreecen2PieceInformation
         end
       end
       chapman_code = ChapmanCode.merge_countries[county_name.titleize]
+      chapman_code
+    end
+
+    def correct_chapman_code(district)
+      county_name = district['name']
+      chapman_code = ExtractFreecen2PieceInformation.extract_chapman_code(county_name)
+      @output_file.puts "County name changed to #{county_name}"
       chapman_code
     end
   end
