@@ -169,6 +169,7 @@ class ExtractFreecen2PieceInformation
             end
           end
         else
+          p "No subdistrict"
           if district['parish'].present?
             piece_object = ExtractFreecen2PieceInformation.process_subdistrict(district, district_year, district_object, district)
             district_object.freecen2_pieces << piece_object
@@ -194,13 +195,13 @@ class ExtractFreecen2PieceInformation
       subdistrict_year = subdistrict['year']
       subdistrict_prenote = subdistrict['prenote']
       subdistrict_year = year if subdistrict_year.blank?
+
+      subdistrict_name = district['name'] if subdistrict_name.blank? && district['name'].present?
+      subdistrict_piece = district['piece'] if subdistrict_piece.blank? && district['piece'].present?
       if subdistrict_name.blank?
         @output_file.puts "Blank name for piece #{subdistrict_tnaid} #{subdistrict_piece} #{subdistrict_code}"
         return nil
       end
-      subdistrict_name = district['name'] if subdistrict_name.blank? && district['name'].present?
-      subdistrict_piece = district['piece'] if subdistrict_piece.blank? && district['piece'].present?
-
       place = Place.find_by(place_name: subdistrict_name.titleize) if subdistrict_name.present?
       if place.blank?
         @missing_place_names << subdistrict_name
@@ -210,7 +211,7 @@ class ExtractFreecen2PieceInformation
       end
       subdistrict_object = Freecen2Piece.new(name: subdistrict_name, code: subdistrict_code, tnaid: subdistrict_tnaid,
                                              number: subdistrict_piece, place_id: place_id, year: subdistrict_year,
-                                             freecen2_district_id: district_object.id , prenote: subdistrict_prenote)
+                                             freecen2_district_id: district_object.id, prenote: subdistrict_prenote)
 
       value = subdistrict['parish']
       if value.present?
