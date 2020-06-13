@@ -16,6 +16,10 @@
           <td class="weight--semibold"> <%=  @freecen2_civil_parish.name %> </td>
         </tr>
         <tr>
+          <td>Notes before name</td>
+          <td class="weight--semibold"> <%=  @freecen2_civil_parish.prenote %> </td>
+        </tr>
+        <tr>
           <td>Notes</td>
           <td class="weight--semibold"> <%=  @freecen2_civil_parish.note %> </td>
         </tr>
@@ -34,8 +38,28 @@
               <td class="weight--semibold"> <%=  hamlet.name %> </td>
             </tr>
             <tr>
+              <td>Hamlet Notes before name </td>
+              <td class="weight--semibold"> <%=  hamlet.prenote  %> </td>
+            </tr>
+            <tr>
               <td>Hamlet Notes</td>
               <td class="weight--semibold"> <%=  hamlet.note  %> </td>
+            </tr>
+          <% end%>
+        <% end%>
+        <% if @freecen2_civil_parish.freecen2_townships.length > 0 %>
+          <% @freecen2_civil_parish.freecen2_townships.each do |township| %>
+            <tr>
+              <td>Township name</td>
+              <td class="weight--semibold"> <%=  township.name %> </td>
+            </tr>
+            <tr>
+              <td>Township Notes before name </td>
+              <td class="weight--semibold"> <%=  township.prenote  %> </td>
+            </tr>
+            <tr>
+              <td>Township Notes</td>
+              <td class="weight--semibold"> <%=  township.note  %> </td>
             </tr>
           <% end%>
         <% end%>

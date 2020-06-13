@@ -137,7 +137,6 @@ class ExtractFreecen2PieceInformation
       end
       place = Place.find_by(place_name: district_name.titleize) if district_name.present?
       if place.blank?
-        p "No place for district #{district_name}"
         @missing_place_names << district_name
         place_id = nil
       else
@@ -179,6 +178,7 @@ class ExtractFreecen2PieceInformation
       subdistrict_code = subdistrict['code']
       subdistrict_piece = subdistrict['piece']
       subdistrict_year = subdistrict['year']
+      subdistrict_prenote = subdistrict['prenote']
       subdistrict_year = year if year == '1851' || year == '1841'
 
       if subdistrict_name.blank?
@@ -188,14 +188,14 @@ class ExtractFreecen2PieceInformation
 
       place = Place.find_by(place_name: subdistrict_name.titleize) if subdistrict_name.present?
       if place.blank?
-        p "No place for piece #{subdistrict_name}"
         @missing_place_names << subdistrict_name
         place_id = nil
       else
         place_id = place.id
       end
       subdistrict_object = Freecen2Piece.new(name: subdistrict_name, code: subdistrict_code, tnaid: subdistrict_tnaid,
-                                             number: subdistrict_piece, place_id: place_id, year: subdistrict_year, freecen2_district_id: district_object.id )
+                                             number: subdistrict_piece, place_id: place_id, year: subdistrict_year,
+                                             freecen2_district_id: district_object.id , prenote: subdistrict_prenote)
 
       value = subdistrict['parish']
       if value.present?
@@ -211,22 +211,23 @@ class ExtractFreecen2PieceInformation
       else
         @output_file.puts " No parishes for district #{subdistrict_name} #{subdistrict_tnaid} "
       end
-
-      civil_parish_names = ExtractFreecen2PieceInformation.add_update_civil_parish_list(subdistrict_object)
-      subdistrict_object.civil_parish_names = civil_parish_names
       result = subdistrict_object.save
       unless result
         @output_file.puts "piece #{subdistrict_tnaid} #{subdistrict_piece} #{subdistrict_code}"
         @output_file.puts subdistrict_object.errors.full_messages
         crash
       end
+      subdistrict_object.reload
+      civil_parish_names = subdistrict_object.add_update_civil_parish_list
+      subdistrict_object.update(civil_parish_names: civil_parish_names)
       subdistrict_object
     end
 
     def process_parish(parish, subdistrict_object)
       parish_name = parish['name']
       parish_note = parish['note']
-      parish_object = Freecen2CivilParish.new(name: parish_name, note: parish_note, freecen2_piece_id: subdistrict_object.id)
+      parish_prenote = parish['prenote']
+      parish_object = Freecen2CivilParish.new(name: parish_name, note: parish_note, freecen2_piece_id: subdistrict_object.id, prenote: parish_prenote)
       value = parish['hamlet']
       if value.respond_to?('each_pair')
         hamlet_object = ExtractFreecen2PieceInformation.process_hamlet(value)
@@ -235,6 +236,17 @@ class ExtractFreecen2PieceInformation
         value.each do |hamlet|
           hamlet_object = ExtractFreecen2PieceInformation.process_hamlet(hamlet)
           parish_object.freecen2_hamlets << hamlet_object
+        end
+      end
+      value = parish['township']
+      if value.respond_to?('each_pair')
+        township_object = ExtractFreecen2PieceInformation.process_township(value)
+        parish_object.freecen2_townships << township_object if township_object.present?
+      elsif value.present?
+        value.each do |township|
+          township_object = ExtractFreecen2PieceInformation.process_township(township)
+          parish_object.freecen2_townships << township_object if township_object.present?
+          @output_file.puts "Nil array for #{parish_name}#{parish_note}" if township_object.blank?
         end
       end
       result = parish_object.save
@@ -249,8 +261,18 @@ class ExtractFreecen2PieceInformation
     def process_hamlet(hamlet)
       hamlet_name = hamlet['name']
       hamlet_note = hamlet['note']
-      hamlet_object = Freecen2Hamlet.new(name: hamlet_name, note: hamlet_note)
+      hamlet_prenote = hamlet['prenote']
+      hamlet_object = Freecen2Hamlet.new(name: hamlet_name, note: hamlet_note, prenote: hamlet_prenote)
       hamlet_object
+    end
+
+    def process_township(township)
+      return nil if township.blank?
+      township_name = township['name']
+      township_note = township['note']
+      township_prenote = township['prenote']
+      township_object = Freecen2Township.new(name: township_name, note: township_note, prenote: township_prenote)
+      township_object
     end
 
     def extract_chapman_code(county_name)
@@ -268,20 +290,6 @@ class ExtractFreecen2PieceInformation
       end
       chapman_code = ChapmanCode.merge_countries[county_name.titleize]
       chapman_code
-    end
-
-    def add_update_civil_parish_list(piece)
-      if piece.freecen2_civil_parishes.blank?
-        return nil
-      end
-      piece.freecen2_civil_parishes.order_by(name: 1).each_with_index do |parish, entry|
-        if entry == 0
-          @civil_parish_names = parish.name
-        else
-          @civil_parish_names = @civil_parish_names + ', ' + parish.name
-        end
-      end
-      @civil_parish_names
     end
   end
 end

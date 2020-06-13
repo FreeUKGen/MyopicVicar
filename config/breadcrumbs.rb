@@ -1530,14 +1530,14 @@ crumb :freecen1_vld_entry do |county, file|
   parent :freecen1_vld_entries, session[:freecen1_vld_file], session[:entry_page]
 end
 
-crumb :freecen2_civil_parishes do |piece|
+crumb :freecen2_civil_parishes do |piece, county, year|
   link 'FreeCen2 Civil Parishes', freecen2_civil_parishes_path(piece_id: piece.id)
-  parent :show_freecen2_piece, piece
+  parent :show_freecen2_piece, piece, county, year
 end
 
-crumb :show_freecen2_civil_parish do |file|
+crumb :show_freecen2_civil_parish do |file, county, year |
   link 'Show FreeCen2 Civil Parish', freecen2_civil_parish_path(file)
-  parent :freecen2_civil_parishes, file.freecen2_piece
+  parent :freecen2_civil_parishes, file.freecen2_piece, county, year
 end
 
 crumb :freecen2_pieces do |county|
@@ -1550,19 +1550,19 @@ crumb :freecen2_pieces_chapman do |county, year|
   parent :freecen2_pieces, county
 end
 
-crumb :show_freecen2_piece do |file|
+crumb :show_freecen2_piece do |file, county, year|
   link 'Show FreeCen2 Piece', freecen2_piece_path(file)
-  parent :freecen2_pieces, session[:county]
+  parent :freecen2_pieces_chapman, county, year
 end
 
-crumb :freecen2_districts do |county|
+crumb :freecen2_districts do |county, year|
   link 'FreeCen2 Districts', freecen2_districts_path(county: county)
   parent :county_options, county
 end
 
-crumb :show_freecen2_district do |file|
+crumb :show_freecen2_district do |file, county, year|
   link 'Show FreeCen2 District', freecen2_district_path(file)
-  parent :freecen2_districts, session[:county]
+  parent :show_freecen2_piece, file, county, year
 end
 
 # ...............................................freecen_csv_files .....................................

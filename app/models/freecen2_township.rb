@@ -1,4 +1,4 @@
-class Freecen2Hamlet
+class Freecen2Township
   include Mongoid::Document
   include Mongoid::Timestamps::Short
   require 'freecen_constants'

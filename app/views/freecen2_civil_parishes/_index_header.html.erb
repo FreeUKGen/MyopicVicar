@@ -1,4 +1,4 @@
-<% breadcrumb :freecen2_civil_parishes,  @piece%>
+<% breadcrumb :freecen2_civil_parishes,  @piece, @piece.district_chapman_code, @piece.year%>
 <h1 style="text-align: center">FreeCen2 Civil Parishes for Piece <%=@piece.number%> in <%=@piece.district_chapman_code%> for <%=@piece.year%></h1>
 <div style="text-align: center">
   <%= render 'flash_notice' %>

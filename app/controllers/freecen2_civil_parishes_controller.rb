@@ -5,7 +5,7 @@ class Freecen2CivilParishesController < ApplicationController
 
     get_user_info_from_userid
     @piece = Freecen2Piece.find_by(id: params[:piece_id])
-    @freecen2_civil_parishes = Freecen2CivilParish.where(freecen2_piece_id: params[:piece_id]).all
+    @freecen2_civil_parishes = Freecen2CivilParish.where(freecen2_piece_id: params[:piece_id]).order_by(:name.asc, :'freecen2_hamlets.name'.asc).all
   end
 
   def show

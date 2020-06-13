@@ -1,5 +1,4 @@
-<% breadcrumb :show_freecen2_piece,  @freecen2_piece.id, @freecen2_piece.district_chapman_code %>
-<% session[:page] = params[:page]%>
+<% breadcrumb :show_freecen2_piece,  @freecen2_piece.id, @freecen2_piece.district_chapman_code,  @freecen2_piece.year %>
 <h1 style="text-align: center">Details of FreeCen2 Piece <%= @freecen2_piece.number%> for <%=@chapman_code%> in <%= @freecen2_piece.year%></h1>
 <%= render 'flash_notice' %>
 <

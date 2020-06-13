@@ -13,6 +13,6 @@ module Freecen2PiecesHelper
   end
 
   def individual_civil_link(parish)
-    link_to "#{parish.name}", freecen2_civil_parish_path(parish.id)
+    link_to "#{parish.name} #{parish.add_hamlet_township_names}", freecen2_civil_parish_path(parish.id)
   end
 end

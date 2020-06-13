@@ -36,6 +36,14 @@
           <td class="weight--semibold"> <%= civil_link(@freecen2_piece)  %></td>
         </tr>
         <tr>
+          <td>Notes before name</td>
+          <td class="weight--semibold"> <%= @freecen2_piece.prenote%> </td>
+        </tr>
+        <tr>
+          <td>Notes</td>
+          <td class="weight--semibold"> <%= @freecen2_piece.notes%> </td>
+        </tr>
+        <tr>
           <td>National Archives Link <small> (Opens in a new tab)</small></td>
           <td class="weight--semibold"><%= tna(@freecen2_piece.tnaid) %> </td>
         </tr>
