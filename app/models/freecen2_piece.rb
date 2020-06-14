@@ -148,7 +148,10 @@ class Freecen2Piece
     def county_year_totals(chapman_code)
       totals_pieces = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
-        totals_pieces[year] = FreecenPiece.chapman_code(chapman_code).year(year).count
+        totals_pieces[year] = 0
+        Freecen2District.chapman_code(chapman_code).year(year).each do |district|
+          totals_pieces[year] = totals_pieces[year] + district.freecen2_pieces.count
+        end
       end
       totals_pieces
     end
