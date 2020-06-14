@@ -12,6 +12,11 @@ module Freecen2PiecesHelper
     link_to "#{piece.civil_parish_names}", freecen2_civil_parishes_path(piece_id: piece.id)
   end
 
+  def csv_files(piece)
+    number = piece.freecen_csv_files.length
+    link_to "#{number}", freecen_csv_files_path(piece_id: piece.id, type: 'piece')
+  end
+
   def individual_civil_link(parish)
     link_to "#{parish.name} #{parish.add_hamlet_township_names}", freecen2_civil_parish_path(parish.id)
   end

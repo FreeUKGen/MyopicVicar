@@ -28,12 +28,16 @@
           <td class="weight--semibold"> <%= @freecen2_piece.district_chapman_code%> </td>
         </tr>
         <tr>
-          <td>District name</td>
+          <td>District name <small>(Name is a link)</small></td>
           <td class="weight--semibold"> <%= district_link(@freecen2_piece.freecen2_district) %> </td>
         </tr>
         <tr>
-          <td>Civil Districts</td>
+          <td>Civil Districts <small>(List is a link)</small></td>
           <td class="weight--semibold"> <%= civil_link(@freecen2_piece)  %></td>
+        </tr>
+        <tr>
+          <td>Number of CSV files <small>(Number is a link)</small></td>
+          <td class="weight--semibold"> <%=  csv_files(@freecen2_piece) %> </td>
         </tr>
         <tr>
           <td>Notes before name</td>
@@ -46,14 +50,6 @@
         <tr>
           <td>National Archives Link <small> (Opens in a new tab)</small></td>
           <td class="weight--semibold"><%= tna(@freecen2_piece.tnaid) %> </td>
-        </tr>
-        <tr>
-          <td>Film Number</td>
-          <td class="weight--semibold"> <%=  @freecen2_piece.film_number %> </td>
-        </tr>
-        <tr>
-          <td>Number of individuals</td>
-          <td class="weight--semibold"> <%=  @freecen2_piece.num_individuals %> </td>
         </tr>
       </table>
     </div>
