@@ -56,7 +56,7 @@ class Freecen2Piece
   has_many :freecen2_civil_parishes, dependent: :restrict_with_error
   has_many :freecen_dwellings, dependent: :restrict_with_error
   has_many :freecen_csv_files, dependent: :restrict_with_error
-
+  has_many :freecen_individuals, dependent: :restrict_with_error
   index(district_chapman_code: 1, year: 1, name: 1)
   index(district_chapman_code: 1, year: 1, number: 1)
 
@@ -144,7 +144,38 @@ class Freecen2Piece
       end
       [year, piece.to_i]
     end
+
+    def county_year_totals(chapman_code)
+      totals_pieces = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        totals_pieces[year] = FreecenPiece.chapman_code(chapman_code).year(year).count
+      end
+      totals_pieces
+    end
+
+    def grand_totals(pieces)
+      grand_pieces = pieces.values.sum
+      grand_pieces
+    end
+
+    def grand_year_totals
+      totals_pieces = {}
+      totals_pieces_online = {}
+      totals_individuals = {}
+      totals_dwellings = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        totals_dwellings[year] = 0
+        totals_individuals[year] = Freecen2Piece.status('Online').year(year).sum(:num_individuals)
+        totals_pieces[year] = Freecen2iece2.year(year).count
+        totals_pieces_online[year] = Freecen2Piece.status('Online').year(year).length
+        Freecen2Piece.status('Online').year(year).each do |piece|
+          totals_dwellings[year] = totals_dwellings[year] + piece.freecen_dwellings.count
+        end
+      end
+      [totals_pieces, totals_pieces_online, totals_individuals, totals_dwellings]
+    end
   end
+
   def add_update_civil_parish_list
     return nil if freecen2_civil_parishes.blank?
 

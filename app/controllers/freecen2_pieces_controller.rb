@@ -74,16 +74,8 @@ class Freecen2PiecesController < ApplicationController
     get_user_info_from_userid
     if session[:chapman_code].present?
       @chapman_code = session[:chapman_code]
-      @freecen2_districts = Freecen2District.chapman_code(session[:chapman_code]).order_by(year: 1, piece_number: 1)
-      @freecen2_pieces = []
-      @freecen2_districts.each do |district|
-        pieces = district.freecen2_pieces
-        pieces.each do |piece|
-          @freecen2_pieces << piece.id
-        end
-      end
-      @totals_pieces, @totals_csv_files, @totals_individuals, @totals_dwellings = Freecen2District.county_year_totals(@chapman_code)
-      @grand_totals_pieces, @grand_totals_csv_files, @grand_totals_individuals, @grand_totals_dwellings = Freecen2District.grand_totals(@totals_pieces, @totals_csv_files, @totals_individuals, @totals_dwellings)
+      @totals_pieces = Freecen2Piece.county_year_totals(@chapman_code)
+      @grand_totals_pieces = Freecen2Piece.grand_totals(@totals_pieces)
     else
       redirect_to manage_resources_path && return
     end
