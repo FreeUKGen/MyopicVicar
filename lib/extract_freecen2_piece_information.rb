@@ -31,6 +31,7 @@ class ExtractFreecen2PieceInformation
     'Devonshire' => 'Devon',
     'Carnarvonshire' => 'Caernarfonshire',
     'Guernsey and adjacent Islands' => 'Guernsey',
+    'Guernsey and adjacent islands' => 'Guernsey',
     'Isle of Man' => 'Isle of Man',
     'Islands in the British seas' => 'Channel Islands',
     'Lincolnshire: Parts of Holland' => 'Lincolnshire',
@@ -50,7 +51,8 @@ class ExtractFreecen2PieceInformation
     'Somersetshire' => 'Somerset',
     'Rutlandshire' => 'Rutland',
     'Yorkshire, East Riding (with York)' => 'Yorkshire, East Riding',
-    'Royal Navy' => 'Royal Navy Ships'
+    'Royal Navy' => 'Royal Navy Ships',
+    'Miscellaneous unidentified pages and fragments' => 'Royal Navy Ships',
   }
   class << self
     def process(limit, file)
