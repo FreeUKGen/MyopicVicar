@@ -260,16 +260,16 @@ class Freereg1CsvFilesController < ApplicationController
     get_user_info_from_userid
     if session[:syndicate].present? && session[:userid_id].blank? && helpers.can_view_files?(session[:role]) && helpers.sorted_by?(session[:sorted_by])
       userids = Syndicate.get_userids_for_syndicate(session[:syndicate])
-      @freereg1_csv_files = Freereg1CsvFile.in(userid: userids).gt(error: 0).order_by(session[:sort]).all
+      @freereg1_csv_files = Freereg1CsvFile.in(userid: userids).gt(error: 0).order_by(session[:sort]).all.page(params[:page]).per(batches)
     elsif session[:syndicate].present? && session[:userid_id].blank? && helpers.can_view_files?(session[:role])
       userids = Syndicate.get_userids_for_syndicate(session[:syndicate])
-      @freereg1_csv_files = Freereg1CsvFile.in(userid: userids).order_by(session[:sort]).all.includes(:freereg1_csv_entries)
+      @freereg1_csv_files = Freereg1CsvFile.in(userid: userids).order_by(session[:sort]).all.page(params[:page]).per(batches).includes(:freereg1_csv_entries)
     elsif session[:syndicate].present? && session[:userid_id].present? && helpers.can_view_files?(session[:role])
-      @freereg1_csv_files = Freereg1CsvFile.userid(UseridDetail.find(session[:userid_id]).userid).no_timeout.order_by(session[:sort]).all
+      @freereg1_csv_files = Freereg1CsvFile.userid(UseridDetail.find(session[:userid_id]).userid).no_timeout.order_by(session[:sort]).all.page(params[:page]).per(batches)
     elsif session[:county].present? && helpers.can_view_files?(session[:role]) && session[:sorted_by] == '; sorted by descending number of errors and then file name'
-      @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).gt(error: 0).order_by(session[:sort]).all
+      @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).gt(error: 0).order_by(session[:sort]).all.page(params[:page]).per(batches)
     elsif session[:county].present? && helpers.can_view_files?(session[:role])
-      @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).no_timeout.order_by(session[:sort]).all
+      @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).no_timeout.order_by(session[:sort]).all.page(params[:page]).per(batches)
     end
   end
 
