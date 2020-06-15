@@ -26,7 +26,8 @@ class Freereg1CsvFilesController < ApplicationController
     user = UseridDetail.find(params[:id])
     @who = user.userid
     @role = session[:role]
-    @freereg1_csv_files = Freereg1CsvFile.userid(user.userid).all.order_by('file_name ASC', 'userid_lower_case ASC')  unless user.blank?
+    batches = FreeregOptionsConstants::FILES_PER_PAGE
+    @freereg1_csv_files = Freereg1CsvFile.userid(user.userid).all.order_by('file_name ASC', 'userid_lower_case ASC').page(params[:page]).per(batches)  unless user.blank?
     render 'index'
   end
 
@@ -92,7 +93,8 @@ class Freereg1CsvFilesController < ApplicationController
     @sorted_by = ' Alphabetical by file name'
     session[:sort] = 'file_name ASC'
     session[:sorted_by] = @sorted_by
-    @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(session[:sort]).all
+    batches = FreeregOptionsConstants::FILES_PER_PAGE
+    @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(session[:sort]).all.page(params[:page]).per(batches)
     render 'index'
   end
 
@@ -102,7 +104,8 @@ class Freereg1CsvFilesController < ApplicationController
     @sorted_by = ' Ordered by number of errors'
     session[:sorted_by] = @sorted_by
     session[:sort] = 'error DESC, file_name ASC'
-    @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).errors.order_by(session[:sort]).all
+    batches = FreeregOptionsConstants::FILES_PER_PAGE
+    @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).errors.order_by(session[:sort]).all.page(params[:page]).per(batches)
     render 'index'
   end
 
@@ -112,7 +115,8 @@ class Freereg1CsvFilesController < ApplicationController
     @sorted_by = ' Ordered by most recent'
     session[:sorted_by] = @sorted_by
     session[:sort] = 'uploaded_date DESC'
-    @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(session[:sort]).all
+    batches = FreeregOptionsConstants::FILES_PER_PAGE
+    @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(session[:sort]).all.page(params[:page]).per(batches)
     render 'index'
   end
 
@@ -122,7 +126,8 @@ class Freereg1CsvFilesController < ApplicationController
     @sorted_by = ' Ordered by oldest'
     session[:sort] = 'uploaded_date ASC'
     session[:sorted_by] = @sorted_by
-    @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(session[:sort]).all
+    batches = FreeregOptionsConstants::FILES_PER_PAGE
+    @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(session[:sort]).all.page(params[:page]).per(batches)
     render 'index'
   end
 
@@ -133,7 +138,8 @@ class Freereg1CsvFilesController < ApplicationController
     @sorted_by = ' Zero years'
     session[:sort] = 'uploaded_date ASC'
     session[:sorted_by] = @sorted_by
-    @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).datemin('0').order_by(session[:sort])
+    batches = FreeregOptionsConstants::FILES_PER_PAGE
+    @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).datemin('0').order_by(session[:sort]).page(params[:page]).per(batches)
     render 'index'
   end
 
@@ -323,7 +329,8 @@ class Freereg1CsvFilesController < ApplicationController
     @sorted_by = ' Ordered by most recent'
     session[:sorted_by] = @sorted_by
     session[:sort] = 'uploaded_date DESC'
-    @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(session[:sort]).all
+    batches = FreeregOptionsConstants::FILES_PER_PAGE
+    @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(session[:sort]).all.page(params[:page]).per(batches)
     render 'index'
   end
 
