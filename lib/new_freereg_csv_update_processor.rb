@@ -879,6 +879,7 @@ class CsvFile < CsvFiles
   def update_the_file_information(project,freereg1_csv_file,records,batch_errors)
     @total_records = @total_records + records
     @total_data_errors = @total_data_errors + batch_errors
+    freereg1_csv_file.reload
     freereg1_csv_file.calculate_distribution
     freereg1_csv_file.update_attribute(:processed, false) if !project.create_search_records
     freereg1_csv_file.update_attributes(:processed => true, :processed_date => Time.new) if project.create_search_records
