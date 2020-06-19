@@ -13,6 +13,7 @@ class Freecen2CivilParishesController < ApplicationController
 
     get_user_info_from_userid
     @freecen2_civil_parish = Freecen2CivilParish.find_by(id: params[:id])
+    @place = @freecen2_civil_parish.freecen2_place
     @piece = @freecen2_civil_parish.freecen2_piece
     @chapman_code = @piece.district_chapman_code
     @freecen2_piece = @freecen2_civil_parish.piece_name

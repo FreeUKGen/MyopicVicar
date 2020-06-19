@@ -15,7 +15,7 @@ class Freecen2District
   field :notes, type: String
 
   has_many :freecen2_pieces, dependent: :restrict_with_error
-  belongs_to :place, optional: true, index: true
+  belongs_to :freecen2_place, optional: true, index: true
   belongs_to :county, optional: true, index: true
   delegate :county, to: :county, prefix: true, allow_nil: true
 

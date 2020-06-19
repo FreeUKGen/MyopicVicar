@@ -13,6 +13,7 @@ class Freecen2DistrictsController < ApplicationController
 
     get_user_info_from_userid
     @freecen2_district = Freecen2District.find_by(id: params[:id])
+    @place = @freecen2_district.freecen2_place
     @chapman_code = session[:chapman_code]
   end
 end

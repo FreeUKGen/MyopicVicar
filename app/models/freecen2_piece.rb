@@ -52,7 +52,7 @@ class Freecen2Piece
 
   delegate :chapman_code, :name, :tnaid, :code, :note, to: :freecen2_district, prefix: :district, allow_nil: true
 
-  belongs_to :place, optional: true, index: true
+  belongs_to :freecen2_place, optional: true, index: true
   has_many :freecen2_civil_parishes, dependent: :restrict_with_error
   has_many :freecen_dwellings, dependent: :restrict_with_error
   has_many :freecen_csv_files, dependent: :restrict_with_error

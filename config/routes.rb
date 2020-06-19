@@ -381,6 +381,7 @@ MyopicVicar::Application.routes.draw do
 
   resources :master_place_names
 
+  resources :freecen2_places
 
   get 'places/:id/approve', :to => 'places#approve', :as => :approve_place
   get 'places/:id/rename', :to => 'places#rename', :as => :rename_place

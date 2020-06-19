@@ -28,11 +28,15 @@
           <td class="weight--semibold"> <%= @freecen2_piece.district_chapman_code%> </td>
         </tr>
         <tr>
-          <td>District name <small>(Name is a link)</small></td>
+          <td>Belongs to Place <small>(Name is a link)</small></td>
+          <td class="weight--semibold"> <%=  place_link(@place) %> </td>
+        </tr>
+        <tr>
+          <td>Belongs to District <small>(Name is a link)</small></td>
           <td class="weight--semibold"> <%= district_link(@freecen2_piece.freecen2_district) %> </td>
         </tr>
         <tr>
-          <td>Civil Districts <small>(List is a link)</small></td>
+          <td>Has Civil Districts <small>(List is a link)</small></td>
           <td class="weight--semibold"> <%= civil_link(@freecen2_piece)  %></td>
         </tr>
         <tr>

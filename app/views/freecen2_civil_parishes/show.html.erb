@@ -16,6 +16,10 @@
           <td class="weight--semibold"> <%=  @freecen2_civil_parish.name %> </td>
         </tr>
         <tr>
+          <td>Belongs to Place <small>(Name is a link)</small></td>
+          <td class="weight--semibold"> <%=  place_link(@place) %> </td>
+        </tr>
+        <tr>
           <td>Notes before name</td>
           <td class="weight--semibold"> <%=  @freecen2_civil_parish.prenote %> </td>
         </tr>
@@ -60,6 +64,22 @@
             <tr>
               <td>Township Notes</td>
               <td class="weight--semibold"> <%=  township.note  %> </td>
+            </tr>
+          <% end%>
+        <% end%>
+        <% if @freecen2_civil_parish.freecen2_wards.length > 0 %>
+          <% @freecen2_civil_parish.freecen2_wards.each do |ward| %>
+            <tr>
+              <td>Ward name</td>
+              <td class="weight--semibold"> <%=  ward.name %> </td>
+            </tr>
+            <tr>
+              <td>Ward Notes before name </td>
+              <td class="weight--semibold"> <%=  ward.prenote  %> </td>
+            </tr>
+            <tr>
+              <td>Ward Notes</td>
+              <td class="weight--semibold"> <%=  ward.note  %> </td>
             </tr>
           <% end%>
         <% end%>

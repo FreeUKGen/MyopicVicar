@@ -1687,6 +1687,52 @@ crumb :correct_freecen_csv_entry do |entry, file|
   parent :error_freecen_csv_entries, file
 end
 
+crumb :freecen2_places do |county, place|
+  case
+  when place.blank?
+    link 'Freecen2 Places', freecen2_places_path
+  when place.present?
+    link 'Freecen2 Places', freecen2_places_path(:anchor => 'session[place.id]')
+  end
+  if session[:character].present?
+    parent :place_range_options, county, session[:active]
+  else
+    parent :county_options, county
+  end
+end
+
+crumb :freecen2_places_range do |county, place|
+  link 'Freereg2 Places', freecen2_places_path
+  parent :Freecen2_place_range_options, county, session[:active]
+end
+
+crumb :show_freecen2_place do |county, place|
+  link 'Freecen2 Place Information', freecen2_place_path(place)
+  case
+  when session[:select_place] || place.blank?
+    parent :county_options, session[:county] if session[:county].present?
+    parent :syndicate_options, session[:syndicate] if session[:syndicate].present?
+  when place.present?
+    parent :freecen2_places, county, place
+  end
+end
+crumb :edit_freecen2_place do |county, place|
+  link 'Edit Freecen2 Place Information', edit_freecen2_place_path(place)
+  parent :show_freecen2_place, county, place
+end
+crumb :create_freecen2_place do |county, place|
+  link 'Create New Freecen2 Place', new_freecen2_place_path
+  parent :freecen2_places, county, place
+end
+crumb :rename_freecen2_place do |county, place|
+  link 'Rename Freecen2 Place', rename_freecen2_place_path
+  parent :freecen2_places, county, place
+end
+crumb :relocate_freecen2_place do |county, place|
+  link 'Relocate Freecen2 Place', relocate_freecen2_place_path
+  parent :freecen2_places, county, place
+end
+
 # crumb :projects do
 #   link 'Projects', projects_path
 # end

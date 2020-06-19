@@ -18,7 +18,7 @@ class PlaceCache
       end
     else #do not inspect churches for freecen
       #places = Place.where(:chapman_code => county).asc(:place_name)
-      places = Place.chapman_code(county).data_present.not_disabled.all.order_by( place_name: 1)
+      places = Freecen2Place.chapman_code(county).data_present.not_disabled.all.order_by( place_name: 1)
       places.each do |place|
         cen_years_with_data = ""
         Freecen::CENSUS_YEARS_ARRAY.each do |yy|

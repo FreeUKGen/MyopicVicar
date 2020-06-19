@@ -157,7 +157,7 @@ module UseridRole
                                  'Review Batches by Most Recent Date of Change', 'Review Batches by Oldest Date of Change', 'Review Specific Batch',
                                  'Upload New Batch', 'Offline Reports', 'Manage Images']
   when 'freecen'
-    COUNTY_MANAGEMENT_OPTIONS = ['Manage FreeCEN1 Pieces', 'Manage FreeCEN2 Pieces', 'Manage VLD Files', 'Manage Places', 'Review Batches with Errors', 'Review Batches by Filename',
+    COUNTY_MANAGEMENT_OPTIONS = ['Manage FreeCEN1 Pieces', 'Manage FreeCEN2 Pieces', 'Manage VLD Files', 'Manage Places', 'Manage FreeCEN2 Places', 'Review Batches with Errors', 'Review Batches by Filename',
                                  'Review Batches by Userid then Filename', 'Review Batches by Most Recent Date of Change',
                                  'Review Batches by Oldest Date of Change', 'Review Specific Batch', 'List files waiting to be processed',
                                  'List files NOT processed', 'Upload New Batch', 'Manage Parms']
@@ -179,6 +179,7 @@ module UseridRole
     'Manage Images' => '/manage_counties/selection?option=Manage Images',
     'Manage FreeCEN1 Pieces' => '/freecen_pieces',
     'Manage FreeCEN2 Pieces' => '/freecen2_pieces',
+    'Manage FreeCEN2 Places' => '/freecen2_places',
     'Manage VLD Files' => '/freecen1_vld_files',
     'Manage Places' => '/places',
     'Offline Reports' => '/manage_counties/selection?option=Offline Reports',

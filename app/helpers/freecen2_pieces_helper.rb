@@ -20,4 +20,13 @@ module Freecen2PiecesHelper
   def individual_civil_link(parish)
     link_to "#{parish.name} #{parish.add_hamlet_township_names}", freecen2_civil_parish_path(parish.id)
   end
+  def place_link(place)
+    p place
+    if place.present?
+      link_to "#{place.place_name}", freecen2_place_path(place.id)
+    else
+      'There is no place'
+    end
+
+  end
 end

@@ -65,13 +65,12 @@ class ExtractFreecen2PieceInformation
       file_for_warning_messages = Rails.root.join('log', "#{year}_extract_freecen2_parms.txt")
       FileUtils.mkdir_p(File.dirname(file_for_warning_messages))
       @output_file = File.new(file_for_warning_messages, 'w')
-      file_for_missing_place_names =  Rails.root.join('log', "#{year}_missing_place_names.txt")
+      file_for_missing_place_names = Rails.root.join('log', "#{year}_missing_place_names.txt")
       FileUtils.mkdir_p(File.dirname(file_for_missing_place_names))
       missing_places = File.new(file_for_missing_place_names, 'w')
       start = Time.now
-      @output_file.puts start
       @missing_place_names = []
-      @output_file.puts year
+      @output_file.puts "#{year} #{file} #{start}"
       p 'Commencing'
       if county.respond_to?('each_pair')
         # process single county
@@ -146,15 +145,25 @@ class ExtractFreecen2PieceInformation
         @output_file.puts "Blank name for district #{district_tnaid} #{district_code}"
         return nil
       end
-      place = Place.find_by(place_name: district_name.titleize) if district_name.present?
+      place = Freecen2Place.find_by(chapman_code: chapman_code, place_name: district_name.titleize) if district_name.present?
       if place.blank?
-        @missing_place_names << district_name
-        place_id = nil
+        place = Freecen2Place.find_by("alternate_freecen2_place_names.alternate_name" => district_name.titleize) if district_name.present?
+        if place.blank?
+          @missing_place_names << "District| #{chapman_code}| #{district_name}"
+          place_id = nil
+        else
+          place_id = place.id
+        end
       else
-        place_id = place.id
+        if place.chapman_code == chapman_code
+          place_id = place.id
+        else
+          @missing_place_names << "District| #{chapman_code}| #{district_name}"
+          place_id = nil
+        end
       end
       district_object = Freecen2District.new(name: district_name, code: district_code, tnaid: district_tnaid, chapman_code: chapman_code,
-                                             year: district_year, place_id: place_id, type: district_type)
+                                             year: district_year, freecen2_place_id: place_id, type: district_type)
       if district_year == '1841'
         piece_object = ExtractFreecen2PieceInformation.process_subdistrict(district, district_year, district_object, district)
         district_object.freecen2_pieces << piece_object
@@ -204,25 +213,35 @@ class ExtractFreecen2PieceInformation
         @output_file.puts "Blank name for piece #{subdistrict_tnaid} #{subdistrict_piece} #{subdistrict_code}"
         return nil
       end
-      place = Place.find_by(place_name: subdistrict_name.titleize) if subdistrict_name.present?
+      place = Freecen2Place.find_by(chapman_code: district_object.chapman_code, place_name: subdistrict_name.titleize) if subdistrict_name.present?
       if place.blank?
-        @missing_place_names << subdistrict_name
-        place_id = nil
+        place = Freecen2Place.find_by("alternate_freecen2_place_names.alternate_name" => subdistrict_name.titleize) if subdistrict_name.present?
+        if place.blank?
+          @missing_place_names << "Piece| #{district_object.chapman_code}| #{subdistrict_name}"
+          place_id = nil
+        else
+          place_id = place.id
+        end
       else
-        place_id = place.id
+        if place.chapman_code == district_object.chapman_code
+          place_id = place.id
+        else
+          @missing_place_names << "Piece| #{district_object.chapman_code}| #{subdistrict_name}"
+          place_id = nil
+        end
       end
       subdistrict_object = Freecen2Piece.new(name: subdistrict_name, code: subdistrict_code, tnaid: subdistrict_tnaid,
-                                             number: subdistrict_piece, place_id: place_id, year: subdistrict_year,
+                                             number: subdistrict_piece, freecen2_place_id: place_id, year: subdistrict_year,
                                              freecen2_district_id: district_object.id, prenote: subdistrict_prenote)
 
       value = subdistrict['parish']
       if value.present?
         if value.respond_to?('each_pair')
-          parish_object = ExtractFreecen2PieceInformation.process_parish(value, subdistrict_object)
+          parish_object = ExtractFreecen2PieceInformation.process_parish(value, subdistrict_object, district_object.chapman_code)
           subdistrict_object.freecen2_civil_parishes << parish_object
         else
           value.each do |parish|
-            parish_object = ExtractFreecen2PieceInformation.process_parish(parish, subdistrict_object)
+            parish_object = ExtractFreecen2PieceInformation.process_parish(parish, subdistrict_object, district_object.chapman_code)
             subdistrict_object.freecen2_civil_parishes << parish_object
           end
         end
@@ -241,11 +260,30 @@ class ExtractFreecen2PieceInformation
       subdistrict_object
     end
 
-    def process_parish(parish, subdistrict_object)
+    def process_parish(parish, subdistrict_object, chapman_code)
       parish_name = parish['name']
       parish_note = parish['note']
       parish_prenote = parish['prenote']
-      parish_object = Freecen2CivilParish.new(name: parish_name, note: parish_note, freecen2_piece_id: subdistrict_object.id, prenote: parish_prenote)
+
+      place = Freecen2Place.find_by(chapman_code: chapman_code, place_name: parish_name.titleize) if parish_name.present?
+      if place.blank?
+        place = Freecen2Place.find_by("alternate_freecen2_place_names.alternate_name" => parish_name.titleize) if parish_name.present?
+        if place.blank?
+          @missing_place_names << "CivilParish| #{chapman_code}| #{parish_name}"
+          place_id = nil
+        else
+          place_id = place.id
+        end
+      else
+        if place.chapman_code == chapman_code
+          place_id = place.id
+        else
+          @missing_place_names << "CivilParish| #{chapman_code}| #{parish_name}"
+          place_id = nil
+        end
+      end
+      parish_object = Freecen2CivilParish.new(name: parish_name, note: parish_note, freecen2_piece_id: subdistrict_object.id, prenote: parish_prenote,
+                                              freecen2_place_id: place_id)
       value = parish['hamlet']
       if value.respond_to?('each_pair')
         hamlet_object = ExtractFreecen2PieceInformation.process_hamlet(value)
@@ -267,6 +305,17 @@ class ExtractFreecen2PieceInformation
           @output_file.puts "Nil array for #{parish_name}#{parish_note}" if township_object.blank?
         end
       end
+      value = parish['ward']
+      if value.respond_to?('each_pair')
+        ward_object = ExtractFreecen2PieceInformation.process_ward(value)
+        parish_object.freecen2_wards << ward_object if ward_object.present?
+      elsif value.present?
+        value.each do |ward|
+          ward_object = ExtractFreecen2PieceInformation.process_township(ward)
+          parish_object.freecen2_wards << ward_object if ward_object.present?
+          @output_file.puts "Nil array for #{parish_name}#{parish_note}" if ward_object.blank?
+        end
+      end
       result = parish_object.save
       unless result
         @output_file.puts "Parish #{parish_name} "
@@ -277,6 +326,8 @@ class ExtractFreecen2PieceInformation
     end
 
     def process_hamlet(hamlet)
+      return nil if hamlet.blank?
+
       hamlet_name = hamlet['name']
       hamlet_note = hamlet['note']
       hamlet_prenote = hamlet['prenote']
@@ -286,11 +337,22 @@ class ExtractFreecen2PieceInformation
 
     def process_township(township)
       return nil if township.blank?
+
       township_name = township['name']
       township_note = township['note']
       township_prenote = township['prenote']
       township_object = Freecen2Township.new(name: township_name, note: township_note, prenote: township_prenote)
       township_object
+    end
+
+    def process_ward(ward)
+      return nil if ward.blank?
+
+      ward_name = ward['name']
+      ward_note = ward['note']
+      ward_prenote = ward['prenote']
+      ward_object = Freecen2Ward.new(name: ward_name, note: ward_note, prenote: ward_prenote)
+      ward_object
     end
 
     def extract_chapman_code(county_name)

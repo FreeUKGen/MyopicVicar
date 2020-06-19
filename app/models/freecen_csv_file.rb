@@ -219,7 +219,7 @@ class FreecenCsvFile
     end
 
     def file_update_location_location_parameters(session, register_type)
-      place = Place.id(session[:selectplace]).first
+      place = Freecen2Place.id(session[:selectplace]).first
     end
 
     def file_update_location_message(session)

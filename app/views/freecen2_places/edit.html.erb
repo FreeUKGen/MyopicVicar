@@ -1,0 +1,12 @@
+<% breadcrumb :edit_freecen2_place,  @county, @place%>
+<h3 style="text-align: center">Editing <b><%= @place_name %></b> of <b><%= @county %></b><br>
+</h3>
+<%= render 'flash_notice' %>
+<div style="text-align: center">
+  <% if !@place.error_flag.nil? && (@user.person_role == 'data_manager' ||   @user.person_role == 'system_administrator')%>
+    <%= link_to 'Remove Unapproved Flag', approve_place_path, method: :get, :class => "btn   btn--small" %>
+  <% end%>
+</div>
+<div style="clear:both;"> </div>
+<section class="island  island--light">
+  <%= render 'form' %>

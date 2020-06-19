@@ -95,7 +95,7 @@ class Freecen2PiecesController < ApplicationController
     @freecen2_piece = Freecen2Piece.new(district_id: district.id)
 
     @freecen2_piece.subplaces = [{ 'name' => '', 'lat' => '0.0', 'long' => '0.0' }]
-    places = Place.chapman_code(params[:chapman_code].upcase).order_by(place_name: 1) if params[:chapman_code].present?
+    places = Freecen2Place.chapman_code(params[:chapman_code].upcase).order_by(place_name: 1) if params[:chapman_code].present?
     @places = []
     places.each do |place|
       @places << place.place_name
@@ -124,6 +124,10 @@ class Freecen2PiecesController < ApplicationController
     get_user_info_from_userid
     @freecen2_piece = Freecen2Piece.where('_id' => params[:id])
     @freecen2_piece = @freecen2_piece.first if @freecen2_piece.present?
+    @place = @freecen2_piece.freecen2_place
+    p 'hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh'
+    p  @place
+    p  @freecen2_piece.freecen2_place_id
     @chapman_code = session[:chapman_code]
   end
 

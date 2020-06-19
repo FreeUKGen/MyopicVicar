@@ -82,7 +82,7 @@ class FreecenPiecesController < ApplicationController
       Freecen::CENSUS_YEARS_ARRAY.include?(params[:year])
     @freecen_piece.chapman_code = params[:chapman_code].upcase if params[:chapman_code].present?
     @freecen_piece.subplaces = [{ 'name' => '', 'lat' => '0.0', 'long' => '0.0' }]
-    places = Place.chapman_code(params[:chapman_code].upcase).order_by(place_name: 1) if params[:chapman_code].present?
+    places = Freecen2Place.chapman_code(params[:chapman_code].upcase).order_by(place_name: 1) if params[:chapman_code].present?
     @places = []
     places.each do |place|
       @places << place.place_name
