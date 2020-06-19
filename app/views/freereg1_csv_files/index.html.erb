@@ -35,14 +35,14 @@
                 <td><%= freereg1_csv_file.county %></td>
                 <td><%= freereg1_csv_file.place %></td>
                 <td><%= freereg1_csv_file.church_name %></td>
-                <td><%= register_name_for_file(freereg1_csv_file) %></td>
+                <td><%= look_up_register_type_for_file(freereg1_csv_file) %></td>
                 <td><%= freereg1_csv_file.freereg1_csv_entries.count %></td>
                 <td><%= mindata(freereg1_csv_file)%></td>
                 <td><%= freereg1_csv_file.datemax %></td>
                 <% unless session[:my_own]%>
                   <td><%= freereg1_csv_file.userid %></td>
                 <% end %>
-                <td><%= processed_date(freereg1_csv_file)%></td>
+                <td><%= look_up_processed_date(freereg1_csv_file)%></td>
                 <td><%= locked_by_transcriber(freereg1_csv_file)%></td>
                 <td><%= locked_by_coordinator(freereg1_csv_file)%></td>
                 <td><%= link_to 'SH', freereg1_csv_file, method: :get  %></td>

@@ -134,4 +134,17 @@ module Freereg1CsvFilesHelper
       'Zero'
     end
   end
+
+  def look_up_processed_date(file)
+    physical_file = PhysicalFile.file_name(file.file_name).userid(file.userid).first
+    processed_date = physical_file.file_processed_date.strftime("%d/%m/%Y") if physical_file.present? && physical_file.file_processed_date.present?
+    processed_date
+  end
+
+  def look_up_register_type_for_file(file)
+    register_object = file.register
+    register_name = RegisterType::display_name(register_object.register_type)
+    register_name
+  end
+
 end
