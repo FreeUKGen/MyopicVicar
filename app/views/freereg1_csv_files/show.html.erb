@@ -26,11 +26,7 @@
         </tr>
         <tr>
           <td>Register type</td>
-          <td class="weight--semibold"><%= register_name_for_file(@freereg1_csv_file) %></td>
-        </tr>
-        <tr>
-          <td>Record type </td>
-          <td class="weight--semibold">  <%= RecordType::display_name(@freereg1_csv_file.record_type) %> </td>
+          <td class="weight--semibold"><%= look_up_register_type_for_file(@freereg1_csv_file) %></td>
         </tr>
         <tr>
           <td>Number of records </td>
@@ -142,7 +138,7 @@
             </tr>
             <tr>
               <td>Processed Date</td>
-              <td class="weight--semibold"><%= @freereg1_csv_file.processed_date.strftime("%d %b %Y") unless @freereg1_csv_file.processed_date.nil? %></td>
+              <td class="weight--semibold"><%= look_up_processed_date(@freereg1_csv_file) %></td>
             </tr>
             <tr>
               <td>Flexible CSV Used</td>
