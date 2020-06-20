@@ -315,7 +315,7 @@ module FreeregValidations
       DATE_SPLITS.each_pair do |date_splitter, date_split|
         date_parts = field.split(date_split)
         unless date_parts[1].nil?
-          return true if  VALID_MONTH.include?(date_parts[1].upcase) || date_parts[1] =~ VALID_NUMERIC_MONTH
+          return true if VALID_MONTH.include?(date_parts[1].titleize) || date_parts[1] =~ VALID_NUMERIC_MONTH
         end
       end
     end
