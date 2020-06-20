@@ -258,6 +258,7 @@ class Freereg1CsvFilesController < ApplicationController
     @syndicate =  session[:syndicate]
     @role = session[:role]
     @sorted_by = session[:sorted_by].presence || ' Ordered by most recent'
+    @session[:sort] = session[:sort].presence || 'uploaded_date DESC'
     if (@county.blank? && @syndicate.blank?) || @role.blank? || @sorted_by.blank?
       redirect_back(fallback_location: new_manage_resource_path, notice: 'Missing parameters') && return
     end
