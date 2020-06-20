@@ -8,7 +8,7 @@
 </tr>
 <tr>
   <td>Number of files loaded:</td>
-  <td > <%= @userid.freereg1_csv_files.count  %> </td>
+  <td > <%= Freereg1CsvFile.userid(@userid.userid).count  %> </td>
 </tr>
 <% unless @userid.county_groups.nil? || @userid.county_groups.length == 0  %>
   <tr>
