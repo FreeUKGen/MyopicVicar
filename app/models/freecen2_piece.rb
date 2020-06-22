@@ -39,7 +39,7 @@ class Freecen2Piece
 
 
 
-
+  field :parish_number, type: String
   field :film_number, type: String
 
   field :status, type: String

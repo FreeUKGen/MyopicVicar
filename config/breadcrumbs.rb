@@ -1540,6 +1540,11 @@ crumb :show_freecen2_civil_parish do |file, county, year |
   parent :freecen2_civil_parishes, file.freecen2_piece, county, year
 end
 
+crumb :edit_freecen2_civil_parish do |file, county, year |
+  link 'Edit FreeCen2 Civil Parish', edit_freecen2_civil_parish_path(file)
+  parent :show_freecen2_civil_parish, file.freecen2_piece, county, year
+end
+
 crumb :freecen2_pieces do |county|
   link 'FreeCen2 Pieces Total', freecen2_pieces_path(county: county)
   parent :county_options, county
@@ -1555,6 +1560,11 @@ crumb :show_freecen2_piece do |file, county, year|
   parent :freecen2_pieces_chapman, county, year
 end
 
+crumb :edit_freecen2_piece do |file, county, year|
+  link 'Edit FreeCen2 Piece', freecen2_piece_path(file)
+  parent :show_freecen2_piece, file, county, year
+end
+
 crumb :freecen2_districts do |county, year|
   link 'FreeCen2 Districts', freecen2_districts_path(county: county)
   parent :county_options, county
@@ -1563,6 +1573,11 @@ end
 crumb :show_freecen2_district do |file, county, year|
   link 'Show FreeCen2 District', freecen2_district_path(file)
   parent :show_freecen2_piece, file, county, year
+end
+
+crumb :edit_freecen2_district do |file, county, year|
+  link 'Edit FreeCen2 District', freecen2_district_path(file)
+  parent :show_freecen2_district, file, county, year
 end
 
 # ...............................................freecen_csv_files .....................................

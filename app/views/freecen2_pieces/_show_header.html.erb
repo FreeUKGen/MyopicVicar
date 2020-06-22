@@ -1,3 +1,6 @@
 <% breadcrumb :show_freecen2_piece,  @freecen2_piece.id, @freecen2_piece.district_chapman_code,  @freecen2_piece.year %>
 <h2 style="text-align: center">Details of FreeCen2 Piece <%= @freecen2_piece.number%> for <%=@chapman_code%> in <%= @freecen2_piece.year%></h2>
 <%= render 'flash_notice' %>
+<div style="text-align: center">
+  <%= link_to 'Edit Piece', edit_freecen2_piece_path(@freecen2_piece) , :class => "btn   btn--small"%>
+</div>
