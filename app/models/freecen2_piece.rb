@@ -74,7 +74,7 @@ class Freecen2Piece
     end
 
     def valid_series?(series)
-      return true if %w[HO107 RG9 RG10 RG11 RG12 RG13 RG14].include?(series)
+      return true if %w[HO107 RG9 RG10 RG11 RG12 RG13 RG14].include?(series.upcase)
 
       # Need to add Scotland and Ireland
       false
@@ -83,7 +83,7 @@ class Freecen2Piece
     def extract_year_and_piece(description)
       remove_extension = description.split('.')
       parts = remove_extension[0].split('_')
-      case parts[0]
+      case parts[0].upcase
       when 'RG9'
         year = '1861'
       when 'RG10'
