@@ -331,17 +331,9 @@ class SearchQuery
           begin
             if name.contains_wildcard_ucf?
               if first_name.blank? && last_name.present?
-                transformed = UcfTransformer.ucf_to_regex(name.last_name.downcase)
-                testing = last_name.downcase.match(transformed).present? ? true : false
-                # test surname
-
-                filtered_records << record if testing
-
+                filtered_records << record if last_name.downcase.match(UcfTransformer.ucf_to_regex(name.last_name.downcase))
               elsif last_name.blank? && first_name.present?
-                testing = first_name.downcase.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))
-                # test forename
-
-                filtered_records << record if testing
+                filtered_records << record if first_name.downcase.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))
               elsif last_name.present? && first_name.present?
                 filtered_records << record if last_name.downcase.match(UcfTransformer.ucf_to_regex(name.last_name.downcase)) &&
                   first_name.downcase.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))
