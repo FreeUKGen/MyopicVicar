@@ -327,31 +327,28 @@ class SearchQuery
       next if start_year.present? && ((record.search_date.to_i < start_year || record.search_date.to_i > end_year) && record.search_date.match(UCF).blank?)
 
       record.search_names.each do |name|
-        if name.type == SearchRecord::PersonType::PRIMARY || self.inclusive || self.witness
+        if name.type == SearchRecord::PersonType::PRIMARY || inclusive || witness
           begin
             if name.contains_wildcard_ucf?
-              if self.first_name.blank?
+              if first_name.blank? && last_name.present?
                 transformed = UcfTransformer.ucf_to_regex(name.last_name.downcase)
-                testing = self.last_name.downcase.match(transformed).present? ? true : false
+                testing = last_name.downcase.match(transformed).present? ? true : false
                 # test surname
-                if testing
-                  filtered_records << record
-                end
-              elsif self.last_name.blank?
-                testing = self.first_name.downcase.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))
+
+                filtered_records << record if testing
+
+              elsif last_name.blank? && first_name.present?
+                testing = first_name.downcase.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))
                 # test forename
-                if testing
-                  filtered_records << record
-                end
-              else
-                if self.last_name.downcase.match(UcfTransformer.ucf_to_regex(name.last_name.downcase)) && self.first_name.downcase.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))
-                  filtered_records << record
-                end
+
+                filtered_records << record if testing
+              elsif last_name.present? && first_name.present?
+                filtered_records << record if last_name.downcase.match(UcfTransformer.ucf_to_regex(name.last_name.downcase)) &&
+                  first_name.downcase.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))
               end
             end
           rescue RegexpError
           end
-
         end
       end
     end

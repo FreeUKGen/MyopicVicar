@@ -143,7 +143,8 @@ module Freereg1CsvFilesHelper
 
   def look_up_register_type_for_file(file)
     register_object = file.register
-    register_name = RegisterType::display_name(register_object.register_type)
+    register_name = 'file does not appear to belong to a register'
+    register_name = RegisterType::display_name(register_object.register_type) if register_object.present?
     register_name
   end
 
