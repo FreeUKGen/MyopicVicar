@@ -1,5 +1,10 @@
 <h3 style="text-align: center"><b><%= active(session[:active_place])%> Freecen2 Places for <%= @county  %></b>.</h3>
 <%= render 'flash_notice' %>
+<% if ['data_manager', 'system_administrator', 'county_coordinator'].include?(@user.person_role) %>
+  <div style="text-align: center">
+    <%= link_to 'Create New Freecen2 Place', new_freecen2_place_path, method: :get, :class => "btn   btn--small" %>
+  </div>
+<% end%>
 <div style="overflow: hidden;">
   <table class="my-width-min flush--bottom" >
     <thead >

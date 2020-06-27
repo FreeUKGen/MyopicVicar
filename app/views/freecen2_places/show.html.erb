@@ -5,7 +5,7 @@
     <h4 style="text-align: center">The Freecen2 Place <%= @place.place_name%> in <%=@county%></h4>
     <div style="text-align: center"> <%= link_to 'Edit Freecen2 Place Information', edit_freecen2_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" unless @user.person_role == "contacts_coordinator" %>
       <% if @user.person_role == 'data_manager' ||   @user.person_role == 'system_administrator'%>
-        <%= link_to 'Create New Freecen2 Place', new_freecen2_place_path, method: :get, :class => "btn   btn--small" %>   <%= link_to 'Change Freecen2 Place Name', rename_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn   btn--small" %>   <%= link_to 'Destroy Freecen2 Place', place_path(@place), method: :delete,  data: { confirm: 'Are you sure you want to destroy this Place.? It will not happen if there are dependents!' }, :class => "btn   btn--small" %>
+        <%= link_to 'Create New Freecen2 Place', new_freecen2_place_path, method: :get, :class => "btn   btn--small" %>   <%= link_to 'Change Freecen2 Place Name', rename_freecen2_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn   btn--small" %>   <%= link_to 'Destroy Freecen2 Place', freecen2_place_path(@place), method: :delete,  data: { confirm: 'Are you sure you want to destroy this Place.? It will not happen if there are dependents!' }, :class => "btn   btn--small" %>
       <% end%>
       <div class="grid__item  ">
         <table class="table--bordered table--data " >

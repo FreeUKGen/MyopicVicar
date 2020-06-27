@@ -31,7 +31,7 @@ class Freecen2PlacesController < ApplicationController
   def create
     @user = get_user
     @first_name = @user.person_forename if @user.present?
-    params[:place][:county] = session[:county]
+    params[:freecen2_place][:county] = session[:county]
     @place = Freecen2Place.new(freecen2_place_params)
     proceed, message, place = @place.check_and_set(params)
     if proceed && message == 'Proceed'
@@ -126,7 +126,7 @@ class Freecen2PlacesController < ApplicationController
   def new
     @place = Freecen2Place.new
     get_user_info_from_userid
-    @place.alternateplacenames.build
+    @place.alternate_freecen2_place_names.build
     @county = session[:county]
   end
 

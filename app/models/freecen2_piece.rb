@@ -73,76 +73,54 @@ class Freecen2Piece
       where(status: status)
     end
 
+    def valid_series?(series)
+      return true if %w[HO107 RG9 RG10 RG11 RG12 RG13 RG14].include?(series)
+
+      # Need to add Scotland and Ireland
+      false
+    end
+
     def extract_year_and_piece(description)
-      parts = description.split('.')
-      stem = parts[0]
-      first_two_characters = stem.slice(0, 2).upcase if stem.slice(0, 2).present?
-      third_character = stem.slice(2, 1)
-      third_and_fourth = stem.slice(2, 2)
-      last_three = stem.slice(5, 3)
-      last_four = stem.slice(4, 4)
-      case first_two_characters
-      when 'RG'
-        if third_character == '9' || third_and_fourth == '09'
-          year = '1861'
-          piece = last_four
-        elsif third_and_fourth == '10'
-          piece = last_four
-          year = '1871'
-        elsif third_and_fourth == '11'
-          piece = last_four
-          year = '1881'
-        elsif third_and_fourth == '12'
-          piece = last_four
-          year = '1891'
-        elsif third_and_fourth == '13'
-          piece = last_four
-          year = '1901'
-        elsif third_and_fourth == '14'
-          piece = last_four
-          year = '1911'
-        end
-      when 'HO'
-        if third_and_fourth == '51'
-          piece = last_four
-          year = '1851'
-        else
-          piece = last_three
+      remove_extension = description.split('.')
+      parts = remove_extension[0].split('_')
+      case parts[0]
+      when 'RG9'
+        year = '1861'
+      when 'RG10'
+        year = '1871'
+      when 'RG11'
+        year = '1881'
+      when 'RG12'
+        year = '1891'
+      when 'RG13'
+        year = '1901'
+      when 'RG14'
+        year = '1911'
+      when 'HO107'
+        if parts[1].length == 4 && parts[1].to_i <= 1465
           year = '1841'
-        end
-      when 'HS'
-        if third_and_fourth == '51'
-          piece = last_three
-          year = '1851'
-        else
-          piece = last_three
+        elsif parts[1].length > 4 && parts[1][0..3].to_i <= 1465
           year = '1841'
-        end
-      when 'RS'
-        if third_character == '6'
-          year = '1861'
-          piece = last_three
-        elsif third_and_fourth == '7'
-          piece = last_three
-          year = '1871'
-        elsif third_and_fourth == '8'
-          piece = last_three
-          year = '1881'
-        elsif third_and_fourth == '9'
-          piece = last_three
-          year = '1891'
-        elsif third_and_fourth == '10'
-          piece = last_three
-          year = '1901'
-        elsif third_and_fourth == '11'
-          piece = last_three
-          year = '1911'
         else
-          year = ''
-          piece = ''
+          year = '1851'
         end
+      when 'HS51'
+        year = parts[0][2..3] == '51' ? '1851' : '1841'
+      when 'RS6'
+        year = '1861'
+      when 'RS7'
+        year = '1871'
+      when 'RS8'
+        year = '1881'
+      when 'RS9'
+        year = '1891'
+      when 'RS10'
+        year = '1901'
+      when 'RS11'
+        year = '1911'
       end
-      [year, piece.to_i]
+      piece = parts[0] + '_' + parts[1]
+      [year, piece]
     end
 
     def county_year_totals(chapman_code)

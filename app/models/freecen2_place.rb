@@ -254,7 +254,7 @@ class Freecen2Place
   end
 
   def check_and_set(param)
-    self.chapman_code = ChapmanCode.values_at(param[:place][:county])
+    self.chapman_code = ChapmanCode.values_at(param[:freecen2_place][:county])
     self.modified_place_name = self.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase
     #use the lat/lon if present if not calculate from the grid reference
     self.add_location_if_not_present

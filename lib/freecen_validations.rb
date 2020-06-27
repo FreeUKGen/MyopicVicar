@@ -26,9 +26,10 @@ module FreecenValidations
     def fixed_valid_piece?(field)
       return false if field.blank?
 
-      return false unless field =~ VALID_TEXT
+      parts = field.split('_')
+      return false if parts.length.zero?
 
-      return false unless field =~ VALID_PIECE
+      return false unless Freecen2Piece.valid_series?(parts[0])
 
       true
     end
