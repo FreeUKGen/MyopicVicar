@@ -73,19 +73,27 @@ class FreecenCsvProcessor
     end
     @project.write_log_file("#{files_to_be_processed.length}\t files selected for processing. <br>")
     files_to_be_processed.each do |file_name|
-      @hold_name = file_name
-      @csvfile = CsvFile.new(@hold_name, @project)
-      success, @records_processed, @data_errors = @csvfile.a_single_csv_file_process
-      if success
-        #p "processed file"
-        @project.total_records = @project.total_records + @records_processed unless @records_processed.nil?
-        @project.total_data_errors = @project.total_data_errors + data_errors unless @data_errors
-        @project.total_files = @project.total_files + 1
-      else
-        #p "failed to process file"
+      begin
+        @hold_name = file_name
+        @csvfile = CsvFile.new(@hold_name, @project)
+        success, @records_processed, @data_errors = @csvfile.a_single_csv_file_process
+        if success
+          #p "processed file"
+          @project.total_records = @project.total_records + @records_processed unless @records_processed.nil?
+          @project.total_data_errors = @project.total_data_errors + data_errors unless @data_errors
+          @project.total_files = @project.total_files + 1
+        else
+          #p "failed to process file"
+          @csvfile.communicate_failure_to_member(@records_processed)
+          @csvfile.clean_up_physical_files_after_failure(@records_processed)
+          # @project.communicate_to_managers(@csvfile) if @project.type_of_project == "individual"
+        end
+      rescue Exception => msg
+        p "rescue"
+        p msg
+        @records_processed = msg
         @csvfile.communicate_failure_to_member(@records_processed)
         @csvfile.clean_up_physical_files_after_failure(@records_processed)
-        # @project.communicate_to_managers(@csvfile) if @project.type_of_project == "individual"
       end
       sleep(300) if Rails.env.production?
     end
