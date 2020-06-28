@@ -345,7 +345,7 @@ class CsvFile < CsvFiles
     if FreecenValidations.fixed_valid_piece?(file_name)
       success = true
       year, piece = Freecen2Piece.extract_year_and_piece(file_name)
-      actual_piece = Freecen2Piece.where(year: year, piece_number: piece.upcase).first
+      actual_piece = Freecen2Piece.where(year: year, number: piece.upcase).first
       if actual_piece.blank?
         message = "Error: there is no piece#{piece.upcase} in #{year} for #{file_name} in the database}. <br>"
         success = false
