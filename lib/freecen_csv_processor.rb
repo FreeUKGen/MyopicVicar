@@ -342,13 +342,13 @@ class CsvFile < CsvFiles
   end
 
   def extract_piece_year_from_file_name(file_name)
-    p 'extract_piece_year_from_file_name'
+    @project.write_messages_to_all("extract_piece_year_from_file_name", true)
     if FreecenValidations.fixed_valid_piece?(file_name)
       success = true
       year, piece = Freecen2Piece.extract_year_and_piece(file_name)
-      p piece
+      @project.write_messages_to_all("#{piece}", true)
       actual_piece = Freecen2Piece.where(year: year, number: piece.upcase).first
-      p actual_piece
+      @project.write_messages_to_all("#{actual_piece}", true)
       if actual_piece.blank?
         message = "Error: there is no piece#{piece.upcase} in #{year} for #{file_name} in the database}. <br>"
         success = false
