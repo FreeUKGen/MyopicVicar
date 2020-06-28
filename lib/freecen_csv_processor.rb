@@ -345,6 +345,7 @@ class CsvFile < CsvFiles
     @project.write_messages_to_all("extract_piece_year_from_file_name", true)
     if FreecenValidations.fixed_valid_piece?(file_name)
       success = true
+      message = ''
       year, piece = Freecen2Piece.extract_year_and_piece(file_name)
       @project.write_messages_to_all("#{piece}", true)
       actual_piece = Freecen2Piece.where(year: year, number: piece.upcase).first
