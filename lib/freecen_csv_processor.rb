@@ -347,9 +347,7 @@ class CsvFile < CsvFiles
       success = true
       message = ''
       year, piece = Freecen2Piece.extract_year_and_piece(file_name)
-      @project.write_messages_to_all("#{piece}", true)
       actual_piece = Freecen2Piece.where(year: year, number: piece.upcase).first
-      @project.write_messages_to_all("#{actual_piece.inspect}", true)
       if actual_piece.blank?
         message = "Error: there is no piece#{piece.upcase} in #{year} for #{file_name} in the database}. <br>"
         success = false
