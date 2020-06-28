@@ -302,9 +302,9 @@ class CsvFile < CsvFiles
     return [false, message] unless success
 
     success, message, @year, @piece = extract_piece_year_from_file_name(@file_name)
-    @chapman_code = @piece.chapman_code if @piece.present?
+    @chapman_code = @piece.district_chapman_code if @piece.present?
     @project.write_messages_to_all(message, true) unless success
-    @project.write_messages_to_all("Working on #{@piece.district_name} for #{@year}, in #{@piece.chapman_code}", true) if success
+    @project.write_messages_to_all("Working on #{@piece.name} for #{@year}, in #{@piece.district_chapman_code}", true) if success
     return [false, message] unless success
 
     success, message = slurp_the_csv_file
@@ -348,7 +348,7 @@ class CsvFile < CsvFiles
       year, piece = Freecen2Piece.extract_year_and_piece(file_name)
       @project.write_messages_to_all("#{piece}", true)
       actual_piece = Freecen2Piece.where(year: year, number: piece.upcase).first
-      @project.write_messages_to_all("#{actual_piece}", true)
+      @project.write_messages_to_all("#{actual_piece.inspect}", true)
       if actual_piece.blank?
         message = "Error: there is no piece#{piece.upcase} in #{year} for #{file_name} in the database}. <br>"
         success = false
