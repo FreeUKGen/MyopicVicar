@@ -44,3 +44,4 @@ alias f2rake='sudo -u webserv bundle exec rake RAILS_ENV=production'
 f2rake foo:refresh_ucf_lists[0,0] --trace
  mongoexport --ssl --sslAllowInvalidCertificates --host "mongo5.freeukgen.org.uk:27017" --db freecen_production_2017 --collection freecen_pieces --out pieces.json
  mongoimport --port 27017 --db freecen_20170426 --collection freecen_pieces --file d:/mongo5/pieces.json
+ ps wuax | grep ruby

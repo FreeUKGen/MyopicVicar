@@ -89,9 +89,8 @@ class FreecenCsvProcessor
           # @project.communicate_to_managers(@csvfile) if @project.type_of_project == "individual"
         end
       rescue Exception => msg
-        p "rescue"
-        p msg
         @records_processed = msg
+        @project.write_messages_to_all(msg)
         @csvfile.communicate_failure_to_member(@records_processed)
         @csvfile.clean_up_physical_files_after_failure(@records_processed)
       end
@@ -345,8 +344,8 @@ class CsvFile < CsvFiles
   def extract_piece_year_from_file_name(file_name)
     if FreecenValidations.fixed_valid_piece?(file_name)
       success = true
-      year, piece = FreecenPiece.extract_year_and_piece(file_name)
-      actual_piece = FreecenPiece.where(year: year, piece_number: piece.upcase).first
+      year, piece = Freecen2Piece.extract_year_and_piece(file_name)
+      actual_piece = Freecen2Piece.where(year: year, piece_number: piece.upcase).first
       if actual_piece.blank?
         message = "Error: there is no piece for #{file_name} in the database}. <br>"
         success = false
@@ -355,7 +354,6 @@ class CsvFile < CsvFiles
       message = "Error: File name does not have a valid piece number. It is #{file_name}. <br>"
       success = false
     end
-
     [success, message, year, actual_piece]
   end
 

@@ -675,37 +675,29 @@ namespace :build do
     db = Mongoid.clients[:default][:database]
     hosts = Mongoid.clients[:default][:hosts]
     host = hosts[0]
-    begin
-      if args.type == 'individual'
-        p "FREECEN:CSV_PROCESSING: starting an individual project"
-        FreecenCsvProcessor.activate_project(args.search_record, args.type, args.force, args.range, args.field, args.processing)
+    if args.type == 'individual'
+      p "FREECEN:CSV_PROCESSING: starting an individual project"
+      FreecenCsvProcessor.activate_project(args.search_record, args.type, args.force, args.range, args.field, args.processing)
+    else
+      rake_lock_file = Rails.root.join('tmp', 'freecen_processing_rake_lock_file.txt')
+      processor_initiation_lock_file = Rails.root.join('tmp', 'freecen_processor_initiation_lock_file.txt')
+      p "Initiation lock present" if File.exist?(freecen_processor_initiation_lock_file)
+      FileUtils.rm(freecen_processor_initiation_lock_file, :force => true) if File.exist?(freecen_processor_initiation_lock_file)
+      if rake_lock_file.present? && File.exist?(rake_lock_file)
+        p "FREECEN:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists. Exiting"
       else
-        rake_lock_file = Rails.root.join('tmp', 'freecen_processing_rake_lock_file.txt')
-        processor_initiation_lock_file = Rails.root.join('tmp', 'freecen_processor_initiation_lock_file.txt')
-        p "Initiation lock present" if File.exist?(freecen_processor_initiation_lock_file)
-        FileUtils.rm(freecen_processor_initiation_lock_file, :force => true) if File.exist?(freecen_processor_initiation_lock_file)
-        if rake_lock_file.present? && File.exist?(rake_lock_file)
-          p "FREECEN:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists. Exiting"
-        else
-          #set the processor running flag
-          locking_file = File.new(rake_lock_file, "w")
-          p "FREECEN:CSV_PROCESSING: Created rake lock file #{rake_lock_file} and processing files"
-          while PhysicalFile.waiting.exists?
-            FreecenCsvProcessor.activate_project(args.search_record, args.type, args.force, args.range, args.field, args.processing)
-            sleep(300)
-          end
-
+        #set the processor running flag
+        locking_file = File.new(rake_lock_file, "w")
+        p "FREECEN:CSV_PROCESSING: Created rake lock file #{rake_lock_file} and processing files"
+        while PhysicalFile.waiting.exists?
+          FreecenCsvProcessor.activate_project(args.search_record, args.type, args.force, args.range, args.field, args.processing)
+          sleep(300)
         end
+
       end
-      p "FREECEN:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
-      FileUtils.rm(rake_lock_file, :force => true) if rake_lock_file.present? && File.exist?(rake_lock_file)
-    rescue Exception => msg
-      p "rescue"
-      p msg
-      p "FREECEN:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
-      FileUtils.rm(rake_lock_file, :force => true) if rake_lock_file.present? && File.exist?(rake_lock_file)
-      p "Still there" if rake_lock_file.present? && File.exist?(rake_lock_file)
     end
+    p "FREECEN:CSV_PROCESSING: removing rake lock file #{rake_lock_file}" if rake_lock_file.present? && File.exist?(rake_lock_file)
+    FileUtils.rm(rake_lock_file, :force => true) if rake_lock_file.present? && File.exist?(rake_lock_file)
 
   end
 
