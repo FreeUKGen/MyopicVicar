@@ -322,9 +322,13 @@ class SearchQuery
       record = SearchRecord.record_id(record.to_s).first
       next if record.blank?
 
+      next if record.search_date.blank?
+
+      next if record.search_date.match(UCF)
+
       next if record_type.present? && record.record_type != record_type
 
-      next if start_year.present? && ((record.search_date.to_i < start_year || record.search_date.to_i > end_year) && record.search_date.match(UCF).blank?)
+      next if start_year.present? && ((record.search_date.to_i < start_year || record.search_date.to_i > end_year))
 
       record.search_names.each do |name|
         if name.type == SearchRecord::PersonType::PRIMARY || inclusive || witness
