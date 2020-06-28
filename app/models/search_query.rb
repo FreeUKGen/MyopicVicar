@@ -334,11 +334,11 @@ class SearchQuery
         if name.type == SearchRecord::PersonType::PRIMARY || inclusive || witness
           begin
             if name.contains_wildcard_ucf?
-              if first_name.blank? && last_name.present?
+              if first_name.blank? && last_name.present? && name.last_name.present?
                 filtered_records << record if last_name.downcase.match(UcfTransformer.ucf_to_regex(name.last_name.downcase))
-              elsif last_name.blank? && first_name.present?
+              elsif last_name.blank? && first_name.present? && name.first_name.present?
                 filtered_records << record if first_name.downcase.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))
-              elsif last_name.present? && first_name.present?
+              elsif last_name.present? && first_name.present? && name.last_name.present? && name.first_name.present?
                 filtered_records << record if last_name.downcase.match(UcfTransformer.ucf_to_regex(name.last_name.downcase)) &&
                   first_name.downcase.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))
               end
