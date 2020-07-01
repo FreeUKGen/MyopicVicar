@@ -1,68 +1,114 @@
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
-<h1 class="accessibility">Search Results</h1>
-<div class="table-wrapper" id="search-result">
-  <table class="table--bordered table--data">
-    <caption class="gamma"> <%= pluralize(@result_count, ' Search Result', ' Search Results') %>
-      <small class="additional">Select a heading to sort results on that column.<br>
-        Each link in the <q>Detail</q> column opens a page with all the information we have for that record.</small>
-    </caption>
-    <thead>
-      <tr>
-        <th>
-          <%= link_to('Main participant(s)', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME), :title => 'Ascending sort on name') %>
-        </th>
-        <th>
-          <%= link_to('Record type', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::TYPE), :title => 'Ascending sort on Record type') %>
-        </th>
-        <th>
-          <%= link_to('Event date', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DATE), :title => 'Ascending sort on Event date') %>
-        </th>
-        <th>
-          <%= link_to('County', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::COUNTY), :title => 'Ascending sort on County') %>
-        </th>
-        <th>
-          <%= link_to("Place : Church : Register type", reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::LOCATION), :title => 'Ascending sort on Place') %>
-        </th>
-        <% unless print_friendly %>
-          <th>Detail</th>
-        <% end %>
-      </tr>
-    </thead>
-    <tbody>
-      <% n = 0 %>
-      <% search_results.each do |search_record| %>
-        <% n = n + 1 %>
-        <tr id="<%=search_record[:_id]%>">
-          <td>
-          <% search_record[:transcript_names].uniq.each_with_index do |name, i| %>
-            <% if  name['type'] == 'primary' %>
-              <% if i > 0 %>
-              <br />
-      <% end%>
-      <%= "#{name['first_name']} #{name['last_name']} " %>
-    <% end %>
-  <% end%>
-</td>
-<td>
-  <%= RecordType::display_name(search_record.record_type) %>
-</td>
-<td>
-  <%= transcript_date(search_record) %>
-</td>
-<td>
-  <%= county(search_record) %>
-</td>
-<td>
-  <%= format_location(search_record) %>
-</td>
-<% unless print_friendly %>
-  <td>
-    <%= link_to("Row #{n}", friendly_search_record_path(search_record.id, search_record.friendly_url),title: "As available for this record")%>
-    <i><%= viewed(@search_query,search_record) %></i>
-  </td>
-<% end %>
-</tr>
-<% end %>
-</tbody>
-</table>
+<div class='grid'>
+  <div class='grid__item one-whole lap-one-whole palm-one-whole push-half--bottom'>
+    <!--div class='result_text'>
+      FreeBMD tries to ensure the results are an accurate transcription of the GRO Index but errors exist in the index and our transcription of it. You are advised to take this into account in your use of the information found and we have some help on doing that.
+    </div-->
+  </div>
 </div>
+<% unless defined?(@printable_format) && @printable_format %>
+  <div class='grid'>
+    
+    <div class="grid__item one-quarter lap-one-quarter palm-one-whole">
+      <%= form_tag search_query_path(@search_query), method: :get, id: 'limit_form' do %>
+        Display <%= select_tag :results_per_page, options_for_select([20,40,60,80,100], selected: @results_per_page), class: 'date_year'%> per page.
+      <% end %>
+    </div>
+    <div class="grid__item one-quarter lap-one-quarter palm-one-whole text--right push-half--top informative">
+      <%= link_to "Results Help", "https://test.freebmd.org.uk/search-results-help.html", target: "_blank" %>
+    </div>
+  </div>
+<% end %>
+<section>
+  <section class="island" >
+    <h1 class="accessibility">Search Results</h1>
+    <div class="table-wrapper bmd_search_results_table" id="search-result" style="overflow: auto !important;">
+      <table class="search_results_table" border='0'  >
+        <thead>
+          <tr>
+            <% unless print_friendly %>
+              <th>Detail</th>
+            <% end %>
+            <th>
+              <%= link_to_unless(print_friendly, 'Surname',
+            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::SURNAME)) %>
+            </th>
+            <th>
+              <%= link_to_unless(print_friendly, 'Firstname(s)',
+            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::FIRSTNAME)) %>
+            </th>
+            <th>
+              <%= link_to_unless(print_friendly, 'Date',
+            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_DATE)) %>
+            </th>
+            <th>
+              <%= link_to_unless(print_friendly, 'Record Type',
+            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_RECORD_TYPE)) %>
+            </th>
+            <th>
+              <%= link_to_unless(print_friendly, 'County/District',
+            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DISTRICT)) %>
+            </th>
+              <%= content_tag(:th, "M/S/A/D #{app_icons[:info]}".html_safe, title: info_tag_text[:m_s_a_d], 'aria-details': info_tag_text[:m_s_a_d]) %>
+          </tr>
+        </thead>
+        <tbody>
+          <% n = 0 %>
+          <% @paginatable_array.each do |search_record| %>
+            <% n = n +1%>
+            <% record_type = RecordType::display_name(["#{search_record[:RecordTypeID]}"])%>
+            <tr id="<%=search_record[:_id]%>" class="<%= record_type.downcase %>">
+              <% unless print_friendly %>
+                <td>
+                  <%= link_to("<i class='fa fa-arrow-right view_arrow'></i> View #{n}".html_safe,friendly_bmd_record_details_path(@search_query.id,search_record.id, search_record.friendly_url), :rel => "nofollow", :title => "" )%>
+                  <i><%= seen(@search_query,search_record) %></i>
+                </td>
+              <% end %>
+              <td>
+                <%= "#{search_record[:Surname]} " %>
+              </td>
+              <td>
+
+                <%= "#{search_record[:GivenName]}" %>
+              </td>
+              <td>
+              <%# raise QuarterDetails.quarters.inspect%>
+                <%= "#{QuarterDetails.quarters.key((search_record[:QuarterNumber]-1)%4 + 1).upcase} #{(search_record[:QuarterNumber]-1)/4 + 1837}"%>
+              </td>
+              <td>
+                <%= "#{record_type}" %>
+              </td>
+              <td>
+                <%# raise search_record.includes(:CountyCombos).inspect%>
+                <%= "#{search_record[:District]}" %>
+              </td>
+              <td>
+                <%= "#{search_record[:AssociateName]} #{search_record[:AgeAtDeath]}" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <% unless print_friendly %>
+      <div class='text--center inline-block'>
+        <%= paginate @paginatable_array %>
+      </div>
+    <% end %>
+  </section>
+</section>
+<div class='grid'>
+  <div class="grid__item one-half lap-one-half palm-one-whole">
+    <%= link_to "Download", '#', :class => "btn btn--small push-half--right push-half--top" %>
+    <%= link_to "About this Query", about_search_query_path(@search_query, :page_number => @page_number), :class => "btn   btn--small  push-half--right push-half--top" %>
+    <%= link_to "Printable Format", show_print_version_search_query_path, class: "btn   btn--small push-half--right push-half--top", title: "Click to view results in printable format", "aria-details": "Click to view results in printable format"  %>
+  </div>
+</div>
+<script type="text/javascript" >
+  $(function(){
+    $('#results_per_page').change(
+      function() {
+       $('#limit_form').submit();
+      });
+  });
+</script>

@@ -1,0 +1,30 @@
+<div class="island  island--dark  flush--bottom  milli  text--white">
+  <div class="container">
+    <div class="grid">
+      <div class="grid__item  one-third  palm-one-whole">
+        <ul class="nav  nav--stacked  lap-and-up-flush--bottom">
+          <li><a href="/contacts/new">Contact Us</a></li>
+          <li><a href="http://www.freeukgenealogy.org.uk/help-us-keep-history-free/">Make a Donation</a></li>
+          <li><a href="https://www.freeukgenealogy.org.uk/files/Documents/Privacy-Notice.pdf">Privacy Notice</a></li>
+          <li><a href="http://www.freeukgenealogy.org.uk/about/constitution-and-policies/">Policies</a></li>
+          <li><%= link_to "Cookie Policy", "/cms/about/cookie-policy" %></li>
+        </ul>
+      </div>
+      <div class="grid__item  one-third  palm-one-whole">
+        <ul class="nav no-text  lap-and-up-flush--bottom">
+          <li><a href="http://www.freeukgenealogy.org.uk/news/"><i class="icon__rss" aria-hidden="true"></i><span class="accessibility">Blog</span></a></li>
+          <li><a href="https://www.facebook.com/freeukgen" target="_blank"><i class="icon__facebook" aria-hidden="true"></i><span class="accessibility">Facebook</span></a></li>
+          <li><a href="https://www.twitter.com/freeukgen" target="_blank"><i class="icon__twitter" aria-hidden="true"></i><span class="accessibility">Twitter</span></a></li>
+        </ul>
+      </div>
+      <div class="grid__item  one-third  palm-one-whole">
+        <a href="http://www.freeukgenealogy.org.uk/" class="icon__freeukgen__project--light"><span class="accessibility">A project by FreeUKGenealogy</span></a>
+      </div>
+    </div>
+    <br>
+    <%= render "layouts/stats" %>
+    <p class="micro">
+      Search engine, layout and database Copyright © 1998-2019 Free UK Genealogy CIO, a charity registered in England and Wales, Number 1167484. We make no warranty whatsoever as to the <%= "accuracy or completeness of the #{appname} data",'/cms/help#Accuracy'%>.
+    </p>
+  </div>
+</div>

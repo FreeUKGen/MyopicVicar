@@ -1,0 +1,81 @@
+<footer class="site__footer">
+  <div class="island  island--magenta  flush--bottom">
+    <div class="container  text--center">
+      <p>
+        Data © Crown copyright. Published by permission of the Controller of HMSO and the Office for National Statistics (ONS).You must not copy on, transfer or reproduce significant portions of data without the prior permission of the ONS.Our Search engine, layout and database Copyright © 1998-2019 Free UK Genealogy CIO, a charity registered in England and Wales, Number 1167484.We make no warranty whatsoever as to the accuracy or completeness of the FreeBMD data.
+      </p>
+    </div>
+  </div>
+  <div class="icon__honeycomb--bottom-left  island  flush--bottom">
+    <div class="container  text--center">
+      <h3 class="epsilon  text--navy">Other FreeUKGenealogy</h3>
+      <ul class="icon-list">
+        <li>          
+          <a href="http://www.freecen.org.uk/" class="icon__freecen"><span class="accessibility">FreeCEN</span></a></li>
+        <li>
+          <a href="http://freereg.org.uk/" class="icon__freereg"><span class="accessibility">FreeReg</span></a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="island  island--dark  flush--bottom  milli  text--white">
+    <div class="container">
+      <div class="grid">
+        <div class="grid__item  one-quarter  palm-one-whole">
+          <ul class="nav  nav--stacked  lap-and-up-flush--bottom">
+            <li> <%= link_to "Terms and Conditions", "#" %></li>
+            <li> <%= link_to "Privacy policy", "#" %></li>
+            <li> <%= link_to "Usage policy", "#" %></li>
+            <li> <%= link_to "Cookie policy", "#" %></li>
+          </ul>
+        </div>
+        <div class="grid__item  one-quarter  palm-one-whole">
+          <ul class="nav  nav--stacked   lap-and-up-flush--bottom">
+            <li> <%= link_to "Volunteer", "#" %></li>
+            <li> <%= link_to "Help with Transcribing", "#" %></li>
+            <li> <%= link_to "Stats and database info", "#" %></li>
+          </ul>
+        </div>
+        <div class="grid__item  one-quarter  palm-one-whole">
+          <ul class="nav  nav--stacked   lap-and-up-flush--bottom">
+            <li> <%= link_to "Donate", "#" %></li>
+            <li> <%= link_to "News", "#" %></li>
+            <li> <%= link_to "Stats and database info", "#" %></li>
+          </ul>
+        </div>
+        <div class="grid__item  one-quarter  palm-one-whole">
+        <ul class="nav  nav--stacked   lap-and-up-flush--bottom">
+          <li> Follow us:</li>
+          <li class='social_links'>
+            <%= link_to app_icons[:news].html_safe, social_links[:news], html_options(alt_text: 'Link to NEWS') %>
+            <%= link_to app_icons[:facebook].html_safe, social_links[:facebook], html_options(alt_text: 'Link to our Facebook page') %>
+            <%= link_to app_icons[:twitter].html_safe, social_links[:twitter], html_options(alt_text: 'Link to Twitter for our tweets ') %>
+          </li>
+          <li class='social_links'>
+            <%= link_to app_icons[:instagram].html_safe, social_links[:instagram], html_options(alt_text: 'Link to our Instagram account') %>
+            <%= link_to app_icons[:pinterest].html_safe, social_links[:pinterest], html_options(alt_text: 'Link to our Pinterest') %>
+            <%= link_to app_icons[:github].html_safe, social_links[:github], html_options(alt_text: 'Link to Github repository to contribute') %>
+          </li>
+        </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="island  island--grey  flush--bottom">
+    <div class="container">
+      <div class='copyright_banner'>
+        <div class='copyright_text'>
+          <p class="micro  text--grey">
+            Data © Crown copyright. Published by permission of the Controller of HMSO and the Office for National Statistics (ONS).You must not copy on, transfer or reproduce significant portions of data without the prior permission of the ONS.Our Search engine, layout and database Copyright © 1998-2019 Free UK Genealogy CIO, a charity registered in England and Wales, Number 1167484.We make no warranty whatsoever as to the <%= link_to "accuracy or completeness of the FreeBMD data.", '/cms/help#Accuracy' %>
+          </p>
+        </div>
+        <div class= 'footer_brand'>
+          <%= link_to '/', class: "icon__freebmd brand_logo_footer" do %>
+            <h1 class="accessibility">FreeBMD</h1>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+

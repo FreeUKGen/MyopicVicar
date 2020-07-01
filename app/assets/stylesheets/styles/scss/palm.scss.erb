@@ -98,7 +98,6 @@
     z-index: 1;
 
     .main-nav {
-
       ul {
         @extend %nav;
         @extend %nav--stacked;
@@ -208,6 +207,19 @@
     margin-bottom: $base-spacing-unit;
   }
 }
+
+@media only screen and (min-width: 572px) {
+  #small_screen_logo {
+    display: none;
+    }
+}
+
+@media only screen and (max-width: 572px) {
+  #small_screen_logo {
+    margin: 56px auto 28px auto;
+    }
+}
+
 /**
  * Extracted from BMD2 Dec 2019
  * needed for Font awesome
@@ -219,3 +231,4 @@ li i {
 .social_links a {
   display:inline-block !important;
 }
+

@@ -1,0 +1,75 @@
+<div class='Navbar'>
+    <div class="Navbar__Link Navbar__Link-brand kodhandam">
+        <%= link_to '/', class: "site__header__logo  icon__freebmd dhandam" do %>
+            <h1 class="accessibility">FreeBMD</h1>
+        <% end %>
+    </div>
+
+    <div class="Navbar__Link Navbar__Link-toggle">
+        <i class="fa fa-bars fa-2x" id='offcanvas_trigger' aria-hidden="true"></i>
+    </div>
+
+    <div class="Navbar__Items Navbar__Items--right flex_container">
+        <% if controller_name.nil? || controller_name == 'search_queries' || controller_name == 'search_records'%>
+        <% if appname_downcase == 'freereg' %>
+        <div class="Navbar__Link">
+            <%=link_to("Coverage",main_app.new_freereg_content_path)%>
+        </div>
+        <% end %>
+        <% else%>
+        <div class="Navbar__Link">
+            <%= link_to("Search",  main_app.new_search_query_path) %>
+        </div>
+        <% end%>
+        <% if  session[:userid_detail_id].present? %>
+        <div class="Navbar__Link">
+            <%= link_to 'Your Actions', main_app.new_manage_resource_path %>
+        </div>
+        <div class="Navbar__Link">
+            <%= link_to "Logout", main_app.logout_manage_resources_path %>
+        </div>
+        <div class="Navbar__Link">
+            <% get_user_info_from_userid %>
+            <% if @user.present? && @user.person_role.present? %>
+            <% if @user.person_role == 'transcriber' || @user.person_role == 'trainee' || @user.person_role == 'pending'%>
+            <%= link_to "Help", "/cms/information-for-transcribers" %>
+            <% elsif @user.person_role == 'researcher'%>
+            <%= link_to "Help", "/cms/registered-researchers" %>
+            <% else %>
+            <%= link_to "Help", "/cms/information-for-coordinators" %>
+            <% end %>
+        </div>
+        <% else %>
+        <div class="Navbar__Link">
+            <%= link_to "About", "/cms/about" %>
+        </div>
+        <% end%>
+        <% else %>
+        <div class="Navbar__Link">
+            <%= link_to "About", "/cms/about" %>
+        </div>
+        <div class="Navbar__Link">
+            <%= link_to "Donate", "https://www.freeukgenealogy.org.uk/help-us-keep-history-free/", id: "donate_nav"%>
+        </div>
+        <div class="Navbar__Link">
+            <%= link_to "Volunteer", "/cms/opportunities-to-volunteer-with-#{MyopicVicar::Application.config.template_set}" %>
+        </div>
+        <div class="Navbar__Link">
+            <%= link_to "Members", refinery.login_path %>
+        </div>
+        <div class="Navbar__Link">
+            <%= link_to "Help", "/cms/help" %>
+        </div>
+        <% end %>
+    </div>
+</div>
+<script type="text/javascript">
+    function classToggle() {
+        const navs = document.querySelectorAll('.Navbar__Items')
+
+        navs.forEach(nav => nav.classList.toggle('Navbar__ToggleShow'));
+    }
+
+    document.querySelector('.Navbar__Link-toggle')
+        .addEventListener('click', classToggle);
+</script>

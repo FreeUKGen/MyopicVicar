@@ -4,15 +4,15 @@
       <div class="grid__item  one-third  palm-one-whole text--left">
         <ul class="nav  nav--stacked  lap-and-up-flush--bottom">
           <li><%= link_to "Cookie Policy", "/cms/about/cookie-policy" %></li>
-          <li><a href="https://www.freeukgenealogy.org.uk/files/Documents/Privacy-Notice.pdf" target="_blank">Privacy Notice<span class="accessibility">Opens in new window</span></a></li>
+          <li><a href="https://www.freeukgenealogy.org.uk/files/Documents/Privacy-Notice.pdf" target="_blank" rel="noreferrer">Privacy Notice<span class="accessibility">Opens in new window</span></a></li>
           <li> <%= link_to "Terms and Conditions", "cms/terms-and-conditions" %></li>
         </ul>
       </div>
       <div class="grid__item  one-third  palm-one-whole  text--left">
         <ul class="nav  nav--stacked   lap-and-up-flush--bottom">
           <li><a href="/contacts/new">Contact Us</a></li>
-          <li><a href="https://www.freeukgenealogy.org.uk/help-us-keep-history-free" target="_blank">Make a donation to cover our operating costs<span class="accessibility">Opens in new window</span></a></li>
-          <li> <a href="https://www.freeukgenealogy.org.uk/news/" target="_blank">News about FreeUKGenealogy<span class="accessibility">Opens in new window</span></a></li>
+          <li><a href="https://www.freeukgenealogy.org.uk/help-us-keep-history-free" target="_blank" rel="noreferrer">Make a donation to cover our operating costs<span class="accessibility">Opens in new window</span></a></li>
+          <!--li> <a href="https://www.freeukgenealogy.org.uk/news/" target="_blank">News about FreeUKGenealogy<span class="accessibility">Opens in new window</span></a></li-->
         </ul>
       </div>
       <div class="grid__item  one-third  palm-one-whole">
@@ -21,14 +21,20 @@
             <p class="accessibility">All open in new windows</p>
           </li>
           <li class='social_links'>
-            <%= link_to app_icons[:news].html_safe, social_links[:news], html_options %>
-            <%= link_to app_icons[:facebook].html_safe, social_links[:facebook], html_options %>
-            <%= link_to app_icons[:twitter].html_safe, social_links[:twitter], html_options %>
+            <%= link_to social_links[:news], html_options(alt_text: 'Link to NEWS') do %><%= app_icons[:news].html_safe %><span class="accessibility">Link to NEWS about FreeUKGenealogy</span>
+            <% end %>
+            <%= link_to social_links[:facebook], html_options(alt_text: 'Link to our Facebook page') do %><%= app_icons[:facebook].html_safe %><span class="accessibility">Link to our Facebook page/span>
+            <% end %>
+            <%= link_to social_links[:twitter], html_options(alt_text: 'Link to Twitter for our tweets ') do %><%= app_icons[:twitter].html_safe %><span class="accessibility">Link to Twitter for our tweets</span>
+            <% end %>
           </li>
           <li class='social_links'>
-            <%= link_to app_icons[:instagram].html_safe, social_links[:instagram], html_options %>
-            <%= link_to app_icons[:pinterest].html_safe, social_links[:pinterest], html_options %>
-            <%= link_to app_icons[:github].html_safe, social_links[:github], html_options %>
+            <%= link_to social_links[:instagram], html_options(alt_text: 'Link to our Instagram account') do %><%= app_icons[:instagram].html_safe %><span class="accessibility">Link to our Instagram account</span>
+            <% end %>
+            <%= link_to social_links[:pinterest], html_options(alt_text: 'Link to our Pinterest') do %><%= app_icons[:pinterest].html_safe %><span class="accessibility">Link to our Pinterest</span>
+            <% end %>
+            <%= link_to social_links[:github], html_options(alt_text: 'Link to Github repository to contribute') do %><%= app_icons[:github].html_safe %><span class="accessibility">Link to Github repository to contribute</span>
+            <% end %>
           </li>
         </ul>
       </div>

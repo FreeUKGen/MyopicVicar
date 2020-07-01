@@ -64,7 +64,9 @@ class SearchQueriesController < ApplicationController
   end
 
   def create
+    #raise params.inspect
     # binding.pry
+    #raise params[:search_query][:chapman_codes].reject { |c| c.empty? }.inspect
     condition = true if params[:search_query].present? && params[:search_query][:region].blank?
     redirect_back(fallback_location: new_search_query_path, notice: 'Invalid Search') && return unless condition
 
@@ -72,7 +74,7 @@ class SearchQueriesController < ApplicationController
     adjust_search_query_parameters
     if @search_query.save
       session[:query] = @search_query.id
-      @search_results = @search_query.search
+      @search_results = @search_query.search_records
       redirect_to search_query_path(@search_query)
     else
       #message = 'Failed to save search. Please Contact Us with search criteria used and topic of Website Problem'
@@ -223,17 +225,24 @@ class SearchQueriesController < ApplicationController
   end
 
   def show
+    #raise params.inspect
     @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
 
     flash[:notice] = 'Your search results are not available. Please repeat your search' if @search_query.result_count.blank?
     redirect_back(fallback_location: new_search_query_path) && return if @search_query.result_count.blank?
-    if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+    max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS unless appname_downcase == 'freebmd'
+    max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS if appname_downcase == 'freebmd'
+    if @search_query.result_count >= max_result
       @result_count = @search_query.result_count
       @search_results = []
       @ucf_results = []
     else
-      response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
+      response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display unless MyopicVicar::Application.config.template_set == 'freebmd'
+      response, @search_results, @ucf_results, @result_count = @search_query.get_bmd_search_results if MyopicVicar::Application.config.template_set == 'freebmd'
+      @results_per_page = params[:results_per_page] || 20
+      total_page = @search_results.count
+      @paginatable_array = Kaminari.paginate_array(@search_results, total_count: @search_results.count).page(params[:page]).per(@results_per_page)
       if !response || @search_results.nil? || @search_query.result_count.nil?
         logger.warn("#{appname_upcase}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
         flash[:notice] = 'Your search results are not available. Please repeat your search'
@@ -248,14 +257,17 @@ class SearchQueriesController < ApplicationController
 
     flash[:notice] = 'Your search results are not available. Please repeat your search' if @search_query.result_count.blank?
     redirect_back(fallback_location: new_search_query_path) && return if @search_query.result_count.blank?
-
+    max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS unless appname_downcase == 'freebmd'
+    max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS if appname_downcase == 'freebmd'
     @printable_format = true
-    if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+    if @search_query.result_count >= max_result
       @result_count = @search_query.result_count
       @search_results = []
       @ucf_results = []
     else
-      response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
+      response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display unless MyopicVicar::Application.config.template_set == 'freebmd'
+      response, @search_results, @ucf_results, @result_count = @search_query.get_bmd_search_results if MyopicVicar::Application.config.template_set == 'freebmd'
+      @paginatable_array = @search_results
       if !response || @search_results.nil? || @search_query.result_count.nil?
         logger.warn("#{appname_upcase}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
         flash[:notice] = 'Your search results are not available. Please repeat your search'
@@ -277,6 +289,15 @@ class SearchQueriesController < ApplicationController
     @search_query.session_id = request.session_options[:id]
     render :new unless @search_query.save
     redirect_to search_query_path(@search_query)
+  end
+
+  def districts_of_selected_counties
+    districts_names = DistrictToCounty.joins(:District).distinct.order( 'DistrictName ASC' )
+    @districts = Hash.new
+    params[:selected_counties].reject { |c| c.empty? }.each { |c|
+      @districts[c] = districts_names.where(County: [c]).pluck(:DistrictName, :DistrictNumber)
+    }
+    @districts
   end
 
   private

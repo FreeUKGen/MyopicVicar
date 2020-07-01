@@ -15,84 +15,93 @@
 /**
  * Site header
  */
-
- .icon__<%= MyopicVicar::Application.config.template_set %> {
-  @include vendor(background-size, 100%);
-  background-repeat: no-repeat;
-  display: inline-block;
- *display: inline;
-  margin: 0% 0% 0% 0%;
-  zoom: 1;
+<% unless MyopicVicar::Application.config.template_set == 'freebmd'%>
+.icon__<%=MyopicVicar::Application.config.template_set %> {
+    @include vendor(background-size, 100%);
+    background-repeat: no-repeat;
+    display: inline-block;
+    *display: inline;
+    margin: 0% 0% 0% 0%;
+    zoom: 1;
 
     @include manual-media-query(1090px) {
-      @include vendor(background-size, 100%);
-      width: 20%;
-      height: 0px;
-      overflow: hidden;
-      padding-bottom: 6.5%;
-      margin: 1% 0% 0% 0%;
+        @include vendor(background-size, 100%);
+        width: 20%;
+        height: 0px;
+        overflow: hidden;
+        padding-bottom: 6.5%;
+        margin: 1% 0% 0% 0%;
     }
+
     @include manual-media-query(1010px) {
-      margin: 2% 0% 0% 0%;
-      padding-bottom: 5%;
-      width: 16%;
+        margin: 2% 0% 0% 0%;
+        padding-bottom: 5%;
+        width: 16%;
     }
-
-  @include manual-media-query(950px) {
-      width: 266px;
-      height:87px;
-      padding-bottom: 0;
-      margin: 0px;
-    }
-
-  @include manual-media-query(800px) {
-      width: 25%;
-      max-height: 60px;
-      padding-bottom: 0;
-      margin: 13px 0px 0px 0px;
-    }
-  @include manual-media-query(710px) {
-      @include vendor(background-size, 100%);
-      max-height: 87px;
-      padding-bottom: 0;
-      margin: 0;
-    }
-}
-
-.site__header {
-  padding-top: 40px;
-  padding-bottom: 40px;
-  height: 170px;
-  @include vendor(box-shadow, 0 0 0 rgba(0, 0, 0, 0));
-
-  @include manual-media-query(890px) {
-    padding-bottom: 60px;
-  }
-
-  .bnner-horz {
-    background: transparent;
-    float: right;
-    position: relative;
-    z-index: 3;
-    margin: 0;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-
 
     @include manual-media-query(950px) {
-      width: 468px;
-      height: 60px;
-      margin-top: 13px;
-      background-position: -60px;
+        width: 266px;
+        height: 87px;
+        padding-bottom: 0;
+        margin: 0px;
     }
-      @include manual-media-query(710px) {
-    display: none;
-  }
 
-  }
+    @include manual-media-query(800px) {
+        width: 25%;
+        max-height: 60px;
+        padding-bottom: 0;
+        margin: 13px 0px 0px 0px;
+    }
+
+    @include manual-media-query(710px) {
+        @include vendor(background-size, 100%);
+        max-height: 87px;
+        padding-bottom: 0;
+        margin: 0;
+    }
+}
+<% end %>
+
+.site__header {
+    padding-top: $site-header-padding-top;
+    padding-bottom: 40px;
+    height: $site-header-height;
+    @include vendor(box-shadow, 0 0 0 rgba(0, 0, 0, 0));
+
+    @include manual-media-query(890px) {
+        padding-bottom: 60px;
+    }
+
+    .bnner-horz {
+        background: transparent;
+        float: right;
+        position: relative;
+        z-index: 3;
+        margin: 0;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+
+
+        @include manual-media-query(950px) {
+            width: 468px;
+            height: 60px;
+            margin-top: 13px;
+            background-position: -60px;
+        }
+
+        @include manual-media-query(710px) {
+            display: none;
+        }
+
+    }
 
 }
 
-.adSenseBanner { width: 100%; height: 100%; text-align: center; margin: auto;}
+.adSenseBanner {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    margin: auto;
+}
 
 
 
@@ -100,28 +109,29 @@
     display: none;
 }
 
-  .site__header__logo {
+.site__header__logo {
     float: left;
     position: relative;
     z-index: 3;
+
     &:focus,
     &:hover {
-      background-color: #fff;
-      outline: 2px dashed $project-color;
-      outline-offset: 7px; // will not work in IE/Edge
+        background-color: #fff;
+        outline: 2px dashed $project-color;
+        outline-offset: 7px; // will not work in IE/Edge
     }
-  }
+}
 
-  .site__header__freeukgen-logo {
+.site__header__freeukgen-logo {
     display: none;
-  }
+}
 
 
-  /**
+/**
    * Most of this code is to re-position the nav inside the header
    * to counteract the weird markup we need so that the offcanvas works
    */
-  .site__header__nav {
+.site__header__nav {
 
     background: $project-color;
     overflow: hidden;
@@ -134,80 +144,79 @@
     z-index: 3;
 
     .site__header__nav__inner {
-      @include container($container-width);
+        @include container($container-width);
     }
 
     .main-nav {
 
-      ul {
-        float: left;
-        margin: 0;
-      }
-
-      li {
-        margin-right: $b * 2;
-        float: left;
-
-        @include manual-media-query(800px) {
-          margin-right: $b;
+        ul {
+            float: left;
+            margin: 0;
+            z-index: 999999 !important;
         }
 
-        @include manual-media-query(680px) {
-          margin-right: $b / 2;
-        }
-      }
+        li {
+            margin-right: $b * 2;
+            float: left;
 
-      a {
-        padding-left: 0;
-        padding-right: 0;
-        padding-top: 11px;
-        padding-bottom: 7px;
+            @include manual-media-query(800px) {
+                margin-right: $b;
+            }
 
-        background: none;
-        color: #fff;
-
-        @include manual-media-query(800px) {
-          @include font-size(16px, false);
+            @include manual-media-query(680px) {
+                margin-right: $b / 2;
+            }
         }
 
-        &:active,
-        &:focus,
-        &:hover {
-          background: #fff;
-          color: $project-color;
-          outline: 5px solid #fff;
-          text-decoration: none;
-        }
+        a {
+            padding-left: 0;
+            padding-right: 0;
+            padding-top: 11px;
+            padding-bottom: 7px;
 
-      }
+            background: none;
+            color: #fff;
+
+            @include manual-media-query(800px) {
+                @include font-size(16px, false);
+            }
+
+            &:active,
+            &:focus,
+            &:hover {
+                background: #fff;
+                color: $project-color;
+                outline: 5px solid #fff;
+                text-decoration: none;
+            }
+
+        }
 
     }
 
     .social-links {
 
-      display: block;
-      float: right;
-      border-right: 2px solid #fff;
-
-      ul {
-
-      }
-
-      li {
-        float: left;
-        border-left: 2px solid #fff;
-
-      }
-
-      a {
         display: block;
-        background: #fff;
-        height: 46px;
-        width: 46px;
-      }
+        float: right;
+        border-right: 2px solid #fff;
+
+        ul {}
+
+        li {
+            float: left;
+            border-left: 2px solid #fff;
+
+        }
+
+        a {
+            display: block;
+            background: #fff;
+            height: 46px;
+            width: 46px;
+        }
     }
 
-  }
+}
 
 
 
@@ -215,8 +224,8 @@
  * Site content
  */
 .site__content {
-  margin-top: 46px;
-  padding-top: $b;
+    margin-top: 46px;
+    padding-top: $b;
 }
 
 
@@ -226,27 +235,28 @@
  * Site footer
  */
 .site__footer {
-  .icon__freeukgen__project--light {
-    margin-top: $base-spacing-unit / 3;
-    &:focus,
-    &:hover {
-      background-color: transparent;
-      outline: 2px dashed $project-color-faded;
-      outline-offset: 5px;
+    .icon__freeukgen__project--light {
+        margin-top: $base-spacing-unit / 3;
+
+        &:focus,
+        &:hover {
+            background-color: transparent;
+            outline: 2px dashed $project-color-faded;
+            outline-offset: 5px;
+        }
     }
-  }
 }
 
 /* For Cookie Consent notification bar */
 
 .cookieConsent {
-  display: none;
-  position: fixed;
-  bottom: 0px;
-  left: 0px;
-  width: 100%;
-  height: auto;
-  text-align: center;
+    display: none;
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    height: auto;
+    text-align: center;
 
 }
 
@@ -254,31 +264,50 @@
  * A list of icons
  */
 .icon-list {
-  li {
-    @include inline-block;
-    margin-left: $base-spacing-unit * 2;
-    margin-right: $base-spacing-unit * 2;
-    a:focus,
-    a:hover {
-      background-color: transparent;
-      outline: 2px dashed $project-color;
-      outline-offset: 7px;
+    li {
+        @include inline-block;
+        margin-left: $base-spacing-unit * 2;
+        margin-right: $base-spacing-unit * 2;
+
+        a:focus,
+        a:hover {
+            background-color: transparent;
+            outline: 2px dashed $project-color;
+            outline-offset: 7px;
+        }
     }
-  }
 }
 
 th.sticky-header {
-  position: -webkit-sticky; /* Safari */
-  position: sticky;
-  background-color: $navy ;
-  color: white;
-  top: 0;
-  z-index: 10;
-  box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.06);
+    position: -webkit-sticky;
+    /* Safari */
+    position: sticky;
+    background-color: $navy;
+    color: white;
+    top: 0;
+    z-index: 10;
+    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
 }
 
-.table--striped{
+.table--striped {
 
-    tbody tr:nth-of-type(odd){
-        background-color:#f5f5f5;}
+    tbody tr:nth-of-type(odd) {
+        background-color: #f5f5f5;
+    }
+}
+
+/* For new bmd design */
+
+.bnner-horz.bmd_adsense.header_ad {
+    margin: auto;
+}
+
+.reg_adsense {
+    padding-top: 0 !important;
+}
+
+.site_header_logo {
+    float: left;
+    position: relative;
+    z-index: 3;
 }

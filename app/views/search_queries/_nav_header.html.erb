@@ -1,18 +1,36 @@
 <% unless defined?(@printable_format) && @printable_format %>
-  <nav class="text--center push--bottom" role="navigation" aria-label="Options for search results">
-    <ul class="nav">
-      <li><%= results_revise_search_form_link %></li>
-      <li><%= results_search_form_link %></li>
-      <li><%= results_about_search_link %></li>
-      <% if  results_broaden_search_link.present? %>
-        <li><%=results_broaden_search_link %></li>
-      <% end %>
-      <% if results_narrow_search_link.present? %>
-        <li><%= results_narrow_search_link %></li>
-      <% end %>
-      <% if results_printable_link.present? %>
-        <li><%= results_printable_link %> </li>
-      <% end %>
-    </ul>
-  </nav>
+  <% unless appname.downcase == 'freebmd' %>
+    <nav class="text--center push--bottom" role="navigation" aria-label="Options for search results">
+      <ul class="nav">
+        <li><%= results_revise_search_form_link %></li>
+        <li><%= results_search_form_link %></li>
+        <li><%= results_about_search_link %></li>
+        <% if  results_broaden_search_link.present? %>
+          <li><%=results_broaden_search_link %></li>
+        <% end %>
+        <% if results_narrow_search_link.present? %>
+          <li><%= results_narrow_search_link %></li>
+        <% end %>
+        <% if results_printable_link.present? %>
+          <li><%= results_printable_link %> </li>
+        <% end %>
+      <%# else %>
+        <li><%#= results_revise_search_form_link %></li>
+        <li><%#= results_search_form_link %></li>
+        <li><%#= results_about_search_link %></li>
+        <li><%#= results_revise_search_form_link %></li>
+        <li><%#= results_search_form_link %></li>
+        <li><%#= results_about_search_link %></li>
+        <% if  results_broaden_search_link.present? %>
+          <li><%#=results_broaden_search_link %></li>
+        <% end %>
+        <% if results_narrow_search_link.present? %>
+          <li><%#= results_narrow_search_link %></li>
+        <% end %>
+        <% if results_printable_link.present? %>
+          <li><%#= results_printable_link %> </li>
+        <% end %>
+      </ul>
+    </nav>
+  <% end %>
 <% end %>
