@@ -199,13 +199,13 @@ class FreecenCsvEntry
       end
 
       if previous_civil_parish == ''
-        message = "Info: line #{num} New Civil Parish #{civil_parish}.<br>"
+        message = "Info: line #{num} New Civil Parish #{civil_parish}.<br>" if info_messages
         record[:info_messages] = record[:info_messages] + message if info_messages
       elsif previous_civil_parish == civil_parish
-        message = "Info: line #{num} Civil Parish has remained the same #{civil_parish}.<br>"
+        message = "Info: line #{num} Civil Parish has remained the same #{civil_parish}.<br>"  if info_messages
         record[:info_messages] = record[:info_messages] + message if info_messages
       else
-        message = "Info: line #{num} Civil Parish has changed to #{civil_parish}.<br>"
+        message = "Info: line #{num} Civil Parish has changed to #{civil_parish}.<br>"  if info_messages
         record[:info_messages] = record[:info_messages] + message if info_messages
       end
       [message, new_civil_parish]
@@ -755,7 +755,7 @@ class FreecenCsvEntry
         if uninhabited_flag == 'x'
           record[:address_flag] = 'x'
           record[:uninhabited_flag] = ''
-          messageb = "Info: line #{num} uninhabited_flag if x is moved to loaction_flag.<br>"
+          messageb = "Info: line #{num} uninhabited_flag if x is moved to loaction_flag.<br>"  if info_messages
           message = message + messageb
           record[:info_messages] = record[:info_messages] + messageb  if info_messages
         end
