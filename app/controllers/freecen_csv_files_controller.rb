@@ -41,7 +41,7 @@ class FreecenCsvFilesController < ApplicationController
     session[:return_to] = request.original_url
     controls(@freecen_csv_file)
     @records = @freecen_csv_file.freecen_csv_entries.count
-    @userids = UseridDetail.get_userids_for_selection(@user.syndicate)
+    @userids = UseridDetail.get_userids_for_selection('all')
   end
 
   def controls(file)
