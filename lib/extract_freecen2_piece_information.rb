@@ -53,6 +53,8 @@ class ExtractFreecen2PieceInformation
     'Yorkshire, East Riding (with York)' => 'Yorkshire, East Riding',
     'Royal Navy' => 'Royal Navy Ships',
     'Miscellaneous unidentified pages and fragments' => 'Royal Navy Ships',
+    'Shipping at sea and in ports abroad' => 'England and Wales Shipping',
+    'British Ships in home ports' => 'England and Wales Shipping',
   }
   class << self
     def process(limit, file)
