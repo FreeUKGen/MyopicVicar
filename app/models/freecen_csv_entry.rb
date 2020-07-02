@@ -756,7 +756,7 @@ class FreecenCsvEntry
           record[:address_flag] = 'x'
           record[:uninhabited_flag] = ''
           messageb = "Info: line #{num} uninhabited_flag if x is moved to loaction_flag.<br>"  if info_messages
-          message = message + messageb
+          message = message + messageb  if info_messages
           record[:info_messages] = record[:info_messages] + messageb  if info_messages
         end
       end
@@ -1220,7 +1220,7 @@ class FreecenCsvEntry
             record[:error_messages] = record[:error_messages] + messageb
           end
         else
-          messageb = "ERROR: line #{num} Language #{record[:language]} should not be included for #{record[:year]}.<br>"
+          messageb = "Warning: line #{num} Language #{record[:language]} should not be included for #{record[:year]}.<br>"
           message = message + messageb
           record[:error_messages] = record[:error_messages] + messageb
         end
