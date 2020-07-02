@@ -90,7 +90,8 @@ class FreecenCsvProcessor
         end
       rescue Exception => msg
         @records_processed = msg
-        @project.write_messages_to_all(msg, true)
+        p msg
+        @project.write_messages_to_all("#{msg}", true)
         @csvfile.communicate_failure_to_member(@records_processed)
         @csvfile.clean_up_physical_files_after_failure(@records_processed)
       end
@@ -144,7 +145,7 @@ class FreecenCsvProcessor
   end
 
   def write_member_message_file(message)
-    member_message_file.puts message
+    member_message_file.puts message unless message == ''
   end
 
   def write_messages_to_all(message, no_member_message)
@@ -165,7 +166,7 @@ class FreecenCsvProcessor
   end
 
   def write_log_file(message)
-    message_file.puts message
+    message_file.puts message unless message == ''
   end
 end
 
@@ -222,7 +223,7 @@ class CsvFile < CsvFiles
     :all_existing_records, :total_files, :total_records, :total_data_errors, :total_header_errors, :place_id, :civil_parish,
     :enumeration_district, :ecclesiastical_parish, :where_census_taken, :ward, :parliamentary_constituency, :poor_law_union, :police_district,
     :sanitary_district, :special_water_district, :scavenging_district, :special_lighting_district, :school_board, :folio, :page, :year,
-    :piece, :schedule, :folio_suffix, :schedule_suffix, :total_errors, :total_warnings, :total_info
+    :piece, :schedule, :folio_suffix, :schedule_suffix, :total_errors, :total_warnings, :total_info, :header_line
 
   def initialize(file_location, project)
     @project = project
@@ -287,6 +288,7 @@ class CsvFile < CsvFiles
     @sequence_in_household = 0
     @field_specication = {}
     @traditional = 2
+    @header_line = ''
   end
 
   def a_single_csv_file_process
@@ -609,9 +611,9 @@ class CsvFile < CsvFiles
   end
 
   def write_freecen_csv_file
-    old_file = FreecenCsvFile.find_by(file_name: @file_name, chapman_code: @chapman_code)
+    old_file = FreecenCsvFile.find_by(file_name: @file_name, chapman_code: @chapman_code, userid: @userid)
     if old_file.present?
-      FreecenCsvEntry.where(freecen_csv_file_id: old_file.id).destroy_all
+      FreecenCsvEntry.collection.delete_many(freecen_csv_file_id: old_file._id)
       old_file.delete
     end
     new_file = FreecenCsvFile.new
@@ -629,6 +631,7 @@ class CsvFile < CsvFiles
     new_file.processed = @project.create_search_records
     new_file.year = @year
     new_file.field_specification = @field_specification
+    new_file.header_line = @header_line
     piece.freecen_csv_files << new_file
     success = piece.save
     p new_file
@@ -636,14 +639,17 @@ class CsvFile < CsvFiles
   end
 
   def write_freecen_csv_entries(records, file)
+    documents = []
     records.each do |record|
-      record[:piece_numer] = record[:piece].piece_number.to_i
+      record[:piece_number] = record[:piece].number
       record[:piece] = nil
       record = record.delete_if {|key, value| key == :piece }
-      freecen_csv_entry = FreecenCsvEntry.new(record)
-      freecen_csv_entry.freecen_csv_file_id = file.id
-      freecen_csv_entry.save
+      #freecen_csv_entry = FreecenCsvEntry.new(record)
+      #freecen_csv_entry.freecen_csv_file_id = file.id
+      record[:freecen_csv_file_id] = file.id
+      documents << record
     end
+    FreecenCsvEntry.collection.insert_many(documents)
     file.update(total_records: records.length) if records.present?
     true
   end
@@ -668,7 +674,7 @@ class CsvRecords < CsvFile
     @project.write_messages_to_all("Error: line #{n} is empty", true) if @array_of_lines[n][0..24].all?(&:blank?)
     return [false, n] if @array_of_lines[n][0..24].all?(&:blank?)
 
-    success, message, @csvfile.field_specification, @csvfile.traditional = line_one(@array_of_lines[n])
+    success, message, @csvfile.field_specification, @csvfile.traditional, @csvfile.header_line = line_one(@array_of_lines[n])
     if success
       reduction = reduction + 1
     else
@@ -691,7 +697,7 @@ class CsvRecords < CsvFile
       message = 'INFO: line 1 Column field specification is missing.<br>'
       success = false
     end
-    [success, message, field_specification, traditional]
+    [success, message, field_specification, traditional, line]
   end
 
   def line_two(line)
@@ -738,7 +744,7 @@ class CsvRecords < CsvFile
       n = n + 1
     end
     p field_specification
-    [success, message, field_specification]
+    [success, message, field_specification, line]
   end
 
   def these_are_these_old_headers?(line)
@@ -812,26 +818,11 @@ class CsvRecord < CsvRecords
     @data_record[:record_number] = num + 1
     @data_record[:messages] = @project.info_messages
     @data_record[:data_transition] = @csvfile.field_specification[first_field_present]
-    convert_transition
     @data_record = load_data_record
     process_data_record(@data_record[:data_transition])
-    #p @data_record
-    #crash if num == 10
+    # p @data_record
+    # crash if num == 10
     [true, ' ', @data_record]
-  end
-
-  def convert_transition
-    if Freecen::LOCATION.include?(@data_record[:data_transition])
-      @data_record[:data_transition] = @data_record[:data_transition]
-    elsif @data_record[:data_transition] == 'folio_number'
-      @data_record[:data_transition] = 'Folio'
-    elsif @data_record[:data_transition] == 'page_number'
-      @data_record[:data_transition] = 'Page'
-    elsif %w[schedule_number house_number house_or_street_name uninhabited_flag address_flag].include?(@data_record[:data_transition])
-      @data_record[:data_transition] = 'Dwelling'
-    else
-      @data_record[:data_transition] = 'Individual'
-    end
   end
 
   def first_field_present
@@ -856,16 +847,15 @@ class CsvRecord < CsvRecords
         'poor_law_union', 'police_district', 'sanitary_district', 'special_water_district', 'scavenging_district', 'special_lighting_district',
         'school_board', 'location_flag'
       extract_location_fields
-    when 'Folio'
+    when 'folio_number'
       extract_folio_fields
-    when 'Page'
+    when 'page_number'
       extract_page_fields
-    when 'Dwelling'
+    when 'schedule_number', 'uninhabited_flag', 'house_number', 'house_or_street_name', 'address_flag',
+        'walls', 'roof_type', 'rooms', 'rooms_with_windows', 'class_of_house', 'rooms_with_windows'
       extract_dwelling_fields
-    when 'Individual'
+    else
       extract_individual_fields
-    when 'Error'
-      error_in_fields
     end
   end
 

@@ -60,7 +60,6 @@ module Freecen
              'Lunatic Asylums', 'Prisons', 'Certified Reformatory & Industrial Schools', 'Merchant Vessels & Lighthouses', 'Schools'].freeze
   end
 
-  FIELD_NAMES = { '0' => 'Enumeration District', '1' => 'Civil Parish', '2' => 'Folio', '3' => 'Page', '4' => 'Dwelling', '8' => 'Individual' }.freeze
   CENSUS_YEARS_ARRAY = ['1841', '1851', '1861', '1871', '1881', '1891', '1901', '1911'].freeze
   CHAPMAN_CODE_ELIMINATIONS = ['England', 'Scotland', 'Wales', 'Ireland', 'Unknown', 'Clwyd', 'Dyfed', 'Gwent', 'Gwynedd', 'Powys', 'Mid Glamorgan',
                                'South Glamorgan', 'West Glamorgan', 'Borders', 'Central', 'Dumfries and Galloway', 'Grampian', 'Highland', 'Lothian',
@@ -71,10 +70,11 @@ module Freecen
                        location_flag].freeze
   LOCATION_PAGE = %w[enumeration_district civil_parish ecclesiastical_parish where_census_taken ward parliamentary_constituency poor_law_union
                        police_district sanitary_district special_water_district scavenging_district special_lighting_district school_board
-                       location_flag Folio Page].freeze
+                       location_flag folio_number page_number].freeze
   LOCATION_DWELLING = %w[enumeration_district civil_parish ecclesiastical_parish where_census_taken ward parliamentary_constituency poor_law_union
                        police_district sanitary_district special_water_district scavenging_district special_lighting_district school_board
-                       location_flag Folio Page Dwelling ].freeze
+                       location_flag folio_number page_number schedule_number uninhabited_flag house_number house_or_street_name address_flag
+                       walls roof_type rooms rooms_with_windows class_of_house rooms_with_windows].freeze
   HOUSEHOLD = %w[folio_number page_number schedule_number uninhabited_flag house_number house_or_street_name address_flag].freeze
 
   IRE_HOUSEHOLD = %w[schedule_number uninhabited_flag house_number house_or_street_name walls roof_type rooms

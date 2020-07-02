@@ -65,7 +65,7 @@ class FreecenCsvEntry
   field :occupation_flag, type: String
   field :page_number, type: String
   field :parliamentary_constituency, type: String
-  field :piece_number, type: Integer
+  field :piece_number, type: String
   field :police_district, type: String
   field :poor_law_union, type: String
   field :read_write, type: String
@@ -101,7 +101,10 @@ class FreecenCsvEntry
   has_one :search_record, dependent: :restrict_with_error
 
   before_destroy do |entry|
-    SearchRecord.destroy_all(:freecen_csv_entry_id => entry._id)
+    file = entry.freecen_csv_file
+    if file.processed
+      SearchRecord.collection.delete_many(freecen_csv_entry_id: entry._id)
+    end
   end
 
   index({ freecen_csv_file_id: 1, year: 1 }, { name: 'freecen_csv_file_id_year' })
@@ -185,7 +188,8 @@ class FreecenCsvEntry
       end
 
       valid = false
-      record[:piece].subplaces.each do |subplace|
+
+      record[:piece].freecen2_civil_parishes.each do |subplace|
         valid = true if subplace[:name].to_s.downcase == civil_parish.to_s.downcase
         break if valid
       end
@@ -1314,11 +1318,11 @@ class FreecenCsvEntry
     prev_id = nil
     next_id = nil
     idx = dwelling_number.to_i
-    pc_id = freecen_piece_id
+    pc_id = freecen2_piece_id
     if idx && idx >= 0
-      prev_dwel = FreecenDwelling.where(freecen_piece_id: pc_id, dwelling_number: (idx - 1)).first
+      prev_dwel = FreecenDwelling.where(freecen2_piece_id: pc_id, dwelling_number: (idx - 1)).first
       prev_id = prev_dwel[:_id] unless prev_dwel.nil?
-      next_dwel = FreecenDwelling.where(freecen_piece_id: pc_id, dwelling_number: (idx + 1)).first
+      next_dwel = FreecenDwelling.where(freecen2_piece_id: pc_id, dwelling_number: (idx + 1)).first
       next_id = next_dwel[:_id] unless next_dwel.nil?
     end
     [prev_id, next_id]
@@ -1331,55 +1335,55 @@ class FreecenCsvEntry
     case year
     when '1841'
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Quaord Sacra', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Folio', 'Page']
       else
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Where Census Taken', 'Piece', 'Enumeration District', 'Constituency', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Where Census Taken', 'Piece',  'Constituency', 'Folio', 'Page']
       end
     when '1851'
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Where Census Taken', 'Piece', 'Enumeration District', 'Ward', 'Constituency','Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Where Census Taken', 'Piece',  'Ward', 'Constituency','Folio', 'Page']
       else
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Census Place', 'Piece', 'Enumeration District', 'Constituency', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Census Place', 'Piece', 'Constituency', 'Folio', 'Page']
       end
     when '1861'
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Page']
       else
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Folio', 'Page']
       end
     when '1871'
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Police District', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Police District', 'Page']
       else
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Folio', 'Page']
       end
     when '1881'
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Police District', 'School Board', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Police District', 'School Board', 'Folio', 'Page']
       else
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Sanitary District', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece',  'Ward', 'Constituency', 'Sanitary District', 'Folio', 'Page']
       end
     when '1891'
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Police District', 'School Board', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Police District', 'School Board', 'Folio', 'Page']
       else
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Sanitary District', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece',  'Ward', 'Constituency', 'Sanitary District', 'Folio', 'Page']
       end
     when '1901'
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Police District',  'School Board', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Police District',  'School Board', 'Folio', 'Page']
       elsif ChapmanCode::CODES['Ireland'].member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Where Census Taken', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Poor Law Union', 'Police District', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Poor Law Union', 'Police District', 'Page']
       else
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Folio', 'Page']
       end
     when '1911'
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Sanitary District', 'Scavenging District', 'Special Lighting District', 'School Board', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Sanitary District', 'Scavenging District', 'Special Lighting District', 'School Board', 'Page']
       elsif ChapmanCode::CODES['Ireland'].member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Where Census Taken', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Poor Law Union', 'Police District', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Poor Law Union', 'Police District', 'Page']
       else
-        ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Folio', 'Page']
       end
     end
   end
@@ -1387,8 +1391,8 @@ class FreecenCsvEntry
   def census_display_values(year, chapman_code)
     #1841 doesn't have ecclesiastical parish or schedule number
     #Scotland doesn't have folio
-    freecen_piece = freecen_csv_file.freecen_piece
-    district_name = freecen_piece.district_name.titleize if freecen_piece.district_name.present?
+    freecen2_piece = freecen_csv_file.freecen2_piece
+    district_name = freecen2_piece.district_name.titleize if freecen2_piece.district_name.present?
     ecclesiastical = ecclesiastical_parish.titleize if ecclesiastical_parish.present?
     civil = civil_parish.titleize if civil_parish.present?
     address = house_or_street_name.titleize if house_or_street_name.present?
@@ -1397,73 +1401,73 @@ class FreecenCsvEntry
     case year
     when '1841'
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, taken, freecen_piece.piece_number.to_s,
-         enumeration_district, ward, parliamentary_constituency, folio_number, page_number]
+        [freecen2_piece.year, disp_county, district_name, civil, enumeration_district, ecclesiastical, taken, freecen2_piece.number.to_s,
+         ward, parliamentary_constituency, folio_number, page_number]
       else
-        [freecen_piece.year, disp_county, district_name, civil, taken, freecen_piece.piece_number.to_s,
-         enumeration_district, parliamentary_constituency, folio_number, page_number]
+        [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, taken, freecen2_piece.number.to_s,
+         parliamentary_constituency, folio_number, page_number]
       end
     when '1851'
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, taken, freecen_piece.piece_number.to_s,
-         enumeration_district, ward, parliamentary_constituency, folio_number, page_number]
+        [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
+         ward, parliamentary_constituency, folio_number, page_number]
       else
-        [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, taken, freecen_piece.piece_number.to_s,
-         enumeration_district, parliamentary_constituency, folio_number, page_number]
+        [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
+         parliamentary_constituency, folio_number, page_number]
       end
     when '1861'
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, taken, freecen_piece.piece_number.to_s,
-         enumeration_district, ward, parliamentary_constituency, folio_number, page_number]
+        [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
+         ward, parliamentary_constituency, folio_number, page_number]
       else
-        [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, taken, freecen_piece.piece_number.to_s,
-         enumeration_district, ward, parliamentary_constituency, folio_number, page_number]
+        [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
+         ward, parliamentary_constituency, folio_number, page_number]
       end
     when '1871'
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, taken, freecen_piece.piece_number.to_s,
-         enumeration_district, ward, parliamentary_constituency, police_district, folio_number, page_number]
+        [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
+         ward, parliamentary_constituency, police_district, folio_number, page_number]
       else
-        [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, taken, freecen_piece.piece_number.to_s,
-         enumeration_district, ward, parliamentary_constituency, folio_number, page_number]
+        [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
+         ward, parliamentary_constituency, folio_number, page_number]
       end
     when '1881'
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, taken, freecen_piece.piece_number.to_s,
-         enumeration_district, ward, parliamentary_constituency, police_district, school_board, folio_number, page_number]
+        [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
+         ward, parliamentary_constituency, police_district, school_board, folio_number, page_number]
       else
-        [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, taken, freecen_piece.piece_number.to_s,
-         enumeration_district, ward, parliamentary_constituency, sanitary_district, folio_number, page_number]
+        [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
+         ward, parliamentary_constituency, sanitary_district, folio_number, page_number]
       end
     when '1891'
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, taken, freecen_piece.piece_number.to_s,
-         enumeration_district, ward, parliamentary_constituency, police_district, school_board, folio_number, page_number]
+        [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
+         ward, parliamentary_constituency, police_district, school_board, folio_number, page_number]
       else
-        [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, taken, freecen_piece.piece_number.to_s,
-         enumeration_district, ward, parliamentary_constituency, sanitary_district, folio_number, page_number]
+        [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
+         ward, parliamentary_constituency, sanitary_district, folio_number, page_number]
       end
     when '1901'
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, taken, freecen_piece.piece_number.to_s,
-         enumeration_district, ward, parliamentary_constituency, police_district, school_board, folio_number, page_number]
+        [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
+         ward, parliamentary_constituency, police_district, school_board, folio_number, page_number]
       elsif ChapmanCode::CODES['Ireland'].member?(chapman_code)
-        [freecen_piece.year, disp_county, district_name, civil, taken, freecen_piece.piece_number.to_s, enumeration_district,
+        [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, taken, freecen2_piece.number.to_s,
          ward, parliamentary_constituency, poor_law_union, police_district, folio_number, page_number]
       else
-        [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, taken, freecen_piece.piece_number.to_s,
-         enumeration_district, ward, parliamentary_constituency, folio_number, page_number]
+        [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
+         ward, parliamentary_constituency, folio_number, page_number]
       end
     when '1911'
       if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, taken, freecen_piece.piece_number.to_s,
-         enumeration_district, ward, parliamentary_constituency, sanitary_district, scavenging_district, special_lighting_district, school_board, folio_number, page_number]
+        [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
+         ward, parliamentary_constituency, sanitary_district, scavenging_district, special_lighting_district, school_board, folio_number, page_number]
       elsif ChapmanCode::CODES['Ireland'].member?(chapman_code)
-        [freecen_piece.year, disp_county, district_name, civil, taken, freecen_piece.piece_number.to_s, enumeration_district,
+        [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, taken, freecen2_piece.number.to_s,
          ward, parliamentary_constituency, poor_law_union, police_district, folio_number, page_number]
       else
-        [freecen_piece.year, disp_county, district_name, civil, ecclesiastical, taken, freecen_piece.piece_number.to_s,
-         enumeration_district, ward, parliamentary_constituency, folio_number, page_number]
+        [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
+         ward, parliamentary_constituency, folio_number, page_number]
       end
     end
   end

@@ -82,7 +82,7 @@ class Freecen2Place
   has_many :churches, dependent: :restrict_with_error
   has_many :search_records
 
-  has_many :freecen_pieces
+  has_many :freecen2_pieces
   has_many :freecen_dwellings
   has_many :sources
 

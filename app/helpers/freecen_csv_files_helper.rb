@@ -89,4 +89,23 @@ module FreecenCsvFilesHelper
       'Zero'
     end
   end
+  def freecen2_piece_number(file)
+    actual_piece = file.freecen2_piece
+    piece_number = actual_piece.present? ? actual_piece.number : ''
+  end
+
+  def freecen2_chapman(file)
+    actual_piece = file.freecen2_piece
+    piece_number = actual_piece.present? ? actual_piece.district_chapman_code : ''
+  end
+
+  def freecen2_year(file)
+    actual_piece = file.freecen2_piece
+    piece_number = actual_piece.present? ? actual_piece.year : ''
+  end
+
+  def freecen2_district_name(file)
+    actual_piece = file.freecen2_piece
+    piece_number = actual_piece.present? ? actual_piece.district_name : ''
+  end
 end

@@ -15,7 +15,7 @@ class Freecen2PlacesController < ApplicationController
   rescue_from Mongoid::Errors::DeleteRestriction, with: :record_cannot_be_deleted
   rescue_from Mongoid::Errors::Validations, with: :record_validation_errors
 
-  skip_before_action :require_login, only: [:for_search_form, :for_freereg_content_form,:for_freecen_piece_form]
+  skip_before_action :require_login, only: [:for_search_form, :for_freereg_content_form,:for_freecen2_piece_form]
 
   def approve
     session[:return_to] = request.referer
@@ -181,7 +181,6 @@ class Freecen2PlacesController < ApplicationController
 
     case
     when params[:commit] == 'Submit'
-      p params
       @place.save_to_original
       proceed = @place.update_attributes(freecen2_place_params)
       if proceed

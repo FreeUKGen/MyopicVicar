@@ -1,5 +1,5 @@
 <% breadcrumb :change_userid_freecen_csv_file,  @freecen_csv_file%>
-<p style="text-align: center"><b><%= file_name(@freecen_csv_file) %> (<%= userid(@freecen_csv_file) %>) in <b><%= @piece.district_name %></b> of <b><%= @piece.chapman_code %></b><br>
+<p style="text-align: center"><b><%= file_name(@freecen_csv_file) %> (<%= userid(@freecen_csv_file) %>) in <b><%= @piece.district_name %></b> of <b><%= @piece.district_chapman_code %></b><br>
   </p>
   <% if flash[:notice] %>
     <div id="notice" style="color:blue"><br>

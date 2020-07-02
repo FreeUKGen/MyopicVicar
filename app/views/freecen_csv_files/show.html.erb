@@ -14,19 +14,19 @@
         </tr>
         <tr>
           <td>Chapman </td>
-          <td class="weight--semibold"> <%=  chapman(@freecen_csv_file)%>  </td>
+          <td class="weight--semibold"> <%=  @freecen_csv_file.chapman_code%>  </td>
         </tr>
         <tr>
           <td> Year </td>
-          <td class="weight--semibold"> <%= year(@freecen_csv_file) %>  </td>
+          <td class="weight--semibold"> <%= @freecen_csv_file.year %>  </td>
         </tr>
         <tr>
           <td>Piece number </td>
-          <td class="weight--semibold">  <%= piece_number(@freecen_csv_file) %> </td>
+          <td class="weight--semibold">  <%= freecen2_piece_number(@freecen_csv_file) %> </td>
         </tr>
         <tr>
           <td>District name </td>
-          <td class="weight--semibold"><%= district_name(@freecen_csv_file)%> </td>
+          <td class="weight--semibold"><%= freecen2_district_name(@freecen_csv_file)%> </td>
         </tr>
         <tr>
           <td>Number of records </td>

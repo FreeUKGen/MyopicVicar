@@ -62,6 +62,7 @@ class FreecenCsvFile
   field :userid_lower_case, type: String
   field :year, type: String
   field :traditional, type: Integer
+  field :header_line, type: Array
 
 
   index({ file_name: 1, userid: 1, county: 1, place: 1, register_type: 1 })
@@ -75,15 +76,15 @@ class FreecenCsvFile
   # index({county: 1, datemin: 1}, {name: 'county_datemin'})
 
   before_save :add_lower_case_userid_to_file, :add_country_to_file
-  after_save :recalculate_last_amended, :update_number_of_files
+  #after_save :recalculate_last_amended, :update_number_of_files
 
   before_destroy do |file|
     file.save_to_attic
-    FreecenCsvEntry.where(freecen_csv_file_id: file._id).delete_all
+    FreecenCsvEntry.collection.delete_many(freecen_csv_file_id: file._id)
   end
 
   belongs_to :userid_detail, index: true, optional: true
-  belongs_to :freecen_piece, index: true, optional: true
+  belongs_to :freecen2_piece, index: true, optional: true
 
   # register belongs to church which belongs to place
 
@@ -264,7 +265,7 @@ class FreecenCsvFile
       return result if freecen_csv_file.blank?
 
       freecen_csv_file = FreecenCsvFile.find(freecen_csv_file)
-      result = true if freecen_csv_file.present? && freecen_csv_file.freecen_piece_id.present?
+      result = true if freecen_csv_file.present? && freecen_csv_file.freecen2_piece_id.present?
       logger.warn("FREEREG:LOCATION:VALIDATION invalid freecen_csv_file #{freecen_csv_file} ") unless result
       result
     end
@@ -369,10 +370,10 @@ class FreecenCsvFile
     when freecen1_csv_entries.count.zero?
       success[0] = false
       success[1] = success[1] + "batch has no entries #{batch} "
-    when freecen_piece.blank?
+    when freecen2_piece.blank?
       success[0] = false
       success[1] = success[1] + "batch has a null freecen_piece #{batch} "
-    when freecen_piece.place.blank?
+    when freecen2_piece.freecen2_place.blank?
       success[0] = false
       success[1] = success[1] + "batch has a null place #{batch} "
     end
@@ -397,10 +398,10 @@ class FreecenCsvFile
       when freecen_csv_entries.count.zero?
         success[0] = false
         success[1] = success[1] + "file has no entries #{batch.file_name} "
-      when freecen_piece.blank?
+      when freecen2_piece.blank?
         success[0] = false
         success[1] = success[1] + "file has a null piece #{batch.file_name} "
-      when freecen_piece.place.blank?
+      when freecen2_piece.freecen2_place.blank?
         success[0] = false
         success[1] = success[1] + "file has a null place #{batch.file_name} "
       end
@@ -422,13 +423,13 @@ class FreecenCsvFile
 
   def update_statistics
     update_number_of_files
-    piece_id = freecen_piece
+    piece_id = freecen2_piece
     if piece_id.blank?
       logger.warn("FREECEN:#{id} does not belong to a piece ")
       return
-    elsif place == piece_id.place
+    elsif place == piece_id.freereg2_place
       if place.blank?
-        logger.warn("FREECEN:#{freecen_piece_id.id} does not belong to a place ")
+        logger.warn("FREECEN:#{piece_id.id} does not belong to a place ")
         return
       end
     else
@@ -469,8 +470,8 @@ class FreecenCsvFile
   end
 
   def location_from_file
-    my_piece = freecen_piece
-    my_place = my_piece.place
+    my_piece = freecen2_piece
+    my_place = my_piece.freereg2_place
     [my_place, my_piece]
   end
 
@@ -505,17 +506,17 @@ class FreecenCsvFile
 
   def merge_batches
     batch_id = _id
-    my_piece = freecen_piece
+    my_piece = freecen2_piece
     force_unlock
     added_records = 0
     my_piece.freecen_csv_files.each do |batch|
       if batch.userid == userid && batch.file_name == file_name
         unless batch._id == batch_id
-          batch.freecen1_csv_entries.each do |entry|
+          batch.freecen_csv_entries.each do |entry|
             added_records = added_records + 1
             entry.update(:freecen_csv_file_id, batch_id)
           end
-          freecen_piece.freecen_csv_files.delete(batch)
+          freecen2_piece.freecen_csv_files.delete(batch)
           batch.delete
         end
       end
@@ -539,8 +540,8 @@ class FreecenCsvFile
   end
 
   def old_piece
-    piece_id = freecen_piece_id
-    place_id = Piece.find(piece_id).place_id
+    piece_id = freecen2_piece_id
+    place_id = Freecen2Piece.find(piece_id).freecen2_place_id
   end
 
   def promulgate_userid_change(new_userid, old_userid)
@@ -553,10 +554,10 @@ class FreecenCsvFile
   end
 
   def recalculate_last_amended
-    my_piece = freecen_piece
+    my_piece = freecen2_piece
     return if my_piece.blank?
 
-    my_place = my_piece.place
+    my_place = my_piece.freecen2_place
     return if my_place.blank?
 
     my_place.recalculate_last_amended_date
@@ -606,7 +607,7 @@ class FreecenCsvFile
     self.locked_by_transcriber = true if who_actioned
     self.locked_by_coordinator = true unless who_actioned
     self.modification_date = Time.now.strftime("%d %b %Y")
-    recalculate_last_amended
+    #recalculate_last_amended
 
     save
 
@@ -635,7 +636,7 @@ class FreecenCsvFile
   end
 
   def update_freecen_piece
-    Piece.update_or_create_piece(self)
+    Freecen2Piece.update_or_create_piece(self)
   end
 
   def calculate_transcriber_name(key)
@@ -647,26 +648,8 @@ class FreecenCsvFile
   end
 
   def write_csv_file(file_location)
-    # since there can be multiple places/churches in a single file we must combine the records for all those back into the single file
-    piece = freecen_piece
-    if field_specification.value?('school_board')
-      @column_headers = Freecen::HEADER_OPTIONS[5]
-    elsif field_specification.value?('municipal_borough')
-      @column_headers = Freecen::HEADER_OPTIONS[4]
-    elsif field_specification.value?('rooms')
-      @column_headers = Freecen::HEADER_OPTIONS[3]
-    elsif field_specification.value?('rooms')
-      @column_headers = Freecen::HEADER_OPTIONS[2]
-    elsif traditional == 1
-      @column_headers = Freecen::HEADER_OPTIONS[1]
-    elsif traditional == 0
-      @column_headers = Freecen::HEADER_OPTIONS[1]
-    else
-      @column_headers = Freecen::HEADER_OPTIONS[2]
-    end
     CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
-      csv << @column_headers
-      # eg +INFO,David@davejo.eclipse.co.uk,password,SEQUENCED,BURIALS,cp850,,,,,,,
+      csv << header_line
       records = freecen_csv_entries
       records.each do |rec|
         line = []
@@ -686,7 +669,16 @@ class FreecenCsvFile
 
   def add_fields(line, rec)
     field_specification.values.each do |field|
-      line << rec[field]
+      if Freecen::LOCATION.include?(rec[:data_transition])
+        @entry = rec[field]
+      elsif Freecen::LOCATION_PAGE.include?(rec[:data_transition])
+        @entry = Freecen::LOCATION.include?.include?(field) ? nil : rec[field]
+      elsif Freecen::LOCATION_DWELLING.include?(rec[:data_transition])
+        @entry = Freecen::LOCATION_PAGE.include?(field) ? nil : rec[field]
+      else
+        @entry = Freecen::LOCATION_DWELLING.include?(field) ? nil : rec[field]
+      end
+      line << @entry
     end
     line
   end

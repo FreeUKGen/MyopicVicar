@@ -274,13 +274,6 @@ class Freereg1CsvFilesController < ApplicationController
     session[:current_page] = @freereg1_csv_files.current_page if @freereg1_csv_files.present?
   end
 
-  def locations
-    @update_counties_location = 'location.href= "/freereg1_csv_files/update_counties?country=" + this.value'
-    @update_places_location = 'location.href= "/freereg1_csv_files/update_places?county=" + this.value'
-    @update_churches_location = 'location.href= "/freereg1_csv_files/update_churches?place=" + this.value'
-    @update_registers_location = 'location.href= "/freereg1_csv_files/update_registers?church=" + this.value'
-  end
-
   def lock
     @freereg1_csv_file = Freereg1CsvFile.find(params[:id])
     unless Freereg1CsvFile.valid_freereg1_csv_file?(params[:id])

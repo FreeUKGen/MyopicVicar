@@ -40,7 +40,6 @@ class FreecenCsvFilesController < ApplicationController
 
     session[:return_to] = request.original_url
     controls(@freecen_csv_file)
-    locations
     @records = @freecen_csv_file.freecen_csv_entries.count
     @userids = UseridDetail.get_userids_for_selection(@user.syndicate)
   end
@@ -51,8 +50,8 @@ class FreecenCsvFilesController < ApplicationController
     @role = session[:role]
     @freecen_csv_file_name = file.file_name
     session[:freecen_csv_file_id] = file._id
-    @piece = file.freecen_piece
-    @return_location = file.freecen_piece.id if file.freecen_piece.present?
+    @piece = file.freecen2_piece
+    @return_location = file.freecen2_piece.id if file.freecen2_piece.present?
   end
 
   def create
@@ -400,7 +399,7 @@ class FreecenCsvFilesController < ApplicationController
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
     controls(@freecen_csv_file)
-    @piece = @freecen_csv_file.freecen_piece
+    @piece = @freecen_csv_file.freecen2_piece
   end
 
   def spreadsheet
@@ -440,12 +439,9 @@ class FreecenCsvFilesController < ApplicationController
       end
     when 'Submit'
       # lets see if we are moving the file
-      @freecen_csv_file.date_change(params[:freecen_csv_file][:transcription_date], params[:freecen_csv_file][:modification_date])
       @freecen_csv_file.check_locking_and_set(params[:freecen_csv_file], session)
-      @freecen_csv_file.update_attributes(:alternate_register_name => (params[:freecen_csv_file][:church_name].to_s + ' ' + params[:freecen_csv_file][:register_type].to_s ))
       @freecen_csv_file.update_attributes(freecen_csv_file_params)
       @freecen_csv_file.update_attributes(:modification_date => Time.now.strftime('%d %b %Y'))
-      @freecen_csv_file.update_freereg_contents_after_processing
       if @freecen_csv_file.errors.any?
         flash[:notice] = "The update of the batch was unsuccessful: #{message}"
         render action: 'edit'

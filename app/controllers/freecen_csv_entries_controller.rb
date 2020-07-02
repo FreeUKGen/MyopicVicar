@@ -84,9 +84,9 @@ class FreecenCsvEntriesController < ApplicationController
     @freecen_csv_file_id = @freecen_csv_file.id
     @freecen_csv_file_name = @freecen_csv_file.file_name
     @file_owner = @freecen_csv_file.userid
-    @piece = @freecen_csv_file.freecen_piece
+    @piece = @freecen_csv_file.freecen2_piece
     @year = @piece.year
-    @chapman_code = @piece.chapman_code
+    @chapman_code = @piece.district_chapman_code
     @place_name = @piece.district_name
     @user = get_user
     @first_name = @user.person_forename if @user.present?
@@ -108,7 +108,7 @@ class FreecenCsvEntriesController < ApplicationController
     session[:freecen_csv_entry_id] = @freecen_csv_entry._id
     @deleted_flag = ''
     @subplaces = []
-    @piece.subplaces.each do |place|
+    @piece.freecen2_civil_parishes.each do |place|
       @subplaces << place[:name]
     end
     @languages = FreecenValidations::VALID_LANGUAGE
@@ -162,7 +162,7 @@ class FreecenCsvEntriesController < ApplicationController
     @freecen_csv_entry = FreecenCsvEntry.new(freecen_csv_file_id: session[:freecen_csv_file_id], record_number: record_number)
     session[:freecen_csv_entry_id] = @freecen_csv_entry._id
     @subplaces = []
-    @piece.subplaces.each do |place|
+    @piece.freecen2_civil_parishes.each do |place|
       @subplaces << place[:name]
     end
     @languages = FreecenValidations::VALID_LANGUAGE
@@ -193,12 +193,14 @@ class FreecenCsvEntriesController < ApplicationController
     @freecen_csv_file = @freecen_csv_entry.freecen_csv_file
 
     proceed = @freecen_csv_entry.update(freecen_csv_entry_params)
-    redirect_back(fallback_location: edit_freecen_csv_entry_path(@freecen_csv_entry), notice: "The update of the entry failed #{message}.") && return unless proceed
-
-    #SearchRecord.update_create_search_record(@freecen_csv_entry, search_version, place)
-
-    flash[:notice] = 'The change in entry contents was successful, the file is now locked against replacement until it has been downloaded.'
-    redirect_to freecen_csv_entry_path(@freecen_csv_entry)
+    unless proceed
+      redirect_back(fallback_location: edit_freecen_csv_entry_path(@freecen_csv_entry), notice: "The update of the entry failed #{message}.") && return
+    else
+      #SearchRecord.update_create_search_record(@freecen_csv_entry, search_version, place)
+      @freecen_csv_file.update(locked_by_transcriber: true)
+      flash[:notice] = 'The change in entry contents was successful, the file is now locked against replacement until it has been downloaded.'
+      redirect_to freecen_csv_entry_path(@freecen_csv_entry)
+    end
   end
 
   def update_file_statistics(place)
