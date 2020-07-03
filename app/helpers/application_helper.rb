@@ -368,7 +368,6 @@ module ApplicationHelper
   def register_name_for_file(file)
     register = file.register
     register_name = register.blank? ? 'File does not belong to a register' : RegisterType::display_name(register.register_type)
-
     register_name
   end
 
