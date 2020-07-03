@@ -92,8 +92,8 @@ class GapsController < ApplicationController
     @gaps = []
     if @freereg1_csv_file.present?
       gaps.each do |gap|
-        @gaps << gap if gap.record_type == @freereg1_csv_file.record_type
-        @gaps << gap if gap.record_type == 'All'
+        @gaps << gap if gap.record_type == @freereg1_csv_file.record_type && gap.freereg1_csv_file == @freereg1_csv_file.id
+        @gaps << gap if gap.record_type == 'All' && gap.freereg1_csv_file == @freereg1_csv_file.id
       end
     else
       @gaps = gaps
