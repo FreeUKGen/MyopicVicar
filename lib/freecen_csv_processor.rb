@@ -91,7 +91,9 @@ class FreecenCsvProcessor
       rescue Exception => msg
         @records_processed = msg
         p msg
+        @project.write_messages_to_all('The CSVProcessor crashed please provide the following information to your coordinator to send to the System Administrators', true)
         @project.write_messages_to_all("#{msg}", true)
+        @project.write_messages_to_all("#{msg.backtrace.inspect}", true)
         @csvfile.communicate_failure_to_member(@records_processed)
         @csvfile.clean_up_physical_files_after_failure(@records_processed)
       end
@@ -306,7 +308,7 @@ class CsvFile < CsvFiles
     success, message, @year, @piece = extract_piece_year_from_file_name(@file_name)
     @chapman_code = @piece.district_chapman_code if @piece.present?
     @project.write_messages_to_all(message, true) unless success
-    @project.write_messages_to_all("Working on #{@piece.name} for #{@year}, in #{@piece.district_chapman_code}", true) if success
+    @project.write_messages_to_all("Working on #{@piece.name} for #{@year}, in #{@piece.district_chapman_code}.<br>", true) if success
     return [false, message] unless success
 
     success, message = slurp_the_csv_file
@@ -344,8 +346,7 @@ class CsvFile < CsvFiles
   end
 
   def extract_piece_year_from_file_name(file_name)
-    @project.write_messages_to_all("extract_piece_year_from_file_name", true)
-    if FreecenValidations.fixed_valid_piece?(file_name)
+    if FreecenValidations.valid_piece?(file_name)
       success = true
       message = ''
       year, piece = Freecen2Piece.extract_year_and_piece(file_name)
@@ -1003,7 +1004,6 @@ class CsvRecord < CsvRecords
     propagate_records
     return if @data_record[:uninhabited_flag].present? && ['b', 'n', 'u', 'v'].include?(@data_record[:uninhabited_flag].downcase)
 
-    @data_record[:address_flag] = 'x' if @data_record[:uninhabited_flag] == 'x'
     @data_record[:dwelling_number] = @csvfile.dwelling_number
     @csvfile.sequence_in_household = @csvfile.sequence_in_household + 1
     @data_record[:sequence_in_household] = @csvfile.sequence_in_household

@@ -23,7 +23,7 @@ module FreecenValidations
   VALID_SEX = %w[M F -].freeze
   VALID_LANGUAGE = %w[E G GE I IE M ME W WE].freeze
   class << self
-    def fixed_valid_piece?(field)
+    def valid_piece?(field)
       return false if field.blank?
 
       parts = field.split('_')
@@ -34,7 +34,7 @@ module FreecenValidations
       true
     end
 
-    def fixed_valid_civil_parish?(field)
+    def valid_civil_parish?(field)
       return [false, 'blank'] if field.blank?
 
       return [false, 'INVALID_TEXT'] unless field =~ VALID_TEXT
@@ -42,7 +42,7 @@ module FreecenValidations
       [true, '']
     end
 
-    def fixed_enumeration_district?(field)
+    def enumeration_district?(field)
       return [true, ''] if field.blank?
 
       return [true, ''] if field =~ VALID_NUMBER
@@ -70,7 +70,7 @@ module FreecenValidations
       [false, 'invalid value']
     end
 
-    def fixed_folio_number?(field)
+    def folio_number?(field)
       return [true, ''] if field.blank?
 
       return [true, ''] if field =~ VALID_NUMBER && field.length <= 4
@@ -81,13 +81,13 @@ module FreecenValidations
       [false, 'invalid number']
     end
 
-    def fixed_page_number?(field)
+    def page_number?(field)
       return [true, ''] if field =~ VALID_NUMBER && field.length <= 4
 
       [false, 'invalid number']
     end
 
-    def fixed_schedule_number?(field)
+    def schedule_number?(field)
       return [true, ''] if field.present? && field =~ VALID_NUMBER
 
       return [true, ''] if field.present? && field =~ VALID_NUMBER_PLUS_SUFFIX
@@ -97,7 +97,7 @@ module FreecenValidations
       [false, 'invalid number']
     end
 
-    def fixed_house_number?(field)
+    def house_number?(field)
       return [true, ''] if field.blank?
 
       return [true, ''] if field.present? && field =~ VALID_NUMBER
@@ -107,7 +107,7 @@ module FreecenValidations
       [false, 'invalid number']
     end
 
-    def fixed_house_address?(field)
+    def house_address?(field)
       return [true, ''] if field.blank?
 
       return [true, ''] if field.present? && field =~ VALID_TEXT
@@ -149,7 +149,7 @@ module FreecenValidations
       [false, 'Not valid class']
     end
 
-    def fixed_uninhabited_flag?(field)
+    def uninhabited_flag?(field)
       return [true, ''] if field.blank?
 
       return [true, ''] if VALID_SPECIAL_LOCATION_CODES.include?(field.downcase)
@@ -157,7 +157,16 @@ module FreecenValidations
       [false, 'invalid value']
     end
 
-    def fixed_surname?(field)
+    def address_flag?(field)
+      return [true, ''] if field.blank?
+
+      return [true, ''] if field.downcase == 'x'
+
+      [false, 'invalid value']
+    end
+
+
+    def surname?(field)
       return [false, 'blank'] if field.blank?
 
       return [false, '?'] if field.present? && field.slice(-1).downcase == '?' && field =~ VALID_TEXT
@@ -167,7 +176,7 @@ module FreecenValidations
       [false, 'invalid value']
     end
 
-    def fixed_forenames?(field)
+    def forenames?(field)
       return [false, 'blank'] if field.blank?
 
       return [false, '?'] if field.present? && field.slice(-1).downcase == '?' && field =~ VALID_TEXT
@@ -177,7 +186,7 @@ module FreecenValidations
       [false, 'invalid value']
     end
 
-    def fixed_name_question?(field)
+    def name_question?(field)
       return [true, ''] if field.blank?
 
       return [true, ''] if field =~ VALID_TEXT
@@ -185,7 +194,7 @@ module FreecenValidations
       [false, 'invalid value']
     end
 
-    def fixed_relationship?(field)
+    def relationship?(field)
       return [true, ''] if field.blank?
 
       return [true, ''] if field =~ VALID_TEXT
@@ -193,7 +202,7 @@ module FreecenValidations
       [false, 'invalid value']
     end
 
-    def fixed_marital_status?(field)
+    def marital_status?(field)
       return [true, ''] if field.blank?
 
       return [true, ''] if VALID_MARITAL_STATUS.include?(field.downcase) && field.length <= 1
@@ -201,7 +210,7 @@ module FreecenValidations
       [false, 'invalid value']
     end
 
-    def fixed_sex?(field)
+    def sex?(field)
       return [false, 'blank'] if field.blank?
 
       return [true, ''] if VALID_SEX.include?(field.upcase) && field.length <= 1
@@ -209,8 +218,10 @@ module FreecenValidations
       [false, 'invalid value']
     end
 
-    def fixed_age?(field, martial, sex)
+    def age?(field, martial, sex)
       return [false, 'blank'] if field.blank?
+
+      return [true, ''] if field =~ VALID_NUMBER && field.to_i == 999
 
       return [true, ''] if field =~ VALID_NUMBER && field.length <= 3 && field.to_i != 0 && field.to_i <= 120
 
@@ -271,7 +282,7 @@ module FreecenValidations
       [false, 'Not valid text']
     end
 
-    def fixed_uncertainty_status?(field)
+    def uncertainty_status?(field)
       return [true, ''] if field.blank?
 
       return [true, ''] if field.downcase == 'x'
@@ -279,7 +290,7 @@ module FreecenValidations
       [false, 'invalid value']
     end
 
-    def fixed_occupation?(field, age)
+    def occupation?(field, age)
       return [true, ''] if field.blank?
 
       return [false, 'invalid use of Scholar'] if age =~ VALID_NUMBER && (age.to_i < 2 || age.to_i > 17) && field.downcase =~ /(scholar)/
@@ -297,7 +308,7 @@ module FreecenValidations
       [false, 'Not valid text']
     end
 
-    def fixed_occupation_category?(field)
+    def occupation_category?(field)
       return [true, ''] if field.blank?
 
       return [true, ''] if field.length == 1 && ['e', 'r', 'n'].include?(field.downcase)
@@ -305,7 +316,7 @@ module FreecenValidations
       [false, 'invalid value']
     end
 
-    def fixed_uncertainty_occupation?(field)
+    def uncertainty_occupation?(field)
       return [true, ''] if field.blank?
 
       return [true, ''] if field.downcase == 'x'
@@ -313,7 +324,7 @@ module FreecenValidations
       [false, 'invalid value']
     end
 
-    def fixed_verbatim_birth_county?(field)
+    def verbatim_birth_county?(field)
       return [false, 'blank'] if field.blank?
 
       return [true, ''] if ChapmanCode.freecen_birth_codes.include?(field.upcase)
@@ -321,7 +332,7 @@ module FreecenValidations
       [false, 'invalid value']
     end
 
-    def fixed_verbatim_birth_place?(field)
+    def verbatim_birth_place?(field)
       return [false, 'blank'] if field.blank?
 
       return [true, ''] if field =~ VALID_TEXT
@@ -341,7 +352,7 @@ module FreecenValidations
       [false, 'Not valid text']
     end
 
-    def fixed_uncertainy_birth?(field)
+    def uncertainy_birth?(field)
       return [true, ''] if field.blank?
 
       return [true, ''] if field.downcase == 'x'
@@ -349,7 +360,7 @@ module FreecenValidations
       [false, 'invalid value']
     end
 
-    def fixed_language?(field)
+    def language?(field)
       return [true, ''] if field.blank?
 
       return [true, ''] if VALID_LANGUAGE.include?(field.upcase)
@@ -357,7 +368,7 @@ module FreecenValidations
       [false, 'invalid value']
     end
 
-    def fixed_disability?(field)
+    def disability?(field)
       return [true, ''] if field.blank?
 
       return [true, ''] if field =~ VALID_TEXT
@@ -365,7 +376,7 @@ module FreecenValidations
       [false, 'invalid value']
     end
 
-    def fixed_disability_notes?(field)
+    def disability_notes?(field)
       return [true, ''] if field.blank?
 
       return [true, ''] if field =~ VALID_TEXT
@@ -373,7 +384,7 @@ module FreecenValidations
       [false, 'invalid value']
     end
 
-    def fixed_notes?(field)
+    def notes?(field)
       return [true, ''] if field.blank?
 
       return [true, ''] if field =~ VALID_TEXT
