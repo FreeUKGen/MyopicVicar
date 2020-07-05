@@ -710,7 +710,6 @@ class FreecenCsvEntry
         message = "Warning: line #{num} Schedule number #{record[:schedule_number]} increments more than 1 .<br>"
         record[:warning_messages] = record[:warning_messages] + message
       elsif (schedule_number.to_i < previous_schedule_number.to_i) && schedule_number.to_i != 0
-        new_schedule_number = previous_schedule_number if ['b', 'n', 'u', 'v'].include?(uninhabited_flag)
         new_schedule_suffix = previous_schedule_suffix if ['b', 'n', 'u', 'v'].include?(uninhabited_flag)
         unless ['u', 'v'].include?(uninhabited_flag) || Freecen::LOCATION.include?(transition)
           message = "Warning: line #{num} Schedule number #{record[:schedule_number]} is less than the previous one .<br>"

@@ -97,15 +97,9 @@ class Freecen2Piece
       when 'RG14'
         year = '1911'
       when 'HO107'
-        if parts[1].length == 4 && parts[1].to_i <= 1465
-          year = '1841'
-        elsif parts[1].length > 4 && parts[1][0..3].to_i <= 1465
-          year = '1841'
-        else
-          year = '1851'
-        end
+        year = parts[1].delete('^0-9').to_i <= 1465 ? '1841' : '1851'
       when 'HS51'
-        year = parts[0][2..3] == '51' ? '1851' : '1841'
+        year = parts[1].delete('^0-9')[2..3] == '51' ? '1851' : '1841'
       when 'RS6'
         year = '1861'
       when 'RS7'
