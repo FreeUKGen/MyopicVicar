@@ -88,15 +88,10 @@ class GapsController < ApplicationController
     redirect_back(fallback_location: new_manage_resource_path, notice: 'The linkages were incorrect') &&
       return if @register.blank? || @church.blank? || @place.blank?
 
-    gaps = Gap.register(@register.id).order_by(record_type: 1, start_date: 1).all
-    @gaps = []
     if @freereg1_csv_file.present?
-      gaps.each do |gap|
-        @gaps << gap if gap.record_type == @freereg1_csv_file.record_type && gap.freereg1_csv_file == @freereg1_csv_file.id
-        @gaps << gap if gap.record_type == 'All' && gap.freereg1_csv_file == @freereg1_csv_file.id
-      end
+      @gaps = Gap.where(register_id: @register.id, freereg1_cev_file: @freereg1_csv_file.id).order_by(record_type: 1, start_date: 1).all
     else
-      @gaps = gaps
+      @gaps = Gap.register(@register.id).order_by(record_type: 1, start_date: 1).all
     end
   end
 
