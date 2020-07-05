@@ -89,7 +89,7 @@ class GapsController < ApplicationController
       return if @register.blank? || @church.blank? || @place.blank?
 
     if @freereg1_csv_file.present?
-      @gaps = Gap.where(register_id: @register.id, freereg1_cev_file: @freereg1_csv_file.id).order_by(record_type: 1, start_date: 1).all
+      @gaps = Gap.where(register_id: @register.id, freereg1_cev_file: @freereg1_csv_file.id.to_s).order_by(record_type: 1, start_date: 1).all
     else
       @gaps = Gap.register(@register.id).order_by(record_type: 1, start_date: 1).all
     end
