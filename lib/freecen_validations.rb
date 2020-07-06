@@ -293,10 +293,13 @@ module FreecenValidations
     def occupation?(field, age)
       return [true, ''] if field.blank?
 
-      return [false, 'invalid use of Scholar'] if age =~ VALID_NUMBER && (age.to_i < 2 || age.to_i > 17) && field.downcase =~ /(scholar)/
+      if age.present?
 
-      return [false, 'invalid use of Scholar'] if age.slice(-1).downcase == 'y' && (age[0...-1].to_i < 2 || age[0...-1].to_i > 17) && field.downcase =~ /(scholar)/
+        return [false, 'invalid use of Scholar'] if age =~ VALID_NUMBER && (age.to_i < 2 || age.to_i > 17) && field.downcase =~ /(scholar)/
 
+        return [false, 'invalid use of Scholar'] if age.slice(-1).downcase == 'y' && (age[0...-1].to_i < 2 || age[0...-1].to_i > 17) && field.downcase =~ /(scholar)/
+
+      end
       return [false, '?'] if field.slice(-1).downcase == '?'
 
       [true, '']
