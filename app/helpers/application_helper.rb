@@ -366,17 +366,8 @@ module ApplicationHelper
   end
 
   def register_name_for_file(file)
-    register_type = file.register_type
-    if register_type.blank?
-      new_register = get_register_object(file)
-      new_register_type = ' '
-      new_register_type = new_register.register_type
-      new_register_type = Register.check_and_correct_register_type(new_register_type)
-    else
-      new_register_type = Register.check_and_correct_register_type(register_type)
-    end
-    file.update_attribute(:register_type, new_register_type) unless new_register_type == register_type
-    register_name = RegisterType::display_name(new_register_type)
+    register = file.register
+    register_name = register.blank? ? 'File does not belong to a register' : RegisterType::display_name(register.register_type)
     register_name
   end
 
