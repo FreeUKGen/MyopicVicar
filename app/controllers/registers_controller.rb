@@ -142,7 +142,7 @@ class RegistersController < ApplicationController
 
     @records = @register.records
     max_records = get_max_records(@user)
-    redirect_to(action: 'show', notice: 'There are too many records for an on-line relocation') && return if @records.present? && @records.to_i >= max_records
+    redirect_to({ action: 'show' }, notice: 'There are too many records for an on-line relocation') && return if @records.present? && @records.to_i >= max_records
 
     get_user_info_from_userid
     @county =  session[:county]
@@ -158,7 +158,7 @@ class RegistersController < ApplicationController
     @user = get_user
     @records = @register.records
     max_records = get_max_records(@user)
-    redirect_to(action: 'show', notice: 'There are too many records for an on-line relocation') && return if @records.present? && @records.to_i >= max_records
+    redirect_to({ action: 'show' }, notice: 'There are too many records for an on-line relocation') && return if @records.present? && @records.to_i >= max_records
   end
 
   def show
