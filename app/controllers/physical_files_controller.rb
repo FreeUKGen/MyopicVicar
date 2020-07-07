@@ -174,7 +174,13 @@ class PhysicalFilesController < ApplicationController
   end
 
   def reprocess
-    file = Freereg1CsvFile.find(params[:id])
+    @appname = appname_downcase
+    case @appname
+    when 'freereg'
+      file = Freereg1CsvFile.find(params[:id])
+    when 'freecen'
+      file = FreecenCsvFile.find(params[:id])
+    end
     redirect_back(fallback_location: { action: 'select_action' }, notice: 'No such file') && return if file.blank?
 
     redirect_back(fallback_location: { action: 'select_action' }, notice: 'File is currently awaiting processing and should not be edited') && return unless file.can_we_edit?
