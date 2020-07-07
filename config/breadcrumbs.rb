@@ -406,6 +406,12 @@ crumb :regmanager_userid_options do
   link 'Userid Management Options', options_userid_details_path
   parent :root
 end
+
+crumb :cengmanager_userid_options do
+  link 'Userid Management Options', options_userid_details_path
+  parent :root
+end
+
 crumb :coordinator_userid_options do
   link 'Profile Display Selection', display_userid_details_path
   parent :root

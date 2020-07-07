@@ -145,7 +145,7 @@ class ExtractFreecen2PieceInformation
         @output_file.puts "Blank name for district #{district_tnaid} #{district_code}"
         return nil
       end
-      place_id = ExtractFreecen2PieceInformation.locate_place(chapman_code, district_name, district_name, 'District')
+      place_id = ExtractFreecen2PieceInformation.locate_district_place(chapman_code, district_name, district_name, 'District')
       @district_object = Freecen2District.new(name: district_name, code: district_code, tnaid: district_tnaid, chapman_code: chapman_code,
                                               year: district_year, freecen2_place_id: place_id, type: district_type)
       result = @district_object.save
@@ -203,7 +203,7 @@ class ExtractFreecen2PieceInformation
         @output_file.puts "Blank name for piece #{subdistrict_tnaid} #{subdistrict_piece} #{subdistrict_code}"
         return nil
       end
-      place_id = ExtractFreecen2PieceInformation.locate_place(district_object.chapman_code, subdistrict_name, district_object.freecen2_place_id, 'Piece')
+      place_id = ExtractFreecen2PieceInformation.locate_subdistrict_place(district_object, subdistrict_name, district_object.freecen2_place_id, 'Piece')
       @subdistrict_object = Freecen2Piece.new(name: subdistrict_name, code: subdistrict_code, tnaid: subdistrict_tnaid,
                                               number: subdistrict_piece, year: subdistrict_year, freecen2_place_id: place_id,
                                               freecen2_district_id: district_object.id, prenote: subdistrict_prenote)
@@ -242,7 +242,7 @@ class ExtractFreecen2PieceInformation
       parish_name = parish['name']
       parish_note = parish['note']
       parish_prenote = parish['prenote']
-      place_id = ExtractFreecen2PieceInformation.locate_place(chapman_code, parish_name, subdistrict_object.freecen2_place_id, 'Civil Parish')
+      place_id = ExtractFreecen2PieceInformation.locate_civil_place(chapman_code, parish_name, subdistrict_object.name, 'Civil Parish', subdistrict_object.freecen2_district.name)
       @parish_object = Freecen2CivilParish.new(name: parish_name, note: parish_note, freecen2_piece_id: subdistrict_object.id, prenote: parish_prenote,
                                                freecen2_place_id: place_id)
       result = @parish_object.save
@@ -353,7 +353,7 @@ class ExtractFreecen2PieceInformation
       piece
     end
 
-    def locate_place(chapman_code, name, place_previous, type)
+    def locate_district_place(chapman_code, name, place_previous, type)
       myname = name.present? ? name.titleize : ''
       place = Freecen2Place.find_by(chapman_code: chapman_code, place_name: myname)
       if place.present?
@@ -362,10 +362,39 @@ class ExtractFreecen2PieceInformation
         place = Freecen2Place.find_by(:chapman_code => chapman_code, "alternate_freecen2_place_names.alternate_name" => myname)
         if place.present?
           place_id = place.id
-        elsif ['Piece', 'Civil Parish'].include?(type) && place_previous.present?
-          place_id = place_previous
         else
           @missing_place_names << "#{type} | #{chapman_code}| #{myname}"
+        end
+      end
+      place_id
+    end
+
+    def locate_subdistrict_place(district, name, place_previous, type)
+      myname = name.present? ? name.titleize : ''
+      place = Freecen2Place.find_by(chapman_code: district.chapman_code, place_name: myname)
+      if place.present?
+        place_id = place.id
+      elsif place.blank?
+        place = Freecen2Place.find_by(:chapman_code => district.chapman_code, "alternate_freecen2_place_names.alternate_name" => myname)
+        if place.present?
+          place_id = place.id
+        else
+          @missing_place_names << "#{type} | #{district.chapman_code}| #{district.name} | #{myname}"
+        end
+      end
+      place_id
+    end
+    def locate_civil_place(chapman_code, name, piece_name, type, district_name)
+      myname = name.present? ? name.titleize : ''
+      place = Freecen2Place.find_by(chapman_code: chapman_code, place_name: myname)
+      if place.present?
+        place_id = place.id
+      elsif place.blank?
+        place = Freecen2Place.find_by(:chapman_code => chapman_code, "alternate_freecen2_place_names.alternate_name" => myname)
+        if place.present?
+          place_id = place.id
+        else
+          @missing_place_names << "#{type} | #{chapman_code}| #{district_name} | #{piece_name} | #{myname}"
         end
       end
       place_id
