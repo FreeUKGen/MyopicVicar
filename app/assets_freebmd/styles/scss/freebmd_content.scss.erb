@@ -8,29 +8,36 @@
 
 .Navbar {
     display: flex;
-    padding-top: 11px !important;
-    padding: 16px;
-    font-family: sans-serif;
-    color: white !important;
+    padding-left: 16px;
     background: #a1185a;
-    overflow: none;
-    height: 46px;
     position: absolute;
-    right: 0;
-    left: 0;
     top: 100px;
     z-index: 2;
     width: 100%;
-    @include manual-media-query(760px) {
-        width: 700px;
+    /**@include manual-media-query(760px) {
+        max-width:  760px;
+        width: 110%;
+    }
+    @include manual-media-query(680px) {
+      max-width: 680px;
+      width: 130%;
+    }**/
+    @include media-query(570px) {
+        margin-top: 46px;
+        padding-top: 28px;
+
     }
     @include manual-media-query(570px) {
-        width: 570px;
+        margin-top: -10px;
+
     }
+
+
 
 }
 
-/**.bmd_logo {
+/**
+.bmd_logo {
         top: 90px;
     left: 15px;
     position: absolute;
@@ -53,7 +60,7 @@
 /* Large devices (laptops/desktops, 992px and up) */
 /*@media only screen and (min-width: 1200px) {
 
-    /* Positioning BMD Logo 
+    /* Positioning BMD Logo
     .icon__freebmd {
         outline: 10px solid white;
         margin-left: 20px;
@@ -287,9 +294,19 @@ select[multiple]:focus option:checked {
 
 .Navbar__Link a {
     color: #f4f4f4;
+    float: left;
+    text-align: center;
+    padding: 10px 16px;
+    text-decoration: none;
+    font-size: 17px;
 }
 
-@media only screen and (max-width: 950px) {
+.Navbar__Link a:hover {
+  background-color: #f4f4f4;
+  color: #a1185a;
+}
+
+@media only screen and (max-width: 1055px) {
 
     .flex_container,
     .Navbar,
@@ -308,8 +325,7 @@ select[multiple]:focus option:checked {
     .Navbar__Link-toggle {
         align-self: flex-end;
         display: initial;
-        position: absolute;
-        margin-top: -5px;
+        padding-right: 50px;
     }
 
     .brand_logo_footer {
@@ -318,7 +334,13 @@ select[multiple]:focus option:checked {
 
     .Navbar__Link-toggle i {
         cursor: default !important;
-        color: #f4f4f4;
+        color: #fff;
+        float: left;
+        text-align: center;
+        padding: 10px 16px;
+        text-decoration: none;
+        font-size: 25px;
+
     }
 
     .Navbar__ToggleShow {
@@ -552,7 +574,7 @@ input:disabled:not([type="submit"]):hover {
     width: 310px;
     height: 60px;
 
-    
+
 }
 
 .icon__freebmd {
@@ -563,7 +585,6 @@ input:disabled:not([type="submit"]):hover {
     width:110%;
     height:160%;
     display: inline-block;
-    *display: inline;
     zoom: 1;
     background-color: transparent;
 
@@ -571,8 +592,8 @@ input:disabled:not([type="submit"]):hover {
         position: relative;
     }
 
-    
-    
+
+
 /**
 
     @include manual-media-query(865px) {
@@ -615,6 +636,3 @@ input:disabled:not([type="submit"]):hover {
         margin: 0;
     }*/
 }
-
-
-
