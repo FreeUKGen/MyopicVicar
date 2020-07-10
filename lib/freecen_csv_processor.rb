@@ -778,7 +778,7 @@ class CsvRecords < CsvFile
 
       @record = CsvRecord.new(line, @csvfile, @project)
       success, message, result = @record.extract_data_line(n)
-      result[:flag] = true if result[:birth_place_flag].present? || result[:deleted_flag].present? || result[:individual_flag].present? ||
+      result[:flag] = true if result[:birth_place_flag].present? || result[:deleted_flag].present? || result[:individual_flag].present? ||  result[:location_flag].present? ||
         result[:name_flag].present? || result[:occupation_flag].present? || (result[:uninhabited_flag].present? && result[:uninhabited_flag].downcase == 'x')
       data_records << result
       @csvfile.total_errors = @csvfile.total_errors + 1 if result[:error_messages].present?
@@ -821,8 +821,9 @@ class CsvRecord < CsvRecords
     @data_record[:data_transition] = @csvfile.field_specification[first_field_present]
     @data_record = load_data_record
     process_data_record(@data_record[:data_transition])
-    # p @data_record
-    # crash if num == 10
+    #p  "after processing #{num}"
+    #p @data_record
+    # crash if num == 50
     [true, ' ', @data_record]
   end
 

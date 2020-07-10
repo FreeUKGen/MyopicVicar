@@ -363,7 +363,7 @@ class ExtractFreecen2PieceInformation
         if place.present?
           place_id = place.id
         else
-          @missing_place_names << "#{type} | #{chapman_code}| #{myname}"
+          @missing_place_names << "#{myname} a #{type} in | #{chapman_code}"
         end
       end
       place_id
@@ -379,7 +379,7 @@ class ExtractFreecen2PieceInformation
         if place.present?
           place_id = place.id
         else
-          @missing_place_names << "#{type} | #{district.chapman_code}| #{district.name} | #{myname}"
+          @missing_place_names << "#{myname} a #{type} in | #{district.chapman_code}| district #{district.name} "
         end
       end
       place_id
@@ -394,7 +394,7 @@ class ExtractFreecen2PieceInformation
         if place.present?
           place_id = place.id
         else
-          @missing_place_names << "#{type} | #{chapman_code}| #{district_name} | #{piece_name} | #{myname}"
+          @missing_place_names << "#{myname} a #{type} in | #{chapman_code}| district #{district_name} | subdistrict (piece) #{piece_name} "
         end
       end
       place_id

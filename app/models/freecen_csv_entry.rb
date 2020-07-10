@@ -179,32 +179,44 @@ class FreecenCsvEntry
       success, messagea = FreecenValidations.valid_civil_parish?(civil_parish)
 
       unless success
-        messagea = "ERROR: line #{num} Civil Parish is blank.<br> " if messagea == 'blank'
-        messagea = "ERROR: line #{num} Civil Parish has invalid text #{civil_parish}.<br>" if messagea == 'INVALID_TEXT'
-        record[:error_messages] = record[:error_messages] + messagea
-        new_civil_parish = previous_civil_parish
-        return [messagea, new_civil_parish]
+        if messagea == '?'
+          messagea = "Warning: line #{num} Civil Parish #{civil_parish}  has trailing ?. Removed and location_flag set.<br>"
+          record[:warning_messages] = record[:warning_messages] + messagea
+          record[:location_flag] = 'x'
+          record[:civil_parish] = record[:civil_parish][0...-1]
+          civil_parish = record[:civil_parish]
+        elsif messagea == 'blank'
+          messagea = "ERROR: line #{num} Civil Parish is blank.<br> "
+          record[:error_messages] = record[:error_messages] + messagea
+          new_civil_parish = previous_civil_parish
+          return [messagea, new_civil_parish]
+        elsif messagea == 'INVALID_TEXT'
+          messagea = "ERROR: line #{num} Civil Parish has invalid text #{civil_parish}.<br>"
+          record[:error_messages] = record[:error_messages] + messagea
+          new_civil_parish = previous_civil_parish
+          return [messagea, new_civil_parish]
+        end
       end
 
       valid = false
 
       record[:piece].freecen2_civil_parishes.each do |subplace|
-        valid = true if subplace[:name].to_s.downcase == civil_parish.to_s.downcase
+        valid = true if subplace[:name].to_s.downcase == record[:civil_parish].to_s.downcase
         break if valid
       end
       unless valid
-        message = "ERROR: line #{num} Civil Parish #{civil_parish} is not in the list of Civil Parishes.<br>"
+        message = "ERROR: line #{num} Civil Parish #{record[:civil_parish]} is not in the list of Civil Parishes.<br>"
         record[:error_messages] = record[:error_messages] + message
       end
 
       if previous_civil_parish == ''
-        message = "Info: line #{num} New Civil Parish #{civil_parish}.<br>" if info_messages
+        message = "Info: line #{num} New Civil Parish #{record[:civil_parish]}.<br>" if info_messages
         record[:info_messages] = record[:info_messages] + message if info_messages
-      elsif previous_civil_parish == civil_parish
-        message = "Info: line #{num} Civil Parish has remained the same #{civil_parish}.<br>"  if info_messages
+      elsif previous_civil_parish == record[:civil_parish]
+        message = "Info: line #{num} Civil Parish has remained the same #{record[:civil_parish]}.<br>"  if info_messages
         record[:info_messages] = record[:info_messages] + message if info_messages
       else
-        message = "Info: line #{num} Civil Parish has changed to #{civil_parish}.<br>"  if info_messages
+        message = "Info: line #{num} Civil Parish has changed to #{record[:civil_parish]}.<br>"  if info_messages
         record[:info_messages] = record[:info_messages] + message if info_messages
       end
       [message, new_civil_parish]
@@ -222,11 +234,19 @@ class FreecenCsvEntry
 
       success, messagea = FreecenValidations.enumeration_district?(enumeration_district)
       unless success
-        new_enumeration_district = previous_enumeration_district
-        messageb = "ERROR: line #{num} Enumeration District #{enumeration_district} is #{messagea}.<br>"
-        message = messagea + messageb
-        record[:error_messages] = record[:error_messages] + messageb
-        return [message, new_enumeration_district]
+        if messagea == '?'
+          messagea = "Warning: line #{num} Enumeration District #{enumeration_district}  has trailing ?. Removed and location_flag set.<br>"
+          record[:warning_messages] = record[:warning_messages] + messagea
+          record[:location_flag] = 'x'
+          record[:enumeration_district] = record[:enumeration_district][0...-1]
+          enumeration_district = record[:enumeration_district]
+        else
+          new_enumeration_district = previous_enumeration_district
+          messageb = "ERROR: line #{num} Enumeration District #{enumeration_district} is #{messagea}.<br>"
+          message = messagea + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+          return [message, new_enumeration_district]
+        end
       end
 
       parts = ''
@@ -275,10 +295,18 @@ class FreecenCsvEntry
       info_messages = record[:messages]
       success, messagea = FreecenValidations.text?(ecclesiastical_parish)
       unless success
-        messageb = "ERROR: line #{num} Ecclesiastical Parish #{ecclesiastical_parish} is #{messagea}.<br>"
-        message = messagea + messageb
-        record[:error_messages] = record[:error_messages] + messageb
-        return [message, new_ecclesiastical_parish]
+        if messagea == '?'
+          messagea = "Warning: line #{num} Ecclesiastical Parish #{ecclesiastical_parish}  has trailing ?. Removed and location_flag set.<br>"
+          record[:warning_messages] = record[:warning_messages] + messagea
+          record[:location_flag] = 'x'
+          record[:ecclesiastical_parish] = record[:ecclesiastical_parish][0...-1]
+          ecclesiastical_parish = record[:ecclesiastical_parish]
+        else
+          messageb = "ERROR: line #{num} Ecclesiastical Parish #{ecclesiastical_parish} is #{messagea}.<br>"
+          message = messagea + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+          return [message, new_ecclesiastical_parish]
+        end
       end
       if previous_ecclesiastical_parish == ''
         message = "Info: line #{num} New Ecclesiastical Parish #{ecclesiastical_parish}.<br>" if info_messages
@@ -301,10 +329,18 @@ class FreecenCsvEntry
       info_messages = record[:messages]
       success, messagea = FreecenValidations.text?(where_census_taken)
       unless success
-        messageb = "ERROR: line #{num} Where Census Taken #{where_census_taken} is #{messagea}.<br>"
-        message = messagea + messageb
-        record[:error_messages] = record[:error_messages] + messageb
-        return [message, new_where_census_taken]
+        if messagea == '?'
+          messagea = "Warning: line #{num} Where Census Taken #{where_census_taken}  has trailing ?. Removed and location_flag set.<br>"
+          record[:warning_messages] = record[:warning_messages] + messagea
+          record[:location_flag] = 'x'
+          record[:where_census_taken] = record[:where_census_taken][0...-1]
+          where_census_taken = record[:where_census_taken]
+        else
+          messageb = "ERROR: line #{num} Where Census Taken #{where_census_taken} is #{messagea}.<br>"
+          message = messagea + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+          return [message, new_where_census_taken]
+        end
       end
       if previous_where_census_taken == ''
         message = "Info: line #{num} New Where Census Taken #{where_census_taken}.<br>" if info_messages
@@ -327,10 +363,18 @@ class FreecenCsvEntry
       info_messages = record[:messages]
       success, messagea = FreecenValidations.text?(ward)
       unless success
-        messageb = "ERROR: line #{num} Ward #{ward} is #{messagea}.<br>"
-        message = messagea + messageb
-        record[:error_messages] = record[:error_messages] + messageb
-        return [message, new_ward]
+        if messagea == '?'
+          messagea = "Warning: line #{num} Ward #{ward}  has trailing ?. Removed and location_flag set.<br>"
+          record[:warning_messages] = record[:warning_messages] + messagea
+          record[:location_flag] = 'x'
+          record[:ward] = record[:ward][0...-1]
+          ward = record[:ward]
+        else
+          messageb = "ERROR: line #{num} Ward #{ward} is #{messagea}.<br>"
+          message = messagea + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+          return [message, new_ward]
+        end
       end
       if previous_ward == ''
         message = "Info: line #{num} New Ward #{ward}.<br>" if info_messages
@@ -353,10 +397,18 @@ class FreecenCsvEntry
       info_messages = record[:messages]
       success, messagea = FreecenValidations.text?(parliamentary_constituency)
       unless success
-        messageb = "ERROR: line #{num} Parliamentary Constituency #{parliamentary_constituency} is #{messagea}.<br>"
-        message = messagea + messageb
-        record[:error_messages] = record[:error_messages] + messageb
-        return [message, new_parliamentary_constituency]
+        if messagea == '?'
+          messagea = "Warning: line #{num} Parliamentary Constituency #{parliamentary_constituency}  has trailing ?. Removed and location_flag set.<br>"
+          record[:warning_messages] = record[:warning_messages] + messagea
+          record[:location_flag] = 'x'
+          record[:parliamentary_constituency] = record[:parliamentary_constituency][0...-1]
+          parliamentary_constituency = record[:parliamentary_constituency]
+        else
+          messageb = "ERROR: line #{num} Parliamentary Constituency #{parliamentary_constituency} is #{messagea}.<br>"
+          message = messagea + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+          return [message, new_parliamentary_constituency]
+        end
       end
       if previous_parliamentary_constituency == ''
         message = "Info: line #{num} New Parliamentary Constituency #{parliamentary_constituency}.<br>" if info_messages
@@ -379,10 +431,18 @@ class FreecenCsvEntry
       info_messages = record[:messages]
       success, messagea = FreecenValidations.text?(poor_law_union)
       unless success
-        messageb = "ERROR: line #{num} Poor Law Union #{poor_law_union} is #{messagea}.<br>"
-        message = messagea + messageb
-        record[:error_messages] = record[:error_messages] + messageb
-        return [message, new_poor_law_union]
+        if messagea == '?'
+          messagea = "Warning: line #{num} Poor Law Union #{poor_law_union}  has trailing ?. Removed and location_flag set.<br>"
+          record[:warning_messages] = record[:warning_messages] + messagea
+          record[:location_flag] = 'x'
+          record[:poor_law_union] = record[:poor_law_union][0...-1]
+          new_poor_law_union = record[:poor_law_union]
+        else
+          messageb = "ERROR: line #{num} Poor Law Union #{poor_law_union} is #{messagea}.<br>"
+          message = messagea + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+          return [message, new_poor_law_union]
+        end
       end
       if previous_poor_law_union == ''
         message = "Info: line #{num} New Poor Law Union #{poor_law_union}.<br>" if info_messages
@@ -405,10 +465,18 @@ class FreecenCsvEntry
       info_messages = record[:messages]
       success, messagea = FreecenValidations.text?(police_district)
       unless success
-        messageb = "ERROR: line #{num} Police District #{police_district} is #{messagea}.<br>"
-        message = messagea + messageb
-        record[:error_messages] = record[:error_messages] + messageb
-        return [message, new_police_district]
+        if messagea == '?'
+          messagea = "Warning: line #{num} Police District #{police_district}  has trailing ?. Removed and location_flag set.<br>"
+          record[:warning_messages] = record[:warning_messages] + messagea
+          record[:location_flag] = 'x'
+          record[:police_district] = record[:police_district][0...-1]
+          new_police_district = record[:police_district]
+        else
+          messageb = "ERROR: line #{num} Police District #{police_district} is #{messagea}.<br>"
+          message = messagea + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+          return [message, new_police_district]
+        end
       end
       if previous_police_district == ''
         message = "Info: line #{num} New Police District #{police_district}.<br>" if info_messages
@@ -431,10 +499,18 @@ class FreecenCsvEntry
       info_messages = record[:messages]
       success, messagea = FreecenValidations.text?(sanitary_district)
       unless success
-        messageb = "ERROR: line #{num} Sanitary District #{sanitary_district} is #{messagea}.<br>"
-        message = messagea + messageb
-        record[:error_messages] = record[:error_messages] + messageb
-        return [message, new_sanitary_district]
+        if messagea == '?'
+          messagea = "Warning: line #{num} Sanitary District #{sanitary_district}  has trailing ?. Removed and location_flag set.<br>"
+          record[:warning_messages] = record[:warning_messages] + messagea
+          record[:location_flag] = 'x'
+          record[:sanitary_district] = record[:sanitary_district][0...-1]
+          sanitary_district = record[:sanitary_district]
+        else
+          messageb = "ERROR: line #{num} Sanitary District #{sanitary_district} is #{messagea}.<br>"
+          message = messagea + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+          return [message, new_sanitary_district]
+        end
       end
       if previous_sanitary_district == ''
         message = "Info: line #{num} New Sanitary District #{sanitary_district}.<br>" if info_messages
@@ -457,10 +533,18 @@ class FreecenCsvEntry
       info_messages = record[:messages]
       success, messagea = FreecenValidations.text?(special_water_district)
       unless success
-        messageb = "ERROR: line #{num} Special Water District #{special_water_district} is #{messagea}.<br>"
-        message = messagea + messageb
-        record[:error_messages] = record[:error_messages] + messageb
-        return [message, new_special_water_district]
+        if messagea == '?'
+          messagea = "Warning: line #{num} Special Water District #{special_water_district}  has trailing ?. Removed and location_flag set.<br>"
+          record[:warning_messages] = record[:warning_messages] + messagea
+          record[:location_flag] = 'x'
+          record[:special_water_district] = record[:special_water_district][0...-1]
+          special_water_district = record[:special_water_district]
+        else
+          messageb = "ERROR: line #{num} Special Water District #{special_water_district} is #{messagea}.<br>"
+          message = messagea + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+          return [message, new_special_water_district]
+        end
       end
       if previous_special_water_district == ''
         message = "Info: line #{num} New Special Water District #{special_water_district}.<br>" if info_messages
@@ -483,10 +567,18 @@ class FreecenCsvEntry
       info_messages = record[:messages]
       success, messagea = FreecenValidations.text?(scavenging_district)
       unless success
-        messageb = "ERROR: line #{num} Scavenging District #{scavenging_district} is #{messagea}.<br>"
-        message = messagea + messageb
-        record[:error_messages] = record[:error_messages] + messageb
-        return [message, new_scavenging_district]
+        if messagea == '?'
+          messagea = "Warning: line #{num} Scavenging District #{scavenging_district}  has trailing ?. Removed and location_flag set.<br>"
+          record[:warning_messages] = record[:warning_messages] + messagea
+          record[:location_flag] = 'x'
+          record[:scavenging_district] = record[:scavenging_district][0...-1]
+          scavenging_district = record[:scavenging_district]
+        else
+          messageb = "ERROR: line #{num} Scavenging District #{scavenging_district} is #{messagea}.<br>"
+          message = messagea + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+          return [message, new_scavenging_district]
+        end
       end
       if previous_scavenging_district == ''
         message = "Info: line #{num} New Scavenging District #{scavenging_district}.<br>" if info_messages
@@ -509,10 +601,18 @@ class FreecenCsvEntry
       info_messages = record[:messages]
       success, messagea = FreecenValidations.text?(special_lighting_district)
       unless success
-        messageb = "ERROR: line #{num} Special Lighting District #{special_lighting_district} is #{messagea}.<br>"
-        message = messagea + messageb
-        record[:error_messages] = record[:error_messages] + messageb
-        return [message, new_special_lighting_district]
+        if messagea == '?'
+          messagea = "Warning: line #{num} Special Lighting District #{special_lighting_district}  has trailing ?. Removed and location_flag set.<br>"
+          record[:warning_messages] = record[:warning_messages] + messagea
+          record[:location_flag] = 'x'
+          record[:special_lighting_district] = record[:special_lighting_district][0...-1]
+          special_lighting_district = record[:special_lighting_district]
+        else
+          mmessageb = "ERROR: line #{num} Special Lighting District #{special_lighting_district} is #{messagea}.<br>"
+          message = messagea + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+          return [message, new_special_lighting_district]
+        end
       end
       if previous_special_lighting_district == ''
         message = "Info: line #{num} New Special Lighting District #{special_lighting_district}.<br>" if info_messages
@@ -535,10 +635,18 @@ class FreecenCsvEntry
       info_messages = record[:messages]
       success, messagea = FreecenValidations.text?(school_board)
       unless success
-        messageb = "ERROR: line #{num} School Board #{school_board} is #{messagea}.<br>"
-        message = messagea + messageb
-        record[:error_messages] = record[:error_messages] + messageb
-        return [message, new_school_board]
+        if messagea == '?'
+          messagea = "Warning: line #{num} School Board #{school_board}  has trailing ?. Removed and location_flag set.<br>"
+          record[:warning_messages] = record[:warning_messages] + messagea
+          record[:location_flag] = 'x'
+          record[:school_board] = record[:school_board][0...-1]
+          school_board = record[:school_board]
+        else
+          messageb = "ERROR: line #{num} School Board #{school_board} is #{messagea}.<br>"
+          message = messagea + messageb
+          record[:error_messages] = record[:error_messages] + messageb
+          return [message, new_school_board]
+        end
       end
       if previous_school_board == ''
         message = "Info: line #{num} New School Board #{school_board}.<br>" if info_messages
@@ -561,9 +669,8 @@ class FreecenCsvEntry
       success, messagea = FreecenValidations.location_flag?(flag)
       unless success
         messageb = "ERROR: line #{num} Location Flag #{flag} is #{messagea}.<br>"
-        message = messagea + messageb
         record[:error_messages] = record[:error_messages] + messageb
-        return [message]
+        return [messageb]
       end
     end
 
@@ -852,7 +959,6 @@ class FreecenCsvEntry
       unless success
         if messagea == '?'
           messageb = "Warning: line #{num} Surname  #{record[:surname]} has trailing ?. Removed and flag set.<br>"
-          message = message + messageb
           record[:warning_messages] = record[:warning_messages] + messageb
           record[:name_flag] = 'x'
           record[:surname] = record[:surname][0...-1]
@@ -880,7 +986,7 @@ class FreecenCsvEntry
 
       success, messagea = FreecenValidations.name_question?(record[:name_flag])
       unless success
-        messageb = "ERROR: line #{num} Uncertainty #{record[:name_flag]} is #{messagea}.<br>"
+        messageb = "ERROR: line #{num} Name Uncertainty #{record[:name_flag]} is #{messagea}.<br>"
         message = message + messageb
         record[:error_messages] = record[:error_messages] + messageb
       end

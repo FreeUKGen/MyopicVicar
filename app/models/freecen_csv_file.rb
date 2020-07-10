@@ -401,7 +401,7 @@ class FreecenCsvFile
       when freecen2_piece.blank?
         success[0] = false
         success[1] = success[1] + "file has a null piece #{batch.file_name} "
-      when freecen2_piece.freecen2_place.blank?
+      when freecen2_piece.present? && freecen2_piece.freecen2_place.blank?
         success[0] = false
         success[1] = success[1] + "file has a null place #{batch.file_name} "
       end
@@ -672,7 +672,7 @@ class FreecenCsvFile
       if Freecen::LOCATION.include?(rec[:data_transition])
         @entry = rec[field]
       elsif Freecen::LOCATION_PAGE.include?(rec[:data_transition])
-        @entry = Freecen::LOCATION.include?.include?(field) ? nil : rec[field]
+        @entry = Freecen::LOCATION.include?(field) ? nil : rec[field]
       elsif Freecen::LOCATION_DWELLING.include?(rec[:data_transition])
         @entry = Freecen::LOCATION_PAGE.include?(field) ? nil : rec[field]
       else
