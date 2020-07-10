@@ -8,41 +8,41 @@
         <i class="fa fa-bars fa-2x" id='offcanvas_trigger' aria-hidden="true"></i>
     </div>
     <div class="Navbar__Items Navbar__Items--right flex_container" >
-      <div class="Navbar__Link">
-        <% if nav_search_form_link.present?%>
+      <% if nav_search_form_link.present?%>
+        <div class="Navbar__Link">
           <%=nav_search_form_link%>
-        <% end%>
-      </div>
-      <div class="Navbar__Link">
-        <% if nav_transcription_page_link.present?%>
+        </div>
+      <% end%>
+      <% if nav_transcription_page_link.present?%>
+        <div class="Navbar__Link">
           <%=nav_transcription_page_link%>
-        <% end%>
-      </div>
-      <div class="Navbar__Link">
-        <% if nav_about_page_link.present?%>
+        </div>
+      <% end%>
+      <% if nav_about_page_link.present?%>
+        <div class="Navbar__Link">
           <%=nav_about_page_link%>
-        <% end%>
-      </div>
-      <div class="Navbar__Link">
-        <% if nav_volunteer_page_link.present?%>
+        </div>
+      <% end%>
+      <% if nav_volunteer_page_link.present?%>
+        <div class="Navbar__Link">
           <%=nav_volunteer_page_link%>
-        <% end%>
-      </div>
-      <div class="Navbar__Link">
-        <% if nav_member_page_link.present?%>
-          <%=nav_member_page_link%>
-        <% end%>
-      </div>
-      <div class="Navbar__Link">
-        <% if nav_actions_page_link.present?%>
+        </div>
+      <% end%>
+      <% if nav_member_page_link.present?%>
+          <div class="Navbar__Link">
+            <%=nav_member_page_link%>
+          </div>
+      <% end%>
+      <% if nav_actions_page_link.present?%>
+        <div class="Navbar__Link">
           <%=nav_actions_page_link%>
-        <% end%>
-      </div>
-      <div class="Navbar__Link">
-        <% if nav_help_pages_link.present?%>
+        </div>
+      <% end%>
+      <% if nav_help_pages_link.present?%>
+        <div class="Navbar__Link">
           <%=nav_help_pages_link%>
-        <% end%>
-      </div>
+        </div>
+      <% end%>
     </div>
 </div>
 
