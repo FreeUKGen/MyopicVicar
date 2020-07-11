@@ -339,7 +339,7 @@ class ManageCountiesController < ApplicationController
       end
       @location = 'location.href= "/freereg1_csv_files/" + this.value'
     when 'freecen'
-      FreecenCsvFile.county(session[:chapman_code]).order_by(file_name: 1).each do |file|
+      FreecenCsvFile.chapman_code(session[:chapman_code]).order_by(file_name: 1).each do |file|
         @files["#{file.file_name}:#{file.userid}"] = file._id if file.file_name.present?
       end
       @location = 'location.href= "/freecen_csv_files/" + this.value'

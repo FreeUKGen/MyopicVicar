@@ -157,10 +157,10 @@ module UseridRole
                                  'Review Batches by Most Recent Date of Change', 'Review Batches by Oldest Date of Change', 'Review Specific Batch',
                                  'Upload New Batch', 'Offline Reports', 'Manage Images']
   when 'freecen'
-    COUNTY_MANAGEMENT_OPTIONS = ['Manage FreeCEN1 Pieces', 'Manage FreeCEN2 Pieces', 'Manage VLD Files', 'Manage Places', 'Manage FreeCEN2 Places', 'Review Batches with Errors', 'Review Batches by Filename',
+    COUNTY_MANAGEMENT_OPTIONS = ['Manage FreeCEN2 Places', 'Manage FreeCEN2 Pieces', 'Review Batches with Errors', 'Review Batches by Filename',
                                  'Review Batches by Userid then Filename', 'Review Batches by Most Recent Date of Change',
-                                 'Review Batches by Oldest Date of Change', 'Review Specific Batch', 'List files waiting to be processed',
-                                 'List files NOT processed', 'Upload New Batch', 'Manage Parms']
+                                 'Review Batches by Oldest Date of Change', 'Review Specific Batch', 'Upload New Batch', 'Manage FreeCEN1 Pieces',
+                                 'Manage VLD Files', 'Manage Places']
   when 'freebmd'
   end
   COUNTY_OPTIONS_TRANSLATION = {
