@@ -233,25 +233,8 @@ class FreecenCsvFilesController < ApplicationController
       message = 'The file was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
-    controls(@freecen_csv_file)
-    errors_for_error_display
-  end
-
-  def errors_for_error_display
-    @referrer = request.referer
-    @errors = @freecen_csv_file.batch_errors.count
-    @owner = @freecen_csv_file.userid
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'There are no errors') && return if @errors.zero?
-    lines = @freecen_csv_file.batch_errors.all
-    @role = session[:role]
-    @lines = []
-    @system = []
-    @header = []
-    lines.each do |line|
-      @lines << line if line.error_type == 'Data_Error'
-      @system << line if line.error_type == 'System_Error'
-      @header << line if line.error_type == 'Header_Error'
-    end
+    session[:freecen_csv_file_id] = @freecen_csv_file.id if @freecen_csv_file.present?
+    redirect_to freecen_csv_entries_path(type: 'Err')
   end
 
   def index
@@ -267,14 +250,14 @@ class FreecenCsvFilesController < ApplicationController
     get_user_info_from_userid
     if session[:syndicate].present? && session[:userid_id].blank? && helpers.can_view_files?(session[:role]) && helpers.sorted_by?(session[:sorted_by])
       userids = Syndicate.get_userids_for_syndicate(session[:syndicate])
-      @freecen_csv_files = FreecenCsvFile.in(userid: userids).gt(error: 0).order_by(session[:sort]).all.page(params[:page]).per(batches)
+      @freecen_csv_files = FreecenCsvFile.in(userid: userids).gt(total_errors: 0).order_by(session[:sort]).all.page(params[:page]).per(batches)
     elsif session[:syndicate].present? && session[:userid_id].blank? && helpers.can_view_files?(session[:role])
       userids = Syndicate.get_userids_for_syndicate(session[:syndicate])
       @freecen_csv_files = FreecenCsvFile.in(userid: userids).order_by(session[:sort]).all.page(params[:page]).per(batches).includes(:freecen_csv_entries)
     elsif session[:syndicate].present? && session[:userid_id].present? && helpers.can_view_files?(session[:role])
       @freecen_csv_files = FreecenCsvFile.userid(UseridDetail.find(session[:userid_id]).userid).no_timeout.order_by(session[:sort]).all.page(params[:page]).per(batches)
     elsif session[:county].present? && helpers.can_view_files?(session[:role]) && session[:sorted_by] == '; sorted by descending number of errors and then file name'
-      @freecen_csv_files = FreecenCsvFile.chapman_code(session[:chapman_code]).gt(error: 0).order_by(session[:sort]).all.page(params[:page]).per(batches)
+      @freecen_csv_files = FreecenCsvFile.chapman_code(session[:chapman_code]).gt(total_errors: 0).order_by(session[:sort]).all.page(params[:page]).per(batches)
     elsif session[:county].present? && helpers.can_view_files?(session[:role])
       @freecen_csv_files = FreecenCsvFile.chapman_code(session[:chapman_code]).no_timeout.order_by(session[:sort]).all.page(params[:page]).per(batches)
     end
