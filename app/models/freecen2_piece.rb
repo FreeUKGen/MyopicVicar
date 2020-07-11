@@ -81,40 +81,55 @@ class Freecen2Piece
     end
 
     def extract_year_and_piece(description)
+      # Need to add Ireland
       remove_extension = description.split('.')
       parts = remove_extension[0].split('_')
       case parts[0].upcase
       when 'RG9'
         year = '1861'
+        census_fields = Freecen::CEN2_1861
       when 'RG10'
         year = '1871'
+        census_fields = Freecen::CEN2_1871
       when 'RG11'
         year = '1881'
+        census_fields = Freecen::CEN2_1881
       when 'RG12'
         year = '1891'
+        census_fields = Freecen::CEN2_1891
       when 'RG13'
         year = '1901'
+        census_fields = Freecen::CEN2_1901
       when 'RG14'
         year = '1911'
+        census_fields = Freecen::CEN2_1911
       when 'HO107'
         year = parts[1].delete('^0-9').to_i <= 1465 ? '1841' : '1851'
+        census_fields = parts[1].delete('^0-9').to_i <= 1465 ? Freecen::CEN2_1841 : Freecen::CEN2_1851
       when 'HS51'
         year = parts[1].delete('^0-9')[2..3] == '51' ? '1851' : '1841'
+        census_fields = parts[1].delete('^0-9')[2..3] == '51' ? Freecen::CEN2_SCT_1851 : Freecen::CEN2_SCT_1841
       when 'RS6'
         year = '1861'
+        census_fields = Freecen::CEN2_SCT_1861
       when 'RS7'
         year = '1871'
+        census_fields = Freecen::CEN2_SCT_1871
       when 'RS8'
         year = '1881'
+        census_fields = Freecen::CEN2_SCT_1881
       when 'RS9'
         year = '1891'
+        census_fields = Freecen::CEN2_SCT_1891
       when 'RS10'
         year = '1901'
+        census_fields = Freecen::CEN2_SCT_1901
       when 'RS11'
         year = '1911'
+        census_fields = Freecen::CEN2_SCT_1911
       end
       piece = parts[0] + '_' + parts[1]
-      [year, piece]
+      [year, piece, census_fields]
     end
 
     def county_year_totals(chapman_code)

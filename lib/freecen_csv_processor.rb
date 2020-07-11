@@ -222,7 +222,7 @@ class CsvFile < CsvFiles
   attr_accessor :header, :list_of_registers, :header_error, :system_error, :data_hold, :dwelling_number, :sequence_in_household,
     :array_of_data_lines, :default_charset, :file, :file_name, :userid, :uploaded_date, :slurp_fail_message, :field_specification,
     :file_start, :file_locations, :data, :unique_locations, :unique_existing_locations, :full_dirname, :chapman_code, :traditional,
-    :all_existing_records, :total_files, :total_records, :total_data_errors, :total_header_errors, :place_id, :civil_parish,
+    :all_existing_records, :total_files, :total_records, :total_data_errors, :total_header_errors, :place_id, :civil_parish, :census_fields,
     :enumeration_district, :ecclesiastical_parish, :where_census_taken, :ward, :parliamentary_constituency, :poor_law_union, :police_district,
     :sanitary_district, :special_water_district, :scavenging_district, :special_lighting_district, :school_board, :folio, :page, :year,
     :piece, :schedule, :folio_suffix, :schedule_suffix, :total_errors, :total_warnings, :total_info, :header_line
@@ -289,6 +289,7 @@ class CsvFile < CsvFiles
     @dwelling_number = 0
     @sequence_in_household = 0
     @field_specication = {}
+    @census_fields = []
     @traditional = 2
     @header_line = ''
   end
@@ -305,7 +306,7 @@ class CsvFile < CsvFiles
     # p "finished file checking #{message}. <br>"
     return [false, message] unless success
 
-    success, message, @year, @piece = extract_piece_year_from_file_name(@file_name)
+    success, message, @year, @piece, @census_fields = extract_piece_year_from_file_name(@file_name)
     @chapman_code = @piece.district_chapman_code if @piece.present?
     @project.write_messages_to_all(message, true) unless success
     @project.write_messages_to_all("Working on #{@piece.name} for #{@year}, in #{@piece.district_chapman_code}.<br>", true) if success
@@ -349,7 +350,7 @@ class CsvFile < CsvFiles
     if FreecenValidations.valid_piece?(file_name)
       success = true
       message = ''
-      year, piece = Freecen2Piece.extract_year_and_piece(file_name)
+      year, piece, fields = Freecen2Piece.extract_year_and_piece(file_name)
       actual_piece = Freecen2Piece.where(year: year, number: piece.upcase).first
       if actual_piece.blank?
         message = "Error: there is no piece#{piece.upcase} in #{year} for #{file_name} in the database}. <br>"
@@ -359,7 +360,7 @@ class CsvFile < CsvFiles
       message = "Error: File name does not have a valid piece number. It is #{file_name}. <br>"
       success = false
     end
-    [success, message, year, actual_piece]
+    [success, message, year, actual_piece, fields]
   end
 
   def check_and_set_characterset(code_set, csvtxt)
@@ -740,9 +741,19 @@ class CsvRecords < CsvFile
         field_specification[n] = Freecen::FIELD_NAMES_CONVERSION[line[n].downcase]
       else
         success = false
-        message = message + "ERROR: column header at position #{n} is invalid  #{line[n]} "
+        message = message + "ERROR: column header at position #{n} is invalid  #{line[n]}.<br>"
       end
       n = n + 1
+    end
+    @csvfile.census_fields.each do |field|
+      next if field_specification.value?(field)
+      success = false
+      message = message + "ERROR: header field #{field} is missing from the spreadsheet for #{@csvfile.year}.<br>"
+    end
+    field_specification.values.each do |value|
+      next if @csvfile.census_fields.include?(value)
+      success = false
+      message = message + "ERROR: header field #{value} is not included in the spreadsheet for #{@csvfile.year}.<br>"
     end
     p field_specification
     [success, message, field_specification, line]

@@ -345,9 +345,9 @@ module FreecenValidations
 
       if age.present?
 
-        return [false, 'invalid use of Scholar'] if age =~ VALID_NUMBER && (age.to_i < 2 || age.to_i > 17) && field.downcase =~ /(scholar)/
+        return [false, 'unusual use of Scholar'] if age =~ VALID_NUMBER && (age.to_i < 2 || age.to_i > 17) && field.downcase =~ /(scholar)/
 
-        return [false, 'invalid use of Scholar'] if age.slice(-1).downcase == 'y' && (age[0...-1].to_i < 2 || age[0...-1].to_i > 17) && field.downcase =~ /(scholar)/
+        return [false, 'unusual use of Scholar'] if age.slice(-1).downcase == 'y' && (age[0...-1].to_i < 2 || age[0...-1].to_i > 17) && field.downcase =~ /(scholar)/
 
       end
       return [false, '?'] if field.slice(-1).downcase == '?'
@@ -498,10 +498,7 @@ module FreecenValidations
     end
 
     def rooms?(field, year)
-      return [true, ''] if field =~ VALID_NUMBER && year == '1901' && field.to_i <= 5
-
-      return [true, ''] if field =~ VALID_NUMBER && year == '1911' && field.to_i <= 19
-
+      return [true, ''] if field =~ VALID_NUMBER
       [false, 'invalid value']
     end
   end

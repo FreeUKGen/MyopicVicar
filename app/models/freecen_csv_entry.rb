@@ -908,6 +908,16 @@ class FreecenCsvEntry
               messageb = "ERROR: line #{num} Rooms #{record[:rooms]} is #{messagea}.<br>"
               message = message + messageb
               record[:error_messages] = record[:error_messages] + messageb
+            else
+              if record[:year] == '1901' && record[:rooms].to_i >= 5
+                messageb = "Warning: line #{num} Rooms #{record[:rooms]} is greater then 5.<br>"
+                message = message + messageb
+                record[:waring_messages] = record[:warning_messages] + messageb
+              elsif record[:year] == '1911' && record[:rooms].to_i > 20
+                messageb = "Warning: line #{num} Rooms #{record[:rooms]} is greater then 20.<br>"
+                message = message + messageb
+                record[:waring_messages] = record[:warning_messages] + messageb
+              end
             end
           else
             messageb = "ERROR: line #{num} Rooms #{record[:rooms]}} should not be included for #{record[:year]}.<br>"
@@ -1148,7 +1158,7 @@ class FreecenCsvEntry
           record[:warning_messages] = record[:warning_messages] + messageb
           record[:occupation_flag] = 'x'
           record[:occupation] = record[:occupation][0...-1]
-        elsif messagea == 'invalid use of Scholar'
+        elsif messagea == 'unusual use of Scholar'
           messageb = "Warning: line #{num} Occupation #{record[:occupation]} is #{messagea}.<br>"
           message = message + messageb
           record[:warning_messages] = record[:warning_messages] + messageb
