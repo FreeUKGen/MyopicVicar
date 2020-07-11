@@ -7,7 +7,7 @@ module FreecenValidations
   VALID_NUMBER_PLUS_SUFFIX = /\A\d+/
   VALID_ENUMERATOR_SPECIAL = /\A\d#\d\z/
   VALID_SPECIAL_LOCATION_CODES = %w[b n u v x].freeze
-  VALID_TEXT = /\A[\w\s,-]*\z/
+  VALID_TEXT = /\A[-\w\s,']*\z/
   VALID_NAME = /^[-A-Za-z0-9_()\.,'\s]*/
   VALID_PIECE = /\A(R|H)(G|O|S)/i
   VALID_AGE_MAXIMUM = { 'd' => 100, 'w' => 100, 'm' => 100, 'y' => 120, 'h' => 100, '?' => 100, 'years' => 120, 'months' => 100, 'weeks' => 100,
