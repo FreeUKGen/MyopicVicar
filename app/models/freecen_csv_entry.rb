@@ -186,10 +186,10 @@ class FreecenCsvEntry
           record[:civil_parish] = record[:civil_parish][0...-1]
           civil_parish = record[:civil_parish]
         elsif messagea == 'blank'
-          messagea = "ERROR: line #{num} Civil Parish is blank.<br> "
-          record[:error_messages] = record[:error_messages] + messagea
+          messageb = "ERROR: line #{num} Civil Parish is blank.<br> "
+          record[:error_messages] = record[:error_messages] + messageb
           new_civil_parish = previous_civil_parish
-          return [messagea, new_civil_parish]
+          return [messageb, new_civil_parish]
         elsif messagea == 'INVALID_TEXT'
           messagea = "ERROR: line #{num} Civil Parish has invalid text #{civil_parish}.<br>"
           record[:error_messages] = record[:error_messages] + messagea
@@ -243,9 +243,8 @@ class FreecenCsvEntry
         else
           new_enumeration_district = previous_enumeration_district
           messageb = "ERROR: line #{num} Enumeration District #{enumeration_district} is #{messagea}.<br>"
-          message = messagea + messageb
           record[:error_messages] = record[:error_messages] + messageb
-          return [message, new_enumeration_district]
+          return [messageb, new_enumeration_district]
         end
       end
 
@@ -303,9 +302,8 @@ class FreecenCsvEntry
           ecclesiastical_parish = record[:ecclesiastical_parish]
         else
           messageb = "ERROR: line #{num} Ecclesiastical Parish #{ecclesiastical_parish} is #{messagea}.<br>"
-          message = messagea + messageb
           record[:error_messages] = record[:error_messages] + messageb
-          return [message, new_ecclesiastical_parish]
+          return [messageb, new_ecclesiastical_parish]
         end
       end
       if previous_ecclesiastical_parish == ''
@@ -337,9 +335,8 @@ class FreecenCsvEntry
           where_census_taken = record[:where_census_taken]
         else
           messageb = "ERROR: line #{num} Where Census Taken #{where_census_taken} is #{messagea}.<br>"
-          message = messagea + messageb
           record[:error_messages] = record[:error_messages] + messageb
-          return [message, new_where_census_taken]
+          return [messageb, new_where_census_taken]
         end
       end
       if previous_where_census_taken == ''
@@ -371,9 +368,8 @@ class FreecenCsvEntry
           ward = record[:ward]
         else
           messageb = "ERROR: line #{num} Ward #{ward} is #{messagea}.<br>"
-          message = messagea + messageb
           record[:error_messages] = record[:error_messages] + messageb
-          return [message, new_ward]
+          return [messageb, new_ward]
         end
       end
       if previous_ward == ''
@@ -405,9 +401,8 @@ class FreecenCsvEntry
           parliamentary_constituency = record[:parliamentary_constituency]
         else
           messageb = "ERROR: line #{num} Parliamentary Constituency #{parliamentary_constituency} is #{messagea}.<br>"
-          message = messagea + messageb
           record[:error_messages] = record[:error_messages] + messageb
-          return [message, new_parliamentary_constituency]
+          return [messageb, new_parliamentary_constituency]
         end
       end
       if previous_parliamentary_constituency == ''
@@ -439,9 +434,8 @@ class FreecenCsvEntry
           new_poor_law_union = record[:poor_law_union]
         else
           messageb = "ERROR: line #{num} Poor Law Union #{poor_law_union} is #{messagea}.<br>"
-          message = messagea + messageb
           record[:error_messages] = record[:error_messages] + messageb
-          return [message, new_poor_law_union]
+          return [messageb, new_poor_law_union]
         end
       end
       if previous_poor_law_union == ''
@@ -473,9 +467,8 @@ class FreecenCsvEntry
           new_police_district = record[:police_district]
         else
           messageb = "ERROR: line #{num} Police District #{police_district} is #{messagea}.<br>"
-          message = messagea + messageb
           record[:error_messages] = record[:error_messages] + messageb
-          return [message, new_police_district]
+          return [messageb, new_police_district]
         end
       end
       if previous_police_district == ''
@@ -507,9 +500,8 @@ class FreecenCsvEntry
           sanitary_district = record[:sanitary_district]
         else
           messageb = "ERROR: line #{num} Sanitary District #{sanitary_district} is #{messagea}.<br>"
-          message = messagea + messageb
           record[:error_messages] = record[:error_messages] + messageb
-          return [message, new_sanitary_district]
+          return [messageb, new_sanitary_district]
         end
       end
       if previous_sanitary_district == ''
@@ -541,9 +533,8 @@ class FreecenCsvEntry
           special_water_district = record[:special_water_district]
         else
           messageb = "ERROR: line #{num} Special Water District #{special_water_district} is #{messagea}.<br>"
-          message = messagea + messageb
           record[:error_messages] = record[:error_messages] + messageb
-          return [message, new_special_water_district]
+          return [messageb, new_special_water_district]
         end
       end
       if previous_special_water_district == ''
@@ -575,9 +566,8 @@ class FreecenCsvEntry
           scavenging_district = record[:scavenging_district]
         else
           messageb = "ERROR: line #{num} Scavenging District #{scavenging_district} is #{messagea}.<br>"
-          message = messagea + messageb
           record[:error_messages] = record[:error_messages] + messageb
-          return [message, new_scavenging_district]
+          return [messageb, new_scavenging_district]
         end
       end
       if previous_scavenging_district == ''
@@ -609,9 +599,8 @@ class FreecenCsvEntry
           special_lighting_district = record[:special_lighting_district]
         else
           mmessageb = "ERROR: line #{num} Special Lighting District #{special_lighting_district} is #{messagea}.<br>"
-          message = messagea + messageb
           record[:error_messages] = record[:error_messages] + messageb
-          return [message, new_special_lighting_district]
+          return [messageb, new_special_lighting_district]
         end
       end
       if previous_special_lighting_district == ''
@@ -643,9 +632,8 @@ class FreecenCsvEntry
           school_board = record[:school_board]
         else
           messageb = "ERROR: line #{num} School Board #{school_board} is #{messagea}.<br>"
-          message = messagea + messageb
           record[:error_messages] = record[:error_messages] + messageb
-          return [message, new_school_board]
+          return [messageb, new_school_board]
         end
       end
       if previous_school_board == ''

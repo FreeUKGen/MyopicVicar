@@ -979,7 +979,7 @@ class CsvRecord < CsvRecords
   def extract_location_flag
     message = FreecenCsvEntry.validate_location_flag(@data_record)
     @project.write_messages_to_all(message, true) unless message == ''
-    extract_folio_fields
+    @csvfile.year == '1911' ? extract_dwelling_fields : extract_folio_fields
   end
 
   def extract_folio_fields
