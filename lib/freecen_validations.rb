@@ -351,13 +351,21 @@ module FreecenValidations
         return [false, 'unusual use of Scholar'] if age.slice(-1).downcase == 'y' && (age[0...-1].to_i < 2 || age[0...-1].to_i > 17) && field.downcase =~ /(scholar)/
 
       end
-      return [false, '?'] if field.slice(-1).downcase == '?'
+
+      unless field.match? VALID_NAME
+        if field[-1] == '?' && (field.chomp('?').match? VALID_NAME)
+          return [false, '?']
+        else
+          return [false, 'INVALID_TEXT']
+        end
+      end
 
       [true, '']
     end
 
     def industry?(field)
       return [true, ''] if field.blank?
+
       unless field.match? VALID_TEXT
         if field[-1] == '?' && (field.chomp('?').match? VALID_TEXT)
           return [false, '?']
