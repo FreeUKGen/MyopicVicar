@@ -9,6 +9,7 @@ module FreecenValidations
   VALID_SPECIAL_LOCATION_CODES = %w[b n u v x].freeze
   VALID_TEXT = /\A[-\w\s,']*\z/
   VALID_NAME = /^[-A-Za-z0-9_()\.,'\s]*/
+  VALID_NAME_PLUS = /^[-A-Za-z0-9_()?\.,'\s]*/
   VALID_PIECE = /\A(R|H)(G|O|S)/i
   VALID_AGE_MAXIMUM = { 'd' => 100, 'w' => 100, 'm' => 100, 'y' => 120, 'h' => 100, '?' => 100, 'years' => 120, 'months' => 100, 'weeks' => 100,
                         'days' => 100, 'hours' => 100 }.freeze
@@ -478,13 +479,7 @@ module FreecenValidations
     def notes?(field)
       return [true, ''] if field.blank?
 
-      unless field.match? VALID_TEXT
-        if field[-1] == '?' && (field.chomp('?').match? VALID_TEXT)
-          return [false, '?']
-        else
-          return [false, 'INVALID_TEXT']
-        end
-      end
+      return [false, 'INVALID_TEXT'] unless field.match? VALID_TEXT_PLUS
 
       [true, '']
     end
