@@ -350,7 +350,7 @@ class CsvFile < CsvFiles
     if FreecenValidations.valid_piece?(file_name)
       success = true
       message = ''
-      year, piece, fields = Freecen2Piece.extract_year_and_piece(file_name)
+      year, piece, fields = Freecen2Piece.extract_year_and_piece(file_name, @chapman_code)
       actual_piece = Freecen2Piece.where(year: year, number: piece.upcase).first
       if actual_piece.blank?
         message = "Error: there is no piece#{piece.upcase} in #{year} for #{file_name} in the database}. <br>"
@@ -746,6 +746,7 @@ class CsvRecords < CsvFile
       n = n + 1
     end
     @csvfile.census_fields.each do |field|
+      next if field == 'language' && (ChapmanCode::CODES['England'].member?(@csvfile.chapman_code) || @csvfile.chapman_code == 'IOM')
       next if field_specification.value?(field)
       success = false
       message = message + "ERROR: header field #{field} is missing from the spreadsheet for #{@csvfile.year}.<br>"

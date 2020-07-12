@@ -1,15 +1,15 @@
 module FreecenValidations
 
   VALID_UCF = /[\}\{\?\*\_\]\[\,]/
-  VALID_NAME = /[\w\'\"\ \.\;\:]/
+  BROAD_VALID_TEXT = /[\w\'\"\ \.\;\:]/
   VALID_NUMERIC = /\d/
   VALID_NUMBER  = /\A\d+\z/
   VALID_NUMBER_PLUS_SUFFIX = /\A\d+/
   VALID_ENUMERATOR_SPECIAL = /\A\d#\d\z/
   VALID_SPECIAL_LOCATION_CODES = %w[b n u v x].freeze
-  VALID_TEXT = /\A[-\w\s,']*\z/
-  VALID_NAME = /^[-A-Za-z0-9_()\.,&'\s]*/
-  VALID_NAME_PLUS = /^[-A-Za-z0-9_()?\.,&'\s]*/
+  NARROW_VALID_TEXT = /\A[-\w\s,']*\z/
+  BROAD_VALID_TEXT = /^[-A-Za-z0-9_()\.,&'\s]*/
+  BROAD_VALID_TEXT_PLUS = /^[-A-Za-z0-9_()?\.,&'\s]*/
   VALID_PIECE = /\A(R|H)(G|O|S)/i
   VALID_AGE_MAXIMUM = { 'd' => 100, 'w' => 100, 'm' => 100, 'y' => 120, 'h' => 100, '?' => 100, 'years' => 120, 'months' => 100, 'weeks' => 100,
                         'days' => 100, 'hours' => 100 }.freeze
@@ -36,14 +36,14 @@ module FreecenValidations
       true
     end
 
-    def valid_civil_parish?(field)
+    def valid_location?(field)
       return [false, 'blank'] if field.blank?
 
-      unless field.match? VALID_TEXT
-        if field[-1] == '?' && (field.chomp('?').match? VALID_TEXT)
+      unless field.match? NARROW_VALID_TEXT
+        if field[-1] == '?' && (field.chomp('?').match? NARROW_VALID_TEXT)
           return [false, '?']
         else
-          return [false, 'INVALID_TEXT']
+          return [false, 'invalid text']
         end
       end
 
@@ -51,7 +51,7 @@ module FreecenValidations
     end
 
     def enumeration_district?(field)
-      return [true, ''] if field.blank?
+      return [false, 'blank'] if field.blank?
 
       return [true, ''] if field =~ VALID_NUMBER
 
@@ -65,11 +65,11 @@ module FreecenValidations
     def text?(field)
       return [true, ''] if field.blank?
 
-      unless field.match? VALID_TEXT
-        if field[-1] == '?' && (field.chomp('?').match? VALID_TEXT)
+      unless field.match? NARROW_VALID_TEXT
+        if field[-1] == '?' && (field.chomp('?').match? NARROW_VALID_TEXT)
           return [false, '?']
         else
-          return [false, 'INVALID_TEXT']
+          return [false, 'invalid text']
         end
       end
 
@@ -124,15 +124,20 @@ module FreecenValidations
     def house_address?(field)
       return [true, ''] if field.blank?
 
-      unless field.match? VALID_NAME
-        if field[-1] == '?' && (field.chomp('?').match? VALID_NAME)
+      unless field.match? BROAD_VALID_TEXT
+        if field[-1] == '?' && (field.chomp('?').match? BROAD_VALID_TEXT)
           return [false, '?']
         else
-          return [false, 'INVALID_TEXT']
+          return [false, 'invalid text']
         end
       end
 
       [true, '']
+    end
+
+    def rooms?(field, year)
+      return [true, ''] if field =~ VALID_NUMBER
+      [false, 'invalid value']
     end
 
     def walls?(field)
@@ -162,11 +167,11 @@ module FreecenValidations
     def class_of_house?(field)
       return [true, ''] if field.blank?
 
-      unless field.match? VALID_TEXT
-        if field[-1] == '?' && (field.chomp('?').match? VALID_TEXT)
+      unless field.match? NARROW_VALID_TEXT
+        if field[-1] == '?' && (field.chomp('?').match? NARROW_VALID_TEXT)
           return [false, '?']
         else
-          return [false, 'INVALID_TEXT']
+          return [false, 'invalid text']
         end
       end
 
@@ -193,11 +198,11 @@ module FreecenValidations
     def surname?(field)
       return [false, 'blank'] if field.blank?
 
-      unless field.match? VALID_NAME
-        if field[-1] == '?' && (field.chomp('?').match? VALID_NAME)
+      unless field.match? BROAD_VALID_TEXT
+        if field[-1] == '?' && (field.chomp('?').match? BROAD_VALID_TEXT)
           return [false, '?']
         else
-          return [false, 'INVALID_TEXT']
+          return [false, 'invalid text']
         end
       end
 
@@ -207,11 +212,11 @@ module FreecenValidations
     def forenames?(field)
       return [false, 'blank'] if field.blank?
 
-      unless field.match? VALID_NAME
-        if field[-1] == '?' && (field.chomp('?').match? VALID_NAME)
+      unless field.match? BROAD_VALID_TEXT
+        if field[-1] == '?' && (field.chomp('?').match? BROAD_VALID_TEXT)
           return [false, '?']
         else
-          return [false, 'INVALID_TEXT']
+          return [false, 'invalid text']
         end
       end
       [true, '']
@@ -228,11 +233,11 @@ module FreecenValidations
     def relationship?(field)
       return [true, ''] if field.blank?
 
-      unless field.match? VALID_TEXT
-        if field[-1] == '?' && (field.chomp('?').match? VALID_TEXT)
+      unless field.match? NARROW_VALID_TEXT
+        if field[-1] == '?' && (field.chomp('?').match? NARROW_VALID_TEXT)
           return [false, '?']
         else
-          return [false, 'INVALID_TEXT']
+          return [false, 'invalid text']
         end
       end
 
@@ -309,11 +314,11 @@ module FreecenValidations
 
     def religion?(field)
       return [true, ''] if field.blank?
-      unless field.match? VALID_TEXT
-        if field[-1] == '?' && (field.chomp('?').match? VALID_TEXT)
+      unless field.match? NARROW_VALID_TEXT
+        if field[-1] == '?' && (field.chomp('?').match? NARROW_VALID_TEXT)
           return [false, '?']
         else
-          return [false, 'INVALID_TEXT']
+          return [false, 'invalid text']
         end
       end
 
@@ -322,11 +327,11 @@ module FreecenValidations
 
     def read_write?(field)
       return [true, ''] if field.blank?
-      unless field.match? VALID_TEXT
-        if field[-1] == '?' && (field.chomp('?').match? VALID_TEXT)
+      unless field.match? NARROW_VALID_TEXT
+        if field[-1] == '?' && (field.chomp('?').match? NARROW_VALID_TEXT)
           return [false, '?']
         else
-          return [false, 'INVALID_TEXT']
+          return [false, 'invalid text']
         end
       end
 
@@ -352,11 +357,11 @@ module FreecenValidations
 
       end
 
-      unless field.match? VALID_NAME
-        if field[-1] == '?' && (field.chomp('?').match? VALID_NAME)
+      unless field.match? BROAD_VALID_TEXT
+        if field[-1] == '?' && (field.chomp('?').match? BROAD_VALID_TEXT)
           return [false, '?']
         else
-          return [false, 'INVALID_TEXT']
+          return [false, 'invalid text']
         end
       end
 
@@ -366,11 +371,11 @@ module FreecenValidations
     def industry?(field)
       return [true, ''] if field.blank?
 
-      unless field.match? VALID_TEXT
-        if field[-1] == '?' && (field.chomp('?').match? VALID_TEXT)
+      unless field.match? NARROW_VALID_TEXT
+        if field[-1] == '?' && (field.chomp('?').match? NARROW_VALID_TEXT)
           return [false, '?']
         else
-          return [false, 'INVALID_TEXT']
+          return [false, 'invalid text']
         end
       end
 
@@ -381,6 +386,14 @@ module FreecenValidations
       return [true, ''] if field.blank?
 
       return [true, ''] if field.length == 1 && ['e', 'r', 'n'].include?(field.downcase)
+
+      [false, 'invalid value']
+    end
+
+    def at_home?(field)
+      return [true, ''] if field.downcase == 'h' && field.length == 1
+
+      return [true, ''] if field.downcase == 'at home' && field.length == 7
 
       [false, 'invalid value']
     end
@@ -404,11 +417,11 @@ module FreecenValidations
     def verbatim_birth_place?(field)
       return [false, 'blank'] if field.blank?
 
-      unless field.match? VALID_TEXT
-        if field[-1] == '?' && (field.chomp('?').match? VALID_TEXT)
+      unless field.match? BROAD_VALID_TEXT
+        if field[-1] == '?' && (field.chomp('?').match? BROAD_VALID_TEXT)
           return [false, '?']
         else
-          return [false, 'INVALID_TEXT']
+          return [false, 'invalid text']
         end
       end
 
@@ -417,11 +430,11 @@ module FreecenValidations
 
     def nationality?(field)
       return [true, ''] if field.blank?
-      unless field.match? VALID_TEXT
-        if field[-1] == '?' && (field.chomp('?').match? VALID_TEXT)
+      unless field.match? NARROW_VALID_TEXT
+        if field[-1] == '?' && (field.chomp('?').match? NARROW_VALID_TEXT)
           return [false, '?']
         else
-          return [false, 'INVALID_TEXT']
+          return [false, 'invalid text']
         end
       end
 
@@ -429,11 +442,11 @@ module FreecenValidations
     end
 
     def father_place_of_birth?(field)
-      unless field.match? VALID_TEXT
-        if field[-1] == '?' && (field.chomp('?').match? VALID_TEXT)
+      unless field.match? BROAD_VALID_TEXT
+        if field[-1] == '?' && (field.chomp('?').match? BROAD_VALID_TEXT)
           return [false, '?']
         else
-          return [false, 'INVALID_TEXT']
+          return [false, 'invalid text']
         end
       end
 
@@ -459,11 +472,11 @@ module FreecenValidations
     def disability?(field)
       return [true, ''] if field.blank?
 
-      unless field.match? VALID_TEXT
-        if field[-1] == '?' && (field.chomp('?').match? VALID_TEXT)
+      unless field.match? BROAD_VALID_TEXT
+        if field[-1] == '?' && (field.chomp('?').match? BROAD_VALID_TEXT)
           return [false, '?']
         else
-          return [false, 'INVALID_TEXT']
+          return [false, 'invalid text']
         end
       end
 
@@ -473,11 +486,11 @@ module FreecenValidations
     def disability_notes?(field)
       return [true, ''] if field.blank?
 
-      unless field.match? VALID_TEXT
-        if field[-1] == '?' && (field.chomp('?').match? VALID_TEXT)
+      unless field.match? BROAD_VALID_TEXT
+        if field[-1] == '?' && (field.chomp('?').match? BROAD_VALID_TEXT)
           return [false, '?']
         else
-          return [false, 'INVALID_TEXT']
+          return [false, 'invalid text']
         end
       end
 
@@ -487,22 +500,9 @@ module FreecenValidations
     def notes?(field)
       return [true, ''] if field.blank?
 
-      return [false, 'INVALID_TEXT'] unless field.match? VALID_NAME_PLUS
+      return [false, 'invalid text'] unless field.match? BROAD_VALID_TEXT_PLUS
 
       [true, '']
-    end
-
-    def at_home?(field)
-      return [true, ''] if field.downcase == 'h' && field.length == 1
-
-      return [true, ''] if field.downcase == 'at home' && field.length == 7
-
-      [false, 'invalid value']
-    end
-
-    def rooms?(field, year)
-      return [true, ''] if field =~ VALID_NUMBER
-      [false, 'invalid value']
     end
   end
 end
