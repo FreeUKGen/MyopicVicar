@@ -8,6 +8,7 @@ module FreecenValidations
   VALID_ENUMERATOR_SPECIAL = /\A\d#\d\z/
   VALID_SPECIAL_LOCATION_CODES = %w[b n u v x].freeze
   NARROW_VALID_TEXT = /\A[-\w\s,']*\z/
+  NARROW_VALID_TEXT_PLUS = /\A[-\w\s,'\.]*\z/
   BROAD_VALID_TEXT = /^[-A-Za-z0-9_()\.,&'\s]*/
   BROAD_VALID_TEXT_PLUS = /^[-A-Za-z0-9_()?\.,&'\s]*/
   VALID_PIECE = /\A(R|H)(G|O|S)/i
@@ -419,6 +420,20 @@ module FreecenValidations
 
       unless field.match? BROAD_VALID_TEXT
         if field[-1] == '?' && (field.chomp('?').match? BROAD_VALID_TEXT)
+          return [false, '?']
+        else
+          return [false, 'invalid text']
+        end
+      end
+
+      [true, '']
+    end
+
+    def birth_place?(field)
+      return [false, 'blank'] if field.blank?
+
+      unless field.match? NARROW_VALID_TEXT_PLUS
+        if field[-1] == '?' && (field.chomp('?').match? NARROW_VALID_TEXT_PLUS)
           return [false, '?']
         else
           return [false, 'invalid text']

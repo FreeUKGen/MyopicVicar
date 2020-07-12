@@ -1261,7 +1261,7 @@ class FreecenCsvEntry
           record[:error_messages] = record[:error_messages] + messageb
         end
       else
-        success, messagea = FreecenValidations.verbatim_birth_place?(record[:birth_place])
+        success, messagea = FreecenValidations.birth_place?(record[:birth_place])
         unless success || messagea == 'blank'
           messageb = "ERROR: line #{num} Birth Place #{record[:birth_place]} is #{messagea}.<br>"
           message = message + messageb
