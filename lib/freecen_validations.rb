@@ -487,7 +487,7 @@ module FreecenValidations
     def notes?(field)
       return [true, ''] if field.blank?
 
-      return [false, 'INVALID_TEXT'] unless field.match? VALID_TEXT_PLUS
+      return [false, 'INVALID_TEXT'] unless field.match? VALID_NAME_PLUS
 
       [true, '']
     end
