@@ -1018,7 +1018,7 @@ class FreecenCsvEntry
 
       success, messagea = FreecenValidations.name_question?(record[:name_flag])
       unless success
-        messageb = "ERROR: line #{num} Name Uncertainty #{record[:name_flag]} is #{messagea}.<br>"
+        messageb = "ERROR: line #{num} Name Flag #{record[:name_flag]} is #{messagea}.<br>"
         message = message + messageb
         record[:error_messages] = record[:error_messages] + messageb
       end
