@@ -1,7 +1,6 @@
 module FreecenValidations
 
   VALID_UCF = /[\}\{\?\*\_\]\[\,]/
-  BROAD_VALID_TEXT = /[\w\'\"\ \.\;\:]/
   VALID_NUMERIC = /\d/
   VALID_NUMBER  = /\A\d+\z/
   VALID_NUMBER_PLUS_SUFFIX = /\A\d+/
@@ -9,7 +8,7 @@ module FreecenValidations
   VALID_SPECIAL_LOCATION_CODES = %w[b n u v x].freeze
   NARROW_VALID_TEXT = /\A[-\w\s,']*\z/
   NARROW_VALID_TEXT_PLUS = /\A[-\w\s,'\.]*\z/
-  BROAD_VALID_TEXT = /^[-A-Za-z0-9_()\.,&'\s]*/
+  BROAD_VALID_TEXT = /^[-A-Za-z0-9_()\.,&'":;\s]*/
   BROAD_VALID_TEXT_PLUS = /^[-A-Za-z0-9_()?\.,&'\s]*/
   VALID_PIECE = /\A(R|H)(G|O|S)/i
   VALID_AGE_MAXIMUM = { 'd' => 100, 'w' => 100, 'm' => 100, 'y' => 120, 'h' => 100, '?' => 100, 'years' => 120, 'months' => 100, 'weeks' => 100,
@@ -38,7 +37,7 @@ module FreecenValidations
     end
 
     def valid_location?(field)
-      return [false, 'blank'] if field.blank?
+      return [false, 'blank'] if field.empty?
 
       unless field.match? NARROW_VALID_TEXT
         if field[-1] == '?' && (field.chomp('?').match? NARROW_VALID_TEXT)
@@ -372,8 +371,8 @@ module FreecenValidations
     def industry?(field)
       return [true, ''] if field.blank?
 
-      unless field.match? NARROW_VALID_TEXT
-        if field[-1] == '?' && (field.chomp('?').match? NARROW_VALID_TEXT)
+      unless field.match? BROAD_VALID_TEXT
+        if field[-1] == '?' && (field.chomp('?').match? BROAD_VALID_TEXT)
           return [false, '?']
         else
           return [false, 'invalid text']
@@ -445,6 +444,7 @@ module FreecenValidations
 
     def nationality?(field)
       return [true, ''] if field.blank?
+
       unless field.match? NARROW_VALID_TEXT
         if field[-1] == '?' && (field.chomp('?').match? NARROW_VALID_TEXT)
           return [false, '?']
@@ -457,6 +457,8 @@ module FreecenValidations
     end
 
     def father_place_of_birth?(field)
+      return [true, ''] if field.blank?
+
       unless field.match? BROAD_VALID_TEXT
         if field[-1] == '?' && (field.chomp('?').match? BROAD_VALID_TEXT)
           return [false, '?']

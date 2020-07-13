@@ -176,15 +176,17 @@ class FreecenCsvEntry
       num = record[:record_number]
       info_messages = record[:messages]
       new_civil_parish = civil_parish
+      message = ''
       success, messagea = FreecenValidations.valid_location?(civil_parish)
 
       unless success
         if messagea == '?'
           messagea = "Warning: line #{num} Civil Parish #{civil_parish}  has trailing ?. Removed and location_flag set.<br>"
-          record[:warning_messages] = record[:warning_messages] + messagea
+          record[:warning_messages] += messagea
           record[:location_flag] = 'x'
-          record[:civil_parish] = record[:civil_parish][0...-1]
-          civil_parish = record[:civil_parish]
+          record[:civil_parish] = record[:civil_parish][0...-1].strip
+          new_civil_parish = record[:civil_parish]
+          message += messagea
         elsif messagea == 'blank'
           messageb = "ERROR: line #{num} Civil Parish is blank.<br> "
           record[:error_messages] = record[:error_messages] + messageb
@@ -205,20 +207,19 @@ class FreecenCsvEntry
         break if valid
       end
       unless valid
-        message = "ERROR: line #{num} Civil Parish #{record[:civil_parish]} is not in the list of Civil Parishes.<br>"
-        record[:error_messages] = record[:error_messages] + message
+        message += "ERROR: line #{num} Civil Parish #{record[:civil_parish]} is not in the list of Civil Parishes.<br>"
+        record[:error_messages] += message
       end
 
       if previous_civil_parish == ''
-        message = "Info: line #{num} New Civil Parish #{record[:civil_parish]}.<br>" if info_messages
-        record[:info_messages] = record[:info_messages] + message if info_messages
+        messagea = "Info: line #{num} New Civil Parish #{record[:civil_parish]}.<br>" if info_messages
       elsif previous_civil_parish == record[:civil_parish]
-        message = "Info: line #{num} Civil Parish has remained the same #{record[:civil_parish]}.<br>"  if info_messages
-        record[:info_messages] = record[:info_messages] + message if info_messages
-      else
-        message = "Info: line #{num} Civil Parish has changed to #{record[:civil_parish]}.<br>"  if info_messages
-        record[:info_messages] = record[:info_messages] + message if info_messages
+        messagea = "Info: line #{num} Civil Parish has remained the same #{record[:civil_parish]}.<br>" if info_messages
+      elsif info_messages
+        messagea = "Info: line #{num} Civil Parish has changed to #{record[:civil_parish]}.<br>"
       end
+      record[:info_messages] += messagea if info_messages
+      message += messagea if messagea.present?
       [message, new_civil_parish]
     end
 
@@ -236,10 +237,11 @@ class FreecenCsvEntry
       unless success
         if messagea == '?'
           messagea = "Warning: line #{num} Enumeration District #{enumeration_district}  has trailing ?. Removed and location_flag set.<br>"
-          record[:warning_messages] = record[:warning_messages] + messagea
+          record[:warning_messages] += messagea
           record[:location_flag] = 'x'
           record[:enumeration_district] = record[:enumeration_district][0...-1]
           enumeration_district = record[:enumeration_district]
+          message += messagea
         else
           new_enumeration_district = previous_enumeration_district
           messageb = "ERROR: line #{num} Enumeration District #{enumeration_district} is #{messagea}.<br>"
@@ -259,11 +261,11 @@ class FreecenCsvEntry
       elsif previous_enumeration_district == enumeration_district
       else
         message = "Info: line #{num} Enumeration District changed to #{enumeration_district}.<br>" if special.blank? && enumeration_district.present? && info_messages
-        record[:info_messages] = record[:info_messages] + message if special.blank? && enumeration_district.present? && info_messages
+        record[:info_messages] += message if special.blank? && enumeration_district.present? && info_messages
         message = "Info: line #{num} Enumeration District changed to blank.<br>" if special.blank? && enumeration_district.blank? && info_messages
-        record[:info_messages] = record[:info_messages] + message if special.blank? && enumeration_district.blank?  && info_messages
+        record[:info_messages] += message if special.blank? && enumeration_district.blank?  && info_messages
         message = "Info: line #{num} Enumeration District changed to #{Freecen::SpecialEnumerationDistricts::CODES[special.to_i]}.<br>" if special.present? && info_messages
-        record[:info_messages] = record[:info_messages] + message if special.present?  && info_messages
+        record[:info_messages] += message if special.present? && info_messages
         new_enumeration_district = enumeration_district
       end
       [message, new_enumeration_district]
@@ -289,371 +291,403 @@ class FreecenCsvEntry
 
     def validate_ecclesiastical_parish(record, previous_ecclesiastical_parish)
       ecclesiastical_parish = record[:ecclesiastical_parish]
-      num = record[:num]
+      num = record[:record_number]
       new_ecclesiastical_parish = previous_ecclesiastical_parish
       info_messages = record[:messages]
+      message = ''
       success, messagea = FreecenValidations.valid_location?(ecclesiastical_parish)
       unless success
         if messagea == '?'
           messagea = "Warning: line #{num} Ecclesiastical Parish #{ecclesiastical_parish}  has trailing ?. Removed and location_flag set.<br>"
-          record[:warning_messages] = record[:warning_messages] + messagea
+          record[:warning_messages] += messagea
           record[:location_flag] = 'x'
-          record[:ecclesiastical_parish] = record[:ecclesiastical_parish][0...-1]
+          record[:ecclesiastical_parish] = record[:ecclesiastical_parish][0...-1].strip
           ecclesiastical_parish = record[:ecclesiastical_parish]
+          message += messagea
         else
           messageb = "ERROR: line #{num} Ecclesiastical Parish #{ecclesiastical_parish} is #{messagea}.<br>"
-          record[:error_messages] = record[:error_messages] + messageb
+          record[:error_messages] += messageb
           return [messageb, new_ecclesiastical_parish]
         end
       end
       if previous_ecclesiastical_parish == ''
-        message = "Info: line #{num} New Ecclesiastical Parish #{ecclesiastical_parish}.<br>" if info_messages
-        record[:info_messages] = record[:info_messages] + message if info_messages
+        messagea = "Info: line #{num} New Ecclesiastical Parish #{ecclesiastical_parish}.<br>" if info_messages
+        record[:info_messages] += messagea if info_messages
         new_ecclesiastical_parish = ecclesiastical_parish
       elsif ecclesiastical_parish.blank?
       elsif previous_ecclesiastical_parish == ecclesiastical_parish
       else
-        message = "Info: line #{num} Ecclesiastical Parish changed to #{ecclesiastical_parish}.<br>" if info_messages
-        record[:info_messages] = record[:info_messages] + message if info_messages
+        messagea = "Info: line #{num} Ecclesiastical Parish changed to #{ecclesiastical_parish}.<br>" if info_messages
+        record[:info_messages] += message if info_messages
         new_ecclesiastical_parish = ecclesiastical_parish
       end
+      message += messagea if messagea.present?
       [message, new_ecclesiastical_parish]
     end
 
     def validate_where_census_taken(record, previous_where_census_taken)
       where_census_taken = record[:where_census_taken]
-      num = record[:num]
+      num = record[:record_number]
       new_where_census_taken = previous_where_census_taken
       info_messages = record[:messages]
+      message = ''
       success, messagea = FreecenValidations.valid_location?(where_census_taken)
       unless success
         if messagea == '?'
           messagea = "Warning: line #{num} Where Census Taken #{where_census_taken}  has trailing ?. Removed and location_flag set.<br>"
-          record[:warning_messages] = record[:warning_messages] + messagea
+          record[:warning_messages] += messagea
           record[:location_flag] = 'x'
-          record[:where_census_taken] = record[:where_census_taken][0...-1]
+          record[:where_census_taken] = record[:where_census_taken][0...-1].strip
           where_census_taken = record[:where_census_taken]
+          message += messagea
         else
           messageb = "ERROR: line #{num} Where Census Taken #{where_census_taken} is #{messagea}.<br>"
-          record[:error_messages] = record[:error_messages] + messageb
+          record[:error_messages] += messageb
           return [messageb, new_where_census_taken]
         end
       end
       if previous_where_census_taken == ''
-        message = "Info: line #{num} New Where Census Taken #{where_census_taken}.<br>" if info_messages
-        record[:info_messages] = record[:info_messages] + message if info_messages
+        messagea = "Info: line #{num} New Where Census Taken #{where_census_taken}.<br>" if info_messages
+        record[:info_messages] += messagea if info_messages
         new_where_census_taken = where_census_taken
       elsif where_census_taken.blank?
       elsif previous_where_census_taken == where_census_taken
       else
         message = "Info: line #{num} Where Census Taken changed to #{where_census_taken}.<br>" if info_messages
-        record[:info_messages] = record[:info_messages] + message if info_messages
+        record[:info_messages] += messagea if info_messages
         new_where_census_taken = where_census_taken
       end
+      message += messagea if messagea.present?
       [message, new_where_census_taken]
     end
 
     def validate_ward(record, previous_ward)
       ward = record[:ward]
-      num = record[:num]
+      num = record[:record_number]
       new_ward = previous_ward
       info_messages = record[:messages]
+      message = ''
       success, messagea = FreecenValidations.valid_location?(ward)
       unless success
         if messagea == '?'
           messagea = "Warning: line #{num} Ward #{ward}  has trailing ?. Removed and location_flag set.<br>"
-          record[:warning_messages] = record[:warning_messages] + messagea
+          record[:warning_messages] += messagea
           record[:location_flag] = 'x'
-          record[:ward] = record[:ward][0...-1]
+          record[:ward] = record[:ward][0...-1].strip
           ward = record[:ward]
+          message += messagea
         else
           messageb = "ERROR: line #{num} Ward #{ward} is #{messagea}.<br>"
-          record[:error_messages] = record[:error_messages] + messageb
+          record[:error_messages] += messageb
           return [messageb, new_ward]
         end
       end
       if previous_ward == ''
-        message = "Info: line #{num} New Ward #{ward}.<br>" if info_messages
-        record[:info_messages] = record[:info_messages] + message if info_messages
+        messagea = "Info: line #{num} New Ward #{ward}.<br>" if info_messages
+        record[:info_messages] += messagea if info_messages
         new_ward = ward
       elsif ward.blank?
       elsif previous_ward == ward
       else
-        message = "Info: line #{num} Municipal Borough changed to #{ward}.<br>" if info_messages
-        record[:info_messages] = record[:info_messages] + message if info_messages
+        messagea = "Info: line #{num} Municipal Borough changed to #{ward}.<br>" if info_messages
+        record[:info_messages] += messagea if info_messages
         new_ward = ward
       end
+      message += messagea if messagea.present?
       [message, new_ward]
     end
 
     def validate_parliamentary_constituency(record, previous_parliamentary_constituency)
       parliamentary_constituency = record[:parliamentary_constituency]
-      num = record[:num]
+      num = record[:record_number]
       new_parliamentary_constituency = previous_parliamentary_constituency
       info_messages = record[:messages]
+      message = ''
       success, messagea = FreecenValidations.valid_location?(parliamentary_constituency)
       unless success
         if messagea == '?'
           messagea = "Warning: line #{num} Parliamentary Constituency #{parliamentary_constituency}  has trailing ?. Removed and location_flag set.<br>"
-          record[:warning_messages] = record[:warning_messages] + messagea
+          record[:warning_messages] += messagea
           record[:location_flag] = 'x'
-          record[:parliamentary_constituency] = record[:parliamentary_constituency][0...-1]
+          record[:parliamentary_constituency] = record[:parliamentary_constituency][0...-1].strip
           parliamentary_constituency = record[:parliamentary_constituency]
+          message += messagea
         else
           messageb = "ERROR: line #{num} Parliamentary Constituency #{parliamentary_constituency} is #{messagea}.<br>"
-          record[:error_messages] = record[:error_messages] + messageb
+          record[:error_messages] += messageb
           return [messageb, new_parliamentary_constituency]
         end
       end
       if previous_parliamentary_constituency == ''
-        message = "Info: line #{num} New Parliamentary Constituency #{parliamentary_constituency}.<br>" if info_messages
-        record[:info_messages] = record[:info_messages] + message if info_messages
+        messagea = "Info: line #{num} New Parliamentary Constituency #{parliamentary_constituency}.<br>" if info_messages
+        record[:info_messages] += messagea if info_messages
         new_parliamentary_constituency = parliamentary_constituency
       elsif parliamentary_constituency.blank?
       elsif previous_parliamentary_constituency == parliamentary_constituency
       else
-        message = "Info: line #{num} Parliamentary Constituency changed to #{parliamentary_constituency}.<br>" if info_messages
-        record[:info_messages] = record[:info_messages] + message if info_messages
+        messagea = "Info: line #{num} Parliamentary Constituency changed to #{parliamentary_constituency}.<br>" if info_messages
+        record[:info_messages] += messagea if info_messages
         new_parliamentary_constituency = parliamentary_constituency
       end
+      message += messagea if messagea.present?
       [message, new_parliamentary_constituency]
     end
 
     def validate_poor_law_union(record, previous_poor_law_union)
       poor_law_union = record[:poor_law_union]
-      num = record[:num]
+      num = record[:record_number]
       new_poor_law_union = previous_poor_law_union
       info_messages = record[:messages]
+      message = ''
       success, messagea = FreecenValidations.valid_location?(poor_law_union)
       unless success
         if messagea == '?'
           messagea = "Warning: line #{num} Poor Law Union #{poor_law_union}  has trailing ?. Removed and location_flag set.<br>"
-          record[:warning_messages] = record[:warning_messages] + messagea
+          record[:warning_messages] += messagea
           record[:location_flag] = 'x'
-          record[:poor_law_union] = record[:poor_law_union][0...-1]
+          record[:poor_law_union] = record[:poor_law_union][0...-1].strip
           new_poor_law_union = record[:poor_law_union]
+          message += messagea
         else
           messageb = "ERROR: line #{num} Poor Law Union #{poor_law_union} is #{messagea}.<br>"
-          record[:error_messages] = record[:error_messages] + messageb
+          record[:error_messages] += messageb
           return [messageb, new_poor_law_union]
         end
       end
       if previous_poor_law_union == ''
-        message = "Info: line #{num} New Poor Law Union #{poor_law_union}.<br>" if info_messages
-        record[:info_messages] = record[:info_messages] + message if info_messages
+        messagea = "Info: line #{num} New Poor Law Union #{poor_law_union}.<br>" if info_messages
+        record[:info_messages] += messagea if info_messages
         new_poor_law_union = poor_law_union
       elsif poor_law_union.blank?
       elsif previous_poor_law_union == poor_law_union
       else
-        message = "Info: line #{num} Poor Law Union changed to #{poor_law_union}.<br>" if info_messages
-        record[:info_messages] = record[:info_messages] + message if info_messages
+        messagea = "Info: line #{num} Poor Law Union changed to #{poor_law_union}.<br>" if info_messages
+        record[:info_messages] += messagea if info_messages
         new_poor_law_union = poor_law_union
       end
+      message += messagea if messagea.present?
       [message, new_poor_law_union]
     end
 
     def validate_police_district(record, previous_police_district)
       police_district = record[:police_district]
-      num = record[:num]
+      num = record[:record_number]
       new_police_district = previous_police_district
       info_messages = record[:messages]
+      message = ''
       success, messagea = FreecenValidations.valid_location?(police_district)
       unless success
         if messagea == '?'
           messagea = "Warning: line #{num} Police District #{police_district}  has trailing ?. Removed and location_flag set.<br>"
-          record[:warning_messages] = record[:warning_messages] + messagea
+          record[:warning_messages] += messagea
           record[:location_flag] = 'x'
-          record[:police_district] = record[:police_district][0...-1]
+          record[:police_district] = record[:police_district][0...-1].strip
           new_police_district = record[:police_district]
+          message += messagea
         else
           messageb = "ERROR: line #{num} Police District #{police_district} is #{messagea}.<br>"
-          record[:error_messages] = record[:error_messages] + messageb
+          record[:error_messages] += messageb
           return [messageb, new_police_district]
         end
       end
       if previous_police_district == ''
-        message = "Info: line #{num} New Police District #{police_district}.<br>" if info_messages
-        record[:info_messages] = record[:info_messages] + message if info_messages
+        messagea = "Info: line #{num} New Police District #{police_district}.<br>" if info_messages
+        record[:info_messages] += messagea if info_messages
         new_police_district = police_district
       elsif police_district.blank?
       elsif previous_police_district == police_district
       else
-        message = "Info: line #{num} Police District changed to #{police_district}.<br>" if info_messages
-        record[:info_messages] = record[:info_messages] + message if info_messages
+        messagea = "Info: line #{num} Police District changed to #{police_district}.<br>" if info_messages
+        record[:info_messages] += messagea if info_messages
         new_police_district = police_district
       end
+      message += messagea if messagea.present?
       [message, new_police_district]
     end
 
     def validate_sanitary_district(record, previous_sanitary_district)
       sanitary_district = record[:sanitary_district]
-      num = record[:num]
+      num = record[:record_number]
       new_sanitary_district = previous_sanitary_district
       info_messages = record[:messages]
+      message = ''
       success, messagea = FreecenValidations.valid_location?(sanitary_district)
       unless success
         if messagea == '?'
           messagea = "Warning: line #{num} Sanitary District #{sanitary_district}  has trailing ?. Removed and location_flag set.<br>"
-          record[:warning_messages] = record[:warning_messages] + messagea
+          record[:warning_messages] += messagea
           record[:location_flag] = 'x'
-          record[:sanitary_district] = record[:sanitary_district][0...-1]
+          record[:sanitary_district] = record[:sanitary_district][0...-1].strip
           sanitary_district = record[:sanitary_district]
+          message += messagea
         else
           messageb = "ERROR: line #{num} Sanitary District #{sanitary_district} is #{messagea}.<br>"
-          record[:error_messages] = record[:error_messages] + messageb
+          record[:error_messages] += messageb
           return [messageb, new_sanitary_district]
         end
       end
       if previous_sanitary_district == ''
-        message = "Info: line #{num} New Sanitary District #{sanitary_district}.<br>" if info_messages
-        record[:info_messages] = record[:info_messages] + message if info_messages
+        messagea = "Info: line #{num} New Sanitary District #{sanitary_district}.<br>" if info_messages
+        record[:info_messages] += messagea if info_messages
         new_sanitary_district = sanitary_district
       elsif sanitary_district.blank?
       elsif previous_sanitary_district == sanitary_district
       else
-        message = "Info: line #{num} Sanitary District changed to #{sanitary_district}.<br>" if info_messages
-        record[:info_messages] = record[:info_messages] + message if info_messages
+        messagea = "Info: line #{num} Sanitary District changed to #{sanitary_district}.<br>" if info_messages
+        record[:info_messages] += messagea if info_messages
         new_sanitary_district = sanitary_district
       end
+      message += messagea if messagea.present?
       [message, new_sanitary_district]
     end
 
     def validate_special_water_district(record, previous_special_water_district)
       special_water_district = record[:special_water_district]
-      num = record[:num]
+      num = record[:record_number]
       new_special_water_district = previous_special_water_district
       info_messages = record[:messages]
+      message = ''
       success, messagea = FreecenValidations.valid_location?(special_water_district)
       unless success
         if messagea == '?'
           messagea = "Warning: line #{num} Special Water District #{special_water_district}  has trailing ?. Removed and location_flag set.<br>"
-          record[:warning_messages] = record[:warning_messages] + messagea
+          record[:warning_messages] += messagea
           record[:location_flag] = 'x'
-          record[:special_water_district] = record[:special_water_district][0...-1]
+          record[:special_water_district] = record[:special_water_district][0...-1].strip
           special_water_district = record[:special_water_district]
+          message += messagea
         else
           messageb = "ERROR: line #{num} Special Water District #{special_water_district} is #{messagea}.<br>"
-          record[:error_messages] = record[:error_messages] + messageb
+          record[:error_messages] += messageb
           return [messageb, new_special_water_district]
         end
       end
       if previous_special_water_district == ''
-        message = "Info: line #{num} New Special Water District #{special_water_district}.<br>" if info_messages
-        record[:info_messages] = record[:info_messages] + message if info_messages
+        messagea = "Info: line #{num} New Special Water District #{special_water_district}.<br>" if info_messages
+        record[:info_messages] += messagea if info_messages
         new_special_water_district = special_water_district
       elsif special_water_district.blank?
       elsif previous_special_water_district == special_water_district
       else
-        message = "Info: line #{num} Special Water District changed to #{special_water_district}.<br>" if info_messages
-        record[:info_messages] = record[:info_messages] + message if info_messages
+        messagea = "Info: line #{num} Special Water District changed to #{special_water_district}.<br>" if info_messages
+        record[:info_messages] += messagea if info_messages
         new_special_water_district = special_water_district
       end
+      message += messagea if messagea.present?
       [message, new_special_water_district]
     end
 
     def validate_scavenging_district(record, previous_scavenging_district)
       scavenging_district = record[:scavenging_district]
-      num = record[:num]
+      num = record[:record_number]
       new_scavenging_district = previous_scavenging_district
       info_messages = record[:messages]
+      message = ''
       success, messagea = FreecenValidations.valid_location?(scavenging_district)
       unless success
         if messagea == '?'
           messagea = "Warning: line #{num} Scavenging District #{scavenging_district}  has trailing ?. Removed and location_flag set.<br>"
-          record[:warning_messages] = record[:warning_messages] + messagea
+          record[:warning_messages] += messagea
           record[:location_flag] = 'x'
-          record[:scavenging_district] = record[:scavenging_district][0...-1]
+          record[:scavenging_district] = record[:scavenging_district][0...-1].strip
           scavenging_district = record[:scavenging_district]
+          message += messagea
         else
           messageb = "ERROR: line #{num} Scavenging District #{scavenging_district} is #{messagea}.<br>"
-          record[:error_messages] = record[:error_messages] + messageb
+          record[:error_messages] += messageb
           return [messageb, new_scavenging_district]
         end
       end
       if previous_scavenging_district == ''
-        message = "Info: line #{num} New Scavenging District #{scavenging_district}.<br>" if info_messages
-        record[:info_messages] = record[:info_messages] + message if info_messages
+        messagea = "Info: line #{num} New Scavenging District #{scavenging_district}.<br>" if info_messages
+        record[:info_messages] += messagea if info_messages
         new_scavenging_district = scavenging_district
       elsif scavenging_district.blank?
       elsif previous_scavenging_district == scavenging_district
       else
-        message = "Info: line #{num} Scavenging District changed to #{scavenging_district}.<br>" if info_messages
-        record[:info_messages] = record[:info_messages] + message if info_messages
+        messagea = "Info: line #{num} Scavenging District changed to #{scavenging_district}.<br>" if info_messages
+        record[:info_messages] += messagea if info_messages
         new_scavenging_district = scavenging_district
       end
+      message += messagea if messagea.present?
       [message, new_scavenging_district]
     end
 
     def validate_special_lighting_district(record, previous_special_lighting_district)
       special_lighting_district = record[:special_lighting_district]
-      num = record[:num]
+      num = record[:record_number]
       new_special_lighting_district = previous_special_lighting_district
       info_messages = record[:messages]
+      message = ''
       success, messagea = FreecenValidations.valid_location?(special_lighting_district)
       unless success
         if messagea == '?'
           messagea = "Warning: line #{num} Special Lighting District #{special_lighting_district}  has trailing ?. Removed and location_flag set.<br>"
-          record[:warning_messages] = record[:warning_messages] + messagea
+          record[:warning_messages] += messagea
           record[:location_flag] = 'x'
-          record[:special_lighting_district] = record[:special_lighting_district][0...-1]
+          record[:special_lighting_district] = record[:special_lighting_district][0...-1].strip
           special_lighting_district = record[:special_lighting_district]
+          message += messagea
         else
-          mmessageb = "ERROR: line #{num} Special Lighting District #{special_lighting_district} is #{messagea}.<br>"
-          record[:error_messages] = record[:error_messages] + messageb
+          messageb = "ERROR: line #{num} Special Lighting District #{special_lighting_district} is #{messagea}.<br>"
+          record[:error_messages] += messageb
           return [messageb, new_special_lighting_district]
         end
       end
       if previous_special_lighting_district == ''
-        message = "Info: line #{num} New Special Lighting District #{special_lighting_district}.<br>" if info_messages
-        record[:info_messages] = record[:info_messages] + message if info_messages
+        messagea = "Info: line #{num} New Special Lighting District #{special_lighting_district}.<br>" if info_messages
+        record[:info_messages] += messagea if info_messages
         new_special_lighting_district = special_lighting_district
       elsif special_lighting_district.blank?
       elsif previous_special_lighting_district == special_lighting_district
       else
-        message = "Info: line #{num} Special Lighting District changed to #{special_lighting_district}.<br>" if info_messages
-        record[:info_messages] = record[:info_messages] + message if info_messages
+        messagea = "Info: line #{num} Special Lighting District changed to #{special_lighting_district}.<br>" if info_messages
+        record[:info_messages] += messagea if info_messages
         new_special_lighting_district = special_lighting_district
       end
+      message += messagea if messagea.present?
       [message, new_special_lighting_district]
     end
 
     def validate_school_board(record, previous_school_board)
       school_board = record[:school_board]
-      num = record[:num]
+      num = record[:record_number]
       new_school_board = previous_school_board
       info_messages = record[:messages]
+      message = ''
       success, messagea = FreecenValidations.valid_location?(school_board)
       unless success
         if messagea == '?'
           messagea = "Warning: line #{num} School Board #{school_board}  has trailing ?. Removed and location_flag set.<br>"
-          record[:warning_messages] = record[:warning_messages] + messagea
+          record[:warning_messages] += messagea
           record[:location_flag] = 'x'
-          record[:school_board] = record[:school_board][0...-1]
+          record[:school_board] = record[:school_board][0...-1].strip
           school_board = record[:school_board]
+          message += messagea
         else
           messageb = "ERROR: line #{num} School Board #{school_board} is #{messagea}.<br>"
-          record[:error_messages] = record[:error_messages] + messageb
+          record[:error_messages] += messageb
           return [messageb, new_school_board]
         end
       end
       if previous_school_board == ''
-        message = "Info: line #{num} New School Board #{school_board}.<br>" if info_messages
-        record[:info_messages] = record[:info_messages] + message if info_messages
+        messagea = "Info: line #{num} New School Board #{school_board}.<br>" if info_messages
+        record[:info_messages] += messagea if info_messages
         new_school_board = school_board
       elsif school_board.blank?
       elsif previous_school_board == school_board
       else
-        message = "Info: line #{num} School Board changed to #{school_board}.<br>" if info_messages
-        record[:info_messages] = record[:info_messages] + message if info_messages
+        messagea = "Info: line #{num} School Board changed to #{school_board}.<br>" if info_messages
+        record[:info_messages] += messagea if info_messages
         new_school_board = school_board
       end
+      message += messagea if messagea.present?
       [message, new_school_board]
     end
 
     def validate_location_flag(record)
       flag = record[:location_flag]
-      num = record[:num]
-      info_messages = record[:messages]
+      num = record[:record_number]
       success, messagea = FreecenValidations.location_flag?(flag)
       unless success
         messageb = "ERROR: line #{num} Location Flag #{flag} is #{messagea}.<br>"
@@ -822,7 +856,7 @@ class FreecenCsvEntry
           message = message + messagea
           record[:warning_messages] = record[:warning_messages] + messagea
           record[:address_flag] = 'x'
-          record[:house_or_street_name] = record[:house_or_street_name][0...-1]
+          record[:house_or_street_name] = record[:house_or_street_name][0...-1].strip
         elsif messagea == 'blank'
         else
           messageb = "ERROR: line #{num} House address #{record[:house_or_street_name]} is #{messagea}.<br>"
@@ -959,7 +993,7 @@ class FreecenCsvEntry
           messageb = "Warning: line #{num} Surname  #{record[:surname]} has trailing ?. Removed and flag set.<br>"
           record[:warning_messages] = record[:warning_messages] + messageb
           record[:name_flag] = 'x'
-          record[:surname] = record[:surname][0...-1]
+          record[:surname] = record[:surname][0...-1].strip
         else
           messageb = "ERROR: line #{num} Surname #{record[:surname]} is #{messagea}.<br>"
           message = message + messageb
@@ -974,7 +1008,7 @@ class FreecenCsvEntry
           message = message + messageb
           record[:warning_messages] = record[:warning_messages] + messageb
           record[:name_flag] = 'x'
-          record[:forenames] = record[:forenames][0...-1]
+          record[:forenames] = record[:forenames][0...-1].strip
         else
           messageb = "ERROR: line #{num} Forenames #{record[:forenames]} is #{messagea}.<br>"
           message = message + messageb
@@ -1145,7 +1179,7 @@ class FreecenCsvEntry
           message = message + messageb
           record[:warning_messages] = record[:warning_messages] + messageb
           record[:occupation_flag] = 'x'
-          record[:occupation] = record[:occupation][0...-1]
+          record[:occupation] = record[:occupation][0...-1].strip
         elsif messagea == 'unusual use of Scholar'
           messageb = "Warning: line #{num} Occupation #{record[:occupation]} is #{messagea}.<br>"
           message = message + messageb
@@ -1445,53 +1479,53 @@ class FreecenCsvEntry
     # Scotland doesn't have folio
     case year
     when '1841'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Folio', 'Page']
       else
         ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Where Census Taken', 'Piece',  'Constituency', 'Folio', 'Page']
       end
     when '1851'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Where Census Taken', 'Piece',  'Ward', 'Constituency','Folio', 'Page']
       else
         ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Census Place', 'Piece', 'Constituency', 'Folio', 'Page']
       end
     when '1861'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Page']
       else
         ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Folio', 'Page']
       end
     when '1871'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Police District', 'Page']
       else
         ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Folio', 'Page']
       end
     when '1881'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Police District', 'School Board', 'Folio', 'Page']
       else
         ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece',  'Ward', 'Constituency', 'Sanitary District', 'Folio', 'Page']
       end
     when '1891'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Police District', 'School Board', 'Folio', 'Page']
       else
         ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece',  'Ward', 'Constituency', 'Sanitary District', 'Folio', 'Page']
       end
     when '1901'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Police District',  'School Board', 'Folio', 'Page']
-      elsif ChapmanCode::CODES['Ireland'].member?(chapman_code)
+      elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
         ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Poor Law Union', 'Police District', 'Page']
       else
         ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Folio', 'Page']
       end
     when '1911'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Sanitary District', 'Scavenging District', 'Special Lighting District', 'School Board', 'Page']
-      elsif ChapmanCode::CODES['Ireland'].member?(chapman_code)
+      elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
         ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Poor Law Union', 'Police District', 'Page']
       else
         ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Folio', 'Page']
@@ -1511,7 +1545,7 @@ class FreecenCsvEntry
     taken = where_census_taken.titleize if where_census_taken.present?
     case year
     when '1841'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [freecen2_piece.year, disp_county, district_name, civil, enumeration_district, ecclesiastical, taken, freecen2_piece.number.to_s,
          ward, parliamentary_constituency, folio_number, page_number]
       else
@@ -1519,7 +1553,7 @@ class FreecenCsvEntry
          parliamentary_constituency, folio_number, page_number]
       end
     when '1851'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
          ward, parliamentary_constituency, folio_number, page_number]
       else
@@ -1527,7 +1561,7 @@ class FreecenCsvEntry
          parliamentary_constituency, folio_number, page_number]
       end
     when '1861'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
          ward, parliamentary_constituency, folio_number, page_number]
       else
@@ -1535,7 +1569,7 @@ class FreecenCsvEntry
          ward, parliamentary_constituency, folio_number, page_number]
       end
     when '1871'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
          ward, parliamentary_constituency, police_district, folio_number, page_number]
       else
@@ -1543,7 +1577,7 @@ class FreecenCsvEntry
          ward, parliamentary_constituency, folio_number, page_number]
       end
     when '1881'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
          ward, parliamentary_constituency, police_district, school_board, folio_number, page_number]
       else
@@ -1551,7 +1585,7 @@ class FreecenCsvEntry
          ward, parliamentary_constituency, sanitary_district, folio_number, page_number]
       end
     when '1891'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
          ward, parliamentary_constituency, police_district, school_board, folio_number, page_number]
       else
@@ -1559,10 +1593,10 @@ class FreecenCsvEntry
          ward, parliamentary_constituency, sanitary_district, folio_number, page_number]
       end
     when '1901'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
          ward, parliamentary_constituency, police_district, school_board, folio_number, page_number]
-      elsif ChapmanCode::CODES['Ireland'].member?(chapman_code)
+      elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, taken, freecen2_piece.number.to_s,
          ward, parliamentary_constituency, poor_law_union, police_district, folio_number, page_number]
       else
@@ -1570,10 +1604,10 @@ class FreecenCsvEntry
          ward, parliamentary_constituency, folio_number, page_number]
       end
     when '1911'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
          ward, parliamentary_constituency, sanitary_district, scavenging_district, special_lighting_district, school_board, folio_number, page_number]
-      elsif ChapmanCode::CODES['Ireland'].member?(chapman_code)
+      elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, taken, freecen2_piece.number.to_s,
          ward, parliamentary_constituency, poor_law_union, police_district, folio_number, page_number]
       else
@@ -1586,53 +1620,53 @@ class FreecenCsvEntry
   def self.dwelling_display_labels(year, chapman_code)
     case year
     when '1841'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         ['House Number', 'House or Street Name', 'Dwelling Number (Comp)']
       else
         ['House Number', 'House or Street Name', 'Dwelling Number (Comp)']
       end
     when '1851'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         ['Schedule', 'House Number', 'House or Street Name', 'Dwelling Number (Comp)']
       else
         ['Schedule', 'House Number', 'House or Street Name', 'Dwelling Number (Comp)']
       end
     when '1861'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         ['Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows', 'Dwelling Number (Comp)']
       else
         ['Schedule', 'House Number', 'House or Street Name', 'Dwelling Number (Comp)']
       end
     when '1871'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         ['Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows', 'Dwelling Number (Comp)']
       else
         ['Schedule', 'House Number', 'House or Street Name', 'Dwelling Number (Comp)']
       end
     when '1881'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         ['Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows', 'Dwelling Number (Comp)']
       else
         ['Schedule', 'House Number', 'House or Street Name', 'Dwelling Number (Comp)']
       end
     when '1891'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         ['Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows', 'Dwelling Number (Comp)']
       else
         ['Schedule', 'House Number', 'House or Street Name', 'Dwelling Number (Comp)']
       end
     when '1901'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         ['Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows', 'Dwelling Number (Comp)']
-      elsif ChapmanCode::CODES['Ireland'].member?(chapman_code)
+      elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
         ['Schedule', 'House Number', 'House or Street Name', 'Walls', 'Roof Type', 'Rooms', 'Rooms with Windows', 'Class of House', 'Dwelling Number (Comp)']
       else
         ['Schedule', 'House Number', 'House or Street Name', 'Rooms', 'Dwelling Number (Comp)']
       end
     when '1911'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         ['Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows', 'Dwelling Number (Comp)']
-      elsif ChapmanCode::CODES['Ireland'].member?(chapman_code)
+      elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
         ['Schedule', 'House Number', 'House or Street Name', 'Walls', 'Roof Type', 'Rooms', 'Rooms with Windows', 'Class of House', 'Dwelling Number (Comp)']
       else
         ['Schedule', 'House Number', 'House or Street Name', 'Rooms', 'Dwelling Number (Comp)']
@@ -1644,53 +1678,53 @@ class FreecenCsvEntry
     address = house_or_street_name.titleize if house_or_street_name.present?
     case year
     when '1841'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [house_number, address, dwelling_number]
       else
         [house_number, address, dwelling_number]
       end
     when '1851'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [schedule_number, house_number, address, dwelling_number]
       else
         [schedule_number, house_number, address, dwelling_number]
       end
     when '1861'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [schedule_number, house_number, address, rooms_with_windows, dwelling_number]
       else
         [schedule_number, house_number, address, dwelling_number]
       end
     when '1871'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [schedule_number, house_number, address, rooms_with_windows, dwelling_number]
       else
         [schedule_number, house_number, address, dwelling_number]
       end
     when '1881'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [schedule_number, house_number, address, rooms_with_windows, dwelling_number]
       else
         [schedule_number, house_number, address, dwelling_number]
       end
     when '1891'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [schedule_number, house_number, address, rooms_with_windows, dwelling_number]
       else
         [schedule_number, house_number, address, dwelling_number]
       end
     when '1901'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [schedule_number, house_number, address, rooms_with_windows, dwelling_number]
-      elsif ChapmanCode::CODES['Ireland'].member?(chapman_code)
+      elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
         [schedule_number, house_number, address, walls, roof_type, rooms, rooms_with_windows, class_of_house, dwelling_number]
       else
         [schedule_number, house_number, address, rooms, dwelling_number]
       end
     when '1911'
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [schedule_number, house_number, address, rooms_with_windows, dwelling_number]
-      elsif ChapmanCode::CODES['Ireland'].member?(chapman_code)
+      elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
         [schedule_number, house_number, address, walls, roof_type, rooms, rooms_with_windows, class_of_house, dwelling_number]
       else
         [schedule_number, house_number, address, rooms, dwelling_number]

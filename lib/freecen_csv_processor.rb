@@ -746,7 +746,7 @@ class CsvRecords < CsvFile
       n = n + 1
     end
     @csvfile.census_fields.each do |field|
-      next if field == 'language' && (ChapmanCode::CODES['England'].member?(@csvfile.chapman_code) || @csvfile.chapman_code == 'IOM')
+      next if field == 'language' && (ChapmanCode::CODES['England'].values.member?(@csvfile.chapman_code) || @csvfile.chapman_code == 'IOM')
       next if field_specification.value?(field)
       success = false
       message = message + "ERROR: header field #{field} is missing from the spreadsheet for #{@csvfile.year}.<br>"
@@ -891,7 +891,7 @@ class CsvRecord < CsvRecords
   end
 
   def extract_enumeration_district
-    unless ChapmanCode::CODES['Ireland'].member?(@csvfile.chapman_code)
+    unless ChapmanCode::CODES['Ireland'].values.member?(@csvfile.chapman_code)
       message, @csvfile.enumeration_district = FreecenCsvEntry.validate_enumeration_district(@data_record, @csvfile.enumeration_district)
       @project.write_messages_to_all(message, true) unless message == ''
     end
@@ -903,7 +903,7 @@ class CsvRecord < CsvRecords
   end
 
   def extract_ecclesiastical_parish
-    unless ChapmanCode::CODES['Ireland'].member?(@csvfile.chapman_code) || (ChapmanCode::CODES['England'].member?(@csvfile.chapman_code) && @csvfile.year == '1841')
+    unless ChapmanCode::CODES['Ireland'].values.member?(@csvfile.chapman_code) || (ChapmanCode::CODES['England'].values.member?(@csvfile.chapman_code) && @csvfile.year == '1841')
       message, @csvfile.ecclesiastical_parish = FreecenCsvEntry.validate_ecclesiastical_parish(@data_record, @csvfile.ecclesiastical_parish)
       @project.write_messages_to_all(message, true) unless message == ''
     end
@@ -915,7 +915,7 @@ class CsvRecord < CsvRecords
   end
 
   def extract_ward
-    unless ChapmanCode::CODES['England'].member?(@csvfile.chapman_code) && %w[1841 1851].include?(@csvfile.year)
+    unless ChapmanCode::CODES['England'].values.member?(@csvfile.chapman_code) && %w[1841 1851].include?(@csvfile.year)
       message, @csvfile.ward = FreecenCsvEntry.validate_ward(@data_record, @csvfile.ward)
       @project.write_messages_to_all(message, true) unless message == ''
     end
@@ -927,50 +927,50 @@ class CsvRecord < CsvRecords
   end
 
   def extract_poor_law_union
-    if ChapmanCode::CODES['Ireland'].member?(@csvfile.chapman_code)
+    if ChapmanCode::CODES['Ireland'].values.member?(@csvfile.chapman_code)
       message, @csvfile.poor_law_union = FreecenCsvEntry.validate_poor_law_union(@data_record, @csvfile.poor_law_union)
       @project.write_messages_to_all(message, true) unless message == ''
     end
   end
 
   def extract_police_district
-    if ChapmanCode::CODES['Ireland'].member?(@csvfile.chapman_code) || (ChapmanCode::CODES['Scotland'].member?(@csvfile.chapman_code) && %w[1871 1881 1891 1901].include?(@csvfile.year))
+    if ChapmanCode::CODES['Ireland'].values.member?(@csvfile.chapman_code) || (ChapmanCode::CODES['Scotland'].values.member?(@csvfile.chapman_code) && %w[1871 1881 1891 1901].include?(@csvfile.year))
       message, @csvfile.police_district = FreecenCsvEntry.validate_police_district(@data_record, @csvfile.police_district)
       @project.write_messages_to_all(message, true) unless message == ''
     end
   end
 
   def extract_sanitary_district
-    if (ChapmanCode::CODES['England'].member?(@csvfile.chapman_code) && %w[1871 1881 1891].include?(@csvfile.year)) ||
-        (ChapmanCode::CODES['Scotland'].member?(@csvfile.chapman_code) && @csvfile.year == '1911')
+    if (ChapmanCode::CODES['England'].values.member?(@csvfile.chapman_code) && %w[1871 1881 1891].include?(@csvfile.year)) ||
+        (ChapmanCode::CODES['Scotland'].values.member?(@csvfile.chapman_code) && @csvfile.year == '1911')
       message, @csvfile.sanitary_district = FreecenCsvEntry.validate_sanitary_district(@data_record, @csvfile.sanitary_district)
       @project.write_messages_to_all(message, true) unless message == ''
     end
   end
 
   def extract_special_water_district
-    if ChapmanCode::CODES['Scotland'].member?(@csvfile.chapman_code) && @csvfile.year == '1911'
+    if ChapmanCode::CODES['Scotland'].values.member?(@csvfile.chapman_code) && @csvfile.year == '1911'
       message, @csvfile.special_water_district = FreecenCsvEntry.validate_special_water_district(@data_record, @csvfile.special_water_district)
       @project.write_messages_to_all(message, true) unless message == ''
     end
   end
 
   def extract_scavenging_district
-    if ChapmanCode::CODES['Scotland'].member?(@csvfile.chapman_code) && @csvfile.year == '1911'
+    if ChapmanCode::CODES['Scotland'].values.member?(@csvfile.chapman_code) && @csvfile.year == '1911'
       message, @csvfile.scavenging_district = FreecenCsvEntry.validate_scavenging_district(@data_record, @csvfile.scavenging_district)
       @project.write_messages_to_all(message, true) unless message == ''
     end
   end
 
   def extract_special_lighting_district
-    if ChapmanCode::CODES['Scotland'].member?(@csvfile.chapman_code) && @csvfile.year == '1911'
+    if ChapmanCode::CODES['Scotland'].values.member?(@csvfile.chapman_code) && @csvfile.year == '1911'
       message, @csvfile.special_lighting_district = FreecenCsvEntry.validate_special_lighting_district(@data_record, @csvfile.special_lighting_district)
       @project.write_messages_to_all(message, true) unless message == ''
     end
   end
 
   def extract_school_board
-    if ChapmanCode::CODES['Scotland'].member?(@csvfile.chapman_code) && %w[1881 1891 1901 1911].include?(@csvfile.year)
+    if ChapmanCode::CODES['Scotland'].values.member?(@csvfile.chapman_code) && %w[1881 1891 1901 1911].include?(@csvfile.year)
       message, @csvfile.school_board = FreecenCsvEntry.validate_school_board(@data_record, @csvfile.school_board)
       @project.write_messages_to_all(message, true) unless message == ''
     end
