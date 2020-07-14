@@ -852,6 +852,7 @@ class CsvRecord < CsvRecords
       break if field.blank?
       @data_record[field.to_sym] = @data_line[n]
     end
+    p @data_record if @data_record[:record_number] == 55
     @data_record
   end
 

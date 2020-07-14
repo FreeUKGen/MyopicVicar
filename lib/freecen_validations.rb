@@ -6,10 +6,10 @@ module FreecenValidations
   VALID_NUMBER_PLUS_SUFFIX = /\A\d+/
   VALID_ENUMERATOR_SPECIAL = /\A\d#\d\z/
   VALID_SPECIAL_LOCATION_CODES = %w[b n u v x].freeze
-  NARROW_VALID_TEXT = /\A[-\w\s,']*\z/
+  NARROW_VALID_TEXT = /\A[-\w\s,'\.]*\z/
   NARROW_VALID_TEXT_PLUS = /\A[-\w\s,'\.]*\z/
-  BROAD_VALID_TEXT = /^[-A-Za-z0-9_()\.,&'":;\s]*/
-  BROAD_VALID_TEXT_PLUS = /^[-A-Za-z0-9_()?\.,&'\s]*/
+  BROAD_VALID_TEXT = /\A[-\w\s()\.,&'":;]*\z/
+  BROAD_VALID_TEXT_PLUS = /\A[-\w\s()\.,&'":;?]*\z/
   VALID_PIECE = /\A(R|H)(G|O|S)/i
   VALID_AGE_MAXIMUM = { 'd' => 100, 'w' => 100, 'm' => 100, 'y' => 120, 'h' => 100, '?' => 100, 'years' => 120, 'months' => 100, 'weeks' => 100,
                         'days' => 100, 'hours' => 100 }.freeze
@@ -24,6 +24,7 @@ module FreecenValidations
   VALID_MARITAL_STATUS = %w[m s u w d -].freeze
   VALID_SEX = %w[M F -].freeze
   VALID_LANGUAGE = %w[E G GE I IE M ME W WE].freeze
+
   class << self
     def valid_piece?(field)
       return false if field.blank?
@@ -37,7 +38,7 @@ module FreecenValidations
     end
 
     def valid_location?(field)
-      return [false, 'blank'] if field.empty?
+      return [false, 'blank'] if field.blank?
 
       unless field.match? NARROW_VALID_TEXT
         if field[-1] == '?' && (field.chomp('?').match? NARROW_VALID_TEXT)
@@ -88,6 +89,7 @@ module FreecenValidations
       return [true, ''] if field.blank?
 
       return [true, ''] if field =~ VALID_NUMBER && field.length <= 4
+
       shorten_field = field
       shorten_field = field.slice(0..-2) if (/\D/ =~ field.slice(-1, 1)).present?
       return [true, ''] if shorten_field =~ VALID_NUMBER && shorten_field.length <= 4
@@ -137,6 +139,7 @@ module FreecenValidations
 
     def rooms?(field, year)
       return [true, ''] if field =~ VALID_NUMBER
+
       [false, 'invalid value']
     end
 
@@ -249,6 +252,8 @@ module FreecenValidations
 
       return [true, ''] if VALID_MARITAL_STATUS.include?(field.downcase) && field.length <= 1
 
+      return [false, '?']  if field[-1] == '?'
+
       [false, 'invalid value']
     end
 
@@ -257,11 +262,15 @@ module FreecenValidations
 
       return [true, ''] if VALID_SEX.include?(field.upcase) && field.length <= 1
 
+      return [false, '?']  if field[-1] == '?'
+
       [false, 'invalid value']
     end
 
     def age?(field, martial, sex)
       return [false, 'blank'] if field.blank?
+
+      return [false, '?']  if field[-1] == '?'
 
       return [true, ''] if field =~ VALID_NUMBER && field.to_i == 999
 
@@ -314,6 +323,7 @@ module FreecenValidations
 
     def religion?(field)
       return [true, ''] if field.blank?
+
       unless field.match? NARROW_VALID_TEXT
         if field[-1] == '?' && (field.chomp('?').match? NARROW_VALID_TEXT)
           return [false, '?']
@@ -327,6 +337,7 @@ module FreecenValidations
 
     def read_write?(field)
       return [true, ''] if field.blank?
+
       unless field.match? NARROW_VALID_TEXT
         if field[-1] == '?' && (field.chomp('?').match? NARROW_VALID_TEXT)
           return [false, '?']
@@ -431,8 +442,8 @@ module FreecenValidations
     def birth_place?(field)
       return [false, 'blank'] if field.blank?
 
-      unless field.match? NARROW_VALID_TEXT_PLUS
-        if field[-1] == '?' && (field.chomp('?').match? NARROW_VALID_TEXT_PLUS)
+      unless field.match? NARROW_VALID_TEXT
+        if field[-1] == '?' && (field.chomp('?').match? NARROW_VALID_TEXT)
           return [false, '?']
         else
           return [false, 'invalid text']

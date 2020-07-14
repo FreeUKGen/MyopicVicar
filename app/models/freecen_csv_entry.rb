@@ -189,7 +189,7 @@ class FreecenCsvEntry
           message += messagea
         elsif messagea == 'blank'
           messageb = "ERROR: line #{num} Civil Parish is blank.<br> "
-          record[:error_messages] = record[:error_messages] + messageb
+          record[:error_messages] += messageb
           new_civil_parish = previous_civil_parish
           return [messageb, new_civil_parish]
         elsif messagea == 'INVALID_TEXT'
@@ -245,7 +245,7 @@ class FreecenCsvEntry
         else
           new_enumeration_district = previous_enumeration_district
           messageb = "ERROR: line #{num} Enumeration District #{enumeration_district} is #{messagea}.<br>"
-          record[:error_messages] = record[:error_messages] + messageb
+          record[:error_messages] += messageb
           return [messageb, new_enumeration_district]
         end
       end
@@ -256,7 +256,7 @@ class FreecenCsvEntry
       special = parts.length > 0 ? parts[1] : nil
       if previous_enumeration_district == ''
         message = "Info: line #{num} New Enumeration District #{enumeration_district}.<br>" if info_messages
-        record[:info_messages] = record[:info_messages] + message if info_messages
+        record[:info_messages] += message if info_messages
         new_enumeration_district = enumeration_district
       elsif previous_enumeration_district == enumeration_district
       else
@@ -691,7 +691,7 @@ class FreecenCsvEntry
       success, messagea = FreecenValidations.location_flag?(flag)
       unless success
         messageb = "ERROR: line #{num} Location Flag #{flag} is #{messagea}.<br>"
-        record[:error_messages] = record[:error_messages] + messageb
+        record[:error_messages] += messageb
         return [messageb]
       end
     end
@@ -716,7 +716,7 @@ class FreecenCsvEntry
 
       if previous_folio_number == 0
         message = "Info: line #{num} Initial Folio number set to #{folio_number}.<br>" if info_messages
-        record[:info_messages] = record[:info_messages] + message if info_messages
+        record[:info_messages] += message if info_messages
         new_folio_number = folio_number.to_i
         new_folio_suffix = folio_suffix
       elsif  folio_number.blank? && ['Folio', 'Page'].include?(transition)
@@ -743,7 +743,7 @@ class FreecenCsvEntry
         new_folio_suffix = folio_suffix
       else
         message = "Info: line #{num} New Folio number #{folio_number}.<br>" if info_messages
-        record[:info_messages] = record[:info_messages] + message if info_messages
+        record[:info_messages] += message if info_messages
         new_folio_number = folio_number
         new_folio_suffix = folio_suffix
       end
@@ -769,7 +769,7 @@ class FreecenCsvEntry
 
       if previous_page_number == 0
         message = "Info: line #{num} Initial Page number set to #{page_number}.<br>" if info_messages
-        record[:info_messages] = record[:info_messages] + message if info_messages
+        record[:info_messages] += message if info_messages
         new_page_number = page_number.to_i
       elsif  page_number.blank? && Freecen::LOCATION_PAGE.include?(transition)
         message = ''
@@ -789,11 +789,11 @@ class FreecenCsvEntry
         new_page_number = page_number.to_i
       elsif page_number.to_i < previous_page_number && page_number.to_i == 1
         message = "Info: line #{num} reset Page number to 1.<br>" if info_messages
-        record[:info_messages] = record[:info_messages] + message if info_messages
+        record[:info_messages] += message if info_messages
         new_page_number = 1
       else
         message = "Info: line #{num} New Page number #{page_number}.<br>" if info_messages
-        record[:info_messages] = record[:info_messages] + message if info_messages
+        record[:info_messages] += message if info_messages
         new_page_number = page_number.to_i
       end
       [message, new_page_number.to_i]
@@ -820,10 +820,10 @@ class FreecenCsvEntry
         new_schedule_suffix = previous_schedule_suffix
         if messagea == 'blank' && Freecen::LOCATION_PAGE.include?(transition) && house_number.blank?
           message = "Info: line #{num} Schedule number retained at #{new_schedule_number}.<br>" if info_messages
-          record[:info_messages] = record[:info_messages] + message if info_messages
+          record[:info_messages] += message if info_messages
         elsif messagea == 'blank' && record[:house_or_street_name] == '-' && house_number.blank?
           message = "Info: line #{num} Schedule number retained at #{new_schedule_number}.<br>" if info_messages
-          record[:info_messages] = record[:info_messages] + message if info_messages
+          record[:info_messages] += message if info_messages
         elsif messagea == 'blank' && record[:year] == '1841'
 
         elsif messagea == 'blank'
@@ -846,7 +846,7 @@ class FreecenCsvEntry
       success, messagea = FreecenValidations.house_number?(house_number)
       if !success
         messageb = "ERROR: line #{num} House number #{house_number} is #{messagea}.<br>"
-        message = message + messageb
+        message += messageb
         record[:error_messages] = record[:error_messages] + messagea
       end
       success, messagea = FreecenValidations.house_address?(record[:house_or_street_name])
@@ -860,35 +860,35 @@ class FreecenCsvEntry
         elsif messagea == 'blank'
         else
           messageb = "ERROR: line #{num} House address #{record[:house_or_street_name]} is #{messagea}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
+          message += messageb
+          record[:error_messages] += messageb
         end
       end
 
       success, messagea = FreecenValidations.address_flag?(record[:address_flag])
       if !success
         messageb = "ERROR: line #{num} Address flag #{record[:address_flag]} is #{messagea}.<br>"
-        message = message + messageb
+        message += messageb
         record[:error_messages] = record[:error_messages] + messagea
       end
 
       success, messagea = FreecenValidations.uninhabited_flag?(uninhabited_flag)
       unless success
         messageb = "ERROR: line #{num} Uninhabited Flag #{uninhabited_flag} is #{messagea}.<br>"
-        message = message + messageb
-        record[:error_messages] = record[:error_messages] + messageb
+        message += messageb
+        record[:error_messages] += messageb
       else
         if %w[u v].include?(uninhabited_flag) && schedule_number.blank?
           messageb = "Warning: line #{num} has special #{uninhabited_flag} but no schedule number.<br>"
-          message = message + messageb
+          message += messageb
           record[:warning_messages] = record[:warning_messages] + messageb
         end
         if uninhabited_flag == 'x'
           record[:address_flag] = 'x'
           record[:uninhabited_flag] = ''
           messageb = "Info: line #{num} uninhabited_flag if x is moved to loaction_flag.<br>"  if info_messages
-          message = message + messageb  if info_messages
-          record[:info_messages] = record[:info_messages] + messageb  if info_messages
+          message += messageb  if info_messages
+          record[:info_messages] += messageb  if info_messages
         end
       end
 
@@ -898,13 +898,13 @@ class FreecenCsvEntry
             success, messagea = FreecenValidations.walls?(record[:walls])
             unless success
               messageb = "ERROR: line #{num} Number of walls #{record[:walls]} is #{messagea}.<br>"
-              message = message + messageb
-              record[:error_messages] = record[:error_messages] + messageb
+              message += messageb
+              record[:error_messages] += messageb
             end
           else
             messageb = "ERROR: line #{num} Number of walls #{record[:walls]} should not be included for #{record[:year]}.<br>"
-            message = message + messageb
-            record[:error_messages] = record[:error_messages] + messageb
+            message += messageb
+            record[:error_messages] += messageb
           end
         end
 
@@ -913,13 +913,13 @@ class FreecenCsvEntry
             success, messagea = FreecenValidations.roof_type?(record[:roof_type])
             unless success
               messageb = "ERROR: line #{num} Roof type #{record[:roof_type]} is #{messagea}.<br>"
-              message = message + messageb
-              record[:error_messages] = record[:error_messages] + messageb
+              message += messageb
+              record[:error_messages] += messageb
             end
           else
             messageb = "ERROR: line #{num} Roof type #{record[:roof_type]} should not be included for #{record[:year]}.<br>"
-            message = message + messageb
-            record[:error_messages] = record[:error_messages] + messageb
+            message += messageb
+            record[:error_messages] += messageb
           end
         end
 
@@ -928,23 +928,23 @@ class FreecenCsvEntry
             success, messagea = FreecenValidations.rooms?(record[:rooms], record[:year])
             unless success
               messageb = "ERROR: line #{num} Rooms #{record[:rooms]} is #{messagea}.<br>"
-              message = message + messageb
-              record[:error_messages] = record[:error_messages] + messageb
+              message += messageb
+              record[:error_messages] += messageb
             else
               if record[:year] == '1901' && record[:rooms].to_i >= 5
                 messageb = "Warning: line #{num} Rooms #{record[:rooms]} is greater then 5.<br>"
-                message = message + messageb
+                message += messageb
                 record[:waring_messages] = record[:warning_messages] + messageb
               elsif record[:year] == '1911' && record[:rooms].to_i > 20
                 messageb = "Warning: line #{num} Rooms #{record[:rooms]} is greater then 20.<br>"
-                message = message + messageb
+                message += messageb
                 record[:waring_messages] = record[:warning_messages] + messageb
               end
             end
           else
             messageb = "ERROR: line #{num} Rooms #{record[:rooms]}} should not be included for #{record[:year]}.<br>"
-            message = message + messageb
-            record[:error_messages] = record[:error_messages] + messageb
+            message += messageb
+            record[:error_messages] += messageb
           end
         end
 
@@ -953,13 +953,13 @@ class FreecenCsvEntry
             success, messagea = FreecenValidations.rooms_with_windows?(record[:rooms_with_windows])
             unless success
               messageb = "ERROR: line #{num} Rooms with windows #{record[:rooms_with_windows]} is #{messagea}.<br>"
-              message = message + messageb
-              record[:error_messages] = record[:error_messages] + messageb
+              message += messageb
+              record[:error_messages] += messageb
             end
           else
             messageb = "ERROR: line #{num} Rooms with windows #{record[:rooms_with_windows]} should not be included for #{record[:year]}.<br>"
-            message = message + messageb
-            record[:error_messages] = record[:error_messages] + messageb
+            message += messageb
+            record[:error_messages] += messageb
           end
         end
 
@@ -968,13 +968,13 @@ class FreecenCsvEntry
             success, messagea = FreecenValidations.class_of_house?(record[:class_of_house])
             unless success
               messageb = "ERROR: line #{num} Class of house #{record[:class_of_house]} is #{messagea}.<br>"
-              message = message + messageb
-              record[:error_messages] = record[:error_messages] + messageb
+              message += messageb
+              record[:error_messages] += messageb
             end
           else
             messageb = "ERROR: line #{num} Class of house #{record[:class_of_house]}  should not be included for #{record[:year]}.<br>"
-            message = message + messageb
-            record[:error_messages] = record[:error_messages] + messageb
+            message += messageb
+            record[:error_messages] += messageb
           end
         end
       end
@@ -991,13 +991,14 @@ class FreecenCsvEntry
       unless success
         if messagea == '?'
           messageb = "Warning: line #{num} Surname  #{record[:surname]} has trailing ?. Removed and flag set.<br>"
+          message += messageb
           record[:warning_messages] = record[:warning_messages] + messageb
           record[:name_flag] = 'x'
           record[:surname] = record[:surname][0...-1].strip
         else
           messageb = "ERROR: line #{num} Surname #{record[:surname]} is #{messagea}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
+          message += messageb
+          record[:error_messages] += messageb
         end
       end
 
@@ -1005,59 +1006,95 @@ class FreecenCsvEntry
       unless success
         if messagea == '?'
           messageb = "Warning: line #{num} Forenames  #{record[:forenames]} has trailing ?. Removed and flag set.<br>"
-          message = message + messageb
+          message += messageb
           record[:warning_messages] = record[:warning_messages] + messageb
           record[:name_flag] = 'x'
           record[:forenames] = record[:forenames][0...-1].strip
         else
           messageb = "ERROR: line #{num} Forenames #{record[:forenames]} is #{messagea}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
+          message += messageb
+          record[:error_messages] += messageb
         end
       end
 
       success, messagea = FreecenValidations.name_question?(record[:name_flag])
       unless success
         messageb = "ERROR: line #{num} Name Flag #{record[:name_flag]} is #{messagea}.<br>"
-        message = message + messageb
-        record[:error_messages] = record[:error_messages] + messageb
+        message += messageb
+        record[:error_messages] += messageb
       end
 
       unless record[:year] == '1841'
         success, messagea = FreecenValidations.relationship?(record[:relationship])
         unless success
-          messageb = "ERROR: line #{num} Relationship #{record[:relationship]} is #{messagea}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
+          if messagea == '?'
+            messageb = "Warning: line #{num} Relationship  #{record[:relationship]} has trailing ?. Removed and flag set.<br>"
+            message += messageb
+            record[:warning_messages] = record[:warning_messages] + messageb
+            record[:individual_flag] = 'x'
+            record[:relationship] = record[:relationship][0...-1].strip
+          else
+            messageb = "ERROR: line #{num} Relationship #{record[:relationship]} is #{messagea}.<br>"
+            message += messageb
+            record[:error_messages] += messageb
+          end
+
         end
         if record[:relationship].present? && record[:relationship].casecmp('head').zero? && record[:sequence_in_household].to_i != 1
           messageb = "Warning: line #{num} Relationship #{record[:relationship]} is #{record[:sequence_in_household]} in household sequence.<br>"
-          message = message + messageb
-          record[:warning_messages] = record[:warning_messages] + messageb
+          message += messageb
+          record[:warning_messages] += messageb
         end
       end
 
       unless record[:year] == '1841'
         success, messagea = FreecenValidations.marital_status?(record[:marital_status])
         unless success
-          messageb = "ERROR: line #{num} Marital status #{record[:marital_status]} is #{messagea}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
+          if messagea == '?'
+            messageb = "Warning: line #{num} Marital Status  #{record[:marital_status]} has trailing ?. Removed and flag set.<br>"
+            message += messageb
+            record[:warning_messages] = record[:warning_messages] + messageb
+            record[:individual_flag] = 'x'
+            record[:marital_status] = record[:marital_status][0...-1].strip
+          else
+            messageb = "ERROR: line #{num} Marital status #{record[:marital_status]} is #{messagea}.<br>"
+            message += messageb
+            record[:error_messages] += messageb
+          end
         end
       end
 
       success, messagea = FreecenValidations.sex?(record[:sex])
       unless success
-        messageb = "ERROR: line #{num} Sex #{record[:sex]} is #{messagea}.<br>"
-        message = message + messageb
-        record[:error_messages] = record[:error_messages] + messageb
+        if messagea == '?'
+          messageb = "Warning: line #{num} Sex  #{record[:sex]} has trailing ?. Removed and flag set.<br>"
+          message += messageb
+          record[:warning_messages] = record[:warning_messages] + messageb
+          record[:individual_flag] = 'x'
+          record[:sex] = record[:sex][0...-1].strip
+        else
+          messageb = "ERROR: line #{num} Sex #{record[:sex]} is #{messagea}.<br>"
+          message += messageb
+          record[:error_messages] += messageb
+        end
       end
 
       success, messagea = FreecenValidations.age?(record[:age], record[:marital_status], record[:sex])
       unless success
+        if messagea == '?'
+          messageb = "Warning: line #{num} Age  #{record[:sex]} has trailing ?. Removed and flag set.<br>"
+          message += messageb
+          record[:warning_messages] = record[:warning_messages] + messageb
+          record[:individual_flag] = 'x'
+          record[:sex] = record[:sex][0...-1].strip
+        else
+          messageb = "ERROR: line #{num} Sex #{record[:sex]} is #{messagea}.<br>"
+          message += messageb
+          record[:error_messages] += messageb
+        end
         messageb = "ERROR: line #{num} Age #{record[:age]} is #{messagea}.<br>"
-        message = message + messageb
-        record[:error_messages] = record[:error_messages] + messageb
+        message += messageb
+        record[:error_messages] += messageb
       end
 
       if record[:school_children].present?
@@ -1065,13 +1102,13 @@ class FreecenCsvEntry
           success, messagea = FreecenValidations.school_children?(record[:aschool_childrene])
           unless success
             messageb = "ERROR: line #{num}  is #{messagea}.<br>"
-            message = message + messageb
-            record[:error_messages] = record[:error_messages] + messageb
+            message += messageb
+            record[:error_messages] += messageb
           end
         else
           messageb = "ERROR: line #{num} Number of school children #{record[:school_children]} should not be included for #{record[:year]}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
+          message += messageb
+          record[:error_messages] += messageb
         end
       end
 
@@ -1080,13 +1117,13 @@ class FreecenCsvEntry
           success, messagea = FreecenValidations.years_married?(record[:years_married])
           unless success
             messageb = "ERROR: line #{num} Years married #{record[:years_married]} is #{messagea}.<br>"
-            message = message + messageb
-            record[:error_messages] = record[:error_messages] + messageb
+            message += messageb
+            record[:error_messages] += messageb
           end
         else
           messageb = "ERROR: line #{num} Years married #{record[:years_married]} should not be included for #{record[:year]}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
+          message += messageb
+          record[:error_messages] += messageb
         end
       end
 
@@ -1095,13 +1132,13 @@ class FreecenCsvEntry
           success, messagea = FreecenValidations.children_born_alive?(record[:children_born_alive])
           unless success
             messageb = "ERROR: line #{num} Number of children born alive #{record[:children_born_alive]} is #{messagea}.<br>"
-            message = message + messageb
-            record[:error_messages] = record[:error_messages] + messageb
+            message += messageb
+            record[:error_messages] += messageb
           end
         else
           messageb = "ERROR: line #{num} Number of children born alive #{record[:children_born_alive]} should not be included for #{record[:year]}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
+          message += messageb
+          record[:error_messages] += messageb
         end
       end
 
@@ -1110,13 +1147,13 @@ class FreecenCsvEntry
           success, messagea = FreecenValidations.children_living?(record[:children_living])
           unless success
             messageb = "ERROR: line #{num} Number of children living #{record[:children_living]} is #{messagea}.<br>"
-            message = message + messageb
-            record[:error_messages] = record[:error_messages] + messageb
+            message += messageb
+            record[:error_messages] += messageb
           end
         else
           messageb = "ERROR: line #{num} Number of children living #{record[:children_living]} should not be included for #{record[:year]}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
+          message += messageb
+          record[:error_messages] += messageb
         end
       end
 
@@ -1125,13 +1162,13 @@ class FreecenCsvEntry
           success, messagea = FreecenValidations.children_deceased?(record[:children_deceased])
           unless success
             messageb = "ERROR: line #{num} Number of children deceased #{record[:children_deceased]} is #{messagea}.<br>"
-            message = message + messageb
-            record[:error_messages] = record[:error_messages] + messageb
+            message += messageb
+            record[:error_messages] += messageb
           end
         else
           messageb = "ERROR: line #{num} Number of children deceased #{record[:children_deceased]} should not be included for #{record[:year]}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
+          message += messageb
+          record[:error_messages] += messageb
         end
       end
 
@@ -1140,13 +1177,13 @@ class FreecenCsvEntry
           success, messagea = FreecenValidations.religion?(record[:religion])
           unless success
             messageb = "ERROR: line #{num} Religion #{record[:religion]} is #{messagea}.<br>"
-            message = message + messageb
-            record[:error_messages] = record[:error_messages] + messageb
+            message += messageb
+            record[:error_messages] += messageb
           end
         else
           messageb = "ERROR: line #{num} Religion #{record[:religion]} should not be included for #{record[:year]}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
+          message += messageb
+          record[:error_messages] += messageb
         end
       end
 
@@ -1155,39 +1192,39 @@ class FreecenCsvEntry
           success, messagea = FreecenValidations.read_write?(record[:read_write])
           unless success
             messageb = "ERROR: line #{num} Ability to read and write #{record[:read_write]} is #{messagea}.<br>"
-            message = message + messageb
-            record[:error_messages] = record[:error_messages] + messageb
+            message += messageb
+            record[:error_messages] += messageb
           end
         else
           messageb = "ERROR: line #{num} Ability to read and write #{record[:read_write]} should not be included for #{record[:year]}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
+          message += messageb
+          record[:error_messages] += messageb
         end
       end
 
       success, messagea = FreecenValidations.uncertainty_status?(record[:individual_flag])
       unless success
         messageb = "ERROR: line #{num} Individual Flag #{record[:individual_flag]} is #{messagea}.<br>"
-        message = message + messageb
-        record[:error_messages] = record[:error_messages] + messageb
+        message += messageb
+        record[:error_messages] += messageb
       end
 
       success, messagea = FreecenValidations.occupation?(record[:occupation], record[:age])
       unless success
         if messagea == '?'
           messageb = "Warning: line #{num} Occupation #{record[:occupation]} has trailing ?. Removed and flag set.<br>"
-          message = message + messageb
+          message += messageb
           record[:warning_messages] = record[:warning_messages] + messageb
           record[:occupation_flag] = 'x'
           record[:occupation] = record[:occupation][0...-1].strip
         elsif messagea == 'unusual use of Scholar'
           messageb = "Warning: line #{num} Occupation #{record[:occupation]} is #{messagea}.<br>"
-          message = message + messageb
+          message += messageb
           record[:warning_messages] = record[:warning_messages] + messageb
         else
           messageb = "ERROR: line #{num} Occupation #{record[:occupation]} is #{messagea}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
+          message += messageb
+          record[:error_messages] += messageb
         end
       end
 
@@ -1195,14 +1232,22 @@ class FreecenCsvEntry
         if %w[1911].include?(record[:year])
           success, messagea = FreecenValidations.industry?(record[:industry])
           unless success
-            messageb = "ERROR: line #{num} Industry #{record[:industry]} is #{messagea}.<br>"
-            message = message + messageb
-            record[:error_messages] = record[:error_messages] + messageb
+            if messagea == '?'
+              messageb = "Warning: line #{num} Industry  #{record[:sex]} has trailing ?. Removed and flag set.<br>"
+              message += messageb
+              record[:warning_messages] = record[:warning_messages] + messageb
+              record[:occupation_flag] = 'x'
+              record[:industry] = record[:industry][0...-1].strip
+            else
+              messageb = "ERROR: line #{num} Industry #{record[:industry]} is #{messagea}.<br>"
+              message += messageb
+              record[:error_messages] += messageb
+            end
           end
         else
           messageb = "ERROR: line #{num} Industry #{record[:industry]} should not be included for #{record[:year]}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
+          message += messageb
+          record[:error_messages] += messageb
         end
       end
 
@@ -1211,13 +1256,13 @@ class FreecenCsvEntry
           success, messagea = FreecenValidations.occupation_category?(record[:occupation_category])
           unless success
             messageb = "ERROR: line #{num} Occupation category #{record[:occupation_category]} is #{messagea}.<br>"
-            message = message + messageb
-            record[:error_messages] = record[:error_messages] + messageb
+            message += messageb
+            record[:error_messages] += messageb
           end
         else
           messageb = "ERROR: line #{num} Occupation category #{record[:occupation_category]} should not be included for #{record[:year]}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
+          message += messageb
+          record[:error_messages] += messageb
         end
       end
 
@@ -1226,43 +1271,51 @@ class FreecenCsvEntry
           success, messagea = FreecenValidations.at_home?(record[:at_home])
           unless success
             messageb = "ERROR: line #{num} Working at home #{record[:at_home]} is #{messagea}.<br>"
-            message = message + messageb
-            record[:error_messages] = record[:error_messages] + messageb
+            message += messageb
+            record[:error_messages] += messageb
           end
         else
           messageb = "ERROR: line #{num} Working at home #{record[:at_home]} should not be included for #{record[:year]}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
+          message += messageb
+          record[:error_messages] += messageb
         end
       end
 
       success, messagea = FreecenValidations.uncertainty_occupation?(record[:occupation_flag])
       unless success
         messageb = "ERROR: line #{num} Occupation Flag #{record[:occupation_flag]} is #{messagea}.<br>"
-        message = message + messageb
-        record[:error_messages] = record[:error_messages] + messageb
+        message += messageb
+        record[:error_messages] += messageb
       end
 
       success, messagea = FreecenValidations.verbatim_birth_county?(record[:verbatim_birth_county])
       unless success
         messageb = "ERROR: line #{num} Verbatim Birth County #{record[:verbatim_birth_county]} is #{messagea}.<br>"
-        message = message + messageb
-        record[:error_messages] = record[:error_messages] + messageb
+        message += messageb
+        record[:error_messages] += messageb
       end
 
 
       if record[:year] == '1841'
         if record[:verbatim_birth_place].present?
           messageb = "ERROR: line #{num} Verbatim Birth Place #{record[:verbatim_birth_place]} should not be included for #{record[:year]}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
+          message += messageb
+          record[:error_messages] += messageb
         end
       else
         success, messagea = FreecenValidations.verbatim_birth_place?(record[:verbatim_birth_place])
         unless success
-          messageb = "ERROR: line #{num} Verbatim Birth Place #{record[:verbatim_birth_place]} is #{messagea}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
+          if messagea == '?'
+            messageb = "Warning: line #{num} Verbatim Birth Place  #{record[:verbatim_birth_place]} has trailing ?. Removed and flag set.<br>"
+            message += messageb
+            record[:warning_messages] = record[:warning_messages] + messageb
+            record[:uncertainy_birth] = 'x'
+            record[:verbatim_birth_place] = record[:verbatim_birth_place][0...-1].strip
+          else
+            messageb = "ERROR: line #{num} Verbatim Birth Place #{record[:verbatim_birth_place]} is #{messagea}.<br>"
+            message += messageb
+            record[:error_messages] += messageb
+          end
         end
       end
 
@@ -1270,36 +1323,52 @@ class FreecenCsvEntry
         unless %w[1841].include?(record[:year])
           success, messagea = FreecenValidations.nationality?(record[:nationality])
           unless success
-            messageb = "ERROR: line #{num} Nationality #{record[:nationality]} is #{messagea}.<br>"
-            message = message + messageb
-            record[:error_messages] = record[:error_messages] + messageb
+            if messagea == '?'
+              messageb = "Warning: line #{num} Nationality #{record[:nationality]} has trailing ?. Removed and flag set.<br>"
+              message += messageb
+              record[:warning_messages] = record[:warning_messages] + messageb
+              record[:uncertainy_birth] = 'x'
+              record[:nationality] = record[:nationality][0...-1].strip
+            else
+              messageb = "ERROR: line #{num} Nationality #{record[:nationality]} is #{messagea}.<br>"
+              message += messageb
+              record[:error_messages] += messageb
+            end
           end
         else
           messageb = "ERROR: line #{num} Nationality #{record[:nationality]} should not be included for #{record[:year]}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
+          message += messageb
+          record[:error_messages] += messageb
         end
       end
 
       success, messagea = FreecenValidations.verbatim_birth_county?(record[:birth_county])
       unless success || messagea == 'blank'
         messageb = "ERROR: line #{num} Birth County #{record[:birth_county]} is #{messagea}.<br>"
-        message = message + messageb
-        record[:error_messages] = record[:error_messages] + messageb
+        message += messageb
+        record[:error_messages] += messageb
       end
 
       if record[:year] == '1841'
         if record[:birth_place].present?
           messageb = "ERROR: line #{num} Birth Place #{record[:birth_place]} should not be included for #{record[:year]}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
+          message += messageb
+          record[:error_messages] += messageb
         end
       else
         success, messagea = FreecenValidations.birth_place?(record[:birth_place])
         unless success || messagea == 'blank'
-          messageb = "ERROR: line #{num} Birth Place #{record[:birth_place]} is #{messagea}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
+          if messagea == '?'
+            messageb = "Warning: line #{num} Birth Place  #{record[:birth_place]} has trailing ?. Removed and flag set.<br>"
+            message += messageb
+            record[:warning_messages] = record[:warning_messages] + messageb
+            record[:uncertainy_birth] = 'x'
+            record[:birth_place] = record[:birth_place][0...-1].strip
+          else
+            messageb = "ERROR: line #{num} Birth Place #{record[:birth_place]} is #{messagea}.<br>"
+            message += messageb
+            record[:error_messages] += messageb
+          end
         end
 
       end
@@ -1308,36 +1377,53 @@ class FreecenCsvEntry
         if record[:year] == '1911'
           success, messagea = FreecenValidations.father_place_of_birth?(record[:father_place_of_birth])
           unless success
-            messageb = "ERROR: line #{num} Father's place of birth #{record[:father_place_of_birth]} is #{messagea}.<br>"
-            message = message + messageb
-            record[:error_messages] = record[:error_messages] + messageb
+            if messagea == '?'
+              messageb = "Warning: line #{num} Father's place of birth #{record[:father_place_of_birth]} has trailing ?. Removed and flag set.<br>"
+              message += messageb
+              record[:warning_messages] = record[:warning_messages] + messageb
+              record[:uncertainy_birth] = 'x'
+              record[:father_place_of_birth] = record[:father_place_of_birth][0...-1].strip
+            else
+              messageb = "ERROR: line #{num} Father's place of birth #{record[:father_place_of_birth]} is #{messagea}.<br>"
+              message += messageb
+              record[:error_messages] += messageb
+            end
           end
         else
           messageb = "ERROR: line #{num} Father's place of birth #{record[:father_place_of_birth]} should not be included for #{record[:year]}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
+          message += messageb
+          record[:error_messages] += messageb
         end
       end
 
-      success, messagea = FreecenValidations.uncertainy_birth?(record[:uncertainy_birth])
+      success, messagea = FreecenValidations.uncertainy_birth?(record[:birth_place_flag])
       unless success
-        messageb = "ERROR: line #{num} Birth uncertainty #{record[:uncertainy_birth]} is #{messagea}.<br>"
-        message = message + messageb
-        record[:error_messages] = record[:error_messages] + messageb
+        messageb = "ERROR: line #{num} Birth Place Flag #{record[:birth_place_flag]} is #{messagea}.<br>"
+        message += messageb
+        record[:error_messages] += messageb
       end
 
       if record[:year] == '1841'
         if record[:disability].present?
           messageb = "ERROR: line #{num} Disability #{record[:disability]} should not be included for #{record[:year]}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
+          message += messageb
+          record[:error_messages] += messageb
         end
       else
         success, messagea = FreecenValidations.disability?(record[:disability])
+
         unless success
-          messageb = "ERROR: line #{num} Disability #{record[:disability]} is #{messagea}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
+          if messagea == '?'
+            messageb = "Warning: line #{num} Disability #{record[:disability]} has trailing ?. Comment added to Notes.<br>"
+            message += messageb
+            record[:warning_messages] = record[:warning_messages] + messageb
+            record[:notes] = record[:notes].present? ? record[:notes] + ' Disability ?' : 'Disability ?'
+            record[:disability] = record[:disability][0...-1].strip
+          else
+            messageb = "ERROR: line #{num} Disability #{record[:disability]} is #{messagea}.<br>"
+            message += messageb
+            record[:error_messages] += messageb
+          end
         end
       end
 
@@ -1345,14 +1431,22 @@ class FreecenCsvEntry
         if record[:year] == '1911'
           success, messagea = FreecenValidations.disability_notes?(record[:disability_notes])
           unless success
-            messageb = "ERROR: line #{num} Disability Notes #{record[:disability_notes]} is #{messagea}.<br>"
-            message = message + messageb
-            record[:error_messages] = record[:error_messages] + messageb
+            if messagea == '?'
+              messageb = "Warning: line #{num} Disability Notes #{record[:disability]} has trailing ?. Comment added to Notes.<br>"
+              message += messageb
+              record[:warning_messages] = record[:warning_messages] + messageb
+              record[:notes] = record[:notes].present? ? record[:notes] + ' Disability Notes?' : 'Disability Notes?'
+              record[:disability_notes] = record[:disability_notes][0...-1].strip
+            else
+              messageb = "ERROR: line #{num} Disability Notes #{record[:disability_notes]} is #{messagea}.<br>"
+              message += messageb
+              record[:error_messages] += messageb
+            end
           end
         else
           messageb = "ERROR: line #{num} Disability Notes #{record[:disability_notes]} should not be included for #{record[:year]}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
+          message += messageb
+          record[:error_messages] += messageb
         end
       end
 
@@ -1361,21 +1455,21 @@ class FreecenCsvEntry
           success, messagea = FreecenValidations.language?(record[:language])
           unless success
             messageb = "ERROR: line #{num} Language #{record[:language]} is #{messagea}.<br>"
-            message = message + messageb
-            record[:error_messages] = record[:error_messages] + messageb
+            message += messageb
+            record[:error_messages] += messageb
           end
         else
           messageb = "Warning: line #{num} Language #{record[:language]} should not be included for #{record[:year]}.<br>"
-          message = message + messageb
-          record[:error_messages] = record[:error_messages] + messageb
+          message += messageb
+          record[:error_messages] += messageb
         end
       end
 
       success, messagea = FreecenValidations.notes?(record[:notes])
       unless success
         messageb = "ERROR: line #{num} Notes #{record[:notes]} is #{messagea}.<br>"
-        message = message + messageb
-        record[:error_messages] = record[:error_messages] + messageb
+        message += messageb
+        record[:error_messages] += messageb
       end
       [message]
     end
