@@ -24,7 +24,7 @@
                         <span class="ttip__text"><%= info_tag_text[:firstname]%></span>
                         <% end %>
                     </div>
-                    <%= autocomplete_field_tag 'search_query[first_name]', set_value(@search_query.first_name), autocomplete_BestGuess_GivenName_search_queries_path, class: 'text-input', placeholder: 'Enter first name(s) here', role: 'textbox', id: 'first_name', tabindex: "0"%>
+                    <%= text_field_tag 'search_query[first_name]', set_value(@search_query.first_name), class: 'text-input', placeholder: 'Enter first name(s) here', role: 'textbox', id: 'first_name', tabindex: "0"%>
                     <div class='names'></div>
                     <label>
                         <small>
@@ -41,7 +41,7 @@
                             <span class="ttip__text"><%= info_tag_text[:lastname]%></span>
                         <% end %>
                     </div>
-                    <%= autocomplete_field_tag 'search_query[last_name]', set_value(@search_query.last_name), autocomplete_BestGuess_Surname_search_queries_path, class: 'text-input', id: 'last_name', placeholder: 'Enter Surname here', tabindex: "0"%>
+                    <%= text_field_tag 'search_query[last_name]', set_value(@search_query.last_name)  , class: 'text-input', id: 'last_name', placeholder: 'Enter Surname here', tabindex: "0"%>
                     <label>
                         <small class="ttip__text">
                             <%= check_box_tag 'search_query[fuzzy]', set_value(@search_query.fuzzy), set_value(@search_query.fuzzy), tabindex: "0" %>
