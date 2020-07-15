@@ -20,8 +20,8 @@ class SearchQueriesController < ApplicationController
   rescue_from ActionController::UnknownFormat, with: :github_camo
   #rescue_from ActionView::Template::Error, with: :missing_template
   rescue_from Timeout::Error, with: :search_taking_too_long
-  autocomplete :BestGuess, :Surname, full: true
-  autocomplete :BestGuess, :GivenName, full: true
+  autocomplete :BestGuess, :Surname, full: false,  limit: 5
+  autocomplete :BestGuess, :GivenName, full: false, limit: 5
   RECORDS_PER_PAGE = 100
 
   def about
