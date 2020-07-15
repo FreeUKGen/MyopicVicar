@@ -7,23 +7,23 @@
   </div>
 </div>
 <% unless defined?(@printable_format) && @printable_format %>
-  <div class='grid'>
-    
+  <!--div class='grid'>
+
     <div class="grid__item one-quarter lap-one-quarter palm-one-whole">
-      <%= form_tag search_query_path(@search_query), method: :get, id: 'limit_form' do %>
-        Display <%= select_tag :results_per_page, options_for_select([20,40,60,80,100], selected: @results_per_page), class: 'date_year'%> per page.
-      <% end %>
+      <%#= form_tag search_query_path(@search_query), method: :get, id: 'limit_form' do %>
+        Display <%#= select_tag :results_per_page, options_for_select([20,40,60,80,100], selected: @results_per_page), class: 'date_year'%> per page.
+      <%# end %>
     </div>
     <div class="grid__item one-quarter lap-one-quarter palm-one-whole text--right push-half--top informative">
-      <%= link_to "Results Help", "https://test.freebmd.org.uk/search-results-help.html", target: "_blank" %>
+      <%#= link_to "Results Help", "https://test.freebmd.org.uk/search-results-help.html", target: "_blank" %>
     </div>
-  </div>
+  </div-->
 <% end %>
 <section>
   <section class="island" >
     <h1 class="accessibility">Search Results</h1>
     <div class="table-wrapper bmd_search_results_table" id="search-result" style="overflow: auto !important;">
-      <table class="search_results_table" border='0'  >
+      <table class="table--bordered table--data"  id='bmd_table_hover'>
         <thead>
           <tr>
             <% unless print_friendly %>
@@ -57,10 +57,10 @@
           <% @paginatable_array.each do |search_record| %>
             <% n = n +1%>
             <% record_type = RecordType::display_name(["#{search_record[:RecordTypeID]}"])%>
-            <tr id="<%=search_record[:_id]%>" class="<%= record_type.downcase %>">
+            <tr id="<%=search_record[:_id]%>" class="<%= record_type.downcase %>_hover" >
               <% unless print_friendly %>
                 <td>
-                  <%= link_to("<i class='fa fa-arrow-right view_arrow'></i> View #{n}".html_safe,friendly_bmd_record_details_path(@search_query.id,search_record.id, search_record.friendly_url), :rel => "nofollow", :title => "" )%>
+                  <%= link_to("View #{n}".html_safe,friendly_bmd_record_details_path(@search_query.id,search_record.id, search_record.friendly_url), :rel => "nofollow", :title => "", class: "btn  btn--small")%>
                   <i><%= seen(@search_query,search_record) %></i>
                 </td>
               <% end %>
@@ -75,7 +75,7 @@
               <%# raise QuarterDetails.quarters.inspect%>
                 <%= "#{QuarterDetails.quarters.key((search_record[:QuarterNumber]-1)%4 + 1).upcase} #{(search_record[:QuarterNumber]-1)/4 + 1837}"%>
               </td>
-              <td>
+              <td class="<%= record_type.downcase %>">
                 <%= "#{record_type}" %>
               </td>
               <td>
@@ -98,7 +98,7 @@
   </section>
 </section>
 <div class='grid'>
-  <div class="grid__item one-half lap-one-half palm-one-whole">
+  <div class="grid__item one-whole lap-one-whole palm-one-whole">
     <%= link_to "Download", '#', :class => "btn btn--small push-half--right push-half--top" %>
     <%= link_to "About this Query", about_search_query_path(@search_query, :page_number => @page_number), :class => "btn   btn--small  push-half--right push-half--top" %>
     <%= link_to "Printable Format", show_print_version_search_query_path, class: "btn   btn--small push-half--right push-half--top", title: "Click to view results in printable format", "aria-details": "Click to view results in printable format"  %>

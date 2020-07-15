@@ -3,17 +3,19 @@
  */
 @import "FreeUKGenealogy-Core-Frontend/styles/scss/vars";
 @import "FreeUKGenealogy-Core-Frontend/styles/scss/lap_and_up";
+@import "FreeUKGenealogy-Core-Frontend/styles/scss/palm";
 
 
 
 .Navbar {
     display: flex;
     padding-left: 16px;
-    background: #a1185a;
+    background: $magenta;
     position: absolute;
-    top: 100px;
+    top: 150px;
     z-index: 2;
     width: 100%;
+    margin-bottom: 50px;
     /**@include manual-media-query(760px) {
         max-width:  760px;
         width: 110%;
@@ -36,6 +38,22 @@
 
 }
 
+
+
+#bmd_site_content {
+    padding-top: 45px !important;
+}
+
+.bmd_site_header {
+    padding-top: 20px !important;
+    padding-bottom: 20px !important;
+    height: 150px !important;
+}
+
+.bmd_adsense {
+    float: none !important;
+}
+
 /**
 .bmd_logo {
         top: 90px;
@@ -49,7 +67,7 @@
     padding-bottom: 7px !important;
     margin-bottom: 5px !important;
     font-size: 2.5rem !important;
-    margin-top: 50px;
+    /*margin-top: 50px;*/
 }
 
 @media (min-width: 992px) {
@@ -219,12 +237,12 @@ span.optional_checkbox_label {
 ol li label i {
     cursor: help;
     padding: 0 2px;
-    color: #a1185a;
+    color: $magenta;
     font-size: 0.8em !important;
 }
 
 input.search_form_submit_button {
-    background-color: #a1185a;
+    background-color: $magenta;
     color: white;
     font-weight: bold;
     border-radius: 8px;
@@ -233,13 +251,63 @@ input.search_form_submit_button {
     border: none !important;
 }
 
+#search_form_submit_small_screen {
+    background-color: #ffffff;
+    color: $magenta !important;
+    font-weight: bolder;
+    border-radius: 8px;
+    padding: 10px;
+    width: 150px;
+    border: none !important;
+}
+
 .grid.action {
     text-align: right;
 }
 
+
+.kittumani {
+    @include manual-media-query(576px) {
+      display: none;
+    }
+}
+
+#sticky_buttons {
+    @media (max-width: 576px){
+        position: fixed;
+        z-index: 3;
+        bottom: 0;
+        width: 100%;
+        height: 55px;
+        padding: 10px;
+        left: 0;
+        text-align: center;
+        background: $magenta;
+    }
+    @media (min-width: 576px) {
+      display: none !important;
+    }
+}
+
+.clear_form_small_screen {
+    color: #ffffff;
+    text-decoration: none;
+    background: none !important;
+    border: none;
+}
+
+.clear_form_small_screen:focus {
+    background-color: #ffffff !important;
+    color: $magenta;
+    border: 1px solid #ffffff;
+    border-radius: 4px;
+    transition: 0.1s;
+    padding: 4px 4px;
+}
+
 .clear_form {
     margin-right: 30px;
-    color: #a1185a;
+    color: $magenta;
     text-decoration: none;
     background: none !important;
     border: none;
@@ -255,7 +323,7 @@ input.search_form_submit_button {
 }
 
 select[multiple]:focus option:checked {
-    background: #a1185a linear-gradient(0deg, #a1185a 0%, #a1185a 100%);
+    background: $magenta linear-gradient(0deg, $magenta 0%, $magenta 100%);
     color: white !important;
     ;
 }
@@ -303,7 +371,7 @@ select[multiple]:focus option:checked {
 
 .Navbar__Link a:hover {
   background-color: #f4f4f4;
-  color: #a1185a;
+  color: $magenta;
 }
 
 @media only screen and (max-width: 1055px) {
@@ -345,8 +413,8 @@ select[multiple]:focus option:checked {
 
     .Navbar__ToggleShow {
         display: flex;
-        border: 5px solid #a1185a;
-        background-color: #ab0354;
+        border: 5px solid $magenta;
+        background-color: $magenta;
     }
 
     .Navbar__ToggleShow .Navbar__Link a {
@@ -402,7 +470,7 @@ input:disabled:not([type="submit"]):hover {
 }
 
 .result_count {
-    color: #A1185A;
+    color: $magenta;
     font-style: normal;
     font-weight: normal;
     font-size: 24px;

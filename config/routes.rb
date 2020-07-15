@@ -401,7 +401,10 @@ MyopicVicar::Application.routes.draw do
   get 'search_queries/selection',  :to => 'search_queries#selection', :as => :select_search_query_report
   get 'search_queries/districts_of_selected_counties' => 'search_queries#districts_of_selected_counties'
   post 'search_queries/:id/analyze(.:format)', :to => 'search_queries#analyze', :as => :analyze_search_query
-  resources :search_queries
+  resources :search_queries do
+    get :autocomplete_BestGuess_Surname, :on => :collection
+    get :autocomplete_BestGuess_GivenName, :on => :collection
+  end
 
   resources :s3buckets
 

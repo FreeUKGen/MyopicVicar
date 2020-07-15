@@ -61,6 +61,7 @@
     <!--link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:italic,300,400,600&display=swap" rel="stylesheet"-->
 
     <!-- Styles -->
+    <%= stylesheet_link_tag    'application', media: 'all' %>
     <%= stylesheet_link_tag "https://fonts.googleapis.com/css?family=Source+Sans+Pro:italic,300,400,600&display=swap",rel: "stylesheet","content-encoding" => "gzip" %>
     <%= stylesheet_link_tag "styles/scss/palm",rel: "stylesheet","content-encoding" => "gzip" %>
     <%= stylesheet_link_tag 'styles/css/icons.data.svg.css',rel: "stylesheet" %>
@@ -102,13 +103,13 @@
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
     <% if appname_downcase == 'freebmd'%>
-    <%= render 'layouts/bmd_main_nav'%>
+      <%= render 'layouts/bmd_main_nav'%>
     <% else %>
-    <%= render "layouts/main_nav" %>
+      <%= render "layouts/main_nav" %>
     <% end %>
     <div class="offcanvas__primary">
       <%= render "layouts/header" %>
-      <main  class="site__content  icon__honeycomb--top-right">
+      <main  class="site__content  icon__honeycomb--top-right" id="bmd_site_content">
         <% unless device_type == :mobile%>
           <!--div class='side_banners' style="float: left; padding: 10px">
             <%= side_banners%>

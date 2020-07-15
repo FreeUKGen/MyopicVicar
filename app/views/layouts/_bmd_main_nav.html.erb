@@ -1,48 +1,50 @@
-<div class='Navbar'>
-    <div class="Navbar__Link Navbar__Link-brand kodhandam">
-        <%= link_to '/', class: "site__header__logo  icon__freebmd dhandam" do %>
-            <h1 class="accessibility">FreeBMD</h1>
-        <% end %>
-    </div>
-    <div class="Navbar__Link Navbar__Link-toggle " >
-        <i class="fa fa-bars fa-2x" id='offcanvas_trigger' aria-hidden="true"></i>
-    </div>
-    <div class="Navbar__Items Navbar__Items--right flex_container" >
-      <% if nav_search_form_link.present?%>
-        <div class="Navbar__Link">
-          <%=nav_search_form_link%>
+<div class='kittu'>
+    <div class='Navbar'>
+        <div class="Navbar__Link Navbar__Link-brand kodhandam">
+            <%= link_to '/', class: "site__header__logo  icon__freebmd dhandam" do %>
+                <h1 class="accessibility">FreeBMD</h1>
+            <% end %>
         </div>
-      <% end%>
-      <% if nav_transcription_page_link.present?%>
-        <div class="Navbar__Link">
-          <%=nav_transcription_page_link%>
+        <div class="Navbar__Link Navbar__Link-toggle " >
+            <i class="fa fa-bars fa-2x" id='offcanvas_trigger' aria-hidden="true"></i>
         </div>
-      <% end%>
-      <% if nav_about_page_link.present?%>
-        <div class="Navbar__Link">
-          <%=nav_about_page_link%>
+        <div class="Navbar__Items Navbar__Items--right flex_container" >
+          <% if nav_search_form_link.present?%>
+            <div class="Navbar__Link">
+              <%=nav_search_form_link%>
+            </div>
+          <% end%>
+          <% if nav_transcription_page_link.present?%>
+            <div class="Navbar__Link">
+              <%=nav_transcription_page_link%>
+            </div>
+          <% end%>
+          <% if nav_about_page_link.present?%>
+            <div class="Navbar__Link">
+              <%=nav_about_page_link%>
+            </div>
+          <% end%>
+          <% if nav_volunteer_page_link.present?%>
+            <div class="Navbar__Link">
+              <%=nav_volunteer_page_link%>
+            </div>
+          <% end%>
+          <% if nav_member_page_link.present?%>
+              <div class="Navbar__Link">
+                <%=nav_member_page_link%>
+              </div>
+          <% end%>
+          <% if nav_actions_page_link.present?%>
+            <div class="Navbar__Link">
+              <%=nav_actions_page_link%>
+            </div>
+          <% end%>
+          <% if nav_help_pages_link.present?%>
+            <div class="Navbar__Link">
+              <%=nav_help_pages_link%>
+            </div>
+          <% end%>
         </div>
-      <% end%>
-      <% if nav_volunteer_page_link.present?%>
-        <div class="Navbar__Link">
-          <%=nav_volunteer_page_link%>
-        </div>
-      <% end%>
-      <% if nav_member_page_link.present?%>
-          <div class="Navbar__Link">
-            <%=nav_member_page_link%>
-          </div>
-      <% end%>
-      <% if nav_actions_page_link.present?%>
-        <div class="Navbar__Link">
-          <%=nav_actions_page_link%>
-        </div>
-      <% end%>
-      <% if nav_help_pages_link.present?%>
-        <div class="Navbar__Link">
-          <%=nav_help_pages_link%>
-        </div>
-      <% end%>
     </div>
 </div>
 
