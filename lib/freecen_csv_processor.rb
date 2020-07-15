@@ -749,12 +749,12 @@ class CsvRecords < CsvFile
       next if field == 'language' && (ChapmanCode::CODES['England'].values.member?(@csvfile.chapman_code) || @csvfile.chapman_code == 'IOM')
       next if field_specification.value?(field)
       success = false
-      message = message + "ERROR: header field #{field} is missing from the spreadsheet for #{@csvfile.year}.<br>"
+      message = message + "ERROR: the field #{field} is missing from the #{@csvfile.year} spreadsheet.<br>"
     end
     field_specification.values.each do |value|
       next if @csvfile.census_fields.include?(value)
       success = false
-      message = message + "ERROR: header field #{value} is not included in the spreadsheet for #{@csvfile.year}.<br>"
+      message = message + "ERROR: header field #{value} should not be included it is not part in the spreadsheet for #{@csvfile.year}.<br>"
     end
     p field_specification
     [success, message, field_specification, line]
