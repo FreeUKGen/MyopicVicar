@@ -102,7 +102,7 @@ class Freecen2Piece
         census_fields = Freecen::CEN2_1901
       when 'RG14'
         year = '1911'
-        census_fields = %w[ALD GSY JSY SRK].include?(chapman_code) ? Freecen::CEN2_CHANNEL_ISLANDS_1911 : Freecen::CEN2_1911
+        census_fields = Freecen::CEN2_1911
       when 'HO107'
         year = parts[1].delete('^0-9').to_i <= 1465 ? '1841' : '1851'
         census_fields = parts[1].delete('^0-9').to_i <= 1465 ? Freecen::CEN2_1841 : Freecen::CEN2_1851
