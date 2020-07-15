@@ -683,6 +683,8 @@ class CsvRecords < CsvFile
       @project.write_messages_to_all(message, true)
       return [success, reduction]
     end
+    return [false, 'No lines other that fields'] if @array_of_lines[n + 1].blank?
+
     success, message = line_two(@array_of_lines[n + 1])
     if success
       reduction = reduction + 1
