@@ -1130,7 +1130,13 @@ class FreecenCsvEntry
       if record[:children_born_alive].present?
         if %w[1911].include?(record[:year])
           success, messagea = FreecenValidations.children_born_alive?(record[:children_born_alive])
-          unless success
+          if success
+            if record[:children_born_alive] >= 15
+              messageb = "Warning: line #{num} Number of children born alive #{record[:children_born_alive]} is #{messagea}.<br>"
+              message += messageb
+              record[:warning_messages] += messageb
+            end
+          else
             messageb = "ERROR: line #{num} Number of children born alive #{record[:children_born_alive]} is #{messagea}.<br>"
             message += messageb
             record[:error_messages] += messageb
@@ -1145,7 +1151,13 @@ class FreecenCsvEntry
       if record[:children_living].present?
         if %w[1911].include?(record[:year])
           success, messagea = FreecenValidations.children_living?(record[:children_living])
-          unless success
+          if success
+            if record[:children_living] >= 15
+              messageb = "Warning: line #{num} Number of children living #{record[:children_living]} is #{messagea}.<br>"
+              message += messageb
+              record[:warning_messages] += messageb
+            end
+          else
             messageb = "ERROR: line #{num} Number of children living #{record[:children_living]} is #{messagea}.<br>"
             message += messageb
             record[:error_messages] += messageb
