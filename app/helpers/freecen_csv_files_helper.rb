@@ -10,30 +10,30 @@ module FreecenCsvFilesHelper
   end
 
   def browse_freecen_file_individuals
-    link_to 'Browse individuals', freecen_csv_entries_path(type: 'Ind'), method: :get, class: 'btn   btn--small'
+    link_to 'View individuals', freecen_csv_entries_path(type: 'Ind'), method: :get, class: 'btn   btn--small'
   end
 
   def browse_freecen_file_civil_parishes
-    link_to 'Browse civil parishes', freecen_csv_entries_path(type: 'Civ'), method: :get, class: 'btn   btn--small'
+    link_to 'View civil parishes', freecen_csv_entries_path(type: 'Civ'), method: :get, class: 'btn   btn--small'
   end
   def browse_freecen_file_pages
-    link_to 'Browse pages', freecen_csv_entries_path(type: 'Pag'), method: :get, class: 'btn   btn--small'
+    link_to 'View pages', freecen_csv_entries_path(type: 'Pag'), method: :get, class: 'btn   btn--small'
   end
 
   def browse_freecen_file_dwellings
-    link_to 'Browse dwellings', freecen_csv_entries_path(type: 'Dwe'), method: :get, class: 'btn   btn--small'
+    link_to 'View dwellings', freecen_csv_entries_path(type: 'Dwe'), method: :get, class: 'btn   btn--small'
   end
 
   def list_freecen_file_error_entries
-    link_to 'Browse error messages', freecen_csv_entries_path(type: 'Err'), method: :get, class: 'btn   btn--small'
+    link_to 'View error messages', freecen_csv_entries_path(type: 'Err'), method: :get, class: 'btn   btn--small'
   end
 
   def list_freecen_file_warning_entries
-    link_to 'Browse warning messages', freecen_csv_entries_path(type: 'War'), method: :get, class: 'btn   btn--small'
+    link_to 'View warning messages', freecen_csv_entries_path(type: 'War'), method: :get, class: 'btn   btn--small'
   end
 
   def list_freecen_file_information_entries
-    link_to 'Browse information messages', freecen_csv_entries_path(type: 'Inf'), method: :get, class: 'btn   btn--small'
+    link_to 'View information messages', freecen_csv_entries_path(type: 'Inf'), method: :get, class: 'btn   btn--small'
   end
 
   def download_spreadsheet
@@ -45,7 +45,7 @@ module FreecenCsvFilesHelper
   end
 
   def list_freecen_file_flags
-    link_to 'Browse Flags', freecen_csv_entries_path(type: 'Fla'), method: :get, class: 'btn   btn--small'
+    link_to 'View Flags', freecen_csv_entries_path(type: 'Fla'), method: :get, class: 'btn   btn--small'
   end
 
   def remove_freecen_file
