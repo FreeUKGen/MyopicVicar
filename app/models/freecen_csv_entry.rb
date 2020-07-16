@@ -934,11 +934,11 @@ class FreecenCsvEntry
               if record[:year] == '1901' && record[:rooms].to_i >= 5
                 messageb = "Warning: line #{num} Rooms #{record[:rooms]} is greater then 5.<br>"
                 message += messageb
-                record[:waring_messages] = record[:warning_messages] + messageb
+                record[:warning_messages] += messageb
               elsif record[:year] == '1911' && record[:rooms].to_i > 20
                 messageb = "Warning: line #{num} Rooms #{record[:rooms]} is greater then 20.<br>"
                 message += messageb
-                record[:waring_messages] = record[:warning_messages] + messageb
+                record[:warning_messages] += messageb
               end
             end
           else
