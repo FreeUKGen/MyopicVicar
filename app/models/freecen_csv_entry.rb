@@ -881,7 +881,7 @@ class FreecenCsvEntry
         if %w[u v].include?(uninhabited_flag) && schedule_number.blank?
           messageb = "Warning: line #{num} has special #{uninhabited_flag} but no schedule number.<br>"
           message += messageb
-          record[:warning_messages] = record[:warning_messages] + messageb
+          record[:warning_messages] += messageb
         end
         if uninhabited_flag == 'x'
           record[:address_flag] = 'x'
@@ -992,7 +992,7 @@ class FreecenCsvEntry
         if messagea == '?'
           messageb = "Warning: line #{num} Surname  #{record[:surname]} has trailing ?. Removed and flag set.<br>"
           message += messageb
-          record[:warning_messages] = record[:warning_messages] + messageb
+          record[:warning_messages] += messageb
           record[:name_flag] = 'x'
           record[:surname] = record[:surname][0...-1].strip
         else
@@ -1007,7 +1007,7 @@ class FreecenCsvEntry
         if messagea == '?'
           messageb = "Warning: line #{num} Forenames  #{record[:forenames]} has trailing ?. Removed and flag set.<br>"
           message += messageb
-          record[:warning_messages] = record[:warning_messages] + messageb
+          record[:warning_messages] += messageb
           record[:name_flag] = 'x'
           record[:forenames] = record[:forenames][0...-1].strip
         else
@@ -1030,7 +1030,7 @@ class FreecenCsvEntry
           if messagea == '?'
             messageb = "Warning: line #{num} Relationship  #{record[:relationship]} has trailing ?. Removed and flag set.<br>"
             message += messageb
-            record[:warning_messages] = record[:warning_messages] + messageb
+            record[:warning_messages] += messageb
             record[:individual_flag] = 'x'
             record[:relationship] = record[:relationship][0...-1].strip
           else
@@ -1053,7 +1053,7 @@ class FreecenCsvEntry
           if messagea == '?'
             messageb = "Warning: line #{num} Marital Status  #{record[:marital_status]} has trailing ?. Removed and flag set.<br>"
             message += messageb
-            record[:warning_messages] = record[:warning_messages] + messageb
+            record[:warning_messages] += messageb
             record[:individual_flag] = 'x'
             record[:marital_status] = record[:marital_status][0...-1].strip
           else
@@ -1069,7 +1069,7 @@ class FreecenCsvEntry
         if messagea == '?'
           messageb = "Warning: line #{num} Sex  #{record[:sex]} has trailing ?. Removed and flag set.<br>"
           message += messageb
-          record[:warning_messages] = record[:warning_messages] + messageb
+          record[:warning_messages] += messageb
           record[:individual_flag] = 'x'
           record[:sex] = record[:sex][0...-1].strip
         else
@@ -1084,7 +1084,7 @@ class FreecenCsvEntry
         if messagea == '?'
           messageb = "Warning: line #{num} Age  #{record[:sex]} has trailing ?. Removed and flag set.<br>"
           message += messageb
-          record[:warning_messages] = record[:warning_messages] + messageb
+          record[:warning_messages] += messageb
           record[:individual_flag] = 'x'
           record[:sex] = record[:sex][0...-1].strip
         else
@@ -1127,27 +1127,6 @@ class FreecenCsvEntry
         end
       end
 
-      if record[:children_born_alive].present?
-        if %w[1911].include?(record[:year])
-          success, messagea = FreecenValidations.children_born_alive?(record[:children_born_alive])
-          if success
-            if record[:children_born_alive] >= 15
-              messageb = "Warning: line #{num} Number of children born alive #{record[:children_born_alive]} is #{messagea}.<br>"
-              message += messageb
-              record[:warning_messages] += messageb
-            end
-          else
-            messageb = "ERROR: line #{num} Number of children born alive #{record[:children_born_alive]} is #{messagea}.<br>"
-            message += messageb
-            record[:error_messages] += messageb
-          end
-        else
-          messageb = "ERROR: line #{num} Number of children born alive #{record[:children_born_alive]} should not be included for #{record[:year]}.<br>"
-          message += messageb
-          record[:error_messages] += messageb
-        end
-      end
-
       if record[:children_living].present?
         if %w[1911].include?(record[:year])
           success, messagea = FreecenValidations.children_living?(record[:children_living])
@@ -1172,13 +1151,40 @@ class FreecenCsvEntry
       if record[:children_deceased].present?
         if %w[1911].include?(record[:year])
           success, messagea = FreecenValidations.children_deceased?(record[:children_deceased])
-          unless success
+          if success
+            if record[:children_deceased] >= 15
+              messageb = "Warning: line #{num} Number of children living #{record[:children_deceased]} is #{messagea}.<br>"
+              message += messageb
+              record[:warning_messages] += messageb
+            end
+          else
             messageb = "ERROR: line #{num} Number of children deceased #{record[:children_deceased]} is #{messagea}.<br>"
             message += messageb
             record[:error_messages] += messageb
           end
         else
           messageb = "ERROR: line #{num} Number of children deceased #{record[:children_deceased]} should not be included for #{record[:year]}.<br>"
+          message += messageb
+          record[:error_messages] += messageb
+        end
+      end
+
+      if record[:children_born_alive].present?
+        if %w[1911].include?(record[:year])
+          success, messagea = FreecenValidations.children_born_alive?(record[:children_born_alive])
+          if success
+            if record[:children_born_alive] >= 15
+              messageb = "Warning: line #{num} Number of children born alive #{record[:children_born_alive]} is #{messagea}.<br>"
+              message += messageb
+              record[:warning_messages] += messageb
+            end
+          else
+            messageb = "ERROR: line #{num} Number of children born alive #{record[:children_born_alive]} is #{messagea}.<br>"
+            message += messageb
+            record[:error_messages] += messageb
+          end
+        else
+          messageb = "ERROR: line #{num} Number of children born alive #{record[:children_born_alive]} should not be included for #{record[:year]}.<br>"
           message += messageb
           record[:error_messages] += messageb
         end
@@ -1226,13 +1232,13 @@ class FreecenCsvEntry
         if messagea == '?'
           messageb = "Warning: line #{num} Occupation #{record[:occupation]} has trailing ?. Removed and flag set.<br>"
           message += messageb
-          record[:warning_messages] = record[:warning_messages] + messageb
+          record[:warning_messages] += messageb
           record[:occupation_flag] = 'x'
           record[:occupation] = record[:occupation][0...-1].strip
         elsif messagea == 'unusual use of Scholar'
           messageb = "Warning: line #{num} Occupation #{record[:occupation]} is #{messagea}.<br>"
           message += messageb
-          record[:warning_messages] = record[:warning_messages] + messageb
+          record[:warning_messages] += messageb
         else
           messageb = "ERROR: line #{num} Occupation #{record[:occupation]} is #{messagea}.<br>"
           message += messageb
@@ -1247,7 +1253,7 @@ class FreecenCsvEntry
             if messagea == '?'
               messageb = "Warning: line #{num} Industry  #{record[:sex]} has trailing ?. Removed and flag set.<br>"
               message += messageb
-              record[:warning_messages] = record[:warning_messages] + messageb
+              record[:warning_messages] += messageb
               record[:occupation_flag] = 'x'
               record[:industry] = record[:industry][0...-1].strip
             else
@@ -1320,7 +1326,7 @@ class FreecenCsvEntry
           if messagea == '?'
             messageb = "Warning: line #{num} Verbatim Birth Place  #{record[:verbatim_birth_place]} has trailing ?. Removed and flag set.<br>"
             message += messageb
-            record[:warning_messages] = record[:warning_messages] + messageb
+            record[:warning_messages] += messageb
             record[:uncertainy_birth] = 'x'
             record[:verbatim_birth_place] = record[:verbatim_birth_place][0...-1].strip
           else
@@ -1338,7 +1344,7 @@ class FreecenCsvEntry
             if messagea == '?'
               messageb = "Warning: line #{num} Nationality #{record[:nationality]} has trailing ?. Removed and flag set.<br>"
               message += messageb
-              record[:warning_messages] = record[:warning_messages] + messageb
+              record[:warning_messages] += messageb
               record[:uncertainy_birth] = 'x'
               record[:nationality] = record[:nationality][0...-1].strip
             else
@@ -1373,7 +1379,7 @@ class FreecenCsvEntry
           if messagea == '?'
             messageb = "Warning: line #{num} Birth Place  #{record[:birth_place]} has trailing ?. Removed and flag set.<br>"
             message += messageb
-            record[:warning_messages] = record[:warning_messages] + messageb
+            record[:warning_messages] += messageb
             record[:uncertainy_birth] = 'x'
             record[:birth_place] = record[:birth_place][0...-1].strip
           else
@@ -1392,7 +1398,7 @@ class FreecenCsvEntry
             if messagea == '?'
               messageb = "Warning: line #{num} Father's place of birth #{record[:father_place_of_birth]} has trailing ?. Removed and flag set.<br>"
               message += messageb
-              record[:warning_messages] = record[:warning_messages] + messageb
+              record[:warning_messages] += messageb
               record[:uncertainy_birth] = 'x'
               record[:father_place_of_birth] = record[:father_place_of_birth][0...-1].strip
             else
@@ -1428,7 +1434,7 @@ class FreecenCsvEntry
           if messagea == '?'
             messageb = "Warning: line #{num} Disability #{record[:disability]} has trailing ?. Comment added to Notes.<br>"
             message += messageb
-            record[:warning_messages] = record[:warning_messages] + messageb
+            record[:warning_messages] += messageb
             record[:notes] = record[:notes].present? ? record[:notes] + ' Disability ?' : 'Disability ?'
             record[:disability] = record[:disability][0...-1].strip
           else
@@ -1446,7 +1452,7 @@ class FreecenCsvEntry
             if messagea == '?'
               messageb = "Warning: line #{num} Disability Notes #{record[:disability]} has trailing ?. Comment added to Notes.<br>"
               message += messageb
-              record[:warning_messages] = record[:warning_messages] + messageb
+              record[:warning_messages] += messageb
               record[:notes] = record[:notes].present? ? record[:notes] + ' Disability Notes?' : 'Disability Notes?'
               record[:disability_notes] = record[:disability_notes][0...-1].strip
             else
