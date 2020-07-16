@@ -66,13 +66,7 @@ module FreecenValidations
     def text?(field)
       return [true, ''] if field.blank?
 
-      unless field.match? NARROW_VALID_TEXT
-        if field[-1] == '?' && (field.chomp('?').match? NARROW_VALID_TEXT)
-          return [false, '?']
-        else
-          return [false, 'invalid text']
-        end
-      end
+      return [false, '?']  if field[-1] == '?'
 
       [true, '']
     end
@@ -368,13 +362,8 @@ module FreecenValidations
 
       end
 
-      unless field.match? BROAD_VALID_TEXT
-        if field[-1] == '?' && (field.chomp('?').match? BROAD_VALID_TEXT)
-          return [false, '?']
-        else
-          return [false, 'invalid text']
-        end
-      end
+
+      return [false, '?'] if field[-1] == '?'
 
       [true, '']
     end

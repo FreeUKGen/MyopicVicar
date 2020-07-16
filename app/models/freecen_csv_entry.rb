@@ -849,7 +849,7 @@ class FreecenCsvEntry
         message += messageb
         record[:error_messages] = record[:error_messages] + messagea
       end
-      success, messagea = FreecenValidations.house_address?(record[:house_or_street_name])
+      success, messagea = FreecenValidations.text?(record[:house_or_street_name])
       unless success
         if messagea == '?'
           messagea = "Warning: line #{num} House address #{record[:house_or_street_name]}  has trailing ?. Removed and address_flag set.<br>"
@@ -987,7 +987,7 @@ class FreecenCsvEntry
       return [true, ''] if %w[b n u v].include?(record[:uninhabited_flag])
 
       message = ''
-      success, messagea = FreecenValidations.surname?(record[:surname])
+      success, messagea = FreecenValidations.text?(record[:surname])
       unless success
         if messagea == '?'
           messageb = "Warning: line #{num} Surname  #{record[:surname]} has trailing ?. Removed and flag set.<br>"
@@ -1002,7 +1002,7 @@ class FreecenCsvEntry
         end
       end
 
-      success, messagea = FreecenValidations.forenames?(record[:forenames])
+      success, messagea = FreecenValidations.text?(record[:forenames])
       unless success
         if messagea == '?'
           messageb = "Warning: line #{num} Forenames  #{record[:forenames]} has trailing ?. Removed and flag set.<br>"
