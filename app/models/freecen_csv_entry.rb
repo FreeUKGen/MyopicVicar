@@ -331,7 +331,7 @@ class FreecenCsvEntry
       new_where_census_taken = previous_where_census_taken
       info_messages = record[:messages]
       message = ''
-      success, messagea = FreecenValidations.valid_location?(where_census_taken)
+      success, messagea = FreecenValidations.tight_location?(where_census_taken)
       unless success
         if messagea == '?'
           messagea = "Warning: line #{num} Where Census Taken #{where_census_taken}  has trailing ?. Removed and location_flag set.<br>"
@@ -728,15 +728,15 @@ class FreecenCsvEntry
         message = "Warning: line #{num} New Folio number is blank.<br>"
         record[:warning_messages] = record[:warning_messages] + message
       elsif folio_number.blank?
-      elsif previous_folio_number.present? && (folio_number.to_i > (previous_folio_number.to_i + 1)) && ['Folio', 'Page'].include?(transition)
+      elsif previous_folio_number.present? && (folio_number.to_i > (previous_folio_number.to_i + 1))
         message = "Warning: line #{num} New Folio number increment larger than 1 #{folio_number}.<br>"
         record[:warning_messages] = record[:warning_messages] + message
         new_folio_number = folio_number.to_i
         new_folio_suffix = folio_suffix
-      elsif (folio_number.to_i == previous_folio_number.to_i) && ['Folio', 'Page'].include?(transition)
+      elsif (folio_number.to_i == previous_folio_number.to_i)
         message = "Warning: line #{num} New Folio number is the same as the previous number #{folio_number}.<br>"
         record[:warning_messages] = record[:warning_messages] + message
-      elsif previous_folio_number.present? && (folio_number.to_i < previous_folio_number.to_i) && ['Folio', 'Page'].include?(transition)
+      elsif previous_folio_number.present? && (folio_number.to_i < previous_folio_number.to_i)
         message = "Warning: line #{num} New Folio number is less than the previous number #{folio_number}.<br>"
         record[:warning_messages] = record[:warning_messages] + message
         new_folio_number = folio_number.to_i
@@ -878,8 +878,8 @@ class FreecenCsvEntry
         message += messageb
         record[:error_messages] += messageb
       else
-        if %w[u v].include?(uninhabited_flag) && schedule_number.blank?
-          messageb = "Warning: line #{num} has special #{uninhabited_flag} but no schedule number.<br>"
+        if %w[u b n v].include?(uninhabited_flag)
+          messageb = "Warning: line #{num} has special #{uninhabited_flag}.<br>"
           message += messageb
           record[:warning_messages] += messageb
         end
@@ -931,12 +931,12 @@ class FreecenCsvEntry
               message += messageb
               record[:error_messages] += messageb
             else
-              if record[:year] == '1901' && record[:rooms].to_i >= 5
-                messageb = "Warning: line #{num} Rooms #{record[:rooms]} is greater then 5.<br>"
+              if record[:year] == '1901' && record[:rooms].to_i > 5
+                messageb = "Warning: line #{num} Rooms #{record[:rooms]} is greater than 5.<br>"
                 message += messageb
                 record[:warning_messages] += messageb
               elsif record[:year] == '1911' && record[:rooms].to_i > 20
-                messageb = "Warning: line #{num} Rooms #{record[:rooms]} is greater then 20.<br>"
+                messageb = "Warning: line #{num} Rooms #{record[:rooms]} is greater than 20.<br>"
                 message += messageb
                 record[:warning_messages] += messageb
               end
@@ -1088,13 +1088,10 @@ class FreecenCsvEntry
           record[:individual_flag] = 'x'
           record[:sex] = record[:sex][0...-1].strip
         else
-          messageb = "ERROR: line #{num} Sex #{record[:sex]} is #{messagea}.<br>"
+          messageb = "ERROR: line #{num} Age #{record[:sex]} is #{messagea}.<br>"
           message += messageb
           record[:error_messages] += messageb
         end
-        messageb = "ERROR: line #{num} Age #{record[:age]} is #{messagea}.<br>"
-        message += messageb
-        record[:error_messages] += messageb
       end
 
       if record[:school_children].present?
