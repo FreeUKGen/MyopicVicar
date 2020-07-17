@@ -65,8 +65,6 @@ module FreecenValidations
       [true, '']
     end
 
-
-
     def enumeration_district?(field)
       return [false, 'blank'] if field.blank?
 
@@ -286,19 +284,24 @@ module FreecenValidations
 
       return [true, ''] if field =~ VALID_NUMBER && field.length <= 3 && field.to_i != 0 && field.to_i <= 120
 
-      return [true, ''] if field.slice(-1).downcase == 'y'  && field[0...-1].to_i >= 14 && field[0...-1].to_i <= 120 && ['m', 'w'].include?(martial) && ['M', '-'].include?(sex)
+      message = 'invalid age, check age, marital status and sex fields'
 
-      return [true, ''] if field.slice(-1).downcase == 'y'  && field[0...-1].to_i >= 12 && field[0...-1].to_i <= 120 && ['m', 'w'].include?(martial) && sex == 'F'
+      martial = martial.downcase if martial.present?
+      sex = sex.downcase if sex.present?
 
-      return [true, ''] if field.slice(-1).downcase == 'y'  && field[0...-1].to_i > 0 && field[0...-1].to_i <= 120 && ['s', 'u', '-'].include?(martial)
+      return [false, message] if field.slice(-1).casecmp('y').zero? && (field[0...-1].to_i < 14 || field[0...-1].to_i > 120) && %w[m w].include?(martial) && %w[m -].include?(sex)
 
-      return [true, ''] if field.slice(-1).downcase == 'm'  && field[0...-1].to_i != 0 && field[0...-1].to_i <= 24
+      return [false, message] if field.slice(-1).casecmp('y').zero? && (field[0...-1].to_i < 12 || field[0...-1].to_i > 120) && %w[m w].include?(martial) && sex == 'f'
 
-      return [true, ''] if field.slice(-1).downcase == 'w'  && field[0...-1].to_i != 0 && field[0...-1].to_i <= 20
+      return [true, ''] if field.slice(-1).casecmp('y').zero?  && field[0...-1].to_i > 0 && field[0...-1].to_i <= 120
 
-      return [true, ''] if field.slice(-1).downcase == 'd'  && field[0...-1].to_i != 0 && field[0...-1].to_i <= 30
+      return [true, ''] if field.slice(-1).casecmp('m').zero?  && field[0...-1].to_i != 0 && field[0...-1].to_i <= 24
 
-      [false, 'invalid value, check age, marital status and sex fields']
+      return [true, ''] if field.slice(-1).casecmp('w').zero?  && field[0...-1].to_i != 0 && field[0...-1].to_i <= 20
+
+      return [true, ''] if field.slice(-1).casecmp('d').zero? && field[0...-1].to_i != 0 && field[0...-1].to_i <= 30
+
+      [false, message]
     end
 
     def school_children?(field)
