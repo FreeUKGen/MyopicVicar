@@ -295,11 +295,11 @@ module FreecenValidations
 
       return [true, ''] if field.slice(-1).casecmp('y').zero?  && field[0...-1].to_i > 0 && field[0...-1].to_i <= 120
 
-      return [true, ''] if field.slice(-1).casecmp('m').zero?  && field[0...-1].to_i != 0 && field[0...-1].to_i <= 24
+      return [true, ''] if field.slice(-1).casecmp('m').zero?  && field[0...-1].to_i >= 0 && field[0...-1].to_i <= 24
 
-      return [true, ''] if field.slice(-1).casecmp('w').zero?  && field[0...-1].to_i != 0 && field[0...-1].to_i <= 20
+      return [true, ''] if field.slice(-1).casecmp('w').zero?  && field[0...-1].to_i >= 0 && field[0...-1].to_i <= 20
 
-      return [true, ''] if field.slice(-1).casecmp('d').zero? && field[0...-1].to_i != 0 && field[0...-1].to_i <= 30
+      return [true, ''] if field.slice(-1).casecmp('d').zero? && field[0...-1].to_i >= 0 && field[0...-1].to_i <= 30
 
       [false, message]
     end
@@ -311,7 +311,23 @@ module FreecenValidations
     end
 
     def years_married?(field)
-      return [true, ''] if field =~ VALID_NUMBER && field.to_i <= 100
+      return [true, ''] if field =~ VALID_NUMBER && field.to_i <= 100 && field.to_i >= 1
+
+      field_parts = field.split(' ')
+      field_parts.each do |part|
+        if part.slice(-1).casecmp('y').zero? && part[0...-1].to_i >= 1 && part[0...-1].to_i <= 99
+          @part_valid = true
+        elsif part.slice(-1).casecmp('m').zero? && part[0...-1].to_i >= 1 && part[0...-1].to_i <= 12
+          @part_valid = true
+        elsif part.slice(-1).casecmp('w').zero? && part[0...-1].to_i >= 1 && part[0...-1].to_i <= 4
+          @part_valid = true
+        elsif part.slice(-1).casecmp('d').zero? && part[0...-1].to_i >= 1 && part[0...-1].to_i <= 7
+          @part_valid = true
+        else
+          @part_valid = false
+        end
+      end
+      return [true, ''] if @part_valid
 
       [false, 'Not valid number']
     end
