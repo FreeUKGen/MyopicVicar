@@ -1048,5 +1048,6 @@ class CsvRecord < CsvRecords
     data_record[:school_board] = @csvfile.school_board if data_record[:school_board].blank? && data_record[:field_specification].value?('school_board')
     data_record[:folio_number] = @csvfile.folio.to_s + @csvfile.folio_suffix.to_s if data_record[:folio_number].blank? && data_record[:field_specification].value?('folio_number')
     data_record[:page_number] = @csvfile.page if data_record[:page_number].blank? && data_record[:field_specification].value?('page_number')
+
   end
 end

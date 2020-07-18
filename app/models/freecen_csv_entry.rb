@@ -95,6 +95,8 @@ class FreecenCsvEntry
   field :year, type: String
   field :years_married, type: String
 
+  before_update :validate_on_line_edit_of_fields
+
   belongs_to :freecen_csv_file, index: true, optional: true
 
   has_one :search_record, dependent: :restrict_with_error
@@ -849,6 +851,7 @@ class FreecenCsvEntry
         message += messageb
         record[:error_messages] = record[:error_messages] + messagea
       end
+
       success, messagea = FreecenValidations.text?(record[:house_or_street_name])
       unless success
         if messagea == '?'
@@ -1096,7 +1099,7 @@ class FreecenCsvEntry
 
       if record[:school_children].present?
         if %w[1861 1871].include?(record[:year])
-          success, messagea = FreecenValidations.school_children?(record[:aschool_childrene])
+          success, messagea = FreecenValidations.school_children?(record[:school_children])
           unless success
             messageb = "ERROR: line #{num}  is #{messagea}.<br>"
             message += messageb
@@ -2118,5 +2121,138 @@ class FreecenCsvEntry
     next_entry = FreecenCsvEntry.find_by(record_number: next_entry, freecen_csv_file_id: file_id)
     previous_entry = FreecenCsvEntry.find_by(record_number: previous_entry, freecen_csv_file_id: file_id)
     [next_entry, previous_entry]
+  end
+
+  def validate_on_line_edit_of_fields
+
+    success, message = FreecenValidations.text?(surname)
+    errors.add(:surname, "Invalid; #{message}") unless success
+
+    success, message = FreecenValidations.text?(forenames)
+    errors.add(:forenames, "Invalid; #{message}") unless success
+
+    success, message = FreecenValidations.name_question?(name_flag)
+    errors.add(:name_flag, "Invalid; #{message}") unless success
+
+    success, message = FreecenValidations.sex?(sex)
+    errors.add(:sex, "Invalid; #{message}") unless success
+
+    success, message = FreecenValidations.age?(age, marital_status, sex)
+    errors.add(:age, "Invalid; #{message}") unless success
+
+    success, message = FreecenValidations.uncertainty_status?(individual_flag)
+    errors.add(:individual_flag, "Invalid; #{message}") unless success
+
+    success, message = FreecenValidations.occupation?(occupation, age)
+    errors.add(:occupation, "Invalid; #{message}") unless success
+
+    success, message = FreecenValidations.uncertainty_occupation?(occupation_flag)
+    errors.add(:occupation_flag, "Invalid; #{message}") unless success
+
+    success, message = FreecenValidations.verbatim_birth_county?(verbatim_birth_county)
+    errors.add(:verbatim_birth_county, "Invalid; #{message}") unless success
+
+    success, message = FreecenValidations.verbatim_birth_county?(birth_county)
+    errors.add(:birth_county, "Invalid; #{message}") unless success
+
+    success, message = FreecenValidations.uncertainy_birth?(birth_place_flag)
+    errors.add(:birth_place_flag, "Invalid; #{message}") unless success
+
+    success, message = FreecenValidations.notes?(notes)
+    errors.add(:language, "Invalid; #{message}") unless success
+
+    if relationship.present?
+      success, message = FreecenValidations.relationship?(relationship)
+      errors.add(:relationship, "Invalid; #{message}") unless success
+    end
+
+    if marital_status.present?
+      success, message = FreecenValidations.marital_status?(marital_status)
+      errors.add(:marital_status, "Invalid; #{message}") unless success
+    end
+    if school_children.present?
+      success, message = FreecenValidations.school_children?(school_children)
+      errors.add(:school_children, "Invalid; #{message}") unless success
+    end
+
+    if years_married.present?
+      success, message = FreecenValidations.years_married?(years_married)
+      errors.add(:years_married, "Invalid; #{message}") unless success
+    end
+
+    if children_living.present?
+      success, message = FreecenValidations.children_living?(children_living)
+      errors.add(:children_living, "Invalid; #{message}") unless success
+    end
+
+    if children_deceased.present?
+      success, message = FreecenValidations.children_deceased?(children_deceased)
+      errors.add(:children_deceased, "Invalid; #{message}") unless success
+    end
+
+    if children_born_alive.present?
+      success, message = FreecenValidations.children_born_alive?(children_born_alive)
+      errors.add(:children_born_alive, "Invalid; #{message}") unless success
+    end
+
+    if religion.present?
+      success, message = FreecenValidations.religion?(religion)
+      errors.add(:religion, "Invalid; #{message}") unless success
+    end
+
+    if read_write.present?
+      success, message = FreecenValidations.read_write?(read_write)
+      errors.add(:read_write, "Invalid; #{message}") unless success
+    end
+
+    if industry.present?
+      success, message = FreecenValidations.industry?(industry)
+      errors.add(:industry, "Invalid; #{message}") unless success
+    end
+
+    if occupation_category.present?
+      success, message = FreecenValidations.occupation_category?(occupation_category)
+      errors.add(:occupation_category, "Invalid; #{message}") unless success
+    end
+
+    if at_home.present?
+      success, message = FreecenValidations.at_home?(at_home)
+      errors.add(:at_home, "Invalid; #{message}") unless success
+    end
+
+    if verbatim_birth_place.present?
+      success, message = FreecenValidations.verbatim_birth_place?(verbatim_birth_place)
+      errors.add(:verbatim_birth_place, "Invalid; #{message}") unless success
+    end
+
+    if nationality.present?
+      success, message = FreecenValidations.nationality?(nationality)
+      errors.add(:nationality, "Invalid; #{message}") unless success
+    end
+
+    if birth_place.present?
+      success, message = FreecenValidations.birth_place?(birth_place)
+      errors.add(:birth_place, "Invalid; #{message}") unless success
+    end
+
+    if father_place_of_birth.present?
+      success, message = FreecenValidations.father_place_of_birth?(father_place_of_birth)
+      errors.add(:father_place_of_birth, "Invalid; #{message}") unless success
+    end
+
+    if disability.present?
+      success, message = FreecenValidations.disability?(disability)
+      errors.add(:disability, "Invalid; #{message}") unless success
+    end
+
+    if disability_notes.present?
+      success, message = FreecenValidations.disability_notes?(disability_notes)
+      errors.add(:disability_notes, "Invalid; #{message}") unless success
+    end
+
+    if language.present?
+      success, message = FreecenValidations.language?(language)
+      errors.add(:language, "Invalid; #{message}") unless success
+    end
   end
 end

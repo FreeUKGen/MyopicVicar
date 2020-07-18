@@ -3,7 +3,7 @@ module FreecenValidations
   VALID_UCF = /[\}\{\?\*\_\]\[\,]/
   VALID_NUMERIC = /\d/
   VALID_NUMBER  = /\A\d+\z/
-  VALID_NUMBER_PLUS_SUFFIX = /\A\d+/
+  VALID_NUMBER_PLUS_SUFFIX = /\A[\da-z?]*\z/i.freeze
   VALID_ENUMERATOR_SPECIAL = /\A\d#\d\z/
   VALID_SPECIAL_LOCATION_CODES = %w[b n u v x].freeze
   NARROW_VALID_TEXT = /\A[-\w\s,'\.]*\z/
@@ -123,8 +123,6 @@ module FreecenValidations
 
     def house_number?(field)
       return [true, ''] if field.blank?
-
-      return [true, ''] if field.present? && field =~ VALID_NUMBER
 
       return [true, ''] if field.present? && field =~ VALID_NUMBER_PLUS_SUFFIX
 
