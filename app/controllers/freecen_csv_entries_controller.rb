@@ -103,6 +103,7 @@ class FreecenCsvEntriesController < ApplicationController
     redirect_back(fallback_location: new_manage_resource_path, notice: 'File is currently awaiting processing and should not be edited') && return unless @freecen_csv_file.can_we_edit?
 
     display_info
+    @year, piece, @census_fields = Freecen2Piece.extract_year_and_piece(@piece.number, @chapman_code)
     @data_transition = @freecen_csv_entry.data_transition
     @date = DateTime.now
     session[:freecen_csv_entry_id] = @freecen_csv_entry._id

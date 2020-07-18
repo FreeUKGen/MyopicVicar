@@ -181,6 +181,7 @@ module Freecen
     CEN2_SCT_1901, CEN2_SCT_1911,
     CEN2_IRL_1901, CEN2_IRL_1911
   ].freeze
+
   HEADER_OPTIONS = %w[Freecen2_traditional 1841 1851 1861 1871 1881 1891 1901 1911 Channel_Islands_1911 Scotland_1841 Scotland_1851 Scotland_1861 Scotland_1871
     Scotland_1881 Scotland_1891 Scotland_1901 Scotland_1911 Ireland_1901 Ireland_1911].freeze
 
