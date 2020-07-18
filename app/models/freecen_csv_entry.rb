@@ -878,8 +878,8 @@ class FreecenCsvEntry
         message += messageb
         record[:error_messages] += messageb
       else
-        if %w[u b n v].include?(uninhabited_flag)
-          messageb = "Warning: line #{num} has special #{uninhabited_flag}.<br>"
+        if %w[u b n v].include?(uninhabited_flag) && schedule_number.blank?
+          messageb = "Warning: line #{num} has special #{uninhabited_flag} but no schedule number.<br>"
           message += messageb
           record[:warning_messages] += messageb
         end
