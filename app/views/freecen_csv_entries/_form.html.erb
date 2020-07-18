@@ -54,7 +54,7 @@
   <%= f.input :birth_place_flag, selected: '', collection: ['x', ''], :input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 2} if @census_fields.include?('birth_place_flag') %>
   <%= f.input :disability ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @census_fields.include?('disability') %>
   <%= f.input :disability_notes ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @census_fields.include?('disability_notes') %>
-  <%= f.input :language, selected: '', collection: @languages, :input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 3} if @census_fields.include?('language') && !(ChapmanCode::CODES['England'].values.member?(@csvfile.chapman_code) || @csvfile.chapman_code == 'IOM') %>
+  <%= f.input :language, selected: '', collection: @languages, :input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 3} if @census_fields.include?('language') && !(ChapmanCode::CODES['England'].values.member?(@chapman_code) || @chapman_code == 'IOM') %>
   <%= f.input :notes, :label => 'Notes', :as => :text, :input_html => {:class => " simple_form_bgcolour  ",   :placeholder => "Enter notes about entry in census",  :size => "29x5" } %>
   <%= f.input :deleted_flag, selected: '', collection: ['d', ''], :input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 2} %>
   <%= f.button :submit, 'Submit',:button_html => {:class => 'btn btn--small' }  %>
