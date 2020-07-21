@@ -31,9 +31,9 @@ class BestGuess < FreebmdDbBase
   end
 
   def self.transcriber(record)
-    sql = "select  s.Surname, s.GivenName from BestGuess as b
-   inner join BestGuessChunk as c on c.ChunkNumber = b.ChunkNumber
-   inner join Accessions as a on a.AccessionNumber = c.AccessionNumber
+    sql = "select  s.UserID from BestGuess as b
+   inner join BestGuessLink as l on l.RecordNumber = b.RecordNumber
+   inner join Accessions as a on a.AccessionNumber = l.AccessionNumber
    inner join Files as f on f.FileNumber = a.FileNumber
    inner join Submitters as s on s.SubmitterNumber = f.SubmitterNumber
    where b.RecordNumber = #{record}"
