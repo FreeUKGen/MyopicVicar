@@ -122,7 +122,9 @@
     <div class="grid">
       <div class="grid__item one-whole lap-one-whole palm-one-whole">
         <h4>This Record has been transcribed by following Transcriber(s)</h4>
-        <%= get_transcriber_info(@search_record) %>
+        <% BestGuess.transcriber(@search_record.RecordNumber).each do |t|%>
+          <p><%= "#{t["GivenName"]} #{t["Surname"]}" %></p>
+        <% end %>
       </div>
     </div>
     <div class="text--center">
