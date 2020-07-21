@@ -1,4 +1,11 @@
-<%= render 'show_header' %>
+<% breadcrumb :show_freecen2_district,  @freecen2_district.id, @freecen2_district.chapman_code, @freecen2_district.year, @type%>
+<h2 style="text-align: center">Details of FreeCen2 District <%= @freecen2_district.name%> for <%=@chapman_code%> in <%= @freecen2_district.year%></h2>
+<%= render 'flash_notice' %>
+<% if %w[data_manager system_administrator].include?(@user.person_role)%>
+  <div style="text-align: center">
+    <%= link_to 'Edit District', edit_freecen2_district_path(@freecen2_district) , :class => "btn   btn--small"%>
+  </div>
+<% end%>
 <div class="grid">
   <section class="island ">
     <div class="grid__item ">

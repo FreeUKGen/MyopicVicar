@@ -41,38 +41,27 @@ class Freecen2CivilParishesController < ApplicationController
 
   def update
     # puts "\n\n*** update ***\n"
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'No information in the update') && return if params[:id].blank? || params[:freecen2_civil_parish].blank?
+    redirect_back(fallback_location: manage_counties_path, notice: 'No information in the update') && return if params[:id].blank? || params[:freecen2_civil_parish].blank?
 
     @freecen2_civil_parish = Freecen2CivilParish.find_by(id: params[:id])
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'Civil Parish not found') && return if @freecen2_civil_parish.blank?
+    redirect_back(fallback_location: manage_counties_path, notice: 'Civil Parish not found') && return if @freecen2_civil_parish.blank?
 
-    @new_civil_parish_params = Freecen2Piece.transform_piece_params(params[:freecen2_piece])
-    @piece_params_errors = Freecen2Piece.check_piece_params(@new_piece_params, controller_name)
-    redirect_to(edit_freecen2_piece_path(@freecen2_piece.id), notice: "Could not update the piece #{@piece_params_errors}") if @piece_params_errors.present? && @piece_params_errors.any?
-
-    # update the fields
-    #online_time not editable by coords for now
-    #num_individuals not editable by coords for now
-    success, place_params = Freecen2Piece.set_piece_place(@freecen2_piece)
-    @new_piece_params = @new_piece_params.merge(place_params) if success
-    result = @freecen2_piece.update(@new_piece_params) if success
-    unless result
-      flash[:notice] = "Could not update the piece #{@freecen2_piece.errors}"
-      render :edit && return
-    end
-    # bust database coverage cache so it picks up the change for display
-    Rails.cache.delete('freecen_coverage_index')
-    flash[:notice] = 'Update was successful'
-    if session[:manage_user_origin] == 'manage county'
-      redirect_to freecen2_piece_path(@freecen2_piece.id)
+    chapman_code = @freecen2_civil_parish.freecen2_piece.district_chapman_code if @freecen2_civil_parish.freecen2_piece.present?
+    place = Freecen2Place.find_by(chapman_code: chapman_code, place_name: params[:freecen2_civil_parish][:name]) if chapman_code.present?
+    params[:freecen2_civil_parish][:freecen2_place_id] = place.id if place.present?
+    @freecen2_civil_parish.update_attributes(freecen2_civil_parish_params)
+    if @freecen2_civil_parish.errors.any?
+      flash[:notice] = "The update of the civil parish failed #{@freecen_csv_entry.errors.full_messages}."
+      redirect_back(fallback_location: edit_freecen2_civil_parish_path(@freecen2_civil_parish)) && return
     else
-      next_page = freecen_coverage_path + "/#{@freecen2_piece.chapman_code}##{@freecen2_piece.year}"
-      redirect_to next_page
+      flash[:notice] = 'Update was successful'
+      redirect_to freecen2_civil_parish_path(@freecen2_civil_parish)
     end
   end
+
   private
 
-  def freecen2_piece_params
-    params.require(:freecen2_piece).permit!
+  def freecen2_civil_parish_params
+    params.require(:freecen2_civil_parish).permit!
   end
 end

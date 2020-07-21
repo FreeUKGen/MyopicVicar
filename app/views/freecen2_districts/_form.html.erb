@@ -1,0 +1,11 @@
+<%= simple_form_for @freecen2_district, :html => { :class => "grid"}  do |f| %>
+  <%= f.input :name ,  label: 'District name:
+  ', selected: @freecen2_district.name, include_blank: false, collection: @places, input_html: {class: " simple_form_bgcolour simple_form_position overide_selection_field_width", size:3 }%>
+  <%= f.input :notes,label: "TNA Notes; add reason for change after their note",  as: :text, input_html: {class: " simple_form_bgcolour  ",   placeholder: @freecen2_district.notes,  size: "40x3" }%>
+  <%= f.input :chapman_code,:label => "Chapman Code", :input_html => { :disabled => true,:size => 10 }%>
+  <%= f.input :year,:label => "Census year", :input_html => { :disabled => true,:size => 10 }%>
+  <%= f.input :type,:label => "Type of District", :input_html => { :disabled => true,:size => 10 }%>
+  <%= f.input :tnaid,:label => "TNA link", :input_html => { :disabled => true,:size => 10, required: false}%>
+  <%= f.input :code,:label => "Registration District Number", :input_html => { :disabled => true,:size => 10 }%>
+  <%= f.button :submit, 'Submit'   %>
+<% end %>

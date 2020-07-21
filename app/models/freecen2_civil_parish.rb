@@ -15,6 +15,9 @@ class Freecen2CivilParish
   embeds_many :freecen2_hamlets
   embeds_many :freecen2_townships
   embeds_many :freecen2_wards
+  accepts_nested_attributes_for :freecen2_hamlets, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :freecen2_townships, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :freecen2_wards, allow_destroy: true, reject_if: :all_blank
 
   delegate :year, :name, :tnaid, :number, :code, :note, to: :freecen2_piece, prefix: :piece, allow_nil: true
 

@@ -28,4 +28,13 @@ module Freecen2PiecesHelper
     end
 
   end
+
+  def piece_year(piece, year)
+    freecen2_piece = Freecen2Piece.find_by(chapman_code: session[:chapman_code], name: piece, year: year)
+    if freecen2_piece.present? && freecen2_piece.year == year
+      link_to 'Yes', freecen2_piece_path(freecen2_piece.id, type: 'index')
+    else
+      'No'
+    end
+  end
 end

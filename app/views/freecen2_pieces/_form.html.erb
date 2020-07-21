@@ -3,14 +3,14 @@
     <div style="color:red;">Warning: Records are already loaded for this piece. Edits could impact existing records.</div>
   <% end %>
   <%= f.input :name ,  label: 'Piece (Subdistrict) name: as used in the search', selected: @freecen2_piece.name, include_blank: false, collection: @places, input_html: {class: " simple_form_bgcolour simple_form_position overide_selection_field_width", size:3 }%>
-  <%= f.input :parish_number , label: "Parish number: used for Scotland, leave blank for ENG/WLS", value: @freecen2_piece.parish_number, :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
+  <%= f.input :parish_number , label: "Parish number: used for Scotland, leave blank for ENG/WLS", value: @freecen2_piece.parish_number, :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if ChapmanCode::CODES['Scotland'].values.member?(@freecen2_piece.district_chapman_code)%>
   <%= f.input :film_number, label: 'Film', value: @freecen2_piece.film_number, :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } %>
   <%= f.input :remarks, label: 'Public notes for Piece', value: @freecen2_piece.remarks, :as => :text, :input_html => {:class => " simple_form_bgcolour  ",   :placeholder => "Enter public notes",  :size => "40x3" }%>
   <%= f.input :remarks_coord, label: 'Management notes for Piece', value: @freecen2_piece.remarks_coord, :as => :text, :input_html => {:class => " simple_form_bgcolour  ",   :placeholder => "Enter management notes",  :size => "40x3" }%>
+  <%= f.input :notes,label: "TNA Notes; add reason for change after their note",  as: :text, input_html: {class: " simple_form_bgcolour  ",   placeholder: @freecen2_piece.notes,  size: "40x3" }%>
   <%= f.input :year,:label => "Census year", :input_html => { :disabled => true,:size => 10 }%>
   <%= f.input :tnaid,:label => "TNA link", :input_html => { :disabled => true,:size => 10 }%>
   <%= f.input :code,:label => "TNA Code", :input_html => { :disabled => true,:size => 10 }%>
-  <%= f.input :notes,:label => "TNA Notes", :input_html => { :disabled => true,:size => 10 }%>
   <%= f.input :prenote,:label => "TNA Pre notes", :input_html => { :disabled => true,:size => 10 }%>
   <%= f.button :submit, 'Submit'   %>
 <% end %>

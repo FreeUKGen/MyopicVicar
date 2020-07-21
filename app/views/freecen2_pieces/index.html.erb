@@ -1,2 +1,21 @@
-<%= render 'index_header' %>
-<%= render 'totals' %>
+<% breadcrumb :freecen2_pieces,  @chapman_code  %>
+<h2 style="text-align: center">FreeCen2 Pieces for <%=@chapman_code%></h2>
+<%= render 'flash_notice' %>
+<table style="margin-left:25%" class="table--bordered t50 table--data table--striped " >
+  <thead >
+    <tr >
+      <th >Year</th>
+      <th >Pieces</th>
+    </tr>
+  </thead>
+  <% Freecen::CENSUS_YEARS_ARRAY.each.each do |year| %>
+    <tr >
+      <td> <%=  link_to "#{year}", freecen2_pieces_chapman_year_index_path(chapman_code:"#{@chapman_code}",year:"#{year}"), method: :get, class: 'btn   btn--small'%> </td>
+      <td> <%= @totals_pieces[year] %></td>
+    </tr>
+  <% end%>
+  <tr >
+    <td> Total</td>
+    <td> <%= @grand_totals_pieces%></td>
+  </tr>
+</table>

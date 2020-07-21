@@ -1,8 +1,5 @@
 <% breadcrumb :edit_freecen2_piece, @freecen2_piece.id, @freecen2_piece.district_chapman_code,  @freecen2_piece.year %>
 <h1 style="text-align: center">Editing FreeCEN Piece Number <%= @freecen2_piece.number%> for <%= @freecen2_piece.district_chapman_code%> in <%= @freecen2_piece.year %></h1>
 <%= render 'flash_notice' %>
-<% if @freecen2_piece.errors.any? %>
-  <%= @freecen2_piece.errors.full_messages%>
-<% end%>
 <%= render 'form' %>
 <br>

@@ -265,6 +265,9 @@ MyopicVicar::Application.routes.draw do
   resources :freecen2_pieces, except: :new
   get 'freecen2_pieces/:chapman_code/:year/new', :to => 'freecen2_pieces#new', :as => :new_freecen2_piece
   get 'freecen2_pieces/:chapman_code/:year/index', :to => 'freecen2_pieces#chapman_year_index', :as => :freecen2_pieces_chapman_year_index
+  get 'freecen2_pieces/index_district', :to => 'freecen2_pieces#index_district', :as => :pieces_district_index_path
+  get 'freecen2_pieces/index_district_year', :to => 'freecen2_pieces#index_district_year', :as => :pieces_district_year_index_path
+
   get 'freecen2_pieces/:year/select_new_county', :to => 'freecen2_pieces#select_new_county', :as => :select_new_county_freecen2_piece
 
   resources :freecen2_civil_parishes

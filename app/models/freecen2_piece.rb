@@ -148,6 +148,14 @@ class Freecen2Piece
       grand_pieces
     end
 
+    def county_district_year_totals(id)
+      totals_district_pieces = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        totals_district_pieces[year] = Freecen2Piece.where(freecen2_district_id: id, year: year).count
+      end
+      totals_district_pieces
+    end
+
     def grand_year_totals
       totals_pieces = {}
       totals_pieces_online = {}

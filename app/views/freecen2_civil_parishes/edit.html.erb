@@ -1,0 +1,6 @@
+<% breadcrumb :edit_freecen2_civil_parish,  @freecen2_civil_parish, @piece.district_chapman_code, @piece.year %>
+<h2 style="text-align: center">Edit FreeCen2 Civil Parish "<%= @freecen2_civil_parish.name%>" for Piece <%=@piece.number%> in <%=@piece.district_chapman_code%> for <%=@piece.year%></h2>
+<h3 style="text-align: center"> Before changing the name to match an existing Place consider if it would be better to add a new Place with this name and appropriate geographic coordinates</h3>
+<%= render 'flash_notice' %>
+<%= render 'form' %>
+<br>

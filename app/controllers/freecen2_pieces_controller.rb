@@ -1,35 +1,5 @@
 class Freecen2PiecesController < ApplicationController
   require 'freecen_constants'
-  def create
-    # puts "\n\n*** create ***\n\n"
-    redirect_to(freecen2_pieces_path, notice: 'No information in the creation') && return if params[:freecen2_piece].blank?
-
-    @new_piece_params = Freecen2Piece.transform_piece_params(params[:freecen2_piece])
-    @piece_params_errors = Freecen2Piece.check_piece_params(@new_piece_params, controller_name)
-    redirect_to(piece_new_freecen2_piece_path(chapman_code:@new_piece_params[:chapman_code]), notice: "Could not create the new piece #{@piece_params_errors}") &&
-      return if @piece_params_errors.present? && @piece_params_errors.any?
-
-    @freecen2_piece = Freecen2Piece.new(@new_piece_params)
-    success, place_params = Freecen2Piece.set_piece_place(@freecen2_piece)
-    @new_piece_params = @new_piece_params.merge(place_params) if success
-    success = @freecen2_piece.update(@new_piece_params) if success
-    @freecen2_piece.save if success
-    if @freecen2_piece.errors.any?
-      redirect_to(piece_new_freecen2_piece_path(chapman_code: @freecen2_piece[:chapman_code]),
-                  notice: "'There was an error while saving the new piece' #{@freecen2_piece.errors.full_messages}") && return
-    else
-      flash[:notice] = 'Piece creation was successful'
-      # clear cached database coverage so it picks up the change for display
-      Rails.cache.delete('freecen_coverage_index')
-      # redirect to the right page
-      if session[:manage_user_origin] == 'manage county'
-        redirect_to freecen2_piece_path(@freecen2_piece.id)
-      else
-        next_page = freecen_coverage_path + "/#{@freecen2_piece.chapman_code}##{@freecen2_piece.year}"
-        redirect_to next_page
-      end
-    end
-  end
 
   def chapman_year_index
     get_user_info_from_userid
@@ -87,26 +57,26 @@ class Freecen2PiecesController < ApplicationController
     end
   end
 
-  def new
+  def index_district
     get_user_info_from_userid
-
-    if params[:year].present? && Freecen::CENSUS_YEARS_ARRAY.include?(params[:year]) && params[:chapman_code].present?
-      district = Freecen2District.new(chapman_code: params[:chapman_code], year: params[:year])
+    if session[:chapman_code].present?
+      @chapman_code = session[:chapman_code]
+      @totals_pieces = Freecen2Piece.county_district_year_totals(params[:id])
+      @grand_totals_pieces = Freecen2Piece.grand_totals(@totals_pieces)
     else
-      flash[:notice] = 'Piece does not exist'
-      redirect_to freecen2_pieces_path && return
+      redirect_to manage_resources_path && return
     end
-    @chapman_code = params[:chapman_code]
+  end
 
-    @freecen2_piece = Freecen2Piece.new(district_id: district.id)
-
-    @freecen2_piece.subplaces = [{ 'name' => '', 'lat' => '0.0', 'long' => '0.0' }]
-    places = Freecen2Place.chapman_code(params[:chapman_code].upcase).order_by(place_name: 1) if params[:chapman_code].present?
-    @places = []
-    places.each do |place|
-      @places << place.place_name
+  def index_district_year
+    get_user_info_from_userid
+    if session[:chapman_code].present?
+      @chapman_code = session[:chapman_code]
+      @totals_pieces = Freecen2Piece.county_district_year_totals(params[:id])
+      @grand_totals_pieces = Freecen2Piece.grand_totals(@totals_pieces)
+    else
+      redirect_to manage_resources_path && return
     end
-    @years = Freecen::CENSUS_YEARS_ARRAY
   end
 
   def select_new_county
@@ -140,12 +110,18 @@ class Freecen2PiecesController < ApplicationController
     @freecen2_piece = Freecen2Piece.where('_id' => params[:id]).first
     redirect_back(fallback_location: new_manage_resource_path, notice: 'Piece not found') && return if @freecen2_piece.blank?
 
-    result = @freecen2_piece.update(freecen2_piece_params)
-    unless result
-      flash[:notice] = "Could not update the piece #{@freecen2_piece.errors}"
-      render :edit && return
+    chapman_code = @freecen2_piece.district_chapman_code
+    place = Freecen2Place.find_by(chapman_code: chapman_code, place_name: params[:freecen2_piece][:name]) if chapman_code.present?
+    params[:freecen2_piece][:freecen2_place_id] = place.id if place.present?
+
+    @freecen2_piece.update(freecen2_piece_params)
+    if @freecen2_piece.errors.any?
+      flash[:notice] = "The update of the civil parish failed #{@freecen2_piece.errors.full_messages}."
+      redirect_back(fallback_location: edit_freecen2_piece_path(@freecen2_piece)) && return
+    else
+      flash[:notice] = 'Update was successful'
+      redirect_to freecen2_piece_path(@freecen2_piece)
     end
-    redirect_to freecen2_piece_path(@freecen2_piece)
   end
 
   private
