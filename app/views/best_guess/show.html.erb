@@ -109,9 +109,20 @@
   </div>
   <div class='postems' id='postem_info'>
     <div class="grid">
-      <div class="grid__item one-whole lap-one-half palm-one-whole">
+      <div class="grid__item one-whole lap-one-whole palm-one-whole">
         <h4>Postems</h4>
         <p>A Postem is a note left by someone about this record - the content of the postem is determined by the person who left it. FreeBMD can offer no assurance about the postem and will not enter into correspondence about it.</p>
+      </div>
+    </div>
+    <div class="text--center">
+      <a href="#" id="create_postem" class="btn btn--small">Create Postem</a>
+    </div>
+  </div>
+  <div class='transcribers' id='transcriber_info'>
+    <div class="grid">
+      <div class="grid__item one-whole lap-one-whole palm-one-whole">
+        <h4>This Record has been transcribed by following Transcriber(s)</h4>
+        <%= get_transcriber_info(@search_record) %>
       </div>
     </div>
     <div class="text--center">

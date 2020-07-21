@@ -29,4 +29,13 @@ class BestGuess < FreebmdDbBase
   def hello
     puts 'hello'
   end
+
+  def self.transcriber(record)
+    sql = "select Submitters.GivenName, Submitters.Surname from BestGuess as b
+   inner join BestGuessChunk as c on c.ChunkNumber = b.ChunkNumber
+   inner join Accessions as a on a.AccessionNumber = c.AccessionNumber
+   inner join Files as f on f.FileNumber = a.FileNumber
+   inner join Submitters as s on s.SubmitterNumber = f.SubmitterNumber
+   where BestGuess.RecordNumber = #{record}"
+   BestGuess.find_by_sql(sql)
 end

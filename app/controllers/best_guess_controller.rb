@@ -21,6 +21,10 @@ class BestGuessController < ApplicationController
     session[:viewed] ||= []
   end
 
+  def get_transcriber_info(record)
+    BestGuess.transcriber(record.RecordNumber)
+  end
+
   def show_value_check
     messagea = 'We are sorry but the record you requested no longer exists; possibly as a result of some data being edited. You will need to redo the search with the original criteria to obtain the updated version.'
     warning = "#{appname_upcase}::SEARCH::ERROR Missing entry for search record"
