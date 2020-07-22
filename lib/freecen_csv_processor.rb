@@ -701,7 +701,7 @@ class CsvRecords < CsvFile
   def line_one(line)
     if line[0..24].all?(&:present?)
       traditional = extract_traditonal_headers(line)
-      success, message, field_specification = extract_field_headers(line)
+      success, message, field_specification = extract_field_headers(line, traditional)
     else
       message = 'INFO: line 1 Column field specification is missing.<br>'
       success = false
@@ -732,7 +732,7 @@ class CsvRecords < CsvFile
     traditional
   end
 
-  def extract_field_headers(line)
+  def extract_field_headers(line, traditional)
     line = line
     n = 0
     field_specification = {}
@@ -752,17 +752,20 @@ class CsvRecords < CsvFile
       end
       n = n + 1
     end
-    @csvfile.census_fields.each do |field|
-      next if field == 'language' && (ChapmanCode::CODES['England'].values.member?(@csvfile.chapman_code) || @csvfile.chapman_code == 'IOM')
-      next if field_specification.value?(field)
-      success = false
-      message = message + "ERROR: the field #{field} is missing from the #{@csvfile.year} spreadsheet.<br>"
-    end
 
-    field_specification.values.each do |value|
-      next if @csvfile.census_fields.include?(value)
-      success = false
-      message = message + "ERROR: header field #{value} should not be included it is not part in the spreadsheet for #{@csvfile.year}.<br>"
+    if traditional == 2
+      @csvfile.census_fields.each do |field|
+        next if field == 'language' && (ChapmanCode::CODES['England'].values.member?(@csvfile.chapman_code) || @csvfile.chapman_code == 'IOM')
+        next if field_specification.value?(field)
+        success = false
+        message = message + "ERROR: the field #{field} is missing from the #{@csvfile.year} spreadsheet.<br>"
+      end
+
+      field_specification.values.each do |value|
+        next if @csvfile.census_fields.include?(value)
+        success = false
+        message = message + "ERROR: header field #{value} should not be included it is not part in the spreadsheet for #{@csvfile.year}.<br>"
+      end
     end
     [success, message, field_specification, line]
   end
