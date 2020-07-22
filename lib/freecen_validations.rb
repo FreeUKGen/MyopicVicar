@@ -284,28 +284,31 @@ module FreecenValidations
     def age?(field, martial, sex)
       return [false, 'blank'] if field.blank?
 
-      return [false, '?']  if field[-1] == '?'
-
-      return [true, ''] if field =~ VALID_NUMBER && field.to_i == 999
-
-      return [true, ''] if field =~ VALID_NUMBER && field.length <= 3 && field.to_i != 0 && field.to_i <= 120
+      return [false, '?'] if field[-1] == '?'
 
       message = 'invalid age, check age, marital status and sex fields'
-
       martial = martial.downcase if martial.present?
       sex = sex.downcase if sex.present?
 
       return [false, message] if field.slice(-1).casecmp('y').zero? && (field[0...-1].to_i < 14 || field[0...-1].to_i > 120) && %w[m w].include?(martial) && %w[m -].include?(sex)
 
+      return [false, message] if (field.match? VALID_NUMBER) && (field.to_i < 14 || field.to_i > 120) && %w[m w].include?(martial) && %w[m -].include?(sex)
+
       return [false, message] if field.slice(-1).casecmp('y').zero? && (field[0...-1].to_i < 12 || field[0...-1].to_i > 120) && %w[m w].include?(martial) && sex == 'f'
+
+      return [false, message] if (field.match? VALID_NUMBER) && (field.to_i < 12 || field[0...-1].to_i > 120) && %w[m w].include?(martial) && sex == 'f'
+
+      return [true, ''] if (field.match? VALID_NUMBER) && field.to_i == 999
+
+      return [true, ''] if (field.match? VALID_NUMBER) && field.length <= 3 && field.to_i != 0 && field.to_i <= 120
 
       return [true, ''] if field.slice(-1).casecmp('y').zero?  && field[0...-1].to_i > 0 && field[0...-1].to_i <= 120
 
-      return [true, ''] if field.slice(-1).casecmp('m').zero?  && field[0...-1].to_i >= 0 && field[0...-1].to_i <= 24
+      return [true, ''] if field.slice(-1).casecmp('m').zero?  && field[0...-1].to_i > 0 && field[0...-1].to_i <= 24
 
-      return [true, ''] if field.slice(-1).casecmp('w').zero?  && field[0...-1].to_i >= 0 && field[0...-1].to_i <= 20
+      return [true, ''] if field.slice(-1).casecmp('w').zero?  && field[0...-1].to_i > 0 && field[0...-1].to_i <= 20
 
-      return [true, ''] if field.slice(-1).casecmp('d').zero? && field[0...-1].to_i >= 0 && field[0...-1].to_i <= 30
+      return [true, ''] if field.slice(-1).casecmp('d').zero? && field[0...-1].to_i > 0 && field[0...-1].to_i <= 30
 
       [false, message]
     end

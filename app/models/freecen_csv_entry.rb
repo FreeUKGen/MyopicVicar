@@ -1103,13 +1103,13 @@ class FreecenCsvEntry
       success, messagea = FreecenValidations.age?(record[:age], record[:marital_status], record[:sex])
       unless success
         if messagea == '?'
-          messageb = "Warning: line #{num} Age  #{record[:sex]} has trailing ?. Removed and flag set.<br>"
+          messageb = "Warning: line #{num} Age  #{record[:age]} has trailing ?. Removed and flag set.<br>"
           message += messageb
           record[:warning_messages] += messageb
           record[:individual_flag] = 'x'
-          record[:sex] = record[:sex][0...-1].strip
+          record[:sex] = record[:age][0...-1].strip
         else
-          messageb = "ERROR: line #{num} Age #{record[:sex]} is #{messagea}.<br>"
+          messageb = "ERROR: line #{num} Age #{record[:age]} is #{messagea}.<br>"
           message += messageb
           record[:error_messages] += messageb
         end
