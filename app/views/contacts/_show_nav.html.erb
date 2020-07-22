@@ -6,5 +6,5 @@
   <%= link_to 'Restore', restore_contact_path(@contact.id), :class => "btn btn--small", data: { confirm: 'Are you sure you want to Archive this contact?' } if do_we_show_restore_contact_action?(@contact)%>
   <%= link_to 'Keep until I say so', keep_contact_path(@contact.id,:source => params[:action]), :class => 'btn btn--small',  data: { confirm: 'Are you sure you want keep this contact' } unless @contact.keep.present? %>
   <%= link_to 'Remove Keep Designation', unkeep_contact_path(@contact.id,:source => params[:action]), :class => 'btn btn--small',  data: { confirm: 'Are you sure you want remove the keep designation for this contact' } if @contact.keep.present? %>
-  <%= link_to "Convert to Issue", convert_contact_to_issue_path(@contact),:class => "btn btn--small",  data: { confirm: 'Are you sure you want to convert to GITHUB issue' } if do_we_show_github_create_contact_action?(@contact) %>
+  <%= link_to "Convert to Issue", convert_contact_to_issue_path(@contact),:class => "btn btn--small" if do_we_show_github_create_contact_action?(@contact) %>
 </div>
