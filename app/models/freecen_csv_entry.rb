@@ -209,19 +209,25 @@ class FreecenCsvEntry
         break if valid
       end
       unless valid
-        message += "ERROR: line #{num} Civil Parish #{record[:civil_parish]} is not in the list of Civil Parishes.<br>"
-        record[:error_messages] += message
+        messagea += "ERROR: line #{num} Civil Parish #{record[:civil_parish]} is not in the list of Civil Parishes.<br>"
+        record[:error_messages] += messagea
+        message += messagea
       end
 
       if previous_civil_parish == ''
         messagea = "Info: line #{num} New Civil Parish #{record[:civil_parish]}.<br>" if info_messages
+        record[:info_messages] += messagea if info_messages
+        message += messagea if messagea.present?
       elsif previous_civil_parish == record[:civil_parish]
         messagea = "Info: line #{num} Civil Parish has remained the same #{record[:civil_parish]}.<br>" if info_messages
+        record[:info_messages] += messagea if info_messages
+        message += messagea if messagea.present?
       elsif info_messages
         messagea = "Info: line #{num} Civil Parish has changed to #{record[:civil_parish]}.<br>"
+        record[:info_messages] += messagea if info_messages
+        message += messagea if messagea.present?
       end
-      record[:info_messages] += messagea if info_messages
-      message += messagea if messagea.present?
+
       [message, new_civil_parish]
     end
 
@@ -316,14 +322,16 @@ class FreecenCsvEntry
         messagea = "Info: line #{num} New Ecclesiastical Parish #{ecclesiastical_parish}.<br>" if info_messages
         record[:info_messages] += messagea if info_messages
         new_ecclesiastical_parish = ecclesiastical_parish
+        message += messagea if info_messages
       elsif ecclesiastical_parish.blank?
       elsif previous_ecclesiastical_parish == ecclesiastical_parish
       else
         messagea = "Info: line #{num} Ecclesiastical Parish changed to #{ecclesiastical_parish}.<br>" if info_messages
         record[:info_messages] += message if info_messages
+        message += messagea if info_messages
         new_ecclesiastical_parish = ecclesiastical_parish
       end
-      message += messagea if messagea.present?
+
       [message, new_ecclesiastical_parish]
     end
 
@@ -351,15 +359,16 @@ class FreecenCsvEntry
       if previous_where_census_taken == ''
         messagea = "Info: line #{num} New Where Census Taken #{where_census_taken}.<br>" if info_messages
         record[:info_messages] += messagea if info_messages
+        message += messagea if info_messages
         new_where_census_taken = where_census_taken
       elsif where_census_taken.blank?
       elsif previous_where_census_taken == where_census_taken
       else
         message = "Info: line #{num} Where Census Taken changed to #{where_census_taken}.<br>" if info_messages
         record[:info_messages] += messagea if info_messages
+        message += messagea if info_messages
         new_where_census_taken = where_census_taken
       end
-      message += messagea if messagea.present?
       [message, new_where_census_taken]
     end
 
@@ -387,15 +396,16 @@ class FreecenCsvEntry
       if previous_ward == ''
         messagea = "Info: line #{num} New Ward #{ward}.<br>" if info_messages
         record[:info_messages] += messagea if info_messages
+        message += messagea if info_messages
         new_ward = ward
       elsif ward.blank?
       elsif previous_ward == ward
       else
-        messagea = "Info: line #{num} Municipal Borough changed to #{ward}.<br>" if info_messages
+        messagea = "Info: line #{num} Ward changed to #{ward}.<br>" if info_messages
         record[:info_messages] += messagea if info_messages
+        message += messagea if info_messages
         new_ward = ward
       end
-      message += messagea if messagea.present?
       [message, new_ward]
     end
 
@@ -423,15 +433,16 @@ class FreecenCsvEntry
       if previous_parliamentary_constituency == ''
         messagea = "Info: line #{num} New Parliamentary Constituency #{parliamentary_constituency}.<br>" if info_messages
         record[:info_messages] += messagea if info_messages
+        message += messagea if info_messages
         new_parliamentary_constituency = parliamentary_constituency
       elsif parliamentary_constituency.blank?
       elsif previous_parliamentary_constituency == parliamentary_constituency
       else
         messagea = "Info: line #{num} Parliamentary Constituency changed to #{parliamentary_constituency}.<br>" if info_messages
         record[:info_messages] += messagea if info_messages
+        message += messagea if info_messages
         new_parliamentary_constituency = parliamentary_constituency
       end
-      message += messagea if messagea.present?
       [message, new_parliamentary_constituency]
     end
 
@@ -459,15 +470,16 @@ class FreecenCsvEntry
       if previous_poor_law_union == ''
         messagea = "Info: line #{num} New Poor Law Union #{poor_law_union}.<br>" if info_messages
         record[:info_messages] += messagea if info_messages
+        message += messagea if info_messages
         new_poor_law_union = poor_law_union
       elsif poor_law_union.blank?
       elsif previous_poor_law_union == poor_law_union
       else
         messagea = "Info: line #{num} Poor Law Union changed to #{poor_law_union}.<br>" if info_messages
         record[:info_messages] += messagea if info_messages
+        message += messagea if info_messages
         new_poor_law_union = poor_law_union
       end
-      message += messagea if messagea.present?
       [message, new_poor_law_union]
     end
 
@@ -495,15 +507,16 @@ class FreecenCsvEntry
       if previous_police_district == ''
         messagea = "Info: line #{num} New Police District #{police_district}.<br>" if info_messages
         record[:info_messages] += messagea if info_messages
+        message += messagea if info_messages
         new_police_district = police_district
       elsif police_district.blank?
       elsif previous_police_district == police_district
       else
         messagea = "Info: line #{num} Police District changed to #{police_district}.<br>" if info_messages
         record[:info_messages] += messagea if info_messages
+        message += messagea if info_messages
         new_police_district = police_district
       end
-      message += messagea if messagea.present?
       [message, new_police_district]
     end
 
@@ -531,15 +544,16 @@ class FreecenCsvEntry
       if previous_sanitary_district == ''
         messagea = "Info: line #{num} New Sanitary District #{sanitary_district}.<br>" if info_messages
         record[:info_messages] += messagea if info_messages
+        message += messagea if info_messages
         new_sanitary_district = sanitary_district
       elsif sanitary_district.blank?
       elsif previous_sanitary_district == sanitary_district
       else
         messagea = "Info: line #{num} Sanitary District changed to #{sanitary_district}.<br>" if info_messages
         record[:info_messages] += messagea if info_messages
+        message += messagea if info_messages
         new_sanitary_district = sanitary_district
       end
-      message += messagea if messagea.present?
       [message, new_sanitary_district]
     end
 
@@ -567,15 +581,16 @@ class FreecenCsvEntry
       if previous_special_water_district == ''
         messagea = "Info: line #{num} New Special Water District #{special_water_district}.<br>" if info_messages
         record[:info_messages] += messagea if info_messages
+        message += messagea if info_messages
         new_special_water_district = special_water_district
       elsif special_water_district.blank?
       elsif previous_special_water_district == special_water_district
       else
         messagea = "Info: line #{num} Special Water District changed to #{special_water_district}.<br>" if info_messages
         record[:info_messages] += messagea if info_messages
+        message += messagea if info_messages
         new_special_water_district = special_water_district
       end
-      message += messagea if messagea.present?
       [message, new_special_water_district]
     end
 
@@ -603,15 +618,16 @@ class FreecenCsvEntry
       if previous_scavenging_district == ''
         messagea = "Info: line #{num} New Scavenging District #{scavenging_district}.<br>" if info_messages
         record[:info_messages] += messagea if info_messages
+        message += messagea if info_messages
         new_scavenging_district = scavenging_district
       elsif scavenging_district.blank?
       elsif previous_scavenging_district == scavenging_district
       else
         messagea = "Info: line #{num} Scavenging District changed to #{scavenging_district}.<br>" if info_messages
         record[:info_messages] += messagea if info_messages
+        message += messagea if info_messages
         new_scavenging_district = scavenging_district
       end
-      message += messagea if messagea.present?
       [message, new_scavenging_district]
     end
 
@@ -639,15 +655,16 @@ class FreecenCsvEntry
       if previous_special_lighting_district == ''
         messagea = "Info: line #{num} New Special Lighting District #{special_lighting_district}.<br>" if info_messages
         record[:info_messages] += messagea if info_messages
+        message += messagea if info_messages
         new_special_lighting_district = special_lighting_district
       elsif special_lighting_district.blank?
       elsif previous_special_lighting_district == special_lighting_district
       else
         messagea = "Info: line #{num} Special Lighting District changed to #{special_lighting_district}.<br>" if info_messages
         record[:info_messages] += messagea if info_messages
+        message += messagea if info_messages
         new_special_lighting_district = special_lighting_district
       end
-      message += messagea if messagea.present?
       [message, new_special_lighting_district]
     end
 
@@ -675,15 +692,16 @@ class FreecenCsvEntry
       if previous_school_board == ''
         messagea = "Info: line #{num} New School Board #{school_board}.<br>" if info_messages
         record[:info_messages] += messagea if info_messages
+        message += messagea if info_messages
         new_school_board = school_board
       elsif school_board.blank?
       elsif previous_school_board == school_board
       else
         messagea = "Info: line #{num} School Board changed to #{school_board}.<br>" if info_messages
         record[:info_messages] += messagea if info_messages
+        message += messagea if info_messages
         new_school_board = school_board
       end
-      message += messagea if messagea.present?
       [message, new_school_board]
     end
 
