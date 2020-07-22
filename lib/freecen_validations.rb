@@ -70,11 +70,16 @@ module FreecenValidations
 
       if field[-1] == '?'
         strip_field = field[0...-1].strip
-        return [false, '?'] if (strip_field.match? VALID_NUMBER) || (strip_field.match? VALID_NUMBER_PLUS_SUFFIX) || (strip_field.match? VALID_ENUMERATOR_SPECIAL)
+        return [false, '?'] if (strip_field.match? VALID_NUMBER) || (strip_field.match? VALID_NUMBER_PLUS_SUFFIX)
 
-      elsif (field.match? VALID_NUMBER) || (field.match? VALID_NUMBER_PLUS_SUFFIX) || (field.match? VALID_ENUMERATOR_SPECIAL)
+        return [false, '?'] if (strip_field.match? VALID_ENUMERATOR_SPECIAL) && strip_field[-1] != '0'
+
+      elsif field.match? VALID_ENUMERATOR_SPECIAL
+
+        return [true, ''] unless strip_field[-1] == '0'
+
+      elsif (field.match? VALID_NUMBER) || (field.match? VALID_NUMBER_PLUS_SUFFIX)
         return [true, '']
-
       end
 
       [false, 'invalid']
