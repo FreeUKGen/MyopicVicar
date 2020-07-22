@@ -121,14 +121,15 @@
   <div class='transcribers' id='transcriber_info'>
     <div class="grid">
       <div class="grid__item one-whole lap-one-whole palm-one-whole">
-        <h4>This Record has been transcribed by following Transcriber(s)</h4>
-        <% BestGuess.transcriber(@search_record.RecordNumber).each do |t|%>
-          <p><%= t["UserID"] %></p>
+        <% if BestGuess.transcriber(@search_record.RecordNumber).present? %>
+          <h4>This Record has been transcribed by following Transcriber(s)</h4>
+          <% BestGuess.transcriber(@search_record.RecordNumber).each do |t|%>
+            <p><%= t["UserID"] %></p>
+          <% end %>
+        <% else %>
+          <p>--</p>
         <% end %>
       </div>
-    </div>
-    <div class="text--center">
-      <a href="#" id="create_postem" class="btn btn--small">Create Postem</a>
     </div>
   </div>
   <div class="push-half--topVB">
