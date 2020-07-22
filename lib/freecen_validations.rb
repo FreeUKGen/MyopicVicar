@@ -68,11 +68,14 @@ module FreecenValidations
     def enumeration_district?(field)
       return [false, 'blank'] if field.blank?
 
-      return [true, ''] if field =~ VALID_NUMBER
+      if field[-1] == '?'
+        strip_field = field[0...-1].strip
+        return [false, '?'] if (strip_field.match? VALID_NUMBER) || (strip_field.match? VALID_NUMBER_PLUS_SUFFIX) || (strip_field.match? VALID_ENUMERATOR_SPECIAL)
 
-      return [true, ''] if field =~ VALID_NUMBER_PLUS_SUFFIX
+      elsif (field.match? VALID_NUMBER) || (field.match? VALID_NUMBER_PLUS_SUFFIX) || (field.match? VALID_ENUMERATOR_SPECIAL)
+        return [true, '']
 
-      return [true, ''] if field =~ VALID_ENUMERATOR_SPECIAL
+      end
 
       [false, 'invalid']
     end
