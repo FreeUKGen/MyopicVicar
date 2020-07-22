@@ -1023,6 +1023,9 @@ class CsvRecord < CsvRecords
   def extract_individual_fields
     @data_record[:notes] = '' if @data_record[:notes] =~ /\[see mynotes.txt\]/
     propagate_records
+
+    message = individual_present_when_unoccupied if @data_record[:uninhabited_flag].present? && ['b', 'n', 'u', 'v'].include?(@data_record[:uninhabited_flag].downcase)
+    @project.write_messages_to_all(message, true) unless message == ''
     return if @data_record[:uninhabited_flag].present? && ['b', 'n', 'u', 'v'].include?(@data_record[:uninhabited_flag].downcase)
 
     @data_record[:dwelling_number] = @csvfile.dwelling_number
@@ -1048,6 +1051,19 @@ class CsvRecord < CsvRecords
     data_record[:school_board] = @csvfile.school_board if data_record[:school_board].blank? && data_record[:field_specification].value?('school_board')
     data_record[:folio_number] = @csvfile.folio.to_s + @csvfile.folio_suffix.to_s if data_record[:folio_number].blank? && data_record[:field_specification].value?('folio_number')
     data_record[:page_number] = @csvfile.page if data_record[:page_number].blank? && data_record[:field_specification].value?('page_number')
+  end
 
+  def individual_present_when_unoccupied
+    individual_present = false
+    individual_present = true if @data_record[:surnane].present? || @data_record[:forename].present? || @data_record[:sex].present? || @data_record[:sex].present?
+    if individual_present
+      message = "ERROR: line #{record[:record_number]} has information for an individual in a vacant dwelling." if ['b', 'n', 'u'].include?(@data_record[:uninhabited_flag].downcase)
+      message = "Warning: line #{record[:record_number]} has information for an individual who is away visiting." if @data_record[:uninhabited_flag].downcase == 'v'
+      record[:error_messages] = record[:error_messages] + message if ['b', 'n', 'u'].include?(@data_record[:uninhabited_flag].downcase)
+      record[:warning_messages] = record[:warning_messages] + message if @data_record[:uninhabited_flag].downcase == 'v'
+    else
+      message = ''
+    end
+    message
   end
 end
