@@ -3,6 +3,7 @@ module FreecenValidations
   VALID_UCF = /[\}\{\?\*\_\]\[\,]/
   VALID_NUMERIC = /\d/
   VALID_NUMBER  = /\A\d+\z/
+  VALID_NUMBER_PLUS = /\A[\da-z?]*\z/i.freeze
   VALID_NUMBER_PLUS_SUFFIX = /\A\d+[a-z]\z/i.freeze
   VALID_ENUMERATOR_SPECIAL = /\A\d#\d\z/
   VALID_SPECIAL_LOCATION_CODES = %w[b n u v x].freeze
@@ -122,7 +123,7 @@ module FreecenValidations
     def schedule_number?(field)
       return [true, ''] if field.present? && field =~ VALID_NUMBER
 
-      return [true, ''] if field.present? && field =~ VALID_NUMBER_PLUS_SUFFIX
+      return [true, ''] if field.present? && field =~ VALID_NUMBER_PLUS
 
       return [false, 'blank'] if field.blank?
 
@@ -132,7 +133,7 @@ module FreecenValidations
     def house_number?(field)
       return [true, ''] if field.blank?
 
-      return [true, ''] if field.present? && field =~ VALID_NUMBER_PLUS_SUFFIX
+      return [true, ''] if field.present? && field =~ VALID_NUMBER_PLUS
 
       [false, 'invalid number']
     end
