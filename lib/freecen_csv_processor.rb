@@ -358,7 +358,7 @@ class CsvFile < CsvFiles
         fields = (%w[1911 1921].include?(year) && %w[ALD GSY JSY SRK].include?(chapman_code)) ? Freecen::CEN2_CHANNEL_ISLANDS_1911 : Freecen::CEN2_1911
       end
       if actual_piece.blank?
-        message = "Error: there is no piece#{piece.upcase} in #{year} for #{file_name} in the database}. <br>"
+        message = "Error: there is no piece #{piece.upcase} in #{year} for #{file_name} in the database}. <br>"
         success = false
       end
     else
@@ -921,8 +921,10 @@ class CsvRecord < CsvRecords
   end
 
   def extract_where_census_taken
-    message, @csvfile.where_census_taken = FreecenCsvEntry.validate_where_census_taken(@data_record, @csvfile.where_census_taken)
-    @project.write_messages_to_all(message, true) unless message == ''
+    unless @csvfile.traditional == 1 || @csvfile.traditional == 0
+      message, @csvfile.where_census_taken = FreecenCsvEntry.validate_where_census_taken(@data_record, @csvfile.where_census_taken)
+      @project.write_messages_to_all(message, true) unless message == ''
+    end
   end
 
   def extract_ward
@@ -933,8 +935,10 @@ class CsvRecord < CsvRecords
   end
 
   def extract_parliamentary_constituency
-    message, @csvfile.parliamentary_constituency = FreecenCsvEntry.validate_parliamentary_constituency(@data_record, @csvfile.parliamentary_constituency)
-    @project.write_messages_to_all(message, true) unless message == ''
+    unless @csvfile.traditional == 1 || @csvfile.traditional == 0
+      message, @csvfile.parliamentary_constituency = FreecenCsvEntry.validate_parliamentary_constituency(@data_record, @csvfile.parliamentary_constituency)
+      @project.write_messages_to_all(message, true) unless message == ''
+    end
   end
 
   def extract_poor_law_union

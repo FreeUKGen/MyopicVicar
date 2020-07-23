@@ -3,7 +3,7 @@ module FreecenValidations
   VALID_UCF = /[\}\{\?\*\_\]\[\,]/
   VALID_NUMERIC = /\d/
   VALID_NUMBER  = /\A\d+\z/
-  VALID_NUMBER_PLUS_SUFFIX = /\A[\da-z?]*\z/i.freeze
+  VALID_NUMBER_PLUS_SUFFIX = /\A\d+[a-z]\z/i.freeze
   VALID_ENUMERATOR_SPECIAL = /\A\d#\d\z/
   VALID_SPECIAL_LOCATION_CODES = %w[b n u v x].freeze
   NARROW_VALID_TEXT = /\A[-\w\s,'\.]*\z/
@@ -76,7 +76,7 @@ module FreecenValidations
 
       elsif field.match? VALID_ENUMERATOR_SPECIAL
 
-        return [true, ''] unless strip_field[-1] == '0'
+        return [true, ''] unless field[-1] == '0'
 
       elsif (field.match? VALID_NUMBER) || (field.match? VALID_NUMBER_PLUS_SUFFIX)
         return [true, '']
@@ -342,19 +342,19 @@ module FreecenValidations
     end
 
     def children_born_alive?(field)
-      return [true, ''] if field =~ VALID_NUMBER && field.to_i <= 30
+      return [true, ''] if field =~ VALID_NUMBER && field.to_i <= 15
 
       [false, 'Not valid number']
     end
 
     def children_living?(field)
-      return [true, ''] if field =~ VALID_NUMBER && field.to_i <= 30
+      return [true, ''] if field =~ VALID_NUMBER && field.to_i <= 15
 
       [false, 'Not valid number']
     end
 
     def children_deceased?(field)
-      return [true, ''] if field =~ VALID_NUMBER && field.to_i <= 30
+      return [true, ''] if field =~ VALID_NUMBER && field.to_i <= 15
 
       [false, 'Not valid number']
     end
