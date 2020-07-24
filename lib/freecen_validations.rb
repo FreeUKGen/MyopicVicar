@@ -1,28 +1,29 @@
 module FreecenValidations
 
-  VALID_UCF = /[\}\{\?\*\_\]\[\,]/
-  VALID_NUMERIC = /\d/
-  VALID_NUMBER  = /\A\d+\z/
+  VALID_UCF = /[\}\{\?\*\_\]\[\,]/.freeze
+  VALID_NUMERIC = /\d/.freeze
+  VALID_NUMBER  = /\A\d+\z/.freeze
+  HOUSE_NUMBER = /\A\d\S*\z/.freeze
   VALID_NUMBER_PLUS = /\A[\da-z?]*\z/i.freeze
   VALID_NUMBER_PLUS_SUFFIX = /\A\d+[a-z]\z/i.freeze
-  VALID_ENUMERATOR_SPECIAL = /\A\d#\d\z/
+  VALID_ENUMERATOR_SPECIAL = /\A\d#\d\z/.freeze
   VALID_SPECIAL_LOCATION_CODES = %w[b n u v x].freeze
-  NARROW_VALID_TEXT = /\A[-\w\s,'\.]*\z/
-  TIGHT_VALID_TEXT = /\A[\w\s,'\.]*\z/
-  NARROW_VALID_TEXT_PLUS = /\A[-\w\s,'\.]*\z/
-  BROAD_VALID_TEXT = /\A[-\w\s()\.,&'":;]*\z/
-  BROAD_VALID_TEXT_PLUS = /\A[-\w\s()\.,&'":;?]*\z/
-  VALID_PIECE = /\A(R|H)(G|O|S)/i
+  NARROW_VALID_TEXT = /\A[-\w\s,'\.]*\z/.freeze
+  TIGHT_VALID_TEXT = /\A[\w\s,'\.]*\z/.freeze
+  NARROW_VALID_TEXT_PLUS = /\A[-\w\s,'\.]*\z/.freeze
+  BROAD_VALID_TEXT = /\A[-\w\s()\.,&'":;]*\z/.freeze
+  BROAD_VALID_TEXT_PLUS = /\A[-\w\s()\.,&'":;?]*\z/.freeze
+  VALID_PIECE = /\A(R|H)(G|O|S)/i.freeze
   VALID_AGE_MAXIMUM = { 'd' => 100, 'w' => 100, 'm' => 100, 'y' => 120, 'h' => 100, '?' => 100, 'years' => 120, 'months' => 100, 'weeks' => 100,
                         'days' => 100, 'hours' => 100 }.freeze
-  VALID_DATE = /\A\d{1,2}[\s+\/\-][A-Za-z\d]{0,3}[\s+\/\-]\d{2,4}\z/ #modern date no UCF or wildcard
-  VALID_DAY = /\A\d{1,2}\z/
+  VALID_DATE = /\A\d{1,2}[\s+\/\-][A-Za-z\d]{0,3}[\s+\/\-]\d{2,4}\z/.freeze #modern date no UCF or wildcard
+  VALID_DAY = /\A\d{1,2}\z/.freeze
   VALID_MONTH = %w[JAN FEB MAR APR MAY JUN JUL AUG SEP SEPT OCT NOV DEC * JANUARY FEBRUARY MARCH APRIL MAY JUNE JULY AUGUST SEPTEMBER
                    OCTOBER NOVEMBER DECEMBER].freeze
-  VALID_NUMERIC_MONTH = /\A\d{1,2}\z/
-  VALID_YEAR = /\A\d{4,5}\z/
+  VALID_NUMERIC_MONTH = /\A\d{1,2}\z/.freeze
+  VALID_YEAR = /\A\d{4,5}\z/.freeze
   DATE_SPLITS = { ' ' => /\s/, '-' => /\-/, '/' => /\\/ }.freeze
-  WILD_CHARACTER = /[\*\[\]\-\_\?]/
+  WILD_CHARACTER = /[\*\[\]\-\_\?]/.freeze
   VALID_MARITAL_STATUS = %w[m s u w d -].freeze
   VALID_SEX = %w[M F -].freeze
   VALID_LANGUAGE = %w[E G GE I IE M ME W WE].freeze
@@ -121,9 +122,9 @@ module FreecenValidations
     end
 
     def schedule_number?(field)
-      return [true, ''] if field.present? && field =~ VALID_NUMBER
+      return [true, ''] if field.present? && (field.match? VALID_NUMBER)
 
-      return [true, ''] if field.present? && field =~ VALID_NUMBER_PLUS
+      return [true, ''] if field.present? && (field.match? VALID_NUMBER_PLUS_SUFFIX)
 
       return [false, 'blank'] if field.blank?
 
@@ -133,7 +134,7 @@ module FreecenValidations
     def house_number?(field)
       return [true, ''] if field.blank?
 
-      return [true, ''] if field.present? && field =~ VALID_NUMBER_PLUS
+      return [true, ''] if field.present? && (field.match? HOUSE_NUMBER)
 
       [false, 'invalid number']
     end
