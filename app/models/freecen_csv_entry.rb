@@ -856,8 +856,8 @@ class FreecenCsvEntry
           record[:error_messages] += messagea
         end
       elsif schedule_number.to_i > 0 && record[:year] == '1841'
-        message = "Warning: line #{num} Schedule number #{record[:schedule_number]} present for 1841 census.<br>"
-        record[:warning_messages] += message
+        message = "Error: line #{num} Schedule number #{record[:schedule_number]} present for 1841 census.<br>"
+        record[:error_messages] += message
       elsif (schedule_number.to_i > (previous_schedule_number.to_i + 1)) && previous_schedule_number.to_i != 0
         message = "Warning: line #{num} Schedule number #{record[:schedule_number]} increments more than 1 .<br>"
         record[:warning_messages] += message
