@@ -874,7 +874,7 @@ class FreecenCsvEntry
       unless success
         if messagea == '?'
           messagea = "Warning: line #{num} House address #{record[:house_or_street_name]}  has trailing ?. Removed and address_flag set.<br>"
-          message = message + messagea
+          message += messagea
           record[:warning_messages] = record[:warning_messages] + messagea
           record[:address_flag] = 'x'
           record[:house_or_street_name] = record[:house_or_street_name][0...-1].strip
