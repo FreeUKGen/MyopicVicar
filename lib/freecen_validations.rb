@@ -459,7 +459,6 @@ module FreecenValidations
 
       end
 
-
       return [false, '?'] if field[-1] == '?'
 
       [true, '']

@@ -1170,9 +1170,9 @@ class FreecenCsvEntry
         if %w[1911].include?(record[:year])
           success, messagea = FreecenValidations.children_living?(record[:children_living])
           unless success
-            messageb = "ERROR: line #{num} Number of children living #{record[:children_living]} is #{messagea}.<br>"
+            messageb = "Warning: line #{num} Number of children living #{record[:children_living]} is #{messagea}.<br>"
             message += messageb
-            record[:error_messages] += messageb
+            record[:warning_messages] += messageb
           end
         else
           messageb = "ERROR: line #{num} Number of children living #{record[:children_living]} should not be included for #{record[:year]}.<br>"
@@ -1185,9 +1185,9 @@ class FreecenCsvEntry
         if %w[1911].include?(record[:year])
           success, messagea = FreecenValidations.children_deceased?(record[:children_deceased])
           unless success
-            messageb = "ERROR: line #{num} Number of children deceased #{record[:children_deceased]} is #{messagea}.<br>"
+            messageb = "Warning: line #{num} Number of children deceased #{record[:children_deceased]} is #{messagea}.<br>"
             message += messageb
-            record[:error_messages] += messageb
+            record[:warning_messages] += messageb
           end
         else
           messageb = "ERROR: line #{num} Number of children deceased #{record[:children_deceased]} should not be included for #{record[:year]}.<br>"
@@ -1200,9 +1200,9 @@ class FreecenCsvEntry
         if %w[1911].include?(record[:year])
           success, messagea = FreecenValidations.children_born_alive?(record[:children_born_alive])
           unless success
-            messageb = "ERROR: line #{num} Number of children born alive #{record[:children_born_alive]} is #{messagea}.<br>"
+            messageb = "Warning: line #{num} Number of children born alive #{record[:children_born_alive]} is #{messagea}.<br>"
             message += messageb
-            record[:error_messages] += messageb
+            record[:warning_messages] += messageb
           end
         else
           messageb = "ERROR: line #{num} Number of children born alive #{record[:children_born_alive]} should not be included for #{record[:year]}.<br>"
@@ -1333,6 +1333,11 @@ class FreecenCsvEntry
         message += messageb
         record[:error_messages] += messageb
       end
+      if record[:verbatim_birth_county] == 'OUC' && record[:year] != '1841'
+        messageb = "ERROR: line #{num} Verbatim Birth County #{record[:verbatim_birth_county]} is only used in 1841.<br>"
+        message += messageb
+        record[:error_messages] += messageb
+      end
 
       if record[:year] == '1841'
         if record[:verbatim_birth_place].present?
@@ -1383,6 +1388,11 @@ class FreecenCsvEntry
       success, messagea = FreecenValidations.verbatim_birth_county?(record[:birth_county])
       unless success || messagea == 'blank'
         messageb = "ERROR: line #{num} Birth County #{record[:birth_county]} is #{messagea}.<br>"
+        message += messageb
+        record[:error_messages] += messageb
+      end
+      if record[:birth_county] == 'OUC' && record[:year] != '1841'
+        messageb = "ERROR: line #{num} Verbatim Birth County #{record[:birth_county]} is only used in 1841.<br>"
         message += messageb
         record[:error_messages] += messageb
       end
