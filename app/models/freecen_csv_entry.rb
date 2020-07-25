@@ -1110,7 +1110,13 @@ class FreecenCsvEntry
           message += messageb
           record[:warning_messages] += messageb
           record[:individual_flag] = 'x'
-          record[:sex] = record[:age][0...-1].strip
+          record[:age] = record[:age][0...-1].strip
+          success, messagea = FreecenValidations.age?(record[:age], record[:marital_status], record[:sex])
+          unless success
+            messageb = "ERROR: line #{num} Age #{record[:age]} is #{messagea}.<br>"
+            message += messageb
+            record[:error_messages] += messageb
+          end
         else
           messageb = "ERROR: line #{num} Age #{record[:age]} is #{messagea}.<br>"
           message += messageb
@@ -1136,8 +1142,20 @@ class FreecenCsvEntry
       if record[:years_married].present?
         if %w[1911].include?(record[:year])
           success, messagea = FreecenValidations.years_married?(record[:years_married])
-          unless success
-            messageb = "ERROR: line #{num} Years married #{record[:years_married]} is #{messagea}.<br>"
+          if messagea == '?'
+            messageb = "Warning: line #{num} Years Married #{record[:years_married]} has trailing ?. Removed and flag set.<br>"
+            message += messageb
+            record[:warning_messages] += messageb
+            record[:individual_flag] = 'x'
+            record[:years_married] = record[:years_married][0...-1].strip
+            success, messagea = FreecenValidations.years_married?(record[:age], record[:years_married])
+            unless success
+              messageb = "ERROR: line #{num} Years Married  #{record[:years_married]} is #{messagea}.<br>"
+              message += messageb
+              record[:error_messages] += messageb
+            end
+          else
+            messageb = "ERROR: line #{num} Years Married  #{record[:years_married]} is #{messagea}.<br>"
             message += messageb
             record[:error_messages] += messageb
           end

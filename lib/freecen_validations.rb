@@ -288,31 +288,50 @@ module FreecenValidations
 
       return [false, '?'] if field[-1] == '?'
 
-      message = 'invalid age, check age, marital status and sex fields'
-      martial = martial.downcase if martial.present?
-      sex = sex.downcase if sex.present?
-
-      return [false, message] if field.slice(-1).casecmp('y').zero? && (field[0...-1].to_i < 14 || field[0...-1].to_i > 120) && %w[m w].include?(martial) && %w[m -].include?(sex)
-
-      return [false, message] if (field.match? VALID_NUMBER) && (field.to_i < 14 || field.to_i > 120) && %w[m w].include?(martial) && %w[m -].include?(sex)
-
-      return [false, message] if field.slice(-1).casecmp('y').zero? && (field[0...-1].to_i < 12 || field[0...-1].to_i > 120) && %w[m w].include?(martial) && sex == 'f'
-
-      return [false, message] if (field.match? VALID_NUMBER) && (field.to_i < 12 || field[0...-1].to_i > 120) && %w[m w].include?(martial) && sex == 'f'
-
       return [true, ''] if (field.match? VALID_NUMBER) && field.to_i == 999
 
       return [true, ''] if (field.match? VALID_NUMBER) && field.length <= 3 && field.to_i != 0 && field.to_i <= 120
 
-      return [true, ''] if field.slice(-1).casecmp('y').zero?  && field[0...-1].to_i > 0 && field[0...-1].to_i <= 120
+      result, message = simple_period?(field) ? check_simple_period(field) : check_complex_period(field)
+      if result
+        message = 'invalid age, check age, marital status and sex fields'
+        martial = martial.downcase if martial.present?
+        sex = sex.downcase if sex.present?
+        unit = field.slice(-1)
+        stem = field[0...-1].to_i
+        if simple_period?(field)
+          return [false, message] if unit.casecmp('y').zero? && (stem < 14 || stem > 120) && %w[m w d].include?(martial) && %w[m -].include?(sex)
 
-      return [true, ''] if field.slice(-1).casecmp('m').zero?  && field[0...-1].to_i > 0 && field[0...-1].to_i <= 24
+          return [false, message] if (field.match? VALID_NUMBER) && (stem < 14 || stem > 120) && %w[m w d].include?(martial) && %w[m -].include?(sex)
 
-      return [true, ''] if field.slice(-1).casecmp('w').zero?  && field[0...-1].to_i > 0 && field[0...-1].to_i <= 20
+          return [false, message] if unit.casecmp('y').zero? && (stem < 12 || stem > 120) && %w[m w d].include?(martial) && sex == 'f'
 
-      return [true, ''] if field.slice(-1).casecmp('d').zero? && field[0...-1].to_i > 0 && field[0...-1].to_i <= 30
+          return [false, message] if (field.match? VALID_NUMBER) && (stem || stem > 120) && %w[m w d].include?(martial) && sex == 'f'
 
-      [false, message]
+          message = ''
+        else
+          year = extract_year_from_complex(field)
+          return [false, message] if (year < 14 || year > 120) && %w[m w d].include?(martial) && %w[m -].include?(sex)
+
+          return [false, message] if (year < 12 || year > 120) && %w[m w d].include?(martial) && sex == 'f'
+
+          message = ''
+        end
+      end
+      [result, message]
+    end
+
+    def extract_year_from_complex(field)
+      field_parts = field.split(' ')
+      field_parts.each do |part|
+        unit = part.slice(-1)
+        stem = part[0...-1].to_i
+        if unit.casecmp('y').zero?
+          return stem
+        else
+          return 2
+        end
+      end
     end
 
     def school_children?(field)
@@ -322,25 +341,57 @@ module FreecenValidations
     end
 
     def years_married?(field)
+      return [false, '?'] if field[-1] == '?'
+
       return [true, ''] if field =~ VALID_NUMBER && field.to_i <= 100 && field.to_i >= 1
 
+      result, message = simple_period?(field) ? check_simple_period(field) : check_complex_period(field)
+      [result, message]
+    end
+
+    def simple_period?(field)
+      result = field.split(' ').length > 1 ? false : true
+      result
+    end
+
+    def check_simple_period(field)
+      unit = field.slice(-1)
+      stem = field[0...-1].to_i
+      if unit.casecmp('y').zero? && stem > 0 && stem <= 120
+        result = true
+      elsif unit.casecmp('m').zero? && stem > 0 && stem <= 24
+        result = true
+      elsif unit.casecmp('w').zero? && stem > 0 && stem <= 20
+        result = true
+      elsif unit.casecmp('d').zero? && stem > 0 && stem <= 30
+        result = true
+      else
+        result = false
+      end
+      message = result ? '' : 'invalid number'
+      [result, message]
+    end
+
+    def check_complex_period(field)
       field_parts = field.split(' ')
       field_parts.each do |part|
-        if part.slice(-1).casecmp('y').zero? && part[0...-1].to_i >= 1 && part[0...-1].to_i <= 99
+        unit = part.slice(-1)
+        stem = part[0...-1].to_i
+        if unit.casecmp('y').zero? && stem >= 1 && stem <= 99
           @part_valid = true
-        elsif part.slice(-1).casecmp('m').zero? && part[0...-1].to_i >= 1 && part[0...-1].to_i <= 12
+        elsif unit.casecmp('m').zero? && stem >= 1 && stem <= 12
           @part_valid = true
-        elsif part.slice(-1).casecmp('w').zero? && part[0...-1].to_i >= 1 && part[0...-1].to_i <= 4
+        elsif unit.casecmp('w').zero? && stem >= 1 && stem <= 4
           @part_valid = true
-        elsif part.slice(-1).casecmp('d').zero? && part[0...-1].to_i >= 1 && part[0...-1].to_i <= 7
+        elsif unit.casecmp('d').zero? && stem >= 1 && stem <= 7
           @part_valid = true
         else
           @part_valid = false
+          break
         end
       end
-      return [true, ''] if @part_valid
-
-      [false, 'Not valid number']
+      message = @part_valid ? '' : 'invalid number'
+      [@part_valid, message]
     end
 
     def children_born_alive?(field)
