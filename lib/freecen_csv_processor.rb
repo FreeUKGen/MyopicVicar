@@ -1064,8 +1064,8 @@ class CsvRecord < CsvRecords
     individual_present = false
     individual_present = true if @data_record[:surnane].present? || @data_record[:forename].present? || @data_record[:sex].present? || @data_record[:sex].present?
     if individual_present
-      message = "ERROR: line #{@data_record[:record_number]} has information for an individual in a vacant dwelling." if ['b', 'n', 'u'].include?(@data_record[:uninhabited_flag].downcase)
-      message = "Warning: line #{@data_record[:record_number]} has information for an individual who is away visiting." if @data_record[:uninhabited_flag].downcase == 'v'
+      message = "ERROR: line #{@data_record[:record_number]} has information for an individual in a vacant dwelling.<br>" if ['b', 'n', 'u'].include?(@data_record[:uninhabited_flag].downcase)
+      message = "Warning: line #{@data_record[:record_number]} has information for an individual who is away visiting.<br>" if @data_record[:uninhabited_flag].downcase == 'v'
       @data_record[:error_messages] += message if ['b', 'n', 'u'].include?(@data_record[:uninhabited_flag].downcase)
       @data_record[:warning_messages] += message if @data_record[:uninhabited_flag].downcase == 'v'
     else
