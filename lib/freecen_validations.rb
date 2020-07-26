@@ -4,6 +4,7 @@ module FreecenValidations
   VALID_NUMERIC = /\d/.freeze
   VALID_NUMBER  = /\A\d+\z/.freeze
   HOUSE_NUMBER = /\A\d\S*\z/.freeze
+  DOUBLE_SCHEDULE = /\A\d+&\d+\z/.freeze
   VALID_NUMBER_PLUS = /\A[\da-z?]*\z/i.freeze
   VALID_NUMBER_PLUS_SUFFIX = /\A\d+[a-z]\z/i.freeze
   VALID_ENUMERATOR_SPECIAL = /\A\d#\d\z/.freeze
@@ -125,6 +126,8 @@ module FreecenValidations
       return [true, ''] if field.present? && (field.match? VALID_NUMBER)
 
       return [true, ''] if field.present? && (field.match? VALID_NUMBER_PLUS_SUFFIX)
+
+      return [true, ''] if field.present? && (field.match? DOUBLE_SCHEDULE)
 
       return [false, 'blank'] if field.blank?
 
