@@ -713,6 +713,10 @@ class FreecenCsvEntry
         messageb = "ERROR: line #{num} Location Flag #{flag} is #{messagea}.<br>"
         record[:error_messages] += messageb
         return [messageb]
+      else
+        messagea = "Info: line #{num} Location Flag #{flag} is #{messagea}.<br>" if flag.present?
+        record[:info_messages] += messagea if info_messages && flag.present?
+        message += messagea if info_messages && flag.present?
       end
     end
 
@@ -894,6 +898,10 @@ class FreecenCsvEntry
         messageb = "ERROR: line #{num} Address flag #{record[:address_flag]} is #{messagea}.<br>"
         message += messageb
         record[:error_messages] += messageb
+      else
+        messagea = "Info: line #{num} Address Flag #{flag} is #{messagea}.<br>" if record[:address_flag]
+        record[:info_messages] += messagea if info_messages && record[:address_flag]
+        message += messagea if info_messages && record[:address_flag]
       end
 
       success, messagea = FreecenValidations.uninhabited_flag?(uninhabited_flag)
@@ -1041,11 +1049,15 @@ class FreecenCsvEntry
         end
       end
 
-      success, messagea = FreecenValidations.name_question?(record[:name_flag])
+      success, messagea = FreecenValidations.name_question?(record[:address_flag])
       unless success
         messageb = "ERROR: line #{num} Name Flag #{record[:name_flag]} is #{messagea}.<br>"
         message += messageb
         record[:error_messages] += messageb
+      else
+        messagea = "Info: line #{num} Name Flag #{flag} is #{messagea}.<br>" if record[:address_flag].present?
+        record[:info_messages] += messagea if info_messages && record[:address_flag].present?
+        message += messagea if info_messages && record[:address_flag].present?
       end
 
       unless record[:year] == '1841'
@@ -1142,22 +1154,24 @@ class FreecenCsvEntry
       if record[:years_married].present?
         if %w[1911].include?(record[:year])
           success, messagea = FreecenValidations.years_married?(record[:years_married])
-          if messagea == '?'
-            messageb = "Warning: line #{num} Years Married #{record[:years_married]} has trailing ?. Removed and flag set.<br>"
-            message += messageb
-            record[:warning_messages] += messageb
-            record[:individual_flag] = 'x'
-            record[:years_married] = record[:years_married][0...-1].strip
-            success, messagea = FreecenValidations.years_married?(record[:age], record[:years_married])
-            unless success
+          unless success
+            if messagea == '?'
+              messageb = "Warning: line #{num} Years Married #{record[:years_married]} has trailing ?. Removed and flag set.<br>"
+              message += messageb
+              record[:warning_messages] += messageb
+              record[:individual_flag] = 'x'
+              record[:years_married] = record[:years_married][0...-1].strip
+              success, messagea = FreecenValidations.years_married?(record[:age], record[:years_married])
+              unless success
+                messageb = "ERROR: line #{num} Years Married  #{record[:years_married]} is #{messagea}.<br>"
+                message += messageb
+                record[:error_messages] += messageb
+              end
+            else
               messageb = "ERROR: line #{num} Years Married  #{record[:years_married]} is #{messagea}.<br>"
               message += messageb
               record[:error_messages] += messageb
             end
-          else
-            messageb = "ERROR: line #{num} Years Married  #{record[:years_married]} is #{messagea}.<br>"
-            message += messageb
-            record[:error_messages] += messageb
           end
         else
           messageb = "ERROR: line #{num} Years married #{record[:years_married]} should not be included for #{record[:year]}.<br>"
@@ -1246,6 +1260,10 @@ class FreecenCsvEntry
         messageb = "ERROR: line #{num} Individual Flag #{record[:individual_flag]} is #{messagea}.<br>"
         message += messageb
         record[:error_messages] += messageb
+      else
+        messagea = "Info: line #{num} Individual Flag #{flag} is #{messagea}.<br>" if record[:individual_flag].present?
+        record[:info_messages] += messagea if info_messages && record[:individual_flag].present?
+        message += messagea if info_messages && record[:individual_flag].present?
       end
 
       success, messagea = FreecenValidations.occupation?(record[:occupation], record[:age])
@@ -1325,6 +1343,10 @@ class FreecenCsvEntry
         messageb = "ERROR: line #{num} Occupation Flag #{record[:occupation_flag]} is #{messagea}.<br>"
         message += messageb
         record[:error_messages] += messageb
+      else
+        messagea = "Info: line #{num} Occupation Flag #{flag} is #{messagea}.<br>" if record[:occupation_flag].present?
+        record[:info_messages] += messagea if info_messages && record[:occupation_flag].present?
+        message += messagea if info_messages && record[:occupation_flag].present?
       end
 
       success, messagea = FreecenValidations.verbatim_birth_county?(record[:verbatim_birth_county])
@@ -1449,6 +1471,10 @@ class FreecenCsvEntry
         messageb = "ERROR: line #{num} Birth Place Flag #{record[:birth_place_flag]} is #{messagea}.<br>"
         message += messageb
         record[:error_messages] += messageb
+      else
+        messagea = "Info: line #{num} Birth Place Flag #{flag} is #{messagea}.<br>" if record[:birth_place_flag].present?
+        record[:info_messages] += messagea if info_messages && record[:birth_place_flag]
+        message += messagea if info_messages && record[:birth_place_flag]
       end
 
       if record[:year] == '1841'
