@@ -708,13 +708,14 @@ class FreecenCsvEntry
     def validate_location_flag(record)
       flag = record[:location_flag]
       num = record[:record_number]
+      info_messages = record[:messages]
       success, messagea = FreecenValidations.location_flag?(flag)
       unless success
         messageb = "ERROR: line #{num} Location Flag #{flag} is #{messagea}.<br>"
         record[:error_messages] += messageb
         return [messageb]
       else
-        messagea = "Info: line #{num} Location Flag #{flag} is #{messagea}.<br>" if flag.present?
+        messagea = "Info: line #{num} Location Flag is #{flag}.<br>" if flag.present?
         record[:info_messages] += messagea if info_messages && flag.present?
         message += messagea if info_messages && flag.present?
       end
@@ -899,7 +900,7 @@ class FreecenCsvEntry
         message += messageb
         record[:error_messages] += messageb
       else
-        messagea = "Info: line #{num} Address Flag #{flag} is #{messagea}.<br>" if record[:address_flag]
+        messagea = "Info: line #{num} Address Flag is #{record[:address_flag]}.<br>" if record[:address_flag]
         record[:info_messages] += messagea if info_messages && record[:address_flag]
         message += messagea if info_messages && record[:address_flag]
       end
@@ -1016,6 +1017,7 @@ class FreecenCsvEntry
     def validate_individual(record)
       # p 'validate_individual'
       num = record[:record_number]
+      info_messages = record[:messages]
       return [true, ''] if %w[b n u v].include?(record[:uninhabited_flag])
 
       message = ''
@@ -1049,15 +1051,15 @@ class FreecenCsvEntry
         end
       end
 
-      success, messagea = FreecenValidations.name_question?(record[:address_flag])
+      success, messagea = FreecenValidations.name_question?(record[:name_flag])
       unless success
         messageb = "ERROR: line #{num} Name Flag #{record[:name_flag]} is #{messagea}.<br>"
         message += messageb
         record[:error_messages] += messageb
       else
-        messagea = "Info: line #{num} Name Flag #{flag} is #{messagea}.<br>" if record[:address_flag].present?
-        record[:info_messages] += messagea if info_messages && record[:address_flag].present?
-        message += messagea if info_messages && record[:address_flag].present?
+        messagea = "Info: line #{num} Name Flag is #{record[:name_flag]}.<br>" if record[:name_flag].present?
+        record[:info_messages] += messagea if info_messages && record[:name_flag].present?
+        message += messagea if info_messages && record[:name_flag].present?
       end
 
       unless record[:year] == '1841'
@@ -1261,7 +1263,7 @@ class FreecenCsvEntry
         message += messageb
         record[:error_messages] += messageb
       else
-        messagea = "Info: line #{num} Individual Flag #{flag} is #{messagea}.<br>" if record[:individual_flag].present?
+        messagea = "Info: line #{num} Individual Flag is #{record[:individual_flag]}.<br>" if record[:individual_flag].present?
         record[:info_messages] += messagea if info_messages && record[:individual_flag].present?
         message += messagea if info_messages && record[:individual_flag].present?
       end
@@ -1344,7 +1346,7 @@ class FreecenCsvEntry
         message += messageb
         record[:error_messages] += messageb
       else
-        messagea = "Info: line #{num} Occupation Flag #{flag} is #{messagea}.<br>" if record[:occupation_flag].present?
+        messagea = "Info: line #{num} Occupation Flag is #{record[:occupation_flag]}.<br>" if record[:occupation_flag].present?
         record[:info_messages] += messagea if info_messages && record[:occupation_flag].present?
         message += messagea if info_messages && record[:occupation_flag].present?
       end
@@ -1472,7 +1474,7 @@ class FreecenCsvEntry
         message += messageb
         record[:error_messages] += messageb
       else
-        messagea = "Info: line #{num} Birth Place Flag #{flag} is #{messagea}.<br>" if record[:birth_place_flag].present?
+        messagea = "Info: line #{num} Birth Place Flag is #{record[:birth_place_flag]}.<br>" if record[:birth_place_flag].present?
         record[:info_messages] += messagea if info_messages && record[:birth_place_flag]
         message += messagea if info_messages && record[:birth_place_flag]
       end

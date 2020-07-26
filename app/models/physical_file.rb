@@ -126,7 +126,7 @@ class PhysicalFile
 
   def add_file(batch)
     success = true
-    if batch == "base" || batch == "reprocessing"
+    if batch == "base" || batch == "reprocessing" && MyopicVicar::Application.config.template_set == 'freereg'
       self.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => true, :waiting_date => Time.now)
     else
       p "why here"
