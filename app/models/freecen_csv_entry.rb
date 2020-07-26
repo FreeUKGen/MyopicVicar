@@ -1368,7 +1368,7 @@ class FreecenCsvEntry
           record[:error_messages] += messageb
         end
       else
-        success, messagea = FreecenValidations.verbatim_birth_place?(record[:verbatim_birth_place])
+        success, messagea = FreecenValidations.text?(record[:verbatim_birth_place])
         unless success
           if messagea == '?'
             messageb = "Warning: line #{num} Verbatim Birth Place  #{record[:verbatim_birth_place]} has trailing ?. Removed and flag set.<br>"
@@ -1426,7 +1426,7 @@ class FreecenCsvEntry
           record[:error_messages] += messageb
         end
       else
-        success, messagea = FreecenValidations.birth_place?(record[:birth_place])
+        success, messagea = FreecenValidations.text?(record[:birth_place])
         unless success || messagea == 'blank'
           if messagea == '?'
             messageb = "Warning: line #{num} Birth Place  #{record[:birth_place]} has trailing ?. Removed and flag set.<br>"
@@ -1445,7 +1445,7 @@ class FreecenCsvEntry
 
       if record[:father_place_of_birth].present?
         if record[:year] == '1911'
-          success, messagea = FreecenValidations.father_place_of_birth?(record[:father_place_of_birth])
+          success, messagea = FreecenValidations.text?(record[:father_place_of_birth])
           unless success
             if messagea == '?'
               messageb = "Warning: line #{num} Father's place of birth #{record[:father_place_of_birth]} has trailing ?. Removed and flag set.<br>"
