@@ -86,7 +86,7 @@ class FreecenCsvEntriesController < ApplicationController
     @file_owner = @freecen_csv_file.userid
     @piece = @freecen_csv_file.freecen2_piece
     @year = @piece.year
-    @chapman_code = @piece.district_chapman_code
+    @chapman_code = @piece.chapman_code
     @place_name = @piece.district_name
     @user = get_user
     @first_name = @user.person_forename if @user.present?

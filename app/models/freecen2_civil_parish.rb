@@ -2,6 +2,11 @@ class Freecen2CivilParish
   include Mongoid::Document
   include Mongoid::Timestamps::Short
   require 'freecen_constants'
+
+  field :chapman_code, type: String
+  validates_inclusion_of :chapman_code, in: ChapmanCode.values
+  field :year, type: String
+  validates_inclusion_of :year, in: Freecen::CENSUS_YEARS_ARRAY
   field :name, type: String
   field :note, type: String
   field :prenote, type: String

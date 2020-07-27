@@ -39,7 +39,7 @@ class Freecen2PiecesController < ApplicationController
       flash[:notice] = 'Piece does not exist'
       redirect_to freecen2_pieces_path
     end
-    places = Freecen2Place.chapman_code(@freecen2_piece.district_chapman_code).all.order_by(place_name: 1)
+    places = Freecen2Place.chapman_code(@freecen2_piece.chapman_code).all.order_by(place_name: 1)
     @places = []
     places.each do |place|
       @places << place.place_name
@@ -110,7 +110,7 @@ class Freecen2PiecesController < ApplicationController
     @freecen2_piece = Freecen2Piece.where('_id' => params[:id]).first
     redirect_back(fallback_location: new_manage_resource_path, notice: 'Piece not found') && return if @freecen2_piece.blank?
 
-    chapman_code = @freecen2_piece.district_chapman_code
+    chapman_code = @freecen2_piece.chapman_code
     place = Freecen2Place.find_by(chapman_code: chapman_code, place_name: params[:freecen2_piece][:name]) if chapman_code.present?
     params[:freecen2_piece][:freecen2_place_id] = place.id if place.present?
 

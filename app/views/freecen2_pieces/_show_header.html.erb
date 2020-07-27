@@ -1,4 +1,4 @@
-<% breadcrumb :show_freecen2_piece,  @freecen2_piece.id, @freecen2_piece.district_chapman_code,  @freecen2_piece.year %>
+<% breadcrumb :show_freecen2_piece,  @freecen2_piece.id, @freecen2_piece.chapman_code,  @freecen2_piece.year %>
 <h2 style="text-align: center">Details of FreeCen2 Piece <%= @freecen2_piece.number%> for <%=@chapman_code%> in <%= @freecen2_piece.year%></h2>
 <%= render 'flash_notice' %>
 <% if %w[data_manager system_administrator].include?(@user.person_role)%>

@@ -96,7 +96,7 @@ module FreecenCsvFilesHelper
 
   def freecen2_chapman(file)
     actual_piece = file.freecen2_piece
-    piece_number = actual_piece.present? ? actual_piece.district_chapman_code : ''
+    piece_number = actual_piece.present? ? actual_piece.chapman_code : ''
   end
 
   def freecen2_year(file)

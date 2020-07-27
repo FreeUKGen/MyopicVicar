@@ -206,7 +206,8 @@ class ExtractFreecen2PieceInformation
       place_id = ExtractFreecen2PieceInformation.locate_subdistrict_place(district_object, subdistrict_name, district_object.freecen2_place_id, 'Piece')
       @subdistrict_object = Freecen2Piece.new(name: subdistrict_name, code: subdistrict_code, tnaid: subdistrict_tnaid,
                                               number: subdistrict_piece, year: subdistrict_year, freecen2_place_id: place_id,
-                                              freecen2_district_id: district_object.id, prenote: subdistrict_prenote)
+                                              freecen2_district_id: district_object.id, prenote: subdistrict_prenote,
+                                              chapman_code: district_object.chapman_code)
       result = @subdistrict_object.save
       unless result
         @output_file.puts "piece #{subdistrict_tnaid} #{subdistrict_piece} #{subdistrict_code}"
@@ -242,9 +243,10 @@ class ExtractFreecen2PieceInformation
       parish_name = parish['name']
       parish_note = parish['note']
       parish_prenote = parish['prenote']
-      place_id = ExtractFreecen2PieceInformation.locate_civil_place(chapman_code, parish_name, subdistrict_object.name, 'Civil Parish', subdistrict_object.freecen2_district.name)
+      place_id = ExtractFreecen2PieceInformation.locate_civil_place(chapman_code, parish_name, subdistrict_object.name, 'Civil Parish',
+                                                                    subdistrict_object.freecen2_district.name)
       @parish_object = Freecen2CivilParish.new(name: parish_name, note: parish_note, freecen2_piece_id: subdistrict_object.id, prenote: parish_prenote,
-                                               freecen2_place_id: place_id)
+                                               freecen2_place_id: place_id, year: subdistrict_object.year, chapman_code: chapman_code)
       result = @parish_object.save
       unless result
         @output_file.puts "Parish #{parish_name} "

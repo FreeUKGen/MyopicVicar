@@ -8,9 +8,9 @@ class Freecen2CivilParishesController < ApplicationController
     @freecen2_civil_parish = Freecen2CivilParish.find_by(id: params[:id])
     @freecen2_place = @freecen2_civil_parish.freecen2_place
     @piece = @freecen2_civil_parish.freecen2_piece
-    @chapman_code = @piece.district_chapman_code
+    @chapman_code = @freecen2_civil_parish.chapman_code
     @freecen2_piece = @freecen2_civil_parish.piece_name
-    places = Freecen2Place.chapman_code(@piece.district_chapman_code).all.order_by(place_name: 1)
+    places = Freecen2Place.chapman_code(@chapman_code).all.order_by(place_name: 1)
     @places = []
     places.each do |place|
       @places << place.place_name
@@ -46,7 +46,7 @@ class Freecen2CivilParishesController < ApplicationController
     @freecen2_civil_parish = Freecen2CivilParish.find_by(id: params[:id])
     redirect_back(fallback_location: manage_counties_path, notice: 'Civil Parish not found') && return if @freecen2_civil_parish.blank?
 
-    chapman_code = @freecen2_civil_parish.freecen2_piece.district_chapman_code if @freecen2_civil_parish.freecen2_piece.present?
+    chapman_code = @freecen2_civil_parish.chapman_code
     place = Freecen2Place.find_by(chapman_code: chapman_code, place_name: params[:freecen2_civil_parish][:name]) if chapman_code.present?
     params[:freecen2_civil_parish][:freecen2_place_id] = place.id if place.present?
     @freecen2_civil_parish.update_attributes(freecen2_civil_parish_params)

@@ -307,9 +307,9 @@ class CsvFile < CsvFiles
     return [false, message] unless success
 
     success, message, @year, @piece, @census_fields = extract_piece_year_from_file_name(@file_name)
-    @chapman_code = @piece.district_chapman_code if @piece.present?
+    @chapman_code = @piece.chapman_code if @piece.present?
     @project.write_messages_to_all(message, true) unless success
-    @project.write_messages_to_all("Working on #{@piece.name} for #{@year}, in #{@piece.district_chapman_code}.<br>", true) if success
+    @project.write_messages_to_all("Working on #{@piece.name} for #{@year}, in #{@piece.chapman_code}.<br>", true) if success
     return [false, message] unless success
 
     success, message = slurp_the_csv_file
@@ -352,7 +352,7 @@ class CsvFile < CsvFiles
       message = ''
       year, piece, fields = Freecen2Piece.extract_year_and_piece(file_name, @chapman_code)
       actual_piece = Freecen2Piece.where(year: year, number: piece.upcase).first
-      chapman_code = actual_piece.district_chapman_code if actual_piece.present?
+      chapman_code = actual_piece.chapman_code if actual_piece.present?
       if (%w[1911 1921].include?(year) && %w[ALD GSY JSY SRK].include?(chapman_code))
         # adjust census for channel islands
         fields = (%w[1911 1921].include?(year) && %w[ALD GSY JSY SRK].include?(chapman_code)) ? Freecen::CEN2_CHANNEL_ISLANDS_1911 : Freecen::CEN2_1911

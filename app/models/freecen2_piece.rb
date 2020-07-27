@@ -27,6 +27,8 @@ class Freecen2Piece
 
   field :name, type: String
   validates :name, presence: true
+  field :chapman_code, type: String
+  validates_inclusion_of :chapman_code, in: ChapmanCode.values
   field :tnaid, type: String
   field :number, type: String
   validates :number, presence: true
@@ -50,7 +52,7 @@ class Freecen2Piece
 
   belongs_to :freecen2_district, optional: true, index: true
 
-  delegate :chapman_code, :name, :tnaid, :code, :note, to: :freecen2_district, prefix: :district, allow_nil: true
+  delegate :name, :tnaid, :code, :note, to: :freecen2_district, prefix: :district, allow_nil: true
 
   belongs_to :freecen2_place, optional: true, index: true
   has_many :freecen2_civil_parishes, dependent: :restrict_with_error
