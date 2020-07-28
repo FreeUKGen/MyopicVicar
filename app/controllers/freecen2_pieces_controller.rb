@@ -5,14 +5,8 @@ class Freecen2PiecesController < ApplicationController
     get_user_info_from_userid
     @chapman_code = params[:chapman_code]
     @year = params[:year]
-    @freecen2_districts = Freecen2District.chapman_code(@chapman_code).year(@year).order_by(year: 1, piece_number: 1)
-    @freecen2_pieces = []
-    @freecen2_districts.each do |district|
-      pieces = district.freecen2_pieces
-      pieces.each do |piece|
-        @freecen2_pieces << piece
-      end
-    end
+    @freecen2_pieces = Freecen2Piece.chapman_code(@chapman_code).year(@year).order_by(year: 1, piece_number: 1).all
+
   end
 
   def destroy
@@ -49,9 +43,9 @@ class Freecen2PiecesController < ApplicationController
   def index
     get_user_info_from_userid
     if session[:chapman_code].present?
+      @census = Freecen::CENSUS_YEARS_ARRAY
       @chapman_code = session[:chapman_code]
-      @totals_pieces = Freecen2Piece.county_year_totals(@chapman_code)
-      @grand_totals_pieces = Freecen2Piece.grand_totals(@totals_pieces)
+      @freecen2_pieces_distinct = Freecen2Piece.chapman_code(session[:chapman_code]).distinct(:name).sort_by(&:downcase)
     else
       redirect_to manage_resources_path && return
     end

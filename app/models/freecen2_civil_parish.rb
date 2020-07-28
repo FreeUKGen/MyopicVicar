@@ -26,7 +26,18 @@ class Freecen2CivilParish
 
   delegate :year, :name, :tnaid, :number, :code, :note, to: :freecen2_piece, prefix: :piece, allow_nil: true
 
-  index(piece_name: 1, piece_year: 1, name: 1)
+  index({ chapman_code: 1, year: 1, name: 1 }, name: 'chapman_code_year_name')
+  index({ chapman_code: 1, name: 1 }, name: 'chapman_code_name')
+  index({ name: 1 }, name: 'chapman_code_name')
+  class << self
+    def chapman_code(chapman)
+      where(chapman_code: chapman)
+    end
+
+    def year(year)
+      where(year: year)
+    end
+  end
 
   def add_hamlet_township_names
     @hamlet_names = ''

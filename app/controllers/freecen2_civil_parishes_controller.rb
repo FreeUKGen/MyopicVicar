@@ -1,6 +1,13 @@
 class Freecen2CivilParishesController < ApplicationController
   require 'freecen_constants'
 
+  def chapman_year_index
+    get_user_info_from_userid
+    @chapman_code = params[:chapman_code]
+    @year = params[:year]
+    @freecen2_civil_parishes = Freecen2CivilParish.chapman_code(@chapman_code).year(@year).order_by(year: 1, name: 1)
+  end
+
   def edit
     redirect_back(fallback_location: new_manage_resource_path, notice:  'No civil parish identified') && return if params[:id].blank?
 
@@ -21,11 +28,15 @@ class Freecen2CivilParishesController < ApplicationController
   end
 
   def index
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'No Piece') && return if params[:piece_id].blank?
 
     get_user_info_from_userid
-    @piece = Freecen2Piece.find_by(id: params[:piece_id])
-    @freecen2_civil_parishes = Freecen2CivilParish.where(freecen2_piece_id: params[:piece_id]).order_by(:name.asc, :'freecen2_hamlets.name'.asc).all
+    if session[:chapman_code].present?
+      @census = Freecen::CENSUS_YEARS_ARRAY
+      @chapman_code = session[:chapman_code]
+      @freecen2_civil_parishes_distinct = Freecen2CivilParish.chapman_code(session[:chapman_code]).distinct(:name).sort_by(&:downcase)
+    else
+      redirect_to manage_resources_path && return
+    end
   end
 
   def show
@@ -35,7 +46,7 @@ class Freecen2CivilParishesController < ApplicationController
     @freecen2_civil_parish = Freecen2CivilParish.find_by(id: params[:id])
     @place = @freecen2_civil_parish.freecen2_place
     @piece = @freecen2_civil_parish.freecen2_piece
-    @chapman_code = @piece.district_chapman_code
+    @chapman_code = @freecen2_civil_parish.chapman_code
     @freecen2_piece = @freecen2_civil_parish.piece_name
   end
 

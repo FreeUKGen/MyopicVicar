@@ -1536,14 +1536,14 @@ crumb :freecen1_vld_entry do |county, file|
   parent :freecen1_vld_entries, session[:freecen1_vld_file], session[:entry_page]
 end
 
-crumb :freecen2_civil_parishes do |piece, county, year|
-  link 'FreeCen2 Civil Parishes', freecen2_civil_parishes_path(piece_id: piece.id)
-  parent :show_freecen2_piece, piece, county, year
+crumb :freecen2_civil_parishes do |county|
+  link 'FreeCen2 Civil Parishes', freecen2_civil_parishes_path(county: county)
+  parent :county_options, county
 end
 
 crumb :show_freecen2_civil_parish do |file, county, year|
   link 'Show FreeCen2 Civil Parish', freecen2_civil_parish_path(file)
-  parent :freecen2_civil_parishes, file.freecen2_piece, county, year
+  parent :freecen2_civil_parishes, county
 end
 
 crumb :edit_freecen2_civil_parish do |file, county, year|
@@ -1552,7 +1552,7 @@ crumb :edit_freecen2_civil_parish do |file, county, year|
 end
 
 crumb :freecen2_pieces do |county|
-  link 'FreeCen2 Pieces Total', freecen2_pieces_path(county: county)
+  link 'FreeCen2 Sub Districts (Pieces)', freecen2_pieces_path(county: county)
   parent :county_options, county
 end
 
@@ -1562,8 +1562,12 @@ crumb :freecen2_pieces_chapman do |county, year|
 end
 
 crumb :show_freecen2_piece do |file, county, year|
-  link 'Show FreeCen2 Piece', freecen2_piece_path(file)
-  parent :freecen2_pieces_chapman, county, year
+  link 'Show FreeCen2 Sub District (Piece)', freecen2_piece_path(file)
+  if year.present?
+    parent :freecen2_pieces_chapman, county, year
+  else
+    parent :freecen2_pieces, county
+  end
 end
 
 crumb :edit_freecen2_piece do |file, county, year|
@@ -1586,12 +1590,17 @@ crumb :freecen2_districts do |county, year|
   parent :county_options, county
 end
 
+crumb :freecen2_districts_chapman do |county, year|
+  link 'FreeCen2 Districts by year', freecen2_districts_chapman_year_index_path(chapman_code: county, year: year)
+  parent :freecen2_districts, county
+end
+
 crumb :show_freecen2_district do |file, county, year, type|
   link 'Show FreeCen2 District', freecen2_district_path(file)
   if type.present? && type == 'index'
     parent :freecen2_districts, county, year
   else
-    parent :show_freecen2_piece, file, county, year
+    parent :freecen2_districts_chapman, file, county, year
   end
 end
 

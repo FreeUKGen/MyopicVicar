@@ -32,9 +32,13 @@ module Freecen2PiecesHelper
   def piece_year(piece, year)
     freecen2_piece = Freecen2Piece.find_by(chapman_code: session[:chapman_code], name: piece, year: year)
     if freecen2_piece.present? && freecen2_piece.year == year
-      link_to 'Yes', freecen2_piece_path(freecen2_piece.id, type: 'index')
+      link_to 'Yes', freecen2_piece_path(freecen2_piece.id, type: 'index'), method: :get, class: 'btn   btn--small'
     else
       'No'
     end
+  end
+
+  def piece_index_link(chapman_code, year)
+    link_to "#{year}", freecen2_pieces_chapman_year_index_path(chapman_code: "#{chapman_code}", year: "#{year}"), method: :get, class: 'btn   btn--small'
   end
 end
