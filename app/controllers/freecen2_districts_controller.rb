@@ -1,6 +1,13 @@
 class Freecen2DistrictsController < ApplicationController
   require 'freecen_constants'
+  caches_action :index, expires_in: 7.days
 
+  def chapman_year_index
+    get_user_info_from_userid
+    @chapman_code = params[:chapman_code]
+    @year = params[:year]
+    @freecen2_districts = Freecen2District.chapman_code(@chapman_code).year(@year).order_by(year: 1, name: 1).all
+  end
 
   def edit
     redirect_back(fallback_location: new_manage_resource_path, notice:  'No civil parish identified') && return if params[:id].blank?
@@ -23,7 +30,11 @@ class Freecen2DistrictsController < ApplicationController
     @census = Freecen::CENSUS_YEARS_ARRAY
     @chapman_code = session[:chapman_code]
     @freecen2_districts_distinct = Freecen2District.chapman_code(session[:chapman_code]).distinct(:name).sort_by(&:downcase)
-    @freecen2_districts = Freecen2District.chapman_code(session[:chapman_code]).order_by(name: 1, yesr: 1)
+  end
+
+  def locate
+    @freecen2_district = Freecen2District.find_by(chapman_code: params[:chapman_code], year: params[:year], name: params[:name])
+    redirect_to freecen2_district_path(@freecen2_district.id, type: 'index')
   end
 
   def show

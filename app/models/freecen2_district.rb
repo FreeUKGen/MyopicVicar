@@ -19,7 +19,10 @@ class Freecen2District
   belongs_to :county, optional: true, index: true
   delegate :county, to: :county, prefix: true, allow_nil: true
 
-  index(county_county: 1, year: 1, name: 1)
+  index({ chapman_code: 1, year: 1, name: 1 }, name: 'chapman_code_year_name')
+  index({ chapman_code: 1, name: 1, year: 1 }, name: 'chapman_code_name_year')
+  index({ chapman_code: 1, name: 1 }, name: 'chapman_code_name')
+  index({ name: 1 }, name: 'chapman_code_name')
 
   class << self
     def chapman_code(chapman)

@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'rails'
+gem 'actionpack-action_caching'
 gem 'tzinfo-data' #needed by windows
 gem 'mysql2'
 gem 'refinerycms'
