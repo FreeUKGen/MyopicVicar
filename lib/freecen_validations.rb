@@ -346,7 +346,7 @@ module FreecenValidations
     def years_married?(field)
       return [false, '?'] if field[-1] == '?'
 
-      return [true, ''] if field =~ VALID_NUMBER && field.to_i <= 100 && field.to_i >= 1
+      return [true, ''] if field =~ VALID_NUMBER && field.to_i < 100 && field.to_i >= 1
 
       result, message = simple_period?(field) ? check_simple_period(field) : check_complex_period(field)
       [result, message]
