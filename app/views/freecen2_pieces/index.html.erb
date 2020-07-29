@@ -17,6 +17,7 @@
       </tr>
     </thead>
     <tbody >
+      <%= paginate @freecen2_pieces_distinct %>
       <% @freecen2_pieces_distinct.each do |freecen2_piece| %>
         <tr >
           <td> <%= freecen2_piece %></td>

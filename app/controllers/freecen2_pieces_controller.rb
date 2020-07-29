@@ -46,6 +46,7 @@ class Freecen2PiecesController < ApplicationController
       @census = Freecen::CENSUS_YEARS_ARRAY
       @chapman_code = session[:chapman_code]
       @freecen2_pieces_distinct = Freecen2Piece.chapman_code(session[:chapman_code]).distinct(:name).sort_by(&:downcase)
+      @freecen2_pieces_distinct = Kaminari.paginate_array(@freecen2_pieces_distinct).page(params[:page]).per(50)
     else
       redirect_to manage_resources_path && return
     end

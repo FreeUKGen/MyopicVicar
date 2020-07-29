@@ -30,6 +30,7 @@ class Freecen2DistrictsController < ApplicationController
     @census = Freecen::CENSUS_YEARS_ARRAY
     @chapman_code = session[:chapman_code]
     @freecen2_districts_distinct = Freecen2District.chapman_code(session[:chapman_code]).distinct(:name).sort_by(&:downcase)
+    @freecen2_districts_distinct = Kaminari.paginate_array(@freecen2_districts_distinct).page(params[:page]).per(50)
   end
 
   def locate

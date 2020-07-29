@@ -2,7 +2,7 @@
 <h2 style="text-align: center">FreeCen2 Civil Parishes for <%=@chapman_code%> </h2>
 <%= render 'flash_notice' %>
 <div class="scrollable ">
-  <table class="table--bordered t50 table--data table--striped " >
+  <table class="table--bordered table--data table--striped " >
     <thead >
       <tr >
         <th class='sticky-header '>Civil Parish</th>
@@ -17,6 +17,7 @@
       </tr>
     </thead>
     <tbody >
+      <%= paginate @freecen2_civil_parishes_distinct %>
       <% @freecen2_civil_parishes_distinct.each do |freecen2_civil_parish| %>
         <tr >
           <td> <%= freecen2_civil_parish %></td>

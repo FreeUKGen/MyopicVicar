@@ -34,6 +34,7 @@ class Freecen2CivilParishesController < ApplicationController
       @census = Freecen::CENSUS_YEARS_ARRAY
       @chapman_code = session[:chapman_code]
       @freecen2_civil_parishes_distinct = Freecen2CivilParish.chapman_code(session[:chapman_code]).distinct(:name).sort_by(&:downcase)
+      @freecen2_civil_parishes_distinct = Kaminari.paginate_array(@freecen2_civil_parishes_distinct).page(params[:page]).per(50)
     else
       redirect_to manage_resources_path && return
     end
