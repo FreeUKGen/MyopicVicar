@@ -913,9 +913,9 @@ class FreecenCsvEntry
         record[:error_messages] += messageb
       else
         if %w[u b n v].include?(uninhabited_flag) && schedule_number.blank?
-          messageb = "Warning: line #{num} has special #{uninhabited_flag} but no schedule number.<br>"
+          messageb = "ERROR: line #{num} has special #{uninhabited_flag} but no schedule number.<br>"
           message += messageb
-          record[:warning_messages] += messageb
+          record[:error_messages] += messageb
         end
         if uninhabited_flag == 'x'
           record[:address_flag] = 'x'
@@ -1143,9 +1143,15 @@ class FreecenCsvEntry
         if %w[1861 1871].include?(record[:year])
           success, messagea = FreecenValidations.school_children?(record[:school_children])
           unless success
-            messageb = "ERROR: line #{num}  is #{messagea}.<br>"
-            message += messageb
-            record[:error_messages] += messageb
+            if messagea == 'invalid number'
+              messageb = "ERROR: line #{num} Number of school children #{record[:school_children]} is #{messagea}.<br>"
+              message += messageb
+              record[:error_messages] += messageb
+            else
+              messageb = "Warning: line #{num} Number of school children #{record[:school_children]} is #{messagea}.<br>"
+              message += messageb
+              record[:warning_messages] += messageb
+            end
           end
         else
           messageb = "ERROR: line #{num} Number of school children #{record[:school_children]} should not be included for #{record[:year]}.<br>"
@@ -1187,9 +1193,15 @@ class FreecenCsvEntry
         if %w[1911].include?(record[:year])
           success, messagea = FreecenValidations.children_living?(record[:children_living])
           unless success
-            messageb = "Warning: line #{num} Number of children living #{record[:children_living]} is #{messagea}.<br>"
-            message += messageb
-            record[:warning_messages] += messageb
+            if messagea == 'invalid number'
+              messageb = "ERROR: line #{num} Number of children living #{record[:children_living]} is #{messagea}.<br>"
+              message += messageb
+              record[:error_messages] += messageb
+            else
+              messageb = "Warning: line #{num} Number of children living #{record[:children_living]} is #{messagea}.<br>"
+              message += messageb
+              record[:warning_messages] += messageb
+            end
           end
         else
           messageb = "ERROR: line #{num} Number of children living #{record[:children_living]} should not be included for #{record[:year]}.<br>"
@@ -1202,9 +1214,15 @@ class FreecenCsvEntry
         if %w[1911].include?(record[:year])
           success, messagea = FreecenValidations.children_deceased?(record[:children_deceased])
           unless success
-            messageb = "Warning: line #{num} Number of children deceased #{record[:children_deceased]} is #{messagea}.<br>"
-            message += messageb
-            record[:warning_messages] += messageb
+            if messagea == 'invalid number'
+              messageb = "ERROR: line #{num} Number of children deceased #{record[:children_deceased]} is #{messagea}.<br>"
+              message += messageb
+              record[:error_messages] += messageb
+            else
+              messageb = "Warning: line #{num} Number of children deceased #{record[:children_deceased]} is #{messagea}.<br>"
+              message += messageb
+              record[:warning_messages] += messageb
+            end
           end
         else
           messageb = "ERROR: line #{num} Number of children deceased #{record[:children_deceased]} should not be included for #{record[:year]}.<br>"
@@ -1217,9 +1235,15 @@ class FreecenCsvEntry
         if %w[1911].include?(record[:year])
           success, messagea = FreecenValidations.children_born_alive?(record[:children_born_alive])
           unless success
-            messageb = "Warning: line #{num} Number of children born alive #{record[:children_born_alive]} is #{messagea}.<br>"
-            message += messageb
-            record[:warning_messages] += messageb
+            if messagea == 'invalid number'
+              messageb = "ERROR: line #{num} Number of children born alive #{record[:children_born_alive]} is #{messagea}.<br>"
+              message += messageb
+              record[:error_messages] += messageb
+            else
+              messageb = "Warning: line #{num} Number of children born alive #{record[:children_born_alive]} is #{messagea}.<br>"
+              message += messageb
+              record[:warning_messages] += messageb
+            end
           end
         else
           messageb = "ERROR: line #{num} Number of children born alive #{record[:children_born_alive]} should not be included for #{record[:year]}.<br>"

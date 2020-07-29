@@ -13,7 +13,7 @@ module FreecenValidations
   TIGHT_VALID_TEXT = /\A[\w\s,'\.]*\z/.freeze
   NARROW_VALID_TEXT_PLUS = /\A[-\w\s,'\.]*\z/.freeze
   BROAD_VALID_TEXT = /\A[-\w\s()\.,&'":;]*\z/.freeze
-  BROAD_VALID_TEXT_PLUS = /\A[-\w\s()\.,&'":;?]*\z/.freeze
+  BROAD_VALID_TEXT_PLUS = /\A[-\w\s()\/\.,&'":;?]*\z/.freeze
   VALID_PIECE = /\A(R|H)(G|O|S)/i.freeze
   VALID_AGE_MAXIMUM = { 'd' => 100, 'w' => 100, 'm' => 100, 'y' => 120, 'h' => 100, '?' => 100, 'years' => 120, 'months' => 100, 'weeks' => 100,
                         'days' => 100, 'hours' => 100 }.freeze
@@ -75,9 +75,9 @@ module FreecenValidations
         strip_field = field[0...-1].strip
         return [false, '?'] if (strip_field.match? VALID_NUMBER) || (strip_field.match? VALID_NUMBER_PLUS_SUFFIX)
 
-        return [false, '?'] if (strip_field.match? VALID_ENUMERATOR_SPECIAL) && strip_field[-1] != '0'
+        return [false, '?'] if (strip_field.match? VALID_ENUMERATOR_SPECIAL) && field[0] == '0'
 
-      elsif field.match? VALID_ENUMERATOR_SPECIAL
+      elsif (field.match? VALID_ENUMERATOR_SPECIAL) && field[0] == '0'
 
         return [true, ''] unless field[-1] == '0'
 
@@ -340,7 +340,7 @@ module FreecenValidations
     def school_children?(field)
       return [true, ''] if field =~ VALID_NUMBER
 
-      [false, 'Not valid number']
+      [false, 'invalid number']
     end
 
     def years_married?(field)
@@ -398,21 +398,27 @@ module FreecenValidations
     end
 
     def children_born_alive?(field)
+      [false, 'is an unusual number'] if field =~ VALID_NUMBER && field.to_i > 15
+
       return [true, ''] if field =~ VALID_NUMBER && field.to_i <= 15
 
-      [false, 'Not valid number']
+      [false, 'invalid number']
     end
 
     def children_living?(field)
+      [false, 'is an unusual number'] if field =~ VALID_NUMBER && field.to_i > 15
+
       return [true, ''] if field =~ VALID_NUMBER && field.to_i <= 15
 
-      [false, 'Not valid number']
+      [false, 'invalid number']
     end
 
     def children_deceased?(field)
+      [false, 'is an unusual number'] if field =~ VALID_NUMBER && field.to_i > 15
+
       return [true, ''] if field =~ VALID_NUMBER && field.to_i <= 15
 
-      [false, 'Not valid number']
+      [false, 'invalid number']
     end
 
     def religion?(field)

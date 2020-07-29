@@ -1,6 +1,5 @@
 class Freecen2DistrictsController < ApplicationController
   require 'freecen_constants'
-  caches_action :index, expires_in: 7.days
 
   def chapman_year_index
     get_user_info_from_userid
