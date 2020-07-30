@@ -25,8 +25,8 @@
           <td ><%= freecen2_district.type %></td>
           <td ><%= freecen2_district.code %></td>
           <td ><%= freecen2_district.notes %></td>
-          <td ><%= link_to 'Show', freecen2_district_path(freecen2_district) , :class => "btn   btn--small"%>
-            <%= link_to 'Edit', edit_freecen2_district_path(freecen2_district) , :class => "btn   btn--small"%></td>
+          <td ><%= link_to 'Show', freecen2_district_path(freecen2_district, type: @type) , :class => "btn   btn--small"%>
+            <%= link_to 'Edit', edit_freecen2_district_path(freecen2_district, type: @type) , :class => "btn   btn--small"%></td>
         </tr>
       <% end %>
     </tbody>

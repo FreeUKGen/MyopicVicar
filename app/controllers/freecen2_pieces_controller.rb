@@ -6,7 +6,7 @@ class Freecen2PiecesController < ApplicationController
     @chapman_code = params[:chapman_code]
     @year = params[:year]
     @freecen2_pieces = Freecen2Piece.chapman_code(@chapman_code).year(@year).order_by(year: 1, piece_number: 1).all
-
+    @type = 'year_index'
   end
 
   def destroy
@@ -27,7 +27,6 @@ class Freecen2PiecesController < ApplicationController
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No piece identified') && return if params[:id].blank?
 
     get_user_info_from_userid
-
     @freecen2_piece = Freecen2Piece.where('_id' => params[:id]).first
     if @freecen2_piece.blank?
       flash[:notice] = 'Piece does not exist'
@@ -38,6 +37,7 @@ class Freecen2PiecesController < ApplicationController
     places.each do |place|
       @places << place.place_name
     end
+    @type = params[:type]
   end
 
   def index
@@ -47,6 +47,7 @@ class Freecen2PiecesController < ApplicationController
       @chapman_code = session[:chapman_code]
       @freecen2_pieces_distinct = Freecen2Piece.chapman_code(session[:chapman_code]).distinct(:name).sort_by(&:downcase)
       @freecen2_pieces_distinct = Kaminari.paginate_array(@freecen2_pieces_distinct).page(params[:page]).per(50)
+      @type = 'index'
     else
       redirect_to manage_resources_path && return
     end
@@ -56,8 +57,12 @@ class Freecen2PiecesController < ApplicationController
     get_user_info_from_userid
     if session[:chapman_code].present?
       @chapman_code = session[:chapman_code]
-      @totals_pieces = Freecen2Piece.county_district_year_totals(params[:id])
-      @grand_totals_pieces = Freecen2Piece.grand_totals(@totals_pieces)
+      p 'index_district'
+      p params
+      @freecen2_district = Freecen2District.find_by(id: params[:freecen2_district_id])
+      @type = params[:type]
+      @freecen2_pieces = Freecen2Piece.where(freecen2_district_id: @freecen2_district.id).all.order_by(name: 1)
+      @year = @freecen2_district.year
     else
       redirect_to manage_resources_path && return
     end
@@ -93,10 +98,10 @@ class Freecen2PiecesController < ApplicationController
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No piece identified') && return if params[:id].blank?
 
     get_user_info_from_userid
-    @freecen2_piece = Freecen2Piece.where('_id' => params[:id])
-    @freecen2_piece = @freecen2_piece.first if @freecen2_piece.present?
+    @freecen2_piece = Freecen2Piece.find_by(id: params[:id])
     @place = @freecen2_piece.freecen2_place
     @chapman_code = session[:chapman_code]
+    @type = params[:type]
   end
 
   def update
@@ -108,14 +113,16 @@ class Freecen2PiecesController < ApplicationController
     chapman_code = @freecen2_piece.chapman_code
     place = Freecen2Place.find_by(chapman_code: chapman_code, place_name: params[:freecen2_piece][:name]) if chapman_code.present?
     params[:freecen2_piece][:freecen2_place_id] = place.id if place.present?
+    @type = params[:freecen2_piece][:type]
+    params[:freecen2_piece].delete :type
 
     @freecen2_piece.update(freecen2_piece_params)
     if @freecen2_piece.errors.any?
       flash[:notice] = "The update of the civil parish failed #{@freecen2_piece.errors.full_messages}."
-      redirect_back(fallback_location: edit_freecen2_piece_path(@freecen2_piece)) && return
+      redirect_back(fallback_location: edit_freecen2_piece_path(@freecen2_piece, type: @type)) && return
     else
       flash[:notice] = 'Update was successful'
-      redirect_to freecen2_piece_path(@freecen2_piece)
+      redirect_to freecen2_piece_path(@freecen2_piece, type: @type)
     end
   end
 

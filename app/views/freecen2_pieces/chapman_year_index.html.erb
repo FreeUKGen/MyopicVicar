@@ -1,4 +1,4 @@
-<<% breadcrumb :freecen2_pieces_chapman,  @chapman_code, @year%>
+<% breadcrumb :freecen2_pieces_chapman,  @chapman_code, @year, @type %>
 <h1 style="text-align: center">FreeCen2 Pieces for <%=@chapman_code%> in <%= @year%></h1>
 <div style="text-align: center">
   <%= render 'flash_notice' %>
@@ -7,25 +7,24 @@
   <table class="table--bordered table--data just--left table--striped">
     <thead >
       <tr>
-        <th class='sticky-header '>Piece</th>
-        <th class='sticky-header '>District</th>
+        <th class='sticky-header '>Piece Number</th>
         <th class='sticky-header '>Piece name</th>
+        <th class='sticky-header '>District</th>
         <th class='sticky-header '>Civil parishes</th>
         <th colspan = "2" class='sticky-header '>Actions</th>
       </tr>
     </thead>
     <tbody >
-      <tr id="<%=freecen2_piece.id%>">
-        <td ><%= freecen2_piece.year %></td>
-        <td ><%= freecen2_piece.number %></td>
-        <td ><%= freecen2_piece.district_name%></td>
-        <td ><%= freecen2_piece.name %></td>
-        <td ><%= freecen2_piece.civil_parish_names %></td>
-        <td ><%= link_to 'Show', freecen2_piece_path(freecen2_piece) , :class => "btn   btn--small"%>
-          <td ><%= link_to 'Edit', edit_freecen2_piece_path(freecen2_piece) , :class => "btn   btn--small"%>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  </div>
-</div>
+      <% @freecen2_pieces.each do |freecen2_piece| %>
+        <tr id="<%=freecen2_piece.id%>">
+          <td ><%= freecen2_piece.number %></td>
+          <td ><%= freecen2_piece.name %></td>
+          <td ><%= freecen2_piece.district_name%></td>
+          <td ><%= freecen2_piece.civil_parish_names %></td>
+          <td ><%= link_to 'Show', freecen2_piece_path(freecen2_piece,type: @type) , :class => "btn   btn--small"%>
+            <td ><%= link_to 'Edit', edit_freecen2_piece_path(freecen2_piece,type: @type) , :class => "btn   btn--small"%>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>

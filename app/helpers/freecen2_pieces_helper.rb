@@ -9,7 +9,7 @@ module Freecen2PiecesHelper
   end
 
   def civil_link(piece)
-    link_to "#{piece.civil_parish_names}", freecen2_civil_parishes_path(piece_id: piece.id)
+    link_to "#{piece.civil_parish_names}", index_for_piece_freecen2_civil_parishes_path(piece_id: piece.id, type: @type)
   end
 
   def csv_files(piece)
@@ -32,7 +32,7 @@ module Freecen2PiecesHelper
   def piece_year(piece, year)
     freecen2_piece = Freecen2Piece.find_by(chapman_code: session[:chapman_code], name: piece, year: year)
     if freecen2_piece.present? && freecen2_piece.year == year
-      link_to 'Yes', freecen2_piece_path(freecen2_piece.id, type: 'index'), method: :get, class: 'btn   btn--small'
+      link_to 'Yes', freecen2_piece_path(freecen2_piece.id, type: @type), method: :get, class: 'btn   btn--small'
     else
       'No'
     end

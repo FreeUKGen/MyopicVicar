@@ -12,5 +12,6 @@
   <%= f.input :tnaid,:label => "TNA link", :input_html => { :disabled => true,:size => 10 }%>
   <%= f.input :code,:label => "TNA Code", :input_html => { :disabled => true,:size => 10 }%>
   <%= f.input :prenote,:label => "TNA Pre notes", :input_html => { :disabled => true,:size => 10 }%>
+  <%= f.hidden_field :type, :value=>@type %>
   <%= f.button :submit, 'Submit'   %>
 <% end %>

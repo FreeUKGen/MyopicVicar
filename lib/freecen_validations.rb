@@ -398,7 +398,7 @@ module FreecenValidations
     end
 
     def children_born_alive?(field)
-      [false, 'is an unusual number'] if field =~ VALID_NUMBER && field.to_i > 15
+      return [false, 'is an unusual number'] if field =~ VALID_NUMBER && field.to_i > 15
 
       return [true, ''] if field =~ VALID_NUMBER && field.to_i <= 15
 
@@ -406,7 +406,7 @@ module FreecenValidations
     end
 
     def children_living?(field)
-      [false, 'is an unusual number'] if field =~ VALID_NUMBER && field.to_i > 15
+      return [false, 'is an unusual number'] if field =~ VALID_NUMBER && field.to_i > 15
 
       return [true, ''] if field =~ VALID_NUMBER && field.to_i <= 15
 
@@ -414,7 +414,7 @@ module FreecenValidations
     end
 
     def children_deceased?(field)
-      [false, 'is an unusual number'] if field =~ VALID_NUMBER && field.to_i > 15
+      return [false, 'is an unusual number'] if field =~ VALID_NUMBER && field.to_i > 15
 
       return [true, ''] if field =~ VALID_NUMBER && field.to_i <= 15
 
