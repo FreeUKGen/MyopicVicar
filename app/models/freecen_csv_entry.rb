@@ -1567,10 +1567,14 @@ class FreecenCsvEntry
       end
 
       success, messagea = FreecenValidations.notes?(record[:notes])
-      unless success
+      if !success
         messageb = "ERROR: line #{num} Notes #{record[:notes]} is #{messagea}.<br>"
         message += messageb
         record[:error_messages] += messageb
+      elsif record[:notes].present?
+        messagea = "Warning: line #{num} Notes contains information #{record[:notes]}.<br>"
+        record[:warning_messages] += messagea
+        message += messagea
       end
       [message]
     end
