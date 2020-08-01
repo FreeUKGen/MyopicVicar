@@ -58,6 +58,13 @@ class Csvfile < CarrierWave::Uploader::Base
     batch
   end
 
+  def downcase_extension
+    file_name_parts = file_name.split('.')
+    file_name_parts[1] = file_name_parts[1].downcase
+    file_name = file_name_parts[0] + '.' + file_name_parts[1]
+    file_name
+  end
+
   def estimate_time
     size = 1
     place = File.join(Rails.application.config.datafiles, userid, file_name)

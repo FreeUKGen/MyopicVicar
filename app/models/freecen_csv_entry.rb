@@ -711,14 +711,14 @@ class FreecenCsvEntry
       info_messages = record[:messages]
       message = ''
       success, messagea = FreecenValidations.location_flag?(flag)
-      unless success
+      if !success
         messageb = "ERROR: line #{num} Location Flag #{flag} is #{messagea}.<br>"
         record[:error_messages] += messageb
         return [messageb]
-      else
-        messagea = "Info: line #{num} Location Flag is #{flag}.<br>" if flag.present?
-        record[:info_messages] += messagea if info_messages && flag.present?
-        message += messagea if info_messages && flag.present?
+      elsif flag.present?
+        messagea = "Warning: line #{num} Location Flag is #{flag}.<br>"
+        record[:warning_messages] += messagea
+        message += messagea
       end
     end
 
@@ -900,10 +900,10 @@ class FreecenCsvEntry
         messageb = "ERROR: line #{num} Address flag #{record[:address_flag]} is #{messagea}.<br>"
         message += messageb
         record[:error_messages] += messageb
-      else
-        messagea = "Info: line #{num} Address Flag is #{record[:address_flag]}.<br>" if record[:address_flag]
-        record[:info_messages] += messagea if info_messages && record[:address_flag]
-        message += messagea if info_messages && record[:address_flag]
+      elsif record[:address_flag].present?
+        messagea = "Warning: line #{num} Address Flag is #{record[:address_flag]}.<br>"
+        record[:warning_messages] += messagea
+        message += messagea
       end
 
       success, messagea = FreecenValidations.uninhabited_flag?(uninhabited_flag)
@@ -920,9 +920,9 @@ class FreecenCsvEntry
         if uninhabited_flag == 'x'
           record[:address_flag] = 'x'
           record[:uninhabited_flag] = ''
-          messageb = "Info: line #{num} uninhabited_flag if x is moved to location_flag.<br>"  if info_messages
-          message += messageb if info_messages
-          record[:info_messages] += messageb if info_messages
+          messageb = "Warning: line #{num} uninhabited_flag if x is moved to address flag.<br>"
+          message += messageb
+          record[:warning_messages] += messageb
         end
       end
 
@@ -1053,14 +1053,14 @@ class FreecenCsvEntry
       end
 
       success, messagea = FreecenValidations.name_question?(record[:name_flag])
-      unless success
+      if !success
         messageb = "ERROR: line #{num} Name Flag #{record[:name_flag]} is #{messagea}.<br>"
         message += messageb
         record[:error_messages] += messageb
-      else
-        messagea = "Info: line #{num} Name Flag is #{record[:name_flag]}.<br>" if record[:name_flag].present?
-        record[:info_messages] += messagea if info_messages && record[:name_flag].present?
-        message += messagea if info_messages && record[:name_flag].present?
+      elsif record[:name_flag].present?
+        messagea = "Warning: line #{num} Name Flag is #{record[:name_flag]}.<br>"
+        record[:warning_messages] += messagea
+        message += messagea
       end
 
       unless record[:year] == '1841'
@@ -1283,14 +1283,14 @@ class FreecenCsvEntry
       end
 
       success, messagea = FreecenValidations.uncertainty_status?(record[:individual_flag])
-      unless success
+      if !success
         messageb = "ERROR: line #{num} Individual Flag #{record[:individual_flag]} is #{messagea}.<br>"
         message += messageb
         record[:error_messages] += messageb
-      else
-        messagea = "Info: line #{num} Individual Flag is #{record[:individual_flag]}.<br>" if record[:individual_flag].present?
-        record[:info_messages] += messagea if info_messages && record[:individual_flag].present?
-        message += messagea if info_messages && record[:individual_flag].present?
+      elsif record[:individual_flag].present?
+        messagea = "Warning: line #{num} Individual Flag is #{record[:individual_flag]}.<br>"
+        record[:warning_messages] += messagea
+        message += messagea
       end
 
       success, messagea = FreecenValidations.occupation?(record[:occupation], record[:age])
@@ -1366,14 +1366,14 @@ class FreecenCsvEntry
       end
 
       success, messagea = FreecenValidations.uncertainty_occupation?(record[:occupation_flag])
-      unless success
+      if !success
         messageb = "ERROR: line #{num} Occupation Flag #{record[:occupation_flag]} is #{messagea}.<br>"
         message += messageb
         record[:error_messages] += messageb
-      else
-        messagea = "Info: line #{num} Occupation Flag is #{record[:occupation_flag]}.<br>" if record[:occupation_flag].present?
-        record[:info_messages] += messagea if info_messages && record[:occupation_flag].present?
-        message += messagea if info_messages && record[:occupation_flag].present?
+      elsif record[:occupation_flag].present?
+        messagea = "Warning: line #{num} Occupation Flag is #{record[:occupation_flag]}.<br>"
+        record[:warning_messages] += messagea
+        message += messagea
       end
 
       success, messagea = FreecenValidations.verbatim_birth_county?(record[:verbatim_birth_county])
@@ -1494,14 +1494,14 @@ class FreecenCsvEntry
       end
 
       success, messagea = FreecenValidations.uncertainy_birth?(record[:birth_place_flag])
-      unless success
+      if !success
         messageb = "ERROR: line #{num} Birth Place Flag #{record[:birth_place_flag]} is #{messagea}.<br>"
         message += messageb
         record[:error_messages] += messageb
-      else
-        messagea = "Info: line #{num} Birth Place Flag is #{record[:birth_place_flag]}.<br>" if record[:birth_place_flag].present?
-        record[:info_messages] += messagea if info_messages && record[:birth_place_flag]
-        message += messagea if info_messages && record[:birth_place_flag]
+      elsif record[:birth_place_flag].present?
+        messagea = "Warning: line #{num} Birth Place Flag is #{record[:birth_place_flag]}.<br>"
+        record[:warning_messages] += messagea
+        message += messagea
       end
 
       if record[:year] == '1841'
