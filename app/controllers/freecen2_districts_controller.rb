@@ -49,7 +49,7 @@ class Freecen2DistrictsController < ApplicationController
     @freecen2_pieces = Freecen2Piece.where(freecen2_district_id: @freecen2_district.id).all.order_by(name: 1)
     @freecen2_pieces_name = []
     @freecen2_pieces.each do |piece|
-      @freecen2_pieces_name << piece.name
+      @freecen2_pieces_name << piece.name unless @freecen2_pieces_name.include?(piece.name)
     end
     @place = @freecen2_district.freecen2_place
     @chapman_code = session[:chapman_code]

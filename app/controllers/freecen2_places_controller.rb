@@ -110,6 +110,7 @@ class Freecen2PlacesController < ApplicationController
   end
 
   def load(place_id)
+
     @place = Freecen2Place.id(place_id).first
     return if @place.blank?
 
