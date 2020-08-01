@@ -6,7 +6,7 @@
   <div  style="text-align: center">
     <%= link_to 'Previous entry',  freecen_csv_entry_path(@previous_entry), method: :get, :class => "btn btn--small" if @previous_entry.present? %>
     <%= link_to 'Next entry',  freecen_csv_entry_path(@next_entry), method: :get, :class => "btn btn--small" if @next_entry.present?%>
-    <%= link_to 'Edit Entry',  edit_freecen_csv_entry_path(@freecen_csv_entry), method: :get, :class => "btn btn--small" %>
+    <%= link_to 'Edit Entry',  edit_freecen_csv_entry_path(@freecen_csv_entry), method: :get, :class => "btn btn--small", title: 'Edit the individual aspects of this entry' %>
   </div>
   <br>
 <% end %>

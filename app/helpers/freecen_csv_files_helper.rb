@@ -1,60 +1,60 @@
 module FreecenCsvFilesHelper
 
   def edit_freecen_file
-    link_to 'Edit Header', edit_freecen_csv_file_path(@freecen_csv_file), method: :get, class: 'btn   btn--small'
+    link_to 'Edit Header', edit_freecen_csv_file_path(@freecen_csv_file), method: :get, class: 'btn   btn--small', title: 'Allows you to enter/edit the name of the person who transcribed the file. Allows you to manage the locks manually '
   end
 
   def download_freecen_file
     link_to 'Download file', download_freecen_csv_file_path(@freecen_csv_file),
-      data: { confirm: 'Are you sure you want to download these entries?' }, method: :get, class: 'btn   btn--small'
+      data: { confirm: 'Are you sure you want to download these entries?' }, method: :get, class: 'btn   btn--small', title: 'Download a copy of the file to your computer. This download WILL INCLUDE and on line changes. Downloading will remove any locks. It will be be stored in your downloads folder'
   end
 
   def browse_freecen_file_individuals
-    link_to 'View individuals', freecen_csv_entries_path(type: 'Ind'), method: :get, class: 'btn   btn--small'
+    link_to 'View individuals', freecen_csv_entries_path(type: 'Ind'), method: :get, class: 'btn   btn--small', title: 'Lists each entry that has individual information. Any of the entries can be displayed on line'
   end
 
   def browse_freecen_file_civil_parishes
-    link_to 'View civil parishes', freecen_csv_entries_path(type: 'Civ'), method: :get, class: 'btn   btn--small'
+    link_to 'View civil parishes', freecen_csv_entries_path(type: 'Civ'), method: :get, class: 'btn   btn--small', title: 'Lists each entry that contained a new civil parish. Any of the entries can be displayed on line'
   end
   def browse_freecen_file_pages
-    link_to 'View pages', freecen_csv_entries_path(type: 'Pag'), method: :get, class: 'btn   btn--small'
+    link_to 'View pages', freecen_csv_entries_path(type: 'Pag'), method: :get, class: 'btn   btn--small', title: 'Lists each entry that contained a new folio or page number. Any of the entries can be displayed on line'
   end
 
   def browse_freecen_file_dwellings
-    link_to 'View dwellings', freecen_csv_entries_path(type: 'Dwe'), method: :get, class: 'btn   btn--small'
+    link_to 'View dwellings', freecen_csv_entries_path(type: 'Dwe'), method: :get, class: 'btn   btn--small', title: 'Lists each entry that has a new dwelling. Any of the entries can be displayed on line'
   end
 
   def list_freecen_file_error_entries
-    link_to 'View error messages', freecen_csv_entries_path(type: 'Err'), method: :get, class: 'btn   btn--small'
+    link_to 'View error messages', freecen_csv_entries_path(type: 'Err'), method: :get, class: 'btn   btn--small', title: 'Lists the entry numbers which have generated an error message. Any of the entries can be displayed on line'
   end
 
   def list_freecen_file_warning_entries
-    link_to 'View warning messages', freecen_csv_entries_path(type: 'War'), method: :get, class: 'btn   btn--small'
+    link_to 'View warning messages', freecen_csv_entries_path(type: 'War'), method: :get, class: 'btn   btn--small', title: 'Lists the entry numbers which have generated a warning message. Any of the entries can be displayed on line'
   end
 
   def list_freecen_file_information_entries
-    link_to 'View information messages', freecen_csv_entries_path(type: 'Inf'), method: :get, class: 'btn   btn--small'
+    link_to 'View information messages', freecen_csv_entries_path(type: 'Inf'), method: :get, class: 'btn   btn--small', title: 'Lists the entry numbers which have generated an information message. Any of the entries can be displayed on line'
   end
 
   def download_spreadsheet
-    link_to 'Download Spreadsheet', download_spresdsheet_freecen_csv_file_path, method: :get, class: 'btn   btn--small'
+    link_to 'Download Spreadsheet', download_spresdsheet_freecen_csv_file_path, method: :get, class: 'btn   btn--small', title: 'Lists the available census spreadsheet headers that can be downloaded to your computer and used for the transcription of a census document'
   end
 
   def download_messages
-    link_to 'Download Message Report', download_message_report_freecen_csv_file_path(@freecen_csv_file), method: :get, class: 'btn   btn--small'
+    link_to 'Download Message Report', download_message_report_freecen_csv_file_path(@freecen_csv_file), method: :get, class: 'btn   btn--small', title: 'Download a copy of the processing messages to your computer. It will be be stored in your downloads folder'
   end
 
   def list_freecen_file_flags
-    link_to 'View Flags', freecen_csv_entries_path(type: 'Fla'), method: :get, class: 'btn   btn--small'
+    link_to 'View Flags', freecen_csv_entries_path(type: 'Fla'), method: :get, class: 'btn   btn--small', title: 'Lists the entry numbers where any flag is set. Any of the entries can be displayed on line'
   end
 
   def remove_freecen_file
-    link_to 'Remove file', remove_freecen_csv_file_path(@freecen_csv_file), data: { confirm: 'Are you sure you want to remove this batch' }, class: 'btn   btn--small', method: :get
+    link_to 'Remove file', remove_freecen_csv_file_path(@freecen_csv_file), data: { confirm: 'Are you sure you want to remove this batch' }, class: 'btn   btn--small', method: :get, title: 'Removes the file and its entries and schedules their actual deletion overnight. Cannot be done if the coordinator has published its contents into the search database'
   end
 
   def replace_freecen_file
     link_to 'Replace file', edit_csvfile_path(@freecen_csv_file), method: :get,
-      data: { confirm:  'Are you sure you want to replace these records?' }, class: 'btn   btn--small'
+      data: { confirm:  'Are you sure you want to replace these records?' }, class: 'btn   btn--small', title: 'Allows the complete replacement of the csv file and all of its entries. Will not be permitted if the file is locked '
   end
 
   def relocate_freecen_file
@@ -68,18 +68,18 @@ module FreecenCsvFilesHelper
   end
 
   def reprocess_freecen_file
-    link_to '(Re)Process file', reprocess_physical_file_path(@freecen_csv_file), class: 'btn   btn--small', method: :get,
+    link_to '(Re)Process file', reprocess_physical_file_path(@freecen_csv_file), class: 'btn   btn--small', method: :get, title: 'Submits the file for processing. The report will go to the owner of the file',
       data: { confirm:  'Are you sure you want to reprocess this file?' }
   end
 
   def delete_freecen_file
     link_to 'Delete original file and all associated entries', freecen_csv_file_path(@freecen_csv_file),
-      data: { confirm: 'Are you sure you want to remove this file and entries' }, class: 'btn   btn--small', method: :delete
+      data: { confirm: 'Are you sure you want to remove this file and entries' }, class: 'btn   btn--small', method: :delete, title: 'This performs an immediate deletion of the file and its entries. Use with EXTREME care'
   end
 
   def change_freecen_file_owner
     link_to 'Copy to Another Person', change_userid_freecen_csv_file_path(@freecen_csv_file),
-      data: { confirm: 'Are you sure you want to copy this file ' }, class: 'btn   btn--small', method: :get
+      data: { confirm: 'Are you sure you want to copy this file ' }, class: 'btn   btn--small', method: :get, title: 'Copies the file (and any on line edits) to a proofreader or validator or yourself. The file will be processed and the report sent.'
   end
 
   def freecen_file_errors(file)

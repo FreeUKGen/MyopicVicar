@@ -22,7 +22,9 @@
           <td ><%= @freecen2_piece.name %></td>
           <td ><%= @freecen2_piece.number %></td>
           <td ><%= link_to 'Show',freecen2_civil_parish_path(freecen2_civil_parish, type: @type), :class => "btn   btn--small"%>
-            <td ><%= link_to 'Edit', edit_freecen2_civil_parish_path(freecen2_civil_parish, type: @type), :class => "btn   btn--small"%>
+            <% if %w[data_manager system_administrator].include?(@user.person_role)%>
+              <td ><%= link_to 'Edit', edit_freecen2_civil_parish_path(freecen2_civil_parish, type: @type), data: { confirm: 'Are you sure?' }, :class => "btn   btn--small", title: 'Editing is restricted to, coordinators, data managers and system administrators'%>
+              <% end %>
             </tr>
           <% end %>
         </tbody>

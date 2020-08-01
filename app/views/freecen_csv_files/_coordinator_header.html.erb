@@ -4,10 +4,15 @@
 <% elsif session[:county].present? %>
   <h3 style="text-align: center"> County Files for  <%= session[:county]%><%=@sorted_by%></h3>
 <% end%>
+<p class=" text--center"> Select a link below to change the order of display</p>
 <div  class=" text--center push--bottom">
-  <%= link_to 'Download Spreadsheet' , download_spreadsheet_freecen_csv_file_path, method: :get , :class => "btn btn--small" %>
+  <%= link_to 'Alphabetical file name', display_my_own_files_freecen_csv_file_path, method: :get , :class => "btn btn--small", title: 'Reorder the list according to the alphabetical order of their file name' %>
+  <%= link_to 'Oldest' , display_my_own_files_by_ascending_uploaded_date_freecen_csv_file_path, method: :get , :class => "btn btn--small", title: 'Reorder the list according to the oldest processing of the file' %>
+  <%= link_to 'Most Recent' , display_my_own_files_by_descending_uploaded_date_freecen_csv_file_path, method: :get , :class => "btn btn--small", title: 'Reorder the list according to the most recent processing of the file' %>
+  <%= link_to 'Files with errors' , display_my_error_freecen_csv_files_path, method: :get , :class => "btn btn--small", title: 'List only those files with errors' %>
+  <%= link_to 'Select Specific File' , display_my_own_files_by_selection_freecen_csv_file_path, method: :get , :class => "btn btn--small", title: 'Select a specific file to look at in detail' %>
+  <%= link_to 'Download Spreadsheet' , download_spreadsheet_freecen_csv_file_path, method: :get , :class => "btn btn--small", title: 'Lists the available census spreadsheet headers that can be downloaded to your computer and used for the transcription of a census document' %>
 </div>
-<%= render partial: 'flash_notice' %>
-<p class="text--center"> To replace a file: find the file in the list and click its RL option.
+<p class="text--center"> To replace a file: locate the file in the list below and click on the RL option on the extreme right. <br>
   To upload a new file: click this <%= link_to 'Upload new file', new_csvfile_path, method: :get , :class => "btn btn--small"%>
 </p>

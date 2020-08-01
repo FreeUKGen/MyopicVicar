@@ -24,7 +24,7 @@
               <td><%= freecen_csv_entry.schedule_number %></td>
               <td><%= freecen_csv_entry.house_number %></td>
               <td><%= freecen_csv_entry.house_or_street_name %></td>
-              <td><%= link_to 'SH', freecen_csv_entry_path(freecen_csv_entry) %> <%= link_to 'ED', edit_freecen_csv_entry_path(freecen_csv_entry) %></td>
+              <td><%= link_to 'Display', freecen_csv_entry_path(freecen_csv_entry), class: 'btn   btn--small' %> </td>
             </tr>
           <% end %>
         </tbody>

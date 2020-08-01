@@ -119,6 +119,48 @@ module UseridRole
     'Manage FreeCen Coverage' => '/freecen_coverage/edit',
     'FreeUKGenealogy  Policies' => '/cms/freeukgenealogy-policies'
   }
+
+  OPTIONS_TITLES = {
+    'Communicate' => 'Communicate to a member of FreeUKGeneology',
+    'Denominations' => 'Make changes to the list of denominations',
+    'Database Statistics' => 'Access the FreeCEN database contents',
+    'GAP Reasons' => 'Make changes to the list of GAP reasons',
+    'Saved Searches' => 'Access your saved searches',
+    'Profile' => 'Display or Edit four personal information',
+    'Batches' => 'List your own FreeREG batches',
+    'Manage Syndicate' => 'Manage a syndicate',
+    'Manage Syndicates' => 'Manage syndicates',
+    'Manage County' => 'Manage a county',
+    'Manage Counties' => 'Manage a county',
+    'Manage Image Server' => 'Manage the Image Server',
+    'Manage Userids' => 'Manage the users',
+    'Display Userids' => 'Display a list of users',
+    'Display Syndicate Coordinators' => 'Display a list of syndicate coordinators',
+    'Display County Coordinators' => 'Display a list of county coordinators',
+    'Syndicate Coordinators' => 'Make changes to syndicates and their coordinators',
+    'County Coordinators' => 'Make changes to counties and county coordinators',
+    'Country Coordinators' => 'Make changes to country coordinators',
+    'Upload New Batch' => 'Upload a new file',
+    'RefineryCMS' => 'Manage the Refinery CMS pages',
+    'Access Attic' => 'Access the attic files for a specific userid',
+    'Physical Files' => 'Access information about the physical files',
+    'Site Statistics' => 'Access information on the number of files and searches',
+    'Search Performance' => 'Access information on the performance of the search engine',
+    'Software Version Information' => 'Access information on the software updates placed on the systems',
+    'Feedback' => 'Access the feedback information from members',
+    'Contacts' => 'Access the contacts submitted by researchers',
+    'System Documentation' => 'Access system documentation',
+    'Roadmap' => 'Review the future roadmap for the application',
+    'Logout' => 'Log out of the system',
+    'Message System' => 'Access the message system used to send information to members',
+    'Manage Images' => 'Manage the images on the image server',
+    'Assignments' => 'List your assignments',
+    'CSV Batches' => 'List your FreeCEN csv files',
+    'Manage Pieces' => 'Access the FreeCEN1 pieces information',
+    'FreeCen Errors' => 'Access the errors arising from the FreeCEN1 monthly update',
+    'Manage FreeCen Coverage' => 'Access the FreeCEN1 database coverage',
+    'FreeUKGenealogy  Policies' => 'Access the FreeUKGenealogy  Policies'
+  }
   USERID_MANAGER_OPTIONS = ['Select specific userid', 'Select specific email', 'Select specific surname/forename',
                             'Browse userids', 'Select Role', 'Select Secondary Role', 'Transcription Agreement Accepted',
                             'Transcription Agreement Not Accepted', 'Incomplete Registrations', 'Create userid', 'Transcriber Statistics']
@@ -140,7 +182,7 @@ module UseridRole
   }
   FILE_MANAGEMENT_OPTIONS = ['Upload New Batch', 'List by Number of Errors then Filename', 'List those with Zero Dates', 'List by Filename',
                              'List by uploaded date (ascending)', 'List by uploaded date (descending)', 'List files waiting to be processed', 'Review Specific Batch']
-  FILE_OPTIONS_TRANSLATION ={
+  FILE_OPTIONS_TRANSLATION = {
     'Upload New Batch' => '/csvfiles/new',
     'List by Number of Errors then Filename' => '/freereg1_csv_files/selection?option=List by Number of Errors then Filename',
     'List those with Zero Dates' => '/freereg1_csv_files/selection?option=Review Batches with Zero Dates',
@@ -187,6 +229,31 @@ module UseridRole
     'Manage Places' => '/places',
     'Offline Reports' => '/manage_counties/selection?option=Offline Reports',
     'Manage Parms' => '/manage_parms/'
+
+  }
+  COUNTY_OPTIONS_TITLES = {
+    'All Places' => 'Lists all possible places in the county',
+    'Active Places' => 'Lists only those places that have information on churches and registers',
+    'Specific Place' => 'List of all places in the county from which you can select just one and review its information',
+    'Places with Unapproved Names' => 'List of those places in the county where its information has not been approved',
+    'Review Batches with Errors' => 'Lists just those batches that contain 1 or more errors',
+    'Review Batches with Zero Dates' => 'Lists just those batches that contain have a zero in the date range',
+    'Review Batches by Filename' => 'Lists all batches sorted by file name',
+    'Review Batches by Userid then Filename' => 'Lists all batches sorted by userid and then file name for each userid',
+    'Review Batches by Most Recent Date of Change' => 'Lists all batches sorted by the NEWEST date of change',
+    'Review Batches by Oldest Date of Change' => 'Lists all batches sorted by the OLDEST date of change',
+    'Review Specific Batch' => 'Lists file name/userid from which you can select just one and review its information',
+    'Upload New Batch' => 'Upload a brand new file',
+    'Manage Images' => 'Go to the set of actions to manage the images for the county',
+    'Manage FreeCEN1 Pieces' => 'Lists all of the Pieces used by CEN1',
+    'Manage FreeCEN2 Pieces' => 'Lists all of the Sub Districts (Pieces) used by CEN2. Note it may take a minute or more to prepare the list',
+    'Manage FreeCEN2 Places' => 'Lists all of the official Places used by CEN2',
+    'Manage FreeCEN2 Districts' => 'Lists all of the Districts used by CEN2. Note it may take a minute or more to prepare the list',
+    'Manage FreeCEN2 Civil Parishes' => 'Lists all of the Civil Parishes used by CEN2. Note it may take a minute or more to prepare the list',
+    'Manage VLD Files' => 'Minimal tools to manage VLD files',
+    'Manage Places' => 'Minimal tools to manage places used by CEN1',
+    'Offline Reports' => 'Generate off line reports',
+    'Manage Parms' => 'Minimal tools to manage parms used by CEN1',
 
   }
   case MyopicVicar::Application.config.template_set

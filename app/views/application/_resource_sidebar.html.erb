@@ -2,9 +2,9 @@
   <h5 class="beta  text--teal">Actions</h5>
   <%@roles.each do |role| %>
     <% if action_manage_image_server(role) %>
-      <%= link_to role, UseridRole::OPTIONS_TRANSLATION[role], :class => "btn  btn--small" ,method: :get, :form=>{:target=>'_blank'} %>
+      <%= link_to role, UseridRole::OPTIONS_TRANSLATION[role], :class => "btn  btn--small" ,method: :get, :form=>{:target=>'_blank'}, title: UseridRole::OPTIONS_TITLES[role]  %>
     <% else%>
-      <%= link_to role, UseridRole::OPTIONS_TRANSLATION[role], :class => "btn  btn--small" ,method: :get %>
+      <%= link_to role, UseridRole::OPTIONS_TRANSLATION[role], :class => "btn  btn--small" ,method: :get, title: UseridRole::OPTIONS_TITLES[role] %>
     <% end%>
     <br>
   <% end%>

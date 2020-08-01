@@ -3,8 +3,9 @@
 <%= render 'flash_notice' %>
 <% if %w[data_manager system_administrator].include?(@user.person_role)%>
   <div style="text-align: center">
-    <%= link_to 'Edit District', edit_freecen2_district_path(@freecen2_district, type: @type) , :class => "btn   btn--small"%>
+    <%= link_to 'Edit District', edit_freecen2_district_path(@freecen2_district, type: @type), data: { confirm: 'Are you sure?' }, :class => "btn   btn--small", title: 'Editing is restricted to, coordinators, data managers and system administrators'%>
   </div>
+</div>
 <% end%>
 <div class="grid">
   <section class="island ">
@@ -32,7 +33,7 @@
         </tr>
         <tr>
           <td>Belongs to Place <small>(Name is a link)</small></td>
-          <td class="weight--semibold"> <%=  place_link(@place) %> </td>
+          <td class="weight--semibold"> <%=  district_place_link(@place) %> </td>
         </tr>
         <tr>
           <td>Type</td>

@@ -8,7 +8,7 @@
       </div>
     <% end %>
     <%@options.each do |option| %>
-      <%= link_to option, UseridRole::COUNTY_OPTIONS_TRANSLATION[option],  method: :get , :class => "btn  btn--small"%>
+      <%= link_to option, UseridRole::COUNTY_OPTIONS_TRANSLATION[option],  method: :get , :class => "btn  btn--small", title: UseridRole::COUNTY_OPTIONS_TITLES[option]%>
       <br>
     <%end%>
     <%= render "resource_sidebar" %>
