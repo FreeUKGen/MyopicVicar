@@ -1,3 +1,6 @@
+<% breadcrumb :search_names_results%>
+<h3 style="text-align: center"> Freecen2 Place Name Search Results for <%= session[:search_name]%></h3>
+<%= render 'flash_notice' %>
 <% if ['data_manager', 'system_administrator', 'county_coordinator'].include?(@user.person_role) %>
   <div style="text-align: center">
     <%= link_to 'Create New Freecen2 Place', new_freecen2_place_path, method: :get, :class => "btn   btn--small", title: 'Permits the addition of a new place' %>
@@ -9,6 +12,7 @@
       <tr>
         <th class='sticky-header '>Place name</th>
         <th class='sticky-header '>Alternate names </th>
+        <th class='sticky-header '>County </th>
         <th class='sticky-header '>Latitude:</th>
         <th class='sticky-header '>Longitude:</th>
         <th class='sticky-header '>Show on map<br>
@@ -20,6 +24,7 @@
         <tr>
           <td ><%= link_to(place.place_name, freecen2_place_path(place), class: 'btn   btn--small', title: 'Additional information on the place' )%> </td>
           <td > <%= alternate(place) %></td>
+          <td > <%= place.chapman_code %></td>
           <td > <%= place.latitude%></td>
           <td > <%= place.longitude%></td>
           <td > <%= locate(place.latitude,place.longitude) %></td>

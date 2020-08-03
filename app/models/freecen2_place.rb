@@ -145,6 +145,19 @@ class Freecen2Place
       where(:modified_place_name => place)
     end
 
+    def search(params)
+      if params[:chapman_code].present?
+        results = Freecen2Place.where('$text' => {'$search' => params[:place_name]}, "disabled" => "false", :chapman_code => params[:chapman_code] ).all
+      else
+        results = Freecen2Place.where('$text' => {'$search' => params[:place_name]}, "disabled" => "false").order_by(chapman_code: 1).all
+      end
+      ids = []
+      results.each do |result|
+        ids <<  result.id
+      end
+      ids
+    end
+
     def valid_chapman_code?(chapman_code)
       result = ChapmanCode.values.include?(chapman_code) ? true : false
       logger.warn("FREEREG:LOCATION:VALIDATION invalid Chapman code #{chapman_code} ") unless result

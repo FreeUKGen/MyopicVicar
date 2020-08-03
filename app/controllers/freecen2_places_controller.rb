@@ -31,33 +31,40 @@ class Freecen2PlacesController < ApplicationController
   def create
     @user = get_user
     @first_name = @user.person_forename if @user.present?
-    params[:freecen2_place][:county] = session[:county]
-    @place = Freecen2Place.new(freecen2_place_params)
-    proceed, message, place = @place.check_and_set(params)
-    if proceed && message == 'Proceed'
-      @place.save
-      if @place.errors.any?
-        # we have errors on the creation
-        flash[:notice] = 'The addition of a place was unsuccessful: (See fields below for actual error and explanations)'
-        @county = session[:county]
-        @place_name = @place.place_name if @place.present?
-        render :new
-      else
-        # we are clean on the addition
-        flash[:notice] = 'The addition to a place was successful'
-        redirect_to(freecen2_place_path(@place)) && return
-      end
+    p  params[:commit]
+    if params[:commit] == 'Search Place Names'
+      session[:search_name] = params[:freecen2_place][:place_name]
+      @results = Freecen2Place.search(params[:freecen2_place])
+      redirect_to search_names_results_freecen2_place_path(results: @results)
     else
-      if proceed
-        # we are clean on the addition
-        flash[:notice] = 'The addition to a place was successful'
-        redirect_to(place_path(place)) && return
+      params[:freecen2_place][:county] = session[:county]
+      @place = Freecen2Place.new(freecen2_place_params)
+      proceed, message, place = @place.check_and_set(params)
+      if proceed && message == 'Proceed'
+        @place.save
+        if @place.errors.any?
+          # we have errors on the creation
+          flash[:notice] = 'The addition of a place was unsuccessful: (See fields below for actual error and explanations)'
+          @county = session[:county]
+          @place_name = @place.place_name if @place.present?
+          render :new
+        else
+          # we are clean on the addition
+          flash[:notice] = 'The addition to a place was successful'
+          redirect_to(freecen2_place_path(@place)) && return
+        end
       else
-        flash[:notice] = "The addition of a place was unsuccessful: #{message}"
-        @county = session[:county]
-        places_counties_and_countries
-        @place_name = @place.place_name if @place.present?
-        render :new
+        if proceed
+          # we are clean on the addition
+          flash[:notice] = 'The addition to a place was successful'
+          redirect_to(place_path(place)) && return
+        else
+          flash[:notice] = "The addition of a place was unsuccessful: #{message}"
+          @county = session[:county]
+          places_counties_and_countries
+          @place_name = @place.place_name if @place.present?
+          render :new
+        end
       end
     end
   end
@@ -167,6 +174,20 @@ class Freecen2PlacesController < ApplicationController
     if @records.present? && @records.to_i >= max_records
       flash[:notice] = 'There are too many records for an on-line relocation'
       redirect_to(action: 'show') && return
+    end
+  end
+
+  def search_names
+    @counties = ChapmanCode.keys
+    @freecen2_place = Freecen2Place.new
+    get_user_info_from_userid
+  end
+
+  def search_names_results
+    get_user_info_from_userid
+    @places = []
+    params[:results].each do |result|
+      @places << Freecen2Place.find_by(id: result)
     end
   end
 

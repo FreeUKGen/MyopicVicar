@@ -254,6 +254,7 @@ class ApplicationController < ActionController::Base
     session.delete(:message_id)
     session.delete(:original_message_id)
     session.delete(:query)
+    session.delete(:search_name)
   end
 
   def clean_session_for_county

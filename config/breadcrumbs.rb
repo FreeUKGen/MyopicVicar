@@ -1813,6 +1813,16 @@ crumb :relocate_freecen2_place do |county, place|
   parent :freecen2_places, county, place
 end
 
+crumb :search_names_results do
+  link 'Search Place Names Results', search_names_results_freecen2_place_path
+  parent :search_names
+end
+
+crumb :search_names do
+  link 'Search Place Names', search_names_freecen2_place_path
+  parent :root
+end
+
 # crumb :projects do
 #   link 'Projects', projects_path
 # end
