@@ -15,6 +15,7 @@
         <th class='sticky-header '>County </th>
         <th class='sticky-header '>Latitude:</th>
         <th class='sticky-header '>Longitude:</th>
+        <th class='sticky-header '>Source:</th>
         <th class='sticky-header '>Show on map<br>
           <small> Opens in a new tab</small></th>
       </tr>
@@ -27,6 +28,7 @@
           <td > <%= place.chapman_code %></td>
           <td > <%= place.latitude%></td>
           <td > <%= place.longitude%></td>
+          <td > <%= place.source%></td>
           <td > <%= locate(place.latitude,place.longitude) %></td>
         </tr>
       <% end%>
