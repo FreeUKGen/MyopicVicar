@@ -31,7 +31,6 @@ class Freecen2PlacesController < ApplicationController
   def create
     @user = get_user
     @first_name = @user.person_forename if @user.present?
-    p  params[:commit]
     if params[:commit] == 'Search Place Names'
       session[:search_name] = params[:freecen2_place][:place_name]
       @results = Freecen2Place.search(params[:freecen2_place])
@@ -186,8 +185,10 @@ class Freecen2PlacesController < ApplicationController
   def search_names_results
     get_user_info_from_userid
     @places = []
-    params[:results].each do |result|
-      @places << Freecen2Place.find_by(id: result)
+    if params[:results].present?
+      params[:results].each do |result|
+        @places << Freecen2Place.find_by(id: result)
+      end
     end
   end
 

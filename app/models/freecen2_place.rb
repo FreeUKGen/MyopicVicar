@@ -146,14 +146,16 @@ class Freecen2Place
     end
 
     def search(params)
-      if params[:chapman_code].present?
-        results = Freecen2Place.where('$text' => {'$search' => params[:place_name]}, "disabled" => "false", :chapman_code => params[:chapman_code] ).all
+      if params[:county].present?
+        results = Freecen2Place.where('$text' => {'$search' => params[:place_name]}, "disabled" => "false", :chapman_code => ChapmanCode.values_at(params[:county]) ).all
       else
         results = Freecen2Place.where('$text' => {'$search' => params[:place_name]}, "disabled" => "false").order_by(chapman_code: 1).all
       end
       ids = []
-      results.each do |result|
-        ids <<  result.id
+      if results.present?
+        results.each do |result|
+          ids << result.id
+        end
       end
       ids
     end
