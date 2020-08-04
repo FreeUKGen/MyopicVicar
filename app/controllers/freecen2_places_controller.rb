@@ -185,6 +185,7 @@ class Freecen2PlacesController < ApplicationController
     get_user_info_from_userid
     session[:search_name] = params[:search]
     @results = Freecen2Place.search(params[:search], params[:county])
+    @total = @results.length
   end
 
   def show
