@@ -16,26 +16,28 @@
         <th class='sticky-header '>Latitude:</th>
         <th class='sticky-header '>Longitude:</th>
         <th class='sticky-header '>Source:</th>
-        <th class='sticky-header '>Show on map<br>
-          <small> Opens in a new tab</small></th>
-      </tr>
-    </thead>
-    <tbody >
-      <% if @places.present? %>
-        <% @places.each do |place| %>
-          <tr>
-            <td ><%= link_to(place.place_name, freecen2_place_path(place), class: 'btn   btn--small', title: 'Additional information on the place' )%> </td>
-            <td > <%= alternate(place) %></td>
-            <td > <%= place.chapman_code %></td>
-            <td > <%= place.latitude%></td>
-            <td > <%= place.longitude%></td>
-            <td > <%= place.source%></td>
-            <td > <%= locate(place.latitude,place.longitude) %></td>
-          </tr>
+        <th class='sticky-header '>Notes<br>
+          <th class='sticky-header '>Show on map<br>
+            <small> Opens in a new tab</small></th>
+        </tr>
+      </thead>
+      <tbody >
+        <% if @results.present? %>
+          <% @results.each do |place| %>
+            <tr>
+              <td ><%= link_to(place.place_name, freecen2_place_path(place), class: 'btn   btn--small', title: 'Additional information on the place' )%> </td>
+              <td > <%= alternate(place) %></td>
+              <td > <%= place.chapman_code %></td>
+              <td > <%= place.latitude%></td>
+              <td > <%= place.longitude%></td>
+              <td > <%= place.source%></td>
+              <td > <%= place.place_notes%></td>
+              <td > <%= locate(place.latitude,place.longitude) %></td>
+            </tr>
+          <% end%>
+        <% else %>
+          <tr> There are no such names </tr>
         <% end%>
-      <% else %>
-        <tr> There are no such names </tr>
-      <% end%>
-    </tbody>
-  </table>
-</div>
+      </tbody>
+    </table>
+  </div>

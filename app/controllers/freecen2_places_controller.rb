@@ -32,9 +32,8 @@ class Freecen2PlacesController < ApplicationController
     @user = get_user
     @first_name = @user.person_forename if @user.present?
     if params[:commit] == 'Search Place Names'
-      session[:search_name] = params[:freecen2_place][:place_name]
-      @results = Freecen2Place.search(params[:freecen2_place])
-      redirect_to search_names_results_freecen2_place_path(results: @results)
+      p params
+      redirect_to search_names_results_freecen2_place_path(search: params[:freecen2_place][:place_name], county: params[:freecen2_place][:county])
     else
       params[:freecen2_place][:county] = session[:county]
       @place = Freecen2Place.new(freecen2_place_params)
@@ -184,12 +183,8 @@ class Freecen2PlacesController < ApplicationController
 
   def search_names_results
     get_user_info_from_userid
-    @places = []
-    if params[:results].present?
-      params[:results].each do |result|
-        @places << Freecen2Place.find_by(id: result)
-      end
-    end
+    session[:search_name] = params[:search]
+    @results = Freecen2Place.search(params[:search], params[:county])
   end
 
   def show

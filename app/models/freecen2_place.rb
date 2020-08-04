@@ -145,19 +145,13 @@ class Freecen2Place
       where(:modified_place_name => place)
     end
 
-    def search(params)
-      if params[:county].present?
-        results = Freecen2Place.where('$text' => {'$search' => params[:place_name]}, "disabled" => "false", :chapman_code => ChapmanCode.values_at(params[:county]) ).all
+    def search(place_name, county)
+      if county.present?
+        results = Freecen2Place.where('$text' => {'$search' => place_name}, "disabled" => "false", :chapman_code => ChapmanCode.values_at(county)).order_by(place_name: 1).all
       else
-        results = Freecen2Place.where('$text' => {'$search' => params[:place_name]}, "disabled" => "false").order_by(chapman_code: 1).all
+        results = Freecen2Place.where('$text' => {'$search' => place_name}, "disabled" => "false").order_by(chapman_code: 1, place_name: 1).all
       end
-      ids = []
-      if results.present?
-        results.each do |result|
-          ids << result.id
-        end
-      end
-      ids
+      results
     end
 
     def valid_chapman_code?(chapman_code)
