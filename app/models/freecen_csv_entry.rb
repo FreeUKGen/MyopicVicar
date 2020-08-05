@@ -1467,7 +1467,18 @@ class FreecenCsvEntry
             record[:error_messages] += messageb
           end
         end
+      end
 
+      if (record[:birth_county].present? && record[:birth_place].blank?) || (record[:birth_county].blank? && record[:birth_place].present?)
+        messageb = "ERROR: line #{num} only one of Birth County #{record[:birth_county]} and Birth Place #{record[:birth_place]} is set.<br>"
+        message += messageb
+        record[:error_messages] += messageb
+      end
+
+      if record[:birth_county].present? && record[:birth_place].present?
+        messageb = "Warning: line #{num} Birth County #{record[:birth_county]} and Birth Place #{record[:birth_place]} require validation.<br>"
+        message += messageb
+        record[:warning_messages] += messageb
       end
 
       if record[:father_place_of_birth].present?
