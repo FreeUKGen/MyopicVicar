@@ -76,11 +76,10 @@ class Freecen2PlacesController < ApplicationController
 
     elsif @place.search_records.exists?
       redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'The Place cannot be disabled because there are dependent search records') && return
-
-    elsif @place.churches.exists?
-      redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'The Place cannot be disabled because there are dependent churches; please remove them first') && return
-
+    elsif @place.freecen2_districts.exists? || @place.freecen2_pieces.exists? || @place.freecen2_civil_parishes.exists?
+      redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'The Place cannot be disabled because there are dependent districts, sub districts or civil parishes') && return
     end
+
     @place.update_attributes(disabled: 'true', data_present: false)
     if @place.errors.any?
       redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: "The disabling of the place was unsuccessful #{@place.errors.messages}") && return
