@@ -165,7 +165,7 @@
 .bmd_search_form {
     background: rgba(13, 195, 195, 0.05);
     padding: 20px !important;
-    margin: 10px 28px 28px 28px !important;
+    margin: 0px 0px 28px 0px !important;
 }
 
 .search_form li {
@@ -179,7 +179,7 @@ input {
 
 label {
     font-size: 1em !important;
-    margin-bottom: 5px !important;
+    margin-bottom: 0px !important;
 }
 
 label.optional_attributes {
@@ -210,12 +210,12 @@ select {
 
 select#date_month,
 select.date_year {
-    display: inline-block;
+    /*display: inline-block;
     padding: 10px;
     background: none;
     border: 1px solid #ccc;
     color: black;
-    width: 40%;
+    width: 40%;*/
 }
 
 span.optional_checkbox_label {
@@ -223,16 +223,21 @@ span.optional_checkbox_label {
     vertical-align: bottom;
 }
 
-.stack_fields label {
+.stack_fields .labeli {
     margin-bottom: -10px;
     padding-bottom: 10px;
 }
+.stack_fields hr {
+    margin-top: 10px !important;
+    margin-bottom: 10px !important
+}
 
 .header_label {
-    border-bottom: 1px solid gray;
+    /*border-bottom: 1px solid gray;
     margin-bottom: 2px !important;
-    width: 50%;
-    font-weight: 200;
+    width: 50%;*/
+    font-weight: 200 !important;
+    color: #444 !important;
 }
 
 ol li label i {
@@ -314,7 +319,7 @@ input.search_form_submit_button {
     border: none;
 }
 
-.clear_form:hover {
+.clear_form:hover, .clear_form:focus {
     background-color: #ffffff !important;
     color: #C84182;
     border: 1px solid #C84182;
@@ -539,7 +544,7 @@ input:disabled:not([type="submit"]):hover {
 }
 
 #death_select_box {
-    margin-bottom: 5px;
+    /*margin-bottom: 5px;*/
 }
 
 .bordered {
