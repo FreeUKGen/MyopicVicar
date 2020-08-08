@@ -407,7 +407,7 @@ crumb :regmanager_userid_options do
   parent :root
 end
 
-crumb :cengmanager_userid_options do
+crumb :cenmanager_userid_options do
   link 'Userid Management Options', options_userid_details_path
   parent :root
 end

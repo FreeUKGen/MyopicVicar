@@ -6,6 +6,7 @@ class Freecen2CivilParishesController < ApplicationController
     @chapman_code = params[:chapman_code]
     @year = params[:year]
     @freecen2_civil_parishes = Freecen2CivilParish.chapman_code(@chapman_code).year(@year).order_by(year: 1, name: 1)
+    @freecen2_piece = @freecen2_civil_parish.freecen2_piece
     @type = 'parish_year_index'
   end
 
