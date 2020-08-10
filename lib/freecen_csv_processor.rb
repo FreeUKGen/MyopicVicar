@@ -225,7 +225,7 @@ class CsvFile < CsvFiles
     :all_existing_records, :total_files, :total_records, :total_data_errors, :total_header_errors, :place_id, :civil_parish, :census_fields,
     :enumeration_district, :ecclesiastical_parish, :where_census_taken, :ward, :parliamentary_constituency, :poor_law_union, :police_district,
     :sanitary_district, :special_water_district, :scavenging_district, :special_lighting_district, :school_board, :folio, :page, :year,
-    :piece, :schedule, :folio_suffix, :schedule_suffix, :total_errors, :total_warnings, :total_info, :header_line
+    :piece, :schedule, :folio_suffix, :schedule_suffix, :total_errors, :total_warnings, :total_info, :header_line, :validation
 
   def initialize(file_location, project)
     @project = project
@@ -292,6 +292,7 @@ class CsvFile < CsvFiles
     @census_fields = []
     @traditional = 2
     @header_line = ''
+    @validation = false
   end
 
   def a_single_csv_file_process
@@ -311,28 +312,27 @@ class CsvFile < CsvFiles
     @project.write_messages_to_all(message, true) unless success
     @project.write_messages_to_all("Working on #{@piece.name} for #{@year}, in #{@piece.chapman_code}.<br>", true) if success
     return [false, message] unless success
+    @file = FreecenCsvFile.find_by(file_name: @file_name, chapman_code: @chapman_code, userid: @userid)
+    @validation = @file.validation if @file.present?
 
     success, message = slurp_the_csv_file
     # p "finished slurp #{success} #{message}"
     return [false, message] unless success
 
     @csv_records = CsvRecords.new(@array_of_data_lines, self, @project)
-    success, reduction = @csv_records.process_header_fields
 
+    success, reduction = @csv_records.process_header_fields
     return [false, "initial @data_lines made no sense extracted #{message}. <br>"] unless success || [1, 2].include?(reduction)
 
     success, records_processed, data_records = @csv_records.extract_the_data(reduction)
-
     return [success, "Data not extracted #{records_processed}. <br>"] unless success
 
     success, freecen_csv_file = write_freecen_csv_file if success
-
     return [success, "File not saved. <br>"] unless success
 
     success = write_freecen_csv_entries(data_records, freecen_csv_file) if success
 
     success, message = clean_up_supporting_information(records_processed) if success
-
     return [success, "clean up failed #{message}. <br>"] unless success
 
     # p "finished clean up
@@ -340,7 +340,7 @@ class CsvFile < CsvFiles
     @project.write_messages_to_all("Created  #{records_processed} entries at an average time of #{time}ms per record at #{Time.new}. <br>",true)
 
     success, message = communicate_file_processing_results
-    # p "finished com"
+    p "finished com"
     return [success, "communication failed #{message}. <br>"] unless success
 
     [true, records_processed, @total_data_errors]
@@ -618,31 +618,26 @@ class CsvFile < CsvFiles
   end
 
   def write_freecen_csv_file
-    old_file = FreecenCsvFile.find_by(file_name: @file_name, chapman_code: @chapman_code, userid: @userid)
-    if old_file.present?
-      FreecenCsvEntry.collection.delete_many(freecen_csv_file_id: old_file._id)
-      old_file.delete
+    if @file.blank?
+      @file = FreecenCsvFile.new(file_name: @file_name, userid: @userid, chapman_code: @chapman_code, year: @year, freecen2_piece_id: @piece.id )
+    else
+      FreecenCsvEntry.collection.delete_many(freecen_csv_file_id: @file._id)
     end
-    new_file = FreecenCsvFile.new
-    new_file.file_name = @file_name
-    new_file.uploaded_date = @uploaded_date
-    new_file.software_version = @software_version
-    new_file.userid = @userid
-    new_file.chapman_code = @chapman_code
-    new_file.total_records = @total_records.to_i
-    new_file.total_errors = @total_errors
-    new_file.total_warnings = @total_warnings
-    new_file.flexible = @project.flexible
-    new_file.total_info = @total_info
-    new_file.traditional = @traditional
-    new_file.processed = @project.create_search_records
-    new_file.year = @year
-    new_file.field_specification = @field_specification
-    new_file.header_line = @header_line
-    piece.freecen_csv_files << new_file
-    success = piece.save
-    p new_file
-    [success, new_file]
+    @file.uploaded_date = @uploaded_date
+    @file.software_version = @software_version
+    @file.total_records = @total_records.to_i
+    @file.total_errors = @total_errors
+    @file.total_warnings = @total_warnings
+    @file.flexible = @project.flexible
+    @file.total_info = @total_info
+    @file.traditional = @traditional
+    @file.validation = @validation
+    @file.processed = @project.create_search_records
+    @file.field_specification = @field_specification
+    @file.header_line = @header_line
+    success = @piece.save
+    p @file
+    [success, @file]
   end
 
   def write_freecen_csv_entries(records, file)
@@ -760,11 +755,15 @@ class CsvRecords < CsvFile
         success = false
         message = message + "ERROR: the field #{field} is missing from the #{@csvfile.year} spreadsheet.<br>"
       end
-
       field_specification.values.each do |value|
+        next if  %w[deleted_flag record_valid].include?(value) && @csvfile.validation
         next if @csvfile.census_fields.include?(value)
         success = false
-        message = message + "ERROR: header field #{value} should not be included it is not part in the spreadsheet for #{@csvfile.year}.<br>"
+        if  %w[deleted_flag record_valid].include?(value)
+          message = message + "ERROR: header field #{value} should not be included as the file is not being validated.<br>"
+        else
+          message = message + "ERROR: header field #{value} should not be included it is not part in the spreadsheet for #{@csvfile.year}.<br>"
+        end
       end
     end
     [success, message, field_specification, line]
@@ -802,6 +801,8 @@ class CsvRecords < CsvFile
       success, message, result = @record.extract_data_line(n)
       result[:flag] = true if result[:birth_place_flag].present? || result[:deleted_flag].present? || result[:individual_flag].present? ||  result[:location_flag].present? ||
         result[:name_flag].present? || result[:occupation_flag].present? || (result[:uninhabited_flag].present? && result[:uninhabited_flag].downcase == 'x')
+
+      result[:record_valid] = true unless result[:error_messages].present? || result[:warning_messages].present?
       data_records << result
       @csvfile.total_errors = @csvfile.total_errors + 1 if result[:error_messages].present?
       @csvfile.total_warnings = @csvfile.total_warnings + 1 if result[:warning_messages].present?
@@ -835,6 +836,7 @@ class CsvRecord < CsvRecords
     @data_record[:warning_messages] = ''
     @data_record[:info_messages] = ''
     @data_record[:field_specification] = @csvfile.field_specification
+    @data_record[:record_validate] = false unless @csvfile.validation
   end
 
   def extract_data_line(num)
@@ -862,7 +864,6 @@ class CsvRecord < CsvRecords
       break if field.blank?
       @data_record[field.to_sym] = @data_line[n]
     end
-    p @data_record if @data_record[:record_number] == 55
     @data_record
   end
 

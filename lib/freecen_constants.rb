@@ -262,6 +262,7 @@ module Freecen
     'walls' => 'walls',
     'ward' => 'ward',
     'where_census_taken' => 'where_census_taken',
-    'years_married' => 'years_married'
+    'years_married' => 'years_married',
+    'record_valid' => 'record_valid'
   }
 end

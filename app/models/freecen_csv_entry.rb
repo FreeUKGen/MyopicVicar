@@ -94,12 +94,13 @@ class FreecenCsvEntry
   field :where_census_taken, type: String
   field :year, type: String
   field :years_married, type: String
-
-  before_update :validate_on_line_edit_of_fields
+  field :record_valid, type: Boolean, default: false
 
   belongs_to :freecen_csv_file, index: true, optional: true
 
   has_one :search_record, dependent: :restrict_with_error
+
+  delegate :validation, to: :freecen_csv_file, prefix: :file, allow_nil: true
 
   before_destroy do |entry|
     file = entry.freecen_csv_file
@@ -107,6 +108,8 @@ class FreecenCsvEntry
       SearchRecord.collection.delete_many(freecen_csv_entry_id: entry._id)
     end
   end
+
+  after_save :check_valid
 
   index({ freecen_csv_file_id: 1, year: 1 }, { name: 'freecen_csv_file_id_year' })
   index({ freecen_csv_file_id: 1, file_line_number: 1 })
@@ -1337,7 +1340,9 @@ class FreecenCsvEntry
 
       if record[:occupation_category].present?
         if %w[1891 1901 1911].include?(record[:year])
+          record[:occupation_category] = record[:occupation_category].upcase if record[:occupation_category].present?
           success, messagea = FreecenValidations.occupation_category?(record[:occupation_category])
+
           unless success
             messageb = "ERROR: line #{num} Occupation category #{record[:occupation_category]} is #{messagea}.<br>"
             message += messageb
@@ -1375,7 +1380,7 @@ class FreecenCsvEntry
         record[:warning_messages] += messagea
         message += messagea
       end
-
+      record[:verbatim_birth_county] = record[:verbatim_birth_county].upcase if record[:verbatim_birth_county].present?
       success, messagea = FreecenValidations.verbatim_birth_county?(record[:verbatim_birth_county])
       unless success
         messageb = "ERROR: line #{num} Verbatim Birth County #{record[:verbatim_birth_county]} is #{messagea}.<br>"
@@ -1411,6 +1416,14 @@ class FreecenCsvEntry
         end
       end
 
+      place_valid = Freecen2Place.chapman_code(record[:verbatim_birth_county]).place(record[:verbatim_birth_place]).all if record[:verbatim_birth_county].present? && record[:verbatim_birth_place].present?
+
+      if place_valid.blank?
+        messageb = "Warning: line #{num} Verbatim Place of Birth #{record[:verbatim_birth_place]} in #{record[:verbatim_birth_county]} was not found so requires validation.<br>"
+        message += messageb
+        record[:warning_messages] += messageb
+      end
+
       if record[:nationality].present?
         unless %w[1841].include?(record[:year])
           success, messagea = FreecenValidations.nationality?(record[:nationality])
@@ -1434,14 +1447,15 @@ class FreecenCsvEntry
         end
       end
 
+      record[:birth_county] = record[:birth_county].upcase if record[:birth_county].present?
       success, messagea = FreecenValidations.verbatim_birth_county?(record[:birth_county])
       unless success || messagea == 'blank'
-        messageb = "ERROR: line #{num} Birth County #{record[:birth_county]} is #{messagea}.<br>"
+        messageb = "ERROR: line #{num} Alt. Birth County #{record[:birth_county]} is #{messagea}.<br>"
         message += messageb
         record[:error_messages] += messageb
       end
       if record[:birth_county] == 'OUC' && record[:year] != '1841'
-        messageb = "ERROR: line #{num} Verbatim Birth County #{record[:birth_county]} is only used in 1841.<br>"
+        messageb = "ERROR: line #{num} Alt. Birth County #{record[:birth_county]} is only used in 1841.<br>"
         message += messageb
         record[:error_messages] += messageb
       end
@@ -1469,14 +1483,22 @@ class FreecenCsvEntry
         end
       end
 
+      place_valid = Freecen2Place.chapman_code(record[:birth_county]).place(record[:birth_place]).all if record[:birth_county].present? && record[:birth_place].present?
+
       if (record[:birth_county].present? && record[:birth_place].blank?) || (record[:birth_county].blank? && record[:birth_place].present?)
-        messageb = "ERROR: line #{num} only one of Birth County #{record[:birth_county]} and Birth Place #{record[:birth_place]} is set.<br>"
+        messageb = "ERROR: line #{num} only one of Alt. Birth County #{record[:birth_county]} and Alt. Birth Place #{record[:birth_place]} is set.<br>"
         message += messageb
         record[:error_messages] += messageb
       end
 
-      if record[:birth_county].present? && record[:birth_place].present?
-        messageb = "Warning: line #{num} Birth County #{record[:birth_county]} and Birth Place #{record[:birth_place]} require validation.<br>"
+      if record[:birth_county].present? && record[:birth_place].present? && place_valid
+        messageb = "Warning: line #{num} Alt. Birth County #{record[:birth_county]} and Alt. Birth Place #{record[:birth_place]} is valid but MAY require validation.<br>"
+        message += messageb
+        record[:warning_messages] += messageb
+      end
+
+      if record[:birth_county].present? && record[:birth_place].present? && !place_valid
+        messageb = "Warning: line #{num} Alt. Birth County #{record[:birth_county]} and Alt. Birth Place #{record[:birth_place]} is invalid so requires validation.<br>"
         message += messageb
         record[:warning_messages] += messageb
       end
@@ -1620,6 +1642,13 @@ class FreecenCsvEntry
     param[:year] = get_year(param, year)
     param[:processed_date] = Time.now
     param
+  end
+
+  def check_valid
+    unless record_valid
+      new_record_valid =  error_messages.present? || warning_messages.present? ? false : true
+      update(record_valid: new_record_valid) unless new_record_valid == record_valid
+    end
   end
 
   def display_fields(search_record)
@@ -1944,11 +1973,11 @@ class FreecenCsvEntry
 
 
   def self.management_display_labels
-    ['Transition', 'Location Flag', 'Address Flag', 'Name Flag', 'Individual Flag', 'Occupation Flag', 'Birth Place Flag', 'Deleted Flag']
+    ['Transition', 'Location Flag', 'Address Flag', 'Name Flag', 'Individual Flag', 'Occupation Flag', 'Birth Place Flag', 'Deleted Flag', 'Record Validated']
   end
 
   def management_display_values
-    [data_transition, location_flag, address_flag, name_flag, individual_flag, occupation_flag, birth_place_flag, deleted_flag]
+    [data_transition, location_flag, address_flag, name_flag, individual_flag, occupation_flag, birth_place_flag, deleted_flag, record_valid]
   end
 
   def self.error_display_labels
@@ -1956,9 +1985,9 @@ class FreecenCsvEntry
   end
 
   def error_display_values
-    error_message = error_messages.gsub(/\<br\>/, '').gsub(/ERROR:/i, '').titleize if error_messages.present?
-    warning_message = warning_messages.gsub(/\<br\>/, '').gsub(/Warning:/i, '').titleize if warning_messages.present?
-    info_message = info_messages.gsub(/\<br\>/, '').gsub(/Info:/i, '').titleize if info_messages.present?
+    error_message = error_messages.gsub(/\<br\>/, '').gsub(/ERROR:/i, '') if error_messages.present?
+    warning_message = warning_messages.gsub(/\<br\>/, '').gsub(/Warning:/i, '') if warning_messages.present?
+    info_message = info_messages.gsub(/\<br\>/, '').gsub(/Info:/i, '') if info_messages.present?
     [error_message, warning_message, info_message]
   end
 
@@ -2032,12 +2061,10 @@ class FreecenCsvEntry
     fore = forenames.titleize if forenames.present?
     relation = relationship.titleize if relationship.present?
     marital = marital_status.upcase if marital_status.present?
-    verbatim_county = verbatim_birth_county.upcase if verbatim_birth_county.present?
-    note = notes.gsub(/\<br\>/, '').titleize if notes.present?
     sx = sex.upcase if sex.present?
     case year
     when '1841'
-      [sequence_in_household, sur, fore, sx, disp_age, disp_occupation, verbatim_county, note]
+      [sequence_in_household, sur, fore, sx, disp_age, disp_occupation, verbatim_birth_county, note]
     when '1851'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [sequence_in_household, sur, fore, relation, marital, sx, disp_age, school_children, disp_occupation]
@@ -2138,7 +2165,7 @@ class FreecenCsvEntry
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         ['Nationality', 'Verbatim Birth County', 'Verbatim Birth Place', 'Alt. Birth County', 'Alt. Birth Place', 'Disability', 'Language', 'Notes']
       elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code) || chapman_code == 'IOM'
-        ['Verbatim Birth County', 'Verbatim Birth Place', 'Disability', 'Alt. Birth County', 'Alt. Birth Place', 'Disability Notes', 'Language', 'Notes']
+        ['Nationality', 'Verbatim Birth County', 'Verbatim Birth Place', 'Disability', 'Alt. Birth County', 'Alt. Birth Place', 'Disability Notes', 'Language', 'Notes']
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
         ['Nationality', 'Verbatim Birth County', 'Verbatim Birth Place', 'Alt. Birth County', 'Alt. Birth Place', 'Disability', 'Notes']
       elsif %w[CHI ALD GSY JSY].include?(chapman_code)
@@ -2152,62 +2179,61 @@ class FreecenCsvEntry
   def part2_individual_display_values(year, chapman_code)
     birth = verbatim_birth_place.titleize if verbatim_birth_place.present?
     selected_birth = birth_place.titleize if birth_place.present?
-    verbatim_county = verbatim_birth_county.upcase if verbatim_birth_county.present?
     note = notes.gsub(/\<br\>/, '').titleize if notes.present?
     case year
     when '1851'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [verbatim_county, birth, birth_county, selected_birth, disability, note]
+        [verbatim_birth_county, birth, birth_county, selected_birth, disability, note]
       else
-        [nationality, verbatim_county, birth, birth_county, selected_birth, disability, note]
+        [nationality, verbatim_birth_county, birth, birth_county, selected_birth, disability, note]
       end
     when '1861'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [verbatim_county, birth, birth_county, selected_birth, disability, note]
+        [verbatim_birth_county, birth, birth_county, selected_birth, disability, note]
       else
-        [nationality, verbatim_county, birth, birth_county, selected_birth, disability, note]
+        [nationality, verbatim_birth_county, birth, birth_county, selected_birth, disability, note]
       end
     when '1871'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [verbatim_county, birth, birth_county, selected_birth, disability, note]
+        [verbatim_birth_county, birth, birth_county, selected_birth, disability, note]
       else
-        [nationality, verbatim_county, birth, birth_county, selected_birth, disability, note]
+        [nationality, verbatim_birth_county, birth, birth_county, selected_birth, disability, note]
       end
     when '1881'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [verbatim_county, birth, birth_county, selected_birth, disability, note]
+        [verbatim_birth_county, birth, birth_county, selected_birth, disability, note]
       else
-        [nationality, verbatim_county, birth, birth_county, selected_birth, disability, note]
+        [nationality, verbatim_birth_county, birth, birth_county, selected_birth, disability, note]
       end
 
     when '1891'
       # only Wales 1891 has language field
       if ChapmanCode::CODES['Wales'].values.member?(chapman_code) || ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [verbatim_county, birth, birth_county, selected_birth, disability, language, note]
+        [verbatim_birth_county, birth, birth_county, selected_birth, disability, language, note]
       else
-        [nationality, verbatim_county, birth, birth_county, selected_birth, disability, note]
+        [nationality, verbatim_birth_county, birth, birth_county, selected_birth, disability, note]
       end
     when '1901'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [verbatim_county, birth, birth_county, selected_birth, disability, language, note]
+        [verbatim_birth_county, birth, birth_county, selected_birth, disability, language, note]
       elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code)
-        [nationality, verbatim_county, birth, birth_county, selected_birth, disability, language, note]
+        [nationality, verbatim_birth_county, birth, birth_county, selected_birth, disability, language, note]
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
-        [verbatim_county, birth, birth_county, selected_birth, disability, language, note]
+        [verbatim_birth_county, birth, birth_county, selected_birth, disability, language, note]
       else
-        [nationality, verbatim_county, birth, birth_county, selected_birth, disability, note]
+        [nationality, verbatim_birth_county, birth, birth_county, selected_birth, disability, note]
       end
     when '1911'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [nationality, verbatim_county, birth, birth_county, selected_birth, disability, language, note]
+        [nationality, verbatim_birth_county, birth, birth_county, selected_birth, disability, language, note]
       elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code) || chapman_code == 'IOM'
-        [nationality, verbatim_county, birth, birth_county, selected_birth, disability, diability_notes, language, note]
+        [nationality, verbatim_birth_county, birth, birth_county, selected_birth, disability, diability_notes, language, note]
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
-        [verbatim_county, birth, birth_county, selected_birth, disability, language, note]
+        [verbatim_birth_county, birth, birth_county, selected_birth, disability, language, note]
       elsif %w[CHI ALD GSY JSY].include?(chapman_code)
-        [nationality, verbatim_county, birth, birth_county, selected_birth, father_place_of_birth, disability, disability_notes, language, note]
+        [nationality, verbatim_birth_county, birth, birth_county, selected_birth, father_place_of_birth, disability, disability_notes, language, note]
       else
-        [nationality, verbatim_county, birth, birth_county, selected_birth, disability, disability_notes, note]
+        [nationality, verbatim_birth_county, birth, birth_county, selected_birth, disability, disability_notes, note]
       end
     end
   end
@@ -2221,136 +2247,152 @@ class FreecenCsvEntry
     [next_entry, previous_entry]
   end
 
-  def validate_on_line_edit_of_fields
-
-    success, message = FreecenValidations.text?(surname)
+  def validate_on_line_edit_of_fields(fields)
+    p 'validate_on_line_edit_of_fields'
+    p file_validation
+    success, message = FreecenValidations.text?(fields[:surname])
     errors.add(:surname, "Invalid; #{message}") unless success
 
-    success, message = FreecenValidations.text?(forenames)
+    success, message = FreecenValidations.text?(fields[:forenames])
     errors.add(:forenames, "Invalid; #{message}") unless success
 
-    success, message = FreecenValidations.name_question?(name_flag)
+    success, message = FreecenValidations.name_question?(fields[:name_flag])
     errors.add(:name_flag, "Invalid; #{message}") unless success
 
-    success, message = FreecenValidations.sex?(sex)
+    success, message = FreecenValidations.sex?(fields[:sex])
     errors.add(:sex, "Invalid; #{message}") unless success
 
-    success, message = FreecenValidations.age?(age, marital_status, sex)
+    success, message = FreecenValidations.age?(fields[:age], fields[:marital_status], fields[:sex])
     errors.add(:age, "Invalid; #{message}") unless success
 
-    success, message = FreecenValidations.uncertainty_status?(individual_flag)
+    success, message = FreecenValidations.uncertainty_status?(fields[:individual_flag])
     errors.add(:individual_flag, "Invalid; #{message}") unless success
 
-    success, message = FreecenValidations.occupation?(occupation, age)
+    success, message = FreecenValidations.occupation?(fields[:occupation], fields[:age])
     errors.add(:occupation, "Invalid; #{message}") unless success
 
-    success, message = FreecenValidations.uncertainty_occupation?(occupation_flag)
+    success, message = FreecenValidations.uncertainty_occupation?(fields[:occupation_flag])
     errors.add(:occupation_flag, "Invalid; #{message}") unless success
 
-    success, message = FreecenValidations.verbatim_birth_county?(verbatim_birth_county)
-    errors.add(:verbatim_birth_county, "Invalid; #{message}") unless success
-
-    success, message = FreecenValidations.verbatim_birth_county?(birth_county)
-    errors.add(:birth_county, "Invalid; #{message}") unless success
-
-    success, message = FreecenValidations.uncertainy_birth?(birth_place_flag)
+    success, message = FreecenValidations.uncertainy_birth?(fields[:birth_place_flag])
     errors.add(:birth_place_flag, "Invalid; #{message}") unless success
 
-    success, message = FreecenValidations.notes?(notes)
+    success, message = FreecenValidations.notes?(fields[:notes])
     errors.add(:language, "Invalid; #{message}") unless success
 
-    if relationship.present?
-      success, message = FreecenValidations.relationship?(relationship)
+    if fields[:relationship].present?
+      success, message = FreecenValidations.relationship?(fields[:relationship])
       errors.add(:relationship, "Invalid; #{message}") unless success
     end
 
-    if marital_status.present?
-      success, message = FreecenValidations.marital_status?(marital_status)
+    if fields[:marital_status].present?
+      success, message = FreecenValidations.marital_status?(fields[:marital_status])
       errors.add(:marital_status, "Invalid; #{message}") unless success
     end
-    if school_children.present?
-      success, message = FreecenValidations.school_children?(school_children)
+    if fields[:school_children].present?
+      success, message = FreecenValidations.school_children?(fields[:school_children])
       errors.add(:school_children, "Invalid; #{message}") unless success
     end
 
-    if years_married.present?
-      success, message = FreecenValidations.years_married?(years_married)
+    if fields[:years_married].present?
+      success, message = FreecenValidations.years_married?(fields[:years_married])
       errors.add(:years_married, "Invalid; #{message}") unless success
     end
 
-    if children_living.present?
-      success, message = FreecenValidations.children_living?(children_living)
+    if fields[:children_living].present?
+      success, message = FreecenValidations.children_living?(fields[:children_living])
       errors.add(:children_living, "Invalid; #{message}") unless success
     end
 
-    if children_deceased.present?
-      success, message = FreecenValidations.children_deceased?(children_deceased)
+    if fields[:children_deceased].present?
+      success, message = FreecenValidations.children_deceased?(fields[:children_deceased])
       errors.add(:children_deceased, "Invalid; #{message}") unless success
     end
 
-    if children_born_alive.present?
-      success, message = FreecenValidations.children_born_alive?(children_born_alive)
+    if fields[:children_born_alive].present?
+      success, message = FreecenValidations.children_born_alive?(fields[:children_born_alive])
       errors.add(:children_born_alive, "Invalid; #{message}") unless success
     end
 
-    if religion.present?
-      success, message = FreecenValidations.religion?(religion)
+    if fields[:religion].present?
+      success, message = FreecenValidations.religion?(fields[:religion])
       errors.add(:religion, "Invalid; #{message}") unless success
     end
 
-    if read_write.present?
-      success, message = FreecenValidations.read_write?(read_write)
+    if fields[:read_write].present?
+      success, message = FreecenValidations.read_write?(fields[:read_write])
       errors.add(:read_write, "Invalid; #{message}") unless success
     end
 
-    if industry.present?
-      success, message = FreecenValidations.industry?(industry)
+    if fields[:industry].present?
+      success, message = FreecenValidations.industry?(fields[:industry])
       errors.add(:industry, "Invalid; #{message}") unless success
     end
 
-    if occupation_category.present?
-      success, message = FreecenValidations.occupation_category?(occupation_category)
+    if fields[:occupation_category].present?
+      success, message = FreecenValidations.occupation_category?(fields[:occupation_category])
       errors.add(:occupation_category, "Invalid; #{message}") unless success
     end
 
-    if at_home.present?
-      success, message = FreecenValidations.at_home?(at_home)
+    if fields[:at_home].present?
+      success, message = FreecenValidations.at_home?(fields[:at_home])
       errors.add(:at_home, "Invalid; #{message}") unless success
     end
 
-    if verbatim_birth_place.present?
-      success, message = FreecenValidations.verbatim_birth_place?(verbatim_birth_place)
-      errors.add(:verbatim_birth_place, "Invalid; #{message}") unless success
+    success, message = FreecenValidations.verbatim_birth_county?(fields[:verbatim_birth_county])
+    errors.add(:verbatim_birth_county, "Invalid; #{message}") unless success
+
+    if fields[:birth_county].present?
+      success, message = FreecenValidations.verbatim_birth_county?(fields[:birth_county])
+      errors.add(:birth_county, "Invalid; #{message}") unless success
     end
 
-    if nationality.present?
-      success, message = FreecenValidations.nationality?(nationality)
+
+
+    success, message = FreecenValidations.verbatim_birth_place?(fields[:verbatim_birth_place])
+    errors.add(:verbatim_birth_place, "Invalid; #{message}") unless success
+    unless file_validation
+      place_valid = Freecen2Place.chapman_code(fields[:verbatim_birth_county]).place(fields[:verbatim_birth_place]).first if fields[:verbatim_birth_county].present? && fields[:verbatim_birth_place].present? && fields[:verbatim_birth_place] != '-'
+      fields[:warning_messages] += messageb = "Warning: line #{fields[:record_number]} Verbatim Place of Birth #{fields[:verbatim_birth_place]} in #{fields[:verbatim_birth_county]} was not found so requires validation.<br>" if place_valid.blank?
+    end
+
+
+    if fields[:birth_place].present?
+      success, message = FreecenValidations.birth_place?(fields[:birth_place])
+      errors.add(:birth_place, "Invalid; #{message}") unless success
+      if file_validation
+        place_valid = Freecen2Place.chapman_code(fields[:birth_county]).place(fields[:birth_place]).first if fields[:birth_county].present? && fields[:birth_place].present? && fields[:birth_place] != '-'
+        fields[:warning_messages] += "Warning: line #{fields[:record_number]} ALt. Place of Birth #{fields[:birth_place]} in #{fields[:birth_county]} was not found.<br>" if place_valid.blank?
+
+      end
+    end
+
+
+    if fields[:nationality].present?
+      success, message = FreecenValidations.nationality?(fields[:nationality])
       errors.add(:nationality, "Invalid; #{message}") unless success
     end
 
-    if birth_place.present?
-      success, message = FreecenValidations.birth_place?(birth_place)
-      errors.add(:birth_place, "Invalid; #{message}") unless success
-    end
 
-    if father_place_of_birth.present?
-      success, message = FreecenValidations.father_place_of_birth?(father_place_of_birth)
+    if fields[:father_place_of_birth].present?
+      success, message = FreecenValidations.father_place_of_birth?(fields[:father_place_of_birth])
       errors.add(:father_place_of_birth, "Invalid; #{message}") unless success
     end
 
-    if disability.present?
-      success, message = FreecenValidations.disability?(disability)
+    if fields[:disability].present?
+      success, message = FreecenValidations.disability?(fields[:disability])
       errors.add(:disability, "Invalid; #{message}") unless success
     end
 
-    if disability_notes.present?
-      success, message = FreecenValidations.disability_notes?(disability_notes)
+    if fields[:disability_notes].present?
+      success, message = FreecenValidations.disability_notes?(fields[:disability_notes])
       errors.add(:disability_notes, "Invalid; #{message}") unless success
     end
 
-    if language.present?
-      success, message = FreecenValidations.language?(language)
+    if fields[:language].present?
+      success, message = FreecenValidations.language?(fields[:language])
       errors.add(:language, "Invalid; #{message}") unless success
     end
+    p errors
   end
 end

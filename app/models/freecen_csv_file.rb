@@ -63,6 +63,7 @@ class FreecenCsvFile
   field :year, type: String
   field :traditional, type: Integer
   field :header_line, type: Array
+  field :validation, type: Boolean, default: false
 
 
   index({ file_name: 1, userid: 1, county: 1, place: 1, register_type: 1 })
@@ -648,8 +649,14 @@ class FreecenCsvFile
   end
 
   def write_csv_file(file_location)
+    if validation && !header_line.include?('deleted')
+      header = header_line << 'deleted'
+      header = header << 'record_valid'
+    else
+      header = header_line
+    end
     CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
-      csv << header_line
+      csv << header
       records = freecen_csv_entries
       records.each do |rec|
         line = []
@@ -679,6 +686,10 @@ class FreecenCsvFile
         @entry = Freecen::LOCATION_DWELLING.include?(field) ? nil : rec[field]
       end
       line << @entry
+    end
+    if validation
+      line << rec[:deleted]
+      line << rec[:record_valid]
     end
     line
   end

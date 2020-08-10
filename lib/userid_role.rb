@@ -161,7 +161,7 @@ module UseridRole
     'FreeCen Errors' => 'Access the errors arising from the FreeCEN1 monthly update',
     'Manage FreeCen Coverage' => 'Access the FreeCEN1 database coverage',
     'FreeUKGenealogy  Policies' => 'Access the FreeUKGenealogy  Policies',
-    'Search Place Names' => 'Search for an existing place name '
+    'Search Place Names' => 'Search for an existing place name; opens in a new tab'
   }
   USERID_MANAGER_OPTIONS = ['Select specific userid', 'Select specific email', 'Select specific surname/forename',
                             'Browse userids', 'Select Role', 'Select Secondary Role', 'Transcription Agreement Accepted',

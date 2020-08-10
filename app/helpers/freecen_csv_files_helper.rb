@@ -82,6 +82,12 @@ module FreecenCsvFilesHelper
       data: { confirm: 'Are you sure you want to copy this file ' }, class: 'btn   btn--small', method: :get, title: 'Copies the file (and any on line edits) to a proofreader or validator or yourself. The file will be processed and the report sent.'
   end
 
+  def validate_freecen_file
+    validation_heading = @freecen_csv_file.validation ? 'Validation under way' : 'Commence validation'
+    link_to "#{validation_heading}", set_validation_freecen_csv_file_path(@freecen_csv_file), class: 'btn   btn--small', method: :get, title: 'Validation of file',
+      data: { confirm:  'Are you sure you want to commence validation of the file?' }
+  end
+
   def freecen_file_errors(file)
     if file.error > 0
       link_to "#{file.error}", error_freecen_csv_file_path(file.id)

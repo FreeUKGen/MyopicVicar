@@ -460,6 +460,24 @@ class FreecenCsvFilesController < ApplicationController
     redirect_to session[:return_to]
   end
 
+  def validate
+    file = FreecenCsvFile.find_by(id: params[:id])
+    if file.blank?
+      message = 'File does not exist'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+
+    elsif file.validation
+      message = 'File is already bring validated'
+    elsif file.total_errors > 0
+      message = 'File has error messages so cannot be validated'
+    else
+      file.update(validation: true)
+      message = 'File is now ready for validation'
+    end
+    flash[:notice] = message
+    redirect_to freecen_csv_file_path(file)
+  end
+
   private
 
   def freecen_csv_file_params

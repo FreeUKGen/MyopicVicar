@@ -48,6 +48,10 @@
           <td>Date of upload </td>
           <td class="weight--semibold"> <%= uploaded_date(@freecen_csv_file)unless @freecen_csv_file.uploaded_date.blank? %></td>
         </tr>
+        <tr>
+          <td>Validation </td>
+          <td class="weight--semibold"> <%= @freecen_csv_file.validation %></td>
+        </tr>
         <% if @freecen_csv_file.total_errors.zero?%>
           <tr id="<%= @freecen_csv_file.id%>"  style="color:black" >
           <% else %>

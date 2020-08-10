@@ -18,6 +18,7 @@
       <%= change_freecen_file_owner  %>
       <%= edit_freecen_file %>
       <%= reprocess_freecen_file %>
+      <%= validate_freecen_file %>
     <% end%>
     <% if ['system_administrator','data_manager'].include?(@user.person_role) %>
       <%= delete_freecen_file %>
