@@ -115,6 +115,7 @@ class FreecenCsvEntriesController < ApplicationController
     @languages = FreecenValidations::VALID_LANGUAGE
     @dwelling = Freecen::LOCATION_DWELLING
     @counties = ChapmanCode.freecen_birth_codes
+    get_user_info_from_userid
   end
 
   def index
@@ -195,11 +196,12 @@ class FreecenCsvEntriesController < ApplicationController
     old_search_record = @freecen_csv_entry.search_record
     @freecen_csv_file = @freecen_csv_entry.freecen_csv_file
 
-    @freecen_csv_entry.update_attributes(params[:freecen_csv_entry])
+    @freecen_csv_entry.validate_on_line_edit_of_fields(params[:freecen_csv_entry])
 
     if @freecen_csv_entry.errors.any?
       redirect_back(fallback_location: edit_freecen_csv_entry_path(@freecen_csv_entry), notice: "The update of the entry failed #{@freecen_csv_entry.errors.full_messages}.") && return
     else
+      @freecen_csv_entry.update_attributes(params[:freecen_csv_entry])
       #SearchRecord.update_create_search_record(@freecen_csv_entry, search_version, place)
       @freecen_csv_file.update(locked_by_transcriber: true)
       flash[:notice] = 'The change in entry contents was successful, the file is now locked against replacement until it has been downloaded.'
