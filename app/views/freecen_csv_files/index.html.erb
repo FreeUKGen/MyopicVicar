@@ -1,6 +1,6 @@
 <%= render 'freecen_csv_files/my_own_header' if session[:my_own]%>
 <%= render 'freecen_csv_files/coordinator_header' unless session[:my_own]%>
-<div style="text-align: center">Batches are colour coded. <FONT COLOR="green">Teal: OK;</FONT><FONT color='red'> Red: Errors;</FONT><FONT color='blue'> Blue: Locked and OK;</FONT><FONT color="maroon"> Maroon: Locked with errors,</FONT><FONT color='orange'> Orange: Just Verified</FONT></div>
+<div style="text-align: center">Colour coding.<FONT color='black'> Verified with no warnings or errors;</FONT><FONT color='red'> Verified with Errors;</FONT><FONT color='brown'> Verified with warnings</FONT><FONT color='voilet'> Verified and locked;</FONT><FONT COLOR="green"> Processed</FONT><FONT color='blue'> Processed and locked.</FONT></div>
 <div class="grid__item ">
   <section class="island ">
     <div class="scrollable " >

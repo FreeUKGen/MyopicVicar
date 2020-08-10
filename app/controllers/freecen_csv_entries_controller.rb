@@ -203,7 +203,7 @@ class FreecenCsvEntriesController < ApplicationController
     else
       @freecen_csv_entry.update_attributes(params[:freecen_csv_entry])
       #SearchRecord.update_create_search_record(@freecen_csv_entry, search_version, place)
-      @freecen_csv_file.update(locked_by_transcriber: true)
+      @freecen_csv_file.update_attributes(locked_by_transcriber: true)
       flash[:notice] = 'The change in entry contents was successful, the file is now locked against replacement until it has been downloaded.'
       redirect_to freecen_csv_entry_path(@freecen_csv_entry)
     end

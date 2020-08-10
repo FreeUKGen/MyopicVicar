@@ -440,19 +440,24 @@ class FreecenCsvFile
 
   def define_colour
     # need to consider storing the processed rather than a look up
-    if !total_errors.zero? && !locked_by_coordinator && !locked_by_transcriber
-      color = 'color:red'
-    elsif !processed
-      color = 'color:orange'
-    elsif total_errors.zero? && !locked_by_coordinator && !locked_by_transcriber
-      color = 'color:green'
-    elsif total_errors.zero? && (locked_by_coordinator || locked_by_transcriber)
-      color = 'color:blue'
-    elsif total_errors != 0 && (locked_by_coordinator || locked_by_transcriber)
-      color = 'color:maroon'
-    else
+
+    if !processed && total_errors.zero? && total_warnings.zero?
       color = 'color:black'
+    elsif !processed && !total_errors.zero?
+      color = 'color:red'
+    elsif !processed && (locked_by_coordinator || locked_by_transcriber)
+      color = 'color:voilet'
+    elsif !processed && total_errors.zero? && !total_warnings.zero?
+      color = 'color:brown'
+
+    elsif total_errors.zero? && total_warnings.zero? && (locked_by_coordinator || locked_by_transcriber)
+      color = 'color:blue'
+    elsif total_errors.zero? && total_warnings.zero? && !locked_by_coordinator && !locked_by_transcriber
+      color = 'color:green'
+    else
+      color = 'color:coral'
     end
+    p color
     color
   end
 

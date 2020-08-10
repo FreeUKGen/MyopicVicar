@@ -1492,13 +1492,13 @@ class FreecenCsvEntry
       end
 
       if record[:birth_county].present? && record[:birth_place].present? && place_valid
-        messageb = "Warning: line #{num} Alt. Birth County #{record[:birth_county]} and Alt. Birth Place #{record[:birth_place]} is valid but MAY require validation.<br>"
+        messageb = "Warning: line #{num} Alt. Birth County #{record[:birth_county]} and Alt. Birth Place #{record[:birth_place]} found but MAY require validation.<br>"
         message += messageb
         record[:warning_messages] += messageb
       end
 
       if record[:birth_county].present? && record[:birth_place].present? && !place_valid
-        messageb = "Warning: line #{num} Alt. Birth County #{record[:birth_county]} and Alt. Birth Place #{record[:birth_place]} is invalid so requires validation.<br>"
+        messageb = "Warning: line #{num} Alt. Birth County #{record[:birth_county]} and Alt. Birth Place #{record[:birth_place]} not found so requires validation.<br>"
         message += messageb
         record[:warning_messages] += messageb
       end
