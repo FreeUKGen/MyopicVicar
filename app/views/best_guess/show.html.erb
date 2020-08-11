@@ -12,8 +12,7 @@
   <h1 class="accessibility">Entry Information</h1>
   <div class="table-wrapper" id="search-result">
     <table class="search_results_table scrollable" border='0' >
-      <caption class="gamma">
-      </caption>
+      <caption class="gamma"></caption>
       <thead>
         <tr>
           <th>
@@ -113,6 +112,13 @@
         <h4>Postems</h4>
         <p>A Postem is a note left by someone about this record - the content of the postem is determined by the person who left it. FreeBMD can offer no assurance about the postem and will not enter into correspondence about it.</p>
       </div>
+      <% if @search_record.best_guess_hash.postems.present? %>
+        <% @search_record.best_guess_hash.postems.each do |postem|%>
+          <ul>
+            <li><%= postem %></li>
+          </ul>
+        <% end %>
+      <% end%>
     </div>
     <div class="text--center">
       <a href="#" id="create_postem" class="btn btn--small">Create Postem</a>

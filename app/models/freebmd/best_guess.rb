@@ -2,6 +2,7 @@ class BestGuess < FreebmdDbBase
   self.pluralize_table_names = false
   self.table_name = 'BestGuess'
   has_one :best_guess_maariages, class_name: '::BestGuessMarriage', foreign_key: 'RecordNumber'
+  has_one :best_guess_hash, class_name: '::BestGuessHash', foreign_key: 'RecordNumber'
   belongs_to :CountyCombos, foreign_key: 'CountyComboID', primary_key: 'CountyComboID', class_name: '::CountyCombo'
   has_many :ScanLinks, primary_key: 'ChunkNumber', foreign_key: 'ChunkNumber'
   extend SharedSearchMethods
@@ -31,12 +32,12 @@ class BestGuess < FreebmdDbBase
   end
 
   def self.transcriber(record)
-    sql = "select  s.UserID from BestGuess as b
+    sql = "select  b.Surname from BestGuess as b
    inner join BestGuessLink as l on l.RecordNumber = b.RecordNumber
-   inner join Accessions as a on a.AccessionNumber = l.AccessionNumber
-   inner join Files as f on f.FileNumber = a.FileNumber
-   inner join Submitters as s on s.SubmitterNumber = f.SubmitterNumber
-   where b.RecordNumber = #{record}"
+   where b.RecordNumber = 1"
    FreebmdDbBase.connection.select_all(sql).to_hash
+  end
+
+  def self.postems_list
   end
 end
