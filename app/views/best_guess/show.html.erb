@@ -115,7 +115,7 @@
       <% if @search_record.best_guess_hash.postems.present? %>
         <% @search_record.best_guess_hash.postems.each do |postem|%>
           <ul>
-            <li><%= postem %></li>
+            <li><%= postem.Information %></li>
           </ul>
         <% end %>
       <% end%>
