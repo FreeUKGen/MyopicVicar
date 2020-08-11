@@ -1187,11 +1187,13 @@ class SearchQuery
   def bmd_volume_params
     params = {}
     params[:volume] = self.volume
+    params
   end
 
   def bmd_page_params
     params = {}
     params[:page] = self.page
+    params
   end
 
   def first_name_filteration
