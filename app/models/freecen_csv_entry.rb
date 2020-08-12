@@ -1416,7 +1416,7 @@ class FreecenCsvEntry
         end
       end
 
-      place_valid = Freecen2Place.chapman_code(record[:verbatim_birth_county]).place(record[:verbatim_birth_place]).all if record[:verbatim_birth_county].present? && record[:verbatim_birth_place].present?
+      place_valid = Freecen2Place.chapman_code(record[:verbatim_birth_county]).modified_place_name(record[:verbatim_birth_place].downcase).all if record[:verbatim_birth_county].present? && record[:verbatim_birth_place].present?
 
 
       if place_valid.blank?
@@ -1486,7 +1486,7 @@ class FreecenCsvEntry
         end
       end
 
-      place_valid = Freecen2Place.chapman_code(record[:birth_county]).place(record[:birth_place]).all if record[:birth_county].present? && record[:birth_place].present?
+      place_valid = Freecen2Place.chapman_code(record[:birth_county]).modified_place_name(record[:birth_place].downcase).all if record[:birth_county].present? && record[:birth_place].present?
 
       if (record[:birth_county].present? && record[:birth_place].blank?) || (record[:birth_county].blank? && record[:birth_place].present?)
         messageb = "ERROR: line #{num} only one of Alt. Birth County #{record[:birth_county]} and Alt. Birth Place #{record[:birth_place]} is set.<br>"
