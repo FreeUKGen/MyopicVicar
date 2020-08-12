@@ -33,7 +33,6 @@
   <%= f.input :notes, :label => 'Notes', :as => :text, :input_html => {:class => " simple_form_bgcolour  ",   :placeholder => "Enter notes about entry in census",  :size => "60x5" } %>
   <% if %w[validator county_coordinator country_coordinator data_manager system_administrator].include?(@user.person_role)%>
     <%= f.input :warning_messages, :label => 'Warning Messages', :as => :text, :input_html => {:class => " simple_form_bgcolour  ",  :size => "60x5" } %>
-    <%= f.input :deleted_flag, label: "Deleted Flag; current value highlighted", selected: @freecen_csv_entry.deleted_flag, collection: ['d', ' '], :input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 2} %>
     <%= f.input :record_valid, label: "Record to be accepted as is; current value highlighted", selected: @freecen_csv_entry.record_valid, collection: [true, false], :input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 2} %>
   <% end %>
   <%= f.button :submit, 'Submit',:button_html => {:class => 'btn btn--small' }  %>

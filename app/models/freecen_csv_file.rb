@@ -654,12 +654,8 @@ class FreecenCsvFile
   end
 
   def write_csv_file(file_location)
-    if validation && !header_line.include?('deleted')
-      header = header_line << 'deleted'
-      header = header << 'record_valid'
-    else
-      header = header_line
-    end
+    header = header_line
+    header << 'record_valid' if validation && !header_line.include?('record_valid')
     CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
       csv << header
       records = freecen_csv_entries
@@ -693,7 +689,6 @@ class FreecenCsvFile
       line << @entry
     end
     if validation
-      line << rec[:deleted]
       line << rec[:record_valid]
     end
     line
