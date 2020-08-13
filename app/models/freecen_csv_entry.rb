@@ -2356,7 +2356,11 @@ class FreecenCsvEntry
     errors.add(:verbatim_birth_place, "Invalid; #{message}") unless success
     unless file_validation
       place_valid = Freecen2Place.chapman_code(fields[:verbatim_birth_county]).place(fields[:verbatim_birth_place]).first if fields[:verbatim_birth_county].present? && fields[:verbatim_birth_place].present? && fields[:verbatim_birth_place] != '-'
-      fields[:warning_messages] += "Warning: line #{fields[:record_number]} Verbatim Place of Birth #{fields[:verbatim_birth_place]} in #{fields[:verbatim_birth_county]} was not found so requires validation.<br>" if place_valid.blank?
+      if fields[:warning_messages].blank?
+        fields[:warning_messages] = "Warning: line #{fields[:record_number]} Verbatim Place of Birth #{fields[:verbatim_birth_place]} in #{fields[:verbatim_birth_county]} was not found so requires validation.<br>" if place_valid.blank?
+      else
+        fields[:warning_messages] += "Warning: line #{fields[:record_number]} Verbatim Place of Birth #{fields[:verbatim_birth_place]} in #{fields[:verbatim_birth_county]} was not found so requires validation.<br>" if place_valid.blank?
+      end
     end
 
 
@@ -2365,8 +2369,11 @@ class FreecenCsvEntry
       errors.add(:birth_place, "Invalid; #{message}") unless success
       if file_validation
         place_valid = Freecen2Place.chapman_code(fields[:birth_county]).place(fields[:birth_place]).first if fields[:birth_county].present? && fields[:birth_place].present? && fields[:birth_place] != '-'
-        fields[:warning_messages] += "Warning: line #{fields[:record_number]} ALt. Place of Birth #{fields[:birth_place]} in #{fields[:birth_county]} was not found.<br>" if place_valid.blank?
-
+        if fields[:warning_messages].blank?
+          fields[:warning_messages] = "Warning: line #{fields[:record_number]} ALt. Place of Birth #{fields[:birth_place]} in #{fields[:birth_county]} was not found.<br>" if place_valid.blank?
+        else
+          fields[:warning_messages] += "Warning: line #{fields[:record_number]} ALt. Place of Birth #{fields[:birth_place]} in #{fields[:birth_county]} was not found.<br>" if place_valid.blank?
+        end
       end
     end
 
