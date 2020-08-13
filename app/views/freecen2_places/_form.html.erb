@@ -2,7 +2,9 @@
   <%= render 'flash_notice' %>
   <%= simple_form_for @place, :html => { :class => "grid"}  do |f| %>
     <% if controller.action_name == 'new' || controller.action_name == 'create'%>
-      <%= f.input :place_name, :label => "Enter the Place Name",:hint => "Please take extreme care with the Place Name to get it correct!" ,:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+      <%= f.input :county,:label => "Select county from following list",:include_blank => false, :collection => @counties, :selected => @county,
+      :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 3}   %>
+      <%= f.input :place_name, :label => "Enter the Place Name",:hint => "Please take extreme care with the Place Name including its case!" ,:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
     <% end %>
     <%= f.simple_fields_for :alternate_freecen2_place_names do |alternate| %>
       <%= alternate.input :alternate_name,:label => "Other Name for Place",:hint => "Alternative name by which place may be known. Use the destroy box below to delete this entry",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>

@@ -32,10 +32,8 @@ class Freecen2PlacesController < ApplicationController
     @user = get_user
     @first_name = @user.person_forename if @user.present?
     if params[:commit] == 'Search Place Names'
-      p params
       redirect_to search_names_results_freecen2_place_path(search: params[:freecen2_place][:place_name], county: params[:freecen2_place][:county])
     else
-      params[:freecen2_place][:county] = session[:county]
       @place = Freecen2Place.new(freecen2_place_params)
       proceed, message, place = @place.check_and_set(params)
       if proceed && message == 'Proceed'
@@ -133,6 +131,7 @@ class Freecen2PlacesController < ApplicationController
     get_user_info_from_userid
     @place.alternate_freecen2_place_names.build
     @county = session[:county]
+    @counties = ChapmanCode.keys
   end
 
   def places_counties_and_countries
