@@ -2356,7 +2356,7 @@ class FreecenCsvEntry
     errors.add(:verbatim_birth_place, "Invalid; #{message}") unless success
     unless file_validation
       place_valid = Freecen2Place.chapman_code(fields[:verbatim_birth_county]).place(fields[:verbatim_birth_place]).first if fields[:verbatim_birth_county].present? && fields[:verbatim_birth_place].present? && fields[:verbatim_birth_place] != '-'
-      fields[:warning_messages] += messageb = "Warning: line #{fields[:record_number]} Verbatim Place of Birth #{fields[:verbatim_birth_place]} in #{fields[:verbatim_birth_county]} was not found so requires validation.<br>" if place_valid.blank?
+      fields[:warning_messages] += "Warning: line #{fields[:record_number]} Verbatim Place of Birth #{fields[:verbatim_birth_place]} in #{fields[:verbatim_birth_county]} was not found so requires validation.<br>" if place_valid.blank?
     end
 
 

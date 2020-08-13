@@ -1652,6 +1652,7 @@ end
 
 crumb :freecen_csv_files do |file|
   if session[:my_own]
+    link 'My Files', freecen_csv_files_path
   elsif file.blank?
     link 'List of Files', freecen_csv_files_path
   else
