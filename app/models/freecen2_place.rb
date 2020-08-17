@@ -177,6 +177,15 @@ class Freecen2Place
       logger.warn("FREEREG:LOCATION:VALIDATION invalid place id #{place} ") unless result
       result
     end
+
+    def alternate_place(county, place)
+      params = {}
+      params[:chapman_code] = { '$eq' => county }
+      params["alternate_freecen2_place_names.alternate_name"] = { '$eq' => place }
+      place_alternate = Freecen2Place.collection.find(params)
+      place_alternate_valid = (place_alternate.present? && place_alternate.count > 0) ? true : false
+      place_alternate_valid
+    end
   end
   ############################################################### instance methods
 

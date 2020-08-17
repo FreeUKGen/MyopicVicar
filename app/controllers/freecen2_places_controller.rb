@@ -15,7 +15,10 @@ class Freecen2PlacesController < ApplicationController
   rescue_from Mongoid::Errors::DeleteRestriction, with: :record_cannot_be_deleted
   rescue_from Mongoid::Errors::Validations, with: :record_validation_errors
 
-  skip_before_action :require_login, only: [:for_search_form, :for_freereg_content_form,:for_freecen2_piece_form]
+  # db.freecen2_places.find({"alternate_freecen2_place_names.alternate_name" : {$eq: "Brompton"}})
+  # db.freecen2_places.find({chapman_code: "SOM", "alternate_freecen2_place_names.alternate_name" : {$eq: "Brompton"}})
+
+  skip_before_action :require_login, only: [:for_search_form, :for_freereg_content_form, :for_freecen2_piece_form]
 
   def approve
     session[:return_to] = request.referer

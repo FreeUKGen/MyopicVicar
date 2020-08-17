@@ -1415,11 +1415,12 @@ class FreecenCsvEntry
           end
         end
       end
-
+      # db.freecen2_places.find({"alternate_freecen2_place_names.alternate_name" : {$eq: "Brompton"}})
+      # db.freecen2_places.find({chapman_code: "SOM", "alternate_freecen2_place_names.alternate_name" : {$eq: "Brompton"}})
       place_valid = Freecen2Place.chapman_code(record[:verbatim_birth_county]).modified_place_name(record[:verbatim_birth_place].downcase).all if record[:verbatim_birth_county].present? && record[:verbatim_birth_place].present?
-
-
-      if place_valid.blank?
+      place_alternate_valid = false
+      place_alternate_valid = Freecen2Place.alternate_place(record[:verbatim_birth_county], record[:verbatim_birth_place]) if record[:verbatim_birth_place].present? && record[:verbatim_birth_place].present? && place_valid.count.zero?
+      unless place_valid || place_alternate_valid
         messageb = "Warning: line #{num} Verbatim Place of Birth #{record[:verbatim_birth_place]} in #{record[:verbatim_birth_county]} was not found so requires validation.<br>"
         if record[:record_valid] == 'false'
           message += messageb
@@ -1485,16 +1486,18 @@ class FreecenCsvEntry
           end
         end
       end
-
+      # db.freecen2_places.find({"alternate_freecen2_place_names.alternate_name" : {$eq: "Brompton"}})
+      # db.freecen2_places.find({chapman_code: "SOM", "alternate_freecen2_place_names.alternate_name" : {$eq: "Brompton"}})
       place_valid = Freecen2Place.chapman_code(record[:birth_county]).modified_place_name(record[:birth_place].downcase).all if record[:birth_county].present? && record[:birth_place].present?
-
+      place_alternate_valid = false
+      place_alternate_valid = Freecen2Place.alternate_place(record[:birth_county], record[:birth_place]) if record[:birth_county].present? && record[:birth_place].present? && place_valid.count.zero?
       if (record[:birth_county].present? && record[:birth_place].blank?) || (record[:birth_county].blank? && record[:birth_place].present?)
         messageb = "ERROR: line #{num} only one of Alt. Birth County #{record[:birth_county]} and Alt. Birth Place #{record[:birth_place]} is set.<br>"
         message += messageb
         record[:error_messages] += messageb
       end
 
-      if record[:birth_county].present? && record[:birth_place].present? && place_valid
+      if record[:birth_county].present? && record[:birth_place].present? && !(place_valid || place_alternate_valid)
         messageb = "Warning: line #{num} Alt. Birth County #{record[:birth_county]} and Alt. Birth Place #{record[:birth_place]} found but MAY require validation.<br>"
         message += messageb   if record[:record_valid] == 'false'
         record[:warning_messages] += messageb  if record[:record_valid] == 'false'
