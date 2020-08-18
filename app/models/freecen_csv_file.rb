@@ -689,7 +689,7 @@ class FreecenCsvFile
       line << @entry
     end
     if validation
-      line << rec[:record_valid]
+      line << rec[:record_valid] if validation && !field_specification.value?('record_valid')
     end
     line
   end
