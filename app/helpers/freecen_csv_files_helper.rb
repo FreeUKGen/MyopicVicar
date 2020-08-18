@@ -1,7 +1,7 @@
 module FreecenCsvFilesHelper
 
   def edit_freecen_file
-    link_to 'Edit Header', edit_freecen_csv_file_path(@freecen_csv_file), method: :get, class: 'btn   btn--small', title: 'Allows you to enter/edit the name of the person who transcribed the file. Allows you to manage the locks manually '
+    link_to 'Edit Header', edit_freecen_csv_file_path(@freecen_csv_file), method: :get, class: 'btn   btn--small', title: 'Allows you to Lock/Unlock file  and enter/edit the name of the person who transcribed the file.'
   end
 
   def download_freecen_file
