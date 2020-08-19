@@ -1418,13 +1418,17 @@ class FreecenCsvEntry
       # db.freecen2_places.find({"alternate_freecen2_place_names.alternate_name" : {$eq: "Brompton"}})
       # db.freecen2_places.find({chapman_code: "SOM", "alternate_freecen2_place_names.alternate_name" : {$eq: "Brompton"}})
       place_valid = false
-      if record[:verbatim_birth_county].present? && record[:verbatim_birth_place].present? && record[:verbatim_birth_place] != '-'
+      if record[:verbatim_birth_place] == '-'
+        place_valid = true
+      elsif record[:verbatim_birth_county].present? && record[:verbatim_birth_place].present?
         place = Freecen2Place.chapman_code(record[:verbatim_birth_county]).modified_place_name(record[:verbatim_birth_place].downcase).all
         place_valid = true unless place.count.zero?
       end
       place_alternate_valid = false
-      if record[:verbatim_birth_place].present? && record[:verbatim_birth_place].present? && !place_valid && record[:verbatim_birth_place] != '-'
-        place_alternate_valid = Freecen2Place.alternate_place(record[:verbatim_birth_county], record[:verbatim_birth_place])
+      unless place_valid
+        if record[:verbatim_birth_place].present? && record[:verbatim_birth_place].present?
+          place_alternate_valid = Freecen2Place.alternate_place(record[:verbatim_birth_county], record[:verbatim_birth_place])
+        end
       end
       unless place_valid || place_alternate_valid
         messageb = "Warning: line #{num} Verbatim Place of Birth #{record[:verbatim_birth_place]} in #{record[:verbatim_birth_county]} was not found so requires validation.<br>"
@@ -1433,7 +1437,6 @@ class FreecenCsvEntry
           record[:warning_messages] += messageb
         end
       end
-
       if record[:nationality].present?
         unless %w[1841].include?(record[:year])
           success, messagea = FreecenValidations.nationality?(record[:nationality])
@@ -1495,13 +1498,17 @@ class FreecenCsvEntry
       # db.freecen2_places.find({"alternate_freecen2_place_names.alternate_name" : {$eq: "Brompton"}})
       # db.freecen2_places.find({chapman_code: "SOM", "alternate_freecen2_place_names.alternate_name" : {$eq: "Brompton"}})
       place_valid = false
-      if record[:birth_county].present? && record[:birth_place].present? && record[:birth_place] != '-'
+      if record[:birth_place] == '-'
+        place_valid = true
+      elsif record[:birth_county].present? && record[:birth_place].present?
         place = Freecen2Place.chapman_code(record[:birth_county]).modified_place_name(record[:birth_place].downcase).all
         place_valid = true unless place.count.zero?
       end
       place_alternate_valid = false
-      if record[:birth_county].present? && record[:birth_place].present? && !place_valid && record[:birth_place] != '-'
-        place_alternate_valid = Freecen2Place.alternate_place(record[:birth_county], record[:birth_place])
+      unless place_valid
+        if record[:birth_county].present? && record[:birth_place].present?
+          place_alternate_valid = Freecen2Place.alternate_place(record[:birth_county], record[:birth_place])
+        end
       end
       if (record[:birth_county].present? && record[:birth_place].blank?) || (record[:birth_county].blank? && record[:birth_place].present?)
         messageb = "ERROR: line #{num} only one of Alt. Birth County #{record[:birth_county]} and Alt. Birth Place #{record[:birth_place]} is set.<br>"
@@ -2195,8 +2202,8 @@ class FreecenCsvEntry
   end
 
   def part2_individual_display_values(year, chapman_code)
-    birth = verbatim_birth_place.titleize if verbatim_birth_place.present?
-    selected_birth = birth_place.titleize if birth_place.present?
+    birth = (verbatim_birth_place.present? && !verbatim_birth_place == '-') ? verbatim_birth_place.titleize : verbatim_birth_place
+    selected_birth = (birth_place.present? && !birth_place == '-') ? birth_place.titleize : birth_place
     note = notes.gsub(/\<br\>/, '').titleize if notes.present?
     case year
     when '1851'

@@ -61,9 +61,9 @@ module Freecen
   end
 
   CENSUS_YEARS_ARRAY = ['1841', '1851', '1861', '1871', '1881', '1891', '1901', '1911'].freeze
-  CHAPMAN_CODE_ELIMINATIONS = ['England', 'Scotland', 'Wales', 'Ireland', 'Unknown', 'Clwyd', 'Dyfed', 'Gwent', 'Gwynedd', 'Powys', 'Mid Glamorgan',
+  CHAPMAN_CODE_ELIMINATIONS = ['England', 'Scotland', 'Wales', 'Ireland', 'Clwyd', 'Dyfed', 'Gwent', 'Gwynedd', 'Powys', 'Mid Glamorgan',
                                'South Glamorgan', 'West Glamorgan', 'Borders', 'Central', 'Dumfries and Galloway', 'Grampian', 'Highland', 'Lothian',
-                               'Orkney Isles', 'Shetland Isles', 'Strathclyde', 'Tayside', 'Western Isles', 'Other Locations'].freeze
+                               'Orkney Isles', 'Shetland Isles', 'Strathclyde', 'Tayside', 'Western Isles'].freeze
 
   LOCATION = %w[enumeration_district civil_parish ecclesiastical_parish where_census_taken ward parliamentary_constituency poor_law_union
                        police_district sanitary_district special_water_district scavenging_district special_lighting_district school_board

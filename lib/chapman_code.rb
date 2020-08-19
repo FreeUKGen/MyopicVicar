@@ -49,6 +49,7 @@ module ChapmanCode
     def freecen_birth_codes
       birth_codes = []
       birth_codes = ChapmanCode.values
+      birth_codes
     end
 
 
