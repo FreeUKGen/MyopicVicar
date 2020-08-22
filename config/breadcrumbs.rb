@@ -1790,6 +1790,8 @@ end
 crumb :show_freecen2_place do |county, place|
   link 'Freecen2 Place Information', freecen2_place_path(place)
   case
+  when session[:search_names].present?
+    parent :search_names_results
   when session[:select_place] || place.blank?
     parent :county_options, session[:county] if session[:county].present?
     parent :syndicate_options, session[:syndicate] if session[:syndicate].present?
@@ -1801,20 +1803,25 @@ crumb :edit_freecen2_place do |county, place|
   link 'Edit Freecen2 Place Information', edit_freecen2_place_path(place)
   parent :show_freecen2_place, county, place
 end
-crumb :create_freecen2_place do |county, place|
+
+crumb :create_freecen2_place do
   link 'Create New Freecen2 Place', new_freecen2_place_path
-  parent :freecen2_places, county, place
+  if session[:search_names].present?
+    parent :search_names_results
+  else
+    parent :freecen2_places, county, search
+  end
 end
 crumb :rename_freecen2_place do |county, place|
   link 'Rename Freecen2 Place', rename_freecen2_place_path
-  parent :freecen2_places, county, place
+  parent :show_freecen2_place, county, place
 end
 crumb :relocate_freecen2_place do |county, place|
   link 'Relocate Freecen2 Place', relocate_freecen2_place_path
-  parent :freecen2_places, county, place
+  parent :show_freecen2_place, county, place
 end
 
-crumb :search_names_results do
+crumb :search_names_results do |search, search_county|
   link 'Search Place Names Results', search_names_results_freecen2_place_path
   parent :search_names
 end

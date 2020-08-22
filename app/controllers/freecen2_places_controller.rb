@@ -32,7 +32,10 @@ class Freecen2PlacesController < ApplicationController
     @user = get_user
     @first_name = @user.person_forename if @user.present?
     if params[:commit] == 'Search Place Names'
-      redirect_to search_names_results_freecen2_place_path(search: params[:freecen2_place][:place_name], county: params[:freecen2_place][:county])
+      session[:search_names] = {}
+      session[:search_names][:search] = params[:freecen2_place][:place_name]
+      session[:search_names][:search_county] = params[:freecen2_place][:county]
+      redirect_to search_names_results_freecen2_place_path
     else
       @place = Freecen2Place.new(freecen2_place_params)
       proceed, message, place = @place.check_and_set(params)
@@ -93,6 +96,8 @@ class Freecen2PlacesController < ApplicationController
 
     @place_name = Freecen2Place.find(session[:place_id]).place_name
     @place.alternate_freecen2_place_names.build
+    @place.alternate_freecen2_place_names.build
+    @place.alternate_freecen2_place_names.build
     @county = session[:county]
   end
 
@@ -112,7 +117,6 @@ class Freecen2PlacesController < ApplicationController
   end
 
   def load(place_id)
-
     @place = Freecen2Place.id(place_id).first
     return if @place.blank?
 
@@ -129,6 +133,8 @@ class Freecen2PlacesController < ApplicationController
   def new
     @place = Freecen2Place.new
     get_user_info_from_userid
+    @place.alternate_freecen2_place_names.build
+    @place.alternate_freecen2_place_names.build
     @place.alternate_freecen2_place_names.build
     @county = session[:county]
     @counties = ChapmanCode.keys
@@ -177,12 +183,12 @@ class Freecen2PlacesController < ApplicationController
     @counties = ChapmanCode.keys
     @freecen2_place = Freecen2Place.new
     get_user_info_from_userid
+    session.delete(:search_names) if session[:search_names].present?
   end
 
   def search_names_results
     get_user_info_from_userid
-    session[:search_name] = params[:search]
-    @results = Freecen2Place.search(params[:search], params[:county])
+    @results = Freecen2Place.search(session[:search_names][:search], session[:search_names][:search_county])
     @total = @results.length
   end
 

@@ -254,7 +254,7 @@ class ApplicationController < ActionController::Base
     session.delete(:message_id)
     session.delete(:original_message_id)
     session.delete(:query)
-    session.delete(:search_name)
+    session.delete(:search_names)
   end
 
   def clean_session_for_county
@@ -300,7 +300,7 @@ class ApplicationController < ActionController::Base
     session.delete(:place)
     session.delete(:church)
     session.delete(:register)
-
+    session.delete(:search_names)
   end
 
   def clean_session_for_images
@@ -373,5 +373,6 @@ class ApplicationController < ActionController::Base
     session.delete(:place)
     session.delete(:church)
     session.delete(:register)
+    session.delete(:search_names)
   end
 end
