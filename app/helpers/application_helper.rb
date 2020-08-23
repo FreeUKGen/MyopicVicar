@@ -275,8 +275,8 @@ module ApplicationHelper
 
   def bmd_search_criteria search_query
     display_map = {}
-    display_map["First Name"] = search_query.first_name.upcase if search_query.first_name
-    display_map["Last Name"] = search_query.last_name.upcase if search_query.last_name
+    display_map["First Name"] = search_query.first_name.present? ? search_query.first_name.upcase : "Not Specified" 
+    display_map["Last Name"] = search_query.last_name.present? ? search_query.last_name.upcase : "Not Specified"
     display_map["First Name Exact Match?"] = search_query.first_name_exact_match ? 'Yes' : 'No'
     display_map["Phonetic Surnames"] = search_query.fuzzy ? 'Yes' : 'No'
     display_map["Search Start Date"] = "#{QuarterDetails.quarters.key(search_query.start_quarter).upcase} #{search_query.start_year}"

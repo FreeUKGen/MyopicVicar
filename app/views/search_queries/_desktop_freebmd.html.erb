@@ -1,12 +1,12 @@
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
-<div class='grid'>
-  <div class='grid__item one-whole lap-one-whole palm-one-whole push-half--bottom'>
-    <!--div class='result_text'>
+<!--div class='grid'>
+  <div class='grid__item one-whole lap-one-whole palm-one-whole'>
+    <div class='result_text'>
       FreeBMD tries to ensure the results are an accurate transcription of the GRO Index but errors exist in the index and our transcription of it. You are advised to take this into account in your use of the information found and we have some help on doing that.
-    </div-->
+    </div>
   </div>
-</div>
-<% unless defined?(@printable_format) && @printable_format %>
+</div-->
+<%# unless defined?(@printable_format) && @printable_format %>
   <!--div class='grid'>
 
     <div class="grid__item one-quarter lap-one-quarter palm-one-whole">
@@ -18,41 +18,42 @@
       <%#= link_to "Results Help", "https://test.freebmd.org.uk/search-results-help.html", target: "_blank" %>
     </div>
   </div-->
-<% end %>
-<section>
-  <section class="island" >
-    <h1 class="accessibility">Search Results</h1>
-    <div class="table-wrapper bmd_search_results_table" id="search-result" style="overflow: auto !important;">
-      <table class="table--bordered table--data"  id='bmd_table_hover'>
+<%# end %>
+
+
+    <h1 class="accessibility">Search Results Table</h1>
+    <!--div class="table-wrapper bmd_search_results_table" id="search-result" style="overflow: auto !important;"-->
+      <table class="table--bordered table--data ">
         <thead>
           <tr>
             <% unless print_friendly %>
               <th>Detail</th>
             <% end %>
-            <th>
-              <%= link_to_unless(print_friendly, 'Surname',
+            <!--th>
+              <%#= link_to_unless(print_friendly, 'Surname',
             reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::SURNAME)) %>
-            </th>
+            </th-->
             <th>
               <%= link_to_unless(print_friendly, 'Firstname(s)',
             reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::FIRSTNAME)) %>
             </th>
-            <th>
-              <%= link_to_unless(print_friendly, 'Date',
+            <!--th>
+              <%#= link_to_unless(print_friendly, 'Date',
             reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_DATE)) %>
-            </th>
+            </th-->
             <th>
               <%= link_to_unless(print_friendly, 'Record Type',
             reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_RECORD_TYPE)) %>
             </th>
-            <th>
-              <%= link_to_unless(print_friendly, 'County/District',
+            <!--th>
+              <%#= link_to_unless(print_friendly, 'County/District',
             reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DISTRICT)) %>
-            </th>
-              <%= content_tag(:th, "M/S/A/D #{app_icons[:info]}".html_safe, title: info_tag_text[:m_s_a_d], 'aria-details': info_tag_text[:m_s_a_d]) %>
+            </th-->
+              <%#= content_tag(:th, "M/S/A/D #{app_icons[:info]}".html_safe, title: info_tag_text[:m_s_a_d], 'aria-details': info_tag_text[:m_s_a_d]) %>
           </tr>
         </thead>
         <tbody>
+        <%# raise @search_results.pluck("District").inspect%>
           <% n = 0 %>
           <% @paginatable_array.each do |search_record| %>
             <% n = n +1%>
@@ -60,43 +61,41 @@
             <tr id="<%=search_record[:_id]%>" class="<%= record_type.downcase %>_hover" >
               <% unless print_friendly %>
                 <td>
-                  <%= link_to("View #{n}".html_safe,friendly_bmd_record_details_path(@search_query.id,search_record.id, search_record.friendly_url), :rel => "nofollow", :title => "", class: "btn  btn--small")%>
-                  <i><%= seen(@search_query,search_record) %></i>
+                  <center><%= link_to("View #{n}".html_safe,friendly_bmd_record_details_path(@search_query.id,search_record.id, search_record.friendly_url), :rel => "nofollow", :title => "", class: "btn  btn--small")%>
+                  <i><%= seen(@search_query,search_record) %></i></center>
                 </td>
               <% end %>
-              <td>
-                <%= "#{search_record[:Surname]} " %>
+              <td class="table--data">
+                <dl>
+                  <strong><dt><%= "#{search_record[:GivenName]} #{search_record[:Surname]}" %></dt></strong>
+                  <dt><%= "#{QuarterDetails.quarters.key((search_record[:QuarterNumber]-1)%4 + 1).upcase} #{(search_record[:QuarterNumber]-1)/4 + 1837}"%></dt>
+                  <dt><%= "#{search_record[:District]}" %></dt>
+                  </dl>
               </td>
-              <td>
-
-                <%= "#{search_record[:GivenName]}" %>
-              </td>
-              <td>
+              <!--td>
               <%# raise QuarterDetails.quarters.inspect%>
-                <%= "#{QuarterDetails.quarters.key((search_record[:QuarterNumber]-1)%4 + 1).upcase} #{(search_record[:QuarterNumber]-1)/4 + 1837}"%>
+                
+              </td-->
+              <td class="<%#= record_type.downcase %>">
+                <center><%= "#{record_type}" %></center>
               </td>
-              <td class="<%= record_type.downcase %>">
-                <%= "#{record_type}" %>
-              </td>
-              <td>
+              <!--td>
                 <%# raise search_record.includes(:CountyCombos).inspect%>
-                <%= "#{search_record[:District]}" %>
-              </td>
-              <td>
-                <%= "#{search_record[:AssociateName]} #{search_record[:AgeAtDeath]}" %>
-              </td>
+              </td-->
+              <!--td>
+                <%#= "#{search_record[:AssociateName]} #{search_record[:AgeAtDeath]}" %>
+              </td-->
             </tr>
           <% end %>
         </tbody>
       </table>
-    </div>
+    <!--/div-->
     <% unless print_friendly %>
       <div class='text--center inline-block'>
         <%= paginate @paginatable_array %>
       </div>
     <% end %>
-  </section>
-</section>
+
 <div class='grid'>
   <div class="grid__item one-whole lap-one-whole palm-one-whole">
     <%= link_to "Download", '#', :class => "btn btn--small push-half--right push-half--top" %>
