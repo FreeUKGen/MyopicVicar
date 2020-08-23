@@ -29,6 +29,37 @@ class FreecenCsvEntriesController < ApplicationController
     search_version
   end
 
+  def accept
+    @freecen_csv_entry = FreecenCsvEntry.find(params[:id]) if params[:id].present?
+    unless FreecenCsvEntry.valid_freecen_csv_entry?(@freecen_csv_entry)
+      message = 'The entry was not correctly linked. Have your coordinator contact the web master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
+    @freecen_csv_entry.update_attributes(warning_messages: '', record_valid: 'true')
+    flash[:notice] = 'The acceptance was successful'
+    redirect_to(freecen_csv_entry_path(@freecen_csv_entry)) && return
+  end
+
+  def revalidate
+    @freecen_csv_entry = FreecenCsvEntry.find(params[:id]) if params[:id].present?
+    unless FreecenCsvEntry.valid_freecen_csv_entry?(@freecen_csv_entry)
+      message = 'The entry was not correctly linked. Have your coordinator contact the web master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
+    @freecen_csv_entry.update_attributes(record_valid: 'false')
+    @freecen_csv_entry.validate_on_line_edit_of_fields(@freecen_csv_entry)
+
+    if @freecen_csv_entry.errors.any?
+      redirect_back(fallback_location: edit_freecen_csv_entry_path(@freecen_csv_entry), notice: "The revalidation of the entry failed #{@freecen_csv_entry.errors.full_messages}.") && return
+    else
+      @freecen_csv_entry.update_attributes(warning_messages: "Warning: Line #{@freecen_csv_entry.record_number}: Validator requested reprocessing", record_valid: 'false')
+      @freecen_csv_file = @freecen_csv_entry.freecen_csv_file
+      @freecen_csv_file.update_attributes(locked_by_transcriber: true)
+      flash[:notice] = 'The entry was declared false.'
+      redirect_to freecen_csv_entry_path(@freecen_csv_entry)
+    end
+  end
+
   def create
     # This deals with a simple entry creation and also the correction of a batch entry error
     # The distinction is made by the presence/absence of session[:error_id]

@@ -1,5 +1,4 @@
 module FreecenValidations
-
   VALID_UCF = /[\}\{\?\*\_\]\[\,]/.freeze
   VALID_NUMERIC = /\d/.freeze
   VALID_NUMBER  = /\A\d+\z/.freeze
@@ -55,6 +54,7 @@ module FreecenValidations
 
       [true, '']
     end
+
     def tight_location?(field)
       return [false, 'blank'] if field.blank?
 
@@ -65,7 +65,6 @@ module FreecenValidations
           return [false, 'invalid text']
         end
       end
-
       [true, '']
     end
 
@@ -79,13 +78,11 @@ module FreecenValidations
         return [false, '?'] if (strip_field.match? VALID_ENUMERATOR_SPECIAL) && field[0] == '0'
 
       elsif (field.match? VALID_ENUMERATOR_SPECIAL) && field[0] == '0'
-
         return [true, ''] unless field[-1] == '0'
 
       elsif (field.match? VALID_NUMBER) || (field.match? VALID_NUMBER_PLUS_SUFFIX)
         return [true, '']
       end
-
       [false, 'invalid']
     end
 
@@ -218,7 +215,6 @@ module FreecenValidations
 
       [false, 'invalid value']
     end
-
 
     def surname?(field)
       return [false, 'blank'] if field.blank?
@@ -401,25 +397,28 @@ module FreecenValidations
     end
 
     def children_born_alive?(field)
-      return [false, 'is an unusual number'] if field =~ VALID_NUMBER && field.to_i > 15
+      field = field.to_i
+      return [false, 'is an unusual number'] if field >= 0 && field > 15
 
-      return [true, ''] if field =~ VALID_NUMBER && field.to_i <= 15
+      return [true, ''] if field >= 0 && field <= 15
 
       [false, 'invalid number']
     end
 
     def children_living?(field)
-      return [false, 'is an unusual number'] if field =~ VALID_NUMBER && field.to_i > 15
+      field = field.to_i
+      return [false, 'is an unusual number'] if field >= 0 && field > 15
 
-      return [true, ''] if field =~ VALID_NUMBER && field.to_i <= 15
+      return [true, ''] if field >= 0 && field <= 15
 
       [false, 'invalid number']
     end
 
     def children_deceased?(field)
-      return [false, 'is an unusual number'] if field =~ VALID_NUMBER && field.to_i > 15
+      field = field.to_i
+      return [false, 'is an unusual number'] if field >= 0 && field > 15
 
-      return [true, ''] if field =~ VALID_NUMBER && field.to_i <= 15
+      return [true, ''] if field >= 0 && field <= 15
 
       [false, 'invalid number']
     end
