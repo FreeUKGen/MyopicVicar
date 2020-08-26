@@ -33,6 +33,7 @@ module RecordType
   DEATH_TYPE = ['2']
   MARRIAGE_TYPE = ['3']
   ALL_TYPES = []
+  BMD_RECORD_TYPE_ID = [1,2,3]
 
   def self.all_types
     ("RecordType::#{all_types_constant}").constantize
