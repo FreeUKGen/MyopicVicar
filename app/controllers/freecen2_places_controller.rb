@@ -37,7 +37,9 @@ class Freecen2PlacesController < ApplicationController
       session[:search_names][:search_county] = params[:freecen2_place][:county]
       redirect_to search_names_results_freecen2_place_path
     else
+      params[:freecen2_place][:chapman_code] = ChapmanCode.values_at(params[:freecen2_place][:county])
       @place = Freecen2Place.new(freecen2_place_params)
+
       proceed, message, place = @place.check_and_set(params)
       if proceed && message == 'Proceed'
         @place.save
@@ -56,7 +58,7 @@ class Freecen2PlacesController < ApplicationController
         if proceed
           # we are clean on the addition
           flash[:notice] = 'The addition to a place was successful'
-          redirect_to(place_path(place)) && return
+          redirect_to(freecen2_place_path(place)) && return
         else
           flash[:notice] = "The addition of a place was unsuccessful: #{message}"
           @county = session[:county]
@@ -77,6 +79,7 @@ class Freecen2PlacesController < ApplicationController
 
     elsif @place.search_records.exists?
       redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'The Place cannot be disabled because there are dependent search records') && return
+
     elsif @place.freecen2_districts.exists? || @place.freecen2_pieces.exists? || @place.freecen2_civil_parishes.exists?
       redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'The Place cannot be disabled because there are dependent districts, sub districts or civil parishes') && return
     end
@@ -126,7 +129,6 @@ class Freecen2PlacesController < ApplicationController
     @place_name = @place.place_name
     session[:place_name] = @place_name
     @county = ChapmanCode.has_key(@place.chapman_code)
-    session[:county] = @county
     @first_name = session[:first_name]
   end
 
@@ -205,7 +207,9 @@ class Freecen2PlacesController < ApplicationController
     case
     when params[:commit] == 'Submit'
       @place.save_to_original
+
       proceed = @place.update_attributes(freecen2_place_params)
+
       if proceed
         flash[:notice] = 'The update the Place was successful'
         redirect_to freecen2_place_path(@place)

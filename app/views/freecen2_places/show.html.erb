@@ -23,9 +23,21 @@
             <th  class="caps">Value</th>
           </tr>
           <tr>
-            <td>Place : </td>
-            <td class="weight--semibold"><%= @place.place_name %>  </td>
+            <td title="The Standard name is the one used for equivalecy testing">Place Name [Standard Name]: </td>
+            <td class="weight--semibold"><%= @place.place_name %>  [<%= @place.standard_place_name %>]</td>
           </tr>
+          <% if  @place.original_place_name.present? %>
+            <tr>
+              <td>Original Place Name [Standard Original Name]: </td>
+              <td class="weight--semibold"><%= @place.original_place_name %>  [<%= @place.original_standard_name %>]</td>
+            </tr>
+          <% end%>
+          <%  @place.alternate_freecen2_place_names.each do |place|%>
+            <tr>
+              <td>Alternate place name [Standard Alternate Name]:</td>
+              <td class="weight--semibold"><%= place.alternate_name %> [<%= place.standard_alternate_name%>] </td>
+            </tr>
+          <% end%>
           <tr>
             <td>County:</td>
             <td class="weight--semibold"><%= @county %></td>
@@ -34,12 +46,6 @@
             <td>Country:</td>
             <td class="weight--semibold"><%= @place.country %></td>
           </tr>
-          <%  @place.alternate_freecen2_place_names.each do |place|%>
-            <tr>
-              <td>Other possible place name :</td>
-              <td class="weight--semibold"><%= place.alternate_name %> </td>
-            </tr>
-          <% end%>
           <tr>
             <td>Latitude:</td>
             <td class="weight--semibold"> <%= @place.latitude%></td>

@@ -16,6 +16,7 @@ class Freecen2Place
   field :county, type: String
   field :chapman_code, type: String#, :required => true
   field :place_name, type: String#, :required => true
+  field :standard_place_name, type: String#, :required => true
   field :last_amended, type: String
   field :alternate_place_name, type: String
   field :place_notes, type: String
@@ -25,6 +26,7 @@ class Freecen2Place
   field :latitude, type: String
   field :longitude, type: String
   field :original_place_name, type: String
+  field :original_standard_name, type: String
   field :original_county, type: String
   field :original_chapman_code, type: String
   field :original_country, type: String
@@ -54,10 +56,9 @@ class Freecen2Place
   field :unique_surnames, type: Array
   field :unique_forenames, type: Array
 
-  embeds_many :alternate_freecen2_place_names
+  embeds_many :alternate_freecen2_place_names, cascade_callbacks: true
 
   accepts_nested_attributes_for :alternate_freecen2_place_names, allow_destroy: true, reject_if: :all_blank
-
 
   validates_inclusion_of :chapman_code, :in => ChapmanCode::values+[nil]
 
@@ -65,19 +66,23 @@ class Freecen2Place
 
   validate :grid_reference_or_lat_lon_present_and_valid
 
-  before_save :add_location_if_not_present, :add_country
+  before_save :add_location_if_not_present, :add_country, :add_standard_names
 
   after_create :update_places_cache
 
-  index({ chapman_code: 1, modified_place_name: 1, disabled: 1 })
-  index({ chapman_code: 1, modified_place_name: 1, error_flag: 1, disabled: 1 })
+  index({ chapman_code: 1, standard_place_name: 1, disabled: 1 }, { name: "chapman_code_1_standard_place_name_1_disabled_1" })
+  index({ chapman_code: 1, standard_place_name: 1, error_flag: 1, disabled: 1 }, { name: "chapman_code_1_standard_place_name_1_error_flag_1_disabled_1" })
+  index({ chapman_code: 1, original_standard_name: 1, disabled: 1 }, { name: "chapman_code_1_original_standard_name_1_disabled_1" })
+  index({ chapman_code: 1, original_standard_name: 1, error_flag: 1, disabled: 1 }, { name: "chapman_code_1_original_standard_name_1_error_flag_1_disabled_1" })
+  index({ "chapman_code" => 1, "alternate_freecen2_place_names.standard_alternate_name" => 1, "disabled" => 1 }, { name: "chapman_code_1_standard_alternate_name_1_disabled_1" })
   index({ chapman_code: 1, place_name: 1, disabled: 1 })
   index({ place_name: 1, grid_reference: 1 })
   index({ disabled: 1 })
   index({ source: 1})
-  index({ chapman_code: 1, data_present: 1,disabled: 1,error_flag: 1}, {name: "chapman_data_present_disabled_error_flag"})
-  index({ chapman_code: 1, _id: 1, disabled: 1, data_present: 1}, {name: "chapman_place_disabled_data_present"})
+  index({ chapman_code: 1, data_present: 1,disabled: 1,error_flag: 1}, { name: "chapman_data_present_disabled_error_flag" })
+  index({ chapman_code: 1, _id: 1, disabled: 1, data_present: 1}, { name: "chapman_place_disabled_data_present" })
   index({ location: "2dsphere" }, { min: -200, max: 200 })
+  index({ "place_name" => "text", "alternate_freecen2_place_names.alternate_name" => "text", "chapman_code"=> 1}, { name: "text_place_name_chapman" })
 
   has_many :churches, dependent: :restrict_with_error
   has_many :search_records
@@ -87,6 +92,7 @@ class Freecen2Place
   has_many :sources
 
   has_many :freecen2_districts
+  has_many :freecen2_civil_parishes
 
   has_many :image_server_groups
   has_many :gaps
@@ -141,8 +147,8 @@ class Freecen2Place
       where(:place_name => place)
     end
 
-    def modified_place_name(place)
-      where(:modified_place_name => place)
+    def standard_place_name(place)
+      where(:standard_place_name => place)
     end
 
     def search(place_name, county)
@@ -186,8 +192,41 @@ class Freecen2Place
       place_alternate_valid = (place_alternate.present? && place_alternate.count > 0) ? true : false
       place_alternate_valid
     end
+
+    def original_place(county, place)
+      place_original = Freecen2Place.where(original_chapman_code: county, original_place_name: place).all
+      place_alternate_valid = (place_original.present? && place_original.count > 0) ? true : false
+      place_alternate_valid
+    end
+
+    def standard_place(place)
+      return place if place.blank?
+      place = place.tr('-', ' ').delete(".,'(){}[]").downcase
+      place = place.gsub(/Saint/, 'St')
+      place = place.strip.squeeze(' ')
+      place
+    end
+
+    def valid_place_name?(county, place_name)
+      standard_place_name = Freecen2Place.standard_place(place_name)
+      place = Freecen2Place.chapman_code(county).standard_place_name(standard_place_name)
+      return true unless place.count.zero?
+
+      place = Freecen2Place.alternate_place(county, standard_place_name)
+      return true if place
+
+      place = Freecen2Place.original_place(county, standard_place_name)
+      place
+    end
+
   end
+
+
   ############################################################### instance methods
+  def add_standard_names
+    self.original_standard_name = Freecen2Place.standard_place(original_place_name) if original_place_name.present?
+    self.standard_place_name = Freecen2Place.standard_place(place_name)
+  end
 
   def add_country
     self.country = self.get_correct_place_country
@@ -195,7 +234,7 @@ class Freecen2Place
 
   def add_location_if_not_present
     self[:place_name] = self[:place_name].strip
-    self[:modified_place_name] = self[:modified_place_name].strip if self[:modified_place_name]
+    self[:standard_place_name] = self[:standard_place_name].strip if self[:standard_place_name]
     if self.location.blank?
       if self[:latitude].blank? || self[:longitude].blank? then
         my_location = self[:grid_reference].to_latlng.to_a
@@ -220,7 +259,7 @@ class Freecen2Place
   end
 
   def approve
-    self.update_attributes(:error_flag => nil,:modified_place_name => self.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase)
+    update_attributes(:error_flag => nil, :standard_place_name => Freecen2Place.standard_name(place_name))
   end
 
   def change_grid_reference(grid)
@@ -260,7 +299,7 @@ class Freecen2Place
 
     unless old_place_name == place_name
       save_to_original
-      update(place_name: place_name, modified_place_name: place_name.gsub(/-/, ' ').gsub(/\./, '').gsub(/\'/, '').downcase)
+      update(place_name: place_name, standard_place_name: Freecen2Place.standard_name(place_name))
       return [false, 'Error in save of place; contact the webmaster'] if errors.any?
 
       propogate_place_name_change(old_place_name)
@@ -272,11 +311,10 @@ class Freecen2Place
   end
 
   def check_and_set(param)
-    self.chapman_code = ChapmanCode.values_at(param[:freecen2_place][:county])
-    self.modified_place_name = self.place_name.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase
     #use the lat/lon if present if not calculate from the grid reference
-    self.add_location_if_not_present
-    place = Freecen2Place.where(:chapman_code => self[:chapman_code] , :place_name => self[:place_name]).all #, :disabled.ne => 'true', :error_flag.ne => "Place name is not approved" ).first
+    add_location_if_not_present
+    place = Freecen2Place.where(:chapman_code => param[:freecen2_place][:chapman_code], :place_name => param[:freecen2_place][:place_name]).all #, :disabled.ne => 'true', :error_flag.ne => "Place name is not approved" ).first
+
     case
     when place.length > 1
       return false, "Many places of that name already exist", place
@@ -286,7 +324,7 @@ class Freecen2Place
         if place.error_flag == "Place name is not approved"
           return false, "There is a disabled place with an unapproved name that already exists", place
         else
-          place.update_attribute(:disabled , 'false')
+          place.update_attribute(:disabled, 'false')
           return true, "There is a disabled place with that name. It has been reactivated.", place
         end
       else

@@ -1795,7 +1795,11 @@ crumb :show_freecen2_place do |county, place|
   when session[:select_place] || place.blank?
     parent :county_options, session[:county] if session[:county].present?
     parent :syndicate_options, session[:syndicate] if session[:syndicate].present?
-  when place.present?
+  when place.present? && session[:county].present?
+    parent :county_options, session[:county]
+  when place.present? && session[:syndicate].present?
+    parent :syndicate_options, session[:syndicate]
+  else
     parent :freecen2_places, county, place
   end
 end
@@ -1804,12 +1808,12 @@ crumb :edit_freecen2_place do |county, place|
   parent :show_freecen2_place, county, place
 end
 
-crumb :create_freecen2_place do
+crumb :create_freecen2_place do |county, place|
   link 'Create New Freecen2 Place', new_freecen2_place_path
   if session[:search_names].present?
     parent :search_names_results
   else
-    parent :freecen2_places, county, search
+    parent :freecen2_places, session[:county], place
   end
 end
 crumb :rename_freecen2_place do |county, place|

@@ -1,12 +1,16 @@
 <div class="island  island--light">
   <h4 style="text-align: center">When creating a New Place <b>PLEASE MAY SPECIAL ATTENTION TO THE SPELLING OF THE NAME INCLUDING CAPITALIZATION</b><br>
-    There are 3 boxes for Alternate Names. You may add more by editing the place and adding them.
+    There are 3 boxes for Alternate Names. You may add more by editing the place after this creation.
   </h4>
   <%= simple_form_for @place, :html => { :class => "grid"}  do |f| %>
     <% if controller.action_name == 'new' || controller.action_name == 'create'%>
-      <%= f.input :county,:label => "Select county from following list",:include_blank => false, :collection => @counties, :selected => @county,
+      <% if %w[data_manager system_administrator].include?(@user.person_role)%>
+        <%= f.input :county,:label => "Select county from following list",:include_blank => true, :collection => @counties,
       :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 3}   %>
-      <%= f.input :place_name, :label => "Enter the Place Name",:hint => "Please take extreme care with the Place Name including its case!" ,:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+        <%= f.input :place_name, :label => "Enter the Place Name",:hint => "Please take extreme care with the Place Name including its case!" ,:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+      <% else%>
+        <%= f.hidden_field :county, :value=>@county %>
+      <% end %>
     <% end %>
     <%= f.simple_fields_for :alternate_freecen2_place_names do |alternate| %>
       <%= alternate.input :alternate_name,:label => "Other Name for Place",:hint => "Alternative name by which place may be known. Use the destroy box below to delete this entry",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>

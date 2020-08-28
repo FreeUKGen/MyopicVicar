@@ -10,6 +10,7 @@ class Place
   require 'master_place_name'
   require 'register_type'
   require 'freereg_validations'
+  # Consider changing modified place name to standard place name as done for Freecen2Place
 
 
   field :country, type: String

@@ -156,7 +156,7 @@ class Csvfile < CarrierWave::Uploader::Base
       message = 'You are attempting to replace a file you do not have. Likely you are a coordinator replacing a file belonging to someone else. You must replace into their userid.'
 
     elsif Freereg1CsvFile.userid(userid).file_name(file_name).transcriber_lock.exists?
-      message = 'You have done on-line edits to the file, so it is locked against replacement until you have downloaded and edited the file.'
+      message = 'You have done on-line edits to the file, so it is locked against replacement until you have downloaded the file.'
       proceed = false
 
     elsif Freereg1CsvFile.userid(userid).file_name(file_name).coordinator_lock.exists?
