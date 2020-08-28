@@ -854,6 +854,10 @@ class FreecenCsvEntry
         elsif messagea == 'blank' && record[:house_or_street_name] == '-' && house_number.blank?
           message = "Info: line #{num} Schedule number retained at #{new_schedule_number}.<br>" if info_messages
           record[:info_messages] += message if info_messages
+        elsif messagea == 'blank' && record[:house_or_street_name].present?
+          messagea = "ERROR: line #{num} Schedule number is blank and there is an address.<br>"
+          message += messagea
+          record[:error_messages] += messagea
         elsif messagea == 'blank' && record[:year] == '1841'
 
         elsif messagea == 'blank'
