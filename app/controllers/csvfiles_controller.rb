@@ -67,9 +67,9 @@ class CsvfilesController < ApplicationController
     @csvfile.file_id = freefile._id
     @csvfile.save_to_attic
     @csvfile.delete
-    flash[:notice] = "The csv file #{freefile.file_name} has been deleted."
+    flash[:alert] = "The csv file #{freefile.file_name} has been deleted."
     redirect_to(my_own_freereg1_csv_file_path(anchor: "#{session[:freereg1_csv_file_id]}"))  && return if appname_downcase == 'freereg'
-    redirect_to(my_own_freereg1_csv_file_path(anchor: "#{session[:freereg1_csv_file_id]}"))  && return if appname_downcase == 'freecen'
+    redirect_to(my_own_freecen_csv_file_path(anchor: "#{session[:freecen_csv_file_id]}"))  && return if appname_downcase == 'freecen'
   end
 
   def edit
@@ -86,9 +86,8 @@ class CsvfilesController < ApplicationController
     files = Freereg1CsvFile.where(userid: @person, file_name: @file_name) if appname_downcase == 'freereg'
     files = FreecenCsvFile.where(userid: @person, file_name: @file_name) if appname_downcase == 'freecen'
     files.each do |file|
-      message = 'The replacement of the file is not permitted as it has been locked due to on-line changes; download the updated copy and remove the lock'
-      redirect_back(fallback_location: new_csvfile_path, notice: message) && return if file.locked_by_transcriber || file.locked_by_coordinator
-
+      flash[:notice] = 'The replacement of the file is not permitted as it has been locked due to on-line changes; download the updated copy and remove the lock' if file.locked_by_transcriber || file.locked_by_coordinator
+      redirect_back(fallback_location: new_csvfile_path) && return if file.locked_by_transcriber || file.locked_by_coordinator
     end
     @csvfile = Csvfile.new(userid: @person, file_name: @file_name)
     session[:file_name] = @file_name
