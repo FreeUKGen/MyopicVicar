@@ -800,8 +800,8 @@ class CsvRecords < CsvFile
 
       @record = CsvRecord.new(line, @csvfile, @project)
       success, message, result = @record.extract_data_line(n)
-      if result[:birth_place_flag].present? || result[:deleted_flag].present? || result[:individual_flag].present? ||  result[:location_flag].present? ||
-          result[:name_flag].present? || result[:occupation_flag].present? || (result[:uninhabited_flag].present? && result[:uninhabited_flag].downcase == 'x')
+      if result[:birth_place_flag].present? || result[:deleted_flag].present? || result[:individual_flag].present? || result[:location_flag].present? ||
+          result[:name_flag].present? || result[:occupation_flag].present? || result[:address_flag].present? || result[:deleted_flag].present?
         result[:flag] = true
       else
         result[:flag] = false

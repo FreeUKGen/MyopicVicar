@@ -928,7 +928,7 @@ class FreecenCsvEntry
         if uninhabited_flag == 'x'
           record[:address_flag] = 'x'
           record[:uninhabited_flag] = ''
-          messageb = "Warning: line #{num} uninhabited_flag if x is moved to address flag.<br>"
+          messageb = "Warning: line #{num} uninhabited_flag of x is moved to address flag.<br>"
           message += messageb
           record[:warning_messages] += messageb
         end
