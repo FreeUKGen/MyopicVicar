@@ -187,6 +187,7 @@ class PhysicalFilesController < ApplicationController
 
     #we write a new copy of the file from current on-line contents
     proceed, message = file.check_file
+
     redirect_back(fallback_location: { action: 'select_action' }, notice: "There is a problem with the file you are attempting to reprocess #{message}. Contact a system administrator if you are concerned.") && return unless proceed
 
     file.backup_file
@@ -194,6 +195,7 @@ class PhysicalFilesController < ApplicationController
     redirect_back(fallback_location: { action: 'select_action' }, notice: "There is a problem with the file you are attempting to reprocess #{message}. Contact a system administrator if you are concerned.") && return if @batch.blank?
 
     #add to processing queue and place in change
+    file.update_attributes(was_locked: true) if @appname == 'freecen' && file.locked_by_transcriber
     proceed, message = @batch.add_file('reprocessing')
     redirect_back(fallback_location: { action: 'select_action' }, notice: "There was a problem with the reprocessing: #{message} ") && return unless proceed
 

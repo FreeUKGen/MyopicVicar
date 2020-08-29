@@ -421,9 +421,8 @@ class CsvFile < CsvFiles
   def check_file_is_not_locked?(batch)
     return [true, 'OK'] if batch.blank?
 
+    return [true, 'OK'] if batch.was_locked || !batch.locked_by_transcriber || !batch.locked_by_coordinator
     message = "The file #{batch.file_name} for #{batch.userid} is already on system and is locked against replacement. <br>"
-    return [true, 'OK'] unless batch.locked_by_transcriber || batch.locked_by_coordinator
-
     @project.write_messages_to_all(message, true)
     [false, message]
   end
@@ -447,7 +446,8 @@ class CsvFile < CsvFiles
     return true if batch.blank?
 
     PhysicalFile.remove_waiting_flag(@userid, @file_name)
-    batch.delete
+    @file.update_attributes(was_locked: false, locked_by_transcriber: true) if @file.was_locked
+    batch.delete unless message.include?('is already on system and is locked against replacement')
   end
 
   def clean_up_supporting_information(records_processed)
@@ -457,6 +457,7 @@ class CsvFile < CsvFiles
 
       batch.delete
     else
+      @file.update_attributes(was_locked: false, locked_by_transcriber: true) if @file.was_locked
       physical_file_clean_up_on_success
     end
     true
