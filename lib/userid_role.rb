@@ -39,41 +39,42 @@ module UseridRole
     }
   when 'freecen'
     OPTIONS = {
-      'checker' => ['CSV Batches', 'Communicate', 'Profile', 'Roadmap', 'Search Place Names', 'FreeUKGenealogy  Policies'],
+      'checker' => ['CSV Batches', 'Communicate', 'Profile', 'Roadmap', 'Search Place Names', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
       'computer' => ['CSV Batches', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
       'researcher' => ['Communicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
       'pending' => ['Profile', 'FreeUKGenealogy  Policies'],
       'contacts_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Display County Coordinators',
-                                 'Display Syndicate Coordinators', 'Display Userids', 'Feedback', 'Manage Counties', 'Profile', 'Search Place Names', 'System Documentation', 'Roadmap', 'FreeUKGenealogy  Policies'],
-      'county_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Display Userids', 'Manage County', 'Manage Syndicate', 'Profile', 'Search Place Names', 'Roadmap', 'FreeUKGenealogy  Policies', 'FreeUKGenealogy  Policies'],
-      'country_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Display Userids', 'Manage County', 'Manage Syndicate', 'Profile', 'Search Place Names', 'Roadmap', 'FreeUKGenealogy  Policies', 'FreeUKGenealogy  Policies'],
-      'data_manager' => ['CSV Batches', 'Communicate', 'Contacts', 'Database Statistics', 'Display Userids', 'Display Syndicate Coordinators', 'Display County Coordinators', 'Manage Counties', 'Manage Syndicates', 'Profile', 'Search Place Names', 'Roadmap', 'FreeUKGenealogy  Policies' ],
+                                 'Display Syndicate Coordinators', 'Display Userids', 'Feedback', 'Manage Counties', 'Profile', 'Search Place Names', 'System Documentation', 'Roadmap', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
+      'county_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Display Userids', 'Manage County', 'Manage Syndicate', 'Profile', 'Search Place Names', 'Roadmap', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
+      'country_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Display Userids', 'Manage County', 'Manage Syndicate', 'Profile', 'Search Place Names', 'Roadmap', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
+      'data_manager' => ['CSV Batches', 'Communicate', 'Contacts', 'Database Statistics', 'Display Userids', 'Display Syndicate Coordinators', 'Display County Coordinators', 'Manage Counties', 'Manage Syndicates', 'Profile', 'Search Place Names', 'Roadmap',
+                         'FreeCEN Handbook', 'FreeUKGenealogy  Policies' ],
       'documentation_coordinator' => ['CSV Batches', 'Communicate', 'Display Userids', 'Feedback', 'Manage Syndicates',
-                                      'Manage Counties', 'Profile', 'Search Place Names', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
-      'engagement_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Database Statistics', 'Manage Userids', 'Feedback', 'Message System', 'Profile', 'Search Place Names', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
+                                      'Manage Counties', 'Profile', 'Search Place Names', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
+      'engagement_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Database Statistics', 'Manage Userids', 'Feedback', 'Message System', 'Profile', 'Search Place Names', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
 
       'executive_director' => ['CSV Batches', 'Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Database Statistics', 'Feedback', 'FreeCen Errors',
                                'Manage Counties', 'Manage FreeCen Coverage', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Profile', 'Search Place Names', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
-                               'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'FreeUKGenealogy  Policies'],
-      'genealogy_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Profile', 'Search Place Names', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
+                               'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
+      'genealogy_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Profile', 'Search Place Names', 'Roadmap', 'System Documentation', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
       'general_communication_coordinator' => ['CSV Batches', 'Communicate', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'Search Place Names', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
 
       'project_manager' => ['CSV Batches', 'Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Database Statistics', 'Feedback', 'FreeCen Errors',
                             'Manage Counties', 'Manage FreeCen Coverage', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Profile', 'Search Place Names', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
-                            'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'FreeUKGenealogy  Policies'],
-      'publicity_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Profile', 'Search Place Names', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
-      'syndicate_coordinator' => ['CSV Batches', 'Communicate', 'Manage Syndicate', 'Profile', 'Search Place Names', 'Roadmap', 'FreeUKGenealogy  Policies'],
+                            'Software Version Information', 'Syndicate Coordinators', 'System Documentation','FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
+      'publicity_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Profile', 'Search Place Names', 'Roadmap', 'System Documentation', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
+      'syndicate_coordinator' => ['CSV Batches', 'Communicate', 'Manage Syndicate', 'Profile', 'Search Place Names', 'Roadmap','FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
       'system_administrator' => ['CSV Batches', 'Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Database Statistics', 'Feedback', 'FreeCen Errors',
-                                 'Manage Counties', 'Manage FreeCen Coverage', 'Manage Parms', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Physical Files', 'Profile', 'Search Place Names', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
-                                 'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'FreeUKGenealogy  Policies'],
-      'trainee' => ['CSV Batches', 'Communicate', 'Profile', 'Search Place Names', 'Roadmap', 'FreeUKGenealogy  Policies'],
+                                 'Manage Counties', 'Manage FreeCen Coverage', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Physical Files', 'Profile', 'Search Place Names', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
+                                 'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
+      'trainee' => ['CSV Batches', 'Communicate', 'Profile', 'Search Place Names', 'Roadmap', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
       'technical' => ['CSV Batches', 'Communicate', 'Contacts', 'Database Statistics', 'Feedback', 'FreeCen Errors', 'Profile', 'Search Place Names', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
-                      'System Documentation', 'FreeUKGenealogy  Policies'],
+                      'System Documentation', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
 
-      'transcriber' => ['CSV Batches', 'Communicate', 'Profile', 'Search Place Names', 'Roadmap', 'FreeUKGenealogy  Policies'],
-      'validator' => ['CSV Batches', 'Communicate', 'Profile', 'Search Place Names', 'Roadmap', 'FreeUKGenealogy  Policies'],
-      'volunteer_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Manage Syndicates', 'Manage Userids', 'Profile', 'Search Place Names', 'Roadmap', 'FreeUKGenealogy  Policies'],
-      'website_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Database Statistics', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'Search Place Names', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies']
+      'transcriber' => ['CSV Batches', 'Communicate', 'Profile', 'Search Place Names', 'Roadmap', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
+      'validator' => ['CSV Batches', 'Communicate', 'Profile', 'Search Place Names', 'Roadmap', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
+      'volunteer_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Manage Syndicates', 'Manage Userids', 'Profile', 'Search Place Names', 'Roadmap', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
+      'website_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Database Statistics', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'Search Place Names', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies']
 
     }
   end
@@ -118,7 +119,8 @@ module UseridRole
     'FreeCen Errors' => '/freecen_errors',
     'Manage FreeCen Coverage' => '/freecen_coverage/edit',
     'FreeUKGenealogy  Policies' => '/cms/freeukgenealogy-policies',
-    'Search Place Names' => '/freecen2_places/search_names'
+    'Search Place Names' => '/freecen2_places/search_names',
+    'FreeCEN Handbook' => '/cms/freecen-handbook',
   }
 
   OPTIONS_TITLES = {
@@ -230,7 +232,6 @@ module UseridRole
     'Manage VLD Files' => '/freecen1_vld_files',
     'Manage Places' => '/places',
     'Offline Reports' => '/manage_counties/selection?option=Offline Reports',
-    'Manage Parms' => '/manage_parms/'
 
   }
   COUNTY_OPTIONS_TITLES = {
@@ -255,7 +256,6 @@ module UseridRole
     'Manage VLD Files' => 'Minimal tools to manage VLD files',
     'Manage Places' => 'Minimal tools to manage places used by CEN1',
     'Offline Reports' => 'Generate off line reports',
-    'Manage Parms' => 'Minimal tools to manage parms used by CEN1',
 
   }
   case MyopicVicar::Application.config.template_set

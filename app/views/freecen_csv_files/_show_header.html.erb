@@ -14,7 +14,7 @@
     <%= browse_freecen_file_dwellings%>
     <%= browse_freecen_file_individuals%>
     <br>
-    <% if ['county_coordinator', 'country_coordinator', 'system_administrator', 'data_manager'].include?(@user.person_role) %>
+    <% if ['county_coordinator', 'country_coordinator', 'system_administrator', 'data_manager', 'validator'].include?(@user.person_role) %>
       <%= change_freecen_file_owner  %>
       <%= edit_freecen_file %>
       <%= reprocess_freecen_file %>
