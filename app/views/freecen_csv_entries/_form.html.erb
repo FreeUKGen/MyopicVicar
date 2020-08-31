@@ -31,9 +31,12 @@
   <%= f.input :disability_notes ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @census_fields.include?('disability_notes') %>
   <%= f.input :language, label: "Language Flag; current value highlighted",selected: @freecen_csv_entry.language, collection: @languages, :input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 3} if @census_fields.include?('language') && !(ChapmanCode::CODES['England'].values.member?(@chapman_code) || @chapman_code == 'IOM') %>
   <%= f.input :notes, :label => 'Notes', :as => :text, :input_html => {:class => " simple_form_bgcolour  ",   :placeholder => "Enter notes about entry in census",  :size => "60x5" } %>
-  <% if %w[validator county_coordinator country_coordinator data_manager system_administrator].include?(@user.person_role)%>
+  <% if %w[validator county_coordinator country_coordinator data_manager system_administrator].include?(@user.person_role) && @freecen_csv_file.validation%>
     <%= f.input :warning_messages, :label => 'Warning Messages', :as => :text, :input_html => {:class => " simple_form_bgcolour  ",  :size => "60x5" } %>
     <%= f.input :record_valid, label: "Record to be accepted as is; current value highlighted", selected: @freecen_csv_entry.record_valid, collection: ['true', 'false'], :input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 2} %>
+  <% else %>
+    <%= f.input :record_valid, label: "Record to be accepted as is; current value highlighted", selected: @freecen_csv_entry.record_valid, collection: ['true', 'false'], :input_html =>{:disabled => true, :class => " simple_form_position narrow_selection_field_width", :size => 2} %>
+    <%= f.input :warning_messages, :label => 'Warning Messages', :as => :text, :input_html => {:disabled => true,   :size => "60x5" } %>
   <% end %>
   <%= f.button :submit, 'Submit',:button_html => {:class => 'btn btn--small' }  %>
 <% end %>
