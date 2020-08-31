@@ -1,6 +1,7 @@
 <% breadcrumb :freecen2_civil_parishes,  @chapman_code, @type%>
 <h2 style="text-align: center">FreeCen2 Civil Parishes for <%=@chapman_code%> </h2>
 <%= render 'flash_notice' %>
+<%= paginate @freecen2_civil_parishes_distinct %>
 <div class="scrollable ">
   <table class="table--bordered table--data table--striped " >
     <thead >
@@ -17,7 +18,6 @@
       </tr>
     </thead>
     <tbody >
-      <%= paginate @freecen2_civil_parishes_distinct %>
       <% @freecen2_civil_parishes_distinct.each do |freecen2_civil_parish| %>
         <tr >
           <td> <%= freecen2_civil_parish %></td>
