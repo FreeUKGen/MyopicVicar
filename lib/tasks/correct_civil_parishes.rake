@@ -70,6 +70,7 @@ def correct_census(year)
             end
           end
           place = Freecen2Place.find_by(_id: place_id) if place_id.present?
+          place_id = place.present? ? place.id : nil
           output_file.puts " #{place.place_name},  #{piece.name}, #{civil_parish.name}, #{hamlet.name} " if place_id.present?
           output_file.puts " No place ,  #{piece.name}, #{civil_parish.name}, #{hamlet.name} " if place_id.blank?
           new_civil_parish = Freecen2CivilParish.new(name: hamlet.name, note: hamlet.note, freecen2_piece_id: piece_id, prenote: hamlet.prenote,
