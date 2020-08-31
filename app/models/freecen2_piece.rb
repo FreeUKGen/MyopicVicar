@@ -184,7 +184,7 @@ class Freecen2Piece
     @civil_parish_names = ''
     freecen2_civil_parishes.order_by(name: 1).each_with_index do |parish, entry|
       if entry.zero?
-        @civil_parish_names = parish.add_hamlet_township_names.empty? ? parish.name + ', ' : parish.name + ', ' + parish.add_hamlet_township_names
+        @civil_parish_names = parish.add_hamlet_township_names.empty? ? parish.name : parish.name + ', ' + parish.add_hamlet_township_names
       else
         @civil_parish_names = parish.add_hamlet_township_names.empty? ? @civil_parish_names + ', ' + parish.name : @civil_parish_names + ', ' +
           parish.name + parish.add_hamlet_township_names
