@@ -261,6 +261,8 @@ class Freecen2Place
   end
 
   def add_location_if_not_present
+    p 'add location'
+    p self
     self[:place_name] = self[:place_name].strip
     self[:standard_place_name] = self[:standard_place_name].strip if self[:standard_place_name]
     if self.location.blank?
@@ -340,7 +342,10 @@ class Freecen2Place
 
   def check_and_set(param)
     #use the lat/lon if present if not calculate from the grid reference
-    add_location_if_not_present
+    return [false, "There is no county selected",nil] if param[:freecen2_place][:chapman_code].blank?
+
+    return [false, "There is no place name entered county", nil] if param[:freecen2_place][:place_name].blank?
+
     place = Freecen2Place.where(:chapman_code => param[:freecen2_place][:chapman_code], :place_name => param[:freecen2_place][:place_name]).all #, :disabled.ne => 'true', :error_flag.ne => "Place name is not approved" ).first
 
     case
