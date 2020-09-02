@@ -2326,10 +2326,7 @@ class FreecenCsvEntry
     end
 
     if fields[:children_living].present?
-      p 'entry'
-      p fields[:children_living]
       success, message = FreecenValidations.children_living?(fields[:children_living])
-      p success
       errors.add(:children_living, "Invalid; #{message}") unless success
     end
 

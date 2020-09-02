@@ -261,8 +261,6 @@ class Freecen2Place
   end
 
   def add_location_if_not_present
-    p 'add location'
-    p self
     self[:place_name] = self[:place_name].strip
     self[:standard_place_name] = self[:standard_place_name].strip if self[:standard_place_name]
     if self.location.blank?
