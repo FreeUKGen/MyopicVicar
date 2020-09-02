@@ -4,13 +4,17 @@
   </h4>
   <%= simple_form_for @place, :html => { :class => "grid"}  do |f| %>
     <% if controller.action_name == 'new' || controller.action_name == 'create'%>
-      <% if %w[data_manager system_administrator].include?(@user.person_role)%>
-        <%= f.input :county,:label => "Select county from following list",:include_blank => true, :collection => @counties,
+      <% if %w[county_coordinator country_coordinator system_administrator data_manager validator].include?(@user.person_role)%>
+        <%= f.input :county,:label => "Select county from following list",:include_blank => false, :collection => @counties,
       :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 3}   %>
         <%= f.input :place_name, :label => "Enter the Place Name",:hint => "Please take extreme care with the Place Name including its case!" ,:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
       <% else%>
         <%= f.hidden_field :county, :value=>@county %>
+        <%= f.hidden_field :place_name, :value=>@place_name %>
       <% end %>
+    <% else%>
+      <%= f.hidden_field :county, :value=>@county %>
+      <%= f.hidden_field :place_name, :value=>@place_name %>
     <% end %>
     <%= f.simple_fields_for :alternate_freecen2_place_names do |alternate| %>
       <%= alternate.input :alternate_name,:label => "Other Name for Place",:hint => "Alternative name by which place may be known. Use the destroy box below to delete this entry",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>

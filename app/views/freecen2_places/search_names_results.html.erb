@@ -3,7 +3,7 @@
 <%= render 'flash_notice' %>
 <% if ['data_manager', 'system_administrator', 'county_coordinator'].include?(@user.person_role) %>
   <div style="text-align: center">
-    <%= link_to 'Create New Freecen2 Place', new_freecen2_place_path, method: :get, :class => "btn   btn--small", title: 'Permits the addition of a new place' %>
+    <%= link_to 'Create New Freecen2 Place', new_freecen2_place_path(name:session[:search_names][:search]), method: :get, :class => "btn   btn--small", title: 'Permits the addition of a new place' %>
   </div>
 <% end%>
 <div class="scrollable ">

@@ -133,13 +133,14 @@ class Freecen2PlacesController < ApplicationController
   end
 
   def new
+    @place_name = params[:place] if params[:place].present?
     @place = Freecen2Place.new
     get_user_info_from_userid
     @place.alternate_freecen2_place_names.build
     @place.alternate_freecen2_place_names.build
     @place.alternate_freecen2_place_names.build
     @county = session[:county]
-    @counties = ChapmanCode.keys
+    @counties = ChapmanCode.keys.sort
   end
 
   def places_counties_and_countries
@@ -147,7 +148,7 @@ class Freecen2PlacesController < ApplicationController
     Country.all.order_by(country_code: 1).each do |country|
       @countries << country.country_code
     end
-    @counties = ChapmanCode.keys
+    @counties = ChapmanCode.keys.sort
     placenames = Freecen2Place.where(:chapman_code => session[:chapman_code], :disabled => 'false', :error_flag.ne => "Place name is not approved").all.order_by(place_name: 1)
     @placenames = []
     placenames.each do |placename|
@@ -182,7 +183,8 @@ class Freecen2PlacesController < ApplicationController
   end
 
   def search_names
-    @counties = ChapmanCode.keys
+    @counties = ChapmanCode.keys.sort
+    @counties = @counties.delete_if { |county| county == 'Unknown' }
     @freecen2_place = Freecen2Place.new
     get_user_info_from_userid
     session.delete(:search_names) if session[:search_names].present?
