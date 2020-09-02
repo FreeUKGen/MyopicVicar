@@ -46,3 +46,4 @@ f2rake foo:refresh_ucf_lists[0,0] --trace
  mongoimport --port 27017 --db freecen_20170426 --collection freecen_pieces --file d:/mongo5/pieces.json
  ps wuax | grep ruby
   db.freecen2_civil_parishes.find({year: "1871","freecen2_hamlets.name": { $exists: true}, chapman_code: "SOM"}).count()
+  db.freecen2_districts.find({year: "1891", chapman_code: { $ne: "LND"},"freecen2_place_id": null})

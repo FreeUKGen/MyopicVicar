@@ -11,6 +11,8 @@ task :correct_civil_parishes,[:option, :year] => :environment do |t, args|
     distinct_civil_parishes
   when 3
     correct_census(year)
+  when 4
+    correct_place_names_in_census(year)
   end
 end
 def duplicated_civil_parishes
@@ -40,7 +42,7 @@ def distinct_civil_parishes
   FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )
   output_file = File.new(file_for_warning_messages, "w")
   p "Checking distinct names"
-  distinct = Freecen2Place.distinct('place_name')
+  distinct = Freecen2CivilParish.distinct('place_name')
   output_file.puts distinct
   p 'finished'
 end
@@ -89,4 +91,64 @@ def correct_census(year)
     end
   end
   p "processed #{record_number} pieces, #{corrected_records} were converted"
+
+end
+def correct_place_names_in_census(year)
+  file_for_warning_messages = "#{Rails.root}/log/correct_census_place_names.log"
+  FileUtils.mkdir_p(File.dirname(file_for_warning_messages))
+  output_file = File.new(file_for_warning_messages, "w")
+  p "Correcting #{year} census place names"
+  output_file.puts
+  record_number = 0
+  corrected_records = 0
+  Freecen2Piece.distinct(:chapman_code).each do |chapman|
+    p "#{chapman}"
+    Freecen2District.where(chapman_code: chapman, year: year).all.each do |district|
+      district_freecen2_place_id = district.freecen2_place_id
+      place_valid, place_id = Freecen2Place.valid_place(chapman, district.name)
+      if place_valid && place_id != district_freecen2_place_id
+        district.update_attribute(:freecen2_place_id, place_id)
+        district_freecen2_place_id = place_id
+        corrected_records += 1
+      end
+      district.freecen2_pieces.each do |piece|
+        piece_freecen2_place_id = piece.freecen2_place_id
+        place_valid, place_id = Freecen2Place.valid_place(chapman, piece.name)
+        if place_valid && place_id != piece_freecen2_place_id
+          piece.update_attribute(:freecen2_place_id, place_id)
+          corrected_records += 1
+          piece_freecen2_place_id = place_id
+        elsif !place_valid && district_freecen2_place_id.present? && piece_freecen2_place_id != district_freecen2_place_id
+          piece.update_attribute(:freecen2_place_id, district_freecen2_place_id)
+          corrected_records += 1
+          piece_freecen2_place_id = district_freecen2_place_id
+        end
+        piece.freecen2_civil_parishes.all.each do |civil_parish|
+          civil_parish_freecen2_place_id = civil_parish.freecen2_place_id
+          record_number += 1
+          place_valid, place_id = Freecen2Place.valid_place(chapman, civil_parish.name)
+          if place_valid
+            if place_id != civil_parish_freecen2_place_id
+              civil_parish.update_attribute(:freecen2_place_id, place_id)
+              corrected_records += 1
+              civil_parish_freecen2_place_id = place_id
+            end
+          else
+            if piece_freecen2_place_id.present?
+              if civil_parish_freecen2_place_id != piece_freecen2_place_id
+                civil_parish.update_attribute(:freecen2_place_id, piece_freecen2_place_id)
+                corrected_records += 1
+                civil_parish_freecen2_place_id = piece_freecen2_place_id
+              end
+            elsif district_freecen2_place_id.present? && civil_parish_freecen2_place_id != district_freecen2_place_id
+              civil_parish.update_attribute(:freecen2_place_id, district_freecen2_place_id)
+              corrected_records += 1
+              civil_parish_freecen2_place_id = district_freecen2_place_id
+            end
+          end
+        end
+      end
+    end
+  end
+  p "processed #{record_number} civil parishes, #{corrected_records} districts, pieces and civil parishes were corrected"
 end
