@@ -446,7 +446,7 @@ class CsvFile < CsvFiles
     return true if batch.blank?
 
     PhysicalFile.remove_waiting_flag(@userid, @file_name)
-    @file.update_attributes(was_locked: false, locked_by_transcriber: true) if @file.was_locked
+    @file.update_attributes(was_locked: false, locked_by_transcriber: true) if @file.present? && @file.was_locked
     batch.delete unless message.include?('is already on system and is locked against replacement')
   end
 
