@@ -752,23 +752,33 @@ class FreecenCsvEntry
       elsif  folio_number.blank? && ['Folio', 'Page'].include?(transition)
         message = ''
       elsif  folio_number.blank? && year == '1841' && page_number.to_i.even?
-        message = "Warning: line #{num} New Folio number is blank.<br>"
-        record[:warning_messages] += message if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+        if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+          message = "Warning: line #{num} New Folio number is blank.<br>"
+          record[:warning_messages] += message
+        end
       elsif folio_number.blank? && year != '1841' && page_number.to_i.odd?
-        message = "Warning: line #{num} New Folio number is blank.<br>"
-        record[:warning_messages] += message  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+        if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+          message = "Warning: line #{num} New Folio number is blank.<br>"
+          record[:warning_messages] += message
+        end
       elsif folio_number.blank?
       elsif previous_folio_number.present? && (folio_number.to_i > (previous_folio_number.to_i + 1))
-        message = "Warning: line #{num} New Folio number increment larger than 1 #{folio_number}.<br>"
-        record[:warning_messages] += message  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+        if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+          message = "Warning: line #{num} New Folio number increment larger than 1 #{folio_number}.<br>"
+          record[:warning_messages] += message
+        end
         new_folio_number = folio_number.to_i
         new_folio_suffix = folio_suffix
       elsif (folio_number.to_i == previous_folio_number.to_i)
-        message = "Warning: line #{num} New Folio number is the same as the previous number #{folio_number}.<br>"
-        record[:warning_messages] += message  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+        if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+          message = "Warning: line #{num} New Folio number is the same as the previous number #{folio_number}.<br>"
+          record[:warning_messages] += message
+        end
       elsif previous_folio_number.present? && (folio_number.to_i < previous_folio_number.to_i)
-        message = "Warning: line #{num} New Folio number is less than the previous number #{folio_number}.<br>"
-        record[:warning_messages] += message  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+        if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+          message = "Warning: line #{num} New Folio number is less than the previous number #{folio_number}.<br>"
+          record[:warning_messages] += message
+        end
         new_folio_number = folio_number.to_i
         new_folio_suffix = folio_suffix
       else
@@ -803,19 +813,23 @@ class FreecenCsvEntry
         new_page_number = page_number.to_i
       elsif  page_number.blank? && Freecen::LOCATION_PAGE.include?(transition)
         message = ''
-      elsif  page_number.blank?
+      elsif  page_number.blank? && record[:record_valid].blank? || record[:record_valid].casecmp?('false')
         message = "Warning: line #{num} New Page number is blank.<br>"
-        record[:warning_messages] += message  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+        record[:warning_messages] += message
       elsif (page_number.to_i > previous_page_number + 1) && Freecen::LOCATION_PAGE.include?(transition)
-        message = "Warning: line #{num} New Page number increment larger than 1 #{page_number}.<br>"
-        record[:warning_messages] += message  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+        if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+          message = "Warning: line #{num} New Page number increment larger than 1 #{page_number}.<br>"
+          record[:warning_messages] += message
+        end
         new_page_number = page_number.to_i
-      elsif (page_number.to_i == previous_page_number) && Freecen::LOCATION_PAGE.include?(transition)
+      elsif (page_number.to_i == previous_page_number) && Freecen::LOCATION_PAGE.include?(transition) && record[:record_valid].blank? || record[:record_valid].casecmp?('false')
         message = "Warning: line #{num} New Page number is the same as the previous number #{page_number}.<br>"
-        record[:warning_messages] += message  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+        record[:warning_messages] += message
       elsif page_number.to_i < previous_page_number && page_number.to_i != 1 && Freecen::LOCATION_PAGE.include?(transition)
-        message = "Warning: line #{num} New Page number is less than the previous number #{page_number}.<br>"
-        record[:warning_messages] += message  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+        if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+          message = "Warning: line #{num} New Page number is less than the previous number #{page_number}.<br>"
+          record[:warning_messages] += message
+        end
         new_page_number = page_number.to_i
       elsif page_number.to_i < previous_page_number && page_number.to_i == 1
         message = "Info: line #{num} reset Page number to 1.<br>" if info_messages
@@ -873,11 +887,15 @@ class FreecenCsvEntry
         message = "Error: line #{num} Schedule number #{record[:schedule_number]} present for 1841 census.<br>"
         record[:error_messages] += message
       elsif (schedule_number.to_i > (previous_schedule_number.to_i + 1)) && previous_schedule_number.to_i != 0
-        message = "Warning: line #{num} Schedule number #{record[:schedule_number]} increments more than 1 .<br>"
-        record[:warning_messages] += message  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+        if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+          message = "Warning: line #{num} Schedule number #{record[:schedule_number]} increments more than 1 .<br>"
+          record[:warning_messages] += message
+        end
       elsif (schedule_number.to_i < previous_schedule_number.to_i) && schedule_number.to_i != 0
-        message = "Warning: line #{num} Schedule number #{record[:schedule_number]} is less than the previous one .<br>"
-        record[:warning_messages] += message  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+        if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+          message = "Warning: line #{num} Schedule number #{record[:schedule_number]} is less than the previous one .<br>"
+          record[:warning_messages] += message
+        end
       end
 
       success, messagea = FreecenValidations.house_number?(house_number)
