@@ -718,7 +718,7 @@ class CsvRecords < CsvFile
   end
 
   def extract_traditonal_headers(line)
-    if line.length == 25
+    if line.length == 25 && line[1] == 'ED'
       traditional = 0
     elsif line.length > 25 && line[1] == 'ED'
       traditional = 1
@@ -757,7 +757,7 @@ class CsvRecords < CsvFile
         message = message + "ERROR: the field #{field} is missing from the #{@csvfile.year} spreadsheet.<br>"
       end
       field_specification.values.each do |value|
-        next if  %w[deleted_flag record_valid].include?(value) && @csvfile.validation
+        next if %w[deleted_flag record_valid].include?(value) && @csvfile.validation
         next if @csvfile.census_fields.include?(value)
         success = false
         if  %w[deleted_flag record_valid].include?(value)

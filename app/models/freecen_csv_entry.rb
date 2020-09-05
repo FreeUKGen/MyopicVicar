@@ -753,22 +753,22 @@ class FreecenCsvEntry
         message = ''
       elsif  folio_number.blank? && year == '1841' && page_number.to_i.even?
         message = "Warning: line #{num} New Folio number is blank.<br>"
-        record[:warning_messages] += message if record[:record_valid].blank? || record[:record_valid] == 'false'
+        record[:warning_messages] += message if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
       elsif folio_number.blank? && year != '1841' && page_number.to_i.odd?
         message = "Warning: line #{num} New Folio number is blank.<br>"
-        record[:warning_messages] += message  if record[:record_valid].blank? || record[:record_valid] == 'false'
+        record[:warning_messages] += message  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
       elsif folio_number.blank?
       elsif previous_folio_number.present? && (folio_number.to_i > (previous_folio_number.to_i + 1))
         message = "Warning: line #{num} New Folio number increment larger than 1 #{folio_number}.<br>"
-        record[:warning_messages] += message  if record[:record_valid].blank? || record[:record_valid] == 'false'
+        record[:warning_messages] += message  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
         new_folio_number = folio_number.to_i
         new_folio_suffix = folio_suffix
       elsif (folio_number.to_i == previous_folio_number.to_i)
         message = "Warning: line #{num} New Folio number is the same as the previous number #{folio_number}.<br>"
-        record[:warning_messages] += message  if record[:record_valid].blank? || record[:record_valid] == 'false'
+        record[:warning_messages] += message  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
       elsif previous_folio_number.present? && (folio_number.to_i < previous_folio_number.to_i)
         message = "Warning: line #{num} New Folio number is less than the previous number #{folio_number}.<br>"
-        record[:warning_messages] += message  if record[:record_valid].blank? || record[:record_valid] == 'false'
+        record[:warning_messages] += message  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
         new_folio_number = folio_number.to_i
         new_folio_suffix = folio_suffix
       else
@@ -805,17 +805,17 @@ class FreecenCsvEntry
         message = ''
       elsif  page_number.blank?
         message = "Warning: line #{num} New Page number is blank.<br>"
-        record[:warning_messages] += message  if record[:record_valid].blank? || record[:record_valid] == 'false'
+        record[:warning_messages] += message  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
       elsif (page_number.to_i > previous_page_number + 1) && Freecen::LOCATION_PAGE.include?(transition)
         message = "Warning: line #{num} New Page number increment larger than 1 #{page_number}.<br>"
-        record[:warning_messages] += message  if record[:record_valid].blank? || record[:record_valid] == 'false'
+        record[:warning_messages] += message  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
         new_page_number = page_number.to_i
       elsif (page_number.to_i == previous_page_number) && Freecen::LOCATION_PAGE.include?(transition)
         message = "Warning: line #{num} New Page number is the same as the previous number #{page_number}.<br>"
-        record[:warning_messages] += message  if record[:record_valid].blank? || record[:record_valid] == 'false'
+        record[:warning_messages] += message  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
       elsif page_number.to_i < previous_page_number && page_number.to_i != 1 && Freecen::LOCATION_PAGE.include?(transition)
         message = "Warning: line #{num} New Page number is less than the previous number #{page_number}.<br>"
-        record[:warning_messages] += message  if record[:record_valid].blank? || record[:record_valid] == 'false'
+        record[:warning_messages] += message  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
         new_page_number = page_number.to_i
       elsif page_number.to_i < previous_page_number && page_number.to_i == 1
         message = "Info: line #{num} reset Page number to 1.<br>" if info_messages
@@ -874,10 +874,10 @@ class FreecenCsvEntry
         record[:error_messages] += message
       elsif (schedule_number.to_i > (previous_schedule_number.to_i + 1)) && previous_schedule_number.to_i != 0
         message = "Warning: line #{num} Schedule number #{record[:schedule_number]} increments more than 1 .<br>"
-        record[:warning_messages] += message  if record[:record_valid].blank? || record[:record_valid] == 'false'
+        record[:warning_messages] += message  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
       elsif (schedule_number.to_i < previous_schedule_number.to_i) && schedule_number.to_i != 0
         message = "Warning: line #{num} Schedule number #{record[:schedule_number]} is less than the previous one .<br>"
-        record[:warning_messages] += message  if record[:record_valid].blank? || record[:record_valid] == 'false'
+        record[:warning_messages] += message  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
       end
 
       success, messagea = FreecenValidations.house_number?(house_number)
@@ -975,12 +975,12 @@ class FreecenCsvEntry
             else
               if record[:year] == '1901' && record[:rooms].to_i > 5
                 messageb = "Warning: line #{num} Rooms #{record[:rooms]} is greater than 5.<br>"
-                message += messageb   if record[:record_valid].blank? || record[:record_valid] == 'false'
-                record[:warning_messages] += messageb  if record[:record_valid].blank? || record[:record_valid] == 'false'
+                message += messageb   if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+                record[:warning_messages] += messageb  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
               elsif record[:year] == '1911' && record[:rooms].to_i > 20
                 messageb = "Warning: line #{num} Rooms #{record[:rooms]} is greater than 20.<br>"
-                message += messageb   if record[:record_valid].blank? || record[:record_valid] == 'false'
-                record[:warning_messages] += messageb  if record[:record_valid].blank? || record[:record_valid] == 'false'
+                message += messageb   if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+                record[:warning_messages] += messageb  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
               end
             end
           else
@@ -1089,8 +1089,8 @@ class FreecenCsvEntry
         end
         if record[:relationship].present? && record[:relationship].casecmp('head').zero? && record[:sequence_in_household].to_i != 1
           messageb = "Warning: line #{num} Relationship #{record[:relationship]} is #{record[:sequence_in_household]} in household sequence.<br>"
-          message += messageb  if record[:record_valid].blank? || record[:record_valid] == 'false'
-          record[:warning_messages] += messageb  if record[:record_valid].blank? || record[:record_valid] == 'false'
+          message += messageb  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+          record[:warning_messages] += messageb  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
         end
       end
 
@@ -1157,8 +1157,8 @@ class FreecenCsvEntry
               record[:error_messages] += messageb
             else
               messageb = "Warning: line #{num} Number of school children #{record[:school_children]} is #{messagea}.<br>"
-              message += messageb  if record[:record_valid].blank? || record[:record_valid] == 'false'
-              record[:warning_messages] += messageb  if record[:record_valid].blank? || record[:record_valid] == 'false'
+              message += messageb  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+              record[:warning_messages] += messageb  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
             end
           end
         else
@@ -1207,8 +1207,8 @@ class FreecenCsvEntry
               record[:error_messages] += messageb
             else
               messageb = "Warning: line #{num} Number of children living #{record[:children_living]} is #{messagea}.<br>"
-              message += messageb  if record[:record_valid].blank? || record[:record_valid] == 'false'
-              record[:warning_messages] += messageb  if record[:record_valid].blank? || record[:record_valid] == 'false'
+              message += messageb  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+              record[:warning_messages] += messageb  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
             end
           end
         else
@@ -1228,8 +1228,8 @@ class FreecenCsvEntry
               record[:error_messages] += messageb
             else
               messageb = "Warning: line #{num} Number of children deceased #{record[:children_deceased]} is #{messagea}.<br>"
-              message += messageb  if record[:record_valid].blank? || record[:record_valid] == 'false'
-              record[:warning_messages] += messageb  if record[:record_valid].blank? || record[:record_valid] == 'false'
+              message += messageb  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+              record[:warning_messages] += messageb  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
             end
           end
         else
@@ -1249,8 +1249,8 @@ class FreecenCsvEntry
               record[:error_messages] += messageb
             else
               messageb = "Warning: line #{num} Number of children born alive #{record[:children_born_alive]} is #{messagea}.<br>"
-              message += messageb  if record[:record_valid].blank? || record[:record_valid] == 'false'
-              record[:warning_messages] += messageb  if record[:record_valid].blank? || record[:record_valid] == 'false'
+              message += messageb  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+              record[:warning_messages] += messageb  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
             end
           end
         else
@@ -1311,8 +1311,8 @@ class FreecenCsvEntry
           record[:occupation] = record[:occupation][0...-1].strip
         elsif messagea == 'unusual use of Scholar'
           messageb = "Warning: line #{num} Occupation #{record[:occupation]} is #{messagea}.<br>"
-          message += messageb  if record[:record_valid].blank? || record[:record_valid] == 'false'
-          record[:warning_messages] += messageb  if record[:record_valid].blank? || record[:record_valid] == 'false'
+          message += messageb  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+          record[:warning_messages] += messageb  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
         else
           messageb = "ERROR: line #{num} Occupation #{record[:occupation]} is #{messagea}.<br>"
           message += messageb
@@ -1433,7 +1433,7 @@ class FreecenCsvEntry
         end
         unless place_valid
           messageb = "Warning: line #{num} Verbatim Place of Birth #{record[:verbatim_birth_place]} in #{record[:verbatim_birth_county]} was not found so requires validation.<br>"
-          if record[:record_valid].blank? || record[:record_valid] == 'false'
+          if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
             message += messageb
             record[:warning_messages] += messageb
           end
@@ -1517,14 +1517,14 @@ class FreecenCsvEntry
 
         if record[:birth_county].present? && valid_alternate_chapman_code && record[:birth_place].present? && place_valid
           messageb = "Warning: line #{num} Alt. Birth Place #{record[:birth_place]} in #{record[:birth_county]} found but MAY require validation.<br>"
-          message += messageb   if record[:record_valid].blank? || record[:record_valid] == 'false'
-          record[:warning_messages] += messageb  if record[:record_valid].blank? || record[:record_valid] == 'false'
+          message += messageb   if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+          record[:warning_messages] += messageb  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
         end
 
         if record[:birth_county].present? && valid_alternate_chapman_code && record[:birth_place].present? && !place_valid
           messageb = "Warning: line #{num} Alt. Birth Place #{record[:birth_place]} in #{record[:birth_county]} not found so requires validation.<br>"
-          message += messageb  if record[:record_valid].blank? || record[:record_valid] == 'false'
-          record[:warning_messages] += messageb if record[:record_valid].blank? || record[:record_valid] == 'false'
+          message += messageb  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+          record[:warning_messages] += messageb if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
         end
       end
 
@@ -1631,8 +1631,8 @@ class FreecenCsvEntry
         record[:error_messages] += messageb
       elsif record[:notes].present?
         messagea = "Warning: line #{num} Notes contains information #{record[:notes]}.<br>"
-        record[:warning_messages] += messagea  if record[:record_valid].blank? || record[:record_valid] == 'false'
-        message += messagea  if record[:record_valid].blank? || record[:record_valid] == 'false'
+        record[:warning_messages] += messagea  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+        message += messagea  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
       end
       [message]
     end

@@ -160,11 +160,10 @@ class FreecenCsvFilesController < ApplicationController
         if File.file?(my_file)
           @freecen_csv_file.update_attributes(digest: Digest::MD5.file(my_file).hexdigest)
           @freecen_csv_file.force_unlock
-          flash[:notice] = 'The file has been downloaded to your computer'
           send_file(my_file, filename: @freecen_csv_file.file_name, x_sendfile: true) and return
         end
       else
-        flash[:notice] = 'There was a problem saving the file prior to download. Please take this message to your coordinator'
+        flash[:notice] = 'There was a problem saving the file prior to download. Please send this message to your coordinator'
       end
     else
       flash[:notice] = "We cannot download the file: #{message}. Contact your coordinator if you need advise."
