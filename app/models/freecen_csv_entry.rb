@@ -813,8 +813,10 @@ class FreecenCsvEntry
         new_page_number = page_number.to_i
       elsif  page_number.blank? && Freecen::LOCATION_PAGE.include?(transition)
         message = ''
-      elsif  page_number.blank? && record[:record_valid].blank? || record[:record_valid].casecmp?('false')
-        message = "Warning: line #{num} New Page number is blank.<br>"
+      elsif  page_number.blank?
+        if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+          message = "Warning: line #{num} New Page number is blank.<br>"
+        end
         record[:warning_messages] += message
       elsif (page_number.to_i > previous_page_number + 1) && Freecen::LOCATION_PAGE.include?(transition)
         if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
@@ -822,9 +824,11 @@ class FreecenCsvEntry
           record[:warning_messages] += message
         end
         new_page_number = page_number.to_i
-      elsif (page_number.to_i == previous_page_number) && Freecen::LOCATION_PAGE.include?(transition) && record[:record_valid].blank? || record[:record_valid].casecmp?('false')
-        message = "Warning: line #{num} New Page number is the same as the previous number #{page_number}.<br>"
-        record[:warning_messages] += message
+      elsif (page_number.to_i == previous_page_number) && Freecen::LOCATION_PAGE.include?(transition)
+        if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+          message = "Warning: line #{num} New Page number is the same as the previous number #{page_number}.<br>"
+          record[:warning_messages] += message
+        end
       elsif page_number.to_i < previous_page_number && page_number.to_i != 1 && Freecen::LOCATION_PAGE.include?(transition)
         if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
           message = "Warning: line #{num} New Page number is less than the previous number #{page_number}.<br>"
