@@ -184,37 +184,6 @@ class Freecen2Place
       result
     end
 
-    def alternate_place(county, place)
-      params = {}
-      params[:chapman_code] = { '$eq' => county }
-      params["alternate_freecen2_place_names.alternate_name"] = { '$eq' => place }
-      place_alternate = Freecen2Place.collection.find(params)
-      place_alternate_valid = (place_alternate.present? && place_alternate.count > 0) ? true : false
-      place_alternate_valid
-    end
-
-    def original_place(county, place)
-      place_original = Freecen2Place.where(original_chapman_code: county, original_place_name: place).all
-      place_alternate_valid = (place_original.present? && place_original.count > 0) ? true : false
-      place_alternate_valid
-    end
-    def alternate_place_object(county, place)
-      params = {}
-      params[:chapman_code] = { '$eq' => county }
-      params["alternate_freecen2_place_names.alternate_name"] = { '$eq' => place }
-      place_alternate = Freecen2Place.collection.find(params)
-      place_alternate_valid = (place_alternate.present? && place_alternate.count > 0) ? true : false
-      place_id = place_alternate.first.id if place_alternate.present? && place_alternate.count > 0
-      [place_alternate_valid, place_id]
-    end
-
-    def original_place_object(county, place)
-      place_original = Freecen2Place.where(original_chapman_code: county, original_place_name: place)
-      place_alternate_valid = (place_original.present? && place_original.count > 0) ? true : false
-      place_id = place_original.first.id if place_original.present? && place_original.count > 0
-      [place_alternate_valid, place_id]
-    end
-
     def standard_place(place)
       return place if place.blank?
       place = place.tr('-', ' ').delete(".,'(){}[]").downcase
@@ -225,7 +194,7 @@ class Freecen2Place
 
     def valid_place_name?(county, place_name)
       standard_place_name = Freecen2Place.standard_place(place_name)
-      place = Freecen2Place.chapman_code(county).standard_place_name(standard_place_name)
+      place = Freecen2Place.chapman_code(county).standard_place_name(standard_place_name).not_disabled
       return true unless place.count.zero?
 
       place = Freecen2Place.alternate_place(county, standard_place_name)
@@ -233,6 +202,22 @@ class Freecen2Place
 
       place = Freecen2Place.original_place(county, standard_place_name)
       place
+    end
+
+    def alternate_place(county, place)
+      params = {}
+      params[:chapman_code] = { '$eq' => county }
+      params["alternate_freecen2_place_names.standard_alternate_name"] = { '$eq' => place }
+      params[:disabled] = { '$eq' => 'false' }
+      place_alternate = Freecen2Place.collection.find(params)
+      place_alternate_valid = (place_alternate.present? && place_alternate.count > 0) ? true : false
+      place_alternate_valid
+    end
+
+    def original_place(county, place)
+      place_original = Freecen2Place.where(original_chapman_code: county, original_standard_name: place).all
+      place_alternate_valid = (place_original.present? && place_original.count > 0) ? true : false
+      place_alternate_valid
     end
 
     def valid_place(county, place_name)
@@ -246,6 +231,24 @@ class Freecen2Place
       place, place_id = Freecen2Place.original_place(county, standard_place_name)
       [place, place_id]
     end
+
+    def alternate_place_object(county, place)
+      params = {}
+      params[:chapman_code] = { '$eq' => county }
+      params["alternate_freecen2_place_names.standard_alternate_name"] = { '$eq' => place }
+      place_alternate = Freecen2Place.collection.find(params)
+      place_alternate_valid = (place_alternate.present? && place_alternate.count > 0) ? true : false
+      place_id = place_alternate.first.id if place_alternate.present? && place_alternate.count > 0
+      [place_alternate_valid, place_id]
+    end
+
+    def original_place_object(county, place)
+      place_original = Freecen2Place.where(original_chapman_code: county, original_standard_name: place)
+      place_alternate_valid = (place_original.present? && place_original.count > 0) ? true : false
+      place_id = place_original.first.id if place_original.present? && place_original.count > 0
+      [place_alternate_valid, place_id]
+    end
+
 
   end
 

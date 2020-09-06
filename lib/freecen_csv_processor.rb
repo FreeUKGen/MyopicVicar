@@ -852,7 +852,7 @@ class CsvRecord < CsvRecords
     process_data_record(@data_record[:data_transition])
     #p  "after processing #{num}"
     #p @data_record
-    #crash if num == 300
+    #crash if num == 100
     [true, ' ', @data_record]
   end
 
