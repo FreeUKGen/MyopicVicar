@@ -193,56 +193,66 @@ class Freecen2Place
     end
 
     def valid_place_name?(county, place_name)
+      result, place_id = valid_place(county, place_name)
+      result
+    end
+
+    def valid_place(county, place_name)
       standard_place_name = Freecen2Place.standard_place(place_name)
-      place = Freecen2Place.chapman_code(county).standard_place_name(standard_place_name).not_disabled
-      return true unless place.count.zero?
+      case county
+      when 'YKS'
+        %w[ERY WRY NRY].each do |cnty|
+          @result, @place_id = valid_place_name_for_county(cnty, standard_place_name)
+          return [@result, @place_id] if @result
+        end
+        return [@result, @place_id]
+      when 'CHI'
+        %w[JSY GSY ALD SRK].each do |cnty|
+          @result, @place_id = valid_place_name_for_county(cnty, standard_place_name)
+          return [@result, @place_id] if @result
+        end
+        return [@result, @place_id]
+      when 'HAM'
+        %w[HAM IOW].each do |cnty|
+          @result, @place_id = valid_place_name_for_county(cnty, standard_place_name)
+          return [@result, @place_id] if @result
+        end
+        return [@result, @place_id]
+      when 'IOW'
+        %w[IOW HAM].each do |cnty|
+          @result, @place_id = valid_place_name_for_county(cnty, standard_place_name)
+          return [@result, @place_id] if @result
+        end
+        return [@result, @place_id]
+      else
+        @result, @place_id = valid_place_name_for_county(county, standard_place_name)
+      end
+      [@result, @place_id]
+    end
 
-      place = Freecen2Place.alternate_place(county, standard_place_name)
-      return true if place
+    def valid_place_name_for_county(county, place_name)
+      place = Freecen2Place.chapman_code(county).standard_place_name(place_name).not_disabled
+      return [true, place.first.id] unless place.count.zero?
 
-      place = Freecen2Place.original_place(county, standard_place_name)
-      place
+      result, place_id = Freecen2Place.alternate_place(county, place_name)
+      return [true, place_id] if result
+
+      result, place_id = Freecen2Place.original_place(county, place_name)
+      [result, place_id]
     end
 
     def alternate_place(county, place)
       params = {}
       params[:chapman_code] = { '$eq' => county }
       params["alternate_freecen2_place_names.standard_alternate_name"] = { '$eq' => place }
-      params[:disabled] = { '$eq' => 'false' }
       place_alternate = Freecen2Place.collection.find(params)
       place_alternate_valid = (place_alternate.present? && place_alternate.count > 0) ? true : false
-      place_alternate_valid
-    end
-
-    def original_place(county, place)
-      place_original = Freecen2Place.where(original_chapman_code: county, original_standard_name: place).all
-      place_alternate_valid = (place_original.present? && place_original.count > 0) ? true : false
-      place_alternate_valid
-    end
-
-    def valid_place(county, place_name)
-      standard_place_name = Freecen2Place.standard_place(place_name)
-      place = Freecen2Place.chapman_code(county).standard_place_name(standard_place_name)
-      return [true, place.first.id] unless place.count.zero?
-
-      place, place_id = Freecen2Place.alternate_place(county, standard_place_name)
-      return [true, place_id] if place
-
-      place, place_id = Freecen2Place.original_place(county, standard_place_name)
-      [place, place_id]
-    end
-
-    def alternate_place_object(county, place)
-      params = {}
-      params[:chapman_code] = { '$eq' => county }
-      params["alternate_freecen2_place_names.standard_alternate_name"] = { '$eq' => place }
-      place_alternate = Freecen2Place.collection.find(params)
-      place_alternate_valid = (place_alternate.present? && place_alternate.count > 0) ? true : false
-      place_id = place_alternate.first.id if place_alternate.present? && place_alternate.count > 0
+      place_id = place_alternate.first if place_alternate.present?
+      place_id = place_id.present? ? place_id['_id'].to_s : nil
       [place_alternate_valid, place_id]
     end
 
-    def original_place_object(county, place)
+    def original_place(county, place)
       place_original = Freecen2Place.where(original_chapman_code: county, original_standard_name: place)
       place_alternate_valid = (place_original.present? && place_original.count > 0) ? true : false
       place_id = place_original.first.id if place_original.present? && place_original.count > 0
