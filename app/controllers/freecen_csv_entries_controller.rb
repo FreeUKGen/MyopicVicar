@@ -36,6 +36,9 @@ class FreecenCsvEntriesController < ApplicationController
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
     @freecen_csv_entry.update_attributes(warning_messages: '', record_valid: 'true')
+
+    @freecen_csv_entry.remove_flags if @freecen_csv_entry.flag
+
     flash[:notice] = 'The acceptance was successful'
     redirect_to(freecen_csv_entry_path(@freecen_csv_entry)) && return
   end

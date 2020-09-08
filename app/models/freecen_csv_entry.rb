@@ -2309,6 +2309,11 @@ class FreecenCsvEntry
     [next_entry, previous_entry]
   end
 
+  def remove_flags
+    update_attributes(flag: false, address_flag: '', birth_place_flag: '', individual_flag: '', deleted_flag: '', location_flag: '',
+                      name_flag: '', occupation_flag: '')
+  end
+
   def validate_on_line_edit_of_fields(fields)
     success, message = FreecenValidations.text?(fields[:surname])
     errors.add(:surname, "Invalid; #{message}") unless success
