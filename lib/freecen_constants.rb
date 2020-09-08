@@ -59,7 +59,8 @@ module Freecen
       'Ind' => 'Individual',
       'Err' => 'Error',
       'War' => 'Warning',
-      'Inf' => 'Information'
+      'Inf' => 'Information',
+      'Fla' => 'Flag'
     }.freeze
   end
 
