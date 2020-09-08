@@ -471,7 +471,7 @@ class FreecenCsvFile
   def force_unlock
     batches = FreecenCsvFile.where(file_name: file_name, userid: userid).all
     batches.each do |batch|
-      batch.update(locked_by_coordinator: false, locked_by_transcriber: false)
+      batch.update(locked_by_transcriber: false)
     end
   end
 
