@@ -11,17 +11,18 @@ module FreecenCsvEntriesHelper
   end
 
   def previous_entry
-    link_to 'Previous entry', freecen_csv_entry_path(@previous_entry), method: :get, class: "btn btn--small",
+    link_to 'Previous entry', freecen_csv_entry_path(@previous_entry, type: @type), method: :get, class: "btn btn--small",
       title: 'Show the previous sequential entry' if @previous_entry.present?
   end
 
   def next_entry
-    link_to 'Next entry', freecen_csv_entry_path(@next_entry), method: :get, class: "btn btn--small",
+    link_to 'Next entry', freecen_csv_entry_path(@next_entry, type: @type), method: :get, class: "btn btn--small",
       title: 'Show the next sequential entry'  if @next_entry.present?
   end
 
   def edit_entry
-    link_to 'Edit entry', edit_freecen_csv_entry_path(@freecen_csv_entry), method: :get, class: "btn btn--small", title: 'Edit the individual aspects of this entry'
+    link_to 'Edit entry', edit_freecen_csv_entry_path(@freecen_csv_entry), method: :get, class: "btn btn--small",
+      title: 'Edit the individual aspects of this entry', data: { confirm: 'Are you sure you want to edit this entry' }
   end
 
   def accept_entry

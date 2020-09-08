@@ -2020,7 +2020,7 @@ class FreecenCsvEntry
 
 
   def self.management_display_labels
-    ['Transition', 'Location Flag', 'Address Flag', 'Name Flag', 'Individual Flag', 'Occupation Flag', 'Birth Place Flag', 'Deleted Flag', 'Record Validated']
+    ['Transition', 'Location Flag', 'Address Flag', 'Name Flag', 'Individual Flag', 'Occupation Flag', 'Birth Place Flag', 'Deleted Flag', 'Record Valid']
   end
 
   def management_display_values
