@@ -381,6 +381,7 @@ class FreecenCsvFilesController < ApplicationController
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
     controls(@freecen_csv_file)
+    @freecen_csv_file.update_attribute(:list_of_records, nil) if @freecen_csv_file.list_of_records.present?
     @piece = @freecen_csv_file.freecen2_piece
   end
 

@@ -179,6 +179,15 @@ class FreecenCsvEntriesController < ApplicationController
     elsif @type == 'Fla'
       @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).where(flag: true).all.order_by(file_line_number: 1)
     end
+    @list_of_records = []
+    @freecen_csv_entries.each do |entry|
+      @list_of_records << entry.id.to_s
+    end
+    @records = {}
+    @records[:type] = @type
+    @records[:file] = @freecen_csv_file_id.to_s
+    @records[:records] = @list_of_records
+    @freecen_csv_file.update_attribute(:list_of_records, @records )
   end
 
   def new
@@ -211,10 +220,12 @@ class FreecenCsvEntriesController < ApplicationController
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
     display_info
+    @type = params[:type]
     session[:freecen_csv_entry_id] = @freecen_csv_entry._id
     @search_record = @freecen_csv_entry.search_record
     @entry = @freecen_csv_entry
     @next_entry, @previous_entry = @freecen_csv_entry.next_and_previous_entries
+    @next_list_entry, @previous_list_entry = @freecen_csv_entry.next_and_previous_list_entries
   end
 
   def update

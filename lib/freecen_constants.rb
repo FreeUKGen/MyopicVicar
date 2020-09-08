@@ -51,6 +51,18 @@ module Freecen
     }
   end
 
+  module Listings
+    NAMES = {
+      'Civ' => 'Civil Parish',
+      'Pag' => 'Page',
+      'Dwe' => 'Dwelling',
+      'Ind' => 'Individual',
+      'Err' => 'Error',
+      'War' => 'Warning',
+      'Inf' => 'Information'
+    }.freeze
+  end
+
   CENSUS_START_YEAR = "1831"
   CENSUS_END_YEAR = "1931"
   CENSUS_YEARS = (CENSUS_START_YEAR..CENSUS_END_YEAR).step(10).to_a

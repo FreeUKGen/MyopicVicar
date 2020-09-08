@@ -14,7 +14,7 @@
           <tr id="<%= freecen_csv_entry.id %>" >
             <td><%= freecen_csv_entry.record_number%></td>
             <td><%= freecen_csv_entry.warning_messages.gsub(/\<br\>/, '').gsub(/Warning:/i, '').titleize if freecen_csv_entry.warning_messages.present? %></td>
-            <td><%= link_to 'Display', freecen_csv_entry_path(freecen_csv_entry), class: 'btn   btn--small' %> </td>
+            <td><%= link_to 'Display', freecen_csv_entry_path(freecen_csv_entry,type: @type), class: 'btn   btn--small' %> </td>
           </tr>
         <% end %>
       </tbody>

@@ -2295,9 +2295,21 @@ class FreecenCsvEntry
     [next_entry, previous_entry]
   end
 
+  def next_and_previous_list_entries
+    file_id = freecen_csv_file.id
+    list_of_records = freecen_csv_file.list_of_records
+    return [nil, nil] if list_of_records.blank?
+
+    current_index = list_of_records[:records].index(_id.to_s)
+    return [nil, nil] if current_index.blank?
+
+    records = list_of_records[:records].length
+    next_entry = (current_index + 1) <= records ? FreecenCsvEntry.find_by(_id: list_of_records[:records][current_index + 1]) : nil
+    previous_entry = (current_index - 1) < 0 ?  nil : FreecenCsvEntry.find_by(_id: list_of_records[:records][current_index - 1])
+    [next_entry, previous_entry]
+  end
+
   def validate_on_line_edit_of_fields(fields)
-    p 'validate_on_line_edit_of_fields'
-    p file_validation
     success, message = FreecenValidations.text?(fields[:surname])
     errors.add(:surname, "Invalid; #{message}") unless success
 

@@ -65,6 +65,7 @@ class FreecenCsvFile
   field :header_line, type: Array
   field :validation, type: Boolean, default: false
   field :was_locked, type: Boolean, default: false
+  field :list_of_records, type: Hash
 
   index({ file_name: 1, userid: 1, county: 1, place: 1, register_type: 1 })
   index({ county: 1, place: 1, register_type: 1, record_type: 1 })

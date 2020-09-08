@@ -26,7 +26,7 @@
             <td><%= freecen_csv_entry.occupation_flag %></td>
             <td><%= freecen_csv_entry.birth_place_flag %></td>
             <td><%= freecen_csv_entry.deleted_flag %></td>
-            <td><%= link_to 'Display', freecen_csv_entry_path(freecen_csv_entry), class: 'btn   btn--small' %> </td>
+            <td><%= link_to 'Display', freecen_csv_entry_path(freecen_csv_entry,type: @type), class: 'btn   btn--small' %> </td>
           </tr>
         <% end %>
       </tbody>
