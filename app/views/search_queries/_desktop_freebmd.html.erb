@@ -21,7 +21,7 @@
 <%# end %>
 
 
-    <h1 class="accessibility">Search Results Table</h1>
+    <h1 class="accessibility">Search Results</h1>
     <!--div class="table-wrapper bmd_search_results_table" id="search-result" style="overflow: auto !important;"-->
       <table class="table--bordered table--data ">
         <thead>
@@ -34,7 +34,7 @@
             reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::SURNAME)) %>
             </th-->
             <th>
-              <%= link_to_unless(print_friendly, 'Firstname(s)',
+              <%= link_to_unless(print_friendly, 'Individual',
             reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::FIRSTNAME)) %>
             </th>
             <!--th>
@@ -95,11 +95,4 @@
       </div>
     <% end %>
 
-<div class='grid'>
-  <div class="grid__item one-whole lap-one-whole palm-one-whole">
-    <%= link_to "Download", '#', :class => "btn btn--small push-half--right push-half--top" %>
-    <%= link_to "About this Query", about_search_query_path(@search_query, :page_number => @page_number), :class => "btn   btn--small  push-half--right push-half--top" %>
-    <%= link_to "Printable Format", show_print_version_search_query_path, class: "btn   btn--small push-half--right push-half--top", title: "Click to view results in printable format", "aria-details": "Click to view results in printable format"  %>
-  </div>
-</div>
 

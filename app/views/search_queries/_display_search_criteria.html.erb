@@ -3,7 +3,7 @@
   <% search_criteria.each do |name, value| %>
     <%= name %>: <b><%= value %></b> ;
   <% end %><br>
-  <%= pluralize(@result_count, ' Search Result', ' Search Results') %>
+  <h4 class="accessiblity"><%= pluralize(@result_count, ' Search Result', ' Search Results') %></h4>
 <% else %>
   
     <!--div class="grid__item  one-sixth  lap-one-sixth  palm-one-whole push-half--top">

@@ -14,39 +14,47 @@
 		Search Logic:
 		<p>
 			<strong>First Name:</strong>
-	    <% case @search_query.first_name.present? %>
-	    <% when @search_query.first_name_exact_match%>
-	    	Records with a first name <b><i><%= @search_query.first_name.upcase %></i></b> (ignoring capitalisation).
-	    <% else @search_query.first_name_exact_match.blank? %>
-	      Records whose first name starts with <b><i><%= @search_query.first_name.upcase %></i></b> (ignoring capitalisation).
-	    <%# when @search_query.do_wildcard_seach?(@search_query.first_name)%>
+	    <% if @search_query.first_name.present? %>
+		    <% case @search_query.first_name %>
+		    <% when @search_query.first_name_exact_match%>
+		    	Records with a first name <b><i><%= @search_query.first_name.upcase %></i></b> (ignoring capitalisation).
+		    <% else @search_query.first_name_exact_match.blank? %>
+		      Records whose first name starts with <b><i><%= @search_query.first_name.upcase %></i></b> (ignoring capitalisation).
+		    <%# when @search_query.do_wildcard_seach?(@search_query.first_name)%>
 
-	    <% end %>
+		    <% end %>
+		  <% else %>
+		  	<span>First Name is Not Specified.</span>
+		  <% end %>
 		</p>
 		<p>
 			<strong>Surname:</strong>
-	    <% case @search_query.last_name.present? %>
-	    <% when @search_query.fuzzy%>
-	    	Records with a surname whose Soundex is <b><i><%= fuzzy(@search_query.last_name)%></i></b>
-	    <% else @search_query.first_name_exact_match.blank? %>
-	      Records with surname <b><i><%= @search_query.last_name.upcase %></i></b> (ignoring capitalisation).
-	    <% end %>
+			<% if @search_query.last_name.present? %>
+		    <% case @search_query.last_name.present? %>
+		    <% when @search_query.fuzzy%>
+		    	Records with a surname whose Soundex is <b><i><%= fuzzy(@search_query.last_name)%></i></b>
+		    <% else @search_query.first_name_exact_match.blank? %>
+		      Records with surname <b><i><%= @search_query.last_name.upcase %></i></b> (ignoring capitalisation).
+		    <% end %>
+		  <% else %>
+		  	<span>Last Name is Not Specified.</span>
+		  <% end %>
 		</p>
 		<p>
-			<strong>Spouse Firstname:</strong>
 	    <% if @search_query.spouse_first_name.present? %>
+	    <strong>Spouse Firstname:</strong>
 	    	Records where Spouse First Name can be <b><i><%= @search_query.spouse_first_name%></i></b> (ignoring capitalisation).
 	    <% end %>
 		</p>
 		<p>
-			<strong>Spouse Surname:</strong>
 	    <% if @search_query.spouses_mother_surname.present? %>
+	    	<strong>Spouse Surname:</strong>
 	    	Records where Spouse Surname can be <b><i><%= @search_query.spouse_first_name%></i></b> (ignoring capitalisation).
 	    <% end %>
 		</p>
 		<p>
-			<strong>Mother Surname:</strong>
 	    <% if @search_query.mother_last_name.present? %>
+	    	<strong>Mother Surname:</strong>
 	    	Records with Mother Surname <b><i><%= @search_query.spouse_first_name%></i></b> (ignoring capitalisation).
 	    <% end %>
 		</p>
@@ -74,33 +82,43 @@
     </p>
 	</p>
 	<p>
-		<h3>Age At Death</h3>
-		<p>
-      <% case %>
-      <% when @search_query.age_at_death.present?%>
-      	Records whose Age At Death is <%= @search_query.age_at_death%>
-      <% when @search_query.min_age_at_death.present?%>
-      	Records whose Age At Death is between <%= @search_query.min_age_at_death %> and <%= @search_query.max_age_at_death %>
-      <% when @search_query.min_dob_at_death.present?%>
-      	Records whose Date of Birth can be in range <%= @search_query.min_dob_at_death%> to <% @search_query.min_dob_at_death %>
-      <% when @search_query.dob_at_death.present?%>
-      	Records whose Date of Birth can be <%= @search_query.dob_at_death %>
-      <% end %>
-      <% if @search_query.match_recorded_ages_or_dates %>
-       Search is performed on records which has Age at Death/Date of Birth in the index.
-      <% end %>
-    </p>
+    <% case %>
+    <% when @search_query.age_at_death.present?%>
+    	<h3>Age At Death</h3>Records whose Age At Death is <%= @search_query.age_at_death%>
+    <% when @search_query.min_age_at_death.present?%>
+    	<h3>Age At Death</h3>Records whose Age At Death is between <%= @search_query.min_age_at_death %> and <%= @search_query.max_age_at_death %>
+    <% when @search_query.min_dob_at_death.present?%>
+    	<h3>Age At Death</h3>Records whose Date of Birth can be in range <%= @search_query.min_dob_at_death%> to <% @search_query.min_dob_at_death %>
+    <% when @search_query.dob_at_death.present?%>
+    	<h3>Age At Death</h3>Records whose Date of Birth can be <%= @search_query.dob_at_death %>
+    <% end %>
+    <% if @search_query.match_recorded_ages_or_dates %>
+     Search is performed on records which has Age at Death/Date of Birth in the index.
+    <% end %>
+  </p>
+	<p>
+		<% if @search_query.volume.present? %>
+			<h3>Volume:</h3><%= @search_query.volume %>
+		<% end %>
 	</p>
 	<p>
-		<h3>Volume:</h3><%= @search_query.volume if @search_query.volume.present?%>
+		<% if @search_query.page.present? %>
+			<h3>Page:</h3><%= @search_query.page %>
+		<% end %>
 	</p>
 	<p>
-		<h3>Page:</h3><%= @search_query.page if @search_query.page.present?%>
+		<% if @search_query.chapman_codes.present? %>
+			<h3>Counties:</h3>
+			<% @search_query.chapman_codes.each do |cc| %>
+			<%  ChapmanCode::CODES.values.each do |v| %>
+				<%= v.key(cc) %>
+			<% end %>
+		<% end %>
+		<%end %>
 	</p>
 	<p>
-		<h3>Counties:</h3><%= @search_query.chapman_codes if @search_query.chapman_codes.present? %>
-	</p>
-	<p>
-		<h3>Districts:</h3><%= @search_query.districts if @search_query.districts.present? %>
+		<% if @search_query.districts.present? %>
+			<h3>Districts:</h3><%= District.where(DistrictNumber: @search_query.districts).pluck(:DistrictName) %>
+		<% end %>
 	</p>
 </section>

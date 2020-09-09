@@ -6,6 +6,8 @@ class BestGuess < FreebmdDbBase
   belongs_to :CountyCombos, foreign_key: 'CountyComboID', primary_key: 'CountyComboID', class_name: '::CountyCombo'
   has_many :ScanLinks, primary_key: 'ChunkNumber', foreign_key: 'ChunkNumber'
   extend SharedSearchMethods
+  ENTRY_SYSTEM = 8
+  ENTRY_REFERENCE = 512
 
   def friendly_url
     particles = []
@@ -32,9 +34,21 @@ class BestGuess < FreebmdDbBase
   end
 
   def self.transcriber(record)
-    sql = "select  b.Surname from BestGuess as b
-   inner join BestGuessLink as l on l.RecordNumber = b.RecordNumber
-   where b.RecordNumber = 1"
+   sql = "SELECT b2.recordNumber,a2.Year,a2.EntryQuarter,a2.RecordTypeID,b.Confirmed
+            FROM Accessions as a1, Accessions as a2,
+                 BestGuessLink as b1, BestGuessLink as b2,
+                 BestGuess as b
+            WHERE b1.recordnumber= #{record} AND
+                  b1.accessionnumber=a1.accessionnumber AND
+                  a1.filenumber=a2.filenumber AND
+                  b2.accessionnumber=a2.accessionnumber AND
+                  a2.startline+b2.sequencenumber=a1.startline+b1.sequencenumber AND
+                  b2.recordNumber!=b1.recordnumber AND
+                  b.RecordNumber= #{record} AND
+                  (b.Confirmed & #{ENTRY_SYSTEM} OR
+                   b.Confirmed & #{ENTRY_REFERENCE} OR
+                   a1.SourceType = '+Z')
+            GROUP BY b2.RecordNumber"
    FreebmdDbBase.connection.select_all(sql).to_hash
   end
 
