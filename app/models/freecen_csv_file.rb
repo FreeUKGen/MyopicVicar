@@ -287,6 +287,18 @@ class FreecenCsvFile
     end
   end
 
+  def add_list_of_records(type, entries)
+    list_of_records = []
+    entries.each do |entry|
+      list_of_records << entry.id.to_s
+    end
+    records = {}
+    records[:type] = type
+    records[:file] = _id.to_s
+    records[:records] = list_of_records
+    update_attribute(:list_of_records, records)
+  end
+
   def add_lower_case_userid_to_file
     # rspec tested directly
     self[:userid_lower_case] = self[:userid].downcase

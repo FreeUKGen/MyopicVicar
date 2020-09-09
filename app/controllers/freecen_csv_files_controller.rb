@@ -383,6 +383,7 @@ class FreecenCsvFilesController < ApplicationController
     controls(@freecen_csv_file)
     session.delete(:cen_index_type)
     session.delete(:next_list_entry)
+    session.delete(:current_list_entry)
     session.delete(:previous_list_entry)
     @freecen_csv_file.update_attribute(:list_of_records, nil) if @freecen_csv_file.list_of_records.present?
     @piece = @freecen_csv_file.freecen2_piece
