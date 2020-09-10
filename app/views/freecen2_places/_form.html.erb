@@ -23,7 +23,7 @@
     <%= f.input :grid_reference , label: ' Either a Grid Reference OR the latitude and longitude', :hint => "Must be 2 capital characters followed by  4, 6 or 8 numerics eg NX123456",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
     <%= f.input :latitude ,:hint => "Required if no Grid Reference entered", :label => "Latitude in degrees eg 50.234 :",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
     <%= f.input :longitude ,:hint => "Required if no Grid Reference entered", :label => "Longitude in degrees eg -1.234 :",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
-    <%= f.input :genuki_url,as: :url,:hint => "Paste the link from the appropriate website page", :label => "Genuki Gazetteer website ",:input_html => {:class => "simple_form_bgcolour", :size => 60 }%>
+    <%= f.input :genuki_url,as: :url,:hint => "Paste the link from the appropriate website page", :label => "Relevant Gazetteer website eg Genuki or Gazetteer",:input_html => {:class => "simple_form_bgcolour", :size => 60 }%>
     <%= f.input :source ,:hint => "Where was the information obtained for this Place entry",:label => "The source of the information",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
     <%= f.input :place_notes,:label => "Notes about the Place",as: :text, :input_html => { :class => "simple_form_bgcolour",:rows => 5, :cols =>30 , :placeholder => "Enter your notes"}%>
     <% if session[:type] == "edit" then %>
