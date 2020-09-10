@@ -193,6 +193,7 @@ class Freecen2PlacesController < ApplicationController
   def search_names_results
     get_user_info_from_userid
     @results = Freecen2Place.search(session[:search_names][:search], session[:search_names][:search_county])
+    @county = session[:search_names][:search_county].present? ? session[:search_names][:search_county] : 'All Counties'
     @total = @results.length
   end
 
