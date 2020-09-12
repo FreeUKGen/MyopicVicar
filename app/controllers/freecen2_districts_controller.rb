@@ -78,7 +78,7 @@ class Freecen2DistrictsController < ApplicationController
       flash[:notice] = 'Update was successful'
       get_user_info_from_userid
       p  @freecen2_district.previous_changes
-      @freecen2_district.update_freecen2_place if @freecen2_district.freecen2_place_id.blank?
+      @freecen2_district.update_freecen2_place
       @freecen2_district.update_tna_change_log(@user_userid)
       redirect_to freecen2_district_path(@freecen2_district, type: @type)
     end

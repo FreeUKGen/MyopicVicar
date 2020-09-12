@@ -121,7 +121,7 @@ class Freecen2PiecesController < ApplicationController
     else
       flash[:notice] = 'Update was successful'
       get_user_info_from_userid
-      @freecen2_piece.update_freecen2_place if @freecen2_piece.freecen2_place_id.blank?
+      @freecen2_piece.update_freecen2_place
       @freecen2_piece.update_tna_change_log(@user_userid)
       redirect_to freecen2_piece_path(@freecen2_piece, type: @type)
     end

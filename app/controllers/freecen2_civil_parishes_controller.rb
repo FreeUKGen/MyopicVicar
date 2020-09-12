@@ -91,7 +91,7 @@ class Freecen2CivilParishesController < ApplicationController
     else
       flash[:notice] = 'Update was successful'
       get_user_info_from_userid
-      @freecen2_civil_parish.update_freecen2_place if @freecen2_civil_parish.freecen2_place_id.blank?
+      @freecen2_civil_parish.update_freecen2_place
       @freecen2_civil_parish.update_tna_change_log(@user_userid)
 
       redirect_to freecen2_civil_parish_path(@freecen2_civil_parish, type: @type)
