@@ -13,6 +13,7 @@ class Freecen2CivilParish
   field :number, type: Integer
   validates :number, numericality: { only_integer: true }, allow_blank: true
   field :suffix, type: String
+  field :reason_changed, type: String
 
   belongs_to :freecen2_piece, optional: true, index: true
   belongs_to :freecen2_place, optional: true, index: true
@@ -52,5 +53,15 @@ class Freecen2CivilParish
     end
     @hamlet_names = '(' + @hamlet_names + ')' unless @hamlet_names.empty?
     @hamlet_names
+  end
+
+  def update_freecen2_place
+    result, place_id = Freecen2Place.valid_place(chapman_code, name)
+    update_attributes(freecen2_place_id: place_id) if result
+  end
+
+  def update_tna_change_log(userid)
+    tna = TnaChangeLog.create(userid: userid, year: year, chapman_code: chapman_code, parameters: previous_changes, tna_collection: "#{self.class}")
+    tna.save
   end
 end

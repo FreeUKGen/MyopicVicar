@@ -57,8 +57,6 @@ class Freecen2PiecesController < ApplicationController
     get_user_info_from_userid
     if session[:chapman_code].present?
       @chapman_code = session[:chapman_code]
-      p 'index_district'
-      p params
       @freecen2_district = Freecen2District.find_by(id: params[:freecen2_district_id])
       @type = params[:type]
       @freecen2_pieces = Freecen2Piece.where(freecen2_district_id: @freecen2_district.id).all.order_by(name: 1)
@@ -122,6 +120,9 @@ class Freecen2PiecesController < ApplicationController
       redirect_back(fallback_location: edit_freecen2_piece_path(@freecen2_piece, type: @type)) && return
     else
       flash[:notice] = 'Update was successful'
+      get_user_info_from_userid
+      @freecen2_piece.update_freecen2_place if @freecen2_piece.freecen2_place_id.blank?
+      @freecen2_piece.update_tna_change_log(@user_userid)
       redirect_to freecen2_piece_path(@freecen2_piece, type: @type)
     end
   end

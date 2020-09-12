@@ -22,7 +22,11 @@ class Freecen2CivilParishesController < ApplicationController
     @places = []
     places.each do |place|
       @places << place.place_name
+      place.alternate_freecen2_place_names.each do |alternate_name|
+        @places << alternate_name.alternate_name
+      end
     end
+    @places = @places.sort
     @freecen2_civil_parish.freecen2_hamlets.build
     @freecen2_civil_parish.freecen2_townships.build
     @freecen2_civil_parish.freecen2_wards.build
@@ -86,6 +90,10 @@ class Freecen2CivilParishesController < ApplicationController
       redirect_back(fallback_location: edit_freecen2_civil_parish_path(@freecen2_civil_parish, type: @type)) && return
     else
       flash[:notice] = 'Update was successful'
+      get_user_info_from_userid
+      @freecen2_civil_parish.update_freecen2_place if @freecen2_civil_parish.freecen2_place_id.blank?
+      @freecen2_civil_parish.update_tna_change_log(@user_userid)
+
       redirect_to freecen2_civil_parish_path(@freecen2_civil_parish, type: @type)
     end
   end

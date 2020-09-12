@@ -12,6 +12,7 @@
   <%= f.input :tnaid,:label => "TNA link", :input_html => { :disabled => true,:size => 10 }%>
   <%= f.input :code,:label => "TNA Code", :input_html => { :disabled => true,:size => 10 }%>
   <%= f.input :prenote,:label => "TNA Pre notes", :input_html => { :disabled => true,:size => 10 }%>
+  <%= f.input :reason_changed,:label => "Reason for making a change or addition",:as => :text, :input_html => {:class => " simple_form_bgcolour  ",   :placeholder => "Enter the reason for a change",  :size => "29x5" }%>
   <%= f.hidden_field :type, :value=>@type %>
   <%= f.button :submit, 'Submit'   %>
 <% end %>

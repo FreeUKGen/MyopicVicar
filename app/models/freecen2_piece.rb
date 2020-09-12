@@ -38,7 +38,7 @@ class Freecen2Piece
   field :notes, type: String
   field :prenote, type: String
   field :civil_parish_names, type: String
-
+  field :reason_changed, type: String
 
 
   field :parish_number, type: String
@@ -191,5 +191,15 @@ class Freecen2Piece
       end
     end
     @civil_parish_names
+  end
+
+  def update_freecen2_place
+    result, place_id = Freecen2Place.valid_place(chapman_code, name)
+    update_attributes(freecen2_place_id: place_id) if result
+  end
+
+  def update_tna_change_log(userid)
+    tna = TnaChangeLog.create(userid: userid, year: year, chapman_code: chapman_code, parameters: previous_changes, tna_collection: "#{self.class}")
+    tna.save
   end
 end

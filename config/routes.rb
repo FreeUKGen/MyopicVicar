@@ -18,6 +18,9 @@ MyopicVicar::Application.routes.draw do
 
   root :to => 'search_queries#new'
 
+  get 'tna_change_logs/:id/download(.:format)', :to => 'tna_change_logs#download', :as => :download_tna_change_logs
+  resources :tna_change_logs
+
   get 'open', :to => 'open#index'
   get 'open/:county/places', :to => 'open#places_for_county', :as => :open_places_for_county
   get 'open/:county/:place/surnames', :to => 'open#surnames_for_place', :as => :open_surnames_for_place

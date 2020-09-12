@@ -13,6 +13,7 @@ class Freecen2District
   field :type, type: String
   field :code, type: String
   field :notes, type: String
+  field :reason_changed, type: String
 
   has_many :freecen2_pieces, dependent: :restrict_with_error
   belongs_to :freecen2_place, optional: true, index: true
@@ -84,5 +85,15 @@ class Freecen2District
       [totals_pieces, totals_pieces_online, totals_individuals, totals_dwellings]
     end
 
+  end
+
+  def update_freecen2_place
+    result, place_id = Freecen2Place.valid_place(chapman_code, name)
+    update_attributes(freecen2_place_id: place_id) if result
+  end
+
+  def update_tna_change_log(userid)
+    tna = TnaChangeLog.create(userid: userid, year: year, chapman_code: chapman_code, parameters: previous_changes, tna_collection: "#{self.class}")
+    tna.save
   end
 end
