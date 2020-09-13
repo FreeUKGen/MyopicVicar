@@ -129,7 +129,7 @@
       <div class="grid__item one-whole lap-one-whole palm-one-whole">
         <% if BestGuess.transcriber(@search_record.RecordNumber).present? %>
           <h4>This Record has been transcribed by following Transcriber(s)</h4>
-          <% BestGuess.transcriber(@search_record.RecordNumber).each do |t|%>
+          <% BestGuess.transcriber(@search_record.RecordNumber).each do |t| %>
             <p><%= t["UserID"] %></p>
           <% end %>
         <% else %>
