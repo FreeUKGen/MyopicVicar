@@ -35,7 +35,7 @@ class BestGuess < FreebmdDbBase
   end
 
   def self.transcriber(record)
-    record_info = BestGuess.where(RecordNumber: record)
+    record_info = BestGuess.where(RecordNumber: record).first
     accession_numbers = BestGuessLink.where(RecordNumber: record).pluck(:AccessionNumber)
     accessions = Accession.where(AccessionNumber: accession_numbers)
     accessions_all = accessions# || accessions.where(SourceType: '+Z')
