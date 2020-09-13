@@ -38,10 +38,11 @@ class BestGuess < FreebmdDbBase
     record_info = BestGuess.where(RecordNumber: record)
     accession_numbers = BestGuessLink.where(RecordNumber: record).pluck(:AccessionNumber)
     accessions = Accession.where(AccessionNumber: accession_numbers)
-    accession_files = accessions.pluck(:FileNumber)
+    accessions_all = accessions# || accessions.where(SourceType: '+Z')
+    accession_files = accessions_all.pluck(:FileNumber)
     file_submitters =  BmdFile.where(FileNumber: accession_files).pluck(:SubmitterNumber)
     @transcribers = Submitter.where(SubmitterNumber: file_submitters)
-    return @transcribers if record_info.confirmed & ENTRY_SYSTEM || record_info & ENTRY_REFERENCE || accessions.SourceType = '+Z'
+    return @transcribers if record_info.Confirmed & ENTRY_SYSTEM || record_info.Confirmed & ENTRY_REFERENCE
    #sql = "SELECT b2.recordNumber,a2.Year,a2.EntryQuarter,a2.RecordTypeID,b.Confirmed
             #FROM Accessions as a1, Accessions as a2,
              #    BestGuessLink as b1, BestGuessLink as b2,
