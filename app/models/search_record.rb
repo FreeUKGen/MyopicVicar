@@ -32,8 +32,10 @@ class SearchRecord
 
 
   belongs_to :freereg1_csv_entry, index: true, optional: true
-  belongs_to :freecen_individual, index: true, optional: true
+  belongs_to :freecen_csv_entry, index: true, optional: true
+  belongs_to :freecen_csv_file, index: true, optional: true
   belongs_to :place, index: true
+
 
 
   field :annotation_ids, type: Array #, :typecast => 'ObjectId'
@@ -567,6 +569,10 @@ class SearchRecord
       place_name = place.place_name unless place.nil? # should not be nil but!
       location_array << "#{place_name} (#{church_name})"
       location_array << " [#{register_type}]"
+    elsif freecen_csv_entry_id.present?
+      entry = FreecenCsvEntry.find_by(_id:freecen_csv_entry_id)
+      place = entry.where_census_taken
+      location_array << "#{place}"
     else # freecen
       place_name = place.place_name unless place.nil?
       location_array << "#{place_name}"
@@ -589,7 +595,12 @@ class SearchRecord
     # then county name
     particles << ChapmanCode.name_from_code(chapman_code)
     # then location
-    particles << self.place.place_name if self.place.place_name
+    if freecen_csv_file_id.present?
+      place = Freecen2Place.find_by(_id: place_id)
+      particles << place.place_name if place.place_name
+    else
+      particles << self.place.place_name if self.place.place_name
+    end
     # finally date
     particles << search_dates.first
     # join and clean
@@ -781,7 +792,7 @@ class SearchRecord
   def populate_search_names
     if transcript_names && transcript_names.size > 0
       transcript_names.each_with_index do |name_hash|
-        person_type=PersonType::FAMILY
+        person_type = PersonType::FAMILY
         if name_hash[:type] == 'primary'
           person_type=PersonType::PRIMARY
         end
@@ -789,8 +800,11 @@ class SearchRecord
           person_type=PersonType::WITNESS
         end
         person_role = (name_hash[:role].nil?) ? nil : name_hash[:role]
-        if MyopicVicar::Application.config.template_set == 'freecen'
+        if MyopicVicar::Application.config.template_set == 'freecen' && freecen_csv_entry_id.blank?
           person_gender = self.freecen_individual.sex.downcase unless self.freecen_individual.nil? || self.freecen_individual.sex.nil?
+        elsif  MyopicVicar::Application.config.template_set == 'freecen' && freecen_csv_entry_id.present?
+          entry = FreecenCsvEntry.find_by(_id: freecen_csv_entry_id)
+          person_gender = entry.sex
         else
           person_gender = gender_from_role(person_role)
         end

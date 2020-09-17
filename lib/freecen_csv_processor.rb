@@ -635,7 +635,6 @@ class CsvFile < CsvFiles
     @file.validation = @validation
     @file.processed = @project.create_search_records
     @file.field_specification = @field_specification
-    @file.header_line = @header_line
     success = @piece.save
     p @file
     [success, @file]
@@ -647,6 +646,7 @@ class CsvFile < CsvFiles
       record[:piece_number] = record[:piece].number
       record[:piece] = nil
       record = record.delete_if {|key, value| key == :piece }
+      record = record.delete_if {|key, value| key == :field_specification }
       #freecen_csv_entry = FreecenCsvEntry.new(record)
       #freecen_csv_entry.freecen_csv_file_id = file.id
       record[:freecen_csv_file_id] = file.id

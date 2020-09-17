@@ -97,6 +97,8 @@ MyopicVicar::Application.routes.draw do
   get 'freecen_csv_files/display_my_own_files_waiting_to_be_processed',  :to => 'freecen_csv_files#display_my_own_files_waiting_to_be_processed', :as => :display_my_own_files_waiting_to_be_processed_freecen_csv_file
   get 'freecen_csv_files/:id/download(.:format)', :to => 'freecen_csv_files#download', :as => :download_freecen_csv_file
   get 'freecen_csv_files/:id/validate(.:format)', :to => 'freecen_csv_files#validate', :as => :set_validation_freecen_csv_file
+  get 'freecen_csv_files/:id/incorporate(.:format)', :to => 'freecen_csv_files#incorporate', :as => :incorporate_freecen_csv_file
+  get 'freecen_csv_files/:id/unincorporate(.:format)', :to => 'freecen_csv_files#unincorporate', :as => :unincorporate_freecen_csv_file
   resources :freecen_csv_files
 
   get 'freecen_csv_entries/:id/edit_embargo(.:format)', :to => 'freecen_csv_entries#edit_embargo', :as => :edit_embargo_freecen_csv_entry

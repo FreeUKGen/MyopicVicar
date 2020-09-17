@@ -66,6 +66,7 @@ class FreecenCsvFile
   field :validation, type: Boolean, default: false
   field :was_locked, type: Boolean, default: false
   field :list_of_records, type: Hash
+  field :incorporated, type: Boolean, default: false
 
   index({ file_name: 1, userid: 1, county: 1, place: 1, register_type: 1 })
   index({ county: 1, place: 1, register_type: 1, record_type: 1 })
@@ -344,6 +345,18 @@ class FreecenCsvFile
     result = PhysicalFile.userid(userid).file_name(file_name).waiting.blank? ? true : false
   end
 
+  def can_we_incorporate?
+    # need to check is duplication
+
+    result = incorporated ? false : true
+  end
+
+  def can_we_unincorporate?
+    # need to check is duplication
+
+    result = incorporated ? true : false
+  end
+
   def change_owner_of_file(new_userid)
     # rspec tested
     # first step is to move the files
@@ -486,6 +499,19 @@ class FreecenCsvFile
       batch.update(locked_by_transcriber: false)
     end
   end
+
+  def incorporate_records
+    freecen_csv_entries.each do |entry|
+      entry.translate_individual
+    end
+    update_attribute(:incorporated, true)
+  end
+
+  def unincorporate_records
+    SearchRecord.collection.delete_many(freecen_csv_file_id: _id)
+    update_attribute(:incorporated, false)
+  end
+
 
   def location_from_file
     my_piece = freecen2_piece

@@ -236,6 +236,35 @@ class FreecenCsvFilesController < ApplicationController
     redirect_to freecen_csv_entries_path(type: 'Err')
   end
 
+  def incorporate
+    @freecen_csv_file = FreecenCsvFile.find(params[:id])
+    unless FreecenCsvFile.valid_freecen_csv_file?(params[:id])
+      message = 'The file was not correctly linked. Have your coordinator contact the web master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
+    unless @freecen_csv_file.can_we_incorporate?
+      message = 'File cannot be incorporated'
+      redirect_back(fallback_location: { action: 'show' }, notice: message) && return
+    end
+    message = @freecen_csv_file.incorporate_records
+    redirect_back(fallback_location: { action: 'show' }, notice: message) && return
+  end
+
+  def unincorporate
+    @freecen_csv_file = FreecenCsvFile.find(params[:id])
+    unless FreecenCsvFile.valid_freecen_csv_file?(params[:id])
+      message = 'The file was not correctly linked. Have your coordinator contact the web master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
+    unless @freecen_csv_file.can_we_unincorporate?
+      message = 'File records are not in the database so cannot be removed'
+      redirect_back(fallback_location: { action: 'show' }, notice: message) && return
+    end
+    message = @freecen_csv_file.unincorporate_records
+    redirect_back(fallback_location: { action: 'show' }, notice: message) && return
+  end
+
+
   def index
     # the common listing entry by syndicates and counties
     @county =  session[:county]

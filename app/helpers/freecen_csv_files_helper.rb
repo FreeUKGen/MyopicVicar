@@ -49,12 +49,14 @@ module FreecenCsvFilesHelper
   end
 
   def remove_freecen_file
-    link_to 'Remove file', remove_freecen_csv_file_path(@freecen_csv_file), data: { confirm: 'Are you sure you want to remove this batch' }, class: 'btn   btn--small', method: :get, title: 'Removes the file and its entries and schedules their actual deletion overnight. Cannot be done if the coordinator has published its contents into the search database'
+    link_to 'Remove file', remove_freecen_csv_file_path(@freecen_csv_file), data: { confirm: 'Are you sure you want to remove this batch' },
+      class: 'btn   btn--small', method: :get,
+      title: 'Removes the file and its entries and schedules their actual deletion overnight. Cannot be done if the coordinator has published its contents into the search database'
   end
 
   def replace_freecen_file
-    link_to 'Replace file', edit_csvfile_path(@freecen_csv_file), method: :get,
-      data: { confirm:  'Are you sure you want to replace these records?' }, class: 'btn   btn--small', title: 'Allows the complete replacement of the csv file and all of its entries. Will not be permitted if the file is locked '
+    link_to 'Replace file', edit_csvfile_path(@freecen_csv_file), method: :get, data: { confirm:  'Are you sure you want to replace these records?' },
+      class: 'btn   btn--small', title: 'Allows the complete replacement of the csv file and all of its entries. Will not be permitted if the file is locked '
   end
 
   def relocate_freecen_file
@@ -64,28 +66,41 @@ module FreecenCsvFilesHelper
 
   def merge_freecen_files
     link_to 'Merge batches from same userid/filename into this one', merge_freecen_csv_file_path(@freecen_csv_file),
-      data: { confirm: 'Are you sure you want to merge all files for the same userid and filename in this piece into this file?' }, class: 'btn   btn--small', method: :get
+      data: { confirm: 'Are you sure you want to merge all files for the same userid and filename in this piece into this file?' },
+      class: 'btn   btn--small', method: :get
   end
 
   def reprocess_freecen_file
-    link_to '(Re)Process file', reprocess_physical_file_path(@freecen_csv_file), class: 'btn   btn--small', method: :get, title: 'Submits the file for processing. The report will go to the owner of the file',
-      data: { confirm:  'Are you sure you want to reprocess this file?' }
+    link_to '(Re)Process file', reprocess_physical_file_path(@freecen_csv_file), class: 'btn   btn--small', method: :get,
+      title: 'Submits the file for processing. The report will go to the owner of the file', data: { confirm:  'Are you sure you want to reprocess this file?' }
   end
 
   def delete_freecen_file
     link_to 'Delete original file and all associated entries', freecen_csv_file_path(@freecen_csv_file),
-      data: { confirm: 'Are you sure you want to remove this file and entries' }, class: 'btn   btn--small', method: :delete, title: 'This performs an immediate deletion of the file and its entries. Use with EXTREME care'
+      data: { confirm: 'Are you sure you want to remove this file and entries' }, class: 'btn   btn--small', method: :delete,
+      title: 'This performs an immediate deletion of the file and its entries. Use with EXTREME care'
   end
 
   def change_freecen_file_owner
     link_to 'Copy to Another Person', change_userid_freecen_csv_file_path(@freecen_csv_file),
-      data: { confirm: 'Are you sure you want to copy this file ' }, class: 'btn   btn--small', method: :get, title: 'Copies the file (and any on line edits) to a proofreader or validator or yourself. The file will be processed and the report sent.'
+      data: { confirm: 'Are you sure you want to copy this file ' }, class: 'btn   btn--small', method: :get,
+      title: 'Copies the file (and any on line edits) to a proofreader or validator or yourself. The file will be processed and the report sent.'
   end
 
   def validate_freecen_file
     validation_heading = @freecen_csv_file.validation ? 'Validation under way' : 'Commence validation'
-    link_to "#{validation_heading}", set_validation_freecen_csv_file_path(@freecen_csv_file), class: 'btn   btn--small', method: :get, title: 'Validation of file',
-      data: { confirm:  'Are you sure you want to commence validation of the file?' }
+    link_to "#{validation_heading}", set_validation_freecen_csv_file_path(@freecen_csv_file), class: 'btn   btn--small', method: :get,
+      title: 'Validation of file', data: { confirm:  'Are you sure you want to commence validation of the file?' }
+  end
+
+  def incorporate_freecen_file
+    unless @freecen_csv_file.incorporated
+      link_to 'Incorporate file', incorporate_freecen_csv_file_path(@freecen_csv_file), class: 'btn   btn--small', method: :get,
+        title: 'Incorporates the records into the database', data: { confirm:  'Are you sure you want to commence incorporation of the file?' }
+    else
+      link_to 'Remove records from database', unincorporate_freecen_csv_file_path(@freecen_csv_file), class: 'btn   btn--small', method: :get,
+        title: 'Removes all of the records from the database', data: { confirm:  'Are you sure you want to remove all of the records from the database?' }
+    end
   end
 
   def freecen_file_errors(file)
