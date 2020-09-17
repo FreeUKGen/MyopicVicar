@@ -107,7 +107,7 @@ class SearchRecordsController < ApplicationController
       @is_family_head = true
     else
       entry = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id, dwelling_number: @dwel, sequence_in_household: 1).first
-      @family_head_name = entry.forenames + ' ' + entry.surname
+      @family_head_name = entry.forenames + ' ' + entry.surname unless entry.blank?
     end
   end
 
