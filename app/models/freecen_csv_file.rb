@@ -347,8 +347,17 @@ class FreecenCsvFile
 
   def can_we_incorporate?
     # need to check is duplication
-
     result = incorporated ? false : true
+    return  [result, 'Already incorporated'] unless result
+
+    piece = Freecen2Piece.find_by(_id: freecen2_piece_id)
+    return [false, 'No Freecen2 Piece'] if piece.blank?
+
+    place = piece.freecen2_place
+
+    return [false, 'No Freecen2 Place'] if place.blank?
+
+    [true, '']
   end
 
   def can_we_unincorporate?

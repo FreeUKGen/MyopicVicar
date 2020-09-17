@@ -242,10 +242,10 @@ class FreecenCsvFilesController < ApplicationController
       message = 'The file was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
-    unless @freecen_csv_file.can_we_incorporate?
-      message = 'File cannot be incorporated'
-      redirect_back(fallback_location: { action: 'show' }, notice: message) && return
-    end
+    result, message = @freecen_csv_file.can_we_incorporate?
+
+    redirect_back(fallback_location: { action: 'show' }, notice: message) && return unless result
+
     message = @freecen_csv_file.incorporate_records
     redirect_back(fallback_location: { action: 'show' }, notice: message) && return
   end
