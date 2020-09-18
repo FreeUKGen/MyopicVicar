@@ -62,13 +62,23 @@ module SearchQueriesHelper
   def format_location(search_record)
     if search_record[:location_name].present?
       search_record[:location_name]
-    elsif
-      search_record[:location_names].present?
+    elsif search_record[:location_names].present?
       format_for_line_breaks(search_record[:location_names])
     else
       ""
     end
   end
+
+  def cen_location(search_record)
+    if search_record.freecen_csv_entry_id.present?
+      entry = FreecenCsvEntry.find_by(_id: search_record.freecen_csv_entry_id)
+      district = entry.where_census_taken.titleize
+    else
+      district = search_record[:location_names][0]
+    end
+    district
+  end
+
   def county(search_record)
     chapman = search_record[:chapman_code]
     if chapman.present?

@@ -572,7 +572,7 @@ class SearchRecord
     elsif freecen_csv_entry_id.present?
       entry = FreecenCsvEntry.find_by(_id:freecen_csv_entry_id)
       place = entry.where_census_taken
-      location_array << "#{place}"
+      location_array << "#{place.titleize}"
     else # freecen
       place_name = place.place_name unless place.nil?
       location_array << "#{place_name}"

@@ -109,6 +109,8 @@ class FreecenCsvEntry
     end
   end
 
+  before_save :adjust_case
+
   after_save :check_valid
 
   index({ freecen_csv_file_id: 1, year: 1 }, { name: 'freecen_csv_file_id_year' })
@@ -116,6 +118,7 @@ class FreecenCsvEntry
   index({ freecen_csv_file_id: 1, record_digest: 1 })
 
   class << self
+
     def id(id)
       where(id: id)
     end
@@ -1715,31 +1718,8 @@ class FreecenCsvEntry
   end
 
   def display_fields(search_record)
-    self['register_type'] = ""
-    self['register_type'] = search_record[:location_names][1].gsub('[','').gsub(']','') unless search_record[:location_names].nil? || search_record[:location_names][1].nil?
-    place = ''
-    church = ''
-    unless search_record[:location_names].nil? || search_record[:location_names][0].nil?
-      name_parts = search_record[:location_names][0].split(') ')
-      case
-      when name_parts.length == 1
-        (place, church) = search_record[:location_names][0].split(' (')
-      when name_parts.length == 2
-        place = name_parts[0] + ")"
-        name_parts[1][0] = ""
-        church = name_parts[1]
-      else
-      end
-    end
-    place.present? ? self['place'] = place.strip : self['place'] = ''
-    church.present? ? self['church_name'] = church[0..-2] : self['church_name'] = ''
-    self['county'] = ""
-    code = search_record[:chapman_code] unless search_record[:chapman_code].nil?
-    ChapmanCode::CODES.each_pair do |key,value|
-      if value.has_value?(code)
-        self['county'] = value.key(code)
-      end
-    end
+
+
   end
 
   def get(date_string)
@@ -2034,6 +2014,38 @@ class FreecenCsvEntry
     end
   end
 
+  def adjust_case
+    self.surname = surname.upcase if surname.present?
+    self.forenames = forenames.titleize if forenames.present?
+    self.birth_place = birth_place.titleize if birth_place.present?
+    self.verbatim_birth_place = verbatim_birth_place.titleize if birth_place.present?
+    self.civil_parish = civil_parish.titleize if civil_parish.present?
+    self.disability = disability.titleize if disability.present?
+    self.ecclesiastical_parish = ecclesiastical_parish.titleize if ecclesiastical_parish.present?
+    self.father_place_of_birth = father_place_of_birth.capitalize if father_place_of_birth.present?
+    self.house_or_street_name = house_or_street_name.titleize if house_or_street_name.present?
+    self.nationality = nationality.capitalize if nationality.present?
+    self.occupation = occupation.titleize if occupation.present?
+    self.occupation_category = occupation_category.upcase if occupation_category.present?
+    self.at_home = at_home.upcase if at_home.present?
+    self.parliamentary_constituency = parliamentary_constituency.titleize if parliamentary_constituency.present?
+    self.police_district = police_district.titleize if police_district.present?
+    self.poor_law_union = poor_law_union.titleize if poor_law_union.present?
+    self.read_write = read_write.titleize if read_write.present?
+    self.relationship = relationship.capitalize if relationship.present?
+    self.religion = religion.titleize if religion.present?
+    self.roof_type = roof_type.capitalize if roof_type.present?
+    self.sanitary_district = sanitary_district.titleize if sanitary_district.present?
+    self.scavenging_district = scavenging_district.titleize if scavenging_district.present?
+    self.school_board = school_board.titleize if school_board.present?
+    self.sex = sex.upcase if sex.present?
+    self.special_lighting_district = special_lighting_district.titleize if special_lighting_district.present?
+    self.special_water_district = special_water_district.titleize if special_water_district.present?
+    self.ward = ward.titleize if ward.present?
+    self.where_census_taken = where_census_taken.titleize if where_census_taken.present?
+    self.notes = notes.titleize if notes.present?
+    self.disability_notes = disability_notes.titleize if disability_notes.present?
+  end
 
   def self.management_display_labels
     ['Transition', 'Location Flag', 'Address Flag', 'Name Flag', 'Individual Flag', 'Occupation Flag', 'Birth Place Flag', 'Deleted Flag', 'Record Valid']
@@ -2242,8 +2254,8 @@ class FreecenCsvEntry
   end
 
   def part2_individual_display_values(year, chapman_code)
-    birth = (verbatim_birth_place.present? && !verbatim_birth_place == '-') ? verbatim_birth_place.titleize : verbatim_birth_place
-    selected_birth = (birth_place.present? && !birth_place == '-') ? birth_place.titleize : birth_place
+    birth = (verbatim_birth_place.present? && verbatim_birth_place != '-') ? verbatim_birth_place.titleize : verbatim_birth_place
+    selected_birth = (birth_place.present? && birth_place != '-') ? birth_place.titleize : birth_place
     birth_county_name = ChapmanCode.has_key(birth_county)
     verbatim_birth_county_name = ChapmanCode.has_key(verbatim_birth_county)
     note = notes.gsub(/\<br\>/, '').titleize if notes.present?

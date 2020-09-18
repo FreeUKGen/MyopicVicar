@@ -6,12 +6,13 @@
           <td><small>
               <%= lbl %>
             </small></td>
-        <% end %> <% if FreecenCsvEntry.part2_individual_display_labels(@year,@chapman_code).present? %>
-          <% FreecenCsvEntry.part2_individual_display_labels(@year,@chapman_code).each do |lbl| %>
-            <td><small>
-                <%= lbl %>
-              </small></td>
-          <% end %>
+        <% end %>
+      <% end %>
+      <% if FreecenCsvEntry.part2_individual_display_labels(@year,@chapman_code).present? %>
+        <% FreecenCsvEntry.part2_individual_display_labels(@year,@chapman_code).each do |lbl| %>
+          <td><small>
+              <%= lbl %>
+            </small></td>
         <% end %>
       <% end %>
     </tr>
@@ -26,12 +27,12 @@
                 <%= field_val %>
               </td>
             <% end %>
-            <% if FreecenCsvEntry.part2_individual_display_labels(@year,@chapman_code).present? %>
-              <% individual.part2_individual_display_values(@year,@chapman_code).each do |field_val| %>
-                <td class="weight--semibold">
-                  <%= field_val %>
-                </td>
-              <% end %>
+          <% end %>
+          <% if FreecenCsvEntry.part2_individual_display_labels(@year,@chapman_code).present? %>
+            <% individual.part2_individual_display_values(@year,@chapman_code).each do |field_val| %>
+              <td class="weight--semibold">
+                <%= field_val %>
+              </td>
             <% end %>
           <% end %>
         <% end %>
