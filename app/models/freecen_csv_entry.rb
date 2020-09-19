@@ -2321,8 +2321,8 @@ class FreecenCsvEntry
     file_id = freecen_csv_file.id
     next_entry = record_number + 1
     previous_entry = record_number - 1
-    next_entry = FreecenCsvEntry.find_by(record_number: next_entry, freecen_csv_file_id: file_id)
-    previous_entry = FreecenCsvEntry.find_by(record_number: previous_entry, freecen_csv_file_id: file_id)
+    next_entry = FreecenCsvEntry.find_by(freecen_csv_file_id: file_id, record_number: next_entry)
+    previous_entry = FreecenCsvEntry.find_by(freecen_csv_file_id: file_id, record_number: previous_entry)
     [next_entry, previous_entry]
   end
 

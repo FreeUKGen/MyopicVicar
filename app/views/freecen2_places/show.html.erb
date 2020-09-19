@@ -62,6 +62,49 @@
             <td>Notes about the place :</td>
             <td class="weight--semibold"><%= @place.place_notes %> </td>
           </tr>
-        </table>
+          <tr>
+            <td>Official website:<small> Opens in new tab</small></td>
+            <td class="weight--semibold"><%=official_source(@place.genuki_url)%></td>
+          </tr>
+          <tr>
+            <td>Source:</td>
+            <td class="weight--semibold"> <%= @place.source %></td>
+          </tr>
+          <% if  @place.reason_for_change.present? ||  @place.original_place_name.present? || @place.original_grid_reference.present? %>
+            <tr>
+              <td>Original place name:</td>
+              <td class="weight--semibold"> <%= @place.original_place_name %></td>
+            </tr>
+            <tr>
+              <td>Original county:</td>
+              <td class="weight--semibold"> <%= @place.original_county %></td>
+            </tr>
+            <tr>
+              <td>Original country:</td>
+              <td class="weight--semibold"> <%= @place.original_country %></td>
+            </tr>
+            <tr>
+              <td>Original Grid Reference:</td>
+              <td class="weight--semibold"> <%= @place.original_grid_reference %></td>
+            </tr>
+            <tr>
+              <td>Original latitude:</td>
+              <td class="weight--semibold"> <%= @place.original_latitude %></td>
+            </tr>
+            <tr>
+              <td>Original longitude:</td>
+              <td class="weight--semibold"> <%= @place.original_longitude %></td>
+            </tr>
+            <tr>
+              <td>Original source:</td>
+              <td class="weight--semibold"> <%= @place.original_source %></td>
+            </tr>
+            <tr>
+              <td>Reason for changes:</td>
+              <td class="weight--semibold"> <%= @place.reason_for_change %></td>
+            </tr>
+            <tr>
+            <% end%>
+          </table>
+        </div>
       </div>
-    </div>

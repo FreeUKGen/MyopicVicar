@@ -164,23 +164,23 @@ class FreecenCsvEntriesController < ApplicationController
     @type = session[:cen_index_type] if @type.blank? && session[:cen_index_type].present?
     session[:cen_index_type] = params[:type]
     if @type.blank?
-      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).all.order_by(file_line_number: 1)
+      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).all.order_by(record_number: 1)
     elsif @type == 'Civ'
-      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).in(data_transition: Freecen::LOCATION).all.order_by(file_line_number: 1)
+      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).in(data_transition: Freecen::LOCATION).all.order_by(record_number: 1)
     elsif @type == 'Pag'
-      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).in(data_transition: Freecen::LOCATION_PAGE).all.order_by(file_line_number: 1)
+      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).in(data_transition: Freecen::LOCATION_PAGE).all.order_by(record_number: 1)
     elsif @type == 'Dwe'
-      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).in(data_transition: Freecen::LOCATION_DWELLING).all.order_by(file_line_number: 1)
+      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).in(data_transition: Freecen::LOCATION_DWELLING).all.order_by(record_number: 1)
     elsif @type == 'Ind'
-      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).all.order_by(file_line_number: 1)
+      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).all.order_by(record_number: 1)
     elsif @type == 'Err'
-      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).where(:error_messages.gte => 1).all.order_by(file_line_number: 1)
+      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).where(:error_messages.gte => 1).all.order_by(record_number: 1)
     elsif @type == 'War'
-      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).where(:warning_messages.gte => 1).all.order_by(file_line_number: 1)
+      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).where(:warning_messages.gte => 1).all.order_by(record_number: 1)
     elsif @type == 'Inf'
-      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).where(:info_messages.gte => 1).all.order_by(file_line_number: 1)
+      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).where(:info_messages.gte => 1).all.order_by(record_number: 1)
     elsif @type == 'Fla'
-      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).where(flag: true).all.order_by(file_line_number: 1)
+      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).where(flag: true).all.order_by(record_number: 1)
     end
     @freecen_csv_file.add_list_of_records(@type, @freecen_csv_entries)
   end

@@ -19,8 +19,10 @@
         <th class='sticky-header '>Notes<br>
           <th class='sticky-header '>Show on map<br>
             <small> Opens in a new tab</small></th>
-          <th class='sticky-header '>Action<br>
-          </tr>
+          <% if ['data_manager', 'system_administrator', 'county_coordinator'].include?(@user.person_role) %>
+            <th class='sticky-header '>Action<br>
+            </tr>
+          <% end%>
         </thead>
         <tbody >
           <% if @results.present? %>
@@ -34,8 +36,10 @@
                 <td > <%= place.source%></td>
                 <td > <%= place.place_notes%></td>
                 <td > <%= locate(place.latitude,place.longitude) %></td>
-                <td ><%= link_to 'Edit', edit_freecen2_place_path(place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small", title: 'Edit the place including the addition of alternate place names' %></td>
-              </tr>
+                <% if ['data_manager', 'system_administrator', 'county_coordinator'].include?(@user.person_role) %>
+                  <td ><%= link_to 'Edit', edit_freecen2_place_path(place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small", title: 'Edit the place including the addition of alternate place names' %></td>
+                </tr>
+              <% end%>
             <% end%>
           <% else %>
             <tr> There are no such names </tr>
