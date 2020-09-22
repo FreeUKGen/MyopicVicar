@@ -1088,7 +1088,7 @@ class SearchQuery
     year.blank? ? default : year
   end
 
-  def quarter_number(year:, quarter: nil)
+  def quarter_number(year:, quarter: 1)
     (year.to_i-1837)*4 + quarter.to_i
   end
 
