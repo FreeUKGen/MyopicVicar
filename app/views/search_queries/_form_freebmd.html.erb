@@ -182,7 +182,7 @@
                         </div>
                         <div id="death_dob">
                             <label class="accessibility" for="search_query_dob_at_death">Finish Year</label>
-                            <%= date_field_tag 'search_query[dob_at_death]', set_value(@search_query.dob_at_death), class: 'text-input', tabindex: "0" %>
+                            <%= number_field_tag 'search_query[dob_at_death]', set_value(@search_query.dob_at_death), { min: 1000, max: 3000, class: 'text-input', tabindex: "0" } %>
                         </div>
                         <div id="death_dob_range">
                             <div class="grid">

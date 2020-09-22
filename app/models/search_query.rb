@@ -1482,7 +1482,7 @@ class SearchQuery
   end
 
   def dob_quarter_number date
-    quarter_number(year: date_array(date)[0], quarter: get_quarter_from_month(date_array(date)[1]))
+    quarter_number(year: date_array(date)[0])#, quarter: get_quarter_from_month(date_array(date)[1]))
   end
 
   def date_array date

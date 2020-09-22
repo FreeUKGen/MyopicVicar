@@ -573,7 +573,7 @@ module ApplicationHelper
       info: '<i class="fa fa-info-circle"></i>',
       pinterest: '<i class="fa fa-pinterest-square fa-2x"></i>',
       instagram: '<i class="fa fa-instagram fa-2x"></i>',
-      left_arrow_pink: '<i class="fa fa-arrow-left view_arrow"></i>'
+      left_arrow_pink: '<i class="fa fa-arrow-left"></i>'
     }
   end
 
