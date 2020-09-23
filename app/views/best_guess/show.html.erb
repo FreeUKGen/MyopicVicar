@@ -93,7 +93,7 @@
                   Transcriber
                 </th>
                 <td>
-                  <%= BestGuess.transcriber(@search_record.RecordNumber).pluck["UserID"].join(',  ') %>
+                  <%= BestGuess.transcriber(@search_record.RecordNumber).pluck["UserID"]#.join(',  ') %>
                 </td>
               </tr>
             </tbody>
