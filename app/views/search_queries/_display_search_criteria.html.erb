@@ -14,11 +14,12 @@
           <%= pluralize(@result_count, 'Result', ' Search Results') %>
         </div>
     </div-->
-    <div class='container'>
+    <div class='container' id='search_criteria_container'>
       <div class="grid">
         <div class="grid__item  seven-tenths lap-three-quarters palm-one-whole">
           <section class="islet islet--light soft--left hard--bottom">
             <div class='grid'>
+              <i class="fa fa-times float--right project-text-color" aria-hidden="true" id="hide-search-criteria"></i>
               <div class="grid__item one-whole lap-one-whole palm-one-whole">
                 <h2 class="epsilon flush--bottom push-half--bottom"><em>When you searched for:</em></h2>
                 <div class="criteria-group">
@@ -50,5 +51,13 @@
           Each View button in the <q>Detail</q> column opens a page with all the information we have for that record.</small>
       <%# end %>
     </div-->
+<script>
+  //js code to close search criteria
+  $('#hide-search-criteria').click(
+    function() {
+     $('#search_criteria_container').hide();
+     $('#view_search_criteria').css("display", "inline-block");
+  });
+</script>
   
 
