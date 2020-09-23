@@ -93,7 +93,7 @@
                   Transcriber
                 </th>
                 <td>
-                  <%= BestGuess.transcriber(@search_record.RecordNumber).pluck["UserID"] %>
+                  <%= BestGuess.transcriber(@search_record[:RecordNumber]).pluck["UserID"] %>
                 </td>
               </tr>
             </tbody>
