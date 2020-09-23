@@ -41,24 +41,8 @@ class BestGuess < FreebmdDbBase
     accessions_all = accessions# || accessions.where(SourceType: '+Z')
     accession_files = accessions_all.pluck(:FileNumber)
     file_submitters =  BmdFile.where(FileNumber: accession_files).pluck(:SubmitterNumber)
-    @transcribers = Submitter.where(SubmitterNumber: file_submitters)
+    @transcribers = Submitter.where(SubmitterNumber: file_submitters).pluck(:UserID)
     return @transcribers if record_info.Confirmed & ENTRY_SYSTEM || record_info.Confirmed & ENTRY_REFERENCE
-   #sql = "SELECT b2.recordNumber,a2.Year,a2.EntryQuarter,a2.RecordTypeID,b.Confirmed
-            #FROM Accessions as a1, Accessions as a2,
-             #    BestGuessLink as b1, BestGuessLink as b2,
-              #   BestGuess as b
-           # WHERE b1.recordnumber= #{record} AND
-            #      b1.accessionnumber=a1.accessionnumber AND
-             #     a1.filenumber=a2.filenumber AND
-              #    b2.accessionnumber=a2.accessionnumber AND
-              #    a2.startline+b2.sequencenumber=a1.startline+b1.sequencenumber AND
-                #  b2.recordNumber!=b1.recordnumber AND
-                #  b.RecordNumber = #{record} AND
-                 # (b.Confirmed & #{ENTRY_SYSTEM} OR
-                 #  b.Confirmed & #{ENTRY_REFERENCE} OR
-                  # a1.SourceType = '+Z')
-            #GROUP BY b2.RecordNumber"
-   #FreebmdDbBase.connection.select_all(sql).to_hash
   end
 
   def self.postems_list
