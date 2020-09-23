@@ -27,3 +27,10 @@ task :freecen_vld_clear_digest,[:vld_basename] => [:environment] do |t,args|
     end
   end
 end
+# the vld_basename is case-sensitive and does not include the full path,
+# for example: rg121798.vld or HS411168.VLD
+# You can enter a single filename or a comma-separated list.
+task :freecen_csv_file_incorporate, [:freecen_csv_file, :chapman_code] => [:environment] do |t, args|
+  require 'freecen_csv_file_incorporate'
+  FreecenCsvFileIncorporate.incorporate(args[:freecen_csv_file], args[:chapman_code])
+end

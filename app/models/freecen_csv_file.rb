@@ -67,6 +67,9 @@ class FreecenCsvFile
   field :was_locked, type: Boolean, default: false
   field :list_of_records, type: Hash
   field :incorporated, type: Boolean, default: false
+  field :incorporated_date, type: DateTime
+  field :enumeration_districts, type: Hash
+  field :incorporation_lock, type: Boolean, default: false
 
   index({ file_name: 1, userid: 1, county: 1, place: 1, register_type: 1 })
   index({ county: 1, place: 1, register_type: 1, record_type: 1 })
@@ -357,13 +360,43 @@ class FreecenCsvFile
 
     return [false, 'No Freecen2 Place'] if place.blank?
 
+    result, message = includes_existing_enumeration_districts(piece)
+
+    return [false, "File contains enumeration districts #{message}"] if result
+
     [true, '']
   end
 
   def can_we_unincorporate?
     # need to check is duplication
+    if !incorporated
+      message = 'File records are not in the database so cannot be removed'
+      result = false
+    elsif incorporation_lock
+      message = 'Records are incorporated but the incorporated lock is set. You must remove before proceeding'
+      result = false
+    else
+      message = 'Proceeding'
+      result = true
+    end
+    [result, message]
+  end
 
-    result = incorporated ? true : false
+  def includes_existing_enumeration_districts(piece)
+    @result = false
+    @message = ''
+    FreecenCsvFile.where(freecen2_piece_id: piece.id).all.each do |file|
+      next unless file.incorporation_lock
+      enumeration_districts.each_pair do |civil_parish, districts|
+        if file.enumeration_districts.key?(civil_parish)
+          districts.each do |district|
+            @result = true if file.enumeration_districts[civil_parish].include?(district)
+            @message += "#{civil_parish} with enumeration district #{district} already incorporated, "
+          end
+        end
+      end
+    end
+    [@result, @message]
   end
 
   def change_owner_of_file(new_userid)
@@ -512,13 +545,17 @@ class FreecenCsvFile
   def incorporate_records
     freecen_csv_entries.each do |entry|
       entry.translate_individual
+      #add eds
     end
+    #add eds
     update_attribute(:incorporated, true)
+
   end
 
   def unincorporate_records
     SearchRecord.collection.delete_many(freecen_csv_file_id: _id)
-    update_attribute(:incorporated, false)
+    update_attributes(incorporated: false, incorporated_date: nil)
+    'Records removed'
   end
 
 

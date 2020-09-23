@@ -47,7 +47,7 @@
               <td><%= link_to 'SH', freecen_csv_file, method: :get, title: 'Display information about the file and a number of reports on its contents' %></td>
               <td><%= link_to 'DL', download_freecen_csv_file_path(freecen_csv_file), data: { confirm:  'Are you sure you want to download this file?'}, method: :get, title: 'Download a copy of the file to your computer. This download WILL INCLUDE and on line changes. Downloading will remove any locks. It will be be stored in your downloads folder'  %></td>
               <td><%=  link_to 'ER', error_freecen_csv_file_path(freecen_csv_file), method: :get, title: 'Lists the entry numbers which have generated an error message. Any of the entries can be displayed on line' %></td>
-              <td><%= link_to 'RL', edit_csvfile_path(freecen_csv_file), method: :get, data: { confirm:  'Are you sure you want to replace these records?' }, title: 'Allows the complete replacement of the csv file and all of its entries. Will not be permitted if the file is locked '%>
+              <td><%= link_to 'RL', edit_csvfile_path(freecen_csv_file), method: :get, data: { confirm:  'Are you sure you want to replace these records?' }, title: 'Allows the complete replacement of the csv file and all of its entries. Will not be permitted if the file is locked' unless freecen_csv_file.incorporation_lock %>
               </td>
             </tr>
           <% end %>

@@ -49,8 +49,8 @@
           <td class="weight--semibold"> <%= uploaded_date(@freecen_csv_file)unless @freecen_csv_file.uploaded_date.blank? %></td>
         </tr>
         <tr>
-          <td>Validation </td>
-          <td class="weight--semibold"> <%= @freecen_csv_file.validation %></td>
+          <td>Enumeration Districts </td>
+          <td class="weight--semibold"> <%= @freecen_csv_file.enumeration_districts %> </td>
         </tr>
         <% if @freecen_csv_file.total_errors.zero?%>
           <tr id="<%= @freecen_csv_file.id%>"  style="color:black" >
@@ -93,15 +93,21 @@
                     <td class="weight--semibold"> <%= transform_boolean(@freecen_csv_file.locked_by_coordinator) %></td>
                   </tr>
                   <tr>
-                    <td>Search records created (No means that it was only verified for errors and its contents are NOT in the searchable database)</td>
-                    <td class="weight--semibold"><%= transform_boolean(@freecen_csv_file.processed) %></td>
+                    <td>Validation </td>
+                    <td class="weight--semibold"> <%= transform_boolean(@freecen_csv_file.validation) %></td>
                   </tr>
                   <tr>
-                    <td>Date search records created</td>
-                    <td class="weight--semibold"><%= @freecen_csv_file.processed_date.strftime("%d %b %Y") unless @freecen_csv_file.processed_date.nil? %></td>
-                  </tr>
-                </table>
+                    <td>Search records created <br>
+                      <small><stong>No </strong>means that it was only verified for errors and its contents are NOT searchable <br>
+                        <strong>Yes </strong>means that the records are searchable and the <strong>Incorporation lock set </strong><small></td>
+                        <td class="weight--semibold"><%= transform_boolean(@freecen_csv_file.incorporated) %></td>
+                      </tr>
+                      <tr>
+                        <td>Date search records created</td>
+                        <td class="weight--semibold"> <%= @freecen_csv_file.incorporated_date if @freecen_csv_file.incorporated_date.present? %></td>
+                      </tr>
+                    </table>
+                  </div>
+                </section>
               </div>
-            </section>
-          </div>
-          <br>
+              <br>

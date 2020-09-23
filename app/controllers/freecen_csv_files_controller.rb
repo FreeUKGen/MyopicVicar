@@ -245,8 +245,14 @@ class FreecenCsvFilesController < ApplicationController
     result, message = @freecen_csv_file.can_we_incorporate?
 
     redirect_back(fallback_location: { action: 'show' }, notice: message) && return unless result
+    get_user_info_from_userid
+    p @freecen_csv_file.file_name
+    p @freecen_csv_file.chapman_code
+    logger.warn("FREECEN:CSV_PROCESSING: Starting incorporation rake task for #{@freecen_csv_file.file_name} #{@freecen_csv_file.chapman_code}")
+    pid1 =  spawn("rake freecen_csv_file_incorporate[#{@freecen_csv_file.file_name},#{@freecen_csv_file.chapman_code}]")
+    message = "The csv file #{@freecen_csv_file.file_name} is being incorporated. You will receive an email when it has been completed."
+    logger.warn("FREECEN:CSV_PROCESSING: rake task for #{pid1}")
 
-    message = @freecen_csv_file.incorporate_records
     redirect_back(fallback_location: { action: 'show' }, notice: message) && return
   end
 
@@ -256,8 +262,8 @@ class FreecenCsvFilesController < ApplicationController
       message = 'The file was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
-    unless @freecen_csv_file.can_we_unincorporate?
-      message = 'File records are not in the database so cannot be removed'
+    proceed, message = @freecen_csv_file.can_we_unincorporate?
+    unless proceed
       redirect_back(fallback_location: { action: 'show' }, notice: message) && return
     end
     message = @freecen_csv_file.unincorporate_records
@@ -478,8 +484,7 @@ class FreecenCsvFilesController < ApplicationController
       else
         session[:type] = 'edit'
         flash[:notice] = 'The update of the batch was successful'
-        @current_page = session[:page]
-        session[:page] = session[:initial_page]
+        redirect_to(action: 'show') && return
       end
     when 'Relocate'
       proceed, message = FreecenCsvFile.file_update_location(@freecen_csv_file, params[:freecen_csv_file], session)

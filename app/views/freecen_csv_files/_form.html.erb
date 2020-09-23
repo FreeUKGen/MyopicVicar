@@ -13,5 +13,9 @@
     <%= f.input :locked_by_transcriber, :input_html => { :disabled => true, :size => 30 } %>
     <%= f.input :locked_by_coordinator, :input_html => {:disabled => true, :size => 30 } %>
   <% end %>
+  <% if %w[county_coordinator system_administrator country_coordinator].include?(session[:role]) %>
+    <%= f.input :incorporation_lock, :label => "Incorporation lock ",:include_blank => false,
+          :collection => [ true, false],:input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width",  :size => 2} %>
+  <% end %>
   <%= f.button :submit, 'Submit'   %>
 <% end %>

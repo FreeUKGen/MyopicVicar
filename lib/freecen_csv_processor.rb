@@ -90,7 +90,6 @@ class FreecenCsvProcessor
         end
       rescue Exception => msg
         @records_processed = msg
-        p msg
         @project.write_messages_to_all('The CSVProcessor crashed please provide the following information to your coordinator to send to the System Administrators', true)
         @project.write_messages_to_all("#{msg}", true)
         @project.write_messages_to_all("#{msg.backtrace.inspect}", true)
@@ -641,6 +640,7 @@ class CsvFile < CsvFiles
   end
 
   def write_freecen_csv_entries(records, file)
+    enumeration_districts = {}
     documents = []
     records.each do |record|
       record[:piece_number] = record[:piece].number
@@ -650,11 +650,13 @@ class CsvFile < CsvFiles
       record = adjust_case(record)
       #freecen_csv_entry = FreecenCsvEntry.new(record)
       #freecen_csv_entry.freecen_csv_file_id = file.id
+      enumeration_districts[record[:civil_parish]] = [] if enumeration_districts[record[:civil_parish]].blank?
+      enumeration_districts[record[:civil_parish]] << record[:enumeration_district] unless enumeration_districts[record[:civil_parish]].include?(record[:enumeration_district])
       record[:freecen_csv_file_id] = file.id
       documents << record
     end
     FreecenCsvEntry.collection.insert_many(documents)
-    file.update(total_records: records.length) if records.present?
+    file.update_attributes(total_records: records.length, enumeration_districts: enumeration_districts) if records.present?
     true
   end
 end
