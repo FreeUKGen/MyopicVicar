@@ -353,6 +353,8 @@ class FreecenCsvFile
     result = incorporated ? false : true
     return  [result, 'Already incorporated'] unless result
 
+    return [false, 'No enumeration districts for the file, please reprocess before incorporating'] if enumeration_districts.blank?
+
     piece = Freecen2Piece.find_by(_id: freecen2_piece_id)
     return [false, 'No Freecen2 Piece'] if piece.blank?
 
