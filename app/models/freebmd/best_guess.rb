@@ -38,8 +38,8 @@ class BestGuess < FreebmdDbBase
 
   def self.transcriber(record)
     users = []
-    BestGuess.includes(:best_guess_links).where(RecordNumber: record).first.best_guess_links.includes(:accession).each do |accession|
-      users << accession.bmd_file.submitter.UserID
+    BestGuess.includes(:best_guess_links).where(RecordNumber: record).first.best_guess_links.includes(:accession).each do |link|
+      users << link.accession.bmd_file.submitter.UserID
     end
     users
     #record_info = BestGuess.where(RecordNumber: record).first
