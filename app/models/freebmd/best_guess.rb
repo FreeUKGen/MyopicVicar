@@ -2,7 +2,7 @@ class BestGuess < FreebmdDbBase
   self.pluralize_table_names = false
   self.table_name = 'BestGuess'
   has_one :best_guess_maariages, class_name: '::BestGuessMarriage', foreign_key: 'RecordNumber'
-  has_many :best_guess_hashes, class_name: '::BestGuessHash', foreign_key: 'RecordNumber'
+  #has_many :best_guess_hashes, class_name: '::BestGuessHash', foreign_key: 'RecordNumber'
   belongs_to :CountyCombos, foreign_key: 'CountyComboID', primary_key: 'CountyComboID', class_name: '::CountyCombo'
   has_many :ScanLinks, primary_key: 'ChunkNumber', foreign_key: 'ChunkNumber'
   has_many :best_guess_links, class_name: '::BestGuessLink', foreign_key: 'RecordNumber' #, primary_key: ['RecordNumber', 'AccessionNumber', 'SequenceNumber']
