@@ -2,7 +2,7 @@ class BestGuess < FreebmdDbBase
   self.pluralize_table_names = false
   self.table_name = 'BestGuess'
   has_one :best_guess_maariages, class_name: '::BestGuessMarriage', foreign_key: 'RecordNumber'
-  has_one :best_guess_hash, class_name: '::BestGuessHash', foreign_key: 'RecordNumber'
+  has_many :best_guess_hashes, class_name: '::BestGuessHash', foreign_key: 'RecordNumber'
   belongs_to :CountyCombos, foreign_key: 'CountyComboID', primary_key: 'CountyComboID', class_name: '::CountyCombo'
   has_many :ScanLinks, primary_key: 'ChunkNumber', foreign_key: 'ChunkNumber'
   has_many :best_guess_links, class_name: '::BestGuessLink', foreign_key: 'RecordNumber' #, primary_key: ['RecordNumber', 'AccessionNumber', 'SequenceNumber']
@@ -52,6 +52,7 @@ class BestGuess < FreebmdDbBase
     #return @transcribers if record_info.Confirmed & ENTRY_SYSTEM || record_info.Confirmed & ENTRY_REFERENCE
   end
 
-  def self.postems_list
+  def self.postems_list(record)
+    BestGuess.includes(:best_guess_hash).where(RecordNumber: record).first.best_guess_hash
   end
 end
