@@ -37,14 +37,19 @@ class BestGuess < FreebmdDbBase
   end
 
   def self.transcriber(record)
-    record_info = BestGuess.where(RecordNumber: record).first
-    accession_numbers = BestGuessLink.where(RecordNumber: record).pluck(:AccessionNumber)
-    accessions = Accession.where(AccessionNumber: accession_numbers)
-    accessions_all = accessions# || accessions.where(SourceType: '+Z')
-    accession_files = accessions_all.pluck(:FileNumber)
-    file_submitters =  BmdFile.where(FileNumber: accession_files).pluck(:SubmitterNumber)
-    @transcribers = Submitter.where(SubmitterNumber: file_submitters).pluck(:UserID)
-    return @transcribers if record_info.Confirmed & ENTRY_SYSTEM || record_info.Confirmed & ENTRY_REFERENCE
+    users = []
+    BestGuess.includes(:best_guess_links).where(RecordNumber: record).first.best_guess_links.includes(:accession).each do |accession|
+      users << accession.bmd_file.submitter.UserID
+    end
+    users
+    #record_info = BestGuess.where(RecordNumber: record).first
+    #accession_numbers = BestGuessLink.where(RecordNumber: record).pluck(:AccessionNumber)
+    #accessions = Accession.where(AccessionNumber: accession_numbers)
+    #accessions_all = accessions# || accessions.where(SourceType: '+Z')
+    #accession_files = accessions_all.pluck(:FileNumber)
+    #file_submitters =  BmdFile.where(FileNumber: accession_files).pluck(:SubmitterNumber)
+    #@transcribers = Submitter.where(SubmitterNumber: file_submitters).pluck(:UserID)
+    #return @transcribers if record_info.Confirmed & ENTRY_SYSTEM || record_info.Confirmed & ENTRY_REFERENCE
   end
 
   def self.postems_list
