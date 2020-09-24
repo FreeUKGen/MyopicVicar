@@ -33,7 +33,7 @@ class BestGuess < FreebmdDbBase
     friendly.downcase!
   end
 
-  def self.transcribers
+  def transcribers
     users = []
     #record_info = BestGuess.includes(:best_guess_links).where(RecordNumber: record).first
     self.best_guess_links.includes(:accession).each do |link|
@@ -50,7 +50,7 @@ class BestGuess < FreebmdDbBase
     #return @transcribers if record_info.Confirmed & ENTRY_SYSTEM || record_info.Confirmed & ENTRY_REFERENCE
   end
 
-  def self.postems_list
+  def postems_list
     postem_info = []
     self.best_guess_hashes.first.postems.each do |postem|
       postem_info << postem.Information
