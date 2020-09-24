@@ -19,9 +19,14 @@ class BestGuess < FreebmdDbBase
     # then the record types
     particles << RecordType::display_name(self.RecordTypeID)
     # then county name
-    #particles << ChapmanCode.name_from_code(chapman_code)
+    county_code = self.CountyCombos.County if self.CountyCombos.present?
+    particles << ChapmanCode.name_from_code(county_code) if county_code.present?
     # then location
-    #particles << self.place.place_name if self.place.place_name
+    particles << self.District if self.District
+    # then volume
+    particles << "v#{self.Volume}" if self.Volume
+    # then page
+    particles << "p#{self.Page}" if self.Page
     # finally date
     #particles << search_dates.first
     # join and clean
@@ -29,9 +34,6 @@ class BestGuess < FreebmdDbBase
     friendly.gsub!(/\W/, '-')
     friendly.gsub!(/-+/, '-')
     friendly.downcase!
-  end
-  def hello
-    puts 'hello'
   end
 
   def self.transcriber(record)
