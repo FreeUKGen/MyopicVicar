@@ -27,19 +27,17 @@ class BestGuess < FreebmdDbBase
     particles << "v#{self.Volume}" if self.Volume
     # then page
     particles << "p#{self.Page}" if self.Page
-    # finally date
-    #particles << search_dates.first
-    # join and clean
     friendly = particles.join('-')
     friendly.gsub!(/\W/, '-')
     friendly.gsub!(/-+/, '-')
     friendly.downcase!
   end
 
-  def self.transcriber(record)
+  def self.transcribers
     users = []
-    BestGuess.includes(:best_guess_links).where(RecordNumber: record).first.best_guess_links.includes(:accession).each do |link|
-      users << link.accession.bmd_file.submitter.UserID
+    #record_info = BestGuess.includes(:best_guess_links).where(RecordNumber: record).first
+    self.best_guess_links.includes(:accession).each do |link|
+      users << link.accession.bmd_file.submitter.UserID if self.Confirmed & ENTRY_SYSTEM || self.Confirmed & ENTRY_REFERENCE
     end
     users
     #record_info = BestGuess.where(RecordNumber: record).first
@@ -52,7 +50,10 @@ class BestGuess < FreebmdDbBase
     #return @transcribers if record_info.Confirmed & ENTRY_SYSTEM || record_info.Confirmed & ENTRY_REFERENCE
   end
 
-  def self.postems_list(record)
-    BestGuess.includes(:best_guess_hash).where(RecordNumber: record).first.best_guess_hash
+  def self.postems_list
+    postem_info = []
+    self.best_guess_hashes.first.postems.each do |postem|
+      postem_info << postem.Information
+    end
   end
 end
