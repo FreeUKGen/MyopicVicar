@@ -246,8 +246,6 @@ class FreecenCsvFilesController < ApplicationController
 
     redirect_back(fallback_location: { action: 'show' }, notice: message) && return unless result
     get_user_info_from_userid
-    p @freecen_csv_file.file_name
-    p @freecen_csv_file.chapman_code
     logger.warn("FREECEN:CSV_PROCESSING: Starting incorporation rake task for #{@freecen_csv_file.file_name} #{@freecen_csv_file.chapman_code}")
     pid1 =  spawn("rake freecen_csv_file_incorporate[#{@freecen_csv_file.file_name},#{@freecen_csv_file.chapman_code}]")
     message = "The csv file #{@freecen_csv_file.file_name} is being incorporated. You will receive an email when it has been completed."

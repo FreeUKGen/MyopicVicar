@@ -2445,7 +2445,7 @@ class FreecenCsvEntry
       @valid_alternate_chapman_code = true if success
     end
 
-    success, message = FreecenValidations.verbatim_birth_place?(fields[:verbatim_birth_place])
+    success, message = FreecenValidations.verbatim_birth_place?(fields[:verbatim_birth_place]) unless fields[:year] == '1841'
     errors.add(:verbatim_birth_place, "Invalid; #{message}") unless success
     unless file_validation
       place_valid = Freecen2Place.chapman_code(fields[:verbatim_birth_county]).place(fields[:verbatim_birth_place]).first if fields[:verbatim_birth_county].present? && fields[:verbatim_birth_place].present? && fields[:verbatim_birth_place] != '-'
