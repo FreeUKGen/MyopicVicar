@@ -1686,7 +1686,6 @@ class FreecenCsvEntry
 
   def add_address(freecen_csv_file_id, dwelling)
     first_individual = FreecenCsvEntry.find_by(freecen_csv_file_id: freecen_csv_file_id, dwelling_number: dwelling)
-    p first_individual
     if first_individual.present?
       self.schedule_number = first_individual.schedule_number
       self.house_number = first_individual.house_number
@@ -1697,7 +1696,6 @@ class FreecenCsvEntry
       self.rooms_with_windows = first_individual.rooms_with_windows
       self.class_of_house = first_individual.class_of_house
     end
-
   end
 
   def add_digest
@@ -2016,35 +2014,35 @@ class FreecenCsvEntry
 
   def adjust_case
     self.surname = surname.upcase if surname.present?
-    self.forenames = forenames.titleize if forenames.present?
-    self.birth_place = birth_place.titleize if birth_place.present?
-    self.verbatim_birth_place = verbatim_birth_place.titleize if birth_place.present?
-    self.civil_parish = civil_parish.titleize if civil_parish.present?
-    self.disability = disability.titleize if disability.present?
-    self.ecclesiastical_parish = ecclesiastical_parish.titleize if ecclesiastical_parish.present?
-    self.father_place_of_birth = father_place_of_birth.capitalize if father_place_of_birth.present?
-    self.house_or_street_name = house_or_street_name.titleize if house_or_street_name.present?
+    self.forenames = forenames.titleize if forenames.present? && forenames != '-'
+    self.birth_place = birth_place.titleize if birth_place.present? && birth_place != '-'
+    self.verbatim_birth_place = verbatim_birth_place.titleize if verbatim_birth_place.present? && verbatim_birth_place != '-'
+    self.civil_parish = civil_parish.titleize if civil_parish.present? && civil_parish != '-'
+    self.disability = disability.titleize if disability.present? && disability != '-'
+    self.ecclesiastical_parish = ecclesiastical_parish.titleize if ecclesiastical_parish.present? && ecclesiastical_parish != '-'
+    self.father_place_of_birth = father_place_of_birth.capitalize if father_place_of_birth.present? && father_place_of_birth != '-'
+    self.house_or_street_name = house_or_street_name.titleize if house_or_street_name.present? && house_or_street_name != '-'
     self.nationality = nationality.capitalize if nationality.present?
-    self.occupation = occupation.titleize if occupation.present?
+    self.occupation = occupation.titleize if occupation.present? && occupation != '-'
     self.occupation_category = occupation_category.upcase if occupation_category.present?
     self.at_home = at_home.upcase if at_home.present?
-    self.parliamentary_constituency = parliamentary_constituency.titleize if parliamentary_constituency.present?
-    self.police_district = police_district.titleize if police_district.present?
-    self.poor_law_union = poor_law_union.titleize if poor_law_union.present?
-    self.read_write = read_write.titleize if read_write.present?
+    self.parliamentary_constituency = parliamentary_constituency.titleize if parliamentary_constituency.present? && parliamentary_constituency != '-'
+    self.police_district = police_district.titleize if police_district.present? && police_district != '-'
+    self.poor_law_union = poor_law_union.titleize if poor_law_union.present? && poor_law_union != '-'
+    self.read_write = read_write.titleize if read_write.present? && read_write != '-'
     self.relationship = relationship.capitalize if relationship.present?
-    self.religion = religion.titleize if religion.present?
+    self.religion = religion.titleize if religion.present? && religion != '-'
     self.roof_type = roof_type.capitalize if roof_type.present?
-    self.sanitary_district = sanitary_district.titleize if sanitary_district.present?
-    self.scavenging_district = scavenging_district.titleize if scavenging_district.present?
-    self.school_board = school_board.titleize if school_board.present?
+    self.sanitary_district = sanitary_district.titleize if sanitary_district.present? && sanitary_district != '-'
+    self.scavenging_district = scavenging_district.titleize if scavenging_district.present? && scavenging_district != '-'
+    self.school_board = school_board.titleize if school_board.present? && school_board != '-'
     self.sex = sex.upcase if sex.present?
-    self.special_lighting_district = special_lighting_district.titleize if special_lighting_district.present?
-    self.special_water_district = special_water_district.titleize if special_water_district.present?
-    self.ward = ward.titleize if ward.present?
-    self.where_census_taken = where_census_taken.titleize if where_census_taken.present?
-    self.notes = notes.titleize if notes.present?
-    self.disability_notes = disability_notes.titleize if disability_notes.present?
+    self.special_lighting_district = special_lighting_district.titleize if special_lighting_district.present? && special_lighting_district != '-'
+    self.special_water_district = special_water_district.titleize if special_water_district.present? && special_water_district != '-'
+    self.ward = ward.titleize if ward.present? && ward != '-'
+    self.where_census_taken = where_census_taken.titleize if where_census_taken.present? && where_census_taken != '-'
+    self.notes = notes.titleize if notes.present? && notes != '-'
+    self.disability_notes = disability_notes.titleize if disability_notes.present? && disability_notes != '-'
   end
 
   def self.management_display_labels
@@ -2501,7 +2499,6 @@ class FreecenCsvEntry
       success, message = FreecenValidations.language?(fields[:language])
       errors.add(:language, "Invalid; #{message}") unless success
     end
-    p errors
   end
 
   def translate_date

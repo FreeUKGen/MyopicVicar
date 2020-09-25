@@ -663,35 +663,35 @@ end
 
 def adjust_case(record)
   record[:surname] = record[:surname].upcase if record[:surname].present?
-  record[:forenames] = record[:forenames].titleize if record[:forenames].present?
-  record[:birth_place] = record[:birth_place].titleize if record[:birth_place].present?
-  record[:verbatim_birth_place] = record[:verbatim_birth_place].titleize if record[:birth_place].present?
-  record[:civil_parish] = record[:civil_parish].titleize if record[:civil_parish].present?
-  record[:disability] = record[:disability].titleize if record[:disability].present?
-  record[:ecclesiastical_parish] = record[:ecclesiastical_parish].titleize if record[:ecclesiastical_parish].present?
+  record[:forenames] = record[:forenames].titleize if record[:forenames].present? && record[:forenames] != '-'
+  record[:birth_place] = record[:birth_place].titleize if record[:birth_place].present? && record[:birth_place] != '-'
+  record[:verbatim_birth_place] = record[:verbatim_birth_place].titleize if record[:verbatim_birth_place].present? && record[:verbatim_birth_place] != '-'
+  record[:civil_parish] = record[:civil_parish].titleize if record[:civil_parish].present? && record[:civil_parish] != '-'
+  record[:disability] = record[:disability].titleize if record[:disability].present? && record[:disability] != '-'
+  record[:ecclesiastical_parish] = record[:ecclesiastical_parish].titleize if record[:ecclesiastical_parish].present? && record[:ecclesiastical_parish] != '-'
   record[:father_place_of_birth] = record[:father_place_of_birth].capitalize if record[:father_place_of_birth].present?
-  record[:house_or_street_name] = record[:house_or_street_name].titleize if record[:house_or_street_name].present?
+  record[:house_or_street_name] = record[:house_or_street_name].titleize if record[:house_or_street_name].present? && record[:house_or_street_name] != '-'
   record[:nationality] = record[:nationality].capitalize if record[:nationality].present?
-  record[:occupation] = record[:occupation].titleize if record[:occupation].present?
+  record[:occupation] = record[:occupation].titleize if record[:occupation].present? && record[:occupation] != '-'
   record[:occupation_category] = record[:occupation_category].upcase if record[:occupation_category].present?
   record[:at_home] = record[:at_home].upcase if record[:at_home].present?
-  record[:parliamentary_constituency] = record[:parliamentary_constituency].titleize if record[:parliamentary_constituency].present?
-  record[:police_district] = record[:police_district].titleize if record[:police_district].present?
-  record[:poor_law_union] = record[:poor_law_union].titleize if record[:poor_law_union].present?
-  record[:read_write] = record[:read_write].titleize if record[:read_write].present?
+  record[:parliamentary_constituency] = record[:parliamentary_constituency].titleize if record[:parliamentary_constituency].present? && record[:parliamentary_constituency] != '-'
+  record[:police_district] = record[:police_district].titleize if record[:police_district].present? && record[:police_district] != '-'
+  record[:poor_law_union] = record[:poor_law_union].titleize if record[:poor_law_union].present? && record[:poor_law_union] != '-'
+  record[:read_write] = record[:read_write].titleize if record[:read_write].present? && record[:read_write] != '-'
   record[:relationship] = record[:relationship].capitalize if record[:relationship].present?
-  record[:religion] = record[:religion].titleize if record[:religion].present?
+  record[:religion] = record[:religion].titleize if record[:religion].present? && record[:religion] != '-'
   record[:roof_type] = record[:roof_type].capitalize if record[:roof_type].present?
-  record[:sanitary_district] = record[:sanitary_district].titleize if record[:sanitary_district].present?
-  record[:scavenging_district] = record[:scavenging_district].titleize if record[:scavenging_district].present?
-  record[:school_board] = record[:school_board].titleize if record[:school_board].present?
+  record[:sanitary_district] = record[:sanitary_district].titleize if record[:sanitary_district].present? && record[:sanitary_district] != '-'
+  record[:scavenging_district] = record[:scavenging_district].titleize if record[:scavenging_district].present? && record[:scavenging_district] != '-'
+  record[:school_board] = record[:school_board].titleize if record[:school_board].present? && record[:school_board] != '-'
   record[:sex] = record[:sex].upcase if record[:sex].present?
-  record[:special_lighting_district] = record[:special_lighting_district].titleize if record[:special_lighting_district].present?
-  record[:special_water_district] = record[:special_water_district].titleize if record[:special_water_district].present?
-  record[:ward] = record[:ward].titleize if record[:ward].present?
-  record[:notes] = record[:notes].titleize if record[:notes].present?
-  record[:disability_notes] = record[:disability_notes].titleize if record[:disability_notes].present?
-  record[:where_census_taken] = record[:where_census_taken].titleize if record[:where_census_taken].present?
+  record[:special_lighting_district] = record[:special_lighting_district].titleize if record[:special_lighting_district].present? && record[:special_lighting_district] != '-'
+  record[:special_water_district] = record[:special_water_district].titleize if record[:special_water_district].present? && record[:special_water_district] != '-'
+  record[:ward] = record[:ward].titleize if record[:ward].present? && record[:ward] != '-'
+  record[:notes] = record[:notes].titleize if record[:notes].present? && record[:notes] != '-'
+  record[:disability_notes] = record[:disability_notes].titleize if record[:disability_notes].present? && record[:disability_notes] != '-'
+  record[:where_census_taken] = record[:where_census_taken].titleize if record[:where_census_taken].present? && record[:where_census_taken] != '-'
   record
 end
 
