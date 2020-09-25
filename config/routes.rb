@@ -402,8 +402,8 @@ MyopicVicar::Application.routes.draw do
   get 'search_queries/districts_of_selected_counties' => 'search_queries#districts_of_selected_counties'
   post 'search_queries/:id/analyze(.:format)', :to => 'search_queries#analyze', :as => :analyze_search_query
   resources :search_queries do
-    get :autocomplete_BestGuess_Surname, :on => :collection
-    get :autocomplete_BestGuess_GivenName, :on => :collection
+    #get :autocomplete_BestGuess_Surname, :on => :collection
+    #get :autocomplete_BestGuess_GivenName, :on => :collection
   end
 
   resources :s3buckets
@@ -461,6 +461,9 @@ MyopicVicar::Application.routes.draw do
   get 'assignments/:id/list_by_syndicate(.:format)', :to => 'assignments#list_by_syndicate', :as => :list_by_syndicate_assignment
   resources :assignments
 
+
+
+
   get 'gaps/:id/index(.:format)', :to => 'gaps#index', :as => :index_gap
   resources :gaps
 
@@ -469,6 +472,9 @@ MyopicVicar::Application.routes.draw do
 
   get ':search_id/entry-information/:id/:friendly(.:format)', :to => 'best_guess#show', :as => :friendly_bmd_record_details
   resources :best_guess
+
+  get "entry-information/cite=:id&scan=1", :to => 'best_guess_hash#show', :as => :citation_url
+  resources :best_guess_hash
 
   # This line mounts Refinery's routes at the root of your application.
   # This means, any requests to the root URL of your application will go to Refinery::PagesController#home.
