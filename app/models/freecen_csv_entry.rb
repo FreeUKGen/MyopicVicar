@@ -2260,57 +2260,57 @@ class FreecenCsvEntry
     case year
     when '1851'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [verbatim_birth_county_name, birth, birth_county, selected_birth, disability, note]
+        [verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, note]
       else
-        [nationality, verbatim_birth_county_name, birth, birth_county, selected_birth, disability, note]
+        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, note]
       end
     when '1861'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [verbatim_birth_county_name, birth, birth_county, selected_birth, disability, note]
+        [verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, note]
       else
-        [nationality, verbatim_birth_county_name, birth, birth_county, selected_birth, disability, note]
+        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, note]
       end
     when '1871'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [verbatim_birth_county_name, birth, birth_county, selected_birth, disability, note]
+        [verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, note]
       else
-        [nationality, verbatim_birth_county_name, birth, birth_county, selected_birth, disability, note]
+        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, note]
       end
     when '1881'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [verbatim_birth_county_name, birth, birth_county, selected_birth, disability, note]
+        [verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, note]
       else
-        [nationality, verbatim_birth_county_name, birth, birth_county, selected_birth, disability, note]
+        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, note]
       end
 
     when '1891'
       # only Wales 1891 has language field
       if ChapmanCode::CODES['Wales'].values.member?(chapman_code) || ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [verbatim_birth_county_name, birth, birth_county, selected_birth, disability, language, note]
+        [verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, language, note]
       else
-        [nationality, verbatim_birth_county_name, birth, birth_county, selected_birth, disability, note]
+        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, note]
       end
     when '1901'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [verbatim_birth_county_name, birth, birth_county, selected_birth, disability, language, note]
+        [verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, language, note]
       elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code)
-        [nationality, verbatim_birth_county_name, birth, birth_county, selected_birth, disability, language, note]
+        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, language, note]
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
-        [verbatim_birth_county_name, birth, birth_county, selected_birth, disability, language, note]
+        [verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, language, note]
       else
-        [nationality, verbatim_birth_county_name, birth, birth_county, selected_birth, disability, note]
+        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, note]
       end
     when '1911'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [nationality, verbatim_birth_county_name, birth, birth_county, selected_birth, disability, language, note]
+        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, language, note]
       elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code) || chapman_code == 'IOM'
-        [nationality, verbatim_birth_county_name, birth, birth_county, selected_birth, disability, diability_notes, language, note]
+        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, diability_notes, language, note]
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
-        [verbatim_birth_county_name, birth, birth_county, selected_birth, disability, language, note]
+        [verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, language, note]
       elsif %w[CHI ALD GSY JSY].include?(chapman_code)
-        [nationality, verbatim_birth_county_name, birth, birth_county, selected_birth, father_place_of_birth, disability, disability_notes, language, note]
+        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, father_place_of_birth, disability, disability_notes, language, note]
       else
-        [nationality, verbatim_birth_county_name, birth, birth_county, selected_birth, disability, disability_notes, note]
+        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, disability_notes, note]
       end
     end
   end
@@ -2446,6 +2446,7 @@ class FreecenCsvEntry
     success, message = FreecenValidations.verbatim_birth_place?(fields[:verbatim_birth_place]) unless fields[:year] == '1841'
     errors.add(:verbatim_birth_place, "Invalid; #{message}") unless success
     unless file_validation
+      place_valid = true
       place_valid = Freecen2Place.chapman_code(fields[:verbatim_birth_county]).place(fields[:verbatim_birth_place]).first if fields[:verbatim_birth_county].present? && fields[:verbatim_birth_place].present? && fields[:verbatim_birth_place] != '-'
       if fields[:warning_messages].blank?
         fields[:warning_messages] = "Warning: line #{fields[:record_number]} Verbatim Place of Birth #{fields[:verbatim_birth_place]} in #{fields[:verbatim_birth_county]} was not found so requires validation.<br>" if place_valid.blank?

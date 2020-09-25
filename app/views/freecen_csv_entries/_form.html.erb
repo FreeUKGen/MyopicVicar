@@ -15,7 +15,7 @@
   <%= f.input :name_flag,  label: "Name Flag; current value highlighted", selected: @freecen_csv_entry.name_flag, collection: ['x', ''], :input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 2} if @census_fields.include?('name_flag') %>
   <%= f.input :relationship ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @census_fields.include?('relationship') %>
   <%= f.input :marital_status ,label: "Marital Status; current value highlighted", selected: @freecen_csv_entry.marital_status, collection: ['m', 's', 'u', 'w', ''] ,:input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 3} if @census_fields.include?('marital_status') %>
-  <%= f.input :sex, label: "Sex; current value highlighted",selected: @freecen_csv_entry.sex, collection: ['M','m','F','f''-'],:input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 3} if @census_fields.include?('sex') %>
+  <%= f.input :sex, label: "Sex; current value highlighted",selected: @freecen_csv_entry.sex, collection: ['M','m','F','f','-'],:input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 5} if @census_fields.include?('sex') %>
   <%= f.input :age ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @census_fields.include?('age') %>
   <%= f.input :school_children ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @census_fields.include?('school_children') %>
   <%= f.input :years_married ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @census_fields.include?('years_married') %>

@@ -148,7 +148,9 @@ class FreecenCsvEntriesController < ApplicationController
     end
     @languages = FreecenValidations::VALID_LANGUAGE
     @dwelling = Freecen::LOCATION_DWELLING
-    @counties = ChapmanCode.freecen_birth_codes
+    @counties = ['ENG', 'SCT', 'IRL', 'WLS', 'CHI']
+    @counties += ChapmanCode.freecen_birth_codes
+    @counties.sort!
     get_user_info_from_userid
   end
 
@@ -235,6 +237,7 @@ class FreecenCsvEntriesController < ApplicationController
 
     old_search_record = @freecen_csv_entry.search_record
     @freecen_csv_file = @freecen_csv_entry.freecen_csv_file
+    params[:freecen_csv_entry][:verbatim_birth_place] = params[:freecen_csv_entry][:verbatim_birth_place].strip
     @freecen_csv_entry.validate_on_line_edit_of_fields(params[:freecen_csv_entry])
 
     if @freecen_csv_entry.errors.any?

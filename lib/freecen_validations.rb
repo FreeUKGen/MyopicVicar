@@ -518,6 +518,8 @@ module FreecenValidations
 
       return [true, ''] if ChapmanCode.freecen_birth_codes.include?(field.upcase)
 
+      return [true, ''] if %w[ENG SCT IRL WLS CHI].include?(field.upcase)
+
       [false, 'invalid value']
     end
 
