@@ -80,9 +80,6 @@ module ChapmanCode
 
     def has_key(value)
       codes = merge_countries
-      p 'chapman'
-      p value
-      p  codes.key(value)
       codes.key(value)
     end
 

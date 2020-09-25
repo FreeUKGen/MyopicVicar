@@ -2254,13 +2254,8 @@ class FreecenCsvEntry
   def part2_individual_display_values(year, chapman_code)
     birth = (verbatim_birth_place.present? && verbatim_birth_place != '-') ? verbatim_birth_place.titleize : verbatim_birth_place
     selected_birth = (birth_place.present? && birth_place != '-') ? birth_place.titleize : birth_place
-    p 'part2_individual_display_values'
-    p birth_county
     birth_county_name = ChapmanCode.has_key(birth_county)
-    p verbatim_birth_county
-
     verbatim_birth_county_name = ChapmanCode.has_key(verbatim_birth_county)
-    p verbatim_birth_county_name
     note = notes.gsub(/\<br\>/, '').titleize if notes.present?
     case year
     when '1851'
