@@ -93,7 +93,7 @@
                   Transcriber
                 </th>
                 <td>
-                  <%= @search_record.transcribers %>
+                  <%#= @search_record.transcribers %>
                 </td>
               </tr>
             </tbody>
@@ -124,14 +124,14 @@
       <div class="grid__item one-whole lap-one-whole palm-one-whole push--bottom">
         <h4>Postems</h4>
         <p>Do you know more about the people or event in this record that you are willing to share with other researchers? We call these helpful additions to the database 'postems'. For example, you you know a more precise place or other details from a certificate or from a search of FreeREG, or more about the family from a search on FreeCEN, or have found other records about them in another country's registration system. Contribute what you know</p>
-        <% if @search_record.postems_list.present? %>
+        <%# if @search_record.postems_list.present? %>
         <p>Below are the list of postems</p>
-          <% @search_record.postems_list.each do |postem|%>
+          <%# @search_record.postems_list.each do |postem|%>
             <ul>
-              <li><%= postem %></li>
+              <li><%#= postem %></li>
             </ul>
-          <% end %>
-        <% end%>
+          <%# end %>
+        <%# end%>
         <%= link_to "Add a postem", "#" %>
       </div>
     </div>
