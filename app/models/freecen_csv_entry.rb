@@ -2467,7 +2467,11 @@ class FreecenCsvEntry
         end
         errors.add(:birth_place, "Alt. Place of Birth #{fields[:birth_place]} not found in #{fields[:birth_county]}") unless place_valid
       else
-        place_valid = Freecen2Place.chapman_code(fields[:birth_county]).place(fields[:birth_place]).first if fields[:birth_county].present? && fields[:birth_place].present? && fields[:birth_place] != '-'
+        if fields[:birth_place] == '-' && fields[:birth_county].present? && @valid_alternate_chapman_code
+          place_valid = true
+        elsif fields[:birth_county].present? && @valid_alternate_chapman_code && fields[:birth_place].present?
+          place_valid = Freecen2Place.valid_place_name?(fields[:birth_county], fields[:birth_place])
+        end
         if fields[:warning_messages].blank?
           fields[:warning_messages] = "Warning: line #{fields[:record_number]} ALt. Place of Birth #{fields[:birth_place]} in #{fields[:birth_county]} was not found.<br>" if place_valid.blank?
         else
