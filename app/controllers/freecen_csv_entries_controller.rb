@@ -148,8 +148,7 @@ class FreecenCsvEntriesController < ApplicationController
     end
     @languages = FreecenValidations::VALID_LANGUAGE
     @dwelling = Freecen::LOCATION_DWELLING
-    @counties = ['ENG', 'SCT', 'IRL', 'WLS', 'CHI']
-    @counties += ChapmanCode.freecen_birth_codes
+    @counties = ChapmanCode.freecen_birth_codes
     @counties.sort!
     get_user_info_from_userid
   end

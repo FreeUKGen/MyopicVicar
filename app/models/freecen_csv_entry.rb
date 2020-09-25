@@ -2218,9 +2218,9 @@ class FreecenCsvEntry
     when '1891'
       # only Wales 1891 has language field
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Birth County Entered', 'Birth Place Entered', 'Selected Birth County', 'Selected Birth Place', 'Disability', 'Language', 'Notes']
+        ['Birth County Entered', 'Birth Place Entered', 'Selected Birth County', 'Selected Birth Place', 'Disability', 'Notes']
       elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code)
-        ['Nationality', 'Birth County Entered', 'Birth Place Entered', 'Selected Birth County', 'Selected Birth Place', 'Disability', 'Notes']
+        ['Nationality', 'Birth County Entered', 'Birth Place Entered', 'Selected Birth County', 'Selected Birth Place', 'Disability', 'Language', 'Notes']
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
         ['Birth County Entered', 'Birth Place Entered', 'Selected Birth County', 'Selected Birth Place', 'Disability', 'Notes']
       else
@@ -2254,8 +2254,13 @@ class FreecenCsvEntry
   def part2_individual_display_values(year, chapman_code)
     birth = (verbatim_birth_place.present? && verbatim_birth_place != '-') ? verbatim_birth_place.titleize : verbatim_birth_place
     selected_birth = (birth_place.present? && birth_place != '-') ? birth_place.titleize : birth_place
+    p 'part2_individual_display_values'
+    p birth_county
     birth_county_name = ChapmanCode.has_key(birth_county)
+    p verbatim_birth_county
+
     verbatim_birth_county_name = ChapmanCode.has_key(verbatim_birth_county)
+    p verbatim_birth_county_name
     note = notes.gsub(/\<br\>/, '').titleize if notes.present?
     case year
     when '1851'
@@ -2285,8 +2290,12 @@ class FreecenCsvEntry
 
     when '1891'
       # only Wales 1891 has language field
-      if ChapmanCode::CODES['Wales'].values.member?(chapman_code) || ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, language, note]
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        [verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, note]
+      elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code)
+        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, language, note]
+      elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
+        [verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, note]
       else
         [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, note]
       end

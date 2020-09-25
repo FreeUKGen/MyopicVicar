@@ -206,12 +206,6 @@ class Freecen2Place
           return [@result, @place_id] if @result
         end
         return [@result, @place_id]
-      when 'CHI'
-        %w[JSY GSY ALD SRK].each do |cnty|
-          @result, @place_id = valid_place_name_for_county(cnty, standard_place_name)
-          return [@result, @place_id] if @result
-        end
-        return [@result, @place_id]
       when 'HAM'
         %w[HAM IOW].each do |cnty|
           @result, @place_id = valid_place_name_for_county(cnty, standard_place_name)
