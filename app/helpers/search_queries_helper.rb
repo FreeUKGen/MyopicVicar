@@ -72,7 +72,7 @@ module SearchQueriesHelper
   def cen_location(search_record)
     if search_record.freecen_csv_entry_id.present?
       entry = FreecenCsvEntry.find_by(_id: search_record.freecen_csv_entry_id)
-      district = entry.where_census_taken.titleize
+      district = entry.where_census_taken
     else
       district = search_record[:location_names][0]
     end

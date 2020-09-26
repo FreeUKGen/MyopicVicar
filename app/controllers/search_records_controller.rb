@@ -232,7 +232,7 @@ class SearchRecordsController < ApplicationController
     proceed, @search_query, @search_record, message = SearchRecord.check_show_parameters(session[:query], params)
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
 
-    @show_navigation = @search_query.present? && (params[:friendly].present? || params[:dwel].present?) ? true : false
+    @show_navigation = false
     @appname = appname_downcase
     if @appname == 'freebmd'
       show_freebmd
@@ -240,7 +240,6 @@ class SearchRecordsController < ApplicationController
       show_freecen_csv
       render '/freecen_csv_entries/show', layout: false
     elsif @appname == 'freecen' && @search_record.freecen_csv_entry_id.blank?
-      show_freecen
       show_freecen
       @display_date = true
       render '_search_records_freecen_print', layout: false
@@ -272,9 +271,11 @@ class SearchRecordsController < ApplicationController
     @freecen_csv_entry = @search_record.freecen_csv_entry.blank? ? session[:freecen_csv_entry_id] : @search_record.freecen_csv_entry
     if params[:dwel].present?
       @dwel = params[:dwel].to_i
+      @dwelling_offset = @dwel - session[:dwel]
     else
       @dwelling_offset = 0
       @dwel = @freecen_csv_entry.dwelling_number
+      session[:dwel] = @dwel
     end
     session[:freecen_csv_entry_id] = @freecen_csv_entry._id
     @freecen_csv_file = @freecen_csv_entry.blank? ? FreecenCsvFile.find(session[:freecen_csv_file_id]) : @freecen_csv_entry.freecen_csv_file

@@ -1,0 +1,19 @@
+<table class="table--bordered table--data" >
+  <thead>
+  </thead>
+  <tbody>
+    <% FreecenCsvEntry.dwelling_display_labels(@year,@chapman_code).each_with_index do |lbl,index| %>
+      <% unless index == 0 && @csv.present?%>
+        <tr>
+          <td><small>
+              <%= lbl %>
+            </small></td>
+          <td class="weight--semibold">
+            <%= @freecen_csv_entry.dwelling_display_values(@year,@chapman_code)[index] %>
+          </td>
+        </tr>
+      <% end %>
+    <% end %>
+  </tbody>
+</table>
+<br>
