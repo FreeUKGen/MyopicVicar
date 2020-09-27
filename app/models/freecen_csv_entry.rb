@@ -1912,7 +1912,7 @@ class FreecenCsvEntry
         ['Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name']
       end
     when '1861'
-      if ChapmanCode::CODES ['Scotland'].values.member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         ['Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows']
       else
         ['Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name']
@@ -1964,7 +1964,7 @@ class FreecenCsvEntry
         [dwelling_number, house_number, address]
       end
     when '1851'
-      if ChapmanCode::CODES[dwelling_number, 'Scotland'].values.member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [dwelling_number, schedule_number, house_number, address]
       else
         [dwelling_number, schedule_number, house_number, address]

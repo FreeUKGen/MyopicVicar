@@ -1,6 +1,5 @@
 <section>
   <% if @search_query.present? %>
-    <%= @dwelling_offset %>
     <p class="text--center">
       <%= link_to "New Search", new_search_query_path, :class => "btn  btn--small" %>  <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  btn--small" %>
       <%= link_to "Back to Results", search_query_path(@search_query, :page_number => @page_number, :anchor => "#{@search_record.id}"), :class => "btn  btn--small"%>
