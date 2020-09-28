@@ -16,6 +16,12 @@
       <%= render '/freecen_csv_entries/csv_census_header_print' %>
       <%= render '/freecen_csv_entries/csv_address_print' %>
     <% end%>
-    <%= render '/freecen_csv_entries/csv_individual' %>
+    <% if @uninhabited.blank?%>
+      <%= render '/freecen_csv_entries/csv_individual'%>
+    <% else%>
+      <p style="text-align: center" class="weight--semibold">
+        <%=  @uninhabited %>
+      </p>
+    <% end%>
   <% end%>
 </section>

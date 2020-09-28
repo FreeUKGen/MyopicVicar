@@ -18,30 +18,23 @@
     </tr>
   </thead>
   <tbody>
-    <% if @freecen_csv_entry.uninhabited_flag.blank? %>
-      <% @individuals.each do |individual| %>
-        <tr>
-          <% individual.individual_display_values(@year,@chapman_code).each_with_index do |field_val, index| %>
-            <% unless index == 0 %>
-              <td class="weight--semibold">
-                <%= field_val %>
-              </td>
-            <% end %>
+    <% @individuals.each do |individual| %>
+      <tr>
+        <% individual.individual_display_values(@year,@chapman_code).each_with_index do |field_val, index| %>
+          <% unless index == 0 %>
+            <td class="weight--semibold">
+              <%= field_val %>
+            </td>
           <% end %>
-          <% if FreecenCsvEntry.part2_individual_display_labels(@year,@chapman_code).present? %>
-            <% individual.part2_individual_display_values(@year,@chapman_code).each do |field_val| %>
-              <td class="weight--semibold">
-                <%= field_val %>
-              </td>
-            <% end %>
+        <% end %>
+        <% if FreecenCsvEntry.part2_individual_display_labels(@year,@chapman_code).present? %>
+          <% individual.part2_individual_display_values(@year,@chapman_code).each do |field_val| %>
+            <td class="weight--semibold">
+              <%= field_val %>
+            </td>
           <% end %>
         <% end %>
       </tr>
-    <% else%>
-      <tr>
-        <p class="text--center">Uninhabited</p>
-      </tr>
     <% end %>
-  </tr>
-</tbody>
+  </tbody>
 </table>

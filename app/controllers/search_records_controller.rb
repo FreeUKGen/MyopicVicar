@@ -169,6 +169,23 @@ class SearchRecordsController < ApplicationController
     @user_address += @country
   end
 
+  def add_uninhabited
+    if @individuals.count == 1 && @individuals.first.uninhabited_flag.present?
+      @uninhabited = @individuals.first.uninhabited_flag
+      case @uninhabited
+      when 'b'
+        message = 'Building in progress'
+      when 'u'
+        message = 'Unoccupied'
+      when 'v'
+        message = 'Family away or visiting'
+      when 'n'
+        message = 'Schedule was not used'
+      end
+      @uninhabited = message
+    end
+  end
+
   def add_viewed
     if @search_query.present?
       @search_result = @search_query.search_result
@@ -269,6 +286,7 @@ class SearchRecordsController < ApplicationController
 
   def show_freecen_csv
     @freecen_csv_entry = @search_record.freecen_csv_entry.blank? ? session[:freecen_csv_entry_id] : @search_record.freecen_csv_entry
+
     if params[:dwel].present?
       @dwel = params[:dwel].to_i
       @dwelling_offset = @dwel - session[:dwel]
@@ -277,6 +295,7 @@ class SearchRecordsController < ApplicationController
       @dwel = @freecen_csv_entry.dwelling_number
       session[:dwel] = @dwel
     end
+
     session[:freecen_csv_entry_id] = @freecen_csv_entry._id
     @freecen_csv_file = @freecen_csv_entry.blank? ? FreecenCsvFile.find(session[:freecen_csv_file_id]) : @freecen_csv_entry.freecen_csv_file
     @freecen_csv_file_id = @freecen_csv_file.id
@@ -289,6 +308,7 @@ class SearchRecordsController < ApplicationController
     @cen_piece = @piece.number
     @csv = true
     @individuals = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id, dwelling_number: @dwel).order_by(sequence_in_household: 1)
+    add_uninhabited
     @type = session[:cen_index_type]
     @freecen_csv_entry.add_address(@freecen_csv_file_id, @dwel)
     @response, @next_record, @previous_record = @search_query.next_and_previous_records(params[:id])
