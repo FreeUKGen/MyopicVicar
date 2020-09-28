@@ -46,5 +46,6 @@
   <% else %>
     <%= f.input :record_valid, label: "Record valid", selected: @freecen_csv_entry.record_valid, collection: ['true', 'false'], :input_html =>{:disabled => true, :class => " simple_form_position narrow_selection_field_width", :size => 2} %>
   <% end %>
-  <%= f.button :submit, 'Submit',:button_html => {:class => 'btn btn--small' }  %>
+  <div  style="text-align: center"><%= link_to 'Cancel', freecen_csv_entry_path(@freecen_csv_entry), method: :get, class: 'btn   btn--small', title: 'Cancels the Editing session.'%></div>
+  <%= f.button :submit, 'Submit',:button_html => {class: 'btn btn--small' }, title: 'Makes the addition or change PERMANENT.'  %>
 <% end %>
