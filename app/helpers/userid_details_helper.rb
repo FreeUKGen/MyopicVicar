@@ -10,19 +10,6 @@ module UseridDetailsHelper
     result
   end
 
-  def agreement(status)
-    case status
-    when 'Accepted'
-      result = 'A'
-    when 'Unknown'
-      result = 'U'
-    when 'Declined'
-      result = 'D'
-    when 'Pending'
-      result = 'P'
-    end
-    result
-  end
 
   def list_userid_files
     case appname_downcase
