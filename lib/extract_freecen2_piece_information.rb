@@ -71,6 +71,8 @@ class ExtractFreecen2PieceInformation
       FileUtils.mkdir_p(File.dirname(file_for_missing_place_names))
       missing_places = File.new(file_for_missing_place_names, 'w')
       start = Time.now
+      @last_piece = nil
+      @adjustments = 0
       @missing_place_names = []
       @output_file.puts "#{year} #{file} #{start}"
       if county.respond_to?('each_pair')
@@ -94,6 +96,7 @@ class ExtractFreecen2PieceInformation
       elapse = Time.now - start
       @output_file.puts elapse
       @output_file.close
+      p "#{@adjustments} file adjustments made"
       p 'finished'
     end
 
@@ -195,6 +198,34 @@ class ExtractFreecen2PieceInformation
       subdistrict_year = subdistrict['year']
       subdistrict_prenote = subdistrict['prenote']
       subdistrict_year = year if subdistrict_year.blank?
+      subdistrict_tnaid = district['tnaid'] if subdistrict_tnaid.blank?
+      if @last_piece.blank?
+        @last_piece = subdistrict_piece
+        @last_increment = 0
+        @last_tnaid = subdistrict_tnaid
+      else
+        if @last_piece == subdistrict_piece
+          @last_increment += 1
+          @adjustments += 1
+          subdistrict_piece += 'A' if @last_increment == 1
+          subdistrict_piece += 'B' if @last_increment == 2
+          subdistrict_piece += 'C' if @last_increment == 3
+          subdistrict_piece += 'D' if @last_increment == 4
+          subdistrict_piece += 'E' if @last_increment == 5
+          subdistrict_piece += 'F' if @last_increment == 6
+          subdistrict_piece += 'G' if @last_increment == 7
+          subdistrict_piece += 'H' if @last_increment == 8
+          subdistrict_piece += 'I' if @last_increment == 9
+          subdistrict_piece += 'J' if @last_increment == 10
+          subdistrict_piece += 'K' if @last_increment == 11
+          subdistrict_piece += 'L' if @last_increment == 12
+          subdistrict_tnaid =  @last_tnaid
+        else
+          @last_piece = subdistrict_piece
+          @last_increment = 0
+          @last_tnaid = subdistrict_tnaid
+        end
+      end
 
       subdistrict_name = district['name'] if subdistrict_name.blank? && district['name'].present?
       subdistrict_piece = district['piece'] if subdistrict_piece.blank? && district['piece'].present?
