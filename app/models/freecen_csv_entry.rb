@@ -1056,7 +1056,14 @@ class FreecenCsvEntry
 
       message = ''
       success, messagea = FreecenValidations.surname?(record[:surname])
-      unless success
+      if success
+        if record[:surname].present? && record[:surname].strip == '-'
+          messageb = "Warning: line #{num} has - Hyphen in field.<br>"
+          message += messageb if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+          record[:warning_messages] += messageb if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+        end
+
+      else
         if messagea == '?'
           messageb = "Warning: line #{num} Surname  #{record[:surname]} has trailing ?. Removed and flag set.<br>"
           message += messageb
@@ -1071,7 +1078,13 @@ class FreecenCsvEntry
       end
 
       success, messagea = FreecenValidations.forenames?(record[:forenames])
-      unless success
+      if success
+        if record[:forenames].present? && record[:forenames].strip == '-'
+          messageb = "Warning: line #{num} has - Hyphen in field.<br>"
+          message += messageb if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+          record[:warning_messages] += messageb if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+        end
+      else
         if messagea == '?'
           messageb = "Warning: line #{num} Forenames  #{record[:forenames]} has trailing ?. Removed and flag set.<br>"
           message += messageb
@@ -2351,10 +2364,18 @@ class FreecenCsvEntry
 
   def validate_on_line_edit_of_fields(fields)
     success, message = FreecenValidations.text?(fields[:surname])
-    errors.add(:surname, "Invalid; #{message}") unless success
+    if success && fields[:surname].present? && fields[:surname].strip == '-'
+      errors.add(:surname, "has - Hyphen in field")
+    elsif !success
+      errors.add(:surname, "Invalid; #{message}")
+    end
 
     success, message = FreecenValidations.text?(fields[:forenames])
-    errors.add(:forenames, "Invalid; #{message}") unless success
+    if success && fields[:forenames].present? && fields[:forenames].strip == '-'
+      errors.add(:forenames, "has - Hyphen in field")
+    elsif !success
+      errors.add(:forenames, "Invalid; #{message}")
+    end
 
     success, message = FreecenValidations.name_question?(fields[:name_flag])
     errors.add(:name_flag, "Invalid; #{message}") unless success
