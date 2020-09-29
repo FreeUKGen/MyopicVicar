@@ -163,6 +163,14 @@ class FreecenCsvEntry
       [[hexdigest].pack("H*")].pack("m").strip
     end
 
+    def myupcase(value)
+      value.strip.upcase if value.present?
+    end
+
+    def mytitlieze(value)
+      value = value.present? && value != '-' ? value.strip.titleize : value
+    end
+
     def update_parameters(params, entry)
       #clean up old null entries
       params = params.delete_if { |k, v| v == '' }
@@ -1832,12 +1840,12 @@ class FreecenCsvEntry
     #1841 doesn't have ecclesiastical parish or schedule number
     #Scotland doesn't have folio
     freecen2_piece = freecen_csv_file.freecen2_piece
-    district_name = freecen2_piece.district_name.titleize if freecen2_piece.district_name.present?
-    ecclesiastical = ecclesiastical_parish.titleize if ecclesiastical_parish.present?
-    civil = civil_parish.titleize if civil_parish.present?
-    address = house_or_street_name.titleize if house_or_street_name.present?
+    district_name = freecen2_piece.district_name
+    ecclesiastical = ecclesiastical_parish
+    civil = civil_parish
+    address = house_or_street_name
     disp_county = '' + ChapmanCode.name_from_code(chapman_code) + ' (' + chapman_code + ')' unless chapman_code.nil?
-    taken = where_census_taken.titleize if where_census_taken.present?
+    taken = where_census_taken
     case year
     when '1841'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
@@ -1970,7 +1978,7 @@ class FreecenCsvEntry
   end
 
   def dwelling_display_values(year, chapman_code)
-    address = house_or_street_name.titleize if house_or_street_name.present?
+    address = house_or_street_name
     case year
     when '1841'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
@@ -2028,36 +2036,37 @@ class FreecenCsvEntry
   end
 
   def adjust_case
-    self.surname = surname.upcase if surname.present?
-    self.forenames = forenames.titleize if forenames.present? && forenames != '-'
-    self.birth_place = birth_place.titleize if birth_place.present? && birth_place != '-'
-    self.verbatim_birth_place = verbatim_birth_place.titleize if verbatim_birth_place.present? && verbatim_birth_place != '-'
-    self.civil_parish = civil_parish.titleize if civil_parish.present? && civil_parish != '-'
-    self.disability = disability.titleize if disability.present? && disability != '-'
-    self.ecclesiastical_parish = ecclesiastical_parish.titleize if ecclesiastical_parish.present? && ecclesiastical_parish != '-'
-    self.father_place_of_birth = father_place_of_birth.capitalize if father_place_of_birth.present? && father_place_of_birth != '-'
-    self.house_or_street_name = house_or_street_name.titleize if house_or_street_name.present? && house_or_street_name != '-'
-    self.nationality = nationality.capitalize if nationality.present?
-    self.occupation = occupation.titleize if occupation.present? && occupation != '-'
-    self.occupation_category = occupation_category.upcase if occupation_category.present?
-    self.at_home = at_home.upcase if at_home.present?
-    self.parliamentary_constituency = parliamentary_constituency.titleize if parliamentary_constituency.present? && parliamentary_constituency != '-'
-    self.police_district = police_district.titleize if police_district.present? && police_district != '-'
-    self.poor_law_union = poor_law_union.titleize if poor_law_union.present? && poor_law_union != '-'
-    self.read_write = read_write.titleize if read_write.present? && read_write != '-'
-    self.relationship = relationship.capitalize if relationship.present?
-    self.religion = religion.titleize if religion.present? && religion != '-'
-    self.roof_type = roof_type.capitalize if roof_type.present?
-    self.sanitary_district = sanitary_district.titleize if sanitary_district.present? && sanitary_district != '-'
-    self.scavenging_district = scavenging_district.titleize if scavenging_district.present? && scavenging_district != '-'
-    self.school_board = school_board.titleize if school_board.present? && school_board != '-'
-    self.sex = sex.upcase if sex.present?
-    self.special_lighting_district = special_lighting_district.titleize if special_lighting_district.present? && special_lighting_district != '-'
-    self.special_water_district = special_water_district.titleize if special_water_district.present? && special_water_district != '-'
-    self.ward = ward.titleize if ward.present? && ward != '-'
-    self.where_census_taken = where_census_taken.titleize if where_census_taken.present? && where_census_taken != '-'
-    self.notes = notes.titleize if notes.present? && notes != '-'
-    self.disability_notes = disability_notes.titleize if disability_notes.present? && disability_notes != '-'
+    self.surname = FreecenCsvEntry.myupcase(surname)
+    self.forenames = FreecenCsvEntry.mytitlieze(forenames)
+    self.birth_place = FreecenCsvEntry.mytitlieze(birth_place)
+    self.verbatim_birth_place = FreecenCsvEntry.mytitlieze(verbatim_birth_place)
+    self.civil_parish = FreecenCsvEntry.mytitlieze(civil_parish)
+    self.disability = FreecenCsvEntry.mytitlieze(disability)
+    self.ecclesiastical_parish = FreecenCsvEntry.mytitlieze(ecclesiastical_parish)
+    self.father_place_of_birth = FreecenCsvEntry.mytitlieze(father_place_of_birth)
+    self.house_or_street_name = FreecenCsvEntry.mytitlieze(house_or_street_name)
+    self.nationality = nationality.strip.capitalize if nationality.present?
+    self.occupation = FreecenCsvEntry.mytitlieze(occupation)
+    self.occupation_category = FreecenCsvEntry.myupcase(occupation_category)
+    self.at_home = FreecenCsvEntry.myupcase(at_home)
+    self.marital_status = FreecenCsvEntry.myupcase(marital_status)
+    self.parliamentary_constituency = FreecenCsvEntry.mytitlieze(parliamentary_constituency)
+    self.police_district = FreecenCsvEntry.mytitlieze(police_district)
+    self.poor_law_union = FreecenCsvEntry.mytitlieze(poor_law_union)
+    self.read_write = FreecenCsvEntry.mytitlieze(read_write)
+    self.relationship = FreecenCsvEntry.mytitlieze(relationship)
+    self.religion = FreecenCsvEntry.mytitlieze(religion)
+    self.roof_type = roof_type.strip.capitalize if roof_type.present?
+    self.sanitary_district = FreecenCsvEntry.mytitlieze(sanitary_district)
+    self.scavenging_district = FreecenCsvEntry.mytitlieze(scavenging_district)
+    self.school_board = FreecenCsvEntry.mytitlieze(school_board)
+    self.sex = FreecenCsvEntry.myupcase(sex)
+    self.special_lighting_district = FreecenCsvEntry.mytitlieze(special_lighting_district)
+    self.special_water_district = FreecenCsvEntry.mytitlieze(special_water_district)
+    self.ward = FreecenCsvEntry.mytitlieze(ward)
+    self.where_census_taken = FreecenCsvEntry.mytitlieze(where_census_taken)
+    self.notes = FreecenCsvEntry.mytitlieze(notes)
+    self.disability_notes = FreecenCsvEntry.mytitlieze(disability_notes)
   end
 
   def self.management_display_labels
@@ -2144,13 +2153,13 @@ class FreecenCsvEntry
     if age_unit.present? && age_unit != 'y'
       disp_age = age + age_unit
     end
-    disp_occupation = occupation.titleize if occupation.present?
-    sur = surname.upcase if surname.present?
-    fore = forenames.titleize if forenames.present?
-    relation = relationship.titleize if relationship.present?
-    marital = marital_status.upcase if marital_status.present?
-    sx = sex.upcase if sex.present?
-    note = notes.gsub(/\<br\>/, '').titleize if notes.present?
+    disp_occupation = occupation
+    sur = surname
+    fore = forenames
+    relation = relationship
+    marital = marital_status
+    sx = sex
+    note = notes.gsub(/\<br\>/, '') if notes.present?
     verbatim_birth_county_name = ChapmanCode.has_key(verbatim_birth_county)
     case year
     when '1841'
@@ -2267,11 +2276,11 @@ class FreecenCsvEntry
   end
 
   def part2_individual_display_values(year, chapman_code)
-    birth = (verbatim_birth_place.present? && verbatim_birth_place != '-') ? verbatim_birth_place.titleize : verbatim_birth_place
-    selected_birth = (birth_place.present? && birth_place != '-') ? birth_place.titleize : birth_place
-    birth_county_name = ChapmanCode.has_key(birth_county)
-    verbatim_birth_county_name = ChapmanCode.has_key(verbatim_birth_county)
-    note = notes.gsub(/\<br\>/, '').titleize if notes.present?
+    birth = verbatim_birth_place
+    selected_birth = birth_place
+    birth_county_name = ChapmanCode.name_from_code(birth_county)
+    verbatim_birth_county_name = ChapmanCode.name_from_code(verbatim_birth_county)
+    note = notes.gsub(/\<br\>/, '') if notes.present?
     case year
     when '1851'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
@@ -2297,7 +2306,6 @@ class FreecenCsvEntry
       else
         [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, note]
       end
-
     when '1891'
       # only Wales 1891 has language field
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
