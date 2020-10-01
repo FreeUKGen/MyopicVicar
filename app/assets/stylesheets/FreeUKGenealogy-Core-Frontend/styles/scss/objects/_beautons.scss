@@ -24,7 +24,6 @@
   // AO: add a little more bottom-margin so that buttons stack nicely
   margin-bottom:  0.5em;
 
-  @include vendor(box-shadow, 0 0.222222em 0 ($project-color / 2));
   @include vendor(transition, all 0.15s ease-in-out);
   @include vendor(border-radius, 4px);
   &:focus, &:hover {
@@ -35,7 +34,6 @@
   }
   &:active {
     text-decoration: none;
-    @include vendor(box-shadow, 0 0 0 ($project-color-faded / 2));
     @include vendor(transform, translate(0, 0.222222em));
   }
 }
@@ -50,13 +48,11 @@
       background: nth($colour, 2);
       border-color: nth($colour, 2);
       color: nth($colour, 3);
-      @include vendor(box-shadow, 0 0.222222em 0 (nth($colour, 2) / 2));
       &:focus, &:hover {
         background: #fff;
         border-color: $project-color;
         @include vendor(box-shadow, 0 0.222222em 0 #ccc);
       }
-      &:active { @include vendor(box-shadow, 0 0 0 (nth($colour, 2) / 2)); }
     }
   }
 
