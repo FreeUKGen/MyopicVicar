@@ -17,13 +17,13 @@ module ChapmanCode
   require 'freecen_constants'
   require 'app'
   ###################
-  #Note the actual list of codes is the merge_counties or select_hash
+  # Note the actual list of codes is the merge_counties or select_hash
   #######################
   class << self
     def add_parenthetical_codes(hash)
       hsh = {}
       hash.each_pair do |key, value|
-        hsh[key] = Hash[value.map { |k,v| ["#{k} (#{v})", v] }]
+        hsh[key] = Hash[value.map { |k, v| ["#{k} (#{v})", v] }]
       end
       hsh
     end
@@ -33,13 +33,14 @@ module ChapmanCode
       codes[name]
     end
 
-    def codes_for_cen_birth_county()
+    def codes_for_cen_birth_county
+      # this is used in the birth county selection BUT ITS THE SAME as codes_for_cen_county
       hsh = {}
       codes = ChapmanCode.remove_codes(ChapmanCode::CODES)
       codes.each_pair do |ctry, ctryval|
         ctryhash = {}
         ctryval.each_pair do |kk, vv|
-          ctryhash[kk] = vv unless ['ERY', 'NRY', 'WRY'].include?(vv)
+          ctryhash[kk] = vv unless %w[ERY NRY WRY].include?(vv)
         end
         hsh[ctry] = ctryhash
       end
@@ -47,20 +48,17 @@ module ChapmanCode
     end
 
     def freecen_birth_codes
-      birth_codes = []
-      birth_codes = ChapmanCode.values
-      birth_codes
+      ChapmanCode.values
     end
 
-
-
-    def codes_for_cen_county()
+    def codes_for_cen_county
+      # This is used in the county selection
       hsh = {}
       codes = ChapmanCode.remove_codes(ChapmanCode::CODES)
       codes.each_pair do |ctry, ctryval|
         ctryhash = {}
         ctryval.each_pair do |kk, vv|
-          ctryhash[kk] = vv unless ['ALD', 'GSY', 'JSY', 'SRK'].include?(vv.to_s)
+          ctryhash[kk] = vv unless %w[ALD GSY JSY SRK].include?(vv.to_s)
         end
         hsh[ctry] = ctryhash
       end
@@ -85,7 +83,7 @@ module ChapmanCode
 
     def has_key?(code)
       codes = merge_countries
-      codes.has_key?(code)
+      codes.key?(code)
     end
 
     def keys
@@ -99,7 +97,7 @@ module ChapmanCode
 
     def merge_countries
       all_countries = {}
-      ChapmanCode::CODES.each_pair do |key, value|
+      ChapmanCode::CODES.each_key do |key|
         all_countries.merge!(CODES[key])
       end
       all_countries
@@ -112,12 +110,19 @@ module ChapmanCode
     end
 
     def name_from_code(code)
-      codes = merge_countries
-      codes.invert[code]
+      codes = {}
+      ChapmanCode::CODES.each_value do |country_value|
+        country_value.each_pair do |county_key, county_value|
+          codes[county_value] = county_key
+        end
+      end
+      result = codes[code]
+      result
     end
 
     def remove_codes(original_hash)
-      reduced_hash = original_hash.each_pair do |_key, value|
+      reduced_hash = {}
+      original_hash.each_pair do |key, value|
         case App.name_downcase
         when 'freereg'
           elimination_codes = FreeregOptionsConstants::CHAPMAN_CODE_ELIMINATIONS
@@ -126,9 +131,11 @@ module ChapmanCode
         when 'freebmd'
           elimination_codes = {}
         end
-        elimination_codes.each do |country|
-          value.delete_if { |new_key, _new_value| new_key == country }
+        myvalue = value.dup
+        elimination_codes.each do |county|
+          myvalue.delete_if { |new_key, _new_value| new_key == county }
         end
+        reduced_hash[key] = myvalue
       end
       reduced_hash
     end
@@ -140,7 +147,7 @@ module ChapmanCode
 
     def select_hash_with_parenthetical_codes
       hash = ChapmanCode::CODES.each_pair do |key, value|
-        ChapmanCode::CODES[key] = Hash[value.map { |k,v| ["#{k} (#{v})", v] }]
+        ChapmanCode::CODES[key] = Hash[value.map { |k, v| ["#{k} (#{v})", v] }]
       end
       hash
     end
@@ -152,7 +159,7 @@ module ChapmanCode
 
     def values
       codes = merge_countries
-      code = codes.values
+      codes.values
     end
 
     def values_at(value)
@@ -163,54 +170,54 @@ module ChapmanCode
   end
 
   CODES = {
-    "England" =>
-    {'England' => 'ENG',
-     'Bedfordshire' => 'BDF',
-     'Berkshire' => 'BRK',
-     'Buckinghamshire' => 'BKM',
-     'Cambridgeshire' => 'CAM',
-     'Cheshire' => 'CHS',
-     'Cornwall' => 'CON',
-     'Cumberland' => 'CUL',
-     'Derbyshire' => 'DBY',
-     'Devon' => 'DEV',
-     'Dorset' => 'DOR',
-     'Durham' => 'DUR',
-     'Essex' => 'ESS',
-     'Gloucestershire' => 'GLS',
-     'Hampshire' => 'HAM',
-     'Herefordshire' => 'HEF',
-     'Hertfordshire' => 'HRT',
-     'Huntingdonshire' => 'HUN',
-     'Isle of Wight' => 'IOW',
-     'Kent' => 'KEN',
-     'Lancashire' => 'LAN',
-     'Leicestershire' => 'LEI',
-     'Lincolnshire' => 'LIN',
-     'London (City)' => 'LND',
-     'Middlesex' => 'MDX',
-     'Norfolk' => 'NFK',
-     'Northamptonshire' => 'NTH',
-     'Northumberland' => 'NBL',
-     'Nottinghamshire' => 'NTT',
-     'Oxfordshire' => 'OXF',
-     'Rutland' => 'RUT',
-     'Shropshire' => 'SAL',
-     'Somerset' => 'SOM',
-     'Staffordshire' => 'STS',
-     'Suffolk' => 'SFK',
-     'Surrey' => 'SRY',
-     'Sussex' => 'SSX',
-     'Warwickshire' => 'WAR',
-     'Westmorland' => 'WES',
-     'Wiltshire' => 'WIL',
-     'Worcestershire' => 'WOR',
-     'Yorkshire' => 'YKS',
-     'Yorkshire, East Riding' => 'ERY',
-     'Yorkshire, North Riding' => 'NRY',
-     'Yorkshire, West Riding' => 'WRY'
-     },
-    "Ireland" => {
+    'England' => {
+      'England' => 'ENG',
+      'Bedfordshire' => 'BDF',
+      'Berkshire' => 'BRK',
+      'Buckinghamshire' => 'BKM',
+      'Cambridgeshire' => 'CAM',
+      'Cheshire' => 'CHS',
+      'Cornwall' => 'CON',
+      'Cumberland' => 'CUL',
+      'Derbyshire' => 'DBY',
+      'Devon' => 'DEV',
+      'Dorset' => 'DOR',
+      'Durham' => 'DUR',
+      'Essex' => 'ESS',
+      'Gloucestershire' => 'GLS',
+      'Hampshire' => 'HAM',
+      'Herefordshire' => 'HEF',
+      'Hertfordshire' => 'HRT',
+      'Huntingdonshire' => 'HUN',
+      'Isle of Wight' => 'IOW',
+      'Kent' => 'KEN',
+      'Lancashire' => 'LAN',
+      'Leicestershire' => 'LEI',
+      'Lincolnshire' => 'LIN',
+      'London (City)' => 'LND',
+      'Middlesex' => 'MDX',
+      'Norfolk' => 'NFK',
+      'Northamptonshire' => 'NTH',
+      'Northumberland' => 'NBL',
+      'Nottinghamshire' => 'NTT',
+      'Oxfordshire' => 'OXF',
+      'Rutland' => 'RUT',
+      'Shropshire' => 'SAL',
+      'Somerset' => 'SOM',
+      'Staffordshire' => 'STS',
+      'Suffolk' => 'SFK',
+      'Surrey' => 'SRY',
+      'Sussex' => 'SSX',
+      'Warwickshire' => 'WAR',
+      'Westmorland' => 'WES',
+      'Wiltshire' => 'WIL',
+      'Worcestershire' => 'WOR',
+      'Yorkshire' => 'YKS',
+      'Yorkshire, East Riding' => 'ERY',
+      'Yorkshire, North Riding' => 'NRY',
+      'Yorkshire, West Riding' => 'WRY'
+    }.freeze,
+    'Ireland' => {
       'Ireland' => 'IRL',
       'County Antrim' => 'ANT',
       'County Armagh' => 'ARM',
@@ -243,85 +250,87 @@ module ChapmanCode
       'County Waterford' => 'WAT',
       'County Westmeath' => 'WEM',
       'County Wexford' => 'WEX',
-      'County Wicklow' => 'WIC',
-    },
-    "Islands" =>{
+      'County Wicklow' => 'WIC'
+    }.freeze,
+    'Islands' => {
       'Channel Islands' => 'CHI',
       'Alderney' => 'ALD',
       'Guernsey' => 'GSY',
       'Jersey' => 'JSY',
       'Isle of Man' => 'IOM',
       'Sark' => 'SRK'
-    },
-    "Scotland" =>
-    {'Scotland' => 'SCT',
-     'Aberdeenshire' => 'ABD',
-     'Angus (Forfarshire)' => 'ANS',
-     'Argyllshire' => 'ARL',
-     'Ayrshire' => 'AYR',
-     'Banffshire' => 'BAN',
-     'Berwickshire' => 'BEW',
-     'Borders' => 'BOR',
-     'Bute' => 'BUT',
-     'Caithness' => 'CAI',
-     'Central' => 'CEN',
-     'Clackmannanshire' => 'CLK',
-     'Dumfries and Galloway' => 'DGY',
-     'Dumfriesshire' => 'DFS',
-     'Dunbartonshire' => 'DNB',
-     'East Lothian' => 'ELN',
-     'Fife' => 'FIF',
-     'Grampian' => 'GMP',
-     'Highland' => 'HLD',
-     'Inverness-shire' => 'INV',
-     'Kincardineshire' => 'KCD',
-     'Kinross-shire' => 'KRS',
-     'Kirkcudbrightshire' => 'KKD',
-     'Lanarkshire' => 'LKS',
-     'Lothian' => 'LTN',
-     'Midlothian' => 'MLN',
-     'Morayshire' => 'MOR',
-     'Nairnshire' => 'NAI',
-     'Orkney' => 'OKI',
-     'Orkney Isles' => 'OKI',
-     'Peeblesshire' => 'PEE',
-     'Perthshire' => 'PER',
-     'Renfrewshire' => 'RFW',
-     'Ross and Cromarty' => 'ROC',
-     'Roxburghshire' => 'ROX',
-     'Selkirkshire' => 'SEL',
-     'Shetland' => 'SHI',
-     'Shetland Isles' => 'SHI',
-     'Stirlingshire' => 'STI',
-     'Strathclyde' => 'STD',
-     'Sutherland' => 'SUT',
-     'Tayside' => 'TAY',
-     'West Lothian' => 'WLN',
-     'Western Isles' => 'WIS',
-     'Wigtownshire' => 'WIG'},
-    "Wales" =>
-    {'Wales' => 'WLS',
-     'Anglesey' => 'AGY',
-     'Brecknockshire' => 'BRE',
-     'Caernarfonshire' => 'CAE',
-     'Cardiganshire' => 'CGN',
-     'Carmarthenshire' => 'CMN',
-     'Clwyd' => 'CWD',
-     'Denbighshire' => 'DEN',
-     'Dyfed' => 'DFD',
-     'Flintshire' => 'FLN',
-     'Glamorgan' => 'GLA',
-     'Mid Glamorgan' => 'MGM',
-     'South Glamorgan' => 'SGM',
-     'West Glamorgan' => 'WGM',
-     'Gwent' => 'GNT',
-     'Gwynedd' => 'GWN',
-     'Merionethshire' => 'MER',
-     'Monmouthshire' => 'MON',
-     'Montgomeryshire' => 'MGY',
-     'Pembrokeshire' => 'PEM',
-     'Powys' => 'POW',
-     'Radnorshire' => 'RAD' },
+    }.freeze,
+    'Scotland' => {
+      'Scotland' => 'SCT',
+      'Aberdeenshire' => 'ABD',
+      'Angus (Forfarshire)' => 'ANS',
+      'Argyllshire' => 'ARL',
+      'Ayrshire' => 'AYR',
+      'Banffshire' => 'BAN',
+      'Berwickshire' => 'BEW',
+      'Borders' => 'BOR',
+      'Bute' => 'BUT',
+      'Caithness' => 'CAI',
+      'Central' => 'CEN',
+      'Clackmannanshire' => 'CLK',
+      'Dumfries and Galloway' => 'DGY',
+      'Dumfriesshire' => 'DFS',
+      'Dunbartonshire' => 'DNB',
+      'East Lothian' => 'ELN',
+      'Fife' => 'FIF',
+      'Grampian' => 'GMP',
+      'Highland' => 'HLD',
+      'Inverness-shire' => 'INV',
+      'Kincardineshire' => 'KCD',
+      'Kinross-shire' => 'KRS',
+      'Kirkcudbrightshire' => 'KKD',
+      'Lanarkshire' => 'LKS',
+      'Lothian' => 'LTN',
+      'Midlothian' => 'MLN',
+      'Morayshire' => 'MOR',
+      'Nairnshire' => 'NAI',
+      'Orkney' => 'OKI',
+      'Orkney Isles' => 'OKI',
+      'Peeblesshire' => 'PEE',
+      'Perthshire' => 'PER',
+      'Renfrewshire' => 'RFW',
+      'Ross and Cromarty' => 'ROC',
+      'Roxburghshire' => 'ROX',
+      'Selkirkshire' => 'SEL',
+      'Shetland' => 'SHI',
+      'Shetland Isles' => 'SHI',
+      'Stirlingshire' => 'STI',
+      'Strathclyde' => 'STD',
+      'Sutherland' => 'SUT',
+      'Tayside' => 'TAY',
+      'West Lothian' => 'WLN',
+      'Western Isles' => 'WIS',
+      'Wigtownshire' => 'WIG'
+    }.freeze,
+    'Wales' => {
+      'Wales' => 'WLS',
+      'Anglesey' => 'AGY',
+      'Brecknockshire' => 'BRE',
+      'Caernarfonshire' => 'CAE',
+      'Cardiganshire' => 'CGN',
+      'Carmarthenshire' => 'CMN',
+      'Clwyd' => 'CWD',
+      'Denbighshire' => 'DEN',
+      'Dyfed' => 'DFD',
+      'Flintshire' => 'FLN',
+      'Glamorgan' => 'GLA',
+      'Mid Glamorgan' => 'MGM',
+      'South Glamorgan' => 'SGM',
+      'West Glamorgan' => 'WGM',
+      'Gwent' => 'GNT',
+      'Gwynedd' => 'GWN',
+      'Merionethshire' => 'MER',
+      'Monmouthshire' => 'MON',
+      'Montgomeryshire' => 'MGY',
+      'Pembrokeshire' => 'PEM',
+      'Powys' => 'POW',
+      'Radnorshire' => 'RAD'
+    }.freeze,
     'Special' => {
       'Unknown' => 'UNK',
       'England and Wales Shipping' => 'EWS',
@@ -332,6 +341,6 @@ module ChapmanCode
       'Other Locations' => 'OTH',
       'Royal Navy Ships' => 'RNS',
       'Military' => 'MIL'
-    }
-  }
+    }.freeze
+  }.freeze
 end

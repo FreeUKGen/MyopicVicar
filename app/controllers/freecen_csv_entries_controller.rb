@@ -219,10 +219,10 @@ class FreecenCsvEntriesController < ApplicationController
     @type = session[:cen_index_type]
     session[:freecen_csv_entry_id] = @freecen_csv_entry._id
     @search_record = @freecen_csv_entry.search_record
-    @entry = @freecen_csv_entry
+
     @next_entry, @previous_entry = @freecen_csv_entry.next_and_previous_entries
     @next_list_entry, @previous_list_entry = @freecen_csv_entry.next_and_previous_list_entries
-    session[:current_list_entry] = @entry.id if @next_list_entry.present? || @previous_list_entry.present?
+    session[:current_list_entry] = @freecen_csv_entry.id if @next_list_entry.present? || @previous_list_entry.present?
     session[:next_list_entry] = @next_list_entry.id if @next_list_entry.present?
     session[:previous_list_entry] = @previous_list_entry.id if @previous_list_entry.present?
   end

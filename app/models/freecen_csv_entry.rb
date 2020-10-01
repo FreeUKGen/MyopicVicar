@@ -2140,7 +2140,7 @@ class FreecenCsvEntry
         ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Years Married', 'Children Born Alive', 'Children Living', 'Children Deceased', 'Occupation', 'Occ Category', 'Industry', 'At Home']
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
         ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Years Married', 'Children Born Alive', 'Children Living', 'Religion', 'Read and Write', 'Occupation', 'Occ Category']
-      elsif  %w[CHI ALD GSY JSY].include?(chapman_code)
+      elsif %w[CHI ALD GSY JSY].include?(chapman_code)
         ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Years Married', 'Children Born Alive', 'Children Living', 'Children Deceased', 'Occupation', 'Occ Category', 'Industry', 'At Home']
       else
         ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Years Married', 'Children Born Alive', 'Children Living', 'Children Deceased', 'Occupation', 'Occ Category', 'Industry', 'At Home']
@@ -2160,7 +2160,7 @@ class FreecenCsvEntry
     marital = marital_status
     sx = sex
     note = notes.gsub(/\<br\>/, '') if notes.present?
-    verbatim_birth_county_name = ChapmanCode.has_key(verbatim_birth_county)
+    verbatim_birth_county_name = ChapmanCode.name_from_code(verbatim_birth_county)
     case year
     when '1841'
       [sequence_in_household, sur, fore, sx, disp_age, disp_occupation, verbatim_birth_county_name, note]
