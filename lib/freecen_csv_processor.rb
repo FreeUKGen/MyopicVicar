@@ -633,6 +633,7 @@ class CsvFile < CsvFiles
     @file.traditional = @traditional
     @file.validation = @validation
     @file.processed = @project.create_search_records
+    @file.header_line = @field_header_line
     @file.field_specification = @field_specification
     success = @piece.save
     p @file
