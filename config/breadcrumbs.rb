@@ -1773,12 +1773,14 @@ crumb :freecen2_places do |county, place|
   when place.blank?
     link 'Freecen2 Places', freecen2_places_path
   when place.present?
-    link 'Freecen2 Places', freecen2_places_path(:anchor => 'session[place.id]')
+    link 'Freecen2 Places', freecen2_places_path(:anchor => place.id)
   end
   if session[:character].present?
     parent :place_range_options, county, session[:active]
-  else
+  elsif session[:county].present?
     parent :county_options, county
+  elsif session[:syndicate].present?
+    parent :syndicate_options, session[:syndicate]
   end
 end
 
@@ -1789,18 +1791,17 @@ end
 
 crumb :show_freecen2_place do |county, place|
   link 'Freecen2 Place Information', freecen2_place_path(place)
-  case
-  when session[:search_names].present?
+  if session[:search_names].nil?
+    if session[:select_place] || place.blank?
+      parent :county_options, session[:county] if session[:county].present?
+      parent :syndicate_options, session[:syndicate] if session[:syndicate].present?
+    else
+      parent :freecen2_places, session[:county], place
+    end
+  elsif session[:search_names].present?
     parent :search_names_results
-  when session[:select_place] || place.blank?
-    parent :county_options, session[:county] if session[:county].present?
-    parent :syndicate_options, session[:syndicate] if session[:syndicate].present?
-  when place.present? && session[:county].present?
-    parent :county_options, session[:county]
-  when place.present? && session[:syndicate].present?
-    parent :syndicate_options, session[:syndicate]
   else
-    parent :freecen2_places, county, place
+    parent :search_names
   end
 end
 crumb :edit_freecen2_place do |county, place|
@@ -1810,10 +1811,12 @@ end
 
 crumb :create_freecen2_place do |county, place|
   link 'Create New Freecen2 Place', new_freecen2_place_path
-  if session[:search_names].present?
+  if session[:search_names].nil?
+    parent :freecen2_places, session[:county], place
+  elsif session[:search_names].present?
     parent :search_names_results
   else
-    parent :freecen2_places, session[:county], place
+    parent :search_names
   end
 end
 crumb :rename_freecen2_place do |county, place|

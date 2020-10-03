@@ -83,13 +83,19 @@ class Freecen2PlacesController < ApplicationController
     elsif @place.freecen2_districts.exists? || @place.freecen2_pieces.exists? || @place.freecen2_civil_parishes.exists?
       redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'The Place cannot be disabled because there are dependent districts, sub districts or civil parishes') && return
     end
-
     @place.update_attributes(disabled: 'true', data_present: false)
     if @place.errors.any?
-      redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: "The disabling of the place was unsuccessful #{@place.errors.messages}") && return
+      redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: "The disabling of the place was unsuccessful #{@place.errors.messages}") && retuurn
+
+    elsif session[:search_names].nil?
+      flash[:notice] = 'The disabling of the place was successful'
+      redirect_to(freecen2_places_path) && return
+    elsif session[:search_names].present?
+      flash[:notice] = 'The disabling of the place was successful'
+      redirect_to(search_names_results_freecen2_place_path) && return
     else
       flash[:notice] = 'The disabling of the place was successful'
-      redirect_to(select_action_manage_counties_path(@county)) && return
+      redirect_to(search_names_freecen2_place_path) && return
     end
   end
 
@@ -120,7 +126,7 @@ class Freecen2PlacesController < ApplicationController
   end
 
   def load(place_id)
-    @place = Freecen2Place.id(place_id).first
+    @place = Freecen2Place.find_by(id: place_id)
     return if @place.blank?
 
     @user = get_user
@@ -128,6 +134,7 @@ class Freecen2PlacesController < ApplicationController
     session[:place_id] = place_id
     @place_name = @place.place_name
     session[:place_name] = @place_name
+    @chapman_code = @place.chapman_code
     @county = ChapmanCode.has_key(@place.chapman_code)
     @first_name = session[:first_name]
   end
@@ -190,6 +197,7 @@ class Freecen2PlacesController < ApplicationController
     @freecen2_place = Freecen2Place.new
     get_user_info_from_userid
     session.delete(:search_names) if session[:search_names].present?
+    session[:search_names] = []
   end
 
   def search_names_results

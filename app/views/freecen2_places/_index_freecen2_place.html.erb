@@ -19,7 +19,7 @@
       </thead>
       <tbody >
         <% @places.each do |place| %>
-          <tr>
+          <tr id="<%= place.id %>">
             <td ><%= link_to(place.place_name, freecen2_place_path(place), class: 'btn   btn--small', title: 'Additional information on the place' )%> </td>
             <td > <%= alternate(place) %></td>
             <td > <%= place.latitude%></td>

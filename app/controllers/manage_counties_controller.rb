@@ -301,6 +301,7 @@ class ManageCountiesController < ApplicationController
   def places
     get_user_info_from_userid
     @county = session[:county]
+    session.delete(:search_names)
     @places = Place.where(chapman_code: session[:chapman_code], place_name: params[:params], disabled: 'false').all
     if @places.length == 1
       place = Place.where(chapman_code: session[:chapman_code], place_name: params[:params], disabled: 'false').first
@@ -315,6 +316,7 @@ class ManageCountiesController < ApplicationController
     session[:select_place] = true
     @manage_county = ManageCounty.new
     @county = session[:county]
+    session.delete(:search_names)
     @places = []
     Place.where(chapman_code: session[:chapman_code], disabled: 'false', error_flag: 'Place name is not approved').order_by(place_name: 1).each do |place|
       @places << place.place_name
@@ -331,6 +333,7 @@ class ManageCountiesController < ApplicationController
     get_user_info_from_userid
     @manage_county = ManageCounty.new
     @county = session[:county]
+    session.delete(:search_names)
     @files = {}
     case appname_downcase
     when 'freereg'
