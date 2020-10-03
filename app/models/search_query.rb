@@ -1470,19 +1470,19 @@ class SearchQuery
   end
 
   def min_dob_range_quarter
-    min_dob_quarter = dob_quarter_number(self.dob_at_death) if self.dob_at_death.present?
-    min_dob_quarter = dob_quarter_number(self.min_dob_at_death) if date_of_birth_range?
+    min_dob_quarter = dob_quarter_number(self.dob_at_death, 1) if self.dob_at_death.present?
+    min_dob_quarter = dob_quarter_number(self.min_dob_at_death, 1) if date_of_birth_range?
     min_dob_quarter
   end
 
   def max_dob_range_quarter
-    max_dob_quarter = dob_quarter_number(self.dob_at_death) if self.dob_at_death.present?
-    max_dob_quarter = dob_quarter_number(self.max_dob_at_death) if date_of_birth_range?
+    max_dob_quarter = dob_quarter_number(self.dob_at_death, 4) if self.dob_at_death.present?
+    max_dob_quarter = dob_quarter_number(self.max_dob_at_death, 4) if date_of_birth_range?
     max_dob_quarter
   end
 
-  def dob_quarter_number date
-    quarter_number(year: date_array(date)[0])#, quarter: get_quarter_from_month(date_array(date)[1]))
+  def dob_quarter_number (date:, quarter: 1)
+    quarter_number(year: date_array(date)[0], quarter: quarter)#get_quarter_from_month(date_array(date)[1]))
   end
 
   def date_array date
