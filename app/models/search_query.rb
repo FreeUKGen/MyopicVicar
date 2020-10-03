@@ -1471,7 +1471,7 @@ class SearchQuery
 
   def min_dob_range_quarter
     min_dob_quarter = dob_quarter_number(date: self.dob_at_death, quarter: 1) if self.dob_at_death.present?
-    min_dob_quarter = dob_quarter_number(date: self.min_dob_at_death, 1) if date_of_birth_range?
+    min_dob_quarter = dob_quarter_number(date: self.min_dob_at_death, quarter: 1) if date_of_birth_range?
     min_dob_quarter
   end
 
