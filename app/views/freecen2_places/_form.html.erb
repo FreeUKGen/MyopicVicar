@@ -3,11 +3,20 @@
     There are 3 boxes for Alternate Names. You may add more by editing the place after this creation.
   </h4>
   <%= simple_form_for @place, :html => { :class => "grid"}  do |f| %>
+    <%=  controller.action_name%>
     <% if controller.action_name == 'new' || controller.action_name == 'create'%>
       <% if %w[county_coordinator country_coordinator system_administrator data_manager validator].include?(@user.person_role)%>
         <%= f.input :county,:label => "Select county from following list",:include_blank => false, :collection => @counties,
       :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 3}   %>
         <%= f.input :place_name, :label => "Enter the Place Name",:hint => "Please take extreme care with the Place Name including its case!" ,:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+      <% else%>
+        <%= f.hidden_field :county, :value=>@county %>
+        <%= f.hidden_field :place_name, :value=>@place_name %>
+      <% end %>
+    <% elsif%>
+      <% if %w[county_coordinator country_coordinator system_administrator data_manager].include?(@user.person_role)%>
+        <%= f.input :county, :value=>@county , :input_html => { :disabled => true,:size => 10 }%>
+        <%= f.input :place_name, :label => "Enter the New Place Name",:hint => "Please take extreme care with the Place Name including its case!" ,:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
       <% else%>
         <%= f.hidden_field :county, :value=>@county %>
         <%= f.hidden_field :place_name, :value=>@place_name %>
