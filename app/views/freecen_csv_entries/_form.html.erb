@@ -31,8 +31,8 @@
   <%= f.input :at_home , label: "Working at home", selected: @freecen_csv_entry.at_home, collection: ['h',''],:input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 2} if @census_fields.include?('at_home') %>
   <%= f.input :occupation_flag, label: "Occupation Flag; current value highlighted",selected: @freecen_csv_entry.occupation_flag, collection: ['x', ''], :input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 2} if @census_fields.include?('occupation_flag') %>
   <%= f.input :nationality ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @census_fields.include?('nationality') %>
-  <%= f.input :verbatim_birth_county ,  label: "Verbatim Birth County; current value highlighted",selected: @freecen_csv_entry.verbatim_birth_county, collection: @counties, :input_html =>{:class => " simple_form_bgcolour narrow_selection_field_width", :size => 4} if @census_fields.include?('verbatim_birth_county') %>
-  <%= f.input :birth_county ,  label: "Birth County; current value highlighted",selected: @freecen_csv_entry.birth_county, collection: @counties, :input_html =>{:class => " simple_form_bgcolour narrow_selection_field_width", :size => 4} if @census_fields.include?('birth_county') %>
+  <%= f.input :verbatim_birth_county ,  label: "Verbatim Birth County; current value highlighted",selected: @freecen_csv_entry.verbatim_birth_county, collection: @counties, :input_html =>{:class => " simple_form_bgcolour small_selection_field_width", :size => 4} if @census_fields.include?('verbatim_birth_county') %>
+  <%= f.input :birth_county ,  label: "Birth County; current value highlighted",selected: @freecen_csv_entry.birth_county, collection: @counties, :input_html =>{:class => " simple_form_bgcolour small_selection_field_width", :size => 4} if @census_fields.include?('birth_county') %>
   <%= f.input :verbatim_birth_place ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @census_fields.include?('verbatim_birth_place') %>
   <%= f.input :birth_place ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @census_fields.include?('birth_place') %>
   <%= f.input :father_place_of_birth ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @census_fields.include?('father_place_of_birth') %>
@@ -42,9 +42,9 @@
   <%= f.input :language, label: "Language Flag; current value highlighted",selected: @freecen_csv_entry.language, collection: @languages, :input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 3} if @census_fields.include?('language') && !(ChapmanCode::CODES['England'].values.member?(@chapman_code) || @chapman_code == 'IOM') %>
   <%= f.input :notes, :label => 'Notes', :as => :text, :input_html => {:class => " simple_form_bgcolour  ",   :placeholder => "Enter notes about entry in census",  :size => "60x5" } %>
   <% if %w[validator county_coordinator country_coordinator data_manager system_administrator].include?(@user.person_role) && @freecen_csv_file.validation%>
-    <%= f.input :record_valid, label: "Record to be accepted as is; current value highlighted", selected: @freecen_csv_entry.record_valid, collection: ['true', 'false'], :input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 2} %>
+    <%= f.input :record_valid, label: "Record to be accepted as is; current value highlighted", selected: @freecen_csv_entry.record_valid, collection: ['true', 'false'], :input_html =>{:class => " simple_form_bgcolour simple_form_position small_selection_field_width", :size => 2} %>
   <% else %>
-    <%= f.input :record_valid, label: "Record valid", selected: @freecen_csv_entry.record_valid, collection: ['true', 'false'], :input_html =>{:disabled => true, :class => " simple_form_position narrow_selection_field_width", :size => 2} %>
+    <%= f.input :record_valid, label: "Record valid", selected: @freecen_csv_entry.record_valid, collection: ['true', 'false'], :input_html =>{:disabled => true, :class => " simple_form_position small_selection_field_width", :size => 2} %>
   <% end %>
   <div  style="text-align: center"><%= link_to 'Cancel', freecen_csv_entry_path(@freecen_csv_entry), method: :get, class: 'btn   btn--small', title: 'Cancels the Editing session.'%></div>
   <%= f.button :submit, 'Submit',:button_html => {class: 'btn btn--small' }, title: 'Makes the addition or change PERMANENT.'  %>
