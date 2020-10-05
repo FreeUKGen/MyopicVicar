@@ -36,7 +36,7 @@ module FreecenCsvEntriesHelper
   end
 
   def accept_entry
-    if @freecen_csv_entry.file_validation && @freecen_csv_entry.record_valid == 'false'
+    if @file_validation && @freecen_csv_entry.record_valid == 'false'
       link_to 'Accept entry', accept_freecen_csv_entry_path(@freecen_csv_entry), method: :get, class: "btn btn--small",
         title: 'Accept the entry as correct; warnings will be removed and not recreated when reloaded',
         data: { confirm: 'Are you sure you want to accept this entry' }
@@ -44,7 +44,7 @@ module FreecenCsvEntriesHelper
   end
 
   def reject_entry
-    if @freecen_csv_entry.file_validation && @freecen_csv_entry.record_valid == 'true'
+    if @file_validation && @freecen_csv_entry.record_valid == 'true'
 
       link_to 'Force Review', revalidate_freecen_csv_entry_path(@freecen_csv_entry), method: :get, class: "btn btn--small",
         title: 'Force review of this entry even though accepted or true', data: { confirm: 'Are you sure you want to force a reprocessing of this entry' }

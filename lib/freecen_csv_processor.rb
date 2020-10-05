@@ -836,12 +836,7 @@ class CsvRecords < CsvFile
       next if line[0..24].all?(&:blank?)
 
       @record = CsvRecord.new(line, @csvfile, @project)
-      p n
-      p @record
       success, message, result = @record.extract_data_line(n)
-      p success
-      p message
-      p result
       if result[:birth_place_flag].present? || result[:deleted_flag].present? || result[:individual_flag].present? || result[:location_flag].present? ||
           result[:name_flag].present? || result[:occupation_flag].present? || result[:address_flag].present? || result[:deleted_flag].present?
         result[:flag] = true
