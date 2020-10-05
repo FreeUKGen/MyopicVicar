@@ -198,7 +198,12 @@ module Freecen
   HEADER_OPTIONS = %w[Freecen2_traditional 1841 1851 1861 1871 1881 1891 1901 1911 Channel_Islands_1911 Scotland_1841 Scotland_1851 Scotland_1861 Scotland_1871
     Scotland_1881 Scotland_1891 Scotland_1901 Scotland_1911 Ireland_1901 Ireland_1911].freeze
 
-
+  UNNEEDED_COUNTIES = [
+    'Central', 'Clwyd', 'Dumfries and Galloway', 'Dyfed', 'England and Wales Shipping', 'Grampian', 'Gwent', 'Gwynedd', 'Highland', 'London (City)',
+    'Lothian', 'Mid Glamorgan', 'Military', 'Orkney', 'Other Locations', 'Out of County', 'Powys', 'Royal Navy Ships', 'Scottish Shipping',
+    'Shetland', 'South Glamorgan', 'Strathclyde', 'Tayside', 'Unknown', 'West Glamorgan', 'Western Isles', 'Yorkshire', 'England', 'Scotland',
+    'Ireland', 'Wales', 'Channel Islands'
+  ].freeze
   FIELD_NAMES_CONVERSION = {
     'civil parish' => 'civil_parish',
     'ed' => 'enumeration_district',

@@ -148,7 +148,7 @@ class Freecen2PlacesController < ApplicationController
     @place.alternate_freecen2_place_names.build
     @county = session[:county]
     @counties = ChapmanCode.keys.sort
-    @counties =  @counties - ['England', 'Scotland', 'Ireland', 'Wales', 'Channel Islands']
+    @counties -= Freecen::UNNEEDED_COUNTIES
   end
 
   def places_counties_and_countries
@@ -157,7 +157,7 @@ class Freecen2PlacesController < ApplicationController
       @countries << country.country_code
     end
     @counties = ChapmanCode.keys.sort
-    @counties =  @counties - ['England', 'Scotland', 'Ireland', 'Wales', 'Channel Islands']
+    @counties -= Freecen::UNNEEDED_COUNTIES
     placenames = Freecen2Place.where(:chapman_code => session[:chapman_code], :disabled => 'false', :error_flag.ne => "Place name is not approved").all.order_by(place_name: 1)
     @placenames = []
     placenames.each do |placename|
