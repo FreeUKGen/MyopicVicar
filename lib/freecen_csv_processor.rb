@@ -692,6 +692,7 @@ def adjust_case(record)
   record[:special_water_district] = FreecenCsvEntry.mytitlieze(record[:special_water_district])
   record[:ward] = FreecenCsvEntry.mytitlieze(record[:ward])
   record[:where_census_taken] = FreecenCsvEntry.mytitlieze(record[:where_census_taken])
+  record[:record_valid] = record[:record_valid].downcase if record[:record_valid].present?
   record
 end
 
@@ -843,7 +844,7 @@ class CsvRecords < CsvFile
       else
         result[:flag] = false
       end
-      result[:record_valid] = true unless result[:error_messages].present? || result[:warning_messages].present? || result[:flag]
+      result[:record_valid] = 'true' unless result[:error_messages].present? || result[:warning_messages].present? || result[:flag]
       data_records << result
       @csvfile.total_errors = @csvfile.total_errors + 1 if result[:error_messages].present?
       @csvfile.total_warnings = @csvfile.total_warnings + 1 if result[:warning_messages].present?
@@ -877,7 +878,7 @@ class CsvRecord < CsvRecords
     @data_record[:warning_messages] = ''
     @data_record[:info_messages] = ''
     @data_record[:field_specification] = @csvfile.field_specification
-    @data_record[:record_validate] = false unless @csvfile.validation
+    @data_record[:record_valid] = 'false' unless @csvfile.validation
   end
 
   def extract_data_line(num)

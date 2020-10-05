@@ -2067,6 +2067,8 @@ class FreecenCsvEntry
     self.special_water_district = FreecenCsvEntry.mytitlieze(special_water_district)
     self.ward = FreecenCsvEntry.mytitlieze(ward)
     self.where_census_taken = FreecenCsvEntry.mytitlieze(where_census_taken)
+    self.record_valid = record_valid.downcase if record_valid.present?
+
   end
 
   def self.management_display_labels
