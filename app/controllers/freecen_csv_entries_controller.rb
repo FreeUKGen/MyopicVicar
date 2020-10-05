@@ -132,6 +132,10 @@ class FreecenCsvEntriesController < ApplicationController
       message = 'The entry was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
+    if @freecen_csv_entry.uninhabited_flag.present?
+      message = 'The entry has the uninhabited flag set and cannot be edited on line'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
 
     @freecen_csv_file = @freecen_csv_entry.freecen_csv_file
     redirect_back(fallback_location: new_manage_resource_path, notice: 'File is currently awaiting processing and should not be edited') && return unless @freecen_csv_file.can_we_edit?
