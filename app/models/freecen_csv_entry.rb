@@ -168,13 +168,14 @@ class FreecenCsvEntry
     end
 
     def mytitlieze(value)
-      value = value.present? && value != '-' ? value.strip.titleize : value
+      value = value.present? && !value.chars.include?('-') ? value.strip.titleize : value
+      value
     end
 
     def update_parameters(params, entry)
       #clean up old null entries
       params = params.delete_if { |k, v| v == '' }
-      return params
+      params
     end
 
     def valid_freecen_csv_entry?(freecen_csv_entry)
@@ -2036,6 +2037,7 @@ class FreecenCsvEntry
   end
 
   def adjust_case
+    # Note this code is replicated in freecen_csv_processor so if changes are made here they need also to be made there
     self.surname = FreecenCsvEntry.myupcase(surname)
     self.forenames = FreecenCsvEntry.mytitlieze(forenames)
     self.birth_place = FreecenCsvEntry.mytitlieze(birth_place)
@@ -2065,8 +2067,6 @@ class FreecenCsvEntry
     self.special_water_district = FreecenCsvEntry.mytitlieze(special_water_district)
     self.ward = FreecenCsvEntry.mytitlieze(ward)
     self.where_census_taken = FreecenCsvEntry.mytitlieze(where_census_taken)
-    self.notes = FreecenCsvEntry.mytitlieze(notes)
-    self.disability_notes = FreecenCsvEntry.mytitlieze(disability_notes)
   end
 
   def self.management_display_labels
