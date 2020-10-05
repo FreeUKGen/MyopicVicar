@@ -1,7 +1,7 @@
 <% breadcrumb :show_freecen2_piece,  @freecen2_piece.id, @freecen2_piece.chapman_code,  @freecen2_piece.year, @type%>
 <h2 style="text-align: center">Details of FreeCen2 Piece <%= @freecen2_piece.number%> for <%=@chapman_code%> in <%= @freecen2_piece.year%></h2>
 <%= render 'flash_notice' %>
-<% if %w[data_manager system_administrator].include?(@user.person_role)%>
+<% if %w[county_coordinator country_coordinator data_manager system_administrator].include?(@user.person_role)%>
   <div style="text-align: center">
     <%= link_to 'Edit Piece', edit_freecen2_piece_path(@freecen2_piece, type: @type), data: { confirm: 'Are you sure?' }, :class => "btn   btn--small", title: 'Editing is restricted to, coordinators, data managers and system administrators'%>
   </div>
