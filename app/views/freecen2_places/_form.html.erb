@@ -5,7 +5,7 @@
   <%= simple_form_for @place, :html => { :class => "grid"}  do |f| %>
     <% if controller.action_name == 'new' || controller.action_name == 'create'%>
       <% if %w[county_coordinator country_coordinator system_administrator data_manager validator].include?(@user.person_role)%>
-        <%= f.input :county,:label => "Select county from following list", :hint => 'For Midlothian use Edinburghshire: Elgin use Morayshire: Haddington use East Lothian; Kings use Offlay;
+        <%= f.input :county,:label => "Select county from following list", :hint => 'For Edinburghshire use Midlothian: Elgin use Morayshire: Haddington use East Lothian; Kings use Offlay;
         Linlithgow use West Lothian; Mearns use Kincardineshire; Queens use County Laois; West Galloway use Wigtownshire: Shetland use Shetland Isles.',:include_blank => false, :collection => @counties, :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 3}   %>
         <%= f.input :place_name, :label => "Enter the Place Name",:hint => "Please take extreme care with the Place Name including its case!" ,:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
       <% else%>
