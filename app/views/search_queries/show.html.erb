@@ -28,9 +28,28 @@
           <div class="grid__item one-quarter lap-one-half palm-one-half">
             <strong><%= pluralize(@search_results.count, 'Results')%></strong>
           </div>
-          <aside class="grid__item one-sixth lap-one-third palm-one-half  float--right">
-            <%= select_tag('tools', options_for_select([['About this Query', "#{about_search_query_path(@search_query, :page_number => @page_number)}".html_safe], ['Printable Format', "#{show_print_version_search_query_path}".html_safe]]), {prompt: '<i class="fa fa-cog" aria-hidden="true"></i>  Tools'.html_safe, id: 'tools', tabindex: "0", class: 'btn--small', onchange: "window.location.replace(window.location.origin + this.value);"}) %>
-          </aside>
+          <div class="grid__item one-sixth lap-one-third palm-one-half float--right">
+            <div id="tool_button" class="tools bordered dropbtn"><i class="fa fa-cog" aria-hidden="true"></i> Tools</div>
+          </div>
+        <!--div class="grid">
+          <div class="grid__item one-quarter lap-one-third palm-one-half float--right bordered">
+            <div id="myDropdown" class="">
+              <div><a href="#home">About this Query</a></div>
+              <div><a href="#about">Printable Format</a></div>
+            </div>
+          </div-->
+            <!--div id="tools_select">
+              <%#= select_tag('tools', content_tag(:div, options_for_select([['About this Query', "#{about_search_query_path(@search_query, :page_number => @page_number)}".html_safe], ['Printable Format', "#{show_print_version_search_query_path}".html_safe]]), class: "idk"), {prompt: '<i class="fa fa-cog" aria-hidden="true"></i>  Tools'.html_safe, id: 'tools', tabindex: "0", class: 'btn--small', onchange: "window.location.replace(window.location.origin + this.value);"}) %>
+            </div-->
+          
+        </div>
+        <div class="grid">
+          <div class="grid__item one-quarter lap-one-third palm-one-half float--right">
+            <!--i class="fa fa-caret-up float--right hide" aria-hidden="true" style="display: none;"></i-->
+            <div id="myDropdown" class="dropdown-content hide">
+              <div><a href="#home">About this Query</a></div>
+              <div><a href="#about">Printable Format</a></div>
+            </div>
         </div>
       </div>
     </div>
@@ -175,6 +194,24 @@
      $('#search_criteria_container').show();
      $('#view_search_criteria').hide();
   });
+
+  /* When the user clicks on the button, 
+toggle between hiding and showing the dropdown content */
+$("#tool_button").click(
+  function() {
+    $(".hide").toggle();
+  });
+
+
+
+// Close the dropdown if the user clicks outside of it
+window.onclick = function(event) {
+  if (!event.target.matches('.dropbtn')) {
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    $(".hide").hide();
+  }
+}
+
 
   //js code to hide show criteria button on load
   //$('#view_search_criteria').hide();
