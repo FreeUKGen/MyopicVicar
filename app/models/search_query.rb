@@ -481,16 +481,16 @@ class SearchQuery
   def individual_sex?(individual)
     return true if sex.blank?
 
-    result = individual.sex == sex ? true : false
+    result = sex.casecmp(individual.sex).zero? ? true : false
     result
   end
 
   def individual_marital_status?(individual)
     return true if marital_status.blank?
 
-    return true if marital_status == individual.marital_status
+    return true if marital_status.casecmp(individual.marital_status).zero?
 
-    return true if individual.marital_status == 'U' && marital_status == 'S'
+    return true if individual.marital_status.casecmp('u').zero? && marital_status.casecmp('s').zero?
 
     false
   end
@@ -498,7 +498,7 @@ class SearchQuery
   def individual_language?(individual)
     return true if language.blank?
 
-    return true if language == individual.language
+    return true if language.casecmp(individual.language).zero?
 
     false
   end
