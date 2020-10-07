@@ -218,15 +218,19 @@ module ApplicationHelper
   end
 
   # generate proper display for the search query, in display order
+
+  # needs rationalization for cen
   def search_params_for_display(search_query)
     search_query[:place_ids].present? ? search_query_places_size = search_query[:place_ids].length : search_query_places_size = 0
     if search_query_places_size > 0
       first_place = search_query[:place_ids][0]
-      first_place = Place.find(first_place)
+      first_place = Place.find(first_place) if appname.downcase == 'freereg'
+      first_place = Freecen2Place.find(first_place) if appname.downcase == 'freecen'
       place = first_place.place_name
       if search_query.all_radius_place_ids.length > 1
         last_place = search_query.all_radius_place_ids[-2]
-        last_place = Place.find(last_place)
+        last_place = Place.find(last_place) if appname.downcase == 'freereg'
+        last_place = Freecen2Place.find(last_place) if appname.downcase == 'freecen'
         additional = search_query.all_radius_place_ids.length - 1
         place <<
         " (including #{additional} additional places within

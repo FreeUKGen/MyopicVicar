@@ -363,7 +363,8 @@ class SearchQuery
     return search_results if no_additional_census_fields?
 
     search_results.each do |record|
-      individual = FreecenIndividual.find(record[:freecen_individual_id])
+      individual = FreecenIndividual.find(record[:freecen_individual_id]) unless record[:freecen_csv_entry_id].present? && record[:freecen_csv_entry_id].present?
+      individual = FreecenCsvEntry.find(record[:freecen_csv_entry_id]) if record[:freecen_csv_entry_id].present? && record[:freecen_csv_entry_id].present?
       next if individual.blank?
 
       if individual_sex?(individual) && individual_marital_status?(individual) && individual_language?(individual) &&
