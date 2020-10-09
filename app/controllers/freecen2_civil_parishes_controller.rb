@@ -4,6 +4,7 @@ class Freecen2CivilParishesController < ApplicationController
   def chapman_year_index
     get_user_info_from_userid
     @chapman_code = params[:chapman_code]
+    session.delete(:freecen2_civil_parish)
     @year = params[:year]
     @freecen2_civil_parishes = Freecen2CivilParish.chapman_code(@chapman_code).year(@year).order_by(year: 1, name: 1)
     @type = 'parish_year_index'
@@ -14,19 +15,18 @@ class Freecen2CivilParishesController < ApplicationController
 
     get_user_info_from_userid
     @freecen2_civil_parish = Freecen2CivilParish.find_by(id: params[:id])
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No civil parish found') && return if @freecen2_civil_parish.blank?
+
+
     @freecen2_place = @freecen2_civil_parish.freecen2_place
+    @freecen2_place = @freecen2_place.present? ? @freecen2_place.place_name : ''
     @piece = @freecen2_civil_parish.freecen2_piece
     @chapman_code = @freecen2_civil_parish.chapman_code
     @freecen2_piece = @freecen2_civil_parish.piece_name
-    places = Freecen2Place.chapman_code(@chapman_code).all.order_by(place_name: 1)
-    @places = []
-    places.each do |place|
-      @places << place.place_name
-      place.alternate_freecen2_place_names.each do |alternate_name|
-        @places << alternate_name.alternate_name
-      end
-    end
-    @places = @places.sort
+    @freecen2_civil_parishes = @freecen2_civil_parish.civil_parish_names
+    @places = @freecen2_civil_parish.civil_parish_place_names
+    session[:freecen2_civil_parish] = @freecen2_civil_parish.name
+
     @freecen2_civil_parish.freecen2_hamlets.build
     @freecen2_civil_parish.freecen2_townships.build
     @freecen2_civil_parish.freecen2_wards.build
@@ -41,6 +41,8 @@ class Freecen2CivilParishesController < ApplicationController
       @freecen2_civil_parishes_distinct = Freecen2CivilParish.chapman_code(session[:chapman_code]).distinct(:name).sort_by(&:downcase)
       @freecen2_civil_parishes_distinct = Kaminari.paginate_array(@freecen2_civil_parishes_distinct).page(params[:page]).per(50)
       @type = 'parish_index'
+      session[:current_page_civil_parish] = @freecen2_civil_parishes_distinct.current_page if @freecen2_civil_parishes_distinct.present?
+      session.delete(:freecen2_civil_parish)
     else
       redirect_to manage_resources_path && return
     end
@@ -64,6 +66,9 @@ class Freecen2CivilParishesController < ApplicationController
 
     get_user_info_from_userid
     @freecen2_civil_parish = Freecen2CivilParish.find_by(id: params[:id])
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No civil parish found') && return if @freecen2_civil_parish.blank?
+
+    session[:freecen2_civil_parish] = @freecen2_civil_parish.name
     @place = @freecen2_civil_parish.freecen2_place
     @piece = @freecen2_civil_parish.freecen2_piece
     @chapman_code = @freecen2_civil_parish.chapman_code
@@ -78,9 +83,9 @@ class Freecen2CivilParishesController < ApplicationController
     @freecen2_civil_parish = Freecen2CivilParish.find_by(id: params[:id])
     redirect_back(fallback_location: manage_counties_path, notice: 'Civil Parish not found') && return if @freecen2_civil_parish.blank?
 
-    chapman_code = @freecen2_civil_parish.chapman_code
-    place = Freecen2Place.find_by(chapman_code: chapman_code, place_name: params[:freecen2_civil_parish][:name]) if chapman_code.present?
-    params[:freecen2_civil_parish][:freecen2_place_id] = place.id if place.present?
+    old_freecen2_place = @freecen2_civil_parish.freecen2_place_id
+    old_civil_parish_name = @freecen2_civil_parish.name
+    params[:freecen2_civil_parish][:freecen2_place_id] = @freecen2_civil_parish.civil_parish_place_id(params[:freecen2_civil_parish][:freecen2_place_id])
     @type = params[:freecen2_civil_parish][:type]
     params[:freecen2_civil_parish].delete :type
 
@@ -91,9 +96,9 @@ class Freecen2CivilParishesController < ApplicationController
     else
       flash[:notice] = 'Update was successful'
       get_user_info_from_userid
-      @freecen2_civil_parish.update_freecen2_place
       @freecen2_civil_parish.update_tna_change_log(@user_userid)
-
+      @freecen2_civil_parish.reload
+      @freecen2_civil_parish.propagate_freecen2_place(old_freecen2_place, old_civil_parish_name)
       redirect_to freecen2_civil_parish_path(@freecen2_civil_parish, type: @type)
     end
   end

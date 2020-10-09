@@ -19,7 +19,7 @@
     </thead>
     <tbody >
       <% @freecen2_pieces_distinct.each do |freecen2_piece| %>
-        <tr >
+        <tr id="<%= freecen2_piece%>">
           <td> <%= freecen2_piece %></td>
           <% @census.each do |year| %>
             <td> <%= piece_year(freecen2_piece, year)%></td>

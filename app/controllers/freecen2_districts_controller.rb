@@ -5,6 +5,10 @@ class Freecen2DistrictsController < ApplicationController
     get_user_info_from_userid
     @chapman_code = params[:chapman_code]
     @year = params[:year]
+    session.delete(:freecen2_piece)
+    session.delete(:freecen2_civil_parish)
+    session.delete(:current_page_piece)
+    session.delete(:current_page_civil_parish)
     @freecen2_districts = Freecen2District.chapman_code(@chapman_code).year(@year).order_by(year: 1, name: 1).all
     @type = 'district_year_index'
   end
@@ -14,13 +18,11 @@ class Freecen2DistrictsController < ApplicationController
 
     get_user_info_from_userid
     @freecen2_district = Freecen2District.find_by(id: params[:id])
+    session[:freecen2_district] = @freecen2_district.name
     @freecen2_place = @freecen2_district.freecen2_place
-
-    places = Freecen2Place.chapman_code(@freecen2_district.chapman_code).all.order_by(place_name: 1)
-    @places = []
-    places.each do |place|
-      @places << place.place_name
-    end
+    @freecen2_place = @freecen2_place.present? ? @freecen2_place.place_name : ''
+    @districts = @freecen2_district.district_names
+    @places = @freecen2_district.district_place_names
     @type = params[:type]
   end
 
@@ -32,6 +34,8 @@ class Freecen2DistrictsController < ApplicationController
     @chapman_code = session[:chapman_code]
     @freecen2_districts_distinct = Freecen2District.chapman_code(session[:chapman_code]).distinct(:name).sort_by(&:downcase)
     @freecen2_districts_distinct = Kaminari.paginate_array(@freecen2_districts_distinct).page(params[:page]).per(50)
+    session[:current_page_district] = @freecen2_districts_distinct.current_page if @freecen2_districts_distinct.present?
+    session.delete(:freecen2_district)
     @type = 'district_index'
   end
 
@@ -46,13 +50,12 @@ class Freecen2DistrictsController < ApplicationController
     @type = params[:type]
     get_user_info_from_userid
     @freecen2_district = Freecen2District.find_by(id: params[:id])
-    @freecen2_pieces = Freecen2Piece.where(freecen2_district_id: @freecen2_district.id).all.order_by(name: 1)
-    @freecen2_pieces_name = []
-    @freecen2_pieces.each do |piece|
-      @freecen2_pieces_name << piece.name unless @freecen2_pieces_name.include?(piece.name)
-    end
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No District found') && return if @freecen2_district.blank?
+
+    @freecen2_pieces_name = @freecen2_district.freecen2_pieces_name
     @place = @freecen2_district.freecen2_place
     @chapman_code = session[:chapman_code]
+    session[:freecen2_district] = @freecen2_district.name
     @type = params[:type]
   end
 
@@ -61,11 +64,11 @@ class Freecen2DistrictsController < ApplicationController
     redirect_back(fallback_location: manage_counties_path, notice: 'No information in the update') && return if params[:id].blank? || params[:freecen2_district].blank?
 
     @freecen2_district = Freecen2District.find_by(id: params[:id])
-    redirect_back(fallback_location: manage_counties_path, notice: 'Civil Parish not found') && return if @freecen2_district.blank?
+    redirect_back(fallback_location: manage_counties_path, notice: 'District not found') && return if @freecen2_district.blank?
 
-    chapman_code = @freecen2_district.chapman_code
-    place = Freecen2Place.find_by(chapman_code: chapman_code, place_name: params[:freecen2_district][:name]) if chapman_code.present?
-    params[:freecen2_district][:freecen2_place_id] = place.id if place.present?
+    old_freecen2_place = @freecen2_district.freecen2_place_id
+    old_district_name = @freecen2_district.name
+    params[:freecen2_district][:freecen2_place_id] = @freecen2_district.district_place_id(params[:freecen2_district][:freecen2_place_id])
     @type = params[:freecen2_district][:type]
     params[:freecen2_district].delete :type
 
@@ -77,9 +80,9 @@ class Freecen2DistrictsController < ApplicationController
     else
       flash[:notice] = 'Update was successful'
       get_user_info_from_userid
-      p  @freecen2_district.previous_changes
-      @freecen2_district.update_freecen2_place
       @freecen2_district.update_tna_change_log(@user_userid)
+      @freecen2_district.reload
+      @freecen2_district.propagate_freecen2_place(old_freecen2_place, old_district_name)
       redirect_to freecen2_district_path(@freecen2_district, type: @type)
     end
   end

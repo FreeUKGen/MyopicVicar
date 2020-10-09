@@ -84,7 +84,72 @@ class Freecen2District
       end
       [totals_pieces, totals_pieces_online, totals_individuals, totals_dwellings]
     end
+  end
 
+  def district_names
+    districts = Freecen2District.chapman_code(chapman_code).all.order_by(place_name: 1)
+    @districts = []
+    districts.each do |district|
+      @districts << district.name
+    end
+    @districts = @districts.uniq.sort
+  end
+
+  def district_place_names
+    places = Freecen2Place.chapman_code(chapman_code).all.order_by(place_name: 1)
+    @places = []
+    places.each do |place|
+      @places << place.place_name
+      place.alternate_freecen2_place_names.each do |alternate_name|
+        @places << alternate_name.alternate_name
+      end
+    end
+    @places = @places.uniq.sort
+  end
+
+  def district_place_id(place_name)
+    place = Freecen2Place.find_by(chapman_code: chapman_code, place_name: place_name) if chapman_code.present?
+    place =  place.present? ? place.id : ''
+  end
+
+  def propagate_freecen2_place(old_place, old_name)
+    new_place = freecen2_place_id
+    new_name = name
+    return if (new_place.to_s == old_place.to_s) && (new_name == old_name)
+
+    Freecen2District.where(chapman_code: chapman_code, name: old_name).each do |district|
+      if district.id != _id
+        district.update_attributes(name: new_name)
+      end
+      district.freecen2_pieces.each do |piece|
+        old_piece_place = piece.freecen2_place_id
+        piece.update_attributes(freecen2_place_id: new_place) if old_piece_place.blank? || old_piece_place.to_s == old_place.to_s
+        piece.freecen2_civil_parishes.each do |civil_parish|
+          old_civil_parish_place = civil_parish.freecen2_place_id
+          civil_parish.update_attributes(freecen2_place_id: new_place) if old_civil_parish_place.blank? || old_civil_parish_place.to_s == old_place.to_s
+        end
+      end
+    end
+    Freecen2District.where(chapman_code: chapman_code, name: name).each do |district|
+      old_place_name = district.freecen2_place_id
+      district.update_attributes(freecen2_place_id: new_place) if old_place_name.blank? || old_place_name.to_s == old_place.to_s
+      district.freecen2_pieces.each do |piece|
+        old_piece_place = piece.freecen2_place_id
+        piece.update_attributes(freecen2_place_id: new_place) if old_piece_place.blank? || old_piece_place.to_s == old_place.to_s
+        piece.freecen2_civil_parishes.each do |civil_parish|
+          old_civil_parish_place = civil_parish.freecen2_place_id
+          civil_parish.update_attributes(freecen2_place_id: new_place) if old_civil_parish_place.blank? || old_civil_parish_place.to_s == old_place.to_s
+        end
+      end
+    end
+  end
+  def freecen2_pieces_name
+    freecen2_pieces = Freecen2Piece.where(freecen2_district_id: _id).all.order_by(name: 1)
+    freecen2_pieces_name = []
+    freecen2_pieces.each do |piece|
+      freecen2_pieces_name << piece.name unless freecen2_pieces_name.include?(piece.name)
+    end
+    freecen2_pieces_name
   end
 
   def update_freecen2_place
@@ -93,6 +158,7 @@ class Freecen2District
   end
 
   def update_tna_change_log(userid)
+    previous_changes
     tna = TnaChangeLog.create(userid: userid, year: year, chapman_code: chapman_code, parameters: previous_changes, tna_collection: "#{self.class}")
     tna.save
   end

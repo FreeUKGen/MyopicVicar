@@ -1,5 +1,7 @@
 <%= simple_form_for @freecen2_civil_parish, :html => { :class => "grid"}  do |f| %>
-  <%= f.input :name ,  label: 'Civil Parish: existing name is preselected IF it exists', selected: @freecen2_civil_parish.name, include_blank: false, collection: @places, input_html: {class: " simple_form_bgcolour simple_form_position overide_selection_field_width", size:3 }%>
+  <%= f.input :reason_changed,:label => "Reason for making a change or addition",:as => :text, :input_html => {:class => " simple_form_bgcolour  ",   :placeholder => "Enter the reason for a change",  :size => "29x5" }%>
+  <%= f.input :name ,  label: 'Civil Parish: existing name is preselected IF it exists', selected: @freecen2_civil_parish.name, include_blank: false, collection: @freecen2_civil_parishes, input_html: {class: " simple_form_bgcolour simple_form_position overide_selection_field_width", size:3 }%>
+  <%= f.input :freecen2_place_id,  label: 'Freecen2 Place name:', selected:  @freecen2_place, include_blank: false, collection: @places, input_html: {class: " simple_form_bgcolour simple_form_position overide_selection_field_width", size:3 }%>
   <%= f.input :note, label: "TNA Notes",  as: :text, input_html: {class: " simple_form_bgcolour  ",   placeholder: @freecen2_civil_parish.note,  size: "40x3" }%>
   <h4 style="text-align: center">Hamlets within the Civil Parish</h4>
   <%= f.simple_fields_for :freecen2_hamlets do |multiple| %>
@@ -19,7 +21,6 @@
     <%= multiple.input :note,:input_html => { :class => " simple_form_bgcolour  ",:size => 30 } %>
     <%= multiple.input :_destroy, :as => :boolean ,:input_html => {:class => " simple_form_bgcolour  "} %>
   <% end %>
-  <%= f.input :reason_changed,:label => "Reason for making a change or addition",:as => :text, :input_html => {:class => " simple_form_bgcolour  ",   :placeholder => "Enter the reason for a change",  :size => "29x5" }%>
   <%= f.hidden_field :type, :value=>@type %>
   <%= f.button :submit, 'Submit'   %>
 <% end %>

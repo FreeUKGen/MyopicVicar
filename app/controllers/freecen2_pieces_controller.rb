@@ -6,6 +6,8 @@ class Freecen2PiecesController < ApplicationController
     @chapman_code = params[:chapman_code]
     @year = params[:year]
     @freecen2_pieces = Freecen2Piece.chapman_code(@chapman_code).year(@year).order_by(year: 1, piece_number: 1).all
+    session.delete(:freecen2_civil_parish)
+    session.delete(:current_page_civil_parish)
     @type = 'year_index'
   end
 
@@ -28,15 +30,13 @@ class Freecen2PiecesController < ApplicationController
 
     get_user_info_from_userid
     @freecen2_piece = Freecen2Piece.where('_id' => params[:id]).first
-    if @freecen2_piece.blank?
-      flash[:notice] = 'Piece does not exist'
-      redirect_to freecen2_pieces_path
-    end
-    places = Freecen2Place.chapman_code(@freecen2_piece.chapman_code).all.order_by(place_name: 1)
-    @places = []
-    places.each do |place|
-      @places << place.place_name
-    end
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No piece found') && return if freecen2_piece.blank?
+
+    session[:freecen2_piece] = @freecen2_piece.name
+    @freecen2_place = @freecen2_piece.freecen2_place
+    @freecen2_place = @freecen2_place.present? ? @freecen2_place.place_name : ''
+    @freecen2_pieces = @freecen2_piece.piece_names
+    @places = @freecen2_piece.piece_place_names
     @type = params[:type]
   end
 
@@ -48,8 +48,10 @@ class Freecen2PiecesController < ApplicationController
       @freecen2_pieces_distinct = Freecen2Piece.chapman_code(session[:chapman_code]).distinct(:name).sort_by(&:downcase)
       @freecen2_pieces_distinct = Kaminari.paginate_array(@freecen2_pieces_distinct).page(params[:page]).per(50)
       @type = 'index'
+      session[:current_page_piece] = @freecen2_pieces_distinct.current_page if @freecen2_pieces_distinct.present?
+      session.delete(:freecen2_piece)
     else
-      redirect_to manage_resources_path && return
+      redirect_back(fallback_location: new_manage_resource_path, notice: 'No chapman code') && return
     end
   end
 
@@ -62,7 +64,7 @@ class Freecen2PiecesController < ApplicationController
       @freecen2_pieces = Freecen2Piece.where(freecen2_district_id: @freecen2_district.id).all.order_by(name: 1)
       @year = @freecen2_district.year
     else
-      redirect_to manage_resources_path && return
+      redirect_back(fallback_location: new_manage_resource_path, notice: 'No chapman code') && return
     end
   end
 
@@ -73,7 +75,7 @@ class Freecen2PiecesController < ApplicationController
       @totals_pieces = Freecen2Piece.county_district_year_totals(params[:id])
       @grand_totals_pieces = Freecen2Piece.grand_totals(@totals_pieces)
     else
-      redirect_to manage_resources_path && return
+      redirect_back(fallback_location: new_manage_resource_path, notice: 'No chapman code') && return
     end
   end
 
@@ -97,9 +99,12 @@ class Freecen2PiecesController < ApplicationController
 
     get_user_info_from_userid
     @freecen2_piece = Freecen2Piece.find_by(id: params[:id])
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No piece found') && return if @freecen2_piece.blank?
+
     @place = @freecen2_piece.freecen2_place
     @chapman_code = session[:chapman_code]
     @type = params[:type]
+    session[:freecen2_piece] = @freecen2_piece.name
   end
 
   def update
@@ -108,9 +113,9 @@ class Freecen2PiecesController < ApplicationController
     @freecen2_piece = Freecen2Piece.where('_id' => params[:id]).first
     redirect_back(fallback_location: new_manage_resource_path, notice: 'Piece not found') && return if @freecen2_piece.blank?
 
-    chapman_code = @freecen2_piece.chapman_code
-    place = Freecen2Place.find_by(chapman_code: chapman_code, place_name: params[:freecen2_piece][:name]) if chapman_code.present?
-    params[:freecen2_piece][:freecen2_place_id] = place.id if place.present?
+    old_freecen2_place = @freecen2_piece.freecen2_place_id
+    old_piece_name = @freecen2_piece.name
+    params[:freecen2_piece][:freecen2_place_id] = @freecen2_piece.piece_place_id(params[:freecen2_piece][:freecen2_place_id])
     @type = params[:freecen2_piece][:type]
     params[:freecen2_piece].delete :type
 
@@ -121,8 +126,9 @@ class Freecen2PiecesController < ApplicationController
     else
       flash[:notice] = 'Update was successful'
       get_user_info_from_userid
-      @freecen2_piece.update_freecen2_place
       @freecen2_piece.update_tna_change_log(@user_userid)
+      @freecen2_piece.reload
+      @freecen2_piece.propagate_freecen2_place(old_freecen2_place, old_piece_name)
       redirect_to freecen2_piece_path(@freecen2_piece, type: @type)
     end
   end

@@ -1,5 +1,5 @@
-<% breadcrumb :show_freecen2_civil_parish,  @freecen2_civil_parish, @piece.chapman_code, @piece.year, @type %>
-<h2 style="text-align: center">Details of FreeCen2 Civil Parish for Piece <%=@piece.number%> in <%=@piece.chapman_code%> for <%=@piece.year%></h2>
+<% breadcrumb :show_freecen2_civil_parish,  @freecen2_civil_parish,@freecen2_civil_parish.chapman_code, @freecen2_civil_parish.year, @type %>
+<h2 style="text-align: center">Details of FreeCen2 Civil Parish <%=  @freecen2_civil_parish.name %></h2>
 <%= render 'flash_notice' %>
 <% if %w[county_coordinator country_coordinator data_manager system_administrator].include?(@user.person_role)%>
   <div style="text-align: center">
@@ -19,8 +19,12 @@
           <th  class="caps">Value</th>
         </tr>
         <tr>
-          <td>Civil parish</td>
-          <td class="weight--semibold"> <%=  @freecen2_civil_parish.name %> </td>
+          <td>County</td>
+          <td class="weight--semibold"> <%=  ChapmanCode.name_from_code(@freecen2_civil_parish.chapman_code)%> (<%= @freecen2_civil_parish.chapman_code%>) </td>
+        </tr>
+        <tr>
+          <td>Year</td>
+          <td class="weight--semibold"> <%=  @freecen2_civil_parish.year %> </td>
         </tr>
         <tr>
           <td>Belongs to Place <small>(Name is a link)</small></td>

@@ -193,6 +193,58 @@ class Freecen2Piece
     @civil_parish_names
   end
 
+  def piece_names
+    pieces = Freecen2Piece.chapman_code(chapman_code).all.order_by(name: 1)
+    @pieces = []
+    pieces.each do |piece|
+      @pieces << piece.name
+    end
+    @pieces = @pieces.uniq.sort
+  end
+
+  def piece_place_names
+    places = Freecen2Place.chapman_code(chapman_code).all.order_by(place_name: 1)
+    @places = []
+    places.each do |place|
+      @places << place.place_name
+      place.alternate_freecen2_place_names.each do |alternate_name|
+        @places << alternate_name.alternate_name
+      end
+    end
+    @places = @places.uniq.sort
+  end
+
+  def piece_place_id(place_name)
+    place = Freecen2Place.find_by(chapman_code: chapman_code, place_name: place_name) if chapman_code.present?
+    place = place.present? ? place.id : ''
+  end
+
+  def propagate_freecen2_place(old_place, old_name)
+    new_place = freecen2_place_id
+    new_name = name
+    return if (new_place.to_s == old_place.to_s) && (new_name == old_name)
+
+    Freecen2Piece.where(chapman_code: chapman_code, name: old_name).each do |piece|
+      if piece.id != _id
+        piece.update_attributes(name: new_name)
+      end
+      old_piece_place = piece.freecen2_place_id
+      piece.update_attributes(freecen2_place_id: new_place) if old_piece_place.blank? || old_piece_place.to_s == old_place.to_s
+      piece.freecen2_civil_parishes.each do |civil_parish|
+        old_civil_parish_place = civil_parish.freecen2_place_id
+        civil_parish.update_attributes(freecen2_place_id: new_place) if old_civil_parish_place.blank? || old_civil_parish_place.to_s == old_place.to_s
+      end
+    end
+    Freecen2Piece.where(chapman_code: chapman_code, name: name).each do |piece|
+      old_place_name = piece.freecen2_place_id
+      piece.update_attributes(freecen2_place_id: new_place) if old_place_name.blank? || old_place_name.to_s == old_place.to_s
+      piece.freecen2_civil_parishes.each do |civil_parish|
+        old_civil_parish_place = civil_parish.freecen2_place_id
+        civil_parish.update_attributes(freecen2_place_id: new_place) if old_civil_parish_place.blank? || old_civil_parish_place.to_s == old_place.to_s
+      end
+    end
+  end
+
   def update_freecen2_place
     result, place_id = Freecen2Place.valid_place(chapman_code, name)
     update_attributes(freecen2_place_id: place_id) if result

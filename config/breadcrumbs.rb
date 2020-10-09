@@ -1537,12 +1537,12 @@ crumb :freecen1_vld_entry do |county, file|
 end
 
 crumb :freecen2_civil_parishes do |county|
-  link 'FreeCen2 Civil Parishes', freecen2_civil_parishes_path(county: county)
+  link 'FreeCen2 Civil Parishes', freecen2_civil_parishes_path(county: county, anchor: session[:freecen2_civil_parish], page: session[:current_page_civil_parish])
   parent :county_options, county
 end
 
 crumb :freecen2_civil_parishes_chapman do |county, year|
-  link 'FreeCen2 Civil Parishes by year', freecen2_civil_parishes_chapman_year_index_path(chapman_code: county, year: year)
+  link 'FreeCen2 Civil Parishes by year', freecen2_civil_parishes_chapman_year_index_path(chapman_code: county, year: year, anchor: session[:freecen2_civil_parish])
   parent :freecen2_civil_parishes, county
 end
 
@@ -1581,12 +1581,12 @@ crumb :freecen2_civil_parishes_index_for_piece do |file, county, year, type|
 end
 
 crumb :freecen2_pieces do |county|
-  link 'FreeCen2 Sub Districts (Pieces)', freecen2_pieces_path(county: county)
+  link 'FreeCen2 Sub Districts (Pieces)', freecen2_pieces_path(county: county, anchor: session[:freecen2_piece], page: session[:current_page_piece])
   parent :county_options, county
 end
 
 crumb :freecen2_pieces_chapman do |county, year|
-  link 'FreeCen2 Sub Districts (Pieces) by year', freecen2_pieces_chapman_year_index_path(chapman_code: county, year: year)
+  link 'FreeCen2 Sub Districts (Pieces) by year', freecen2_pieces_chapman_year_index_path(chapman_code: county, year: year, anchor: session[:freecen2_piece])
   parent :freecen2_pieces, county
 end
 
@@ -1619,13 +1619,13 @@ crumb :freecen2_pieces_district do |district, county, year, type|
 end
 
 crumb :freecen2_districts do |county, year|
-  link 'FreeCen2 Districts', freecen2_districts_path(county: county)
+  link 'FreeCen2 Districts', freecen2_districts_path(county: county, anchor: session[:freecen2_district], page: session[:current_page_district])
   parent :county_options, county
 end
 
 crumb :freecen2_districts_chapman do |county, year|
-  link 'FreeCen2 Districts by year', freecen2_districts_chapman_year_index_path(chapman_code: county, year: year)
-  parent :freecen2_districts, county
+  link 'FreeCen2 Districts by year', freecen2_districts_chapman_year_index_path(chapman_code: county, year: year, anchor: session[:freecen2_district])
+  parent :freecen2_districts, county, year
 end
 
 crumb :show_freecen2_district do |file, county, year, type|
@@ -1634,7 +1634,7 @@ crumb :show_freecen2_district do |file, county, year, type|
   when 'district_index'
     parent :freecen2_districts, county, year
   when 'district_year_index'
-    parent :freecen2_districts_chapman, file, county, year
+    parent :freecen2_districts_chapman, county, year
   else
     parent :county_options, county
   end

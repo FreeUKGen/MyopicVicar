@@ -11,13 +11,13 @@
         <th class='sticky-header '>Piece name</th>
         <th class='sticky-header '>District</th>
         <th class='sticky-header '>Civil parishes <br>
-           <small>The part in () is the name of any Hamlet, Township, Ward or Place included in the Civil Parish</small></th>
+          <small>The part in () is the name of any Hamlet, Township, Ward or Place included in the Civil Parish</small></th>
         <th colspan = "2" class='sticky-header '>Actions</th>
       </tr>
     </thead>
     <tbody >
       <% @freecen2_pieces.each do |freecen2_piece| %>
-        <tr id="<%=freecen2_piece.id%>">
+        <tr id="<%=freecen2_piece.name%>">
           <td ><%= freecen2_piece.number %></td>
           <td ><%= freecen2_piece.name %></td>
           <td ><%= freecen2_piece.district_name%></td>
