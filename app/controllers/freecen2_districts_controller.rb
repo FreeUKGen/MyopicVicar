@@ -45,6 +45,13 @@ class Freecen2DistrictsController < ApplicationController
     redirect_to freecen2_district_path(@freecen2_district.id, type: @type)
   end
 
+  def missing_place
+    get_user_info_from_userid
+    @chapman_code = session[:chapman_code]
+    @freecen2_districts = Freecen2District.missing_places(@chapman_code)
+    @type = 'missing_place_index'
+  end
+
   def show
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No District identified') && return if params[:id].blank?
     @type = params[:type]

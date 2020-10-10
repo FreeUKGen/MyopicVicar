@@ -1,5 +1,5 @@
 <% breadcrumb :relocate_freecen2_place,  @county, @place%>
-<p style="text-align: center"> <b><%= @place_name %></b> of <b><%= @county %></b><br>
+<p style="text-align: center"> <b><%= @place_name %></b> of <b> <%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>) </b><br>
 </p>
 <%= render 'flash_notice' %>
 <section class="island  island--light">

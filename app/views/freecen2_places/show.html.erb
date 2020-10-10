@@ -2,7 +2,7 @@
 <%= render 'flash_notice' %>
 <div class="grid">
   <section class="island ">
-    <h4 style="text-align: center">The Freecen2 Place <%= @place.place_name%> in <%=@county%></h4>
+    <h4 style="text-align: center">The Freecen2 Place <%= @place.place_name%> in <%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>) </h4>
     <div style="text-align: center">
       <% if %w[data_manager system_administrator county_coordinator validator].include?(@user.person_role)%>
         <%= link_to 'Edit Freecen2 Place Information', edit_freecen2_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small", title: 'Edit the place including the addition of alternate place names' %>

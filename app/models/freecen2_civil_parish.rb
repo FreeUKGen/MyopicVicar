@@ -38,6 +38,11 @@ class Freecen2CivilParish
     def year(year)
       where(year: year)
     end
+
+    def missing_places(chapman_code)
+      Freecen2CivilParish.where(chapman_code: chapman_code, freecen2_place_id: nil).all.order_by(name: 1, year: 1)
+    end
+
   end
 
   def add_hamlet_township_names

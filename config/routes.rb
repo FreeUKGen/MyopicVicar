@@ -264,10 +264,12 @@ MyopicVicar::Application.routes.draw do
   get 'counties/selection', :to =>'counties#selection', :as => :selection_counties
   resources :counties
 
-  get 'freecen2_districts/:chapman_code/:year/index', :to => 'freecen2_districts#chapman_year_index', :as => :freecen2_districts_chapman_year_index
-  get 'freecen2_districts/locate', :to => 'freecen2_districts#locate', :as => :locate_freecen2_district
+  get 'freecen2_districts/missing_place', to: 'freecen2_districts#missing_place', as: :missing_place_freecen2_districts
+  get 'freecen2_districts/:chapman_code/:year/index', to: 'freecen2_districts#chapman_year_index', as: :freecen2_districts_chapman_year_index
+  get 'freecen2_districts/locate', to: 'freecen2_districts#locate', as: :locate_freecen2_district
   resources :freecen2_districts
 
+  get 'freecen2_pieces/missing_place', to: 'freecen2_pieces#missing_place', as: :missing_place_freecen2_pieces
   get 'freecen2_pieces/new', :to => 'freecen2_pieces#new', :as => :piece_new_freecen2_piece
   get 'freecen2_pieces/:chapman_code/:year/new', :to => 'freecen2_pieces#new', :as => :new_freecen2_piece
   get 'freecen2_pieces/:chapman_code/:year/index', :to => 'freecen2_pieces#chapman_year_index', :as => :freecen2_pieces_chapman_year_index
@@ -277,7 +279,7 @@ MyopicVicar::Application.routes.draw do
   resources :freecen2_pieces, except: :new
 
 
-
+  get 'freecen2_civil_parishes/missing_place', to: 'freecen2_civil_parishes#missing_place', as: :missing_place_freecen2_civil_parishes
   get 'freecen2_civil_parishes/:id/index_for_piece', :to => 'freecen2_civil_parishes#index_for_piece', :as => :index_for_piece_freecen2_civil_parishes
   get 'freecen2_civil_parishes/:chapman_code/:year/index', :to => 'freecen2_civil_parishes#chapman_year_index', :as => :freecen2_civil_parishes_chapman_year_index
   resources :freecen2_civil_parishes

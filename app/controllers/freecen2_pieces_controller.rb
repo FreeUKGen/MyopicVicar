@@ -30,7 +30,7 @@ class Freecen2PiecesController < ApplicationController
 
     get_user_info_from_userid
     @freecen2_piece = Freecen2Piece.where('_id' => params[:id]).first
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'No piece found') && return if freecen2_piece.blank?
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No piece found') && return if @freecen2_piece.blank?
 
     session[:freecen2_piece] = @freecen2_piece.name
     @freecen2_place = @freecen2_piece.freecen2_place
@@ -77,6 +77,13 @@ class Freecen2PiecesController < ApplicationController
     else
       redirect_back(fallback_location: new_manage_resource_path, notice: 'No chapman code') && return
     end
+  end
+
+  def missing_place
+    get_user_info_from_userid
+    @chapman_code = session[:chapman_code]
+    @freecen2_pieces = Freecen2Piece.missing_places(@chapman_code)
+    @type = 'missing_place_index'
   end
 
   def select_new_county

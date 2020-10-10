@@ -1,5 +1,5 @@
 <% breadcrumb :edit_freecen2_place,  @county, @place%>
-<h3 style="text-align: center">Editing <b><%= @place_name %></b> of <b><%= @county %></b><br>
+<h3 style="text-align: center">Editing <b><%= @place_name %></b> of <b><%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>) </b><br>
 </h3>
 <%= render 'flash_notice' %>
 <div style="text-align: center">

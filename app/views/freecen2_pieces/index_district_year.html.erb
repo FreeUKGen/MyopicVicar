@@ -1,5 +1,5 @@
 <% breadcrumb :freecen2_pieces_district_year, @year, @freecen2_district.id, @chapman_code  %>
-<h2 style="text-align: center">FreeCen2 Pieces for <%=@freecen2_district%> in <%=@chapman_code%> in <% @year%></h2>
+<h2 style="text-align: center">FreeCen2 Pieces for <%=@freecen2_district%> in <%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>) in <% @year%></h2>
 <%= render 'flash_notice' %>
 <div class="scrollable ">
   <table class="table--bordered my-width table--data just--left table--striped">

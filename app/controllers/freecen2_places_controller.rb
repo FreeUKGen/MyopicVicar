@@ -108,6 +108,7 @@ class Freecen2PlacesController < ApplicationController
     @place.alternate_freecen2_place_names.build
     @place.alternate_freecen2_place_names.build
     @county = session[:county]
+    @chapman_code = session[:chapman_code]
   end
 
   def index
@@ -142,6 +143,7 @@ class Freecen2PlacesController < ApplicationController
   def new
     @place_name = params[:place] if params[:place].present?
     @place = Freecen2Place.new
+    @chapman_code = session[:chapman_code]
     get_user_info_from_userid
     @place.alternate_freecen2_place_names.build
     @place.alternate_freecen2_place_names.build

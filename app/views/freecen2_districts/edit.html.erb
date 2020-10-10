@@ -1,5 +1,5 @@
 <% breadcrumb :edit_freecen2_district,  @freecen2_district.id, @freecen2_district.chapman_code, @freecen2_district.year, @type %>
-<h2 style="text-align: center">Edit FreeCen2 District <%= @freecen2_district.name%> for <%=@chapman_code%> in <%= @freecen2_district.year%></h2>
+<h2 style="text-align: center">Edit FreeCen2 District <%= @freecen2_district.name%> for <%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>) in <%= @freecen2_district.year%></h2>
 <%= render 'flash_notice' %>
 <%= render 'form' %>
 <br>

@@ -84,6 +84,10 @@ class Freecen2District
       end
       [totals_pieces, totals_pieces_online, totals_individuals, totals_dwellings]
     end
+
+    def missing_places(chapman_code)
+      Freecen2District.where(chapman_code: chapman_code, freecen2_place_id: nil).all.order_by(name: 1, year: 1)
+    end
   end
 
   def district_names

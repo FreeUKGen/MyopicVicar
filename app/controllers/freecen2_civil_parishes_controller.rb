@@ -61,6 +61,13 @@ class Freecen2CivilParishesController < ApplicationController
     end
   end
 
+  def missing_place
+    get_user_info_from_userid
+    @chapman_code = session[:chapman_code]
+    @freecen2_civil_parishes = Freecen2CivilParish.missing_places(@chapman_code)
+    @type = 'missing_place_index'
+  end
+
   def show
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No civil parish identified') && return if params[:id].blank?
 

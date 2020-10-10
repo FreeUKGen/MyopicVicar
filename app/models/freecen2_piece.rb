@@ -176,6 +176,10 @@ class Freecen2Piece
       end
       [totals_pieces, totals_pieces_online, totals_individuals, totals_dwellings]
     end
+
+    def missing_places(chapman_code)
+      Freecen2Piece.where(chapman_code: chapman_code, freecen2_place_id: nil).all.order_by(name: 1, year: 1)
+    end
   end
 
   def add_update_civil_parish_list

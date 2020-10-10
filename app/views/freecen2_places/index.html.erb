@@ -1,4 +1,4 @@
 <% breadcrumb :freecen2_places,  @county%>
-<h3 style="text-align: center"><b><%= active(session[:active_place])%> Freecen2 Places for <%= @county  %></b>.</h3>
+<h3 style="text-align: center"><b><%= active(session[:active_place])%> Freecen2 Places for <%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>) </b>.</h3>
 <%= render 'flash_notice' %>
 <%= render 'index_freecen2_place' %>
