@@ -4,6 +4,7 @@
 <% if %w[county_coordinator country_coordinator data_manager system_administrator].include?(@user.person_role)%>
   <div style="text-align: center">
     <%= link_to 'List Districts with missing Freecen2 Place', missing_place_freecen2_civil_parishes_path(chapman_code: @chapman_code), data: { confirm: 'Are you sure?' }, :class => "btn   btn--small", title: 'Editing is restricted to, coordinators, data managers and system administrators'%>
+    <%= link_to 'List Pieces with District Freecen2 Place name', district_place_name_freecen2_civil_parishes_path(chapman_code: @chapman_code), data: { confirm: 'Are you sure?' }, :class => "btn   btn--small", title: 'Editing is restricted to, coordinators, data managers and system administrators'%>
   </div>
 <% end%>
 <%= paginate @freecen2_civil_parishes_distinct %>

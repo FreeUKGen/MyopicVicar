@@ -43,6 +43,15 @@ class Freecen2CivilParish
       Freecen2CivilParish.where(chapman_code: chapman_code, freecen2_place_id: nil).all.order_by(name: 1, year: 1)
     end
 
+    def district_place_name(chapman_code)
+      civil_parishes = []
+      Freecen2CivilParish.where(chapman_code: chapman_code).all.order_by(name: 1, year: 1).each do |civil_piece|
+        civil_parishes << civil_piece if civil_piece.freecen2_place_id.present? && (civil_piece.freecen2_place_id.to_s == civil_piece.freecen2_piece.freecen2_district.freecen2_place_id.to_s) &&
+          (civil_piece.name != civil_piece.freecen2_piece.freecen2_district.name)
+      end
+      civil_parishes
+    end
+
   end
 
   def add_hamlet_township_names

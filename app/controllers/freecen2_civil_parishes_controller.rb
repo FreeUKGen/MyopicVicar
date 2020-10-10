@@ -10,6 +10,13 @@ class Freecen2CivilParishesController < ApplicationController
     @type = 'parish_year_index'
   end
 
+  def district_place_name
+    get_user_info_from_userid
+    @chapman_code = session[:chapman_code]
+    @freecen2_civil_parishes = Freecen2CivilParish.district_place_name(@chapman_code)
+    @type = 'district_place_name'
+  end
+
   def edit
     redirect_back(fallback_location: new_manage_resource_path, notice:  'No civil parish identified') && return if params[:id].blank?
 

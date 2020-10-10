@@ -1601,10 +1601,18 @@ crumb :show_freecen2_piece do |file, county, year, type|
     parent :show_freecen2_district, district, county, year, type
   when 'missing_place_index'
     parent :freecen2_pieces_missing_places, county
+  when 'district_place_name'
+    parent :freecen2_pieces_district_place_name, county
   else
     parent :county_options, county
   end
 end
+
+crumb :freecen2_pieces_district_place_name do |county, type|
+  link 'District Freecen2 Places', district_place_name_freecen2_pieces_path(chapman_code: county)
+  parent :freecen2_pieces, county
+end
+
 
 crumb :freecen2_pieces_missing_places do |county, type|
   link 'Missing Freecen2 Places', missing_place_freecen2_pieces_path(chapman_code: county)
@@ -1655,10 +1663,18 @@ crumb :show_freecen2_civil_parish do |file, county, year, type|
     parent :show_freecen2_piece, piece, county, year, type
   when 'missing_place_index'
     parent :freecen2_civil_parishes_missing_places, county
+  when 'district_place_name'
+    parent :freecen2_civil_parishes_district_place_name, county
   else
     parent :county_options, county
   end
 end
+
+crumb :freecen2_civil_parishes_district_place_name do |county, type|
+  link 'District Freecen2 Places', district_place_name_freecen2_civil_parishes_path(chapman_code: county)
+  parent :freecen2_pieces, county
+end
+
 
 crumb :freecen2_civil_parishes_missing_places do |county, type|
   link 'Missing Freecen2 Places', missing_place_freecen2_pieces_path(chapman_code: county)

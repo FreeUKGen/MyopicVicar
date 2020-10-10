@@ -25,6 +25,15 @@ class Freecen2PiecesController < ApplicationController
     redirect_to freecen2_pieces_path
   end
 
+
+  def district_place_name
+    get_user_info_from_userid
+    @chapman_code = session[:chapman_code]
+    @freecen2_pieces = Freecen2Piece.district_place_name(@chapman_code)
+    @type = 'district_place_name'
+  end
+
+
   def edit
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No piece identified') && return if params[:id].blank?
 

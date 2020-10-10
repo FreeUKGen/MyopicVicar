@@ -180,6 +180,14 @@ class Freecen2Piece
     def missing_places(chapman_code)
       Freecen2Piece.where(chapman_code: chapman_code, freecen2_place_id: nil).all.order_by(name: 1, year: 1)
     end
+
+    def district_place_name(chapman_code)
+      pieces = []
+      Freecen2Piece.where(chapman_code: chapman_code).all.order_by(name: 1, year: 1).each do |piece|
+        pieces << piece if piece.freecen2_place_id.present? && (piece.freecen2_place_id.to_s == piece.freecen2_district.freecen2_place_id.to_s) && (piece.name != piece.freecen2_district.name)
+      end
+      pieces
+    end
   end
 
   def add_update_civil_parish_list
