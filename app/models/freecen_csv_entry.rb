@@ -1784,55 +1784,55 @@ class FreecenCsvEntry
     case year
     when '1841'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency']
       else
-        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Where Census Taken', 'Piece',  'Constituency', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Where Census Taken', 'Piece',  'Constituency']
       end
     when '1851'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Where Census Taken', 'Piece',  'Ward', 'Constituency','Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Where Census Taken', 'Piece',  'Ward', 'Constituency']
       else
-        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Census Place', 'Piece', 'Constituency', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Census Place', 'Piece', 'Constituency']
       end
     when '1861'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Ward', 'Constituency']
       else
-        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency']
       end
     when '1871'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Police District', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Police District']
       else
-        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency']
       end
     when '1881'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Police District', 'School Board', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Police District', 'School Board']
       else
-        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece',  'Ward', 'Constituency', 'Sanitary District', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Sanitary District']
       end
     when '1891'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Police District', 'School Board', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Police District', 'School Board']
       else
-        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece',  'Ward', 'Constituency', 'Sanitary District', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Sanitary District']
       end
     when '1901'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Police District',  'School Board', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Police District',  'School Board']
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Poor Law Union', 'Police District', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Poor Law Union', 'Police District']
       else
-        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency']
       end
     when '1911'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Sanitary District', 'Scavenging District', 'Special Lighting District', 'School Board', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Sanitary District', 'Scavenging District', 'Special Lighting District', 'School Board']
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Poor Law Union', 'Police District', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Poor Law Union', 'Police District']
       else
-        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency', 'Folio', 'Page']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency']
       end
     end
   end
@@ -1851,72 +1851,72 @@ class FreecenCsvEntry
     when '1841'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [freecen2_piece.year, disp_county, district_name, civil, enumeration_district, ecclesiastical, taken, freecen2_piece.number.to_s,
-         ward, parliamentary_constituency, folio_number, page_number]
+         ward, parliamentary_constituency]
       else
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, taken, freecen2_piece.number.to_s,
-         parliamentary_constituency, folio_number, page_number]
+         parliamentary_constituency]
       end
     when '1851'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
-         ward, parliamentary_constituency, folio_number, page_number]
+         ward, parliamentary_constituency]
       else
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
-         parliamentary_constituency, folio_number, page_number]
+         parliamentary_constituency]
       end
     when '1861'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
-         ward, parliamentary_constituency, folio_number, page_number]
+         ward, parliamentary_constituency]
       else
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
-         ward, parliamentary_constituency, folio_number, page_number]
+         ward, parliamentary_constituency]
       end
     when '1871'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
-         ward, parliamentary_constituency, police_district, folio_number, page_number]
+         ward, parliamentary_constituency, police_district]
       else
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
-         ward, parliamentary_constituency, folio_number, page_number]
+         ward, parliamentary_constituency]
       end
     when '1881'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
-         ward, parliamentary_constituency, police_district, school_board, folio_number, page_number]
+         ward, parliamentary_constituency, police_district, school_board]
       else
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
-         ward, parliamentary_constituency, sanitary_district, folio_number, page_number]
+         ward, parliamentary_constituency, sanitary_district]
       end
     when '1891'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
-         ward, parliamentary_constituency, police_district, school_board, folio_number, page_number]
+         ward, parliamentary_constituency, police_district, school_board]
       else
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
-         ward, parliamentary_constituency, sanitary_district, folio_number, page_number]
+         ward, parliamentary_constituency, sanitary_district]
       end
     when '1901'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
-         ward, parliamentary_constituency, police_district, school_board, folio_number, page_number]
+         ward, parliamentary_constituency, police_district, school_board]
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, taken, freecen2_piece.number.to_s,
-         ward, parliamentary_constituency, poor_law_union, police_district, folio_number, page_number]
+         ward, parliamentary_constituency, poor_law_union, police_district]
       else
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
-         ward, parliamentary_constituency, folio_number, page_number]
+         ward, parliamentary_constituency]
       end
     when '1911'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
-         ward, parliamentary_constituency, sanitary_district, scavenging_district, special_lighting_district, school_board, folio_number, page_number]
+         ward, parliamentary_constituency, sanitary_district, scavenging_district, special_lighting_district, school_board]
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, taken, freecen2_piece.number.to_s,
-         ward, parliamentary_constituency, poor_law_union, police_district, folio_number, page_number]
+         ward, parliamentary_constituency, poor_law_union, police_district]
       else
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
-         ward, parliamentary_constituency, folio_number, page_number]
+         ward, parliamentary_constituency]
       end
     end
   end
@@ -1925,55 +1925,55 @@ class FreecenCsvEntry
     case year
     when '1841'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Dwelling Number (Comp)', 'House Number', 'House or Street Name']
+        ['Folio', 'Page', 'Dwelling Number (Comp)', 'House Number', 'House or Street Name']
       else
-        ['Dwelling Number (Comp)', 'House Number', 'House or Street Name']
+        ['Folio', 'Page', 'Dwelling Number (Comp)', 'House Number', 'House or Street Name']
       end
     when '1851'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name']
+        ['Folio', 'Page', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name']
       else
-        ['Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name']
+        ['Folio', 'Page', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name']
       end
     when '1861'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows']
+        ['Page', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows']
       else
-        ['Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name']
+        ['Folio', 'Page', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name']
       end
     when '1871'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows']
+        ['Page', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows']
       else
-        ['Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name']
+        ['Folio', 'Page', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name']
       end
     when '1881'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows']
+        ['Folio', 'Page', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows']
       else
-        ['Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name']
+        ['Folio', 'Page', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name']
       end
     when '1891'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows']
+        ['Folio', 'Page', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows']
       else
-        ['Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name']
+        ['Folio', 'Page', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name']
       end
     when '1901'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows']
+        ['Folio', 'Page', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows']
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
-        ['Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name', 'Walls', 'Roof Type', 'Rooms', 'Rooms with Windows', 'Class of House']
+        ['Page', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name', 'Walls', 'Roof Type', 'Rooms', 'Rooms with Windows', 'Class of House']
       else
-        ['Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name', 'Rooms']
+        ['Folio', 'Page', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name', 'Rooms']
       end
     when '1911'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows']
+        ['Folio', 'Page', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows']
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
-        ['Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name', 'Walls', 'Roof Type', 'Rooms', 'Rooms with Windows', 'Class of House']
+        ['Page', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name', 'Walls', 'Roof Type', 'Rooms', 'Rooms with Windows', 'Class of House']
       else
-        ['Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name', 'Rooms']
+        ['Folio', 'Page', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name', 'Rooms']
       end
     end
   end
@@ -1983,55 +1983,55 @@ class FreecenCsvEntry
     case year
     when '1841'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [dwelling_number, house_number, address]
+        [folio_number, page_number, dwelling_number, house_number, address]
       else
-        [dwelling_number, house_number, address]
+        [folio_number, page_number, dwelling_number, house_number, address]
       end
     when '1851'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [dwelling_number, schedule_number, house_number, address]
+        [folio_number, page_number, dwelling_number, schedule_number, house_number, address]
       else
-        [dwelling_number, schedule_number, house_number, address]
+        [folio_number, page_number, dwelling_number, schedule_number, house_number, address]
       end
     when '1861'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [dwelling_number, schedule_number, house_number, address, rooms_with_windows]
+        [page_number, dwelling_number, schedule_number, house_number, address, rooms_with_windows]
       else
-        [dwelling_number, schedule_number, house_number, address]
+        [folio_number, page_number, dwelling_number, schedule_number, house_number, address]
       end
     when '1871'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [dwelling_number, schedule_number, house_number, address, rooms_with_windows]
+        [page_number, dwelling_number, schedule_number, house_number, address, rooms_with_windows]
       else
-        [dwelling_number, schedule_number, house_number, address]
+        [folio_number, page_number, dwelling_number, schedule_number, house_number, address]
       end
     when '1881'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [dwelling_number, schedule_number, house_number, address, rooms_with_windows]
+        [folio_number, page_number, dwelling_number, schedule_number, house_number, address, rooms_with_windows]
       else
-        [dwelling_number, schedule_number, house_number, address]
+        [folio_number, page_number, dwelling_number, schedule_number, house_number, address]
       end
     when '1891'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [dwelling_number, schedule_number, house_number, address, rooms_with_windows]
+        [folio_number, page_number, dwelling_number, schedule_number, house_number, address, rooms_with_windows]
       else
-        [dwelling_number, schedule_number, house_number, address]
+        [folio_number, page_number, dwelling_number, schedule_number, house_number, address]
       end
     when '1901'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [dwelling_number, schedule_number, house_number, address, rooms_with_windows]
+        [folio_number, page_number, dwelling_number, schedule_number, house_number, address, rooms_with_windows]
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
-        [dwelling_number, schedule_number, house_number, address, walls, roof_type, rooms, rooms_with_windows, class_of_house]
+        [page_number, dwelling_number, schedule_number, house_number, address, walls, roof_type, rooms, rooms_with_windows, class_of_house]
       else
-        [dwelling_number, schedule_number, house_number, address, rooms]
+        [folio_number, page_number, dwelling_number, schedule_number, house_number, address, rooms]
       end
     when '1911'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [dwelling_number, schedule_number, house_number, address, rooms_with_windows]
+        [folio_number, page_number, dwelling_number, schedule_number, house_number, address, rooms_with_windows]
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
-        [dwelling_number, schedule_number, house_number, address, walls, roof_type, rooms, rooms_with_windows, class_of_house]
+        [page_number, dwelling_number, schedule_number, house_number, address, walls, roof_type, rooms, rooms_with_windows, class_of_house]
       else
-        [dwelling_number, schedule_number, house_number, address, rooms]
+        [folio_number, page_number, dwelling_number, schedule_number, house_number, address, rooms]
       end
     end
   end
