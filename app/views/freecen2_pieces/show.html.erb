@@ -6,6 +6,11 @@
     <%= link_to 'Edit Piece', edit_freecen2_piece_path(@freecen2_piece, type: @type), data: { confirm: 'Are you sure?' }, :class => "btn   btn--small", title: 'Editing is restricted to, coordinators, data managers and system administrators'%>
   </div>
 <% end%>
+<% if %w[data_manager system_administrator].include?(@user.person_role)%>
+  <div style="text-align: center">
+    <%= link_to 'Delete Piece', freecen2_piece_path(@freecen2_piece), method: :delete, data: { confirm: 'Are you sure you want to destroy this Piece.? It will not happen if there are dependants!' } , :class => "btn  btn--small"%>
+  </div>
+<% end%>
 <div class="grid">
   <section class="island ">
     <div class="grid__item ">

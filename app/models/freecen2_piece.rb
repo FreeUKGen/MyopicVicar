@@ -190,6 +190,17 @@ class Freecen2Piece
     end
   end
 
+  # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::Instance methods:::::::::::::::::::::::::::::::::::::::::::::::::::
+
+  def copy_to_another_district(chapman_code, new_district_id)
+    success = false
+    new_piece = Freecen2Piece.new(name: name, chapman_code: chapman_code, tnaid: tnaid, number: number, year: year, code: code, notes: notes, prenote: prenote,
+                                  civil_parish_names: civil_parish_names, parish_number: parish_number, film_number: film_number, online_time: online_time,
+                                  num_individuals: num_individuals, freecen2_district_id:  new_district_id)
+    success = new_piece.save
+    [success, new_piece]
+  end
+
   def add_update_civil_parish_list
     return nil if freecen2_civil_parishes.blank?
 

@@ -10,6 +10,17 @@ class Freecen2CivilParishesController < ApplicationController
     @type = 'parish_year_index'
   end
 
+  def destroy
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No Civil Parish identified') && return if params[:id].blank?
+
+    @freecen2_civil_parish = Freecen2CivilParish.find_by(id: params[:id])
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No civil parish found') && return if @freecen2_civil_parish.blank?
+
+    success = @freecen2_civil_parish.destroy
+    flash[:notice] = success ? 'Civil Parish deleted' : 'Civil Parish deletion failed'
+    redirect_to freecen2_civil_parishes_path
+  end
+
   def district_place_name
     get_user_info_from_userid
     @chapman_code = session[:chapman_code]
@@ -23,7 +34,6 @@ class Freecen2CivilParishesController < ApplicationController
     get_user_info_from_userid
     @freecen2_civil_parish = Freecen2CivilParish.find_by(id: params[:id])
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No civil parish found') && return if @freecen2_civil_parish.blank?
-
 
     @freecen2_place = @freecen2_civil_parish.freecen2_place
     @freecen2_place = @freecen2_place.present? ? @freecen2_place.place_name : ''

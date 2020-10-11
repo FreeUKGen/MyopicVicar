@@ -12,19 +12,15 @@ class Freecen2PiecesController < ApplicationController
   end
 
   def destroy
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'No piece identified') && return if params[:id].blank?
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No district identified') && return if params[:id].blank?
 
-    get_user_info_from_userid
-    @freecen2_piece = Freecen2Piece.where('_id' => params[:id]).first
-    if @freecen2_piece.present?
-      @freecen2_piece.delete
-      flash[:notice] = 'Piece destroyed'
-    else
-      flash[:notice] = 'Piece does not exist'
-    end
+    @freecen2_piece = Freecen2Piece.find_by(id: params[:id])
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No district found') && return if @freecen2_piece.blank?
+
+    success = @freecen2_piece.destroy
+    flash[:notice] = success ? 'Piece deleted' : 'Piece deletion failed'
     redirect_to freecen2_pieces_path
   end
-
 
   def district_place_name
     get_user_info_from_userid
@@ -32,7 +28,6 @@ class Freecen2PiecesController < ApplicationController
     @freecen2_pieces = Freecen2Piece.district_place_name(@chapman_code)
     @type = 'district_place_name'
   end
-
 
   def edit
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No piece identified') && return if params[:id].blank?

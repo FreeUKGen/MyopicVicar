@@ -54,6 +54,27 @@ class Freecen2CivilParish
 
   end
 
+  # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::Instance methods :::::::::::::::::::::::::::::::::::::::
+
+  def copy_to_another_piece(chapman_code, new_piece_id)
+    new_civil_parish = Freecen2CivilParish.new(name: name, chapman_code: chapman_code, year: year, note: note, prenote: prenote, number: number,
+                                               suffix: suffix, freecen2_piece_id: new_piece_id)
+    freecen2_hamlets.each do |hamlet|
+      hamlet_object = Freecen2Hamlet.new(name: hamlet.name, note: hamlet.note, prenote: hamlet.prenote)
+      new_civil_parish.freecen2_hamlets << hamlet_object
+    end
+    freecen2_townships.each do |township|
+      township_object = Freecen2Township.new(name: township.name, note: township.note, prenote: township.prenote)
+      new_civil_parish.freecen2_townships << township_object
+    end
+    freecen2_wards.each do |ward|
+      ward_object = Freecen2Ward.new(name: ward.name, note: ward.note, prenote: ward.prenote)
+      new_civil_parish.freecen2_wards << ward_object
+    end
+    success = new_civil_parish.save
+    [success, new_civil_parish]
+  end
+
   def add_hamlet_township_names
     @hamlet_names = ''
     freecen2_hamlets.order_by(name: 1).each do |hamlet|

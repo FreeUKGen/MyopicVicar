@@ -264,6 +264,8 @@ MyopicVicar::Application.routes.draw do
   get 'counties/selection', :to =>'counties#selection', :as => :selection_counties
   resources :counties
 
+  get 'freecen2_districts/complete_copy', to: 'freecen2_districts#complete_copy', as: :complete_copy_freecen2_district
+  get 'freecen2_districts/:id/copy(.:format)', to: 'freecen2_districts#copy', as: :copy_freecen2_district
   get 'freecen2_districts/missing_place', to: 'freecen2_districts#missing_place', as: :missing_place_freecen2_districts
   get 'freecen2_districts/:chapman_code/:year/index', to: 'freecen2_districts#chapman_year_index', as: :freecen2_districts_chapman_year_index
   get 'freecen2_districts/locate', to: 'freecen2_districts#locate', as: :locate_freecen2_district

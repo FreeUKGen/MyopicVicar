@@ -14,6 +14,7 @@ class Freecen2District
   field :code, type: String
   field :notes, type: String
   field :reason_changed, type: String
+  field :action, type: String
 
   has_many :freecen2_pieces, dependent: :restrict_with_error
   belongs_to :freecen2_place, optional: true, index: true
@@ -90,6 +91,23 @@ class Freecen2District
     end
   end
 
+  # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Instance methods::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+  def copy_to_another_county(chapman_code)
+    county = County.find_by(chapman_code: chapman_code)
+    new_district = Freecen2District.new(chapman_code: chapman_code, year: year, name: name, tnaid: tnaid, type: type, notes: notes, county_id: county.id)
+    freecen2_pieces.each do |piece|
+      successa, new_piece = piece.copy_to_another_district(chapman_code, new_district.id)
+      if successa
+        piece.freecen2_civil_parishes.each do |civil_parish|
+          successa, new_civil_parish = civil_parish.copy_to_another_piece(chapman_code, new_piece.id)
+        end
+      end
+    end
+    success = new_district.save
+    [success, new_district]
+  end
+
   def district_names
     districts = Freecen2District.chapman_code(chapman_code).all.order_by(place_name: 1)
     @districts = []
@@ -113,7 +131,16 @@ class Freecen2District
 
   def district_place_id(place_name)
     place = Freecen2Place.find_by(chapman_code: chapman_code, place_name: place_name) if chapman_code.present?
-    place =  place.present? ? place.id : ''
+    place = place.present? ? place.id : ''
+  end
+
+  def get_counties
+    @counties = []
+    counties = County.application_counties
+    counties.each do |county|
+      @counties << county.chapman_code
+    end
+    @counties
   end
 
   def propagate_freecen2_place(old_place, old_name)
@@ -147,6 +174,7 @@ class Freecen2District
       end
     end
   end
+
   def freecen2_pieces_name
     freecen2_pieces = Freecen2Piece.where(freecen2_district_id: _id).all.order_by(name: 1)
     freecen2_pieces_name = []

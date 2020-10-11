@@ -13,11 +13,55 @@ class Freecen2DistrictsController < ApplicationController
     @type = 'district_year_index'
   end
 
+  def copy
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No district identified') && return if params[:id].blank?
+
+    @freecen2_district = Freecen2District.find_by(id: params[:id])
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No district found') && return if @freecen2_district.blank?
+
+    get_user_info_from_userid
+    @counties = @freecen2_district.get_counties
+    session[:freecen2_district] = params[:id]
+    @location = 'location.href= "/freecen2_districts/complete_copy?chapman_code=" + this.value'
+    @prompt = 'Select Chapman Code'
+    render '_form_for_selection'
+  end
+
+  def complete_copy
+    @chapman_code = params[:chapman_code]
+    @freecen2_district = Freecen2District.find_by(id: session[:freecen2_district])
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No district found') && return if @freecen2_district.blank?
+
+    success, freecen2_district = @freecen2_district.copy_to_another_county(@chapman_code)
+    session.delete(:freecen2_district)
+    if success
+      session[:chapman_code] = @chapman_code
+      flash[:notice] = 'Success'
+      redirect_to freecen2_district_path(freecen2_district, type: 'district_index')
+    else
+      flash[:notice] = 'Failure'
+      redirect_to freecen2_district_path(@freecen2_district, type: 'district_index')
+    end
+  end
+
+  def destroy
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No district identified') && return if params[:id].blank?
+
+    @freecen2_district = Freecen2District.find_by(id: params[:id])
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No district found') && return if @freecen2_district.blank?
+
+    success = @freecen2_district.destroy
+    flash[:notice] = success ? 'District deleted' : 'District deletion failed'
+    redirect_to freecen2_districts_path
+  end
+
   def edit
-    redirect_back(fallback_location: new_manage_resource_path, notice:  'No civil parish identified') && return if params[:id].blank?
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No district identified') && return if params[:id].blank?
 
     get_user_info_from_userid
     @freecen2_district = Freecen2District.find_by(id: params[:id])
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No district found') && return if @freecen2_district.blank?
+
     session[:freecen2_district] = @freecen2_district.name
     @freecen2_place = @freecen2_district.freecen2_place
     @freecen2_place = @freecen2_place.present? ? @freecen2_place.place_name : ''
@@ -68,7 +112,8 @@ class Freecen2DistrictsController < ApplicationController
 
   def update
     # puts "\n\n*** update ***\n"
-    redirect_back(fallback_location: manage_counties_path, notice: 'No information in the update') && return if params[:id].blank? || params[:freecen2_district].blank?
+    redirect_back(fallback_location: manage_counties_path, notice: 'No information in the update') && return if params[:id].blank? ||
+      params[:freecen2_district].blank?
 
     @freecen2_district = Freecen2District.find_by(id: params[:id])
     redirect_back(fallback_location: manage_counties_path, notice: 'District not found') && return if @freecen2_district.blank?
@@ -93,10 +138,10 @@ class Freecen2DistrictsController < ApplicationController
       redirect_to freecen2_district_path(@freecen2_district, type: @type)
     end
   end
+
   private
 
   def freecen2_district_params
     params.require(:freecen2_district).permit!
   end
-
 end
