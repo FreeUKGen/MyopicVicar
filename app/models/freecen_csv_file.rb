@@ -544,23 +544,6 @@ class FreecenCsvFile
     end
   end
 
-  def incorporate_records
-    freecen_csv_entries.each do |entry|
-      entry.translate_individual
-      #add eds
-    end
-    #add eds
-    update_attribute(:incorporated, true)
-
-  end
-
-  def unincorporate_records
-    SearchRecord.collection.delete_many(freecen_csv_file_id: _id)
-    update_attributes(incorporated: false, incorporated_date: nil)
-    'Records removed'
-  end
-
-
   def location_from_file
     my_piece = freecen2_piece
     my_place = my_piece.freereg2_place

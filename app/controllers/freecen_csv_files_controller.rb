@@ -245,10 +245,11 @@ class FreecenCsvFilesController < ApplicationController
     result, message = @freecen_csv_file.can_we_incorporate?
 
     redirect_back(fallback_location: { action: 'show' }, notice: message) && return unless result
+
     get_user_info_from_userid
     logger.warn("FREECEN:CSV_PROCESSING: Starting incorporation rake task for #{@freecen_csv_file.file_name} #{@freecen_csv_file.chapman_code}")
     pid1 =  spawn("rake freecen_csv_file_incorporate[#{@freecen_csv_file.file_name},#{@freecen_csv_file.chapman_code}]")
-    message = "The csv file #{@freecen_csv_file.file_name} is being incorporated. You will receive an email when it has been completed."
+    message = "The records for the csv file #{@freecen_csv_file.file_name} are being incorporated. You will receive an email when the task has been completed."
     logger.warn("FREECEN:CSV_PROCESSING: rake task for #{pid1}")
 
     redirect_back(fallback_location: { action: 'show' }, notice: message) && return
@@ -261,10 +262,14 @@ class FreecenCsvFilesController < ApplicationController
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
     proceed, message = @freecen_csv_file.can_we_unincorporate?
-    unless proceed
-      redirect_back(fallback_location: { action: 'show' }, notice: message) && return
-    end
-    message = @freecen_csv_file.unincorporate_records
+    redirect_back(fallback_location: { action: 'show' }, notice: message) && return unless proceed
+
+    get_user_info_from_userid
+    logger.warn("FREECEN:CSV_PROCESSING: Starting unincorporation rake task for #{@freecen_csv_file.file_name} #{@freecen_csv_file.chapman_code}")
+    pid1 =  spawn("rake freecen_csv_file_unincorporate[#{@freecen_csv_file.file_name},#{@freecen_csv_file.chapman_code}]")
+    message = "The records for the csv file #{@freecen_csv_file.file_name} are being removed from the database. You will receive an email when the task has been completed."
+    logger.warn("FREECEN:CSV_PROCESSING: rake task for #{pid1}")
+
     redirect_back(fallback_location: { action: 'show' }, notice: message) && return
   end
 

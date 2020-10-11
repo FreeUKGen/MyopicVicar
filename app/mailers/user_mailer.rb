@@ -171,6 +171,13 @@ class UserMailer < ActionMailer::Base
     mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", subject: "Incorporation report for #{file} in #{county}") if coordinator.present?
   end
 
+  def unincorporation_report(userid, message, file, county)
+    coordinator = UseridDetail.userid(userid).first
+    @appname = appname
+    @message = message
+    mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", subject: "Record removal report for #{file} in #{county}") if coordinator.present?
+  end
+
   def notification_of_technical_registration(user)
     @appname = appname
     @user = user
