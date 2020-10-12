@@ -1067,7 +1067,7 @@ class FreecenCsvEntry
       success, messagea = FreecenValidations.surname?(record[:surname])
       if success
         if record[:surname].present? && record[:surname].strip == '-'
-          messageb = "Warning: line #{num} has - Hyphen in field.<br>"
+          messageb = "Warning: line #{num} has single - Hyphen in Surname.<br>"
           message += messageb if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
           record[:warning_messages] += messageb if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
         end
@@ -1089,7 +1089,7 @@ class FreecenCsvEntry
       success, messagea = FreecenValidations.forenames?(record[:forenames])
       if success
         if record[:forenames].present? && record[:forenames].strip == '-'
-          messageb = "Warning: line #{num} has - Hyphen in field.<br>"
+          messageb = "Warning: line #{num} has single - Hyphen in Forename.<br>"
           message += messageb if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
           record[:warning_messages] += messageb if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
         end
@@ -2375,14 +2375,14 @@ class FreecenCsvEntry
   def validate_on_line_edit_of_fields(fields)
     success, message = FreecenValidations.text?(fields[:surname])
     if success && fields[:surname].present? && fields[:surname].strip == '-'
-      errors.add(:surname, "has - Hyphen in field")
+      errors.add(:surname, "has single - Hyphen in Surnaame")
     elsif !success
       errors.add(:surname, "Invalid; #{message}")
     end
 
     success, message = FreecenValidations.text?(fields[:forenames])
     if success && fields[:forenames].present? && fields[:forenames].strip == '-'
-      errors.add(:forenames, "has - Hyphen in field")
+      errors.add(:forenames, "has single - Hyphen in Forename")
     elsif !success
       errors.add(:forenames, "Invalid; #{message}")
     end
