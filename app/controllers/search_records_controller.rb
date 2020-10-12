@@ -311,7 +311,7 @@ class SearchRecordsController < ApplicationController
     add_uninhabited
     @type = session[:cen_index_type]
     @freecen_csv_entry.add_address(@freecen_csv_file_id, @dwel)
-    @response, @next_record, @previous_record = @search_query.next_and_previous_records(params[:id])
+    @response, @next_record, @previous_record = @search_query.next_and_previous_records(params[:id]) unless @search_query.is_a?(String)
     @cen_chapman_code = @chapman_code
     @cen_year = @year
     @cen_prev_dwelling = @dwel - 1
