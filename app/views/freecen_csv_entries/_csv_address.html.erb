@@ -2,22 +2,18 @@
   <thead>
     <tr>
       <% FreecenCsvEntry.dwelling_display_labels(@year,@chapman_code).each_with_index do |lbl,index| %>
-        <% unless index == 0 && @csv.present?%>
-          <td><small>
-              <%= lbl %>
-            </small></td>
-        <% end %>
+        <td><small>
+            <%= lbl %>
+          </small></td>
       <% end %>
     </tr>
   </thead>
   <tbody>
     <tr>
       <% @freecen_csv_entry.dwelling_display_values(@year,@chapman_code).each_with_index do |field_val, index| %>
-        <% unless index == 0 && @csv.present?%>
-          <td class="weight--semibold">
-            <%= field_val %>
-          </td>
-        <% end %>
+        <td class="weight--semibold">
+          <%= field_val %>
+        </td>
       <% end %>
     </tr>
   </tbody>
