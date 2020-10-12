@@ -2127,25 +2127,25 @@ class FreecenCsvEntry
       end
     when '1901'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category', 'At Home']
+        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category', 'Works At Home']
       elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code)
-        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category', 'At Home']
+        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category', 'Works At Home']
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
         ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Religion', 'Read and Write', 'Occupation', 'Occ Category']
       else
-        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category', 'At Home']
+        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category', 'Works At Home']
       end
     when '1911'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Years Married', 'Children Born Alive', 'Children Living', 'Occupation', 'Occ Category', 'Industry', 'At Home']
+        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Years Married', 'Children Born Alive', 'Children Living', 'Occupation', 'Occ Category', 'Industry', 'Works At Home']
       elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code) || chapman_code == 'IOM'
-        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Years Married', 'Children Born Alive', 'Children Living', 'Children Deceased', 'Occupation', 'Occ Category', 'Industry', 'At Home']
+        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Years Married', 'Children Born Alive', 'Children Living', 'Children Deceased', 'Occupation', 'Occ Category', 'Industry', 'Works At Home']
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
         ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Years Married', 'Children Born Alive', 'Children Living', 'Religion', 'Read and Write', 'Occupation', 'Occ Category']
       elsif %w[CHI ALD GSY JSY].include?(chapman_code)
-        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Years Married', 'Children Born Alive', 'Children Living', 'Children Deceased', 'Occupation', 'Occ Category', 'Industry', 'At Home']
+        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Years Married', 'Children Born Alive', 'Children Living', 'Children Deceased', 'Occupation', 'Occ Category', 'Industry', 'Works At Home']
       else
-        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Years Married', 'Children Born Alive', 'Children Living', 'Children Deceased', 'Occupation', 'Occ Category', 'Industry', 'At Home']
+        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Years Married', 'Children Born Alive', 'Children Living', 'Children Deceased', 'Occupation', 'Occ Category', 'Industry', 'Works At Home']
       end
     end
   end
@@ -2160,6 +2160,12 @@ class FreecenCsvEntry
     fore = forenames
     relation = relationship
     marital = marital_status
+    if year == '1891'
+      category = Freecen::OCCUPATIONAL_CATEGORY_1891[occupation_category]
+    else
+      category = Freecen::OCCUPATIONAL_CATEGORY_1901[occupation_category]
+    end
+    home = at_home.present? ? 'Yes' : ''
     sx = sex
     note = notes.gsub(/\<br\>/, '') if notes.present?
     verbatim_birth_county_name = ChapmanCode.name_from_code(verbatim_birth_county)
@@ -2190,31 +2196,31 @@ class FreecenCsvEntry
     when '1891'
       # only Wales 1891 has language field
       if ChapmanCode::CODES['Wales'].values.member?(chapman_code) || ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation, occupation_category]
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation, category]
       else
-        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation, occupation_category]
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation, category]
       end
     when '1901'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation, occupation_category, at_home]
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation, category, home]
       elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code)
-        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation, occupation_category, at_home]
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation, category, home]
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
-        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, religion, read_and_write, disp_occupation, occupation_category]
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, religion, read_and_write, disp_occupation, category]
       else
-        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation, occupation_category, at_home]
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation, category, home]
       end
     when '1911'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, years_married, children_born_alive, children_living, disp_occupation, occupation_category, industry, at_home]
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, years_married, children_born_alive, children_living, disp_occupation, category, industry, home]
       elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code) || chapman_code == 'IOM'
-        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, years_married, children_born_alive, children_living, disp_occupation, occupation_category, industry, at_home]
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, years_married, children_born_alive, children_living, disp_occupation, category, industry, home]
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
-        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, years_married, children_born_alive, children_living, religion, read_and_write, disp_occupation, occupation_category]
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, years_married, children_born_alive, children_living, religion, read_and_write, disp_occupation, category]
       elsif  %w[CHI ALD GSY JSY].include?(chapman_code)
-        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, years_married, children_born_alive, children_living, children_deceased, disp_occupation, occupation_category, industry, at_home]
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, years_married, children_born_alive, children_living, children_deceased, disp_occupation, category, industry, home]
       else
-        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, years_married, children_born_alive, children_living, children_deceased, disp_occupation, occupation_category, industry, at_home]
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, years_married, children_born_alive, children_living, children_deceased, disp_occupation, category, industry, home]
       end
     end
   end

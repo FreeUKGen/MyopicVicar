@@ -204,6 +204,11 @@ module Freecen
     'Shetland', 'South Glamorgan', 'Strathclyde', 'Tayside', 'Unknown', 'West Glamorgan', 'Western Isles', 'Yorkshire', 'England', 'Scotland',
     'Ireland', 'Wales', 'Channel Islands'
   ].freeze
+
+  OCCUPATIONAL_CATEGORY_1891 = { 'E' => 'Employee', 'R' => 'Employer', 'N' => 'Neither', 'e' => 'Employee', 'r' => 'Employer', 'n' => 'Neither'}.freeze
+
+  OCCUPATIONAL_CATEGORY_1901 = { 'e' => 'Worker', 'r' => 'Employer', 'n' => 'Own Account', 'E' => 'Worker', 'R' => 'Employer', 'N' => 'Own Account'}.freeze
+
   FIELD_NAMES_CONVERSION = {
     'civil parish' => 'civil_parish',
     'ed' => 'enumeration_district',
