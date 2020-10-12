@@ -1,7 +1,7 @@
 <% breadcrumb :freecen2_civil_parishes,  @chapman_code, @type%>
 <h2 style="text-align: center">FreeCen2 Civil Parishes for <%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>)  </h2>
 <%= render 'flash_notice' %>
-<% if %w[county_coordinator country_coordinator data_manager system_administrator].include?(@user.person_role)%>
+<% if %w[project_manager executive_director county_coordinator country_coordinator data_manager system_administrator].include?(@user.person_role)%>
   <div style="text-align: center">
     <%= link_to 'List Civil Parishes with missing Freecen2 Place', missing_place_freecen2_civil_parishes_path(chapman_code: @chapman_code), data: { confirm: 'Are you sure?' }, :class => "btn   btn--small", title: 'Editing is restricted to, coordinators, data managers and system administrators'%>
     <%= link_to 'List Civil Parishes with District Freecen2 Place name', district_place_name_freecen2_civil_parishes_path(chapman_code: @chapman_code), data: { confirm: 'Are you sure?' }, :class => "btn   btn--small", title: 'Editing is restricted to, coordinators, data managers and system administrators'%>
