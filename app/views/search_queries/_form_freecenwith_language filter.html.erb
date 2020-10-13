@@ -166,6 +166,24 @@
                 <% end %>
               </select>
             </li>
+            <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="search_query_language_input">
+              <label class="label ttip" for="search_query_language" tabindex="0">
+                Language
+                <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
+                <span class="ttip__text">Select the language status you wish to view. Available only in 1891 onwards.</span>
+                <small class="additional">Leave blank to search all</small>
+              </label>
+              <select id="search_query_language" name="search_query[language]" class="select" size="4" style="max-width: 10rem;">
+                <option value="">--</option>
+                <% Freecen::LANGUAGE.each_pair do |name, value| %>
+                  <%if !@search_query.language.nil? && @search_query.language.include?(name)%>
+                    <option value="<%= name %>" selected="selected"> <%= value %></option>
+                  <% else %>
+                    <option value="<%= name %>"><%= value %></option>
+                  <% end %>
+                <% end %>
+              </select>
+            </li>
             <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="search_query_sex_input">
               <label class="label ttip" for="search_query_sex" tabindex="0">
                 Sex

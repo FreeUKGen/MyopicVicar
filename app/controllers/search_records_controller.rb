@@ -111,7 +111,6 @@ class SearchRecordsController < ApplicationController
     end
   end
 
-
   def add_evidence_explained_values
     @piece = @cen_piece
     @place = @dwelling.place.place_name
@@ -182,7 +181,9 @@ class SearchRecordsController < ApplicationController
       when 'n'
         message = 'Schedule was not used'
       end
+      message += ' : ' + @individuals.first.notes if @individuals.first.notes.present?
       @uninhabited = message
+      @uninhabited
     end
   end
 

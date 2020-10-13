@@ -1077,12 +1077,19 @@ class CsvRecord < CsvRecords
 
     message = individual_present_when_unoccupied if @data_record[:uninhabited_flag].present? && ['b', 'n', 'u', 'v'].include?(@data_record[:uninhabited_flag].downcase)
     @project.write_messages_to_all(message, true) unless message == ''
-    return if @data_record[:uninhabited_flag].present? && ['b', 'n', 'u', 'v'].include?(@data_record[:uninhabited_flag].downcase)
+    unless @data_record[:uninhabited_flag].present? && ['b', 'n', 'u', 'v'].include?(@data_record[:uninhabited_flag].downcase)
 
-    @data_record[:dwelling_number] = @csvfile.dwelling_number
-    @csvfile.sequence_in_household = @csvfile.sequence_in_household + 1
-    @data_record[:sequence_in_household] = @csvfile.sequence_in_household
-    message = FreecenCsvEntry.validate_individual(@data_record)
+      @data_record[:dwelling_number] = @csvfile.dwelling_number
+      @csvfile.sequence_in_household = @csvfile.sequence_in_household + 1
+      @data_record[:sequence_in_household] = @csvfile.sequence_in_household
+      message = FreecenCsvEntry.validate_individual(@data_record)
+      @project.write_messages_to_all(message, true) unless message == ''
+    end
+    extract_notes_field
+  end
+
+  def extract_notes_field
+    message = FreecenCsvEntry.validate_notes(@data_record)
     @project.write_messages_to_all(message, true) unless message == ''
   end
 

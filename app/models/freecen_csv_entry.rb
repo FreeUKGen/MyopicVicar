@@ -1670,8 +1670,13 @@ class FreecenCsvEntry
           record[:error_messages] += messageb
         end
       end
+      [message]
+    end
 
+    def validate_notes(record)
+      num = record[:record_number]
       success, messagea = FreecenValidations.notes?(record[:notes])
+      message = ''
       if !success
         messageb = "ERROR: line #{num} Notes #{record[:notes]} is #{messagea}.<br>"
         message += messageb
@@ -1679,7 +1684,7 @@ class FreecenCsvEntry
       elsif record[:notes].present?
         messagea = "Warning: line #{num} Notes contains information #{record[:notes]}.<br>"
         record[:warning_messages] += messagea  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
-        message += messagea  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+        message += messagea if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
       end
       [message]
     end
@@ -1925,55 +1930,55 @@ class FreecenCsvEntry
     case year
     when '1841'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Folio', 'Page', 'Dwelling Number (Comp)', 'House Number', 'House or Street Name']
+        ['Folio', 'Page', 'Dwelling Number', 'House Number', 'House or Street Name']
       else
-        ['Folio', 'Page', 'Dwelling Number (Comp)', 'House Number', 'House or Street Name']
+        ['Folio', 'Page', 'Dwelling Number', 'House Number', 'House or Street Name']
       end
     when '1851'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Folio', 'Page', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name']
+        ['Folio', 'Page', 'Dwelling Number', 'Schedule', 'House Number', 'House or Street Name']
       else
-        ['Folio', 'Page', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name']
+        ['Folio', 'Page', 'Dwelling Number', 'Schedule', 'House Number', 'House or Street Name']
       end
     when '1861'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Page', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows']
+        ['Page', 'Dwelling Number', 'Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows']
       else
-        ['Folio', 'Page', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name']
+        ['Folio', 'Page', 'Dwelling Number', 'Schedule', 'House Number', 'House or Street Name']
       end
     when '1871'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Page', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows']
+        ['Page', 'Dwelling Number', 'Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows']
       else
-        ['Folio', 'Page', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name']
+        ['Folio', 'Page', 'Dwelling Number', 'Schedule', 'House Number', 'House or Street Name']
       end
     when '1881'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Folio', 'Page', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows']
+        ['Folio', 'Page', 'Dwelling Number', 'Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows']
       else
-        ['Folio', 'Page X', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name']
+        ['Folio', 'Page X', 'Dwelling Number', 'Schedule', 'House Number', 'House or Street Name']
       end
     when '1891'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Folio', 'Page', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows']
+        ['Folio', 'Page', 'Dwelling Number', 'Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows']
       else
-        ['Folio', 'Page', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name']
+        ['Folio', 'Page', 'Dwelling Number', 'Schedule', 'House Number', 'House or Street Name']
       end
     when '1901'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Folio', 'Page', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows']
+        ['Folio', 'Page', 'Dwelling Number', 'Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows']
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
-        ['Page', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name', 'Walls', 'Roof Type', 'Rooms', 'Rooms with Windows', 'Class of House']
+        ['Page', 'Dwelling Number', 'Schedule', 'House Number', 'House or Street Name', 'Walls', 'Roof Type', 'Rooms', 'Rooms with Windows', 'Class of House']
       else
-        ['Folio', 'Page', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name', 'Rooms']
+        ['Folio', 'Page', 'Dwelling Number', 'Schedule', 'House Number', 'House or Street Name', 'Rooms']
       end
     when '1911'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Folio', 'Page', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows']
+        ['Folio', 'Page', 'Dwelling Number', 'Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows']
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
-        ['Page', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name', 'Walls', 'Roof Type', 'Rooms', 'Rooms with Windows', 'Class of House']
+        ['Page', 'Dwelling Number', 'Schedule', 'House Number', 'House or Street Name', 'Walls', 'Roof Type', 'Rooms', 'Rooms with Windows', 'Class of House']
       else
-        ['Folio', 'Page', 'Dwelling Number (Comp)', 'Schedule', 'House Number', 'House or Street Name', 'Rooms']
+        ['Folio', 'Page', 'Dwelling Number', 'Schedule', 'House Number', 'House or Street Name', 'Rooms']
       end
     end
   end
@@ -2093,59 +2098,59 @@ class FreecenCsvEntry
   def self.individual_display_labels(year, chapman_code)
     case year
     when '1841'
-      ['Sequence (Comp)', 'Surname', 'Forenames', 'Sex', 'Age', 'Occupation', 'Birth County Entered', 'Notes']
+      ['Sequence', 'Surname', 'Forenames', 'Sex', 'Age', 'Occupation', 'Birth County', 'Notes']
     when '1851'
-      ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation']
+      ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation']
     when '1861'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'School Children' 'Occupation']
+        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'School Children' 'Occupation']
       else
-        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation']
+        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation']
       end
     when '1871'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'School Children' 'Occupation']
+        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'School Children' 'Occupation']
       else
-        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation']
+        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation']
       end
     when '1881'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'School Children' 'Occupation']
+        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'School Children' 'Occupation']
       else
-        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation']
+        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation']
       end
     when '1891'
       # only Wales 1891 has language field
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category']
+        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category']
       elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code)
-        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category']
+        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category']
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
-        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category']
+        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category']
       else
-        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category']
+        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category']
       end
     when '1901'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category', 'Works At Home']
+        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category', 'Works At Home']
       elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code)
-        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category', 'Works At Home']
+        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category', 'Works At Home']
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
-        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Religion', 'Read and Write', 'Occupation', 'Occ Category']
+        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Religion', 'Read and Write', 'Occupation', 'Occ Category']
       else
-        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category', 'Works At Home']
+        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation', 'Occ Category', 'Works At Home']
       end
     when '1911'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Years Married', 'Children Born Alive', 'Children Living', 'Occupation', 'Occ Category', 'Industry', 'Works At Home']
+        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Years Married', 'Children Born Alive', 'Children Living', 'Occupation', 'Occ Category', 'Industry', 'Works At Home']
       elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code) || chapman_code == 'IOM'
-        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Years Married', 'Children Born Alive', 'Children Living', 'Children Deceased', 'Occupation', 'Occ Category', 'Industry', 'Works At Home']
+        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Years Married', 'Children Born Alive', 'Children Living', 'Children Deceased', 'Occupation', 'Occ Category', 'Industry', 'Works At Home']
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
-        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Years Married', 'Children Born Alive', 'Children Living', 'Religion', 'Read and Write', 'Occupation', 'Occ Category']
+        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Years Married', 'Children Born Alive', 'Children Living', 'Religion', 'Read and Write', 'Occupation', 'Occ Category']
       elsif %w[CHI ALD GSY JSY].include?(chapman_code)
-        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Years Married', 'Children Born Alive', 'Children Living', 'Children Deceased', 'Occupation', 'Occ Category', 'Industry', 'Works At Home']
+        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Years Married', 'Children Born Alive', 'Children Living', 'Children Deceased', 'Occupation', 'Occ Category', 'Industry', 'Works At Home']
       else
-        ['Sequence (Comp)', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Years Married', 'Children Born Alive', 'Children Living', 'Children Deceased', 'Occupation', 'Occ Category', 'Industry', 'Works At Home']
+        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Years Married', 'Children Born Alive', 'Children Living', 'Children Deceased', 'Occupation', 'Occ Category', 'Industry', 'Works At Home']
       end
     end
   end
@@ -2228,57 +2233,57 @@ class FreecenCsvEntry
   def self.part2_individual_display_labels(year, chapman_code)
     case year
     when '1851'
-      ['Nationality', 'Birth County Entered', 'Birth Place Entered', 'Selected Birth County', 'Selected Birth Place', 'Disability', 'Notes']
+      ['Nationality', 'Birth County',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Notes']
     when '1861'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Birth County Entered', 'Birth Place Entered', 'Selected Birth County', 'Selected Birth Place',  'Disability', 'Notes']
+        ['Birth County Entered',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place',  'Disability', 'Notes']
       else
-        ['Nationality', 'Birth County Entered', 'Birth Place Entered', 'Selected Birth County', 'Selected Birth Place', 'Disability', 'Notes']
+        ['Nationality', 'Birth County',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Notes']
       end
     when '1871'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Birth County Entered', 'Birth Place Entered', 'Selected Birth County', 'Selected Birth Place', 'Disability', 'Notes']
+        ['Birth County Entered',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Notes']
       else
-        ['Nationality', 'Birth County Entered', 'Birth Place Entered', 'Selected Birth County', 'Selected Birth Place', 'Disability', 'Notes']
+        ['Nationality', 'Birth County',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Notes']
       end
     when '1881'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Birth County Entered', 'Birth Place Entered', 'Selected Birth County', 'Selected Birth Place', 'Disability', 'Notes']
+        ['Birth County Entered',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Notes']
       else
-        ['Nationality', 'Birth County Entered', 'Birth Place Entered', 'Selected Birth County', 'Selected Birth Place', 'Disability', 'Notes']
+        ['Nationality', 'Birth County',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Notes']
       end
     when '1891'
       # only Wales 1891 has language field
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Birth County Entered', 'Birth Place Entered', 'Selected Birth County', 'Selected Birth Place', 'Disability', 'Notes']
+        ['Birth County Entered',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Notes']
       elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code)
-        ['Nationality', 'Birth County Entered', 'Birth Place Entered', 'Selected Birth County', 'Selected Birth Place', 'Disability', 'Language', 'Notes']
+        ['Nationality', 'Birth County',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Language', 'Notes']
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
-        ['Birth County Entered', 'Birth Place Entered', 'Selected Birth County', 'Selected Birth Place', 'Disability', 'Notes']
+        ['Birth County Entered',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Notes']
       else
-        ['Nationality', 'Birth County Entered', 'Birth Place Entered', 'Selected Birth County', 'Selected Birth Place', 'Disability', 'Notes']
+        ['Nationality', 'Birth County',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Notes']
       end
     when '1901'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Birth County Entered', 'Birth Place Entered', 'Selected Birth County', 'Selected Birth Place', 'Disability', 'Language', 'Notes']
+        ['Birth County Entered',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Language', 'Notes']
       elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code)
-        ['Nationality', 'Birth County Entered', 'Birth Place Entered', 'Selected Birth County', 'Selected Birth Place', 'Disability', 'Language', 'Notes']
+        ['Nationality', 'Birth County',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Language', 'Notes']
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
-        ['Birth County Entered', 'Birth Place Entered', 'Selected Birth County', 'Selected Birth Place', 'Disability', 'Notes']
+        ['Birth County Entered',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Notes']
       else
-        ['Nationality', 'Birth County Entered', 'Birth Place Entered', 'Selected Birth County', 'Selected Birth Place', 'Disability', 'Notes']
+        ['Nationality', 'Birth County',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Notes']
       end
     when '1911'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Nationality', 'Birth County Entered', 'Birth Place Entered', 'Selected Birth County', 'Selected Birth Place', 'Disability', 'Language', 'Notes']
+        ['Nationality', 'Birth County',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Language', 'Notes']
       elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code) || chapman_code == 'IOM'
-        ['Nationality', 'Birth County Entered', 'Birth Place Entered', 'Disability', 'Selected Birth County', 'Selected Birth Place', 'Disability Notes', 'Language', 'Notes']
+        ['Nationality', 'Birth County',  'Birth Place', 'Disability', 'Preferred Birth County', 'Preferred Birth Place', 'Disability Notes', 'Language', 'Notes']
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
-        ['Nationality', 'Birth County Entered', 'Birth Place Entered', 'Selected Birth County', 'Selected Birth Place', 'Disability', 'Notes']
+        ['Nationality', 'Birth County',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Notes']
       elsif %w[CHI ALD GSY JSY].include?(chapman_code)
-        ['Nationality', 'Birth County Entered', 'Birth Place Entered', 'Selected Birth County', 'Selected Birth Place', "Father's Place of Birth", 'Disability', 'Notes']
+        ['Nationality', 'Birth County',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', "Father's Place of Birth", 'Disability', 'Notes']
       else
-        ['Nationality', 'Birth County Entered', 'Birth Place Entered', 'Selected Birth County', 'Selected Birth Place', 'Disability', 'Disability Notes', 'Notes']
+        ['Nationality', 'Birth County',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Disability Notes', 'Notes']
       end
     end
   end
@@ -2289,6 +2294,7 @@ class FreecenCsvEntry
     birth_county_name = ChapmanCode.name_from_code(birth_county)
     verbatim_birth_county_name = ChapmanCode.name_from_code(verbatim_birth_county)
     note = notes.gsub(/\<br\>/, '') if notes.present?
+    lang = Freecen::LANGUAGE[language]
     case year
     when '1851'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
@@ -2319,7 +2325,7 @@ class FreecenCsvEntry
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, note]
       elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code)
-        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, language, note]
+        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, lang, note]
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
         [verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, note]
       else
@@ -2327,23 +2333,23 @@ class FreecenCsvEntry
       end
     when '1901'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, language, note]
+        [verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, lang, note]
       elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code)
-        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, language, note]
+        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, lang, note]
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
-        [verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, language, note]
+        [verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, lang, note]
       else
         [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, note]
       end
     when '1911'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, language, note]
+        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, lang, note]
       elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code) || chapman_code == 'IOM'
-        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, diability_notes, language, note]
+        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, diability_notes, lang, note]
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
-        [verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, language, note]
+        [verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, lang, note]
       elsif %w[CHI ALD GSY JSY].include?(chapman_code)
-        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, father_place_of_birth, disability, disability_notes, language, note]
+        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, father_place_of_birth, disability, disability_notes, lang, note]
       else
         [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, disability_notes, note]
       end

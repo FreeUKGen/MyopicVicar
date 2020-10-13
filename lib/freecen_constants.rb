@@ -14,6 +14,7 @@ module Freecen
 
     UNINHABITED_PATTERN = /[ubnv]/
   end
+  UNINHABITED = { 'B' => 'Under Construction', 'U' => 'Unoccupied', 'V' => 'Family Away Visiting', 'N' => 'Missing Schedule' }.freeze
 
   module Languages
     WELSH = 'W'
@@ -208,6 +209,9 @@ module Freecen
   OCCUPATIONAL_CATEGORY_1891 = { 'E' => 'Employee', 'R' => 'Employer', 'N' => 'Neither', 'e' => 'Employee', 'r' => 'Employer', 'n' => 'Neither'}.freeze
 
   OCCUPATIONAL_CATEGORY_1901 = { 'e' => 'Worker', 'r' => 'Employer', 'n' => 'Own Account', 'E' => 'Worker', 'R' => 'Employer', 'N' => 'Own Account'}.freeze
+
+  LANGUAGE = { 'E' => 'English', 'G' => ' Gaelic', 'GE' => 'Gaelic / English', 'I' => 'Irish', 'IE' => 'Irish / English', 'M' => 'Manx',
+               'ME' => 'Manx / English', 'W' => 'Welsh', 'WE' => 'Welsh / English', 'B' => 'Welsh / English' }.freeze
 
   FIELD_NAMES_CONVERSION = {
     'civil parish' => 'civil_parish',
