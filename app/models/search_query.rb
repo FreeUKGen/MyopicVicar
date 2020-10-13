@@ -578,6 +578,7 @@ class SearchQuery
     if search_result.records.respond_to?(:values)
       search_results = search_result.records.values
       search_results = filter_name_types(search_results)
+      search_results = filter_census_addional_fields(search_results) if MyopicVicar::Application.config.template_set == 'freecen'
       search_results = sort_results(search_results) unless search_results.nil?
       record_number = locate_index(search_results, current)
       next_record_id = nil
