@@ -3,11 +3,11 @@ class Freecen2CivilParishesController < ApplicationController
 
   def chapman_year_index
     get_user_info_from_userid
-    @chapman_code = params[:chapman_code]
+    @chapman_code = session[:chapman_code]
     session.delete(:freecen2_civil_parish)
     @year = params[:year]
     @freecen2_civil_parishes = Freecen2CivilParish.chapman_code(@chapman_code).year(@year).order_by(year: 1, name: 1)
-    @type = 'parish_year_index'
+    session[:type] = 'parish_year_index'
   end
 
   def destroy
@@ -25,7 +25,7 @@ class Freecen2CivilParishesController < ApplicationController
     get_user_info_from_userid
     @chapman_code = session[:chapman_code]
     @freecen2_civil_parishes = Freecen2CivilParish.district_place_name(@chapman_code)
-    @type = 'district_place_name'
+    session[:type] = 'parish_district_place_name'
   end
 
   def edit
@@ -50,15 +50,24 @@ class Freecen2CivilParishesController < ApplicationController
     @type = params[:type]
   end
 
+  def full_index
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No Chapman code') && return if session[:chapman_code].blank?
+
+    get_user_info_from_userid
+    @census = Freecen::CENSUS_YEARS_ARRAY
+    @chapman_code = session[:chapman_code]
+    @freecen2_civil_parishes_distinct = Freecen2CivilParish.chapman_code(session[:chapman_code]).distinct(:name).sort_by(&:downcase)
+    @freecen2_civil_parishes_distinct = Kaminari.paginate_array(@freecen2_civil_parishes_distinct).page(params[:page]).per(50)
+    session[:current_page_civil_parish] = @freecen2_civil_parishes_distinct.current_page if @freecen2_civil_parishes_distinct.present?
+    session[:type] = 'parish_index'
+  end
+
   def index
     get_user_info_from_userid
     if session[:chapman_code].present?
       @census = Freecen::CENSUS_YEARS_ARRAY
       @chapman_code = session[:chapman_code]
-      @freecen2_civil_parishes_distinct = Freecen2CivilParish.chapman_code(session[:chapman_code]).distinct(:name).sort_by(&:downcase)
-      @freecen2_civil_parishes_distinct = Kaminari.paginate_array(@freecen2_civil_parishes_distinct).page(params[:page]).per(50)
-      @type = 'parish_index'
-      session[:current_page_civil_parish] = @freecen2_civil_parishes_distinct.current_page if @freecen2_civil_parishes_distinct.present?
+      session[:type] = 'parish'
       session.delete(:freecen2_civil_parish)
     else
       redirect_to manage_resources_path && return
@@ -82,7 +91,32 @@ class Freecen2CivilParishesController < ApplicationController
     get_user_info_from_userid
     @chapman_code = session[:chapman_code]
     @freecen2_civil_parishes = Freecen2CivilParish.missing_places(@chapman_code)
-    @type = 'missing_place_index'
+    session[:type] = 'missing_parish_index'
+  end
+
+  def selection_by_name
+    @chapman_code = session[:chapman_code]
+    get_user_info_from_userid
+    @freecen2_civil_parish = Freecen2CivilParish.new
+    @options = {}
+    Freecen2CivilParish.chapman_code(@chapman_code).order_by(name: 1, year: 1).each do |civil_parish|
+      @options["#{civil_parish.name} (#{civil_parish.year})"] = civil_parish._id
+    end
+    @location = 'location.href= "/freecen2_civil_parishes/" + this.value'
+    @prompt = 'Select Civil Parish)'
+    session[:type] = 'parish_name'
+    render '_form_for_selection'
+  end
+
+  def selection_by_year
+    @chapman_code = session[:chapman_code]
+    get_user_info_from_userid
+    @freecen2_civil_parish = Freecen2CivilParish.new
+    @options = Freecen::CENSUS_YEARS_ARRAY
+    @location = 'location.href= "/freecen2_civil_parishes/chapman_year_index/?year=" + this.value'
+    @prompt = 'Select Year'
+    session[:type] = 'parish_year'
+    render '_form_for_selection'
   end
 
   def show
@@ -97,7 +131,7 @@ class Freecen2CivilParishesController < ApplicationController
     @piece = @freecen2_civil_parish.freecen2_piece
     @chapman_code = @freecen2_civil_parish.chapman_code
     @freecen2_piece = @freecen2_civil_parish.piece_name
-    @type = params[:type]
+    @type = session[:type]
   end
 
   def update
@@ -110,7 +144,7 @@ class Freecen2CivilParishesController < ApplicationController
     old_freecen2_place = @freecen2_civil_parish.freecen2_place_id
     old_civil_parish_name = @freecen2_civil_parish.name
     params[:freecen2_civil_parish][:freecen2_place_id] = @freecen2_civil_parish.civil_parish_place_id(params[:freecen2_civil_parish][:freecen2_place_id])
-    @type = params[:freecen2_civil_parish][:type]
+    @type = session[:type]
     params[:freecen2_civil_parish].delete :type
 
     @freecen2_civil_parish.update_attributes(freecen2_civil_parish_params)

@@ -14,6 +14,7 @@ class Freecen2CivilParish
   validates :number, numericality: { only_integer: true }, allow_blank: true
   field :suffix, type: String
   field :reason_changed, type: String
+  field :action, type: String
 
   belongs_to :freecen2_piece, optional: true, index: true
   belongs_to :freecen2_place, optional: true, index: true

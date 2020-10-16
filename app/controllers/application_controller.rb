@@ -301,6 +301,7 @@ class ApplicationController < ActionController::Base
     session.delete(:church)
     session.delete(:register)
     session.delete(:search_names)
+    session.delete(:type)
   end
 
   def clean_session_for_images

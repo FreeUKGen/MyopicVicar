@@ -1,4 +1,4 @@
-<% breadcrumb :freecen2_civil_parishes_index_for_piece,  @freecen2_piece.id, @chapman_code, @year, @type %>
+<% breadcrumb :freecen2_civil_parishes_index_for_piece,  @freecen2_piece.id, @chapman_code, @year %>
 <h2 style="text-align: center">FreeCen2 Civil Parishes for <%= @freecen2_piece.name%> in <%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>)  </h2>
 <%= render 'flash_notice' %>
 <div class="scrollable ">

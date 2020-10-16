@@ -3,6 +3,7 @@
     <div style="color:red;">Warning: Records are already loaded for this piece. Edits could impact existing records.</div>
   <% end %>
   <%= f.input :reason_changed,:label => "Reason for making a change or addition",:as => :text, :input_html => {:class => " simple_form_bgcolour  ",   :placeholder => "Enter the reason for a change",  :size => "29x5" }%>
+  <%= f.input :number, label: 'Piece Number', value: @freecen2_piece.number, :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if %w[data_manager system_administrator].include?(@user.person_role)%>
   <%= f.input :name ,  label: 'Piece (Subdistrict) name: as used in the search', selected: @freecen2_piece.name, include_blank: false, collection: @freecen2_pieces, input_html: {class: " simple_form_bgcolour simple_form_position overide_selection_field_width", size:3 }%>
   <%= f.input :freecen2_place_id,  label: 'Freecen2 Place name:', selected:  @freecen2_place, include_blank: false, collection: @places, input_html: {class: " simple_form_bgcolour simple_form_position overide_selection_field_width", size:3 }%>
   <%= f.input :parish_number , label: "Parish number: used for Scotland, leave blank for ENG/WLS", value: @freecen2_piece.parish_number, :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if ChapmanCode::CODES['Scotland'].values.member?(@freecen2_piece.chapman_code)%>
@@ -14,6 +15,5 @@
   <%= f.input :tnaid,:label => "TNA link", :input_html => { :disabled => true,:size => 10 }%>
   <%= f.input :code,:label => "TNA Code", :input_html => { :disabled => true,:size => 10 }%>
   <%= f.input :prenote,:label => "TNA Pre notes", :input_html => { :disabled => true,:size => 10 }%>
-  <%= f.hidden_field :type, :value=>@type %>
   <%= f.button :submit, 'Submit'   %>
 <% end %>

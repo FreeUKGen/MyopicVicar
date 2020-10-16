@@ -1539,9 +1539,14 @@ end
 
 #  .........................................................................freecen2_districts...........................................
 
-crumb :freecen2_districts do |county, year|
-  link 'FreeCen2 Districts', freecen2_districts_path(county: county, anchor: session[:freecen2_district], page: session[:current_page_district])
+crumb :freecen2_districts do |county|
+  link 'FreeCen2 Districts', freecen2_districts_path(county: county)
   parent :county_options, county
+end
+
+crumb :freecen2_districts_full_index do |county|
+  link 'Full Index FreeCen2 Districts', full_index_freecen2_districts_path(county: county, anchor: session[:freecen2_district], page: session[:current_page_district])
+  parent :freecen2_districts, county
 end
 
 crumb :freecen2_districts_chapman do |county, year|
@@ -1549,36 +1554,74 @@ crumb :freecen2_districts_chapman do |county, year|
   parent :freecen2_districts, county, year
 end
 
-crumb :show_freecen2_district do |file, county, year, type|
-  link 'Show FreeCen2 District', freecen2_districts_path(file, type: type)
-  case type
+crumb :show_freecen2_district do |file, county, year|
+  link 'Show FreeCen2 District', freecen2_district_path(file)
+  case session[:type]
+  when 'parish'
+    parent :freecen2_civil_parishes, county
+  when 'parish_name'
+    parent :freecen2_civil_parishes, county
+  when 'parish_year'
+    parent :freecen2_civil_parishes, county
+  when 'parish_index'
+    parent :freecen2_civil_parishes_full_index, county, year
+  when 'parish_year_index'
+    parent :freecen2_civil_parishes_chapman, county, year
+  when 'missing_parish_index'
+    parent :freecen2_civil_parishes_missing_places, county
+  when 'parish_district_place_name'
+    parent :freecen2_civil_parishes_district_place_name, county
+  when 'piece'
+    parent :freecen2_pieces, county
+  when 'piece_name'
+    parent :freecen2_pieces, county
+  when 'piece_year'
+    parent :freecen2_pieces, county
+  when 'piece_index'
+    parent :freecen2_pieces_full_index, county, year
+  when 'piece_year_index'
+    parent :freecen2_pieces_chapman, county, year
+  when 'missing_piece_place_index'
+    parent :freecen2_pieces_missing_places, county
+  when 'piece_district_place_name'
+    parent :freecen2_pieces_district_place_name, county
+  when 'district'
+    parent :freecen2_districts, county
+  when 'district_name'
+    parent :freecen2_districts, county
+  when 'district_year'
+    parent :freecen2_districts, county
   when 'district_index'
-    parent :freecen2_districts, county, year
+    parent :freecen2_districts_full_index, county, year
   when 'district_year_index'
     parent :freecen2_districts_chapman, county, year
-  when 'missing_place_index'
-    parent :freecen2_districts_missing_places, county, type
+  when 'missing_district_place_index'
+    parent :freecen2_districts_missing_places, county
   else
     parent :county_options, county
   end
 end
 
-crumb :freecen2_districts_missing_places do |county, type|
-  link 'Missing Freecen2 Places', missing_place_freecen2_districts_path(chapman_code: county)
+crumb :freecen2_districts_missing_places do |county|
+  link 'Missing Freecen2 Places', missing_place_freecen2_districts_path(chapman_code: county, anchor: session[:freecen2_district])
   parent :freecen2_districts, county
 end
 
-crumb :edit_freecen2_district do |file, county, year, type|
-  link 'Edit FreeCen2 District', freecen2_districts_path(file, type: type)
-  parent :show_freecen2_district, file, county, year, type
+crumb :edit_freecen2_district do |file, county, year|
+  link 'Edit FreeCen2 District', freecen2_district_path(file)
+  parent :show_freecen2_district, file, county, year
 end
-
 
 # .................................................................freecen2_pieces.................................................
 
 crumb :freecen2_pieces do |county|
-  link 'FreeCen2 Sub Districts (Pieces)', freecen2_pieces_path(county: county, anchor: session[:freecen2_piece], page: session[:current_page_piece])
+  link 'FreeCen2 Sub Districts (Pieces)', freecen2_pieces_path(county: county)
   parent :county_options, county
+end
+
+crumb :freecen2_pieces_full_index do |county|
+  link 'Full Index FreeCen2 Pieces', full_index_freecen2_pieces_path(county: county, anchor: session[:freecen2_piece], page: session[:current_page_piece])
+  parent :freecen2_pieces, county
 end
 
 crumb :freecen2_pieces_chapman do |county, year|
@@ -1586,55 +1629,84 @@ crumb :freecen2_pieces_chapman do |county, year|
   parent :freecen2_pieces, county
 end
 
-crumb :show_freecen2_piece do |file, county, year, type|
-  link 'Show FreeCen2 Sub District (Piece)', freecen2_piece_path(file, type: type)
-  case type
-  when 'year_index'
-    parent :freecen2_pieces_chapman, county, year
-  when 'index'
+crumb :show_freecen2_piece do |file, county, year|
+  link 'Show FreeCen2 Sub District (Piece)', freecen2_piece_path(file)
+  case session[:type]
+  when 'parish'
+    parent :freecen2_civil_parishes, county
+  when 'parish_name'
+    parent :freecen2_civil_parishes, county
+  when 'parish_year'
+    parent :freecen2_civil_parishes, county
+  when 'parish_index'
+    parent :freecen2_civil_parishes_full_index, county, year
+  when 'parish_year_index'
+    parent :freecen2_civil_parishes_chapman, county, year
+  when 'missing_parish_index'
+    parent :freecen2_civil_parishes_missing_places, county
+  when 'parish_district_place_name'
+    parent :freecen2_civil_parishes_district_place_name, county
+  when 'piece'
     parent :freecen2_pieces, county
-  when 'district_index'
-    district = Freecen2Piece.find_by(id: file).freecen2_district
-    parent :show_freecen2_district, district, county, year, type
-  when 'district_year_index'
-    district = Freecen2Piece.find_by(id: file).freecen2_district
-    parent :show_freecen2_district, district, county, year, type
-  when 'missing_place_index'
+  when 'piece_name'
+    parent :freecen2_pieces, county
+  when 'piece_year'
+    parent :freecen2_pieces, county
+  when 'piece_index'
+    parent :freecen2_pieces_full_index, county, year
+  when 'piece_year_index'
+    parent :freecen2_pieces_chapman, county, year
+  when 'missing_piece_place_index'
     parent :freecen2_pieces_missing_places, county
-  when 'district_place_name'
+  when 'piece_district_place_name'
     parent :freecen2_pieces_district_place_name, county
+  when 'district'
+    parent :freecen2_districts, county
+  when 'district_name'
+    parent :freecen2_districts, county
+  when 'district_year'
+    parent :freecen2_districts, county
+  when 'district_index'
+    parent :freecen2_districts_full_index, county, year
+  when 'district_year_index'
+    parent :freecen2_districts_chapman, county, year
+  when 'missing_district_place_index'
+    parent :freecen2_districts_missing_places, county
   else
     parent :county_options, county
   end
 end
 
-crumb :freecen2_pieces_district_place_name do |county, type|
-  link 'District Freecen2 Places', district_place_name_freecen2_pieces_path(chapman_code: county)
+crumb :freecen2_pieces_district_place_name do |county|
+  link 'District Freecen2 Places', district_place_name_freecen2_pieces_path(chapman_code: county, anchor: session[:freecen2_piece])
   parent :freecen2_pieces, county
 end
 
-
-crumb :freecen2_pieces_missing_places do |county, type|
-  link 'Missing Freecen2 Places', missing_place_freecen2_pieces_path(chapman_code: county)
+crumb :freecen2_pieces_missing_places do |county|
+  link 'Missing Freecen2 Places', missing_place_freecen2_pieces_path(chapman_code: county, anchor: session[:freecen2_piece])
   parent :freecen2_pieces, county
 end
 
-crumb :edit_freecen2_piece do |file, county, year, type|
-  link 'Edit FreeCen2 Piece', freecen2_piece_path(file, type: type)
-  parent :show_freecen2_piece, file, county, year, type
+crumb :edit_freecen2_piece do |file, county, year|
+  link 'Edit FreeCen2 Piece', freecen2_piece_path(file)
+  parent :show_freecen2_piece, file, county, year
 end
 
-crumb :freecen2_pieces_district do |district, county, year, type|
-  link 'FreeCen2 Pieces for District', freecen2_pieces_district_index_path(district, type: type)
-  parent :show_freecen2_district, district, county, year, type
+crumb :freecen2_pieces_district do |district, county, year|
+  link 'FreeCen2 Pieces for District', freecen2_pieces_district_index_path(district)
+  parent :freecen2_pieces, county
 end
-
 
 # ...........................................................................freecen2_civil_parishes..............................................
 
 crumb :freecen2_civil_parishes do |county|
-  link 'FreeCen2 Civil Parishes', freecen2_civil_parishes_path(county: county, anchor: session[:freecen2_civil_parish], page: session[:current_page_civil_parish])
+  link 'FreeCen2 Civil Parishes', freecen2_civil_parishes_path(county: county)
   parent :county_options, county
+end
+
+crumb :freecen2_civil_parishes_full_index do |county|
+  link 'Full Index FreeCen2 Civil Parishes', full_index_freecen2_civil_parishes_path(county: county, anchor: session[:freecen2_civil_parish], page: session[:current_page_civil_parish])
+  parent :freecen2_civil_parishes, county
 end
 
 crumb :freecen2_civil_parishes_chapman do |county, year|
@@ -1642,56 +1714,73 @@ crumb :freecen2_civil_parishes_chapman do |county, year|
   parent :freecen2_civil_parishes, county
 end
 
-crumb :show_freecen2_civil_parish do |file, county, year, type|
-  link 'Show FreeCen2 Civil Parish', freecen2_civil_parish_path(file, type: type)
-  case type
-  when 'district_index'
-    piece = file.freecen2_piece
-    parent :show_freecen2_piece, piece, county, year, type
-  when 'district_year_index'
-    piece = file.freecen2_piece
-    parent :show_freecen2_piece, piece, county, year, type
-  when 'parish_index'
+crumb :show_freecen2_civil_parish do |file, county, year|
+  link 'Show FreeCen2 Civil Parish', freecen2_civil_parish_path(file)
+  case session[:type]
+  when 'parish'
     parent :freecen2_civil_parishes, county
+  when 'parish_name'
+    parent :freecen2_civil_parishes, county
+  when 'parish_year'
+    parent :freecen2_civil_parishes, county
+  when 'parish_index'
+    parent :freecen2_civil_parishes_full_index, county, year
   when 'parish_year_index'
     parent :freecen2_civil_parishes_chapman, county, year
-  when 'year_index'
-    piece = file.freecen2_piece
-    parent :show_freecen2_piece, piece, county, year, type
-  when 'index'
-    piece = file.freecen2_piece
-    parent :show_freecen2_piece, piece, county, year, type
-  when 'missing_place_index'
+  when 'missing_parish_index'
     parent :freecen2_civil_parishes_missing_places, county
-  when 'district_place_name'
+  when 'parish_district_place_name'
     parent :freecen2_civil_parishes_district_place_name, county
+  when 'piece'
+    parent :freecen2_pieces, county
+  when 'piece_name'
+    parent :freecen2_pieces, county
+  when 'piece_year'
+    parent :freecen2_pieces, county
+  when 'piece_index'
+    parent :freecen2_pieces_full_index, county, year
+  when 'piece_year_index'
+    parent :freecen2_pieces_chapman, county, year
+  when 'missing_piece_place_index'
+    parent :freecen2_pieces_missing_places, county
+  when 'piece_district_place_name'
+    parent :freecen2_pieces_district_place_name, county
+  when 'district'
+    parent :freecen2_districts, county
+  when 'district_name'
+    parent :freecen2_districts, county
+  when 'district_year'
+    parent :freecen2_districts, county
+  when 'district_index'
+    parent :freecen2_districts_full_index, county, year
+  when 'district_year_index'
+    parent :freecen2_districts_chapman, county, year
+  when 'missing_district_place_index'
+    parent :freecen2_districts_missing_places, county
   else
     parent :county_options, county
   end
 end
 
-crumb :freecen2_civil_parishes_district_place_name do |county, type|
-  link 'District Freecen2 Places', district_place_name_freecen2_civil_parishes_path(chapman_code: county)
+crumb :freecen2_civil_parishes_district_place_name do |county|
+  link 'District Freecen2 Places', district_place_name_freecen2_civil_parishes_path(chapman_code: county, anchor: session[:freecen2_civil_parish])
   parent :freecen2_pieces, county
 end
 
-
-crumb :freecen2_civil_parishes_missing_places do |county, type|
-  link 'Missing Freecen2 Places', missing_place_freecen2_pieces_path(chapman_code: county)
+crumb :freecen2_civil_parishes_missing_places do |county|
+  link 'Missing Freecen2 Places', missing_place_freecen2_pieces_path(chapman_code: county, anchor: session[:freecen2_civil_parish])
   parent :freecen2_civil_parishes, county
 end
 
-crumb :edit_freecen2_civil_parish do |file, county, year, type|
-  link 'Edit FreeCen2 Civil Parish', edit_freecen2_civil_parish_path(file, type: type)
-  parent :show_freecen2_civil_parish, file, county, year, type
+crumb :edit_freecen2_civil_parish do |file, county, year|
+  link 'Edit FreeCen2 Civil Parish', edit_freecen2_civil_parish_path(file)
+  parent :show_freecen2_civil_parish, file, county, year
 end
 
-crumb :freecen2_civil_parishes_index_for_piece do |file, county, year, type|
-  link 'FreeCen2 Civil Parish for Piece', index_for_piece_freecen2_civil_parishes_path(file, type: type)
-  parent :show_freecen2_piece, file, county, year, type
+crumb :freecen2_civil_parishes_index_for_piece do |file, county, year|
+  link 'FreeCen2 Civil Parish for Piece', index_for_piece_freecen2_civil_parishes_path(file)
+  parent :show_freecen2_piece, file, county, year
 end
-
-
 
 # ...............................................freecen_csv_files .....................................
 crumb :my_own_freecen_csv_files do
@@ -1783,7 +1872,6 @@ crumb :spreadsheet_selection do |file|
     parent :freecen_csv_files, file
   end
 end
-
 
 crumb :freecen_csv_entries do |entry, file, type|
   if entry.nil?

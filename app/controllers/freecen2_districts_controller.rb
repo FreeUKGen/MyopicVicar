@@ -3,14 +3,14 @@ class Freecen2DistrictsController < ApplicationController
 
   def chapman_year_index
     get_user_info_from_userid
-    @chapman_code = params[:chapman_code]
+    @chapman_code = session[:chapman_code]
     @year = params[:year]
     session.delete(:freecen2_piece)
     session.delete(:freecen2_civil_parish)
     session.delete(:current_page_piece)
     session.delete(:current_page_civil_parish)
     @freecen2_districts = Freecen2District.chapman_code(@chapman_code).year(@year).order_by(year: 1, name: 1).all
-    @type = 'district_year_index'
+    session[:type] = 'district_year_index'
   end
 
   def copy
@@ -20,7 +20,7 @@ class Freecen2DistrictsController < ApplicationController
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No district found') && return if @freecen2_district.blank?
 
     get_user_info_from_userid
-    @counties = @freecen2_district.get_counties
+    @options = @freecen2_district.get_counties
     session[:freecen2_district] = params[:id]
     @location = 'location.href= "/freecen2_districts/complete_copy?chapman_code=" + this.value'
     @prompt = 'Select Chapman Code'
@@ -67,7 +67,8 @@ class Freecen2DistrictsController < ApplicationController
     @freecen2_place = @freecen2_place.present? ? @freecen2_place.place_name : ''
     @districts = @freecen2_district.district_names
     @places = @freecen2_district.district_place_names
-    @type = params[:type]
+    @type = session[:type]
+    @chapman_code = session[:chapman_code]
   end
 
   def index
@@ -80,11 +81,24 @@ class Freecen2DistrictsController < ApplicationController
     @freecen2_districts_distinct = Kaminari.paginate_array(@freecen2_districts_distinct).page(params[:page]).per(50)
     session[:current_page_district] = @freecen2_districts_distinct.current_page if @freecen2_districts_distinct.present?
     session.delete(:freecen2_district)
-    @type = 'district_index'
+    session[:type] = 'district'
+  end
+
+  def full_index
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No Chapman code') && return if session[:chapman_code].blank?
+
+    get_user_info_from_userid
+    @census = Freecen::CENSUS_YEARS_ARRAY
+    @chapman_code = session[:chapman_code]
+    @freecen2_districts_distinct = Freecen2District.chapman_code(session[:chapman_code]).distinct(:name).sort_by(&:downcase)
+    @freecen2_districts_distinct = Kaminari.paginate_array(@freecen2_districts_distinct).page(params[:page]).per(50)
+    session[:current_page_district] = @freecen2_districts_distinct.current_page if @freecen2_districts_distinct.present?
+    session.delete(:freecen2_district)
+    session[:type] = 'district_index'
   end
 
   def locate
-    @type = params[:type]
+    @type = session[:type]
     @freecen2_district = Freecen2District.find_by(chapman_code: params[:chapman_code], year: params[:year], name: params[:name])
     redirect_to freecen2_district_path(@freecen2_district.id, type: @type)
   end
@@ -93,12 +107,39 @@ class Freecen2DistrictsController < ApplicationController
     get_user_info_from_userid
     @chapman_code = session[:chapman_code]
     @freecen2_districts = Freecen2District.missing_places(@chapman_code)
-    @type = 'missing_place_index'
+    session[:type] = 'missing_district_place_index'
+  end
+
+  def selection_by_name
+    @chapman_code = session[:chapman_code]
+    get_user_info_from_userid
+    @freecen2_district = Freecen2District.new
+    freecen2_districts = {}
+    Freecen2District.chapman_code(@chapman_code).order_by(name: 1, year: 1).each do |district|
+      freecen2_districts["#{district.name} (#{district.year})"] = district._id
+    end
+    @options = freecen2_districts
+    @location = 'location.href= "/freecen2_districts/" + this.value'
+    @prompt = 'Select District'
+    session[:type] = 'district_name'
+    render '_form_for_selection'
+  end
+
+  def selection_by_year
+    @chapman_code = session[:chapman_code]
+    get_user_info_from_userid
+    @freecen2_district = Freecen2District.new
+    @options = Freecen::CENSUS_YEARS_ARRAY
+
+    @location = 'location.href= "/freecen2_districts/chapman_year_index/?year=" + this.value'
+    @prompt = 'Select Year'
+    session[:type] = 'district_year'
+    render '_form_for_selection'
   end
 
   def show
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No District identified') && return if params[:id].blank?
-    @type = params[:type]
+    @type = session[:type]
     get_user_info_from_userid
     @freecen2_district = Freecen2District.find_by(id: params[:id])
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No District found') && return if @freecen2_district.blank?
@@ -107,7 +148,7 @@ class Freecen2DistrictsController < ApplicationController
     @place = @freecen2_district.freecen2_place
     @chapman_code = session[:chapman_code]
     session[:freecen2_district] = @freecen2_district.name
-    @type = params[:type]
+    @type = session[:type]
   end
 
   def update
@@ -121,7 +162,7 @@ class Freecen2DistrictsController < ApplicationController
     old_freecen2_place = @freecen2_district.freecen2_place_id
     old_district_name = @freecen2_district.name
     params[:freecen2_district][:freecen2_place_id] = @freecen2_district.district_place_id(params[:freecen2_district][:freecen2_place_id])
-    @type = params[:freecen2_district][:type]
+    @type = session[:type]
     params[:freecen2_district].delete :type
 
     @freecen2_district.update_attributes(freecen2_district_params)

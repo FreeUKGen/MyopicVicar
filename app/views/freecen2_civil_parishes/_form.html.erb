@@ -21,6 +21,5 @@
     <%= multiple.input :note,:input_html => { :class => " simple_form_bgcolour  ",:size => 30 } %>
     <%= multiple.input :_destroy, :as => :boolean ,:input_html => {:class => " simple_form_bgcolour  "} %>
   <% end %>
-  <%= f.hidden_field :type, :value=>@type %>
   <%= f.button :submit, 'Submit'   %>
 <% end %>

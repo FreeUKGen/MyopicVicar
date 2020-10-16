@@ -1,0 +1,32 @@
+<% breadcrumb :freecen2_districts_full_index,  @chapman_code, @year%>
+<h2 style="text-align: center">FreeCen2 Districts for <%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>) </h2>
+<%= render 'flash_notice' %>
+<%= paginate @freecen2_districts_distinct %>
+<div class="scrollable ">
+  <table class="table--bordered table--data table--striped " >
+    <thead >
+      <tr >
+        <th class='sticky-header '>District</th>
+        <th class='sticky-header '><%= district_index_link(@chapman_code, '1841')%></th>
+        <th class='sticky-header '><%= district_index_link(@chapman_code, '1851')%></th>
+        <th class='sticky-header '><%= district_index_link(@chapman_code, '1861')%></th>
+        <th class='sticky-header '><%= district_index_link(@chapman_code, '1871')%></th>
+        <th class='sticky-header '><%= district_index_link(@chapman_code, '1881')%></th>
+        <th class='sticky-header '><%= district_index_link(@chapman_code, '1891')%></th>
+        <th class='sticky-header '><%= district_index_link(@chapman_code, '1901')%></th>
+        <th class='sticky-header '><%= district_index_link(@chapman_code, '1911')%></th>
+      </tr>
+    </thead>
+    <tbody >
+      <% @freecen2_districts_distinct.each do |freecen2_district| %>
+        <tr id="<%= freecen2_district%>">
+          <td> <%= freecen2_district %></td>
+          <% @census.each do |year| %>
+            <td> <%= district_year(freecen2_district, year)%></td>
+          <% end%>
+          <td></td>
+        </tr>
+      <% end%>
+    </tbody >
+  </table>
+</div>

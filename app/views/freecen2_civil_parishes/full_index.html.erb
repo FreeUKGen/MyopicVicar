@@ -1,0 +1,32 @@
+<% breadcrumb :freecen2_civil_parishes_full_index,  @chapman_code, @type%>
+<h2 style="text-align: center">FreeCen2 Civil Parishes for <%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>)  </h2>
+<%= render 'flash_notice' %>
+<%= paginate @freecen2_civil_parishes_distinct %>
+<div class="scrollable ">
+  <table class="table--bordered table--data table--striped " >
+    <thead >
+      <tr >
+        <th class='sticky-header '>Civil Parish</th>
+        <th class='sticky-header '><%= civil_parish_index_link(@chapman_code, '1841')%></th>
+        <th class='sticky-header '><%= civil_parish_index_link(@chapman_code, '1851')%></th>
+        <th class='sticky-header '><%= civil_parish_index_link(@chapman_code, '1861')%></th>
+        <th class='sticky-header '><%= civil_parish_index_link(@chapman_code, '1871')%></th>
+        <th class='sticky-header '><%= civil_parish_index_link(@chapman_code, '1881')%></th>
+        <th class='sticky-header '><%= civil_parish_index_link(@chapman_code, '1891')%></th>
+        <th class='sticky-header '><%= civil_parish_index_link(@chapman_code, '1901')%></th>
+        <th class='sticky-header '><%= civil_parish_index_link(@chapman_code, '1911')%></th>
+      </tr>
+    </thead>
+    <tbody >
+      <% @freecen2_civil_parishes_distinct.each do |freecen2_civil_parish| %>
+        <tr id="<%= freecen2_civil_parish%>">
+          <td> <%= freecen2_civil_parish %></td>
+          <% @census.each do |year| %>
+            <td> <%= civil_parish_year(freecen2_civil_parish, year)%></td>
+          <% end%>
+          <td></td>
+        </tr>
+      <% end%>
+    </tbody >
+  </table>
+</div>

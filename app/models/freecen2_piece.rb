@@ -39,6 +39,7 @@ class Freecen2Piece
   field :prenote, type: String
   field :civil_parish_names, type: String
   field :reason_changed, type: String
+  field :action, type: String
 
 
   field :parish_number, type: String
