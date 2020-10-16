@@ -188,7 +188,6 @@ class FreecenCsvEntry
       result
     end
 
-
     def validate_civil_parish(record, previous_civil_parish)
       civil_parish = record[:civil_parish]
       num = record[:record_number]
@@ -2609,6 +2608,12 @@ class FreecenCsvEntry
       record.birth_chapman_code = birth_county
     elsif verbatim_birth_county.present?
       record.birth_chapman_code = verbatim_birth_county
+    end
+
+    if birth_place.present?
+      record.birth_place = birth_place
+    elsif verbatim_birth_place.present?
+      record.birth_place = verbatim_birth_county
     end
 
     record.freecen_csv_entry_id = _id

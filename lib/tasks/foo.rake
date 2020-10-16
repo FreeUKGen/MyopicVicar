@@ -7,7 +7,13 @@ namespace :foo do
 
   # eg foo:check_search_records[100000]
 
-
+  task :add_birth_place_to_search_record, [:num, :fix] => [:environment] do |t, args|
+    require 'add_birth_place_to_search_record'
+    limit = args.num.to_i
+    puts "Checking the existence of birth_place in search record  "
+    AddBirthPlaceToSearchRecord.process(limit, args.fix.to_s)
+    puts "Completed Checking #{limit} Search records"
+  end
 
   task :check_search_records_with_null_entry, [:num, :fix] => [:environment] do |t, args|
     require 'check_search_records_with_null_entry'

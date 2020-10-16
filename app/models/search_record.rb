@@ -45,7 +45,7 @@ class SearchRecord
   field :asset_id, type: String
   field :chapman_code, type: String
   field :birth_chapman_code, type: String
-
+  field :birth_place, type: String
   #many :annotations, :in => :annotation_ids
 
   field :record_type, type: String

@@ -36,7 +36,9 @@ module SearchQueriesHelper
 
   def birth_place(search_record)
     birth_place = ''
-    if search_record.freecen_csv_entry_id.present?
+    if search_record.birth_place.present?
+      birth_place = search_record.birth_place
+    elsif search_record.freecen_csv_entry_id.present?
       entry = FreecenCsvEntry.find_by(id: search_record.freecen_csv_entry_id)
       if entry.present?
         birth_place = entry.birth_place.present? ? entry.birth_place : entry.verbatim_birth_place
