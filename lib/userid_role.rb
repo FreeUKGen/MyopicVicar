@@ -205,7 +205,7 @@ module UseridRole
                                  'Upload New Batch', 'Offline Reports', 'Manage Images']
   when 'freecen'
     COUNTY_MANAGEMENT_OPTIONS = ['Manage FreeCEN2 Places', 'Manage FreeCEN2 Districts', 'Manage FreeCEN2 Pieces', 'Manage FreeCEN2 Civil Parishes',
-                                 'Review Batches with Errors', 'Review Batches by Filename',
+                                 'Review Batches with Errors', 'Review Batches by Filename', 'Review Batches being Validated', 'Review Incorporated Batches',
                                  'Review Batches by Userid then Filename', 'Review Batches by Most Recent Date of Change',
                                  'Review Batches by Oldest Date of Change', 'Review Specific Batch', 'Upload New Batch', 'Manage FreeCEN1 Pieces',
                                  'Manage VLD Files', 'Manage Places']
@@ -218,6 +218,8 @@ module UseridRole
     'Places with Unapproved Names' => '/manage_counties/selection?option=Places with Unapproved Names',
     'Review Batches with Errors' => '/manage_counties/selection?option=Review Batches with Errors',
     'Review Batches with Zero Dates' => '/manage_counties/selection?option=Review Batches with Zero Dates',
+    'Review Batches being Validated' => '/manage_counties/selection?option=Being Validated',
+    'Review Incorporated Batches' => '/manage_counties/selection?option=Incorporated',
     'Review Batches by Filename' => '/manage_counties/selection?option=Review Batches by Filename',
     'Review Batches by Userid then Filename' => '/manage_counties/selection?option=Review Batches by Userid then Filename',
     'Review Batches by Most Recent Date of Change' => '/manage_counties/selection?option=Review Batches by Most Recent Date of Change',

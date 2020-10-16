@@ -87,8 +87,8 @@ MyopicVicar::Application.routes.draw do
   get 'freecen_csv_files/:id/relocate(.:format)', :to => 'freecen_csv_files#relocate', :as => :relocate_freecen_csv_file
   get 'freecen_csv_files/:id/lock(.:format)', :to => 'freecen_csv_files#lock', :as => :lock_freecen_csv_file
   get 'freecen_csv_files/:id/error(.:format)', :to => 'freecen_csv_files#error', :as => :error_freecen_csv_file
-  get 'freecen_csv_files/my_own',  :to => 'freecen_csv_files#my_own', :as => :my_own_freecen_csv_file
   get 'freecen_csv_files/:id/by_userid',  :to => 'freecen_csv_files#by_userid', :as => :by_userid_freecen_csv_file
+  get 'freecen_csv_files/my_own',  :to => 'freecen_csv_files#my_own', :as => :my_own_freecen_csv_file
   get 'freecen_csv_files/display_my_error_files',  :to => 'freecen_csv_files#display_my_error_files', :as => :display_my_error_freecen_csv_files
   get 'freecen_csv_files/display_my_own_files',  :to => 'freecen_csv_files#display_my_own_files', :as => :display_my_own_files_freecen_csv_file
   get 'freecen_csv_files/display_my_own_files_by_descending_uploaded_date',  :to => 'freecen_csv_files#display_my_own_files_by_descending_uploaded_date',  :as => :display_my_own_files_by_descending_uploaded_date_freecen_csv_file
@@ -331,9 +331,10 @@ MyopicVicar::Application.routes.draw do
     collection { post :import }
   end
 
-
-  get  'manage_counties/selection',  :to => 'manage_counties#work_all_places', constraints: ManageCountiesAllPlacesConstraint ,:as => :selection_all_manage_counties
-  get  'manage_counties/selection',  :to => 'manage_counties#work_with_active_places', constraints: ManageCountiesActivePlacesConstraint ,:as => :selection_active_manage_counties
+  get  'manage_counties/selection',  :to => 'manage_counties#being_validated', constraints: ManageCountiesBeingValidatedConstraint, :as => :selection_being_validated_manage_counties
+  get  'manage_counties/selection',  :to => 'manage_counties#incorporated', constraints: ManageCountiesIncorporatedConstraint, :as => :selection_incorporated_manage_counties
+  get  'manage_counties/selection',  :to => 'manage_counties#work_all_places', constraints: ManageCountiesAllPlacesConstraint, :as => :selection_all_manage_counties
+  get  'manage_counties/selection',  :to => 'manage_counties#work_with_active_places', constraints: ManageCountiesActivePlacesConstraint, :as => :selection_active_manage_counties
   get  'manage_counties/selection',  :to => 'manage_counties#work_with_specific_place', constraints: ManageCountiesSpecificPlaceConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#places_with_unapproved_names', constraints: ManageCountiesUnapprovedNamesConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#batches_with_errors', constraints: ManageCountiesErrorBatchConstraint

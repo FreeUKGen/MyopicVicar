@@ -295,6 +295,10 @@ class FreecenCsvFilesController < ApplicationController
       @freecen_csv_files = FreecenCsvFile.userid(UseridDetail.find(session[:userid_id]).userid).no_timeout.order_by(session[:sort]).all.page(params[:page]).per(batches)
     elsif session[:county].present? && helpers.can_view_files?(session[:role]) && session[:sorted_by] == '; sorted by descending number of errors and then file name'
       @freecen_csv_files = FreecenCsvFile.chapman_code(session[:chapman_code]).gt(total_errors: 0).order_by(session[:sort]).all.page(params[:page]).per(batches)
+    elsif session[:county].present? && session[:sorted_by] == '; being validated'
+      @freecen_csv_files = FreecenCsvFile.where(chapman_code: session[:chapman_code], validation: true, incorporated: false).order_by(session[:sort]).all.page(params[:page]).per(batches)
+    elsif session[:county].present? && session[:sorted_by] == '; incorporated'
+      @freecen_csv_files = FreecenCsvFile.where(chapman_code: session[:chapman_code], incorporated: true).no_timeout.order_by(session[:sort]).all.page(params[:page]).per(batches)
     elsif session[:county].present? && helpers.can_view_files?(session[:role])
       @freecen_csv_files = FreecenCsvFile.chapman_code(session[:chapman_code]).no_timeout.order_by(session[:sort]).all.page(params[:page]).per(batches)
     end

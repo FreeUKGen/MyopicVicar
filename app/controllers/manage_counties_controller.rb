@@ -29,6 +29,21 @@ class ManageCountiesController < ApplicationController
     end
   end
 
+  def being_validated
+    get_user_info_from_userid
+    @county = session[:county]
+    @who = @user.person_forename
+    @sorted_by = '; being validated'
+    session[:sorted_by] = @sorted_by
+    session[:sort] = 'file_name ASC'
+    case appname_downcase
+    when 'freereg'
+      redirect_to freereg1_csv_files_path
+    when 'freecen'
+      redirect_to freecen_csv_files_path
+    end
+  end
+
   def county_content_report
     # not yet implemented for CEN
     get_user_info_from_userid
@@ -165,6 +180,21 @@ class ManageCountiesController < ApplicationController
     end
     @counties = @counties.compact if @counties.present?
     @counties.sort! if @counties.present?
+  end
+
+  def incorporated
+    get_user_info_from_userid
+    @county = session[:county]
+    @who = @user.person_forename
+    @sorted_by = '; incorporated'
+    session[:sorted_by] = @sorted_by
+    session[:sort] = 'file_name ASC'
+    case appname_downcase
+    when 'freereg'
+      redirect_to freereg1_csv_files_path
+    when 'freecen'
+      redirect_to freecen_csv_files_path
+    end
   end
 
   def index
