@@ -480,7 +480,7 @@ class CsvFile < CsvFiles
     copy_file_name = "#{@header[:file_name]}.txt"
     to = File.join(@full_dirname, copy_file_name)
     FileUtils.cp_r(file, to, remove_destination: true)
-    UserMailer.batch_processing_success(file, @header[:userid],@header[:file_name]).deliver_now unless @project.type_of_project == "special_selection_1" ||  @project.type_of_project == "special_selection_2"
+    UserMailer.batch_processing_success(file, @header[:userid], @header[:file_name]).deliver_now unless @project.type_of_project == "special_selection_1" ||  @project.type_of_project == "special_selection_2"
     clean_up_message
     true
   end
