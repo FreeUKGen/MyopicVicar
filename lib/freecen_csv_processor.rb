@@ -139,7 +139,7 @@ class FreecenCsvProcessor
     time = Time.new
     tnsec = time.nsec / 1000
     time = time.to_i.to_s + tnsec.to_s
-    file_for_warning_messages = Rails.root.join('log', "freecen_csv_processing_messages_#{time}.log")
+    file_for_warning_messages = Rails.root.join('log', "freecen_csv_processing_#{time}.txt")
     message_file = File.new(file_for_warning_messages, 'w')
     message_file.chmod(0664)
     message_file
@@ -489,7 +489,7 @@ class CsvFile < CsvFiles
     time = Time.new
     tnsec = time.nsec / 1000
     time = time.to_i.to_s + tnsec.to_s
-    file_for_member_messages = Rails.root.join('log', "#{userid}_member_update_messages_#{time}.log").to_s
+    file_for_member_messages = Rails.root.join('log', "#{userid}_processed_#{@file_name}_#{time}.txt").to_s
     member_message_file = File.new(file_for_member_messages, 'w')
     member_message_file
   end
