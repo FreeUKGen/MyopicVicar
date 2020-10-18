@@ -14,6 +14,7 @@ class SearchQuery
   module SearchOrder
     TYPE = 'record_type'
     DATE = 'search_date'
+    BIRTH_PLACE = 'birth_place'
     BIRTH_COUNTY = 'birth_chapman_code'
     COUNTY = 'chapman_code'
     LOCATION = 'location'
@@ -22,6 +23,7 @@ class SearchQuery
     ALL_ORDERS = [
       TYPE,
       BIRTH_COUNTY,
+      BIRTH_PLACE,
       DATE,
       COUNTY,
       LOCATION,
