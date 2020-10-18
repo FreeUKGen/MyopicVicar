@@ -11,10 +11,7 @@ class AddBirthPlaceToSearchRecord
     records = 0
 
     time_start = Time.now
-    SearchRecord.no_timeout.each do |record|
-
-
-      next unless record.freecen_csv_entry_id.present?
+    SearchRecord.where(:freecen_csv_entry_id.exists => true).each do |record|
       entry_id = record.freecen_csv_entry_id
       entry = FreecenCsvEntry.id(entry_id).first unless entry_id.nil?
       next unless entry.present?
