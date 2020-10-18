@@ -274,8 +274,7 @@ class ExtractFreecen2PieceInformation
       parish_name = parish['name']
       parish_note = parish['note']
       parish_prenote = parish['prenote']
-      place_id = ExtractFreecen2PieceInformation.locate_civil_place(chapman_code, parish_name, subdistrict_object.name, 'Civil Parish',
-                                                                    subdistrict_object.freecen2_district.name)
+      place_id = ExtractFreecen2PieceInformation.locate_civil_place(chapman_code, parish_name, subdistrict_object, 'Civil Parish')
       @parish_object = Freecen2CivilParish.new(name: parish_name, note: parish_note, freecen2_piece_id: subdistrict_object.id, prenote: parish_prenote,
                                                freecen2_place_id: place_id, year: subdistrict_object.year, chapman_code: chapman_code)
       result = @parish_object.save
@@ -412,13 +411,18 @@ class ExtractFreecen2PieceInformation
         if place.present?
           place_id = place.id
         else
-          @missing_place_names << "#{myname} a #{type} in | #{district.chapman_code}| district #{district.name} "
+          if district.freecen2_place_id.present?
+            place_id = district.freecen2_place_id
+          else
+            @missing_place_names << "#{myname} a #{type} in | #{district.chapman_code}| district #{district.name} "
+          end
         end
       end
       place_id
     end
-    def locate_civil_place(chapman_code, name, piece_name, type, district_name)
-      myname = name.present? ? name.titleize : ''
+    def locate_civil_place(chapman_code, name, piece, type)
+      district_name = piece.freecen2_district.name
+      myname = piece.name.present? ? piece.name.titleize : ''
       place = Freecen2Place.find_by(chapman_code: chapman_code, place_name: myname)
       if place.present?
         place_id = place.id
@@ -427,7 +431,11 @@ class ExtractFreecen2PieceInformation
         if place.present?
           place_id = place.id
         else
-          @missing_place_names << "#{myname} a #{type} in | #{chapman_code}| district #{district_name} | subdistrict (piece) #{piece_name} "
+          if piece.freecen2_place_id.present?
+            place_id = piece.freecen2_place_id
+          else
+            @missing_place_names << "#{myname} a #{type} in | #{chapman_code}| district #{district_name} | subdistrict (piece) #{piece.name} "
+          end
         end
       end
       place_id
