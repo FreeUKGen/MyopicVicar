@@ -931,17 +931,19 @@ class CsvRecord < CsvRecords
   def extract_location_fields
     extract_enumeration_district
     extract_civil_parish
-    extract_ecclesiastical_parish
-    extract_where_census_taken
-    extract_ward
-    extract_parliamentary_constituency
-    extract_poor_law_union
-    extract_police_district
-    extract_sanitary_district
-    extract_special_water_district
-    extract_scavenging_district
-    extract_special_lighting_district
-    extract_school_board
+    extract_ecclesiastical_parish unless @csvfile.traditional == 0
+    if @csvfile.traditional == 2
+      extract_where_census_taken
+      extract_ward
+      extract_parliamentary_constituency
+      extract_poor_law_union
+      extract_police_district
+      extract_sanitary_district
+      extract_special_water_district
+      extract_scavenging_district
+      extract_special_lighting_district
+      extract_school_board
+    end
     extract_location_flag
   end
 
@@ -965,10 +967,8 @@ class CsvRecord < CsvRecords
   end
 
   def extract_where_census_taken
-    unless @csvfile.traditional == 1 || @csvfile.traditional == 0
-      message, @csvfile.where_census_taken = FreecenCsvEntry.validate_where_census_taken(@data_record, @csvfile.where_census_taken)
-      @project.write_messages_to_all(message, true) unless message == ''
-    end
+    message, @csvfile.where_census_taken = FreecenCsvEntry.validate_where_census_taken(@data_record, @csvfile.where_census_taken)
+    @project.write_messages_to_all(message, true) unless message == ''
   end
 
   def extract_ward
@@ -979,10 +979,8 @@ class CsvRecord < CsvRecords
   end
 
   def extract_parliamentary_constituency
-    unless @csvfile.traditional == 1 || @csvfile.traditional == 0
-      message, @csvfile.parliamentary_constituency = FreecenCsvEntry.validate_parliamentary_constituency(@data_record, @csvfile.parliamentary_constituency)
-      @project.write_messages_to_all(message, true) unless message == ''
-    end
+    message, @csvfile.parliamentary_constituency = FreecenCsvEntry.validate_parliamentary_constituency(@data_record, @csvfile.parliamentary_constituency)
+    @project.write_messages_to_all(message, true) unless message == ''
   end
 
   def extract_poor_law_union
