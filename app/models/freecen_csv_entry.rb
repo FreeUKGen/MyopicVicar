@@ -2232,10 +2232,10 @@ class FreecenCsvEntry
   def self.part2_individual_display_labels(year, chapman_code)
     case year
     when '1851'
-      ['Nationality', 'Birth County',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Notes']
+      ['Nationality', 'Birth County', 'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Notes']
     when '1861'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Birth County Entered',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place',  'Disability', 'Notes']
+        ['Birth County Entered', 'Birth Place', 'Preferred Birth County', 'Preferred Birth Place',  'Disability', 'Notes']
       else
         ['Nationality', 'Birth County',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Notes']
       end

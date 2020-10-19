@@ -14,7 +14,7 @@ class AddBirthPlaceToSearchRecord
     SearchRecord.where(:freecen_csv_entry_id.exists => true).each do |record|
       entry_id = record.freecen_csv_entry_id
       entry = FreecenCsvEntry.id(entry_id).first unless entry_id.nil?
-      next unless entry.present?
+      next if entry.blank?
 
       records = records + 1
       break if records == limit.to_i
@@ -25,15 +25,13 @@ class AddBirthPlaceToSearchRecord
         p average
         message_file.puts "#{records},  #{average}"
       end
-
       if entry.birth_place.present?
         birth_place = entry.birth_place
       elsif entry.verbatim_birth_place.present?
-        birth_place = entry.verbatim_birth_county
+        birth_place = entry.verbatim_birth_place
       end
       record.update_attributes(birth_place: birth_place) if birth_place.present?
-
-
+      record.reload
     end
     p records
 
