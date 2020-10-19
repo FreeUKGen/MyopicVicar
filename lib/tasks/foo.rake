@@ -6,6 +6,13 @@ namespace :foo do
   #number of files of 0 is all, force creation is true or false, order files processed is 1 or -1
 
   # eg foo:check_search_records[100000]
+  task :add_birth_place_to_search_record_individual, [:num, :fix] => [:environment] do |t, args|
+    require 'add_birth_place_to_search_record_individual'
+    limit = args.num.to_i
+    puts "Checking the existence of birth_place in search record  "
+    AddBirthPlaceToSearchRecordIndividual.process(limit, args.fix.to_s)
+    puts "Completed Checking #{limit} Search records"
+  end
 
   task :add_birth_place_to_search_record, [:num, :fix] => [:environment] do |t, args|
     require 'add_birth_place_to_search_record'

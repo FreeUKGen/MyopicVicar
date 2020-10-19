@@ -235,6 +235,8 @@ module Freecen
     'place of birth' => 'verbatim_birth_place',
     'xb' => 'birth_place_flag',
     'dis.' => 'disability',
+    'alt. chp' => 'birth_county',
+    'alt. pob' => 'birth_place',
     'w' => 'language',
     'language' => 'language',
     'notes' => 'notes',
