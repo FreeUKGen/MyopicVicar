@@ -155,6 +155,7 @@ class FreecenCsvEntriesController < ApplicationController
     @counties = ChapmanCode.freecen_birth_codes
     @counties.sort!
     get_user_info_from_userid
+    session.delete(:propagate_alternate)
   end
 
   def index
@@ -168,6 +169,7 @@ class FreecenCsvEntriesController < ApplicationController
 
     @type = session[:cen_index_type] if @type.blank? && session[:cen_index_type].present?
     session[:cen_index_type] = params[:type]
+    session.delete(:propagate_alternate)
     if @type.blank?
       @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).all.order_by(record_number: 1)
     elsif @type == 'Civ'
@@ -212,6 +214,24 @@ class FreecenCsvEntriesController < ApplicationController
     @languages = FreecenValidations::VALID_LANGUAGE
   end
 
+  def propagate_alternate
+    @freecen_csv_entry = FreecenCsvEntry.find(params[:id]) if params[:id].present?
+    unless FreecenCsvEntry.valid_freecen_csv_entry?(@freecen_csv_entry)
+      message = 'The entry was not correctly linked. Have your coordinator contact the web master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
+
+    success, message = @freecen_csv_entry.propagate_alternate
+    if success
+      flash[:notice] = 'The propagation of the alternate fields was was successful, the file is now locked against replacement until it has been downloaded.'
+    else
+      flash[:notice] = "The propagation of the alternate fields failed because #{message}."
+    end
+    session.delete(:propagate_alternate)
+    redirect_to freecen_csv_entry_path(@freecen_csv_entry)
+
+  end
+
   def show
     @freecen_csv_entry = FreecenCsvEntry.find(params[:id]) if params[:id].present?
 
@@ -247,6 +267,7 @@ class FreecenCsvEntriesController < ApplicationController
       redirect_back(fallback_location: edit_freecen_csv_entry_path(@freecen_csv_entry), notice: "The update of the entry failed #{@freecen_csv_entry.errors.full_messages}.") && return
     else
       @freecen_csv_entry.update_attributes(params[:freecen_csv_entry])
+      session[:propagate_alternate] = @freecen_csv_entry.id if @freecen_csv_entry.previous_changes.key?('birth_county') || @freecen_csv_entry.previous_changes.key?('birth_place')
       #SearchRecord.update_create_search_record(@freecen_csv_entry, search_version, place)
       @freecen_csv_file.update_attributes(locked_by_transcriber: true)
       flash[:notice] = 'The change in entry contents was successful, the file is now locked against replacement until it has been downloaded.'

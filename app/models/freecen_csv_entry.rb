@@ -1781,6 +1781,13 @@ class FreecenCsvEntry
     [prev_id, next_id]
   end
 
+  def propagate_alternate
+    FreecenCsvEntry.where(freecen_csv_file_id: freecen_csv_file_id, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place).no_timeout.each do |entry|
+      warning_message = entry.warning_messages + "Warning: Alternate fields have been adjusted and need review"
+      entry.update_attributes( birth_county: birth_county, birth_place: birth_place, warning_messages: warning_message) unless entry.id == _id
+    end
+  end
+
   # labels/vals for dwelling page header section (body in freecen_individuals)
   def self.census_display_labels(year, chapman_code)
     # 1841 doesn't have ecclesiastical parish or schedule number

@@ -43,6 +43,14 @@ module FreecenCsvEntriesHelper
     end
   end
 
+  def propagate_alternate
+    if session[:propagate_alternate] == @freecen_csv_entry.id
+      link_to 'Propagate Alternate Fields', propagate_alternate_freecen_csv_entry_path(@freecen_csv_entry), method: :get, class: "btn btn--small",
+        title: 'Propagates the alternate fields to entries with the same verbatim fields as this entry',
+        data: { confirm: 'Are you sure you want to propagate this entry' }
+    end
+  end
+
   def reject_entry
     if @file_validation && @freecen_csv_entry.record_valid.downcase == 'true'
       link_to 'Force Review', revalidate_freecen_csv_entry_path(@freecen_csv_entry), method: :get, class: "btn btn--small",
