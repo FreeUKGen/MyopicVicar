@@ -16,6 +16,8 @@ class CsvfilesController < ApplicationController
     redirect_back(fallback_location: new_csvfile_path, notice: 'There was no userid') && return if @csvfile.userid.blank?
 
     @csvfile.file_name = @csvfile.csvfile.identifier
+    redirect_back(fallback_location: new_csvfile_path, notice: 'The file had an incorrect extension') && return if @csvfile.csvfile.identifier.blank?
+
     @csvfile.file_name = @csvfile.downcase_extension
     redirect_back(fallback_location: new_csvfile_path, notice: 'A CSV file with that name does not exist on your computer (You likely tried to upload a file with a different extension') && return if @csvfile.file_name.blank?
 
