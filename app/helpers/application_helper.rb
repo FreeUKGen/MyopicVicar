@@ -78,11 +78,11 @@ module ApplicationHelper
 
     case appname.downcase
     when 'freereg'
-      link_to('Transcriptions', main_app.new_freereg_content_path)
+      link_to('Records', main_app.new_freereg_content_path)
     when 'freecen'
-      link_to('Transcriptions', main_app.freecen_coverage_path, id: 'db_coverage_nav')
+      link_to('Records', main_app.freecen_coverage_path, id: 'db_coverage_nav')
     when 'freebmd'
-      link_to('Transcriptions', 'https://www.freebmd.org.uk/progress.shtml', target: :_blank)
+      link_to('Records', 'https://www.freebmd.org.uk/progress.shtml', target: :_blank)
     end
   end
 
