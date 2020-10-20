@@ -2613,7 +2613,7 @@ class FreecenCsvEntry
     if birth_place.present?
       record.birth_place = birth_place
     elsif verbatim_birth_place.present?
-      record.birth_place = verbatim_birth_county
+      record.birth_place = verbatim_birth_place
     end
 
     record.freecen_csv_entry_id = _id
