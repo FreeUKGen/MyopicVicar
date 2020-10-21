@@ -572,12 +572,12 @@ class SearchRecord
       location_array << " [#{register_type}]"
     elsif freecen_csv_entry_id.present?
       # freecen
-      entry = FreecenCsvEntry.find_by(_id:freecen_csv_entry_id)
-      place = entry.where_census_taken
-      location_array << "#{place}"
+      entry = FreecenCsvEntry.find_by(_id: freecen_csv_entry_id)
+      place = entry.where_census_taken.presence || entry.freecen_csv_file.freecen2_piece.district_name
+      location_array << place.to_s
     else
       place_name = place.place_name unless place.nil?
-      location_array << "#{place_name}"
+      location_array << place_name.to_s
     end
     location_array
   end
@@ -952,6 +952,7 @@ class SearchRecord
       end
     else
       # freecen-specific transformations
+      self.search_date = search_dates[0]
     end
   end
 
