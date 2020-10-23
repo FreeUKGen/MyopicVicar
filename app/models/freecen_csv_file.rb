@@ -351,20 +351,22 @@ class FreecenCsvFile
   def can_we_incorporate?
     # need to check is duplication
     result = incorporated ? false : true
-    return  [result, 'Already incorporated'] unless result
+    return [result, 'Already incorporated'] unless result
 
-    return [false, 'No enumeration districts for the file, please reprocess before incorporating'] if enumeration_districts.blank?
+    return [false, 'Cannot be incorporated as there are No enumeration districts for the file, please reprocess before attempting to incorporate'] if enumeration_districts.blank?
 
     piece = Freecen2Piece.find_by(_id: freecen2_piece_id)
-    return [false, 'No Freecen2 Piece'] if piece.blank?
+    return [false, 'Cannot be incorporated as the file does not belong to a Freecen2 Piece'] if piece.blank?
 
     place = piece.freecen2_place
 
-    return [false, 'No Freecen2 Place'] if place.blank?
+    return [false, 'Cannot be incorporated as the file does not belong to a Freecen2 Place'] if place.blank?
 
     result, message = includes_existing_enumeration_districts(piece)
 
-    return [false, "File contains enumeration districts #{message}"] if result
+    return [false, "Cannot be incorporated as the file contains enumeration districts #{message}"] if result
+
+    return [false, 'Cannot be incorporated as the file contains errors or warnings'] if includes_warnings_or_errors?
 
     [true, '']
   end
@@ -399,6 +401,11 @@ class FreecenCsvFile
       end
     end
     [@result, @message]
+  end
+
+  def includes_warnings_or_errors?
+    result = total_errors.zero? && total_warnings.zero? ? false : true
+    result
   end
 
   def change_owner_of_file(new_userid)
