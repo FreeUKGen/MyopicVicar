@@ -4,6 +4,26 @@ namespace :foo do
   # rake foo:update_search_records[number of files, record type,software version, force creation, order files are processed]
   #eg f2rake  foo:update_search_records[0,bu,"2016-05-27T19:23:31+00:00", true, 1]
   #number of files of 0 is all, force creation is true or false, order files processed is 1 or -1
+  task :download_place_as_csv_file, [:file, :chapman_code, :limit]  => [:environment] do |t, args|
+    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+    require 'download_place_as_csv_file'
+    DownloadPlaceAsCsvFile.process(args.file, args.limit, args.chapman_code)
+    puts "Task complete."
+  end
+
+  task :download_freecen2_place_as_csv_file, [:file, :chapman_code, :limit] => [:environment] do |t, args|
+    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+    require 'download_freecen2_place_as_csv_file'
+    DownloadFreecen2PlaceAsCsvFile.process(args.file, args.limit, args.chapman_code)
+    puts "Task complete."
+  end
+
+  task :update_freecen2_place_from_csv_file, [:file, :limit] => [:environment] do |t, args|
+    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+    require 'update_freecen2_place_from_csv_file'
+    UpdateFreecen2PlaceFromCsvFile.process(args.file, args.limit)
+    puts "Task complete."
+  end
 
   # eg foo:check_search_records[100000]
   task :add_birth_place_to_search_record_individual, [:num, :fix] => [:environment] do |t, args|
