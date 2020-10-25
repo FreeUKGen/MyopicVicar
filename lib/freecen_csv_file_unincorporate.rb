@@ -4,14 +4,28 @@ class FreecenCsvFileUnincorporate
     freecen_file = FreecenCsvFile.find_by(file_name: file.to_s, chapman_code: owner.to_s)
     county = County.chapman_code(owner.to_s).first
     message = "#{file} for #{owner} "
-    message += unincorporate_records(freecen_file)
-    UserMailer.unincorporation_report(county.county_coordinator, message, file, owner).deliver_now
+    success, messagea = unincorporate_records(freecen_file)
+    message += messagea
+    if success
+      UserMailer.unincorporation_report(county.county_coordinator, message, file, owner).deliver_now
+    else
+      UserMailer.unincorporation_report_failure(county.county_coordinator, message, file, owner).deliver_now
+    end
   end
 
   def self.unincorporate_records(freecen_file)
-    SearchRecord.collection.delete_many(freecen_csv_file_id: freecen_file.id)
-    freecen_file.update_attributes(incorporated: false, incorporated_date: nil)
-    message = 'Records removed'
-    message
+    begin
+      freecen_file.freecen_csv_entries.each do |entry|
+        entry.update_attributes(search_record_id: nil)
+      end
+      SearchRecord.collection.delete_many(freecen_csv_file_id: freecen_file.id)
+      freecen_file.update_attributes(incorporated: false, incorporated_date: nil)
+      success = true
+      message = 'success'
+    rescue Exception => msg
+      success = false
+      message = "#{msg}, #{msg.backtrace.inspect}"
+    end
+    [success, message]
   end
 end

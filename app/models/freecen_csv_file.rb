@@ -71,15 +71,6 @@ class FreecenCsvFile
   field :enumeration_districts, type: Hash
   field :incorporation_lock, type: Boolean, default: false
 
-  index({ file_name: 1, userid: 1, county: 1, place: 1, register_type: 1 })
-  index({ county: 1, place: 1, register_type: 1, record_type: 1 })
-  index({ file_name: 1, file_errors: 1 })
-  index({ error: 1, file_name: 1 })
-
-  index({ userid: 1, uploaded_date: 1 }, { name: 'userid_uploaded_date' })
-  index({ userid: 1, file_name: 1 }, { name: 'userid_file_name' })
-  index({ county: 1, file_errors: 1 }, { name: 'county_errors' })
-  # index({county: 1, datemin: 1}, {name: 'county_datemin'})
 
   before_save :add_lower_case_userid_to_file, :add_country_to_file
   #after_save :recalculate_last_amended, :update_number_of_files
@@ -94,9 +85,9 @@ class FreecenCsvFile
 
   # register belongs to church which belongs to place
 
-  has_many :batch_errors
-
   has_many :freecen_csv_entries, validate: false, order: :id.asc
+
+
   VALID_DAY = /\A\d{1,2}\z/
   VALID_MONTH = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP","SEPT", "OCT", "NOV", "DEC", "*","JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
   VALID_YEAR = /\A\d{4}\z/

@@ -18,6 +18,7 @@ class Freecen2CivilParish
 
   belongs_to :freecen2_piece, optional: true, index: true
   belongs_to :freecen2_place, optional: true, index: true
+  has_many :freecen_csv_entries
 
   embeds_many :freecen2_hamlets
   embeds_many :freecen2_townships

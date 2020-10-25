@@ -30,16 +30,17 @@ class SearchRecord
     WITNESS = 'w'
   end
 
-
   belongs_to :freereg1_csv_entry, index: true, optional: true
   belongs_to :freecen_csv_entry, index: true, optional: true
   belongs_to :freecen_csv_file, index: true, optional: true
   belongs_to :freecen_individual, index: true, optional: true
-  belongs_to :place, index: true
+  belongs_to :place, index: true, optional: true
+  belongs_to :freecen2_place, index: true, optional: true
+  belongs_to :freecen2_civil_parish, index: true, optional: true
+  belongs_to :freecen2_piece, index: true, optional: true
+  belongs_to :freecen2_district, index: true, optional: true
 
-
-
-  field :annotation_ids, type: Array #, :typecast => 'ObjectId'
+  field :annotation_ids, type: Array # , :typecast => 'ObjectId'
 
   #denormalized fields
   field :asset_id, type: String
@@ -86,7 +87,8 @@ class SearchRecord
     'fn_place_rt_sd_ssd' => ['search_names.first_name', 'place_id', 'record_type', 'search_date', 'secondary_search_date'],
     'fnsdx_place_rt_sd_ssd' => ['search_soundex.first_name', 'place_id', 'record_type', 'search_date', 'secondary_search_date'],
     'place_rt_sd_ssd' => ['place_id', 'record_type', 'search_date', 'secondary_search_date'],
-    'birth_chapman_code_names_date' => ['birth_chapman_code', 'search_names.last_name', 'search_names.first_name', 'search_date']
+    'birth_chapman_code_names_date' => ['birth_chapman_code', 'search_names.last_name', 'search_names.first_name', 'search_date'],
+    'birth_chapman_code_last_name_date' => ['birth_chapman_code', 'search_names.last_name', 'search_date']
   }
 
   SHARDED_INDEXES = {
@@ -573,7 +575,7 @@ class SearchRecord
     elsif freecen_csv_entry_id.present?
       # freecen
       entry = FreecenCsvEntry.find_by(_id: freecen_csv_entry_id)
-      place = entry.where_census_taken.presence || entry.freecen_csv_file.freecen2_piece.district_name
+      place = entry.freecen2_civil_parish.freecen2_place.place_name
       location_array << place.to_s
     else
       place_name = place.place_name unless place.nil?
@@ -598,8 +600,8 @@ class SearchRecord
     particles << ChapmanCode.name_from_code(chapman_code)
     # then location
     if freecen_csv_file_id.present?
-      place = Freecen2Place.find_by(_id: place_id)
-      particles << place.place_name if place.place_name
+      place = Freecen2Place.find_by(_id: freecen2_place_id)
+      particles << place.place_name if place.present?
     else
       particles << self.place.place_name if self.place.place_name
     end

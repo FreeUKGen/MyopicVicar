@@ -225,12 +225,22 @@ module ApplicationHelper
     if search_query_places_size > 0
       first_place = search_query[:place_ids][0]
       first_place = Place.find(first_place) if appname.downcase == 'freereg'
-      first_place = Freecen2Place.find(first_place) if appname.downcase == 'freecen'
+      if appname.downcase == 'freecen'
+        first_place = Place.find(search_query[:place_ids][0])
+        if first_place.blank?
+          first_place = Freecen2Place.find(search_query[:place_ids][0])
+        end
+      end
       place = first_place.place_name
       if search_query.all_radius_place_ids.length > 1
         last_place = search_query.all_radius_place_ids[-2]
         last_place = Place.find(last_place) if appname.downcase == 'freereg'
-        last_place = Freecen2Place.find(last_place) if appname.downcase == 'freecen'
+        if appname.downcase == 'freecen'
+          last_place = Place.find(last_place)
+          if last_place.blank?
+            last_place = Freecen2Place.find(search_query.all_radius_place_ids[-2])
+          end
+        end
         additional = search_query.all_radius_place_ids.length - 1
         place <<
         " (including #{additional} additional places within

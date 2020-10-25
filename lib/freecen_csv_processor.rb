@@ -649,8 +649,7 @@ class CsvFile < CsvFiles
       record = record.delete_if {|key, value| key == :piece }
       record = record.delete_if {|key, value| key == :field_specification }
       record = adjust_case(record)
-      #freecen_csv_entry = FreecenCsvEntry.new(record)
-      #freecen_csv_entry.freecen_csv_file_id = file.id
+      record[:freecen2_civil_parish_id] = locate_civil_parish(record, file)
       enumeration_districts[record[:civil_parish]] = [] if enumeration_districts[record[:civil_parish]].blank?
       enumeration_districts[record[:civil_parish]] << record[:enumeration_district] unless enumeration_districts[record[:civil_parish]].include?(record[:enumeration_district])
       record[:freecen_csv_file_id] = file.id
@@ -660,6 +659,15 @@ class CsvFile < CsvFiles
     file.update_attributes(total_records: records.length, enumeration_districts: enumeration_districts) if records.present?
     true
   end
+end
+
+def locate_civil_parish(record, file)
+  piece = file.freecen2_piece
+  piece.freecen2_civil_parishes.each do |civil_parish|
+    @civil_parish = civil_parish if civil_parish.name == FreecenCsvEntry.mytitlieze(record[:civil_parish])
+  end
+  id = @civil_parish.id if @civil_parish.present?
+  id
 end
 
 def adjust_case(record)

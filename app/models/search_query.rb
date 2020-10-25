@@ -638,15 +638,24 @@ class SearchQuery
   end
 
   def place_search_params
-    params = Hash.new
+    params = {}
     if place_search?
+      appname = MyopicVicar::Application.config.freexxx_display_name.downcase
       search_place_ids = radius_place_ids
-
-      params[:place_id] = { '$in' => search_place_ids }
+      case appname
+      when 'freecen'
+        params = { '$or' => [{ place_id: { '$in' => search_place_ids } }, { freecen2_place_id: { '$in' => search_place_ids } }] }
+      when 'freereg'
+        params[:place_id] = { '$in' => search_place_ids }
+      end
     else
-      chapman_codes && chapman_codes.size > 0 ? params[:chapman_code] = { '$in' => chapman_codes } : params[:chapman_code] = { '$in' => ChapmanCode.values }
-      # params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes && chapman_codes.size > 0
-      params[:birth_chapman_code] = { '$in' => birth_chapman_codes } if birth_chapman_codes && birth_chapman_codes.size > 0
+      case appname
+      when 'freecen'
+        params[:chapman_code] = chapman_codes.present? ? { '$in' => chapman_codes } : { '$in' => ChapmanCode.values }
+        params[:birth_chapman_code] = { '$in' => birth_chapman_codes } if birth_chapman_codes.present?
+      when 'freereg'
+        params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes.present?
+      end
     end
     params
   end
@@ -663,7 +672,6 @@ class SearchQuery
     record = record_ids_sorted[idx-1]
     record
   end
-
 
   def next_record(current)
     records_sorted = self.results

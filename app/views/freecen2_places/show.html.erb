@@ -70,6 +70,14 @@
             <td>Source:</td>
             <td class="weight--semibold"> <%= @place.source %></td>
           </tr>
+          <tr>
+            <td>Data present for this place:</td>
+            <td class="weight--semibold"> <%= @place.data_present %></td>
+          </tr>
+          <tr>
+            <td>Census years present for this place:</td>
+            <td class="weight--semibold"> <%= @place.cen_data_years %></td>
+          </tr>
           <% if  @place.reason_for_change.present? ||  @place.original_place_name.present? || @place.original_grid_reference.present? %>
             <tr>
               <td>Original place name:</td>
