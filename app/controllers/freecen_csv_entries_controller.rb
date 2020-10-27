@@ -260,7 +260,7 @@ class FreecenCsvEntriesController < ApplicationController
 
     old_search_record = @freecen_csv_entry.search_record
     @freecen_csv_file = @freecen_csv_entry.freecen_csv_file
-    params[:freecen_csv_entry][:verbatim_birth_place] = params[:freecen_csv_entry][:verbatim_birth_place].strip
+    params[:freecen_csv_entry][:verbatim_birth_place] = FreecenCsvEntry.mystrip(params[:freecen_csv_entry][:verbatim_birth_place])
     @freecen_csv_entry.validate_on_line_edit_of_fields(params[:freecen_csv_entry])
 
     if @freecen_csv_entry.errors.any?

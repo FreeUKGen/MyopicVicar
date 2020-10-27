@@ -168,6 +168,10 @@ class FreecenCsvEntry
       value.strip.upcase if value.present?
     end
 
+    def mystrip(value)
+      value.strip if value.present?
+    end
+
     def mytitlieze(value)
       value = value.present? && !value.chars.include?('-') ? value.strip.titleize : value
       value
@@ -2394,7 +2398,7 @@ class FreecenCsvEntry
   def validate_on_line_edit_of_fields(fields)
     success, message = FreecenValidations.text?(fields[:surname])
     if success && fields[:surname].present? && fields[:surname].strip == '-'
-      errors.add(:surname, "has single - Hyphen in Surnaame")
+      errors.add(:surname, "has single - Hyphen in Surname")
     elsif !success
       errors.add(:surname, "Invalid; #{message}")
     end
