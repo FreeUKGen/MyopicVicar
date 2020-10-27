@@ -5,12 +5,6 @@ GIT
     osgb (0.3.1)
 
 GIT
-  remote: https://github.com/codahale/bcrypt-ruby
-  revision: 7644e3684d96fb49f5aa20cb5f547cb1b56b3f38
-  specs:
-    bcrypt (3.1.12)
-
-GIT
   remote: https://github.com/refinery/refinerycms-i18n
   revision: 30059ea9a33948995faf042757b43d9e93a9528a
   ref: 30059ea
@@ -81,6 +75,7 @@ GEM
     awesome_nested_set (3.1.4)
       activerecord (>= 4.0.0, < 5.3)
     babosa (1.0.2)
+    bcrypt (3.1.16)
     bourbon (5.1.0)
       sass (~> 3.4)
       thor (~> 0.19)
@@ -217,7 +212,7 @@ GEM
       mongoid (>= 3.0, < 8.0)
     multi_json (1.13.1)
     multipart-post (2.0.0)
-    mysql2 (0.5.2-x64-mingw32)
+    mysql2 (0.5.3-x64-mingw32)
     newrelic_rpm (6.2.0.354)
     nio4r (2.3.1)
     nokogiri (1.10.7-x64-mingw32)
@@ -416,7 +411,7 @@ PLATFORMS
 
 DEPENDENCIES
   airbrake
-  bcrypt!
+  bcrypt
   bourbon
   carrierwave-mongoid
   coffee-rails
