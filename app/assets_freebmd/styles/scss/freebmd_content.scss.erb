@@ -784,6 +784,7 @@ transform: matrix(-1, 0, 0, 1, 0, 0);
 
 .dropbtn {
 
+
 }
 
 .dropbtn:hover, .dropbtn:focus {
@@ -799,18 +800,33 @@ transform: matrix(-1, 0, 0, 1, 0, 0);
 }
 
 .dropdown-content {
-  background-color: white;
-  z-index: 5;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  border-radius: 0px 0 6px 6px;
-  border-top: solid 5px white;
-  background-color: white;
-  min-width: 160px;
-  width: 100%;
-  overflow: auto;
   vertical-align: baseline;
   right: 0px;
-  padding: 12px 16px;
+  display: none;
+  position: absolute;
+  background-color: white;
+  min-width: 160px;
+  overflow: auto;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  border-radius: 0px 0 6px 6px;
+  border-top: solid 5px white;
+
+  /*background-color: white;
+-  z-index: 5;
++  min-width: 160px;
++  overflow: auto;
+   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
++  z-index: 1;
+   border-radius: 0px 0 6px 6px;
+   border-top: solid 5px white;
+-  background-color: white;
+-  min-width: 160px;
+-  width: 100%;
+-  overflow: auto;
+-  vertical-align: baseline;
+-  right: 0px;
+-  padding: 12px 16px;*/
 }
 
 .dropdown-content div a {
@@ -836,3 +852,38 @@ transform: matrix(-1, 0, 0, 1, 0, 0);
     color: white;
     text-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
 }
+
+.white_button {
+    border: 1px solid #C84182;
+    background-color: #fff;
+    color: #C84182;
+    outline: none;
+    font-weight: normal;
+    padding-left: 1.25em;
+    line-height: 2.2;
+    margin-bottom: 0.5em;
+    -webkit-box-shadow: 0 0.222222em 0 #642141;
+    -moz-box-shadow: 0 0.222222em 0 #642141;
+    -ms-box-shadow: 0 0.222222em 0 #642141;
+    -o-box-shadow: 0 0.222222em 0 #642141;
+    box-shadow: 0 0.222222em 0 #642141;
+    -webkit-transition: all 0.15s ease-in-out;
+    -moz-transition: all 0.15s ease-in-out;
+    -ms-transition: all 0.15s ease-in-out;
+    -o-transition: all 0.15s ease-in-out;
+    transition: all 0.15s ease-in-out;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    -o-border-radius: 4px;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.white_button:hover, .white_button:focus {
+    background-color: #c84182;
+    color: white;
+    outline: none;
+    cursor: pointer;
+}
+

@@ -6,7 +6,7 @@
 <h1 class="semi-kilo project-font-color container ">Results</h1>
 <div class="grid__item one-whole lap-one-whole palm-one-whole push-half--bottom hard--left">
   <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn   btn--small " %>
-  <%= link_to "New Search", new_search_query_path, :class => "btn   btn--small  " %>
+  <%= link_to "New Search", new_search_query_path, :class => "btn   btn--small white_button" %>
   <%= link_to "View Search Criteria", '#', class: "btn   btn--small" , id: "view_search_criteria"%>
 </div>
 <h4 class="accessibility">Search Criteria</h1>
@@ -29,7 +29,7 @@
             <strong><%= pluralize(@search_results.count, 'Results')%></strong>
           </div>
           <div class="grid__item one-sixth lap-one-third palm-one-half float--right">
-            <div id="tool_button" class="tools bordered dropbtn"><i class="fa fa-cog" aria-hidden="true"></i> Tools</div>
+            <div id="tool_button" class="dropbtn "><i class="fa fa-cog" aria-hidden="true"></i> Tools</div>
           </div>
         <!--div class="grid">
           <div class="grid__item one-quarter lap-one-third palm-one-half float--right bordered">

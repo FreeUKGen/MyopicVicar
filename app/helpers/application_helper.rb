@@ -582,7 +582,7 @@ module ApplicationHelper
       facebook: 'https://www.facebook.com/freeukgen',
       news: 'https://www.freeukgenealogy.org.uk/news/',
       twitter: 'https://www.twitter.com/freeukgen',
-      github: 'https://github.com/FreeUKGen/MyopicVicar/',
+      github: 'https://github.com/FreeUKGen/FreeBMD2',
       pinterest: 'https://www.pinterest.co.uk/FreeUKGenealogy/',
       instagram: 'https://www.instagram.com/freeukgenealogy/'
     }
