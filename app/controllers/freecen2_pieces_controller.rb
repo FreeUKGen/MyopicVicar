@@ -107,8 +107,8 @@ class Freecen2PiecesController < ApplicationController
     get_user_info_from_userid
     @freecen2_piece = Freecen2Piece.new
     @options = {}
-    Freecen2Piece.chapman_code(@chapman_code).order_by(name: 1, year: 1).each do |piece|
-      @options["#{piece.name} (#{piece.year})"] = piece._id
+    Freecen2Piece.chapman_code(@chapman_code).order_by(number: 1, year: 1).each do |piece|
+      @options["#{piece.number} (#{piece.year}) (#{piece.name})"] = piece._id
     end
     @location = 'location.href= "/freecen2_pieces/" + this.value'
     @prompt = 'Select Sub district (Piece)'

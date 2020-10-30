@@ -22,6 +22,20 @@ class FreecenCsvFileUnincorporate
       freecen_file.update_attributes(incorporated: false, incorporated_date: nil)
       success = true
       message = 'success'
+      piece = freecen_file.freecen2_piece
+      freecen_file.reload
+      piece.reload
+      action = piece.do_we_update_place?
+      p action
+      if action
+        place = piece.freecen2_place
+        p place.cen_data_years
+        place.cen_data_years.delete_if { |year| year == piece.year }
+        place.data_present = false
+        success = place.save
+        PlaceCache.refresh(freecen_file.chapman_code) if success
+        message = 'Failed to update place' unless success
+      end
     rescue Exception => msg
       success = false
       message = "#{msg}, #{msg.backtrace.inspect}"
