@@ -311,7 +311,7 @@ class SearchRecordsController < ApplicationController
     @response, @next_record, @previous_record = @search_query.next_and_previous_records(params[:id]) unless @search_query.is_a?(String)
     @cen_chapman_code = @chapman_code
     @cen_year = @year
-    @cen_prev_dwelling = @dwel.zero? ? nil : @dwel - 1
+    @cen_prev_dwelling = @dwel == 1 ? nil : @dwel - 1
     @cen_next_dwelling = @freecen_csv_file.next_dwelling(@dwel)
     add_evidence_explained_values_csv
     add_address_for_citation_csv
