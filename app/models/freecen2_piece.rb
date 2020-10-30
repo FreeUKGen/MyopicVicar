@@ -217,6 +217,11 @@ class Freecen2Piece
     @civil_parish_names
   end
 
+  def display_for_csv_show
+    [year, chapman_code, district_name, number]
+  end
+
+
   def piece_names
     pieces = Freecen2Piece.chapman_code(chapman_code).all.order_by(name: 1)
     @pieces = []

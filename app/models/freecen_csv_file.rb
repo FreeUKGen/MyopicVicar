@@ -377,6 +377,10 @@ class FreecenCsvFile
     [result, message]
   end
 
+  def display_for_csv_show
+    [_id, file_name, userid]
+  end
+
   def includes_existing_enumeration_districts(piece)
     @result = false
     @message = ''
@@ -602,6 +606,12 @@ class FreecenCsvFile
       logger.info "FREECEN:updated record count #{records.to_i} "
     end
     [true, '']
+  end
+
+  def next_dwelling(dwel)
+    last_dwelling = FreecenCsvEntry.where(freecen_csv_file_id: id).order_by(dwelling_number: 1).last
+    dwelling = dwel + 1 unless dwel == last_dwelling.dwelling_number
+    dwelling
   end
 
   def physical_userid_location(userid)

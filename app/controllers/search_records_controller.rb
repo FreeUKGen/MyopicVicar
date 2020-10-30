@@ -288,35 +288,31 @@ class SearchRecordsController < ApplicationController
   def show_freecen_csv
     @freecen_csv_entry = @search_record.freecen_csv_entry.blank? ? session[:freecen_csv_entry_id] : @search_record.freecen_csv_entry
 
+    session[:freecen_csv_entry_id] = @freecen_csv_entry._id
+    @freecen_csv_file = @freecen_csv_entry.blank? ? FreecenCsvFile.find(session[:freecen_csv_file_id]) : @freecen_csv_entry.freecen_csv_file
+    @freecen_csv_file_id, @freecen_csv_file_name, @file_owner = @freecen_csv_file.display_for_csv_show
+    @piece = @freecen_csv_file.freecen2_piece
+    @year, @chapman_code, @place_name, @cen_piece = @piece.display_for_csv_show
+    @csv = true
     if params[:dwel].present?
       @dwel = params[:dwel].to_i
       @dwelling_offset = @dwel - session[:dwel]
+      @individuals = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id, dwelling_number: @dwel).order_by(sequence_in_household: 1)
+      @freecen_csv_entry = @individuals.first
     else
       @dwelling_offset = 0
       @dwel = @freecen_csv_entry.dwelling_number
+      @individuals = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id, dwelling_number: @dwel).order_by(sequence_in_household: 1)
       session[:dwel] = @dwel
     end
-
-    session[:freecen_csv_entry_id] = @freecen_csv_entry._id
-    @freecen_csv_file = @freecen_csv_entry.blank? ? FreecenCsvFile.find(session[:freecen_csv_file_id]) : @freecen_csv_entry.freecen_csv_file
-    @freecen_csv_file_id = @freecen_csv_file.id
-    @freecen_csv_file_name = @freecen_csv_file.file_name
-    @file_owner = @freecen_csv_file.userid
-    @piece = @freecen_csv_file.freecen2_piece
-    @year = @piece.year
-    @chapman_code = @piece.chapman_code
-    @place_name = @piece.district_name
-    @cen_piece = @piece.number
-    @csv = true
-    @individuals = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id, dwelling_number: @dwel).order_by(sequence_in_household: 1)
     add_uninhabited
     @type = session[:cen_index_type]
     @freecen_csv_entry.add_address(@freecen_csv_file_id, @dwel)
     @response, @next_record, @previous_record = @search_query.next_and_previous_records(params[:id]) unless @search_query.is_a?(String)
     @cen_chapman_code = @chapman_code
     @cen_year = @year
-    @cen_prev_dwelling = @dwel - 1
-    @cen_next_dwelling = @dwel + 1
+    @cen_prev_dwelling = @dwel.zero? ? nil : @dwel - 1
+    @cen_next_dwelling = @freecen_csv_file.next_dwelling(@dwel)
     add_evidence_explained_values_csv
     add_address_for_citation_csv
     add_series_code

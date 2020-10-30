@@ -1720,6 +1720,7 @@ class FreecenCsvEntry
     if first_individual.present?
       self.folio_number = first_individual.folio_number
       self.page_number = first_individual.page_number
+      self.dwelling_number = first_individual.dwelling_number
       self.schedule_number = first_individual.schedule_number
       self.house_number = first_individual.house_number
       self.house_or_street_name = first_individual.house_or_street_name
