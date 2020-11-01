@@ -31,12 +31,14 @@ module FreecenCsvEntriesHelper
   end
 
   def edit_entry
-    link_to 'Edit entry', edit_freecen_csv_entry_path(@freecen_csv_entry), method: :get, class: "btn btn--small",
-      title: 'Edit the individual aspects of this entry', data: { confirm: 'Are you sure you want to edit this entry' }
+    unless @freecen_csv_file.incorporated
+      link_to 'Edit entry', edit_freecen_csv_entry_path(@freecen_csv_entry), method: :get, class: "btn btn--small",
+        title: 'Edit the individual aspects of this entry', data: { confirm: 'Are you sure you want to edit this entry' }
+    end
   end
 
   def accept_entry
-    if @file_validation && @freecen_csv_entry.record_valid.downcase == 'false'
+    if @file_validation && @freecen_csv_entry.record_valid.downcase == 'false' && !@freecen_csv_file.incorporated
       link_to 'Accept entry', accept_freecen_csv_entry_path(@freecen_csv_entry), method: :get, class: "btn btn--small",
         title: 'Accept the entry as correct; warnings will be removed and not recreated when reloaded',
         data: { confirm: 'Are you sure you want to accept this entry' }
@@ -44,7 +46,7 @@ module FreecenCsvEntriesHelper
   end
 
   def propagate_alternate
-    if session[:propagate_alternate] == @freecen_csv_entry.id
+    if session[:propagate_alternate] == @freecen_csv_entry.id && !@freecen_csv_file.incorporated
       link_to 'Propagate Alternate Fields', propagate_alternate_freecen_csv_entry_path(@freecen_csv_entry), method: :get, class: "btn btn--small",
         title: 'Propagates the alternate fields to entries with the same verbatim fields as this entry',
         data: { confirm: 'Are you sure you want to propagate this entry' }
@@ -52,7 +54,7 @@ module FreecenCsvEntriesHelper
   end
 
   def reject_entry
-    if @file_validation && @freecen_csv_entry.record_valid.downcase == 'true'
+    if @file_validation && @freecen_csv_entry.record_valid.downcase == 'true' && !@freecen_csv_file.incorporated
       link_to 'Force Review', revalidate_freecen_csv_entry_path(@freecen_csv_entry), method: :get, class: "btn btn--small",
         title: 'Force review of this entry even though accepted or true', data: { confirm: 'Are you sure you want to force a reprocessing of this entry' }
     end
