@@ -1,5 +1,4 @@
 class FreecenCsvFileUnincorporate
-
   def self.unincorporate(file, owner)
     freecen_file = FreecenCsvFile.find_by(file_name: file.to_s, chapman_code: owner.to_s)
     county = County.chapman_code(owner.to_s).first
@@ -25,17 +24,13 @@ class FreecenCsvFileUnincorporate
       piece = freecen_file.freecen2_piece
       freecen_file.reload
       piece.reload
-      action = piece.do_we_update_place?
-      p action
-      if action
-        place = piece.freecen2_place
-        p place.cen_data_years
-        place.cen_data_years.delete_if { |year| year == piece.year }
-        place.data_present = false
-        success = place.save
-        PlaceCache.refresh(freecen_file.chapman_code) if success
-        message = 'Failed to update place' unless success
+      success, message = piece.update_place
+      piece.freecen2_civil_parishes.each do |civil_parish|
+        success, messagea = civil_parish.update_place(freecen_file)
+        message += messagea unless success
+        break unless success
       end
+      PlaceCache.refresh(freecen_file.chapman_code) if success
     rescue Exception => msg
       success = false
       message = "#{msg}, #{msg.backtrace.inspect}"

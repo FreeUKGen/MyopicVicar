@@ -2609,15 +2609,14 @@ class FreecenCsvEntry
   end
 
 
-  def translate_individual
+  def translate_individual(piece, district, chapman_code, place, file_id)
     # create the search record for the person
     transcript_name = { first_name: forenames, last_name: surname, type: 'primary' }
     transcript_date = translate_date
-    piece = freecen2_civil_parish.freecen2_piece
-    district = piece.freecen2_district
-    record = SearchRecord.new(transcript_dates: [transcript_date], transcript_names: [transcript_name], chapman_code: freecen_csv_file.chapman_code,
-                              record_type: year, freecen2_civil_parish_id: freecen2_civil_parish_id, freecen2_place_id: freecen2_civil_parish.freecen2_place.id,
-                              freecen2_piece_id: piece.id, freecen2_district_id: district.id)
+
+    record = SearchRecord.new(transcript_dates: [transcript_date], transcript_names: [transcript_name], chapman_code: chapman_code,
+                              record_type: year, freecen2_civil_parish_id: freecen2_civil_parish_id, freecen2_place_id: place.id,
+                              freecen2_piece_id: piece.id, freecen2_district_id: district.id, freecen_csv_entry_id: _id, freecen_csv_file_id: file_id)
     if birth_county.present?
       record.birth_chapman_code = birth_county
     elsif verbatim_birth_county.present?
@@ -2628,23 +2627,20 @@ class FreecenCsvEntry
     elsif verbatim_birth_place.present?
       record.birth_place = verbatim_birth_place
     end
-    record.freecen_csv_entry_id = _id
-    record.freecen_csv_file_id = freecen_csv_file.id
     record.transform
     record.add_digest
     record.save!
-    record.reload
     update_attributes(search_record_id: record.id)
 
-    unless record.freecen2_place.data_present
-      record.freecen2_place.data_present = true
+    unless place.data_present
+      place.data_present = true
       place_save_needed = true
     end
 
-    unless record.freecen2_place.cen_data_years.include?(year)
-      record.freecen2_place.cen_data_years << year
+    unless place.cen_data_years.include?(year)
+      place.cen_data_years << year
       place_save_needed = true
     end
-    record.freecen2_place.save! if place_save_needed
+    place.save! if place_save_needed
   end
 end

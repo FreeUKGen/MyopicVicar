@@ -221,6 +221,23 @@ class Freecen2Piece
     [year, chapman_code, district_name, number]
   end
 
+  def do_we_update_place?
+    files = freecen_csv_files.where(incorporated: true).count
+    result = files > 0 ? false : true
+    result
+  end
+
+  def update_place
+    message = 'success'
+    return [true, message] unless do_we_update_place?
+
+    place = freecen2_place
+    place.cen_data_years.delete_if { |value| value == year }
+    place.data_present = false
+    success = place.save
+    message = 'Failed to update place' unless success
+    [success, message]
+  end
 
   def piece_names
     pieces = Freecen2Piece.chapman_code(chapman_code).all.order_by(name: 1)

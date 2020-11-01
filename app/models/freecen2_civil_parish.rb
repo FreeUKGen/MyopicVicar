@@ -41,6 +41,10 @@ class Freecen2CivilParish
       where(year: year)
     end
 
+    def civil_name(name)
+      where(name: name)
+    end
+
     def missing_places(chapman_code)
       Freecen2CivilParish.where(chapman_code: chapman_code, freecen2_place_id: nil).all.order_by(name: 1, year: 1)
     end
@@ -100,6 +104,40 @@ class Freecen2CivilParish
   def update_tna_change_log(userid)
     tna = TnaChangeLog.create(userid: userid, year: year, chapman_code: chapman_code, parameters: previous_changes, tna_collection: "#{self.class}")
     tna.save
+  end
+
+
+  def do_we_update_place?(file)
+    p 'parish question'
+    p self
+    place = freecen2_place.reload
+
+    p place
+    files = []
+    FreecenCsvFile.where(chapman_code: chapman_code, year: year, incorporated: true).all.each do |my_file|
+      files << my_file if my_file.enumeration_districts.keys.include?(name)
+    end
+    p files
+    p files.count.zero?
+    result = files.count.zero? ? true : false
+    p result
+    result
+  end
+
+  def update_place(file)
+    message = 'success'
+    return [true, message] unless do_we_update_place?(file)
+
+    place = freecen2_place
+    p 'update place'
+    p self
+    p place.cen_data_years
+    p year
+    place.cen_data_years.delete_if { |value| value == year }
+    place.data_present = false
+    success = place.save
+    message = 'Failed to update place' unless success
+    [success, message]
   end
 
   def civil_parish_names

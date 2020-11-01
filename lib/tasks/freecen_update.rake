@@ -33,12 +33,11 @@ end
 task :freecen_csv_file_incorporate, [:freecen_csv_file, :chapman_code] => [:environment] do |t, args|
   require 'freecen_csv_file_incorporate'
   FreecenCsvFileIncorporate.incorporate(args[:freecen_csv_file], args[:chapman_code])
-  PlaceCache.refresh(args[:chapman_code])
-
+  p 'Incorporation complete'
 end
 
 task :freecen_csv_file_unincorporate, [:freecen_csv_file, :chapman_code] => [:environment] do |t, args|
   require 'freecen_csv_file_unincorporate'
   FreecenCsvFileUnincorporate.unincorporate(args[:freecen_csv_file], args[:chapman_code])
-  PlaceCache.refresh(args[:chapman_code])
+  p 'Record removal complete'
 end

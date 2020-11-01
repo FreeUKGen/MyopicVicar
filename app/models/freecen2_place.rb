@@ -18,7 +18,6 @@ class Freecen2Place
   field :place_name, type: String#, :required => true
   field :standard_place_name, type: String#, :required => true
   field :last_amended, type: String
-  field :alternate_place_name, type: String
   field :place_notes, type: String
   field :genuki_url, type: String
   field :location, type: Array
@@ -37,22 +36,14 @@ class Freecen2Place
   field :source, type: String
   field :reason_for_change, type: String
   field :other_reason_for_change, type: String
-  field :modified_place_name, type: String #This is used for comparison searching
   field :disabled, type: String, default: "false"
   field :master_place_lat, type: String
   field :master_place_lon, type: String
   field :error_flag, type: String, default: nil
   field :data_present, type: Boolean, default: false
   field :cen_data_years, type: Array, default: [] #Cen: fullyears with data here
-  field :alternate, type: String, default: ""
-  field :ucf_list, type: Hash, default: {}
-  field :records, type: String
-  field :datemin, type: String
-  field :datemax, type: String
-  field :daterange, type: Hash
   field :transcribers, type: Hash
   field :contributors, type: Hash
-  field :open_record_count, type: Integer, default: 0
   field :unique_surnames, type: Array
   field :unique_forenames, type: Array
 
@@ -68,7 +59,7 @@ class Freecen2Place
 
   before_save :add_location_if_not_present, :add_country, :add_standard_names
 
-  after_create :update_places_cache
+  after_save :update_places_cache
 
   index({ chapman_code: 1, standard_place_name: 1, disabled: 1 }, { name: "chapman_code_1_standard_place_name_1_disabled_1" })
   index({ chapman_code: 1, standard_place_name: 1, error_flag: 1, disabled: 1 }, { name: "chapman_code_1_standard_place_name_1_error_flag_1_disabled_1" })
