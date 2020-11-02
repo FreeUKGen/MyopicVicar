@@ -43,11 +43,17 @@ Back to Step a abd repeat for next server
 When complete update refinery
 
 Refinery transfer https://docs.google.com/document/d/1ozrJbHY074xYvwCB3j6NodDdPFPnWU4WySdnZCMeWUw/edit
+https://rundeck.freeukgen.org.uk/.
+
 
 alias f2rake='sudo -u webserv bundle exec rake RAILS_ENV=production'
 
 
 Reminder for me
+
+f2rake foo:refresh_ucf_lists[0,0] --trace
  mongoexport --ssl --sslAllowInvalidCertificates --host "mongo5.freeukgen.org.uk:27017" --db freecen_production_2017 --collection freecen_pieces --out pieces.json
  mongoimport --port 27017 --db freecen_20170426 --collection freecen_pieces --file d:/mongo5/pieces.json
-
+ ps wuax | grep ruby
+  db.freecen2_civil_parishes.find({year: "1871","freecen2_hamlets.name": { $exists: true}, chapman_code: "SOM"}).count()
+  db.freecen2_districts.find({year: "1891", chapman_code: { $ne: "LND"},"freecen2_place_id": null})

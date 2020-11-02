@@ -1,0 +1,60 @@
+<%= render 'freecen_csv_files/my_own_header' if session[:my_own]%>
+<%= render 'freecen_csv_files/coordinator_header' unless session[:my_own]%>
+<div style="text-align: center">Colour coding.<FONT color='black'> Verified with no warnings or errors;</FONT><FONT color='red'> Verified with Errors;</FONT><FONT color='brown'> Verified with warnings</FONT><FONT color='voilet'> Verified and locked;</FONT><FONT COLOR="green"> Processed</FONT><FONT color='blue'> Processed and locked.</FONT></div>
+<div class="grid__item ">
+  <section class="island ">
+    <div class="scrollable " >
+      <table class=' table--bordered my-width table--data table--striped just--left'>
+        <thead >
+          <tr>
+            <th class='sticky-header'>File</th>
+            <th class='sticky-header'>Chap</th>
+            <th class='sticky-header'>Year</th>
+            <th class='sticky-header'>Piece</th>
+            <th class='sticky-header'>District</th>
+            <th class='sticky-header'>Entries</th>
+            <th colspan = "3" class='sticky-header'>Messges<br>
+              E W I  <a href="#" class="left_tooltip" onclick="return false;"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %><span>E: Errors W: Warnings I: Info </span></a></th>
+            <% unless session[:my_own]%>
+              <th class='sticky-header'>User ID</th>
+            <% end%>
+            <th class='sticky-header' >Uploaded</th>
+            <th colspan = "2" class='sticky-header'>Locked<br>
+              TR SC</th>
+            <th colspan="7" class='sticky-header'>Action <a href="#" class="left_tooltip" onclick="return false;"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %><span>SH: Show file info; DL: Download batch; ER: Errors in batch; RL:Replace batch </span></a></th>
+          </tr>
+        </thead>
+        <!--/table-->
+        <!--table class=" table--bordered my-width table--data just--left"-->
+        <tbody >
+          <% @freecen_csv_files.each do |freecen_csv_file| %>
+            <tr id="<%= freecen_csv_file.id %>" style="<%=freecen_csv_file.define_colour%>">
+              <td><%= freecen_csv_file.file_name%></td>
+              <td><%= freecen_csv_file.chapman_code %></td>
+              <td><%= freecen_csv_file.year %></td>
+              <td><%= freecen2_piece_number(freecen_csv_file) %></td>
+              <td><%= freecen2_district_name(freecen_csv_file) %></td>
+              <td><%= freecen_csv_file.total_records %></td>
+              <td><%= freecen_csv_file.total_errors%></td>
+              <td><%= freecen_csv_file.total_warnings%></td>
+              <td><%= freecen_csv_file.total_info%></td>
+              <% unless session[:my_own]%>
+                <td><%= freecen_csv_file.userid %></td>
+              <% end %>
+              <td><%= uploaded_date(freecen_csv_file)%></td>
+              <td><%= locked_by_transcriber(freecen_csv_file)%></td>
+              <td><%= locked_by_coordinator(freecen_csv_file)%></td>
+              <td><%= link_to 'SH', freecen_csv_file, method: :get, title: 'Display information about the file and a number of reports on its contents' %></td>
+              <td><%= link_to 'DL', download_freecen_csv_file_path(freecen_csv_file), data: { confirm:  'Are you sure you want to download this file?'}, method: :get, title: 'Download a copy of the file to your computer. This download WILL INCLUDE and on line changes. Downloading will remove any locks. It will be be stored in your downloads folder'  %></td>
+              <td><%=  link_to 'ER', error_freecen_csv_file_path(freecen_csv_file), method: :get, title: 'Lists the entry numbers which have generated an error message. Any of the entries can be displayed on line' %></td>
+              <td><%= link_to 'RL', edit_csvfile_path(freecen_csv_file), method: :get, data: { confirm:  'Are you sure you want to replace these records?' }, title: 'Allows the complete replacement of the csv file and all of its entries. Will not be permitted if the file is locked' unless freecen_csv_file.incorporation_lock %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <br />
+      <br>
+    </div>
+  </section>
+</div>

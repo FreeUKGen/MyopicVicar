@@ -47,8 +47,8 @@ class PhysicalFilesController < ApplicationController
     load(params[:id])
     redirect_back(fallback_location: { action: 'select_action' }) && return if @batch.blank?
 
-    @batch.file_and_entries_delete
-
+    @batch.file_and_entries_delete if appname_downcase == 'freereg'
+    @batch.freecen_csv_file_and_entries_delete if appname_downcase == 'freecen'
     @batch.delete
     flash[:notice] = 'The destruction of the physical files and all its entries and search records was successful'
     redirect_back(fallback_location: { action: 'select_action' }) && return
@@ -169,18 +169,25 @@ class PhysicalFilesController < ApplicationController
 
     @batch.file_delete
     @batch.delete
-    flash[:notice] = 'The file and physical files entry was removed'
+    flash[:notice] = 'The physical files entry was removed'
     redirect_back(fallback_location: { action: 'select_action' }) && return
   end
 
   def reprocess
-    file = Freereg1CsvFile.find(params[:id])
+    @appname = appname_downcase
+    case @appname
+    when 'freereg'
+      file = Freereg1CsvFile.find(params[:id])
+    when 'freecen'
+      file = FreecenCsvFile.find(params[:id])
+    end
     redirect_back(fallback_location: { action: 'select_action' }, notice: 'No such file') && return if file.blank?
 
     redirect_back(fallback_location: { action: 'select_action' }, notice: 'File is currently awaiting processing and should not be edited') && return unless file.can_we_edit?
 
     #we write a new copy of the file from current on-line contents
     proceed, message = file.check_file
+
     redirect_back(fallback_location: { action: 'select_action' }, notice: "There is a problem with the file you are attempting to reprocess #{message}. Contact a system administrator if you are concerned.") && return unless proceed
 
     file.backup_file
@@ -188,6 +195,7 @@ class PhysicalFilesController < ApplicationController
     redirect_back(fallback_location: { action: 'select_action' }, notice: "There is a problem with the file you are attempting to reprocess #{message}. Contact a system administrator if you are concerned.") && return if @batch.blank?
 
     #add to processing queue and place in change
+    file.update_attributes(was_locked: true) if @appname == 'freecen' && file.locked_by_transcriber
     proceed, message = @batch.add_file('reprocessing')
     redirect_back(fallback_location: { action: 'select_action' }, notice: "There was a problem with the reprocessing: #{message} ") && return unless proceed
 

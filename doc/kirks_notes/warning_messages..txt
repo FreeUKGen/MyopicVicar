@@ -1,0 +1,30 @@
+        "Warning: line #{num} Civil Parish #{civil_parish}  has trailing ?. Removed and location_flag set.<br>"
+        preceding applies to all location fields and House address, Surname, Forenames, Relationship, Marital Status, Sex, Age, Years Married, Occupation, Industry,
+        Verbatim Birth Place, Nationality, Birth Place, Father's place of birth, Disability, Disability Notes,
+        "Warning: line #{num} Location Flag is #{flag}.<br>"
+        preceding  applies to all flags
+        "Warning: line #{num} New Folio number is blank.<br>"
+        "Warning: line #{num} New Folio number increment larger than 1 #{folio_number}.<br>"
+        "Warning: line #{num} New Folio number is the same as the previous number #{folio_number}.<br>"
+        "Warning: line #{num} New Folio number is less than the previous number #{folio_number}.<br>"
+        "Warning: line #{num} New Page number is blank.<br>"
+        "Warning: line #{num} New Page number increment larger than 1 #{page_number}.<br>"
+        "Warning: line #{num} New Page number is the same as the previous number #{page_number}.<br>"
+        "Warning: line #{num} New Page number is less than the previous number #{page_number}.<br>"
+        "Warning: line #{num} Schedule number #{record[:schedule_number]} increments more than 1 .<br>"
+        "Warning: line #{num} Schedule number #{record[:schedule_number]} is less than the previous one .<br>"
+        "Warning: line #{num} uninhabited_flag if x is moved to address flag.<br>"
+        "Warning: line #{num} Rooms #{record[:rooms]} is greater than 5.<br>"
+        "Warning: line #{num} Rooms #{record[:rooms]} is greater than 20.<br>"
+
+        "Warning: line #{num} Relationship #{record[:relationship]} is #{record[:sequence_in_household]} in household sequence.<br>"
+        "Warning: line #{num} Number of school children #{record[:school_children]} is #{messagea}.<br>"
+        "Warning: line #{num} Number of children living #{record[:children_living]} is #{messagea}.<br>"
+        "Warning: line #{num} Number of children deceased #{record[:children_deceased]} is #{messagea}.<br>"
+        "Warning: line #{num} Number of children born alive #{record[:children_born_alive]} is #{messagea}.<br>"
+        "Warning: line #{num} Occupation #{record[:occupation]} is #{messagea}.<br>" (Scholar)
+        "Warning: line #{num} Verbatim Place of Birth #{record[:verbatim_birth_place]} in #{record[:verbatim_birth_county]} was not found so requires validation.<br>"
+        "Warning: line #{num} Alt. Birth County #{record[:birth_county]} and Alt. Birth Place #{record[:birth_place]} is valid but MAY require validation.<br>"
+        "Warning: line #{num} Alt. Birth County #{record[:birth_county]} and Alt. Birth Place #{record[:birth_place]} is invalid so requires validation.<br>"
+        "Warning: line #{num} Language #{record[:language]} should not be included for #{record[:year]}.<br>"
+        "Warning: line #{num} Notes contains information #{record[:notes]}.<br>"

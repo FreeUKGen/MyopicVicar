@@ -5,9 +5,63 @@ namespace :foo do
   #eg f2rake  foo:update_search_records[0,bu,"2016-05-27T19:23:31+00:00", true, 1]
   #number of files of 0 is all, force creation is true or false, order files processed is 1 or -1
 
+  task :upload_place_dump_from_csv_file_to_freecen2_place_collection, [:file, :limit] => [:environment] do |t, args|
+    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+    require 'upload_place_dump_from_csv_file_to_freecen2_place_collection'
+    puts "upload_place_dump_from_csv_file_to_freecen2_place_collection started with #{args.file} and limit #{args.limit} "
+    UploadPlaceDumpFromCsvFileToFreecen2PlaceCollection.process(args.file, args.limit)
+    puts "Task complete."
+  end
+
+
+  task :dump_place_as_csv_file, [:file, :chapman_code, :limit] => [:environment] do |t, args|
+    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+    require 'dump_place_as_csv_file'
+    puts "dump_place_as_csv_file started with #{args.file} and limit #{args.limit} for #{args.chapman_code}"
+    DumpPlaceAsCsvFile.process(args.file, args.limit, args.chapman_code)
+    puts "Task complete."
+  end
+
+  task :download_place_as_csv_file, [:file, :chapman_code, :limit]  => [:environment] do |t, args|
+    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+    require 'download_place_as_csv_file'
+    puts "download_place_as_csv_file started with #{args.file} and limit #{args.limit} for #{args.chapman_code}"
+    DownloadPlaceAsCsvFile.process(args.file, args.limit, args.chapman_code)
+    puts "Task complete."
+  end
+
+  task :download_freecen2_place_as_csv_file, [:file, :chapman_code, :limit] => [:environment] do |t, args|
+    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+    require 'download_freecen2_place_as_csv_file'
+    puts "download_freecen2_place_as_csv_file started with #{args.file} and limit #{args.limit} for #{args.chapman_code}"
+    DownloadFreecen2PlaceAsCsvFile.process(args.file, args.limit, args.chapman_code)
+    puts "Task complete."
+  end
+
+  task :update_freecen2_place_from_csv_file, [:file, :limit] => [:environment] do |t, args|
+    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+    require 'update_freecen2_place_from_csv_file'
+    puts "update_freecen2_place_from_csv_file started with #{args.file} and limit #{args.limit} "
+    UpdateFreecen2PlaceFromCsvFile.process(args.file, args.limit)
+    puts "Task complete."
+  end
+
   # eg foo:check_search_records[100000]
+  task :add_birth_place_to_search_record_individual, [:num, :fix] => [:environment] do |t, args|
+    require 'add_birth_place_to_search_record_individual'
+    limit = args.num.to_i
+    puts "Checking the existence of birth_place in search record  "
+    AddBirthPlaceToSearchRecordIndividual.process(limit, args.fix.to_s)
+    puts "Completed Checking #{limit} Search records"
+  end
 
-
+  task :add_birth_place_to_search_record, [:num, :fix] => [:environment] do |t, args|
+    require 'add_birth_place_to_search_record'
+    limit = args.num.to_i
+    puts "Checking the existence of birth_place in search record  "
+    AddBirthPlaceToSearchRecord.process(limit, args.fix.to_s)
+    puts "Completed Checking #{limit} Search records"
+  end
 
   task :check_search_records_with_null_entry, [:num, :fix] => [:environment] do |t, args|
     require 'check_search_records_with_null_entry'

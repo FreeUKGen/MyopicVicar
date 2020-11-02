@@ -14,6 +14,7 @@ class SearchQuery
   module SearchOrder
     TYPE = 'record_type'
     DATE = 'search_date'
+    BIRTH_PLACE = 'birth_place'
     BIRTH_COUNTY = 'birth_chapman_code'
     COUNTY = 'chapman_code'
     LOCATION = 'location'
@@ -22,6 +23,7 @@ class SearchQuery
     ALL_ORDERS = [
       TYPE,
       BIRTH_COUNTY,
+      BIRTH_PLACE,
       DATE,
       COUNTY,
       LOCATION,
@@ -356,7 +358,8 @@ class SearchQuery
     return search_results if no_additional_census_fields?
 
     search_results.each do |record|
-      individual = FreecenIndividual.find(record[:freecen_individual_id])
+      individual = FreecenIndividual.find(record[:freecen_individual_id]) unless record[:freecen_csv_entry_id].present? && record[:freecen_csv_entry_id].present?
+      individual = FreecenCsvEntry.find(record[:freecen_csv_entry_id]) if record[:freecen_csv_entry_id].present? && record[:freecen_csv_entry_id].present?
       next if individual.blank?
 
       if individual_sex?(individual) && individual_marital_status?(individual) && individual_language?(individual) &&
@@ -473,16 +476,16 @@ class SearchQuery
   def individual_sex?(individual)
     return true if sex.blank?
 
-    result = individual.sex == sex ? true : false
+    result = sex.casecmp(individual.sex).zero? ? true : false
     result
   end
 
   def individual_marital_status?(individual)
     return true if marital_status.blank?
 
-    return true if marital_status == individual.marital_status
+    return true if marital_status.casecmp(individual.marital_status).zero?
 
-    return true if individual.marital_status == 'U' && marital_status == 'S'
+    return true if individual.marital_status.casecmp('u').zero? && marital_status.casecmp('s').zero?
 
     false
   end
@@ -490,7 +493,7 @@ class SearchQuery
   def individual_language?(individual)
     return true if language.blank?
 
-    return true if language == individual.language
+    return true if language.casecmp(individual.language).zero?
 
     false
   end
@@ -570,6 +573,7 @@ class SearchQuery
     if search_result.records.respond_to?(:values)
       search_results = search_result.records.values
       search_results = filter_name_types(search_results)
+      search_results = filter_census_addional_fields(search_results) if MyopicVicar::Application.config.template_set == 'freecen'
       search_results = sort_results(search_results) unless search_results.nil?
       record_number = locate_index(search_results, current)
       next_record_id = nil
@@ -627,15 +631,24 @@ class SearchQuery
   end
 
   def place_search_params
-    params = Hash.new
+    params = {}
     if place_search?
+      appname = MyopicVicar::Application.config.freexxx_display_name.downcase
       search_place_ids = radius_place_ids
-
-      params[:place_id] = { '$in' => search_place_ids }
+      case appname
+      when 'freecen'
+        params = { '$or' => [{ place_id: { '$in' => search_place_ids } }, { freecen2_place_id: { '$in' => search_place_ids } }] }
+      when 'freereg'
+        params[:place_id] = { '$in' => search_place_ids }
+      end
     else
-      chapman_codes && chapman_codes.size > 0 ? params[:chapman_code] = { '$in' => chapman_codes } : params[:chapman_code] = { '$in' => ChapmanCode.values }
-      # params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes && chapman_codes.size > 0
-      params[:birth_chapman_code] = { '$in' => birth_chapman_codes } if birth_chapman_codes && birth_chapman_codes.size > 0
+      case appname
+      when 'freecen'
+        params[:chapman_code] = chapman_codes.present? ? { '$in' => chapman_codes } : { '$in' => ChapmanCode.values }
+        params[:birth_chapman_code] = { '$in' => birth_chapman_codes } if birth_chapman_codes.present?
+      when 'freereg'
+        params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes.present?
+      end
     end
     params
   end
@@ -652,7 +665,6 @@ class SearchQuery
     record = record_ids_sorted[idx-1]
     record
   end
-
 
   def next_record(current)
     records_sorted = self.results
@@ -738,7 +750,7 @@ class SearchQuery
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
     update_attribute(:search_index, @search_index)
 
-    # logger.warn @search_parameters.inspect
+    #logger.warn @search_parameters.inspect
     records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     persist_results(records)
     persist_additional_results(secondary_date_results) if App.name == 'FreeREG' && (result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)

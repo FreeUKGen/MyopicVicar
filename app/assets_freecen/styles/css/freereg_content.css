@@ -304,12 +304,24 @@ label.collection_check_boxes {
 /* ----- Override selection field width ----- */
 
 .overide_selection_field_width{
-  padding: 16px;
+  padding: 10px;
     width: 40% !important;
+}
+.narrow_selection_field_width{
+  padding: 10px;
+    width: 6% !important;
+}
+.small_selection_field_width{
+  padding: 10px;
+    width: 8% !important;
+}
+.medium_selection_field_width{
+  padding: 10px;
+    width: 16% !important;
 }
 .simple_form_bgcolour{background: #C2FFD1; color: #000000; font-weight: bold;}
 .simple_form_position {
-  margin-left: 50%;
+  margin-left: 40%;
   margin-right: auto;
 
 }

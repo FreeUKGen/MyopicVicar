@@ -21,7 +21,7 @@
         </tr>
         <tr>
           <td>District name</td>
-          <td class="weight--semibold"> <%= link_to "#{@freecen_piece.district_name}" , place_path(@freecen_piece.place) %> </td>
+          <td class="weight--semibold"> <%= link_to "#{@freecen_piece.district_name}" , place_path(@freecen_piece.place_id) %> </td>
         </tr>
         <tr>
           <td>Subplaces</td>
@@ -69,7 +69,13 @@
         </tr>
         <tr>
           <td>Freecen1 fixed DAT entry</td>
-          <td class="weight--semibold">  <%= link_to 'dat_entry', freecen1_fixed_dat_entry_path(@freecen_piece.freecen1_fixed_dat_entry)  %></td>
+          <td class="weight--semibold">
+            <% if @freecen_piece.freecen1_fixed_dat_entry.present? %>
+              <%= link_to 'dat_entry', freecen1_fixed_dat_entry_path(@freecen_piece.freecen1_fixed_dat_entry)  %>
+            <% else %>
+              Entry created on line
+            <% end%>
+          </td>
         </tr>
       </table>
     </div>

@@ -375,6 +375,5 @@ module Freecen
       end
       record_errors
     end
-
   end
 end
