@@ -44,8 +44,6 @@ class Freecen2Place
   field :cen_data_years, type: Array, default: [] #Cen: fullyears with data here
   field :transcribers, type: Hash
   field :contributors, type: Hash
-  field :unique_surnames, type: Array
-  field :unique_forenames, type: Array
 
   embeds_many :alternate_freecen2_place_names, cascade_callbacks: true
 
