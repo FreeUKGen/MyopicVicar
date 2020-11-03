@@ -1,56 +1,91 @@
 <% problem_record = SearchRecord.where(id: @communication.record_id).first%>
-<% individual = problem_record.freecen_individual%>
-<% dwelling = individual.freecen_dwelling %>
+<% if problem_record.freecen_csv_entry.blank?%>
+  <% individual = problem_record.freecen_individual%>
+  <% dwelling = individual.freecen_dwelling %>
   <p>
     <b>County:</b>
     <%= ChapmanCode::name_from_code(problem_record.chapman_code) + '(' + problem_record.chapman_code + ')' %>
   </p>
-<p><b>Data Problem:</b></p>
-<h4>Below are the further details of the data:</h4>
-<table border="1">
-  <tr>
-    <th>Full Name :</th>
-    <td>
-      <%= "#{individual.forenames} #{individual.surname}"%>
-    </td>
-  </tr>
-  <tr>
-    <th>Record:</th>
-    <td>
-      <%= link_to 'Problem Record Link', search_record_url(@contact.record_id), method: :get%>
-    </td>
-  </tr>
-</table>
-<table border="1">
-  <tr>
-    <th>Census Year</th>
-    <th>County</th>
-    <th>Place</th>
-    <th>Civil Parish</th>
-    <th>Piece</th>
-    <th>Enumeration District</th>
-    <th>Folio</th>
-    <th>Page</th>
-    <th>Schedule Number</th>
-    <th>House Number</th>
-    <th>House or Street Name</th>
-  </tr>
-  <% dwelling.tap do |d| %>
+  <p><b>Data Problem:</b></p>
+  <h4>Below are the further details of the data:</h4>
+  <table border="1">
     <tr>
-      <td><%= d.freecen_piece.year %></td>
+      <th>Full Name :</th>
       <td>
-        <%= "#{ChapmanCode::name_from_code(d.freecen_piece.chapman_code)} ( #{ d.freecen_piece.chapman_code } )"%>
+        <%= "#{individual.forenames} #{individual.surname}"%>
       </td>
-      <td><%= d.freecen_piece.place.place_name %></td>
-      <td><%= d.civil_parish %></td>
-      <td><%= d.freecen_piece.piece_number %></td>
-      <td><%= d.enumeration_district %></td>
-      <td><%= d.folio_number %></td>
-      <td><%= d.page_number %></td>
-      <td><%= d.schedule_number %></td>
-      <td><%= d.house_number %></td>
-      <td><%= d.house_or_street_name %></td>
     </tr>
-  <% end %>
-</table>
-<p>Link to record:  to view the problem record.</p>
+    <tr>
+      <th>Record:</th>
+      <td>
+        <%= link_to 'Problem Record Link', search_record_url(@contact.record_id), method: :get%>
+      </td>
+    </tr>
+  </table>
+  <table border="1">
+    <tr>
+      <th>Census Year</th>
+      <th>County</th>
+      <th>Place</th>
+      <th>Civil Parish</th>
+      <th>Piece</th>
+      <th>Enumeration District</th>
+      <th>Folio</th>
+      <th>Page</th>
+      <th>Schedule Number</th>
+      <th>House Number</th>
+      <th>House or Street Name</th>
+    </tr>
+    <% dwelling.tap do |d| %>
+      <tr>
+        <td><%= d.freecen_piece.year %></td>
+        <td>
+          <%= "#{ChapmanCode::name_from_code(d.freecen_piece.chapman_code)} ( #{ d.freecen_piece.chapman_code } )"%>
+        </td>
+        <td><%= d.freecen_piece.place.place_name %></td>
+        <td><%= d.civil_parish %></td>
+        <td><%= d.freecen_piece.piece_number %></td>
+        <td><%= d.enumeration_district %></td>
+        <td><%= d.folio_number %></td>
+        <td><%= d.page_number %></td>
+        <td><%= d.schedule_number %></td>
+        <td><%= d.house_number %></td>
+        <td><%= d.house_or_street_name %></td>
+      </tr>
+    <% end %>
+  </table>
+  <p>To view the problem record. use the preceding Problem Record Link</p>
+<% else %>
+  <% @csv = true%>
+  <% @show_navigation = false%>
+  <% @uninhabited = nil%>
+  <% @freecen_csv_entry  = FreecenCsvEntry.find_by(_id: problem_record.freecen_csv_entry)%>
+  <% @year = @freecen_csv_entry.year%>
+  <% @chapman_code = problem_record.chapman_code%>
+  <p>
+    <b>County:</b>
+    <%= ChapmanCode::name_from_code(problem_record.chapman_code) + '(' + problem_record.chapman_code + ')' %>
+  </p>
+  <p>
+    <b>File Name:</b>
+    <%= @freecen_csv_entry.freecen_csv_file.file_name %>
+  </p>
+  <p><b>Data Problem:</b></p>
+  <h4>Below are the further details of the data:</h4>
+  <table border="1">
+    <tr>
+      <th>Full Name :</th>
+      <td>
+        <%= "#{problem_record.transcript_names} "%>
+      </td>
+    </tr>
+    <tr>
+      <th>Record:</th>
+      <td>
+        <%= link_to 'Problem Record Link', search_record_url(@contact.record_id), method: :get%>
+      </td>
+    </tr>
+  </table>
+  <p>To view the problem record. use the preceding Problem Record Link</p>
+  <%= render '/freecen_csv_entries/csv_census_header' %>
+<% end%>
