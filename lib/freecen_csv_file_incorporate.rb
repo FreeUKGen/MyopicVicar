@@ -39,7 +39,7 @@ class FreecenCsvFileIncorporate
       #successb = place.save if successa
       PlaceCache.refresh(freecen_file.chapman_code) if successa #&& successb
       success = true if successa #&& successb
-      message = 'File update and or place update failed' unless successa && successb
+      message = 'File update and or place update failed' unless successa #&& successb
     rescue Exception => msg
       success = false
       message = "#{msg}, #{msg.backtrace.inspect}"
