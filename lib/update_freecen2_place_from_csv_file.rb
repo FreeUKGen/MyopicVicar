@@ -71,7 +71,7 @@ class UpdateFreecen2PlaceFromCsvFile
           place.reload
           alternates.each do |alternate|
             standard_place_name = Freecen2Place.standard_place(alternate)
-            place.alternate_freecen2_place_names << AlternateFreecen2PlaceName.new(alternate_name: alternate, standard_place_name: standard_place_name)
+            place.alternate_freecen2_place_names << AlternateFreecen2PlaceName.new(alternate_name: alternate, standard_alternate_name: standard_place_name)
             place.save
           end
           p "#{place_name} created"
