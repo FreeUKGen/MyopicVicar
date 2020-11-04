@@ -54,15 +54,6 @@ class ContactsController < ApplicationController
   def create
     @contact = Contact.new(contact_params)
     if @contact.contact_name.blank? #spam trap
-      session.delete(:flash)
-      @contact.session_data = session.to_hash
-      #avoid invalid character in warden.user.authentication_devise_user.key key
-      @contact.session_data['warden_user_authentication_devise_user_key_key'] = @contact.session_data['warden.user.authentication_devise_user.key'][0].to_s.gsub(/\W/, '') if @contact.session_data['warden.user.authentication_devise_user.key'].present?
-      @contact.session_data['warden_user_authentication_devise_user_key_value'] = @contact.session_data['warden.user.authentication_devise_user.key'][1] if @contact.session_data['warden.user.authentication_devise_user.key'].present?
-      @contact.session_data.delete('warden.user.authentication_devise_user.key')  if @contact.session_data['warden.user.authentication_devise_user.key'].present?
-      @contact.session_data['warden_user_authentication_devise_user_key_session'] = @contact.session_data['warden.user.authentication_devise_user.session']
-      @contact.session_data.delete('warden.user.authentication_devise_user.session') if @contact.session_data['warden.user.authentication_devise_user.session'].present?
-      @contact.session_id = session.to_hash['session_id']
       @contact.previous_page_url = request.env['HTTP_REFERER']
       if @contact.selected_county == 'nil'
         @contact.selected_county = nil # string 'nil' to nil
