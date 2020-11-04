@@ -32,7 +32,7 @@ class UpdateFreecen2PlaceFromCsvFile
 
     array.each do |line|
       break if @number_of_line > limit
-      p line
+
       @number_of_line += 1
       next if line[0].present? && line[0].strip == 'Chapman Code'
       next if line[0].blank?
@@ -40,8 +40,8 @@ class UpdateFreecen2PlaceFromCsvFile
       chapman_code = line[0]
       place_name = line[1].strip if line[1].present?
       grid_reference = line[2].strip if line[2].present?
-      latitude = line[3].strip if  line[3].present?
-      longitude = line[4].strip if  line[4].present?
+      latitude = line[3].strip if line[3].present?
+      longitude = line[4].strip if line[4].present?
       source = line[5].strip if line[5].present?
       genuki_url  = line[6].strip if line[6].present?
       place_notes = line[7].strip if line[7].present?
@@ -59,21 +59,23 @@ class UpdateFreecen2PlaceFromCsvFile
       standard_place_name = Freecen2Place.standard_place(place_name)
       place = Freecen2Place.find_by(standard_place_name: standard_place_name)
       if place.present?
-        p 'Place already exists'
+        p "Place #{place_name} already exists in #{chapman_code}"
+        message_file.puts "Place #{place_name} already exists in #{chapman_code}"
         @number_skipped += 1
       else
         place = Freecen2Place.new(chapman_code: chapman_code, place_name: place_name, standard_place_name: standard_place_name, grid_reference: grid_reference, latitude: latitude,
                                   longitude: longitude, source: source, genuki_url: genuki_url, place_notes: place_notes)
-        alternates.each do |alternate|
-          place.alternate_freecen2_place_names << AlternateFreecen2PlaceName.new(alternate_name: alternate)
-          place.save
-          place.reload
-        end
         result = place.save
         if result
+          @number_added += 1
+          place.reload
+          alternates.each do |alternate|
+            standard_place_name = Freecen2Place.standard_place(alternate)
+            place.alternate_freecen2_place_names << AlternateFreecen2PlaceName.new(alternate_name: alternate, standard_place_name: standard_place_name)
+            place.save
+          end
           p "#{place_name} created"
           message_file.puts "#{chapman_code}, #{place_name}, created"
-          @number_added += 1
         else
           p "#{place_name} creation failed"
           p line
@@ -82,5 +84,4 @@ class UpdateFreecen2PlaceFromCsvFile
     end
     p "#{@number_of_line} records processed with #{@number_added} added and #{@number_skipped}"
   end
-
-end #end process
+end
