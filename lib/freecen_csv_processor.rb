@@ -663,10 +663,11 @@ end
 
 def locate_civil_parish(record, file)
   piece = file.freecen2_piece
+  @civil_parish = nil
   piece.freecen2_civil_parishes.each do |civil_parish|
     @civil_parish = civil_parish if civil_parish.name == FreecenCsvEntry.mytitlieze(record[:civil_parish])
   end
-  id = @civil_parish.id if @civil_parish.present?
+  id = @civil_parish.present? ? @civil_parish.id : nil
   id
 end
 

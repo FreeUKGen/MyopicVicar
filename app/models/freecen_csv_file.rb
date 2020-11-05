@@ -354,10 +354,12 @@ class FreecenCsvFile
     return [false, 'Cannot be incorporated as the file does not belong to a Freecen2 Place'] if place.blank?
 
     result, message = includes_existing_enumeration_districts(piece)
-
     return [false, "Cannot be incorporated as the file contains enumeration districts #{message}"] if result
 
     return [false, 'Cannot be incorporated as the file contains errors or warnings'] if includes_warnings_or_errors?
+
+    result, message = civil_parishes_have_freecen2_place
+    return [false, "Cannot be incorporated as the file contains #{message}"] unless result
 
     [true, '']
   end
@@ -379,6 +381,22 @@ class FreecenCsvFile
 
   def display_for_csv_show
     [_id, file_name, userid]
+  end
+
+  def civil_parishes_have_freecen2_place
+    enumeration_districts.each_pair do |civil_parish, _districts|
+      parish = Freecen2CivilParish.find_by(year: year, chapman_code: chapman_code, name: civil_parish)
+      if parish.present?
+        if parish.freecen2_place.present?
+          return [true, '']
+        else
+          return [false, " a Civil Parish: #{civil_parish} that does not link to a Freecen2 Place"]
+        end
+      else
+        return [false, "Missing Civil Parish: #{civil_parish}"]
+      end
+    end
+
   end
 
   def includes_existing_enumeration_districts(piece)
