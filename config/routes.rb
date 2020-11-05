@@ -406,6 +406,8 @@ MyopicVicar::Application.routes.draw do
     #get :autocomplete_BestGuess_GivenName, :on => :collection
   end
 
+  resources :postems
+  
   resources :s3buckets
 
   resources :fields

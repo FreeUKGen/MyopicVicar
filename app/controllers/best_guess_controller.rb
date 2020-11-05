@@ -7,6 +7,7 @@ class BestGuessController < ApplicationController
     @page_number = params[:page_number].to_i
     @search_record = BestGuess.where(RecordNumber: params[:id]).first
     @display_date = false
+    @new_postem = @search_record.best_guess_hash.postems.new
     #@entry.display_fields(@search_record)
     #@entry.acknowledge
     if @search_query.present?
