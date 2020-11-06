@@ -2,4 +2,5 @@
 // If Adblock is being used, canRunAds will return
 // undefined when called elsewhere, because this file will be blocked
 
-var canRunAds = true;
+var car = true;
+console.log("is this page working")
