@@ -1,0 +1,21 @@
+To do
+
+Requirements for Incorporation Statistics
+
+
+In Progress
+Decide how to handle the 1841 Hundreds as far as place name and location are concerned
+Populate the LND Place Names
+
+Needing review
+Add ability to copy a district and it Pieces and Civil Parishes to another County
+Next and previous search results not functioning correctly with filters
+Mobile version of csv entry
+
+
+Conversion
+Enable name variants in the Parms files to be accommodated in the drop down lists through a lookup
+Review Indexes
+
+
+when taking place from REG delete the data present and other unneeded fields

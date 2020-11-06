@@ -57,7 +57,7 @@ class UpdateFreecen2PlaceFromCsvFile
         longitude = location[1]
       end
       standard_place_name = Freecen2Place.standard_place(place_name)
-      place = Freecen2Place.find_by(standard_place_name: standard_place_name)
+      place = Freecen2Place.find_by(chapman_code: chapman_code, standard_place_name: standard_place_name)
       if place.present?
         p "Place #{place_name} already exists in #{chapman_code}"
         message_file.puts "Place #{place_name} already exists in #{chapman_code}"

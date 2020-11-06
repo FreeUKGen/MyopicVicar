@@ -76,7 +76,7 @@ class UploadPlaceDumpFromCsvFileToFreecen2PlaceCollection
         param[:longitude] = location[1]
       end
       standard_place_name = Freecen2Place.standard_place(param[:place_name])
-      place = Freecen2Place.find_by(standard_place_name: standard_place_name)
+      place = Freecen2Place.find_by(chapman_code: chapman_code, standard_place_name: standard_place_name)
       if place.present?
         p 'Place already exists'
         @number_skipped += 1
