@@ -6,7 +6,7 @@ class DumpPlaceAsCsvFile
     base = Rails.root.join('tmp', file)
     @number_of_line = 0
     data_file = File.new(base, 'w')
-    data_file.puts 'country,county,chapman_code,place_name,last_amended,location,grid_reference,latitude,longitude,source,website_url,place_notes,original_country,original_county,original_chapman_code,original_place_name,original_grid_reference,original_latitude,original_longitude,original_source,reason_for_change,other_reason_for_change,disabled,master_place_lat,master_place_lon,alternate,alternate,alternate'
+    data_file.puts 'country,county,chapman_code,place_name,last_amended,grid_reference,latitude,longitude,source,website_url,place_notes,original_country,original_county,original_chapman_code,original_place_name,original_grid_reference,original_latitude,original_longitude,original_source,reason_for_change,other_reason_for_change,disabled,master_place_lat,master_place_lon,alternate,alternate,alternate'
     if chapman_code.casecmp('ALL').zero?
       Place.not_disabled.order_by(chapman_code: 1, place_name: 1).each do |place|
         break if @number_of_line > limit

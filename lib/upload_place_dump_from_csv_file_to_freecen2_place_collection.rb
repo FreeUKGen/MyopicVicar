@@ -30,8 +30,8 @@ class UploadPlaceDumpFromCsvFileToFreecen2PlaceCollection
     length = array.length
     param = {}
     p "Started a freecen2 place update with limit of #{limit} with a file at #{base} with #{length} entries"
-
     array.each do |line|
+
       break if @number_of_line > limit
       p line
       @number_of_line += 1
@@ -71,12 +71,12 @@ class UploadPlaceDumpFromCsvFileToFreecen2PlaceCollection
       end
 
       if param[:grid_reference].present? && param[:grid_reference].is_gridref?
-        param[:location] = param[:grid_reference].to_latlng.to_a
+        location = param[:grid_reference].to_latlng.to_a
         param[:latitude] = location[0]
         param[:longitude] = location[1]
       end
       standard_place_name = Freecen2Place.standard_place(param[:place_name])
-      place = Freecen2Place.find_by(chapman_code: chapman_code, standard_place_name: standard_place_name)
+      place = Freecen2Place.find_by(chapman_code:  param[:chapman_code], standard_place_name: standard_place_name)
       if place.present?
         p 'Place already exists'
         @number_skipped += 1
