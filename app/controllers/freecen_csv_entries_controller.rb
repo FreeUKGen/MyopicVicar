@@ -260,6 +260,7 @@ class FreecenCsvEntriesController < ApplicationController
 
     old_search_record = @freecen_csv_entry.search_record
     @freecen_csv_file = @freecen_csv_entry.freecen_csv_file
+    @warnings, @errors = @freecen_csv_entry.are_there_messages
     params[:freecen_csv_entry][:verbatim_birth_place] = FreecenCsvEntry.mystrip(params[:freecen_csv_entry][:verbatim_birth_place])
     @freecen_csv_entry.validate_on_line_edit_of_fields(params[:freecen_csv_entry])
 
@@ -269,7 +270,9 @@ class FreecenCsvEntriesController < ApplicationController
       @freecen_csv_entry.update_attributes(params[:freecen_csv_entry])
       session[:propagate_alternate] = @freecen_csv_entry.id if @freecen_csv_entry.previous_changes.key?('birth_county') || @freecen_csv_entry.previous_changes.key?('birth_place')
       #SearchRecord.update_create_search_record(@freecen_csv_entry, search_version, place)
-      @freecen_csv_file.update_attributes(locked_by_transcriber: true)
+      @freecen_csv_entry.reload
+      @warnings_now, @errors_now = @freecen_csv_entry.are_there_messages
+      @freecen_csv_file.update_messages_and_lock(@warnings, @errors, @warnings_now, @errors_now)
       flash[:notice] = 'The change in entry contents was successful, the file is now locked against replacement until it has been downloaded.'
       redirect_to freecen_csv_entry_path(@freecen_csv_entry)
     end

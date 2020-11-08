@@ -711,7 +711,6 @@ class FreecenCsvFile
     #recalculate_last_amended
 
     save
-
   end
 
   def update_number_of_files
@@ -734,6 +733,26 @@ class FreecenCsvFile
       end
       userid.update(number_of_files: number, number_of_records: records, last_upload: last_uploaded)
     end
+  end
+
+  def update_messages_and_lock(original_warnings, original_errors, new_warnings, new_errors)
+    original_number_errors = total_errors
+    original_number_warnings = total_warnings
+    if original_warnings == new_warnings
+      new_number_warnings = original_number_warnings
+    elsif new_warnings
+      new_number_warnings = original_number_warnings + 1
+    else
+      new_number_warnings = original_number_warnings - 1
+    end
+    if original_errors == new_errors
+      new_number_errors = original_number_errors
+    elsif new_errors
+      new_number_errors = original_number_errors + 1
+    else
+      new_number_errors = original_number_errors - 1
+    end
+    update_attributes(locked_by_transcriber: true, total_errors: new_number_errors, total_warnings: new_number_warnings)
   end
 
   def update_freecen_piece

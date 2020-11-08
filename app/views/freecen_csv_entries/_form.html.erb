@@ -5,6 +5,7 @@
     <%= f.input :warning_messages, :label => 'Warning Messages', :as => :text, :input_html => {:class => " simple_form_bgcolour  ",  :size => "60x5" } if  @freecen_csv_entry.warning_messages.present?%>
     <%= f.input :error_messages , :label => 'Error Messages', :as => :text, :input_html => {:class => " simple_form_bgcolour  ",  :size => "60x5" } if  @freecen_csv_entry.error_messages.present?%>
     <%= f.input :info_messages , :label => 'Information Messages', :as => :text, :input_html => {:class => " simple_form_bgcolour  ",  :size => "60x5" } if  @freecen_csv_entry.info_messages.present?%>
+    <%= f.input :address_flag, :label => 'Address Flag',  selected: @freecen_csv_entry.address_flag, collection: ['x', ''], :input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 2} if   @freecen_csv_entry.address_flag.present?%>
   <% else %>
     <%= f.input :warning_messages, :label => 'Warning Messages', :as => :text, :input_html => {:disabled => true,   :size => "60x5" } if  @freecen_csv_entry.warning_messages.present?%>
     <%= f.input :error_messages, :label => 'Error Messages', :as => :text, :input_html => {:disabled => true,   :size => "60x5" } if  @freecen_csv_entry.error_messages.present?%>

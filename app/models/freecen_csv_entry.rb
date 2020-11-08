@@ -1742,6 +1742,12 @@ class FreecenCsvEntry
     param
   end
 
+  def are_there_messages
+    errors = error_messages.present? ? true : false
+    warnings = warning_messages.present? ? true : false
+    [warnings, errors]
+  end
+
   def check_valid
     if record_valid == 'false'
       new_record_valid =  error_messages.present? || warning_messages.present? ? 'false' : 'true'
@@ -1750,8 +1756,6 @@ class FreecenCsvEntry
   end
 
   def display_fields(search_record)
-
-
   end
 
   def get(date_string)
