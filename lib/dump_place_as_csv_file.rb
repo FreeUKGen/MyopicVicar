@@ -13,7 +13,7 @@ class DumpPlaceAsCsvFile
 
         @number_of_line += 1
         message = "#{place.country}"
-        message += ",#{place.county}"
+        message += ",\"#{place.county}\""
         message += ",#{place.chapman_code}"
         message += ",\"#{place.place_name}\""
         message += ",\"#{place.last_amended}\""
@@ -49,7 +49,7 @@ class DumpPlaceAsCsvFile
 
         @number_of_line += 1
         message = "#{place.country}"
-        message += ",#{place.county}"
+        message += ",\"#{place.county}\""
         message += ",#{place.chapman_code}"
         message += ",\"#{place.place_name}\""
         message += ",\"#{place.last_amended}\""

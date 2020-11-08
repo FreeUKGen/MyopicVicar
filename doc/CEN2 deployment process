@@ -4,9 +4,7 @@ Step 2. Test basic running of master copy on test2 freeCEN
   sudo bash /root/bin/update-freecen2-development
   After fetching remember to do a bundle install
 
-Step 3. Test basic running of master copy on test2 freeREG
-
-Step 4. delete all freecen2 collections on test2 cen
+Step 3. delete all freecen2 collections on test2 cen
   db.search_records.deleteMany({freecen_csv_entry_id:{ $exists: true}}) # this takes quite a while
   db.freecen_csv_entries.drop()
   db.freecen_csv_files.drop()
@@ -17,7 +15,7 @@ Step 4. delete all freecen2 collections on test2 cen
   db.freecen2_districts.drop()
   db.freecen2_civil_parishes.drop()
 
-Step 5. Create Freecen Places
+Step 4. Create Freecen Places
   Activate Special Counties
   use fileZilla to copy files to my folder tmp on test2
     dump_all.csv
@@ -27,14 +25,16 @@ Step 5. Create Freecen Places
     KEN_place_name.csv
     IOWGJ_place_names.csv
     civil_parishes-no-geom_irish.csv
+    dump_cen2_places.csv
   copy to tmp on test2
     sudo -u webserv cp *.csv /home/apache/hosts/freecen2/development/tmp/
   run loads of files
     fd2rake foo:upload_place_dump_from_csv_file_to_freecen2_place_collection["dump_all.csv",500000] --trace
     fd2rake foo:update_freecen2_place_from_csv_file['LND_place_names_a.csv',100000] --trace
     etc
+  create indices
 
-Step 6. Load parms
+Step 5. Load parms
   use fileZilla to copy files to my folder tmp on test2
     1841.xml
     1851.xml
@@ -50,9 +50,7 @@ Step 6. Load parms
   run loads of files
     sudo -u webserv bundle exec rake RAILS_ENV=development  extract_freecen2_parms[2,1871-modes-2b.xml] --trace
 
-Step 8 correct_civil_parishes.rake options 3 1891 and 4 all years
-  check if option 4 is needed as load should have added the place names
-
+  create indices for all 3 collections
 
 annex A
   dump places from freereg
