@@ -175,6 +175,7 @@ class Freecen2Place
 
     def standard_place(place)
       return place if place.blank?
+
       place = place.tr('-', ' ').delete(".,'(){}[]").downcase
       place = place.gsub(/Saint/, 'St')
       place = place.strip.squeeze(' ')

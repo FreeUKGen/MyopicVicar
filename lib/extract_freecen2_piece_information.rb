@@ -386,55 +386,72 @@ class ExtractFreecen2PieceInformation
     end
 
     def locate_district_place(chapman_code, name, place_previous, type)
-      myname = name.present? ? name.titleize : ''
-      place = Freecen2Place.find_by(chapman_code: chapman_code, place_name: myname)
+      myname = Freecen2Place.standard_place(name)
+      place = Freecen2Place.find_by(chapman_code: chapman_code, standard_place_name: myname)
       if place.present?
         place_id = place.id
       elsif place.blank?
-        place = Freecen2Place.find_by(:chapman_code => chapman_code, "alternate_freecen2_place_names.alternate_name" => myname)
+        place = Freecen2Place.find_by(:chapman_code => chapman_code, "alternate_freecen2_place_names.standard_alternate_name" => myname)
         if place.present?
           place_id = place.id
         else
-          @missing_place_names << "#{myname} a #{type} in | #{chapman_code}"
+          place = Freecen2Place.find_by(chapman_code: chapman_code, original_standard_name: myname)
+          if place.present?
+            place_id = place.id
+          else
+            @missing_place_names << "#{myname} a #{type} in | #{chapman_code}"
+          end
         end
       end
       place_id
     end
 
     def locate_subdistrict_place(district, name, place_previous, type)
-      myname = name.present? ? name.titleize : ''
-      place = Freecen2Place.find_by(chapman_code: district.chapman_code, place_name: myname)
+      myname = Freecen2Place.standard_place(name)
+      place = Freecen2Place.find_by(chapman_code: district.chapman_code, standard_place_name: myname)
       if place.present?
         place_id = place.id
       elsif place.blank?
-        place = Freecen2Place.find_by(:chapman_code => district.chapman_code, "alternate_freecen2_place_names.alternate_name" => myname)
+        place = Freecen2Place.find_by(:chapman_code => district.chapman_code, "alternate_freecen2_place_names.standard_alternate_name" => myname)
         if place.present?
           place_id = place.id
         else
-          if district.freecen2_place_id.present?
-            place_id = district.freecen2_place_id
+          place = Freecen2Place.find_by(chapman_code: district.chapman_code, original_standard_name: myname)
+          if place.present?
+            place_id = place.id
           else
-            @missing_place_names << "#{myname} a #{type} in | #{district.chapman_code}| district #{district.name} "
+            if district.freecen2_place_id.present?
+              place_id = district.freecen2_place_id
+            else
+              @missing_place_names << "#{myname} a #{type} in | #{district.chapman_code}| district #{district.name} "
+            end
           end
         end
       end
       place_id
     end
+
     def locate_civil_place(chapman_code, name, piece, type)
+      myname = Freecen2Place.standard_place(name)
       district_name = piece.freecen2_district.name
-      myname = piece.name.present? ? piece.name.titleize : ''
-      place = Freecen2Place.find_by(chapman_code: chapman_code, place_name: myname)
+      piece_name = piece.name
+      place = Freecen2Place.find_by(chapman_code: chapman_code, standard_place_name: myname)
       if place.present?
         place_id = place.id
       elsif place.blank?
-        place = Freecen2Place.find_by(:chapman_code => chapman_code, "alternate_freecen2_place_names.alternate_name" => myname)
+        place = Freecen2Place.find_by(:chapman_code => chapman_code, "alternate_freecen2_place_names.standard_alternate_name" => myname)
         if place.present?
           place_id = place.id
         else
-          if piece.freecen2_place_id.present?
-            place_id = piece.freecen2_place_id
+          place = Freecen2Place.find_by(chapman_code: chapman_code, original_standard_name: myname)
+          if place.present?
+            place_id = place.id
           else
-            @missing_place_names << "#{myname} a #{type} in | #{chapman_code}| district #{district_name} | subdistrict (piece) #{piece.name} "
+            if piece.freecen2_place_id.present?
+              place_id = piece.freecen2_place_id
+            else
+              @missing_place_names << "#{myname} a #{type} in | #{chapman_code}| district #{district_name} | sub district (piece) #{piece_name} "
+            end
           end
         end
       end
