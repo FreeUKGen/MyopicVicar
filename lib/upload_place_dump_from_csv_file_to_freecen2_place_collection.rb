@@ -60,7 +60,7 @@ class UploadPlaceDumpFromCsvFileToFreecen2PlaceCollection
       param[:original_source] = line[18]
       param[:reason_for_change] = line[19]
       param[:other_reason_for_change] = line[20]
-      param[:disabled] = line[21] #{place.disabled}"
+      param[:disabled] = 'false' if (line[21]).casecmp?('false') # {place.disabled}"
       param[:master_place_lat] = line[22] #{place.master_place_lat}"
       param[:master_place_lon] = line[23] #{place.master_place_lon}"
       alternates = []

@@ -4,7 +4,7 @@ Step 2. Test basic running of master copy on test2 freeCEN
   sudo bash /root/bin/update-freecen2-development
   After fetching remember to do a bundle install
 
-Step 3. delete all freecen2 collections on test2 cen
+Step 3. delete all freecen2 collections
   db.search_records.deleteMany({freecen_csv_entry_id:{ $exists: true}}) # this takes quite a while
   db.freecen_csv_entries.drop()
   db.freecen_csv_files.drop()
@@ -23,7 +23,7 @@ Step 4. Create Freecen Places
     MDX_place_name.csv
     SRY_place_name.csv
     KEN_place_name.csv
-    IOWGJ_place_names.csv
+    IOWGJ_place_name.csv
     civil_parishes-no-geom_irish.csv
     dump_cen2_places.csv
   copy to tmp on test2
@@ -48,7 +48,7 @@ Step 5. Load parms
   copy to tmp on test2
     sudo -u webserv cp *.xml /home/apache/hosts/freecen2/development/tmp/
   run loads of files
-    sudo -u webserv bundle exec rake RAILS_ENV=development  extract_freecen2_parms[2,1871-modes-2b.xml] --trace
+    sudo -u webserv bundle exec rake RAILS_ENV=development  extract_freecen2_parms[2,1871.xml] --trace
 
   create indices for all 3 collections
 
