@@ -24,7 +24,7 @@ class DumpPlaceAsCsvFile
         message += ",\"#{place.genuki_url}\""
         message += ",\"#{place.place_notes}\""
         message += ",#{place.original_country}"
-        message += ",#{place.original_county}"
+        message += ",\"#{place.original_county}\""
         message += ",#{place.original_chapman_code}"
         message += ",\"#{place.original_place_name}\""
         message += ",#{place.original_grid_reference}"
