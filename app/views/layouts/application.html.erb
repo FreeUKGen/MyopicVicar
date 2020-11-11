@@ -94,7 +94,7 @@
     <%= javascript_include_tag "spin.min.js" %>
     <%= javascript_include_tag "ladda.min.js" %>
     <%= javascript_include_tag "freecen_coverage_graph.js" %>
-    <%= javascript_include_tag "javascripts/freecen_gdpr.js"%>
+    <%= javascript_include_tag "javascripts/freecen_gdpr.js" if appname.downcase == 'freecen'%>
     <script src="https://use.fontawesome.com/5b8044f85d.js"></script>
     <%= csrf_meta_tags %>
     <% google_analytics_tracking_id = google_analytics_tracking %>
