@@ -93,7 +93,7 @@
                   Transcriber
                 </th>
                 <td>
-                  <%= @search_record.transcribers.join(', ') if @search_record.transcribers.present? %>
+                  <%#= @search_record.transcribers.join(', ') if @search_record.transcribers.present? %>
                 </td>
               </tr>
             </tbody>
@@ -134,14 +134,22 @@
             </ul>
           <% end %>
         <% end%>
-        <%= link_to "Add a postem", "", id: "create_postem" %>
-        <%= semantic_form_for(@new_postem) do |f| %>
-        <%#= raise @new_postem.inspect%>
-          <%= f.hidden_field('Hash', value: @new_postem.Hash) %>
-          <%= text_area_tag 'postem[Information]'%>
-          <%= button_tag 'Pin it', type: :submit, class: 'ladda-button kittumani' , id: 'search_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
-        <% end %>
-
+        <p id="create_postem">Add a postem</p>
+        <div class="create_postem_div">
+          <%= semantic_form_for(@new_postem) do |f| %>
+            <%= f.hidden_field('Hash', value: @new_postem.Hash) %>
+            <%= hidden_field_tag('search_query', @search_query.id) %>
+            <ol class="grid">
+              <li class="grid__item desk-wide-three-quarters desk-three-quarters lap-three-quarters palm-one-whole push--bottom">
+                <%= text_area_tag 'postem[Information]', nil, rows: 7, style: 'width: 100%'%>
+              </li>
+            
+              <div class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole">
+                <%= button_tag 'Add Postem', type: :submit, class: 'ladda-button kittumani' , id: 'postem_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
+              </div>
+            </ol>
+          <% end %>
+        </div>
       </div>
     </div>
     <% unless print_friendly %>
@@ -155,6 +163,13 @@
       <% end %>
     <% end %>
   </div>
+  <script type="text/javascript">
+    $("#create_postem").click(
+      function() {
+        $(".create_postem_div").show();
+        $("#create_postem").hide();
+    });
+  </script>
   
   <!--div class="grid">
     <ul>

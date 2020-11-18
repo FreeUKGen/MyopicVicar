@@ -633,7 +633,7 @@ input:disabled:not([type="submit"]):hover {
 
 .dhandam {
     top: -10px;
-    margin: 0px auto;
+    margin: 0px auto !important;
     text-align: center;
     padding-left: 15px;
     left: 50%;
@@ -884,6 +884,15 @@ transform: matrix(-1, 0, 0, 1, 0, 0);
     background-color: #c84182;
     color: white;
     outline: none;
+    cursor: pointer;
+}
+
+.spouse_firstnames_div, .spouse_or_mother_surname_div, .age_at_death_or_date_of_birth_div, .create_postem_div {
+    display: none;
+}
+
+#create_postem {
+    color: $magenta;
     cursor: pointer;
 }
 
