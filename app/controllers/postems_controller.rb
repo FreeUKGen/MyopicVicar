@@ -8,6 +8,7 @@ class PostemsController < ApplicationController
   	@postem.QuarterNumberEvent = (@record.QuarterNumber * 3) + @record.RecordTypeID
   	@postem.RecordInfo = "#{@record.Surname}|#{@record.GivenName}|#{@record.AgeAtDeath}#{@record.AssociateName}|#{@record.District}|#{@record.Volume}|#{@record.Page}"
   	@postem.SourceInfo = request.remote_ip
+    @postem.Created = Time.now.strftime('%s')
   	if @postem.save
   		flash[:notice] = "Added Postem successfully"
   	else

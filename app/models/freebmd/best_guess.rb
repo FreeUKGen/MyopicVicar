@@ -54,9 +54,6 @@ class BestGuess < FreebmdDbBase
   def postems_list
     postem_info = []
     get_hash = self.best_guess_hash.Hash
-    Postem.where(Hash: get_hash).each do |postem|
-      postem_info << postem.Information
-    end
-    postem_info
+    Postem.where(Hash: get_hash).all
   end
 end
