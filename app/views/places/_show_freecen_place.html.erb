@@ -40,6 +40,11 @@
           <td class="weight--semibold"> <%= @place.longitude%></td>
         </tr>
         <tr>
+          <td>Show on map<br>
+            <small> Opens in a new tab</small></td>
+          <td > <%= locate(@place.latitude,@place.longitude) %></td>
+        </tr>
+        <tr>
           <td>Notes about the place :</td>
           <td class="weight--semibold"><%= @place.place_notes %> </td>
         </tr>
