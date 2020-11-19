@@ -445,6 +445,7 @@ class FreecenCsvFilesController < ApplicationController
   end
 
   def update
+    p params
     #update the headers
     @freecen_csv_file = FreecenCsvFile.find(params[:id])
     unless FreecenCsvFile.valid_freecen_csv_file?(params[:id])
@@ -500,6 +501,33 @@ class FreecenCsvFilesController < ApplicationController
       else
         flash[:notice] = message
         redirect_to(action: 'relocate') && return
+      end
+    else
+      # lets see if we are moving the file
+      @freecen_csv_file.check_locking_and_set(params[:freecen_csv_file], session)
+      @freecen_csv_file.update_attributes(freecen_csv_file_params)
+      @freecen_csv_file.update_attributes(:modification_date => Time.now.strftime('%d %b %Y'))
+      if @freecen_csv_file.errors.any?
+        flash[:notice] = "The update of the batch was unsuccessful: #{message}"
+        render action: 'edit'
+        return
+      end
+      if session[:error_line].present?
+        # lets remove the header errors
+        @freecen_csv_file.error = @freecen_csv_file.error - session[:header_errors]
+        session[:error_id].each do |id|
+          error = BatchError.find(id)
+          @freecen_csv_file.batch_errors.delete(error) if error.present?
+        end
+        @freecen_csv_file.save
+        # clean out the session variables
+        session[:error_id] = nil
+        session[:header_errors] = nil
+        session[:error_line] = nil
+      else
+        session[:type] = 'edit'
+        flash[:notice] = 'The update of the batch was successful'
+        redirect_to(action: 'show') && return
       end
     end
     redirect_to session[:return_to]

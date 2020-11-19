@@ -641,6 +641,7 @@ class CsvFile < CsvFiles
   end
 
   def write_freecen_csv_entries(records, file)
+    civil_parishes = list_civil_parishes(file)
     enumeration_districts = {}
     documents = []
     records.each do |record|
@@ -649,7 +650,7 @@ class CsvFile < CsvFiles
       record = record.delete_if {|key, value| key == :piece }
       record = record.delete_if {|key, value| key == :field_specification }
       record = adjust_case(record)
-      record[:freecen2_civil_parish_id] = locate_civil_parish(record, file)
+      record[:freecen2_civil_parish_id] = locate_civil_parish(record, civil_parishes)
       enumeration_districts[record[:civil_parish]] = [] if enumeration_districts[record[:civil_parish]].blank?
       enumeration_districts[record[:civil_parish]] << record[:enumeration_district] unless enumeration_districts[record[:civil_parish]].include?(record[:enumeration_district])
       record[:freecen_csv_file_id] = file.id
@@ -661,13 +662,20 @@ class CsvFile < CsvFiles
   end
 end
 
-def locate_civil_parish(record, file)
-  piece = file.freecen2_piece
-  @civil_parish = nil
-  piece.freecen2_civil_parishes.each do |civil_parish|
-    @civil_parish = civil_parish if civil_parish.name == FreecenCsvEntry.mytitlieze(record[:civil_parish])
+def list_civil_parishes(file)
+  civil_parishes = {}
+  if file.freecen2_piece.present?
+    file.freecen2_piece.freecen2_civil_parishes.each do |parish|
+      civil_parishes[parish.name.downcase] = parish.id
+    end
   end
-  id = @civil_parish.present? ? @civil_parish.id : nil
+  civil_parishes
+end
+
+def locate_civil_parish(record, civil_parishes)
+  id = nil
+  record_parish = record[:civil_parish].downcase if record[:civil_parish].present?
+  id = civil_parishes[record_parish] if record_parish.present?
   id
 end
 

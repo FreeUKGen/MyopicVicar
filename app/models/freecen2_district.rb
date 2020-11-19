@@ -130,8 +130,17 @@ class Freecen2District
   end
 
   def district_place_id(place_name)
-    place = Freecen2Place.find_by(chapman_code: chapman_code, place_name: place_name) if chapman_code.present?
-    place = place.present? ? place.id : ''
+    standard_place_name = Freecen2Place.standard_place(place_name)
+    place = Freecen2Place.find_by(chapman_code: chapman_code, standard_place_name: standard_place_name) if chapman_code.present?
+    if place.present?
+      return place.id
+    else
+      place = Freecen2Place.find_by("alternate_freecen2_place_names.standard_alternate_name" => standard_place_name)
+      if place.present?
+        return place.id
+      end
+      ''
+    end
   end
 
   def get_counties

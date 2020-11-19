@@ -183,9 +183,11 @@ class Freecen2Piece
     end
 
     def district_place_name(chapman_code)
+      districts = Freecen2District.distinct("freecen2_place_id")
+      district_names = Freecen2District.distinct("name")
       pieces = []
       Freecen2Piece.where(chapman_code: chapman_code).all.order_by(name: 1, year: 1).each do |piece|
-        pieces << piece if piece.freecen2_place_id.present? && (piece.freecen2_place_id.to_s == piece.freecen2_district.freecen2_place_id.to_s) && (piece.name != piece.freecen2_district.name)
+        pieces << piece if piece.freecen2_place_id.present? && districts.include?(piece.freecen2_place_id) && !district_names.include?(piece.name)
       end
       pieces
     end
@@ -261,8 +263,17 @@ class Freecen2Piece
   end
 
   def piece_place_id(place_name)
-    place = Freecen2Place.find_by(chapman_code: chapman_code, place_name: place_name) if chapman_code.present?
-    place = place.present? ? place.id : ''
+    standard_place_name = Freecen2Place.standard_place(place_name)
+    place = Freecen2Place.find_by(chapman_code: chapman_code, standard_place_name: standard_place_name) if chapman_code.present?
+    if place.present?
+      return place.id
+    else
+      place = Freecen2Place.find_by("alternate_freecen2_place_names.standard_alternate_name" => standard_place_name)
+      if place.present?
+        return place.id
+      end
+      ''
+    end
   end
 
   def propagate_freecen2_place(old_place, old_name)

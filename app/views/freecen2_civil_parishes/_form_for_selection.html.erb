@@ -4,7 +4,7 @@
   </div>
 <% end %>
 <div class="island ">
-  <%= simple_form_for @freecen2_civil_parish  do |f| %>
-    <%= f.input :action,  :as => :select, :label =>  @prompt, :required => true, :collection => @options ,:input_html => {'onchange' => @location,:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4}%>
+  <%= semantic_form_for @freecen2_civil_parish  do |f| %>
+    <%= f.input :action,  :as => :select, :label =>  @prompt, :required => true, :collection => @options ,:input_html => {'onchange' => @location,:class => "simple_form_bgcolour large_selection_field_width", :size => 5}%>
   <% end %>
 </div>

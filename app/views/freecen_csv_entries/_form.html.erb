@@ -1,52 +1,57 @@
-<%= simple_form_for @freecen_csv_entry, :html => { :class => "grid"}  do |f| %>
+<%= semantic_form_for @freecen_csv_entry, :html => { :class => 'grid'}   do |f| %>
   <%= f.hidden_field :record_number, :value=>@freecen_csv_entry.record_number %>
   <%= f.hidden_field :year, :value=>@freecen_csv_entry.year %>
   <% if %w[validator county_coordinator country_coordinator data_manager system_administrator].include?(@user.person_role) && @freecen_csv_file.validation%>
-    <%= f.input :warning_messages, :label => 'Warning Messages', :as => :text, :input_html => {:class => " simple_form_bgcolour  ",  :size => "60x5" } if  @freecen_csv_entry.warning_messages.present?%>
-    <%= f.input :error_messages , :label => 'Error Messages', :as => :text, :input_html => {:class => " simple_form_bgcolour  ",  :size => "60x5" } if  @freecen_csv_entry.error_messages.present?%>
-    <%= f.input :info_messages , :label => 'Information Messages', :as => :text, :input_html => {:class => " simple_form_bgcolour  ",  :size => "60x5" } if  @freecen_csv_entry.info_messages.present?%>
-    <%= f.input :address_flag, :label => 'Address Flag',  selected: @freecen_csv_entry.address_flag, collection: ['x', ''], :input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 2} if   @freecen_csv_entry.address_flag.present?%>
+    <%= f.input :warning_messages, :label => 'Warning Messages', :as => :text, :input_html => {:class => ' simple_form_bgcolour  ',  :size => '50x5' } if  @freecen_csv_entry.warning_messages.present?%>
+    <%= f.input :error_messages , :label => 'Error Messages', :as => :text, :input_html => {:class => ' simple_form_bgcolour  ',  :size => '50x5' } if  @freecen_csv_entry.error_messages.present?%>
+    <%= f.input :info_messages , :label => 'Information Messages', :as => :text, :input_html => {:class => ' simple_form_bgcolour  ',  :size => '50x5' } if  @freecen_csv_entry.info_messages.present?%>
+    <%= f.input :address_flag, :label => 'Address Flag',  selected: @freecen_csv_entry.address_flag, collection: ['x', ''], :input_html =>{:class => ' simple_form_bgcolour  narrow_selection_field_width', :size => 2} if   @freecen_csv_entry.address_flag.present?%>
   <% else %>
-    <%= f.input :warning_messages, :label => 'Warning Messages', :as => :text, :input_html => {:disabled => true,   :size => "60x5" } if  @freecen_csv_entry.warning_messages.present?%>
-    <%= f.input :error_messages, :label => 'Error Messages', :as => :text, :input_html => {:disabled => true,   :size => "60x5" } if  @freecen_csv_entry.error_messages.present?%>
-    <%= f.input :info_messages , :label => 'Information Messages', :as => :text, :input_html => {:disabled => true,   :size => "60x5" } if  @freecen_csv_entry.info_messages.present?%>
+    <%= f.input :warning_messages, :label => 'Warning Messages', :as => :text, :input_html => {:disabled => true,   :size => '50x5' } if  @freecen_csv_entry.warning_messages.present?%>
+    <%= f.input :error_messages, :label => 'Error Messages', :as => :text, :input_html => {:disabled => true,   :size => '50x5' } if  @freecen_csv_entry.error_messages.present?%>
+    <%= f.input :info_messages , :label => 'Information Messages', :as => :text, :input_html => {:disabled => true,   :size => '50x5' } if  @freecen_csv_entry.info_messages.present?%>
   <% end %>
-  <%= f.input :surname ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @census_fields.include?('surname') %>
-  <%= f.input :forenames ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @census_fields.include?('forenames') %>
-  <%= f.input :name_flag,  label: "Name Flag; current value highlighted", selected: @freecen_csv_entry.name_flag, collection: ['x', ''], :input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 2} if @census_fields.include?('name_flag') %>
-  <%= f.input :relationship ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @census_fields.include?('relationship') %>
-  <%= f.input :marital_status ,label: "Marital Status; current value highlighted", selected: @freecen_csv_entry.marital_status, collection: ['m', 's', 'u', 'w', ''] ,:input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 3} if @census_fields.include?('marital_status') %>
-  <%= f.input :sex, label: "Sex; current value highlighted",selected: @freecen_csv_entry.sex, collection: ['M','m','F','f','-'],:input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 5} if @census_fields.include?('sex') %>
-  <%= f.input :age ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @census_fields.include?('age') %>
-  <%= f.input :school_children ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @census_fields.include?('school_children') %>
-  <%= f.input :years_married ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @census_fields.include?('years_married') %>
-  <%= f.input :children_born_alive ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @census_fields.include?('children_born_alive') %>
-  <%= f.input :children_living ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @census_fields.include?('children_living') %>
-  <%= f.input :children_deceased ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @census_fields.include?('children_deceased') %>
-  <%= f.input :religion ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @census_fields.include?('religion') %>
-  <%= f.input :read_write ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @census_fields.include?('read_write') %>
-  <%= f.input :individual_flag, label: "Individual Flag; current value highlighted",selected: @freecen_csv_entry.individual_flag, collection: ['x', ''], :input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 2} if @census_fields.include?('individual_flag') %>
-  <%= f.input :occupation ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @census_fields.include?('occupation') %>
-  <%= f.input :industry ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @census_fields.include?('industry') %>
-  <%= f.input :occupation_category , label: "Occupational Category; current value highlighted",selected: @freecen_csv_entry.occupation_category, collection: ['e','r','n', ''],:input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 3} if @census_fields.include?('occupation_category') %>
-  <%= f.input :at_home , label: "Working at home", selected: @freecen_csv_entry.at_home, collection: ['h',''],:input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 2} if @census_fields.include?('at_home') %>
-  <%= f.input :occupation_flag, label: "Occupation Flag; current value highlighted",selected: @freecen_csv_entry.occupation_flag, collection: ['x', ''], :input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 2} if @census_fields.include?('occupation_flag') %>
-  <%= f.input :nationality ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @census_fields.include?('nationality') %>
-  <%= f.input :verbatim_birth_county ,  label: "Verbatim Birth County; current value highlighted",selected: @freecen_csv_entry.verbatim_birth_county, collection: @counties, :input_html =>{:class => " simple_form_bgcolour small_selection_field_width", :size => 4} if @census_fields.include?('verbatim_birth_county') %>
-  <%= f.input :birth_county ,  label: "Birth County; current value highlighted",selected: @freecen_csv_entry.birth_county, collection: @counties, :input_html =>{:class => " simple_form_bgcolour small_selection_field_width", :size => 4} if @census_fields.include?('birth_county') %>
-  <%= f.input :verbatim_birth_place ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @census_fields.include?('verbatim_birth_place') %>
-  <%= f.input :birth_place ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @census_fields.include?('birth_place') %>
-  <%= f.input :father_place_of_birth ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @census_fields.include?('father_place_of_birth') %>
-  <%= f.input :birth_place_flag, label: "Birth Place Flag; current value highlighted",selected: @freecen_csv_entry.birth_place_flag, collection: ['x', ' '], :input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 2} if @census_fields.include?('birth_place_flag') %>
-  <%= f.input :disability ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @census_fields.include?('disability') %>
-  <%= f.input :disability_notes ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } if @census_fields.include?('disability_notes') %>
-  <%= f.input :language, label: "Language Flag; current value highlighted",selected: @freecen_csv_entry.language, collection: @languages, :input_html =>{:class => " simple_form_bgcolour simple_form_position narrow_selection_field_width", :size => 3} if @census_fields.include?('language') && !(ChapmanCode::CODES['England'].values.member?(@chapman_code) || @chapman_code == 'IOM') %>
-  <%= f.input :notes, :label => 'Notes', :as => :text, :input_html => {:class => " simple_form_bgcolour  ",   :placeholder => "Enter notes about entry in census",  :size => "60x5" } %>
+  <%= f.input :surname ,  :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30 } if @census_fields.include?('surname') %>
+  <%= f.input :forenames ,  :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30 } if @census_fields.include?('forenames') %>
+  <%= f.input :name_flag,  label: 'Name Flag; current value highlighted', selected: @freecen_csv_entry.name_flag, collection: ['x', ''], :input_html =>{:class => ' simple_form_bgcolour narrow_selection_field_width', :size => 2} if @census_fields.include?('name_flag') %>
+  <%= f.input :relationship ,  :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30 } if @census_fields.include?('relationship') %>
+  <%= f.input :marital_status ,label: 'Marital Status; current value highlighted', selected: @freecen_csv_entry.marital_status, collection: ['m', 's', 'u', 'w', ''] ,:input_html =>{:class => ' simple_form_bgcolour  narrow_selection_field_width', :size => 3} if @census_fields.include?('marital_status') %>
+  <%= f.input :sex, label: 'Sex; current value highlighted',selected: @freecen_csv_entry.sex, collection: ['M','m','F','f','-'],:input_html =>{:class => ' simple_form_bgcolour  narrow_selection_field_width', :size => 5} if @census_fields.include?('sex') %>
+  <%= f.input :age ,  :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30 } if @census_fields.include?('age') %>
+  <%= f.input :school_children ,  :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30 } if @census_fields.include?('school_children') %>
+  <%= f.input :years_married ,  :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30 } if @census_fields.include?('years_married') %>
+  <%= f.input :children_born_alive ,  :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30 } if @census_fields.include?('children_born_alive') %>
+  <%= f.input :children_living ,  :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30 } if @census_fields.include?('children_living') %>
+  <%= f.input :children_deceased ,  :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30 } if @census_fields.include?('children_deceased') %>
+  <%= f.input :religion ,  :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30 } if @census_fields.include?('religion') %>
+  <%= f.input :read_write ,  :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30 } if @census_fields.include?('read_write') %>
+  <%= f.input :individual_flag, label: 'Individual Flag; current value highlighted',selected: @freecen_csv_entry.individual_flag, collection: ['x', ''], :input_html =>{:class => ' simple_form_bgcolour narrow_selection_field_width', :size => 2} if @census_fields.include?('individual_flag') %>
+  <%= f.input :occupation ,  :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30 } if @census_fields.include?('occupation') %>
+  <%= f.input :industry ,  :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30 } if @census_fields.include?('industry') %>
+  <%= f.input :occupation_category , label: 'Occupational Category; current value highlighted',selected: @freecen_csv_entry.occupation_category, collection: ['e','r','n', ''],:input_html =>{:class => ' simple_form_bgcolour narrow_selection_field_width', :size => 3} if @census_fields.include?('occupation_category') %>
+  <%= f.input :at_home , label: 'Working at home', selected: @freecen_csv_entry.at_home, collection: ['h',''],:input_html =>{:class => ' simple_form_bgcolour simple_form_position narrow_selection_field_width', :size => 2} if @census_fields.include?('at_home') %>
+  <%= f.input :occupation_flag, label: 'Occupation Flag; current value highlighted',selected: @freecen_csv_entry.occupation_flag, collection: ['x', ''], :input_html =>{:class => ' simple_form_bgcolour narrow_selection_field_width', :size => 2} if @census_fields.include?('occupation_flag') %>
+  <%= f.input :nationality ,  :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30 } if @census_fields.include?('nationality') %>
+  <%= f.input :verbatim_birth_county ,  label: 'Verbatim Birth County; current value highlighted',selected: @freecen_csv_entry.verbatim_birth_county, collection: @counties, :input_html =>{:class => ' simple_form_bgcolour small_selection_field_width', :size => 4} if @census_fields.include?('verbatim_birth_county') %>
+  <%= f.input :birth_county ,  label: 'Birth County; current value highlighted',selected: @freecen_csv_entry.birth_county, collection: @counties, :input_html =>{:class => ' simple_form_bgcolour small_selection_field_width', :size => 4} if @census_fields.include?('birth_county') %>
+  <%= f.input :verbatim_birth_place ,  :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30 } if @census_fields.include?('verbatim_birth_place') %>
+  <%= f.input :birth_place ,  :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30 } if @census_fields.include?('birth_place') %>
+  <%= f.input :father_place_of_birth ,  :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30 } if @census_fields.include?('father_place_of_birth') %>
+  <%= f.input :birth_place_flag, label: 'Birth Place Flag; current value highlighted',selected: @freecen_csv_entry.birth_place_flag, collection: ['x', ' '], :input_html =>{:class => ' simple_form_bgcolour  narrow_selection_field_width', :size => 2} if @census_fields.include?('birth_place_flag') %>
+  <%= f.input :disability ,  :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30 } if @census_fields.include?('disability') %>
+  <%= f.input :disability_notes ,  :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30 } if @census_fields.include?('disability_notes') %>
+  <%= f.input :language, label: 'Language Flag; current value highlighted',selected: @freecen_csv_entry.language, collection: @languages, :input_html =>{:class => ' simple_form_bgcolour  narrow_selection_field_width', :size => 3} if @census_fields.include?('language') && !(ChapmanCode::CODES['England'].values.member?(@chapman_code) || @chapman_code == 'IOM') %>
+  <%= f.input :notes, :as => :text, :input_html => {:class => 'simple_form control-label simple_form_bgcolour ',   :placeholder => 'Enter notes about entry in census',  :size => '50x5' } %>
   <% if %w[validator county_coordinator country_coordinator data_manager system_administrator].include?(@user.person_role) && @freecen_csv_file.validation%>
-    <%= f.input :record_valid, label: "Record to be accepted as is; current value highlighted", selected: @freecen_csv_entry.record_valid, collection: ['true', 'false'], :input_html =>{:class => " simple_form_bgcolour simple_form_position small_selection_field_width", :size => 2} %>
+    <%= f.input :record_valid, selected: @freecen_csv_entry.record_valid, collection: ['true', 'false'], :input_html =>{:class => '  simple_form_bgcolour  small_selection_field_width', :size => 2} %>
   <% else %>
-    <%= f.input :record_valid, label: "Record valid", selected: @freecen_csv_entry.record_valid, collection: ['true', 'false'], :input_html =>{:disabled => true, :class => " simple_form_position small_selection_field_width", :size => 2} %>
+    <%= f.input :record_valid, selected: @freecen_csv_entry.record_valid, collection: ['true', 'false'], :input_html =>{:disabled => true, :class => '  small_selection_field_width', :size => 2} %>
   <% end %>
-  <div  style="text-align: center"><%= link_to 'Cancel', freecen_csv_entry_path(@freecen_csv_entry), method: :get, class: 'btn   btn--small', title: 'Cancels the Editing session.'%></div>
-  <%= f.button :submit, 'Submit',:button_html => {class: 'btn btn--small' }, title: 'Makes the addition or change PERMANENT.'  %>
+  <div  style='text-align: center'>
+    <%= f.action :submit,  :as => :button,  :label =>  'Select', :button_html => {name: 'commit', value: 'Select', :class => 'ladda-button' , 'data-style' => 'contract' ,'data-color' => appname_downcase , 'data-size' => 's', 'data-spinner-color' => '#ffffff'  } %>
+    <%= f.action  :cancel, as: :link, label: 'Cancel' %>
+  </div>
 <% end %>
+<script type='text/javascript'>
+  Ladda.bind( 'button[type=submit]' );
+</script>

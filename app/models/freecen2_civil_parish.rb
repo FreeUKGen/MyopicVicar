@@ -50,14 +50,14 @@ class Freecen2CivilParish
     end
 
     def district_place_name(chapman_code)
+      districts = Freecen2District.distinct("freecen2_place_id")
+      district_names = Freecen2District.distinct("name")
       civil_parishes = []
       Freecen2CivilParish.where(chapman_code: chapman_code).all.order_by(name: 1, year: 1).each do |civil_piece|
-        civil_parishes << civil_piece if civil_piece.freecen2_place_id.present? && (civil_piece.freecen2_place_id.to_s == civil_piece.freecen2_piece.freecen2_district.freecen2_place_id.to_s) &&
-          (civil_piece.name != civil_piece.freecen2_piece.freecen2_district.name)
+        civil_parishes << civil_piece if civil_piece.freecen2_place_id.present? && districts.include?(civil_piece.freecen2_place_id) && !district_names.include?(civil_piece.name)
       end
       civil_parishes
     end
-
   end
 
   # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::Instance methods :::::::::::::::::::::::::::::::::::::::
@@ -162,8 +162,17 @@ class Freecen2CivilParish
   end
 
   def civil_parish_place_id(place_name)
-    place = Freecen2Place.find_by(chapman_code: chapman_code, place_name: place_name) if chapman_code.present?
-    place = place.present? ? place.id : ''
+    standard_place_name = Freecen2Place.standard_place(place_name)
+    place = Freecen2Place.find_by(chapman_code: chapman_code, standard_place_name: standard_place_name) if chapman_code.present?
+    if place.present?
+      return place.id
+    else
+      place = Freecen2Place.find_by("alternate_freecen2_place_names.standard_alternate_name" => standard_place_name)
+      if place.present?
+        return place.id
+      end
+      ''
+    end
   end
 
   def propagate_freecen2_place(old_place, old_name)

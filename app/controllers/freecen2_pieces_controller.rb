@@ -38,6 +38,7 @@ class Freecen2PiecesController < ApplicationController
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No piece found') && return if @freecen2_piece.blank?
 
     session[:freecen2_piece] = @freecen2_piece.name
+    @chapman_code = session[:chapman_code]
     @freecen2_place = @freecen2_piece.freecen2_place
     @freecen2_place = @freecen2_place.present? ? @freecen2_place.place_name : ''
     @freecen2_pieces = @freecen2_piece.piece_names

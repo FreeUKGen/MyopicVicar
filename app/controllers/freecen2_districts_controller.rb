@@ -120,7 +120,7 @@ class Freecen2DistrictsController < ApplicationController
     end
     @options = freecen2_districts
     @location = 'location.href= "/freecen2_districts/" + this.value'
-    @prompt = 'Select District'
+    @prompt = 'Select the specific District'
     session[:type] = 'district_name'
     render '_form_for_selection'
   end
@@ -132,7 +132,7 @@ class Freecen2DistrictsController < ApplicationController
     @options = Freecen::CENSUS_YEARS_ARRAY
 
     @location = 'location.href= "/freecen2_districts/chapman_year_index/?year=" + this.value'
-    @prompt = 'Select Year'
+    @prompt = 'Select the Year'
     session[:type] = 'district_year'
     render '_form_for_selection'
   end

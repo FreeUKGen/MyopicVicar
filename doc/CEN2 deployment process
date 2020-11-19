@@ -1,3 +1,5 @@
+Step 0. Check Userid collection on production and coordinators
+
 Step 1. Merge copy of current branch into copy of Master
 
 Step 2. Test basic running of master copy on test2 freeCEN
@@ -15,6 +17,25 @@ Step 3. delete all freecen2 collections
   db.freecen2_districts.drop()
   db.freecen2_civil_parishes.drop()
 
+
+Step4 Get place names
+
+ dump places from freereg production
+    f2rake foo:dump_place_as_csv_file["dump_all.csv",ALL,500000] --trace
+  add alias fd2rake='sudo -u webserv bundle exec rake RAILS_ENV=development'
+    Check for errors in the reg dump file, misplaced disables and misspelt  grid reference
+  transfer to my server and upload
+  bundle exec rake foo:upload_place_dump_from_csv_file_to_freecen2_place_collection["dump_all.csv",500000] --trace
+
+  extract mdx, sry, ken from my server of freecen
+    f2rake foo:download_freecen2_place_as_csv_file['KEN_place_name.csv',KEN,100000] --trace
+    f2rake foo:download_freecen2_place_as_csv_file['MDX_place_name.csv',MDX,100000] --trace
+    f2rake foo:download_freecen2_place_as_csv_file['SRY_place_name.csv',SRY,100000] --trace
+  copy to my server with fileZilla
+  dump places from freecen production
+    f2rake foo:dump_place_as_csv_file["dump_cen2_places.csv",ALL,500000] --trace
+  Transfer to my server and redit
+    remove entries with 60 0 lat lon
 Step 4. Create Freecen Places
   Activate Special Counties
   use fileZilla to copy files to my folder tmp on test2
@@ -26,6 +47,7 @@ Step 4. Create Freecen Places
     IOWGJ_place_name.csv
     civil_parishes-no-geom_irish.csv
     dump_cen2_places.csv
+    kirk_place_name.csv
   copy to tmp on test2
     sudo -u webserv cp *.csv /home/apache/hosts/freecen2/development/tmp/
   run loads of files
@@ -52,16 +74,3 @@ Step 5. Load parms
 
   create indices for all 3 collections
 
-annex A
-  dump places from freereg
-    f2rake foo:dump_place_as_csv_file["dump_all.csv",ALL,500000] --trace
-  add alias fd2rake='sudo -u webserv bundle exec rake RAILS_ENV=development'
-  transfer to test2
-  load into freecen2 Place
-    fd2rake foo:upload_place_dump_from_csv_file_to_freecen2_place_collection["dump_all.csv",500000] --trace
-  extract mdx, sry, ken
-    f2rake foo:download_freecen2_place_as_csv_file['KEN_place_name.csv',KEN,100000] --trace
-    f2rake foo:download_freecen2_place_as_csv_file['MDX_place_name.csv',MDX,100000] --trace
-    f2rake foo:download_freecen2_place_as_csv_file['SRY_place_name.csv',SRY,100000] --trace
-  copy to my server with fileZilla
-    update MDX, SRY, KEN to LND
