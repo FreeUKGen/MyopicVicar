@@ -111,9 +111,9 @@
         This entry was transcribed from the below scan(s).
         <% @scan_ids = BestGuess.includes(:ScanLinks).where(RecordNumber: @search_record[:RecordNumber]).pluck(:ScanID)%>
         <ul>
-          <img src="https://images.freebmd.org.uk/GUS/1837/Births/September/ANC-01/1837B3-A-0000.jpg" alt="tadaboom" />
+          <!--img src="https://images.freebmd.org.uk/GUS/1837/Births/September/ANC-01/1837B3-A-0000.jpg" alt="tadaboom" /-->
           <% ScanList.where(ScanID: @scan_ids).each do |s| %>
-          <%= image_tag('https://images.freebmd.org.uk/GUS/1837/Births/September/ANC-01/1837B3-A-0000.jpg')%>
+          <%#= image_tag('https://images.freebmd.org.uk/GUS/1837/Births/September/ANC-01/1837B3-A-0000.jpg')%>
             <li><%= s.SeriesRangeFileName %></li>
           <% end %>
         </ul>
