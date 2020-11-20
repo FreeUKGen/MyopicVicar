@@ -1,0 +1,49 @@
+/* top and middle footer section overrides */
+
+// reduce paddling in database caution (top) section
+.c-subfooter-3 {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+
+// remove padding in middle footer section
+.c-subfooter-2 {
+  padding: 0;
+
+  // reduce margin around title
+  &__heading {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  // remove margin around icon list
+  &__nav.c-subfooter-2__nav {
+    margin: 0;
+  }
+
+  // reduce margin on icon element
+  &__nav-item.c-subfooter-2__nav-item {
+    margin-bottom: 0.25rem;
+  }
+
+}
+
+
+/* hack for Safari to enable  focus/hover outlines */
+// need to override text-decoration setting
+// Firefox, Chrome, Edge and IE  are not impacted by "none" setting
+// text-decoration: none     (see base/_type.scss)
+.c-subfooter-2__nav-item a {
+  // resize freecen and freebmd icons
+  width: 175px;
+  height: 62px;
+  background-size: 175px 62px;
+  text-decoration: underline;
+}
+
+/* reduce spacing of outline */
+.c-subfooter-2__nav-item.c-subfooter-2__nav-item a:focus,
+.c-subfooter-2__nav-item.c-subfooter-2__nav-item a:hover {
+  outline-offset: 0.25rem;
+}
