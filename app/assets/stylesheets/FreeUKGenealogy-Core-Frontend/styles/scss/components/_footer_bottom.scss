@@ -136,9 +136,9 @@
 
 /* statistics section */
 .c-subfooter-1__stats {
+  border: 0.125rem solid $lesslight;
   grid-area: stats;
   margin: 1rem 1.75rem 0;
-  border: 0.125rem solid $lesslight;
   // background: $debug-darklime;
 
   &-heading {
@@ -156,7 +156,11 @@
   }
 
   &-value {
-    padding: 0 0.5rem 0.15rem 0.25rem;
+    //padding: 0 0.5rem 0.15rem 0.25rem;
+    padding-top: 0;
+    padding-left: 0.5rem;
+    padding-bottom: 0.15rem;
+    padding-right: 0.25rem;
   }
 }
 
