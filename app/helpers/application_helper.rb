@@ -598,8 +598,8 @@ module ApplicationHelper
   end
 
   def html_options_freeukgen_icon
-    { class: 'c-subfooter-1__fug-nav icon__freeukgen__project--light', 
-    rel: 'noreferrer' }
+    { class: 'c-subfooter-1__fug-nav icon__freeukgen__project--light',
+      rel: 'noreferrer' }
   end
 
   def helpful_anchors
