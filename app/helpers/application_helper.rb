@@ -568,7 +568,7 @@ module ApplicationHelper
 
   def app_icons2
     {
-      facebook: '<i class="fa fa-facebook-square fa-3x" title="facebook"></i></i>
+      facebook: '<i class="fa fa-facebook-square fa-3x" title="facebook"></i>
       <span class="accessibility">facebook</span>',
       news: '<i class="fa fa-rss-square fa-3x" title="news"></i>
       <span class="accessibility">FreeUKGenealogy News</span></i>',
@@ -582,24 +582,24 @@ module ApplicationHelper
   end
 
   def html_options2
-    {rel: 'noreferrer'}
+    { rel: 'noreferrer' }
   end
 
   def html_options_freereg_icon
-    {class: 'icon__freereg', rel: 'noreferrer'}
+    { class: 'icon__freereg', rel: 'noreferrer' }
   end
 
   def html_options_freecen_icon
-    {class: 'icon__freecen', rel: 'noreferrer'}
+    { class: 'icon__freecen', rel: 'noreferrer' }
   end
 
   def html_options_freebmd_icon
-    {class: 'icon__freebmd', rel: 'noreferrer'}
+    { class: 'icon__freebmd', rel: 'noreferrer' }
   end
 
   def html_options_freeukgen_icon
-    {class: 'c-subfooter-1__fug-nav icon__freeukgen__project--light', 
-      rel: 'noreferrer'}
+    { class: 'c-subfooter-1__fug-nav icon__freeukgen__project--light', 
+    rel: 'noreferrer' }
   end
 
   def helpful_anchors
@@ -613,7 +613,6 @@ module ApplicationHelper
       <span class="accessibility">Opens in new window</span>',
       fugNews: 'News about FreeUKGenealogy
       <span class="accessibility">Opens in new window</span>',
-
       freeregIcon: '<span class="accessibility">FreeREG</span>',
       freecenIcon: '<span class="accessibility">FreeCEN</span>',
       freebmdIcon: '<span class="accessibility">FreeBMD</span>',
@@ -630,12 +629,10 @@ module ApplicationHelper
       contactUs: '/contacts/new',
       donation: 'https://www.freeukgenealogy.org.uk/help-us-keep-history-free',
       fugNews: 'https://www.freeukgenealogy.org.uk/news/',
-
       freereg: 'https://www.freereg.org.uk/',
       freecen: 'https://www.freecen.org.uk/',
       freebmd: 'https://www.freebmd.org.uk/',
       freeukgen: 'http://www.freeukgenealogy.org.uk/',
-
       freeregStat: 'https://www.freereg.org.uk/freereg_contents/new?locale=en',
       freecenStat: 'https://www.freecen.org.uk/freecen_coverage?locale=en',
       freebmdStat: 'https://www.freebmd.org.uk/progress.shtml'
