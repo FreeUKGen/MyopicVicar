@@ -180,3 +180,13 @@ $text-colours:(
   "pink" $pink,
   "indigo" $indigo
 );
+
+
+// fug footer breakpoints
+$default-breakpoint: bp2 !default;
+
+$breakpoints: (
+  bp1: 220px,
+  bp2: 480px,
+  bp3: 768px
+) !default;
