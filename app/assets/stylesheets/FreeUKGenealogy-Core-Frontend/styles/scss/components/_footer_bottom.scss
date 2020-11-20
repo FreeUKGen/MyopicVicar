@@ -2,187 +2,179 @@
 *  bottom subfooter section
 */
 .c-subfooter-1 {
-    // 18px = 1.125rem      1rem
-    // 16px = 1rem or 1em   0.8889ren
-    // 13px = 0.8125rem     0.7222rem
-    margin: 0;
-    padding: 0;
-    border: 0;
-    background: $dark;
-    font-size: 0.7222rem;
+  // 18px = 1.125rem      1rem
+  // 16px = 1rem or 1em   0.8889ren
+  // 13px = 0.8125rem     0.7222rem
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: $dark;
+  font-size: 0.7222rem;
+  font-weight: normal;
+  line-height: 1.125rem;
+
+  a {
+    color: $lesslight;
     font-weight: normal;
-    line-height: 1.125rem;
+  }
 
-    a {
-        color: $lesslight;
-        font-weight: normal;
+  &__wrap {
+    display: grid;
+    width: 100%;
+    max-width: 1200px;
+    margin-right: auto;
+    margin-left: auto;
+
+    /* small display  */
+    @include forLargeScreens(bp1) {
+      grid-template-areas:
+        "footer-nav"
+        "project-by"
+        "follow-us"
+        "stats"
+        "copyright"
+        "pg-ad";
+      grid-template-columns: 1fr;
     }
 
-    &__wrap {
-        display: grid;
-        width: 100%;
-        max-width: 1200px;
-        margin-right: auto;
-        margin-left: auto;
-
-        /* small display  */
-        @include forLargeScreens(bp1) {
-            grid-template-areas:
-                'footer-nav'
-                'project-by'
-                'follow-us'
-                'stats'
-                'copyright'
-                'pg-ad';
-            grid-template-columns: 1fr;
-        }
-
-        /* medium display */
-        @include forLargeScreens(bp2) {
-            grid-template-areas:
-                'footer-nav project-by'
-                'footer-nav follow-us'
-                'stats copyright'
-                'pg-ad pg-ad';
-            grid-template-columns: 1fr 1fr;
-        }
-
-        /* wide display */
-        @include forLargeScreens(bp3) {
-            grid-template-areas:
-                'footer-nav project-by stats'
-                'footer-nav follow-us  stats'
-                'copyright copyright copyright'
-                'pg-ad pg-ad pg-ad';
-            grid-template-columns: 36% 28% 36%;
-        }
+    /* medium display */
+    @include forLargeScreens(bp2) {
+      grid-template-areas:
+        "footer-nav project-by"
+        "footer-nav follow-us"
+        "stats copyright"
+        "pg-ad pg-ad";
+      grid-template-columns: 1fr 1fr;
     }
+
+    /* wide display */
+    @include forLargeScreens(bp3) {
+      grid-template-areas:
+        "footer-nav project-by stats"
+        "footer-nav follow-us  stats"
+        "copyright copyright copyright"
+        "pg-ad pg-ad pg-ad";
+      grid-template-columns: 36% 28% 36%;
+    }
+  }
 }
-
 
 /* subfooter nav */
 .c-subfooter-1__nav {
-    grid-area: footer-nav;
-    margin: 1rem 1.75rem 0;
-    border: 0.125rem solid $lesslight;
-    // background: $debug-green;
+  grid-area: footer-nav;
+  margin: 1rem 1.75rem 0;
+  border: 0.125rem solid $lesslight;
+  // background: $debug-green;
 
-    &-list {
-        margin-bottom: 0;
-        margin-left: 0;
-    }
+  &-list {
+    margin-bottom: 0;
+    margin-left: 0;
+  }
 
-    &-heading {
-        margin-bottom: 0;
-        padding: 0.25rem 0 0.15rem;
-        text-align: center;
-    }
+  &-heading {
+    margin-bottom: 0;
+    padding: 0.25rem 0 0.15rem;
+    text-align: center;
+  }
 
-    &-item {
-        width: auto;
-        padding: 0 1.625rem 0.15rem;
-        list-style-type: none;
-    }
+  &-item {
+    width: auto;
+    padding: 0 1.625rem 0.15rem;
+    list-style-type: none;
+  }
 
-    &-item:nth-child(3) {
-        padding-bottom: 1.425rem;
-    }
+  &-item:nth-child(3) {
+    padding-bottom: 1.425rem;
+  }
 }
-
 
 /* fug project section */
 .c-subfooter-1__fug {
-    grid-area: project-by;
-    padding: 0 0.5rem;
-    text-align: center;
-    // background: $debug-limegreen;
+  grid-area: project-by;
+  padding: 0 0.5rem;
+  text-align: center;
+  // background: $debug-limegreen;
 
-    &-heading {
-        margin: 1rem 0 0.25rem;
-    }
+  &-heading {
+    margin: 1rem 0 0.25rem;
+  }
 
-    &-nav.c-subfooter-1__fug-nav.c-subfooter-1__fug-nav {
-        margin-top: 0;
-    }
+  &-nav.c-subfooter-1__fug-nav.c-subfooter-1__fug-nav {
+    margin-top: 0;
+  }
 
-    //override lap_and_up line 228
-    a:focus,
-    a:hover {
-        background-color: transparent;
-        outline: 2px dashed $project-color-faded;
-        outline-offset: 5px;
-    }
-
+  //override lap_and_up line 228
+  a:focus,
+  a:hover {
+    background-color: transparent;
+    outline: 2px dashed $project-color-faded;
+    outline-offset: 5px;
+  }
 }
-
 
 /* follow us section */
 .c-subfooter-1__social-nav {
-    grid-area: follow-us;
-    padding: 0 0.5rem;
+  grid-area: follow-us;
+  padding: 0 0.5rem;
+  list-style-type: none;
+  text-align: center;
+  // background: $debug-purple;
+
+  &-heading {
+    margin: 0.25rem;
+  }
+
+  &-list {
+    margin: 0;
     list-style-type: none;
-    text-align: center;
-    // background: $debug-purple;
+  }
 
-    &-heading {
-        margin: 0.25rem;
-    }
-
-    &-list {
-        margin: 0;
-        list-style-type: none;
-    }
-
-    &-item {
-        padding: 0 3px;
-    }
+  &-item {
+    padding: 0 3px;
+  }
 }
-
 
 /* statistics section */
 .c-subfooter-1__stats {
-    grid-area: stats;
-    margin: 1rem 1.75rem 0;
-    border: 0.125rem solid $lesslight;
-    // background: $debug-darklime;
+  grid-area: stats;
+  margin: 1rem 1.75rem 0;
+  border: 0.125rem solid $lesslight;
+  // background: $debug-darklime;
 
-    &-heading {
-        margin-bottom: 0;
-        padding: 0.25rem 0 0.15rem;
-        text-align: center;
-    }
+  &-heading {
+    margin-bottom: 0;
+    padding: 0.25rem 0 0.15rem;
+    text-align: center;
+  }
 
-    &-list {
-        margin-bottom: 0;
-    }
+  &-list {
+    margin-bottom: 0;
+  }
 
-    &-term {
-        padding: 0 1.625rem 0.15rem;
-    }
+  &-term {
+    padding: 0 1.625rem 0.15rem;
+  }
 
-    &-value {
-        padding: 0 0.5rem 0.15rem 0.25rem;
-    }
-
+  &-value {
+    padding: 0 0.5rem 0.15rem 0.25rem;
+  }
 }
-
 
 /* copyright section */
 .c-subfooter-1__copyright {
-    grid-area: copyright;
-    padding: 0 2rem;
-    text-align: center;
-    // background: $debug-blue;
+  grid-area: copyright;
+  padding: 0 2rem;
+  text-align: center;
+  // background: $debug-blue;
 
-    &-text {
-        margin-top: 0.75rem;
-        margin-bottom: 0.25rem;
-    }
+  &-text {
+    margin-top: 0.75rem;
+    margin-bottom: 0.25rem;
+  }
 }
-
 
 /* ads space */
 .c-subfooter-1__ads-space {
-    grid-area: pg-ad;
-    height: 5.625rem;
+  grid-area: pg-ad;
+  height: 5.625rem;
 }

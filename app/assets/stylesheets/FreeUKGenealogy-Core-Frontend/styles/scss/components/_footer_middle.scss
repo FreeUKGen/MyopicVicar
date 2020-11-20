@@ -6,7 +6,6 @@
   padding-bottom: 0.5rem;
 }
 
-
 // remove padding in middle footer section
 .c-subfooter-2 {
   padding: 0;
@@ -26,9 +25,7 @@
   &__nav-item.c-subfooter-2__nav-item {
     margin-bottom: 0.25rem;
   }
-
 }
-
 
 /* hack for Safari to enable  focus/hover outlines */
 // need to override text-decoration setting
