@@ -577,29 +577,29 @@ module ApplicationHelper
   end
 
   def html_options2
-    { rel: 'noreferrer'}
+    { rel: 'noreferrer' }
   end
 
   def html_options_freereg_icon
-    { class: 'icon__freereg', rel: 'noreferrer'}
+    { class: 'icon__freereg', rel: 'noreferrer' }
   end
 
   def html_options_freecen_icon
-    { class: 'icon__freecen', rel: 'noreferrer'}
+    { class: 'icon__freecen', rel: 'noreferrer' }
   end
 
   def html_options_freebmd_icon
-    { class: 'icon__freebmd', rel: 'noreferrer'}
+    { class: 'icon__freebmd', rel: 'noreferrer' }
   end
 
   def html_options_freeukgen_icon
-    { class: 'c-subfooter-1__fug-nav icon__freeukgen__project--light', rel: 'noreferrer'}
+    { class: 'c-subfooter-1__fug-nav icon__freeukgen__project--light', rel: 'noreferrer' }
   end
 
-def helpful_anchors
+  def helpful_anchors
     {
-      cookiePolicy: 'Cookie Policy',
-      privacyNotice: 'Privacy Notice<span class="accessibility">Opens in new window</span>',
+     cookiePolicy: 'Cookie Policy',
+     privacyNotice: 'Privacy Notice<span class="accessibility">Opens in new window</span>',
       termAndConditions: 'Terms and Conditions',
       contactUs: 'Contact Us',
       donation: 'Make a donation to cover our operating costs<span class="accessibility">Opens in new window</span>',
@@ -611,27 +611,27 @@ def helpful_anchors
       freeukgenIcon: '<span class="accessibility">FreeUKGenealogy</span>',
       statistics: 'Statistics'
     }
-end
+  end
 
-def helpful_links
-  {
-  cookiePolicy: '/cms/about/cookie-policy',
-  privacyNotice: 'https://www.freeukgenealogy.org.uk/files/Documents/Privacy-Notice.pdf',
-  termAndConditions: '/cms/terms-and-conditions',
-  contactUs: '/contacts/new',
-  donation: 'https://www.freeukgenealogy.org.uk/help-us-keep-history-free',
-  fugNews: 'https://www.freeukgenealogy.org.uk/news/',
+  def helpful_links
+    {
+      cookiePolicy: '/cms/about/cookie-policy',
+      privacyNotice: 'https://www.freeukgenealogy.org.uk/files/Documents/Privacy-Notice.pdf',
+      termAndConditions: '/cms/terms-and-conditions',
+      contactUs: '/contacts/new',
+      donation: 'https://www.freeukgenealogy.org.uk/help-us-keep-history-free',
+      fugNews: 'https://www.freeukgenealogy.org.uk/news/',
 
-  freereg: 'https://www.freereg.org.uk/',
-  freecen: 'https://www.freecen.org.uk/',
-  freebmd: 'https://www.freebmd.org.uk/',
-  freeukgen: 'http://www.freeukgenealogy.org.uk/',
+      freereg: 'https://www.freereg.org.uk/',
+      freecen: 'https://www.freecen.org.uk/',
+      freebmd: 'https://www.freebmd.org.uk/',
+      freeukgen: 'http://www.freeukgenealogy.org.uk/',
 
-  freeregStat: 'https://www.freereg.org.uk/freereg_contents/new?locale=en',
-  freecenStat: 'https://www.freecen.org.uk/freecen_coverage?locale=en',
-  freebmdStat: 'https://www.freebmd.org.uk/progress.shtml'
-  }
-end
+      freeregStat: 'https://www.freereg.org.uk/freereg_contents/new?locale=en',
+      freecenStat: 'https://www.freecen.org.uk/freecen_coverage?locale=en',
+      freebmdStat: 'https://www.freebmd.org.uk/progress.shtml'
+    }
+  end
 
   def fullwidth_adsense_freereg
     banner = <<-HTML
