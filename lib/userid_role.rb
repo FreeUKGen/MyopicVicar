@@ -208,7 +208,7 @@ module UseridRole
                                  'Review Batches with Errors', 'Review Batches by Filename', 'Review Batches being Validated', 'Review Incorporated Batches',
                                  'Review Batches by Userid then Filename', 'Review Batches by Most Recent Date of Change',
                                  'Review Batches by Oldest Date of Change', 'Review Specific Batch', 'Upload New Batch', 'Manage FreeCEN1 Pieces',
-                                 'Manage VLD Files', 'Manage Places']
+                                 'Manage VLD Files', 'Manage FreeCEN1 Places']
   when 'freebmd'
   end
   COUNTY_OPTIONS_TRANSLATION = {
@@ -233,7 +233,7 @@ module UseridRole
     'Manage FreeCEN2 Districts' => '/freecen2_districts',
     'Manage FreeCEN2 Civil Parishes' => '/freecen2_civil_parishes',
     'Manage VLD Files' => '/freecen1_vld_files',
-    'Manage Places' => '/places',
+    'Manage FreeCEN1 Places' => '/places',
     'Offline Reports' => '/manage_counties/selection?option=Offline Reports',
 
   }

@@ -48,7 +48,7 @@
     <%= f.input :record_valid, selected: @freecen_csv_entry.record_valid, collection: ['true', 'false'], :input_html =>{:disabled => true, :class => '  small_selection_field_width', :size => 2} %>
   <% end %>
   <div  style='text-align: center'>
-    <%= f.action :submit,  :as => :button,  :label =>  'Select', :button_html => {name: 'commit', value: 'Select', :class => 'ladda-button' , 'data-style' => 'contract' ,'data-color' => appname_downcase , 'data-size' => 's', 'data-spinner-color' => '#ffffff'  } %>
+    <%= f.action :submit,  :as => :button,  :label =>  'Submit', :button_html => {name: 'commit', value: 'Submit', :class => 'ladda-button' , 'data-style' => 'contract' ,'data-color' => appname_downcase , 'data-size' => 's', 'data-spinner-color' => '#ffffff'  } %>
     <%= f.action  :cancel, as: :link, label: 'Cancel' %>
   </div>
 <% end %>
