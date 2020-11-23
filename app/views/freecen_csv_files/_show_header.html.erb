@@ -14,12 +14,12 @@
     <%= browse_freecen_file_dwellings%>
     <%= browse_freecen_file_individuals%>
     <br>
-    <% if ['county_coordinator', 'country_coordinator', 'system_administrator', 'data_manager', 'validator'].include?(@user.person_role) %>
+    <% if %w[county_coordinator master_county_coordinator country_coordinator system_administrator data_manager validator executive_director project_manager].include?(@user.person_role) %>
       <%= change_freecen_file_owner unless @freecen_csv_file.incorporation_lock %>
       <%= edit_freecen_file %>
       <%= reprocess_freecen_file unless @freecen_csv_file.incorporation_lock %>
     <% end%>
-    <% if ['county_coordinator', 'country_coordinator', 'system_administrator'].include?(@user.person_role) %>
+    <% if %w[county_coordinator master_county_coordinator country_coordinator system_administrator data_manager validator executive_director project_manager].include?(@user.person_role) %>
       <%= validate_freecen_file unless @freecen_csv_file.incorporation_lock %>
       <%= incorporate_freecen_file if @freecen_csv_file.validation%>
     <% end%>

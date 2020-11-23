@@ -234,6 +234,13 @@ class FreecenCsvEntry
         message += messagea
       end
 
+      freecen2_civil_parish = Freecen2CivilParish.find_by(name: record[:civil_parish], year: record[:year], chapman_code: record[:piece].chapman_code)
+      if freecen2_civil_parish.freecen2_place_id.blank?
+        messagea += "Warning: line #{num} Civil Parish #{record[:civil_parish]} does not link to a place.<br>"
+        record[:warning_messages] += messagea
+        message += messagea
+      end
+
       if previous_civil_parish == ''
         messagea = "Info: line #{num} New Civil Parish #{record[:civil_parish]}.<br>" if info_messages
         record[:info_messages] += messagea if info_messages

@@ -1,7 +1,7 @@
 <%= semantic_form_for @freecen_csv_entry, :html => { :class => 'grid'}   do |f| %>
   <%= f.hidden_field :record_number, :value=>@freecen_csv_entry.record_number %>
   <%= f.hidden_field :year, :value=>@freecen_csv_entry.year %>
-  <% if %w[validator county_coordinator country_coordinator data_manager system_administrator].include?(@user.person_role) && @freecen_csv_file.validation%>
+  <% if %w[validator county_coordinator master_county_coordinator country_coordinator data_manager system_administrator executive_director project_manager].include?(@user.person_role) && @freecen_csv_file.validation%>
     <%= f.input :warning_messages, :label => 'Warning Messages', :as => :text, :input_html => {:class => ' simple_form_bgcolour  ',  :size => '50x5' } if  @freecen_csv_entry.warning_messages.present?%>
     <%= f.input :error_messages , :label => 'Error Messages', :as => :text, :input_html => {:class => ' simple_form_bgcolour  ',  :size => '50x5' } if  @freecen_csv_entry.error_messages.present?%>
     <%= f.input :info_messages , :label => 'Information Messages', :as => :text, :input_html => {:class => ' simple_form_bgcolour  ',  :size => '50x5' } if  @freecen_csv_entry.info_messages.present?%>
@@ -42,7 +42,7 @@
   <%= f.input :disability_notes ,  :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30 } if @census_fields.include?('disability_notes') %>
   <%= f.input :language, label: 'Language Flag; current value highlighted',selected: @freecen_csv_entry.language, collection: @languages, :input_html =>{:class => ' simple_form_bgcolour  narrow_selection_field_width', :size => 3} if @census_fields.include?('language') && !(ChapmanCode::CODES['England'].values.member?(@chapman_code) || @chapman_code == 'IOM') %>
   <%= f.input :notes, :as => :text, :input_html => {:class => 'simple_form control-label simple_form_bgcolour ',   :placeholder => 'Enter notes about entry in census',  :size => '50x5' } %>
-  <% if %w[validator county_coordinator country_coordinator data_manager system_administrator].include?(@user.person_role) && @freecen_csv_file.validation%>
+  <% if %w[validator county_coordinator master_county_coordinator country_coordinator data_manager system_administrator executive_director project_manager].include?(@user.person_role) && @freecen_csv_file.validation%>
     <%= f.input :record_valid, selected: @freecen_csv_entry.record_valid, collection: ['true', 'false'], :input_html =>{:class => '  simple_form_bgcolour  small_selection_field_width', :size => 2} %>
   <% else %>
     <%= f.input :record_valid, selected: @freecen_csv_entry.record_valid, collection: ['true', 'false'], :input_html =>{:disabled => true, :class => '  small_selection_field_width', :size => 2} %>

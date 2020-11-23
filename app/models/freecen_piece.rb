@@ -154,7 +154,7 @@ class FreecenPiece
           piece = ''
         end
       end
-      [year, piece.to_i]
+      [year, piece.to_i, first_two_characters]
     end
 
     def grand_totals(pieces, pieces_online, individuals, dwellings)

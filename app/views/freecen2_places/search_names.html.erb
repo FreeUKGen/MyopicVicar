@@ -1,5 +1,5 @@
 <% breadcrumb :search_names%>
-<% if %w[data_manager system_administrator county_coordinator validator].include?(@user.person_role) %>
+<% if %w[data_manager system_administrator county_coordinator master_county_coordinator validator executive_director project_manager].include?(@user.person_role) %>
   <div style="text-align: center">
     <%= link_to 'Create New Freecen2 Place', new_freecen2_place_path, method: :get, :class => "btn   btn--small", title: 'Permits the addition of a new place' %>
   </div>

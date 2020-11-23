@@ -163,8 +163,8 @@ class ManageCountiesController < ApplicationController
   def get_counties_for_selection
     @counties = @user.county_groups
     @countries = @user.country_groups
-    if @user.person_role == 'data_manager' || @user.person_role == 'system_administrator' || @user.person_role == 'project_director' ||
-        @user.person_role == 'documentation_coordinator' || @user.person_role == "contacts_coordinator"
+    if %w[volunteer_coordinator contacts_coordinator data_manager master_county_coordinator system_administrator documentation_coordinator SNDManager
+          CENManager REGManager executive_director project_manager].include?(@user.person_role)
       @countries = []
       counties = County.application_counties
       counties.each do |county|

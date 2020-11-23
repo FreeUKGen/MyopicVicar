@@ -1,7 +1,7 @@
 <% breadcrumb :search_names_results%>
 <h3 style="text-align: center"> <%= @total%> Results in a Freecen2 Place Name Search for <%= session[:search_names][:search]%> in <%= @county %></h3>
 <%= render 'flash_notice' %>
-<% if ['data_manager', 'system_administrator', 'county_coordinator', 'validator'].include?(@user.person_role) %>
+<% if %w[data_manager system_administrator county_coordinator master_county_coordinator validator executive_director project_manager].include?(@user.person_role) %>
   <div style="text-align: center">
     <%= link_to 'Create New Freecen2 Place', new_freecen2_place_path(name:session[:search_names][:search]), method: :get, :class => "btn   btn--small", title: 'Permits the addition of a new place' %>
   </div>
@@ -19,7 +19,7 @@
         <th class='sticky-header '>Notes<br>
           <th class='sticky-header '>Show on map<br>
             <small> Opens in a new tab</small></th>
-          <% if %w[validator data_manager system_administrator county_coordinator].include?(@user.person_role) %>
+          <% if %w[validator data_manager system_administrator county_coordinator master_county_coordinator executive_director project_manager].include?(@user.person_role) %>
             <th class='sticky-header '>Action<br>
             </tr>
           <% end%>
@@ -36,7 +36,7 @@
                 <td > <%= place.source%></td>
                 <td > <%= place.place_notes%></td>
                 <td > <%= locate(place.latitude,place.longitude) %></td>
-                <% if %w[validator data_manager system_administrator county_coordinator].include?(@user.person_role) %>
+                <% if %w[validator data_manager system_administrator county_coordinator master_county_coordinator executive_director project_manager].include?(@user.person_role) %>
                   <td ><%= link_to 'Edit', edit_freecen2_place_path(place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small", title: 'Edit the place including the addition of alternate place names' %></td>
                 </tr>
               <% end%>
