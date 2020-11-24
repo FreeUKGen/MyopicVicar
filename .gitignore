@@ -119,4 +119,3 @@ data/*
 .robocop.yml
 
 
-lib/create_userid_docs.rb
