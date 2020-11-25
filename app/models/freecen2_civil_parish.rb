@@ -108,19 +108,12 @@ class Freecen2CivilParish
 
 
   def do_we_update_place?(file)
-    p 'parish question'
-    p self
     place = freecen2_place.reload
-
-    p place
     files = []
     FreecenCsvFile.where(chapman_code: chapman_code, year: year, incorporated: true).all.each do |my_file|
       files << my_file if my_file.enumeration_districts.keys.include?(name)
     end
-    p files
-    p files.count.zero?
     result = files.count.zero? ? true : false
-    p result
     result
   end
 
@@ -129,10 +122,6 @@ class Freecen2CivilParish
     return [true, message] unless do_we_update_place?(file)
 
     place = freecen2_place
-    p 'update place'
-    p self
-    p place.cen_data_years
-    p year
     place.cen_data_years.delete_if { |value| value == year }
     place.data_present = false
     success = place.save
