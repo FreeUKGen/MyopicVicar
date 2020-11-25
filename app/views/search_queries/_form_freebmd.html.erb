@@ -130,7 +130,7 @@
                 </div>
 
                  <div class="spouse_firstnames_div">
-                    <li class="grid__item desk-wide-one-fifth desk-one-third lap-one-half palm-one-whole spousefirstnamess">
+                    <li class="grid__item desk-wide-one-quarter desk-one-third lap-one-half palm-one-whole spousefirstnamess">
                         <div class='labels'>
                             <%= label_tag 'spouse_first_name', "Spouse first name(s) #{app_icons[:info]}".html_safe, class: "ttip", tabindex: "0" do %>
                                 <%= "Spouse first name(s) #{app_icons[:info]}".html_safe %>
@@ -160,7 +160,7 @@
                 </div>
 
                 <div class="age_at_death_or_date_of_birth_div">
-                    <li class="grid__item desk-wide-one-fifth desk-one-third lap-one-half palm-one-whole dateofbirths">
+                    <li class="grid__item desk-wide-one-quarter desk-one-third lap-one-half palm-one-whole dateofbirths">
                         <div class='labels'>
                             <%= label_tag 'death_select_box', "Age at Death #{app_icons[:info]}".html_safe, class: "ttip", tabindex: "0" do %>
                                 <%= "Age at Death #{app_icons[:info]}".html_safe %>
@@ -232,7 +232,7 @@
                     <%= text_field_tag 'search_query[page]', set_value(@search_query.page), class: 'text-input', id: 'page', placeholder: 'Enter Page', tabindex: "0"%>
                 </li>
 
-                <div class="grid__item desk-wide-one-third desk-one-half lap-one-half palm-one-whole countiess">
+                <li class="grid__item desk-wide-one-third desk-one-half lap-one-half palm-one-whole countiess">
                     <div class='labels'>
                         <div class="countieslabel">
                             <%= label_tag 'chapman_codes', "Counties #{app_icons[:info]}".html_safe, class: "ttip",  tabindex: "0" do %>
@@ -245,8 +245,8 @@
                     <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
                     <% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil?%>
                     <%= f.select :chapman_codes, grouped_options_for_select(grouped_options, selected_key = key), {include_blank: 'All Counties'}, {multiple: true, id: 'search_query_chapman_codes', tabindex: "0"} %>
-                    <!--small class="additional">Select one place or none</small-->
-                </div>
+                    <small class="additional">Select one County or none</small>
+                </li>
 
                 <div class="grid__item desk-wide-one-third desk-one-half lap-one-half palm-one-whole districtss">
                     <div class='labels'>
