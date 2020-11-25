@@ -4,6 +4,6 @@
   <%= render partial: 'flash_notice' %>
   <%= semantic_form_for @freecen_csv_file, :html => { :class => "grid"}  do |f| %>
     <%= f.input :action,
-    { :as => :select, :include_blank => true,  :label => "Make a Selection", :required => false, :collection => @options,:width => 10 ,:input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 10 ,'onchange' => @location} }%>
+    { :as => :select, :include_blank => false,  :label => "Make a Selection", :required => true, :collection => @options,:width => 10 ,:input_html => {:class => " simple_form_bgcolour  overide_selection_field_width", :size => 10 ,'onchange' => @location} }%>
   <% end %>
 </div>
