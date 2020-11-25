@@ -107,6 +107,10 @@ module Freecen
 
   FINAL = %w[disability disability_notes language notes].freeze
 
+  VLD_FIELDS = %w[age birth_county birth_place civil_parish disability ecclesiastical_parish enumeration_district folio_number
+                  forenames house_number house_or_street_name language marital_status notes occupation page_number relationship
+                  schedule_number sex surname uninhabited_flag verbatim_birth_county verbatim_birth_place].freeze
+
   FREECEN1_HEADER = ['Civil Parish', 'ED', 'Folio', 'Page', 'Schd', 'House', 'Address', 'X', 'Surname', 'Forenames', 'X', 'Rel.', 'C',
                      'Sex', 'Age', 'X', 'Occupation', 'E', 'X', 'CHP', 'Place of birth', 'X', 'Dis.', 'W', 'Notes'].freeze
   CEN2_TRADITIONAL = [
