@@ -733,6 +733,14 @@ class CsvRecords < CsvFile
     return [false, n] if @array_of_lines[n][0..24].all?(&:blank?)
 
     success, message, @csvfile.field_specification, @csvfile.traditional, @csvfile.header_line = line_one(@array_of_lines[n])
+
+    file = FreecenCsvFile.find_by(userid: @csvfile.userid, file_name: @csvfile.file_name)
+    if file.present? && @csvfile.traditional < file.traditional
+      message = 'Modern headers are in use on the uploaded file and you are attempting to upload a file with traditional headers. This is not permitted'
+      @project.write_messages_to_all(message, true)
+      return [false, '']
+
+    end
     if success
       reduction = reduction + 1
     else

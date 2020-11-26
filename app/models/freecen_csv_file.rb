@@ -400,11 +400,12 @@ class FreecenCsvFile
 
   def create_modern_header_file
     #this makes aback up copy of the file in the attic and creates a new one
+    save_to_attic
     @chapman_code = chapman_code
     year, piece, series = FreecenPiece.extract_year_and_piece(file_name)
     success, message, file, census_fields = convert_file_name_to_csv(year, piece, series)
     if success
-      file_location = Rails.root.join('tmp', file_name)
+      file_location = File.join(Rails.application.config.datafiles, userid, file)
       success, message = write_modern_csv_file(file_location, census_fields)
     end
     [success, message, file_location, file]
@@ -479,7 +480,6 @@ class FreecenCsvFile
   end
 
   def write_modern_csv_file(file_location, census_fields)
-    file_location = Rails.root.join('tmp', file_name)
     header = census_fields
     @initial_line_hash = {}
     @blank = nil
@@ -558,7 +558,8 @@ class FreecenCsvFile
         line << rec.notes
       when 'ward', 'parliamentary_constituency', 'poor_law_union', 'police_district', 'sanitary_district', 'special_water_district',
           'scavenging_district', 'special_lighting_district', 'school_board'
-        line << @blank
+        entry = @use_blank ? @blank : @dash
+        line << entry
       when 'walls', 'roof_type', 'rooms', 'rooms_with_windows', 'class_of_house', 'rooms_with_windows', 'industry', 'at_home', 'years_married',
           'children_born_alive', 'children_living', 'children_deceased', 'nationality', 'disability_notes'
         line << @blank
@@ -599,27 +600,25 @@ class FreecenCsvFile
   end
 
   def compute_civil_parish(rec)
-    if !@use_blank
-      line = rec['civil_parish']
-      @initial_line_hash['civil_parish'] = rec['civil_parish']
+    if @use_blank
+      line = @blank
     else
-      if rec['civil_parish'] == @initial_line_hash['civil_parish']
-        line = @blank
+      if rec['civil_parish'].blank?
+        line = @dash
       else
         line = rec['civil_parish']
-
+        @initial_line_hash['civil_parish'] = rec['civil_parish']
       end
     end
     line
   end
 
   def compute_ecclesiastical_parish(rec)
-    if !@use_blank
-      line = rec['ecclesiastical_parish']
-      @initial_line_hash['ecclesiastical_parish'] = rec['ecclesiastical_parish']
+    if @use_blank
+      line = @blank
     else
-      if rec['ecclesiastical_parish'] == @initial_line_hash['ecclesiastical_parish']
-        line = @blank
+      if rec['ecclesiastical_parish'].blank?
+        line = @dash
       else
         line = rec['ecclesiastical_parish']
         @initial_line_hash['ecclesiastical_parish'] = rec['ecclesiastical_parish']
