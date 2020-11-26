@@ -1,0 +1,42 @@
+<div class="scrollable ">
+  <table class="table--bordered table--data" >
+    <thead>
+      <tr>
+        <% FreecenCsvEntry.individual_display_labels(@year,@chapman_code).each_with_index do |lbl,index| %>
+          <% unless index == 0 %>
+            <td><small>
+                <%= lbl %>
+              </small></td>
+          <% end %>
+        <% end %>
+        <% if FreecenCsvEntry.part2_individual_display_labels(@year,@chapman_code).present? %>
+          <% FreecenCsvEntry.part2_individual_display_labels(@year,@chapman_code).each do |lbl| %>
+            <td><small>
+                <%= lbl %>
+              </small></td>
+          <% end %>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <% @individuals.each do |individual| %>
+        <tr>
+          <% individual.individual_display_values(@year,@chapman_code).each_with_index do |field_val, index| %>
+            <% unless index == 0 %>
+              <td class="weight--semibold">
+                <%= field_val %>
+              </td>
+            <% end %>
+          <% end %>
+          <% if FreecenCsvEntry.part2_individual_display_labels(@year,@chapman_code).present? %>
+            <% individual.part2_individual_display_values(@year,@chapman_code).each do |field_val| %>
+              <td class="weight--semibold">
+                <%= field_val %>
+              </td>
+            <% end %>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <%= render '/freecen_csv_entries/donate_and_data_problem' %>

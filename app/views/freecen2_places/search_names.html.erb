@@ -1,0 +1,15 @@
+<% breadcrumb :search_names%>
+<% if %w[data_manager system_administrator county_coordinator master_county_coordinator validator executive_director project_manager].include?(@user.person_role) %>
+  <div style="text-align: center">
+    <%= link_to 'Create New Freecen2 Place', new_freecen2_place_path, method: :get, :class => "btn   btn--small", title: 'Permits the addition of a new place' %>
+  </div>
+<% end%>
+<%= render 'flash_notice' %>
+<div class="island  island--light">
+  <%= simple_form_for @freecen2_place, :html => { :class => "grid"}  do |f| %>
+    <%= f.input :place_name, :label => "Enter the place name(s) you are trying to locate",:hint => "Names entered are case insensitive and should be the stem of a name e.g. ann will locate ann anns ann's anns'. Results will include both or any of the names entered and will be independent of their order." ,:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+    <%= f.input :county,:label => "Select county from following list",:include_blank => true, :collection => @counties,:hint =>'Select the initial blank line to search all Counties or select a County', :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 3}   %>
+    <%= f.hidden_field :disabled, :value=> false %>
+    <%= f.button :submit, 'Search Place Names',:button_html => {:class => "btn" }  %>
+  <% end %>
+</div>

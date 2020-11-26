@@ -126,53 +126,59 @@ class PhysicalFile
 
   def add_file(batch)
     success = true
-    case
-    when  batch == "base" || batch == "reprocessing"
+    if batch == "base" || batch == "reprocessing" && MyopicVicar::Application.config.template_set == 'freereg'
       self.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => true, :waiting_date => Time.now)
-    when batch == "change"
-      base_directory = Rails.application.config.datafiles
-      change_directory = Rails.application.config.datafiles_changeset
-      self.update_attributes(:change => true,:change_uploaded_date =>Time.now, :file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => true, :waiting_date => Time.now)
-      filename = File.join(change_directory, self.userid,self.file_name)
-      if File.exists?(filename)
-        file_location = File.join(base_directory, self.userid)
-        Dir.mkdir(file_location) unless Dir.exists?(file_location)
-        FileUtils.cp(filename,File.join(file_location,self.file_name ),:verbose => true)
-        self.update_attributes(:base => true, :base_uploaded_date => Time.now,:file_processed => false)
-      else
-        success = false
-        message = "File does not exist"
-      end
     else
       p "why here"
     end
-    rake_lock_file = File.join(Rails.root,"tmp","processing_rake_lock_file.txt")
-    if File.exist?(rake_lock_file)
-      logger.warn("FREEREG:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists")
-      message =  "The csv file #{ self.file_name} has been sent for processing . You will receive an email when it has been completed."
-    else
-      logger.warn("FREEREG:CSV_PROCESSING: Starting rake task for #{self.userid} #{self.file_name}")
-      pid1 = Kernel.spawn("rake build:freereg_new_update[\"create_search_records\",\"waiting\",\"no\",\"a-9\"]")
-      message =  "The csv file #{ self.file_name} is being processed . You will receive an email when it has been completed."
+    case MyopicVicar::Application.config.template_set
+    when 'freereg'
+      rake_lock_file = Rails.root.join('tmp', 'processing_rake_lock_file.txt')
+      if File.exist?(rake_lock_file)
+        logger.warn("FREEREG:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists")
+        message = "The csv file #{ self.file_name} has been sent for processing . You will receive an email when it has been completed."
+      else
+        logger.warn("FREEREG:CSV_PROCESSING: Starting rake task for #{self.userid} #{self.file_name}")
+        pid1 = spawn("rake build:freereg_new_update[\"create_search_records\",\"waiting\",\"no\",\"a-9\"]")
+        message = "The csv file #{ self.file_name} is being processed . You will receive an email when it has been completed."
+      end
+    when 'freecen'
+      rake_lock_file = Rails.root.join('tmp', 'freecen_processing_rake_lock_file.txt')
+      if File.exist?(rake_lock_file)
+        logger.warn("FREECEN:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists")
+        message = "The csv file #{ self.file_name} has been sent for processing . You will receive an email when it has been completed."
+      else
+
+        logger.warn("FREECEN:CSV_PROCESSING: Starting rake task for #{self.userid} #{self.file_name}")
+        pid1 = spawn("rake build:freecen_csv_process[\"no_search_records\",\"individual\",\"no\",\"#{File.join(userid, file_name)}\",\"Traditional\",\"Check(Warn)\"]")
+        message = "The csv file #{ self.file_name} is being processed . You will receive an email when it has been completed."
+        logger.warn("FREECEN:CSV_PROCESSING: #{pid1}")
+      end
     end
-    return[success,message]
+    [success, message]
   end
 
   def file_and_entries_delete
     file = Freereg1CsvFile.where(file_name: file_name, userid: userid).first
-    file.remove_from_ucf_list unless file.blank?
-    file.save_to_attic unless file.blank?
-    Freereg1CsvFile.where(file_name: file_name, userid: userid).destroy_all unless file.blank?
+    file.remove_from_ucf_list if file.present?
+    Freereg1CsvFile.where(file_name: file_name, userid: userid).destroy_all if file.present?
     if file_name.present?
       base_file_location = File.join(Rails.application.config.datafiles, userid, file_name)
-      change_file_location = File.join(Rails.application.config.datafiles_changeset, userid, file_name)
       File.delete(base_file_location) if File.file?(base_file_location)
-      File.delete(change_file_location) if File.file?(change_file_location)
+    end
+  end
+
+  def freecen_csv_file_and_entries_delete
+    file = FreecenCsvFile.where(file_name: file_name, userid: userid).first
+    FreecenCsvFile.where(file_name: file_name, userid: userid).destroy_all if file.present?
+    if file_name.present?
+      base_file_location = File.join(Rails.application.config.datafiles, userid, file_name)
+      File.delete(base_file_location) if File.file?(base_file_location)
     end
   end
 
   def file_delete
-    location = File.join(Rails.application.config.datafiles,self.userid,self.file_name)
+    location = File.join(Rails.application.config.datafiles, self.userid, self.file_name)
     File.delete(location) if File.file?(location)
   end
 

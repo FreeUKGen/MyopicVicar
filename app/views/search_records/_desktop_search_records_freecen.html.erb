@@ -61,13 +61,6 @@
       </tbody>
     </table>
   <% end %>
-  <div class="read-length push--bottom" style="margin-left: auto; margin-right: auto;">
-    <br>
-    <% unless defined?(@printable_format) && @printable_format %>
-      <center><a href="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/" class="freeCEN" id="donate"><%= DonateIconHelper::DONATE_ICON.html_safe %></a></center>
-    <% end %>
-    <p class="push-half--bottom">While most other genealogy sites charge you to find and read records, <b><%= appname %></b> is dedicated to keeping our searches free. A small donation towards our costs would really help us keep it that way. </p>
-  </div>
   <% if @annotations && @annotations.length > 0 %>
     <!----- do we need this annotations stuff for freecen? ----->
     <table class="table--bordered ">
@@ -154,7 +147,7 @@
       </tbody>
     </table>
   <% end %>
-  <h5> If you believe there to be an error in this transcription then please <%= link_to "report", report_error_contact_path(@search_record, :query => @search_query), target: "_blank" %> it to our data manager (link opens in a new tab or window).</h5>
+  <%= render '/freecen_csv_entries/donate_and_data_problem' %>
 </section>
 <style>
   .javascript{

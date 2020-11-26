@@ -1,5 +1,5 @@
-<% breadcrumb :new_csvfile,  @csvfile%>
-<p style="text-align: center"><b>Upload a new Batch of records to FreeReg</b></p>
+<% breadcrumb :new_csvfile,  @csvfile, @app%>
+<p style="text-align: center"><b>Upload a new Batch of records to <%= appname%></b></p>
 <%= render 'flash_notice' %>
 <ul>
   <% @csvfile.errors.full_messages.each do |msg| %>
@@ -10,10 +10,14 @@
   <%= simple_form_for @csvfile, html: { multipart: true } do |f| %>
     <%= f.input :action, :as => :hidden, :input_html => { :value => @action } %>
     <%= f.input :csvfile, :label => "Select the file to be uploaded from a folder on your computer", :input_html => {  :class => " simple_form_bgcolour simple_form_position_left"} %><br>
+    <% if appname.downcase == 'freecen' %>
+      <%= f.input :type_of_processing, :collection => @types_of_processing, :required => true , :label => "Type of processing.",
+      :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width ", :size => 3 },:selected => @type_of_processing %>
+    <% end%>
     <%= f.input :userid, :collection => @people,:required => true , :label => "Userid where file is to be stored .Your own has been preselected. Select another if you wish.",
       :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width ", :size => 4 },:selected => @user.userid unless session[:my_own] %><br>
     <p class="text--center text--negative push-half--bottom"> <b>
-        Click the Upload button after selecting your file and it will be submitted for processing</b><br>
+        Click the Upload button after selecting your file and it will be submitted for processing</b>
       <%= f.button :button, 'Upload' ,:button_html => {:class => "btn  btn-small" } %>
       <br>
     <% end %>

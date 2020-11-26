@@ -1,0 +1,17 @@
+<% breadcrumb :freecen2_pieces,  @chapman_code  %>
+<h2 style='text-align: center'>FreeCen2 Sub Districts (Pieces) for <%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>) </h2>
+<h4 style='text-align: center'> Please note that some of these action may take upwards of a minute or longer to complete. Please be patient</h4>
+<%= render 'flash_notice' %>
+<% if %w[project_manager executive_director county_coordinator master_county_coordinator country_coordinator data_manager system_administrator].include?(@user.person_role)%>
+  <div style='text-align: center'>
+    <%= link_to 'Display a Specific Sub district (Piece)', selection_by_name_freecen2_pieces_path,  :class => 'btn   btn--small'%>
+    <%= link_to 'List  Sub districts (Pieces) for a Specific Year', selection_by_year_freecen2_pieces_path, :class => 'btn   btn--small'%>
+    <%= link_to 'Full Index of Sub districts (Pieces) ', full_index_freecen2_pieces_path, :class => 'btn   btn--small'%>
+    <%= link_to 'List Sub districts (Pieces) with missing Freecen2 Place', missing_place_freecen2_pieces_path(chapman_code: @chapman_code), :class => 'btn   btn--small'%>
+    <%= link_to 'List Sub districts (Pieces)  with District Freecen2 Place name', district_place_name_freecen2_pieces_path(chapman_code: @chapman_code), :class => 'btn   btn--small'%>
+  </div>
+  <br>
+  <br>
+  <br>
+  <br>
+<% end%>

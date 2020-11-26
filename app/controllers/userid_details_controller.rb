@@ -131,6 +131,7 @@ class UseridDetailsController < ApplicationController
     @userid = @user if session[:my_own]
     @current_user = get_user
     @syndicates = Syndicate.get_syndicates
+    @appname = appname_downcase
   end
 
   def general
@@ -201,6 +202,7 @@ class UseridDetailsController < ApplicationController
     else
       @syndicates = Syndicate.get_syndicates_open_for_transcription
     end
+    @appname = appname_downcase
     @userid = UseridDetail.new
   end
 

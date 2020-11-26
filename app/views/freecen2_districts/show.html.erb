@@ -1,0 +1,67 @@
+<% breadcrumb :show_freecen2_district,  @freecen2_district.id, @chapman_code, @freecen2_district.year, @type%>
+<h2 style="text-align: center">Details of FreeCen2 District:- <%= @freecen2_district.name%> in <%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>) </h2>
+<%= render 'flash_notice' %>
+<% if %w[county_coordinator master_county_coordinator country_coordinator data_manager system_administrator].include?(@user.person_role)%>
+  <div style="text-align: center">
+    <%= link_to 'Edit District', edit_freecen2_district_path(@freecen2_district, type: @type), data: { confirm: 'Are you sure?' }, :class => "btn   btn--small", title: 'Editing is restricted to, coordinators, data managers and system administrators'%>
+  </div>
+<% end%>
+<% if %w[data_manager system_administrator].include?(@user.person_role)%>
+  <div style="text-align: center">
+    <%= link_to 'Copy District', copy_freecen2_district_path(@freecen2_district, type: @type), data: { confirm: 'Are you sure?' }, :class => "btn   btn--small", title: 'Copy is restricted to data managers and system administrators'%>
+    <%= link_to 'Delete District', freecen2_district_path(@freecen2_district), method: :delete, data: { confirm: 'Are you sure you want to destroy this District.? It will not happen if there are dependants!' } , :class => "btn  btn--small"%>
+  </div>
+<% end%>
+<div class="grid">
+  <section class="island ">
+    <div class="grid__item ">
+      <table   class="table--bordered table--striped  table--data">
+        <colgroup >
+          <col class=t40>
+          <col class=t60>
+        </colgroup>
+        <tr>
+          <th class="caps">Field</th>
+          <th  class="caps">Value</th>
+        </tr>
+        <tr>
+          <td>Year</td>
+          <td class="weight--semibold"> <%=  @freecen2_district.year %> </td>
+        </tr>
+        <tr>
+          <td>Chapman code</td>
+          <td class="weight--semibold"> <%=  @freecen2_district.chapman_code %> </td>
+        </tr>
+        <tr>
+          <td>District name</td>
+          <td class="weight--semibold"> <%= @freecen2_district.name %> </td>
+        </tr>
+        <tr>
+          <td>Belongs to Place <small>(Name is a link)</small></td>
+          <td class="weight--semibold"> <%=  district_place_link(@place) %> </td>
+        </tr>
+        <tr>
+          <td>Type</td>
+          <td class="weight--semibold"> <%=  @freecen2_district.type %> </td>
+        </tr>
+        <tr>
+          <td>Registration District Number</td>
+          <td class="weight--semibold"> <%=  @freecen2_district.code %> </td>
+        </tr>
+        <tr>
+          <td>Freecen2 Pieces</td>
+          <td class="weight--semibold"> <%=  list_pieces(@freecen2_district) %> </td>
+        </tr>
+        <tr>
+          <td>Notes</td>
+          <td class="weight--semibold"> <%=  @freecen2_district.notes %> </td>
+        </tr>
+        <tr>
+          <td>National Archives Link <small> (Opens in a new tab)</small></td>
+          <td class="weight--semibold"><%= tna(@freecen2_district.tnaid) %> </td>
+        </tr>
+      </table>
+    </div>
+  </section>
+</div>
+<br>

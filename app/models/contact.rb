@@ -96,21 +96,21 @@ class Contact
 
   def action_recipient_userid
     coordinator = nil
-    if self.contact_type == 'Data Problem'
-      coordinator = self.obtain_coordinator if self.record_id.present?
+    if contact_type == 'Data Problem'
+      coordinator = obtain_coordinator if record_id.present?
     else
       coordinator = UseridDetail.role(self.role_from_contact).active(true).first
       coordinator = UseridDetail.secondary(self.role_from_contact).active(true).first if coordinator.blank?
       coordinator = coordinator.userid unless coordinator.blank?
     end
-    coordinator = self.obtain_manager if coordinator.blank?
-    self.update_attribute(:contact_action_sent_to_userid, coordinator)
+    coordinator = obtain_manager if coordinator.blank?
+    update_attribute(:contact_action_sent_to_userid, coordinator)
     coordinator
   end
 
   def action_recipient_copies_userids(action_person)
     action_recipient_copies_userids = []
-    role = self.role_from_contact
+    role = role_from_contact
     UseridDetail.role(role).active(true).all.each do |person|
       action_recipient_copies_userids.push(person.userid) unless person.userid == action_person
     end
@@ -118,22 +118,21 @@ class Contact
       action_recipient_copies_userids.push(person.userid) unless person.userid == action_person
     end
     action_recipient_copies_userids = action_recipient_copies_userids.uniq
-    self.update_attribute(:copies_of_contact_action_sent_to_userids, action_recipient_copies_userids)
+    update_attribute(:copies_of_contact_action_sent_to_userids, action_recipient_copies_userids)
     action_recipient_copies_userids
   end
 
   def add_contact_coordinator_to_copies_of_contact_action_sent_to_userids
-    copies_of_contact_action_sent_to_userids = self.copies_of_contact_action_sent_to_userids
     action_person = UseridDetail.role('contacts_coordinator').active(true).first
     action_person = UseridDetail.secondary('contacts_coordinator').active(true).first if action_person.blank?
-    if action_person.present? && (action_person.userid != self.contact_action_sent_to_userid)
+    if action_person.present? && (action_person.userid != contact_action_sent_to_userid)
       if copies_of_contact_action_sent_to_userids.blank?
         copies_of_contact_action_sent_to_userids.push(action_person.userid)
       else
         copies_of_contact_action_sent_to_userids.push(action_person.userid) unless copies_of_contact_action_sent_to_userids.include?(action_person.userid)
       end
+      update_attribute(:copies_of_contact_action_sent_to_userids, copies_of_contact_action_sent_to_userids)
     end
-    self.update_attribute(:copies_of_contact_action_sent_to_userids, copies_of_contact_action_sent_to_userids)
     copies_of_contact_action_sent_to_userids
   end
 
@@ -231,9 +230,9 @@ class Contact
   end
 
   def contact_action_communication
-    send_to_userid = self.action_recipient_userid
-    copies_of_contact_action_sent_to_userids = self.action_recipient_copies_userids(send_to_userid)
-    copies_of_contact_action_sent_to_userids = self.add_contact_coordinator_to_copies_of_contact_action_sent_to_userids
+    send_to_userid = action_recipient_userid
+    copies_of_contact_action_sent_to_userids = action_recipient_copies_userids(send_to_userid)
+    copies_of_contact_action_sent_to_userids = add_contact_coordinator_to_copies_of_contact_action_sent_to_userids
     UserMailer.contact_action_request(self, send_to_userid, copies_of_contact_action_sent_to_userids).deliver_now
     #copies = self.add_sender_to_copies_of_contact_action_sent_to_userids(send_to_userid)
   end
@@ -348,6 +347,7 @@ class Contact
   end
 
   # used by freecen if user selects to contact coordinator for a specific county
+  #cannot see its call
   def obtain_coordinator_for_selected_county
     return nil if MyopicVicar::Application.config.template_set != 'freecen'
 
@@ -373,7 +373,7 @@ class Contact
   end
 
   def role_from_contact
-    case self.contact_type
+    case contact_type
     when 'Website Problem'
       role = 'website_coordinator'
     when 'Data Question'

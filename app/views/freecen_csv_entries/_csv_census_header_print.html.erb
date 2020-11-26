@@ -1,0 +1,16 @@
+<table class="table--bordered table--data" >
+  <thead>
+  </thead>
+  <tbody>
+    <% FreecenCsvEntry.census_display_labels(@year,@chapman_code).each_with_index do |lbl, num| %>
+      <tr>
+        <td><small>
+            <%= lbl %>
+          </small></td>
+        <td class="weight--semibold">
+          <%= @freecen_csv_entry.census_display_values(@year,@chapman_code)[num] %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
