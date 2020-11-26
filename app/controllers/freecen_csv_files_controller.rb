@@ -54,6 +54,25 @@ class FreecenCsvFilesController < ApplicationController
     @return_location = file.freecen2_piece.id if file.freecen2_piece.present?
   end
 
+  def convert_header
+    @freecen_csv_file = FreecenCsvFile.find(params[:id])
+    unless FreecenCsvFile.valid_freecen_csv_file?(params[:id])
+      message = 'The file was not correctly linked. Have your coordinator contact the web master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
+
+    success, message, file_location = @freecen_csv_file.create_modern_header_file
+    if success
+      if File.file?(file_location)
+        send_file(file_location, filename: @freecen_csv_file.file_name, x_sendfile: true) && return
+      end
+    else
+      flash[:notice] = "There was a problem saving the file prior to download. Please send this message #{message} to your coordinator"
+    end
+
+    redirect_back(fallback_location: new_manage_resource_path) && return
+  end
+
   def create
   end
 
@@ -538,7 +557,9 @@ class FreecenCsvFilesController < ApplicationController
     if file.blank?
       message = 'File does not exist'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
-
+    elsif file.traditional.zero?
+      message = 'File has traditional headers and  must be converted before validation'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     elsif file.validation
       message = 'File is already bring validated'
     elsif file.total_errors > 0

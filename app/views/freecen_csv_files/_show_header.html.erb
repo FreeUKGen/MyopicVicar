@@ -2,6 +2,7 @@
   </h3>
   <div  style="text-align: center">
     <%= replace_freecen_file unless @freecen_csv_file.incorporation_lock %>
+    <%= convert_header %>
     <%= download_freecen_file %>
     <%= remove_freecen_file unless @freecen_csv_file.incorporation_lock %>
     <%= download_messages %><br>

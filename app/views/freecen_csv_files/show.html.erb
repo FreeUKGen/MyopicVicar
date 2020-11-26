@@ -40,6 +40,12 @@
           <td>Uploaded by userid </td>
           <td class="weight--semibold"> <%= @freecen_csv_file.userid %> </td>
         </tr>
+        <% if @freecen_csv_file.traditional.zero? %>
+          <tr>
+            <td>Header line is traditional format </td>
+            <td class="weight--semibold"> Yes</td>
+          </tr>
+        <% end %>
         <tr>
           <td>Transcribed by (Can only be entered by an edit)</td>
           <td class="weight--semibold">  <%= @freecen_csv_file.transcriber_name %></td>

@@ -81,6 +81,7 @@ MyopicVicar::Application.routes.draw do
 
   get 'freecen_csv_files/spreadsheet/:id', :to => 'freecen_csv_files#spreadsheet', :as => :spreadsheet_freecen_csv_file
   get 'freecen_csv_files/download_spreadsheet', :to => 'freecen_csv_files#download_spreadsheet', :as => :download_spreadsheet_freecen_csv_file
+  get 'freecen_csv_files/:id/convert_header', :to => 'freecen_csv_files#convert_header', :as => :modern_headers_freecen_csv_file
   get 'freecen_csv_files/:id/download_message_report(.:format)', :to => 'freecen_csv_files#download_message_report', :as => :download_message_report_freecen_csv_file
   get 'freecen_csv_files/:id/change_userid', :to => 'freecen_csv_files#change_userid', :as => :change_userid_freecen_csv_file
   get 'freecen_csv_files/:id/merge', :to => 'freecen_csv_files#merge', :as => :merge_freecen_csv_file

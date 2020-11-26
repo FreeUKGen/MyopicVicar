@@ -9,6 +9,11 @@ module FreecenCsvFilesHelper
       data: { confirm: 'Are you sure you want to download these entries?' }, method: :get, class: 'btn   btn--small', title: 'Download a copy of the file to your computer. This download WILL INCLUDE and on line changes. Downloading will remove any locks. It will be be stored in your downloads folder'
   end
 
+  def convert_header
+    link_to 'Convert to modern headers', modern_headers_freecen_csv_file_path(@freecen_csv_file),
+      data: { confirm: 'Are you sure you want to convert the header of this file?' }, method: :get, class: 'btn   btn--small', title: 'Converts the file headers from the old format to the modern one used in proofreading, validation and incorporation.'  if @freecen_csv_file.traditional.zero?
+  end
+
   def browse_freecen_file_individuals
     link_to 'View individuals', freecen_csv_entries_path(type: 'Ind'), method: :get, class: 'btn   btn--small', title: 'Lists each entry that has individual information. Any of the entries can be displayed on line'
   end
