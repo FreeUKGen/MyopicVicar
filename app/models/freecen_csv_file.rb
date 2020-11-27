@@ -399,84 +399,11 @@ class FreecenCsvFile
   end
 
   def create_modern_header_file
-    #this makes aback up copy of the file in the attic and creates a new one
-    save_to_attic
     @chapman_code = chapman_code
-    year, piece, series = FreecenPiece.extract_year_and_piece(file_name)
-    success, message, file, census_fields = convert_file_name_to_csv(year, piece, series)
-    if success
-      file_location = File.join(Rails.application.config.datafiles, userid, file)
-      success, message = write_modern_csv_file(file_location, census_fields)
-    end
-    [success, message, file_location, file]
-  end
-
-  def convert_file_name_to_csv(year, piece, series)
-    case series
-    when 'RG'
-      success = true
-      message = ''
-      case year
-      when '1861'
-        file = 'RG9' + '_' + piece.to_s + '.csv'
-        census_fields = Freecen::CEN2_1861
-      when '1871'
-        file = 'RG10' + '_' + piece.to_s + '.csv'
-        census_fields = Freecen::CEN2_1871
-      when '1881'
-        file = 'RG11' + '_' + piece.to_s + '.csv'
-        census_fields = Freecen::CEN2_1881
-      when '1891'
-        file = 'RG12' + '_' + piece.to_s + '.csv'
-        census_fields = Freecen::CEN2_1891
-      when '1901'
-        file = 'RG13' + '_' + piece.to_s + '.csv'
-        census_fields = Freecen::CEN2_1901
-      when '1911'
-        file = 'RG14' + '_' + piece.to_s + '.csv'
-        census_fields = Freecen::CEN2_1911
-        census_fields = Freecen::CEN2_CHANNEL_ISLANDS_1911 if %w[CHI ALD GSY JSY].include?(@chapman_code)
-      when '1921'
-        file = 'RG15' + '_' + piece.to_s + '.csv'
-        census_fields = Freecen::CEN2_1921
-      end
-    when 'HS'
-      success = false
-      message = 'Scotland Code not checked'
-      case year
-      when '1841'
-        file = 'RS41' + '_' + piece.to_s + '.csv'
-        census_fields = Freecen::CEN2_SCT_1861
-      when '1851'
-        file = 'RS51' + '_' + piece.to_s + '.csv'
-        census_fields = Freecen::CEN2_SCT_1871
-      when '1861'
-        file = 'RS61' + '_' + piece.to_s + '.csv'
-        census_fields = Freecen::CEN2_SCT_1861
-      when '1871'
-        file = 'RS71' + '_' + piece.to_s + '.csv'
-        census_fields = Freecen::CEN2_SCT_1871
-      when '1881'
-        file = 'RS81' + '_' + piece.to_s + '.csv'
-        census_fields = Freecen::CEN2_SCT_1881
-      when '1891'
-        file = 'RS91' + '_' + piece.to_s + '.csv'
-        census_fields = Freecen::CEN2_SCT_1891
-      when '1901'
-        file = 'RS' + '_' + piece.to_s + '.csv'
-        census_fields = Freecen::CEN2_SCT_1901
-      when '1911'
-        file = 'RS' + '_' + piece.to_s + '.csv'
-        census_fields = Freecen::CEN2_SCT_1911
-      end
-    when 'HO'
-      success = true
-      message = ''
-      file = 'HO107_' + '_' + piece.to_s + '.csv'
-      census_fields = piece.to_i <= 1465 ? Freecen::CEN2_1841 : Freecen::CEN2_1851
-    else
-    end
-    [success, message, file, census_fields]
+    _year, _piece, census_fields = Freecen2Piece.extract_year_and_piece(file_name, @chapman_code)
+    file_location = File.join(Rails.application.config.datafiles, userid, file_name)
+    success, message = write_modern_csv_file(file_location, census_fields)
+    [success, message, file_location, file_name]
   end
 
   def write_modern_csv_file(file_location, census_fields)
@@ -487,7 +414,7 @@ class FreecenCsvFile
     census_fields.each do |field|
       @initial_line_hash[field] = nil
     end
-    CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+    CSV.open(file_location, 'wb', row_sep: "\r\n") do |csv|
       csv << header
       records = freecen_csv_entries
       @record_number = 0

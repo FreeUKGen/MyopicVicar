@@ -61,7 +61,7 @@ class FreecenCsvFilesController < ApplicationController
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
 
-    success, message, file_location = @freecen_csv_file.create_modern_header_file
+    success, message, file_location, _fil = @freecen_csv_file.create_modern_header_file
     if success
       if File.file?(file_location)
         send_file(file_location, filename: @freecen_csv_file.file_name, x_sendfile: true) && return

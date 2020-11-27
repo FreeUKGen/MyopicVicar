@@ -1979,7 +1979,7 @@ class FreecenCsvEntry
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         ['Folio', 'Page', 'Dwelling Number', 'Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows']
       else
-        ['Folio', 'Page X', 'Dwelling Number', 'Schedule', 'House Number', 'House or Street Name']
+        ['Folio', 'Page', 'Dwelling Number', 'Schedule', 'House Number', 'House or Street Name']
       end
     when '1891'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
