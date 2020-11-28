@@ -244,6 +244,7 @@ class FreecenCsvEntriesController < ApplicationController
     session[:freecen_csv_entry_id] = @freecen_csv_entry._id
     @search_record = @freecen_csv_entry.search_record
     @file_validation = @freecen_csv_file.validation
+    @freecen_csv_entry.add_address(@freecen_csv_file.id, @freecen_csv_entry.dwelling_number)
     @next_entry, @previous_entry = @freecen_csv_entry.next_and_previous_entries
     @next_list_entry, @previous_list_entry = @freecen_csv_entry.next_and_previous_list_entries
     session[:current_list_entry] = @freecen_csv_entry.id if @next_list_entry.present? || @previous_list_entry.present?
