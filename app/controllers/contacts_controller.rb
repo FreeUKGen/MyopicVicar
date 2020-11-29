@@ -109,6 +109,8 @@ class ContactsController < ApplicationController
   end
 
   def get_contacts
+    p 'initialize'
+    p @user
     ContactRules.new(@user)
   end
 
@@ -117,6 +119,9 @@ class ContactsController < ApplicationController
     session[:message_base] = 'contact'
     params[:source] = 'original'
     get_user_info_from_userid
+    p 'index'
+    p @user.userid
+    p @roles
     order = 'contact_time DESC'
     @contacts = get_contacts.result(session[:archived_contacts], order)
     @archived = session[:archived_contacts]

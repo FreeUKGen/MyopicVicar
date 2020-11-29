@@ -9,10 +9,14 @@ class ContactRules
   def initialize(user)
     @user = user
     @result_sets = []
+    p 'initialzation'
+    p  @user
   end
 
   def result(archived, sort_order)
     @contacts = Contact.archived(archived).order_by(sort_order)
+    p 'result'
+    p @contacts
     get_contacts_for_roles
   end
 
@@ -26,6 +30,9 @@ class ContactRules
 
   # Get the contacts for each role
   def get_contacts_for_roles
+    p ' get_contacts_for_roles'
+    p roles_in_contact_types?
+    p user_role_contacts
     roles_in_contact_types? ? user_role_contacts : @contacts
   end
 
@@ -52,6 +59,7 @@ class ContactRules
       { county: { '$in': county_contacts } },
       { contact_type: { '$in': remaining_contact_types.flatten } }
     )
+
     contacts.map{ |result| result }
   end
 
