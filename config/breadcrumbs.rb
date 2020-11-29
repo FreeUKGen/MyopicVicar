@@ -1768,7 +1768,7 @@ crumb :freecen2_civil_parishes_district_place_name do |county|
 end
 
 crumb :freecen2_civil_parishes_missing_places do |county|
-  link 'Missing Freecen2 Places', missing_place_freecen2_pieces_path(chapman_code: county, anchor: session[:freecen2_civil_parish])
+  link 'Missing Freecen2 Places', missing_place_freecen2_civil_parishes_path(chapman_code: county, anchor: session[:freecen2_civil_parish])
   parent :freecen2_civil_parishes, county
 end
 
