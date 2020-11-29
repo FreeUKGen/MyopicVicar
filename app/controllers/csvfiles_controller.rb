@@ -12,13 +12,14 @@ class CsvfilesController < ApplicationController
     message = "#{@csvfile.inspect}"
     logger.warn("#{appname_upcase}:CSV_PROCESSING: " + message)
     # if the process does not have a userid then the process has been initiated by the user on his own batches
+
     @csvfile.userid = session[:userid] if params[:csvfile][:userid].blank?
     redirect_back(fallback_location: new_csvfile_path, notice: 'There was no userid') && return if @csvfile.userid.blank?
 
     @csvfile.file_name = @csvfile.csvfile.identifier
     redirect_back(fallback_location: new_csvfile_path, notice: 'The file had an incorrect extension') && return if @csvfile.csvfile.identifier.blank?
 
-    @csvfile.file_name = @csvfile.downcase_extension
+    @csvfile.file_name = @csvfile.downcase_extension # this is a noop for freereg
     redirect_back(fallback_location: new_csvfile_path, notice: 'A CSV file with that name does not exist on your computer (You likely tried to upload a file with a different extension') && return if @csvfile.file_name.blank?
 
     case params[:csvfile][:action]

@@ -59,6 +59,8 @@ class Csvfile < CarrierWave::Uploader::Base
   end
 
   def downcase_extension
+    return file_name if MyopicVicar::Application.config.freexxx_display_name.downcase == 'freereg'
+
     file_name_parts = file_name.split('.')
     file_name_parts[1] = file_name_parts[1].downcase
     file_name = file_name_parts[0] + '.' + file_name_parts[1]
