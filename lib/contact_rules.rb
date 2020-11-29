@@ -1,4 +1,4 @@
- #rules to list the contacts to user on the basis of their roles
+#rules to list the contacts to user on the basis of their roles
 class ContactRules
   attr_reader :user, :result_sets
 
@@ -6,12 +6,12 @@ class ContactRules
     "county_coordinator", "country_coordinator"
   ]
 
-  def initialize user
+  def initialize(user)
     @user = user
     @result_sets = []
   end
 
-  def result(archived,sort_order)
+  def result(archived, sort_order)
     @contacts = Contact.archived(archived).order_by(sort_order)
     get_contacts_for_roles
   end
@@ -28,7 +28,7 @@ class ContactRules
   def get_contacts_for_roles
     roles_in_contact_types? ? user_role_contacts : @contacts
   end
-  
+
   # Check user roles are not in contact types
   def roles_in_contact_types?
     (merge_roles - complete_contact_types.flatten).empty?
@@ -42,7 +42,7 @@ class ContactRules
   # remove role if county or country co ordinator
   def remove_county_or_country_roles
     merge_roles.reject { |role|
-      COUNTY_COUNTRY_COORDINATORS.include? role
+      COUNTY_COUNTRY_COORDINATORS.include?(role)
     }
   end
 
