@@ -108,13 +108,22 @@ class ContactsController < ApplicationController
     redirect_to(action: 'index') && return
   end
 
+  def get_contacts
+    p 'initialize'
+    p @user
+    ContactRules.new(@user)
+  end
+
   def index
     session[:archived_contacts] = false
     session[:message_base] = 'contact'
     params[:source] = 'original'
     get_user_info_from_userid
+    p 'index'
+    p @user.userid
+    p @roles
     order = 'contact_time DESC'
-    @contacts = Contact.results(session[:archived_contacts], order, @user)
+    @contacts = get_contacts.result(session[:archived_contacts], order)
     @archived = session[:archived_contacts]
   end
 
@@ -134,7 +143,7 @@ class ContactsController < ApplicationController
     params[:source] = 'original'
     get_user_info_from_userid
     order = 'contact_time  ASC'
-    @contacts = Contact.results(session[:archived_contacts], order, @user)
+    @contacts = get_contacts.result(session[:archived_contacts],order)
     @archived = session[:archived_contacts]
     render :index
   end
@@ -142,7 +151,7 @@ class ContactsController < ApplicationController
   def list_by_date
     get_user_info_from_userid
     order = 'contact_time ASC'
-    @contacts = Contact.results(session[:archived_contacts], order, @user)
+    @contacts = get_contacts.result(session[:archived_contacts],order)
     @archived = session[:archived_contacts]
     render :index
   end
@@ -150,7 +159,7 @@ class ContactsController < ApplicationController
   def list_by_most_recent
     get_user_info_from_userid
     order = 'contact_time DESC'
-    @contacts = Contact.results(session[:archived_contacts], order, @user)
+    @contacts = get_contacts.result(session[:archived_contacts],order)
     @archived = session[:archived_contacts]
     render :index
   end
@@ -158,7 +167,7 @@ class ContactsController < ApplicationController
   def list_by_name
     get_user_info_from_userid
     order = 'name ASC'
-    @contacts = Contact.results(session[:archived_contacts], order, @user)
+    @contacts = get_contacts.result(session[:archived_contacts],order)
     @archived = session[:archived_contacts]
     render :index
   end
@@ -166,7 +175,7 @@ class ContactsController < ApplicationController
   def list_by_type
     get_user_info_from_userid
     order = 'contact_type ASC'
-    @contacts = Contact.results(session[:archived_contacts], order, @user)
+    @contacts = get_contacts.result(session[:archived_contacts],order)
     @archived = session[:archived_contacts]
     render :index
   end
@@ -273,7 +282,7 @@ class ContactsController < ApplicationController
     get_user_info_from_userid
     @options = {}
     order = 'identifier ASC'
-    Contact.results(session[:archived_contacts], order, @user).each do |contact|
+    @contacts = get_contacts.result(session[:archived_contacts], order).each do |contact|
       @options[contact.identifier] = contact.id
     end
     @contact = Contact.new
