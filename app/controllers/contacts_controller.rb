@@ -14,7 +14,6 @@
 class ContactsController < ApplicationController
 
   require 'freereg_options_constants'
-  require 'contact_rules'
 
   skip_before_action :require_login, only: [:new, :report_error, :create, :show]
 
