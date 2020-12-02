@@ -47,7 +47,7 @@
                 <dl>
                   <strong><dt><%= "#{search_record[:GivenName]} #{search_record[:Surname]}" %></dt></strong>
                   <dt><%= "#{QuarterDetails.quarters.key((search_record[:QuarterNumber]-1)%4 + 1).upcase} #{(search_record[:QuarterNumber]-1)/4 + 1837}"%></dt>
-                  <dt><%= "#{search_record[:District]}" %></dt>
+                  <dt><%= link_to "#{search_record[:District]}", "http://www.ukbmd.org.uk/reg/districts/#{search_record[:District].downcase}.html", target: "_blank" %></dt>
                   </dl>
               </td>
               
