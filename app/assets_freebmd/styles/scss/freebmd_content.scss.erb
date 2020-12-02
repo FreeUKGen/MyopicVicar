@@ -782,7 +782,7 @@ box-sizing: border-box;
 transform: matrix(-1, 0, 0, 1, 0, 0);
 }
 
-.dropbtn {
+/*.dropbtn {
 
 
 }
@@ -826,17 +826,41 @@ transform: matrix(-1, 0, 0, 1, 0, 0);
 -  overflow: auto;
 -  vertical-align: baseline;
 -  right: 0px;
--  padding: 12px 16px;*/
-}
+-  padding: 12px 16px;
+}*/
 
-.dropdown-content div a {
+/*.dropdown-content div a {
   color: black;
   padding: 10px 10px;
   text-decoration: none;
-  display: block;
+  display: inline-block;
+}*/
+
+.bordered {
+ border: 1px solid #C84182;
+    background-color: #fff;
+    outline: none;
+    font-weight: normal;
+    margin-bottom: 0.5em;
+    -webkit-box-shadow: 0 0.222222em 0 #642141; 
+    -moz-box-shadow: 0 0.222222em 0 #642141; 
+    -ms-box-shadow: 0 0.222222em 0 #642141;
+    -o-box-shadow: 0 0.222222em 0 #642141;
+    box-shadow: 0 0.222222em 0 #642141;
+ -webkit-transition: all 0.15s ease-in-out;
+    -moz-transition: all 0.15s ease-in-out;
+    -ms-transition: all 0.15s ease-in-out;
+    -o-transition: all 0.15s ease-in-out;
+    transition: all 0.15s ease-in-out;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    -o-border-radius: 4px;
+    border-radius: 4px;
 }
 
-.dropdown-content div:hover {background-color: $magenta; color: white;}
+
+/*.dropdown-content div:hover {background-color: $magenta; color: white;}
 
 .show {display: block;}
 
@@ -885,9 +909,42 @@ transform: matrix(-1, 0, 0, 1, 0, 0);
     color: white;
     outline: none;
     cursor: pointer;
+}*/
+
+
+.dropbtn:hover, .dropbtn:focus {
+  background-color: $magenta; color: white; outline: none;
 }
 
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  overflow: auto;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 3;
+  border-radius: 0px 0 6px 6px;
+  border-top: solid 5px white;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 7px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {background-color: #C84182; color: white; text-decoration: none;}
+
+.show {display: block;}
 .spouse_firstnames_div, .spouse_or_mother_surname_div, .age_at_death_or_date_of_birth_div, .create_postem_div {
+    display: none;
+}
+
+.display_none {
     display: none;
 }
 

@@ -779,6 +779,10 @@ module ApplicationHelper
     }
   end
 
+  def from_quarter_number_to_year(quarter)
+    (quarter-1)/4 + 1837
+  end
+
   def date_of_birth_or_death_age_info
     {
       death_age: 'The Age at Death may not be known exactly, you can specify a range for the Age at Death, like the following:

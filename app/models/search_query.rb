@@ -187,8 +187,8 @@ class SearchQuery
   DEATH_AGE_OPTIONS = {
     1 => "Age",
     2 => "Age Range",
-    3 => "Date of Birth",
-    4 => "Date of Birth Range"
+    3 => "Year of Birth",
+    4 => "Year of Birth Range"
   }
 
   class << self
