@@ -18,6 +18,12 @@ class BestGuessController < ApplicationController
     end
   end
 
+  def show_records_of_page
+    @volume = params[:volume]
+    @page = params[:page]
+    @search_records = BestGuess.where(Volume: @volume, Page: @page)
+  end
+
   def viewed
     session[:viewed] ||= []
   end

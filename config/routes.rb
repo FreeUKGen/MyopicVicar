@@ -473,6 +473,8 @@ MyopicVicar::Application.routes.draw do
   resources :gap_reasons
 
   get ':search_id/entry-information/:id/:friendly(.:format)', :to => 'best_guess#show', :as => :friendly_bmd_record_details
+  get '/entry-information/:id/:friendly(.:format)', :to => 'best_guess#show', :as => :friendly_bmd_record_details_from_page
+  get ':volume/:page', :to => 'best_guess#show_records_of_page', :as => :show_records_of_page
   resources :best_guess
 
   get "entry-information/cite=:id&scan=1", :to => 'best_guess_hash#show', :as => :citation_url
