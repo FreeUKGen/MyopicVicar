@@ -578,6 +578,7 @@ module ApplicationHelper
       <span class="accessibility">pinterest</span>',
       instagram: '<i class="fa fa-instagram fa-3x" title="instagram"></i>
       <span class="accessibility">instagram</span>'
+
     }
   end
 
