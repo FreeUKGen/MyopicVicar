@@ -85,7 +85,7 @@
                   Page
                 </th>
                 <td>
-                  <%= link_to "#{@search_record[:Page]}", show_records_of_page_path(volume: @search_record[:Volume], page: @search_record[:Page]), target: "_blank" %>
+                  <%= link_to "#{@search_record[:Page]}", same_page_entries_path(volume: @search_record[:Volume], page: @search_record[:Page], record: @search_record[:RecordTypeID], quarter: @search_record[:QuarterNumber]), target: "_blank" %>
                 </td>
               </tr>
               <tr>
@@ -154,7 +154,7 @@
                     <%= DateTime.strptime("#{postem.Created}",'%s').to_date if postem.Created.present?%>
                   </td>
                   <td>
-                    <%= postem.Information %>
+                    <%= auto_link(postem.Information, :html => { :target => '_blank' }) %>
                   </td>
                 </tr>
               <% end %>
@@ -198,19 +198,8 @@
     });
   </script>
   
-  <!--div class="grid">
-    <ul>
-      <li class="grid__item one-third lap-one-third palm-one-whole click_scan text--center border_text">
-        <%= link_to  "Scan(s)", '#', :class => "push-half--right push-half--down", title: "Please Click here to view Scan Information. Scan Info is shown by default"%>
-      </li>
-      <li class="grid__item one-third lap-one-third palm-one-whole click_postem text--center border_text">
-        <%= link_to  "Postem(s)", '#', :class => "push-half--right push-half--down", title: "Please Click here to view or create Postem(s)"%>
-      </li>
-      <li class="grid__item one-third lap-one-third palm-one-whole click_transcriber text--center border_text">
-        <%= link_to  "Transcriber(s)", '#', :class => "push-half--right push-half--down", title: "Please Click here to view Transcriber(s) who transcribed the record" %>
-      </li>
-  </div>
-  <div class='scan_info' id="scan_information">
+  
+  <!--div class='scan_info' id="scan_information">
     <div class="grid">
       <div class="grid__item one-whole lap-one-whole palm-one-whole">
         <h4>Scan Info:</h4>

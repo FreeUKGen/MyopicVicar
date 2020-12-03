@@ -265,6 +265,8 @@ GEM
       railties (~> 5.0)
     rails3-jquery-autocomplete (1.0.15)
       rails (>= 3.2)
+    rails_autolink (1.1.6)
+      rails (> 3.1)
     railties (5.1.7)
       actionpack (= 5.1.7)
       activesupport (= 5.1.7)
@@ -451,6 +453,7 @@ DEPENDENCIES
   pry-byebug
   rails
   rails3-jquery-autocomplete
+  rails_autolink
   refinerycms
   refinerycms-authentication-devise
   refinerycms-county_pages!

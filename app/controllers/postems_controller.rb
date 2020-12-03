@@ -1,7 +1,9 @@
 class PostemsController < ApplicationController
   skip_before_action :require_login
+  require 'rails_autolink'
 
   def create
+
   	@postem = Postem.new(postem_params.delete_if { |_k, v| v.blank? })
   	@record = BestGuessHash.where(Hash: postem_params[:Hash]).first.best_guess
     @search_query = SearchQuery.where(id: params[:search_query]).first

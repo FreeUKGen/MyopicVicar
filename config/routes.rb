@@ -474,7 +474,7 @@ MyopicVicar::Application.routes.draw do
 
   get ':search_id/entry-information/:id/:friendly(.:format)', :to => 'best_guess#show', :as => :friendly_bmd_record_details
   get '/entry-information/:id/:friendly(.:format)', :to => 'best_guess#show', :as => :friendly_bmd_record_details_from_page
-  get ':volume/:page', :to => 'best_guess#show_records_of_page', :as => :show_records_of_page
+  get '/same_page_entries', to: 'best_guess#same_page_entries', as: :same_page_entries
   resources :best_guess
 
   get "entry-information/cite=:id&scan=1", :to => 'best_guess_hash#show', :as => :citation_url

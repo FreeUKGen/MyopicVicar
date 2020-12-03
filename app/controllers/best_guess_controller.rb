@@ -18,10 +18,10 @@ class BestGuessController < ApplicationController
     end
   end
 
-  def show_records_of_page
+  def same_page_entries
     @volume = params[:volume]
     @page = params[:page]
-    @search_records = BestGuess.where(Volume: @volume, Page: @page)
+    @search_records = BestGuess.where(Volume: @volume, Page: @page, QuarterNumber: params[:quarter], RecordTypeID: params[:record])
   end
 
   def viewed
