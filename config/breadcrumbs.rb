@@ -1516,24 +1516,24 @@ crumb :show_freecen_place do |county, place|
   end
 end
 
-crumb :freecen1_vld_files do |county, page|
-  link 'FreeCen1 VLD Files', freecen1_vld_files_path(county: county, page: page)
+crumb :freecen1_vld_files do |county, file|
+  link 'FreeCen1 VLD Files', freecen1_vld_files_path(county: county, anchor: file)
   parent :county_options, county
 end
 
 crumb :freecen1_vld_file do |county, file|
   link 'FreeCen1 VLD File', freecen1_vld_file_path(id: file, county: county)
-  parent :freecen1_vld_files, county, session[:file_page]
+  parent :freecen1_vld_files, county, file
 end
 
-crumb :freecen1_vld_entries do |file, page|
-  link 'FreeCen1 VLD Entries', freecen1_vld_entries_path(file: file, page: page)
+crumb :freecen1_vld_entries do |file, page, entry|
+  link 'FreeCen1 VLD Entries', freecen1_vld_entries_path(file: file, page: page, anchor: entry)
   parent :freecen1_vld_file, session[:county], file
 end
 
-crumb :freecen1_vld_entry do |county, file|
-  link 'FreeCen1 VLD Entry', freecen1_vld_entry_path(id: file, county: county)
-  parent :freecen1_vld_entries, session[:freecen1_vld_file], session[:entry_page]
+crumb :freecen1_vld_entry do |county, entry|
+  link 'FreeCen1 VLD Entry', freecen1_vld_entry_path(id: entry, county: county)
+  parent :freecen1_vld_entries, entry.freecen1_vld_file_id, session[:entry_page], entry
 end
 
 
@@ -1931,9 +1931,6 @@ crumb :freecen2_places_range do |county, place|
 end
 
 crumb :show_freecen2_place do |county, place|
-
-  p county
-  p place
   link 'Freecen2 Place Information', freecen2_place_path(place)
   if session[:search_names].nil?
     if  session[:type] == 'place_index'

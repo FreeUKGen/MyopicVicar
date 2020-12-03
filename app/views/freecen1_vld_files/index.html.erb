@@ -1,29 +1,31 @@
 <%= render 'index_header' %>
-<table>
-  <tr>
-    <th>File name</th>
-    <th>Dir name</th>
-    <th>Census type</th>
-    <th>Raw year</th>
-    <th>Full year</th>
-    <th>Piece</th>
-    <th>Series</th>
-    <th></th>
-    <th></th>
-    <th></th>
-  </tr>
-  <% @freecen1_vld_files.each do |freecen1_vld_file| %>
+<div class="scrollable ">
+  <table class="table--bordered table--data table--striped ">
     <tr>
-      <td><%= freecen1_vld_file.file_name %></td>
-      <td><%= freecen1_vld_file.dir_name %></td>
-      <td><%= freecen1_vld_file.census_type %></td>
-      <td><%= freecen1_vld_file.raw_year %></td>
-      <td><%= freecen1_vld_file.full_year %></td>
-      <td><%= freecen1_vld_file.piece %></td>
-      <td><%= freecen1_vld_file.series %></td>
-      <td><%= link_to 'Show', freecen1_vld_file %></td>
-    </td>
-  </tr>
-<% end %>
+      <th class='sticky-header '>File name</th>
+      <th class='sticky-header '>Dir name</th>
+      <th class='sticky-header '>Census type</th>
+      <th class='sticky-header '>Raw year</th>
+      <th class='sticky-header '>Full year</th>
+      <th class='sticky-header '>Piece</th>
+      <th class='sticky-header '>Series</th>
+      <th colspan = "2" class='sticky-header '>Actions</th>
+    </tr>
+    <% @freecen1_vld_files.each do |freecen1_vld_file| %>
+      <tr id="<%= freecen1_vld_file.id%>">
+        <td><%= freecen1_vld_file.file_name %></td>
+        <td><%= freecen1_vld_file.dir_name %></td>
+        <td><%= freecen1_vld_file.census_type %></td>
+        <td><%= freecen1_vld_file.raw_year %></td>
+        <td><%= freecen1_vld_file.full_year %></td>
+        <td><%= freecen1_vld_file.piece %></td>
+        <td><%= freecen1_vld_file.series %></td>
+        <td><%= link_to 'Show', freecen1_vld_file_path(freecen1_vld_file) %></td>
+        <td><%= link_to 'Edit', edit_freecen1_vld_file_path(freecen1_vld_file) if %w[data_manager system_administrator].include?(@user.person_role)%></td>
+      </td>
+    </tr>
+  <% end %>
 </table>
-<br />
+</div>
+<br>
+<br>

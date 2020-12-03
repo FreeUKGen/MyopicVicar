@@ -2,4 +2,3 @@
 <% session[:file_page] = params[:page]%>
 <h1 style="text-align: center">Listing of FreeCen1 VLD Files for <%= @chapman_code%></h1>
 <%= render 'flash_notice' %>
-<%= paginate @freecen1_vld_files %>

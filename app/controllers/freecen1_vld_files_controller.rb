@@ -2,6 +2,7 @@ class Freecen1VldFilesController < ApplicationController
   skip_before_action :require_login
 
   def csv_download
+    get_user_info_from_userid
     @freecen1_vld_file = Freecen1VldFile.find(params[:id])
     unless Freecen1VldFile.valid_freecen1_vld_file?(params[:id])
       message = 'The file was not correctly linked. Have your coordinator contact the web master'
@@ -21,8 +22,9 @@ class Freecen1VldFilesController < ApplicationController
   end
 
   def index
+    get_user_info_from_userid
     if session[:chapman_code].present?
-      @freecen1_vld_files = Freecen1VldFile.chapman(session[:chapman_code]).order_by(full_year: 1, piece: 1).page(params[:page]).per(25)
+      @freecen1_vld_files = Freecen1VldFile.chapman(session[:chapman_code]).order_by(full_year: 1, piece: 1)
       @chapman_code = session[:chapman_code]
     else
       redirect_to manage_resources_path && return
@@ -30,6 +32,7 @@ class Freecen1VldFilesController < ApplicationController
   end
 
   def show
+    get_user_info_from_userid
     if params[:id].present?
       @freecen1_vld_file = Freecen1VldFile.find(params[:id])
       @chapman_code = session[:chapman_code]
