@@ -78,6 +78,16 @@ class Contact
       where(source_contact_id: id)
     end
 
+    def results(archived, order, user)
+      counties = user.county_groups
+      if %w[county_coordinator country_coordinator].include?(user.person_role)
+        contacts = Contact.where(archived: archived, county: { '$in' => counties }).order_by(order)
+      else
+        contacts = Contact.where(archived: archived).order_by(order)
+      end
+      contacts
+    end
+
     def type(status)
       where(contact_type: status)
     end
