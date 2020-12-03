@@ -1920,15 +1920,25 @@ crumb :freecen2_places do |county, place|
   end
 end
 
+crumb :freecen2_places_full_index do |county, place|
+  link 'Full Index FreeCen2 Places', full_index_freecen2_places_path(county: county, anchor: place)
+  parent :freecen2_places, county, place
+end
+
 crumb :freecen2_places_range do |county, place|
   link 'Freereg2 Places', freecen2_places_path
   parent :Freecen2_place_range_options, county, session[:active]
 end
 
 crumb :show_freecen2_place do |county, place|
+
+  p county
+  p place
   link 'Freecen2 Place Information', freecen2_place_path(place)
   if session[:search_names].nil?
-    if session[:select_place] || place.blank?
+    if  session[:type] == 'place_index'
+      parent :freecen2_places_full_index, session[:county], place
+    elsif session[:select_place] || place.blank?
       parent :county_options, session[:county] if session[:county].present?
       parent :syndicate_options, session[:syndicate] if session[:syndicate].present?
     else

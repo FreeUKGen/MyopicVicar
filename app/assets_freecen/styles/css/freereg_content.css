@@ -358,8 +358,9 @@ label.collection_check_boxes {
 .betterstyling { display: none; visibility: hidden; }
 
 .scrollable {
+    display:block;
     overflow: auto;
-    max-height: 400px;
+    max-height: 600px;
 }
 .strong {
   font-weight: bold;

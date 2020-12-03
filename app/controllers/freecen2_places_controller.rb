@@ -124,6 +124,23 @@ class Freecen2PlacesController < ApplicationController
     @first_name = @user.person_forename if @user.present?
     session[:page] = request.original_url
     session[:manage_places] = true
+    session[:type] = 'place'
+  end
+
+  def full_index
+    get_user_info_from_userid
+    @chapman_code = session[:chapman_code]
+    @county = ChapmanCode.has_key(session[:chapman_code])
+    if session[:active_place]
+      @places = Freecen2Place.where(chapman_code: @chapman_code, data_present: true).all.order_by(place_name: 1)
+    else
+      @places = Freecen2Place.where(chapman_code: @chapman_code, disabled: 'false').all.order_by(place_name: 1)
+    end
+    @user = get_user
+    @first_name = @user.person_forename if @user.present?
+    session[:page] = request.original_url
+    session[:manage_places] = true
+    session[:type] = 'place_index'
   end
 
   def load(place_id)
@@ -207,6 +224,21 @@ class Freecen2PlacesController < ApplicationController
     @results = Freecen2Place.search(session[:search_names][:search], session[:search_names][:search_county])
     @county = session[:search_names][:search_county].present? ? session[:search_names][:search_county] : 'All Counties'
     @total = @results.length
+  end
+
+  def selection_by_name
+    @chapman_code = session[:chapman_code]
+    get_user_info_from_userid
+    @freecen2_place = Freecen2Place.new
+    freecen2_places = {}
+    Freecen2Place.chapman_code(@chapman_code).order_by(place_name: 1).each do |place|
+      freecen2_places["#{place.place_name}"] = place._id
+    end
+    @options = freecen2_places
+    @location = 'location.href= "/freecen2_places/" + this.value'
+    @prompt = 'Select the specific Place'
+    session[:type] = 'place_name'
+    render '_form_for_selection'
   end
 
   def show

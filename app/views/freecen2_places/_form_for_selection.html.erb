@@ -1,0 +1,10 @@
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+  </div>
+<% end %>
+<div class="island ">
+  <%= semantic_form_for @freecen2_place  do |f| %>
+    <%= f.input :action,  :as => :select, :label =>  @prompt, :required => true, :collection => @options ,:input_html => {'onchange' => @location,:class => "simple_form_bgcolour  large_selection_field_width", :size => 5}%>
+  <% end %>
+</div>

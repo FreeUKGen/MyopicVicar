@@ -1,9 +1,12 @@
+<% breadcrumb :freecen2_places_full_index,  @county%>
+<h3 style="text-align: center"><b><%= active(session[:active_place])%> Freecen2 Places for <%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>) </b>.</h3>
+<%= render 'flash_notice' %>
 <% if %w[project_manager executive_director county_coordinator master_county_coordinator country_coordinator data_manager system_administrator validator].include?(@user.person_role)%>
   <div style="text-align: center">
     <%= link_to 'Create New Freecen2 Place', new_freecen2_place_path, method: :get, :class => "btn   btn--small", title: 'Permits the addition of a new place' %>
   </div>
 <% end%>
-<div class="scrollable ">
+<div class='scrollable'>
   <table  class="table--bordered table--data table--striped " >
     <thead >
       <tr>
@@ -11,24 +14,26 @@
         <th class='sticky-header '>Alternate names </th>
         <th class='sticky-header '>Latitude:</th>
         <th class='sticky-header '>Longitude:</th>
+        <th class='sticky-header '>Show on map<br>
+          <small> Opens new tab</small></th>
         <th class='sticky-header '>Source:</th>
         <th class='sticky-header '>Notes<br>
-          <th class='sticky-header '>Show on map<br>
-            <small> Opens in a new tab</small></th>
         </tr>
       </thead>
-      <tbody >
+      <tbody  >
         <% @places.each do |place| %>
           <tr id="<%= place.id %>">
             <td ><%= link_to(place.place_name, freecen2_place_path(place), class: 'btn   btn--small', title: 'Additional information on the place' )%> </td>
             <td > <%= alternate(place) %></td>
             <td > <%= place.latitude%></td>
             <td > <%= place.longitude%></td>
+            <td > <%= locate(place.latitude,place.longitude) %></td>
             <td > <%= place.source%></td>
             <td > <%= place.place_notes%></td>
-            <td > <%= locate(place.latitude,place.longitude) %></td>
           </tr>
         <% end%>
       </tbody>
     </table>
   </div>
+  <br>
+  <br>

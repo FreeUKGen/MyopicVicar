@@ -415,6 +415,8 @@ MyopicVicar::Application.routes.draw do
   get '/freecen2_places/search_names_results', :to => 'freecen2_places#search_names_results', :as => :search_names_results_freecen2_place
   get '/freecen2_places/search_names', :to => 'freecen2_places#search_names', :as => :search_names_freecen2_place
   get 'freecen2_places/:id/rename', :to => 'freecen2_places#rename', :as => :rename_freecen2_place
+  get 'freecen2_places/full_index', to: 'freecen2_places#full_index', as: :full_index_freecen2_places
+  get 'freecen2_places/selection_by_name', to: 'freecen2_places#selection_by_name', as: :selection_by_name_freecen2_places
   resources :freecen2_places
 
 
