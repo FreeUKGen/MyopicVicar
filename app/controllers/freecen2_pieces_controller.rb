@@ -53,7 +53,7 @@ class Freecen2PiecesController < ApplicationController
     @census = Freecen::CENSUS_YEARS_ARRAY
     @chapman_code = session[:chapman_code]
     @freecen2_pieces_distinct = Freecen2Piece.chapman_code(session[:chapman_code]).distinct(:name).sort_by(&:downcase)
-    @freecen2_pieces_distinct = Kaminari.paginate_array(@freecen2_pieces_distinct).page(params[:page]).per(50)
+    @freecen2_pieces_distinct = Kaminari.paginate_array(@freecen2_pieces_distinct).page(params[:page]).per(100)
     session[:current_page_piece] = @freecen2_pieces_distinct.current_page if @freecen2_pieces_distinct.present?
     session[:type] = 'piece_index'
   end

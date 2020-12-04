@@ -78,7 +78,7 @@ class Freecen2DistrictsController < ApplicationController
     @census = Freecen::CENSUS_YEARS_ARRAY
     @chapman_code = session[:chapman_code]
     @freecen2_districts_distinct = Freecen2District.chapman_code(session[:chapman_code]).distinct(:name).sort_by(&:downcase)
-    @freecen2_districts_distinct = Kaminari.paginate_array(@freecen2_districts_distinct).page(params[:page]).per(50)
+    @freecen2_districts_distinct = Kaminari.paginate_array(@freecen2_districts_distinct).page(params[:page]).per(100)
     session[:current_page_district] = @freecen2_districts_distinct.current_page if @freecen2_districts_distinct.present?
     session.delete(:freecen2_district)
     session[:type] = 'district'
@@ -91,7 +91,7 @@ class Freecen2DistrictsController < ApplicationController
     @census = Freecen::CENSUS_YEARS_ARRAY
     @chapman_code = session[:chapman_code]
     @freecen2_districts_distinct = Freecen2District.chapman_code(session[:chapman_code]).distinct(:name).sort_by(&:downcase)
-    @freecen2_districts_distinct = Kaminari.paginate_array(@freecen2_districts_distinct).page(params[:page]).per(50)
+    @freecen2_districts_distinct = Kaminari.paginate_array(@freecen2_districts_distinct).page(params[:page]).per(100)
     session[:current_page_district] = @freecen2_districts_distinct.current_page if @freecen2_districts_distinct.present?
     session.delete(:freecen2_district)
     session[:type] = 'district_index'
