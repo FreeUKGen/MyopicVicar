@@ -10,8 +10,8 @@
         <th class='sticky-header '>tnaid</th>
         <th class='sticky-header '>Type</th>
         <th class='sticky-header '>Code</th>
-        <th class='sticky-header '>Notes</th>
-        <th colspan = "2" class='sticky-header '>Actions</th>
+        <th class='sticky-header t25'>Notes</th>
+        <th colspan = "2" class='sticky-header t15'>Actions</th>
       </tr>
     </thead>
     <tbody >
@@ -22,8 +22,8 @@
           <td ><%= freecen2_district.tnaid%></td>
           <td ><%= freecen2_district.type %></td>
           <td ><%= freecen2_district.code %></td>
-          <td ><%= freecen2_district.notes %></td>
-          <td ><%= link_to 'Show', freecen2_district_path(freecen2_district, type: @type) , :class => "btn   btn--small"%>
+          <td class='t25'><%= freecen2_district.notes %></td>
+          <td class='t15'><%= link_to 'Show', freecen2_district_path(freecen2_district, type: @type) , :class => "btn   btn--small"%>
             <%= link_to 'Edit', edit_freecen2_district_path(freecen2_district, type: @type) , :class => "btn   btn--small"%></td>
         </tr>
       <% end %>
