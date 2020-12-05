@@ -16,13 +16,15 @@ class FreecenCsvFileIncorporate
   def self.incorporate_records(freecen_file)
     enumeration_districts = {}
     place_ids = {}
+    start = Time.now.to_i
     begin
       piece = freecen_file.freecen2_piece
       district = piece.freecen2_district
       chapman_code = freecen_file.chapman_code
       freecen_file_id = freecen_file.id
-
+      number = 0
       freecen_file.freecen_csv_entries.no_timeout.each do |entry|
+        number += 1
         parish = entry.civil_parish
         enumeration_districts[parish] = [] if enumeration_districts[parish].blank?
         enumeration_districts[parish] << entry.enumeration_district unless enumeration_districts[parish].include?(entry.enumeration_district)
@@ -30,7 +32,10 @@ class FreecenCsvFileIncorporate
         entry.translate_individual(piece, district, chapman_code, place_ids[parish], freecen_file_id)
       end
       puts 'success'
-      message = 'success'
+      time_end = Time.now.to_i
+      actual = time_end - start
+      per = actual / number
+      message = "success; #{number} in #{actual} or #{per} seconds a record"
       successa = freecen_file.update_attributes(incorporated: true, enumeration_districts: enumeration_districts, incorporation_lock: true,
                                                 incorporated_date: DateTime.now.in_time_zone('London'))
       # the translate individual adds the civil parishes
