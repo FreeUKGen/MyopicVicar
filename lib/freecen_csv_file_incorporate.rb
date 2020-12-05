@@ -22,7 +22,7 @@ class FreecenCsvFileIncorporate
       chapman_code = freecen_file.chapman_code
       freecen_file_id = freecen_file.id
 
-      freecen_file.freecen_csv_entries.all.no_timeout.each do |entry|
+      freecen_file.freecen_csv_entries.no_timeout.each do |entry|
         parish = entry.civil_parish
         enumeration_districts[parish] = [] if enumeration_districts[parish].blank?
         enumeration_districts[parish] << entry.enumeration_district unless enumeration_districts[parish].include?(entry.enumeration_district)

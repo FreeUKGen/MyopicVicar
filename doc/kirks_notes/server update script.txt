@@ -43,7 +43,7 @@ Back to Step a abd repeat for next server
 When complete update refinery
 
 Refinery transfer https://docs.google.com/document/d/1ozrJbHY074xYvwCB3j6NodDdPFPnWU4WySdnZCMeWUw/edit
-https://rundeck.freeukgen.org.uk/.
+https://rundeck.freeukgen.org.uk/
 
 
 alias f2rake='sudo -u webserv bundle exec rake RAILS_ENV=production'
