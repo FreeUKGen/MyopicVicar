@@ -259,7 +259,6 @@ class FreecenCsvEntriesController < ApplicationController
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
 
-    old_search_record = @freecen_csv_entry.search_record
     @freecen_csv_file = @freecen_csv_entry.freecen_csv_file
     @warnings, @errors = @freecen_csv_entry.are_there_messages
     params[:freecen_csv_entry][:verbatim_birth_place] = FreecenCsvEntry.mystrip(params[:freecen_csv_entry][:verbatim_birth_place])
