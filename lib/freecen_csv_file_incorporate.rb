@@ -31,10 +31,11 @@ class FreecenCsvFileIncorporate
         place_ids[parish] = entry.freecen2_civil_parish.freecen2_place unless place_ids.key?(parish)
         entry.translate_individual(piece, district, chapman_code, place_ids[parish], freecen_file_id)
       end
-      puts 'success'
+
       time_end = Time.now.to_i
       actual = time_end - start
       per = actual / number
+      puts "Success; #{number} records in #{actual} seconds or #{per} seconds a record"
       message = "success; #{number} in #{actual} or #{per} seconds a record"
       successa = freecen_file.update_attributes(incorporated: true, enumeration_districts: enumeration_districts, incorporation_lock: true,
                                                 incorporated_date: DateTime.now.in_time_zone('London'))
