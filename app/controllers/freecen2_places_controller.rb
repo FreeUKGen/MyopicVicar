@@ -231,7 +231,7 @@ class Freecen2PlacesController < ApplicationController
     get_user_info_from_userid
     @freecen2_place = Freecen2Place.new
     freecen2_places = {}
-    Freecen2Place.chapman_code(@chapman_code).order_by(place_name: 1).each do |place|
+    Freecen2Place.chapman_code(@chapman_code).not_disabled.order_by(place_name: 1).each do |place|
       freecen2_places["#{place.place_name}"] = place._id
     end
     @options = freecen2_places
