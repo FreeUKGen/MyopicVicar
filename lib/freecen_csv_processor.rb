@@ -635,7 +635,9 @@ class CsvFile < CsvFiles
     @file.processed = @project.create_search_records
     @file.header_line = @header_line
     @file.field_specification = @field_specification
+    @file.freecen2_district_id = @piece.freecen2_district_id
     success = @piece.save
+
     p @file
     [success, @file]
   end

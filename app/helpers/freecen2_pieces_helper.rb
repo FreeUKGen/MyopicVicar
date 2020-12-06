@@ -13,8 +13,15 @@ module Freecen2PiecesHelper
   end
 
   def csv_files(piece)
-    number = piece.freecen_csv_files.length
-    link_to "#{number}", freecen_csv_files_path(piece_id: piece.id, type: 'piece'), class: 'btn   btn--small', title:'Access to csv files for this Sub District (Piece)'
+    if piece.freecen_csv_files.present?
+      files = []
+      piece.freecen_csv_files.each do |file|
+        files << file.file_name
+      end
+      link_to "#{files}", freecen_csv_files_path, class: 'btn   btn--small', title:'Csv files for this Piece'
+    else
+      'There are no csv files'
+    end
   end
 
   def individual_civil_link(parish)

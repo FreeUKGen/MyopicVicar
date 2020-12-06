@@ -46,6 +46,19 @@ class Freecen2PiecesController < ApplicationController
     @type = session[:type]
   end
 
+  def edit_name
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No piece identified') && return if params[:id].blank?
+
+    get_user_info_from_userid
+    @freecen2_piece = Freecen2Piece.where('_id' => params[:id]).first
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No piece found') && return if @freecen2_piece.blank?
+
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'Piece has csv files; so edit not permitted') && return if @freecen2_piece.freecen_csv_files.present?
+
+    @type = session[:type]
+    @chapman_code = session[:chapman_code]
+  end
+
   def full_index
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No Chapman code') && return if session[:chapman_code].blank?
 
@@ -162,23 +175,35 @@ class Freecen2PiecesController < ApplicationController
     @freecen2_piece = Freecen2Piece.where('_id' => params[:id]).first
     redirect_back(fallback_location: new_manage_resource_path, notice: 'Piece not found') && return if @freecen2_piece.blank?
 
-    old_freecen2_place = @freecen2_piece.freecen2_place_id
-    old_piece_name = @freecen2_piece.name
-    params[:freecen2_piece][:freecen2_place_id] = @freecen2_piece.piece_place_id(params[:freecen2_piece][:freecen2_place_id])
-    @type = session[:type]
-    params[:freecen2_piece].delete :type
-
-    @freecen2_piece.update(freecen2_piece_params)
-    if @freecen2_piece.errors.any?
-      flash[:notice] = "The update of the civil parish failed #{@freecen2_piece.errors.full_messages}."
-      redirect_back(fallback_location: edit_freecen2_piece_path(@freecen2_piece, type: @type)) && return
+    if params[:commit] == 'Submit Name'
+      @freecen2_piece.update_attributes(name: params[:freecen2_piece][:name])
+      if @freecen2_piece.errors.any?
+        flash[:notice] = "The update of the piece name failed #{@freecen2_piece.errors.full_messages}."
+        redirect_back(fallback_location: edit_name_freecen2_piece_path(@freecen2_piece, type: @type)) && return
+      else
+        flash[:notice] = 'Update was successful'
+        @type = session[:type]
+        redirect_to freecen2_piece_path(@freecen2_piece, type: @type)
+      end
     else
-      flash[:notice] = 'Update was successful'
-      get_user_info_from_userid
-      @freecen2_piece.update_tna_change_log(@user_userid)
-      @freecen2_piece.reload
-      @freecen2_piece.propagate_freecen2_place(old_freecen2_place, old_piece_name)
-      redirect_to freecen2_piece_path(@freecen2_piece, type: @type)
+      old_freecen2_place = @freecen2_piece.freecen2_place_id
+      old_piece_name = @freecen2_piece.name
+      params[:freecen2_piece][:freecen2_place_id] = @freecen2_piece.piece_place_id(params[:freecen2_piece][:freecen2_place_id])
+      @type = session[:type]
+      params[:freecen2_piece].delete :type
+
+      @freecen2_piece.update(freecen2_piece_params)
+      if @freecen2_piece.errors.any?
+        flash[:notice] = "The update of the civil parish failed #{@freecen2_piece.errors.full_messages}."
+        redirect_back(fallback_location: edit_freecen2_piece_path(@freecen2_piece, type: @type)) && return
+      else
+        flash[:notice] = 'Update was successful'
+        get_user_info_from_userid
+        @freecen2_piece.update_tna_change_log(@user_userid)
+        @freecen2_piece.reload
+        @freecen2_piece.propagate_freecen2_place(old_freecen2_place, old_piece_name)
+        redirect_to freecen2_piece_path(@freecen2_piece, type: @type)
+      end
     end
   end
 

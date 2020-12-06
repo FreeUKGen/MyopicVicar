@@ -1,16 +1,5 @@
 <% breadcrumb :show_freecen2_piece,  @freecen2_piece.id, @freecen2_piece.chapman_code,  @freecen2_piece.year, @type%>
-<h2 style="text-align: center">Details of FreeCen2 Piece:- <%= @freecen2_piece.number%> in <%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>) </h2>
-<%= render 'flash_notice' %>
-<% if %w[executive_director project_manager county_coordinator master_county_coordinator country_coordinator data_manager system_administrator].include?(@user.person_role)%>
-  <div style="text-align: center">
-    <%= link_to 'Edit Piece', edit_freecen2_piece_path(@freecen2_piece, type: @type), data: { confirm: 'Are you sure?' }, :class => "btn   btn--small", title: 'Editing is restricted to, coordinators, data managers and system administrators'%>
-  </div>
-<% end%>
-<% if %w[data_manager system_administrator].include?(@user.person_role)%>
-  <div style="text-align: center">
-    <%= link_to 'Delete Piece', freecen2_piece_path(@freecen2_piece), method: :delete, data: { confirm: 'Are you sure you want to destroy this Piece.? It will not happen if there are dependants!' } , :class => "btn  btn--small"%>
-  </div>
-<% end%>
+<%= render 'show_header' %>
 <div class="grid">
   <section class="island ">
     <div class="grid__item ">
@@ -52,7 +41,7 @@
           <td class="weight--semibold"> <%= civil_link(@freecen2_piece)  %></td>
         </tr>
         <tr>
-          <td>Number of CSV files <small>(Number is a link)</small></td>
+          <td>CSV files <small>(Number is a link)</small></td>
           <td class="weight--semibold"> <%=  csv_files(@freecen2_piece) %> </td>
         </tr>
         <tr>

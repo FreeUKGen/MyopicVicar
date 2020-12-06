@@ -16,6 +16,21 @@ module Freecen2DistrictHelper
     link_to "#{@freecen2_pieces_name}", freecen2_pieces_district_index_path(freecen2_district_id: freecen2_district.id, type: @type), class: 'btn   btn--small', title: 'List of the Pieces that belong to this District'
   end
 
+  def list_files(freecen2_district)
+    if freecen2_district.freecen_csv_files.present?
+      files = []
+      freecen2_district.freecen_csv_files.each do |file|
+        files << file.file_name
+      end
+      link_to "#{files}", freecen_csv_files_path, class: 'btn   btn--small', title:'Csv files for this District'
+
+    else
+      'There are no csv files'
+    end
+
+  end
+
+
   def district_place_link(place)
     if place.present?
       link_to "#{place.place_name}", freecen2_place_path(place.id), class: 'btn   btn--small', title: ' Displays all of the information about the place to which this District is linked'

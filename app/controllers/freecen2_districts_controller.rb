@@ -71,6 +71,19 @@ class Freecen2DistrictsController < ApplicationController
     @chapman_code = session[:chapman_code]
   end
 
+  def edit_name
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No district identified') && return if params[:id].blank?
+
+    get_user_info_from_userid
+    @freecen2_district = Freecen2District.find_by(id: params[:id])
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No district found') && return if @freecen2_district.blank?
+
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'District has files so edit not permitted') && return if @freecen2_district.freecen_csv_files.present?
+
+    @type = session[:type]
+    @chapman_code = session[:chapman_code]
+  end
+
   def index
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No Chapman code') && return if session[:chapman_code].blank?
 
@@ -159,24 +172,36 @@ class Freecen2DistrictsController < ApplicationController
     @freecen2_district = Freecen2District.find_by(id: params[:id])
     redirect_back(fallback_location: manage_counties_path, notice: 'District not found') && return if @freecen2_district.blank?
 
-    old_freecen2_place = @freecen2_district.freecen2_place_id
-    old_district_name = @freecen2_district.name
-    params[:freecen2_district][:freecen2_place_id] = @freecen2_district.district_place_id(params[:freecen2_district][:freecen2_place_id])
-    @type = session[:type]
-    params[:freecen2_district].delete :type
-
-    @freecen2_district.update_attributes(freecen2_district_params)
-
-    if @freecen2_district.errors.any?
-      flash[:notice] = "The update of the civil parish failed #{@freecen_csv_entry.errors.full_messages}."
-      redirect_back(fallback_location: edit_freecen2_district_path(@freecen2_district, type: @type)) && return
+    if params[:commit] == 'Submit Name'
+      @freecen2_district.update_attributes(name: params[:freecen2_district][:name])
+      if @freecen2_district.errors.any?
+        flash[:notice] = "The update of the district name failed #{@freecen2_district.errors.full_messages}."
+        redirect_back(fallback_location: edit_name_freecen2_district_path(@freecen2_district, type: @type)) && return
+      else
+        flash[:notice] = 'Update was successful'
+        @type = session[:type]
+        redirect_to freecen2_district_path(@freecen2_district, type: @type)
+      end
     else
-      flash[:notice] = 'Update was successful'
-      get_user_info_from_userid
-      @freecen2_district.update_tna_change_log(@user_userid)
-      @freecen2_district.reload
-      @freecen2_district.propagate_freecen2_place(old_freecen2_place, old_district_name)
-      redirect_to freecen2_district_path(@freecen2_district, type: @type)
+      old_freecen2_place = @freecen2_district.freecen2_place_id
+      old_district_name = @freecen2_district.name
+      params[:freecen2_district][:freecen2_place_id] = @freecen2_district.district_place_id(params[:freecen2_district][:freecen2_place_id])
+
+      params[:freecen2_district].delete :type
+
+      @freecen2_district.update_attributes(freecen2_district_params)
+
+      if @freecen2_district.errors.any?
+        flash[:notice] = "The update of the district failed #{@freecen2_district.errors.full_messages}."
+        redirect_back(fallback_location: edit_freecen2_district_path(@freecen2_district, type: @type)) && return
+      else
+        flash[:notice] = 'Update was successful'
+        get_user_info_from_userid
+        @freecen2_district.update_tna_change_log(@user_userid)
+        @freecen2_district.reload
+        @freecen2_district.propagate_freecen2_place(old_freecen2_place, old_district_name)
+        redirect_to freecen2_district_path(@freecen2_district, type: @type)
+      end
     end
   end
 

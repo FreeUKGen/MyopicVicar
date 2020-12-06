@@ -82,6 +82,7 @@ class FreecenCsvFile
 
   belongs_to :userid_detail, index: true, optional: true
   belongs_to :freecen2_piece, index: true, optional: true
+  belongs_to :freecen2_district, index: true, optional: true
 
   # register belongs to church which belongs to place
 

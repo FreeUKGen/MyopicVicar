@@ -274,6 +274,7 @@ MyopicVicar::Application.routes.draw do
   get 'freecen2_districts/:id/copy(.:format)', to: 'freecen2_districts#copy', as: :copy_freecen2_district
   get 'freecen2_districts/missing_place', to: 'freecen2_districts#missing_place', as: :missing_place_freecen2_districts
   get 'freecen2_districts/chapman_year_index', to: 'freecen2_districts#chapman_year_index', as: :freecen2_districts_chapman_year_index
+  get 'freecen2_districts/:id/edit_name', to: 'freecen2_districts#edit_name', as: :edit_name_freecen2_district
   get 'freecen2_districts/locate', to: 'freecen2_districts#locate', as: :locate_freecen2_district
   resources :freecen2_districts
 
@@ -286,6 +287,7 @@ MyopicVicar::Application.routes.draw do
   get 'freecen2_pieces/:chapman_code/:year/new', :to => 'freecen2_pieces#new', :as => :new_freecen2_piece
   get 'freecen2_pieces/chapman_year_index', :to => 'freecen2_pieces#chapman_year_index', :as => :freecen2_pieces_chapman_year_index
   get 'freecen2_pieces/index_district', :to => 'freecen2_pieces#index_district', :as => :freecen2_pieces_district_index
+  get 'freecen2_pieces/:id/edit_name', to: 'freecen2_pieces#edit_name', as: :edit_name_freecen2_piece
   get 'freecen2_pieces/index_district_year', :to => 'freecen2_pieces#index_district_year', :as => :freecen2_pieces_district_year_index
   get 'freecen2_pieces/:year/select_new_county', :to => 'freecen2_pieces#select_new_county', :as => :select_new_county_freecen2_piece
   resources :freecen2_pieces, except: :new
@@ -297,6 +299,7 @@ MyopicVicar::Application.routes.draw do
   get 'freecen2_civil_parishes/missing_place', to: 'freecen2_civil_parishes#missing_place', as: :missing_place_freecen2_civil_parishes
   get 'freecen2_civil_parishes/:id/index_for_piece', :to => 'freecen2_civil_parishes#index_for_piece', :as => :index_for_piece_freecen2_civil_parishes
   get 'freecen2_civil_parishes/chapman_year_index', :to => 'freecen2_civil_parishes#chapman_year_index', :as => :freecen2_civil_parishes_chapman_year_index
+  get 'freecen2_civil_parishes/:id/edit_name', to: 'freecen2_civil_parishes#edit_name', as: :edit_name_freecen2_civil_parish
   resources :freecen2_civil_parishes
 
   resources :my_saved_searches

@@ -50,6 +50,20 @@ class Freecen2CivilParishesController < ApplicationController
     @type = params[:type]
   end
 
+  def edit_name
+    redirect_back(fallback_location: new_manage_resource_path, notice:  'No civil parish identified') && return if params[:id].blank?
+
+    get_user_info_from_userid
+    @freecen2_civil_parish = Freecen2CivilParish.find_by(id: params[:id])
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No civil parish found') && return if @freecen2_civil_parish.blank?
+
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'Civil parish has csv files; so edit not permitted') && return if @freecen2_civil_parish.freecen2_piece.freecen_csv_files.present?
+
+    @piece = @freecen2_civil_parish.freecen2_piece
+    @type = session[:type]
+    @chapman_code = session[:chapman_code]
+  end
+
   def full_index
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No Chapman code') && return if session[:chapman_code].blank?
 
@@ -141,23 +155,35 @@ class Freecen2CivilParishesController < ApplicationController
     @freecen2_civil_parish = Freecen2CivilParish.find_by(id: params[:id])
     redirect_back(fallback_location: manage_counties_path, notice: 'Civil Parish not found') && return if @freecen2_civil_parish.blank?
 
-    old_freecen2_place = @freecen2_civil_parish.freecen2_place_id
-    old_civil_parish_name = @freecen2_civil_parish.name
-    params[:freecen2_civil_parish][:freecen2_place_id] = @freecen2_civil_parish.civil_parish_place_id(params[:freecen2_civil_parish][:freecen2_place_id])
-    @type = session[:type]
-    params[:freecen2_civil_parish].delete :type
-
-    @freecen2_civil_parish.update_attributes(freecen2_civil_parish_params)
-    if @freecen2_civil_parish.errors.any?
-      flash[:notice] = "The update of the civil parish failed #{@freecen_csv_entry.errors.full_messages}."
-      redirect_back(fallback_location: edit_freecen2_civil_parish_path(@freecen2_civil_parish, type: @type)) && return
+    if params[:commit] == 'Submit Name'
+      @freecen2_civil_parish.update_attributes(name: params[:freecen2_civil_parish][:name])
+      if @freecen2_civil_parish.errors.any?
+        flash[:notice] = "The update of the civil parish name failed #{@freecen2_civil_parish.errors.full_messages}."
+        redirect_back(fallback_location: edit_name_freecen2_civil_parish_path(@freecen2_piece, type: @type)) && return
+      else
+        flash[:notice] = 'Update was successful'
+        @type = session[:type]
+        redirect_to freecen2_civil_parish_path(@freecen2_civil_parish, type: @type)
+      end
     else
-      flash[:notice] = 'Update was successful'
-      get_user_info_from_userid
-      @freecen2_civil_parish.update_tna_change_log(@user_userid)
-      @freecen2_civil_parish.reload
-      @freecen2_civil_parish.propagate_freecen2_place(old_freecen2_place, old_civil_parish_name)
-      redirect_to freecen2_civil_parish_path(@freecen2_civil_parish, type: @type)
+      old_freecen2_place = @freecen2_civil_parish.freecen2_place_id
+      old_civil_parish_name = @freecen2_civil_parish.name
+      params[:freecen2_civil_parish][:freecen2_place_id] = @freecen2_civil_parish.civil_parish_place_id(params[:freecen2_civil_parish][:freecen2_place_id])
+      @type = session[:type]
+      params[:freecen2_civil_parish].delete :type
+
+      @freecen2_civil_parish.update_attributes(freecen2_civil_parish_params)
+      if @freecen2_civil_parish.errors.any?
+        flash[:notice] = "The update of the civil parish failed #{@freecen_csv_entry.errors.full_messages}."
+        redirect_back(fallback_location: edit_freecen2_civil_parish_path(@freecen2_civil_parish, type: @type)) && return
+      else
+        flash[:notice] = 'Update was successful'
+        get_user_info_from_userid
+        @freecen2_civil_parish.update_tna_change_log(@user_userid)
+        @freecen2_civil_parish.reload
+        @freecen2_civil_parish.propagate_freecen2_place(old_freecen2_place, old_civil_parish_name)
+        redirect_to freecen2_civil_parish_path(@freecen2_civil_parish, type: @type)
+      end
     end
   end
 

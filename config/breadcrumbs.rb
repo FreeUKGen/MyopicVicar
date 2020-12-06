@@ -1549,6 +1549,11 @@ crumb :freecen2_districts_full_index do |county|
   parent :freecen2_districts, county
 end
 
+crumb :freecen2_district_select do |county|
+  link 'FreeCen2 District Selection'
+  parent :freecen2_districts, county
+end
+
 crumb :freecen2_districts_chapman do |county, year|
   link 'FreeCen2 Districts by year', freecen2_districts_chapman_year_index_path(chapman_code: county, year: year, anchor: session[:freecen2_district])
   parent :freecen2_districts, county, year
@@ -1608,9 +1613,15 @@ crumb :freecen2_districts_missing_places do |county|
 end
 
 crumb :edit_freecen2_district do |file, county, year|
-  link 'Edit FreeCen2 District', freecen2_district_path(file)
+  link 'Edit FreeCen2 District', edit_freecen2_district_path(file)
   parent :show_freecen2_district, file, county, year
 end
+
+crumb :edit_name_freecen2_district do |file, county, year|
+  link 'Edit FreeCen2 District Name', edit_name_freecen2_district_path(file)
+  parent :show_freecen2_district, file, county, year
+end
+
 
 # .................................................................freecen2_pieces.................................................
 
@@ -1621,6 +1632,11 @@ end
 
 crumb :freecen2_pieces_full_index do |county|
   link 'Full Index FreeCen2 Pieces', full_index_freecen2_pieces_path(county: county, anchor: session[:freecen2_piece], page: session[:current_page_piece])
+  parent :freecen2_pieces, county
+end
+
+crumb :freecen2_piece_select do |county|
+  link 'FreeCen2 Piece Selection'
   parent :freecen2_pieces, county
 end
 
@@ -1688,7 +1704,12 @@ crumb :freecen2_pieces_missing_places do |county|
 end
 
 crumb :edit_freecen2_piece do |file, county, year|
-  link 'Edit FreeCen2 Piece', freecen2_piece_path(file)
+  link 'Edit FreeCen2 Piece', edit_freecen2_piece_path(file)
+  parent :show_freecen2_piece, file, county, year
+end
+
+crumb :edit_name_freecen2_piece do |file, county, year|
+  link 'Edit FreeCen2 Piece Name', edit_name_freecen2_piece_path(file)
   parent :show_freecen2_piece, file, county, year
 end
 
@@ -1708,6 +1729,12 @@ crumb :freecen2_civil_parishes_full_index do |county|
   link 'Full Index FreeCen2 Civil Parishes', full_index_freecen2_civil_parishes_path(county: county, anchor: session[:freecen2_civil_parish], page: session[:current_page_civil_parish])
   parent :freecen2_civil_parishes, county
 end
+
+crumb :freecen2_civil_parish_select do |county|
+  link 'FreeCen2 Civil Parish Selection'
+  parent :freecen2_civil_parishes, county
+end
+
 
 crumb :freecen2_civil_parishes_chapman do |county, year|
   link 'FreeCen2 Civil Parishes by year', freecen2_civil_parishes_chapman_year_index_path(chapman_code: county, year: year, anchor: session[:freecen2_civil_parish])
@@ -1774,6 +1801,11 @@ end
 
 crumb :edit_freecen2_civil_parish do |file, county, year|
   link 'Edit FreeCen2 Civil Parish', edit_freecen2_civil_parish_path(file)
+  parent :show_freecen2_civil_parish, file, county, year
+end
+
+crumb :edit_name_freecen2_civil_parish do |file, county, year|
+  link 'Edit FreeCen2 Piece Name', edit_name_freecen2_civil_parish_path(file)
   parent :show_freecen2_civil_parish, file, county, year
 end
 
@@ -1923,6 +1955,11 @@ end
 crumb :freecen2_places_full_index do |county, place|
   link 'Full Index FreeCen2 Places', full_index_freecen2_places_path(county: county, anchor: place)
   parent :freecen2_places, county, place
+end
+
+crumb :freecen2_place_select do |county|
+  link 'FreeCen2 Place Selection'
+  parent :freecen2_places, county
 end
 
 crumb :freecen2_places_range do |county, place|
