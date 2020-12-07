@@ -301,7 +301,7 @@ class Freecen1VldFile
   end
 
   def compute_schedule_number(rec)
-    if rec['schedule_number'].present? && rec['schedule_number'] == @initial_line_hash['schedule_number']
+    if rec['schedule_number'].present? && (rec['schedule_number'] != '0') && (rec['schedule_number'] == @initial_line_hash['schedule_number'])
       line = @blank
       @use_schedule_blank = true
     else

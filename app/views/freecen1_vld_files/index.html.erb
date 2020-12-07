@@ -21,7 +21,6 @@
         <td><%= freecen1_vld_file.piece %></td>
         <td><%= freecen1_vld_file.series %></td>
         <td><%= link_to 'Show', freecen1_vld_file_path(freecen1_vld_file) %></td>
-        <td><%= link_to 'Edit', edit_freecen1_vld_file_path(freecen1_vld_file) if %w[data_manager system_administrator].include?(@user.person_role)%></td>
       </td>
     </tr>
   <% end %>
