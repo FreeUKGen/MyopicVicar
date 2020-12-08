@@ -1,17 +1,25 @@
 class FreecenCsvFileIncorporate
-  def self.incorporate(file, owner)
-    freecen_file = FreecenCsvFile.find_by(file_name: file.to_s, chapman_code: owner.to_s)
-    county = County.chapman_code(owner.to_s).first
-    message = "#{file} for #{owner} "
-    p "#{file} for #{owner} "
-    success, messagea = incorporate_records(freecen_file)
+  def self.incorporate(file)
+    freecen_file = FreecenCsvFile.find_by(_id: file)
+    file_name = freecen_file.file_name
+    chapman_code = freecen_file.chapman_code
+    county = County.find_by(chapman_code: chapman_code)
+    owner = freecen_file.userid
+    message = "#{file_name} for #{owner} in #{chapman_code} "
+    p "#{file_name} for #{owner} in #{chapman_code} "
+    result, messagea = freecen_file.can_we_incorporate?
     message += messagea
+    if result
+      success, messagea = incorporate_records(freecen_file)
+      message += messagea
+    end
     if success
-      UserMailer.incorporation_report(county.county_coordinator, message, file, owner).deliver_now
+      UserMailer.incorporation_report(county.county_coordinator, message, file_name, owner).deliver_now
     else
-      UserMailer.incorporation_report_failure(county.county_coordinator, message, file, owner).deliver_now
+      UserMailer.incorporation_report_failure(county.county_coordinator, message, file_name, owner).deliver_now
     end
   end
+
 
   def self.incorporate_records(freecen_file)
     enumeration_districts = {}
@@ -36,7 +44,7 @@ class FreecenCsvFileIncorporate
       actual = time_end - start
       per = actual / number
       puts "Success; #{number} records in #{actual} seconds or #{per} seconds a record"
-      message = "success; #{number} in #{actual} or #{per} seconds a record"
+      message = "success; #{number} records in #{actual} or #{per} seconds a record"
       successa = freecen_file.update_attributes(incorporated: true, enumeration_districts: enumeration_districts, incorporation_lock: true,
                                                 incorporated_date: DateTime.now.in_time_zone('London'))
       # the translate individual adds the civil parishes
@@ -47,6 +55,7 @@ class FreecenCsvFileIncorporate
       #place.data_present = true
       #successb = place.save if successa
       PlaceCache.refresh(freecen_file.chapman_code) if successa #&& successb
+      message += '. Place cache rewritten'
       success = true if successa #&& successb
       message = 'File update and or place update failed' unless successa #&& successb
     rescue Exception => msg

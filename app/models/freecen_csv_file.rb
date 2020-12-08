@@ -340,10 +340,18 @@ class FreecenCsvFile
     result = PhysicalFile.userid(userid).file_name(file_name).waiting.blank? ? true : false
   end
 
+  def can_we_unincorporate?
+    return [false, 'Not incorporated'] unless incorporated
+    [true, '']
+  end
+
   def can_we_incorporate?
-    # need to check is duplication
-    result = incorporated ? false : true
-    return [result, 'Already incorporated'] unless result
+
+    return [false, 'Already incorporated'] if incorporated
+
+    return [false, 'Has not been validated incorporated'] unless validation
+
+    return [false, 'Cannot be incorporated as the file contains errors or warnings'] if includes_warnings_or_errors?
 
     return [false, 'Cannot be incorporated as there are No enumeration districts for the file, please reprocess before attempting to incorporate'] if enumeration_districts.blank?
 
@@ -356,8 +364,6 @@ class FreecenCsvFile
 
     result, message = includes_existing_enumeration_districts(piece)
     return [false, "Cannot be incorporated as the file contains enumeration districts #{message}"] if result
-
-    return [false, 'Cannot be incorporated as the file contains errors or warnings'] if includes_warnings_or_errors?
 
     result, message = civil_parishes_have_freecen2_place
     return [false, "Cannot be incorporated as the file contains #{message}"] unless result

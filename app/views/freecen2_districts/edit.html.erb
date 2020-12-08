@@ -1,5 +1,6 @@
 <% breadcrumb :edit_freecen2_district,  @freecen2_district.id, @freecen2_district.chapman_code, @freecen2_district.year %>
 <h2 style="text-align: center">Edit FreeCen2 District:- <%= @freecen2_district.name%> for <%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>) in <%= @freecen2_district.year%></h2>
 <%= render 'flash_notice' %>
+<p> <b> Please take care over the selection of the District name and or the Place name. Recovery may be difficult. Please check the selection, pause and then check it again before hitting the submit button.</b></p>
 <%= render 'form' %>
 <br>

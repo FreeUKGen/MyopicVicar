@@ -11,6 +11,7 @@
     <%= f.input :action, :as => :hidden, :input_html => { :value => @action } %>
     <%= f.input :csvfile, :label => "Select the file to be uploaded from a folder on your computer", :input_html => {  :class => " simple_form_bgcolour simple_form_position_left"} %><br>
     <% if appname.downcase == 'freecen' %>
+      <p class="text--left">  <b> Behind the scenes</b>, the upload process is a 3 step process that does take some time to fully complete (1-15 minutes). So please be patient. The first step takes a copy of the file from your computer and stores it on the server. The second step returns you to the list of files and a message that the file has been submitted for processing. The processing is a background task on the server and the length of time taken will depend on the number of entries in the file, the number of other people submitting files for processing in both FreeCEN and FreeREG, as well as the number of searches being performed on this server. The third step is making your entries available for review and sending you an email that the process is complete. So please do not expect the results of the upload to immediately appear in your list of files. Wait for the email and then refresh the list of files. </p>
       <%= f.input :type_of_processing, :collection => @types_of_processing, :required => true , :label => "Type of processing.",
       :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width ", :size => 3 },:selected => @type_of_processing %>
     <% end%>
