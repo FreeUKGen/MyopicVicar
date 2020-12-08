@@ -47,7 +47,7 @@ class FreecenDwelling
       return ['Census Year', 'County', 'Census District', 'Civil Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'House Number', 'House or Street Name']
     end
     if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-      return ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Piece', 'Enumeration District', 'Page', 'Schedule', 'House Number', 'House or Street Name']
+      return ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'Schedule', 'House Number', 'House or Street Name']
     end
     ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'Schedule', 'House Number', 'House or Street Name']
   end
