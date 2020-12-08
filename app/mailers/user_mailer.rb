@@ -195,7 +195,7 @@ class UserMailer < ActionMailer::Base
     coordinator = UseridDetail.userid(userid).first
     @appname = appname
     @message = message
-    manager = UseridDetail.role('Captkirk').first
+    manager = UseridDetail.userid('Captkirk').first
     mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", cc: "#{manager.person_forename} <#{manager.email_address}>", subject: "Record removal failure report for #{file} in #{county}") if coordinator.present?
   end
 
