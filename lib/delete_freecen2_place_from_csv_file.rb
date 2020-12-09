@@ -41,9 +41,9 @@ class DeleteFreecen2PlaceFromCsvFile
       chapman_code = line[2]
       place_name = line[3].strip if line[3].present?
       standard_place_name = Freecen2Place.standard_place(place_name)
-
-      place = Freecen2Place.find_by(chapman_code: chapman_code, standard_place_name: standard_place_name)
-
+      p place_name
+      place = Freecen2Place.find_by(chapman_code: chapman_code, place_name: place_name)
+      p place
       if place.present?
         @number_deleted += 1
         p "Place #{place_name} found in #{chapman_code}"
@@ -56,6 +56,6 @@ class DeleteFreecen2PlaceFromCsvFile
         message_file.puts "Place #{place_name} not found exists in #{chapman_code}"
       end
     end
-    p "#{@number_of_line} records processed with #{@number_deleted} added and #{@number_skipped}"
+    p "#{@number_of_line} records processed with #{@number_deleted} deleted and #{@number_skipped} skipped"
   end
 end
