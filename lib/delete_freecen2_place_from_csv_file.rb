@@ -40,7 +40,7 @@ class DeleteFreecen2PlaceFromCsvFile
 
       chapman_code = line[2].strip if line[2].present?
       p chapman_code
-      place_name = line[3].strip if line[3].present?
+      place_name = line[3].titleize if line[3].present?
       standard_place_name = Freecen2Place.standard_place(place_name)
       p place_name
       place = Freecen2Place.find_by(chapman_code: chapman_code, place_name: place_name)
