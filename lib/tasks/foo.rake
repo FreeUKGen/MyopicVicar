@@ -46,6 +46,15 @@ namespace :foo do
     puts "Task complete."
   end
 
+  task :delete_freecen2_place_from_csv_file, [:file, :limit] => [:environment] do |t, args|
+    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+    require 'delete_freecen2_place_from_csv_file'
+    puts "delete_freecen2_place_from_csv_file started with #{args.file} and limit #{args.limit} "
+    DeleteFreecen2PlaceFromCsvFile.process(args.file, args.limit)
+    puts "Task complete."
+  end
+
+
   # eg foo:check_search_records[100000]
   task :add_birth_place_to_search_record_individual, [:num, :fix] => [:environment] do |t, args|
     require 'add_birth_place_to_search_record_individual'

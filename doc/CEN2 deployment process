@@ -68,9 +68,9 @@ Step 5. Load parms
     1911.xml
 
   copy to tmp on test2
-    sudo -u webserv cp *.xml /home/apache/hosts/freecen2/development/tmp/
+    sudo -u webserv cp *.xml /home/apache/hosts/freecen2/production/test_data/new_parms/
   run loads of files
-    sudo -u webserv bundle exec rake RAILS_ENV=development  extract_freecen2_parms[2,1871.xml] --trace
+    sudo -u webserv bundle exec rake RAILS_ENV=production  extract_freecen2_parms[2,1871.xml] --trace
 
   create indices for all 3 collections
 
