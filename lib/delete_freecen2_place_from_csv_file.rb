@@ -38,7 +38,8 @@ class DeleteFreecen2PlaceFromCsvFile
       next if line[0].present? && line[0].strip == 'Chapman Code'
       next if line[0].blank?
 
-      chapman_code = line[2]
+      chapman_code = line[2].strip if line[2].present?
+      p chapman_code
       place_name = line[3].strip if line[3].present?
       standard_place_name = Freecen2Place.standard_place(place_name)
       p place_name
