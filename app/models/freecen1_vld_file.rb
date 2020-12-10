@@ -168,10 +168,10 @@ class Freecen1VldFile
         line << compute_schedule_number(rec)
       when 'uninhabited_flag'
         line << compute_uninhabited_flag(rec)
-      when 'house_number'
-        line << compute_house_number(rec)
       when 'house_or_street_name'
-        line << compute_house_or_street_name(rec)
+        number, address = compute_address(rec)
+        line << number
+        line << address
       when 'surname'
         line << rec['surname']
       when 'forenames'
@@ -313,7 +313,7 @@ class Freecen1VldFile
   end
 
   def compute_schedule_number(rec)
-    if rec['schedule_number'].present? && (rec['schedule_number'] != '0') && (rec['schedule_number'] == @initial_line_hash['schedule_number'])
+    if rec['schedule_number'].present? && (rec['schedule_number'] == @initial_line_hash['schedule_number'])
       line = @blank
       @use_schedule_blank = true
     else
@@ -324,24 +324,16 @@ class Freecen1VldFile
     line
   end
 
-  def compute_house_number(rec)
-    if @use_schedule_blank || rec['house_number'] == @initial_line_hash['house_number']
-      entry = @blank
+  def compute_address(rec)
+    if rec['dwelling_number'] == @initial_line_hash['dwelling_number']
+      number = @blank
+      address = @blank
     else
-      @initial_line_hash['house_number'] = rec['house_number']
-      entry = rec['house_number']
+      @initial_line_hash['dwelling_number'] = rec['dwelling_number']
+      number = rec['house_number']
+      address = rec['house_or_street_name']
     end
-    entry
-  end
-
-  def compute_house_or_street_name(rec)
-    if @use_schedule_blank || rec['house_or_street_name'] == @initial_line_hash['house_or_street_name']
-      entry = @blank
-    else
-      @initial_line_hash['house_or_street_name'] = rec['house_or_street_name']
-      entry = rec['house_or_street_name']
-    end
-    entry
+    [number, address]
   end
 
   def compute_age(rec)
