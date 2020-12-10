@@ -216,6 +216,8 @@ class Freecen1VldFile
   end
 
   def compute_enumeration_district(rec)
+    @special = special_enumeration_district?(rec['enumeration_district'])
+    rec['enumeration_district'] = reformat_enumeration_district(rec['enumeration_district']) if @special
     if rec['enumeration_district'] == @initial_line_hash['enumeration_district']
       line = @blank
       @use_blank = true
@@ -227,6 +229,17 @@ class Freecen1VldFile
     line
   end
 
+  def special_enumeration_district?(rec)
+    ed_chars = rec.chars
+    special_format = ed_chars.length == 2 && ed_chars[0] == '0' ? true : false
+    special_format
+  end
+
+  def reformat_enumeration_district(rec)
+    ed_chars = rec.chars
+    ed_chars[0] + '#' + ed_chars[1]
+  end
+
   def compute_civil_parish(rec)
     if !@use_blank
       line = rec['civil_parish']
@@ -236,7 +249,6 @@ class Freecen1VldFile
         line = @blank
       else
         line = rec['civil_parish']
-
       end
     end
     line
@@ -313,13 +325,23 @@ class Freecen1VldFile
   end
 
   def compute_house_number(rec)
-    entry = @use_schedule_blank ? @blank : rec['house_number']
-    line = entry
+    if @use_schedule_blank || rec['house_number'] == @initial_line_hash['house_number']
+      entry = @blank
+    else
+      @initial_line_hash['house_number'] = rec['house_number']
+      entry = rec['house_number']
+    end
+    entry
   end
 
   def compute_house_or_street_name(rec)
-    entry = @use_schedule_blank ? @blank : rec['house_or_street_name']
-    line = entry
+    if @use_schedule_blank || rec['house_or_street_name'] == @initial_line_hash['house_or_street_name']
+      entry = @blank
+    else
+      @initial_line_hash['house_or_street_name'] = rec['house_or_street_name']
+      entry = rec['house_or_street_name']
+    end
+    entry
   end
 
   def compute_age(rec)
