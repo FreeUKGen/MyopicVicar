@@ -5,9 +5,15 @@
   <%= f.input :notes,label: 'TNA Notes',  as: :text, required: false, input_html: {class: ' simple_form_bgcolour  ',   placeholder: @freecen2_district.notes,  size: '50x5' }%>
   <%= f.input :chapman_code,:label => 'Chapman Code', required: false, :input_html => { :disabled => true,:size => 10 }%>
   <%= f.input :year,:label => 'Census year', required: false , :input_html => { :disabled => true,:size => 10}%>
-  <%= f.input :type,:label => 'Type of District', required: false, :input_html => { :disabled => true,:size => 10 }%>
-  <%= f.input :tnaid,:label => 'TNA link', required: false, :input_html => { :disabled => true,:size => 10}%>
-  <%= f.input :code,:label => 'Registration District Number', required: false, :input_html => { :disabled => true,:size => 10 }%>
+  <% if %w[data_manager system_administrator].include?(@user.person_role) %>
+    <%= f.input :type,:label => 'Type of District', required: false, :input_html => {:class => ' simple_form_bgcolour ', :size => 10 }%>
+    <%= f.input :tnaid,:label => 'TNA link', required: false, :input_html => { :class => ' simple_form_bgcolour ', :size => 10}%>
+    <%= f.input :code,:label => 'Registration District Number', required: false, :input_html => { :class => ' simple_form_bgcolour ', :size => 10 }%>
+  <% else%>
+    <%= f.input :type,:label => 'Type of District', required: false, :input_html => { :disabled => true,:size => 10 }%>
+    <%= f.input :tnaid,:label => 'TNA link', required: false, :input_html => { :disabled => true,:size => 10}%>
+    <%= f.input :code,:label => 'Registration District Number', required: false, :input_html => { :disabled => true,:size => 10 }%>
+  <% end%>
   <div  style="text-align: center">
     <%= f.action :submit,  :as => :button,  :label =>  'Submit', :button_html => {name: 'commit', value: 'Submit', :class => 'ladda-button' , 'data-style' => 'contract' ,'data-color' => appname_downcase , 'data-size' => 's', 'data-spinner-color' => '#ffffff'  } %>
     <%= f.action  :cancel, as: :link, label: 'Cancel' %>

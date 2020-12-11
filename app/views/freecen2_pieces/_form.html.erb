@@ -11,10 +11,16 @@
   <%= f.input :remarks, label: 'Public notes for Piece', value: @freecen2_piece.remarks, :as => :text, :input_html => {:class => ' simple_form_bgcolour  ',   :placeholder => 'Enter public notes',  :size => '50x5' }%>
   <%= f.input :remarks_coord, label: 'Management notes for Piece', value: @freecen2_piece.remarks_coord, :as => :text, :input_html => {:class => ' simple_form_bgcolour  ',   :placeholder => 'Enter management notes',  :size => '50x5' }%>
   <%= f.input :notes,label: 'TNA Notes; add reason for change after their note',  as: :text, input_html: {class: ' simple_form_bgcolour  ',   placeholder: @freecen2_piece.notes,  size: '50x5' }%>
+  <% if %w[data_manager system_administrator].include?(@user.person_role) %>
+    <%= f.input :tnaid,:label => 'TNA link', :input_html => {:class => ' simple_form_bgcolour  ',:size => 10 }%>
+    <%= f.input :code,:label => 'TNA Code', :input_html => {:class => ' simple_form_bgcolour  ',:size => 10 }%>
+    <%= f.input :prenote,:label => 'TNA Pre notes', :input_html => {:class => ' simple_form_bgcolour  ',:size => 10 }%>
+  <% else %>
+    <%= f.input :tnaid,:label => 'TNA link', :input_html => { :disabled => true,:size => 10 }%>
+    <%= f.input :code,:label => 'TNA Code', :input_html => { :disabled => true,:size => 10 }%>
+    <%= f.input :prenote,:label => 'TNA Pre notes', :input_html => { :disabled => true,:size => 10 }%>
+  <% end %>
   <%= f.input :year,:label => 'Census year', required: false, :input_html => { :disabled => true,:size => 10 }%>
-  <%= f.input :tnaid,:label => 'TNA link', :input_html => { :disabled => true,:size => 10 }%>
-  <%= f.input :code,:label => 'TNA Code', :input_html => { :disabled => true,:size => 10 }%>
-  <%= f.input :prenote,:label => 'TNA Pre notes', :input_html => { :disabled => true,:size => 10 }%>
   <div  style="text-align: center">
     <%= f.action :submit,  :as => :button,  :label =>  'Submit', :button_html => {name: 'commit', value: 'Submit', :class => 'ladda-button' , 'data-style' => 'contract' ,'data-color' => appname_downcase , 'data-size' => 's', 'data-spinner-color' => '#ffffff'  } %>
     <%= f.action  :cancel, as: :link, label: 'Cancel' %>
