@@ -193,9 +193,9 @@ class Freecen1VldFile
       when 'verbatim_birth_place'
         line << rec['verbatim_birth_place']
       when 'birth_county'
-        line << rec['birth_county']
-      when 'birth_place'
-        line << rec['birth_place']
+        county, place = compute_alternate(rec)
+        line << county
+        line << place
       when 'disability'
         line << rec['disability']
       when 'language'
@@ -213,6 +213,17 @@ class Freecen1VldFile
       end
     end
     line
+  end
+
+  def compute_alternate(rec)
+    if rec['birth_county'] == rec['verbatim_birth_county'] && rec['birth_place'] == rec['verbatim_birth_place']
+      county = @blank
+      place = @blank
+    else
+      county = @rec['birth_county']
+      place =  rec['birth_place']
+    end
+    [county, place]
   end
 
   def compute_enumeration_district(rec)
