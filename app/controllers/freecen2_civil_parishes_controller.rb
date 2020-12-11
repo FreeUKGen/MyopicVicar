@@ -15,9 +15,13 @@ class Freecen2CivilParishesController < ApplicationController
 
     @freecen2_civil_parish = Freecen2CivilParish.find_by(id: params[:id])
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No civil parish found') && return if @freecen2_civil_parish.blank?
+    @freecen2_piece = @freecen2_civil_parish.freecen2_piece
 
     success = @freecen2_civil_parish.destroy
     flash[:notice] = success ? 'Civil Parish deleted' : 'Civil Parish deletion failed'
+    civil_parish_names = @freecen2_piece.add_update_civil_parish_list
+    @freecen2_piece.update(civil_parish_names: civil_parish_names) unless civil_parish_names == @freecen2_piece.civil_parish_names
+
     redirect_to freecen2_civil_parishes_path
   end
 
@@ -161,6 +165,9 @@ class Freecen2CivilParishesController < ApplicationController
         flash[:notice] = "The update of the civil parish name failed #{@freecen2_civil_parish.errors.full_messages}."
         redirect_back(fallback_location: edit_name_freecen2_civil_parish_path(@freecen2_piece, type: @type)) && return
       else
+        @freecen2_piece = @freecen2_civil_parish.freecen2_piece
+        civil_parish_names = @freecen2_piece.add_update_civil_parish_list
+        @freecen2_piece.update(civil_parish_names: civil_parish_names) unless civil_parish_names == @freecen2_piece.civil_parish_names
         flash[:notice] = 'Update was successful'
         @type = session[:type]
         redirect_to freecen2_civil_parish_path(@freecen2_civil_parish, type: @type)
@@ -181,6 +188,9 @@ class Freecen2CivilParishesController < ApplicationController
         get_user_info_from_userid
         @freecen2_civil_parish.update_tna_change_log(@user_userid)
         @freecen2_civil_parish.reload
+        @freecen2_piece = @freecen2_civil_parish.freecen2_piece
+        civil_parish_names = @freecen2_piece.add_update_civil_parish_list
+        @freecen2_piece.update(civil_parish_names: civil_parish_names) unless civil_parish_names == @freecen2_piece.civil_parish_names
         @freecen2_civil_parish.propagate_freecen2_place(old_freecen2_place, old_civil_parish_name)
         redirect_to freecen2_civil_parish_path(@freecen2_civil_parish, type: @type)
       end

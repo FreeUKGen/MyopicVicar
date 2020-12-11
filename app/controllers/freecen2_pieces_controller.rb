@@ -116,16 +116,42 @@ class Freecen2PiecesController < ApplicationController
     session[:type] = 'missing_piece_place_index'
   end
 
-  def selection_by_name
+  def refresh_civil_parish_list
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No piece identified') && return if params[:id].blank?
+
+    get_user_info_from_userid
+    @freecen2_piece = Freecen2Piece.find_by(id: params[:id])
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No piece found') && return if @freecen2_piece.blank?
+
+    civil_parish_names = @freecen2_piece.add_update_civil_parish_list
+    @freecen2_piece.update(civil_parish_names: civil_parish_names) unless civil_parish_names == @freecen2_piece.civil_parish_names
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'Civil Parish List Updated if necessary')
+  end
+
+  def selection_by_number
     @chapman_code = session[:chapman_code]
     get_user_info_from_userid
     @freecen2_piece = Freecen2Piece.new
     @options = {}
     Freecen2Piece.chapman_code(@chapman_code).order_by(number: 1, year: 1).each do |piece|
-      @options["#{piece.number} (#{piece.year}) (#{piece.name})"] = piece._id
+      @options["#{piece.number} (#{piece.year})"] = piece._id
     end
     @location = 'location.href= "/freecen2_pieces/" + this.value'
-    @prompt = 'Select Sub district (Piece)'
+    @prompt = 'Select Sub district (Piece) by number'
+    session[:type] = 'piece_name'
+    render '_form_for_selection'
+  end
+
+  def selection_by_name
+    @chapman_code = session[:chapman_code]
+    get_user_info_from_userid
+    @freecen2_piece = Freecen2Piece.new
+    @options = {}
+    Freecen2Piece.chapman_code(@chapman_code).order_by(name: 1, year: 1).each do |piece|
+      @options["#{piece.name} (#{piece.year})"] = piece._id
+    end
+    @location = 'location.href= "/freecen2_pieces/" + this.value'
+    @prompt = 'Select Sub district (Piece) by name'
     session[:type] = 'piece_name'
     render '_form_for_selection'
   end
