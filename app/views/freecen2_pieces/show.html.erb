@@ -37,12 +37,16 @@
           <td class="weight--semibold"> <%= district_link(@freecen2_piece.freecen2_district) %> </td>
         </tr>
         <tr>
-          <td>Has Civil Parishes <small>(List is a link)</small></td>
-          <td class="weight--semibold"> <%= civil_link(@freecen2_piece)  %></td>
+          <td><%= civil_link(@freecen2_piece)  %></td>
+          <td class="weight--semibold"> <%=  "#{@freecen2_piece.civil_parish_names}"  %></td>
         </tr>
         <tr>
           <td>CSV files <small>(Number is a link)</small></td>
           <td class="weight--semibold"> <%=  csv_files(@freecen2_piece) %> </td>
+        </tr>
+        <tr>
+          <td>Code</td>
+          <td class="weight--semibold"> <%= @freecen2_piece.code%> </td>
         </tr>
         <tr>
           <td>Notes before name</td>

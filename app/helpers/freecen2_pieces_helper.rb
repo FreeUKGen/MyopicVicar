@@ -9,7 +9,7 @@ module Freecen2PiecesHelper
   end
 
   def civil_link(piece)
-    link_to "Index of Civil Parishes", index_for_piece_freecen2_civil_parishes_path(piece_id: piece.id, type: @type), class: 'btn   btn--small', title:' Displays a list of the Civil Parishes which belong to this Sub District (Piece)'
+    link_to "Link to Civil Parishes", index_for_piece_freecen2_civil_parishes_path(piece_id: piece.id, type: @type), class: 'btn   btn--small', title:' Displays a list of the Civil Parishes which belong to this Sub District (Piece)'
   end
 
   def csv_files(piece)
