@@ -1,5 +1,7 @@
 <% breadcrumb :freecen2_pieces_full_index,  @chapman_code  %>
 <h2 style="text-align: center">FreeCen2 Sub Districts (Pieces) for <%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>) </h2>
+<%= render 'flash_notice' %>
+<h3 style="text-align: center">Please be aware that there may well be several Pieces with the same name for a given year</h3>
 <%= paginate @freecen2_pieces_distinct %>
 <div class="scrollable ">
   <table  class="table--bordered table--data table--striped " >

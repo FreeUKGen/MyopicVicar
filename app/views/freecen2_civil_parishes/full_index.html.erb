@@ -1,6 +1,7 @@
 <% breadcrumb :freecen2_civil_parishes_full_index,  @chapman_code, @type%>
 <h2 style="text-align: center">FreeCen2 Civil Parishes for <%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>)  </h2>
 <%= render 'flash_notice' %>
+<h3 style="text-align: center">Please be aware that there may well be several Civil Parishes with the same name for a given year</h3>
 <%= paginate @freecen2_civil_parishes_distinct %>
 <div class="scrollable ">
   <table class="table--bordered table--data table--striped " >
