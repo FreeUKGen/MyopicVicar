@@ -5,6 +5,14 @@ namespace :foo do
   #eg f2rake  foo:update_search_records[0,bu,"2016-05-27T19:23:31+00:00", true, 1]
   #number of files of 0 is all, force creation is true or false, order files processed is 1 or -1
 
+  task :correct_tna_link, [:limit] => [:environment] do |t, args|
+    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+    require 'correct_tna_link'
+    puts "Correcting TNA links for 1841 and limit #{args.limit} "
+    CorrectTnaLink.process(args.limit)
+    puts "Task complete."
+  end
+
   task :upload_place_dump_from_csv_file_to_freecen2_place_collection, [:file, :limit] => [:environment] do |t, args|
     # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
     require 'upload_place_dump_from_csv_file_to_freecen2_place_collection'
