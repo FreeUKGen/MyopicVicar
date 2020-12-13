@@ -1,0 +1,42 @@
+<% breadcrumb :new_freecen2_civil_parish, @freecen2_piece, @county, @year%>
+<h3 style="text-align: center">Creating a New Civil Parish in <%=@freecen2_piece.number%> for <%=@chapman_code%> in <%=@year%> </b><br>
+</h3>
+<%= render 'flash_notice' %>
+<%= semantic_form_for @freecen2_civil_parish, :html => { :class => 'grid'}  do |f| %>
+  <%= f.input :reason_changed,:label => 'Reason for making addition',:as => :text, :input_html => {:class => ' simple_form_bgcolour  ',   :placeholder => 'Enter the reason for addition',  :size => '50x5' }%>
+  <%= f.input :name ,  label: 'Civil Parish Name', input_html: {class: ' simple_form_bgcolour', size:40 }%>
+  <%= f.input :number ,  label: 'Civil Parish Number (if any)', input_html: {class: ' simple_form_bgcolour', size:40 }%>
+  <%= f.input :suffix ,  label: 'Civil Parish Suffix (if any)', input_html: {class: ' simple_form_bgcolour', size:40 }%>
+  <%= f.input :freecen2_place_id,  label: 'Freecen2 Place name:', selected:  @freecen2_place_name, include_blank: false, collection: @places, input_html: {class: ' simple_form_bgcolour very_large_selection_field_width', size:5 }%>
+  <%= f.input :note, label: 'TNA Notes',  as: :text, input_html: {class: ' simple_form_bgcolour  ',   placeholder: @freecen2_civil_parish.note,  size: '50x5' }%>
+  <%= f.input :prenote, label: 'TNA Prenote',  as: :text, input_html: {class: ' simple_form_bgcolour  ',   placeholder: @freecen2_civil_parish.note,  size: '50x5' }%>
+  <h4 style='text-align: center'>The following sections are for the addition of Hamlets, Townships and Wards within the Civil Parish</h4>
+  <h4 style='text-align: center'>Hamlets within the Civil Parish</h4>
+  <%= f.simple_fields_for :freecen2_hamlets do |multiple| %>
+    <%= multiple.input :name,:input_html => {:class => ' simple_form_bgcolour  ', :size => 40 } %>
+    <%= multiple.input :note,:input_html => { :class => ' simple_form_bgcolour  ',:size => 40 } %>
+    <%= multiple.input :prenote,:input_html => { :class => ' simple_form_bgcolour  ',:size => 40 } %>
+  <% end %>
+  <h4 style='text-align: center'>Townships within the Civil Parish</h4>
+  <%= f.simple_fields_for :freecen2_townships do |multiple| %>
+    <%= multiple.input :name,:input_html => {:class => ' simple_form_bgcolour  ', :size => 40 } %>
+    <%= multiple.input :note,:input_html => { :class => ' simple_form_bgcolour  ',:size => 40 } %>
+    <%= multiple.input :prenote,:input_html => { :class => ' simple_form_bgcolour  ',:size => 40 } %>
+  <% end %>
+  <h4 style='text-align: center'>Wards within the Civil Parish</h4>
+  <%= f.simple_fields_for :freecen2_wards do |multiple| %>
+    <%= multiple.input :name,:input_html => {:class => ' simple_form_bgcolour  ', :size => 40 } %>
+    <%= multiple.input :note,:input_html => { :class => ' simple_form_bgcolour  ',:size => 40 } %>
+    <%= multiple.input :prenote,:input_html => { :class => ' simple_form_bgcolour  ',:size => 40 } %>
+  <% end %>
+  <%= f.hidden_field :chapman_code, :value=>@chapman_code %>
+  <%= f.hidden_field :year, :value=>@year %>
+  <%= f.hidden_field :freecen2_piece_id, :value=>@freecen2_piece.id %>
+  <div  style="text-align: center">
+    <%= f.action :submit,  :as => :button,  :label =>  'Submit', :button_html => {name: 'commit', value: 'Submit', :class => 'ladda-button' , 'data-style' => 'contract' ,'data-color' => appname_downcase , 'data-size' => 's', 'data-spinner-color' => '#ffffff'  } %>
+    <%= f.action  :cancel, as: :link, label: 'Cancel' %>
+  <% end %>
+</div>
+<script type='text/javascript'>
+  Ladda.bind( 'button[type=submit]' );
+</script>

@@ -1735,7 +1735,10 @@ crumb :freecen2_civil_parish_select do |county|
   parent :freecen2_civil_parishes, county
 end
 
-
+crumb :new_freecen2_civil_parish do |file, county, year|
+  link 'Create FreeCen2 Civil Parish'
+  parent :show_freecen2_piece, file, county, year
+end
 crumb :freecen2_civil_parishes_chapman do |county, year|
   link 'FreeCen2 Civil Parishes by year', freecen2_civil_parishes_chapman_year_index_path(chapman_code: county, year: year, anchor: session[:freecen2_civil_parish])
   parent :freecen2_civil_parishes, county

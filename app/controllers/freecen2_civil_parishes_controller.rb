@@ -10,6 +10,33 @@ class Freecen2CivilParishesController < ApplicationController
     session[:type] = 'parish_year_index'
   end
 
+  def create
+    # puts "\n\n*** create ***\n\n"
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No information in the creation') && return if params[:freecen2_civil_parish].blank?
+
+    @new_civil_parish_params = Freecen2CivilParish.transform_civil_parish_params(params[:freecen2_civil_parish])
+
+    @freecen2_civil_parish = Freecen2CivilParish.new(@new_civil_parish_params)
+
+    @freecen2_civil_parish.save
+    if @freecen2_civil_parish.errors.any?
+      redirect_back(fallback_location: new_manage_resource_path, notice: "'There was an error while saving the new civil parish' #{@freecen2_civil_parish.errors.full_messages}") && return
+    else
+      @freecen2_civil_parish.reload
+      @freecen2_piece = @freecen2_civil_parish.freecen2_piece
+      civil_parish_names = @freecen2_piece.add_update_civil_parish_list
+      @freecen2_piece.update(civil_parish_names: civil_parish_names)
+      p  params[:freecen2_civil_parish][:freecen2_hamlets_attributes]
+      p params[:freecen2_civil_parish][:freecen2_hamlets_attributes].present?
+      @freecen2_civil_parish.freecen2_hamlets << Freecen2CivilParish.add_hamlet(params) if params[:freecen2_civil_parish][:freecen2_hamlets_attributes].present?
+      @freecen2_civil_parish.freecen2_townships << Freecen2CivilParish.add_township(params) if params[:freecen2_civil_parish][:freecen2_townships_attributes].present?
+      @freecen2_civil_parish.freecen2_wards << Freecen2CivilParish.add_ward(params) if params[:freecen2_civil_parish][:freecen2_wards_attributes].present?
+      @freecen2_civil_parish.save
+      flash[:notice] = 'The civil place was created'
+      redirect_to freecen2_piece_path(@freecen2_piece)
+    end
+
+  end
   def destroy
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No Civil Parish identified') && return if params[:id].blank?
 
@@ -110,6 +137,25 @@ class Freecen2CivilParishesController < ApplicationController
     @chapman_code = session[:chapman_code]
     @freecen2_civil_parishes = Freecen2CivilParish.missing_places(@chapman_code)
     session[:type] = 'missing_parish_index'
+  end
+
+  def new
+    redirect_back(fallback_location: new_manage_resource_path, notice:  'No piece identified') && return if params[:piece].blank?
+
+    get_user_info_from_userid
+    @freecen2_piece = Freecen2Piece.find_by(_id: params[:piece])
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No piece found') && return if @freecen2_piece.blank?
+
+    @freecen2_place = @freecen2_piece.freecen2_place
+    @freecen2_place_name = @freecen2_place.present? ? @freecen2_place.place_name : ''
+    @chapman_code = @freecen2_piece.chapman_code
+    @year = @freecen2_piece.year
+    @freecen2_civil_parish = Freecen2CivilParish.new(freecen2_piece_id: @freecen2_piece.id, chapman_code: @chapman_code, year: @year, freecen2_place_id: @freecen2_place)
+    @places = @freecen2_civil_parish.civil_parish_place_names
+    @freecen2_civil_parish.freecen2_hamlets.build
+    @freecen2_civil_parish.freecen2_townships.build
+    @freecen2_civil_parish.freecen2_wards.build
+    @type = params[:type]
   end
 
   def selection_by_name

@@ -58,6 +58,56 @@ class Freecen2CivilParish
       end
       civil_parishes
     end
+
+    def transform_civil_parish_params(params)
+      return params if params.blank?
+      place = Freecen2Place.find_by(chapman_code: params['chapman_code'], place_name: params['freecen2_place_id'])
+      new_civil_parish_params = {}
+      new_civil_parish_params[:chapman_code] = params['chapman_code']
+      new_civil_parish_params[:year] = params['year']
+      new_civil_parish_params[:reason_changed] = params['reason_changed']
+      new_civil_parish_params[:freecen2_piece_id] = params['freecen2_piece_id']
+      new_civil_parish_params[:name] = params['name']
+      new_civil_parish_params[:number] = params['number']
+      new_civil_parish_params[:suffix] = params['suffix']
+      new_civil_parish_params[:note] = params['note']
+      new_civil_parish_params[:prenote] = params['prenote']
+      new_civil_parish_params[:freecen2_place_id] = place.id if place.present?
+      new_civil_parish_params
+    end
+
+    def add_hamlet(params)
+      hamlet = params[:freecen2_civil_parish][:freecen2_hamlets_attributes]['0']
+      return nil if hamlet['name'].blank?
+
+      hamlet_name = hamlet['name']
+      hamlet_note = hamlet['note']
+      hamlet_prenote = hamlet['prenote']
+      hamlet_object = Freecen2Hamlet.new(name: hamlet_name, note: hamlet_note, prenote: hamlet_prenote)
+      hamlet_object
+    end
+
+    def add_township(params)
+      township = params[:freecen2_civil_parish][:freecen2_townships_attributes]['0']
+      return nil if township['name'].blank?
+
+      township_name = township['name']
+      township_note = township['note']
+      township_prenote = township['prenote']
+      township_object = Freecen2Township.new(name: township_name, note: township_note, prenote: township_prenote)
+      township_object
+    end
+
+    def add_ward(params)
+      ward = params[:freecen2_civil_parish][:freecen2_wards_attributes]['0']
+      return nil if ward['name'].blank?
+
+      ward_name = ward['name']
+      ward_note = ward['note']
+      ward_prenote = ward['prenote']
+      ward_object = Freecen2Ward.new(name: ward_name, note: ward_note, prenote: ward_prenote)
+      ward_object
+    end
   end
 
   # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::Instance methods :::::::::::::::::::::::::::::::::::::::
