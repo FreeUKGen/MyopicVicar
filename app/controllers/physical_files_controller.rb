@@ -62,7 +62,8 @@ class PhysicalFilesController < ApplicationController
     my_file = File.join(Rails.application.config.datafiles_changeset, file.userid, file.file_name) if params[:loc] == 'FR1'
     redirect_back(fallback_location: { action: 'select_action' }, notice: 'There is a problem with the file you are attempting to download') && return unless File.file?(my_file)
 
-    send_file(my_file, filename: file.file_name, x_sendfile: true)
+
+    send_file(my_file, filename: file.file_name, x_sendfile: true) && return
 
     redirect_back(fallback_location: { action: 'select_action' }, notice: 'Downloaded')
 
