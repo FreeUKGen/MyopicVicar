@@ -617,6 +617,7 @@ module ApplicationHelper
       freeregIcon: '<span class="accessibility">FreeREG</span>',
       freecenIcon: '<span class="accessibility">FreeCEN</span>',
       freebmdIcon: '<span class="accessibility">FreeBMD</span>',
+      freebmdAccuracy: 'accuracy or completeness',
       freeukgenIcon: '<span class="accessibility">FreeUKGenealogy</span>',
       statistics: 'Statistics'
     }
@@ -633,6 +634,7 @@ module ApplicationHelper
       freereg: 'https://www.freereg.org.uk/',
       freecen: 'https://www.freecen.org.uk/',
       freebmd: 'https://www.freebmd.org.uk/',
+      freebmdAccuracy: '/cms/help#Accuracy',
       freeukgen: 'http://www.freeukgenealogy.org.uk/',
       freeregStat: 'https://www.freereg.org.uk/freereg_contents/new?locale=en',
       freecenStat: 'https://www.freecen.org.uk/freecen_coverage?locale=en',
