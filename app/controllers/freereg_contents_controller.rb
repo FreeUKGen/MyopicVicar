@@ -212,6 +212,8 @@ class FreeregContentsController < ApplicationController
 
     @unique_forenames = @church.unique_forenames
     @unique_surnames = @church.unique_surnames
+    @unique_surnames, @remainders = FreeregContent.letterize(@unique_surnames)
+    @unique_forenames, @remainderf = FreeregContent.letterize(@unique_forenames)
     variables_for_church_show
     @referer = params[:ref].presence || ' '
   end
@@ -234,6 +236,8 @@ class FreeregContentsController < ApplicationController
 
     @unique_forenames = @place.unique_forenames
     @unique_surnames = @place.unique_surnames
+    @unique_surnames, @remainders = FreeregContent.letterize(@unique_surnames)
+    @unique_forenames, @remainderf = FreeregContent.letterize(@unique_forenames)
 
     variables_for_place_show
     @referer = params[:ref].presence || ' '
