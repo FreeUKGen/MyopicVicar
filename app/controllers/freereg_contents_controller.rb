@@ -222,6 +222,8 @@ class FreeregContentsController < ApplicationController
 
     @unique_forenames = @register.unique_forenames
     @unique_surnames = @register.unique_surnames
+    @unique_surnames, @remainders = FreeregContent.letterize(@unique_surnames)
+    @unique_forenames, @remainderf = FreeregContent.letterize(@unique_forenames)
     variables_for_register_show
     @referer = params[:ref].presence || ' '
   end

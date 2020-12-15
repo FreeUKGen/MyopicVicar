@@ -4,20 +4,38 @@
       <h3 class=" text--center">SURNAMES</h3>
       <p class=" text--center">You may find it useful to use your browser find option to search for critical parts of names</p>
       <p>
-        <% if @unique_surnames.present? %>
-          <% @unique_surnames.each do |name| %>
-            <%= name %>&emsp;
-          <% end%>
+        <% ("A".."Z").each do |letter| %>
+          <p><%= letter%></p>
+          <p>
+            <% @unique_surnames[letter].each do |name| %>
+              <%= name %>&emsp;&nbsp;
+            <% end%>
+          </p>
         <% end%>
+        <p> Additional Names</p>
+        <p>
+          <% @remainders.each do |name| %>
+            <%= name %>&emsp;&nbsp;
+          <% end%>
+        </p>
       </p>
     </div>
     <h3 class=" text--center">FORENAMES</h3>
     <p>
-      <% if @unique_forenames.present? %>
-        <% @unique_forenames.each do |name| %>
-          <%= name %>&emsp;
-        <% end%>
+      <% ("A".."Z").each do |letter| %>
+        <p><%= letter%></p>
+        <p>
+          <% @unique_forenames[letter].each do |name| %>
+            <%= name %>&emsp;&nbsp;
+          <% end%>
+        </p>
       <% end%>
+      <p> Additional Names</p>
+      <p>
+        <% @remainderf.each do |name| %>
+          <%= name %>&emsp;&nbsp;
+        <% end%>
+      </p>
     </p>
   </div>
   <div >

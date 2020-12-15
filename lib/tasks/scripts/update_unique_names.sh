@@ -12,7 +12,7 @@ trace() {
 ROOT=/home/apache/hosts/freereg2/production
 cd $ROOT
 umask 0002
-sudo -u webserv bundle exec rake RAILS_ENV=production reports:extract_unique_names[0] --trace
+sudo -u webserv bundle exec rake RAILS_ENV=production reports:extract_collection_unique_names[0] --trace
 exit
 
 
