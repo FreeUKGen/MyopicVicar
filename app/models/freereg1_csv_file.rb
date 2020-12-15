@@ -1163,6 +1163,8 @@ class Freereg1CsvFile
       entries["Mother's Forename"] = all_entries.distinct(:mother_forename).delete_if{|x| x == nil}.sort
       entries["Person's Forename"] = all_entries.distinct(:person_forename).delete_if{|x| x == nil}.sort
       entries["Person's Surname"] = all_entries.distinct(:person_surname).delete_if{|x| x == nil}.sort
+      entries["Witness Surname"] = all_entries.distinct('multiple_witness.witness_surname').delete_if{|x| x == nil}.sort
+      entries["Witness Forename"] = all_entries.distinct('multiple_witness.witness_forename').delete_if{|x| x == nil}.sort
     when "bu"
       entries["Burial Person's Surname"] = all_entries.distinct(:burial_person_surname).delete_if{|x| x == nil}.sort
       entries["Burial Person's Forename"] = all_entries.distinct(:burial_person_forename).delete_if{|x| x == nil}.sort
