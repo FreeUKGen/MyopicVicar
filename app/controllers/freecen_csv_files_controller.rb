@@ -185,7 +185,7 @@ class FreecenCsvFilesController < ApplicationController
         flash[:notice] = 'There was a problem saving the file prior to download. Please send this message to your coordinator'
       end
     else
-      flash[:notice] = "We cannot download the file: #{message}. Contact your coordinator if you need advise."
+      flash[:notice] = "We cannot download the file: #{message}. Contact your coordinator if you need advice."
     end
     redirect_back(fallback_location: new_manage_resource_path) && return
   end
@@ -208,7 +208,7 @@ class FreecenCsvFilesController < ApplicationController
         flash[:notice] = 'The message file does not exist.'
       end
     else
-      flash[:notice] = "We cannot download the message file: #{message}. Contact your coordinator if you need advise."
+      flash[:notice] = "We cannot download the message file: #{message}. Contact your coordinator if you need advice."
     end
     redirect_back(fallback_location: new_manage_resource_path) && return
   end
