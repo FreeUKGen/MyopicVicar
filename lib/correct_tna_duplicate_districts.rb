@@ -3,7 +3,8 @@ class CorrectTnaDuplicateDistricts
     limit = len.to_i
     year = year.to_s
     chapman_code = chapman_code.to_s
-    file_for_messages = 'log/correct_tna_duplicate_districts.log'
+    file_for_messages = Rails.root.join('log', 'correct_tna_duplicate_districts.log')
+    @number_of_line = 0
     message_file = File.new(file_for_messages, 'w')
     message_file.puts "Processing #{limit} districts for #{year} in #{chapman_code}"
     number = 0
@@ -18,8 +19,8 @@ class CorrectTnaDuplicateDistricts
       next if duplicates.count == 1
 
       duplicates.each_with_index do |duplicate, index|
-        @new_district_id = duplicate.id if index == 0
-        next if index == 0
+        @new_district_id = duplicate.id if index.zero?
+        next if index.zero?
 
         corrected += 1
         piece = duplicate.freecen2_pieces
