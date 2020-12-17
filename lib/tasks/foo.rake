@@ -4,6 +4,13 @@ namespace :foo do
   # rake foo:update_search_records[number of files, record type,software version, force creation, order files are processed]
   #eg f2rake  foo:update_search_records[0,bu,"2016-05-27T19:23:31+00:00", true, 1]
   #number of files of 0 is all, force creation is true or false, order files processed is 1 or -1
+  task :correct_tna_duplicate_districts, [:limit, :year, :chapman_code] => [:environment] do |t, args|
+    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+    require 'correct_tna_duplicate_districts'
+    puts "Correcting #{args.limit} TNA Duplicate Districts for #{args.year} in #{args.chapman_code}"
+    CorrectTnaDuplicateDistricts.process(args.limit, args.year, args.chapman_code)
+    puts "Task complete."
+  end
 
   task :correct_tna_link, [:limit] => [:environment] do |t, args|
     # This takes reads a csv file of syndicate coordinators and creates the syndicates collection

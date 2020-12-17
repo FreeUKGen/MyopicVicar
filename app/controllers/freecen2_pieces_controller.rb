@@ -90,7 +90,7 @@ class Freecen2PiecesController < ApplicationController
       @chapman_code = session[:chapman_code]
       @freecen2_district = Freecen2District.find_by(id: params[:freecen2_district_id])
       @type = session[:type]
-      @freecen2_pieces = Freecen2Piece.where(freecen2_district_id: @freecen2_district.id).all.order_by(name: 1)
+      @freecen2_pieces = Freecen2Piece.where(freecen2_district_id: @freecen2_district.id).all.order_by(name: 1, number: 1)
       @year = @freecen2_district.year
     else
       redirect_back(fallback_location: new_manage_resource_path, notice: 'No chapman code') && return
