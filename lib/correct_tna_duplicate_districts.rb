@@ -25,7 +25,7 @@ class CorrectTnaDuplicateDistricts
         piece = duplicate.freecen2_pieces
         piece[0].update_attributes(freecen2_district_id: @new_district_id)
         duplicate.delete
-        message_file.puts " #{duplicate.name},  #{piece.name}, #{piece.number}"
+        message_file.puts " #{duplicate.name},  #{piece[0].name}, #{piece[0].number}"
       end
     end
     message_file.puts "Processed #{number} districts and corrected #{corrected}"
