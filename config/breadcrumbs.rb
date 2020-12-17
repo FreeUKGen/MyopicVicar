@@ -1715,7 +1715,50 @@ end
 
 crumb :freecen2_pieces_district do |district, county, year|
   link 'FreeCen2 Pieces for District', freecen2_pieces_district_index_path(district)
-  parent :freecen2_pieces, county
+  case session[:type]
+  when 'parish'
+    parent :freecen2_civil_parishes, county
+  when 'parish_name'
+    parent :freecen2_civil_parishes, county
+  when 'parish_year'
+    parent :freecen2_civil_parishes, county
+  when 'parish_index'
+    parent :freecen2_civil_parishes_full_index, county, year
+  when 'parish_year_index'
+    parent :freecen2_civil_parishes_chapman, county, year
+  when 'missing_parish_index'
+    parent :freecen2_civil_parishes_missing_places, county
+  when 'parish_district_place_name'
+    parent :freecen2_civil_parishes_district_place_name, county
+  when 'piece'
+    parent :freecen2_pieces, county
+  when 'piece_name'
+    parent :freecen2_pieces, county
+  when 'piece_year'
+    parent :freecen2_pieces, county
+  when 'piece_index'
+    parent :freecen2_pieces_full_index, county, year
+  when 'piece_year_index'
+    parent :freecen2_pieces_chapman, county, year
+  when 'missing_piece_place_index'
+    parent :freecen2_pieces_missing_places, county
+  when 'piece_district_place_name'
+    parent :freecen2_pieces_district_place_name, county
+  when 'district'
+    parent :freecen2_districts, county
+  when 'district_name'
+    parent :freecen2_districts, county
+  when 'district_year'
+    parent :freecen2_districts, county
+  when 'district_index'
+    parent :freecen2_districts_full_index, county, year
+  when 'district_year_index'
+    parent :freecen2_districts_chapman, county, year
+  when 'missing_district_place_index'
+    parent :freecen2_districts_missing_places, county
+  else
+    parent :county_options, county
+  end
 end
 
 # ...........................................................................freecen2_civil_parishes..............................................
