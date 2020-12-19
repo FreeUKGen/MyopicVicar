@@ -37,12 +37,12 @@
           <td class="weight--semibold"> <%=  @freecen2_district.code %> </td>
         </tr>
         <tr>
-          <td>Freecen2 Pieces <small> (Unique names only)</small></td>
+          <td><%= district_piece_link(@freecen2_district)  %></td>
           <td class="weight--semibold"> <%=  list_pieces(@freecen2_district) %> </td>
         </tr>
         <tr>
-          <td>Freecen Files</td>
-          <td class="weight--semibold"> <%=  list_files(@freecen2_district) %> </td>
+          <td><%= csv_files_link(@freecen2_district) %></td>
+          <td class="weight--semibold"> <%=  csv_files_district(@freecen2_district) %> </td>
         </tr>
         <tr>
           <td>Notes</td>

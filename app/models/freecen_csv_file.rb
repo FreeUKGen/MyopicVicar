@@ -925,7 +925,7 @@ class FreecenCsvFile
   def remove_batch
     case
     when locked_by_transcriber || locked_by_coordinator
-      return false, 'The removal of the batch was unsuccessful; the batch is locked'
+      [false, 'The removal of the batch was unsuccessful; the batch is locked']
 
     else
       # deal with file and its records

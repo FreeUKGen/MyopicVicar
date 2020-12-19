@@ -9,19 +9,23 @@ module Freecen2PiecesHelper
   end
 
   def civil_link(piece)
-    link_to "Link to Civil Parishes", index_for_piece_freecen2_civil_parishes_path(piece_id: piece.id, type: @type), class: 'btn   btn--small', title:' Displays a list of the Civil Parishes which belong to this Sub District (Piece)'
+    link_to 'Civil Parishes', index_for_piece_freecen2_civil_parishes_path(piece_id: piece.id, type: @type), class: 'btn   btn--small', title:' Displays a list of the Civil Parishes which belong to this Sub District (Piece)'
   end
 
-  def csv_files(piece)
+  def csv_files_piece(piece)
     if piece.freecen_csv_files.present?
       files = []
       piece.freecen_csv_files.each do |file|
         files << file.file_name
       end
-      link_to "#{files}", freecen_csv_files_path, class: 'btn   btn--small', title:'Csv files for this Piece'
+      files
     else
       'There are no csv files'
     end
+  end
+
+  def csv_files_piece_link(piece)
+    link_to 'Freecen Files', freecen_csv_files_path, class: 'btn   btn--small', title:'Csv files for this Piece'
   end
 
   def individual_civil_link(parish)
