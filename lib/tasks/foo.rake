@@ -20,6 +20,15 @@ namespace :foo do
     puts "Task complete."
   end
 
+  task :delete_incorrect_tna_district, [:district] => [:environment] do |t, args|
+    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+    require 'delete_incorrect_tna_district'
+    puts "Deleting Civil Parishes, Pieces and the District #{args.district} "
+    DeleteIncorrectTnaDistrict.process(args.district)
+    puts "Task complete."
+  end
+
+
   task :upload_place_dump_from_csv_file_to_freecen2_place_collection, [:file, :limit] => [:environment] do |t, args|
     # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
     require 'upload_place_dump_from_csv_file_to_freecen2_place_collection'

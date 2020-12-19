@@ -84,6 +84,20 @@ class Freecen2DistrictsController < ApplicationController
     @chapman_code = session[:chapman_code]
   end
 
+  def force
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No district identified') && return if params[:id].blank?
+
+    @freecen2_district = Freecen2District.find_by(id: params[:id])
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No district found') && return if @freecen2_district.blank?
+
+    logger.warn("FREECEN:CSV_PROCESSING: Starting forced deletion rake task for #{@freecen2_district.name}")
+    pid1 =  spawn("rake foo:delete_incorrect_tna_district[#{params[:id]}]")
+    flash[:notice]  = "The civil parishes, pieces and district for #{@freecen2_district.name} are being deleted. You will receive an email when the task has been completed."
+    logger.warn("FREECEN:CSV_PROCESSING: rake task for #{pid1}")
+
+    redirect_to freecen2_districts_path
+  end
+
   def index
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No Chapman code') && return if session[:chapman_code].blank?
 

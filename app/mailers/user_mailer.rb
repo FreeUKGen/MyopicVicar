@@ -140,6 +140,13 @@ class UserMailer < ActionMailer::Base
     mail(to: "#{@send_to.email_address}", cc: @cc_email_addresses, subject: "This is a feedback action request for reference #{@contact.identifier} on #{@appname}")
   end
 
+  def forced_district_deletion(chapman_code, name, year)
+    county = County.find_by(chapman_code: chapman_code)
+    county_coordinator = UseridDetail.find_by(userid: county.county_coordinator)
+    friendly_email = "#{county_coordinator.person_forename} #{county_coordinator.person_surname} <#{county_coordinator.email_address}>"
+    mail(to: friendly_email, subject: "Forced deletion of district #{name} for #{chapman_code} in #{year} completed")
+  end
+
   def get_attachment(contact)
     if contact.screenshot_location.present?
       @file_name = File.basename(contact.screenshot_location)

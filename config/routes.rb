@@ -276,6 +276,7 @@ MyopicVicar::Application.routes.draw do
   get 'freecen2_districts/chapman_year_index', to: 'freecen2_districts#chapman_year_index', as: :freecen2_districts_chapman_year_index
   get 'freecen2_districts/:id/edit_name', to: 'freecen2_districts#edit_name', as: :edit_name_freecen2_district
   get 'freecen2_districts/locate', to: 'freecen2_districts#locate', as: :locate_freecen2_district
+  delete 'freecen2_districts/:id/force(.:format)', to: 'freecen2_districts#force', as: :force_freecen2_district
   resources :freecen2_districts
 
   get 'freecen2_pieces/selection_by_name', to: 'freecen2_pieces#selection_by_name', as: :selection_by_name_freecen2_pieces
