@@ -1,0 +1,27 @@
+db.runCommand(
+  {
+    createIndexes: "emendation_rules",
+    indexes: [
+        {
+            key: {
+                original: 1,
+                replacement: 1
+            },
+            name: "original_replacement"
+        },
+         {
+           key: {
+               replacement: 1,
+                original: 1
+            },
+            name: "replacement_original"
+        },
+        {
+            key: {
+                emendation_type_id: 1
+            },
+            name: "emendation_type_id"
+        }
+    ]
+  }
+)

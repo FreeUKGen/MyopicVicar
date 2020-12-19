@@ -1,0 +1,20 @@
+db.runCommand(
+  {
+    createIndexes: "countries",
+    indexes: [
+        {
+            key: {
+                country_code: 1,
+                country_coordinator: 1 
+            },
+            name: "country_code_country_coordinator"
+        },
+         {
+            key: {
+                country_coordinator: 1
+            },
+            name: "country_coordinator",
+        },
+    ]
+  }
+)

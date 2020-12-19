@@ -1,0 +1,13 @@
+db.runCommand(
+  {
+    createIndexes: "place_unique_names",
+    indexes: [
+        {
+            key: {
+                place_id: 1,
+            },
+            name: "place_unique_name"
+        }
+    ]
+  }
+)

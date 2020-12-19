@@ -1,0 +1,49 @@
+db.runCommand(
+  {
+    createIndexes: "batch_errors",
+    indexes: [
+        {
+            key: {
+                entry_id: 1
+            },
+            name: "entry_id"
+        },
+         {
+            key: {
+                freereg1_csv_file_id: 1,
+                 entry_id: 1
+            },
+            name: "freereg1_csv_file_id_entry_id",
+        },
+    ]
+  },
+  {
+    createIndexes: "churches",
+    indexes: [
+        {
+            key: {
+                place_id: 1,
+                church_name: 1
+            },
+            name: "place_id_church_name"
+        },
+         {
+            key: {
+                church_name: 1
+            },
+            name: "church_name",
+        },
+    ]
+  }
+
+
+
+
+
+
+
+
+
+
+
+)

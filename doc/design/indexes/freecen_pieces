@@ -1,0 +1,52 @@
+db.runCommand(
+  {
+    createIndexes: "freecen_pieces",
+    indexes: [
+        {
+                "key" : {
+                        "_id" : 1
+                },
+                "name" : "_id_"
+        },
+        {
+                 "key" : {
+                        "piece_number" : 1,
+                        "chapman_code" : 1
+                },
+                "name" : "piece_number_1_chapman_code_1"
+        },
+        {
+                 "key" : {
+                        "piece_number" : 1,
+                        "chapman_code" : 1,
+                        "year" : 1,
+                        "suffix" : 1,
+                        "parish_number" : 1
+                },
+                "name" : "piece_number_1_chapman_code_1_year_1_suffix_1_parish_number_1"
+
+        },
+        {
+                 "key" : {
+                        "chapman_code" : 1,
+                        "piece_number" : 1,
+                },
+                "name" : "chapman_code_1_piece_number_1"
+        },
+        {
+                 "key" : {
+                        "chapman_code" : 1,
+                        "piece_number" : 1,
+                        "year" : 1,
+                        "suffix" : 1,
+                        "parish_number" : 1
+                },
+                "name" : "chapman_code_1_piece_number_1_year_1_suffix_1_parish_number_1"
+
+        }
+
+    ]
+  }
+)
+
+

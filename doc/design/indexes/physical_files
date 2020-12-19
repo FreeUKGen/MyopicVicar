@@ -1,0 +1,61 @@
+db.runCommand(
+  {
+    createIndexes: "physical_files",
+    indexes: [
+        {
+            key: {
+                userid: 1,
+                file_name: 1, 
+                change: 1, 
+                change_uploaded_date: 1 
+            },
+            name: "userid_file_name_change_uploaded_date"
+        },
+         {
+            key: {
+                userid: 1,
+                file_name: 1, 
+                base: 1, 
+                base_uploaded_date: 1
+            },
+            name: "userid_file_name_base_base_uploaded_date"
+        },
+        {
+            key: {
+                userid: 1, 
+                file_name: 1, 
+                file_processed: 1, 
+                file_processed_date: 1
+            },
+            name: "userid_file_name_file_processed_file_processed_date"
+        },
+        {
+            key: {
+                base: 1
+            },
+            name: "base"
+        },
+         {
+            key: {
+                file_processed: 1
+            },
+            name: "file_processed"
+        },
+        {
+            key: {
+                 waiting_to_be_processed: 1
+            },
+            name: "waiting_to_be_processed"
+        },
+        {
+            key: {
+                 userid: 1, 
+                 waiting_to_be_processed: 1
+            },
+            name: "userid_waiting_to_be_processed"
+        }
+    ]
+  }
+)
+
+ 
