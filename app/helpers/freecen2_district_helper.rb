@@ -27,7 +27,7 @@ module Freecen2DistrictHelper
   def csv_files_district(freecen2_district)
     if freecen2_district.freecen_csv_files.present?
       files = []
-      freecen2_district.freecen_csv_files.each do |file|
+      freecen2_district.freecen_csv_files.order_by(file_name: 1).each do |file|
         files << file.file_name
       end
       files
