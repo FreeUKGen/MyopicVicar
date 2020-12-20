@@ -180,15 +180,17 @@ class UserMailer < ActionMailer::Base
     coordinator = UseridDetail.userid(userid).first
     @appname = appname
     @message = message
-    mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", subject: "Incorporation report for #{file} in #{county}") if coordinator.present?
+    subject = "We have processed your request to include #{file} of #{county} into the database"
+    mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", subject: subject) if coordinator.present?
   end
 
   def incorporation_report_failure(userid, message, file, county)
     coordinator = UseridDetail.userid(userid).first
     @appname = appname
     @message = message
+    subject =  "We were unable to process your request to include #{file} of #{county} into the database"
     manager = UseridDetail.userid('Captkirk').first
-    mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", cc: "#{manager.person_forename} <#{manager.email_address}>", subject: "Incorporation failure report for #{file} in #{county}") if coordinator.present?
+    mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", cc: "#{manager.person_forename} <#{manager.email_address}>", subject: subject) if coordinator.present?
   end
 
   def unincorporation_report(userid, message, file, county)
