@@ -59,8 +59,6 @@ class Freecen2Place
 
   before_save :add_location_if_not_present, :add_country, :add_standard_names
 
-  belongs_to :county, optional: true, index: true
-
   after_save :update_places_cache
 
   index({ chapman_code: 1, standard_place_name: 1, disabled: 1 }, { name: "chapman_code_1_standard_place_name_1_disabled_1" })
