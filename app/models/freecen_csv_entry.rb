@@ -1756,10 +1756,8 @@ class FreecenCsvEntry
   end
 
   def check_valid
-    if record_valid == 'false'
-      new_record_valid =  error_messages.present? || warning_messages.present? ? 'false' : 'true'
-      update_attributes(record_valid: new_record_valid) unless new_record_valid == record_valid
-    end
+    new_record_valid = error_messages.present? || warning_messages.present? ? 'false' : 'true'
+    update_attributes(record_valid: new_record_valid) unless new_record_valid == record_valid
   end
 
   def display_fields(search_record)
@@ -1796,6 +1794,16 @@ class FreecenCsvEntry
       next_id = next_dwel[:_id] unless next_dwel.nil?
     end
     [prev_id, next_id]
+  end
+
+  def propagate?
+    return false if freecen_csv_file.incorporated
+
+    return false unless freecen_csv_file.validation
+
+    return true if previous_changes.key?('birth_county') || previous_changes.key?('birth_place')
+
+    false
   end
 
   def propagate_alternate
@@ -2435,7 +2443,7 @@ class FreecenCsvEntry
     errors.add(:individual_flag, "Invalid; #{message}") unless success
 
     success, message = FreecenValidations.occupation?(fields[:occupation], fields[:age])
-    errors.add(:occupation, "Invalid; #{message}") unless success
+    errors.add(:occupation, "Invalid; #{message}") unless success || (message == 'unusual use of Scholar' && freecen_csv_file.validation)
 
     success, message = FreecenValidations.uncertainty_occupation?(fields[:occupation_flag])
     errors.add(:occupation_flag, "Invalid; #{message}") unless success

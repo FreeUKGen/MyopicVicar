@@ -46,7 +46,7 @@ module FreecenCsvEntriesHelper
   end
 
   def propagate_alternate
-    if session[:propagate_alternate] == @freecen_csv_entry.id && !@freecen_csv_file.incorporated
+    if session[:propagate_alternate].present? && session[:propagate_alternate] == @freecen_csv_entry.id
       link_to 'Propagate Alternate Fields', propagate_alternate_freecen_csv_entry_path(@freecen_csv_entry), method: :get, class: "btn btn--small",
         title: 'Propagates the alternate fields to entries with the same verbatim fields as this entry',
         data: { confirm: 'Are you sure you want to propagate this entry' }
