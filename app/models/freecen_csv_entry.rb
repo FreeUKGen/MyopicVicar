@@ -1801,7 +1801,7 @@ class FreecenCsvEntry
 
     return false unless freecen_csv_file.validation
 
-    return true if previous_changes.key?('birth_county') || previous_changes.key?('birth_place')
+    return true if (previous_changes.key?('birth_county') || previous_changes.key?('birth_place')) && previous_changes['birth_place'][1].present?
 
     false
   end
