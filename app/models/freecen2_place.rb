@@ -396,9 +396,13 @@ class Freecen2Place
       if (self[:latitude].blank? || self[:longitude].blank?)
         errors.add(:grid_reference, "Either the grid reference or the lat/lon must be present")
       else
-        if MyopicVicar::Application.config.template_set != 'freecen'
+        case MyopicVicar::Application.config.template_set
+        when 'freereg'
           errors.add(:latitude, "The latitude must be between 45 and 70") unless (self[:latitude].to_i > 45 && self[:latitude].to_i < 70)
           errors.add(:longitude, "The longitude must be between -10 and 5") unless self[:longitude].to_i > -10 && self[:longitude].to_i < 5
+        when 'freecen'
+          errors.add(:latitude, "The latitude must be between -90 and 90") unless (self[:latitude].to_i > -90 && self[:latitude].to_i < 90)
+          errors.add(:longitude, "The longitude must be between -180 and 180") unless self[:longitude].to_i > -180 && self[:longitude].to_i < 180
         end
       end
     else
