@@ -49,4 +49,5 @@ gem 'jquery-rails'
 gem 'refinerycms-county_pages', :path => 'vendor/extensions'
 gem 'rubocop', '~> 0.62.0', require: false
 gem 'rails3-jquery-autocomplete'
+gem 'jquery-validation-rails', '~> 1.13', '>= 1.13.1'
 gem 'rails_autolink'

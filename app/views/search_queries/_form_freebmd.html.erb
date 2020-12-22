@@ -4,13 +4,16 @@
     </div>
 <% end %>
 <% if @search_query.present? && (@search_query.errors.present? || @search_query.errors.any?) %>
-    <h2 class="gamma text--center"><%= pluralize(@search_query.errors.count, "error") %> prohibited this search from being processed:</h2>
+    <h2 class="gamma text--center">Following Error(s) prohibited this search from being processed:</h2>
+    
     <ul class="validation-list">
         <% @search_query.errors.messages.each do |key, msg| %>
             <li class="validation-list__error text--center"><%= msg[0] %></li>
         <% end %>
     </ul>
 <% end %>
+<ul id="errors" class="validation-list text--center"></ul>
+
 <%# if device_type == :mobile%>
     <%#= render 'mobile_freebmd_form'%>
 <%# else %>
@@ -173,11 +176,11 @@
                             <div class="grid">
                                 <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half">
                                     <label class="accessibility" for="search_query_min_age_at_death">Start Age</label>
-                                    <%= number_field_tag 'search_query[min_age_at_death]', set_value(@search_query.min_age_at_death), within: 0..199, placeholder: 'min age', class: 'text-input', tabindex: "0" %>
+                                    <%= number_field_tag 'search_query[min_age_at_death]', set_value(@search_query.min_age_at_death), placeholder: 'min age', class: 'text-input', tabindex: "0" %>
                                 </div>
                                 <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half">
                                     <label class="accessibility" for="search_query_max_age_at_death">Finish Age</label>
-                                    <%= number_field_tag 'search_query[max_age_at_death]', set_value(@search_query.max_age_at_death), within: 0..199, placeholder: 'max age', class: 'text-input',  tabindex: "0" %>
+                                    <%= number_field_tag 'search_query[max_age_at_death]', set_value(@search_query.max_age_at_death), placeholder: 'max age', class: 'text-input',  tabindex: "0" %>
                                 </div>
                             </div>
                         </div>
@@ -195,6 +198,7 @@
                                     <label class="accessibility" for="search_query_max_dob_at_death">Finish Birth Year</label>
                                     <%= number_field_tag 'search_query[max_dob_at_death]', set_value(@search_query.max_dob_at_death), { min: 1000, max: 3000, class: 'text-input', placeholder: 'end year', tabindex: "0" } %>
                                 </div>
+                                
                             </div>
                         </div>
                     </div>
@@ -204,6 +208,7 @@
                             Match only recorded ages
                         </small>
                     </label>
+                    
                 </li>
 
                 <li class="grid__item desk-wide-one-sixth desk-one-third lap-one-half palm-one-whole volumes">
@@ -258,7 +263,7 @@
             </ol>
             <div class="grid action">
                 <%= button_tag 'Clear Form', type: :reset, class: 'clear_form kittumani' %>
-                <%= button_tag 'Search', type: :submit, class: 'ladda-button kittumani' , id: 'search_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
+                <%= button_tag 'Search', type: 'submit', class: 'ladda-button kittumani' , id: 'search_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
             </div>
         <% end %>
         <div class="sticky_buttons_css" id="sticky_buttons">
@@ -268,9 +273,11 @@
     </div>
 <%# end %>
     <script type="text/javascript">
-        Ladda.bind( 'button[type=submit]' );
+        
+
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
 
     <script type="text/javascript">
         $('.checkAll').on('change', function(e) {
@@ -294,6 +301,7 @@
     <script>
         $('#search_query_districts').empty();
         $(document).ready(function() {
+
             $("#search_query_chapman_codes").change(function() {
                 var counties = [];
                 $.each($("#search_query_chapman_codes option:selected"), function() {
@@ -384,7 +392,7 @@
 
             aad_selection_function();
 
-            $('#death_select_box').prop('disabled', 'disabled');
+            //$('#death_select_box').prop('disabled', 'disabled');
             $('.checkboxtag, .checkAll').change(function() {
                 hide_all_death_options();
                 $('#spouses_mother_surname').removeAttr('value');
@@ -441,56 +449,63 @@
             });
 
             if ($(".birth").is(":checked") && !$('.death, .marriage, .checkAll').is(':checked')) {
-                $('#spouses_mother_surname').prop('disabled', false)
-                $('#spouses_mother_surname').prop('placeholder', "Enter Mother's surname here")
+                //$('#spouses_mother_surname').prop('disabled', false)
+              //  $('#spouses_mother_surname').prop('placeholder', "Enter Mother's surname here")
                 $('#spouses_mother_surname').prop('name', 'search_query[mother_last_name]');
                 $('.spouse_or_mother_surname_label').text("Mothers Surname").append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
-                $('#spouses_mother_surname').css('background', 'white');
-                $('#death_select_box').prop('disabled', 'disabled');
-                $('#death_select_box').css('background', '#ccc');
+               // $('#spouses_mother_surname').css('background', 'white');
+               // $('#death_select_box').prop('disabled', 'disabled');
+               // $('#death_select_box').css('background', '#ccc');
                 $('#death_select_box').val([]);
                 $('#spouse_or_mother_surname_div').show();
+                $('#spouse_firstnames_div').hide();
+                $('#spouse_first_name').val('');
             } else if ($(".marriage").is(":checked") && !$('.birth, .death, .checkAll').is(':checked')) {
-                $('#spouses_mother_surname').prop('disabled', false)
-                $('#spouse_first_name').prop('disabled', false)
-                $('#spouse_first_name').prop('placeholder', "Enter Spouse First Name(s) here ")
-                $('#spouses_mother_surname').prop('placeholder', "Enter Spouse's surname here")
+                //$('#spouses_mother_surname').prop('disabled', false)
+               // $('#spouse_first_name').prop('disabled', false)
+                //$('#spouse_first_name').prop('placeholder', "Enter Spouse First Name(s) here ")
+               // $('#spouses_mother_surname').prop('placeholder', "Enter Spouse's surname here")
                 $('#spouses_mother_surname').prop('name', 'search_query[spouses_mother_surname]');
                 $('.spouse_or_mother_surname_label').text("Spouses Surname").append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
-                $('#spouses_mother_surname').css('background', 'white');
-                $('#death_select_box').prop('disabled', 'disabled');
-                $('#death_select_box').css('background', '#ccc');
+                //$('#spouses_mother_surname').css('background', 'white');
+                //$('#death_select_box').prop('disabled', 'disabled');
+                //$('#death_select_box').css('background', '#ccc');
                 $('#death_select_box').val([]);
-                $('#spouse_first_name').css('background', 'white');
+                //$('#spouse_first_name').css('background', 'white');
                 $('#spouse_or_mother_surname_div').show();
                 $('#spouse_firstnames_div').show();
                 $('#spuse_checkbox').show();
             } else if ($(".death").is(":checked") && !$('.birth, .marriage, .checkAll').is(':checked')) {
-                $('#death_select_box').prop('disabled', false);
-                $('#spouses_mother_surname').val('').prop('disabled', true)
-                $('#spouses_mother_surname').css('background', '#ccc');
-                $('#spouses_mother_surname').prop('placeholder', '');
-                $('#spouses_mother_surname').prop('name', '');
+                //$('#death_select_box').prop('disabled', false);
+                //$('#spouses_mother_surname').val('').prop('disabled', true)
+                //$('#spouses_mother_surname').css('background', '#ccc');
+                //$('#spouses_mother_surname').prop('placeholder', '');
+                //$('#spouses_mother_surname').prop('name', '');
                 aad_selection_function();
-                $('#death_select_box').css('background', 'white');
+                //$('#death_select_box').css('background', 'white');
                 $('#spouses_mother_surname').val('');
+                $('#spouse_firstnames_div').hide();
+                $('#spuse_checkbox').hide();
+                $('#spouse_or_mother_surname_div').hide();
+                $('#spouse_first_name').val('');
                 $('#age_at_death_or_date_of_birth_div').show();
             } else {
                 $('#spouse_firstnames_div').hide();
                 $('#spuse_checkbox').hide();
                 $('#spouse_or_mother_surname_div').hide();
                 $('#age_at_death_or_date_of_birth_div').hide();
-                $('#spouses_mother_surname').val('').prop('disabled', true)
-                $('#spouses_mother_surname').prop('placeholder', '')
-                $('#spouses_mother_surname').prop('name', '');
-                $('#death_select_box').prop('disabled', 'disabled');
-                $('#death_select_box').css('background', '#ccc');
-                $('#spouses_mother_surname').css('background', '#ccc');
+                $('#spouse_first_name').val('');
+                //$('#spouses_mother_surname').val('').prop('disabled', true)
+                //$('#spouses_mother_surname').prop('placeholder', '')
+                //$('#spouses_mother_surname').prop('name', '');
+                //$('#death_select_box').prop('disabled', 'disabled');
+                //$('#death_select_box').css('background', '#ccc');
+                //$('#spouses_mother_surname').css('background', '#ccc');
                 $('#spouses_mother_surname').val('');
                 $('#death_select_box').val([]);
-                $('#spouse_first_name').prop('disabled', true)
-                $('#spouse_first_name').prop('placeholder', "")
-                $('#spouse_first_name').css('background', '#ccc');
+                //$('#spouse_first_name').prop('disabled', true)
+                //$('#spouse_first_name').prop('placeholder', "")
+                //$('#spouse_first_name').css('background', '#ccc');
             };
 
             $('#death_select_box').on('change', function() {
@@ -498,19 +513,21 @@
                 aad_selection_function();
             });
 
-            var validate_death_age = function() {
+
+            /*var validate_death_age = function() {
                 var min_age_value = $('#search_query_min_age_at_death').val();
                 var min_age = parseInt(min_age_value);
                 var max_age_value = $('#search_query_max_age_at_death').val();
                 var max_age = parseInt(max_age_value);
+                
                 if (max_age < min_age) {
-                    $('#search_query_max_age_at_death')[0].setCustomValidity('Max death age should not lesser than Min death age');
+                    $('#search_query_max_age_at_death')[0].setCustomValidity('Max death age should not less than Min death age');
+
                 } else {
                     $('#search_query_max_age_at_death')[0].setCustomValidity('');
                 }
             };
-
-            var validate_nonphonetic_wildcard_search = function() {
+             var validate_nonphonetic_wildcard_search = function() {
                 var lastnameValue = $('#last_name').val();
                 var fuzzyValue = $('#search_query_fuzzy').is(":checked")
                 var hasWildcard = lastnameValue.includes('*') || lastnameValue.includes('?')
@@ -526,45 +543,103 @@
                 var max_dob = new Date($('#search_query_max_dob_at_death').val()).getTime();
 
                 if (max_dob < min_dob) {
-                    $('#search_query_max_dob_at_death')[0].setCustomValidity('Max death date should not be lesser than Min death date');
+                    $('#search_query_max_dob_at_death')[0].setCustomValidity('Max death date should not be less than Min death date');
                 } else {
                     $('#search_query_max_dob_at_death')[0].setCustomValidity('');
                 }
-            };
+            };*/
 
-            $('#search_form_submit').click(function() {
+            jQuery.validator.addMethod("validateAgeAtDeathRange", function() {
+                var min_age_value = $('#search_query_min_age_at_death').val();
+                var min_age = parseInt(min_age_value);
+                var max_age_value = $('#search_query_max_age_at_death').val();
+                var max_age = parseInt(max_age_value);
+                return max_age >= min_age;
+            }, "Max Age at Death should be greater than Min Age at Death");
+
+            jQuery.validator.addMethod("validateNonphoneticWildcardSearch", function() {
+                var lastnameValue = $('#last_name').val();
+                var fuzzyValue = $('#search_query_fuzzy').is(":checked")
+                var hasWildcard = lastnameValue.includes('*') || lastnameValue.includes('?')
+                return !(hasWildcard && fuzzyValue);
+            }, "Phonetic Search can not be used with wildcard");
+
+            jQuery.validator.addMethod("validateDateofbirthRange", function() {
+                var min_dob = parseInt($('#search_query_min_dob_at_death').val());
+                var max_dob = parseInt($('#search_query_max_dob_at_death').val());
+                return max_dob >= min_dob;
+            }, "Max Year of Birth should be greater than Min Year of Birth");
+
+            var validator = $("#new_search_query").validate({
+               
+                rules: {
+                  "search_query[max_age_at_death]": {
+                    validateAgeAtDeathRange: true,
+                    range: [0, 199],
+                  },
+                  "search_query[min_age_at_death]": { range: [0, 199] },
+                  "search_query[last_name]" : { validateNonphoneticWildcardSearch: true },
+                  "search_query[max_dob_at_death]": { validateDateofbirthRange: true }
+                  },
+                messages: {
+                  "search_query[max_age_at_death]": {
+                    range: "Max Age should be between 0 to 199",
+                   },
+                  "search_query[min_age_at_death]": {
+                    range: "Min Age should be between 0 to 199",
+                   },
+                },
+                errorLabelContainer: "#errors", 
+                wrapper: "li"
+            });
+
+            $('#search_form_submit').click( function() {
+                var l = Ladda.create(document.querySelector('.ladda-button'));
+                l.stop();
+                if ($("#new_search_query").valid()) {
+                    l.start();
+                   $('#new_search_query').submit()
+                } 
+            });
+
+           
+
+            /*$('#search_form_submit').click(function() {
                 validate_death_age();
                 validate_death_dob();
                 validate_nonphonetic_wildcard_search();
-            });
+            });*/
+
+
+
 
             $('#bmd_record_type_death').change(function() {
                 var aad_disabled = $('#death_select_box').prop('disabled');
                 var aad_selection = document.getElementById('death_select_box');
                 var aad_select_value = aad_selection.options[0].value
                 if (aad_disabled === true) {
-                    $('#death_select_box').css('background', '#ccc')
+                    //$('#death_select_box').css('background', '#ccc')
                     $('#death_select_box').val([])
                 } else {
                     $('#death_select_box').val(aad_select_value)
-                    $('#death_select_box').css('background', 'white')
+                    //$('#death_select_box').css('background', 'white')
                 }
             });
 
-            var aad_disable = $('#death_select_box').prop('disabled');
+           /* var aad_disable = $('#death_select_box').prop('disabled');
             if (aad_disable === true) {
-                $('#death_select_box').css('background', '#ccc');
+               // $('#death_select_box').css('background', '#ccc');
                 $('#death_select_box').val([]);
             } else {
                 //$('#death_select_box').val(aad_selection);
-                $('#death_select_box').css('background', 'white');
-            }
+                //$('#death_select_box').css('background', 'white');
+            }*/
 
             $('.clear_form').click(function() {
                 hide_all_death_options();
                 $('#death_select_box').val([]);
-                $('#death_select_box').prop('disabled', 'disabled');
-                $('#death_select_box').css('background', '#ccc');
+                //$('#death_select_box').prop('disabled', 'disabled');
+                //$('#death_select_box').css('background', '#ccc');
             });
 
             /*

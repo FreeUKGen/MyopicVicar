@@ -34,4 +34,5 @@ Rails.application.configure do
   config.assets.precompile += %w( advert_control.js )
   config.assets.precompile += %w( jquery.cookiesDirective.js )
   config.assets.precompile += %w( javascripts/freecen_gdpr.js )
+  config.assets.precompile += %w( jquery.validate.min.js )
 end

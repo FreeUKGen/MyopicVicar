@@ -51,6 +51,161 @@ class BestGuess < FreebmdDbBase
     #return @transcribers if record_info.Confirmed & ENTRY_SYSTEM || record_info.Confirmed & ENTRY_REFERENCE
   end
 
+  def get_approved_scanslists
+    self.best_guess_hash.scan_lists.approved
+  end
+
+  def get_unapproved_definitive_scanslists
+    self.best_guess_hash.scan_lists.non_definite.unrejected.definitive unless get_approved_scanslists.present?
+  end
+
+  def get_unapproved_probable_scanslists
+    self.best_guess_hash.scan_lists.non_definite.unrejected.probable unless get_unapproved_definitive_scanslists.present?
+  end
+
+  def get_rejected_probable_scanslists
+    self.best_guess_hash.scan_lists.non_definite.rejected.probably_confirm unless get_unapproved_probable_scanslists.present?
+  end
+
+  def get_rejected_possible_scanslists
+    self.best_guess_hash.scan_lists.non_definite.rejected.possibly_confirm unless get_rejected_probable_scanslists.present?
+  end
+
+  def get_rejected_likely_scanslists
+    self.best_guess_hash.scan_lists.non_definite.rejected.can_be_confirm unless get_rejected_possible_scanslists.present?
+  end
+
+  def get_scanlists
+    get_approved_scanslists + get_unapproved_definitive_scanslists + get_unapproved_probable_scanslists + get_rejected_probable_scanslists + get_rejected_possible_scanslists + get_rejected_likely_scanslists
+  end
+
+  def uniq_scanlists
+    get_scanlists.uniq[0..5] if get_scanlists.present?
+  end
+
+  def record_accessions
+    self.best_guess_links.pluck(:AccessionNumber)
+  end
+
+  def record_accession_pages
+    #Accession.where(AccessionNumber: record_accessions).pluck(:Page)
+    #self.best_guess_links.each {|link|
+     # link.accession.Page
+    #}
+  end
+
+  def find_accessions
+    Accession.where(AccessionNumber: record_accessions)
+  end
+
+  def accession_info
+    raw_pages = find_accessions.pluck(:Page)
+    @pages = raw_pages + raw_pages.select{|m| m.length > 3}.map{|m| m.last(3)}
+    @sources = find_accessions.pluck(:SourceID)
+    @qne = event_quarter_number
+  end
+
+  def page_scans
+    accession_info
+    ImageFile
+    .select(image_fileds)
+    .joins(:image_pages, range:[:source])
+    .find_by('ImagePage.PageNumber' => @pages, 'source.QuarterEventNumber' => @qne , 'ImagePage.Implied' => 0)
+  end
+
+  def series_scans
+    accession_info
+    ImageFile
+    .select(image_fileds)
+    .joins(:image_pages, range:[:source])
+    .find_by('source.SeriesID' => @sources ) unless page_scans.present?
+  end
+
+  def filename_scans
+    accession_info
+    ImageFile
+    .select(image_fileds)
+    .joins(:image_pages, range:[:source])
+    .find_by('ImageFile.Filename' => @sources ) unless page_scans.present?
+  end
+
+  def image_fileds
+    'ImagePage.PageNumber, ImagePage.Implied, ImageFile.ImageID, ImageFile.MultipleFiles, ImageFile.Filename, ImageFile.StartLetters, ImageFile.EndLetters, range.RangeID, range.Range, range.StartLetters, range.EndLetters, source.SourceID, source.SeriesID'
+  end
+
+  def combined_scans
+    scans = page_scans if page_scans.present?
+    unless page_scans.present?
+      if series_scans.present? && filename_scans.present?
+        scans = series_scans + filename_scans
+      elsif series_scans.present? && !filename_scans.present?
+        scans = series_scans if series_scans.present?
+      else 
+        scans =  filename_scans
+      end
+    end
+    scans
+  end
+
+  def get_non_implied_scans
+    combined_scans.where('ImagePage.Implied' => 0) if combined_scans.present?
+  end
+
+  def scan_with_range
+    get_non_implied_scans.reject{|s| s.Range = ""} if get_non_implied_scans.present?
+  end
+
+  def best_probable_scans
+    surname_start_letter = self.Surname[0]
+    scan_with_range.select{|scan|
+      if scan.StartLetters.present? && scan.EndLetters.present?
+        (scan.StartLetters...scan.EndLetters).include?surname_start_letter
+      elsif scan.range.StartLetters.present? && scan.range.EndLetters.present?
+        (scan.range.StartLetters...scan.range.EndLetters).include?surname_start_letter
+      else
+      end
+    } if scan_with_range.present?
+  end
+
+  def multiple_best_probable_scans
+    unless uniq_scanlists.present?
+      best_probable_scans.reject{|scan| scan.MultipleFiles = 0 }.uniq[0..6] if best_probable_scans.present?
+    end
+  end
+
+  def get_non_multiple_scans
+    unless uniq_scanlists.present?
+      best_probable_scans.select{|scan| scan.MultipleFiles = 0 }.uniq[0..6] if best_probable_scans.present?
+    end
+  end
+
+  def final_acc_scans
+    best_probable_scans unless get_scanlists.present?
+  end
+
+  def get_component_images
+    ComponentFile.where(ImageID: multiple_best_probable_scans.pluck(:ImageID))
+  end
+
+  def multi_image_filenames
+    get_component_images.pluck(:Filename)
+  end
+
+  def event_quarter_number
+    #return (($year - 1837)*4 + $quarter)*3 + $event;
+    qne = []
+    find_accessions.each {|acc|
+      @qne << ((acc.year - 1837) * 4 + acc.EntryQuarter) * 3 + acc.RecordTypeID
+    }
+    qne
+  end
+
+  def record_accession_sources
+    Accession.where(AccessionNumber: record_accessions).pluck(:SorceID)
+    #self.best_guess_links.each {|link|
+     # link.accession.Page
+    #}
+  end
   def postems_list
     postem_info = []
     get_hash = self.best_guess_hash.Hash

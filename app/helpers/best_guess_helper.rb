@@ -9,4 +9,8 @@ module BestGuessHelper
     end
     field
   end
+
+  def calculate_quarter number
+    (number-1)%4 + 1
+  end
 end
