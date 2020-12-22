@@ -158,6 +158,7 @@ class BestGuess < FreebmdDbBase
   def best_probable_scans
     surname_start_letter = self.Surname[0]
     get_non_implied_scans.select{|scan|
+      raise scan.inspect
       if scan.StartLetters.present? && scan.EndLetters.present?
         (scan.StartLetters...scan.EndLetters).include?surname_start_letter
       elsif scan.range.StartLetters.present? && scan.range.EndLetters.present?
