@@ -117,6 +117,7 @@
         <% scan_links = @search_record.uniq_scanlists %>
         <% acc_scans = @search_record.get_non_multiple_scans %>
         <% acc_mul_scans = @search_record.multiple_best_probable_scans%>
+        <%= raise acc_scans.inspect%>
         <% if scan_links.present? %>
           <ul>
             <div class="grid">
@@ -141,7 +142,7 @@
               <% acc_scans.each do |s| %>
                 <div class = "grid__item one-fifth lap-one-third palm-one-whole push--bottom" >
                   <% series = s.SeriesID %>
-                  <% range = "/#{s.Range}" if s.Range.present?%>
+                  <% range = "/#{s.range.Range}" if s.Range.present?%>
                   <% file = s.FileName %>
                   <% image_file_path = "#{image_server}/#{year}/#{event}/#{quarter}/#{series}#{range}/#{file}" %>
                   <div class='labels'>
