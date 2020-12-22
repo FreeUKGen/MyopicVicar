@@ -111,7 +111,7 @@
       <div class="grid__item one-whole">
         <h4>Scanned Images</h4>
         <% year = from_quarter_number_to_year(@search_record[:QuarterNumber]) %>
-        <% event = "#{record_type}s" %>
+        <% event = "#{record_type.capitalize}s" %>
         <% quarter = QuarterDetails.quarters.key(calculate_quarter(@search_record[:QuarterNumber])).capitalize %>
         <% image_server = "https://images.freebmd.org.uk/SUG" %>
         <% scan_links = @search_record.uniq_scanlists %>
