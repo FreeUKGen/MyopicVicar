@@ -117,7 +117,6 @@
         <% scan_links = @search_record.uniq_scanlists %>
         <% acc_scans = @search_record.get_non_multiple_scans %>
         <% acc_mul_scans = @search_record.multiple_best_probable_scans%>
-        <%= raise acc_scans.inspect%>
         <% if scan_links.present? %>
           <ul>
             <div class="grid">

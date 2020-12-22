@@ -159,10 +159,9 @@ class BestGuess < FreebmdDbBase
     surname_start_letter = self.Surname[0].upcase
     get_non_implied_scans.select{|scan|
       if scan.StartLetters.present? && scan.EndLetters.present?
-        raise ((scan.StartLetters.upcase...scan.EndLetters.upcase)).inspect
-        (scan.StartLetters.upcase...scan.EndLetters.upcase).include?(surname_start_letter)
+        (scan.StartLetters.upcase..scan.EndLetters.upcase).include?(surname_start_letter)
       elsif scan.range.StartLetters.present? && scan.range.EndLetters.present?
-        (scan.range.StartLetters.upcase...scan.range.EndLetters.upcase).include?(surname_start_letter)
+        (scan.range.StartLetters.upcase..scan.range.EndLetters.upcase).include?(surname_start_letter)
       else
       end
     } if get_non_implied_scans.present?
@@ -175,7 +174,6 @@ class BestGuess < FreebmdDbBase
   end
 
   def get_non_multiple_scans
-    raise best_probable_scans.inspect
     unless uniq_scanlists.present?
       best_probable_scans.select{|scan| scan.MultipleFiles = 0 }.uniq[0..6] if best_probable_scans.present?
     end
