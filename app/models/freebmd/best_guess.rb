@@ -157,10 +157,9 @@ class BestGuess < FreebmdDbBase
 
   def best_probable_scans
     surname_start_letter = self.Surname[0].upcase
-    byebug
     get_non_implied_scans.select{|scan|
       if scan.StartLetters.present? && scan.EndLetters.present?
-        raise ((scan.StartLetters.upcase...scan.EndLetters.upcase).include?(surname_start_letter)).inspect
+        raise ((scan.StartLetters.upcase...scan.EndLetters.upcase)).inspect
         (scan.StartLetters.upcase...scan.EndLetters.upcase).include?(surname_start_letter)
       elsif scan.range.StartLetters.present? && scan.range.EndLetters.present?
         (scan.range.StartLetters.upcase...scan.range.EndLetters.upcase).include?(surname_start_letter)
