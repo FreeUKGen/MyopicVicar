@@ -116,7 +116,6 @@
         <% image_server = "https://images.freebmd.org.uk/SUG" %>
         <% scan_links = @search_record.uniq_scanlists %>
         <% acc_scans = @search_record.get_non_multiple_scans %>
-        <%= raise acc_scans.inspect%>
         <% acc_mul_scans = @search_record.multiple_best_probable_scans%>
         <% if scan_links.present? %>
           <ul>
