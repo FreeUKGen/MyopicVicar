@@ -45,7 +45,7 @@
                   Date
                 </th>
                 <td>
-                  <%= "#{QuarterDetails.quarters.key((@search_record[:QuarterNumber]-1)%4 + 1).upcase} #{from_quarter_number_to_year(@search_record[:QuarterNumber])}"%>
+                  <%= "#{QuarterDetails.quarters.key(calculate_quarter(@search_record[:QuarterNumber])).upcase} #{from_quarter_number_to_year(@search_record[:QuarterNumber])}"%>
                 </td>
               </tr>
               <tr>
@@ -81,7 +81,7 @@
                 </td>
               </tr>
               <tr>
-                <th class="project-text-color">
+                <th class="project-text-color" style="font-family: serif;">
                   Page
                 </th>
                 <td>
@@ -93,7 +93,7 @@
                   Transcriber
                 </th>
                 <td>
-                  <%#= @search_record.transcribers.join(', ') if @search_record.transcribers.present? %>
+                  <%= @search_record.transcribers.join(', ') if @search_record.transcribers.present? %>
                 </td>
               </tr>
             </tbody>
@@ -110,26 +110,72 @@
       </section>
       <div class="grid__item one-whole">
         <h4>Scanned Images</h4>
-        This entry was transcribed from the below scan(s).
-        <% @scan_ids = BestGuess.includes(:ScanLinks).where(RecordNumber: @search_record[:RecordNumber]).pluck(:ScanID)%>
-        <ul>
-          <div class="grid">
-            <% ScanList.where(ScanID: @scan_ids).each do |s| %>
-            <div class = "grid__item one-fifth lap-one-third palm-one-whole push--bottom" >
-              <%= link_to "#{image_tag('https://images.freebmd.org.uk/SUG/1837/Deaths/December/ONS-MyFamily/T-V/1837D4-T-1648.gif')}".html_safe, "https://images.freebmd.org.uk/SUG/1837/Deaths/December/ONS-MyFamily/T-V/1837D4-T-1648.gif"%>
-              <%= image_tag('https://images.freebmd.org.uk/SUG/1837/Deaths/December/ONS-MyFamily/T-V/1837D4-T-1648.gif')%>
+        <% year = from_quarter_number_to_year(@search_record[:QuarterNumber]) %>
+        <% event = "#{record_type}s" %>
+        <% quarter = QuarterDetails.quarters.key(calculate_quarter(@search_record[:QuarterNumber])).capitalize %>
+        <% image_server = "https://images.freebmd.org.uk/SUG" %>
+        <% scan_links = @search_record.uniq_scanlists %>
+        <% acc_scans = @search_record.get_non_multiple_scans %>
+        <% acc_mul_scans = @search_record.multiple_best_probable_scans%>
+        <% if scan_links.present? %>
+          <ul>
+            <div class="grid">
+              <% scan_links.each do |s| %>
+                <div class = "grid__item one-fifth lap-one-third palm-one-whole push--bottom" >
+                  <% series = s.SeriesRangeFileName %>
+                  <% image_file_path = "#{image_server}/#{year}/#{event}/#{quarter}/#{series}" %>
+                  <div class='labels'>
+                    <%= label_tag 'scan_name','' , class: "ttip", tabindex: "0"  do %>
+                        <%="#{series}".html_safe %>
+                    <% end %>
+                  </div>
+                  <%= link_to "#{image_tag(image_file_path)}".html_safe, image_file_path, target: "_blank"%>
+                </div>
+              <% end %>
             </div>
-          
-            <li><%= s.SeriesRangeFileName %></li>
-          <% end %>
-            
-          </div>
-          
-          <% ScanList.where(ScanID: @scan_ids).each do |s| %>
-          
-            <li><%= s.SeriesRangeFileName %></li>
-          <% end %>
-        </ul>
+          </ul>
+        <% end %>
+        <% if acc_scans.present? %>
+          <ul>
+            <div class="grid">
+              <% acc_scans.each do |s| %>
+                <div class = "grid__item one-fifth lap-one-third palm-one-whole push--bottom" >
+                  <% series = s.SeriesID %>
+                  <% range = s.Range %>
+                  <% file = s.FileName %>
+                  <% image_file_path = "#{image_server}/#{year}/#{event}/#{quarter}/#{series}/#{range}/#{file}" %>
+                  <div class='labels'>
+                    <%= label_tag 'scan_name','' , class: "ttip", tabindex: "0"  do %>
+                        <%="#{series}".html_safe %>
+                    <% end %>
+                  </div>
+                  <%= link_to "#{image_tag(image_file_path)}".html_safe, image_file_path, target: "_blank"%>
+                </div>
+              <% end %>
+            </div>
+          </ul>
+        <% end %>
+        <% if acc_mul_scans.present? %>
+          <ul>
+            <div class="grid">
+              <% acc_mul_scans.each do |s| %>
+                <div class = "grid__item one-fifth lap-one-third palm-one-whole push--bottom" >
+                  <% series = s.SeriesID %>
+                  <% range = s.Range %>
+                  <% @search_record.get_component_images.each do |fn| %>
+                    <% image_file_path = "#{image_server}/#{year}/#{event}/#{quarter}/#{series}/#{range}/#{fn}" %>
+                    <div class='labels'>
+                      <%= label_tag 'scan_name','' , class: "ttip", tabindex: "0"  do %>
+                          <%="#{series}".html_safe %>
+                      <% end %>
+                    </div>
+                    <%= link_to "#{image_tag(image_file_path)}".html_safe, image_file_path, target: "_blank"%>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </ul>
+        <% end %>
       </div>
       <div class="grid__item one-whole lap-one-whole palm-one-whole push--bottom">
         <h4>Corrections</h4>
@@ -199,80 +245,7 @@
   </script>
   
   
-  <!--div class='scan_info' id="scan_information">
-    <div class="grid">
-      <div class="grid__item one-whole lap-one-whole palm-one-whole">
-        <h4>Scan Info:</h4>
-        This entry was transcribed from the below scan(s).
-        <% @scan_ids = BestGuess.includes(:ScanLinks).where(RecordNumber: @search_record[:RecordNumber]).pluck(:ScanID)%>
-        <ul>
-          <% ScanList.where(ScanID: @scan_ids).each do |s| %>
-            <li><%= s.SeriesRangeFileName %></li>
-          <% end %>
-        </ul>
-      </div>
-      <div class="grid__item one-whole lap-one-whole palm-one-whole">
-        <h4>Postems</h4>
-        <p>A Postem is a note left by someone about this record - the content of the postem is determined by the person who left it. FreeBMD can offer no assurance about the postem and will not enter into correspondence about it.</p>
-        <%# if @search_record.best_guess_hash.postems.present? %>
-          <%# @search_record.best_guess_hash.postems.each do |postem|%>
-            <ul>
-              <li><%#= postem.Information %></li>
-            </ul>
-          <%# end %>
-        <%# end%>
-    </div>
-    </div>
-    <div class="grid">
-      <div class="grid__item one-sixth lap-one-whole palm-one-whole thumbnail">
-        <%= image_tag('1837B3-B-0017.jpg', size:"50x50", alt: '1837B3-B-0017.jpg')%>
-      </div>
-      <div class="img-zoom-container">
-        <div class="grid__item three-sixths lap-one-whole palm-one-whole whole_image">
-          <%= image_tag('1837B3-B-0017.jpg', height: "350", width: '350', class: 'whole_image1', id:'myimage')%>
-        </div>
-        <div class="grid__item two-sixths lap-one-whole palm-one-whole whole_image1">
-          <div id="myresult" class="img-zoom-result"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class='postems' id='postem_info'>
-    <div class="grid">
-      <div class="grid__item one-whole lap-one-whole palm-one-whole">
-        <h4>Postems</h4>
-        <p>A Postem is a note left by someone about this record - the content of the postem is determined by the person who left it. FreeBMD can offer no assurance about the postem and will not enter into correspondence about it.</p>
-      </div>
-      <%# if @search_record.best_guess_hash.postems.present? %>
-        <%# @search_record.best_guess_hash.postems.each do |postem|%>
-          <ul>
-            <li><%#= postem.Information %></li>
-          </ul>
-        <%# end %>
-      <%# end%>
-    </div>
-    <div class="text--center">
-      <a href="#" id="create_postem" class="btn btn--small">Create Postem</a>
-    </div>
-  </div>
-  <div class='transcribers' id='transcriber_info'>
-    <div class="grid">
-      <div class="grid__item one-whole lap-one-whole palm-one-whole">
-        <%# if BestGuess.transcriber(@search_record.RecordNumber).present? %>
-          <h4>This Record has been transcribed by following Transcriber(s)</h4>
-          <%# BestGuess.transcriber(@search_record.RecordNumber).each do |t| %>
-            <p><%#= t["UserID"] %></p>
-          <%# end %>
-        <%# else %>
-          <p>--</p>
-        <%# end %>
-      </div>
-    </div>
-  </div>
-  <div class="push-half--topVB">
-    <h5> If you believe there to be an error in this transcription then please <%= link_to "report", report_error_contact_path(@search_record, :query => @search_query), target: "_blank" %> it to our data manager (link opens in a new tab or window).</h5>
-  </div-->
-  
+    
   <!--script>
     $('.whole_image1').hide();
     $('.postems, .transcribers').hide();
