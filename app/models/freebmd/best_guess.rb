@@ -110,7 +110,7 @@ class BestGuess < FreebmdDbBase
     ImageFile
     .select(image_fileds)
     .joins(:image_pages, range:[:source])
-    .where('ImagePage.PageNumber' => @pages, 'Source.QuarterEventNumber' => @qne , 'ImagePage.Implied' => 0)
+    .where('ImagePage.PageNumber' => @pages, 'Source.QuarterEventNumber' => @qne )
   end
 
   def series_scans
@@ -130,7 +130,7 @@ class BestGuess < FreebmdDbBase
   end
 
   def image_fileds
-    'ImagePage.PageNumber, ImagePage.Implied, ImageFile.ImageID, ImageFile.MultipleFiles, ImageFile.Filename, ImageFile.StartLetters, ImageFile.EndLetters, Range.RangeID, Range.Range, Range.StartLetters, Range.EndLetters, Source.SourceID, Source.SeriesID'
+    'ImagePage.PageNumber, ImagePage.Implied, ImageID, MultipleFiles, Filename, StartLetters, EndLetters, Range.RangeID, Range.Range, Range.StartLetters, Range.EndLetters, Source.SourceID, Source.SeriesID'
   end
 
   def combined_scans
@@ -148,6 +148,7 @@ class BestGuess < FreebmdDbBase
   end
 
   def get_non_implied_scans
+    raise combined_scans.inspect
     combined_scans.where('ImagePage.Implied' => 0) if combined_scans.present?
   end
 
