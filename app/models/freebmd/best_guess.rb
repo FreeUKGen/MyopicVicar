@@ -174,6 +174,7 @@ class BestGuess < FreebmdDbBase
   end
 
   def get_non_multiple_scans
+    raise best_probable_scans.inspect
     unless uniq_scanlists.present?
       best_probable_scans.select{|scan| scan.MultipleFiles = 0 }.uniq[0..6] if best_probable_scans.present?
     end
