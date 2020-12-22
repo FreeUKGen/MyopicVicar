@@ -134,7 +134,6 @@ class BestGuess < FreebmdDbBase
   end
 
   def combined_scans
-    raise page_scans.inspect
     scans = page_scans if page_scans.present?
     unless page_scans.present?
       if series_scans.present? && filename_scans.present?
