@@ -126,7 +126,7 @@ class BestGuess < FreebmdDbBase
     ImageFile
     .select(image_fileds)
     .joins(:image_pages, range:[:source])
-    .find_by('ImageFile.Filename' => @sources ) unless page_scans.present?
+    .where('ImageFile.Filename' => @sources ) unless page_scans.present?
   end
 
   def image_fileds
@@ -134,7 +134,6 @@ class BestGuess < FreebmdDbBase
   end
 
   def combined_scans
-    raise page_scans.inspect
     scans = page_scans if page_scans.present?
     unless page_scans.present?
       if series_scans.present? && filename_scans.present?
