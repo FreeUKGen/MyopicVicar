@@ -195,7 +195,7 @@ class BestGuess < FreebmdDbBase
     #return (($year - 1837)*4 + $quarter)*3 + $event;
     qne = []
     find_accessions.each {|acc|
-      @qne << ((acc.year - 1837) * 4 + acc.EntryQuarter) * 3 + acc.RecordTypeID
+      @qne << ((acc.Year - 1837) * 4 + acc.EntryQuarter) * 3 + acc.RecordTypeID
     }
     qne
   end
