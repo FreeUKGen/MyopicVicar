@@ -103,12 +103,17 @@ class Freecen2PlacesController < ApplicationController
     load(params[:id])
     redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'That place does not exist') && return if @place.blank?
 
-    @place_name = Freecen2Place.find(session[:place_id]).place_name
-    @place.alternate_freecen2_place_names.build
-    @place.alternate_freecen2_place_names.build
-    @place.alternate_freecen2_place_names.build
-    @county = session[:county]
-    @chapman_code = session[:chapman_code]
+    if @place.data_present
+      flash[:notice] = 'You must use the rename action as there are search records using this current place name'
+      redirect_to(freecen2_place_path(@place)) && return
+    else
+      @place_name = @place.place_name
+      @place.alternate_freecen2_place_names.build
+      @place.alternate_freecen2_place_names.build
+      @place.alternate_freecen2_place_names.build
+      @county = session[:county]
+      @chapman_code = session[:chapman_code]
+    end
   end
 
   def index
@@ -202,7 +207,7 @@ class Freecen2PlacesController < ApplicationController
     places_counties_and_countries
     @county = session[:county]
     @chapman_code = @place.chapman_code
-    @records = @place.records
+    @records = @place.search_records.count
     max_records = get_max_records(@user)
     if @records.present? && @records.to_i >= max_records
       flash[:notice] = 'There are too many records for an on-line relocation'
@@ -244,6 +249,7 @@ class Freecen2PlacesController < ApplicationController
   def show
     load(params[:id])
     redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'That place does not exist') && return if @place.blank?
+
     session.delete(:from)
   end
 
@@ -266,7 +272,7 @@ class Freecen2PlacesController < ApplicationController
       end
       return
     when params[:commit] == 'Rename'
-      proceed, message = @place.change_name(params[:place])
+      proceed, message = @place.change_name(params[:freecen2_place])
       if proceed
         flash[:notice] = 'The rename the Place was successful'
         redirect_to freecen2_place_path(@place)

@@ -61,20 +61,6 @@ class Freecen2Place
 
   after_save :update_places_cache
 
-  index({ chapman_code: 1, standard_place_name: 1, disabled: 1 }, { name: "chapman_code_1_standard_place_name_1_disabled_1" })
-  index({ chapman_code: 1, standard_place_name: 1, error_flag: 1, disabled: 1 }, { name: "chapman_code_1_standard_place_name_1_error_flag_1_disabled_1" })
-  index({ chapman_code: 1, original_standard_name: 1, disabled: 1 }, { name: "chapman_code_1_original_standard_name_1_disabled_1" })
-  index({ chapman_code: 1, original_standard_name: 1, error_flag: 1, disabled: 1 }, { name: "chapman_code_1_original_standard_name_1_error_flag_1_disabled_1" })
-  index({ "chapman_code" => 1, "alternate_freecen2_place_names.standard_alternate_name" => 1, "disabled" => 1 }, { name: "chapman_code_1_standard_alternate_name_1_disabled_1" })
-  index({ chapman_code: 1, place_name: 1, disabled: 1 })
-  index({ place_name: 1, grid_reference: 1 })
-  index({ disabled: 1 })
-  index({ source: 1})
-  index({ chapman_code: 1, data_present: 1,disabled: 1,error_flag: 1}, { name: "chapman_data_present_disabled_error_flag" })
-  index({ chapman_code: 1, _id: 1, disabled: 1, data_present: 1}, { name: "chapman_place_disabled_data_present" })
-  index({ location: "2dsphere" }, { min: -200, max: 200 })
-  index({ "place_name" => "text", "alternate_freecen2_place_names.alternate_name" => "text", "chapman_code"=> 1}, { name: "text_place_name_chapman" })
-
   has_many :churches, dependent: :restrict_with_error
   has_many :search_records
 
@@ -89,6 +75,26 @@ class Freecen2Place
   has_many :gaps
 
   has_many :open_names_per_place
+
+
+  index({ chapman_code: 1, standard_place_name: 1, disabled: 1 }, { name: "chapman_code_1_standard_place_name_1_disabled_1" })
+  index({ chapman_code: 1, standard_place_name: 1, error_flag: 1, disabled: 1 }, { name: "chapman_code_1_standard_place_name_1_error_flag_1_disabled_1" })
+  index({ chapman_code: 1, original_standard_name: 1, disabled: 1 }, { name: "chapman_code_1_original_standard_name_1_disabled_1" })
+  index({ chapman_code: 1, original_standard_name: 1, error_flag: 1, disabled: 1 }, { name: "chapman_code_1_original_standard_name_1_error_flag_1_disabled_1" })
+  index({ "chapman_code" => 1, "alternate_freecen2_place_names.standard_alternate_name" => 1, "disabled" => 1 }, { name: "chapman_code_1_standard_alternate_name_1_disabled_1" })
+  index({ chapman_code: 1, place_name: 1, disabled: 1 })
+  index({ place_name: 1, grid_reference: 1 })
+  index({ disabled: 1 })
+  index({ source: 1})
+  index({ chapman_code: 1, data_present: 1,disabled: 1,error_flag: 1}, { name: "chapman_data_present_disabled_error_flag" })
+  index({ chapman_code: 1, _id: 1, disabled: 1, data_present: 1}, { name: "chapman_place_disabled_data_present" })
+  index({ location: "2dsphere" }, { min: -200, max: 200 })
+  index({ "place_name" => "text", "alternate_freecen2_place_names.alternate_name" => "text", "chapman_code"=> 1}, { name: "text_place_name_chapman" })
+
+
+
+
+
   PLACE_BASE_URL = "http://www.genuki.org.uk"
 
   module MeasurementSystem
@@ -179,7 +185,7 @@ class Freecen2Place
       return place if place.blank?
 
       place = place.tr('-', ' ').delete(".,'(){}[]").downcase
-      place = place.gsub(/Saint/, 'St')
+      place = place.gsub(/saint/, 'st')
       place = place.strip.squeeze(' ')
       place
     end
@@ -272,51 +278,8 @@ class Freecen2Place
     end
   end
 
-  def adjust_location_before_applying(params, chapman)
-    self.chapman_code = ChapmanCode.name_from_code(params[:place][:county]) unless params[:place][:county].nil?
-    self.chapman_code = chapman if self.chapman_code.nil?
-    #We use the lat/lon if provided and the grid reference if  lat/lon not available
-    self.change_grid_reference(params[:place][:grid_reference])
-    self.change_lat_lon(params[:place][:latitude],params[:place][:longitude]) if params[:place][:grid_reference].blank?
-    #have already saved the appropriate location information so remove those parameters
-    params[:place].delete :latitude
-    params[:place].delete :longitude
-    params[:place].delete :grid_reference
-    params
-  end
-
   def approve
     update_attributes(:error_flag => nil, :standard_place_name => Freecen2Place.standard_name(place_name))
-  end
-
-  def change_grid_reference(grid)
-    self.grid_reference = grid
-    self.location = [0,0]
-    unless grid.blank?
-      my_location = self.grid_reference.to_latlng.to_a
-      self.latitude = my_location[0]
-      self.longitude = my_location[1]
-      self.location = [self.longitude.to_f,self.latitude.to_f]
-    end
-    self.save(:validate => false)
-  end
-
-  def change_lat_lon(lat,lon)
-    self.latitude = lat
-    self.longitude = lon
-    self.location = [0,0]
-    unless lat.blank?  || lon.blank?
-      self.location = [self.longitude.to_f,self.latitude.to_f]
-    end
-    self.save(:validate => false)
-    # update freecen pieces
-    if MyopicVicar::Application.config.template_set == 'freecen'
-      self.freecen_pieces.no_timeout.each do |piece|
-        piece.place_latitude = self.latitude
-        piece.place_longitude = self.longitude
-        piece.save
-      end
-    end
   end
 
   def change_name(param)

@@ -9,7 +9,7 @@ module Freecen2PlacesHelper
   end
 
   def official_source(url)
-    if url.present? && !(%r{^https?:\/\/www.genuki.org.uk\/maps\/\S+}.match?(url))
+    if url.present? && !(%r{^https:?}.match?(url))
       #    link_to 'Location', "https://www.google.com/maps/@?api=1&map_action=map&center=#{latitude},#{longitude}&zoom=13", target: :_blank, title: 'Shows the location on a Google map'
       link_to 'Link to Official Source', "#{url}", target: :_blank, class: 'btn   btn--small', title: 'Links to an official source of the information'
     else

@@ -63,12 +63,12 @@
             <td class="weight--semibold"><%= @place.place_notes %> </td>
           </tr>
           <tr>
-            <td>Official website:<small> Opens in new tab</small></td>
-            <td class="weight--semibold"><%=official_source(@place.genuki_url)%></td>
-          </tr>
-          <tr>
             <td>Source:</td>
             <td class="weight--semibold"> <%= @place.source %></td>
+          </tr>
+          <tr>
+            <td>Official website:<small> Opens in new tab</small></td>
+            <td class="weight--semibold"><%=official_source(@place.genuki_url)%></td>
           </tr>
           <tr>
             <td>Data present for this place:</td>
