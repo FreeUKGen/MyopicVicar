@@ -110,7 +110,7 @@ class BestGuess < FreebmdDbBase
     ImageFile
     .select(image_fileds)
     .joins(:image_pages, range:[:source])
-    .find_by('ImagePage.PageNumber' => @pages, 'source.QuarterEventNumber' => @qne , 'ImagePage.Implied' => 0)
+    .find_by('ImagePage.PageNumber' => @pages, 'Source.QuarterEventNumber' => @qne , 'ImagePage.Implied' => 0)
   end
 
   def series_scans
@@ -118,7 +118,7 @@ class BestGuess < FreebmdDbBase
     ImageFile
     .select(image_fileds)
     .joins(:image_pages, range:[:source])
-    .find_by('source.SeriesID' => @sources ) unless page_scans.present?
+    .find_by('Source.SeriesID' => @sources ) unless page_scans.present?
   end
 
   def filename_scans
@@ -130,7 +130,7 @@ class BestGuess < FreebmdDbBase
   end
 
   def image_fileds
-    'ImagePage.PageNumber, ImagePage.Implied, ImageFile.ImageID, ImageFile.MultipleFiles, ImageFile.Filename, ImageFile.StartLetters, ImageFile.EndLetters, Range.RangeID, Range.Range, Range.StartLetters, Range.EndLetters, source.SourceID, source.SeriesID'
+    'ImagePage.PageNumber, ImagePage.Implied, ImageFile.ImageID, ImageFile.MultipleFiles, ImageFile.Filename, ImageFile.StartLetters, ImageFile.EndLetters, Range.RangeID, Range.Range, Range.StartLetters, Range.EndLetters, Source.SourceID, Source.SeriesID'
   end
 
   def combined_scans
