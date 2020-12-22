@@ -148,6 +148,7 @@ class BestGuess < FreebmdDbBase
   end
 
   def get_non_implied_scans
+    raise combined_scans.inspect
     combined_scans.where('ImagePage.Implied' => 0) if combined_scans.present?
   end
 
