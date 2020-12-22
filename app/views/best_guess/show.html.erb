@@ -139,11 +139,10 @@
           <ul>
             <div class="grid">
               <% acc_scans.each do |s| %>
-              <%= raise s.inspect %>
                 <div class = "grid__item one-fifth lap-one-third palm-one-whole push--bottom" >
                   <% series = s.SeriesID %>
                   <% range = "/#{s.range.Range}" if s.Range.present?%>
-                  <% file = s.FileName %>
+                  <% file = s.Filename %>
                   <% image_file_path = "#{image_server}/#{year}/#{event}/#{quarter}/#{series}#{range}/#{file}" %>
                   <div class='labels'>
                     <%= label_tag 'scan_name','' , class: "ttip", tabindex: "0"  do %>
