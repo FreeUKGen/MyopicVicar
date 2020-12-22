@@ -130,7 +130,7 @@ class BestGuess < FreebmdDbBase
   end
 
   def image_fileds
-    'ImagePage.PageNumber, ImagePage.Implied, ImageFile.ImageID, ImageFile.MultipleFiles, ImageFile.Filename, ImageFile.StartLetters, ImageFile.EndLetters, range.RangeID, range.Range, range.StartLetters, range.EndLetters, source.SourceID, source.SeriesID'
+    'ImagePage.PageNumber, ImagePage.Implied, ImageFile.ImageID, ImageFile.MultipleFiles, ImageFile.Filename, ImageFile.StartLetters, ImageFile.EndLetters, Range.RangeID, Range.Range, Range.StartLetters, Range.EndLetters, source.SourceID, source.SeriesID'
   end
 
   def combined_scans
