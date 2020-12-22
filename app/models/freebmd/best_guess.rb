@@ -152,14 +152,12 @@ class BestGuess < FreebmdDbBase
   end
 
   def scan_with_range
-    get_non_implied_scans.reject{|s|
-      raise s.range.inspect
-      s.Range = ""} if get_non_implied_scans.present?
+    get_non_implied_scans.reject{|s| s.Range = ""} if get_non_implied_scans.present?
   end
 
   def best_probable_scans
     surname_start_letter = self.Surname[0]
-    scan_with_range.select{|scan|
+    get_non_implied_scans.select{|scan|
       if scan.StartLetters.present? && scan.EndLetters.present?
         (scan.StartLetters...scan.EndLetters).include?surname_start_letter
       elsif scan.range.StartLetters.present? && scan.range.EndLetters.present?
@@ -176,7 +174,6 @@ class BestGuess < FreebmdDbBase
   end
 
   def get_non_multiple_scans
-    raise best_probable_scans.inspect
     unless uniq_scanlists.present?
       best_probable_scans.select{|scan| scan.MultipleFiles = 0 }.uniq[0..6] if best_probable_scans.present?
     end

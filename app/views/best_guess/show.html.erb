@@ -141,9 +141,9 @@
               <% acc_scans.each do |s| %>
                 <div class = "grid__item one-fifth lap-one-third palm-one-whole push--bottom" >
                   <% series = s.SeriesID %>
-                  <% range = s.Range %>
+                  <% range = "/#{s.Range}" if s.Range.present?%>
                   <% file = s.FileName %>
-                  <% image_file_path = "#{image_server}/#{year}/#{event}/#{quarter}/#{series}/#{range}/#{file}" %>
+                  <% image_file_path = "#{image_server}/#{year}/#{event}/#{quarter}/#{series}#{range}/#{file}" %>
                   <div class='labels'>
                     <%= label_tag 'scan_name','' , class: "ttip", tabindex: "0"  do %>
                         <%="#{series}".html_safe %>
@@ -161,9 +161,9 @@
               <% acc_mul_scans.each do |s| %>
                 <div class = "grid__item one-fifth lap-one-third palm-one-whole push--bottom" >
                   <% series = s.SeriesID %>
-                  <% range = s.Range %>
+                  <% range = "/#{s.Range}" if s.Range.present?%>
                   <% @search_record.get_component_images.each do |fn| %>
-                    <% image_file_path = "#{image_server}/#{year}/#{event}/#{quarter}/#{series}/#{range}/#{fn}" %>
+                    <% image_file_path = "#{image_server}/#{year}/#{event}/#{quarter}/#{series}#{range}/#{fn}" %>
                     <div class='labels'>
                       <%= label_tag 'scan_name','' , class: "ttip", tabindex: "0"  do %>
                           <%="#{series}".html_safe %>
