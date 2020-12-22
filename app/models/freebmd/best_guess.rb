@@ -152,8 +152,9 @@ class BestGuess < FreebmdDbBase
   end
 
   def scan_with_range
-    raise get_non_implied_scans.inspect
-    get_non_implied_scans.reject{|s| s.Range = ""} if get_non_implied_scans.present?
+    get_non_implied_scans.reject{|s|
+      raise s.range.inspect
+      s.Range = ""} if get_non_implied_scans.present?
   end
 
   def best_probable_scans
