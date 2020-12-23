@@ -483,6 +483,8 @@ class SearchQuery
   def individual_marital_status?(individual)
     return true if marital_status.blank?
 
+    return false if individual.marital_status.blank?
+
     return true if marital_status.casecmp(individual.marital_status).zero?
 
     return true if individual.marital_status.casecmp('u').zero? && marital_status.casecmp('s').zero?

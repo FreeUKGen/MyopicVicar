@@ -103,17 +103,13 @@ class Freecen2PlacesController < ApplicationController
     load(params[:id])
     redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'That place does not exist') && return if @place.blank?
 
-    if @place.data_present
-      flash[:notice] = 'You must use the rename action as there are search records using this current place name'
-      redirect_to(freecen2_place_path(@place)) && return
-    else
-      @place_name = @place.place_name
-      @place.alternate_freecen2_place_names.build
-      @place.alternate_freecen2_place_names.build
-      @place.alternate_freecen2_place_names.build
-      @county = session[:county]
-      @chapman_code = session[:chapman_code]
-    end
+    @place_name = @place.place_name
+    @place.alternate_freecen2_place_names.build
+    @place.alternate_freecen2_place_names.build
+    @place.alternate_freecen2_place_names.build
+    @county = session[:county]
+    @chapman_code = session[:chapman_code]
+
   end
 
   def index

@@ -14,9 +14,9 @@
       <%= f.hidden_field :place_name, :value=>@place_name %>
     <% end %>
   <% elsif%>
-    <% if %w[county_coordinator master_county_coordinator country_coordinator system_administrator data_manager executive_director project_manager].include?(@user.person_role)%>
+    <% if %w[county_coordinator master_county_coordinator country_coordinator system_administrator data_manager executive_director project_manager].include?(@user.person_role) && !@place.data_present%>
       <%= f.input :county, :value=>@county , :input_html => { :disabled => true,:size => 40 }%>
-      <%= f.input :place_name, :value=>@cplace_name, :label => 'Enter the New Place Name',:hint => 'Please take extreme care with the Place Name including its case!' ,:input_html => {:class => 'simple_form_bgcolour', :size => 40 }%>
+      <%= f.input :place_name, :value=>@place_name, :label => 'Enter the New Place Name',:hint => 'Please take extreme care with the Place Name including its case!' ,:input_html => {:class => 'simple_form_bgcolour', :size => 40 }%>
     <% else%>
       <%= f.hidden_field :county, :value=>@county %>
       <%= f.hidden_field :place_name, :value=>@place_name %>
