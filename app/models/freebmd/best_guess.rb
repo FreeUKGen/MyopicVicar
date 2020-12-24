@@ -1,3 +1,4 @@
+# Entry Information
 class BestGuess < FreebmdDbBase
   self.pluralize_table_names = false
   self.table_name = 'BestGuess'
@@ -18,7 +19,7 @@ class BestGuess < FreebmdDbBase
     particles << self.Surname if self.Surname
 
     # then the record types
-    particles << RecordType::display_name(self.RecordTypeID)
+    particles << RecordType.display_name(self.RecordTypeID)
     # then county name
     county_code = self.CountyCombos.County if self.CountyCombos.present?
     particles << ChapmanCode.name_from_code(county_code) if county_code.present?
@@ -36,51 +37,51 @@ class BestGuess < FreebmdDbBase
 
   def transcribers
     users = []
-    #record_info = BestGuess.includes(:best_guess_links).where(RecordNumber: record).first
+    # record_info = BestGuess.includes(:best_guess_links).where(RecordNumber: record).first
     self.best_guess_links.includes(:accession).each do |link|
       users << link.accession.bmd_file.submitter.UserID if self.Confirmed & ENTRY_SYSTEM || self.Confirmed & ENTRY_REFERENCE
     end
     users
-    #record_info = BestGuess.where(RecordNumber: record).first
-    #accession_numbers = BestGuessLink.where(RecordNumber: record).pluck(:AccessionNumber)
-    #accessions = Accession.where(AccessionNumber: accession_numbers)
-    #accessions_all = accessions# || accessions.where(SourceType: '+Z')
-    #accession_files = accessions_all.pluck(:FileNumber)
-    #file_submitters =  BmdFile.where(FileNumber: accession_files).pluck(:SubmitterNumber)
-    #@transcribers = Submitter.where(SubmitterNumber: file_submitters).pluck(:UserID)
-    #return @transcribers if record_info.Confirmed & ENTRY_SYSTEM || record_info.Confirmed & ENTRY_REFERENCE
+    # record_info = BestGuess.where(RecordNumber: record).first
+    # accession_numbers = BestGuessLink.where(RecordNumber: record).pluck(:AccessionNumber)
+    # accessions = Accession.where(AccessionNumber: accession_numbers)
+    # accessions_all = accessions# || accessions.where(SourceType: '+Z')
+    # accession_files = accessions_all.pluck(:FileNumber)
+    # file_submitters =  BmdFile.where(FileNumber: accession_files).pluck(:SubmitterNumber)
+    # @transcribers = Submitter.where(SubmitterNumber: file_submitters).pluck(:UserID)
+    # return @transcribers if record_info.Confirmed & ENTRY_SYSTEM || record_info.Confirmed & ENTRY_REFERENCE
   end
 
-  def get_approved_scanslists
+  def approved_scanslists
     self.best_guess_hash.scan_lists.approved
   end
 
-  def get_unapproved_definitive_scanslists
-    self.best_guess_hash.scan_lists.non_definite.unrejected.definitive unless get_approved_scanslists.present?
+  def unapproved_definitive_scanslists
+    self.best_guess_hash.scan_lists.non_definite.unrejected.definitive if approved_scanslists.blank?
   end
 
-  def get_unapproved_probable_scanslists
-    self.best_guess_hash.scan_lists.non_definite.unrejected.probable unless get_unapproved_definitive_scanslists.present?
+  def unapproved_probable_scanslists
+    self.best_guess_hash.scan_lists.non_definite.unrejected.probable if unapproved_definitive_scanslists.blank?
   end
 
-  def get_rejected_probable_scanslists
-    self.best_guess_hash.scan_lists.non_definite.rejected.probably_confirm unless get_unapproved_probable_scanslists.present?
+  def rejected_probable_scanslists
+    self.best_guess_hash.scan_lists.non_definite.rejected.probably_confirm if unapproved_probable_scanslists.blank?
   end
 
-  def get_rejected_possible_scanslists
-    self.best_guess_hash.scan_lists.non_definite.rejected.possibly_confirm unless get_rejected_probable_scanslists.present?
+  def rejected_possible_scanslists
+    self.best_guess_hash.scan_lists.non_definite.rejected.possibly_confirm if rejected_probable_scanslists.blank?
   end
 
-  def get_rejected_likely_scanslists
-    self.best_guess_hash.scan_lists.non_definite.rejected.can_be_confirm unless get_rejected_possible_scanslists.present?
+  def rejected_likely_scanslists
+    self.best_guess_hash.scan_lists.non_definite.rejected.can_be_confirm if rejected_possible_scanslists.blank?
   end
 
-  def get_scanlists
-    get_approved_scanslists + get_unapproved_definitive_scanslists + get_unapproved_probable_scanslists + get_rejected_probable_scanslists + get_rejected_possible_scanslists + get_rejected_likely_scanslists
+  def scanlists
+    approved_scanslists + unapproved_definitive_scanslists + unapproved_probable_scanslists + rejected_probable_scanslists + rejected_possible_scanslists + rejected_likely_scanslists
   end
 
   def uniq_scanlists
-    get_scanlists.uniq[0..5] if get_scanlists.present?
+    scanlists.uniq[0..5] if scanlists.present?
   end
 
   def record_accessions
@@ -115,18 +116,22 @@ class BestGuess < FreebmdDbBase
 
   def series_scans
     accession_info
-    ImageFile
-    .select(image_fileds)
-    .joins(:image_pages, range:[:source])
-    .where('Source.SeriesID' => @sources ) unless page_scans.present?
+    if page_scans.blank?
+      ImageFile
+        .select(image_fileds)
+        .joins(:image_pages, range:[:source])
+        .where('Source.SeriesID' => @sources )
+    end
   end
 
   def filename_scans
     accession_info
-    ImageFile
-    .select(image_fileds)
-    .joins(:image_pages, range:[:source])
-    .where('ImageFile.Filename' => @sources ) unless page_scans.present?
+    if page_scans.blank?
+      ImageFile
+        .select(image_fileds)
+        .joins(:image_pages, range:[:source])
+        .where('ImageFile.Filename' => @sources )
+    end
   end
 
   def image_fileds
@@ -147,24 +152,28 @@ class BestGuess < FreebmdDbBase
     scans
   end
 
-  def get_non_implied_scans
-    combined_scans.where('ImagePage.Implied' => 0) if combined_scans.present?
+  def all_scans
+    page_scans + series_scans + filename_scans
+  end
+
+  def non_implied_scans
+    all_scans.where('ImagePage.Implied' => 0) if all_scans.present?
   end
 
   def scan_with_range
-    get_non_implied_scans.reject{|s| s.Range = ""} if get_non_implied_scans.present?
+    non_implied_scans.reject{|s| s.Range = ""} if non_implied_scans.present?
   end
 
   def best_probable_scans
     surname_start_letter = self.Surname[0].upcase
-    get_non_implied_scans.select{|scan|
+    non_implied_scans.select{|scan|
       if scan.StartLetters.present? && scan.EndLetters.present?
         (scan.StartLetters.upcase..scan.EndLetters.upcase).include?(surname_start_letter)
       elsif scan.range.StartLetters.present? && scan.range.EndLetters.present?
         (scan.range.StartLetters.upcase..scan.range.EndLetters.upcase).include?(surname_start_letter)
       else
       end
-    } if get_non_implied_scans.present?
+    } if non_implied_scans.present?
   end
 
   def multiple_best_probable_scans
