@@ -176,20 +176,30 @@ class BestGuess < FreebmdDbBase
     } if non_implied_scans.present?
   end
 
+  def scans_with_out_file_character_check
+    if best_probable_scans.count < 3
+      non_implied_scans.all
+    end
+  end
+
+  def all_acc_scans
+    best_probable_scans || scans_with_out_file_character_check
+  end
+
   def multiple_best_probable_scans
     unless uniq_scanlists.present?
-      best_probable_scans.reject{|scan| scan.MultipleFiles = 0 }.uniq[0..6] if best_probable_scans.present?
+      all_acc_scans.reject{|scan| scan.MultipleFiles = 0 }.uniq[0..6] if all_acc_scans.present?
     end
   end
 
   def get_non_multiple_scans
     unless uniq_scanlists.present?
-      best_probable_scans.select{|scan| scan.MultipleFiles = 0 }.uniq[0..6] if best_probable_scans.present?
+      all_acc_scans.select{|scan| scan.MultipleFiles = 0 }.uniq[0..6] if all_acc_scans.present?
     end
   end
 
   def final_acc_scans
-    best_probable_scans unless get_scanlists.present?
+    all_acc_scans unless get_scanlists.present?
   end
 
   def get_component_images
