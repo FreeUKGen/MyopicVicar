@@ -153,7 +153,7 @@ class BestGuess < FreebmdDbBase
   end
 
   def all_scans
-    page_scans + series_scans + filename_scans
+    page_scans.or(series_scans).or(filename_scans)
   end
 
   def non_implied_scans
