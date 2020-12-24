@@ -165,9 +165,9 @@
                   <% @search_record.get_component_images.each do |fn| %>
                     <% image_file_path = "#{image_server}/#{year}/#{event}/#{quarter}/#{series}#{range}/#{fn}" %>
                     <div class='labels'>
-                      <%= label_tag 'scan_name','' , class: "ttip", tabindex: "0"  do %>
-                          <%="#{series}#{range}/#{fn}".html_safe %>
-                      <% end %>
+                      <%#= label_tag 'scan_name','' , class: "ttip", tabindex: "0"  do %>
+                          <small><%="#{series}#{range}/#{fn}".html_safe %></small>
+                      <%# end %>
                     </div>
                     <%= link_to "#{image_tag(image_file_path)}".html_safe, image_file_path, target: "_blank"%>
                   <% end %>
