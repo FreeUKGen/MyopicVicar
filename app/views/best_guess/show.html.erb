@@ -121,7 +121,7 @@
           <ul>
             <div class="grid">
               <% scan_links.each do |s| %>
-                <div class = "grid__item one-half lap-one-half palm-one-whole push--bottom" >
+                <div class = "grid__item one-quarter lap-one-quarter palm-one-whole push--bottom" >
                   <% series = s.SeriesRangeFileName %>
                   <% image_file_path = "#{image_server}/#{year}/#{event}/#{quarter}/#{series}" %>
                   <div class='labels'>
@@ -139,7 +139,7 @@
           <ul>
             <div class="grid">
               <% acc_scans.each do |s| %>
-                <div class = "grid__item one-half lap-one-half palm-one-whole push--bottom" >
+                <div class = "grid__item one-quarter lap-one-quarter palm-one-whole push--bottom" >
                   <% series = s.SeriesID %>
                   <% range = "/#{s.range.Range}" if s.Range.present?%>
                   <% file = s.Filename %>
@@ -159,7 +159,7 @@
           <ul>
             <div class="grid">
               <% acc_mul_scans.each do |s| %>
-                <div class = "grid__item one-half lap-one-half palm-one-whole push--bottom" >
+                <div class = "grid__item one-quarter lap-one-quarter palm-one-whole push--bottom" >
                   <% series = s.SeriesID %>
                   <% range = "/#{s.Range}" if s.Range.present?%>
                   <% @search_record.get_component_images.each do |fn| %>
