@@ -8,6 +8,7 @@ class Freecen2CivilParish
   field :year, type: String
   validates_inclusion_of :year, in: Freecen::CENSUS_YEARS_ARRAY
   field :name, type: String
+  field :standard_name, type: String
   field :note, type: String
   field :prenote, type: String
   field :number, type: Integer
@@ -28,6 +29,9 @@ class Freecen2CivilParish
   accepts_nested_attributes_for :freecen2_wards, allow_destroy: true, reject_if: :all_blank
 
   delegate :year, :name, :tnaid, :number, :code, :note, to: :freecen2_piece, prefix: :piece, allow_nil: true
+
+  before_save :add_standard_names
+  before_update :add_standard_names
 
   index({ chapman_code: 1, year: 1, name: 1 }, name: 'chapman_code_year_name')
   index({ chapman_code: 1, name: 1 }, name: 'chapman_code_name')
@@ -111,6 +115,10 @@ class Freecen2CivilParish
   end
 
   # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::Instance methods :::::::::::::::::::::::::::::::::::::::
+
+  def add_standard_names
+    self.standard_name = Freecen2Place.standard_place(name)
+  end
 
   def copy_to_another_piece(chapman_code, new_piece_id)
     new_civil_parish = Freecen2CivilParish.new(name: name, chapman_code: chapman_code, year: year, note: note, prenote: prenote, number: number,

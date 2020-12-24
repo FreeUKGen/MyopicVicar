@@ -27,6 +27,7 @@ class Freecen2Piece
 
   field :name, type: String
   validates :name, presence: true
+  field :standard_name, type: String
   field :chapman_code, type: String
   validates_inclusion_of :chapman_code, in: ChapmanCode.values
   field :tnaid, type: String
@@ -60,6 +61,9 @@ class Freecen2Piece
   has_many :freecen_dwellings, dependent: :restrict_with_error
   has_many :freecen_csv_files, dependent: :restrict_with_error
   has_many :freecen_individuals, dependent: :restrict_with_error
+
+  before_save :add_standard_names
+  before_update :add_standard_names
 
   index({ chapman_code: 1, year: 1, name: 1 }, name: 'chapman_code_year_name')
   index({ chapman_code: 1, name: 1 }, name: 'chapman_code_name')
@@ -194,6 +198,10 @@ class Freecen2Piece
   end
 
   # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::Instance methods:::::::::::::::::::::::::::::::::::::::::::::::::::
+
+  def add_standard_names
+    self.standard_name = Freecen2Place.standard_place(name)
+  end
 
   def copy_to_another_district(chapman_code, new_district_id)
     success = false

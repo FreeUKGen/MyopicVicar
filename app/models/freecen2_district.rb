@@ -8,6 +8,7 @@ class Freecen2District
   validates_inclusion_of :year, in: Freecen::CENSUS_YEARS_ARRAY
   field :name, type: String
   validates :name, presence: true
+  field :standard_name, type: String
   field :tnaid, type: String
   validates :tnaid, presence: true
   field :type, type: String
@@ -21,6 +22,9 @@ class Freecen2District
   belongs_to :freecen2_place, optional: true, index: true
   belongs_to :county, optional: true, index: true
   delegate :county, to: :county, prefix: true, allow_nil: true
+
+  before_save :add_standard_names
+  before_update :add_standard_names
 
   index({ chapman_code: 1, year: 1, name: 1 }, name: 'chapman_code_year_name')
   index({ chapman_code: 1, name: 1, year: 1 }, name: 'chapman_code_name_year')
@@ -93,6 +97,9 @@ class Freecen2District
   end
 
   # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Instance methods::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  def add_standard_names
+    self.standard_name = Freecen2Place.standard_place(name)
+  end
 
   def copy_to_another_county(chapman_code)
     county = County.find_by(chapman_code: chapman_code)

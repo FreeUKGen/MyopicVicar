@@ -12,6 +12,14 @@ namespace :foo do
     puts "Task complete."
   end
 
+  task :add_standard, [:limit] => [:environment] do |t, args|
+    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+    require 'add_standard_name_to_name'
+    puts "Standard names #{args.limit} "
+    AddStandarNameToName.process(args.limit)
+    puts "Task complete."
+  end
+
   task :correct_tna_link, [:limit] => [:environment] do |t, args|
     # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
     require 'correct_tna_link'

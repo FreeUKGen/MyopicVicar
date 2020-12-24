@@ -21,6 +21,10 @@
           <td class="weight--semibold"> <%=  @freecen2_civil_parish.year %> </td>
         </tr>
         <tr>
+          <td>Civil Parish name <small>(Standard name)</small></td>
+          <td class="weight--semibold"> <%= @freecen2_civil_parish.name %> (<%= @freecen2_civil_parish.standard_name %>)</td>
+        </tr>
+        <tr>
           <td>Belongs to Place <small>(Name is a link)</small></td>
           <td class="weight--semibold"> <%=  civil_place_link(@place) %> </td>
         </tr>
