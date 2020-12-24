@@ -146,7 +146,7 @@
                   <% image_file_path = "#{image_server}/#{year}/#{event}/#{quarter}/#{series}#{range}/#{file}" %>
                   <div class='labels'>
                     <%= label_tag 'scan_name','' , class: "ttip", tabindex: "0"  do %>
-                        <%="#{series}".html_safe %>
+                        <%="#{series}#{range}/#{file}".html_safe %>
                     <% end %>
                   </div>
                   <%= link_to "#{image_tag(image_file_path)}".html_safe, image_file_path, target: "_blank"%>
@@ -166,7 +166,7 @@
                     <% image_file_path = "#{image_server}/#{year}/#{event}/#{quarter}/#{series}#{range}/#{fn}" %>
                     <div class='labels'>
                       <%= label_tag 'scan_name','' , class: "ttip", tabindex: "0"  do %>
-                          <%="#{series}".html_safe %>
+                          <%="#{series}#{range}/#{fn}".html_safe %>
                       <% end %>
                     </div>
                     <%= link_to "#{image_tag(image_file_path)}".html_safe, image_file_path, target: "_blank"%>
