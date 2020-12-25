@@ -109,7 +109,7 @@
         </div>
       </section>
       <div class="grid__item one-whole">
-        <h4>Scanned Images</h4>
+        <h4>Scans</h4>
         <% year = from_quarter_number_to_year(@search_record[:QuarterNumber]) %>
         <% event = "#{record_type.capitalize}s" %>
         <% quarter = QuarterDetails.quarters.key(calculate_quarter(@search_record[:QuarterNumber])).capitalize %>
