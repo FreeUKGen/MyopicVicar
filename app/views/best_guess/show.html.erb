@@ -121,15 +121,15 @@
           <ul>
             <div class="grid">
               <% scan_links.each do |s| %>
-                <div class = "grid__item one-quarter lap-one-quarter palm-one-whole push--bottom" >
+                <div class = "grid__item one-whole lap-one-whole palm-one-whole push--bottom" >
                   <% series = s.SeriesRangeFileName %>
                   <% image_file_path = "#{image_server}/#{year}/#{event}/#{quarter}/#{series}" %>
                   <div class='labels'>
-                    <%= label_tag 'scan_name','' , class: "ttip", tabindex: "0"  do %>
-                        <%="#{series}".html_safe %>
-                    <% end %>
+                    <%#= label_tag 'scan_name','' , class: "ttip", tabindex: "0"  do %>
+                        <%#="#{series}".html_safe %>
+                    <%# end %>
                   </div>
-                  <%= link_to "#{image_tag(image_file_path)}".html_safe, image_file_path, target: "_blank"%>
+                  <%= link_to "#{series}".html_safe, image_file_path, target: "_blank"%>
                 </div>
               <% end %>
             </div>
@@ -139,17 +139,17 @@
           <ul>
             <div class="grid">
               <% acc_scans.each do |s| %>
-                <div class = "grid__item one-quarter lap-one-quarter palm-one-whole push--bottom" >
+                <div class = "grid__item one-whole lap-one-whole palm-one-whole push--bottom" >
                   <% series = s.SeriesID %>
                   <% range = "/#{s.range.Range}" if s.Range.present?%>
                   <% file = s.Filename %>
                   <% image_file_path = "#{image_server}/#{year}/#{event}/#{quarter}/#{series}#{range}/#{file}" %>
                   <div class=''>
                     <%#= label_tag 'scan_name','' , class: "ttip", tabindex: "0"  do %>
-                        <small><%="#{series}#{range}/#{file}".html_safe %></small>
+                        <small><%#="#{series}#{range}/#{file}".html_safe %></small>
                     <%# end %>
                   </div>
-                  <%= link_to "#{image_tag(image_file_path)}".html_safe, image_file_path, target: "_blank"%>
+                  <%= link_to "#{series}#{range}/#{file}".html_safe, image_file_path, target: "_blank"%>
                 </div>
               <% end %>
             </div>
@@ -159,17 +159,17 @@
           <ul>
             <div class="grid">
               <% acc_mul_scans.each do |s| %>
-                <div class = "grid__item one-quarter lap-one-quarter palm-one-whole push--bottom" >
+                <div class = "grid__item one-whole lap-one-whole palm-one-whole push--bottom" >
                   <% series = s.SeriesID %>
                   <% range = "/#{s.Range}" if s.Range.present?%>
                   <% @search_record.get_component_images.each do |fn| %>
                     <% image_file_path = "#{image_server}/#{year}/#{event}/#{quarter}/#{series}#{range}/#{fn}" %>
                     <div class=''>
-                      <%= label_tag 'scan_name','' , class: "ttip", tabindex: "0"  do %>
-                          <%="#{series}#{range}/#{fn}".html_safe %>
-                      <% end %>
+                      <%#= label_tag 'scan_name','' , class: "ttip", tabindex: "0"  do %>
+                          <%#="#{series}#{range}/#{fn}".html_safe %>
+                      <%# end %>
                     </div>
-                    <%= link_to "#{image_tag(image_file_path)}".html_safe, image_file_path, target: "_blank"%>
+                    <%= link_to "#{series}#{range}/#{fn}".html_safe, image_file_path, target: "_blank"%>
                   <% end %>
                 </div>
               <% end %>

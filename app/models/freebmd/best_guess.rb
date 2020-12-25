@@ -199,19 +199,19 @@ class BestGuess < FreebmdDbBase
   end
 
   def final_acc_scans
-    all_acc_scans unless get_scanlists.present?
+    all_acc_scans unless scanlists.present?
   end
 
-  def get_component_images
+  def component_images
     ComponentFile.where(ImageID: multiple_best_probable_scans.pluck(:ImageID))
   end
 
   def multi_image_filenames
-    get_component_images.pluck(:Filename)
+    component_images.pluck(:Filename)
   end
 
   def event_quarter_number
-    #return (($year - 1837)*4 + $quarter)*3 + $event;
+    # return (($year - 1837)*4 + $quarter)*3 + $event;
     qne = []
     find_accessions.each {|acc|
       qne << ((acc.Year - 1837) * 4 + acc.EntryQuarter) * 3 + acc.RecordTypeID
@@ -223,10 +223,9 @@ class BestGuess < FreebmdDbBase
     Accession.where(AccessionNumber: record_accessions).pluck(:SorceID)
     #self.best_guess_links.each {|link|
      # link.accession.Page
-    #}
+    # }
   end
   def postems_list
-    postem_info = []
     get_hash = self.best_guess_hash.Hash
     Postem.where(Hash: get_hash).all
   end
