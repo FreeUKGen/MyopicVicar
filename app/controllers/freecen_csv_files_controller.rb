@@ -465,7 +465,6 @@ class FreecenCsvFilesController < ApplicationController
   end
 
   def update
-    p params
     #update the headers
     @freecen_csv_file = FreecenCsvFile.find(params[:id])
     unless FreecenCsvFile.valid_freecen_csv_file?(params[:id])

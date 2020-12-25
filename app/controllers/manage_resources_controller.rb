@@ -33,12 +33,14 @@ class ManageResourcesController < ApplicationController
     @user = get_user
     if @user.present?
       if @user.blank?
-        logger.warn "FREEREG::USER userid not found in session #{session[:userid_detail_id]}"
+        logger.warn "FREEREG::USER userid not found in session #{session[:userid_detail_id]}" if appname_downcase == 'freereg'
+        logger.warn "FREECEN::USER userid not found in session #{session[:userid_detail_id]}" if appname_downcase == 'freecen'
         flash[:notice] = 'Your userid was not found in the system (if you believe this to be a mistake please contact your coordinator)'
         continue = false
       end
     else
-      logger.warn 'FREEREG::USER no userid cookie'
+      logger.warn 'FREEREG::USER no userid cookie' if appname_downcase == 'freereg'
+      logger.warn 'FREECEN::USER no userid cookie' if appname_downcase == 'freecen'
       flash[:notice] = 'We did not find your userid cookie. Do you have them disabled?'
       continue = false
     end
@@ -121,7 +123,8 @@ class ManageResourcesController < ApplicationController
     session[:first_name] = @first_name
     session[:manager] = manager?(@user)
     session[:role] = @user.person_role
-    logger.warn "FREEREG::USER user #{@user.userid}"
+    logger.warn "FREEREG::USER user #{@user.userid}"  if appname_downcase == 'freereg'
+    logger.warn "FREECEN::USER user #{@user.userid}"  if appname_downcase == 'freecen'
   end
 
   def show

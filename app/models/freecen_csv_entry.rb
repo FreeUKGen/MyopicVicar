@@ -234,7 +234,7 @@ class FreecenCsvEntry
         message += messagea
       end
 
-      freecen2_civil_parish = Freecen2CivilParish.find_by(name: FreecenCsvEntry.mytitlieze(record[:civil_parish]), year: record[:year], chapman_code: record[:piece].chapman_code)
+      freecen2_civil_parish = Freecen2CivilParish.find_by(standard_name: Freecen2Place.standard_name(record[:civil_parish]), year: record[:year], chapman_code: record[:piece].chapman_code)
       if freecen2_civil_parish.present? && freecen2_civil_parish.freecen2_place_id.blank?
         messagea += "Warning: line #{num} Civil Parish #{record[:civil_parish]} does not link to a place.<br>"
         record[:warning_messages] += messagea
