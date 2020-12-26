@@ -279,7 +279,7 @@ class Freecen2Place
   end
 
   def approve
-    update_attributes(:error_flag => nil, :standard_place_name => Freecen2Place.standard_name(place_name))
+    update_attributes(:error_flag => nil, :standard_place_name => Freecen2Place.standard_place(place_name))
   end
 
   def change_name(param)
@@ -289,7 +289,7 @@ class Freecen2Place
 
     unless old_place_name == place_name
       save_to_original
-      update(place_name: place_name, standard_place_name: Freecen2Place.standard_name(place_name))
+      update(place_name: place_name, standard_place_name: Freecen2Place.standard_place(place_name))
       return [false, 'Error in save of place; contact the webmaster'] if errors.any?
 
       propogate_place_name_change(old_place_name)

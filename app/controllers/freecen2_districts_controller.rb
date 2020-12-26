@@ -126,7 +126,7 @@ class Freecen2DistrictsController < ApplicationController
 
   def locate
     @type = session[:type]
-    @freecen2_district = Freecen2District.find_by(chapman_code: params[:chapman_code], year: params[:year], standard_name: Freecen2Place.standard_name(params[:name]))
+    @freecen2_district = Freecen2District.find_by(chapman_code: params[:chapman_code], year: params[:year], standard_name: Freecen2Place.standard_place(params[:name]))
     redirect_to freecen2_district_path(@freecen2_district.id, type: @type)
   end
 

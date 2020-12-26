@@ -392,7 +392,7 @@ class FreecenCsvFile
 
   def civil_parishes_have_freecen2_place
     enumeration_districts.each_pair do |civil_parish, _districts|
-      parish = Freecen2CivilParish.find_by(year: year, chapman_code: chapman_code, standard_name: Freecen2Place.standard_name(civil_parish))
+      parish = Freecen2CivilParish.find_by(year: year, chapman_code: chapman_code, standard_name: Freecen2Place.standard_place(civil_parish))
       if parish.present?
         if parish.freecen2_place.present?
           return [true, '']
