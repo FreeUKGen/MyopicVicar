@@ -30,7 +30,7 @@ class Freecen2CivilParishesController < ApplicationController
       @freecen2_civil_parish.freecen2_townships << Freecen2CivilParish.add_township(params) if params[:freecen2_civil_parish][:freecen2_townships_attributes].present?
       @freecen2_civil_parish.freecen2_wards << Freecen2CivilParish.add_ward(params) if params[:freecen2_civil_parish][:freecen2_wards_attributes].present?
       @freecen2_civil_parish.save
-      flash[:notice] = 'The civil place was created'
+      flash[:notice] = 'The civil parish was created'
       redirect_to freecen2_piece_path(@freecen2_piece)
     end
   end
@@ -39,7 +39,7 @@ class Freecen2CivilParishesController < ApplicationController
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No Civil Parish identified') && return if params[:id].blank?
 
     @freecen2_civil_parish = Freecen2CivilParish.find_by(id: params[:id])
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'No civil parish found') && return if @freecen2_civil_parish.blank?
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No Civil Parish found') && return if @freecen2_civil_parish.blank?
     @freecen2_piece = @freecen2_civil_parish.freecen2_piece
 
     success = @freecen2_civil_parish.destroy
@@ -84,7 +84,7 @@ class Freecen2CivilParishesController < ApplicationController
 
     get_user_info_from_userid
     @freecen2_civil_parish = Freecen2CivilParish.find_by(id: params[:id])
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'No civil parish found') && return if @freecen2_civil_parish.blank?
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No Civil Parish found') && return if @freecen2_civil_parish.blank?
 
     redirect_back(fallback_location: new_manage_resource_path, notice: 'Civil parish has csv files; so edit not permitted') && return if @freecen2_civil_parish.freecen2_piece.freecen_csv_files.present?
 
@@ -138,11 +138,11 @@ class Freecen2CivilParishesController < ApplicationController
   end
 
   def new
-    redirect_back(fallback_location: new_manage_resource_path, notice:  'No piece identified') && return if params[:piece].blank?
+    redirect_back(fallback_location: new_manage_resource_path, notice:  'No Piece identified') && return if params[:piece].blank?
 
     get_user_info_from_userid
     @freecen2_piece = Freecen2Piece.find_by(_id: params[:piece])
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'No piece found') && return if @freecen2_piece.blank?
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No Piece found') && return if @freecen2_piece.blank?
 
     @freecen2_place = @freecen2_piece.freecen2_place
     @freecen2_place_name = @freecen2_place.present? ? @freecen2_place.place_name : ''
