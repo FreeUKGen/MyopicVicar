@@ -1,7 +1,11 @@
 module Freecen2PiecesHelper
 
   def tna(number)
-    link_to 'The National Archive', "https://discovery.nationalarchives.gov.uk/browse/r/h/#{number}", target: :_blank, class: 'btn   btn--small', title:'Access to The National Archive'
+    if number.to_s == 'None'
+      "#{number}"
+    else
+      link_to 'The National Archive', "https://discovery.nationalarchives.gov.uk/browse/r/h/#{number}", target: :_blank, class: 'btn   btn--small', title:'Access to The National Archive'
+    end
   end
 
   def district_link(district)

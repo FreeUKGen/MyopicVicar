@@ -251,7 +251,39 @@ class Freecen2Place
       [place_alternate_valid, place_id]
     end
 
+    def place_names(chapman_code)
+      placenames = Freecen2Place.where(chapman_code: chapman_code, disabled: 'false', :error_flag.ne => "Place name is not approved").all.order_by(place_name: 1)
+      places = []
+      placenames.each do |placename|
+        places << placename.place_name if placename.present?
+      end
+      places
+    end
 
+    def place_names_plus_alternates(chapman_code)
+      placenames = Freecen2Place.where(chapman_code: chapman_code, disabled: 'false', :error_flag.ne => "Place name is not approved").all.order_by(place_name: 1)
+      places = []
+      placenames.each do |placename|
+        places << placename.place_name if placename.present?
+        placename.alternate_freecen2_place_names.each do |alternate_name|
+          places << alternate_name.alternate_name
+        end
+      end
+      places = places.uniq.sort
+    end
+
+    def place_id(chapman_code, place_name)
+      return '' if chapman_code.blank? || place_name.blank?
+
+      standard_place_name = Freecen2Place.standard_place(place_name)
+      place = Freecen2Place.find_by(chapman_code: chapman_code, standard_place_name: standard_place_name)
+      return place.id if place.present?
+
+      place = Freecen2Place.find_by("alternate_freecen2_place_names.standard_alternate_name" => standard_place_name)
+      return place.id if place.present?
+
+      ''
+    end
   end
 
 

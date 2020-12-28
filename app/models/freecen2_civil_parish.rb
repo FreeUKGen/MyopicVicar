@@ -76,7 +76,7 @@ class Freecen2CivilParish
       new_civil_parish_params[:suffix] = params['suffix']
       new_civil_parish_params[:note] = params['note']
       new_civil_parish_params[:prenote] = params['prenote']
-      new_civil_parish_params[:freecen2_place_id] = place.id if place.present?
+      new_civil_parish_params[:freecen2_place_id] = Freecen2Place.place_id(params['chapman_code'], params[:freecen2_place_id])
       new_civil_parish_params
     end
 
@@ -164,6 +164,14 @@ class Freecen2CivilParish
     tna.save
   end
 
+  def civil_parish_names
+    civil_parishes = Freecen2CivilParish.chapman_code(chapman_code).all.order_by(name: 1)
+    @civil_parishes = []
+    civil_parishes.each do |civil_parish|
+      @civil_parishes << civil_parish.name
+    end
+    @civil_parishes = @civil_parishes.uniq.sort
+  end
 
   def do_we_update_place?(file)
     place = freecen2_place.reload
@@ -185,41 +193,6 @@ class Freecen2CivilParish
     success = place.save
     message = 'Failed to update place' unless success
     [success, message]
-  end
-
-  def civil_parish_names
-    civil_parishes = Freecen2CivilParish.chapman_code(chapman_code).all.order_by(name: 1)
-    @civil_parishes = []
-    civil_parishes.each do |civil_parish|
-      @civil_parishes << civil_parish.name
-    end
-    @civil_parishes = @civil_parishes.uniq.sort
-  end
-
-  def civil_parish_place_names
-    places = Freecen2Place.chapman_code(chapman_code).all.order_by(place_name: 1)
-    @places = []
-    places.each do |place|
-      @places << place.place_name
-      place.alternate_freecen2_place_names.each do |alternate_name|
-        @places << alternate_name.alternate_name
-      end
-    end
-    @places = @places.uniq.sort
-  end
-
-  def civil_parish_place_id(place_name)
-    standard_place_name = Freecen2Place.standard_place(place_name)
-    place = Freecen2Place.find_by(chapman_code: chapman_code, standard_place_name: standard_place_name) if chapman_code.present?
-    if place.present?
-      return place.id
-    else
-      place = Freecen2Place.find_by("alternate_freecen2_place_names.standard_alternate_name" => standard_place_name)
-      if place.present?
-        return place.id
-      end
-      ''
-    end
   end
 
   def propagate_freecen2_place(old_place, old_name)

@@ -26,8 +26,6 @@ class Freecen2CivilParishesController < ApplicationController
       @freecen2_piece = @freecen2_civil_parish.freecen2_piece
       civil_parish_names = @freecen2_piece.add_update_civil_parish_list
       @freecen2_piece.update(civil_parish_names: civil_parish_names)
-      p  params[:freecen2_civil_parish][:freecen2_hamlets_attributes]
-      p params[:freecen2_civil_parish][:freecen2_hamlets_attributes].present?
       @freecen2_civil_parish.freecen2_hamlets << Freecen2CivilParish.add_hamlet(params) if params[:freecen2_civil_parish][:freecen2_hamlets_attributes].present?
       @freecen2_civil_parish.freecen2_townships << Freecen2CivilParish.add_township(params) if params[:freecen2_civil_parish][:freecen2_townships_attributes].present?
       @freecen2_civil_parish.freecen2_wards << Freecen2CivilParish.add_ward(params) if params[:freecen2_civil_parish][:freecen2_wards_attributes].present?
@@ -35,8 +33,8 @@ class Freecen2CivilParishesController < ApplicationController
       flash[:notice] = 'The civil place was created'
       redirect_to freecen2_piece_path(@freecen2_piece)
     end
-
   end
+
   def destroy
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No Civil Parish identified') && return if params[:id].blank?
 
@@ -72,7 +70,7 @@ class Freecen2CivilParishesController < ApplicationController
     @chapman_code = @freecen2_civil_parish.chapman_code
     @freecen2_piece = @freecen2_civil_parish.piece_name
     @freecen2_civil_parishes = @freecen2_civil_parish.civil_parish_names
-    @places = @freecen2_civil_parish.civil_parish_place_names
+    @places = Freecen2Place.place_names_plus_alternates(@chapman_code)
     session[:freecen2_civil_parish] = @freecen2_civil_parish.name
 
     @freecen2_civil_parish.freecen2_hamlets.build
@@ -151,10 +149,11 @@ class Freecen2CivilParishesController < ApplicationController
     @chapman_code = @freecen2_piece.chapman_code
     @year = @freecen2_piece.year
     @freecen2_civil_parish = Freecen2CivilParish.new(freecen2_piece_id: @freecen2_piece.id, chapman_code: @chapman_code, year: @year, freecen2_place_id: @freecen2_place)
-    @places = @freecen2_civil_parish.civil_parish_place_names
+    @places = Freecen2Place.place_names_plus_alternates(@chapman_code)
     @freecen2_civil_parish.freecen2_hamlets.build
     @freecen2_civil_parish.freecen2_townships.build
     @freecen2_civil_parish.freecen2_wards.build
+    session[:type] = session[:type] == 'district_year_index' ? 'district_year_index' : 'piece_year_index'
     @type = params[:type]
   end
 
@@ -221,7 +220,7 @@ class Freecen2CivilParishesController < ApplicationController
     else
       old_freecen2_place = @freecen2_civil_parish.freecen2_place_id
       old_civil_parish_name = @freecen2_civil_parish.name
-      params[:freecen2_civil_parish][:freecen2_place_id] = @freecen2_civil_parish.civil_parish_place_id(params[:freecen2_civil_parish][:freecen2_place_id])
+      params[:freecen2_civil_parish][:freecen2_place_id] = Freecen2Place.place_id( @freecen2_civil_parish.chapman_code, params[:freecen2_civil_parish][:freecen2_place_id])
       @type = session[:type]
       params[:freecen2_civil_parish].delete :type
 

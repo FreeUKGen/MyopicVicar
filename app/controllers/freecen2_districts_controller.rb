@@ -44,6 +44,21 @@ class Freecen2DistrictsController < ApplicationController
     end
   end
 
+  def create
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No information in the creation') && return if params[:freecen2_district].blank?
+
+    params[:freecen2_district][:freecen2_place_id] = Freecen2Place.place_id(params[:freecen2_district][:chapman_code], params[:freecen2_district][:freecen2_place_id])
+    @freecen2_district = Freecen2District.new(freecen2_district_params)
+    @freecen2_district.save
+    if @freecen2_district.errors.any?
+      redirect_back(fallback_location: new_manage_resource_path, notice: "'There was an error while saving the new piece' #{@freecen2_district.errors.full_messages}") && return
+    else
+      @freecen2_district.reload
+      flash[:notice] = 'The piece was created'
+      redirect_to freecen2_district_path(@freecen2_district)
+    end
+  end
+
   def destroy
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No district identified') && return if params[:id].blank?
 
@@ -91,8 +106,8 @@ class Freecen2DistrictsController < ApplicationController
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No district found') && return if @freecen2_district.blank?
 
     logger.warn("FREECEN:CSV_PROCESSING: Starting forced deletion rake task for #{@freecen2_district.name}")
-    pid1 =  spawn("rake foo:delete_incorrect_tna_district[#{params[:id]}]")
-    flash[:notice]  = "The civil parishes, pieces and district for #{@freecen2_district.name} are being deleted. You will receive an email when the task has been completed."
+    pid1 = spawn("rake foo:delete_incorrect_tna_district[#{params[:id]}]")
+    flash[:notice] = "The civil parishes, pieces and district for #{@freecen2_district.name} are being deleted. You will receive an email when the task has been completed."
     logger.warn("FREECEN:CSV_PROCESSING: rake task for #{pid1}")
 
     redirect_to freecen2_districts_path
@@ -128,6 +143,18 @@ class Freecen2DistrictsController < ApplicationController
     @type = session[:type]
     @freecen2_district = Freecen2District.find_by(chapman_code: params[:chapman_code], year: params[:year], standard_name: Freecen2Place.standard_place(params[:name]))
     redirect_to freecen2_district_path(@freecen2_district.id, type: @type)
+  end
+
+  def new
+    @year = params[:year]
+    @chapman_code = params[:chapman_code]
+    redirect_back(fallback_location: new_manage_resource_path, notice:  'No Chapman code or year identified') && return if @chapman_code.blank? || @year.blank?
+
+    get_user_info_from_userid
+    @places = Freecen2Place.place_names_plus_alternates(@chapman_code)
+    @freecen2_district = Freecen2District.new(chapman_code: params[:chapman_code], year: params[:year])
+    session[:type] = 'district_year_index'
+    @type = session[:type]
   end
 
   def missing_place

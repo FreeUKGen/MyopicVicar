@@ -178,11 +178,7 @@ class Freecen2PlacesController < ApplicationController
     end
     @counties = ChapmanCode.keys.sort
     @counties -= Freecen::UNNEEDED_COUNTIES
-    placenames = Freecen2Place.where(:chapman_code => session[:chapman_code], :disabled => 'false', :error_flag.ne => "Place name is not approved").all.order_by(place_name: 1)
-    @placenames = []
-    placenames.each do |placename|
-      @placenames << placename.place_name
-    end
+    @placenames = Freecen2Place.place_names(session[:chapman_code])
   end
 
   def record_cannot_be_deleted

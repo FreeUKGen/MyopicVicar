@@ -285,15 +285,15 @@ MyopicVicar::Application.routes.draw do
   get 'freecen2_pieces/full_index', to: 'freecen2_pieces#full_index', as: :full_index_freecen2_pieces
   get 'freecen2_pieces/district_place_name', to: 'freecen2_pieces#district_place_name', as: :district_place_name_freecen2_pieces
   get 'freecen2_pieces/missing_place', to: 'freecen2_pieces#missing_place', as: :missing_place_freecen2_pieces
-  get 'freecen2_pieces/new', :to => 'freecen2_pieces#new', :as => :piece_new_freecen2_piece
-  get 'freecen2_pieces/:chapman_code/:year/new', :to => 'freecen2_pieces#new', :as => :new_freecen2_piece
+  #get 'freecen2_pieces/new', :to => 'freecen2_pieces#new', :as => :piece_new_freecen2_piece
+  #get 'freecen2_pieces/:chapman_code/:year/new', :to => 'freecen2_pieces#new', :as => :new_freecen2_piece
   get 'freecen2_pieces/chapman_year_index', :to => 'freecen2_pieces#chapman_year_index', :as => :freecen2_pieces_chapman_year_index
   get 'freecen2_pieces/index_district', :to => 'freecen2_pieces#index_district', :as => :freecen2_pieces_district_index
   get 'freecen2_pieces/:id/edit_name', to: 'freecen2_pieces#edit_name', as: :edit_name_freecen2_piece
   get 'freecen2_pieces/:id/refresh_civil_parish_list', to: 'freecen2_pieces#refresh_civil_parish_list', as: :refresh_civil_parish_list_freecen2_piece
   get 'freecen2_pieces/index_district_year', :to => 'freecen2_pieces#index_district_year', :as => :freecen2_pieces_district_year_index
   get 'freecen2_pieces/:year/select_new_county', :to => 'freecen2_pieces#select_new_county', :as => :select_new_county_freecen2_piece
-  resources :freecen2_pieces, except: :new
+  resources :freecen2_pieces
 
   get 'freecen2_civil_parishes/selection_by_name', to: 'freecen2_civil_parishes#selection_by_name', as: :selection_by_name_freecen2_civil_parishes
   get 'freecen2_civil_parishes/selection_by_year', to: 'freecen2_civil_parishes#selection_by_year', as: :selection_by_year_freecen2_civil_parishes

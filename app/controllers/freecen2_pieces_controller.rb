@@ -11,6 +11,24 @@ class Freecen2PiecesController < ApplicationController
     session[:type] = 'piece_year_index'
   end
 
+  def create
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No information in the creation') && return if params[:freecen2_piece].blank?
+
+    @new_freecen2_piece_params = Freecen2Piece.transform_piece_params(params[:freecen2_piece])
+    @freecen2_piece = Freecen2Piece.new(@new_freecen2_piece_params)
+    @freecen2_piece.save
+    if @freecen2_piece.errors.any?
+      redirect_back(fallback_location: new_manage_resource_path, notice: "'There was an error while saving the new piece' #{@freecen2_piece.errors.full_messages}") && return
+    else
+      @freecen2_piece.reload
+      @freecen2_district = @freecen2_piece.freecen2_district
+      civil_parish_names = @freecen2_piece.add_update_civil_parish_list
+      @freecen2_piece.update(civil_parish_names: civil_parish_names)
+      flash[:notice] = 'The piece was created'
+      redirect_to freecen2_piece_path(@freecen2_piece)
+    end
+  end
+
   def destroy
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No district identified') && return if params[:id].blank?
 
@@ -42,7 +60,7 @@ class Freecen2PiecesController < ApplicationController
     @freecen2_place = @freecen2_piece.freecen2_place
     @freecen2_place = @freecen2_place.present? ? @freecen2_place.place_name : ''
     @freecen2_pieces = @freecen2_piece.piece_names
-    @places = @freecen2_piece.piece_place_names
+    @places = Freecen2Place.place_names_plus_alternates(@chapman_code)
     @type = session[:type]
   end
 
@@ -114,6 +132,23 @@ class Freecen2PiecesController < ApplicationController
     @chapman_code = session[:chapman_code]
     @freecen2_pieces = Freecen2Piece.missing_places(@chapman_code)
     session[:type] = 'missing_piece_place_index'
+  end
+
+  def new
+    redirect_back(fallback_location: new_manage_resource_path, notice:  'No district identified') && return if params[:district].blank?
+
+    get_user_info_from_userid
+    @freecen2_district = Freecen2District.find_by(_id: params[:district])
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No district found') && return if @freecen2_district.blank?
+
+    @freecen2_place = @freecen2_district.freecen2_place
+    @freecen2_place_name = @freecen2_place.present? ? @freecen2_place.place_name : ''
+    @chapman_code = @freecen2_district.chapman_code
+    @year = @freecen2_district.year
+    @places = Freecen2Place.place_names_plus_alternates(@chapman_code)
+    @freecen2_piece = Freecen2Piece.new(freecen2_district_id: @freecen2_district.id, chapman_code: @chapman_code, year: @year, freecen2_place_id: @freecen2_place)
+    session[:type] = 'district_year_index'
+    @type = params[:type]
   end
 
   def refresh_civil_parish_list
@@ -214,7 +249,7 @@ class Freecen2PiecesController < ApplicationController
     else
       old_freecen2_place = @freecen2_piece.freecen2_place_id
       old_piece_name = @freecen2_piece.name
-      params[:freecen2_piece][:freecen2_place_id] = @freecen2_piece.piece_place_id(params[:freecen2_piece][:freecen2_place_id])
+      params[:freecen2_piece][:freecen2_place_id] = Freecen2Place.place_id(@freecen2_piece.chapman_code, params[:freecen2_piece][:freecen2_place_id])
       @type = session[:type]
       params[:freecen2_piece].delete :type
 

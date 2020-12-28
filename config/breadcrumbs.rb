@@ -1554,6 +1554,11 @@ crumb :freecen2_district_select do |county|
   parent :freecen2_districts, county
 end
 
+crumb :new_freecen2_district do |county, year|
+  link 'Create FreeCen2 District'
+  parent :freecen2_districts_chapman, county, year
+end
+
 crumb :freecen2_districts_chapman do |county, year|
   link 'FreeCen2 Districts by year', freecen2_districts_chapman_year_index_path(chapman_code: county, year: year, anchor: session[:freecen2_district])
   parent :freecen2_districts, county, year
@@ -1638,6 +1643,11 @@ end
 crumb :freecen2_piece_select do |county|
   link 'FreeCen2 Piece Selection'
   parent :freecen2_pieces, county
+end
+
+crumb :new_freecen2_piece do |district, county, year|
+  link 'Create FreeCen2 Piece'
+  parent :show_freecen2_district, district, county, year
 end
 
 crumb :freecen2_pieces_chapman do |county, year|
@@ -1782,6 +1792,7 @@ crumb :new_freecen2_civil_parish do |file, county, year|
   link 'Create FreeCen2 Civil Parish'
   parent :show_freecen2_piece, file, county, year
 end
+
 crumb :freecen2_civil_parishes_chapman do |county, year|
   link 'FreeCen2 Civil Parishes by year', freecen2_civil_parishes_chapman_year_index_path(chapman_code: county, year: year, anchor: session[:freecen2_civil_parish])
   parent :freecen2_civil_parishes, county

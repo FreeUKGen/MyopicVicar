@@ -195,6 +195,23 @@ class Freecen2Piece
       end
       pieces
     end
+
+    def transform_piece_params(params)
+      return params if params.blank?
+
+      new_piece_params = {}
+      new_piece_params[:chapman_code] = params['chapman_code']
+      new_piece_params[:year] = params['year']
+      new_piece_params[:reason_changed] = params['reason_changed']
+      new_piece_params[:freecen2_district_id] = params['freecen2_district_id']
+      new_piece_params[:name] = params['name']
+      new_piece_params[:number] = params['number']
+      new_piece_params[:code] = params['code']
+      new_piece_params[:notes] = params['notes']
+      new_piece_params[:prenote] = params['prenote']
+      new_piece_params[:freecen2_place_id] = Freecen2Place.place_id(params['chapman_code'], params[:freecen2_place_id])
+      new_piece_params
+    end
   end
 
   # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::Instance methods:::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -256,32 +273,6 @@ class Freecen2Piece
       @pieces << piece.name
     end
     @pieces = @pieces.uniq.sort
-  end
-
-  def piece_place_names
-    places = Freecen2Place.chapman_code(chapman_code).all.order_by(place_name: 1)
-    @places = []
-    places.each do |place|
-      @places << place.place_name
-      place.alternate_freecen2_place_names.each do |alternate_name|
-        @places << alternate_name.alternate_name
-      end
-    end
-    @places = @places.uniq.sort
-  end
-
-  def piece_place_id(place_name)
-    standard_place_name = Freecen2Place.standard_place(place_name)
-    place = Freecen2Place.find_by(chapman_code: chapman_code, standard_place_name: standard_place_name) if chapman_code.present?
-    if place.present?
-      return place.id
-    else
-      place = Freecen2Place.find_by("alternate_freecen2_place_names.standard_alternate_name" => standard_place_name)
-      if place.present?
-        return place.id
-      end
-      ''
-    end
   end
 
   def propagate_freecen2_place(old_place, old_name)
