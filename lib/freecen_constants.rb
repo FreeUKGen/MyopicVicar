@@ -82,13 +82,20 @@ module Freecen
   LOCATION = %w[enumeration_district civil_parish ecclesiastical_parish where_census_taken ward parliamentary_constituency poor_law_union
                        police_district sanitary_district special_water_district scavenging_district special_lighting_district school_board
                        location_flag].freeze
+
+  LOCATION_FOLIO = %w[enumeration_district civil_parish ecclesiastical_parish where_census_taken ward parliamentary_constituency poor_law_union
+                       police_district sanitary_district special_water_district scavenging_district special_lighting_district school_board
+                       location_flag folio_number].freeze
+
   LOCATION_PAGE = %w[enumeration_district civil_parish ecclesiastical_parish where_census_taken ward parliamentary_constituency poor_law_union
                        police_district sanitary_district special_water_district scavenging_district special_lighting_district school_board
                        location_flag folio_number page_number].freeze
+
   LOCATION_DWELLING = %w[enumeration_district civil_parish ecclesiastical_parish where_census_taken ward parliamentary_constituency poor_law_union
                        police_district sanitary_district special_water_district scavenging_district special_lighting_district school_board
                        location_flag folio_number page_number schedule_number uninhabited_flag house_number house_or_street_name address_flag
                        walls roof_type rooms rooms_with_windows class_of_house rooms_with_windows].freeze
+
   HOUSEHOLD = %w[folio_number page_number schedule_number uninhabited_flag house_number house_or_street_name address_flag].freeze
 
   IRE_HOUSEHOLD = %w[schedule_number uninhabited_flag house_number house_or_street_name walls roof_type rooms

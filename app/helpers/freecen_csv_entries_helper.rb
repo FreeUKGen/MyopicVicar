@@ -59,4 +59,8 @@ module FreecenCsvEntriesHelper
         title: 'Force review of this entry even though accepted or true', data: { confirm: 'Are you sure you want to force a reprocessing of this entry' }
     end
   end
+
+  def folio(entry)
+    Freecen::LOCATION_FOLIO.include?(entry.data_transition) ? entry.folio_number : ''
+  end
 end

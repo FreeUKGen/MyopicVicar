@@ -1028,8 +1028,10 @@ class FreecenCsvFile
     field_specification.values.each do |field|
       if Freecen::LOCATION.include?(rec[:data_transition])
         @entry = rec[field]
-      elsif Freecen::LOCATION_PAGE.include?(rec[:data_transition])
+      elsif Freecen::LOCATION_FOLIO.include?(rec[:data_transition])
         @entry = Freecen::LOCATION.include?(field) ? nil : rec[field]
+      elsif Freecen::LOCATION_PAGE.include?(rec[:data_transition])
+        @entry = Freecen::LOCATION_FOLIO.include?(field) ? nil : rec[field]
       elsif Freecen::LOCATION_DWELLING.include?(rec[:data_transition])
         @entry = Freecen::LOCATION_PAGE.include?(field) ? nil : rec[field]
       else
