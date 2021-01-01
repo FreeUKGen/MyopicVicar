@@ -247,7 +247,8 @@ class Freecen2DistrictsController < ApplicationController
         @freecen2_district.propagate(@old_freecen2_district_id, @old_freecen2_district_name, @old_place, merge_district)
       end
     end
-    redirect_to freecen2_district_path(merge_district.id, type: @type)
+    redirect_to freecen2_district_path(@freecen2_district.id, type: @type) if merge_district.blank?
+    redirect_to freecen2_district_path(merge_district.id, type: @type) if merge_district.present?
   end
 
   private
