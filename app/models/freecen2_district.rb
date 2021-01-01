@@ -165,7 +165,7 @@ class Freecen2District
     freecen2_pieces.each do |piece|
       piece.update_attribute(:freecen2_district_id, merge_district.id) if merge_district.present? && merge_district.id != old_district_id
     end
-    old_district = Freecen2Piece.find_by(_id: old_district_id)
+    old_district = Freecen2District.find_by(_id: old_district_id)
     old_district.destroy if merge_district.present? && merge_district.id != old_district.id
 
     Freecen2District.where(chapman_code: chapman_code, name: old_district_name).each do |district|
