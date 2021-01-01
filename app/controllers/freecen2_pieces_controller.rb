@@ -5,7 +5,7 @@ class Freecen2PiecesController < ApplicationController
     get_user_info_from_userid
     @chapman_code = session[:chapman_code]
     @year = params[:year]
-    @freecen2_pieces = Freecen2Piece.chapman_code(@chapman_code).year(@year).order_by(year: 1, number: 1, name: 1).all
+    @freecen2_pieces = Freecen2Piece.chapman_code(@chapman_code).year(@year).order_by(year: 1, name: 1, number: 1).all
     session.delete(:freecen2_civil_parish)
     session.delete(:current_page_civil_parish)
     session[:type] = 'piece_year_index'
