@@ -224,8 +224,12 @@ class Freecen2DistrictsController < ApplicationController
         redirect_to freecen2_district_path(@freecen2_district, type: @type)
       end
     else
-      old_freecen2_place = @freecen2_district.freecen2_place_id
-      old_district_name = @freecen2_district.name
+      @old_district = @freecen2_district
+      @old_freecen2_district_id = @freecen2_district.id
+      @old_freecen2_district_name = @freecen2_district.name
+      @old_place = @freecen2_district.freecen2_place_id
+      merge_district = Freecen2District.find_by(name: params[:freecen2_district][:name], chapman_code: @freecen2_district.chapman_code, year: @freecen2_district.year)
+
       params[:freecen2_district][:freecen2_place_id] = @freecen2_district.district_place_id(params[:freecen2_district][:freecen2_place_id])
 
       params[:freecen2_district].delete :type
@@ -240,10 +244,10 @@ class Freecen2DistrictsController < ApplicationController
         get_user_info_from_userid
         @freecen2_district.update_tna_change_log(@user_userid)
         @freecen2_district.reload
-        @freecen2_district.propagate_freecen2_place(old_freecen2_place, old_district_name)
-        redirect_to freecen2_district_path(@freecen2_district, type: @type)
+        @freecen2_district.propagate(@old_freecen2_district_id, @old_freecen2_district_name, @old_place, merge_district)
       end
     end
+    redirect_to freecen2_district_path(merge_district.id, type: @type)
   end
 
   private

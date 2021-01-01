@@ -53,10 +53,10 @@ class Freecen2Piece
   field :num_individuals, type: Integer, default: 0
 
   belongs_to :freecen2_district, optional: true, index: true
+  belongs_to :freecen2_place, optional: true, index: true
 
   delegate :name, :tnaid, :code, :note, to: :freecen2_district, prefix: :district, allow_nil: true
 
-  belongs_to :freecen2_place, optional: true, index: true
   has_many :freecen2_civil_parishes, dependent: :restrict_with_error
   has_many :freecen_dwellings, dependent: :restrict_with_error
   has_many :freecen_csv_files, dependent: :restrict_with_error
@@ -275,30 +275,18 @@ class Freecen2Piece
     @pieces = @pieces.uniq.sort
   end
 
-  def propagate_freecen2_place(old_place, old_name)
+  def propagate(old_piece_id, old_piece_name, old_place, merge_piece)
     new_place = freecen2_place_id
-    new_name = name
-    return if (new_place.to_s == old_place.to_s) && (new_name == old_name)
-
-    Freecen2Piece.where(chapman_code: chapman_code, name: old_name).each do |piece|
-      if piece.id != _id
-        piece.update_attributes(name: new_name)
-      end
-      old_piece_place = piece.freecen2_place_id
-      piece.update_attributes(freecen2_place_id: new_place) if old_piece_place.blank? || old_piece_place.to_s == old_place.to_s
+    update_attribute(:_id, merge_piece.id) if merge_piece.present? && merge_piece.id != old_piece_id
+    old_piece = Freecen2Piece.find_by(_id: old_piece_id)
+    Freecen2Piece.where(chapman_code: chapman_code, freecen2_district_id: old_piece.freecen2_district_id, name: old_piece_name, year: year).each do |piece|
+      piece.update_attributes(freecen2_place_id: new_place, name: name)
       piece.freecen2_civil_parishes.each do |civil_parish|
         old_civil_parish_place = civil_parish.freecen2_place_id
         civil_parish.update_attributes(freecen2_place_id: new_place) if old_civil_parish_place.blank? || old_civil_parish_place.to_s == old_place.to_s
       end
     end
-    Freecen2Piece.where(chapman_code: chapman_code, name: name).each do |piece|
-      old_place_name = piece.freecen2_place_id
-      piece.update_attributes(freecen2_place_id: new_place) if old_place_name.blank? || old_place_name.to_s == old_place.to_s
-      piece.freecen2_civil_parishes.each do |civil_parish|
-        old_civil_parish_place = civil_parish.freecen2_place_id
-        civil_parish.update_attributes(freecen2_place_id: new_place) if old_civil_parish_place.blank? || old_civil_parish_place.to_s == old_place.to_s
-      end
-    end
+    old_piece.destroy  if merge_piece.present? && merge_piece.id != old_piece.id
   end
 
   def update_freecen2_place

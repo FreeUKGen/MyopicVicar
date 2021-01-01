@@ -218,9 +218,13 @@ class Freecen2CivilParishesController < ApplicationController
         redirect_to freecen2_civil_parish_path(@freecen2_civil_parish, type: @type)
       end
     else
-      old_freecen2_place = @freecen2_civil_parish.freecen2_place_id
-      old_civil_parish_name = @freecen2_civil_parish.name
-      params[:freecen2_civil_parish][:freecen2_place_id] = Freecen2Place.place_id( @freecen2_civil_parish.chapman_code, params[:freecen2_civil_parish][:freecen2_place_id])
+      @old_freecen2_civil_parish_id = @freecen2_civil_parish.id
+      @old_freecen2_civil_parish_name = @freecen2_civil_parish.name
+      @old_place = @freecen2_civil_parish.freecen2_place_id
+
+      merge_civil_parish = Freecen2CivilParish.find_by(name: params[:freecen2_civil_parish][:name], chapman_code: @freecen2_civil_parish.chapman_code, year: @freecen2_civil_parish.year, freecen2_piece_id: @freecen2_piece.freecen2_piece_id)
+
+      params[:freecen2_civil_parish][:freecen2_place_id] = Freecen2Place.place_id(@freecen2_civil_parish.chapman_code, params[:freecen2_civil_parish][:freecen2_place_id])
       @type = session[:type]
       params[:freecen2_civil_parish].delete :type
 
@@ -233,10 +237,10 @@ class Freecen2CivilParishesController < ApplicationController
         get_user_info_from_userid
         @freecen2_civil_parish.update_tna_change_log(@user_userid)
         @freecen2_civil_parish.reload
+        @freecen2_civil_parish.propagate(@old_freecen2_civil_parish_id, @old_freecen2_civil_parish_name, @old_place, merge_civil_parish)
         @freecen2_piece = @freecen2_civil_parish.freecen2_piece
         civil_parish_names = @freecen2_piece.add_update_civil_parish_list
         @freecen2_piece.update(civil_parish_names: civil_parish_names) unless civil_parish_names == @freecen2_piece.civil_parish_names
-        @freecen2_civil_parish.propagate_freecen2_place(old_freecen2_place, old_civil_parish_name)
         redirect_to freecen2_civil_parish_path(@freecen2_civil_parish, type: @type)
       end
     end

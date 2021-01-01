@@ -233,7 +233,7 @@ class Freecen2PiecesController < ApplicationController
   def update
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No information in the update') && return if params[:id].blank? || params[:freecen2_piece].blank?
 
-    @freecen2_piece = Freecen2Piece.where('_id' => params[:id]).first
+    @freecen2_piece = Freecen2Piece.find_by(_id: params[:id])
     redirect_back(fallback_location: new_manage_resource_path, notice: 'Piece not found') && return if @freecen2_piece.blank?
 
     if params[:commit] == 'Submit Name'
@@ -247,12 +247,20 @@ class Freecen2PiecesController < ApplicationController
         redirect_to freecen2_piece_path(@freecen2_piece, type: @type)
       end
     else
-      old_freecen2_place = @freecen2_piece.freecen2_place_id
-      old_piece_name = @freecen2_piece.name
+      p @freecen2_piece
+      @old_freecen2_piece_id = @freecen2_piece.id
+      @old_freecen2_piece_name = @freecen2_piece.name
+      @old_place = @freecen2_piece.freecen2_place_id
+      p @old_freecen2_piece_id
+      p@old_freecen2_piece_name
+      p @old_place
+
+
+      merge_piece = Freecen2Piece.find_by(name: params[:freecen2_piece][:name], chapman_code: @freecen2_piece.chapman_code, year: @freecen2_piece.year, freecen2_district_id: @freecen2_piece.freecen2_district_id)
+      p merge_piece
       params[:freecen2_piece][:freecen2_place_id] = Freecen2Place.place_id(@freecen2_piece.chapman_code, params[:freecen2_piece][:freecen2_place_id])
       @type = session[:type]
       params[:freecen2_piece].delete :type
-
       @freecen2_piece.update(freecen2_piece_params)
       if @freecen2_piece.errors.any?
         flash[:notice] = "The update of the civil parish failed #{@freecen2_piece.errors.full_messages}."
@@ -262,7 +270,7 @@ class Freecen2PiecesController < ApplicationController
         get_user_info_from_userid
         @freecen2_piece.update_tna_change_log(@user_userid)
         @freecen2_piece.reload
-        @freecen2_piece.propagate_freecen2_place(old_freecen2_place, old_piece_name)
+        @freecen2_piece.propagate(@old_freecen2_piece_id, @old_freecen2_piece_name, @old_place, merge_piece)
         redirect_to freecen2_piece_path(@freecen2_piece, type: @type)
       end
     end

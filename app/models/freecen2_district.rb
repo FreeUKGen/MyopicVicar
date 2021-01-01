@@ -160,27 +160,17 @@ class Freecen2District
     @counties
   end
 
-  def propagate_freecen2_place(old_place, old_name)
+  def propagate(old_district_id, old_district_name, old_place, merge_district)
     new_place = freecen2_place_id
-    new_name = name
-    return if (new_place.to_s == old_place.to_s) && (new_name == old_name)
-
-    Freecen2District.where(chapman_code: chapman_code, name: old_name).each do |district|
-      if district.id != _id
-        district.update_attributes(name: new_name)
-      end
-      district.freecen2_pieces.each do |piece|
-        old_piece_place = piece.freecen2_place_id
-        piece.update_attributes(freecen2_place_id: new_place) if old_piece_place.blank? || old_piece_place.to_s == old_place.to_s
-        piece.freecen2_civil_parishes.each do |civil_parish|
-          old_civil_parish_place = civil_parish.freecen2_place_id
-          civil_parish.update_attributes(freecen2_place_id: new_place) if old_civil_parish_place.blank? || old_civil_parish_place.to_s == old_place.to_s
-        end
-      end
+    freecen2_pieces.each do |piece|
+      piece.update_attribute(:freecen2_district_id, merge_district.id) if merge_district.present? && merge_district.id != old_district_id
     end
-    Freecen2District.where(chapman_code: chapman_code, name: name).each do |district|
+    old_district = Freecen2Piece.find_by(_id: old_district_id)
+    old_district.destroy if merge_district.present? && merge_district.id != old_district.id
+
+    Freecen2District.where(chapman_code: chapman_code, name: old_district_name).each do |district|
       old_place_name = district.freecen2_place_id
-      district.update_attributes(freecen2_place_id: new_place) if old_place_name.blank? || old_place_name.to_s == old_place.to_s
+      district.update_attributes(freecen2_place_id: new_place, name: name)
       district.freecen2_pieces.each do |piece|
         old_piece_place = piece.freecen2_place_id
         piece.update_attributes(freecen2_place_id: new_place) if old_piece_place.blank? || old_piece_place.to_s == old_place.to_s
