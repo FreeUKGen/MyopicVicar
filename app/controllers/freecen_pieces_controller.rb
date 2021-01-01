@@ -35,7 +35,7 @@ class FreecenPiecesController < ApplicationController
     get_user_info_from_userid
     @chapman_code = params[:chapman_code]
     @year = params[:year]
-    @freecen_pieces = FreecenPiece.chapman_code(@chapman_code).year(@year).order_by(piece_number: 1)
+    @freecen_pieces = FreecenPiece.chapman_code(@chapman_code).year(@year).order_by(name: 1, number: 1)
   end
 
   def destroy

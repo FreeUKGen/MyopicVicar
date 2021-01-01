@@ -5,8 +5,8 @@
   <table class="table--bordered table--data just--left table--striped">
     <thead >
       <tr>
-        <th class='sticky-header '>Piece Number</th>
         <th class='sticky-header '>Piece name</th>
+        <th class='sticky-header '>Piece Number</th>
         <th class='sticky-header '>District</th>
         <th class='sticky-header '>Civil parishes <br>
           <small>The part in () is the name of any Hamlet, Township, Ward or Place included in the Civil Parish</small></th>
@@ -16,8 +16,8 @@
     <tbody >
       <% @freecen2_pieces.each do |freecen2_piece| %>
         <tr id="<%=freecen2_piece.name%>">
-          <td ><%= freecen2_piece.number %></td>
           <td ><%= freecen2_piece.name %></td>
+          <td ><%= freecen2_piece.number %></td>
           <td ><%= freecen2_piece.district_name%></td>
           <td ><%= freecen2_piece.civil_parish_names %></td>
           <td ><%= link_to 'Show', freecen2_piece_path(freecen2_piece,type: @type) , :class => "btn   btn--small"%>
