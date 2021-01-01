@@ -173,6 +173,7 @@ class Freecen2District
       district.update_attributes(freecen2_place_id: new_place, name: name)
       district.freecen2_pieces.each do |piece|
         old_piece_place = piece.freecen2_place_id
+        piece.update_attribute(:freecen2_district_id, merge_district.id) if merge_district.present? && merge_district.id != old_district_id
         piece.update_attributes(freecen2_place_id: new_place) if old_piece_place.blank? || old_piece_place.to_s == old_place.to_s
         piece.freecen2_civil_parishes.each do |civil_parish|
           old_civil_parish_place = civil_parish.freecen2_place_id

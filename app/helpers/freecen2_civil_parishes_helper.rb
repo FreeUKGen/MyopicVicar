@@ -31,4 +31,15 @@ module Freecen2CivilParishesHelper
     link_to "#{piece.name}", freecen2_piece_path(piece), class: 'btn   btn--small', title:' Displays all of the information about the Sub District (Piece) to which this Civil Parish is linked'
   end
 
+  def civil_district_name(civil_parish)
+    piece = civil_parish.freecen2_piece
+    district = piece.freecen2_district
+    "#{district.name}"
+  end
+
+  def civil_piece_name(civil_parish)
+    piece = civil_parish.freecen2_piece
+    "#{piece.name}"
+  end
+
 end
