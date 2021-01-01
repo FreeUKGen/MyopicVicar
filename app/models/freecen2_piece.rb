@@ -282,7 +282,6 @@ class Freecen2Piece
     Freecen2Piece.where(chapman_code: chapman_code, freecen2_district_id: old_piece.freecen2_district_id, name: old_piece_name, year: year).each do |piece|
       piece.update_attributes(freecen2_place_id: new_place, name: name)
       piece.freecen2_civil_parishes.each do |civil_parish|
-        civil_parish.update_attributes(freecen2_piece_id: merge_piece.id) if merge_piece.present? && merge_piece.id != old_piece_id
         old_civil_parish_place = civil_parish.freecen2_place_id
         civil_parish.update_attributes(freecen2_place_id: new_place) if old_civil_parish_place.blank? || old_civil_parish_place.to_s == old_place.to_s
       end
