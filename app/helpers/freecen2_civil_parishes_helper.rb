@@ -42,4 +42,8 @@ module Freecen2CivilParishesHelper
     "#{piece.name}"
   end
 
+  def civil_piece_number(civil_parish)
+    piece = civil_parish.freecen2_piece
+    "#{piece.number}"
+  end
 end

@@ -7,6 +7,7 @@
         <th class='sticky-header t5'>Year</th>
         <th class='sticky-header t5'>District</th>
         <th class='sticky-header t5'>Piece</th>
+        <th class='sticky-header t5'>Piece number</th>
         <th colspan = "2" class='sticky-header t10'>Actions</th>
       </tr>
     </thead>
@@ -17,6 +18,7 @@
           <td ><%= freecen2_civil_parish.year%></td>
           <td ><%= civil_district_name(freecen2_civil_parish) %></td>
           <td ><%=civil_piece_name(freecen2_civil_parish)%></td>
+          <td ><%=civil_piece_number(freecen2_civil_parish)%></td>
           <td ><%= link_to 'Show',freecen2_civil_parish_path(freecen2_civil_parish, type: @type), :class => "btn   btn--small"%>
             <% if %w[county_coordinator master_county_coordinator data_manager system_administrator].include?(@user.person_role)%>
               <td ><%= link_to 'Edit', edit_freecen2_civil_parish_path(freecen2_civil_parish, type: @type), data: { confirm: 'Are you sure?' }, :class => "btn   btn--small", title: 'Editing is restricted to, coordinators, data managers and system administrators'%></td>
