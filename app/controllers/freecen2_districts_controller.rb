@@ -245,9 +245,10 @@ class Freecen2DistrictsController < ApplicationController
         @freecen2_district.update_tna_change_log(@user_userid)
         @freecen2_district.reload
         @freecen2_district.propagate(@old_freecen2_district_id, @old_freecen2_district_name, @old_place, merge_district)
+        redirect_to freecen2_district_path(@freecen2_district.id, type: @type)
       end
     end
-    redirect_to freecen2_district_path(@freecen2_district.id, type: @type)
+
   end
 
   private

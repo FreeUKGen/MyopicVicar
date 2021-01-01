@@ -247,17 +247,10 @@ class Freecen2PiecesController < ApplicationController
         redirect_to freecen2_piece_path(@freecen2_piece, type: @type)
       end
     else
-      p @freecen2_piece
       @old_freecen2_piece_id = @freecen2_piece.id
       @old_freecen2_piece_name = @freecen2_piece.name
       @old_place = @freecen2_piece.freecen2_place_id
-      p @old_freecen2_piece_id
-      p@old_freecen2_piece_name
-      p @old_place
-
-
       merge_piece = Freecen2Piece.find_by(name: params[:freecen2_piece][:name], chapman_code: @freecen2_piece.chapman_code, year: @freecen2_piece.year, freecen2_district_id: @freecen2_piece.freecen2_district_id)
-      p merge_piece
       params[:freecen2_piece][:freecen2_place_id] = Freecen2Place.place_id(@freecen2_piece.chapman_code, params[:freecen2_piece][:freecen2_place_id])
       @type = session[:type]
       params[:freecen2_piece].delete :type
