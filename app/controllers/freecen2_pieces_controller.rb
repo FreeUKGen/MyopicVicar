@@ -222,7 +222,8 @@ class Freecen2PiecesController < ApplicationController
 
     get_user_info_from_userid
     @freecen2_piece = Freecen2Piece.find_by(id: params[:id])
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'No piece found') && return if @freecen2_piece.blank?
+    flash[:notice] = 'No piece found' if @freecen2_piece.blank?
+    redirect_to new_manage_resource_path && return if @freecen2_piece.blank?
 
     @place = @freecen2_piece.freecen2_place
     @chapman_code = session[:chapman_code]
@@ -264,7 +265,8 @@ class Freecen2PiecesController < ApplicationController
         @freecen2_piece.update_tna_change_log(@user_userid)
         @freecen2_piece.reload
         @freecen2_piece.propagate(@old_freecen2_piece_id, @old_freecen2_piece_name, @old_place, merge_piece)
-        redirect_to freecen2_piece_path(@freecen2_piece, type: @type)
+        piece = @freecen2_piece.present? ? @freecen2_piece.id : merge_piece.id
+        redirect_to freecen2_piece_path(piece, type: @type)
       end
     end
   end

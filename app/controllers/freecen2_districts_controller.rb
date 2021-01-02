@@ -196,7 +196,8 @@ class Freecen2DistrictsController < ApplicationController
     @type = session[:type]
     get_user_info_from_userid
     @freecen2_district = Freecen2District.find_by(id: params[:id])
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'No District found') && return if @freecen2_district.blank?
+    flash[:notice] = 'No District found' if @freecen2_district.blank?
+    redirect_to new_manage_resource_path && return if @freecen2_district.blank?
 
     @freecen2_pieces_name = @freecen2_district.freecen2_pieces_name
     @place = @freecen2_district.freecen2_place
@@ -245,7 +246,8 @@ class Freecen2DistrictsController < ApplicationController
         @freecen2_district.update_tna_change_log(@user_userid)
         @freecen2_district.reload
         @freecen2_district.propagate(@old_freecen2_district_id, @old_freecen2_district_name, @old_place, merge_district)
-        redirect_to freecen2_district_path(@freecen2_district.id, type: @type)
+        district = merge_district.present? ? merge_district.id : @freecen2_district.id
+        redirect_to freecen2_district_path(district, type: @type)
       end
     end
 

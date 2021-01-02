@@ -187,7 +187,8 @@ class Freecen2CivilParishesController < ApplicationController
 
     get_user_info_from_userid
     @freecen2_civil_parish = Freecen2CivilParish.find_by(id: params[:id])
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'No civil parish found') && return if @freecen2_civil_parish.blank?
+    flash[:notice] = 'No civil parish found' if @freecen2_civil_parish.blank?
+    redirect_to new_manage_resource_path && return if @freecen2_civil_parish.blank?
 
     session[:freecen2_civil_parish] = @freecen2_civil_parish.name
     @place = @freecen2_civil_parish.freecen2_place
@@ -241,7 +242,8 @@ class Freecen2CivilParishesController < ApplicationController
         @freecen2_piece = @freecen2_civil_parish.freecen2_piece
         civil_parish_names = @freecen2_piece.add_update_civil_parish_list
         @freecen2_piece.update(civil_parish_names: civil_parish_names) unless civil_parish_names == @freecen2_piece.civil_parish_names
-        redirect_to freecen2_civil_parish_path(@freecen2_civil_parish, type: @type)
+        parish = @freecen2_civil_parish.present? ? @freecen2_civil_parish.id : merge_civil_parish.id
+        redirect_to freecen2_civil_parish_path(parish, type: @type)
       end
     end
   end
