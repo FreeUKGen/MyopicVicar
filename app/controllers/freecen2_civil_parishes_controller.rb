@@ -223,7 +223,7 @@ class Freecen2CivilParishesController < ApplicationController
       @old_freecen2_civil_parish_name = @freecen2_civil_parish.name
       @old_place = @freecen2_civil_parish.freecen2_place_id
 
-      merge_civil_parish = Freecen2CivilParish.find_by(name: params[:freecen2_civil_parish][:name], chapman_code: @freecen2_civil_parish.chapman_code, year: @freecen2_civil_parish.year, freecen2_piece_id: @freecen2_ivil_parish.freecen2_piece_id)
+      merge_civil_parish = Freecen2CivilParish.find_by(name: params[:freecen2_civil_parish][:name], chapman_code: @freecen2_civil_parish.chapman_code, year: @freecen2_civil_parish.year, freecen2_piece_id: @freecen2_civil_parish.freecen2_piece_id)
 
       params[:freecen2_civil_parish][:freecen2_place_id] = Freecen2Place.place_id(@freecen2_civil_parish.chapman_code, params[:freecen2_civil_parish][:freecen2_place_id])
       @type = session[:type]
