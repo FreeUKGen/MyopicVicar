@@ -195,16 +195,16 @@ class Freecen2CivilParish
     [success, message]
   end
 
-  def propagate_freecen2_place(old_civil_parish_id, old_civil_parish_name, old_place, merge_civil_parish)
+  def propagate(old_civil_parish_id, old_civil_parish_name, old_place, merge_civil_parish)
     new_place = freecen2_place_id
     update_attribute(:_id, merge_civil_parish.id) if merge_civil_parish.present? && merge_civil_parish.id != old_civil_parish_id
     old_civil_parish = Freecen2CivilParish.find_by(_id: old_civil_parish_id)
 
-    Freecen2civilParish.where(chapman_code: chapman_code, freecen2_piece_id: old_civil_parish.freecen2_piece_id, name: old_civil_parish_name, year: year).each do |civil_parish|
+    Freecen2CivilParish.where(chapman_code: chapman_code, freecen2_piece_id: old_civil_parish.freecen2_piece_id, name: old_civil_parish_name, year: year).each do |civil_parish|
       old_civil_parish_place = civil_parish.freecen2_place_id
       civil_parish.update_attributes(freecen2_place_id: new_place) if old_civil_parish_place.blank? || old_civil_parish_place.to_s == old_place.to_s
       civil_parish.update_attributes(name: name)
     end
-    old_civil_parish.destroy if merge_piece.present? && merge_piece.id != old_civil_parish_id
+    old_civil_parish.destroy if merge_civil_parish.present? && merge_civil_parish.id != old_civil_parish_id
   end
 end
