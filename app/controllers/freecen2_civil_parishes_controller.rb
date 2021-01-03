@@ -206,17 +206,25 @@ class Freecen2CivilParishesController < ApplicationController
     redirect_back(fallback_location: manage_counties_path, notice: 'Civil Parish not found') && return if @freecen2_civil_parish.blank?
 
     if params[:commit] == 'Submit Name'
-      @freecen2_civil_parish.update_attributes(name: params[:freecen2_civil_parish][:name])
-      if @freecen2_civil_parish.errors.any?
-        flash[:notice] = "The update of the civil parish name failed #{@freecen2_civil_parish.errors.full_messages}."
-        redirect_back(fallback_location: edit_name_freecen2_civil_parish_path(@freecen2_piece, type: @type)) && return
+      redirect_back(fallback_location: manage_counties_path, notice: 'Civil Parish name must not be blank') && return if params[:freecen2_civil_parish][:name].blank?
+
+      proceed = @freecen2_civil_parish.check_new_name(params[:freecen2_civil_parish][:name].strip)
+      if proceed
+        @freecen2_civil_parish.update_attributes(name: params[:freecen2_civil_parish][:name].strip)
+        if @freecen2_civil_parish.errors.any?
+          flash[:notice] = "The update of the civil parish name failed #{@freecen2_civil_parish.errors.full_messages}."
+          redirect_back(fallback_location: edit_name_freecen2_civil_parish_path(@freecen2_piece, type: @type)) && return
+        else
+          @freecen2_piece = @freecen2_civil_parish.freecen2_piece
+          civil_parish_names = @freecen2_piece.add_update_civil_parish_list
+          @freecen2_piece.update(civil_parish_names: civil_parish_names) unless civil_parish_names == @freecen2_piece.civil_parish_names
+          flash[:notice] = 'Update was successful'
+          @type = session[:type]
+          redirect_to freecen2_civil_parish_path(@freecen2_civil_parish, type: @type)
+        end
       else
-        @freecen2_piece = @freecen2_civil_parish.freecen2_piece
-        civil_parish_names = @freecen2_piece.add_update_civil_parish_list
-        @freecen2_piece.update(civil_parish_names: civil_parish_names) unless civil_parish_names == @freecen2_piece.civil_parish_names
-        flash[:notice] = 'Update was successful'
-        @type = session[:type]
-        redirect_to freecen2_civil_parish_path(@freecen2_civil_parish, type: @type)
+        flash[:notice] = 'The new name already exists please use the full edit to combine this civil parish with the existing civil parish of that name if that is what you want to achieve.'
+        redirect_back(fallback_location: edit_name_freecen2_civil_parish_path(@freecen2_civil_parish, type: @type)) && return
       end
     else
       @old_freecen2_civil_parish_id = @freecen2_civil_parish.id

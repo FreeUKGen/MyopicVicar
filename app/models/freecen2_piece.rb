@@ -220,6 +220,11 @@ class Freecen2Piece
     self.standard_name = Freecen2Place.standard_place(name)
   end
 
+  def check_new_name(new_name)
+    result = Freecen2Piece.find_by(chapman_code: chapman_code, year: year, freecen2_district_id: freecen2_district_id, name: new_name).present? ? false : true
+    result
+  end
+
   def copy_to_another_district(chapman_code, new_district_id)
     success = false
     new_piece = Freecen2Piece.new(name: name, chapman_code: chapman_code, tnaid: tnaid, number: number, year: year, code: code, notes: notes, prenote: prenote,
@@ -267,7 +272,7 @@ class Freecen2Piece
   end
 
   def piece_names
-    pieces = Freecen2Piece.chapman_code(chapman_code).all.order_by(name: 1)
+    pieces = Freecen2Piece.where(chapman_code: chapman_code, year: year, freecen2_district_id: freecen2_district_id).all.order_by(name: 1)
     @pieces = []
     pieces.each do |piece|
       @pieces << piece.name

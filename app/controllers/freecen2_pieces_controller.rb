@@ -238,14 +238,22 @@ class Freecen2PiecesController < ApplicationController
     redirect_back(fallback_location: new_manage_resource_path, notice: 'Piece not found') && return if @freecen2_piece.blank?
 
     if params[:commit] == 'Submit Name'
-      @freecen2_piece.update_attributes(name: params[:freecen2_piece][:name])
-      if @freecen2_piece.errors.any?
-        flash[:notice] = "The update of the piece name failed #{@freecen2_piece.errors.full_messages}."
-        redirect_back(fallback_location: edit_name_freecen2_piece_path(@freecen2_piece, type: @type)) && return
+      redirect_back(fallback_location: manage_counties_path, notice: 'Piece name must not be blank') && return if params[:freecen2_piece][:name].blank?
+
+      proceed = @freecen2_piece.check_new_name(params[:freecen2_piece][:name].strip)
+      if proceed
+        @freecen2_piece.update_attributes(name: params[:freecen2_piece][:name].strip)
+        if @freecen2_piece.errors.any?
+          flash[:notice] = "The update of the piece name failed #{@freecen2_piece.errors.full_messages}."
+          redirect_back(fallback_location: edit_name_freecen2_piece_path(@freecen2_piece, type: @type)) && return
+        else
+          flash[:notice] = 'Update was successful'
+          @type = session[:type]
+          redirect_to freecen2_piece_path(@freecen2_piece, type: @type)
+        end
       else
-        flash[:notice] = 'Update was successful'
-        @type = session[:type]
-        redirect_to freecen2_piece_path(@freecen2_piece, type: @type)
+        flash[:notice] = 'The new name already exists please use the full edit to combine this piece with the existing piece of that name if that is what you want to achieve.'
+        redirect_back(fallback_location: edit_name_freecen2_piece_path(@freecen2_piece, type: @type)) && return
       end
     else
       @old_freecen2_piece_id = @freecen2_piece.id

@@ -101,6 +101,11 @@ class Freecen2District
     self.standard_name = Freecen2Place.standard_place(name)
   end
 
+  def check_new_name(new_name)
+    result = Freecen2District.find_by(chapman_code: chapman_code, year: year, name: new_name).present? ? false : true
+    result
+  end
+
   def copy_to_another_county(chapman_code)
     county = County.find_by(chapman_code: chapman_code)
     new_district = Freecen2District.new(chapman_code: chapman_code, year: year, name: name, tnaid: tnaid, type: type, notes: notes, county_id: county.id)
@@ -117,7 +122,7 @@ class Freecen2District
   end
 
   def district_names
-    districts = Freecen2District.chapman_code(chapman_code).all.order_by(place_name: 1)
+    districts = Freecen2District.where(chapman_code: chapman_code, year: year).all.order_by(name: 1)
     @districts = []
     districts.each do |district|
       @districts << district.name
@@ -168,7 +173,7 @@ class Freecen2District
     old_district = Freecen2District.find_by(_id: old_district_id)
     old_district.destroy if merge_district.present? && merge_district.id != old_district.id
 
-    Freecen2District.where(chapman_code: chapman_code, name: old_district_name).each do |district|
+    Freecen2District.where(chapman_code: chapman_code, year: year, name: old_district_name).each do |district|
       old_place_name = district.freecen2_place_id
       district.update_attributes(freecen2_place_id: new_place, name: name)
       district.freecen2_pieces.each do |piece|

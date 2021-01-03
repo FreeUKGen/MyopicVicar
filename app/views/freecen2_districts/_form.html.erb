@@ -1,6 +1,6 @@
 <%= semantic_form_for @freecen2_district, :html => { :class => 'grid'}  do |f| %>
   <%= f.input :reason_changed,:label => 'Reason for making a change or addition',:as => :text, :input_html => {:class => ' simple_form_bgcolour  ',   :placeholder => 'Enter the reason for a change',  :size => '50x5' }%>
-  <%= f.input :name ,  label: 'District name:', selected: @freecen2_district.name, include_blank: false, collection: @districts, input_html: {class: ' simple_form_bgcolour large_selection_field_width', size:3 } if %w[data_manager system_administrator].include?(@user.person_role)%>
+  <%= f.input :name ,  label: 'District name (Allows this District to be merged into another District. If in doubt talk to the data manager):', selected: @freecen2_district.name, include_blank: false, collection: @districts, input_html: {class: ' simple_form_bgcolour large_selection_field_width', size:3 } if %w[data_manager system_administrator].include?(@user.person_role)%>
   <%= f.input :freecen2_place_id,  label: 'Freecen2 Place name:', selected:  @freecen2_place, include_blank: false, collection: @places, input_html: {class: ' simple_form_bgcolour large_selection_field_width', size:5 }%>
   <%= f.input :notes,label: 'TNA Notes',  as: :text, required: false, input_html: {class: ' simple_form_bgcolour  ',   placeholder: @freecen2_district.notes,  size: '50x5' }%>
   <%= f.input :chapman_code,:label => 'Chapman Code', required: false, :input_html => { :disabled => true,:size => 10 }%>

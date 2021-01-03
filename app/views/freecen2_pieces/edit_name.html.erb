@@ -3,7 +3,7 @@
 <%= render 'flash_notice' %>
 <%= semantic_form_for @freecen2_piece, :html => { :class => 'grid'}  do |f| %>
   <%= f.input :reason_changed,:label => 'Reason for making a change or addition',:as => :text, :input_html => {:class => ' simple_form_bgcolour  ',   :placeholder => 'Enter the reason for a change',  :size => '50x5' }%>
-  <%= f.input :name ,  label: 'Piece name:',  input_html: {class: ' simple_form_bgcolour', size:40 }%>
+  <%= f.input :name ,  label: 'Piece name (MUST not be an existing name):',  input_html: {class: ' simple_form_bgcolour', size:40 }%>
   <div  style="text-align: center">
     <%= f.action :submit,  :as => :button,  :label =>  'Submit', :button_html => {name: 'commit', value: 'Submit Name', :class => 'ladda-button' , 'data-style' => 'contract' ,'data-color' => appname_downcase , 'data-size' => 's', 'data-spinner-color' => '#ffffff'  } %>
     <%= f.action  :cancel, as: :link, label: 'Cancel' %>

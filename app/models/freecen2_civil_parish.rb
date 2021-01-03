@@ -120,6 +120,11 @@ class Freecen2CivilParish
     self.standard_name = Freecen2Place.standard_place(name)
   end
 
+  def check_new_name(new_name)
+    result = Freecen2CivilParish.find_by(chapman_code: chapman_code, year: year, freecen2_piece_id: freecen2_piece_id, name: new_name).present? ? false : true
+    result
+  end
+
   def copy_to_another_piece(chapman_code, new_piece_id)
     new_civil_parish = Freecen2CivilParish.new(name: name, chapman_code: chapman_code, year: year, note: note, prenote: prenote, number: number,
                                                suffix: suffix, freecen2_piece_id: new_piece_id)
@@ -165,7 +170,7 @@ class Freecen2CivilParish
   end
 
   def civil_parish_names
-    civil_parishes = Freecen2CivilParish.chapman_code(chapman_code).all.order_by(name: 1)
+    civil_parishes = Freecen2CivilParish.where(chapman_code: chapman_code, year: year, freecen2_piece_id: freecen2_piece_id).all.order_by(name: 1)
     @civil_parishes = []
     civil_parishes.each do |civil_parish|
       @civil_parishes << civil_parish.name

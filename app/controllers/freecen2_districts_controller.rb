@@ -145,6 +145,13 @@ class Freecen2DistrictsController < ApplicationController
     redirect_to freecen2_district_path(@freecen2_district.id, type: @type)
   end
 
+  def missing_place
+    get_user_info_from_userid
+    @chapman_code = session[:chapman_code]
+    @freecen2_districts = Freecen2District.missing_places(@chapman_code)
+    session[:type] = 'missing_district_place_index'
+  end
+
   def new
     @year = params[:year]
     @chapman_code = params[:chapman_code]
@@ -156,14 +163,6 @@ class Freecen2DistrictsController < ApplicationController
     session[:type] = 'district_year_index'
     @type = session[:type]
   end
-
-  def missing_place
-    get_user_info_from_userid
-    @chapman_code = session[:chapman_code]
-    @freecen2_districts = Freecen2District.missing_places(@chapman_code)
-    session[:type] = 'missing_district_place_index'
-  end
-
   def selection_by_name
     @chapman_code = session[:chapman_code]
     get_user_info_from_userid
@@ -215,14 +214,22 @@ class Freecen2DistrictsController < ApplicationController
     redirect_back(fallback_location: manage_counties_path, notice: 'District not found') && return if @freecen2_district.blank?
 
     if params[:commit] == 'Submit Name'
-      @freecen2_district.update_attributes(name: params[:freecen2_district][:name])
-      if @freecen2_district.errors.any?
-        flash[:notice] = "The update of the district name failed #{@freecen2_district.errors.full_messages}."
-        redirect_back(fallback_location: edit_name_freecen2_district_path(@freecen2_district, type: @type)) && return
+      redirect_back(fallback_location: manage_counties_path, notice: 'District name must not be blank') && return if params[:freecen2_district][:name].blank?
+
+      proceed = @freecen2_district.check_new_name(params[:freecen2_district][:name].strip)
+      if proceed
+        @freecen2_district.update_attributes(name: params[:freecen2_district][:name].strip)
+        if @freecen2_district.errors.any?
+          flash[:notice] = "The update of the district name failed #{@freecen2_district.errors.full_messages}."
+          redirect_back(fallback_location: edit_name_freecen2_district_path(@freecen2_district, type: @type)) && return
+        else
+          flash[:notice] = 'Update was successful'
+          @type = session[:type]
+          redirect_to freecen2_district_path(@freecen2_district, type: @type)
+        end
       else
-        flash[:notice] = 'Update was successful'
-        @type = session[:type]
-        redirect_to freecen2_district_path(@freecen2_district, type: @type)
+        flash[:notice] = 'The new name already exists please use the full edit to combine this district with the existing district of that name if that is what you want to achieve.'
+        redirect_back(fallback_location: edit_name_freecen2_district_path(@freecen2_district, type: @type)) && return
       end
     else
       @old_district = @freecen2_district
