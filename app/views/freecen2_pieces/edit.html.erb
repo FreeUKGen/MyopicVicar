@@ -1,7 +1,7 @@
 <% breadcrumb :edit_freecen2_piece, @freecen2_piece.id, @freecen2_piece.chapman_code,  @freecen2_piece.year , @type%>
 <h2 style="text-align: center">Editing FreeCEN Piece:- <%= @freecen2_piece.number%> for <%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>) in <%= @freecen2_piece.year %></h2>
 <%= render 'flash_notice' %>
-<h3 style="text-align: center"> Name changes will normally be performed using the Edit Piece Name action and only extremely rarely using the main Edit action</h3>
+<h3 style="text-align: center"> Name changes will normally be done with the Edit Piece Name action and extremely rarely using the main Edit action</h3>
 <h4 style="text-align: center"> Before changing the Place to match an existing Place consider if it would be better to add a new Place with this name and appropriate geographic coordinates</h4>
 <%= render 'form' %>
 <br>

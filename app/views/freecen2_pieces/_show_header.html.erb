@@ -1,5 +1,5 @@
 <h2 style="text-align: center">Details of FreeCen2 Piece:<%= @freecen2_piece.name%> (<%= @freecen2_piece.number%>) of District: <%= @freecen2_piece.district_name%> in <%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>) for <%= @freecen2_piece.year%></h2>
-<h3 style="text-align: center"> Name changes will normally be performed using the Edit Piece Name action and only extremely rarely using the main Edit action</h3>
+<h3 style="text-align: center"> Name changes will normally be done with the Edit Piece Name action and extremely rarely using the main Edit action</h3>
 <%= render 'flash_notice' %>
 <% if %w[executive_director project_manager county_coordinator master_county_coordinator country_coordinator data_manager system_administrator].include?(@user.person_role)%>
   <div style="text-align: center">

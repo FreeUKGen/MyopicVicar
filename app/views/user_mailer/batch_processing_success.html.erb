@@ -1,5 +1,9 @@
 <p><%= @userid.person_forename %>,</p>
 <p>The file submitted for processing has been completed. Please review the following report.</p>
 <%= @message.html_safe%>
-<p> If there were errors in the header they will have to be corrected off line. Most other data errors can be corrected by using the on-line editing system or by correcting the file off line and then replacing the file on the system. </p>
-<p>The <%= @appname %> Team</p>
+<% if @appname.downcase == 'freereg' %>
+  <p> If there were errors in the header they will have to be corrected off line. Most other data errors can be corrected by using the on-line editing system or by correcting the file off line and then replacing the file on the system. </p>
+<% elsif @appname.downcase == 'freecen' %>
+  <p> Errors or warnings in the census information and dwelling fields must be addressed off line. Errors and warnings associated with the Individual may be corrected on line if you wish.
+  <% end%>
+  <p>The <%= @appname %> Team</p>
