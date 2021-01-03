@@ -1,4 +1,5 @@
 <h2 style="text-align: center">Details of FreeCen2 Civil Parish:- <%=  @freecen2_civil_parish.name %> in <%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>) </h2>
+<h3 style="text-align: center"> Name changes will normally be performed using the Edit Civil Parish Name action and only extremely rarely using the main Edit action</h3>
 <%= render 'flash_notice' %>
 <% if %w[county_coordinator master_county_coordinator country_coordinator data_manager system_administrator executive_director project_manager].include?(@user.person_role)%>
   <div style="text-align: center">
