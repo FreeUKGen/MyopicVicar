@@ -30,23 +30,29 @@ Step 2. Create database.yml
   You can base this on the database.example.yml
 
 Step 3. Create errbit.yml
-  On https://errbit.freeukgen.org.uk/ create a new app
+  On https://errbit.freeukgen.org.uk/ create a new app if you wish to report errors
 
 Step 4. Create mongo_config.yml
 
 Step 5 Create mongoid.yml
 
+This will be the same as used for reg except a different database name
+
 Step 6. Clone the myopicvicar code base
- into the folder from which you will run the application server
+ into the folder from which you will run this application eg freecen
 
 Step 7. Copy the files created in steps 1-5 into the config folder
 
-Step 8 Start your server
+Step 8. Load the mongodb collections
 
-Updating A Using Myopicvicar Code Base
+Step 9. Run rake assets:precompile to load the assets
+
+Step 10. Start your server in the application folder created in step 6
+
+Updating Using Myopicvicar Code Base
 
 This is done in the normal manner pulling code change and running assets:precompile if assets are changed.
 
 Switching From One application to Another:
 
-Stop the server; change the freeukgen_application.yml; delete the public folder contents; run rake assets:precompile (sudo may be needed); start the server
+Stop the server; start the server in the application folder created in step 6
