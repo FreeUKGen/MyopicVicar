@@ -55,4 +55,4 @@ This is done in the normal manner pulling code change and running assets:precomp
 
 Switching From One application to Another:
 
-Stop the server; start the server in the application folder created in step 6
+Stop the server; start the server in the application folder created in step 6 for freecen, Myopicvicar for freereg and what ever is being used for freebmd
