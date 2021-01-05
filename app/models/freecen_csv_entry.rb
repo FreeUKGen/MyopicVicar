@@ -2418,113 +2418,113 @@ class FreecenCsvEntry
   def validate_on_line_edit_of_fields(fields)
     success, message = FreecenValidations.text?(fields[:surname])
     if success && fields[:surname].present? && fields[:surname].strip == '-'
-      errors.add(:surname, "has single - Hyphen in Surname")
+      errors.add(:surname, "has single - Hyphen in Surname") unless fields[:record_valid] == 'true'
     elsif !success
       errors.add(:surname, "Invalid; #{message}")
     end
 
     success, message = FreecenValidations.text?(fields[:forenames])
     if success && fields[:forenames].present? && fields[:forenames].strip == '-'
-      errors.add(:forenames, "has single - Hyphen in Forename")
+      errors.add(:forenames, "has single - Hyphen in Forename") unless fields[:record_valid] == 'true'
     elsif !success
       errors.add(:forenames, "Invalid; #{message}")
     end
 
     success, message = FreecenValidations.name_question?(fields[:name_flag])
-    errors.add(:name_flag, "Invalid; #{message}") unless success
+    errors.add(:name_flag, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
 
     success, message = FreecenValidations.sex?(fields[:sex])
-    errors.add(:sex, "Invalid; #{message}") unless success
+    errors.add(:sex, "Invalid; #{message}")  unless success || fields[:record_valid] == 'true'
 
     success, message = FreecenValidations.age?(fields[:age], fields[:marital_status], fields[:sex])
-    errors.add(:age, "Invalid; #{message}") unless success
+    errors.add(:age, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
 
     success, message = FreecenValidations.uncertainty_status?(fields[:individual_flag])
-    errors.add(:individual_flag, "Invalid; #{message}") unless success
+    errors.add(:individual_flag, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
 
     success, message = FreecenValidations.occupation?(fields[:occupation], fields[:age])
-    errors.add(:occupation, "Invalid; #{message}") unless success || (message == 'unusual use of Scholar' && freecen_csv_file.validation)
+    errors.add(:occupation, "Invalid; #{message}") unless success || fields[:record_valid] == 'true' || (message == 'unusual use of Scholar' && freecen_csv_file.validation)
 
     success, message = FreecenValidations.uncertainty_occupation?(fields[:occupation_flag])
-    errors.add(:occupation_flag, "Invalid; #{message}") unless success
+    errors.add(:occupation_flag, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
 
     success, message = FreecenValidations.uncertainy_birth?(fields[:birth_place_flag])
-    errors.add(:birth_place_flag, "Invalid; #{message}") unless success
+    errors.add(:birth_place_flag, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
 
     success, message = FreecenValidations.notes?(fields[:notes])
-    errors.add(:language, "Invalid; #{message}") unless success
+    errors.add(:language, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
 
     if fields[:relationship].present?
       success, message = FreecenValidations.relationship?(fields[:relationship])
-      errors.add(:relationship, "Invalid; #{message}") unless success
+      errors.add(:relationship, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
     end
 
     if fields[:marital_status].present?
       success, message = FreecenValidations.marital_status?(fields[:marital_status])
-      errors.add(:marital_status, "Invalid; #{message}") unless success
+      errors.add(:marital_status, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
     end
     if fields[:school_children].present?
       success, message = FreecenValidations.school_children?(fields[:school_children])
-      errors.add(:school_children, "Invalid; #{message}") unless success
+      errors.add(:school_children, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
     end
 
     if fields[:years_married].present?
       success, message = FreecenValidations.years_married?(fields[:years_married])
-      errors.add(:years_married, "Invalid; #{message}") unless success
+      errors.add(:years_married, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
     end
 
     if fields[:children_living].present?
       success, message = FreecenValidations.children_living?(fields[:children_living])
-      errors.add(:children_living, "Invalid; #{message}") unless success
+      errors.add(:children_living, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
     end
 
     if fields[:children_deceased].present?
       success, message = FreecenValidations.children_deceased?(fields[:children_deceased])
-      errors.add(:children_deceased, "Invalid; #{message}") unless success
+      errors.add(:children_deceased, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
     end
 
     if fields[:children_born_alive].present?
       success, message = FreecenValidations.children_born_alive?(fields[:children_born_alive])
-      errors.add(:children_born_alive, "Invalid; #{message}") unless success
+      errors.add(:children_born_alive, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
     end
 
     if fields[:religion].present?
       success, message = FreecenValidations.religion?(fields[:religion])
-      errors.add(:religion, "Invalid; #{message}") unless success
+      errors.add(:religion, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
     end
 
     if fields[:read_write].present?
       success, message = FreecenValidations.read_write?(fields[:read_write])
-      errors.add(:read_write, "Invalid; #{message}") unless success
+      errors.add(:read_write, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
     end
 
     if fields[:industry].present?
       success, message = FreecenValidations.industry?(fields[:industry])
-      errors.add(:industry, "Invalid; #{message}") unless success
+      errors.add(:industry, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
     end
 
     if fields[:occupation_category].present?
       success, message = FreecenValidations.occupation_category?(fields[:occupation_category])
-      errors.add(:occupation_category, "Invalid; #{message}") unless success
+      errors.add(:occupation_category, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
     end
 
     if fields[:at_home].present?
       success, message = FreecenValidations.at_home?(fields[:at_home])
-      errors.add(:at_home, "Invalid; #{message}") unless success
+      errors.add(:at_home, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
     end
 
     success, message = FreecenValidations.verbatim_birth_county?(fields[:verbatim_birth_county])
-    errors.add(:verbatim_birth_county, "Invalid; #{message}") unless success
+    errors.add(:verbatim_birth_county, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
 
     @valid_alternate_chapman_code = false
     if fields[:birth_county].present?
       success, message = FreecenValidations.verbatim_birth_county?(fields[:birth_county])
-      errors.add(:birth_county, "Invalid; #{message}") unless success
+      errors.add(:birth_county, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
       @valid_alternate_chapman_code = true if success
     end
 
     success, message = FreecenValidations.verbatim_birth_place?(fields[:verbatim_birth_place]) unless fields[:year] == '1841'
-    errors.add(:verbatim_birth_place, "Invalid; #{message}") unless success
+    errors.add(:verbatim_birth_place, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
     unless file_validation
       place_valid = true
       place_valid = Freecen2Place.chapman_code(fields[:verbatim_birth_county]).place(fields[:verbatim_birth_place]).first if fields[:verbatim_birth_county].present? && fields[:verbatim_birth_place].present? && fields[:verbatim_birth_place] != '-'
@@ -2537,7 +2537,7 @@ class FreecenCsvEntry
 
     if fields[:birth_place].present?
       success, message = FreecenValidations.birth_place?(fields[:birth_place])
-      errors.add(:birth_place, "Invalid; #{message}") unless success
+      errors.add(:birth_place, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
       if file_validation
         place_valid = false
         if fields[:birth_place] == '-' && fields[:birth_county].present? && @valid_alternate_chapman_code
@@ -2562,27 +2562,27 @@ class FreecenCsvEntry
 
     if fields[:nationality].present?
       success, message = FreecenValidations.nationality?(fields[:nationality])
-      errors.add(:nationality, "Invalid; #{message}") unless success
+      errors.add(:nationality, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
     end
 
     if fields[:father_place_of_birth].present?
       success, message = FreecenValidations.father_place_of_birth?(fields[:father_place_of_birth])
-      errors.add(:father_place_of_birth, "Invalid; #{message}") unless success
+      errors.add(:father_place_of_birth, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
     end
 
     if fields[:disability].present?
       success, message = FreecenValidations.disability?(fields[:disability])
-      errors.add(:disability, "Invalid; #{message}") unless success
+      errors.add(:disability, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
     end
 
     if fields[:disability_notes].present?
       success, message = FreecenValidations.disability_notes?(fields[:disability_notes])
-      errors.add(:disability_notes, "Invalid; #{message}") unless success
+      errors.add(:disability_notes, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
     end
 
     if fields[:language].present?
       success, message = FreecenValidations.language?(fields[:language])
-      errors.add(:language, "Invalid; #{message}") unless success
+      errors.add(:language, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
     end
   end
 
