@@ -135,6 +135,8 @@ class Freecen1VldFile
       records = freecen1_vld_entries
       @record_number = 0
       records.each do |rec|
+        next if rec.blank?
+
         next if rec['deleted_flag'].present?
 
         @record_number += 1
