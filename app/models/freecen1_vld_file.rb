@@ -222,7 +222,7 @@ class Freecen1VldFile
       county = @blank
       place = @blank
     else
-      county = @rec['birth_county']
+      county = rec['birth_county']
       place =  rec['birth_place']
     end
     [county, place]
