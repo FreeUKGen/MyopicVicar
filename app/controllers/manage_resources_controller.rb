@@ -129,6 +129,8 @@ class ManageResourcesController < ApplicationController
 
   def show
     load(params[:id])
+    flash[:notice] = 'Invalid option'
+    redirect_back fallback_location: { action: 'new' }
   end
 
   def stop_processing

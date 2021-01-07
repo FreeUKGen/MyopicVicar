@@ -94,6 +94,51 @@ class Freecen2District
     def missing_places(chapman_code)
       Freecen2District.where(chapman_code: chapman_code, freecen2_place_id: nil).all.order_by(name: 1, year: 1)
     end
+
+    def create_csv_file(chapman_code, year, districts)
+      file = "#{chapman_code}_#{year}_District_Index.csv"
+      file_location = Rails.root.join('tmp', file)
+      success, message = Freecen2District.write_csv_file(file_location, districts)
+
+      [success, message, file_location, file]
+    end
+
+    def write_csv_file(file_location, districts)
+      header = []
+      header << 'Rec number'
+      header << 'Chapman code'
+      header << 'Year'
+      header << 'District name'
+      header << 'District type'
+      header << 'Piece names follow in columns'
+      CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+        csv << header
+        record_number = 0
+        districts.each do |rec|
+          next if rec.blank?
+
+          record_number += 1
+          line = []
+          line = Freecen2District.add_fields(line, record_number, rec)
+          csv << line
+        end
+      end
+      [true, '']
+    end
+
+    def add_fields(line, number, rec)
+      line << number.to_i
+      line << rec.chapman_code
+      line << rec.year
+      line << rec.name
+      type = rec.type.blank? ? 'Registration District' : rec.type
+      line << type
+      rec.freecen2_pieces.each do |piece|
+        line << piece.name
+      end
+      line
+    end
+
   end
 
   # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Instance methods::::::::::::::::::::::::::::::::::::::::::::::::::::::

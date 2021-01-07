@@ -218,8 +218,12 @@ class Freecen2PlacesController < ApplicationController
 
   def search_names_results
     get_user_info_from_userid
-    @results = Freecen2Place.search(session[:search_names][:search], session[:search_names][:search_county])
-    @county = session[:search_names][:search_county].present? ? session[:search_names][:search_county] : 'All Counties'
+    search_place = session[:search_names][:search]
+    search_county = session[:search_names][:search_county]
+    redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'That place does not exist') && return if search_place.blank? || search_county.blank?
+
+    @results = Freecen2Place.search(search_place, search_county)
+    @county = search_county.present? ? search_county : 'All Counties'
     @total = @results.length
   end
 

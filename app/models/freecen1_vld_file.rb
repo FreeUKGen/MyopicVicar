@@ -143,7 +143,6 @@ class Freecen1VldFile
         line = []
         line = add_fields(line, rec, census_fields)
         csv << line
-        p line
       end
     end
     [true, '']

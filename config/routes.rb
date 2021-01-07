@@ -277,6 +277,7 @@ MyopicVicar::Application.routes.draw do
   get 'freecen2_districts/:id/edit_name', to: 'freecen2_districts#edit_name', as: :edit_name_freecen2_district
   get 'freecen2_districts/locate', to: 'freecen2_districts#locate', as: :locate_freecen2_district
   delete 'freecen2_districts/:id/force(.:format)', to: 'freecen2_districts#force', as: :force_freecen2_district
+  get 'freecen2_districts/csv_index', to: 'freecen2_districts#csv_index', as: :csv_index_freecen2_district
   resources :freecen2_districts
 
   get 'freecen2_pieces/selection_by_name', to: 'freecen2_pieces#selection_by_name', as: :selection_by_name_freecen2_pieces
@@ -293,6 +294,7 @@ MyopicVicar::Application.routes.draw do
   get 'freecen2_pieces/:id/refresh_civil_parish_list', to: 'freecen2_pieces#refresh_civil_parish_list', as: :refresh_civil_parish_list_freecen2_piece
   get 'freecen2_pieces/index_district_year', :to => 'freecen2_pieces#index_district_year', :as => :freecen2_pieces_district_year_index
   get 'freecen2_pieces/:year/select_new_county', :to => 'freecen2_pieces#select_new_county', :as => :select_new_county_freecen2_piece
+  get 'freecen2_pieces/csv_index', to: 'freecen2_pieces#csv_index', as: :csv_index_freecen2_piece
   resources :freecen2_pieces
 
   get 'freecen2_civil_parishes/selection_by_name', to: 'freecen2_civil_parishes#selection_by_name', as: :selection_by_name_freecen2_civil_parishes
@@ -303,6 +305,7 @@ MyopicVicar::Application.routes.draw do
   get 'freecen2_civil_parishes/:id/index_for_piece', :to => 'freecen2_civil_parishes#index_for_piece', :as => :index_for_piece_freecen2_civil_parishes
   get 'freecen2_civil_parishes/chapman_year_index', :to => 'freecen2_civil_parishes#chapman_year_index', :as => :freecen2_civil_parishes_chapman_year_index
   get 'freecen2_civil_parishes/:id/edit_name', to: 'freecen2_civil_parishes#edit_name', as: :edit_name_freecen2_civil_parish
+  get 'freecen2_civil_parishes/csv_index', to: 'freecen2_civil_parishes#csv_index', as: :csv_index_freecen2_civil_parish
   resources :freecen2_civil_parishes
 
   resources :my_saved_searches
