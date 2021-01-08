@@ -133,7 +133,8 @@ class Freecen2District
       line << rec.name
       type = rec.type.blank? ? 'Registration District' : rec.type
       line << type
-      line << rec.freecen2_place.place_name if rec.freecen2_place.present?
+      place = rec.freecen2_place.present? ? rec.place_place_name : ''
+      line << place
       line
     end
 

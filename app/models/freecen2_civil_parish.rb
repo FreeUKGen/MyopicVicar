@@ -155,7 +155,8 @@ class Freecen2CivilParish
       district = piece.freecen2_district
       line << district.name
       line << rec.piece_number
-      line << rec.place_place_name if rec.freecen2_place.present?
+      place = rec.freecen2_place.present? ? rec.place_place_name : ''
+      line << place
       line << rec.name
       line
     end
