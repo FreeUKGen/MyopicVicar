@@ -62,7 +62,11 @@ class Freecen2DistrictsController < ApplicationController
   def csv_index
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No information') && return if params[:chapman_code].blank? || params[:year].blank?
 
-    freecen2_districts = Freecen2District.chapman_code(params[:chapman_code]).year(params[:year]).order_by(year: 1, name: 1).all
+    if params[:year] == 'all'
+      freecen2_districts = Freecen2District.chapman_code(session[:chapman_code]).distinct(:name).sort_by(&:downcase)
+    else
+      freecen2_districts = Freecen2District.chapman_code(params[:chapman_code]).year(params[:year]).order_by(year: 1, name: 1).all
+    end
 
     success, message, file_location, file_name = Freecen2District.create_csv_file(params[:chapman_code], params[:year], freecen2_districts)
     if success
@@ -134,11 +138,7 @@ class Freecen2DistrictsController < ApplicationController
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No Chapman code') && return if session[:chapman_code].blank?
 
     get_user_info_from_userid
-    @census = Freecen::CENSUS_YEARS_ARRAY
     @chapman_code = session[:chapman_code]
-    @freecen2_districts_distinct = Freecen2District.chapman_code(session[:chapman_code]).distinct(:name).sort_by(&:downcase)
-    @freecen2_districts_distinct = Kaminari.paginate_array(@freecen2_districts_distinct).page(params[:page]).per(100)
-    session[:current_page_district] = @freecen2_districts_distinct.current_page if @freecen2_districts_distinct.present?
     session.delete(:freecen2_district)
     session[:type] = 'district'
   end

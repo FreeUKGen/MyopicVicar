@@ -22,7 +22,7 @@ class Freecen2District
   belongs_to :freecen2_place, optional: true, index: true
   belongs_to :county, optional: true, index: true
   delegate :county, to: :county, prefix: true, allow_nil: true
-
+  delegate :place_name, to: :freecen2_place, prefix: :place
   before_save :add_standard_names
   before_update :add_standard_names
 
@@ -98,19 +98,14 @@ class Freecen2District
     def create_csv_file(chapman_code, year, districts)
       file = "#{chapman_code}_#{year}_District_Index.csv"
       file_location = Rails.root.join('tmp', file)
-      success, message = Freecen2District.write_csv_file(file_location, districts)
+      success, message = Freecen2District.write_csv_file(file_location, year, chapman_code, districts)
 
       [success, message, file_location, file]
     end
 
-    def write_csv_file(file_location, districts)
-      header = []
-      header << 'Rec number'
-      header << 'Chapman code'
-      header << 'Year'
-      header << 'District name'
-      header << 'District type'
-      header << 'Linked to Place'
+    def write_csv_file(file_location, year, chapman_code, districts)
+      header = year == 'all' ? Freecen2District.all_year_header(chapman_code) : Freecen2District.year_header(chapman_code, year)
+
       CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
         csv << header
         record_number = 0
@@ -119,22 +114,53 @@ class Freecen2District
 
           record_number += 1
           line = []
-          line = Freecen2District.add_fields(line, record_number, rec)
+          line = year == 'all' ? Freecen2District.add_all_year_fields(line, record_number, chapman_code, rec) : Freecen2District.add_year_fields(line, record_number, chapman_code, rec)
           csv << line
         end
       end
       [true, '']
     end
 
-    def add_fields(line, number, rec)
+    def year_header(chapman_code, year)
+      header = []
+      header << 'Rec number'
+      header << 'District name'
+      header << 'District type'
+      header << 'Linked to Place'
+      header << chapman_code
+      header << year
+      header
+    end
+
+    def add_year_fields(line, number, chapman_code, rec)
       line << number.to_i
-      line << rec.chapman_code
-      line << rec.year
       line << rec.name
       type = rec.type.blank? ? 'Registration District' : rec.type
       line << type
       place = rec.freecen2_place.present? ? rec.place_place_name : ''
       line << place
+      line
+    end
+
+    def all_year_header(chapman_code)
+      header = []
+      header << 'Rec number'
+      header << 'District name'
+      Freecen::CENSUS_YEARS_ARRAY.each do |census|
+        header << "#{census}"
+      end
+      header << chapman_code
+      header
+    end
+
+    def add_all_year_fields(line, number, chapman_code, rec)
+      line << number.to_i
+      line << rec
+      Freecen::CENSUS_YEARS_ARRAY.each do |census|
+        freecen2_district = Freecen2District.where(chapman_code: chapman_code, name: rec, year: census).exists?
+        entry = freecen2_district ? 'Yes' : 'No'
+        line << entry
+      end
       line
     end
 
