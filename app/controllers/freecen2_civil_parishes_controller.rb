@@ -35,6 +35,24 @@ class Freecen2CivilParishesController < ApplicationController
     end
   end
 
+  def csv_index
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No information') && return if params[:chapman_code].blank? || params[:year].blank?
+
+    freecen2_civil_parishes = Freecen2CivilParish.chapman_code(params[:chapman_code]).year(params[:year]).order_by(year: 1, name: 1).all
+
+    success, message, file_location, file_name = Freecen2CivilParish.create_csv_file(params[:chapman_code], params[:year], freecen2_civil_parishes)
+    if success
+      if File.file?(file_location)
+        send_file(file_location, filename: file_name, x_sendfile: true) && return
+        flash[:notice] = 'Downloaded'
+      end
+    else
+      flash[:notice] = "There was a problem saving the file prior to download. Please send this message #{message} to your coordinator"
+    end
+    redirect_back(fallback_location: new_manage_resource_path)
+  end
+
+
   def destroy
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No Civil Parish identified') && return if params[:id].blank?
 

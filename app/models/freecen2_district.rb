@@ -110,7 +110,7 @@ class Freecen2District
       header << 'Year'
       header << 'District name'
       header << 'District type'
-      header << 'Piece names follow in columns'
+      header << 'Linked to Place'
       CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
         csv << header
         record_number = 0
@@ -133,9 +133,7 @@ class Freecen2District
       line << rec.name
       type = rec.type.blank? ? 'Registration District' : rec.type
       line << type
-      rec.freecen2_pieces.each do |piece|
-        line << piece.name
-      end
+      line << rec.freecen2_place.place_name if rec.freecen2_place.present?
       line
     end
 

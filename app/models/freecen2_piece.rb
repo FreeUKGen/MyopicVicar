@@ -56,6 +56,7 @@ class Freecen2Piece
   belongs_to :freecen2_place, optional: true, index: true
 
   delegate :name, :tnaid, :code, :note, to: :freecen2_district, prefix: :district, allow_nil: true
+  delegate :place_name, to: :freecen2_place, prefix: :place
 
   has_many :freecen2_civil_parishes, dependent: :restrict_with_error
   has_many :freecen_dwellings, dependent: :restrict_with_error
@@ -211,6 +212,50 @@ class Freecen2Piece
       new_piece_params[:prenote] = params['prenote']
       new_piece_params[:freecen2_place_id] = Freecen2Place.place_id(params['chapman_code'], params[:freecen2_place_id])
       new_piece_params
+    end
+
+    def create_csv_file(chapman_code, year, pieces)
+      file = "#{chapman_code}_#{year}_Piece_Index.csv"
+      file_location = Rails.root.join('tmp', file)
+      success, message = Freecen2Piece.write_csv_file(file_location, pieces)
+
+      [success, message, file_location, file]
+    end
+
+    def write_csv_file(file_location, pieces)
+      header = []
+      header << 'Rec number'
+      header << 'Chapman code'
+      header << 'Year'
+      header << 'District name'
+      header << 'Linked to Place'
+      header << 'Piece name'
+      header << 'Piece number'
+
+      CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+        csv << header
+        record_number = 0
+        pieces.each do |rec|
+          next if rec.blank?
+
+          record_number += 1
+          line = []
+          line = Freecen2Piece.add_fields(line, record_number, rec)
+          csv << line
+        end
+      end
+      [true, '']
+    end
+
+    def add_fields(line, number, rec)
+      line << number.to_i
+      line << rec.chapman_code
+      line << rec.year
+      line << rec.district_name
+      line << rec.place_place_name if rec.freecen2_place.present?
+      line << rec.name
+      line << rec.number
+      line
     end
   end
 

@@ -29,6 +29,7 @@ class Freecen2CivilParish
   accepts_nested_attributes_for :freecen2_wards, allow_destroy: true, reject_if: :all_blank
 
   delegate :year, :name, :tnaid, :number, :code, :note, to: :freecen2_piece, prefix: :piece, allow_nil: true
+  delegate :place_name, to: :freecen2_place, prefix: :place
 
   before_save :add_standard_names
   before_update :add_standard_names
@@ -111,6 +112,52 @@ class Freecen2CivilParish
       ward_prenote = ward['prenote']
       ward_object = Freecen2Ward.new(name: ward_name, note: ward_note, prenote: ward_prenote)
       ward_object
+    end
+
+    def create_csv_file(chapman_code, year, civil_parishes)
+      file = "#{chapman_code}_#{year}_Civil_Parish_Index.csv"
+      file_location = Rails.root.join('tmp', file)
+      success, message = Freecen2CivilParish.write_csv_file(file_location, civil_parishes)
+
+      [success, message, file_location, file]
+    end
+
+    def write_csv_file(file_location, civil_parishes)
+      header = []
+      header << 'Rec number'
+      header << 'Chapman code'
+      header << 'Year'
+      header << 'District name'
+      header << 'Piece number'
+      header << 'Linked to Place'
+      header << 'Civil Parish name'
+
+      CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+        csv << header
+        record_number = 0
+        civil_parishes.each do |rec|
+          next if rec.blank?
+
+          record_number += 1
+          line = []
+          line = Freecen2CivilParish.add_fields(line, record_number, rec)
+          csv << line
+        end
+      end
+      [true, '']
+    end
+
+    def add_fields(line, number, rec)
+      line << number.to_i
+      line << rec.chapman_code
+      line << rec.year
+      piece = rec.freecen2_piece
+      district = piece.freecen2_district
+      line << district.name
+      line << rec.piece_number
+      line << rec.place_place_name if rec.freecen2_place.present?
+      line << rec.name
+      line
     end
   end
 
