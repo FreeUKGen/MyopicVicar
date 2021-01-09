@@ -29,11 +29,14 @@ class Freecen2PiecesController < ApplicationController
     end
   end
 
-
   def csv_index
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No information') && return if params[:chapman_code].blank? || params[:year].blank?
 
-    freecen2_pieces = Freecen2Piece.chapman_code(params[:chapman_code]).year(params[:year]).order_by(year: 1, name: 1).all
+    if params[:year] == 'all'
+      freecen2_pieces = Freecen2Piece.chapman_code(session[:chapman_code]).distinct(:name).sort_by(&:downcase)
+    else
+      freecen2_pieces = Freecen2Piece.chapman_code(params[:chapman_code]).year(params[:year]).order_by(year: 1, name: 1).all
+    end
 
     success, message, file_location, file_name = Freecen2Piece.create_csv_file(params[:chapman_code], params[:year], freecen2_pieces)
     if success

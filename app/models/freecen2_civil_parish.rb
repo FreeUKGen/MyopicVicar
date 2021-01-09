@@ -117,20 +117,13 @@ class Freecen2CivilParish
     def create_csv_file(chapman_code, year, civil_parishes)
       file = "#{chapman_code}_#{year}_Civil_Parish_Index.csv"
       file_location = Rails.root.join('tmp', file)
-      success, message = Freecen2CivilParish.write_csv_file(file_location, civil_parishes)
+      success, message = Freecen2CivilParish.write_csv_file(file_location, year, chapman_code, civil_parishes)
 
       [success, message, file_location, file]
     end
 
-    def write_csv_file(file_location, civil_parishes)
-      header = []
-      header << 'Rec number'
-      header << 'Chapman code'
-      header << 'Year'
-      header << 'District name'
-      header << 'Piece number'
-      header << 'Linked to Place'
-      header << 'Civil Parish name'
+    def write_csv_file(file_location, year, chapman_code, civil_parishes)
+      header = year == 'all' ? Freecen2CivilParish.all_year_header(chapman_code) : Freecen2CivilParish.year_header(chapman_code, year)
 
       CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
         csv << header
@@ -140,26 +133,55 @@ class Freecen2CivilParish
 
           record_number += 1
           line = []
-          line = Freecen2CivilParish.add_fields(line, record_number, rec)
+          line = year == 'all' ? Freecen2CivilParish.add_all_year_fields(line, record_number, chapman_code, rec) : Freecen2CivilParish.add_year_fields(line, record_number, chapman_code, rec)
           csv << line
         end
       end
       [true, '']
     end
 
-    def add_fields(line, number, rec)
+    def year_header(chapman_code, year)
+      header = []
+      header << 'Rec number'
+      header << "Civil Parish name in #{chapman_code} for #{year}"
+      header << 'Piece number'
+      header << 'District name'
+      header << 'Linked to Place'
+      header
+    end
+
+    def all_year_header(chapman_code)
+      header = []
+      header << 'Rec number'
+      header << "Civil Parish name in #{chapman_code}"
+      Freecen::CENSUS_YEARS_ARRAY.each do |census|
+        header << "#{census}"
+      end
+      header
+    end
+
+    def add_year_fields(line, number, chapman_code, rec)
       line << number.to_i
-      line << rec.chapman_code
-      line << rec.year
-      piece = rec.freecen2_piece
-      district = piece.freecen2_district
-      line << district.name
+      line << rec.name
       line << rec.piece_number
+      district = rec.freecen2_piece.freecen2_district
+      line << district.name
       place = rec.freecen2_place.present? ? rec.place_place_name : ''
       line << place
-      line << rec.name
       line
     end
+
+    def add_all_year_fields(line, number, chapman_code, rec)
+      line << number.to_i
+      line << rec
+      Freecen::CENSUS_YEARS_ARRAY.each do |census|
+        freecen2_piece = Freecen2CivilParish.where(chapman_code: chapman_code, name: rec, year: census).exists?
+        entry = freecen2_piece ? 'Yes' : ''
+        line << entry
+      end
+      line
+    end
+
   end
 
   # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::Instance methods :::::::::::::::::::::::::::::::::::::::

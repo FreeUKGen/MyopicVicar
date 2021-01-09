@@ -38,7 +38,11 @@ class Freecen2CivilParishesController < ApplicationController
   def csv_index
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No information') && return if params[:chapman_code].blank? || params[:year].blank?
 
-    freecen2_civil_parishes = Freecen2CivilParish.chapman_code(params[:chapman_code]).year(params[:year]).order_by(year: 1, name: 1).all
+    if params[:year] == 'all'
+      freecen2_civil_parishes = Freecen2CivilParish.chapman_code(session[:chapman_code]).distinct(:name).sort_by(&:downcase)
+    else
+      freecen2_civil_parishes = Freecen2CivilParish.chapman_code(params[:chapman_code]).year(params[:year]).order_by(year: 1, name: 1).all
+    end
 
     success, message, file_location, file_name = Freecen2CivilParish.create_csv_file(params[:chapman_code], params[:year], freecen2_civil_parishes)
     if success

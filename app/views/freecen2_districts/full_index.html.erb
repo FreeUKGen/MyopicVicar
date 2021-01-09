@@ -1,7 +1,7 @@
 <% breadcrumb :freecen2_districts_full_index,  @chapman_code, @year%>
 <h2 style="text-align: center">FreeCen2 Districts for <%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>) </h2>
 <div style="text-align: center">
-  <%= link_to 'Download CSV Listing of Districts', csv_index_freecen2_district_path(year:'all', chapman_code: @chapman_code), data: { confirm: 'Are you sure?' }, :class => "btn   btn--small", title: 'Downloads a csv file listing all the districts for this year and county'%>
+  <%= link_to 'Download Full CSV Listing of Districts', csv_index_freecen2_district_path(year:'all', chapman_code: @chapman_code), data: { confirm: 'Are you sure?' }, :class => "btn   btn--small", title: 'Downloads a csv file listing all the districts for this year and county'%>
 </div>
 <%= render 'flash_notice' %>
 <%= paginate @freecen2_districts_distinct %>

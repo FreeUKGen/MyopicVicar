@@ -1,5 +1,8 @@
 <% breadcrumb :freecen2_civil_parishes_full_index,  @chapman_code, @type%>
 <h2 style="text-align: center">FreeCen2 Civil Parishes for <%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>)  </h2>
+<div style="text-align: center">
+  <%= link_to 'Download Full CSV Listing of Civil Parishes', csv_index_freecen2_civil_parish_path(year: 'all', chapman_code: @chapman_code), data: { confirm: 'Are you sure?' }, :class => "btn   btn--small", title: 'Downloads a csv file listing all the civil Parishes for this year and county'%>
+</div>
 <%= render 'flash_notice' %>
 <h3 style="text-align: center">Please be aware that there may well be several Civil Parishes with the same name for a given year</h3>
 <%= paginate @freecen2_civil_parishes_distinct %>
