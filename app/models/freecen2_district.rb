@@ -123,10 +123,11 @@ class Freecen2District
 
     def year_header(chapman_code, year)
       header = []
-      header << 'Rec number'
-      header << "District name in #{chapman_code} for #{year}"
-      header << 'District type'
+      header << 'Rec Number'
+      header << "District Name in #{chapman_code} for #{year}"
+      header << 'District Type' if year == '1841'
       header << 'Linked to Place'
+      header << 'Action Required'
       header
     end
 
@@ -134,7 +135,7 @@ class Freecen2District
       line << number.to_i
       line << rec.name
       type = rec.type.blank? ? 'Registration District' : rec.type
-      line << type
+      line << type  if year == '1841'
       place = rec.freecen2_place.present? ? rec.place_place_name : ''
       line << place
       line
@@ -142,11 +143,12 @@ class Freecen2District
 
     def all_year_header(chapman_code)
       header = []
-      header << 'Rec number'
-      header << "District name in #{chapman_code}"
+      header << 'Rec Number'
+      header << "District Name in #{chapman_code}"
       Freecen::CENSUS_YEARS_ARRAY.each do |census|
         header << "#{census}"
       end
+      header << 'Action Required'
       header
     end
 

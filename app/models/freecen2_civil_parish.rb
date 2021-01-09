@@ -142,21 +142,23 @@ class Freecen2CivilParish
 
     def year_header(chapman_code, year)
       header = []
-      header << 'Rec number'
+      header << 'Rec Number'
       header << "Civil Parish name in #{chapman_code} for #{year}"
-      header << 'Piece number'
-      header << 'District name'
+      header << 'Piece Number'
+      header << 'District Name'
       header << 'Linked to Place'
+      header << 'Action Required'
       header
     end
 
     def all_year_header(chapman_code)
       header = []
-      header << 'Rec number'
+      header << 'Rec Number'
       header << "Civil Parish name in #{chapman_code}"
       Freecen::CENSUS_YEARS_ARRAY.each do |census|
         header << "#{census}"
       end
+      header << 'Action Required'
       header
     end
 
