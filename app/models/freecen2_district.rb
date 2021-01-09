@@ -135,7 +135,7 @@ class Freecen2District
       line << number.to_i
       line << rec.name
       type = rec.type.blank? ? 'Registration District' : rec.type
-      line << type  if year == '1841'
+      line << type  if rec.year == '1841'
       place = rec.freecen2_place.present? ? rec.place_place_name : ''
       line << place
       line
