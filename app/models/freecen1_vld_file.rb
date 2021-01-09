@@ -115,7 +115,7 @@ class Freecen1VldFile
     when 'HO'
       success = true
       message = ''
-      file = 'HO107_' + '_' + piece.to_s + '.csv'
+      file = 'HO107' + '_' + piece.to_s + '.csv'
       census_fields = piece.to_i <= 1465 ? Freecen::CEN2_1841 : Freecen::CEN2_1851
     else
     end
