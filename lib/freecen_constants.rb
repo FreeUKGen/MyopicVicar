@@ -142,7 +142,7 @@ module Freecen
               school_board] + HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes language]
 
   CEN2_1891 = LOCATION - %w[poor_law_union police_district special_water_district scavenging_district special_lighting_district school_board] +
-    HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry at_home] + BIRTH + FINAL - %w[disability_notes]
+    HOUSEHOLD - %w[address_flag] + %w[rooms address_flag] + INDIVIDUAL + OCCUPATION - %w[industry at_home] + BIRTH + FINAL - %w[disability_notes]
 
   CEN2_1901 = LOCATION - %w[poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district
               school_board] + HOUSEHOLD - %w[address_flag] + %w[rooms address_flag] + INDIVIDUAL + OCCUPATION - %w[industry] + BIRTH +
