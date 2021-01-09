@@ -1011,14 +1011,14 @@ class FreecenCsvEntry
         end
 
         if record[:rooms].present?
-          if %w[1901 1911].include?(record[:year])
+          if %w[1891 1901 1911].include?(record[:year])
             success, messagea = FreecenValidations.rooms?(record[:rooms], record[:year])
             unless success
               messageb = "ERROR: line #{num} Rooms #{record[:rooms]} is #{messagea}.<br>"
               message += messageb
               record[:error_messages] += messageb
             else
-              if record[:year] == '1901' && record[:rooms].to_i > 5
+              if %w[1891 1901].include?(record[:year]) && record[:rooms].to_i > 5
                 messageb = "Warning: line #{num} Rooms #{record[:rooms]} is greater than 5.<br>"
                 message += messageb   if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
                 record[:warning_messages] += messageb  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
