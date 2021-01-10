@@ -1191,7 +1191,7 @@ class Freereg1CsvEntry
 
       end
       unless FreeregValidations.cleanage(person_age)
-        errors.add(:groom_age, 'Invalid age')
+        errors.add(:person_age, 'Invalid age')
       end
 
       #following is disabled until check is improved
