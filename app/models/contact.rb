@@ -80,7 +80,7 @@ class Contact
 
     def results(archived, order, user)
       counties = user.county_groups
-      if user.person_role == 'volunteer_coordinator'
+      if user.secondary_role == 'volunteer_coordinator'
         contacts = Contact.where(archived: archived).order_by(order)
       elsif %w[county_coordinator country_coordinator].include?(user.person_role)
         contacts = Contact.where(archived: archived, county: { '$in' => counties }).order_by(order)
