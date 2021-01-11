@@ -52,11 +52,18 @@ Start mongo in a command window on the application folder and use the database n
 
 create the indexes by pasting in the scripts index zip sent to you into mongo one at a time
 
-Step 9. Run rake assets:precompile to load the assets
+Step 9. Set up refinery
 
-Step 10. Start your server in the application folder created in step 6
+repeat steps G9, G12 and G15 of the Freereg installation documentation
 
-Updating Using Myopicvicar Code Base
+Step 10. Run rake assets:precompile to load the assets
+
+Step 11. Start your server in the application folder created in step 6
+
+
+
+
+Updating the code base from Myopicvicar Code Base
 
 This is done in the normal manner pulling code change and running assets:precompile if assets are changed.
 

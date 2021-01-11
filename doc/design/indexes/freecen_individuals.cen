@@ -32,7 +32,7 @@ db.runCommand(
         },
         {
             key: {
-                verbatim_birth_place: "text"},{ language_override: "dummy" },
+                verbatim_birth_place: "text"},
             name: "verbatim_birth_place"
         }
 
