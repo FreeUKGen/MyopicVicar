@@ -12,6 +12,7 @@
   <%= link_to 'Select Specific File' , display_my_own_files_by_selection_freecen_csv_file_path, method: :get , :class => "btn btn--small", title: 'Select a specific file to look at in detail' %>
   <%= link_to 'Download Spreadsheet' , download_spreadsheet_freecen_csv_file_path, method: :get , :class => "btn btn--small", title: 'Lists the available census spreadsheet headers that can be downloaded to your computer and used for the transcription of a census document' %>
 </div>
-<p class="text--center"> To replace a file: locate the file in the list below and click on the RL option on the extreme right. <br>
-  To upload a new file: click this <%= link_to 'Upload new file', new_csvfile_path, method: :get , :class => "btn btn--small"%>
-</p>
+<div class="text--center">
+  To upload a new file: click this <%= link_to 'Upload new file', new_csvfile_path, method: :get , :class => "btn btn--small"%><br>
+  To replace a file: click on the Replace option on the actions for the specific file in the list below. <br>
+</div>
