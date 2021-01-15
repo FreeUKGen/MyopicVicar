@@ -1,6 +1,6 @@
 <% breadcrumb :freecen_csv_files %>
-<h2 class=" text--center"> <%=@who%> these are your files
-</h2>
+<h2 class=" text--center"> <%=@who%> these are your files</h2>
+Videos describing <%= link_to 'this page', "https://youtu.be/TDzBOZGK4U8", target: '_blank' %>, <%= link_to 'download spreadsheet', "" , target: '_blank' %>, <%= link_to 'upload new file', "" , target: '_blank'%>, <%= link_to 'replace a file', "" , target: '_blank' %>, <%= link_to 'errors display', "" , target: '_blank' %>, <%= link_to 'show details of the file', "" , target: '_blank' %> (open in new tabs)<br>
 <%= render 'flash_notice' %>
 <p class=" text--center"> <%=@sorted_by%>: select a link below to change the order of display
 </p>
