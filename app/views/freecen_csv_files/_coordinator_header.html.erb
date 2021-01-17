@@ -5,6 +5,7 @@
   <h3 style="text-align: center"> County Files for  <%= session[:county]%><%=@sorted_by%></h3>
 <% end%>
 <%= render 'flash_notice' %>
+Videos describing <%= link_to 'this page', "https://youtu.be/TDzBOZGK4U8", target: '_blank' %>, <%= link_to 'download spreadsheet', "" , target: '_blank' %>, <%= link_to 'upload traditional file', "" , target: '_blank'%>, <%= link_to 'upload new CSVProc file', "" , target: '_blank'%> <%= link_to 'show details of the file', "" , target: '_blank' %>, <%= link_to 'errors display', "" , target: '_blank' %>, <%= link_to 'replace a file', "" , target: '_blank' %> (all open in new tabs)<br>
 <p class=" text--center"> Select a link below to change the order of display</p>
 <div  class=" text--center push--bottom">
   <%= link_to 'Alphabetical file name', manage_counties_selection_path(option: 'Review Batches by Filename'), method: :get , :class => "btn btn--small", title: 'Reorder the list according to the alphabetical order of their file name' %>

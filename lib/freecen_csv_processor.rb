@@ -56,7 +56,8 @@ class FreecenCsvProcessor
     @type_of_project = arg2
     @flexible = arg5 == 'Traditional' ? false : true
     @type_of_processing = arg6
-    @info_messages = @type_of_processing == 'Check(Info)' ? true : false
+    @info_messages = @type_of_processing == 'Information' ? true : false
+    @error_messages_only = @type_of_processing == 'Error' ? true : false
     EmailVeracity::Config[:skip_lookup] = true
   end
 
@@ -146,7 +147,7 @@ class FreecenCsvProcessor
   end
 
   def write_member_message_file(message)
-    member_message_file.puts message unless message == ''
+    member_message_file.puts message unless message == '' || (@error_messages_only && (message[0...5] == 'Info:' || message[0...8] == 'Warning:'))
   end
 
   def write_messages_to_all(message, no_member_message)
@@ -773,10 +774,10 @@ class CsvRecords < CsvFile
   def line_two(line)
     success = false
     if line[0..15].all?(&:blank?)
-      @project.write_messages_to_all("Warning: line 2 is empty", true)
+      @project.write_messages_to_all('Warning: line 2 is empty', true)
       success = true
     elsif line[0].present? && line[0].casecmp?('abcdefghijklmnopqrst')
-      message = '"Warning: line 2 old field width specification detected and ignored'
+      message = 'Warning: line 2 old field width specification detected and ignored'
       success = true
     end
     [success, message]

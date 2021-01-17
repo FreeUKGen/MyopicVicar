@@ -12,8 +12,10 @@
     <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
   </div>
 <% end %>
+<% if appname_downcase == 'freecen' %>
+  Videos describing <%= link_to 'this page', "https://youtu.be/1P95Un3Ky30", target: '_blank' %>, <%= link_to 'transcriber action overview', "https://youtu.be/c1hF7QsKoDc" , target: '_blank' %>, <%= link_to 'transcriber action details', "https://youtu.be/km143JaxdT8" , target: '_blank'%> (all open in new tabs)<br>
+<% end %>
 <% count = @user.count_not_checked_messages %>
-Videos describing <%= link_to 'this page', "https://youtu.be/1P95Un3Ky30", target: '_blank' %>, <%= link_to 'transcriber action overview', "https://youtu.be/c1hF7QsKoDc" , target: '_blank' %>, <%= link_to 'transcriber action details', "https://youtu.be/km143JaxdT8" , target: '_blank'%> (open in new tabs)<br>
 <% if count != 0 %>
   <div class="islet islet--bordered push--bottom" style="border-color: #895f49; border-width: 2px; max-width: 20em;">
     You have <b><%= link_to "#{pluralize(count, 'message')}", userid_messages_path %>.</b>
