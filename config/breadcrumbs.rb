@@ -463,10 +463,12 @@ end
 #csvfiles
 crumb :new_csvfile do |csvfile, app|
   link 'Upload New File', new_csvfile_path
+  p session[:my_own]
+  p app
   case
   when session[:my_own]
     parent :files, nil if app == 'freereg'
-    parent :freecen_csv_files, nil if app == 'freecen'
+    parent :my_own_freecen_csv_files if app == 'freecen'
   when session[:county]
     parent :county_options, session[:county]
   when session[:syndicate]
@@ -478,7 +480,7 @@ crumb :edit_csvfile do |csvfile, file, app|
   case
   when session[:my_own]
     parent :files, file if app == 'freereg'
-    parent :freecen_csv_files, file if app == 'freecen'
+    parent :my_own_freecen_csv_files, file if app == 'freecen'
   when session[:county]
     parent :files, file
     #parent :county_options, session[:county]

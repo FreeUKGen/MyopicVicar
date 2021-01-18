@@ -98,8 +98,8 @@ class CsvfilesController < ApplicationController
     @action = 'Replace'
     @app = appname_downcase
     if @app == 'freecen'
-      @types_of_processing = ['Check(Info)', 'Check(Warn)']
-      @type_of_processing = 'Check(Info)'
+      @types_of_processing = ['Information', 'Warning', 'Error']
+      @type_of_processing = 'Error'
     end
   end
 
@@ -115,8 +115,8 @@ class CsvfilesController < ApplicationController
     userids_and_transcribers
     @app = appname_downcase
     if @app == 'freecen'
-      @types_of_processing = ['Check(Info)', 'Check(Warn)']
-      @type_of_processing = 'Check(Info)'
+      @types_of_processing = ['Information', 'Warning', 'Error']
+      @type_of_processing = 'Error'
     end
     @action = 'Upload'
   end
