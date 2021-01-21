@@ -46,7 +46,7 @@ class EditFreecen2Name
       break if fixed == limit
 
       new_name = document.name.gsub(bad_text_less, ' ').gsub(bad_s, '').gsub(/ +/, ' ')
-      message_file.puts "#{chapman_code},#{document.year},\"#{document.name}\",\"#{new_name}\""
+      message_file.puts "#{document.chapman_code},#{document.year},\"#{document.name}\",\"#{new_name}\""
       document.update_attributes(name: new_name) if fixit
     end
     time_diff = Time.now - time_start
