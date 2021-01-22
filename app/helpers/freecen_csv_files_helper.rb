@@ -10,8 +10,10 @@ module FreecenCsvFilesHelper
   end
 
   def convert_header
-    link_to 'Convert to modern headers', modern_headers_freecen_csv_file_path(@freecen_csv_file),
-      data: { confirm: 'Are you sure you want to convert the header of this file?' }, method: :get, class: 'btn   btn--small', title: 'Converts the file headers from the old format to the modern one used in proofreading, validation and incorporation.'  if @freecen_csv_file.traditional.zero?
+    if @freecen_csv_file.traditional.zero?
+      link_to 'Convert to modern headers and download', modern_headers_freecen_csv_file_path(@freecen_csv_file),
+        data: { confirm: 'Are you sure you want to convert the header of this file?' }, method: :get, class: 'btn   btn--small', title: 'Converts the file headers from the old format to the modern one used in proofreading, validation and incorporation.'  if @freecen_csv_file.traditional.zero?
+    end
   end
 
   def browse_freecen_file_individuals
@@ -30,15 +32,21 @@ module FreecenCsvFilesHelper
   end
 
   def list_freecen_file_error_entries
-    link_to 'View error messages', freecen_csv_entries_path(type: 'Err'), method: :get, class: 'btn   btn--small', title: 'Lists the entry numbers which have generated an error message. Any of the entries can be displayed on line'
+    unless  @freecen_csv_file.total_errors.zero?
+      link_to 'View error messages', freecen_csv_entries_path(type: 'Err'), method: :get, class: 'btn   btn--small', title: 'Lists the entry numbers which have generated an error message. Any of the entries can be displayed on line'
+    end
   end
 
   def list_freecen_file_warning_entries
-    link_to 'View warning messages', freecen_csv_entries_path(type: 'War'), method: :get, class: 'btn   btn--small', title: 'Lists the entry numbers which have generated a warning message. Any of the entries can be displayed on line'
+    unless  @freecen_csv_file.total_warnings.zero?
+      link_to 'View warning messages', freecen_csv_entries_path(type: 'War'), method: :get, class: 'btn   btn--small', title: 'Lists the entry numbers which have generated a warning message. Any of the entries can be displayed on line'
+    end
   end
 
   def list_freecen_file_information_entries
-    link_to 'View information messages', freecen_csv_entries_path(type: 'Inf'), method: :get, class: 'btn   btn--small', title: 'Lists the entry numbers which have generated an information message. Any of the entries can be displayed on line'
+    unless  @freecen_csv_file.total_info.zero?
+      link_to 'View information messages', freecen_csv_entries_path(type: 'Inf'), method: :get, class: 'btn   btn--small', title: 'Lists the entry numbers which have generated an information message. Any of the entries can be displayed on line'
+    end
   end
 
   def download_spreadsheet
