@@ -65,6 +65,7 @@ class FreecenCsvFilesController < ApplicationController
     if success
       if File.file?(file_location)
         send_file(file_location, filename: @freecen_csv_file.file_name, x_sendfile: true) && return
+        @freecen_csv_file.force_unlock
       end
     else
       flash[:notice] = "There was a problem saving the file prior to download. Please send this message #{message} to your coordinator"

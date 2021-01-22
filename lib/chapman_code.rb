@@ -65,6 +65,20 @@ module ChapmanCode
       hsh
     end
 
+    def codes_for_cen_county_search
+      # This is used in the county selection
+      hsh = {}
+      codes = ChapmanCode.remove_codes(ChapmanCode::CODES)
+      codes.each_pair do |ctry, ctryval|
+        ctryhash = {}
+        ctryval.each_pair do |kk, vv|
+          ctryhash[kk] = vv unless %w[ALD GSY JSY SRK].include?(vv.to_s) || CODES['Ireland'].values.include?(vv.to_s)
+        end
+        hsh[ctry] = ctryhash
+      end
+      hsh
+    end
+
     def chapman_codes_for_reg_county
       codes = ChapmanCode.remove_codes(ChapmanCode::CODES)
       all_codes = []
