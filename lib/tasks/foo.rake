@@ -12,6 +12,14 @@ namespace :foo do
     puts "Task complete."
   end
 
+  task :freecen2_pieces_refresh_civil_parish_list, [:limit, :fix] => [:environment] do |t, args|
+    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+    require 'freecen2_pieces_refresh_civil_parish_list'
+    puts "Refreshing civil parish list"
+    Freecen2PiecesRefreshCivilParishList.process(args.limit, args.fix)
+    puts "Task complete."
+  end
+
   task :correct_tna_duplicate_districts, [:limit, :year, :chapman_code] => [:environment] do |t, args|
     # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
     require 'correct_tna_duplicate_districts'
