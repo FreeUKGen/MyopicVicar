@@ -1796,12 +1796,24 @@ class FreecenCsvEntry
     [prev_id, next_id]
   end
 
-  def propagate?
+  def propagate?(parameters)
     return false if freecen_csv_file.incorporated
 
     return false unless freecen_csv_file.validation
 
-    return true if (previous_changes.key?('birth_county') || previous_changes.key?('birth_place')) && previous_changes['birth_place'][1].present?
+    return true if parameters[:birth_county].present? && parameters[:birth_county] != birth_county
+
+    return true if parameters[:birth_place].present? && parameters[:birth_place] != birth_place
+
+    false
+  end
+
+  def propagate_note?(parameters)
+    return false if freecen_csv_file.incorporated
+
+    return false unless freecen_csv_file.validation
+
+    return true if parameters[:notes].present? && parameters[:notes] != notes
 
     false
   end
@@ -1810,6 +1822,14 @@ class FreecenCsvEntry
     FreecenCsvEntry.where(freecen_csv_file_id: freecen_csv_file_id, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place).no_timeout.each do |entry|
       warning_message = entry.warning_messages + "Warning: Alternate fields have been adjusted and need review"
       entry.update_attributes( birth_county: birth_county, birth_place: birth_place, warning_messages: warning_message) unless entry.id == _id
+    end
+  end
+
+  def propagate_note
+    FreecenCsvEntry.where(freecen_csv_file_id: freecen_csv_file_id, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place, notes: nil).no_timeout.each do |entry|
+      warning_message = entry.warning_messages + "Warning: Notes field have been adjusted and need review"
+      add_notes = entry.notes.present? ? entry.notes + notes : notes
+      entry.update_attributes(notes: add_notes, warning_messages: warning_message) unless entry.id == _id
     end
   end
 

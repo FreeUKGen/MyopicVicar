@@ -103,6 +103,7 @@ MyopicVicar::Application.routes.draw do
   get 'freecen_csv_files/:id/unincorporate(.:format)', :to => 'freecen_csv_files#unincorporate', :as => :unincorporate_freecen_csv_file
   resources :freecen_csv_files
 
+  get 'freecen_csv_entries/:id/propagate_note(.:format)', :to => 'freecen_csv_entries#propagate_note', :as => :propagate_note_freecen_csv_entry
   get 'freecen_csv_entries/:id/propagate_alternate(.:format)', :to => 'freecen_csv_entries#propagate_alternate', :as => :propagate_alternate_freecen_csv_entry
   get 'freecen_csv_entries/:id/edit_embargo(.:format)', :to => 'freecen_csv_entries#edit_embargo', :as => :edit_embargo_freecen_csv_entry
   get 'freecen_csv_entries/:id/error(.:format)', :to => 'freecen_csv_entries#error', :as => :error_freecen_csv_entry
