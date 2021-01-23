@@ -710,8 +710,6 @@ module ApplicationHelper
                             def banner_header_freereg
                               banner = <<-HTML
                               <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-                              <script> (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1; </script>
-                              <script type="text/javascript">(adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1</script>
                               <script type="text/javascript">
                                 window.pg=window.pg||[];pg.acq=pg.acq||[]; // build consent queue
                                 pg.acq.push(function() {
@@ -724,7 +722,6 @@ module ApplicationHelper
                                   data-ad-slot: "#{data_ad_slot_header}",
                                   enable_page_level_ads: true
                                 });
-                                (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
                               </script>
                               HTML
                               banner.html_safe
