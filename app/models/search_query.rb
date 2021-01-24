@@ -822,8 +822,11 @@ class SearchQuery
       case order_field
       when *selected_sort_fields
         results.sort! do |x, y|
-          x, y = y, x unless order_asc
-          (x[order_field] || '') <=> (y[order_field] || '')
+          if order_asc
+            (x[order_field] || '') <=> (y[order_field] || '')
+          else
+            (y[order_field] || '') <=> (x[order_field] || '')
+          end
         end
       when SearchOrder::DATE
         if order_asc
