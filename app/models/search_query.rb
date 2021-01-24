@@ -176,6 +176,9 @@ class SearchQuery
   ############################################################################# instance methods #####################################################
 
   def add_birth_place_when_absent(search_results)
+    p 'add_birth_place_when_absent'
+    p 'before'
+    p search_results
     search_results.each do |record|
       search_record = SearchRecord.find_by(_id: record['_id'])
       next if search_record.birth_place.present?
@@ -184,13 +187,18 @@ class SearchQuery
         entry = FreecenCsvEntry.find_by(_id: search_record.freecen_csv_entry_id)
         birth_place = entry.birth_place.present? ? entry.birth_place : entry.verbatim_birth_place
         search_record.update_attributes(birth_place: birth_place) if entry.present?
+        search_record.reload
       else
         individual = search_record.freecen_individual_id
         actual_individual = FreecenIndividual.find_by(_id: individual) if individual.present?
         birth_place = actual_individual.birth_place.present? ? actual_individual.birth_place : actual_individual.verbatim_birth_place
         search_record.update_attributes(birth_place: birth_place) if actual_individual.present?
+        search_record.reload
       end
     end
+    p 'add_birth_place_when_absent'
+    p 'after'
+    p search_results
     search_results
   end
 
@@ -823,6 +831,7 @@ class SearchQuery
       when *selected_sort_fields
         order = order_field.to_sym
         p 'before'
+        p order
         results.each do |rec|
           p rec
         end
