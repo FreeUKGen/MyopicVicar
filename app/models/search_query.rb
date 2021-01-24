@@ -185,14 +185,23 @@ class SearchQuery
       p search_record
       p search_record.birth_place.present?
       next if search_record.birth_place.present?
-
-      individual = search_record.freecen_individual_id
-      actual_individual = FreecenIndividual.find_by(_id: individual) if individual.present?
-      p 'ind'
-      p actual_individual
-      search_record.update_attributes(birth_place: actual_individual.birth_place) if actual_individual.present?
-      p 'updated sr'
-      p search_record
+      if search_record.freecen_csv_entry_id.present?
+        entry = FreecenCsvEntry.find_by(_id: search_record.freecen_csv_entry_id)
+        p 'entry'
+        p entry
+        birth_place = entry.birth_place.present? ? entry.birth_place : entry.verbatim_birth_place
+        search_record.update_attributes(birth_place: birth_place) if entry.present?
+        p 'updated sr'
+        p search_record
+      else
+        individual = search_record.freecen_individual_id
+        actual_individual = FreecenIndividual.find_by(_id: individual) if individual.present?
+        p 'ind'
+        p actual_individual
+        search_record.update_attributes(birth_place: actual_individual.birth_place) if actual_individual.present?
+        p 'updated sr'
+        p search_record
+      end
     end
     search_results
   end
@@ -821,14 +830,20 @@ class SearchQuery
   end
 
   def sort_results(results)
+    p 'sort_results'
+    p order_field
     # next reorder in memory
     if results.present?
       case self.order_field
       when *selected_sort_fields
+        p order_field
+        p results
         results.sort! do |x, y|
           x, y = y, x unless self.order_asc
           (x[order_field] || '') <=> (y[order_field] || '')
         end
+        p 'after'
+        p results
       when SearchOrder::DATE
         if self.order_asc
           results.sort! { |x, y| (x[:search_date] || '') <=> (y[:search_date] || '') }
