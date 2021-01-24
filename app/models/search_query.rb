@@ -822,21 +822,29 @@ class SearchQuery
       case order_field
       when *selected_sort_fields
         order = order_field.to_sym
+        p 'before'
+        results.each do |rec|
+          p rec
+        end
         results.sort! do |x, y|
           if order_asc
+            p x[order]
+            p y[order]
             (x[order] || '') <=> (y[order] || '')
           else
             (y[order] || '') <=> (x[order] || '')
           end
         end
-        results
+        p 'after'
+        results.each do |rec|
+          p rec
+        end
       when SearchOrder::DATE
         if order_asc
           results.sort! { |x, y| (x[:search_date] || '') <=> (y[:search_date] || '') }
         else
           results.sort! { |x, y| (y[:search_date] || '') <=> (x[:search_date] || '') }
         end
-        results
       when SearchOrder::LOCATION
         if order_asc
           results.sort! do |x, y|
@@ -847,7 +855,6 @@ class SearchQuery
             compare_location(y, x) # note the reverse order
           end
         end
-        results
       when SearchOrder::NAME
         if order_asc
           results.sort! do |x, y|
@@ -858,7 +865,6 @@ class SearchQuery
             compare_name(y, x) # note the reverse order
           end
         end
-        results
       end
     end
     results
