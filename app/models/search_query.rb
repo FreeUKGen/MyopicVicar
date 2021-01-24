@@ -176,31 +176,19 @@ class SearchQuery
   ############################################################################# instance methods #####################################################
 
   def add_birth_place_when_absent(search_results)
-    p 'add_birth_place_when_absent'
     search_results.each do |record|
-      p 'recprd'
-      p record
-      search_record = SearchRecord.find_by(_id: record["_id"])
-      p 'sr........................................'
-      p search_record
-      p search_record.birth_place.present?
+      search_record = SearchRecord.find_by(_id: record['_id'])
       next if search_record.birth_place.present?
+
       if search_record.freecen_csv_entry_id.present?
         entry = FreecenCsvEntry.find_by(_id: search_record.freecen_csv_entry_id)
-        p 'entry'
-        p entry
         birth_place = entry.birth_place.present? ? entry.birth_place : entry.verbatim_birth_place
         search_record.update_attributes(birth_place: birth_place) if entry.present?
-        p 'updated sr'
-        p search_record
       else
         individual = search_record.freecen_individual_id
         actual_individual = FreecenIndividual.find_by(_id: individual) if individual.present?
-        p 'ind'
-        p actual_individual
-        search_record.update_attributes(birth_place: actual_individual.birth_place) if actual_individual.present?
-        p 'updated sr'
-        p search_record
+        birth_place = actual_individual.birth_place.present? ? actual_individual.birth_place : actual_individual.verbatim_birth_place
+        search_record.update_attributes(birth_place: birth_place) if actual_individual.present?
       end
     end
     search_results
@@ -429,7 +417,6 @@ class SearchQuery
   end
 
   def get_and_sort_results_for_display
-    p 'get_and_sort_results_for_display'
     if self.search_result.records.respond_to?(:values)
       search_results = self.search_result.records.values
       search_results = add_birth_place_when_absent(search_results)
@@ -830,28 +817,22 @@ class SearchQuery
   end
 
   def sort_results(results)
-    p 'sort_results'
-    p order_field
     # next reorder in memory
     if results.present?
-      case self.order_field
+      case order_field
       when *selected_sort_fields
-        p order_field
-        p results
         results.sort! do |x, y|
-          x, y = y, x unless self.order_asc
+          x, y = y, x unless order_asc
           (x[order_field] || '') <=> (y[order_field] || '')
         end
-        p 'after'
-        p results
       when SearchOrder::DATE
-        if self.order_asc
+        if order_asc
           results.sort! { |x, y| (x[:search_date] || '') <=> (y[:search_date] || '') }
         else
           results.sort! { |x, y| (y[:search_date] || '') <=> (x[:search_date] || '') }
         end
       when SearchOrder::LOCATION
-        if self.order_asc
+        if order_asc
           results.sort! do |x, y|
             compare_location(x, y)
           end
@@ -861,7 +842,7 @@ class SearchQuery
           end
         end
       when SearchOrder::NAME
-        if self.order_asc
+        if order_asc
           results.sort! do |x, y|
             compare_name(x, y)
           end
