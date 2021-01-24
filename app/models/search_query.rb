@@ -821,12 +821,23 @@ class SearchQuery
     if results.present?
       case order_field
       when *selected_sort_fields
+        order = order_field.to_sym
+        p 'before'
+        results.each do |rec|
+          p rec
+        end
         results.sort! do |x, y|
           if order_asc
-            (x[order_field.to_sym] || '') <=> (y[order_field.to_sym] || '')
+            p x[order]
+            p y[order]
+            (x[order] || '') <=> (y[order] || '')
           else
-            (y[order_field.to_sym] || '') <=> (x[order_field.to_sym] || '')
+            (y[order] || '') <=> (x[order] || '')
           end
+        end
+        p 'after'
+        results.each do |rec|
+          p rec
         end
       when SearchOrder::DATE
         if order_asc
