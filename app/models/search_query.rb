@@ -175,9 +175,11 @@ class SearchQuery
     def add_birth_place_when_absent(rec)
       'add_birth_place_when_absent'
       p rec
-      search_record = SearchRecord.find_by(_id: rec[:_id])
+
       p search_record
-      return rec if search_record.birth_place.present?
+      return rec if rec[:birth_place].present?
+
+      search_record = SearchRecord.find_by(_id: rec[:_id])
 
       if search_record.freecen_csv_entry_id.present?
         entry = FreecenCsvEntry.find_by(_id: search_record.freecen_csv_entry_id)
@@ -190,7 +192,7 @@ class SearchQuery
         search_record.update_attributes(birth_place: birth_place) if actual_individual.present?
       end
       p 'after'
-      p search_record
+      p search_record.to_json
       search_record
     end
   end
@@ -627,6 +629,8 @@ class SearchQuery
     records = Hash.new
     results.each do |rec|
       rec_id = rec['_id'].to_s
+
+
       records[rec_id] = SearchQuery.add_birth_place_when_absent(rec)
     end
     self.search_result.records = self.search_result.records.merge(records)
@@ -637,6 +641,7 @@ class SearchQuery
 
   def persist_results(results)
     return unless results
+    p 'results'
     # finally extract the records IDs and persist them
     records = Hash.new
     results.each do |rec|
