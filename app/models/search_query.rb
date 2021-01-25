@@ -192,8 +192,8 @@ class SearchQuery
         search_record.update_attributes(birth_place: birth_place) if actual_individual.present?
       end
       p 'after'
-      p search_record.to_json
-      search_record
+
+      search_record.to_json
     end
   end
 
