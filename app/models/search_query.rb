@@ -173,15 +173,9 @@ class SearchQuery
     end
 
     def add_birth_place_when_absent(rec)
-      'add_birth_place_when_absent'
-      p rec
-
-
       return rec if rec[:birth_place].present?
 
       search_record = SearchRecord.find_by(_id: rec[:_id])
-      p search_record
-
       if search_record.freecen_csv_entry_id.present?
         entry = FreecenCsvEntry.find_by(_id: search_record.freecen_csv_entry_id)
         birth_place = entry.birth_place.present? ? entry.birth_place : entry.verbatim_birth_place
@@ -192,16 +186,12 @@ class SearchQuery
         birth_place = actual_individual.birth_place.present? ? actual_individual.birth_place : actual_individual.verbatim_birth_place
         search_record.update_attributes(birth_place: birth_place) if actual_individual.present?
       end
-      p 'after'
-
       rec['birth_place'] = birth_place
-      p rec
       rec
     end
   end
 
   ############################################################################# instance methods #####################################################
-
 
 
   def adequate_first_name_criteria?
@@ -629,11 +619,9 @@ class SearchQuery
   def persist_additional_results(results)
     return unless results
     # finally extract the records IDs and persist them
-    records = Hash.new
+    records = {}
     results.each do |rec|
       rec_id = rec['_id'].to_s
-
-
       records[rec_id] = SearchQuery.add_birth_place_when_absent(rec)
     end
     self.search_result.records = self.search_result.records.merge(records)
@@ -644,9 +632,9 @@ class SearchQuery
 
   def persist_results(results)
     return unless results
-    p 'results'
+
     # finally extract the records IDs and persist them
-    records = Hash.new
+    records = {}
     results.each do |rec|
       record = rec # should be a SearchRecord despite Mongoid bug
       rec_id = record['_id'].to_s
