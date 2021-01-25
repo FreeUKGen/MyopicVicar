@@ -176,10 +176,11 @@ class SearchQuery
       'add_birth_place_when_absent'
       p rec
 
-      p search_record
+
       return rec if rec[:birth_place].present?
 
       search_record = SearchRecord.find_by(_id: rec[:_id])
+      p search_record
 
       if search_record.freecen_csv_entry_id.present?
         entry = FreecenCsvEntry.find_by(_id: search_record.freecen_csv_entry_id)
