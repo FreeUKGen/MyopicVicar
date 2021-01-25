@@ -171,36 +171,32 @@ class SearchQuery
 
       [record, true, '']
     end
-  end
 
-  ############################################################################# instance methods #####################################################
-
-  def add_birth_place_when_absent(search_results)
-    p 'add_birth_place_when_absent'
-    p 'before'
-    p search_results
-    search_results.each do |record|
-      search_record = SearchRecord.find_by(_id: record['_id'])
-      next if search_record.birth_place.present?
+    def add_birth_place_when_absent(rec)
+      'add_birth_place_when_absent'
+      search_record = SearchRecord.find_by(_id: rec[:_id])
+      p search_record
+      return rec if search_record.birth_place.present?
 
       if search_record.freecen_csv_entry_id.present?
         entry = FreecenCsvEntry.find_by(_id: search_record.freecen_csv_entry_id)
         birth_place = entry.birth_place.present? ? entry.birth_place : entry.verbatim_birth_place
         search_record.update_attributes(birth_place: birth_place) if entry.present?
-        search_record.reload
       else
         individual = search_record.freecen_individual_id
         actual_individual = FreecenIndividual.find_by(_id: individual) if individual.present?
         birth_place = actual_individual.birth_place.present? ? actual_individual.birth_place : actual_individual.verbatim_birth_place
         search_record.update_attributes(birth_place: birth_place) if actual_individual.present?
-        search_record.reload
       end
+      p 'after'
+      p search_record
+      search_record
     end
-    p 'add_birth_place_when_absent'
-    p 'after'
-    p search_results
-    search_results
   end
+
+  ############################################################################# instance methods #####################################################
+
+
 
   def adequate_first_name_criteria?
     first_name.present? && chapman_codes.length > 0 && place_ids.present?
@@ -427,7 +423,6 @@ class SearchQuery
   def get_and_sort_results_for_display
     if self.search_result.records.respond_to?(:values)
       search_results = self.search_result.records.values
-      search_results = add_birth_place_when_absent(search_results)
       search_results = self.filter_name_types(search_results)
       search_results = self.filter_embargoed(search_results)
       search_results = self.filter_census_addional_fields(search_results) if MyopicVicar::Application.config.template_set == 'freecen'
@@ -631,7 +626,7 @@ class SearchQuery
     records = Hash.new
     results.each do |rec|
       rec_id = rec['_id'].to_s
-      records[rec_id] = rec
+      records[rec_id] = SearchQuery.add_birth_place_when_absent(rec)
     end
     self.search_result.records = self.search_result.records.merge(records)
     self.result_count = self.search_result.records.length
@@ -646,9 +641,9 @@ class SearchQuery
     results.each do |rec|
       record = rec # should be a SearchRecord despite Mongoid bug
       rec_id = record['_id'].to_s
-      records[rec_id] = record
+      records[rec_id] = SearchQuery.add_birth_place_when_absent(record)
     end
-    self.search_result =  SearchResult.new
+    self.search_result = SearchResult.new
     self.search_result.records = records
     self.result_count = records.length
     self.runtime = (Time.now.utc - self.updated_at) * 1000
@@ -830,23 +825,14 @@ class SearchQuery
       case order_field
       when *selected_sort_fields
         order = order_field.to_sym
-        p 'before'
-        p order
         results.each do |rec|
-          p rec
         end
         results.sort! do |x, y|
           if order_asc
-            p x[order]
-            p y[order]
             (x[order] || '') <=> (y[order] || '')
           else
             (y[order] || '') <=> (x[order] || '')
           end
-        end
-        p 'after'
-        results.each do |rec|
-          p rec
         end
       when SearchOrder::DATE
         if order_asc
