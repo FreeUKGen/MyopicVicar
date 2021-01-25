@@ -193,7 +193,9 @@ class SearchQuery
       end
       p 'after'
 
-      search_record.to_json
+      rec['birth_place'] = birth_place
+      p rec
+      rec
     end
   end
 
