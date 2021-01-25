@@ -174,6 +174,7 @@ class SearchQuery
 
     def add_birth_place_when_absent(rec)
       'add_birth_place_when_absent'
+      p rec
       search_record = SearchRecord.find_by(_id: rec[:_id])
       p search_record
       return rec if search_record.birth_place.present?
