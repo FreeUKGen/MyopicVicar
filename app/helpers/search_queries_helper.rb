@@ -51,9 +51,9 @@ module SearchQueriesHelper
       search_year
     else
       if record_type == RecordType::CENSUS_1841 && search_year > "1826"
-        "#{search_year.to_i - 3} - #{search_year.to_i + 2}"
+        "#{search_year.to_i - 3}"
       else
-        "#{search_year.to_i - 1} - #{search_year}"
+        "#{search_year.to_i - 1}"
       end
     end
   end
