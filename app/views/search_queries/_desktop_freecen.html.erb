@@ -14,10 +14,10 @@
         <%= link_to('Birth Place', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BIRTH_PLACE)) %>
       <% else %>Birth Place<% end %></th>
     <th><% unless print_friendly %>
-        <%= link_to('Birth Year', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DATE)) %>
+        <%= link_to('Birth', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DATE)) %>
       <% else %>Birth Year<% end %></th>
     <th><% unless print_friendly %>
-        <%= link_to('Census Year', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::TYPE)) %>
+        <%= link_to('Census', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::TYPE)) %>
       <% else %>Census Year<% end %></th>
     <th><% unless print_friendly %>
         <%= link_to('Census County', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::COUNTY)) %>
