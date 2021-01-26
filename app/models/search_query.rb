@@ -189,6 +189,15 @@ class SearchQuery
       rec['birth_place'] = birth_place
       rec
     end
+
+    def add_search_date_when_absent(rec)
+      return rec if rec[:search_date].present?
+
+      search_record = SearchRecord.find_by(_id: rec[:_id])
+      search_record.update_attributes(search_date: search_record.search_dates[0])
+      rec['search_date'] = search_record.search_dates[0]
+      rec
+    end
   end
 
   ############################################################################# instance methods #####################################################
@@ -638,7 +647,9 @@ class SearchQuery
     results.each do |rec|
       record = rec # should be a SearchRecord despite Mongoid bug
       rec_id = record['_id'].to_s
-      records[rec_id] = SearchQuery.add_birth_place_when_absent(record)
+      record = SearchQuery.add_birth_place_when_absent(record) if record[:birth_place].blank?
+      record = SearchQuery.add_search_date_when_absent(record) if record[:search_date].blank?
+      records[rec_id] = record
     end
     self.search_result = SearchResult.new
     self.search_result.records = records
