@@ -450,6 +450,8 @@ class FreecenCsvFilesController < ApplicationController
     session.delete(:previous_list_entry)
     @freecen_csv_file.update_attribute(:list_of_records, nil) if @freecen_csv_file.list_of_records.present?
     @piece = @freecen_csv_file.freecen2_piece
+    @freecen_csv_file.set_total_dwellings
+    @freecen_csv_file.set_total_individuals
   end
 
   def spreadsheet

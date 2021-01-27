@@ -15,16 +15,8 @@ if Rails.env.development?
     ActionMailer::Base.perform_deliveries = true
     ActionMailer::Base.raise_delivery_errors = true
   when 'localhost:3000'
-    ActionMailer::Base.perform_deliveries = true
-    ActionMailer::Base.raise_delivery_errors = true
-    ActionMailer::Base.smtp_settings = {
-      :address              => "smtp.gmail.com",
-      :port                 => 587,
-      :user_name            => ENV['gmail_username'],
-      :password             => ENV['gmail_password'],
-      :authentication       => "plain",
-      :enable_starttls_auto => true
-    }
+    ActionMailer::Base.perform_deliveries = false
+    ActionMailer::Base.raise_delivery_errors = false
   end
 else
   ActionMailer::Base.delivery_method = :sendmail
