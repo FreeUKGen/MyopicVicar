@@ -1,0 +1,18 @@
+<table class="table--bordered " style="background-color:#ffffff;">
+  <thead>
+    <% FreecenDwelling.dwelling_display_labels(@cen_year,@cen_chapman_code).each do |lbl| %>
+      <th>
+        <%= lbl %>
+      </th>
+    <% end %>
+  </thead>
+  <tbody>
+    <tr>
+      <% @dwelling.dwelling_display_values(@cen_year,@cen_chapman_code).each do |field_val| %>
+        <td>
+          <%= field_val %>
+        </td>
+      <% end %>
+    </tr>
+  </tbody>
+</table>
