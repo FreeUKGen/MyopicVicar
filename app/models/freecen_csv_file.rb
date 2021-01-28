@@ -70,6 +70,8 @@ class FreecenCsvFile
   field :incorporated_date, type: DateTime
   field :enumeration_districts, type: Hash
   field :incorporation_lock, type: Boolean, default: false
+  field :total_dwellings, type: Integer
+  field :total_individuals, type: Integer
 
 
   before_save :add_lower_case_userid_to_file, :add_country_to_file
@@ -1043,5 +1045,23 @@ class FreecenCsvFile
       line << rec[:record_valid] if validation && !field_specification.value?('record_valid')
     end
     line
+  end
+
+  def set_total_dwellings
+    if total_dwellings.blank?
+      last_dwelling = FreecenCsvEntry.where(freecen_csv_file_id: id).order_by(dwelling_number: -1).first
+      number_of_dwellings = last_dwelling.dwelling_number if last_dwelling.present?
+      update_attributes(total_dwellings: number_of_dwellings)
+    end
+  end
+
+  def set_total_individuals
+    if total_individuals.blank?
+      number_of_individuals = 0
+      freecen_csv_entries.each do |entry|
+        number_of_individuals += 1 if entry.sequence_in_household.present?
+      end
+      update_attributes(total_individuals: number_of_individuals)
+    end
   end
 end
