@@ -1,7 +1,6 @@
 <% title "Search Results" %>
 <h1 class="accessibility">Search results</h1>
 <%= render 'flash_notice' %>
-<a id="pagetop"></a>
 <% show_contents_link%>
 <% if @search_query.present? %>
   <%= render 'nav_header' %>
@@ -50,7 +49,6 @@
     <% if @result_count > 10 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
       <br>
       <%= render 'nav_header' %>
-      <a href="#pagetop" class="btn  btn--small">Go to top</a>
     <% end %>
     <% if @result_count > 0 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
       <%= render 'please_donate' %>
