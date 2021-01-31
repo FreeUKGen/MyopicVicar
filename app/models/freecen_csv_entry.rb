@@ -173,7 +173,7 @@ class FreecenCsvEntry
     end
 
     def mytitlieze(value)
-      value = value.present? && !value.chars.include?('-') ? value.strip.titleize : value
+      value = value.present? && !value.chars.include?('-') ? value.strip.downcase.titleize : value
       value
     end
 

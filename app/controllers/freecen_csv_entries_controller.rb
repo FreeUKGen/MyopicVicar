@@ -291,8 +291,6 @@ class FreecenCsvEntriesController < ApplicationController
       session[:propagate_note] = @freecen_csv_entry.id if @freecen_csv_entry.propagate_note?(params[:freecen_csv_entry])
       params[:freecen_csv_entry][:warning_messages] = '' if params[:freecen_csv_entry][:record_valid] == 'true'
       @freecen_csv_entry.update_attributes(params[:freecen_csv_entry])
-
-      #SearchRecord.update_create_search_record(@freecen_csv_entry, search_version, place)
       @freecen_csv_entry.reload
       @warnings_now, @errors_now = @freecen_csv_entry.are_there_messages
       @freecen_csv_entry.check_valid
