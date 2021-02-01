@@ -42,14 +42,14 @@ class FreecenDwelling
     #Scotland doesn't have folio
     if '1841' == year
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        return ['Census Year', 'County', 'Census District', 'Civil Parish', 'Piece', 'Enumeration District', 'Page', 'House Number', 'House or Street Name']
+        return ['Census', 'County', 'District', 'Civil Parish', 'Piece', 'Enumeration District', 'Page', 'House Number', 'House or Street Name']
       end
-      return ['Census Year', 'County', 'Census District', 'Civil Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'House Number', 'House or Street Name']
+      return ['Census', 'County', 'District', 'Civil Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'House Number', 'House or Street Name']
     end
     if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-      return ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'Schedule', 'House Number', 'House or Street Name']
+      return ['Census', 'County', 'District', 'Civil Parish', 'Ecclesiastical Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'Schedule', 'House Number', 'House or Street Name']
     end
-    ['Census Year', 'County', 'Census District', 'Civil Parish', 'Ecclesiastical Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'Schedule', 'House Number', 'House or Street Name']
+    ['Census', 'County', 'District', 'Civil Parish', 'Ecclesiastical Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'Schedule', 'House Number', 'House or Street Name']
   end
   def dwelling_display_values(year, chapman_code)
     #1841 doesn't have ecclesiastical parish or schedule number

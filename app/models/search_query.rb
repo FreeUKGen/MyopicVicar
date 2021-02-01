@@ -171,9 +171,37 @@ class SearchQuery
 
       [record, true, '']
     end
+
+    def add_birth_place_when_absent(rec)
+      return rec if rec[:birth_place].present?
+
+      search_record = SearchRecord.find_by(_id: rec[:_id])
+      if search_record.freecen_csv_entry_id.present?
+        entry = FreecenCsvEntry.find_by(_id: search_record.freecen_csv_entry_id)
+        birth_place = entry.birth_place.present? ? entry.birth_place : entry.verbatim_birth_place
+        search_record.update_attributes(birth_place: birth_place) if entry.present?
+      else
+        individual = search_record.freecen_individual_id
+        actual_individual = FreecenIndividual.find_by(_id: individual) if individual.present?
+        birth_place = actual_individual.birth_place.present? ? actual_individual.birth_place : actual_individual.verbatim_birth_place
+        search_record.update_attributes(birth_place: birth_place) if actual_individual.present?
+      end
+      rec['birth_place'] = birth_place
+      rec
+    end
+
+    def add_search_date_when_absent(rec)
+      return rec if rec[:search_date].present?
+
+      search_record = SearchRecord.find_by(_id: rec[:_id])
+      search_record.update_attributes(search_date: search_record.search_dates[0])
+      rec['search_date'] = search_record.search_dates[0]
+      rec
+    end
   end
 
   ############################################################################# instance methods #####################################################
+
 
   def adequate_first_name_criteria?
     first_name.present? && chapman_codes.length > 0 && place_ids.present?
@@ -403,7 +431,7 @@ class SearchQuery
       search_results = self.filter_name_types(search_results)
       search_results = self.filter_embargoed(search_results)
       search_results = self.filter_census_addional_fields(search_results) if MyopicVicar::Application.config.template_set == 'freecen'
-      search_results.length.present? ? result_count = search_results.length : result_count = 0
+      result_count = search_results.length.present? ? search_results.length : 0
       search_results = self.sort_results(search_results) unless search_results.nil?
 
       ucf_results = self.ucf_results if self.ucf_results.present?
@@ -600,10 +628,10 @@ class SearchQuery
   def persist_additional_results(results)
     return unless results
     # finally extract the records IDs and persist them
-    records = Hash.new
+    records = {}
     results.each do |rec|
       rec_id = rec['_id'].to_s
-      records[rec_id] = rec
+      records[rec_id] = SearchQuery.add_birth_place_when_absent(rec)
     end
     self.search_result.records = self.search_result.records.merge(records)
     self.result_count = self.search_result.records.length
@@ -613,14 +641,17 @@ class SearchQuery
 
   def persist_results(results)
     return unless results
+
     # finally extract the records IDs and persist them
-    records = Hash.new
+    records = {}
     results.each do |rec|
       record = rec # should be a SearchRecord despite Mongoid bug
       rec_id = record['_id'].to_s
+      record = SearchQuery.add_birth_place_when_absent(record) if record[:birth_place].blank?
+      record = SearchQuery.add_search_date_when_absent(record) if record[:search_date].blank?
       records[rec_id] = record
     end
-    self.search_result =  SearchResult.new
+    self.search_result = SearchResult.new
     self.search_result.records = records
     self.result_count = records.length
     self.runtime = (Time.now.utc - self.updated_at) * 1000
@@ -799,20 +830,26 @@ class SearchQuery
   def sort_results(results)
     # next reorder in memory
     if results.present?
-      case self.order_field
+      case order_field
       when *selected_sort_fields
+        order = order_field.to_sym
+        results.each do |rec|
+        end
         results.sort! do |x, y|
-          x, y = y, x unless self.order_asc
-          (x[order_field] || '') <=> (y[order_field] || '')
+          if order_asc
+            (x[order] || '') <=> (y[order] || '')
+          else
+            (y[order] || '') <=> (x[order] || '')
+          end
         end
       when SearchOrder::DATE
-        if self.order_asc
+        if order_asc
           results.sort! { |x, y| (x[:search_date] || '') <=> (y[:search_date] || '') }
         else
           results.sort! { |x, y| (y[:search_date] || '') <=> (x[:search_date] || '') }
         end
       when SearchOrder::LOCATION
-        if self.order_asc
+        if order_asc
           results.sort! do |x, y|
             compare_location(x, y)
           end
@@ -822,7 +859,7 @@ class SearchQuery
           end
         end
       when SearchOrder::NAME
-        if self.order_asc
+        if order_asc
           results.sort! do |x, y|
             compare_name(x, y)
           end
@@ -935,6 +972,6 @@ class SearchQuery
   private
 
   def selected_sort_fields
-    [ SearchOrder::COUNTY, SearchOrder::BIRTH_COUNTY, SearchOrder::TYPE ]
+    [ SearchOrder::COUNTY, SearchOrder::BIRTH_COUNTY, SearchOrder::BIRTH_PLACE, SearchOrder::TYPE ]
   end
 end
