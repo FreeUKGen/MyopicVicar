@@ -631,7 +631,7 @@ class SearchQuery
     records = {}
     results.each do |rec|
       rec_id = rec['_id'].to_s
-      records[rec_id] = SearchQuery.add_birth_place_when_absent(rec)
+      #records[rec_id] = SearchQuery.add_birth_place_when_absent(rec)
     end
     self.search_result.records = self.search_result.records.merge(records)
     self.result_count = self.search_result.records.length
@@ -647,7 +647,7 @@ class SearchQuery
     results.each do |rec|
       record = rec # should be a SearchRecord despite Mongoid bug
       rec_id = record['_id'].to_s
-      record = SearchQuery.add_birth_place_when_absent(record) if record[:birth_place].blank?
+      record = SearchQuery.add_birth_place_when_absent(record) if record[:birth_place].blank? && App.name.downcase == 'freecen'
       record = SearchQuery.add_search_date_when_absent(record) if record[:search_date].blank?
       records[rec_id] = record
     end
