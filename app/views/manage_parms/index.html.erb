@@ -1,0 +1,45 @@
+<h2 class="text--center">List Freecen1 Fixed Dat files for <%= params[:year] %></h2>
+<p class="text--center">
+  <%= link_to 'Add new Parm file', new_manage_parm_path, class: "btn  btn--small" %>
+</p>
+
+<div class="grid__item "> 
+  <section class="island ">
+    <div class="scrollable">
+      <div class="table-wrapper" style="margin-top: 20px;">
+        <table class="table--bordered table--data" >
+          <thead>
+            <tr>
+              <th>Filename</th>
+              <th>Dirname</th>
+              <th>Year</th>
+              <th>Userid</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @manage_parms.each do |freecen1_fixed_dat_file| %>
+              <tr>
+                <td><%= freecen1_fixed_dat_file.file_name %></td>
+                <td><%= freecen1_fixed_dat_file.chapman_code %></td>
+                <td><%= freecen1_fixed_dat_file.year %></td>
+                <td><%= freecen1_fixed_dat_file.userid %></td>
+                <td><%= link_to 'Process', '#', class: 'push--right', id: 'parm_file_process' %>
+                <%= link_to 'Remove', '#', method: :delete, data: { confirm: 'Are you sure?' } %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+  
+  $(function () {
+    //$("#parm_file_process").click(function() {
+      //event.preventDefault();
+      //$( "#new-parm-form" ).slideDown();
+    //});
+  });
+</script>

@@ -1,0 +1,25 @@
+<fieldset>
+  <legend>Please upload only the '.dat' or '.csv' files for the year <%= params[:year] %></legend>
+	<%= simple_form_for(@manage_parm) do |f| %>
+	  <%= form_error(f) %>
+
+	  <div class="form-inputs">
+	  	<%= label_tag do%>
+	  	  Select a Census Year:
+	  		<%= f.select :year, options_for_select(Freecen::CENSUS_YEARS) %>
+	  	<% end %>
+	  	<%#  session[:chapman_code].inspect %>
+	    <%= f.hidden_field :chapman_code, value: session[:chapman_code] %>
+	    <%= f.hidden_field :userid, value: @user.userid %>
+	    <%= f.hidden_field :date_of_addition, value: DateTime.now.to_formatted_s(:long) %>
+	    <%= label_tag do%>
+	    	Choose a Parm File to Upload:
+	    	<%= f.file_field :parm_file, required: true %>
+	    <% end %>
+	  </div>
+
+	  <div class="form-actions">
+	    <%= f.button :submit, "Upload File" %>
+	  </div>
+	<% end %>
+</fieldset>

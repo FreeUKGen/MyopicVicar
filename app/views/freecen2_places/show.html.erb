@@ -1,0 +1,118 @@
+<% breadcrumb :show_freecen2_place,  @county, @place%>
+<%= render 'flash_notice' %>
+<div class="grid">
+  <section class="island ">
+    <h4 style="text-align: center">The Freecen2 Place <%= @place.place_name%> in <%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>) </h4>
+    <div style="text-align: center">
+      <% if %w[data_manager system_administrator county_coordinator validator master_county_coordinator executive_director project_manager].include?(@user.person_role)%>
+        <%= link_to 'Edit Freecen2 Place Information', edit_freecen2_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small", title: 'Edit the place including the addition of alternate place names' %>
+        <%= link_to 'Create New Freecen2 Place', new_freecen2_place_path, method: :get, :class => "btn   btn--small", title: 'Permits the addition of a new place'  %>
+        <%= link_to 'Disable Freecen2 Place', freecen2_place_path(@place), method: :delete,  data: { confirm: 'Are you sure you want to disable this Place.? It will not happen if there are dependants!' }, :class => "btn   btn--small", title: 'Disables this place without actually deleting it'  %>
+      <% end%>
+      <% if %w[system_administrator].include?(@user.person_role)%>
+        <%= link_to 'Change Freecen2 Place Name', rename_freecen2_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn   btn--small", title: 'Change the name of the place within its county'  %>
+      <% end%>
+      <div class="grid__item  ">
+        <table class="table--bordered table--data " >
+          <colgroup >
+            <col class=t40>
+            <col class=t60>
+          </colgroup>
+          <tr>
+            <th class="caps">Field</th>
+            <th  class="caps">Value</th>
+          </tr>
+          <tr>
+            <td title="The Standard name is the one used for equivalecy testing">Place Name [Standard Name]: </td>
+            <td class="weight--semibold"><%= @place.place_name %>  [<%= @place.standard_place_name %>]</td>
+          </tr>
+          <% if  @place.original_place_name.present? %>
+            <tr>
+              <td>Original Place Name [Standard Original Name]: </td>
+              <td class="weight--semibold"><%= @place.original_place_name %>  [<%= @place.original_standard_name %>]</td>
+            </tr>
+          <% end%>
+          <%  @place.alternate_freecen2_place_names.each do |place|%>
+            <tr>
+              <td>Alternate place name [Standard Alternate Name]:</td>
+              <td class="weight--semibold"><%= place.alternate_name %> [<%= place.standard_alternate_name%>] </td>
+            </tr>
+          <% end%>
+          <tr>
+            <td>County:</td>
+            <td class="weight--semibold"><%= @county %></td>
+          </tr>
+          <tr>
+            <td>Country:</td>
+            <td class="weight--semibold"><%= @place.country %></td>
+          </tr>
+          <tr>
+            <td>Latitude:</td>
+            <td class="weight--semibold"> <%= @place.latitude%></td>
+          </tr>
+          <tr>
+            <td>Longitude:</td>
+            <td class="weight--semibold"> <%= @place.longitude%></td>
+          </tr>
+          <tr>
+            <td>Location:<small> Opens in new tab</small></td>
+            <td class="weight--semibold"><%=locate(@place.latitude,@place.longitude)%></td>
+          </tr>
+          <tr>
+            <td>Notes about the place :</td>
+            <td class="weight--semibold"><%= @place.place_notes %> </td>
+          </tr>
+          <tr>
+            <td>Source:</td>
+            <td class="weight--semibold"> <%= @place.source %></td>
+          </tr>
+          <tr>
+            <td>Official website:<small> Opens in new tab</small></td>
+            <td class="weight--semibold"><%=official_source(@place.genuki_url)%></td>
+          </tr>
+          <tr>
+            <td>Data present for this place:</td>
+            <td class="weight--semibold"> <%= @place.data_present %></td>
+          </tr>
+          <tr>
+            <td>Census years present for this place:</td>
+            <td class="weight--semibold"> <%= @place.cen_data_years %></td>
+          </tr>
+          <% if  @place.reason_for_change.present? ||  @place.original_place_name.present? || @place.original_grid_reference.present? %>
+            <tr>
+              <td>Original place name:</td>
+              <td class="weight--semibold"> <%= @place.original_place_name %></td>
+            </tr>
+            <tr>
+              <td>Original county:</td>
+              <td class="weight--semibold"> <%= @place.original_county %></td>
+            </tr>
+            <tr>
+              <td>Original country:</td>
+              <td class="weight--semibold"> <%= @place.original_country %></td>
+            </tr>
+            <tr>
+              <td>Original Grid Reference:</td>
+              <td class="weight--semibold"> <%= @place.original_grid_reference %></td>
+            </tr>
+            <tr>
+              <td>Original latitude:</td>
+              <td class="weight--semibold"> <%= @place.original_latitude %></td>
+            </tr>
+            <tr>
+              <td>Original longitude:</td>
+              <td class="weight--semibold"> <%= @place.original_longitude %></td>
+            </tr>
+            <tr>
+              <td>Original source:</td>
+              <td class="weight--semibold"> <%= @place.original_source %></td>
+            </tr>
+            <tr>
+              <td>Reason for changes:</td>
+              <td class="weight--semibold"> <%= @place.reason_for_change %></td>
+            </tr>
+            <tr>
+            <% end%>
+          </table>
+        </div>
+      </div>

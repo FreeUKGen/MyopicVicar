@@ -17,4 +17,24 @@ module FreecenPiecesHelper
     place_names.sort_by! { |e| ActiveSupport::Inflector.transliterate(e.downcase) }
     place_names.join(', ')
   end
+
+  def piece_number(file)
+    actual_piece = file.freecen_piece
+    piece_number = actual_piece.piece_number
+  end
+
+  def chapman(file)
+    actual_piece = file.freecen_piece
+    piece_number = actual_piece.chapman_code
+  end
+
+  def year(file)
+    actual_piece = file.freecen_piece
+    piece_number = actual_piece.year
+  end
+
+  def district_name(file)
+    actual_piece = file.freecen_piece
+    piece_number = actual_piece.district_name
+  end
 end

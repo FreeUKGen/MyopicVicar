@@ -62,7 +62,12 @@ class UserMailer < ActionMailer::Base
     @batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
     @syndicate_coordinator, @syndicate_coordinator_email = syndicate_coordinator_email_lookup(@userid)
     @county_coordinator, @county_coordinator_email = county_coordinator_email_lookup(batch, @userid)
-    subject = "#{@userid.userid}/#{batch} processed at #{Time.now} with #{@batch.error unless @batch.nil?} errors over period #{@batch.datemin unless @batch.nil?}-#{@batch.datemax unless @batch.nil?}"
+    case appname.downcase
+    when 'freereg'
+      subject = "#{@userid.userid}/#{batch} processed at #{Time.now} with #{@batch.error unless @batch.nil?} errors over period #{@batch.datemin unless @batch.nil?}-#{@batch.datemax unless @batch.nil?}"
+    when 'freecen'
+      subject = "#{@userid.userid} processed #{batch} at #{Time.now} "
+    end
     adjust_email_recipients(subject)
   end
 
@@ -136,6 +141,13 @@ class UserMailer < ActionMailer::Base
     mail(to: "#{@send_to.email_address}", cc: @cc_email_addresses, subject: "This is a feedback action request for reference #{@contact.identifier} on #{@appname}")
   end
 
+  def forced_district_deletion(chapman_code, name, year)
+    county = County.find_by(chapman_code: chapman_code)
+    county_coordinator = UseridDetail.find_by(userid: county.county_coordinator)
+    friendly_email = "#{county_coordinator.person_forename} #{county_coordinator.person_surname} <#{county_coordinator.email_address}>"
+    mail(to: friendly_email, subject: "Forced deletion of district #{name} for #{chapman_code} in #{year} completed")
+  end
+
   def get_attachment(contact)
     if contact.screenshot_location.present?
       @file_name = File.basename(contact.screenshot_location)
@@ -163,6 +175,38 @@ class UserMailer < ActionMailer::Base
       @filei = "#{Rails.root}/public" + @message.images_url
       attachments[@image] = File.binread(@filei)
     end
+  end
+
+  def incorporation_report(userid, message, file, county)
+    coordinator = UseridDetail.userid(userid).first
+    @appname = appname
+    @message = message
+    subject = "We have processed your request to include #{file} of #{county} into the database"
+    mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", subject: subject) if coordinator.present?
+  end
+
+  def incorporation_report_failure(userid, message, file, county)
+    coordinator = UseridDetail.userid(userid).first
+    @appname = appname
+    @message = message
+    subject =  "We were unable to process your request to include #{file} of #{county} into the database"
+    manager = UseridDetail.userid('Captkirk').first
+    mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", cc: "#{manager.person_forename} <#{manager.email_address}>", subject: subject) if coordinator.present?
+  end
+
+  def unincorporation_report(userid, message, file, county)
+    coordinator = UseridDetail.userid(userid).first
+    @appname = appname
+    @message = message
+    mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", subject: "Record removal report for #{file} in #{county}") if coordinator.present?
+  end
+
+  def unincorporation_report_failure(userid, message, file, county)
+    coordinator = UseridDetail.userid(userid).first
+    @appname = appname
+    @message = message
+    manager = UseridDetail.userid('Captkirk').first
+    mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", cc: "#{manager.person_forename} <#{manager.email_address}>", subject: "Record removal failure report for #{file} in #{county}") if coordinator.present?
   end
 
   def notification_of_technical_registration(user)
@@ -483,9 +527,15 @@ class UserMailer < ActionMailer::Base
   end
 
   def sndmanager_email_lookup
-    sndmager = UseridDetail.userid('SNDManager').first
-    friendly_email = "#{sndmager.person_forename} #{sndmager.person_surname} <#{sndmager.email_address}>"
-    [sndmager, friendly_email]
+    sndmanger = UseridDetail.userid('SNDManager').first
+    if sndmanger.present?
+      friendly_email = "#{sndmager.person_forename} #{sndmager.person_surname} <#{sndmager.email_address}>"
+      [sndmanger, friendly_email]
+
+    else
+      sndmanger = UseridDetail.userid('vinodhini')
+      [sndmanger, "Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>"]
+    end
   end
 
   def extract_chapman_code_from_file_name(file_name)

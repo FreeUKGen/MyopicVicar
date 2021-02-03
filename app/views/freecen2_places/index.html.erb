@@ -1,0 +1,11 @@
+<% breadcrumb :freecen2_places,  @county%>
+<h3 style="text-align: center"><b><%= active(session[:active_place])%> Freecen2 Places for <%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>) </b>.</h3>
+<%= render 'flash_notice' %>
+<div style="text-align: center">
+  <%= link_to 'Display a Specific Place', selection_by_name_freecen2_places_path,  :class => "btn   btn--small"%>
+  <%= link_to 'Full Index of Places ', full_index_freecen2_places_path, :class => "btn   btn--small"%>
+</div>
+<br>
+<br>
+<br>
+<br>

@@ -24,7 +24,6 @@ module RecordType
   CENSUS_1871 = '1871'
   CENSUS_1881 = '1881'
   CENSUS_1891 = '1891'
-
   BIRTHS    = 1
   DEATHS    = 2
   MARRIAGES = 3
@@ -35,6 +34,8 @@ module RecordType
   ALL_TYPES = []
   BMD_RECORD_TYPE_ID = [1,2,3]
 
+  CENSUS_1901 = '1901'
+  CENSUS_1911 = '1911'
   def self.all_types
     ("RecordType::#{all_types_constant}").constantize
     case MyopicVicar::Application.config.template_set
@@ -65,12 +66,12 @@ module RecordType
   end
 
   ALL_FREEREG_TYPES = [BURIAL, MARRIAGE, BAPTISM].freeze
-  ALL_FREECEN_TYPES = [CENSUS_1841, CENSUS_1851, CENSUS_1861, CENSUS_1871, CENSUS_1881, CENSUS_1891]
   ALL_FREEBMD_TYPES = [BIRTHS, DEATHS, MARRIAGES]
 
   def self.all_types_constant
     ("ALL_#{MyopicVicar::Application.config.template_set}_types").upcase
   end
+  ALL_FREECEN_TYPES = [CENSUS_1841, CENSUS_1851, CENSUS_1861, CENSUS_1871, CENSUS_1881, CENSUS_1891, CENSUS_1901, CENSUS_1911].freeze
 
   private
   FREEREG_OPTIONS = {

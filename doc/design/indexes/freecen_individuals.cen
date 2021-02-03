@@ -1,0 +1,41 @@
+db.runCommand(
+  {
+    createIndexes: "freecen_individuals",
+    indexes: [
+        {
+            key: {
+                birth_county: 1,
+                birth_place: 1
+            },
+            name: "birth_county_birth_place"
+        },
+        {
+            key: {
+                birth_county: 1,
+                verbatim_birth_place: 1
+            },
+            name: "birth_county_verbatim_birth_place"
+        },
+        {
+            key: {
+                verbatim_birth_county: 1,
+                birth_place: 1
+            },
+            name: "verbatim_birth_county_birth_place"
+        },
+         {
+            key: {
+                verbatim_birth_county: 1,
+                verbatim_birth_place: 1
+            },
+            name: "verbatim_birth_county_verbatim_birth_place"
+        },
+        {
+            key: {
+                verbatim_birth_place: "text"},
+            name: "verbatim_birth_place"
+        }
+
+            ]
+  }
+)

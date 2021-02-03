@@ -1,0 +1,20 @@
+db.runCommand(
+  {
+    createIndexes: "churches",
+    indexes: [
+        {
+            key: {
+                place_id: 1,
+                church_name: 1
+            },
+            name: "place_id_church_name"
+        },
+         {
+            key: {
+                church_name: 1
+            },
+            name: "church_name",
+        },
+    ]
+  }
+)

@@ -14,7 +14,6 @@
 class ContactsController < ApplicationController
 
   require 'freereg_options_constants'
-  require 'contact_rules'
 
   skip_before_action :require_login, only: [:new, :report_error, :create, :show]
 
@@ -54,15 +53,6 @@ class ContactsController < ApplicationController
   def create
     @contact = Contact.new(contact_params)
     if @contact.contact_name.blank? #spam trap
-      session.delete(:flash)
-      @contact.session_data = session.to_hash
-      #avoid invalid character in warden.user.authentication_devise_user.key key
-      @contact.session_data['warden_user_authentication_devise_user_key_key'] = @contact.session_data['warden.user.authentication_devise_user.key'][0].to_s.gsub(/\W/, '') if @contact.session_data['warden.user.authentication_devise_user.key'].present?
-      @contact.session_data['warden_user_authentication_devise_user_key_value'] = @contact.session_data['warden.user.authentication_devise_user.key'][1] if @contact.session_data['warden.user.authentication_devise_user.key'].present?
-      @contact.session_data.delete('warden.user.authentication_devise_user.key')  if @contact.session_data['warden.user.authentication_devise_user.key'].present?
-      @contact.session_data['warden_user_authentication_devise_user_key_session'] = @contact.session_data['warden.user.authentication_devise_user.session']
-      @contact.session_data.delete('warden.user.authentication_devise_user.session') if @contact.session_data['warden.user.authentication_devise_user.session'].present?
-      @contact.session_id = session.to_hash['session_id']
       @contact.previous_page_url = request.env['HTTP_REFERER']
       if @contact.selected_county == 'nil'
         @contact.selected_county = nil # string 'nil' to nil
@@ -117,17 +107,13 @@ class ContactsController < ApplicationController
     redirect_to(action: 'index') && return
   end
 
-  def get_contacts
-    ContactRules.new(@user)
-  end
-
   def index
     session[:archived_contacts] = false
     session[:message_base] = 'contact'
     params[:source] = 'original'
     get_user_info_from_userid
     order = 'contact_time DESC'
-    @contacts = get_contacts.result(session[:archived_contacts], order)
+    @contacts = Contact.results(session[:archived_contacts], order, @user)
     @archived = session[:archived_contacts]
   end
 
@@ -147,7 +133,7 @@ class ContactsController < ApplicationController
     params[:source] = 'original'
     get_user_info_from_userid
     order = 'contact_time  ASC'
-    @contacts = get_contacts.result(session[:archived_contacts],order)
+    @contacts = Contact.results(session[:archived_contacts], order, @user)
     @archived = session[:archived_contacts]
     render :index
   end
@@ -155,7 +141,7 @@ class ContactsController < ApplicationController
   def list_by_date
     get_user_info_from_userid
     order = 'contact_time ASC'
-    @contacts = get_contacts.result(session[:archived_contacts],order)
+    @contacts = Contact.results(session[:archived_contacts], order, @user)
     @archived = session[:archived_contacts]
     render :index
   end
@@ -163,7 +149,7 @@ class ContactsController < ApplicationController
   def list_by_most_recent
     get_user_info_from_userid
     order = 'contact_time DESC'
-    @contacts = get_contacts.result(session[:archived_contacts],order)
+    @contacts = Contact.results(session[:archived_contacts], order, @user)
     @archived = session[:archived_contacts]
     render :index
   end
@@ -171,7 +157,7 @@ class ContactsController < ApplicationController
   def list_by_name
     get_user_info_from_userid
     order = 'name ASC'
-    @contacts = get_contacts.result(session[:archived_contacts],order)
+    @contacts = Contact.results(session[:archived_contacts], order, @user)
     @archived = session[:archived_contacts]
     render :index
   end
@@ -179,7 +165,7 @@ class ContactsController < ApplicationController
   def list_by_type
     get_user_info_from_userid
     order = 'contact_type ASC'
-    @contacts = get_contacts.result(session[:archived_contacts],order)
+    @contacts = Contact.results(session[:archived_contacts], order, @user)
     @archived = session[:archived_contacts]
     render :index
   end
@@ -254,7 +240,7 @@ class ContactsController < ApplicationController
     if source == 'show'
       redirect_to action: 'show', id: id
     else
-      redirect_to action: 'list_archived'
+      redirect_to action: 'index'
     end
   end
 
@@ -286,7 +272,7 @@ class ContactsController < ApplicationController
     get_user_info_from_userid
     @options = {}
     order = 'identifier ASC'
-    @contacts = get_contacts.result(session[:archived_contacts], order).each do |contact|
+    Contact.results(session[:archived_contacts], order, @user).each do |contact|
       @options[contact.identifier] = contact.id
     end
     @contact = Contact.new

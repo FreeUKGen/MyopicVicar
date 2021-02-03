@@ -440,12 +440,14 @@ class Freereg1CsvEntry
 
     place, _church, _register = file.location_from_file
     search_record = entry.search_record
-    file.ucf_list.delete_if { |record| record.to_s == search_record.id.to_s }
-    file.ucf_updated = DateTime.now.to_date
-    file.save
-    if place.present? && place.ucf_list.present? && place.ucf_list[file.id.to_s].present?
-      place.ucf_list[file.id.to_s].delete_if { |record| record.to_s == search_record.id.to_s }
-      place.save
+    if search_record.present?
+      file.ucf_list.delete_if { |record| record.to_s == search_record.id.to_s }
+      file.ucf_updated = DateTime.now.to_date
+      file.save
+      if place.present? && place.ucf_list.present? && place.ucf_list[file.id.to_s].present?
+        place.ucf_list[file.id.to_s].delete_if { |record| record.to_s == search_record.id.to_s }
+        place.save
+      end
     end
   end
 
@@ -1189,7 +1191,7 @@ class Freereg1CsvEntry
 
       end
       unless FreeregValidations.cleanage(person_age)
-        errors.add(:groom_age, 'Invalid age')
+        errors.add(:person_age, 'Invalid age')
       end
 
       #following is disabled until check is improved

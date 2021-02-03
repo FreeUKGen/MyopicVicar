@@ -41,27 +41,27 @@ class FreecenDwelling
     #1841 doesn't have ecclesiastical parish or schedule number
     #Scotland doesn't have folio
     if '1841' == year
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        return ['Census Year', 'County', 'Place', 'Civil Parish', 'Piece', 'Enumeration District', 'Page', 'House Number', 'House or Street Name']
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        return ['Census', 'County', 'District', 'Civil Parish', 'Piece', 'Enumeration District', 'Page', 'House Number', 'House or Street Name']
       end
-      return ['Census Year', 'County', 'Place', 'Civil Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'House Number', 'House or Street Name']
+      return ['Census', 'County', 'District', 'Civil Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'House Number', 'House or Street Name']
     end
-    if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-      return ['Census Year', 'County', 'Place', 'Civil Parish', 'Ecclesiastical Parish', 'Piece', 'Enumeration District', 'Page', 'Schedule', 'House Number', 'House or Street Name']
+    if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+      return ['Census', 'County', 'District', 'Civil Parish', 'Ecclesiastical Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'Schedule', 'House Number', 'House or Street Name']
     end
-    ['Census Year', 'County', 'Place', 'Civil Parish', 'Ecclesiastical Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'Schedule', 'House Number', 'House or Street Name']
+    ['Census', 'County', 'District', 'Civil Parish', 'Ecclesiastical Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'Schedule', 'House Number', 'House or Street Name']
   end
   def dwelling_display_values(year, chapman_code)
     #1841 doesn't have ecclesiastical parish or schedule number
     #Scotland doesn't have folio
     disp_county = '' + ChapmanCode::name_from_code(chapman_code) + ' (' + chapman_code + ')' unless chapman_code.nil?
     if '1841' == year
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         return [self.freecen_piece.year, disp_county, self.place.place_name, self.civil_parish, self.freecen_piece.piece_number.to_s, self.enumeration_district, self.page_number, self.house_number, self.house_or_street_name]
       end
       return [self.freecen_piece.year, disp_county, self.place.place_name, self.civil_parish, self.freecen_piece.piece_number.to_s, self.enumeration_district, self.folio_number, self.page_number, self.house_number, self.house_or_street_name]
     end
-    if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+    if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
       return [self.freecen_piece.year, disp_county, self.place.place_name, self.civil_parish, self.ecclesiastical_parish, self.freecen_piece.piece_number.to_s, self.enumeration_district, self.folio_number, self.page_number, self.schedule_number, self.house_number, self.house_or_street_name]
     end
     [self.freecen_piece.year, disp_county, self.place.place_name, self.civil_parish, self.ecclesiastical_parish, self.freecen_piece.piece_number.to_s, self.enumeration_district, self.folio_number, self.page_number, self.schedule_number, self.house_number, self.house_or_street_name]

@@ -1,0 +1,59 @@
+<% breadcrumb :show_freecen2_district,  @freecen2_district.id, @chapman_code, @freecen2_district.year, @type%>
+<%= render 'show_header' %>
+<div class="grid">
+  <section class="island ">
+    <div class="grid__item ">
+      <table   class="table--bordered table--striped  table--data">
+        <colgroup >
+          <col class=t40>
+          <col class=t60>
+        </colgroup>
+        <tr>
+          <th class="caps">Field</th>
+          <th  class="caps">Value</th>
+        </tr>
+        <tr>
+          <td>Year</td>
+          <td class="weight--semibold"> <%=  @freecen2_district.year %> </td>
+        </tr>
+        <tr>
+          <td>Chapman code</td>
+          <td class="weight--semibold"> <%=  @freecen2_district.chapman_code %> </td>
+        </tr>
+        <tr>
+          <td>District name  <small>(Standard name)</small></td>
+          <td class="weight--semibold"> <%= @freecen2_district.name %> (<%= @freecen2_district.standard_name %>) </td>
+        </tr>
+        <tr>
+          <td>Belongs to Place <small>(Name is a link)</small></td>
+          <td class="weight--semibold"> <%=  district_place_link(@place) %> </td>
+        </tr>
+        <tr>
+          <td>Type</td>
+          <td class="weight--semibold"> <%=  @freecen2_district.type %> </td>
+        </tr>
+        <tr>
+          <td>Registration District Number</td>
+          <td class="weight--semibold"> <%=  @freecen2_district.code %> </td>
+        </tr>
+        <tr>
+          <td><%= district_piece_link(@freecen2_district)  %></td>
+          <td class="weight--semibold"> <%=  list_pieces(@freecen2_district) %> </td>
+        </tr>
+        <tr>
+          <td><%= csv_files_link(@freecen2_district) %></td>
+          <td class="weight--semibold"> <%=  csv_files_district(@freecen2_district) %> </td>
+        </tr>
+        <tr>
+          <td>Notes</td>
+          <td class="weight--semibold"> <%=  @freecen2_district.notes %> </td>
+        </tr>
+        <tr>
+          <td>National Archives Link <small> (Opens in a new tab)</small></td>
+          <td class="weight--semibold"><%= tna(@freecen2_district.tnaid) %> </td>
+        </tr>
+      </table>
+    </div>
+  </section>
+</div>
+<br>

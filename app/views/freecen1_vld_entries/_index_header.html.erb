@@ -1,4 +1,4 @@
-<% breadcrumb :freecen1_vld_entries,  @freecen1_vld_file.id, params[:page] %>
+<% breadcrumb :freecen1_vld_entries,  @freecen1_vld_file, params[:page] %>
 <% session[:entry_page] = params[:page]%>
 <% session[:freecen1_vld_file] = @freecen1_vld_file.id%>
 <h1 style="text-align: center">Listing of entries for <%= @freecen1_vld_file.file_name%></h1>

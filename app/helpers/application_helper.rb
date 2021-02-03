@@ -78,11 +78,11 @@ module ApplicationHelper
 
     case appname.downcase
     when 'freereg'
-      link_to('Transcriptions', main_app.new_freereg_content_path)
+      link_to('Records', main_app.new_freereg_content_path)
     when 'freecen'
-      link_to('Transcriptions', main_app.freecen_coverage_path, id: 'db_coverage_nav')
+      link_to('Records', main_app.freecen_coverage_path, id: 'db_coverage_nav')
     when 'freebmd'
-      link_to('Transcriptions', 'https://www.freebmd.org.uk/progress.shtml', target: :_blank)
+      link_to('Records', 'https://www.freebmd.org.uk/progress.shtml', target: :_blank)
     end
   end
 
@@ -218,15 +218,29 @@ module ApplicationHelper
   end
 
   # generate proper display for the search query, in display order
+
+  # needs rationalization for cen
   def search_params_for_display(search_query)
     search_query[:place_ids].present? ? search_query_places_size = search_query[:place_ids].length : search_query_places_size = 0
     if search_query_places_size > 0
       first_place = search_query[:place_ids][0]
-      first_place = Place.find(first_place)
+      first_place = Place.find(first_place) if appname.downcase == 'freereg'
+      if appname.downcase == 'freecen'
+        first_place = Place.find(search_query[:place_ids][0])
+        if first_place.blank?
+          first_place = Freecen2Place.find(search_query[:place_ids][0])
+        end
+      end
       place = first_place.place_name
       if search_query.all_radius_place_ids.length > 1
         last_place = search_query.all_radius_place_ids[-2]
-        last_place = Place.find(last_place)
+        last_place = Place.find(last_place) if appname.downcase == 'freereg'
+        if appname.downcase == 'freecen'
+          last_place = Place.find(last_place)
+          if last_place.blank?
+            last_place = Freecen2Place.find(search_query.all_radius_place_ids[-2])
+          end
+        end
         additional = search_query.all_radius_place_ids.length - 1
         place <<
         " (including #{additional} additional places within

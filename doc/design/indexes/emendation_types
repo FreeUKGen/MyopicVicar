@@ -1,0 +1,28 @@
+db.runCommand(
+  {
+    createIndexes: "emendation_types",
+    indexes: [
+        {
+            key: {
+                name: 1,
+                target_field: 1,
+                origin: 1
+            },
+            name: "name_target_field_origin"
+        },
+         {
+           key: {
+                target_field: 1,
+                origin: 1
+            },
+            name: "target_field_origin"
+        },
+        {
+            key: {
+                 origin: 1
+            },
+            name: "origin"
+        }
+    ]
+  }
+)

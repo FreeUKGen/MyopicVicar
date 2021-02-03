@@ -1,6 +1,6 @@
 class DevelopmentMailInterceptor
   def self.delivering_email(message)
     message.subject = "Trapped message #{message.to} #{message.subject}"
-    message.to = 'kirk.dawson@freeukgenealogy.org.uk'
+    message.to = 'vandervorda@gmail.com'
   end
 end

@@ -133,7 +133,7 @@ class SearchQueriesController < ApplicationController
     old_query = SearchQuery.search_id(params[:search_id]).first if params[:search_id].present?
     old_query.search_result.records = {} if old_query.present? && old_query.search_result.present?
     @search_query = SearchQuery.new(old_query.attributes) if old_query.present?
-
+    @chapman_codes = ChapmanCode::CODES
   end
 
   def remember
@@ -295,6 +295,7 @@ class SearchQueriesController < ApplicationController
   def update
     @search_query = SearchQuery.new(search_params.delete_if { |_k, v| v.blank? })
     @search_query.session_id = request.session_options[:id]
+    @chapman_codes = ChapmanCode::CODES
     render :new unless @search_query.save
     redirect_to search_query_path(@search_query)
   end

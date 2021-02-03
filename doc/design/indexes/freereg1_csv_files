@@ -1,0 +1,63 @@
+db.runCommand(
+  {
+    createIndexes: "freereg1_csv_files",
+    indexes: [
+        {
+            key: {
+                userid: 1,
+                uploaded_date: 1   
+            },
+            name: "userid_uploaded_date"
+        },
+         {
+            key: {
+                userid: 1,
+                file_name: 1  
+            },
+            name: "userid_file_name"
+        },
+        {
+            key: {
+                 county: 1, 
+                 errors: 1
+            },
+            name: "county_errors"
+        },
+        {
+            key: {
+                county: 1,
+                place: 1,  
+                church_name: 1,
+                register_type: 1,
+                record_type: 1 
+            },
+            name: "county_place_church_name_register_type_record_type"
+        },
+         {
+            key: {
+                file_name: 1,
+                userid: 1,
+                county: 1,
+                place: 1,
+                church_name: 1,
+                register_type: 1
+            },
+            name: "file_name_userid_county_place_church_name_register_type"
+        },
+        {
+            key: {
+                 file_name: 1, 
+                 errors: 1
+            },
+            name: "file_name_errors"
+        },
+        {
+            key: {
+                 errors: 1, 
+                 ile_name: 1
+            },
+            name: "errors_file_name"
+        }
+    ]
+  }
+)

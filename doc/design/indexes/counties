@@ -1,0 +1,20 @@
+db.runCommand(
+  {
+    createIndexes: "counties",
+    indexes: [
+        {
+            key: {
+                county_code: 1,
+                county_coordinator: 1 
+            },
+            name: "county_code_county_coordinator"
+        },
+         {
+            key: {
+                county_coordinator: 1
+            },
+            name: "county_coordinator",
+        },
+    ]
+  }
+)

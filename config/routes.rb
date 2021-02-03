@@ -18,6 +18,9 @@ MyopicVicar::Application.routes.draw do
 
   root :to => 'search_queries#new'
 
+  get 'tna_change_logs/:id/download(.:format)', :to => 'tna_change_logs#download', :as => :download_tna_change_logs
+  resources :tna_change_logs
+
   get 'open', :to => 'open#index'
   get 'open/:county/places', :to => 'open#places_for_county', :as => :open_places_for_county
   get 'open/:county/:place/surnames', :to => 'open#surnames_for_place', :as => :open_surnames_for_place
@@ -73,7 +76,40 @@ MyopicVicar::Application.routes.draw do
 
   resources :freecen1_vld_entries
 
+  get 'freecen1_vld_files/:id/csv_download(.:format)', to: 'freecen1_vld_files#csv_download', as: :csv_download_freecen1_vld_file
   resources :freecen1_vld_files
+
+  get 'freecen_csv_files/spreadsheet/:id', :to => 'freecen_csv_files#spreadsheet', :as => :spreadsheet_freecen_csv_file
+  get 'freecen_csv_files/download_spreadsheet', :to => 'freecen_csv_files#download_spreadsheet', :as => :download_spreadsheet_freecen_csv_file
+  get 'freecen_csv_files/:id/convert_header', :to => 'freecen_csv_files#convert_header', :as => :modern_headers_freecen_csv_file
+  get 'freecen_csv_files/:id/download_message_report(.:format)', :to => 'freecen_csv_files#download_message_report', :as => :download_message_report_freecen_csv_file
+  get 'freecen_csv_files/:id/change_userid', :to => 'freecen_csv_files#change_userid', :as => :change_userid_freecen_csv_file
+  get 'freecen_csv_files/:id/merge', :to => 'freecen_csv_files#merge', :as => :merge_freecen_csv_file
+  get 'freecen_csv_files/:id/remove', :to => 'freecen_csv_files#remove', :as => :remove_freecen_csv_file
+  get 'freecen_csv_files/:id/relocate(.:format)', :to => 'freecen_csv_files#relocate', :as => :relocate_freecen_csv_file
+  get 'freecen_csv_files/:id/lock(.:format)', :to => 'freecen_csv_files#lock', :as => :lock_freecen_csv_file
+  get 'freecen_csv_files/:id/error(.:format)', :to => 'freecen_csv_files#error', :as => :error_freecen_csv_file
+  get 'freecen_csv_files/:id/by_userid',  :to => 'freecen_csv_files#by_userid', :as => :by_userid_freecen_csv_file
+  get 'freecen_csv_files/my_own',  :to => 'freecen_csv_files#my_own', :as => :my_own_freecen_csv_file
+  get 'freecen_csv_files/display_my_error_files',  :to => 'freecen_csv_files#display_my_error_files', :as => :display_my_error_freecen_csv_files
+  get 'freecen_csv_files/display_my_own_files',  :to => 'freecen_csv_files#display_my_own_files', :as => :display_my_own_files_freecen_csv_file
+  get 'freecen_csv_files/display_my_own_files_by_descending_uploaded_date',  :to => 'freecen_csv_files#display_my_own_files_by_descending_uploaded_date',  :as => :display_my_own_files_by_descending_uploaded_date_freecen_csv_file
+  get 'freecen_csv_files/display_my_own_files_by_ascending_uploaded_date',  :to => 'freecen_csv_files#display_my_own_files_by_ascending_uploaded_date', :as => :display_my_own_files_by_ascending_uploaded_date_freecen_csv_file
+  get 'freecen_csv_files/display_my_own_files_by_selection',  :to => 'freecen_csv_files#display_my_own_files_by_selection', :as => :display_my_own_files_by_selection_freecen_csv_file
+  get 'freecen_csv_files/display_my_own_files_waiting_to_be_processed',  :to => 'freecen_csv_files#display_my_own_files_waiting_to_be_processed', :as => :display_my_own_files_waiting_to_be_processed_freecen_csv_file
+  get 'freecen_csv_files/:id/download(.:format)', :to => 'freecen_csv_files#download', :as => :download_freecen_csv_file
+  get 'freecen_csv_files/:id/validate(.:format)', :to => 'freecen_csv_files#validate', :as => :set_validation_freecen_csv_file
+  get 'freecen_csv_files/:id/incorporate(.:format)', :to => 'freecen_csv_files#incorporate', :as => :incorporate_freecen_csv_file
+  get 'freecen_csv_files/:id/unincorporate(.:format)', :to => 'freecen_csv_files#unincorporate', :as => :unincorporate_freecen_csv_file
+  resources :freecen_csv_files
+
+  get 'freecen_csv_entries/:id/propagate_note(.:format)', :to => 'freecen_csv_entries#propagate_note', :as => :propagate_note_freecen_csv_entry
+  get 'freecen_csv_entries/:id/propagate_alternate(.:format)', :to => 'freecen_csv_entries#propagate_alternate', :as => :propagate_alternate_freecen_csv_entry
+  get 'freecen_csv_entries/:id/edit_embargo(.:format)', :to => 'freecen_csv_entries#edit_embargo', :as => :edit_embargo_freecen_csv_entry
+  get 'freecen_csv_entries/:id/error(.:format)', :to => 'freecen_csv_entries#error', :as => :error_freecen_csv_entry
+  get 'freecen_csv_entries/:id/accept(.:format)', :to => 'freecen_csv_entries#accept', :as => :accept_freecen_csv_entry
+  get 'freecen_csv_entries/:id/revalidate(.:format)', :to => 'freecen_csv_entries#revalidate', :as => :revalidate_freecen_csv_entry
+  resources :freecen_csv_entries
 
   get 'messages/:id/show_waitlist_msg',:to => 'messages#show_waitlist_msg', :as => :show_waitlist_msg
   delete 'messages/:id/remove_from_useriddetail_waitlist(.:format)',:to => 'messages#remove_from_useriddetail_waitlist', :as => :remove_from_useriddetail_waitlist
@@ -187,6 +223,7 @@ MyopicVicar::Application.routes.draw do
   get  'manage_syndicates/selection',  :to => 'manage_syndicates#transcription_agreement_accepted', constraints: ManageSyndicatesTranscriptionAgreementAcceptedConstraint
   get  'manage_syndicates/selection',  :to => 'manage_syndicates#transcription_agreement_not_accepted', constraints: ManageSyndicatesTranscriptionAgreementNotAcceptedConstraint
   get  'manage_syndicates/select_action',  :to => 'manage_syndicates#select_action', :as => :select_action_manage_syndicates
+  #get  'manage_parms/select_action',  :to => 'manage_syndicates#select_action', :as => :select_action_manage_syndicates
   get  'manage_syndicates/display_files_not_processed', :to => 'manage_syndicates#display_files_not_processed', :as => :display_files_not_processed_manage_syndicates
   get  'manage_syndicates/:id/selected(.:format)', :to => 'manage_syndicates#selected', :as => :selected_manage_syndicates
   get  'manage_syndicates/display_files_waiting_to_be_processed',  :to => 'manage_syndicates#display_files_waiting_to_be_processed', :as => :display_files_waiting_to_be_processed_manage_syndicates
@@ -195,6 +232,14 @@ MyopicVicar::Application.routes.draw do
   get 'manage_syndicatess/:id/list_fully_transcribed_group', :to => 'manage_syndicates#list_fully_transcribed_group', :as => :list_fully_transcribed_group_manage_syndicate
   resources :manage_syndicates
 
+  get 'manage_parms/:year/get_dat_files_of_census_year', :to => 'manage_parms#get_dat_files_of_census_year', :as => :get_dat_files_of_census_year_manage_parm
+  get 'manage_parms/select_year', :to => 'manage_parms#select_year', :as => :select_year_manage_parm
+  resources :manage_parms do
+    collection do
+      post :upload_files
+    end
+  end
+
   resources :csvfiles
   get 'csvfiles/:id/error(.:format)', :to => 'csvfiles#replace', :as => :replace_csvfile
   get 'csvfiles/:id/download(.:format)', :to => 'csvfiles#download', :as => :download_csvfile
@@ -202,8 +247,10 @@ MyopicVicar::Application.routes.draw do
   resources :freecen_parms
   get 'freecen_parms/:year/:chapman_code/download(.:format)', :to => 'freecen_parms#download', :as => :download_freecen_parms
 
+  get 'freecen_pieces/new', :to => 'freecen_pieces#new', :as => :piece_new_freecen_piece
   resources :freecen_pieces, except: :new
   get 'freecen_pieces/:chapman_code/:year/new', :to => 'freecen_pieces#new', :as => :new_freecen_piece
+  get 'freecen_pieces/:chapman_code/:year/index', :to => 'freecen_pieces#chapman_year_index', :as => :chapman_year_index
   get 'freecen_pieces/:year/select_new_county', :to => 'freecen_pieces#select_new_county', :as => :select_new_county_freecen_piece
 
   get 'freecen_coverage/grand_totals', to: 'freecen_coverage#grand_totals', as: :grand_totals_freecen_coverage
@@ -221,6 +268,46 @@ MyopicVicar::Application.routes.draw do
   get 'counties/selection', :to =>'counties#selection', :as => :selection_counties
   resources :counties
 
+  get 'freecen2_districts/selection_by_name', to: 'freecen2_districts#selection_by_name', as: :selection_by_name_freecen2_districts
+  get 'freecen2_districts/selection_by_year', to: 'freecen2_districts#selection_by_year', as: :selection_by_year_freecen2_districts
+  get 'freecen2_districts/full_index', to: 'freecen2_districts#full_index', as: :full_index_freecen2_districts
+  get 'freecen2_districts/complete_copy', to: 'freecen2_districts#complete_copy', as: :complete_copy_freecen2_district
+  get 'freecen2_districts/:id/copy(.:format)', to: 'freecen2_districts#copy', as: :copy_freecen2_district
+  get 'freecen2_districts/missing_place', to: 'freecen2_districts#missing_place', as: :missing_place_freecen2_districts
+  get 'freecen2_districts/chapman_year_index', to: 'freecen2_districts#chapman_year_index', as: :freecen2_districts_chapman_year_index
+  get 'freecen2_districts/:id/edit_name', to: 'freecen2_districts#edit_name', as: :edit_name_freecen2_district
+  get 'freecen2_districts/locate', to: 'freecen2_districts#locate', as: :locate_freecen2_district
+  delete 'freecen2_districts/:id/force(.:format)', to: 'freecen2_districts#force', as: :force_freecen2_district
+  get 'freecen2_districts/csv_index', to: 'freecen2_districts#csv_index', as: :csv_index_freecen2_district
+  resources :freecen2_districts
+
+  get 'freecen2_pieces/selection_by_name', to: 'freecen2_pieces#selection_by_name', as: :selection_by_name_freecen2_pieces
+  get 'freecen2_pieces/selection_by_number', to: 'freecen2_pieces#selection_by_number', as: :selection_by_number_freecen2_pieces
+  get 'freecen2_pieces/selection_by_year', to: 'freecen2_pieces#selection_by_year', as: :selection_by_year_freecen2_pieces
+  get 'freecen2_pieces/full_index', to: 'freecen2_pieces#full_index', as: :full_index_freecen2_pieces
+  get 'freecen2_pieces/district_place_name', to: 'freecen2_pieces#district_place_name', as: :district_place_name_freecen2_pieces
+  get 'freecen2_pieces/missing_place', to: 'freecen2_pieces#missing_place', as: :missing_place_freecen2_pieces
+  #get 'freecen2_pieces/new', :to => 'freecen2_pieces#new', :as => :piece_new_freecen2_piece
+  #get 'freecen2_pieces/:chapman_code/:year/new', :to => 'freecen2_pieces#new', :as => :new_freecen2_piece
+  get 'freecen2_pieces/chapman_year_index', :to => 'freecen2_pieces#chapman_year_index', :as => :freecen2_pieces_chapman_year_index
+  get 'freecen2_pieces/index_district', :to => 'freecen2_pieces#index_district', :as => :freecen2_pieces_district_index
+  get 'freecen2_pieces/:id/edit_name', to: 'freecen2_pieces#edit_name', as: :edit_name_freecen2_piece
+  get 'freecen2_pieces/:id/refresh_civil_parish_list', to: 'freecen2_pieces#refresh_civil_parish_list', as: :refresh_civil_parish_list_freecen2_piece
+  get 'freecen2_pieces/index_district_year', :to => 'freecen2_pieces#index_district_year', :as => :freecen2_pieces_district_year_index
+  get 'freecen2_pieces/:year/select_new_county', :to => 'freecen2_pieces#select_new_county', :as => :select_new_county_freecen2_piece
+  get 'freecen2_pieces/csv_index', to: 'freecen2_pieces#csv_index', as: :csv_index_freecen2_piece
+  resources :freecen2_pieces
+
+  get 'freecen2_civil_parishes/selection_by_name', to: 'freecen2_civil_parishes#selection_by_name', as: :selection_by_name_freecen2_civil_parishes
+  get 'freecen2_civil_parishes/selection_by_year', to: 'freecen2_civil_parishes#selection_by_year', as: :selection_by_year_freecen2_civil_parishes
+  get 'freecen2_civil_parishes/full_index', to: 'freecen2_civil_parishes#full_index', as: :full_index_freecen2_civil_parishes
+  get 'freecen2_civil_parishes/district_place_name', to: 'freecen2_civil_parishes#district_place_name', as: :district_place_name_freecen2_civil_parishes
+  get 'freecen2_civil_parishes/missing_place', to: 'freecen2_civil_parishes#missing_place', as: :missing_place_freecen2_civil_parishes
+  get 'freecen2_civil_parishes/:id/index_for_piece', :to => 'freecen2_civil_parishes#index_for_piece', :as => :index_for_piece_freecen2_civil_parishes
+  get 'freecen2_civil_parishes/chapman_year_index', :to => 'freecen2_civil_parishes#chapman_year_index', :as => :freecen2_civil_parishes_chapman_year_index
+  get 'freecen2_civil_parishes/:id/edit_name', to: 'freecen2_civil_parishes#edit_name', as: :edit_name_freecen2_civil_parish
+  get 'freecen2_civil_parishes/csv_index', to: 'freecen2_civil_parishes#csv_index', as: :csv_index_freecen2_civil_parish
+  resources :freecen2_civil_parishes
 
   resources :my_saved_searches
 
@@ -257,9 +344,10 @@ MyopicVicar::Application.routes.draw do
     collection { post :import }
   end
 
-
-  get  'manage_counties/selection',  :to => 'manage_counties#work_all_places', constraints: ManageCountiesAllPlacesConstraint ,:as => :selection_all_manage_counties
-  get  'manage_counties/selection',  :to => 'manage_counties#work_with_active_places', constraints: ManageCountiesActivePlacesConstraint ,:as => :selection_active_manage_counties
+  get  'manage_counties/selection',  :to => 'manage_counties#being_validated', constraints: ManageCountiesBeingValidatedConstraint, :as => :selection_being_validated_manage_counties
+  get  'manage_counties/selection',  :to => 'manage_counties#incorporated', constraints: ManageCountiesIncorporatedConstraint, :as => :selection_incorporated_manage_counties
+  get  'manage_counties/selection',  :to => 'manage_counties#work_all_places', constraints: ManageCountiesAllPlacesConstraint, :as => :selection_all_manage_counties
+  get  'manage_counties/selection',  :to => 'manage_counties#work_with_active_places', constraints: ManageCountiesActivePlacesConstraint, :as => :selection_active_manage_counties
   get  'manage_counties/selection',  :to => 'manage_counties#work_with_specific_place', constraints: ManageCountiesSpecificPlaceConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#places_with_unapproved_names', constraints: ManageCountiesUnapprovedNamesConstraint
   get  'manage_counties/selection',  :to => 'manage_counties#batches_with_errors', constraints: ManageCountiesErrorBatchConstraint
@@ -333,6 +421,13 @@ MyopicVicar::Application.routes.draw do
   resources :registers
 
   resources :master_place_names
+
+  get '/freecen2_places/search_names_results', :to => 'freecen2_places#search_names_results', :as => :search_names_results_freecen2_place
+  get '/freecen2_places/search_names', :to => 'freecen2_places#search_names', :as => :search_names_freecen2_place
+  get 'freecen2_places/:id/rename', :to => 'freecen2_places#rename', :as => :rename_freecen2_place
+  get 'freecen2_places/full_index', to: 'freecen2_places#full_index', as: :full_index_freecen2_places
+  get 'freecen2_places/selection_by_name', to: 'freecen2_places#selection_by_name', as: :selection_by_name_freecen2_places
+  resources :freecen2_places
 
 
   get 'places/:id/approve', :to => 'places#approve', :as => :approve_place

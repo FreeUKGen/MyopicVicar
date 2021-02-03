@@ -1,0 +1,92 @@
+<% unless @csv %>
+  <% breadcrumb :show_freecen_csv_entry,  @freecen_csv_entry,  @freecen_csv_file %>
+  <h3 style="text-align: center">Showing entry <b><%= @freecen_csv_entry.record_number %></b> for <%= file_name(@freecen_csv_file) %></b> (<%= @freecen_csv_file.userid %>) in <b><%= @place_name %></b> of <b><%= @chapman_code %></b><br>
+</h3>
+<% if session[:userid].present?%>
+  <div  style="text-align: center">
+    <%= previous_entry %>
+    <%= next_entry %>
+    <%= previous_list_entry %>
+    <%= current_list_entry %>
+    <%= next_list_entry %>
+    <br>
+    <%= edit_entry %>
+    <%= propagate_alternate%>
+    <%= propagate_note%>
+    <%= accept_entry %>
+    <%= reject_entry %>
+  </div>
+  <br>
+<% end %>
+<%= render 'flash_notice' %>
+<div style="clear:both;color:'black'"> </div>
+<% end %>
+<%= render '/search_records/nav_header_freecen' if  @show_navigation %>
+<%= render '/freecen_csv_entries/freecen_csv_entry' %>
+<br>
+<style>
+  .javascript{
+    display: none;
+  }
+  .citation-dropdown-list{
+    list-style-type: none;
+  }
+  .citation_container{
+    border: 1px solid black;
+    padding: 5px;
+  }
+</style>
+<script>
+  document.getElementById("citation-toggle").addEventListener("click", citationToggle);
+  /* When the user clicks on the button,
+  toggle between hiding and showing the dropdown content */
+  function citationToggle() {
+    var x = document.getElementById("citation-dropdown");
+  
+    if (x.style.display === "none") {
+        x.style.display = "block";
+    } else {
+        x.style.display = "none";
+    }
+  }
+  // When the page loads, hide all no-javascript elements and display all javascript elements.
+  window.addEventListener("load", function(){
+    const no_javascript_elements = document.getElementsByClassName("no-javascript");
+    const javascript_elements = document.getElementsByClassName("javascript");
+  
+    for(let i = 0; i < no_javascript_elements.length; i++){
+      no_javascript_elements[i].remove();
+    }
+    for(let i = 0; i < javascript_elements.length; i++){
+      javascript_elements[i].style.display = "block";
+    }
+    if(!document.getElementById("citation_section")){
+      document.getElementById("citation-dropdown").style.display = "none";
+    }
+  })
+  // Function to copy the text from an element.
+  function copy(elm) {
+      var button = event.currentTarget || event.srcElement;
+      var target = document.getElementsByClassName(elm)[0];
+      var range, select;
+      if (document.createRange) {
+        range = document.createRange();
+        range.selectNode(target)
+        select = window.getSelection();
+        select.removeAllRanges();
+        select.addRange(range);
+        document.execCommand('copy');
+        select.removeAllRanges();
+      } else {
+        range = document.body.createTextRange();
+        range.moveToElementText(target);
+        range.select();
+        document.execCommand('copy');
+      }
+      //Change button value to "copied" for 10 sec and then change back to "copy".
+      button.innerHTML = "Copied"
+      setTimeout(function(){
+        button.innerHTML = "Copy"
+      }, 10000);
+    }
+</script>

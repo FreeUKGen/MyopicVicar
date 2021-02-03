@@ -666,4 +666,39 @@ namespace :build do
     p "finished"
   end
 
+
+  desc "Process freecen csv file.  Example arguments: [create_search_records,individual,force_rebuild,userid/filename.csv] or [create_search_records,range,force_rebuild,k]"
+  task :freecen_csv_process, [:search_record, :type, :force, :range, :field, :processing] => [:environment] do |t, args|
+    require 'freecen_csv_processor'
+    @mongodb_bin =   Rails.application.config.mongodb_bin_location
+    Mongoid.load!("#{Rails.root}/config/mongoid.yml")
+    db = Mongoid.clients[:default][:database]
+    hosts = Mongoid.clients[:default][:hosts]
+    host = hosts[0]
+    if args.type == 'individual'
+      p "FREECEN:CSV_PROCESSING: starting an individual project"
+      FreecenCsvProcessor.activate_project(args.search_record, args.type, args.force, args.range, args.field, args.processing)
+    else
+      rake_lock_file = Rails.root.join('tmp', 'freecen_processing_rake_lock_file.txt')
+      processor_initiation_lock_file = Rails.root.join('tmp', 'freecen_processor_initiation_lock_file.txt')
+      p "Initiation lock present" if File.exist?(freecen_processor_initiation_lock_file)
+      FileUtils.rm(freecen_processor_initiation_lock_file, :force => true) if File.exist?(freecen_processor_initiation_lock_file)
+      if rake_lock_file.present? && File.exist?(rake_lock_file)
+        p "FREECEN:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists. Exiting"
+      else
+        #set the processor running flag
+        locking_file = File.new(rake_lock_file, "w")
+        p "FREECEN:CSV_PROCESSING: Created rake lock file #{rake_lock_file} and processing files"
+        while PhysicalFile.waiting.exists?
+          FreecenCsvProcessor.activate_project(args.search_record, args.type, args.force, args.range, args.field, args.processing)
+          sleep(300)
+        end
+
+      end
+    end
+    p "FREECEN:CSV_PROCESSING: removing rake lock file #{rake_lock_file}" if rake_lock_file.present? && File.exist?(rake_lock_file)
+    FileUtils.rm(rake_lock_file, :force => true) if rake_lock_file.present? && File.exist?(rake_lock_file)
+
+  end
+
 end

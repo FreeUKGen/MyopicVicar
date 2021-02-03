@@ -29,24 +29,44 @@ Step 2. Create database.yml
 
   You can base this on the database.example.yml
 
+  Do step C of the freereg installation instructions but replace freereg2 with freecen2 wherever it appears
+
 Step 3. Create errbit.yml
-  On https://errbit.freeukgen.org.uk/ create a new app
+  On https://errbit.freeukgen.org.uk/ create a new app if you wish to report errors
 
 Step 4. Create mongo_config.yml
 
 Step 5 Create mongoid.yml
 
-Step 6. Clone the myopicvicar code base
- into the folder from which you will run the application server
+This will be the same as used for reg except a different database name
+
+Step 6. Clone the myopicvicar code base into the folder from which you will run this application eg freecen
+
+Open a command window on that folder and run bundle install
 
 Step 7. Copy the files created in steps 1-5 into the config folder
 
-Step 8 Start your server
+Step 8. Load the mongodb collections having started mongodb as normal using the download links provided to you
 
-Updating A Using Myopicvicar Code Base
+Start mongo in a command window on the application folder and use the database name from step 5
+
+create the indexes by pasting in the scripts index zip sent to you into mongo one at a time
+
+Step 9. Set up refinery
+
+repeat steps G9, G12 and G15 of the Freereg installation documentation
+
+Step 10. Run rake assets:precompile to load the assets
+
+Step 11. Start your server in the application folder created in step 6
+
+
+
+
+Updating the code base from Myopicvicar Code Base
 
 This is done in the normal manner pulling code change and running assets:precompile if assets are changed.
 
 Switching From One application to Another:
 
-Stop the server; change the freeukgen_application.yml; delete the public folder contents; run rake assets:precompile (sudo may be needed); start the server
+Stop the server; start the server in the application folder created in step 6 for freecen, Myopicvicar for freereg and what ever is being used for freebmd

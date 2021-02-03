@@ -1,0 +1,31 @@
+<% breadcrumb :new_freecen2_piece, @freecen2_district, @county, @year%>
+<h3 style="text-align: center">Creating a Piece in <%=@freecen2_district.name%> for <%=@chapman_code%> in <%=@year%> </b><br>
+</h3>
+<%= render 'flash_notice' %>
+<%= semantic_form_for @freecen2_piece, :html => { :class => 'grid'}  do |f| %>
+  <%= f.input :reason_changed,:label => 'Reason for making addition',:as => :text, :input_html => {:class => ' simple_form_bgcolour  ',   :placeholder => 'Enter the reason for addition',  :size => '50x5' }%>
+  <%= f.input :number, label: 'Piece Number (e.g. RG10_2349)', :input_html => {:class => ' simple_form_bgcolour  ',  :size => 40 }%>
+  <%= f.input :name ,  label: 'Piece (Subdistrict) name:', input_html: {:class => ' simple_form_bgcolour  ',  :size => 40 }%>
+  <%= f.input :freecen2_place_id,  label: 'Freecen2 Place name:', selected:  @freecen2_place, include_blank: false, collection: @places, input_html: {class: ' simple_form_bgcolour large_selection_field_width', size:5 }%>
+  <%= f.input :parish_number , label: 'Parish number: used for Scotland, leave blank for ENG/WLS', :input_html => {:class => ' simple_form_bgcolour  ',  :size => 40 } if ChapmanCode::CODES['Scotland'].values.member?(@freecen2_piece.chapman_code)%>
+  <%= f.input :film_number, label: 'Film', value: @freecen2_piece.film_number, :input_html => {:class => ' simple_form_bgcolour  ',  :size => 40 } %>
+  <%= f.input :remarks, label: 'Public notes for Piece', value: @freecen2_piece.remarks, :as => :text, :input_html => {:class => ' simple_form_bgcolour  ',   :placeholder => 'Enter public notes',  :size => '50x5' }%>
+  <%= f.input :remarks_coord, label: 'Management notes for Piece', value: @freecen2_piece.remarks_coord, :as => :text, :input_html => {:class => ' simple_form_bgcolour  ',   :placeholder => 'Enter management notes',  :size => '50x5' }%>
+  <%= f.input :tnaid,:label => 'TNA link (enter None if no link)', :input_html => {:class => ' simple_form_bgcolour  ',:size => 10 }%>
+  <div  style="text-align: center">
+    The following fields are optional and to be copied from TNA for the Piece
+  </div>
+  <%= f.input :code,:label => 'TNA Code', :input_html => {:class => ' simple_form_bgcolour  ',:size => 10 }%>
+  <%= f.input :notes,label: 'TNA Notes ',  as: :text, input_html: {class: ' simple_form_bgcolour  ',   placeholder: @freecen2_piece.notes,  size: '50x5' }%>
+  <%= f.input :prenote,:label => 'TNA Pre notes', :input_html => {:class => ' simple_form_bgcolour  ',:size => 10 }%>
+  <%= f.hidden_field :year, :value => @year %>
+  <%= f.hidden_field :chapman_code, :value => @chapman_code %>
+  <%= f.hidden_field :freecen2_district_id, :value => @freecen2_district.id %>
+  <div  style="text-align: center">
+    <%= f.action :submit,  :as => :button,  :label =>  'Submit', :button_html => {name: 'commit', value: 'Submit', :class => 'ladda-button' , 'data-style' => 'contract' ,'data-color' => appname_downcase , 'data-size' => 's', 'data-spinner-color' => '#ffffff'  } %>
+    <%= f.action  :cancel, as: :link, label: 'Cancel' %>
+  <% end %>
+</div>
+<script type='text/javascript'>
+  Ladda.bind( 'button[type=submit]' );
+</script>

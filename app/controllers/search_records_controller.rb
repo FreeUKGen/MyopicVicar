@@ -35,12 +35,14 @@ class SearchRecordsController < ApplicationController
     @show_navigation = @search_query.present? && (params[:friendly].present? || params[:dwel].present?) ? true : false
     @appname = appname_downcase
     @page_number = params[:page_number].to_i
-    case @appname
-    when 'freebmd'
+    if @appname == 'freebmd'
       show_freebmd
-    when 'freecen'
+    elsif @appname == 'freecen' && @search_record.freecen_csv_entry_id.present?
+      show_freecen_csv
+      render '/freecen_csv_entries/show'
+    elsif @appname == 'freecen' && @search_record.freecen_csv_entry_id.blank?
       show_freecen
-    when 'freereg'
+    elsif @appname == 'freereg'
       @display_date = false
       show_freereg
     end
@@ -52,7 +54,7 @@ class SearchRecordsController < ApplicationController
 
   def show_freecen
     # common code for the three show versions show print and citation
-    @individual = @search_record.freecen_individual
+    @individual = FreecenIndividual.find_by(_id: @search_record.freecen_individual_id)
     @dwelling = @individual.freecen_dwelling if @individual
     @cen_year = ' '
     @cen_piece = ' '
@@ -76,58 +78,124 @@ class SearchRecordsController < ApplicationController
       @cen_prev_dwelling = prev_next_dwellings[0]
       @cen_next_dwelling = prev_next_dwellings[1]
       @dweling_values = @dwelling.dwelling_display_values(@cen_year, @cen_chapman_code)
-
-      #   ------------------------ Fields required for citation generation ------------------------
-      @user_address = ''
-      unless @dweling_values[11] == '-' || @dweling_values[11].nil? || @dweling_values[11].empty?
-        @user_address += @dweling_values[11] + ', '
-      end
-      unless @dweling_values[2] == '-' || @dweling_values[2].nil? || @dweling_values[2].empty?
-        @user_address += @dweling_values[2] + ', '
-      end
-      @county = @dweling_values[1].slice(0..(@dweling_values[1].index(' ')-1))
-      unless @county == '-' || @county.nil? || @county.empty?
-        @user_address += @county + ', '
-      end
-      @user_address += @search_record.place["country"]
-
-      #evidence explained
-
-      @piece = @dweling_values[5]
-      @place = @dweling_values[2]
-      @enumeration_district = @dweling_values[6]
-      @civil_parish = @dweling_values[3]
-      @ecclesiastical_parish = @dweling_values[4]
-      @folio = @dweling_values[7]
-      @page = @dweling_values[8]
-      @schedule = @dweling_values[9]
-      @ee_address = @dweling_values[11]
-
-      #census database description
-
-      @census_database = "General Register Office: #{@cen_year} Census Returns database"
-
-      if @search_record.place['country'] == 'Scotland'
-        @census_database = "Scottish General Register Office: #{@cen_year} Census Returns database"
-      end
-
-      @searched_user_name = @search_record.transcript_names.first['first_name'] + ' ' + @search_record.transcript_names.first['last_name']
-      @viewed_date = Date.today.strftime("%e %b %Y")
-      @viewed_year = Date.today.strftime("%Y")
-
-      @is_family_head = false
-      @family_head_name = nil
-
-      #checks whether the head of the house is the same person searched for
-      if @individual.individual_display_values(@cen_year, @cen_chapman_code)[2].eql? 'Head'
-        @is_family_head = true
-      else
-        if @dwelling.freecen_individuals.present?
-          @family_head_name = @dwelling.freecen_individuals.asc(:sequence_in_household).first['forenames'] + ' ' + @dwelling.freecen_individuals.asc(:sequence_in_household).first['surname']
-        end
-      end
     end
+    add_head
+    add_evidence_explained_values
+    add_address_for_citation
+    add_series_code
+    add_viewed
+  end
 
+  def add_head
+    @searched_user_name = @search_record.transcript_names.first['first_name'] + ' ' + @search_record.transcript_names.first['last_name']
+    @is_family_head = false
+    @family_head_name = nil
+    #checks whether the head of the house is the same person searched for
+    if @individual.relationship == 'Head'
+      @is_family_head = true
+    elsif @dwelling.freecen_individuals.present?
+      @family_head_name = @dwelling.freecen_individuals.asc(:sequence_in_household).first['forenames'] + ' ' + @dwelling.freecen_individuals.asc(:sequence_in_household).first['surname']
+    end
+  end
+
+  def add_head_csv
+    @searched_user_name = @search_record.transcript_names.first['first_name'] + ' ' + @search_record.transcript_names.first['last_name']
+    @is_family_head = false
+    @family_head_name = nil
+    #checks whether the head of the house is the same person searched for
+    if @freecen_csv_entry.relationship == 'Head'
+      @is_family_head = true
+    else
+      entry = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id, dwelling_number: @dwel, sequence_in_household: 1).first
+      @family_head_name = entry.forenames + ' ' + entry.surname unless entry.blank?
+    end
+  end
+
+  def add_evidence_explained_values
+    @piece = @cen_piece
+    @place = @dwelling.place.place_name
+    @enumeration_district = @dwelling.enumeration_district
+    @civil_parish = @dwelling.civil_parish
+    @ecclesiastical_parish = @dwelling.ecclesiastical_parish
+    @folio = @dwelling.folio_number
+    @page = @dwelling.page_number
+    @schedule = @dwelling.schedule_number
+    @ee_address = @dwelling.house_or_street_name
+  end
+
+  def add_address_for_citation
+    @user_address = ''
+    @user_address += @dwelling.house_number + ', ' unless @dwelling.house_number == '-' || @dwelling.house_number.blank?
+    @user_address += @dwelling.house_or_street_name + ', ' unless @dwelling.house_or_street_name == '-' || @dwelling.house_or_street_name.blank?
+    @county = ChapmanCode.name_from_code(@cen_chapman_code)
+    @user_address += @county + ', ' unless @county == '-' || @county.blank?
+    add_country
+    @user_address += @country
+  end
+
+  def add_country
+    if ChapmanCode::CODES['Scotland'].values.member?(@cen_chapman_code)
+      @country = 'Scotland'
+    elsif ChapmanCode::CODES['Ireland'].values.member?(@cen_chapman_code)
+      @country = 'Ireland'
+    elsif ChapmanCode::CODES['Wales'].values.member?(@cen_chapman_code)
+      @country = 'Wales'
+    else
+      @country = 'England'
+    end
+  end
+
+  def add_evidence_explained_values_csv
+    @place = @piece.freecen2_place.place_name
+    split_number = @cen_piece.split('_')
+    @piece = split_number[1]
+    @enumeration_district = @freecen_csv_entry.enumeration_district
+    @civil_parish = @freecen_csv_entry.civil_parish
+    @ecclesiastical_parish = @freecen_csv_entry.ecclesiastical_parish
+    @folio = @freecen_csv_entry.folio_number
+    @page = @freecen_csv_entry.page_number
+    @schedule = @freecen_csv_entry.schedule_number
+    @ee_address = @freecen_csv_entry.house_or_street_name
+  end
+
+  def add_address_for_citation_csv
+    @user_address = ''
+    @user_address += @freecen_csv_entry.house_number + ', ' unless @freecen_csv_entry.house_number == '-' || @freecen_csv_entry.house_number.blank?
+    @user_address += @freecen_csv_entry.house_or_street_name + ', ' unless @freecen_csv_entry.house_or_street_name == '-' || @freecen_csv_entry.house_or_street_name.blank?
+    @county = ChapmanCode.name_from_code(@cen_chapman_code)
+    @user_address += @county + ', ' unless @county == '-' || @county.blank?
+    add_country
+    @user_address += @country
+  end
+
+  def add_uninhabited
+    if @individuals.count == 1 && @individuals.first.uninhabited_flag.present?
+      @uninhabited = @individuals.first.uninhabited_flag
+      case @uninhabited
+      when 'b'
+        message = 'Building in progress'
+      when 'u'
+        message = 'Unoccupied'
+      when 'v'
+        message = 'Family away or visiting'
+      when 'n'
+        message = 'Schedule was not used'
+      end
+      message += ' : ' + @individuals.first.notes if @individuals.first.notes.present?
+      @uninhabited = message
+      @uninhabited
+    end
+  end
+
+  def add_viewed
+    if @search_query.present?
+      @search_result = @search_query.search_result
+      @viewed_records = @search_result.viewed_records
+      @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
+      @search_result.update_attribute(:viewed_records, @viewed_records)
+    end
+  end
+  def add_series_code
     # Adds the department and series codes based on the citation year
     case @cen_year
     when '1841' || '1851'
@@ -147,12 +215,16 @@ class SearchRecordsController < ApplicationController
     else
       @dep_series_code = nil
     end
-    if @search_query.present?
-      @search_result = @search_query.search_result
-      @viewed_records = @search_result.viewed_records
-      @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
-      @search_result.update_attribute(:viewed_records, @viewed_records)
+    #census database description
+    if ChapmanCode::CODES['Scotland'].values.member?(@cen_chapman_code)
+      @census_database = "Scottish General Register Office: #{@cen_year} Census Returns database"
+    elsif ChapmanCode::CODES['Ireland'].values.member?(@cen_chapman_code)
+      @census_database = "Northern Ireland General Register Office: #{@cen_year} Census Returns database"
+    else
+      @census_database = "General Register Office: #{@cen_year} Census Returns database"
     end
+    @viewed_date = Date.today.strftime("%e %b %Y")
+    @viewed_year = Date.today.strftime("%Y")
   end
 
   def show_freereg
@@ -178,16 +250,20 @@ class SearchRecordsController < ApplicationController
     proceed, @search_query, @search_record, message = SearchRecord.check_show_parameters(session[:query], params)
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
 
-    @show_navigation = @search_query.present? && (params[:friendly].present? || params[:dwel].present?) ? true : false
+    @show_navigation = false
     @appname = appname_downcase
-    case @appname
-    when 'freebmd'
+    if @appname == 'freebmd'
       show_freebmd
-    when 'freecen'
+    elsif @appname == 'freecen' && @search_record.freecen_csv_entry_id.present?
+      show_freecen_csv
+      render '/freecen_csv_entries/show', layout: false
+    elsif @appname == 'freecen' && @search_record.freecen_csv_entry_id.blank?
       show_freecen
       @display_date = true
       render '_search_records_freecen_print', layout: false
-    when 'freereg'
+    elsif @appname == 'freereg'
+      @display_date = false
+      show_freereg
       @display_date = false
       @printable_format = true
       @display_date = true
@@ -207,6 +283,41 @@ class SearchRecordsController < ApplicationController
         end
       end
     end
+  end
+
+  def show_freecen_csv
+    @freecen_csv_entry = @search_record.freecen_csv_entry.blank? ? session[:freecen_csv_entry_id] : @search_record.freecen_csv_entry
+
+    session[:freecen_csv_entry_id] = @freecen_csv_entry._id
+    @freecen_csv_file = @freecen_csv_entry.blank? ? FreecenCsvFile.find(session[:freecen_csv_file_id]) : @freecen_csv_entry.freecen_csv_file
+    @freecen_csv_file_id, @freecen_csv_file_name, @file_owner = @freecen_csv_file.display_for_csv_show
+    @piece = @freecen_csv_file.freecen2_piece
+    @year, @chapman_code, @place_name, @cen_piece = @piece.display_for_csv_show
+    @csv = true
+    if params[:dwel].present?
+      @dwel = params[:dwel].to_i
+      @dwelling_offset = @dwel - session[:dwel]
+      @individuals = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id, dwelling_number: @dwel).order_by(sequence_in_household: 1) unless @dwel.zero?
+      @freecen_csv_entry = @individuals.first unless @dwel.zero?
+    else
+      @dwelling_offset = 0
+      @dwel = @freecen_csv_entry.dwelling_number
+      @individuals = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id, dwelling_number: @dwel).order_by(sequence_in_household: 1)
+      session[:dwel] = @dwel
+    end
+    add_uninhabited
+    @type = session[:cen_index_type]
+    @freecen_csv_entry.add_address(@freecen_csv_file_id, @dwel)
+    @response, @next_record, @previous_record = @search_query.next_and_previous_records(params[:id]) unless @search_query.is_a?(String)
+    @cen_chapman_code = @chapman_code
+    @cen_year = @year
+    @cen_prev_dwelling = @dwel == 1 ? nil : @dwel - 1
+    @cen_next_dwelling = @freecen_csv_file.next_dwelling(@dwel)
+    add_evidence_explained_values_csv
+    add_address_for_citation_csv
+    add_series_code
+    add_viewed
+    add_head_csv
   end
 
   # implementation of the citation generator

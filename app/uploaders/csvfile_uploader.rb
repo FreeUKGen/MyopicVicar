@@ -13,6 +13,8 @@ class CsvfileUploader < CarrierWave::Uploader::Base
     # "#{Rails.application.config.datafiles}/#{mounted_as}/#{model.userid}/"
     if Rails.application.config.datafiles == '/raid/freereg2/users'
       "#{Rails.application.config.datafiles}/#{model.userid}/"
+    elsif Rails.application.config.datafiles == '/raid/freecen2/users'
+      "#{Rails.application.config.datafiles}/#{model.userid}/"
     else
       "#{Rails.root}/#{Rails.application.config.datafiles}/#{model.userid}/"
     end

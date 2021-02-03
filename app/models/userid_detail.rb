@@ -325,7 +325,7 @@ class UseridDetail
     users.each do |user|
       @userids << user.email_address
     end
-    return @userids
+    return @userids.sort_by(&:downcase)
   end
 
   def self.get_names_for_selection(syndicate)
@@ -338,7 +338,7 @@ class UseridDetail
       name = user.person_surname + ":" + user.person_forename unless user.person_surname.nil?
       @userids << name
     end
-    return @userids
+    return @userids.sort_by(&:downcase)
   end
 
   def send_invitation_to_create_password

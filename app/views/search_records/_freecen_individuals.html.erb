@@ -1,0 +1,30 @@
+<table class="table--bordered " style="background-color:#ffffff;">
+  <thead>
+    <% FreecenIndividual.individual_display_labels(@cen_year,@cen_chapman_code).each do |lbl| %>
+      <th>
+        <%= lbl %>
+      </th>
+    <% end %>
+  </th>
+</thead>
+<tbody>
+  <% if @dwelling.freecen_individuals.present? %>
+    <% @dwelling.freecen_individuals.asc(:sequence_in_household).each do |individual| %>
+      <% individual.individual_display_values(@cen_year,@cen_chapman_code).each do |field_val| %>
+        <% if individual == @individual %>
+          <td><b>
+              <%= field_val %></b>
+          </td>
+        <% else%>
+          <td>
+            <%= field_val %>
+          </td>
+        <% end%>
+      <% end %>
+    </tr>
+  <% end %>
+<% else%>
+  <p class="text--center">Uninhabited <%= @dwelling.unoccupied_notes %></p>
+<% end %>
+</tbody>
+</table>

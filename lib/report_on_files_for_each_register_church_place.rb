@@ -35,7 +35,7 @@ class ReportOnFilesForEachRegisterChurchPlace
       places = Place.chapman_code(chapman_code).not_disabled.all.order_by(place_name: 1)
       if places.blank?
         place_name = 'No place'
-        line = chapman_code.to_s + '^' + place_name
+        line = '"' + chapman_code.to_s + '"^"' + place_name + '"'
         records << line
         line = ''
       else
@@ -43,7 +43,7 @@ class ReportOnFilesForEachRegisterChurchPlace
           place_name = place.place_name
           churches = place.churches.order_by(church_name: 1)
           if churches.blank?
-            line = chapman_code.to_s + '^' + place_name.to_s + '^' + 'No church'
+            line = '"' + chapman_code.to_s + '"^"' + place_name.to_s + '"^"' + 'No church' + '"'
             records << line
             line = ''
           else
@@ -51,7 +51,7 @@ class ReportOnFilesForEachRegisterChurchPlace
               church_name = church.church_name
               registers = church.registers.order_by(register_type: 1)
               if registers.blank?
-                line = chapman_code.to_s + '^' + place_name.to_s + '^' + church_name.to_s + '^' + 'No register'
+                line = '"' + chapman_code.to_s + '"^"' + place_name.to_s + '"^"' + church_name.to_s + '"^"' + 'No register' + '"'
                 records << line
                 line = ''
               else
@@ -59,16 +59,16 @@ class ReportOnFilesForEachRegisterChurchPlace
                   register_type = register.register_type
                   files = register.freereg1_csv_files.order_by(file_name: 1)
                   if files.blank?
-                    line = chapman_code.to_s + '^' + place_name.to_s + '^' + church_name.to_s + '^' + register_type.to_s + '^' + 'No batch'
+                    line = '"' + chapman_code.to_s + '"^"' + place_name.to_s + '"^"' + church_name.to_s + '"^"' + register_type.to_s + '"^"' + 'No batch' + '"'
                     records << line
                     line = ''
                   else
                     files.each do |file|
-                      line =  line = chapman_code.to_s + '^' + place_name.to_s + '^' + church_name.to_s + '^' + register_type.to_s + '^' + file.file_name.to_s
-                      line =  line + '^' + file.userid.to_s
-                      line =  line + '^' + file.records.to_s
-                      line =  line + '^' + file.datemin.to_s
-                      line =  line + '^' + file.datemax.to_s
+                      line =  line = '"' + chapman_code.to_s + '"^"' + place_name.to_s + '"^"' + church_name.to_s + '"^"' + register_type.to_s + '"^"' + file.file_name.to_s + '"'
+                      line =  line + '^"' + file.userid.to_s + '"'
+                      line =  line + '^"' + file.records.to_s + '"'
+                      line =  line + '^"' + file.datemin.to_s + '"'
+                      line =  line + '^"' + file.datemax.to_s + '"'
                       records << line
                       line = ''
                     end

@@ -1,14 +1,19 @@
 <% breadcrumb :root %>
 <% title "Action Page" %>
-<% if  @user.new_transcription_agreement.blank? || @user.new_transcription_agreement == 'Unknown' || @user.new_transcription_agreement == 'Pending' %>
-  <b><%= @user.person_forename %></b><br>
-  <%= @acceptance %>
+<% if ['https://www.freecen.org.uk', 'https://www.freereg.org.uk', 'https://www.freebmd.org.uk'].include?(MyopicVicar::Application.config.website) %>
+  <% if  @user.new_transcription_agreement.blank? || @user.new_transcription_agreement == 'Unknown' || @user.new_transcription_agreement == 'Pending' %>
+    <b><%= @user.person_forename %></b><br>
+    <%= @acceptance %>
+  <% end%>
 <% end%>
 <%# raise @current_user.inspect %>
 <% if flash[:notice] %>
   <div class="push-half--bottom" id="notice" style="color:blue;">
     <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
   </div>
+<% end %>
+<% if appname_downcase == 'freecen' %>
+  Videos describing <%= link_to 'this page', "https://youtu.be/1P95Un3Ky30", target: '_blank' %>, <%= link_to 'transcriber action overview', "https://youtu.be/c1hF7QsKoDc" , target: '_blank' %>, <%= link_to 'transcriber action details', "https://youtu.be/km143JaxdT8" , target: '_blank'%> (all open in new tabs)<br>
 <% end %>
 <% count = @user.count_not_checked_messages %>
 <% if count != 0 %>

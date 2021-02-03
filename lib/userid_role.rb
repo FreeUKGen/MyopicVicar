@@ -1,5 +1,5 @@
 module UseridRole
-  VALUES = ['checker', 'computer', 'contacts_coordinator', 'county_coordinator', 'country_coordinator', 'data_manager', 'documentation_coordinator',
+  VALUES = ['checker', 'computer', 'contacts_coordinator', 'county_coordinator', 'country_coordinator', 'master_county_coordinator', 'data_manager', 'documentation_coordinator',
             'engagement_coordinator', 'executive_director', 'genealogy_coordinator', 'general_communication_coordinator', 'pending', 'project_manager',
             'publicity_coordinator', 'researcher', 'syndicate_coordinator', 'system_administrator', 'technical', 'trainee', 'transcriber',
             'validator', 'volunteer_coordinator', 'website_coordinator']
@@ -39,42 +39,43 @@ module UseridRole
     }
   when 'freecen'
     OPTIONS = {
-      'checker' => ['Communicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
-      'computer' => ['Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
+      'checker' => ['CSV Batches', 'Search Place Names', 'FreeCEN Handbook', 'Communicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
+      'computer' => ['CSV Batches', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
       'researcher' => ['Communicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
       'pending' => ['Profile', 'FreeUKGenealogy  Policies'],
-      'contacts_coordinator' => ['Communicate', 'Contacts', 'Display County Coordinators',
-                                 'Display Syndicate Coordinators', 'Display Userids', 'Feedback', 'Manage Counties', 'Profile', 'System Documentation', 'Roadmap', 'FreeUKGenealogy  Policies'],
-      'county_coordinator' => ['Communicate', 'Contacts', 'Display Userids', 'Manage County', 'Manage Syndicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies', 'FreeUKGenealogy  Policies'],
-      'country_coordinator' => ['Communicate', 'Contacts', 'Display Userids', 'Manage County', 'Manage Syndicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies', 'FreeUKGenealogy  Policies'],
-      'data_manager' => ['Communicate', 'Contacts', 'Database Statistics', 'Display Userids', 'Display Syndicate Coordinators', 'Display County Coordinators', 'Manage Counties', 'Manage Syndicates', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies' ],
-      'documentation_coordinator' => ['Communicate', 'Display Userids', 'Feedback', 'Manage Syndicates',
-                                      'Manage Counties', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
-      'engagement_coordinator' => ['Communicate', 'Contacts', 'Database Statistics', 'Manage Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
+      'contacts_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Display County Coordinators',
+                                 'Display Syndicate Coordinators', 'Display Userids', 'Feedback', 'Manage Counties', 'Profile', 'Search Place Names', 'System Documentation', 'Roadmap', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
+      'county_coordinator' => ['CSV Batches', 'Search Place Names', 'FreeCEN Handbook', 'Manage County', 'Manage Syndicate', 'Contacts', 'Communicate', 'Display Userids', 'Profile',  'Roadmap', 'FreeUKGenealogy  Policies'],
+      'master_county_coordinator' => ['CSV Batches', 'Search Place Names', 'FreeCEN Handbook', 'Manage Counties', 'Manage Syndicates', 'Contacts', 'Communicate', 'Display Userids', 'Profile',  'Roadmap', 'FreeUKGenealogy  Policies'],
+      'country_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Display Userids', 'Manage County', 'Manage Syndicate', 'Profile', 'Roadmap', 'Search Place Names', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
+      'data_manager' => ['CSV Batches', 'Search Place Names', 'FreeCEN Handbook', 'Manage Counties', 'Manage Syndicates', 'FreeCen Errors', 'Physical Files', 'Communicate', 'Contacts', 'Database Statistics', 'Access Attic', 'Display Userids', 'Display Syndicate Coordinators', 'Display County Coordinators', 'Profile',
+                         'Roadmap', 'FreeUKGenealogy  Policies'],
+      'documentation_coordinator' => ['CSV Batches', 'Communicate', 'Display Userids', 'Feedback', 'Manage Syndicates',
+                                      'Manage Counties', 'Profile', 'RefineryCMS', 'Roadmap','Search Place Names', 'System Documentation', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
+      'engagement_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Database Statistics', 'Manage Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Place Names', 'System Documentation', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
 
-      'executive_director' => ['Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Database Statistics', 'Feedback', 'FreeCen Errors',
-                               'Manage Counties', 'Manage FreeCen Coverage', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
-                               'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'FreeUKGenealogy  Policies'],
-      'genealogy_coordinator' => ['Communicate', 'Contacts', 'Profile', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
-      'general_communication_coordinator' => ['Communicate', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
+      'executive_director' => ['Access Attic', 'CSV Batches', 'Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Database Statistics', 'Feedback', 'FreeCen Errors',
+                               'Manage Counties', 'Manage FreeCen Coverage', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Search Place Names', 'Site Statistics',
+                               'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'TNA Change Logs', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
+      'genealogy_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Profile', 'Roadmap', 'Search Place Names', 'System Documentation', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
+      'general_communication_coordinator' => ['CSV Batches', 'Communicate', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Place Names', 'System Documentation', 'FreeUKGenealogy  Policies'],
 
-      'project_manager' => ['Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Database Statistics', 'Feedback', 'FreeCen Errors',
-                            'Manage Counties', 'Manage FreeCen Coverage', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
-                            'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'FreeUKGenealogy  Policies'],
-      'publicity_coordinator' => ['Communicate', 'Contacts', 'Profile', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
+      'project_manager' => ['Access Attic', 'CSV Batches', 'Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Database Statistics', 'Feedback', 'FreeCen Errors',
+                            'Manage Counties', 'Manage FreeCen Coverage', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Search Place Names', 'Site Statistics',
+                            'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'TNA Change Logs', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
+      'publicity_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Profile', 'Roadmap', 'Search Place Names', 'System Documentation', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
+      'syndicate_coordinator' => ['CSV Batches', 'Search Place Names', 'FreeCEN Handbook', 'Manage Syndicate', 'Contacts', 'Communicate', 'Display Userids', 'Profile',  'Roadmap', 'FreeUKGenealogy  Policies'],
+      'system_administrator' => ['Access Attic', 'CSV Batches', 'Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Database Statistics', 'Feedback', 'FreeCen Errors',
+                                 'Manage Counties', 'Manage FreeCen Coverage', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Physical Files', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Search Place Names', 'Site Statistics',
+                                 'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'TNA Change Logs', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
+      'trainee' => ['CSV Batches', 'Communicate', 'Profile', 'Roadmap', 'Search Place Names', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
+      'technical' => ['Access Attic', 'CSV Batches', 'Communicate', 'Contacts', 'Database Statistics', 'Feedback', 'FreeCen Errors', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Search Place Names', 'Site Statistics',
+                      'System Documentation', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
 
-      'syndicate_coordinator' => ['Communicate', 'Manage Syndicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
-      'system_administrator' => ['Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Database Statistics', 'Feedback', 'FreeCen Errors',
-                                 'Manage Counties', 'Manage FreeCen Coverage', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
-                                 'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'FreeUKGenealogy  Policies'],
-      'trainee' => ['Communicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
-      'technical' => ['Communicate', 'Contacts', 'Database Statistics', 'Feedback', 'FreeCen Errors', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
-                      'System Documentation', 'FreeUKGenealogy  Policies'],
-
-      'transcriber' => ['Communicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
-      'validator' => ['Communicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
-      'volunteer_coordinator' => ['Communicate', 'Contacts', 'Manage Syndicates', 'Manage Userids', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
-      'website_coordinator' => ['Communicate', 'Contacts', 'Database Statistics', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies']
+      'transcriber' => ['CSV Batches', 'Search Place Names', 'FreeCEN Handbook', 'Communicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
+      'validator' => ['CSV Batches', 'Search Place Names', 'FreeCEN Handbook', 'Communicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
+      'volunteer_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Manage Syndicates', 'Manage Userids', 'Profile', 'Roadmap', 'Search Place Names', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
+      'website_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Database Statistics', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Place Names', 'System Documentation', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies']
 
     }
   when 'freebmd'
@@ -152,10 +153,57 @@ module UseridRole
     'Message System' => '/messages',
     'Manage Images' => '/sources',
     'Assignments' => '/assignments/my_own',
+    'CSV Batches' => '/freecen_csv_files/my_own',
     'Manage Pieces' => '/freecen_pieces',
     'FreeCen Errors' => '/freecen_errors',
     'Manage FreeCen Coverage' => '/freecen_coverage/edit',
-    'FreeUKGenealogy  Policies' => '/cms/freeukgenealogy-policies'
+    'FreeUKGenealogy  Policies' => '/cms/freeukgenealogy-policies',
+    'Search Place Names' => '/freecen2_places/search_names',
+    'TNA Change Logs' => '/tna_change_logs',
+    'FreeCEN Handbook' => '/cms/freecen-handbook',
+  }
+
+  OPTIONS_TITLES = {
+    'Communicate' => 'Communicate to a member of FreeUKGeneology',
+    'Denominations' => 'Make changes to the list of denominations',
+    'Database Statistics' => 'Access the FreeCEN database contents',
+    'GAP Reasons' => 'Make changes to the list of GAP reasons',
+    'Saved Searches' => 'Access your saved searches',
+    'Profile' => 'Display or Edit four personal information',
+    'Batches' => 'List your own FreeREG batches',
+    'Manage Syndicate' => 'Manage a syndicate',
+    'Manage Syndicates' => 'Manage syndicates',
+    'Manage County' => 'Manage a county',
+    'Manage Counties' => 'Manage a county',
+    'Manage Image Server' => 'Manage the Image Server',
+    'Manage Userids' => 'Manage the users',
+    'Display Userids' => 'Display a list of users',
+    'Display Syndicate Coordinators' => 'Display a list of syndicate coordinators',
+    'Display County Coordinators' => 'Display a list of county coordinators',
+    'Syndicate Coordinators' => 'Make changes to syndicates and their coordinators',
+    'County Coordinators' => 'Make changes to counties and county coordinators',
+    'Country Coordinators' => 'Make changes to country coordinators',
+    'Upload New Batch' => 'Upload a new file',
+    'RefineryCMS' => 'Manage the Refinery CMS pages',
+    'Access Attic' => 'Access the attic files for a specific userid',
+    'Physical Files' => 'Access information about the physical files',
+    'Site Statistics' => 'Access information on the number of files and searches',
+    'Search Performance' => 'Access information on the performance of the search engine',
+    'Software Version Information' => 'Access information on the software updates placed on the systems',
+    'Feedback' => 'Access the feedback information from members',
+    'Contacts' => 'Access the contacts submitted by researchers',
+    'System Documentation' => 'Access system documentation',
+    'Roadmap' => 'Review the future roadmap for the application',
+    'Logout' => 'Log out of the system',
+    'Message System' => 'Access the message system used to send information to members',
+    'Manage Images' => 'Manage the images on the image server',
+    'Assignments' => 'List your assignments',
+    'CSV Batches' => 'List your FreeCEN csv files',
+    'Manage Pieces' => 'Access the FreeCEN1 pieces information',
+    'FreeCen Errors' => 'Access the errors arising from the FreeCEN1 monthly update',
+    'Manage FreeCen Coverage' => 'Access the FreeCEN1 database coverage',
+    'FreeUKGenealogy  Policies' => 'Access the FreeUKGenealogy  Policies',
+    'Search Place Names' => 'Search for an existing place name; opens in a new tab'
   }
   USERID_MANAGER_OPTIONS = ['Select specific userid', 'Select specific email', 'Select specific surname/forename',
                             'Browse userids', 'Select Role', 'Select Secondary Role', 'Transcription Agreement Accepted',
@@ -178,7 +226,7 @@ module UseridRole
   }
   FILE_MANAGEMENT_OPTIONS = ['Upload New Batch', 'List by Number of Errors then Filename', 'List those with Zero Dates', 'List by Filename',
                              'List by uploaded date (ascending)', 'List by uploaded date (descending)', 'List files waiting to be processed', 'Review Specific Batch']
-  FILE_OPTIONS_TRANSLATION ={
+  FILE_OPTIONS_TRANSLATION = {
     'Upload New Batch' => '/csvfiles/new',
     'List by Number of Errors then Filename' => '/freereg1_csv_files/selection?option=List by Number of Errors then Filename',
     'List those with Zero Dates' => '/freereg1_csv_files/selection?option=Review Batches with Zero Dates',
@@ -195,7 +243,11 @@ module UseridRole
                                  'Review Batches by Most Recent Date of Change', 'Review Batches by Oldest Date of Change', 'Review Specific Batch',
                                  'Upload New Batch', 'Offline Reports', 'Manage Images']
   when 'freecen'
-    COUNTY_MANAGEMENT_OPTIONS = ['Manage Pieces', 'Manage VLD Files', 'Manage Places']
+    COUNTY_MANAGEMENT_OPTIONS = ['Manage FreeCEN2 Places', 'Manage FreeCEN2 Districts', 'Manage FreeCEN2 Pieces', 'Manage FreeCEN2 Civil Parishes',
+                                 'Review Batches with Errors', 'Review Batches by Filename', 'Review Batches being Validated', 'Review Incorporated Batches',
+                                 'Review Batches by Userid then Filename', 'Review Batches by Most Recent Date of Change',
+                                 'Review Batches by Oldest Date of Change', 'Review Specific Batch', 'Upload New Batch', 'Manage FreeCEN1 Pieces',
+                                 'Manage VLD Files', 'Manage FreeCEN1 Places']
   when 'freebmd'
   end
   COUNTY_OPTIONS_TRANSLATION = {
@@ -205,6 +257,8 @@ module UseridRole
     'Places with Unapproved Names' => '/manage_counties/selection?option=Places with Unapproved Names',
     'Review Batches with Errors' => '/manage_counties/selection?option=Review Batches with Errors',
     'Review Batches with Zero Dates' => '/manage_counties/selection?option=Review Batches with Zero Dates',
+    'Review Batches being Validated' => '/manage_counties/selection?option=Being Validated',
+    'Review Incorporated Batches' => '/manage_counties/selection?option=Incorporated',
     'Review Batches by Filename' => '/manage_counties/selection?option=Review Batches by Filename',
     'Review Batches by Userid then Filename' => '/manage_counties/selection?option=Review Batches by Userid then Filename',
     'Review Batches by Most Recent Date of Change' => '/manage_counties/selection?option=Review Batches by Most Recent Date of Change',
@@ -212,17 +266,58 @@ module UseridRole
     'Review Specific Batch' => '/manage_counties/selection?option=Review Specific Batch',
     'Upload New Batch' => '/csvfiles/new',
     'Manage Images' => '/manage_counties/selection?option=Manage Images',
-    'Manage Pieces' => '/freecen_pieces',
+    'Manage FreeCEN1 Pieces' => '/freecen_pieces',
+    'Manage FreeCEN2 Pieces' => '/freecen2_pieces',
+    'Manage FreeCEN2 Places' => '/freecen2_places',
+    'Manage FreeCEN2 Districts' => '/freecen2_districts',
+    'Manage FreeCEN2 Civil Parishes' => '/freecen2_civil_parishes',
     'Manage VLD Files' => '/freecen1_vld_files',
-    'Manage Places' => '/places',
-    'Offline Reports' => '/manage_counties/selection?option=Offline Reports'
+    'Manage FreeCEN1 Places' => '/places',
+    'Offline Reports' => '/manage_counties/selection?option=Offline Reports',
 
   }
-  SYNDICATE_MANAGEMENT_OPTIONS =  ['Review Active Members', 'Review All Members', 'Transcription Agreement Accepted', 'Transcription Agreement Not Accepted', 'Select Specific Member by Userid',
-                                   'Select Specific Member by Email Address', 'Select Specific Member by Surname/Forename', 'Incomplete Registrations', 'Create Userid',
-                                   'Syndicate Messages', 'Review Batches with Errors', 'Review Batches with Zero Dates', 'Review Batches by Filename',
-                                   'Review Batches by Userid then Filename', 'Review Batches by Most Recent Date of Change', 'Review Batches by Oldest Date of Change',
-                                   'Review Specific Batch', 'List files waiting to be processed', 'List files NOT processed', 'Upload New Batch', 'Change Recruiting Status', 'Manage Images']
+  COUNTY_OPTIONS_TITLES = {
+    'All Places' => 'Lists all possible places in the county',
+    'Active Places' => 'Lists only those places that have information on churches and registers',
+    'Specific Place' => 'List of all places in the county from which you can select just one and review its information',
+    'Places with Unapproved Names' => 'List of those places in the county where its information has not been approved',
+    'Review Batches with Errors' => 'Lists just those batches that contain 1 or more errors',
+    'Review Batches with Zero Dates' => 'Lists just those batches that contain have a zero in the date range',
+    'Review Batches by Filename' => 'Lists all batches sorted by file name',
+    'Review Batches by Userid then Filename' => 'Lists all batches sorted by userid and then file name for each userid',
+    'Review Batches by Most Recent Date of Change' => 'Lists all batches sorted by the NEWEST date of change',
+    'Review Batches by Oldest Date of Change' => 'Lists all batches sorted by the OLDEST date of change',
+    'Review Specific Batch' => 'Lists file name/userid from which you can select just one and review its information',
+    'Upload New Batch' => 'Upload a brand new file',
+    'Manage Images' => 'Go to the set of actions to manage the images for the county',
+    'Manage FreeCEN1 Pieces' => 'Lists all of the Pieces used by CEN1',
+    'Manage FreeCEN2 Pieces' => 'Lists all of the Sub Districts (Pieces) used by CEN2. Note it may take a minute or more to prepare the list',
+    'Manage FreeCEN2 Places' => 'Lists all of the official Places used by CEN2',
+    'Manage FreeCEN2 Districts' => 'Lists all of the Districts used by CEN2. Note it may take a minute or more to prepare the list',
+    'Manage FreeCEN2 Civil Parishes' => 'Lists all of the Civil Parishes used by CEN2. Note it may take a minute or more to prepare the list',
+    'Manage VLD Files' => 'Minimal tools to manage VLD files',
+    'Manage Places' => 'Minimal tools to manage places used by CEN1',
+    'Offline Reports' => 'Generate off line reports',
+
+  }
+  case MyopicVicar::Application.config.template_set
+  when 'freereg'
+    SYNDICATE_MANAGEMENT_OPTIONS = ['Review Active Members', 'Review All Members', 'Transcription Agreement Accepted',
+                                    'Transcription Agreement Not Accepted', 'Select Specific Member by Userid',
+                                    'Select Specific Member by Email Address', 'Select Specific Member by Surname/Forename',
+                                    'Incomplete Registrations', 'Create Userid', 'Syndicate Messages', 'Review Batches with Errors',
+                                    'Review Batches with Zero Dates', 'Review Batches by Filename', 'Review Batches by Userid then Filename',
+                                    'Review Batches by Most Recent Date of Change', 'Review Batches by Oldest Date of Change',
+                                    'Review Specific Batch', 'List files waiting to be processed', 'List files NOT processed', 'Upload New Batch',
+                                    'Change Recruiting Status', 'Manage Images']
+  when 'freecen'
+    SYNDICATE_MANAGEMENT_OPTIONS = ['Review Active Members', 'Review All Members', 'Transcription Agreement Accepted',
+                                    'Transcription Agreement Not Accepted', 'Select Specific Member by Userid',
+                                    'Select Specific Member by Email Address', 'Select Specific Member by Surname/Forename',
+                                    'Incomplete Registrations', 'Create Userid', 'Syndicate Messages', 'Change Recruiting Status']
+  when 'freebmd'
+  end
+
   SYNDICATE_OPTIONS_TRANSLATION = {
     'Review Active Members' => '/manage_syndicates/selection?option=Review Active Members',
     'Review All Members' => '/manage_syndicates/selection?option=Review All Members',

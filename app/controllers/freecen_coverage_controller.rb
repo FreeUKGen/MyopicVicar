@@ -4,6 +4,24 @@ class FreecenCoverageController < ApplicationController
   require 'freecen_constants'
   skip_before_action :require_login
 
+  def create
+    if params.present? && params[:freecen_coverage].present? && params[:freecen_coverage][:chapman_codes].present?#params[:commit] == "Select"
+      @freecen_coverage = FreecenCoverage.new(freecen_coverage_params)
+      @chapman_code = params[:freecen_coverage][:chapman_codes][1]
+      session[:chapman_code] = @chapman_code
+      if @freecen_coverage.save
+        @county = ChapmanCode.name_from_code(@chapman_code)
+        session[:county] = @county
+        redirect_to freecen_coverage_path
+        return
+      else
+        redirect_to new_freecen_coverage_path
+      end
+    elsif params.present? && params[:freecen_coverage].present? && params[:freecen_coverage][:place].present?
+      redirect_to(freecen_coverage_path(params[:freecen_coverage][:place])) && return
+    end
+  end
+
   def index
     # Since get_index_stats is slow (several seconds on production), we cache
     # the result so subsequent hits will be faster. Be sure to do
@@ -18,6 +36,12 @@ class FreecenCoverageController < ApplicationController
     @manage_pieces = (@manager || (@roles.present? &&@roles.include?('Manage Pieces'))) ? true : false
     @editing = (@manage_pieces && session[:edit_freecen_pieces]=='edit')
   end
+
+  def new
+    @freecen_coverage = FreecenCoverage.new
+    @options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES))
+  end
+
 
   def show
     @roles=[]
@@ -56,6 +80,12 @@ class FreecenCoverageController < ApplicationController
     @totals_pieces, @totals_pieces_online, @totals_individuals, @totals_dwellings = FreecenPiece.grand_year_totals
     @grand_totals_pieces, @grand_totals_pieces_online, @grand_totals_individuals, @grand_totals_dwellings = FreecenPiece.grand_totals(@totals_pieces, @totals_pieces_online, @totals_individuals, @totals_dwellings)
     session.delete(:manage_places)
+  end
+
+  private
+
+  def freecen_coverage_params
+    params.require(:freecen_coverage).permit!
   end
 
 end
