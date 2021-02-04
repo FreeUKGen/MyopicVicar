@@ -28,6 +28,14 @@ namespace :foo do
     puts "Task complete."
   end
 
+  task :update_freecen2_pieces_1861_lnd, [:limit] => [:environment] do |t, args|
+    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+    require 'update_freecen2_pieces_1861_lnd'
+    puts "Update Freecen2 Piece dropping Pieces and Civil Parishes for LDN in 1861"
+    UpdateFreecen2Pieces1861Lnd.process(args.limit)
+    puts "Task complete."
+  end
+
   task :update_freecen2_pieces_1911, [:limit] => [:environment] do |t, args|
     # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
     require 'update_freecen2_pieces_1911'
