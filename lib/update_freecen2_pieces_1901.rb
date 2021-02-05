@@ -18,7 +18,7 @@ class UpdateFreecen2Pieces1901
       p records
 
       piece.freecen2_civil_parishes.each do |parish|
-        message_file.puts "#{parish.chapman_code}, #{parish.year},#{parish.name}, #{document.name}, has entries and cannot be deleted" if parish.freecen_csv_entries.present?
+        message_file.puts "#{parish.chapman_code}, #{parish.year},#{parish.name}, #{piece.number}, has entries and cannot be deleted" if parish.freecen_csv_entries.present?
         next if parish.freecen_csv_entries.present?
 
         if parish.freecen2_townships.present?
