@@ -25,17 +25,17 @@ class UpdateFreecen2Pieces1911
 
         if parish.freecen2_townships.present?
           parish.freecen2_townships.each do |unit|
-            unit.deleted
+            unit.delete
           end
         end
         if parish.freecen2_hamlets.present?
           parish.freecen2_hamlets.each do |unit|
-            unit.deleted
+            unit.delete
           end
         end
         if parish.freecen2_wards.present?
           parish.freecen2_wards.each do |unit|
-            unit.deleted
+            unit.delete
           end
         end
         parish.delete
