@@ -29,9 +29,10 @@ task :delete_freecen_csv_file_no_sleep,[:limit] => [:environment] do |t, args|
       line = line.chomp
       p " Starting #{files}  #{parts[0]},#{parts[1]},#{parts[2]}"
       record_number = 0
-      if  FreecenCsvEntry.where(:freecen_csv_file_id => parts[0]).exists?
-        FreecenCsvEntry.where(:freecen_csv_file_id => parts[0]).no_timeout.each do |entry|
-          record_number = record_number + 1
+      if FreecenCsvEntry.where(freecen_csv_file_id: parts[0]).exists?
+        entries = FreecenCsvEntry.where(freecen_csv_file_id: parts[0]).all
+        entries.each.no_timeout do |entry|
+          record_number += 1
           output_file.puts "#{entry.record_number},#{entry.civil_parish}, #{entry.enumeration_district},#{entry.piece_number}, #{entry.where_census_taken}" if record_number == 1
           entry.destroy
         end
