@@ -5,7 +5,7 @@ class UpdateFreecen2Pieces1911
     limit = limit.to_i
     file_for_warning_messages = 'log/update_freecen2-pieces_1911.txt'
     FileUtils.mkdir_p(File.dirname(file_for_warning_messages))
-
+    message_file = File.new(file_for_warning_messages, 'w')
     p "Update Freecen2 Piece dropping Civil Parishes for 1911 with limit of #{limit}"
     records = 0
     fixed = 0
