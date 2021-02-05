@@ -217,7 +217,7 @@ module Freecen
       # loop through each 299-byte substring
       record_count = raw_file.length / VLD_RECORD_LENGTH
       computed_file_length = record_count * VLD_RECORD_LENGTH
-      raise "***Incorrect file length for #{filename} Actual #{number_with_delimiter(raw_file.length)} Computed #{number_with_delimiter(computed_file_length)} " if raw_file.length != computed_file_length
+      raise "***Incorrect file length for #{filename}  Actual #{File.size(filename)} measured #{raw_file.length} Computed #{computed_file_length} " if raw_file.length != computed_file_length
       return contents if raw_file.length != computed_file_length
 
       (0...record_count).to_a.each do |i|
