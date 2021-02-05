@@ -41,24 +41,24 @@ class MoveCivilParishesToAnotherCounty
         fixed += 1
         original_piece_number = move[1].to_s
         original_chapman_code = move[0].to_s.upcase
-        message_file.puts "Invalid Chapman Code for original #{original_chapman_code} " unless ChapmanCode.value?(original_chapman_code)
+        message_file.puts "ERROR: Invalid Chapman Code for original #{original_chapman_code} " unless ChapmanCode.value?(original_chapman_code)
         next unless ChapmanCode.value?(original_chapman_code)
 
         new_chapman_code = move[2].to_s.upcase
-        message_file.puts "Invalid Chapman Code for new #{new_chapman_code} " unless ChapmanCode.value?(new_chapman_code)
+        message_file.puts "ERROR: Invalid Chapman Code for new #{new_chapman_code} " unless ChapmanCode.value?(new_chapman_code)
         next unless ChapmanCode.value?(new_chapman_code)
 
         year, piece_number, _field = Freecen2Piece.extract_year_and_piece(original_piece_number, original_chapman_code)
         piece = Freecen2Piece.find_by(chapman_code: original_chapman_code, number: piece_number, year: year)
-        message_file.puts "Piece #{piece_number} not found in #{original_chapman_code} for #{year}" if piece.blank?
+        message_file.puts "ERROR: Piece #{piece_number} not found in #{original_chapman_code} for #{year}" if piece.blank?
         next if piece.blank?
 
         original_district = piece.freecen2_district
-        message_file.puts "Piece #{piece_number} does not have a district" if original_district.blank?
+        message_file.puts "ERROR: Piece #{piece_number} does not have a district" if original_district.blank?
         next if original_district.blank?
 
         original_place = piece.freecen2_place
-        message_file.puts "Piece #{piece_number} does not have a Freecen2Place; you will need to add one" if original_place.blank?
+        message_file.puts "WARNING: Piece #{piece_number} does not have a Freecen2Place; you will need to add one" if original_place.blank?
 
         parishes = 0
         while parishes < number_of_civil_parishes
@@ -72,14 +72,14 @@ class MoveCivilParishesToAnotherCounty
           check_parish = Freecen2CivilParish.find_by(freecen2_piece_id: piece.id, standard_name: Freecen2Place.standard_place(original_parish))
 
           if check_parish.blank?
-            message_file.puts "#{original_parish} is not in the civil parish list for #{piece_number} in #{original_chapman_code}"
+            message_file.puts "ERROR: #{original_parish} is not in the civil parish list for #{piece_number} in #{original_chapman_code}"
             puts "#{original_parish} is not in the civil parish list for #{piece_number} in #{original_chapman_code}"
             next
 
           end
 
           if check_parish.freecen_csv_entries.present?
-            message_file.puts "#{original_parish} has freecen_csv_entries and cannot be moved"
+            message_file.puts "ERROR: #{original_parish} has freecen_csv_entries and cannot be moved"
             puts "#{original_parish} has freecen_csv_entries and cannot be moved"
             next
 
@@ -115,7 +115,7 @@ class MoveCivilParishesToAnotherCounty
           new_piece.freecen2_civil_parishes.each do |parish|
             existing_parishes << parish.standard_name
           end
-          puts "Civil Parish   #{original_parish} already exists in #{new_piece_number} for #{new_district.name} in #{new_chapman_code} for year #{year}" if existing_parishes.include?(Freecen2Place.standard_place(original_parish))
+          puts "ERROR: Civil Parish  #{original_parish} already exists in #{new_piece_number} for #{new_district.name} in #{new_chapman_code} for year #{year}" if existing_parishes.include?(Freecen2Place.standard_place(original_parish))
           next if existing_parishes.include?(Freecen2Place.standard_place(original_parish))
 
           check_parish.update(freecen2_piece_id: new_piece.id, chapman_code: new_chapman_code)
