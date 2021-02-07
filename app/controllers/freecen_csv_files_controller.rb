@@ -295,7 +295,12 @@ class FreecenCsvFilesController < ApplicationController
 
 
   def index
+    p 'sorted by'
+    p session[:sorted_by]
+    p 'selected'
+    p session[:selection]
     # the common listing entry by syndicates and counties
+    get_user_info_from_userid
     @county =  session[:county]
     @syndicate =  session[:syndicate]
     @role = session[:role]
@@ -303,26 +308,41 @@ class FreecenCsvFilesController < ApplicationController
     if (@county.blank? && @syndicate.blank?) || @role.blank? || @sorted_by.blank?
       redirect_back(fallback_location: new_manage_resource_path, notice: 'Missing parameters') && return
     end
-    batches = FreeregOptionsConstants::FILES_PER_PAGE
-    get_user_info_from_userid
-    if session[:syndicate].present? && session[:userid_id].blank? && helpers.can_view_files?(session[:role]) && helpers.sorted_by?(session[:sorted_by])
-      userids = Syndicate.get_userids_for_syndicate(session[:syndicate])
-      @freecen_csv_files = FreecenCsvFile.in(userid: userids).gt(total_errors: 0).order_by(session[:sort]).all.page(params[:page]).per(batches)
-    elsif session[:syndicate].present? && session[:userid_id].blank? && helpers.can_view_files?(session[:role])
-      userids = Syndicate.get_userids_for_syndicate(session[:syndicate])
-      @freecen_csv_files = FreecenCsvFile.in(userid: userids).order_by(session[:sort]).all.page(params[:page]).per(batches).includes(:freecen_csv_entries)
-    elsif session[:syndicate].present? && session[:userid_id].present? && helpers.can_view_files?(session[:role])
-      @freecen_csv_files = FreecenCsvFile.userid(UseridDetail.find(session[:userid_id]).userid).no_timeout.order_by(session[:sort]).all.page(params[:page]).per(batches)
-    elsif session[:county].present? && helpers.can_view_files?(session[:role]) && session[:sorted_by] == '; sorted by descending number of errors and then file name'
-      @freecen_csv_files = FreecenCsvFile.chapman_code(session[:chapman_code]).gt(total_errors: 0).order_by(session[:sort]).all.page(params[:page]).per(batches)
-    elsif session[:county].present? && session[:sorted_by] == '; being validated'
-      @freecen_csv_files = FreecenCsvFile.where(chapman_code: session[:chapman_code], validation: true, incorporated: false).order_by(session[:sort]).all.page(params[:page]).per(batches)
-    elsif session[:county].present? && session[:sorted_by] == '; incorporated'
-      @freecen_csv_files = FreecenCsvFile.where(chapman_code: session[:chapman_code], incorporated: true).no_timeout.order_by(session[:sort]).all.page(params[:page]).per(batches)
-    elsif session[:county].present? && helpers.can_view_files?(session[:role])
-      @freecen_csv_files = FreecenCsvFile.chapman_code(session[:chapman_code]).no_timeout.order_by(session[:sort]).all.page(params[:page]).per(batches)
+    case params[:order]
+    when 'alphabetic'
+      session[:sort] = 'file_name ASC'
+    when 'userid'
+      session[:sort] = 'userid_lower_case ASC, file_name ASC'
+    when 'oldest'
+      session[:sort] = 'uploaded_date ASC'
+    when 'recent'
+      session[:sort] = 'uploaded_date DESC'
     end
-    session[:current_page] = @freecen_csv_files.current_page if @freecen_csv_files.present?
+    p 'sort'
+    p session[:sort]
+    case
+    when session[:syndicate].present?
+      if session[:userid_id].blank? && helpers.can_view_files?(session[:role]) && helpers.sorted_by?(session[:sorted_by])
+        userids = Syndicate.get_userids_for_syndicate(session[:syndicate])
+        @freecen_csv_files = FreecenCsvFile.in(userid: userids).gt(total_errors: 0).order_by(session[:sort]).all
+      elsif session[:userid_id].blank? && helpers.can_view_files?(session[:role])
+        userids = Syndicate.get_userids_for_syndicate(session[:syndicate])
+        @freecen_csv_files = FreecenCsvFile.in(userid: userids).order_by(session[:sort]).all.includes(:freecen_csv_entries)
+      elsif session[:userid_id].present? && helpers.can_view_files?(session[:role])
+        @freecen_csv_files = FreecenCsvFile.userid(UseridDetail.find(session[:userid_id]).userid).no_timeout.order_by(session[:sort]).all
+      end
+    when session[:county].present?
+      if helpers.can_view_files?(session[:role]) && session[:selection] == 'errors'
+        @freecen_csv_files = FreecenCsvFile.chapman_code(session[:chapman_code]).gt(total_errors: 0).order_by(session[:sort]).all
+      elsif helpers.can_view_files?(session[:role]) && session[:selection] == 'validated'
+        @freecen_csv_files = FreecenCsvFile.where(chapman_code: session[:chapman_code], validation: true, incorporated: false).order_by(session[:sort]).all
+      elsif helpers.can_view_files?(session[:role]) && session[:selection] == 'incorporated'
+        @freecen_csv_files = FreecenCsvFile.where(chapman_code: session[:chapman_code], incorporated: true).order_by(session[:sort]).all
+      elsif helpers.can_view_files?(session[:role]) && session[:selection] == 'all'
+        @freecen_csv_files = FreecenCsvFile.chapman_code(session[:chapman_code]).order_by(session[:sort]).all
+      end
+    end
+    #session[:current_page] = @freecen_csv_files.current_page if @freecen_csv_files.present?
   end
 
   def lock
