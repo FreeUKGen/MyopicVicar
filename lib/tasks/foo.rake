@@ -4,11 +4,43 @@ namespace :foo do
   # rake foo:update_search_records[number of files, record type,software version, force creation, order files are processed]
   #eg f2rake  foo:update_search_records[0,bu,"2016-05-27T19:23:31+00:00", true, 1]
   #number of files of 0 is all, force creation is true or false, order files processed is 1 or -1
+
+  task :move_civil_parishes_to_another_county, [:limit, :file_name] => [:environment] do |t, args|
+    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+    require 'move_civil_parishes_to_another_county'
+    puts "Move Civil Parishes To Another County"
+    MoveCivilParishesToAnotherCounty.process(args.limit, args.file_name)
+    puts "Task complete."
+  end
   task :edit_freecen2_name, [:type, :chapman_code, :limit, :fix] => [:environment] do |t, args|
     # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
     require 'edit_freecen2_name'
     puts "Editing Freecen2 collection names"
     EditFreecen2Name.process(args.type, args.chapman_code, args.limit, args.fix)
+    puts "Task complete."
+  end
+
+  task :update_freecen2_pieces_1901, [:limit] => [:environment] do |t, args|
+    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+    require 'update_freecen2_pieces_1901'
+    puts "Update Freecen2 Piece dropping Civil Parishes for 1901"
+    UpdateFreecen2Pieces1901.process(args.limit)
+    puts "Task complete."
+  end
+
+  task :update_freecen2_pieces_1861_lnd, [:limit] => [:environment] do |t, args|
+    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+    require 'update_freecen2_pieces_1861_lnd'
+    puts "Update Freecen2 Piece dropping Pieces and Civil Parishes for LDN in 1861"
+    UpdateFreecen2Pieces1861Lnd.process(args.limit)
+    puts "Task complete."
+  end
+
+  task :update_freecen2_pieces_1911, [:limit] => [:environment] do |t, args|
+    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+    require 'update_freecen2_pieces_1911'
+    puts "Update Freecen2 Piece dropping Civil Parishes for 1911"
+    UpdateFreecen2Pieces1911.process(args.limit)
     puts "Task complete."
   end
 
