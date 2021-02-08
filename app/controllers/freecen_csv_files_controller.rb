@@ -427,12 +427,8 @@ class FreecenCsvFilesController < ApplicationController
     flash[:notice] = proceed ? 'The removal of the batch was successful' : message
     if session[:my_own]
       redirect_to my_own_freecen_csv_file_path
-    elsif session[:page]
-      redirect_to session[:page]
-    elsif session[:return_to].present?
-      redirect_to session[:return_to]
     else
-      redirect_to manage_resource_path(@user)
+      redirect_to freecen_csv_files_path
     end
   end
 
