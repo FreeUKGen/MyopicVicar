@@ -20,7 +20,11 @@ module Freecen2PiecesHelper
     if piece.freecen_csv_files.present?
       files = []
       piece.freecen_csv_files.order_by(file_name: 1).each do |file|
-        files << file.file_name + ' (' + file.userid + ')'
+        unless file.userid.blank?
+          files << file.file_name + ' (' + file.userid + ')'
+        else
+          files << file.file_name + ' ()'
+        end
       end
       files
     else
