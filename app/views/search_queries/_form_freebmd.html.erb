@@ -101,8 +101,8 @@
                     <div class='labels'>
                         <div class="recordtypelabel">
                             <%= label_tag 'record_type', "Record Type #{app_icons[:info]}".html_safe, class: "ttip", tabindex: "0" do %>
-                                <%= "Record Type #{app_icons[:info]}".html_safe %>
-                                <span class="ttip__text"><%= info_tag_text[:record_type]%></span>
+                                <%= "Record Type".html_safe %>
+                                <span class="ttip__text"><%#= info_tag_text[:record_type]%></span>
                             <% end %>
                         </div>
                     </div>
@@ -138,8 +138,8 @@
                 <li class="grid__item desk-wide-one-quarter desk-one-third lap-one-half palm-one-whole spousefirstnamess display_none flush--bottom" id="spouse_firstnames_div">
                     <div class='labels'>
                         <%= label_tag 'spouse_first_name', "Spouse first name(s) #{app_icons[:info]}".html_safe, class: "ttip", tabindex: "0" do %>
-                            <%= "Spouse first name(s) #{app_icons[:info]}".html_safe %>
-                            <span class="ttip__text"><%= info_tag_text[:spouse_first_name]%></span>
+                            <%= "Spouse first name(s)".html_safe %>
+                            <span class="ttip__text"><%#= info_tag_text[:spouse_first_name]%></span>
                         <% end %>
                     </div>
                     <%= text_field_tag 'search_query[spouse_first_name]', set_value(@search_query.spouse_first_name), class: 'text-input flush--bottom', placeholder: 'Enter spouse first name(s) here', id: 'spouse_first_name', tabindex: "0"%>
@@ -216,9 +216,9 @@
 
                 <li class="grid__item desk-wide-one-sixth desk-one-third lap-one-half palm-one-whole volumes">
                     <div class='labels'>
-                        <%= label_tag 'volume', "Volume #{app_icons[:info]}".html_safe, class: "ttip", tabindex: "0" do %>
-                            <%= "Volume #{app_icons[:info]}".html_safe %>
-                            <span class="ttip__text"><%= info_tag_text[:volume].html_safe %></span>
+                        <%= label_tag 'volume', "Volume".html_safe, class: "ttip", tabindex: "0" do %>
+                            <%= "Volume".html_safe %>
+                            <span class="ttip__text"><%#= info_tag_text[:volume].html_safe %></span>
                         <% end %>
                     </div>
                     <%= text_field_tag 'search_query[volume]', set_value(@search_query.volume), class: 'text-input', id: 'volume', placeholder: 'Enter Volume', tabindex: "0" %>
@@ -226,9 +226,9 @@
 
                 <li class="grid__item desk-wide-one-sixth desk-one-third lap-one-half palm-one-whole pages">
                     <div class='labels'>
-                        <%= label_tag 'page', "Page #{app_icons[:info]}".html_safe, class: "ttip", tabindex: "0" do %>
-                            <%= "Page #{app_icons[:info]}".html_safe %>
-                            <span class="ttip__text"><%= info_tag_text[:page]%></span>
+                        <%= label_tag 'page', "Page".html_safe, class: "ttip", tabindex: "0" do %>
+                            <%= "Page".html_safe %>
+                            <span class="ttip__text"><%#= info_tag_text[:page]%></span>
                         <% end %>
                     </div>
                     <%= text_field_tag 'search_query[page]', set_value(@search_query.page), class: 'text-input', id: 'page', placeholder: 'Enter Page', tabindex: "0"%>
@@ -237,8 +237,8 @@
                 <li class="grid__item desk-wide-one-third desk-one-third lap-one-half palm-one-whole countiess">
                     <div class='labels'>
                         <div class="countieslabel">
-                            <%= label_tag 'chapman_codes', "Counties #{app_icons[:info]}".html_safe, class: "ttip",  tabindex: "0" do %>
-                                <%= "Counties #{app_icons[:info]}".html_safe %>
+                            <%= label_tag 'chapman_codes', "Counties".html_safe, class: "ttip",  tabindex: "0" do %>
+                                <%= "Counties ".html_safe %>
                                 <span class="ttip__text"><%#= info_tag_text[:counties]%></span>
                             <% end %>
                         </div>
@@ -254,8 +254,8 @@
                     <div class='labels'>
                         <div class='districtslabel'>
                             <%= label_tag 'search_query_districts', "Districts #{app_icons[:info]}".html_safe, class: "ttip",tabindex: "0" do %>
-                                <%= "Districts #{app_icons[:info]}".html_safe %>
-                                <span class="ttip__text"><%= info_tag_text[:districts]%></span>
+                                <%= "Districts".html_safe %>
+                                <span class="ttip__text"><%#= info_tag_text[:districts]%></span>
                             <% end %>
                         </div>
                     </div>

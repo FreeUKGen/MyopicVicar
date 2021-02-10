@@ -22,15 +22,7 @@
       <section>
         <div class="grid__item two-thirds lap-one-whole palm-one-whole hard--left">
           <table class="table--bordered table--data">
-            <thead>
-              <!--tr>
-                <td colspan="2">
-                  <h2>Entry Information</h2>
-                </td>
-              </tr-->
-            </thead>
             <tbody>
-            <%# raise @search_record[:RecordTypeID].inspect%>
               <% record_type = RecordType::display_name(@search_record[:RecordTypeID])%>
               <tr>
                 <th class="project-text-color">
@@ -45,7 +37,7 @@
                   Date
                 </th>
                 <td>
-                  <%= "#{QuarterDetails.quarters.key(calculate_quarter(@search_record[:QuarterNumber])).upcase} #{from_quarter_number_to_year(@search_record[:QuarterNumber])}"%>
+                  <%= format_quarter(@search_record[:QuarterNumber])%>
                 </td>
               </tr>
               <tr>
@@ -53,17 +45,20 @@
                   District
                 </th>
                 <td>
-                  <%= "#{@search_record[:District]}" %>
+                  <%= link_to "#{@search_record[:District]}", "http://www.ukbmd.org.uk/reg/districts/#{@search_record[:District].downcase}.html", target: "_blank" %><br>
+                  <span class="weight--normal"><%= ApplicationText::NEW_TAB_LINK_TEXT %></span>
                 </td>
               </tr>
-              <tr>
-                <th class="project-text-color">
-                  Mother or Spouse Surname
-                </th>
-                <td>
-                  <%= "#{@search_record[:AssociateName]}" %>
-                </td>
-              </tr>
+              <% unless record_type.downcase == 'death' %>
+                <tr>
+                  <th class="project-text-color">
+                    <%= mother_or_spouse_surname(record_type)%>
+                  </th>
+                  <td>
+                    <%= "#{@search_record[:AssociateName]}" %>
+                  </td>
+                </tr>
+                <% end %>
               <tr>
                 <th class="project-text-color">
                   Age at Death/Date of Birth
@@ -85,7 +80,7 @@
                   Page
                 </th>
                 <td>
-                  <%= link_to "#{@search_record[:Page]}", same_page_entries_path(volume: @search_record[:Volume], page: @search_record[:Page], record: @search_record[:RecordTypeID], quarter: @search_record[:QuarterNumber]), target: "_blank" %>
+                  <%= link_to "#{@search_record[:Page]}", same_page_entries_path(volume: @search_record[:Volume], page: @search_record[:Page], record: @search_record[:RecordTypeID], quarter: @search_record[:QuarterNumber], district: @search_record[:District]), target: "_blank" %>
                 </td>
               </tr>
               <tr>
@@ -187,7 +182,6 @@
         <p>Do you know more about the people or event in this record that you are willing to share with other researchers? We call these helpful additions to the database 'postems'. For example, you you know a more precise place or other details from a certificate or from a search of FreeREG, or more about the family from a search on FreeCEN, or have found other records about them in another country's registration system. Contribute what you know</p>
         <% if @search_record.postems_list.present? %>
           <p>Below are the list of postems</p>
-          <%#= raise postem.Created.inspect%>
           <table class="table--bordered table--data">
             <thead>
               <th>Date</th>
@@ -210,6 +204,7 @@
         <p id="create_postem">Add a postem</p>
         <div class="create_postem_div">
           <%= semantic_form_for(@new_postem) do |f| %>
+            <%= f.hidden_field('honeypot', value: @new_postem[:honeypot])%>
             <%= f.hidden_field('Hash', value: @new_postem.Hash) %>
             <%= hidden_field_tag('search_query', @search_query.id) %>
             <ol class="grid">

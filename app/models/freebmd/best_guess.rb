@@ -1,5 +1,6 @@
 # Entry Information
 class BestGuess < FreebmdDbBase
+  require 'application_text'
   self.pluralize_table_names = false
   self.table_name = 'BestGuess'
   has_one :best_guess_maariages, class_name: '::BestGuessMarriage', foreign_key: 'RecordNumber'
@@ -177,8 +178,8 @@ class BestGuess < FreebmdDbBase
   end
 
   def scans_with_out_file_character_check
-    if best_probable_scans.count < 3
-      non_implied_scans.all
+    if best_probable_scans.to_a.count < 3
+      non_implied_scans.all if non_implied_scans.present?
     end
   end
 

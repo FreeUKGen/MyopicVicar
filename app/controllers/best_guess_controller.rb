@@ -8,8 +8,8 @@ class BestGuessController < ApplicationController
     @search_record = BestGuess.where(RecordNumber: params[:id]).first
     @display_date = false
     @new_postem = @search_record.best_guess_hash.postems.new
-    #@entry.display_fields(@search_record)
-    #@entry.acknowledge
+    @postem_honeypot = "postem#{rand.to_s[2..11]}"
+    session[:postem_honeypot] = @postem_honeypot
     if @search_query.present?
       @search_result = @search_query.search_result
       @viewed_records = @search_result.viewed_records
@@ -21,6 +21,8 @@ class BestGuessController < ApplicationController
   def same_page_entries
     @volume = params[:volume]
     @page = params[:page]
+    @district = params[:district]
+    @quarter = params[:quarter]
     @search_records = BestGuess.where(Volume: @volume, Page: @page, QuarterNumber: params[:quarter], RecordTypeID: params[:record])
   end
 
