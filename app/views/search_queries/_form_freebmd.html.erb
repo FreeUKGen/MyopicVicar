@@ -70,7 +70,7 @@
                         <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half daterangetogrid">
                             <label class="accessibility" for="from_year">Start Year</label>
                             <%#= select_year(set_value(@search_query.start_year), { start_year: 1837, end_year: 1992, step: 10 }, class: 'select_year_start date_years text-input', name: 'search_query[start_year]', id: 'from_year', tabindex: "0") %>
-                            <%= number_field_tag 'search_query[start_year]', set_value(@search_query.start_year), within: 1837..1992, class: 'text-input', id: 'from_year', tabindex: "0" %>
+                            <%= number_field_tag 'search_query[start_year]', set_value(@search_query.start_year), within: 1837..1992, class: 'text-input', id: 'from_year', tabindex: "0", placeholder: 'YYYY' %>
                         </div>
                     </div>
                 </li>
@@ -92,7 +92,7 @@
                         <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half daterangetogrid">
                             <label class="accessibility" for="end_year">Finish Year</label>
                             <%#= select_year(set_value(@search_query.end_year), {start_year: 1992, end_year: 1837 }, class: 'select_year_end date_years text-input', name: 'search_query[end_year]', id: 'end_year', tabindex: "0") %>
-                            <%= number_field_tag 'search_query[end_year]', set_value(@search_query.end_year), within: 1837..1992, class: 'text-input', id: 'end_year', tabindex: "0" %>
+                            <%= number_field_tag 'search_query[end_year]', set_value(@search_query.end_year), within: 1837..1992, class: 'text-input', id: 'end_year', tabindex: "0", placeholder: 'YYYY' %>
                         </div>
                     </div>
                 </li>
@@ -238,7 +238,7 @@
                     <div class='labels'>
                         <div class="countieslabel">
                             <%= label_tag 'chapman_codes', "Counties".html_safe, class: "ttip",  tabindex: "0" do %>
-                                <%= "Counties ".html_safe %>
+                                <%= "Counties".html_safe %>
                                 <span class="ttip__text"><%#= info_tag_text[:counties]%></span>
                             <% end %>
                         </div>

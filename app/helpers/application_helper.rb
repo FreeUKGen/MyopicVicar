@@ -82,7 +82,7 @@ module ApplicationHelper
     when 'freecen'
       link_to('Records', main_app.freecen_coverage_path, id: 'db_coverage_nav')
     when 'freebmd'
-      link_to('Records', 'https://www.freebmd.org.uk/progress.shtml', target: :_blank)
+      link_to('Records', social_links[:bmd1_coverage], target: :_blank)
     end
   end
 
@@ -604,7 +604,8 @@ module ApplicationHelper
       twitter: 'https://www.twitter.com/freeukgen',
       github: 'https://github.com/FreeUKGen/FreeBMD2',
       pinterest: 'https://www.pinterest.co.uk/FreeUKGenealogy/',
-      instagram: 'https://www.instagram.com/freeukgenealogy/'
+      instagram: 'https://www.instagram.com/freeukgenealogy/',
+      bmd1_coverage: 'https://www.freebmd.org.uk/progress.shtml'
     }
   end
 
