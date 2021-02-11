@@ -41,17 +41,3 @@ task :freecen_csv_file_unincorporate, [:freecen_csv_file] => [:environment] do |
   FreecenCsvFileUnincorporate.unincorporate(args[:freecen_csv_file])
   p 'Record removal complete'
 end
-
-task :process_vld_file,[:vld_file,:chapman] => [:environment] do |t,args|
-  p '-----------------------------------------------------------'
-  require 'vld_processor'
-  file_name = Rails.root.join('tmp', args[:vld_file])
-  file_for_messages = Rails.root.join('log', "record_output for #{args[:vld_file]}.txt")
-  message_file = File.new(file_for_messages, 'w')
-
-
-  VldProcessor.process(file_name, args[:chapman], message_file)
-
-
-
-end
