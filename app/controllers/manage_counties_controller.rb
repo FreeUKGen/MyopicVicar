@@ -15,7 +15,6 @@ class ManageCountiesController < ApplicationController
   require 'freecen_constants'
 
   def batches_with_errors
-    p 'batches_with_errors'
     get_user_info_from_userid
     @county = session[:county]
     @who = @user.person_forename

@@ -295,10 +295,6 @@ class FreecenCsvFilesController < ApplicationController
 
 
   def index
-    p 'sorted by'
-    p session[:sorted_by]
-    p 'selected'
-    p session[:selection]
     # the common listing entry by syndicates and counties
     get_user_info_from_userid
     @county =  session[:county]
@@ -318,8 +314,6 @@ class FreecenCsvFilesController < ApplicationController
     when 'recent'
       session[:sort] = 'uploaded_date DESC'
     end
-    p 'sort'
-    p session[:sort]
     case
     when session[:syndicate].present?
       if session[:userid_id].blank? && helpers.can_view_files?(session[:role]) && helpers.sorted_by?(session[:sorted_by])
@@ -334,7 +328,7 @@ class FreecenCsvFilesController < ApplicationController
     when session[:county].present?
       if helpers.can_view_files?(session[:role]) && session[:selection] == 'errors'
         @freecen_csv_files = FreecenCsvFile.chapman_code(session[:chapman_code]).gt(total_errors: 0).order_by(session[:sort]).all
-      elsif helpers.can_view_files?(session[:role]) && session[:selection] == 'validated'
+      elsif helpers.can_view_files?(session[:role]) && session[:selection] == 'validation'
         @freecen_csv_files = FreecenCsvFile.where(chapman_code: session[:chapman_code], validation: true, incorporated: false).order_by(session[:sort]).all
       elsif helpers.can_view_files?(session[:role]) && session[:selection] == 'incorporated'
         @freecen_csv_files = FreecenCsvFile.where(chapman_code: session[:chapman_code], incorporated: true).order_by(session[:sort]).all
