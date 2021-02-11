@@ -1,0 +1,39 @@
+<% breadcrumb :freecen2_site_statistics,  'total'%>
+<h2 style="text-align: center">Listing Freecen2 Site Statistics</h2>
+<div class='scrollable'>
+  <table  class="table--bordered table--data table--striped " >
+    <thead >
+      <tr>
+        <th>Day</th>
+        <th>Month</th>
+        <th>Year</th>
+        <th>Number of searches</th>
+        <th>Vld  Records</th>
+        <th>Csv  Records</th>
+        <th>Individuals</th>
+        <th>Dwellings</th>
+        <th>Vld Files</th>
+        <th>Csv Fils in Progress</th>
+        <th>Csv Incorp</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @freecen2_site_statistics.each do |statistic| %>
+        <tr>
+          <td><%= statistic.day %></td>
+          <td><%= statistic.month %></td>
+          <td><%= statistic.year %></td>
+          <td><%= statistic.searches %></td>
+          <td><%= statistic.records[:total][:total][:vld_entries] %></td>
+          <td><%= statistic.records[:total][:total][:csv_entries] %></td>
+          <td><%= statistic.records[:total][:total][:individuals] %></td>
+          <td><%= statistic.records[:total][:total][:dwellings] %></td>
+          <td><%= statistic.records[:total][:total][:vld_files_on_line] %></td>
+          <td><%= statistic.records[:total][:total][:csv_files] %></td>
+          <td><%= statistic.records[:total][:total][:csv_files_incorporated] %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+<br />

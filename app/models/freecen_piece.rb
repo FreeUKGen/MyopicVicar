@@ -75,11 +75,12 @@ class FreecenPiece
       totals_dwellings = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
         totals_dwellings[year] = 0
-        totals_individuals[year] = FreecenPiece.chapman_code(chapman_code).status('Online').year(year).sum(:num_individuals)
+        totals_individuals[year] = 0
         totals_pieces[year] = FreecenPiece.chapman_code(chapman_code).year(year).count
-        totals_pieces_online[year] = FreecenPiece.chapman_code(chapman_code).status('Online').year(year).length
-        FreecenPiece.chapman_code(chapman_code).status('Online').year(year).each do |piece|
-          totals_dwellings[year] = totals_dwellings[year] + piece.freecen_dwellings.count
+        totals_pieces_online[year] = FreecenPiece.chapman_code(chapman_code).year(year).status('Online').count
+        FreecenPiece.chapman_code(chapman_code).year(year).status('Online').each do |piece|
+          totals_dwellings[year] += piece.freecen_dwellings.count
+          totals_individuals[year] = piece.num_individuals if piece.num_individuals.present?
         end
       end
       [totals_pieces, totals_pieces_online, totals_individuals, totals_dwellings]

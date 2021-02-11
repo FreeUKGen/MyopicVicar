@@ -119,6 +119,14 @@ class FreecenCsvFile
       where(:chapman_code => name)
     end
 
+    def year(year)
+      where(year: year)
+    end
+
+    def incorporated(status)
+      where(incorprated: status)
+    end
+
     def coordinator_lock
       where(:locked_by_coordinator => true)
     end

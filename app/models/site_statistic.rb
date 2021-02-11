@@ -110,16 +110,5 @@ class SiteStatistic
     result
   end
 
-  def self.record_type_counts_freecen
-    result = Hash.new
-    totals_pieces, totals_pieces_online, totals_individuals, totals_dwellings = FreecenPiece.grand_year_totals
-    result['1841'] = totals_individuals['1841']
-    result['1851'] = totals_individuals['1851']
-    result['1861'] = totals_individuals['1861']
-    result['1871'] = totals_individuals['1871']
-    result['1881'] = totals_individuals['1881']
-    result['1891'] = totals_individuals['1891']
-    result
-  end
 
 end

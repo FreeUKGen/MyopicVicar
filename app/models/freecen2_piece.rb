@@ -142,6 +142,25 @@ class Freecen2Piece
       [year, piece, census_fields]
     end
 
+    def county_year_data_totals(chapman_code)
+      totals_csv_files = {}
+      totals_csv_files_incorporated = {}
+      totals_individuals = {}
+      totals_dwellings = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        totals_dwellings[year] = 0
+        totals_individuals[year] = 0
+        FreecenCsvFile.chapman_code(chapman_code).year(year).incorporated(true).each do |file|
+          totals_dwellings[year] += file.total_dwellings if file.total_dwellings.present?
+          totals_individuals[year] += file.total_individuals if file.total_individuals.present?
+        end
+        piece = Freecen2Piece.chapman_code(chapman_code).year(year).first
+        totals_csv_files[year] = piece.present? ? piece.freecen_csv_files.count : 0
+        totals_csv_files_incorporated[year] = FreecenCsvFile.chapman_code(chapman_code).year(year).incorporated(true).count
+      end
+      [totals_csv_files, totals_csv_files_incorporated, totals_individuals, totals_dwellings]
+    end
+
     def county_year_totals(chapman_code)
       totals_pieces = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|

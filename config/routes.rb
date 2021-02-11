@@ -72,7 +72,9 @@ MyopicVicar::Application.routes.draw do
 
   resources :freecen_individuals
 
-  #resources :site_statistics
+  resources :site_statistics
+
+  resources :freecen2_site_statistics
 
   resources :freecen1_vld_entries
 

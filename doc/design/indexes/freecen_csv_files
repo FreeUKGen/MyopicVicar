@@ -27,10 +27,10 @@ db.runCommand(
          {
             key: {
                 chapman_code: 1,
-                file_name: 1,
-                year: 1
+                year: 1,
+                file_name: 1
             },
-            name: "chapman_code_year"
+            name: "chapman_code_year_file"
         },
         {
             key: {
