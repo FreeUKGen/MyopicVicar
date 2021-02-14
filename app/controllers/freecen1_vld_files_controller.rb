@@ -41,7 +41,7 @@ class Freecen1VldFilesController < ApplicationController
   end
 
   def update
-    #update the transcriber name
+    # update the transcriber name
     @freecen1_vld_file = Freecen1VldFile.find(params[:id])
     unless Freecen1VldFile.valid_freecen1_vld_file?(params[:id])
       message = 'The file was not correctly linked. Have your coordinator contact the web master'
@@ -49,10 +49,10 @@ class Freecen1VldFilesController < ApplicationController
     end
     case params[:commit]
     when 'Submit'
-      #      if @freecen1_vld_file.errors.any?
-      #        flash[:notice] = "The update was unsuccessful: #{message}"
-      #        return
-      #      end
+      if @freecen1_vld_file.errors.any?
+        flash[:notice] = "The update was unsuccessful: #{message}"
+        return
+      end
       @freecen1_vld_file.update_attributes(freecen1_vld_file_params)
       if @freecen1_vld_file.errors.any?
         flash[:notice] = "The update was unsuccessful: #{message}"
