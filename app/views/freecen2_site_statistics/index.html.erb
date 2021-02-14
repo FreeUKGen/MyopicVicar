@@ -4,17 +4,21 @@
   <table  class="table--bordered table--data table--striped " >
     <thead >
       <tr>
-        <th>Day</th>
-        <th>Month</th>
-        <th>Year</th>
-        <th>Searches</th>
-        <th>Vld  Records</th>
-        <th>Csv  Records</th>
-        <th>Individuals</th>
-        <th>Dwellings</th>
-        <th>Vld Files</th>
-        <th>Csv Files Uploaded</th>
-        <th>Csv Incorp</th>
+        <th class='sticky-header'>Day</th>
+        <th class='sticky-header'>Month</th>
+        <th class='sticky-header'>Year</th>
+        <th class='sticky-header'>Searches</th>
+        <th class='sticky-header'>Search Records</th>
+        <th class='sticky-header'>Vld  Records</th>
+        <th class='sticky-header'>Csv  Records</th>
+        <th class='sticky-header'>Individuals</th>
+        <th class='sticky-header'>Dwellings</th>
+        <th class='sticky-header'>Vld Files</th>
+        <th class='sticky-header'>Csv Files</th>
+        <th class='sticky-header'>Csv Incorp</th>
+        <th class='sticky-header'>Added Records</th>
+        <th class='sticky-header'>Added Csv Files</th>
+        <th class='sticky-header'>Added Csv Incorp</th>
       </tr>
     </thead>
     <tbody>
@@ -24,10 +28,14 @@
           <td><%= statistic.month %></td>
           <td><%= statistic.year %></td>
           <td><%= statistic.searches %></td>
+          <td><%= statistic.records[:total][:total][:search_records] %></td>
           <td><%= statistic.records[:total][:total][:vld_entries] %></td>
           <td><%= statistic.records[:total][:total][:csv_entries] %></td>
           <td><%= statistic.records[:total][:total][:individuals] %></td>
           <td><%= statistic.records[:total][:total][:dwellings] %></td>
+          <td><%= statistic.records[:total][:total][:vld_files_on_line] %></td>
+          <td><%= statistic.records[:total][:total][:csv_files] %></td>
+          <td><%= statistic.records[:total][:total][:csv_files_incorporated] %></td>
           <td><%= statistic.records[:total][:total][:vld_files_on_line] %></td>
           <td><%= statistic.records[:total][:total][:csv_files] %></td>
           <td><%= statistic.records[:total][:total][:csv_files_incorporated] %></td>

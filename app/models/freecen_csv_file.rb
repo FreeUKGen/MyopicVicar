@@ -277,6 +277,30 @@ class FreecenCsvFile
       logger.warn("FREECEN:LOCATION:VALIDATION invalid freecen_csv_file #{freecen_csv_file} ") unless result
       result
     end
+
+    def county_year_data_totals(chapman_code)
+      totals_csv_files = {}
+      totals_csv_files_incorporated = {}
+      totals_individuals = {}
+      totals_dwellings = {}
+      totals_csv_entries = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        totals_dwellings[year] = 0
+        totals_individuals[year] = 0
+        FreecenCsvFile.chapman_code(chapman_code).year(year).incorporated(true).each do |file|
+          totals_dwellings[year] += file.total_dwellings if file.total_dwellings.present?
+          totals_individuals[year] += file.total_individuals if file.total_individuals.present?
+        end
+        totals_csv_files[year] = FreecenCsvFile.chapman_code(chapman_code).year(year).count
+        totals_csv_files_incorporated[year] = FreecenCsvFile.chapman_code(chapman_code).year(year).incorporated(true).count
+        totals_csv_entries[year] = 0
+        FreecenCsvFile.chapman_code(chapman_code).year(year).each do |file|
+          totals_csv_entries[year] += file.freecen_csv_entries.count
+        end
+      end
+
+      [totals_csv_files, totals_csv_entries, totals_csv_files_incorporated, totals_individuals, totals_dwellings]
+    end
   end # self
 
   # ######################################################################### instance methods

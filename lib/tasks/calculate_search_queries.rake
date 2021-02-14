@@ -3,6 +3,7 @@ namespace :freereg do
   task calculate_search_queries: [:environment] do
     p Time.current
     SearchStatistic.calculate
+    p 'finished'
   end
 end
 
@@ -11,5 +12,6 @@ namespace :freecen do
   task calculate_search_queries: [:environment] do
     p Time.current
     Freecen2SearchStatistic.calculate
+    p 'finished'
   end
 end

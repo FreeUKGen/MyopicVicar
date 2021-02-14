@@ -76,6 +76,8 @@ MyopicVicar::Application.routes.draw do
 
   resources :freecen2_site_statistics
 
+  resources :freecen2_search_statistics
+
   resources :freecen1_vld_entries
 
   get 'freecen1_vld_files/:id/csv_download(.:format)', to: 'freecen1_vld_files#csv_download', as: :csv_download_freecen1_vld_file

@@ -1,6 +1,6 @@
 class Freecen2SearchStatistic
   include Mongoid::Document
-
+  include Mongoid::Timestamps
   # Search Statistics aggregate a single hour's
   # worth of search queries for a single database
   #
@@ -30,9 +30,9 @@ class Freecen2SearchStatistic
   ###################################
   #
   # Number of searches during the interval, by result type
-  field :n_searches, type: Integer, default: 0      # total number of searches
-  field :n_zero_result, type: Integer, default: 0   # zero-result searches
-  field :n_limit_result, type: Integer, default: 0  # searches which hit the limit
+  field :searches, type: Integer, default: 0      # total number of searches
+  field :zero_result, type: Integer, default: 0   # zero-result searches
+  field :limit_result, type: Integer, default: 0  # searches which hit the limit
   #
   # Total results during the interval
   field :total_results, type: Integer, default: 0   # total results returned by all queries
@@ -42,125 +42,49 @@ class Freecen2SearchStatistic
   field :max_time,    type: Integer, default: 0
   #
   # Number of searches during the interval, by run time
-  field :n_time_gt_1s,  type: Integer, default: 0   # runtime > 1 second
-  field :n_time_gt_10s, type: Integer, default: 0   # runtime > 10 seconds
-  field :n_time_gt_60s, type: Integer, default: 0   # runtime > 1 minute
+  field :time_gt_1s,  type: Integer, default: 0   # runtime > 1 second
+  field :time_gt_10s, type: Integer, default: 0   # runtime > 10 seconds
+  field :time_gt_60s, type: Integer, default: 0   # runtime > 1 minute
   #
   # Number of searches during the interval, by search criteria
-  field :n_ln,            type: Integer, default: 0  # surname searches
-  field :n_fn,            type: Integer, default: 0  # forename searches
-  field :n_place,         type: Integer, default: 0  # specific place searches
-  field :n_nearby,        type: Integer, default: 0  # radius searches
-  field :n_fuzzy,         type: Integer, default: 0  # soundex searches
-  field :n_inclusive,     type: Integer, default: 0  # search additional family member names
-  field :n_0_county,      type: Integer, default: 0  # blank county
-  field :n_1_county,      type: Integer, default: 0  # county (exactly 1)
-  field :n_multi_county,  type: Integer, default: 0  # county (more than 1)
-  field :n_date,          type: Integer, default: 0  # date range
-  field :n_r_type,        type: Integer, default: 0  # record type
+  field :ln,            type: Integer, default: 0  # surname searches
+  field :fn,            type: Integer, default: 0  # forename searches
+  field :place,         type: Integer, default: 0  # specific place searches
+  field :nearby,        type: Integer, default: 0  # radius searches
+  field :fuzzy,         type: Integer, default: 0  # soundex searches
+  field :inclusive,     type: Integer, default: 0  # search additional family member names
+  field :zero_county,     type: Integer, default: 0  # blank county
+  field :one_county,      type: Integer, default: 0  # county (exactly 1)
+  field :multi_county,  type: Integer, default: 0  # county (more than 1)
+  field :date,          type: Integer, default: 0  # date range
+  field :record_type,   type: Integer, default: 0  # record type
+  field :zero_birth_chapman_codes, type: Integer, default: 0
+  field :one_birth_chapman_codes, type: Integer, default: 0
+  field :multi_birth_chapman_codes, type: Integer, default: 0
+  field :birth_place_name, type: Integer, default: 0
+  field :disabled, type: Integer, default: 0
+  field :marital_status, type: Integer, default: 0
+  field :sex, type: Integer, default: 0
+  field :language, type: Integer, default: 0
+  field :occupation, type: Integer, default: 0
 
-  index({ interval_end: -1})
-  index({ year: 1, month: 1, day: 1},{name: "year_month_day",background: true })
-
-  def self.calculate
-    until self.up_to_date? do
-        stat = SearchStatistic.new
+  index(interval_end: -1)
+  index({ year: 1, month: 1, day: 1}, {name: "year_month_day", background: true })
+  class << self
+    def calculate
+      @@this_database = this_db
+      num = 0
+      @freshest_stat_date = SearchStatistic.new.terminus_ad_quem
+      @last_midnight = DateTime.new(Time.now.year, Time.now.month, Time.now.day)
+      while @last_midnight > @freshest_stat_date
+        stat = Freecen2SearchStatistic.new(db: @@this_database, interval_end: @freshest_stat_date)
         stat.populate
         stat.save!
+        logger.info "stat #{stat.inspect}"
+        @freshest_stat_date = stat.next_hour(@freshest_stat_date)
+        num += 1
+        #break if num == 2
       end
-    end
-
-    def self.up_to_date?
-      freshest_stat_date = SearchStatistic.new.terminus_ad_quem
-      last_midnight = Time.new(Time.now.year,Time.now.month,Time.now.day)
-
-      freshest_stat_date > last_midnight
-    end
-
-    def process_query(query)
-      self.n_searches += 1
-      self.n_zero_result += 1   if query.result_count == 0
-      self.n_limit_result += 1  if query.result_count == FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
-
-      self.total_results += (query.result_count || 0)
-
-      self.total_time += (query.runtime||0)
-      self.max_time = query.runtime if (query.runtime||0) > self.max_time
-
-      self.n_time_gt_1s += 1    if (query.runtime||0) > 1000
-      self.n_time_gt_10s += 1   if (query.runtime||0) > 10000
-      self.n_time_gt_60s += 1   if (query.runtime||0) > 60000
-
-      self.n_ln += 1            unless query.last_name.blank?
-      self.n_fn += 1            unless query.first_name.blank?
-      self.n_place += 1         unless query.places.empty?
-      self.n_nearby += 1        if query.search_nearby_places
-      self.n_fuzzy += 1         if query.fuzzy
-      self.n_inclusive += 1     if query.inclusive
-      self.n_0_county += 1      if query.chapman_codes.empty?
-      self.n_1_county += 1      if query.chapman_codes.size == 1
-      self.n_multi_county += 1  if query.chapman_codes.size > 1
-      self.n_date += 1          if query.start_year || query.end_year
-      self.n_r_type += 1        unless query.record_type.blank?
-    end
-
-    def populate
-      populate_dimension
-      populate_facts
-    end
-
-    def populate_dimension
-      self.db = this_db
-
-      self.year     = terminus_ad_quem.year
-      self.month    = terminus_ad_quem.month
-      self.day      = terminus_ad_quem.day
-      self.hour     = terminus_ad_quem.hour
-      self.weekday  = terminus_ad_quem.wday
-
-      self.interval_end = terminus_ad_quem
-
-    end
-
-    def populate_facts
-      matching_queries.each do |q|
-        process_query(q)
-      end
-    end
-
-
-    def matching_queries
-      SearchQuery.between(:c_at => terminus_a_quo..terminus_ad_quem)
-    end
-
-    def terminus_ad_quem
-      # increment terminus a quo by 1 hour
-      @terminus_ad_quem ||= next_hour(terminus_a_quo)
-    end
-
-    def terminus_a_quo
-      # find most recent search_statistic for this database
-      @terminus_a_quo ||= most_recent_statistic_date || earliest_search_query_date
-    end
-
-    def next_hour(prev_datetime)
-      # convert to a time before doing math
-      prev_time = prev_datetime.to_time
-
-      raw_next = prev_time + 1*60*60 #add one hour of seconds to previous time
-      # create new time in next hour with 0 secs and 0 mins
-      Time.new(raw_next.year, raw_next.month, raw_next.day, raw_next.hour, 0, 0, 0)
-    end
-
-
-    def earliest_search_query_date
-      SearchQuery.where(:c_at.ne => nil).asc(:c_at).first.created_at
-    end
-
-    def most_recent_statistic_date
-      stat = SearchStatistic.where(:db => this_db).asc(:interval_end).last
-
-      stat ? stat.interval_end : nil
     end
 
     def this_db
@@ -172,5 +96,84 @@ class Freecen2SearchStatistic
         "#{host}/#{db}"
       end
     end
-
   end
+
+  def populate
+    populate_dimension
+    populate_facts
+  end
+
+  def populate_dimension
+    self.year     = terminus_ad_quem.year
+    self.month    = terminus_ad_quem.month
+    self.day      = terminus_ad_quem.day
+    self.hour     = terminus_ad_quem.hour
+    self.weekday  = terminus_ad_quem.wday
+  end
+
+  def populate_facts
+    matching_queries.each do |q|
+      process_query(q)
+    end
+  end
+
+  def process_query(query)
+    self.searches += 1
+    self.zero_result += 1   if query.result_count.blank? || query.result_count == 0
+    self.limit_result += 1  if query.result_count == FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+    self.total_results += (query.result_count || 0)
+    self.total_time += (query.runtime || 0)
+    self.max_time = query.runtime if (query.runtime || 0) > self.max_time
+    self.time_gt_1s += 1    if (query.runtime || 0) > 1000
+    self.time_gt_10s += 1   if (query.runtime || 0) > 10000
+    self.time_gt_60s += 1   if (query.runtime || 0) > 60000
+    self.ln += 1            if query.last_name.present?
+    self.fn += 1            if query.first_name.present?
+    self.place += 1         if query.places.present?
+    self.nearby += 1        if query.search_nearby_places
+    self.fuzzy += 1         if query.fuzzy
+    self.inclusive += 1     if query.inclusive
+    self.zero_county += 1   if query.chapman_codes.empty?
+    self.one_county += 1    if query.chapman_codes.size == 1
+    self.multi_county += 1  if query.chapman_codes.size > 1
+    self.date += 1          if query.start_year || query.end_year
+    self.record_type += 1   if query.record_type.present?
+    self.zero_birth_chapman_codes += 1   if query.birth_chapman_codes.empty?
+    self.one_birth_chapman_codes += 1    if query.birth_chapman_codes.size == 1
+    self.multi_birth_chapman_codes += 1  if query.birth_chapman_codes.size > 1
+    self.birth_place_name += 1           if query.birth_place_name.present?
+    self.disabled += 1      if query.disabled.present?
+    self.marital_status += 1             if query.marital_status.present?
+    self.sex += 1           if query.sex.present?
+    self.language += 1      if query.language.present?
+    self.occupation += 1    if query.occupation.present?
+  end
+
+  def matching_queries
+    SearchQuery.between(c_at: terminus_a_quo..terminus_ad_quem)
+  end
+
+  def terminus_ad_quem
+    # increment terminus a quo by 1 hour
+    @terminus_ad_quem ||= next_hour(terminus_a_quo)
+  end
+
+  def terminus_a_quo
+    # find most recent search_statistic for this database
+    @terminus_a_quo ||= most_recent_statistic_date || earliest_search_query_date
+  end
+
+  def next_hour(prev_datetime)
+    DateTime.new(prev_datetime.year, prev_datetime.month, prev_datetime.day, prev_datetime.hour + 1)
+  end
+
+  def earliest_search_query_date
+    result = SearchQuery.where(:c_at.ne => nil).asc(:c_at).first.created_at
+    DateTime.new(result.year, result.month, result.day, result.hour)
+  end
+
+  def most_recent_statistic_date
+    stat = Freecen2SearchStatistic.where(db: @@this_database).asc(:interval_end).last
+    stat ? stat.interval_end : nil
+  end
+end
