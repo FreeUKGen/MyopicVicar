@@ -2,15 +2,13 @@
   <% if @freecen1_vld_file.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@freecen1_vld_file.errors.count, "error") %> prohibited this freecen1_vld_file from being saved:</h2>
-
       <ul>
-      <% @freecen1_vld_file.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
+        <% @freecen1_vld_file.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
       </ul>
     </div>
   <% end %>
-
   <div class="field">
     <%= f.label :file_name %><br />
     <%= f.text_field :file_name %>
@@ -38,6 +36,10 @@
   <div class="field">
     <%= f.label :series %><br />
     <%= f.text_field :series %>
+  </div>
+  <div class="field">
+    <%= f.label :transcriber_name %><br />
+    <%= f.text_field :transcriber_name %>
   </div>
   <div class="actions">
     <%= f.submit %>

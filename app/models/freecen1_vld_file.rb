@@ -15,6 +15,7 @@ class Freecen1VldFile
   field :sctpar, type: String
   field :file_digest, type: String
   field :file_errors, type: Array
+  field :transcriber_name, type: String
 
   has_many :freecen1_vld_entries
   has_many :freecen_dwellings

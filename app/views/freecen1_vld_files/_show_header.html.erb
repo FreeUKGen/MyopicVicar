@@ -2,6 +2,9 @@
 <h1 style="text-align: center">Listing of <%= @freecen1_vld_file.file_name %> for <%= @chapman_code%></h1>
 <%= render 'flash_notice' %>
 <div style="text-align: center">
+  <% if %w[county_coordinator master_county_coordinator system_administrator].include?(@user.person_role)%>
+    <%= edit_freecen1_vld_file %>
+  <% end%>
   <%= link_to 'List entries ', freecen1_vld_entries_path(file: @freecen1_vld_file.id) , :class => "btn btn--small" %>
   <% if %w[data_manager system_administrator].include?(@user.person_role)%>
     <%= link_to 'Download file as CSV ', csv_download_freecen1_vld_file_path(file: @freecen1_vld_file.id) , :class => "btn btn--small" %>

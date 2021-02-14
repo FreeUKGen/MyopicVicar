@@ -1,6 +1,12 @@
-<h1>Editing freecen1_vld_file</h1>
-
-<%= render 'form' %>
-
-<%= link_to 'Show', @freecen1_vld_file %> |
-<%= link_to 'Back', freecen1_vld_files_path %>
+<p style="text-align: center"><b>Editing  FreeCen1 VLD file : <b><%= file_name(@freecen1_vld_file) %></b> for <b><%= @chapman_code %></b><br>
+  </p>
+  <%= semantic_form_for @freecen1_vld_file , :html => { :class => 'grid'}  do |f| %>
+    <%= f.input :transcriber_name  , :input_html => {:class => ' simple_form_bgcolour ',  :size => 30 }%>
+    <div  style="text-align: center">
+      <%= f.action :submit,  :as => :button, :label =>  "Submit", :button_html => {name: 'commit', value:'Submit', :class => "ladda-button" , "data-style" => "contract" ,"data-color" => appname_downcase , "data-size" => "s", "data-spinner-color" => "#ffffff"  } %>
+      <%= f.action  :cancel, as: :link, label: 'Cancel' %>
+    </div>
+  <% end %>
+  <script type="text/javascript">
+    Ladda.bind( 'button[type=submit]' );
+  </script>
