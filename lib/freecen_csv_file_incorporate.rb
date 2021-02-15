@@ -48,12 +48,7 @@ class FreecenCsvFileIncorporate
       successa = freecen_file.update_attributes(incorporated: true, enumeration_districts: enumeration_districts, incorporation_lock: true,
                                                 incorporated_date: DateTime.now.in_time_zone('London'))
       # the translate individual adds the civil parishes
-      # we need to add the piece place
 
-      #place = piece.freecen2_place
-      #place.cen_data_years << freecen_file.year unless place.cen_data_years.present? && place.cen_data_years.include?(freecen_file.year)
-      #place.data_present = true
-      #successb = place.save if successa
       PlaceCache.refresh(freecen_file.chapman_code) if successa #&& successb
       message += '. Place cache rewritten'
       success = true if successa #&& successb

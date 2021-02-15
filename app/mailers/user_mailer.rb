@@ -197,7 +197,7 @@ class UserMailer < ActionMailer::Base
     coordinator = UseridDetail.userid(userid).first
     @appname = appname
     @message = message
-    mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", subject: "Record removal report for #{file} in #{county}") if coordinator.present?
+    mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", subject: "Incorporation report for #{file} in #{county}") if coordinator.present?
   end
 
   def unincorporation_report_failure(userid, message, file, county)
@@ -205,7 +205,7 @@ class UserMailer < ActionMailer::Base
     @appname = appname
     @message = message
     manager = UseridDetail.userid('Captkirk').first
-    mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", cc: "#{manager.person_forename} <#{manager.email_address}>", subject: "Record removal failure report for #{file} in #{county}") if coordinator.present?
+    mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", cc: "#{manager.person_forename} <#{manager.email_address}>", subject: "Unincorporation failure report for #{file} in #{county}") if coordinator.present?
   end
 
   def notification_of_technical_registration(user)

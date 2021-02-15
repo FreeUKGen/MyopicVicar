@@ -26,7 +26,10 @@ class FreecenCsvFileUnincorporate
       freecen_file.freecen_csv_entries.each do |entry|
         entry.update_attributes(search_record_id: nil)
       end
-      SearchRecord.collection.delete_many(freecen_csv_file_id: freecen_file.id)
+      freecen_file.freecen_csv_entries do |entry|
+        search_record = entry.search_record
+        search_record.delete
+      end
       freecen_file.update_attributes(incorporated: false, incorporated_date: nil)
       success = true
       message = 'Success'
