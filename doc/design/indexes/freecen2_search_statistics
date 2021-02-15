@@ -1,0 +1,27 @@
+db.runCommand(
+  {
+    createIndexes: "freecen2_search_statistics",
+    indexes: [
+        {
+            key: {
+                c_at: 1
+            },
+            name: "c_at_1"
+        },
+         {
+            key: {
+                interval_end: -1
+            },
+            name: "interval_end_1"
+        },
+        {
+            key: {
+                year: 1,
+                month: 1,
+                day: 1
+            },
+            name: "year_month_day"
+        }
+    ]
+  }
+)
