@@ -1,17 +1,5 @@
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
-
-    <!--div class="grid__item one-quarter lap-one-quarter palm-one-whole">
-      <%#= form_tag search_query_path(@search_query), method: :get, id: 'limit_form' do %>
-        Display <%#= select_tag :results_per_page, options_for_select([20,40,60,80,100], selected: @results_per_page), class: 'date_year'%> per page.
-      <%# end %>
-    </div>
-    
-  </div-->
-<%# end %>
-
-
     <h1 class="accessibility">Search Results</h1>
-    <!--div class="table-wrapper bmd_search_results_table" id="search-result" style="overflow: auto !important;"-->
       <table class="table--bordered table--data ">
         <thead>
           <tr>
@@ -32,24 +20,37 @@
         <tbody>
           <% n = 0 %>
           <% @paginatable_array.each do |search_record| %>
-            <% n = n +1%>
+            <% n = n +1 %>
             <% record_type = RecordType::display_name(["#{search_record[:RecordTypeID]}"])%>
             <tr id="<%=search_record[:_id]%>" class="<%= record_type.downcase %>_hover" >
               <% unless print_friendly %>
                 <td>
-                  <center><%= link_to("View #{n}".html_safe,friendly_bmd_record_details_path(@search_query.id,search_record.id, search_record.friendly_url), :rel => "nofollow", :title => "", class: "btn  btn--small")%>
-                  <i><%= seen(@search_query,search_record) %></i></center>
+                  <center>
+                    <%= link_to("View #{n}".html_safe,friendly_bmd_record_details_path(@search_query.id,search_record.id, search_record.friendly_url), :rel => "nofollow", :title => "", class: "btn  btn--small")%>
+                    <i><%= seen(@search_query,search_record) %></i>
+                  </center>
                 </td>
               <% end %>
               <td class="table--data">
                 <dl>
-                  <strong><dt><%= "#{search_record[:GivenName]} #{search_record[:Surname]}" %></dt></strong>
-                  <dt><%= "#{QuarterDetails.quarters.key((search_record[:QuarterNumber]-1)%4 + 1).upcase} #{(search_record[:QuarterNumber]-1)/4 + 1837}"%></dt>
-                  <dt><%= link_to "#{search_record[:District]}", "http://www.ukbmd.org.uk/reg/districts/#{search_record[:District].downcase}.html", target: "_blank" %></dt>
-                  </dl>
+                  <strong>
+                    <dt>
+                      <%= "#{search_record[:GivenName]} #{search_record[:Surname]}" %>
+                    </dt>
+                  </strong>
+                  <dt>
+                    <%= "#{QuarterDetails.quarters.key((search_record[:QuarterNumber]-1)%4 + 1).upcase} #{(search_record[:QuarterNumber]-1)/4 + 1837}"%>
+                  </dt>
+                  <dt>
+                    <% if print_friendly %>
+                      <%= search_record[:District] %>
+                    <% else %>
+                      <%= link_to "#{search_record[:District]}", "http://www.ukbmd.org.uk/reg/districts/#{search_record[:District].downcase}.html", target: "_blank" %>
+                    <% end %>
+                  </dt>
+                </dl>
               </td>
-              
-              <td class="<%#= record_type.downcase %>">
+              <td>
                 <center><%= "#{record_type}" %></center>
               </td>
             </tr>

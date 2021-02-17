@@ -5,13 +5,15 @@
 <%# show_contents_link%>
 <div class='container'>
   <h1 class="semi-kilo project-font-color ">Results</h1>
-  <div class="grid">
-    <div class="grid__item one-whole lap-one-whole palm-one-whole push-half--bottom ">
-      <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn   btn--small " %>
-      <%= link_to "New Search", new_search_query_path, :class => "btn   btn--small white_button" %>
-      <%= link_to "View Search Criteria", '#', class: "btn   btn--small" , id: "view_search_criteria"%>
+  <% unless print_friendly %>
+    <div class="grid">
+      <div class="grid__item one-whole lap-one-whole palm-one-whole push-half--bottom ">
+        <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn   btn--small " %>
+        <%= link_to "New Search", new_search_query_path, :class => "btn   btn--small white_button" %>
+        <%= link_to "View Search Criteria", '#', class: "btn   btn--small" , id: "view_search_criteria"%>
+      </div>
     </div>
-  </div>
+  <% end %>
   <h4 class="accessibility">Search Criteria</h4>
 </div>
 <% if @search_query.present? %>

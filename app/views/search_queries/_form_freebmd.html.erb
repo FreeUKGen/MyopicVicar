@@ -13,21 +13,17 @@
     </ul>
 <% end %>
 <ul id="errors" class="validation-list text--center"></ul>
-
-<%# if device_type == :mobile%>
-    <%#= render 'mobile_freebmd_form'%>
-<%# else %>
     <div class="bmd_search_form">
         <%= semantic_form_for(@search_query) do |f| %>
             <ol class="grid search_form">
-                <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole firstnamegrid">
+                <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole firstnamegrid flush--bottom">
                     <div class='labels'>
                         <%= label_tag 'first_name','' , class: "ttip", tabindex: "0", id: 'firstname'  do %>
                             <%="First name(s) #{app_icons[:info]}".html_safe %>
                             <span class="ttip__text"><%= info_tag_text[:firstname]%></span>
                         <% end %>
                     </div>
-                    <%= text_field_tag 'search_query[first_name]', set_value(@search_query.first_name), class: 'text-input', placeholder: 'Enter first name(s) here', role: 'textbox', id: 'first_name', tabindex: "0"%>
+                    <%= text_field_tag 'search_query[first_name]', set_value(@search_query.first_name), class: 'text-input flush--bottom', placeholder: 'Enter first name(s) here', role: 'textbox', id: 'first_name', tabindex: "0"%>
                     <label>
                         <small>
                             <%= check_box_tag 'search_query[first_name_exact_match]', set_value(@search_query.first_name_exact_match), set_value(@search_query.first_name_exact_match),tabindex: "0" %>
@@ -36,14 +32,14 @@
                     </label>
                 </li>
 
-                <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole surnamegrid">
+                <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole surnamegrid flush--bottom push--bottom">
                     <div class='labels'>
                         <%= label_tag 'last_name', "Surname #{app_icons[:info]}".html_safe, class: "ttip", tabindex: "0" do %>
                             <%= "Surname #{app_icons[:info]}".html_safe %>
                             <span class="ttip__text"><%= info_tag_text[:lastname]%></span>
                         <% end %>
                     </div>
-                    <%= text_field_tag 'search_query[last_name]', set_value(@search_query.last_name)  , class: 'text-input', id: 'last_name', placeholder: 'Enter Surname here', tabindex: "0"%>
+                    <%= text_field_tag 'search_query[last_name]', set_value(@search_query.last_name)  , class: 'text-input flush--bottom', id: 'last_name', placeholder: 'Enter Surname here', tabindex: "0"%>
                     <label>
                         <small class="ttip__text">
                             <%= check_box_tag 'search_query[fuzzy]', set_value(@search_query.fuzzy), set_value(@search_query.fuzzy), tabindex: "0" %>
@@ -97,7 +93,7 @@
                     </div>
                 </li>
 
-                <div class="grid__item desk-wide-one-fifth desk-one-third lap-one-half palm-one-whole recordTypeGrid">
+                <div class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole recordTypeGrid">
                     <div class='labels'>
                         <div class="recordtypelabel">
                             <%= label_tag 'record_type', "Record Type #{app_icons[:info]}".html_safe, class: "ttip", tabindex: "0" do %>
@@ -135,7 +131,7 @@
                     </ol>
                 </div>
 
-                <li class="grid__item desk-wide-one-quarter desk-one-third lap-one-half palm-one-whole spousefirstnamess display_none flush--bottom" id="spouse_firstnames_div">
+                <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole spousefirstnamess display_none flush--bottom" id="spouse_firstnames_div">
                     <div class='labels'>
                         <%= label_tag 'spouse_first_name', "Spouse first name(s) #{app_icons[:info]}".html_safe, class: "ttip", tabindex: "0" do %>
                             <%= "Spouse first name(s)".html_safe %>
@@ -151,7 +147,7 @@
                     </label>
                 </li>
 
-                <li class="grid__item desk-wide-one-quarter desk-one-third lap-one-half palm-one-whole spouseormothersurname display_none" id="spouse_or_mother_surname_div">
+                <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole spouseormothersurname display_none" id="spouse_or_mother_surname_div">
                     <div class='labels'>
                         <%= label_tag 'spouses_mother_surname', "Spouse/Mothers surname #{app_icons[:info]}".html_safe, class: "ttip spouse_or_mother_surname_label", tabindex: "0" do %>
                             <%= "Spouse/Mothers surname #{app_icons[:info]}".html_safe %>
@@ -162,7 +158,7 @@
                 </li>
 
                 
-                <li class="grid__item desk-wide-one-quarter desk-one-third lap-one-half palm-one-whole dateofbirths display_none flush--bottom" id= "age_at_death_or_date_of_birth_div">
+                <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole dateofbirths display_none flush--bottom" id= "age_at_death_or_date_of_birth_div">
                     <div class='labels'>
                         <%= label_tag 'death_select_box', "Age at Death #{app_icons[:info]}".html_safe, class: "ttip", tabindex: "0" do %>
                             <%= "Age at Death #{app_icons[:info]}".html_safe %>
@@ -173,7 +169,7 @@
                     <div id="death_age_and_dob">
                         <div id="death_age">
                             <label class="accessibility" for="search_query_age_at_death">Age at death</label>
-                            <%= number_field_tag 'search_query[age_at_death]', set_value(@search_query.age_at_death), within: 0..199, placeholder: 'Enter Age', class: 'text-input', tabindex: "0" %>
+                            <%= number_field_tag 'search_query[age_at_death]', set_value(@search_query.age_at_death), within: 0..199, placeholder: 'Enter Age', class: 'text-input flush--bottom', tabindex: "0" %>
                         </div>
                         <div id="death_age_range">
                             <div class="grid">
@@ -214,7 +210,7 @@
                     
                 </li>
 
-                <li class="grid__item desk-wide-one-sixth desk-one-third lap-one-half palm-one-whole volumes">
+                <li class="grid__item desk-wide-one-sixth desk-one-quarter lap-one-half palm-one-whole volumes">
                     <div class='labels'>
                         <%= label_tag 'volume', "Volume".html_safe, class: "ttip", tabindex: "0" do %>
                             <%= "Volume".html_safe %>
@@ -224,7 +220,7 @@
                     <%= text_field_tag 'search_query[volume]', set_value(@search_query.volume), class: 'text-input', id: 'volume', placeholder: 'Enter Volume', tabindex: "0" %>
                 </li>
 
-                <li class="grid__item desk-wide-one-sixth desk-one-third lap-one-half palm-one-whole pages">
+                <li class="grid__item desk-wide-one-sixth desk-one-quarter lap-one-half palm-one-whole pages">
                     <div class='labels'>
                         <%= label_tag 'page', "Page".html_safe, class: "ttip", tabindex: "0" do %>
                             <%= "Page".html_safe %>
@@ -234,7 +230,7 @@
                     <%= text_field_tag 'search_query[page]', set_value(@search_query.page), class: 'text-input', id: 'page', placeholder: 'Enter Page', tabindex: "0"%>
                 </li>
 
-                <li class="grid__item desk-wide-one-third desk-one-third lap-one-half palm-one-whole countiess">
+                <li class="grid__item desk-wide-one-third desk-two-fifths lap-one-half palm-one-whole countiess">
                     <div class='labels'>
                         <div class="countieslabel">
                             <%= label_tag 'chapman_codes', "Counties".html_safe, class: "ttip",  tabindex: "0" do %>
@@ -250,7 +246,7 @@
                     <small class="additional">Select one County or none</small>
                 </li>
 
-                <li class="grid__item desk-wide-one-third desk-one-third lap-one-half palm-one-whole districtss">
+                <li class="grid__item desk-wide-one-third desk-two-fifths lap-one-half palm-one-whole districtss">
                     <div class='labels'>
                         <div class='districtslabel'>
                             <%= label_tag 'search_query_districts', "Districts #{app_icons[:info]}".html_safe, class: "ttip",tabindex: "0" do %>
