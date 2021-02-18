@@ -296,7 +296,7 @@ class SearchRecordsController < ApplicationController
     @csv = true
     if params[:dwel].present?
       @dwel = params[:dwel].to_i
-      @dwelling_offset = @dwel - session[:dwel]
+      @dwelling_offset = session[:dwel].present? ?  @dwel - session[:dwel] : @dwel
       @individuals = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id, dwelling_number: @dwel).order_by(sequence_in_household: 1) unless @dwel.zero?
       @freecen_csv_entry = @individuals.first unless @dwel.zero?
     else
