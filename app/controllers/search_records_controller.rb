@@ -339,13 +339,14 @@ class SearchRecordsController < ApplicationController
       @display_date = true
       @all_data = true
       show_freereg
-      respond_to do |format|
-        @viewed_date = Date.today.strftime("%e %b %Y")
-        @viewed_year = Date.today.strftime("%Y")
-        @type = params[:citation_type]
-        format.html { render :citation, layout: false }
-      end
     end
+    respond_to do |format|
+      @viewed_date = Date.today.strftime("%e %b %Y")
+      @viewed_year = Date.today.strftime("%Y")
+      @type = params[:citation_type]
+      format.html { render :citation, layout: false }
+    end
+
   end
 
   def viewed
