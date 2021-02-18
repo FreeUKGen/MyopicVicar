@@ -1,47 +1,21 @@
-<%= form_for(@freecen1_vld_file) do |f| %>
-  <% if @freecen1_vld_file.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@freecen1_vld_file.errors.count, "error") %> prohibited this freecen1_vld_file from being saved:</h2>
-      <ul>
-        <% @freecen1_vld_file.errors.full_messages.each do |msg| %>
-          <li><%= msg %></li>
-        <% end %>
-      </ul>
-    </div>
+<%= semantic_form_for @freecen1_vld_file , :html => { :class => 'grid'}  do |f| %>
+  <% unless @type = 'transcriber' %>
+    <%= f.input :file_name , :input_html => {:class => ' simple_form_bgcolour ',  :size => 15 }%>
+    <%= f.input :dir_name , :input_html => {:class => ' simple_form_bgcolour ',  :size => 15 }%>
+    <%= f.input :census_type , :input_html => {:class => ' simple_form_bgcolour ',  :size => 4 }%>
+    <%= f.input :raw_year , :input_html => {:class => ' simple_form_bgcolour ',  :size => 4 }%>
+    <%= f.input :full_year , :input_html => {:class => ' simple_form_bgcolour ',  :size => 4 }%>
+    <%= f.input :piece , :input_html => {:class => ' simple_form_bgcolour ',  :size => 4 }%>
+    <%= f.input :series , :input_html => {:class => ' simple_form_bgcolour ',  :size => 4 }%>
   <% end %>
-  <div class="field">
-    <%= f.label :file_name %><br />
-    <%= f.text_field :file_name %>
-  </div>
-  <div class="field">
-    <%= f.label :dir_name %><br />
-    <%= f.text_field :dir_name %>
-  </div>
-  <div class="field">
-    <%= f.label :census_type %><br />
-    <%= f.text_field :census_type %>
-  </div>
-  <div class="field">
-    <%= f.label :raw_year %><br />
-    <%= f.text_field :raw_year %>
-  </div>
-  <div class="field">
-    <%= f.label :full_year %><br />
-    <%= f.text_field :full_year %>
-  </div>
-  <div class="field">
-    <%= f.label :piece %><br />
-    <%= f.text_field :piece %>
-  </div>
-  <div class="field">
-    <%= f.label :series %><br />
-    <%= f.text_field :series %>
-  </div>
-  <div class="field">
-    <%= f.label :transcriber_name %><br />
-    <%= f.text_field :transcriber_name %>
-  </div>
-  <div class="actions">
-    <%= f.submit %>
+  <%= f.input :transcriber_name  , :label => "Transcriber name: ", :input_html => {:class => ' simple_form_bgcolour ',  :size => 30 }%>
+  <%= f.input :transcriber_email_address  , :label => "Transcriber email address: ", :input_html => {:class => ' simple_form_bgcolour ',  :size => 30 }%>
+  <%= f.input :transcriber_userid, :collection => @people, :required => false , :label => "Transcriber userid: ", :include_blank => true, :input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 5}%>
+  <div  style="text-align: center">
+    <%= f.action :submit,  :as => :button, :label =>  "Submit", :button_html => {name: 'commit', value:'Submit', :class => "ladda-button" , "data-style" => "contract" ,"data-color" => appname_downcase , "data-size" => "s", "data-spinner-color" => "#ffffff"  } %>
+    <%= f.action  :cancel, as: :link, label: 'Cancel' %>
   </div>
 <% end %>
+<script type="text/javascript">
+  Ladda.bind( 'button[type=submit]' );
+</script>
