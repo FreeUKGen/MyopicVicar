@@ -1,5 +1,5 @@
 <%= semantic_form_for @freecen1_vld_file , :html => { :class => 'grid'}  do |f| %>
-  <% unless @type = 'transcriber' %>
+  <% unless @type == 'transcriber' %>
     <%= f.input :file_name , :input_html => {:class => ' simple_form_bgcolour ',  :size => 15 }%>
     <%= f.input :dir_name , :input_html => {:class => ' simple_form_bgcolour ',  :size => 15 }%>
     <%= f.input :census_type , :input_html => {:class => ' simple_form_bgcolour ',  :size => 4 }%>
