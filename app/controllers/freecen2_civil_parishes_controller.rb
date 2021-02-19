@@ -212,7 +212,12 @@ class Freecen2CivilParishesController < ApplicationController
     flash[:notice] = 'No civil parish found' if @freecen2_civil_parish.blank?
     redirect_to new_manage_resource_path && return if @freecen2_civil_parish.blank?
 
+    p 'mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm'
+    p @freecen2_civil_parish
+
     session[:freecen2_civil_parish] = @freecen2_civil_parish.name
+    @year = @freecen2_civil_parish.year
+    @name = @freecen2_civil_parish.name
     @place = @freecen2_civil_parish.freecen2_place
     @piece = @freecen2_civil_parish.freecen2_piece
     @chapman_code = @freecen2_civil_parish.chapman_code
