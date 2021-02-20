@@ -4,7 +4,6 @@
     <%= link_to 'Create New Freecen2 Place', new_freecen2_place_path, method: :get, :class => "btn   btn--small", title: 'Permits the addition of a new place' %>
   </div>
 <% end%>
-<%= @place_name%>
 <%= render 'flash_notice' %>
 <div class="island  island--light">
   <%= simple_form_for @freecen2_place, :html => { :class => "grid"}  do |f| %>

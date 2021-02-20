@@ -211,7 +211,6 @@ class Freecen2PlacesController < ApplicationController
   def search_names
     @counties = ChapmanCode.keys.sort
     @counties = @counties.delete_if { |county| county == 'Unknown' }
-    @freecen2_place = Freecen2Place.new
     get_user_info_from_userid
     @place_name = session[:search_names].present? ? session[:search_names][:search] : ''
     @county = session[:search_names].present? ? session[:search_names][:search_county] : ''
