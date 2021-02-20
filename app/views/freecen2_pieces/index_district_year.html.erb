@@ -9,8 +9,8 @@
         <th class='sticky-header t10'>Piece</th>
         <th class='sticky-header t15'>District</th>
         <th class='sticky-header t15'>Piece name</th>
-        <th class='sticky-header t45'>Civil parishes</th>
         <th colspan = "2" class='sticky-header t10'>Actions</th>
+        <th class='sticky-header t45'>Civil parishes</th>
       </tr>
     </thead>
     <tbody >
@@ -20,11 +20,11 @@
           <td ><%= freecen2_piece.number %></td>
           <td ><%= freecen2_piece.district_name%></td>
           <td ><%= freecen2_piece.name %></td>
+          <td ><%= link_to 'Show', freecen2_piece_path(freecen2_piece) , :class => "btn   btn--small"%></td>
+          <td ><%= link_to 'Edit', edit_freecen2_piece_path(freecen2_piece) , :class => "btn   btn--small"%></td>
           <td ><%= freecen2_piece.civil_parish_names %></td>
-          <td ><%= link_to 'Show', freecen2_piece_path(freecen2_piece) , :class => "btn   btn--small"%>
-            <td ><%= link_to 'Edit', edit_freecen2_piece_path(freecen2_piece) , :class => "btn   btn--small"%>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
