@@ -244,8 +244,10 @@ class Freecen2PiecesController < ApplicationController
 
     get_user_info_from_userid
     @freecen2_piece = Freecen2Piece.find_by(id: params[:id])
-    flash[:notice] = 'No piece found' if @freecen2_piece.blank?
-    redirect_to new_manage_resource_path && return if @freecen2_piece.blank?
+    if @freecen2_piece.blank?
+      flash[:notice] = 'No piece found'
+      return redirect_to new_manage_resource_path
+    end
 
     @place = @freecen2_piece.freecen2_place
     @chapman_code = session[:chapman_code]

@@ -213,16 +213,21 @@ class Freecen2PlacesController < ApplicationController
     @counties = @counties.delete_if { |county| county == 'Unknown' }
     @freecen2_place = Freecen2Place.new
     get_user_info_from_userid
+    @place_name = session[:search_names].present? ? session[:search_names][:search] : ''
+    @county = session[:search_names].present? ? session[:search_names][:search_county] : ''
+    @freecen2_place = Freecen2Place.new(place_name: @place_name, county: @county)
     session.delete(:search_names) if session[:search_names].present?
     session[:search_names] = []
   end
 
   def search_names_results
     get_user_info_from_userid
-    search_place = session[:search_names][:search]
-    search_county = session[:search_names][:search_county]
-    redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'That place does not exist') && return if search_place.blank?
+    return redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'No prior search') if session[:search_names].blank?
 
+    search_place = session[:search_names][:search]
+    return redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'No prior resul search') if search_place.blank?
+
+    search_county = session[:search_names][:search_county]
     @results = Freecen2Place.search(search_place, search_county)
     @county = search_county.present? ? search_county : 'All Counties'
     @total = @results.length
