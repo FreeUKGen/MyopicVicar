@@ -214,9 +214,7 @@ class Freecen2PlacesController < ApplicationController
     @freecen2_place = Freecen2Place.new
     get_user_info_from_userid
     @place_name = session[:search_names].present? ? session[:search_names][:search] : ''
-    p  @place_name
     @county = session[:search_names].present? ? session[:search_names][:search_county] : ''
-    p @county
     @freecen2_place = Freecen2Place.new(place_name: @place_name, county: @county)
     session.delete(:search_names) if session[:search_names].present?
     session[:search_names] = []
@@ -231,7 +229,6 @@ class Freecen2PlacesController < ApplicationController
 
     search_county = session[:search_names][:search_county]
     @results = Freecen2Place.search(search_place, search_county)
-    p @results
     @county = search_county.present? ? search_county : 'All Counties'
     @total = @results.length
   end
