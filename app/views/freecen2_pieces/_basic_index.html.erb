@@ -8,9 +8,9 @@
         <th class='sticky-header '>Piece name</th>
         <th class='sticky-header '>Piece Number</th>
         <th class='sticky-header '>District</th>
+        <th colspan = "2" class='sticky-header '>Actions</th>
         <th class='sticky-header '>Civil parishes <br>
           <small>The part in () is the name of any Hamlet, Township, Ward or Place included in the Civil Parish</small></th>
-        <th colspan = "2" class='sticky-header '>Actions</th>
       </tr>
     </thead>
     <tbody >
@@ -19,13 +19,13 @@
           <td ><%= freecen2_piece.name %></td>
           <td ><%= freecen2_piece.number %></td>
           <td ><%= freecen2_piece.district_name%></td>
+          <td ><%= link_to 'Show', freecen2_piece_path(freecen2_piece,type: @type) , :class => "btn   btn--small"%></td>
+          <td ><%= link_to 'Edit', edit_freecen2_piece_path(freecen2_piece,type: @type) , :class => "btn   btn--small"%></td>
           <td ><%= freecen2_piece.civil_parish_names %></td>
-          <td ><%= link_to 'Show', freecen2_piece_path(freecen2_piece,type: @type) , :class => "btn   btn--small"%>
-            <td ><%= link_to 'Edit', edit_freecen2_piece_path(freecen2_piece,type: @type) , :class => "btn   btn--small"%>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-    <br>
-    <br>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+<br>
+<br>
