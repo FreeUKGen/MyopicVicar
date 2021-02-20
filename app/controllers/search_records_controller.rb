@@ -79,6 +79,7 @@ class SearchRecordsController < ApplicationController
       @cen_next_dwelling = prev_next_dwellings[1]
       @dweling_values = @dwelling.dwelling_display_values(@cen_year, @cen_chapman_code)
     end
+    @response, @next_record, @previous_record = @search_query.next_and_previous_records(params[:id]) unless @search_query.is_a?(String)
     add_head
     add_evidence_explained_values
     add_address_for_citation
