@@ -38,6 +38,7 @@ class Freecen2PlacesController < ApplicationController
       redirect_to search_names_results_freecen2_place_path
     else
       params[:freecen2_place][:chapman_code] = ChapmanCode.values_at(params[:freecen2_place][:county])
+      params[:freecen2_place][:grid_reference] = params[:freecen2_place][:grid_reference].strip if params[:freecen2_place][:grid_reference].present?
       @place = Freecen2Place.new(freecen2_place_params)
 
       proceed, message, place = @place.check_and_set(params)
