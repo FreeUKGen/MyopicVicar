@@ -79,6 +79,7 @@ class SearchRecordsController < ApplicationController
       @cen_next_dwelling = prev_next_dwellings[1]
       @dweling_values = @dwelling.dwelling_display_values(@cen_year, @cen_chapman_code)
     end
+    @response, @next_record, @previous_record = @search_query.next_and_previous_records(params[:id]) unless @search_query.is_a?(String)
     add_head
     add_evidence_explained_values
     add_address_for_citation
@@ -296,7 +297,7 @@ class SearchRecordsController < ApplicationController
     @csv = true
     if params[:dwel].present?
       @dwel = params[:dwel].to_i
-      @dwelling_offset = @dwel - session[:dwel]
+      @dwelling_offset = session[:dwel].present? ?  @dwel - session[:dwel] : @dwel
       @individuals = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id, dwelling_number: @dwel).order_by(sequence_in_household: 1) unless @dwel.zero?
       @freecen_csv_entry = @individuals.first unless @dwel.zero?
     else
@@ -339,13 +340,14 @@ class SearchRecordsController < ApplicationController
       @display_date = true
       @all_data = true
       show_freereg
-      respond_to do |format|
-        @viewed_date = Date.today.strftime("%e %b %Y")
-        @viewed_year = Date.today.strftime("%Y")
-        @type = params[:citation_type]
-        format.html { render :citation, layout: false }
-      end
     end
+    respond_to do |format|
+      @viewed_date = Date.today.strftime("%e %b %Y")
+      @viewed_year = Date.today.strftime("%Y")
+      @type = params[:citation_type]
+      format.html { render :citation, layout: false }
+    end
+
   end
 
   def viewed

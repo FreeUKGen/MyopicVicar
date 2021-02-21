@@ -1,6 +1,15 @@
-<h1>Editing freecen1_vld_file</h1>
-
-<%= render 'form' %>
-
-<%= link_to 'Show', @freecen1_vld_file %> |
-<%= link_to 'Back', freecen1_vld_files_path %>
+<% breadcrumb :freecen1_vld_file,  @chapman_code, @freecen1_vld_file %>
+<p style="text-align: center"><b>Editing  FreeCen1 VLD file : <b><%= file_name(@freecen1_vld_file) %></b> for <b><%= @chapman_code %></b><br>
+  </p>
+  <%= render partial: 'flash_notice' %>
+  <%unless session[:error_line].nil?%>
+    <%n = 0%>
+    <%while n < @n %>
+      <b><%=@error_message[n]%><%= @content[n]%></b>
+      <br>
+      <%n = n + 1%>
+    <%end%>
+  <%end%>
+  <br>
+  <%= render 'form' %>
+  <br>

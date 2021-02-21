@@ -6,16 +6,17 @@
       <table class=' table--bordered my-width table--data table--striped just--left'>
         <thead >
           <tr>
-            <th class='sticky-header'>Piece</th>
-            <th class='sticky-header'>Chapman</th>
+            <th class='sticky-header'>File</th>
+            <% if session[:my_own]%>
+              <th class='sticky-header'>Chapman</th>
+            <% else%>
+              <th class='sticky-header'>User ID</th>
+            <% end%>
             <th class='sticky-header'>Year</th>
             <th class='sticky-header'>District</th>
             <th class='sticky-header'>Entries</th>
             <th colspan = "3" class='sticky-header'>Messges<br>
               E W I  <a href="#" class="left_tooltip" onclick="return false;"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %><span>E: Errors W: Warnings I: Info </span></a></th>
-            <% unless session[:my_own]%>
-              <th class='sticky-header'>User ID</th>
-            <% end%>
             <th class='sticky-header' >Uploaded</th>
             <th colspan="3" class='sticky-header'>Actions</th>
           </tr>
@@ -26,17 +27,18 @@
           <% if @freecen_csv_files.present? %>
             <% @freecen_csv_files.each do |freecen_csv_file| %>
               <tr id="<%= freecen_csv_file.id %>" style="<%=freecen_csv_file.define_colour%>">
-                <td><%= freecen2_piece_number(freecen_csv_file) %></td>
-                <td><%= freecen_csv_file.chapman_code %></td>
+                <td><%= freecen_csv_file.file_name %></td>
+                <% if session[:my_own]%>
+                  <td><%= freecen_csv_file.chapman_code %></td>
+                <%else%>
+                  <td><%= freecen_csv_file.userid %></td>
+                <% end %>
                 <td><%= freecen_csv_file.year %></td>
                 <td><%= freecen2_district_name(freecen_csv_file) %></td>
                 <td><%= freecen_csv_file.total_records %></td>
                 <td><%= freecen_csv_file.total_errors%></td>
                 <td><%= freecen_csv_file.total_warnings%></td>
                 <td><%= freecen_csv_file.total_info%></td>
-                <% unless session[:my_own]%>
-                  <td><%= freecen_csv_file.userid %></td>
-                <% end %>
                 <td><%= uploaded_date(freecen_csv_file)%></td>
                 <td><%= link_to 'Show', freecen_csv_file, method: :get, class: 'btn   btn--small', title: 'Display information about the file and a number of reports on its contents' %></td>
                 <td><%=  link_to 'Errors', error_freecen_csv_file_path(freecen_csv_file), method: :get, class: 'btn   btn--small', title: 'Lists the entry numbers which have generated an error message. Any of the entries can be displayed on line' unless  freecen_csv_file.total_errors.zero? %></td>

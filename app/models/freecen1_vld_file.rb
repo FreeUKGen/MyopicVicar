@@ -15,6 +15,15 @@ class Freecen1VldFile
   field :sctpar, type: String
   field :file_digest, type: String
   field :file_errors, type: Array
+  field :transcriber_name, type: String
+  field :transcriber_email_address, type: String
+  field :transcriber_userid, type: String
+
+  before_save :remove_whitespace
+
+  validates_format_of :transcriber_email_address,:with => Devise::email_regexp, :message => 'Invalid email address format'
+  validates :transcriber_name, presence: true
+  validates :transcriber_email_address, presence: true
 
   has_many :freecen1_vld_entries
   has_many :freecen_dwellings
@@ -367,6 +376,10 @@ class Freecen1VldFile
   def compute_uninhabited_flag(rec)
     line = rec['uninhabited_flag'] == @dash ? @blank : rec['uninhabited_flag']
     line
+  end
+
+  def remove_whitespace
+    self[:transcriber_name] = self[:transcriber_name].squeeze(" ").strip
   end
 
 end

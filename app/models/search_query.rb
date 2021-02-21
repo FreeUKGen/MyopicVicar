@@ -504,6 +504,8 @@ class SearchQuery
   def individual_sex?(individual)
     return true if sex.blank?
 
+    return false if individual.sex.blank?
+
     result = sex.casecmp(individual.sex).zero? ? true : false
     result
   end
@@ -522,6 +524,8 @@ class SearchQuery
 
   def individual_language?(individual)
     return true if language.blank?
+
+    return false if individual.language.blank?
 
     return true if language.casecmp(individual.language).zero?
 
