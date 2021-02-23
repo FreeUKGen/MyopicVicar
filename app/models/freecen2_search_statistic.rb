@@ -74,7 +74,8 @@ class Freecen2SearchStatistic
     def calculate
       @@this_database = this_db
       num = 0
-      @freshest_stat_date = SearchStatistic.new.terminus_ad_quem
+      @freshest_stat_date = Freecen2SearchStatistic.new.terminus_ad_quem
+      p "Staring at #{@freshest_stat_date.inspect}"
       @last_midnight = DateTime.new(Time.now.year, Time.now.month, Time.now.day)
       while @last_midnight > @freshest_stat_date
         stat = Freecen2SearchStatistic.new(db: @@this_database, interval_end: @freshest_stat_date)
@@ -83,7 +84,7 @@ class Freecen2SearchStatistic
         logger.info "stat #{stat.inspect}"
         @freshest_stat_date = stat.next_hour(@freshest_stat_date)
         num += 1
-        #break if num == 2
+        #break if num == 10
       end
     end
 
@@ -164,12 +165,13 @@ class Freecen2SearchStatistic
   end
 
   def next_hour(prev_datetime)
-    DateTime.new(prev_datetime.year, prev_datetime.month, prev_datetime.day, prev_datetime.hour + 1)
+    t = Time.parse(prev_datetime.to_s) + (24 * 3600)
+    DateTime.parse(t.to_s)
   end
 
   def earliest_search_query_date
     result = SearchQuery.where(:c_at.ne => nil).asc(:c_at).first.created_at
-    DateTime.new(result.year, result.month, result.day, result.hour)
+    DateTime.new(result.year, result.month, result.day)
   end
 
   def most_recent_statistic_date

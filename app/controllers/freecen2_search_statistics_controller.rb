@@ -3,7 +3,7 @@ class Freecen2SearchStatisticsController < ApplicationController
 
   LAUNCH = [2015, 4, 14, 14]
 
-  def index
+  def graphic
     calculate_last_8_days(8)
     if params[:hours]
       #       over-write with recent stuff
@@ -11,6 +11,14 @@ class Freecen2SearchStatisticsController < ApplicationController
     end
 
     #     calculate_last_48_hours
+  end
+
+  def index
+    @freecen2_search_statistics = Freecen2SearchStatistic.where(:searches.ne => 0).desc(:interval_end).limit(100)
+  end
+
+  def show
+
   end
 
   def calculate_last_8_days(days)

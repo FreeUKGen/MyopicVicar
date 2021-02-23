@@ -49,7 +49,7 @@ MyopicVicar::Application.configure do
   config.assets.raise_runtime_errors = false
   config.assets.compile = false
   # Raise exception on mass assignment protection for Active Record models
-
+  config.assets.check_precompiled_asset = false
 
   # Log the query plan for queries taking more than this (works
   # with SQLite, MySQL, and PostgreSQL)

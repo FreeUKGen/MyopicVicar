@@ -1,4 +1,4 @@
-<h1>Search Statistics for <%= appname %></h1>
+<h2>Search Statistics for <%= appname %></h2>
 <figure>
   <figcaption>
     This chart shows the search performance of <%= MyopicVicar::Application.config.freexxx_display_name %>2 over the last <%= @chart_unit %>.<br/>
@@ -64,7 +64,7 @@
           <%= l %>
         </td>
         <td>
-          <%= @data[:n_searches][i] %>
+          <%= @data[:searches][i] %>
         </td>
       </tr>
     <% end %>
@@ -82,7 +82,7 @@
               pointStrokeColor: "#fff",
               pointHighlightFill: "#fff",
               pointHighlightStroke: "rgba(151,187,205,1)",
-              data: <%= @data[:n_searches].to_json %>
+              data: <%= @data[:searches].to_json %>
           },
           {
               label: "Searches > 1 second",
@@ -92,7 +92,7 @@
               pointStrokeColor: "#fff",
               pointHighlightFill: "#fff",
               pointHighlightStroke: "rgba(151,187,205,1)",
-              data: <%= @data[:n_time_gt_1s].to_json %>
+              data: <%= @data[:time_gt_1s].to_json %>
           },
           {
               label: "Searches > 10 seconds",
@@ -102,7 +102,7 @@
               pointStrokeColor: "#fff",
               pointHighlightFill: "#fff",
               pointHighlightStroke: "rgba(151,187,205,1)",
-              data: <%= @data[:n_time_gt_10s].to_json %>
+              data: <%= @data[:time_gt_10s].to_json %>
           },
           {
               label: "Searches > 1 minute",
@@ -112,7 +112,7 @@
               pointStrokeColor: "#fff",
               pointHighlightFill: "#fff",
               pointHighlightStroke: "rgba(151,187,205,.5)",
-              data: <%= @data[:n_time_gt_60s].to_json %>
+              data: <%= @data[:time_gt_60s].to_json %>
           }
       ]
   };
@@ -143,7 +143,7 @@
               pointStrokeColor: "#fff",
               pointHighlightFill: "#fff",
               pointHighlightStroke: "rgba(151,187,205,1)",
-              data: <%= @data[:n_ln].to_json %>
+              data: <%= @data[:ln].to_json %>
           }
       ]
   };
@@ -173,7 +173,7 @@
               pointStrokeColor: "#fff",
               pointHighlightFill: "#fff",
               pointHighlightStroke: "rgba(151,187,205,1)",
-              data: <%= @data[:n_fn].to_json %>
+              data: <%= @data[:fn].to_json %>
           }
       ]
   };
@@ -204,7 +204,7 @@
               pointStrokeColor: "#fff",
               pointHighlightFill: "#fff",
               pointHighlightStroke: "rgba(151,187,205,1)",
-              data: <%= @data[:n_zero_result].to_json %>
+              data: <%= @data[:zero_result].to_json %>
           },
           {
               label: "Limit Result Searches",
@@ -214,7 +214,7 @@
               pointStrokeColor: "#fff",
               pointHighlightFill: "#fff",
               pointHighlightStroke: "rgba(151,187,205,1)",
-              data: <%= @data[:n_limit_result].to_json %>
+              data: <%= @data[:limit_result].to_json %>
           }
       ]
   };
@@ -245,7 +245,7 @@
               pointStrokeColor: "#fff",
               pointHighlightFill: "#fff",
               pointHighlightStroke: "rgba(151,187,205,1)",
-              data: <%= @data[:n_date].to_json %>
+              data: <%= @data[:date].to_json %>
           }
       ]
   };
@@ -276,7 +276,7 @@
               pointStrokeColor: "#fff",
               pointHighlightFill: "#fff",
               pointHighlightStroke: "rgba(151,187,205,1)",
-              data: <%= @data[:n_r_type].to_json %>
+              data: <%= @data[:record_type].to_json %>
           }
       ]
   };
@@ -308,7 +308,7 @@
               pointStrokeColor: "#fff",
               pointHighlightFill: "#fff",
               pointHighlightStroke: "rgba(151,187,205,1)",
-              data: <%= @data[:n_0_county].to_json %>
+              data: <%= @data[:zero_county].to_json %>
           }
       ]
   };
@@ -340,7 +340,7 @@
               pointStrokeColor: "#fff",
               pointHighlightFill: "#fff",
               pointHighlightStroke: "rgba(151,187,205,1)",
-              data: <%= @data[:n_place].to_json %>
+              data: <%= @data[:place].to_json %>
           },
           {
               label: "Nearby Searches",
@@ -350,7 +350,7 @@
               pointStrokeColor: "#fff",
               pointHighlightFill: "#fff",
               pointHighlightStroke: "rgba(151,187,205,1)",
-              data: <%= @data[:n_nearby].to_json %>
+              data: <%= @data[:nearby].to_json %>
           }
       ]
   };

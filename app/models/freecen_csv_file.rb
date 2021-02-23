@@ -299,10 +299,9 @@ class FreecenCsvFile
         end
       end
 
-      [totals_csv_files, totals_csv_entries, totals_csv_files_incorporated, totals_individuals, totals_dwellings]
+      [totals_csv_files,  totals_csv_files_incorporated, totals_csv_entries, totals_individuals, totals_dwellings]
     end
   end # self
-
   # ######################################################################### instance methods
 
   def add_country_to_file

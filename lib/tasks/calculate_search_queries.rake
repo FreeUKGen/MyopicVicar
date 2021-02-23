@@ -10,7 +10,7 @@ end
 namespace :freecen do
   desc 'Extract search statistics'
   task calculate_search_queries: [:environment] do
-    p Time.current
+
     Freecen2SearchStatistic.calculate
     p 'finished'
   end
