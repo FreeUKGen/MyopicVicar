@@ -592,75 +592,54 @@ module ApplicationHelper
     data-ad-slot="#{data_ad_slot_header}">
     </ins>
     <script>
-    window.update_personalized_google_adverts = function (preference) {
-      if(preference == 'accept') {
-          (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
-        } else if(preference == 'deny') {
-          (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
-        }
-        };
-        $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})});
+      (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
+      window.pg=window.pg||[];pg.acq=pg.acq||[]; // build consent queue
+      pg.acq.push(function() {
+      // add code here that should be executed after consent is obtained
+        (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
+      }
+        (adsbygoogle = window.adsbygoogle || []).push({});
         (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
-        </script>
-        <script>
-        function detectAdblock(){
-          console.log(window.canRunAds);
-          if( window.canRunAds === undefined){
-              console.log("Adblock detected")
-              var donateBanners = document.getElementsByClassName("donations");
-              for (i = 0; i < donateBanners.length; i++) {
-                  donateBanners[i].style.display = "block";
-                  console.log("Banner displayed! " + i)
-                }
-                }
-                else {
-                    console.log(window.canRunAds);
-                    console.log("Adblock not detected");
-                  }
-                  }
-                  window.onload = detectAdblock;
-                  </script>
-                  HTML
-                  if Rails.env.development?
-                    banner = <<-HTML
-                    <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
-                    HTML
-                  end
-                  banner.html_safe
-                end
+    </script>
+    HTML
+    if Rails.env.development?
+      banner = <<-HTML
+      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
+      HTML
+    end
+    banner.html_safe
+  end
 
-                def fullwidth_adsense_freecen
-                  banner = <<-HTML
-                  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-                  <script>
-                  (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
-                  </script>
-                  <!-- FreeCEN2 Transcriber Registration (Responsive) -->
-                  <ins class="adsbygoogle adSenseBanner"
-                  style="display:inline-block;width:728px;height:90px"
-                  data-ad-client="#{data_ad_client}"
-                  data-ad-slot="#{data_ad_slot_fullwidth}">
-                  </ins>
-                  <script>
-                  window.update_personalized_fullwidth_adverts = function (preference) {
-                    if(preference == 'accept') {
-                        (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
-                      }
-                    else if(preference == 'deny') {
-                        (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
-                      }
-                      };
-                      $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})});
-                      (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
-                      </script>
-                      HTML
-                      if Rails.env.development?
-                        banner = <<-HTML
-                        <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
-                        HTML
-                      end
-                      banner.html_safe
-                    end
+  def fullwidth_adsense_freecen
+    banner = <<-HTML
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+    (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
+    </script>
+    <!-- FreeCEN2 Transcriber Registration (Responsive) -->
+    <ins class="adsbygoogle adSenseBanner"
+    style="display:inline-block;width:728px;height:90px"
+    data-ad-client="#{data_ad_client}"
+    data-ad-slot="#{data_ad_slot_fullwidth}">
+    </ins>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
+      window.pg=window.pg||[];pg.acq=pg.acq||[]; // build consent queue
+      pg.acq.push(function() {
+      // add code here that should be executed after consent is obtained
+        (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
+      })
+      (adsbygoogle = window.adsbygoogle || []).push({});
+      (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
+    </script>
+        HTML
+        if Rails.env.development?
+          banner = <<-HTML
+          <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
+          HTML
+        end
+        banner.html_safe
+      end
 
                     def adsence_right_side_banner
                       banner = <<-HTML
@@ -674,15 +653,14 @@ module ApplicationHelper
                       data-ad-slot = "#{app_advert['data_ad_slot_side']}">
                       </ins>
                       <script>
-                      window.update_personalized_adverts = function (preference) {
-                        if(preference == 'accept') {
-                            (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
-                          } else if(preference == 'deny') {
-                            (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
-                          }
-                          };
-                          $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})});
-                          (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
+                        (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
+                        window.pg=window.pg||[];pg.acq=pg.acq||[]; // build consent queue
+                        pg.acq.push(function() {
+                        // add code here that should be executed after consent is obtained
+                          (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
+                        })
+                        (adsbygoogle = window.adsbygoogle || []).push({});
+                        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
                           </script>
                           HTML
                           if Rails.env.development?
@@ -706,17 +684,16 @@ module ApplicationHelper
                           data-ad-client="#{data_ad_client}"
                           data-ad-slot= "#{@data_ad_slot}">
                           </ins>
-                          <script>
-                          window.update_personalized_adverts = function (preference) {
-                            if(preference == 'accept') {
-                                (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
-                              } else if(preference == 'deny') {
-                                (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
-                              }
-                              };
-                              $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})});
-                              (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
-                              </script>
+                          <script type="text/javascript">
+                            (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
+                            window.pg=window.pg||[];pg.acq=pg.acq||[]; // build consent queue
+                            pg.acq.push(function() {
+                            // add code here that should be executed after consent is obtained
+                              (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
+                            })
+                            (adsbygoogle = window.adsbygoogle || []).push({});
+                            (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
+                          </script>
                               HTML
                               if Rails.env.development?
                                 banner = <<-HTML
@@ -726,26 +703,45 @@ module ApplicationHelper
                               banner.html_safe
                             end
 
-                            def banner_header
+                            def banner_header_freereg
                               banner = <<-HTML
                               <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-                              <script> (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1; </script>
-                              <ins class="adsbygoogle adSenseBanner"
-                              style="display:inline-block;width:728px;height:90px"
-                              data-ad-client = "#{data_ad_client}"
-                              data-ad-slot = "#{data_ad_slot_header}">
-                              </ins>
-                              <script>
-                              window.update_personalized_header_adverts = function (preference) {
-                                if(preference == 'accept') {
+                              <script type="text/javascript">
+                                window.pg=window.pg||[];pg.acq=pg.acq||[]; // build consent queue
+                                pg.acq.push(function() {
+                                // add code here that should be executed after consent is obtained
+                                  (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
+                                })
+                                //Google Adsense
+                                (adsbygoogle = window.adsbygoogle || []).push({
+                                  google_ad_client: "#{data_ad_client}",
+                                  data-ad-slot: "#{data_ad_slot_header}",
+                                  enable_page_level_ads: true
+                                });
+                              </script>
+                              HTML
+                              banner.html_safe
+                            end
+
+                            def banner_header
+                              banner = <<-HTML
+                                <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                                <script> (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1; </script>
+                                <ins class="adsbygoogle adSenseBanner"
+                                style="display:inline-block;width:728px;height:90px"
+                                data-ad-client = "#{data_ad_client}"
+                                data-ad-slot = "#{data_ad_slot_header}">
+                                </ins>
+                                <script>
+                                  (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
+                                  window.pg=window.pg||[];pg.acq=pg.acq||[]; // build consent queue
+                                  pg.acq.push(function() {
+                                  // add code here that should be executed after consent is obtained
                                     (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
-                                  } else if(preference == 'deny') {
-                                    (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
-                                  }
-                                  };
-                                  $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})});
-                                  (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
-                                  </script>
+                                  })
+                                    (adsbygoogle = window.adsbygoogle || []).push({});
+                                    (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
+                                </script>
                                   HTML
                                   if Rails.env.development?
                                     banner = <<-HTML
