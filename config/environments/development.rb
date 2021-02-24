@@ -19,9 +19,8 @@ MyopicVicar::Application.configure do
   # every request.  This slows down response time but is perfect for development
   # since you don't have to restart the webserver when you make code changes.
   config.cache_classes = false
-  Rails.logger = Logger.new(STDOUT)
-  config.logger = ActiveSupport::Logger.new("log/#{Rails.env}.log")
-  config.log_level = :warn
+
+  config.log_level = :debug
   # Log error messages when you accidentally call methods on nil.
   config.whiny_nils = true
 
@@ -50,6 +49,8 @@ MyopicVicar::Application.configure do
   config.assets.compile = false
   # Raise exception on mass assignment protection for Active Record models
   config.assets.check_precompiled_asset = false
+  config.assets.unknown_asset_fallback = true
+  config.assets.skip_pipelines = true
 
   # Log the query plan for queries taking more than this (works
   # with SQLite, MySQL, and PostgreSQL)

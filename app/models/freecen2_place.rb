@@ -62,14 +62,14 @@ class Freecen2Place
   after_save :update_places_cache
 
   has_many :churches, dependent: :restrict_with_error
-  has_many :search_records
+  has_many :search_records, dependent: :restrict_with_error
 
-  has_many :freecen2_pieces
+  has_many :freecen2_pieces, dependent: :restrict_with_error
   has_many :freecen_dwellings
   has_many :sources
 
-  has_many :freecen2_districts
-  has_many :freecen2_civil_parishes
+  has_many :freecen2_districts, dependent: :restrict_with_error
+  has_many :freecen2_civil_parishes, dependent: :restrict_with_error
 
   has_many :image_server_groups
   has_many :gaps
