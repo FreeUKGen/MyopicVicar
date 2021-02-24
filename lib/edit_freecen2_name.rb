@@ -4,7 +4,7 @@ class EditFreecen2Name
     #The purpose of this clean up utility is to eliminate search records that are unconnected with an entry. Or an entry without a batch
     bad_text = /[-_,'":]/
     bad_text_less = /[-_,":]/
-    bad_s = /'/
+    bad_s = /'s/
     limit = limit.to_i
     type = type.titleize
     chapman_code = chapman_code.upcase
@@ -46,9 +46,9 @@ class EditFreecen2Name
       fixed += 1
       break if fixed == limit
 
-      new_name = document.name.gsub(bad_text_less, ' ').gsub(bad_s, '').gsub(/ +/, ' ')
-      message_file.puts "#{document.chapman_code},#{document.year},\"#{document.name}\",\"#{new_name}\""
-      document.update_attributes(name: new_name) if fixit
+      new_name = document.name.gsub(bad_text_less, ' ').gsub(bad_s, 's').gsub(/ +/, ' ')
+      message_file.puts "#{document.chapman_code},#{document.year},\"#{document.name}\",\"#{new_name}\"" unless new_name == document.name
+      document.update_attributes(name: new_name) if fixit && new_name != document.name
       next unless type == 'Civil Parish'
 
       piece = document.freecen2_piece

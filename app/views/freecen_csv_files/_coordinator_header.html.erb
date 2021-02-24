@@ -1,21 +1,18 @@
 <% breadcrumb :freecen_csv_files, @freecen_csv_file %>
+<p class=" text--center">Videos describing <%= link_to 'this page', "https://youtu.be/TDzBOZGK4U8", target: '_blank' %>, <%= link_to 'download spreadsheet', "https://youtu.be/_wvHUcoqKwc" , target: '_blank' %>, <%= link_to 'upload traditional file', "https://youtu.be/Dfg--wO2onE" , target: '_blank'%>, <%= link_to 'upload new CSVProc file', "https://youtu.be/Uzj-fHOnIuw" , target: '_blank'%>, <%= link_to 'show details of the file', "https://youtu.be/4xmR3W9Sq_I" , target: '_blank' %>, <%= link_to 'errors display', "https://youtu.be/ZFYAqlia29E" , target: '_blank' %>, <%= link_to 'replace a file', "https://youtu.be/atuPZ5ZV7-M" , target: '_blank' %>, <%= link_to 'remove a file', "https://youtu.be/eZ9ef3be19w" , target: '_blank' %> (all open in new tabs)<br>
+</p>
 <% if session[:syndicate].present? %>
-  <h3 style="text-align: center"> Syndicate Files for  <%= session[:syndicate]%><%=@sorted_by%></h3>
+  <h2 style="text-align: center"> Files for  <%= session[:syndicate]%><%=@sorted_by%></h2>
 <% elsif session[:county].present? %>
-  <h3 style="text-align: center"> County Files for  <%= session[:county]%><%=@sorted_by%></h3>
+  <h2 style="text-align: center"> Files for  <%= session[:county]%>: <%= session[:selection]%> <%= session[:sorted_by]%></h2>
 <% end%>
 <%= render 'flash_notice' %>
-<p class=" text--center">Videos describing <%= link_to 'this page', "https://youtu.be/TDzBOZGK4U8", target: '_blank' %>, <%= link_to 'download spreadsheet', "https://youtu.be/_wvHUcoqKwc" , target: '_blank' %>, <%= link_to 'upload traditional file', "https://youtu.be/Dfg--wO2onE" , target: '_blank'%>, <%= link_to 'upload new CSVProc file', "https://youtu.be/Uzj-fHOnIuw" , target: '_blank'%> <%= link_to 'show details of the file', "https://youtu.be/4xmR3W9Sq_I" , target: '_blank' %>, <%= link_to 'errors display', "https://youtu.be/ZFYAqlia29E" , target: '_blank' %>, <%= link_to 'replace a file', "https://youtu.be/atuPZ5ZV7-M" , target: '_blank' %>, <%= link_to 'remove a file', "https://youtu.be/eZ9ef3be19w" , target: '_blank' %> (all open in new tabs)<br>
-</p>
 <p class=" text--center"> Select a link below to change the order of display</p>
 <div  class=" text--center push--bottom">
-  <%= link_to 'Alphabetical file name', manage_counties_selection_path(option: 'Review Batches by Filename'), method: :get , :class => "btn btn--small", title: 'Reorder the list according to the alphabetical order of their file name' %>
-  <%= link_to 'Oldest' ,  manage_counties_selection_path(option: 'Review Batches by Oldest Date of Change'), method: :get , :class => "btn btn--small", title: 'Reorder the list according to the oldest processing of the file' %>
-  <%= link_to 'Most Recent' , manage_counties_selection_path(option: 'Review Batches by Most Recent Date of Change'), method: :get , :class => "btn btn--small", title: 'Reorder the list according to the most recent processing of the file' %>
-  <%= link_to 'Files with errors' , manage_counties_selection_path(option: 'Review Batches with Errors'), method: :get , :class => "btn btn--small", title: 'List only those files with errors' %>
-  <%= link_to 'Select Specific File' , manage_counties_selection_path(option: 'Review Specific Batch'), method: :get , :class => "btn btn--small", title: 'Select a specific file to look at in detail' %>
-  <%= link_to 'Being Validated' , manage_counties_selection_path(option: 'Being Validated'), method: :get , :class => "btn btn--small", title: 'List only those files being validated' %>
-  <%= link_to 'Incorporated' , manage_counties_selection_path(option: 'Incorporated'), method: :get , :class => "btn btn--small", title: 'List only those files that have been validated' %>
+  <%= link_to 'Alphabetical file name', freecen_csv_files_path(order: 'alphabetic'), method: :get , :class => "btn btn--small", title: 'Reorder the list according to the alphabetical order of their file name' %>
+  <%= link_to 'Alphabetical Userid then file name', freecen_csv_files_path(order: 'userid'), method: :get , :class => "btn btn--small", title: 'Reorder the list according to the alphabetical order of their userid then file name' %>
+  <%= link_to 'Oldest' ,  freecen_csv_files_path(order: 'oldest'), method: :get , :class => "btn btn--small", title: 'Reorder the list according to the oldest processing of the file' %>
+  <%= link_to 'Most Recent' ,  freecen_csv_files_path(order: 'recent'), method: :get , :class => "btn btn--small", title: 'Reorder the list according to the most recent processing of the file' %>
   <%= link_to 'Download Spreadsheet' , download_spreadsheet_freecen_csv_file_path, method: :get , :class => "btn btn--small", title: 'Lists the available census spreadsheet headers that can be downloaded to your computer and used for the transcription of a census document' %>
 </div>
 <p class="text--center"> To replace a file: locate the file in the list below and click on the RL option on the extreme right. <br>

@@ -25,7 +25,8 @@ Refinery::Authentication::Devise::User.class_eval do
   def inform_coordinator_of_completion_and_update_userid
     if self.changed.include?('encrypted_password')
       userid = UseridDetail.id(self.userid_detail_id).first
-      logger.warn "FREEREG::USER updating encrypted_password for #{userid.userid}"
+      logger.warn "FREEREG::USER updating encrypted_password for #{userid.userid}" if userid.present?
+      logger.warn "FREEREG::USER missing userid for #{userid_detail_id}" if userid.blank?
 
       #we send coordinator email on an initial password setting
       userid.finish_transcriber_creation_setup if userid.present? && userid.person_role == 'transcriber' &&

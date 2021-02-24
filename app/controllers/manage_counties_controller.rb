@@ -21,6 +21,7 @@ class ManageCountiesController < ApplicationController
     @sorted_by = '; sorted by descending number of errors and then file name'
     session[:sorted_by] = @sorted_by
     session[:sort] = 'error DESC, file_name ASC'
+    session[:selection] = 'errors'
     case appname_downcase
     when 'freereg'
       redirect_to freereg1_csv_files_path
@@ -36,6 +37,7 @@ class ManageCountiesController < ApplicationController
     @sorted_by = '; being validated'
     session[:sorted_by] = @sorted_by
     session[:sort] = 'file_name ASC'
+    session[:selection] = 'validation'
     case appname_downcase
     when 'freereg'
       redirect_to freereg1_csv_files_path
@@ -101,6 +103,7 @@ class ManageCountiesController < ApplicationController
     @sorted_by = '; sorted alphabetically by file name'
     session[:sorted_by] = @sorted_by
     session[:sort] = 'file_name ASC'
+    session[:selection] = 'all'
     case appname_downcase
     when 'freereg'
       redirect_to freereg1_csv_files_path
@@ -116,6 +119,7 @@ class ManageCountiesController < ApplicationController
     @sorted_by = '; sorted by userid then alphabetically by file name'
     session[:sorted_by] = @sorted_by
     session[:sort] = 'userid_lower_case ASC, file_name ASC'
+    session[:selection] = 'all'
     case appname_downcase
     when 'freereg'
       redirect_to freereg1_csv_files_path
@@ -133,6 +137,7 @@ class ManageCountiesController < ApplicationController
     @sorted_by = '; selects files with zero date records then alphabetically by userid and file name'
     session[:sorted_by] = @sorted_by
     session[:sort] = 'userid_lower_case ASC, file_name ASC'
+    session[:selection] = 'zero'
     @freereg1_csv_files = Freereg1CsvFile.county(session[:chapman_code]).datemin('0').no_timeout.order_by(session[:sort])
     render 'freereg1_csv_files/index'
   end
@@ -189,6 +194,7 @@ class ManageCountiesController < ApplicationController
     @sorted_by = '; incorporated'
     session[:sorted_by] = @sorted_by
     session[:sort] = 'file_name ASC'
+    session[:selection] = 'incorporated'
     case appname_downcase
     when 'freereg'
       redirect_to freereg1_csv_files_path

@@ -156,6 +156,7 @@ class FreecenCsvEntriesController < ApplicationController
     @counties.sort!
     get_user_info_from_userid
     session.delete(:propagate_alternate)
+    session.delete(:propagate_note)
   end
 
   def index
@@ -170,6 +171,7 @@ class FreecenCsvEntriesController < ApplicationController
     @type = session[:cen_index_type] if @type.blank? && session[:cen_index_type].present?
     session[:cen_index_type] = params[:type]
     session.delete(:propagate_alternate)
+    session.delete(:propagate_note)
     if @type.blank?
       @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).all.order_by(record_number: 1)
     elsif @type == 'Civ'
@@ -229,8 +231,26 @@ class FreecenCsvEntriesController < ApplicationController
     end
     session.delete(:propagate_alternate)
     redirect_to freecen_csv_entry_path(@freecen_csv_entry)
+  end
+
+  def propagate_note
+    @freecen_csv_entry = FreecenCsvEntry.find(params[:id]) if params[:id].present?
+    unless FreecenCsvEntry.valid_freecen_csv_entry?(@freecen_csv_entry)
+      message = 'The entry was not correctly linked. Have your coordinator contact the web master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
+
+    success, message = @freecen_csv_entry.propagate_note
+    if success
+      flash[:notice] = 'The propagation of the note field was was successful, the file is now locked against replacement until it has been downloaded.'
+    else
+      flash[:notice] = "The propagation of the note field failed because #{message}."
+    end
+    session.delete(:propagate_note)
+    redirect_to freecen_csv_entry_path(@freecen_csv_entry)
 
   end
+
 
   def show
     @freecen_csv_entry = FreecenCsvEntry.find(params[:id]) if params[:id].present?
@@ -261,17 +281,16 @@ class FreecenCsvEntriesController < ApplicationController
 
     @freecen_csv_file = @freecen_csv_entry.freecen_csv_file
     @warnings, @errors = @freecen_csv_entry.are_there_messages
-    params[:freecen_csv_entry][:warning_messages] = ''
-    params[:freecen_csv_entry][:error_messages] = ''
     params[:freecen_csv_entry][:verbatim_birth_place] = FreecenCsvEntry.mystrip(params[:freecen_csv_entry][:verbatim_birth_place])
-    @freecen_csv_entry.validate_on_line_edit_of_fields(params[:freecen_csv_entry])
+    @freecen_csv_entry.validate_on_line_edit_of_fields(params[:freecen_csv_entry]) unless params[:freecen_csv_entry][:record_valid] == 'true'
 
     if @freecen_csv_entry.errors.any?
       redirect_back(fallback_location: edit_freecen_csv_entry_path(@freecen_csv_entry), notice: "The update of the entry failed #{@freecen_csv_entry.errors.full_messages}.") && return
     else
+      session[:propagate_alternate] = @freecen_csv_entry.id if @freecen_csv_entry.propagate?(params[:freecen_csv_entry])
+      session[:propagate_note] = @freecen_csv_entry.id if @freecen_csv_entry.propagate_note?(params[:freecen_csv_entry])
+      params[:freecen_csv_entry][:warning_messages] = '' if params[:freecen_csv_entry][:record_valid] == 'true'
       @freecen_csv_entry.update_attributes(params[:freecen_csv_entry])
-      session[:propagate_alternate] = @freecen_csv_entry.id if @freecen_csv_entry.propagate?
-      #SearchRecord.update_create_search_record(@freecen_csv_entry, search_version, place)
       @freecen_csv_entry.reload
       @warnings_now, @errors_now = @freecen_csv_entry.are_there_messages
       @freecen_csv_entry.check_valid

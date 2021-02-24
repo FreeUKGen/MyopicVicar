@@ -100,11 +100,11 @@ class Csvfile < CarrierWave::Uploader::Base
     batch = create_batch_unless_exists
     range = File.join(userid, file_name)
     batch_processing = PhysicalFile.where(userid: userid, file_name: file_name, waiting_to_be_processed: true).exists?
-    message = 'Your file is already waiting to be processed. It cannot reprocess it until that one is finished' if batch_processing.present?
+    message = 'Your file is already waiting to be processed. It cannot be reprocessed until that one is finished' if batch_processing.present?
     return [false, message] if batch_processing.present?
 
     size = estimate_size
-    if size.blank? || size.present? && size < 500
+    if size.blank? || size.present? && size < 100
       proceed = false
       message = 'The file either does not exist or is too small to be a valid file.'
       clean_up
@@ -138,6 +138,7 @@ class Csvfile < CarrierWave::Uploader::Base
         process = false
       end
     when 'freecen'
+      batch.update_attributes(waiting_to_be_processed: true, waiting_date: Time.now)
       logger.warn("FREECEN:CSV_PROCESSING: Starting rake task for #{userid} #{file_name}")
       pid1 =  spawn("rake build:freecen_csv_process[\"no_search_records\",\"individual\",\"no\",\"#{range}\",\"'Modern'\",\"#{type_of_processing}\"]")
       message = "The csv file #{file_name} is being checked. You will receive an email when it has been completed."

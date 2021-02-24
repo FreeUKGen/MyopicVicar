@@ -70,6 +70,11 @@ class FreecenPiecesController < ApplicationController
       @chapman_code = session[:chapman_code]
       @totals_pieces, @totals_pieces_online, @totals_individuals, @totals_dwellings = FreecenPiece.county_year_totals(@chapman_code)
       @grand_totals_pieces, @grand_totals_pieces_online, @grand_totals_individuals, @grand_totals_dwellings = FreecenPiece.grand_totals(@totals_pieces, @totals_pieces_online, @totals_individuals, @totals_dwellings)
+      if @totals_pieces.blank? || @totals_pieces_online.blank? || @totals_individuals.blank? || @totals_dwellings.blank? ||
+          @grand_totals_pieces.blank? || @grand_totals_pieces_online.blank? || @grand_totals_individuals.blank? || @grand_totals_dwellings.blank?
+        flash[:notice] = 'A total for either pieces or individuals or dwellings is blank'
+        redirect_to manage_resources_path && return
+      end
     else
       redirect_to manage_resources_path && return
     end

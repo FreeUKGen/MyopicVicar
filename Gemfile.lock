@@ -128,6 +128,7 @@ GEM
     faraday (1.1.0)
       multipart-post (>= 1.2, < 3)
       ruby2_keywords
+    ffi (1.13.1)
     ffi (1.13.1-x64-mingw32)
     fog-aws (3.6.7)
       fog-core (~> 2.1)
@@ -221,9 +222,12 @@ GEM
       mongoid (>= 3.0, < 8.0)
     multi_json (1.15.0)
     multipart-post (2.1.1)
+    mysql2 (0.5.3)
     mysql2 (0.5.3-x64-mingw32)
     newrelic_rpm (6.14.0)
     nio4r (2.5.4)
+    nokogiri (1.10.10)
+      mini_portile2 (~> 2.4.0)
     nokogiri (1.10.10-x64-mingw32)
       mini_portile2 (~> 2.4.0)
     octokit (4.19.0)
@@ -420,6 +424,7 @@ GEM
       rubyzip (>= 1.0.0)
 
 PLATFORMS
+  ruby
   x64-mingw32
 
 DEPENDENCIES
@@ -469,4 +474,4 @@ DEPENDENCIES
   zip-zip
 
 BUNDLED WITH
-   2.0.1
+   2.1.4

@@ -69,6 +69,7 @@ class UseridDetail
   validates_format_of :email_address,:with => Devise::email_regexp
   validate :userid_and_email_address_does_not_exist, :transcription_agreement_must_accepted, on: :create
   validate :email_address_does_not_exist, on: :update
+  validate :active_with_inactive_reason
   validates :volunteer_induction_handbook, :code_of_conduct, :volunteer_policy, acceptance: true
 
   before_create :add_lower_case_userid,:capitalize_forename, :captilaize_surname, :remove_secondary_role_blank_entries, :transcription_agreement_value_change
@@ -458,6 +459,14 @@ class UseridDetail
       UseridDetail.where(:email_address => self[:email_address]).exists?  && (self.userid != Refinery::Authentication::Devise::User.where(:username => self[:userid]))
       errors.add(:email_address, "Refinery email already exists on change") if
       Refinery::Authentication::Devise::User.where(:email => self[:email_address]).exists? && (self.userid != Refinery::Authentication::Devise::User.where(:username => self[:userid]))
+    end
+  end
+
+  def active_with_inactive_reason
+    if self.active
+      unless self.disabled_reason_standard.blank? and self.disabled_reason.blank?
+        errors.add(:active, "box must be unchecked if Reason for making inactive specified")
+      end
     end
   end
 

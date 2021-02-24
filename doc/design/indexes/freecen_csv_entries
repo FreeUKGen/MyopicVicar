@@ -84,6 +84,18 @@ db.runCommand(
                  search_record_id: 1,
             },
             name: "search_record"
+        },
+         {
+            key: {
+                 freecen2_civil_parish_id: 1,
+            },
+            name: "freecen2_civil_parish"
+        },
+         {
+            key: {
+                 freecen_csv_file: 1,
+            },
+            name: "freecen_csv_file"
         }
     ]
   }
