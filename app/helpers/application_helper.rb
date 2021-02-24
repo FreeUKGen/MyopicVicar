@@ -549,10 +549,6 @@ module ApplicationHelper
     MyopicVicar::Application.config.gtm_key
   end
 
-  def ga_key_value
-    MyopicVicar::Application.config.ga_key
-  end
-
   def transform_boolean(value)
     result = value ? 'Yes' : 'No'
   end
