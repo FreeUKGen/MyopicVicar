@@ -1413,7 +1413,7 @@ class SearchQuery
   end
 
   def date_of_birth_search_range_a records
-    records.select{|r|
+    records = records.select{|r|
       start = (r.QuarterNumber - (r.AgeAtDeath.to_i * 4))
       last = (r.QuarterNumber - ((r.AgeAtDeath.to_i + 1) * 4 + 1))
       #range_a = (r.QuarterNumber - ((r.AgeAtDeath.to_i + 1) * 4 + 1))..(r.QuarterNumber - (r.AgeAtDeath.to_i * 4))
@@ -1421,32 +1421,37 @@ class SearchQuery
       #(range_a).include?(range_b) || (range_b).include?(range_a) if r.AgeAtDeath.present?
       start >= min_dob_range_quarter && last <= max_dob_range_quarter
     }
+    records
   end
 
   def dob_age_search records
-    records.select{|r|
+    records = records.select{|r|
       (1..3).include?(r.AgeAtDeath.length)
     }
+    records
   end
 
   def no_aad_or_dob records
     unless self.match_recorded_ages_or_dates
-      records.where(AgeAtDeath: '').to_a
+      records = records.where(AgeAtDeath: '').to_a
     else
-      []
+      records = []
     end
+    records
   end
 
   def invalid_age_records records
-    records.reject{|r|
+    records = records.reject{|r|
       month.values.any?{|v| r.AgeAtDeath.upcase[v]} if r.QuarterNumber >= DOB_START_QUARTER
     }
+    records
   end
 
   def records_with_dob records
-    records.select{|r|
+    records = records.select{|r|
       month.values.any?{|v| r.AgeAtDeath.upcase[v]} if r.QuarterNumber >= DOB_START_QUARTER
     }
+    records
   end
 
   def calculate_age_range_for_dob records
@@ -1463,18 +1468,20 @@ class SearchQuery
   end
 
   def calculate_age_for_dob records
-    records.select {|r|
+    records = records.select {|r|
       year = r.AgeAtDeath.scan(/\d+/).select{|r| r.length == 4}.pop.to_i
       qn_year = (r.QuarterNumber-1)/4 + 1837
       difference = qn_year - year
       self.age_at_death.to_i == difference
     }
+    records
   end
 
   def date_of_birth_uncertain_aad records
-    records.select{|r|
+    records = records.select{|r|
       r.AgeAtDeath.strip.scan(/[a-z\_\-\*\?\[\]]/).length != 0
     }
+    records
   end
 
   def age_at_death_with_year records
@@ -1520,10 +1527,11 @@ class SearchQuery
 
   def aad_search records
     unless self.match_recorded_ages_or_dates
-      records.where(AgeAtDeath: ['', self.age_at_death])
+      records = records.where(AgeAtDeath: ['', self.age_at_death])
     else
-      records.where(AgeAtDeath: [self.age_at_death])
+      records = records.where(AgeAtDeath: [self.age_at_death])
     end
+    records
   end
 
   def min_dob_range_quarter
@@ -1615,9 +1623,10 @@ class SearchQuery
   end
 
   def identifiable_spouse_only_search
-    records.select{|r|
+    records = records.select{|r|
       r.pick[:Surname].include? r
     }
+    records
   end
 
   def marriage_surname_filteration(records)
@@ -1632,44 +1641,50 @@ class SearchQuery
   end
 
   def spouse_first_name_filteration(records)
-    records.select{|r|
+    records = records.select{|r|
       first_name_array = BestGuessMarriage.where(Volume: r[:Volume], Page: r[:Page], QuarterNumber: r[:QuarterNumber]).pluck(:GivenName)
       #first_name_array.map(&:downcase).include?self.spouse_first_name.downcase unless self.identifiable_spouse_only?
       #raise first_name_array.inspect
       first_name_array.map(&:downcase).include?self.spouse_first_name.downcase
     }
+    records
   end
 
   def reject_unidentified_spouses_records (records)
-    records.reject{|r|
+    records = records.reject{|r|
       last_name_array = BestGuessMarriage.where(Volume: r[:Volume], Page: r[:Page], QuarterNumber: r[:QuarterNumber]).pluck(:Surname)
       #raise last_name_array.inspect
       last_name_array.map(&:downcase).exclude?r[:AssociateName].downcase
     }
+    records
   end
 
   def spouse_surname_records(records)
-    records.where('BestGuess.QuarterNumber >= ?', SPOUSE_SURNAME_START_QUARTER)
+    records = records.where('BestGuess.QuarterNumber >= ?', SPOUSE_SURNAME_START_QUARTER)
+    records
   end
 
   def non_spouse_surname_records(records)
-    records.where('BestGuess.QuarterNumber < ?', SPOUSE_SURNAME_START_QUARTER)
+    records = records.where('BestGuess.QuarterNumber < ?', SPOUSE_SURNAME_START_QUARTER)
+    records
   end
 
   def spouse_surname_search(records)
-    records.where(AssociateName: self.spouses_mother_surname)
+    records = records.where(AssociateName: self.spouses_mother_surname)
     #records.select{|r|
     #  r[:AssociateName].downcase == self.spouses_mother_surname.downcase if r[:AssociateName].present?
     #}
-    records.where("BestGuess.AssociateName like '#{name_wildcard_search(self.spouses_mother_surname)}%'") if do_wildcard_seach?self.spouses_mother_surname
+    records = records.where("BestGuess.AssociateName like '#{name_wildcard_search(self.spouses_mother_surname)}%'") if do_wildcard_seach?self.spouses_mother_surname
+    records
   end
 
   def search_pre_spouse_surname records
-    records.joins(spouse_join_condition).where(Surname: self.spouses_mother_surname)
+    records = records.joins(spouse_join_condition).where(Surname: self.spouses_mother_surname)
    # records.joins(spouse_join_condition).select {|r|
     #  r[:Surname].downcase == self.spouses_mother_surname.downcase
     #}
-    records.where("BestGuess.Surname like '#{name_wildcard_search(self.spouses_mother_surname)}%'") if do_wildcard_seach?self.spouses_mother_surname
+    records = records.where("BestGuess.Surname like '#{name_wildcard_search(self.spouses_mother_surname)}%'") if do_wildcard_seach?self.spouses_mother_surname
+    records
   end
 
   def has_wildcard? name
