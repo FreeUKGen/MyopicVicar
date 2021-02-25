@@ -122,12 +122,12 @@
                                 <%= content_text(:optional_checkbox_label, 'Death') %>
                             <% end %>
                         </li>
-                        <div class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole">
+                        <li class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole">
                             <%= f.label :bmd_record_type_marriage, { :class => "optional_attributes", id: 'marriage_record_type_label'} do %>
                                 <%= check_box_tag 'search_query[bmd_record_type][]', 3,set_checkbox_checked_value(field_value: @search_query.bmd_record_type, value: '3'),{ multiple: true, class: 'checkboxtag marriage' , id: 'search_query_bmd_record_type_marriage', tabindex: "0"} %>
                                 <%= content_text(:optional_checkbox_label, 'Marriage') %>
                             <% end %>
-                        </div>
+                        </li>
                     </ol>
                 </div>
 
@@ -262,13 +262,20 @@
             </ol>
             <div class="grid action">
                 <%= button_tag 'Clear Form', type: :reset, class: 'clear_form kittumani' %>
-                <%= button_tag 'Search', type: 'submit', class: 'ladda-button kittumani' , id: 'search_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
+                <%= button_tag 'Search', type: 'submit', class: ' kittumani' , id: 'search_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
+            </div>
+            <div class="sticky_buttons_css" id="sticky_buttons">
+                <ol class="grid">
+                    <li class="grid__item palm-one-half">
+                        <%= button_tag 'Clear Form', type: :reset, class: 'clear_form_small_screen' %>
+                    </li>
+                    <li class="grid__item palm-one-half search_button">
+                        <%= button_tag 'Search', type: 'submit', class: '' , id: 'search_form_submit_small_screen', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => '#C84182'}%>
+                    </li>
+                </ol>
             </div>
         <% end %>
-        <div class="sticky_buttons_css" id="sticky_buttons">
-                <%= button_tag 'Clear Form', type: :reset, class: 'clear_form_small_screen push--right left' %>
-                <%= button_tag 'Search', type: :submit, class: 'ladda-button push--left' , id: 'search_form_submit_small_screen', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#c84182"}%>
-        </div>
+        
     </div>
 <%# end %>
     <script type="text/javascript">
@@ -606,6 +613,51 @@
                 } 
             });
 
+            if (window.matchMedia("(min-width: 576px)").matches) {
+                $('#search_form_submit_small_screen').remove();
+            } else {
+                $( $("#search_form_submit_small_screen") ).appendTo("#search_button" );
+
+            }
+
+            if (window.matchMedia("(max-width: 576px)").matches) {
+                $('#search_form_submit').remove();
+            }
+
+            
+            $('#search_form_submit_small_screen').click( function() {
+                var l = Ladda.create(document.querySelector('.ladda-button'));
+                l.stop();
+                if ($("#new_search_query").valid()) {
+                    l.start();
+                   $('#new_search_query').submit()
+                }
+            });
+
+            if ( $( "#search_form_submit" ).length ) {
+                 $('#search_form_submit').addClass('ladda-button')
+            } else {
+                 $('#search_form_submit').removeClass('ladda-button')
+            }
+
+            if ( $( "#search_form_submit_small_screen" ).length ) {
+                 $('#search_form_submit_small_screen').addClass('ladda-button')
+
+            } else {
+                 $('#search_form_submit_small_screen').removeClass('ladda-button')
+            }
+
+            if ( $( "#search_form_submit_small_screen" ).length ) {
+                 $('#search_form_submit_small_screen').addClass('ladda-button')
+
+            } else {
+                 $('#search_form_submit_small_screen').removeClass('ladda-button')
+            }
+
+
+
+
+
            
 
             /*$('#search_form_submit').click(function() {
@@ -645,132 +697,5 @@
                 //$('#death_select_box').prop('disabled', 'disabled');
                 //$('#death_select_box').css('background', '#ccc');
             });
-
-            /*
-              $(".surnamelabel").click(function() {
-                if ($('#surname_help').length) {
-                $("#surname_div").empty();
-                $("#surname_div").removeClass('help_box');
-                } else {
-                  if ($('.search_help_text').length) {
-                    $(".iframeDiv").empty('');
-                    $(".iframeDiv").removeClass('help_box');
-                  }
-                  $("#surname_div").addClass('help_box');
-                  $("#surname_div").load('/cms/help #surname_help');
-                }
-              });
-
-              $(".datereangefromlabel").click(function() {
-                if ($('#from_date_range_help').length) {
-                $("#fromdate_div").empty();
-                $("#fromdate_div").removeClass('help_box');
-                } else {
-                  if ($('.search_help_text').length) {
-                    $(".iframeDiv").empty('');
-                    $(".iframeDiv").removeClass('help_box');
-                  }
-                  $("#fromdate_div").addClass('help_box');
-                  $("#fromdate_div").load('/cms/help #from_date_range');
-                }
-              });
-
-              $(".todaterangelabel").click(function() {
-                if ($('#to_date_range_help').length) {
-                $("#todate_div").empty();
-                $("#todate_div").removeClass('help_box');
-                } else {
-                  if ($('.search_help_text').length) {
-                    $(".iframeDiv").empty('');
-                    $(".iframeDiv").removeClass('help_box');
-                  }
-                  $("#todate_div").addClass('help_box');
-                  $("#todate_div").load('/cms/help #to_date_range');
-                }
-              });
-
-              $(".recordtypelabel").click(function() {
-                if ($('#recordtypehelp').length) {
-                $("#recordtype_div").empty();
-                $("#recordtype_div").removeClass('help_box');
-                } else {
-                  if ($('.search_help_text').length) {
-                    $(".iframeDiv").empty('');
-                    $(".iframeDiv").removeClass('help_box');
-                  }
-                  $("#recordtype_div").addClass('help_box');
-                  $("#recordtype_div").load('/cms/help #record_type');
-                }
-              });
-
-              $(".spousefirstnamelabel").click(function() {
-                if ($('#spousefirstnamehelp').length) {
-                $("#spousefirstname_div").empty();
-                $("#spousefirstname_div").removeClass('help_box');
-                } else {
-                  if ($('.search_help_text').length) {
-                    $(".iframeDiv").empty('');
-                    $(".iframeDiv").removeClass('help_box');
-                  }
-                  $("#spousefirstname_div").addClass('help_box');
-                  $("#spousefirstname_div").load('/cms/help #spouse_surname_givenname');
-                }
-              });
-
-              $(".spouseormothersurnamelabel").click(function() {
-                if ($('#spouseormothersurnamehelp').length) {
-                $("#spousemothersurname_div").empty();
-                $("#spousemothersurname_div").removeClass('help_box');
-                } else {
-                  if ($('.search_help_text').length) {
-                    $(".iframeDiv").empty('');
-                    $(".iframeDiv").removeClass('help_box');
-                  }
-                  $("#spousemothersurname_div").addClass('help_box');
-                  $("#spousemothersurname_div").load('/cms/help #spouse_or_mother_surnames');
-                }
-              });
-
-              $(".ageatdeathlabel").click(function() {
-                if ($('#ageatdeathhelp').length) {
-                $("#ageatdeath_div").empty();
-                $("#ageatdeath_div").removeClass('help_box');
-                } else {
-                  if ($('.search_help_text').length) {
-                    $(".iframeDiv").empty('');
-                    $(".iframeDiv").removeClass('help_box');
-                  }
-                  $("#ageatdeath_div").addClass('help_box');
-                  $("#ageatdeath_div").load('/cms/help #age_at_death');
-                }
-              });
-
-              $(".countieslabel").click(function() {
-                if ($('#countieshelp').length) {
-                $("#counties_div").empty();
-                $("#counties_div").removeClass('help_box');
-                } else {
-                  if ($('.search_help_text').length) {
-                    $(".iframeDiv").empty('');
-                    $(".iframeDiv").removeClass('help_box');
-                  }
-                  $("#counties_div").addClass('help_box');
-                  $("#counties_div").load('/cms/help #counties');
-                }
-              });
-
-              $(".districtslabel").click(function() {
-                if ($('#districtshelp').length) {
-                $("#districts_div").empty();
-                $("#districts_div").removeClass('help_box');
-                } else {
-                  if ($('.search_help_text').length) {
-                    $(".iframeDiv").empty('');
-                    $(".iframeDiv").removeClass('help_box');
-                  }
-                  $("#districts_div").addClass('help_box');
-                  $("#districts_div").load('/cms/help #districts');
-                }
-              });*/
         });
     </script>
