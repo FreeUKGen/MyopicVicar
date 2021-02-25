@@ -58,15 +58,15 @@
                         </div>
                     </div>
                     <div class="grid">
-                        <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half daterangetogrid">
+                        <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half daterangefromgrid">
                             <label class="accessibility" for="from_quarter">Start Quarter</label>
                             <%= select_tag( 'search_query[start_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.start_quarter)), class: 'select_month_start date_years ', id: 'from_quarter', tabindex: "0")%>
                             <%#= month_field_tag('search_query[start_quarter]', set_value(@search_query.start_quarter), min: 1, max:12, step:3 , class: 'select_month_start date_years text-input', id: 'from_quarter', tabindex: "0")%>
                         </div>
-                        <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half daterangetogrid">
+                        <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half daterangefromgrid">
                             <label class="accessibility" for="from_year">Start Year</label>
-                            <%#= select_year(set_value(@search_query.start_year), { start_year: 1837, end_year: 1992, step: 10 }, class: 'select_year_start date_years text-input', name: 'search_query[start_year]', id: 'from_year', tabindex: "0") %>
-                            <%= number_field_tag 'search_query[start_year]', set_value(@search_query.start_year), within: 1837..1992, class: 'text-input', id: 'from_year', tabindex: "0", placeholder: 'YYYY' %>
+                            <%= select_year(set_value(@search_query.start_year), { start_year: 1837, end_year: 1992, step: 10 }, class: 'select_year_start date_years text-input', name: 'search_query[start_year]', id: 'from_year', tabindex: "0") %>
+                            <%#= number_field_tag 'search_query[start_year]', set_value(@search_query.start_year), within: 1837..1992, class: 'text-input', id: 'from_year', tabindex: "0", placeholder: 'YYYY' %>
                         </div>
                     </div>
                 </li>
@@ -87,8 +87,8 @@
                         </div>
                         <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half daterangetogrid">
                             <label class="accessibility" for="end_year">Finish Year</label>
-                            <%#= select_year(set_value(@search_query.end_year), {start_year: 1992, end_year: 1837 }, class: 'select_year_end date_years text-input', name: 'search_query[end_year]', id: 'end_year', tabindex: "0") %>
-                            <%= number_field_tag 'search_query[end_year]', set_value(@search_query.end_year), within: 1837..1992, class: 'text-input', id: 'end_year', tabindex: "0", placeholder: 'YYYY' %>
+                            <%= select_year(set_value(@search_query.end_year), {start_year: 1992, end_year: 1837 }, class: 'select_year_end date_years text-input', name: 'search_query[end_year]', id: 'end_year', tabindex: "0") %>
+                            <%#= number_field_tag 'search_query[end_year]', set_value(@search_query.end_year), within: 1837..1992, class: 'text-input', id: 'end_year', tabindex: "0", placeholder: 'YYYY' %>
                         </div>
                     </div>
                 </li>
