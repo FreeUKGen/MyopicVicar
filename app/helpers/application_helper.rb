@@ -711,7 +711,7 @@ module ApplicationHelper
                                 pg.acq.push(function() {
                                 // add code here that should be executed after consent is obtained
                                   (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
-                                })
+                                });
                                 //Google Adsense
                                 (adsbygoogle = window.adsbygoogle || []).push({
                                   google_ad_client: "#{data_ad_client}",
