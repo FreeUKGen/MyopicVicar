@@ -35,6 +35,7 @@ class Freecen2PlacesController < ApplicationController
       session[:search_names] = {}
       session[:search_names][:search] = params[:freecen2_place][:place_name]
       session[:search_names][:search_county] = params[:freecen2_place][:county]
+      session[:search_names][:soundex_search] = params[:freecen2_place][:soundex_search]
       redirect_to search_names_results_freecen2_place_path
     else
       params[:freecen2_place][:chapman_code] = ChapmanCode.values_at(params[:freecen2_place][:county])
@@ -224,10 +225,19 @@ class Freecen2PlacesController < ApplicationController
     return redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'No prior search') if session[:search_names].blank?
 
     search_place = session[:search_names][:search]
-    return redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'No prior resul search') if search_place.blank?
+    return redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'No prior result search') if search_place.blank?
 
     search_county = session[:search_names][:search_county]
-    @results = Freecen2Place.search(search_place, search_county)
+    @soundex = session[:search_names][:soundex_search]
+    if @soundex == 'true'
+      return redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'Soundex search must contain alphabetic characters only') unless search_place.match(/^[A-Za-z ]+$/)
+      name_soundex = Text::Soundex.soundex(search_place)
+      @sound_head = 'Soundex '
+      @results = Freecen2Place.sound_search(name_soundex, search_county)
+    else
+      @sound_head = ' '
+      @results = Freecen2Place.search(search_place, search_county)
+    end
     @county = search_county.present? ? search_county : 'All Counties'
     @total = @results.length
   end

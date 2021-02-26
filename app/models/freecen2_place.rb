@@ -45,7 +45,8 @@ class Freecen2Place
   field :transcribers, type: Hash
   field :contributors, type: Hash
   field :action, type: String
-
+  field :place_name_soundex, type: String
+  field :soundex_search, type: Boolean
 
   embeds_many :alternate_freecen2_place_names, cascade_callbacks: true
 
@@ -57,7 +58,7 @@ class Freecen2Place
 
   validate :grid_reference_or_lat_lon_present_and_valid
 
-  before_save :add_location_if_not_present, :add_country, :add_standard_names
+  before_save :add_location_if_not_present, :add_country, :add_standard_names, :add_place_name_soundex
 
   after_save :update_places_cache
 
@@ -90,7 +91,8 @@ class Freecen2Place
   index({ chapman_code: 1, _id: 1, disabled: 1, data_present: 1}, { name: "chapman_place_disabled_data_present" })
   index({ location: "2dsphere" }, { min: -200, max: 200 })
   index({ "place_name" => "text", "alternate_freecen2_place_names.alternate_name" => "text", "chapman_code"=> 1}, { name: "text_place_name_chapman" })
-
+  index({ place_name_soundex: 1})
+  index({ "alternate_freecen2_place_names.alternate_name_soundex" => 1})
 
 
 
@@ -156,6 +158,21 @@ class Freecen2Place
       end
       results
     end
+
+    def sound_search(name_soundex, county)
+      if county.present?
+        results = Freecen2Place.where(:place_name_soundex => name_soundex, "disabled" => "false", :chapman_code => ChapmanCode.values_at(county)).
+          or(Freecen2Place.where("alternate_freecen2_place_names.alternate_name_soundex" => name_soundex, "disabled" => "false", :chapman_code => ChapmanCode.values_at(county)))
+        order_by(place_name: 1).all
+      else
+        results = Freecen2Place.where(:place_name_soundex => name_soundex, "disabled" => "false").
+          or(Freecen2Place.where("alternate_freecen2_place_names.alternate_name_soundex" => name_soundex, "disabled" => "false")).
+          order_by(chapman_code: 1, place_name: 1).all
+
+      end
+      results
+    end
+
 
     def valid_chapman_code?(chapman_code)
       result = ChapmanCode.values.include?(chapman_code) ? true : false
@@ -308,6 +325,10 @@ class Freecen2Place
       end
       self.location = [self[:longitude].to_f,self[:latitude].to_f]
     end
+  end
+
+  def add_place_name_soundex
+    self.place_name_soundex = Text::Soundex.soundex(self.place_name)
   end
 
   def approve
