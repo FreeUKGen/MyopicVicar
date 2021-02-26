@@ -113,6 +113,14 @@
             </tr>
             <tr>
             <% end%>
+            <tr>
+              <td>Updated </td>
+              <td class="weight--semibold"> <%= @place.u_at.strftime("%d %b %Y") if @place.u_at.present? %></td>
+            </tr>
+            <tr>
+              <td>Created </td>
+              <td class="weight--semibold"> <%= @place.c_at.strftime("%d %b %Y") if @place.c_at.present? %></td>
+            </tr>
           </table>
         </div>
       </div>
