@@ -715,7 +715,6 @@ module ApplicationHelper
                                 //Google Adsense
                                 (adsbygoogle = window.adsbygoogle || []).push({
                                   google_ad_client: "#{data_ad_client}",
-                                  data-ad-slot: "#{data_ad_slot_header}",
                                   enable_page_level_ads: true
                                 });
                               </script>
