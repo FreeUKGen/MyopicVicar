@@ -274,12 +274,16 @@ class Freecen2Place
 
     def place_id(chapman_code, place_name)
       return '' if chapman_code.blank? || place_name.blank?
+      p place_name
 
       standard_place_name = Freecen2Place.standard_place(place_name)
+      p standard_place_name
       place = Freecen2Place.find_by(chapman_code: chapman_code, standard_place_name: standard_place_name)
+      p place
       return place.id if place.present?
-
+      p 'again'
       place = Freecen2Place.find_by("alternate_freecen2_place_names.standard_alternate_name" => standard_place_name)
+      p place
       return place.id if place.present?
 
       ''
