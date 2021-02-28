@@ -153,6 +153,38 @@ class UseridDetail
       end
       friendly_email
     end
+
+
+    def uploaded_freecen_file(users, transcribers)
+      uploaded = []
+      FreecenCsvFile.where(:userid.exists => true).each do |file|
+        uploaded << file.userid
+      end
+      uploaded = uploaded.uniq
+      total_uploading_users = uploaded.length
+      total_uploading_transcribers = 0
+      uploaded.each do |user|
+        who = UseridDetail.find_by(userid: user)
+        total_uploading_transcribers += 1 if who.person_role == 'transcriber'
+      end
+      users_not_uploading = users - total_uploading_users
+      transcribers_not_uploading = transcribers - total_uploading_transcribers
+      [users_not_uploading, transcribers_not_uploading, total_uploading_users, total_uploading_transcribers]
+    end
+
+    def modern_freecen_active
+      users = 0
+      transcribers = 0
+      start = Time.new(2020, 12, 1).to_i
+      Refinery::Authentication::Devise::User.all.each do |user|
+        next if Time.parse(user.updated_at.to_s).to_i < start
+
+        userid = UseridDetail.find_by(_id: user.userid_detail_id)
+        users += 1 if userid.present?
+        transcribers += 1 if userid.present? && userid.person_role == 'transcriber'
+      end
+      [users, transcribers]
+    end
   end
 
 

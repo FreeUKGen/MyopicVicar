@@ -554,14 +554,23 @@ class UseridDetailsController < ApplicationController
 
     @total_users = UseridDetail.count
     @total_transcribers = UseridDetail.where(person_role: 'transcriber').count
+    @total_accepted_agreement = UseridDetail.where(new_transcription_agreement: 'Accepted').count
     @total_transcribers_accepted_agreement = UseridDetail.where(person_role: 'transcriber', new_transcription_agreement: 'Accepted').count
+    @total_active = UseridDetail.where(active: true).count
     @total_active_transcribers = UseridDetail.where(person_role: 'transcriber', active: true).count
-    @users_never_uploaded_file = UseridDetail.where(number_of_files: 0).count
-    @users_uploaded_file = UseridDetail.where(number_of_files: { '$ne': 0 }).count
-    @transcribers_never_uploaded_file = UseridDetail.where(person_role: 'transcriber', number_of_files: 0).count
-    @transcriber_uploaded_file = UseridDetail.where(person_role: 'transcriber', number_of_files: { '$ne': 0 }).count
     @incomplete_registrations = UseridDetail.new.incomplete_user_registrations_count
     @incomplete_transcriber_registrations = UseridDetail.new.incomplete_transcribers_registrations_count
+    case appname_downcase
+    when 'freereg'
+      @users_never_uploaded_file = UseridDetail.where(number_of_files: 0).count
+      @users_uploaded_file = UseridDetail.where(number_of_files: { '$ne': 0 }).count
+      @transcribers_never_uploaded_file = UseridDetail.where(person_role: 'transcriber', number_of_files: 0).count
+      @transcriber_uploaded_file = UseridDetail.where(person_role: 'transcriber', number_of_files: { '$ne': 0 }).count
+    when 'freecen'
+      @user_modern_active, @transcribers_modern_active = UseridDetail.modern_freecen_active
+      @users_never_uploaded_file, @transcribers_never_uploaded_file, @users_uploaded_file, @transcriber_uploaded_file = UseridDetail.uploaded_freecen_file(@total_users, @total_transcribers)
+    end
+
     # New statistics
     @total_records_transcribers = return_total_transcriber_records
     @percentage_total_records_by_transcribers = return_percentage_total_records_by_transcribers
