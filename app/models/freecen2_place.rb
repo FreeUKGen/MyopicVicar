@@ -328,7 +328,7 @@ class Freecen2Place
   end
 
   def add_place_name_soundex
-    self.place_name_soundex = Text::Soundex.soundex(self.place_name)
+    self.place_name_soundex = Text::Soundex.soundex(self.standard_place_name)
   end
 
   def approve

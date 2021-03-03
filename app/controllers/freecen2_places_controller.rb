@@ -231,7 +231,7 @@ class Freecen2PlacesController < ApplicationController
     @soundex = session[:search_names][:soundex_search]
     if @soundex == 'true'
       return redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'Soundex search must contain alphabetic characters only') unless search_place.match(/^[A-Za-z ]+$/)
-      name_soundex = Text::Soundex.soundex(search_place)
+      name_soundex = Text::Soundex.soundex(Freecen2Place.standard_place(search_place))
       @sound_head = 'Soundex '
       @results = Freecen2Place.sound_search(name_soundex, search_county)
     else

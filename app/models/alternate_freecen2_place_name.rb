@@ -12,6 +12,6 @@ class AlternateFreecen2PlaceName
   end
 
   def add_alternate_name_soundex
-    self.alternate_name_soundex = Text::Soundex.soundex(self.alternate_name)
+    self.alternate_name_soundex = Text::Soundex.soundex(self.standard_alternate_name)
   end
 end
