@@ -1,7 +1,7 @@
 class Freecen2Place
   include Mongoid::Document
 
-  include Mongoid::Timestamps::Updated::Short
+  include Mongoid::Timestamps::Short
 
   require 'chapman_code'
   require 'nokogiri'
@@ -316,19 +316,10 @@ class Freecen2Place
 
   def change_name(param)
     place_name = param[:place_name]
-    old_place_name = self.place_name
-    return [false, 'That place name is already in use'] if Freecen2Place.place(place_name).chapman_code(param[:chapman_code]).exists?
+    save_to_original
+    update(place_name: place_name, standard_place_name: Freecen2Place.standard_place(place_name))
+    return [false, 'Error in save of place; contact the webmaster'] if errors.any?
 
-    unless old_place_name == place_name
-      save_to_original
-      update(place_name: place_name, standard_place_name: Freecen2Place.standard_place(place_name))
-      return [false, 'Error in save of place; contact the webmaster'] if errors.any?
-
-      propogate_place_name_change(old_place_name)
-      propogate_batch_lock
-      recalculate_last_amended_date
-      PlaceCache.refresh_cache(self)
-    end
     [true, '']
   end
 
@@ -336,7 +327,7 @@ class Freecen2Place
     #use the lat/lon if present if not calculate from the grid reference
     return [false, "There is no county selected",nil] if param[:freecen2_place][:chapman_code].blank?
 
-    return [false, "There is no place name entered county", nil] if param[:freecen2_place][:place_name].blank?
+    return [false, "There is no place name entered", nil] if param[:freecen2_place][:place_name].blank?
 
     place = Freecen2Place.where(:chapman_code => param[:freecen2_place][:chapman_code], :place_name => param[:freecen2_place][:place_name]).all #, :disabled.ne => 'true', :error_flag.ne => "Place name is not approved" ).first
 

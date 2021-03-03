@@ -1,66 +1,69 @@
 <% breadcrumb :transcriber_statistics %>
-<h2 class=" text--center">Statistics</h2>
+<h2 class=" text--center"><%= appname%> Member Statistics </h2>
+<% if appname.downcase == 'freecen'%>
+  <h3 class=" text--center">Please be careful of the interpretation of these statistics as FreeCEN had no member functionality until December 2020 </h3>
+<% end %>
 <%= render "flash_notice" %>
 <div class="grid">
   <section class="island  ">
     <div class="grid__item one-whole" >
       <table  class="table--bordered   table--data">
         <tr>
-          <th style="width:50%">Stats Description</th>
-          <th style="width:50%">Count</th>
+          <th class="t40 caps">Statistic</th>
+          <th class="t30 caps">All Members</th>
+          <th class="t30 caps">Transcribers</th>
         </tr>
         <tr>
-          <td style="font-weight: bold;">Total number of users</td>
+          <td style="font-weight: bold;">Total numbers</td>
           <td ><%= @total_users %></td>
-        </tr>
-        <tr>
-          <td style="font-weight: bold;">Total number of users as transcribers</td>
           <td ><%= @total_transcribers %></td>
         </tr>
         <tr>
-          <td style="font-weight: bold;">Total number of transcribers who accepted Transcription Agreement </td>
+          <td style="font-weight: bold;">Total who accepted Transcription Agreement </td>
+          <td ><%= @total_accepted_agreement %> </td>
           <td ><%= @total_transcribers_accepted_agreement %></td>
         </tr>
         <tr>
-          <td style="font-weight: bold;">Total number of Active transcribers </td>
+          <td style="font-weight: bold;">Total number defined Active </td>
+          <td> <%= @total_active %></td>
           <td ><%= @total_active_transcribers %></td>
         </tr>
+        <% if appname_downcase == 'freecen' %>
+          <tr>
+            <td style="font-weight: bold;">Total number Active on CSVProc</td>
+            <td> <%= @user_modern_active %></td>
+            <td ><%= @transcribers_modern_active %></td>
+          </tr>
+        <% end%>
         <tr>
-          <td style="font-weight: bold;">Total number of Users who uploaded file </td>
+          <td style="font-weight: bold;">Total number who uploaded file </td>
           <td ><%= @users_uploaded_file %></td>
-        </tr>
-        <tr>
-          <td style="font-weight: bold;">Total number of Users who never uploaded file </td>
-          <td ><%= @users_never_uploaded_file %></td>
-        </tr>
-        <tr>
-          <td style="font-weight: bold;">Total number of Transcribers who never uploaded file </td>
-          <td ><%= @transcribers_never_uploaded_file %></td>
-        </tr>
-        <tr>
-          <td style="font-weight: bold;">Total number of Transcribers who uploaded file </td>
           <td ><%= @transcriber_uploaded_file %></td>
         </tr>
         <tr>
-          <td style="font-weight: bold;">Total number of Users who had not completed the registrations </td>
-          <td ><%= @incomplete_registrations %></td>
+          <td style="font-weight: bold;">Total number who never uploaded file </td>
+          <td ><%= @users_never_uploaded_file %></td>
+          <td ><%= @transcribers_never_uploaded_file %></td>
         </tr>
         <tr>
-          <td style="font-weight: bold;">Total number of Transcribers who had not completed the registrations </td>
+          <td style="font-weight: bold;">Total number who had not completed the registrations </td>
+          <td ><%= @incomplete_registrations %></td>
           <td ><%= @incomplete_transcriber_registrations %></td>
         </tr>
-        <tr>
-          <td style="font-weight: bold;">Total number of Records opened by Transcribers</td>
-          <td ><%= @total_records_transcribers %></td>
-        </tr>
-        <tr>
-          <td style="font-weight: bold;">Percentage of total records opened by Transcribers </td>
-          <td ><%= @percentage_total_records_by_transcribers.to_i %> % </td>
-        </tr>
-        <tr>
-          <td style="font-weight: bold;">Total number of transcribers who have accepted Transcription Agreement, but have no records </td>
-          <td ><%= @total_transcribers_accepted_agreement_no_records %></td>
-        </tr>
+        <% unless appname_downcase == 'freecen' %>
+          <tr>
+            <td style="font-weight: bold;">Total number of Records opened by Transcribers</td>
+            <td ><%= @total_records_transcribers %></td>
+          </tr>
+          <tr>
+            <td style="font-weight: bold;">Percentage of total records opened by Transcribers </td>
+            <td ><%= @percentage_total_records_by_transcribers.to_i %> % </td>
+          </tr>
+          <tr>
+            <td style="font-weight: bold;">Total number of transcribers who have accepted Transcription Agreement, but have no records </td>
+            <td ><%= @total_transcribers_accepted_agreement_no_records %></td>
+          </tr>
+        <% end%>
         <tr>
           <td style="font-weight: bold;">Percentage of all users who accepted Transcription Agreement </td>
           <td ><%= @percentage_all_users_who_accepted_transcription_agreement.to_i %> % </td>

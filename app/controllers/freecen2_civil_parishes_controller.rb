@@ -261,12 +261,17 @@ class Freecen2CivilParishesController < ApplicationController
       @old_freecen2_civil_parish_id = @freecen2_civil_parish.id
       @old_freecen2_civil_parish_name = @freecen2_civil_parish.name
       @old_place = @freecen2_civil_parish.freecen2_place_id
-
-      merge_civil_parish = Freecen2CivilParish.find_by(name: params[:freecen2_civil_parish][:name], chapman_code: @freecen2_civil_parish.chapman_code, year: @freecen2_civil_parish.year, freecen2_piece_id: @freecen2_civil_parish.freecen2_piece_id)
-
-      params[:freecen2_civil_parish][:freecen2_place_id] = Freecen2Place.place_id(@freecen2_civil_parish.chapman_code, params[:freecen2_civil_parish][:freecen2_place_id])
       @type = session[:type]
       params[:freecen2_civil_parish].delete :type
+      merge_civil_parish = Freecen2CivilParish.find_by(name: params[:freecen2_civil_parish][:name], chapman_code: @freecen2_civil_parish.chapman_code, year: @freecen2_civil_parish.year, freecen2_piece_id: @freecen2_civil_parish.freecen2_piece_id)
+      freecen2_place_id = Freecen2Place.place_id(@freecen2_civil_parish.chapman_code, params[:freecen2_civil_parish][:freecen2_place_id])
+      if freecen2_place_id.present?
+        params[:freecen2_civil_parish][:freecen2_place_id] = freecen2_place_id
+      else
+        flash[:notice] = "The update of the civil parish failed because we could not locate the place name."
+        redirect_back(fallback_location: edit_freecen2_civil_parish_path(@freecen2_civil_parish, type: @type)) && return
+      end
+
 
       @freecen2_civil_parish.update_attributes(freecen2_civil_parish_params)
       if @freecen2_civil_parish.errors.any?
