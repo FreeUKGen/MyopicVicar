@@ -583,9 +583,6 @@ module ApplicationHelper
   def fullwidth_adsense_freereg
     banner = <<-HTML
     <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <script>
-    (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
-    </script>
     <ins class="adsbygoogle adSenseBanner"
     style="display:inline-block;width:728px;height:90px"
     data-ad-client="#{data_ad_client}"
@@ -606,9 +603,6 @@ module ApplicationHelper
   def fullwidth_adsense_freecen
     banner = <<-HTML
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <script>
-    (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
-    </script>
     <!-- FreeCEN2 Transcriber Registration (Responsive) -->
     <ins class="adsbygoogle adSenseBanner"
     style="display:inline-block;width:728px;height:90px"
@@ -630,9 +624,6 @@ module ApplicationHelper
                     def adsence_right_side_banner
                       banner = <<-HTML
                       <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-                      <script>
-                      (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
-                      </script>
                       <ins class="adsbygoogle float--right"
                       style="display:inline-block;width:300px;height:600px"
                       data-ad-client = "#{data_ad_client}"
@@ -654,9 +645,6 @@ module ApplicationHelper
                           @data_ad_slot = current_page?(freecen_coverage_path) ? data_ad_slot_coverage : data_ad_slot_google_advert
                           banner = <<-HTML
                           <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-                          <script>
-                          (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
-                          </script>
                           <!-- Responsive ad -->
                           <ins class="adsbygoogle adSenseBanner"
                           style="display:inline-block;width:728px;height:90px"
