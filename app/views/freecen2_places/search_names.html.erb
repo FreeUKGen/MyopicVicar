@@ -6,8 +6,15 @@
 <% end%>
 <%= render 'flash_notice' %>
 <div class="island  island--light">
-  <%= simple_form_for @freecen2_place, :html => { :class => "grid"}  do |f| %>
+  <%= simple_form_for @freecen2_place, :html => { :class => "grid"}  do |f| %>   
     <%= f.input :place_name, :label => "Search for Place name(s). Previous search name preloaded",:hint => "Names entered are case insensitive and should be the stem of a name e.g. ann will locate ann anns ann's anns'. Results will include both or any of the names entered and will be independent of their order." ,:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+    <li class="grid__item one-whole">
+          <%= f.label :soundex_search, { :class => "ttip", :tabindex => "0" } do %>
+            <%= f.check_box :soundex_search, {}, "true", "false" %>
+            Place Name Soundex
+            <span class="ttip__text">Check to perform a 'sounds like' search of the place name. Note: non-alphabetic characters are not permitted.</span>
+          <% end %><br>
+        </li>
     <%= f.input :county, selected: @county, :label => "County to be searched. Leave empty to search all Counties. Click in box for county options. Previous selection preloaded. ",:include_blank => true, :collection => @counties,:hint =>'', :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width"}   %>
     <%= f.hidden_field :disabled, :value=> false %>
     <%= f.button :submit, 'Search Place Names',:button_html => {:class => "btn" }  %>
