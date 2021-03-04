@@ -210,7 +210,7 @@ module UseridRole
   when 'freecen'
     COUNTY_MANAGEMENT_OPTIONS = ['Manage FreeCEN2 Places', 'Manage FreeCEN2 Districts', 'Manage FreeCEN2 Pieces', 'Manage FreeCEN2 Civil Parishes',
                                  'Review Batches by Filename', 'Review Batches with Errors', 'Review Batches being Validated', 'Review Incorporated Batches',
-                                 'Review Specific Batch', 'Upload New Batch', 'Manage FreeCEN1 Pieces', 'Manage VLD Files', 'Manage FreeCEN1 Places']
+                                 'Review Specific Batch', 'Upload New Batch', 'County Statistics', 'Manage FreeCEN1 Pieces', 'Manage VLD Files', 'Manage FreeCEN1 Places']
   when 'freebmd'
   end
   COUNTY_OPTIONS_TRANSLATION = {
@@ -234,6 +234,7 @@ module UseridRole
     'Manage FreeCEN2 Places' => '/freecen2_places',
     'Manage FreeCEN2 Districts' => '/freecen2_districts',
     'Manage FreeCEN2 Civil Parishes' => '/freecen2_civil_parishes',
+    'County Statistics' => '/site_statistics',
     'Manage VLD Files' => '/freecen1_vld_files',
     'Manage FreeCEN1 Places' => '/places',
     'Offline Reports' => '/manage_counties/selection?option=Offline Reports',
@@ -258,6 +259,7 @@ module UseridRole
     'Manage FreeCEN2 Places' => 'Lists all of the official Places used by CEN2',
     'Manage FreeCEN2 Districts' => 'Lists all of the Districts used by CEN2. Note it may take a minute or more to prepare the list',
     'Manage FreeCEN2 Civil Parishes' => 'Lists all of the Civil Parishes used by CEN2. Note it may take a minute or more to prepare the list',
+    'County Statistics' => 'Access to the statistics for the county',
     'Manage VLD Files' => 'Minimal tools to manage VLD files',
     'Manage Places' => 'Minimal tools to manage places used by CEN1',
     'Offline Reports' => 'Generate off line reports',

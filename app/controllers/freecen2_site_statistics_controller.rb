@@ -21,6 +21,17 @@ class Freecen2SiteStatisticsController < ApplicationController
 
   def index
     @freecen2_site_statistics = Freecen2SiteStatistic.all.order_by(interval_end: -1)
+    if session[:chapman_code].present?
+      @county = session[:county]
+      statistics = Freecen2SiteStatistic.all.order_by(interval_end: -1)
+      @county_stats = @freecen2_site_statistics[0].records[session[:chapman_code]]
+      @inverval_end = @freecen2_site_statistics[0].interval_end
+      p @inverval_end
+      p @county_stats
+      render :index_county
+    else
+      @county = session[:county].present? ? session[:county] : 'total'
+    end
   end
 
   def show
