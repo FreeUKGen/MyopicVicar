@@ -8,20 +8,6 @@
   <!--<![endif]-->
   <head>
     <script src="/prebid_ads.js" type="text/javascript"></script>
-    <!--script>
-      // Make sure that the googlefc property exists on the window.
-      window.googlefc = window.googlefc || {};
-      // To guarantee functionality, this must go before the FC tag on
-      // the page.
-      googlefc.controlledMessagingFunction = (message) => {
-        // Do not show the message if adblock is disabled or not present.
-       if (window.canRunAds === true) {
-         message.proceed(false);
-       } else {
-         message.proceed(true);
-       }
-    };
-  </script-->
   <% if appname_downcase == 'freereg' %>
     <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found') || current_page?('/cms/refinery/users/login') %>
       <script type="text/javascript" src="//m2d.m2.ai/pg.freereg.js" async></script>
