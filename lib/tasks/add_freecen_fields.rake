@@ -11,6 +11,7 @@ namespace :freecen do
       piece.save if piece.num_dwellings.blank?
     end
     Freecen1VldFile.no_timeout.each do |file|
+      file.num_entries = file.freecen1_vld_entries.count
       file.save if file.num_entries.blank?
     end
 
