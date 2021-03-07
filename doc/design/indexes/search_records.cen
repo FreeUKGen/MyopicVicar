@@ -171,6 +171,21 @@ db.runCommand(
                 },
                 "name" : "freecen2_civil_parish_id",
                 background: true
+        },
+        {
+                "key" : {
+                        "record_type" : 1
+                },
+                "name" : "record_type",
+                background: true
+        },
+        {
+                "key" : {
+                       "chapman_code" : 1,
+                       "record_type" : 1
+                },
+                "name" : "chapman_record_type",
+                background: true
         }
 
             ]

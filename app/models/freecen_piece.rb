@@ -48,10 +48,13 @@ class FreecenPiece
   field :remarks_coord, type: String #visible to coords, not public
   field :online_time, type: Integer
   field :num_individuals, type: Integer, default: 0
+  field :num_dwellings, type: Integer, default: 0
   belongs_to :freecen1_fixed_dat_entry, index: true, optional: true
   belongs_to :place, optional: true, index: true
   has_many :freecen_dwellings
   has_many :freecen_csv_files
+
+  before_save :add_num_dwellings
   index(:piece_number => 1, :chapman_code => 1)
   index(:piece_number => 1, :chapman_code => 1, :year => 1, :suffix => 1, :parish_number => 1)
 
@@ -74,14 +77,72 @@ class FreecenPiece
       totals_individuals = {}
       totals_dwellings = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
-        totals_dwellings[year] = 0
-        totals_individuals[year] = 0
+        totals_individuals[year] = FreecenPiece.chapman_code(chapman_code).year(year).status('Online').sum(:num_individuals)
         totals_pieces[year] = FreecenPiece.chapman_code(chapman_code).year(year).count
         totals_pieces_online[year] = FreecenPiece.chapman_code(chapman_code).year(year).status('Online').count
-        FreecenPiece.chapman_code(chapman_code).year(year).status('Online').each do |piece|
-          totals_dwellings[year] += piece.freecen_dwellings.count
-          totals_individuals[year] = piece.num_individuals if piece.num_individuals.present?
-        end
+        totals_dwellings[year] = FreecenPiece.chapman_code(chapman_code).year(year).status('Online').sum(:num_dwellings)
+      end
+      [totals_pieces, totals_pieces_online, totals_individuals, totals_dwellings]
+    end
+
+    def before_county_year_totals(chapman_code, time)
+      last_id = BSON::ObjectId.from_time(time)
+      totals_pieces = {}
+      totals_pieces_online = {}
+      totals_individuals = {}
+      totals_dwellings = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        totals_individuals[year] = FreecenPiece.where(_id: { '$lte' => last_id }).chapman_code(chapman_code).year(year).status('Online').sum(:num_individuals)
+        totals_pieces[year] = FreecenPiece.where(_id: { '$lte' => last_id }).chapman_code(chapman_code).year(year).count
+        totals_pieces_online[year] = FreecenPiece.where(_id: { '$lte' => last_id }).chapman_code(chapman_code).year(year).status('Online').count
+        totals_dwellings[year] = FreecenPiece.where(_id: { '$lte' => last_id }).chapman_code(chapman_code).year(year).status('Online').sum(:num_dwellings)
+      end
+      [totals_pieces, totals_pieces_online, totals_individuals, totals_dwellings]
+    end
+
+    def between_dates_county_year_totals(chapman_code, time1, time2)
+      last_id = BSON::ObjectId.from_time(time2)
+      first_id = BSON::ObjectId.from_time(time1)
+      totals_pieces = {}
+      totals_pieces_online = {}
+      totals_individuals = {}
+      totals_dwellings = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        totals_individuals[year] = FreecenPiece.between(_id: first_id..last_id).chapman_code(chapman_code).year(year).status('Online').sum(:num_individuals)
+        totals_pieces[year] = FreecenPiece.between(_id: first_id..last_id).chapman_code(chapman_code).year(year).count
+        totals_pieces_online[year] = FreecenPiece.between(_id: first_id..last_id).chapman_code(chapman_code).year(year).status('Online').count
+        totals_dwellings[year] = FreecenPiece.between(_id: first_id..last_id).chapman_code(chapman_code).year(year).status('Online').sum(:num_dwellings)
+      end
+      [totals_pieces, totals_pieces_online, totals_individuals, totals_dwellings]
+    end
+
+    def before_year_totals(time)
+      last_id = BSON::ObjectId.from_time(time)
+      totals_pieces = {}
+      totals_pieces_online = {}
+      totals_individuals = {}
+      totals_dwellings = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        totals_individuals[year] = FreecenPiece.where(_id: { '$lte' => last_id }).year(year).status('Online').sum(:num_individuals)
+        totals_pieces[year] = FreecenPiece.where(_id: { '$lte' => last_id }).year(year).count
+        totals_pieces_online[year] = FreecenPiece.where(_id: { '$lte' => last_id }).year(year).status('Online').count
+        totals_dwellings[year] = FreecenPiece.where(_id: { '$lte' => last_id }).year(year).status('Online').sum(:num_dwellings)
+      end
+      [totals_pieces, totals_pieces_online, totals_individuals, totals_dwellings]
+    end
+
+    def between_dates_year_totals(time1, time2)
+      last_id = BSON::ObjectId.from_time(time2)
+      first_id = BSON::ObjectId.from_time(time1)
+      totals_pieces = {}
+      totals_pieces_online = {}
+      totals_individuals = {}
+      totals_dwellings = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        totals_individuals[year] = FreecenPiece.between(_id: first_id..last_id).year(year).status('Online').sum(:num_individuals)
+        totals_pieces[year] = FreecenPiece.between(_id: first_id..last_id).year(year).count
+        totals_pieces_online[year] = FreecenPiece.between(_id: first_id..last_id).year(year).status('Online').count
+        totals_dwellings[year] = FreecenPiece.between(_id: first_id..last_id).year(year).status('Online').sum(:num_dwellings)
       end
       [totals_pieces, totals_pieces_online, totals_individuals, totals_dwellings]
     end
@@ -172,13 +233,10 @@ class FreecenPiece
       totals_individuals = {}
       totals_dwellings = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
-        totals_dwellings[year] = 0
         totals_individuals[year] = FreecenPiece.status('Online').year(year).sum(:num_individuals)
         totals_pieces[year] = FreecenPiece.year(year).count
         totals_pieces_online[year] = FreecenPiece.status('Online').year(year).length
-        FreecenPiece.status('Online').year(year).each do |piece|
-          totals_dwellings[year] = totals_dwellings[year] + piece.freecen_dwellings.count
-        end
+        totals_dwellings[year] = FreecenPiece.status('Online').year(year).sum(:num_dwellings)
       end
       [totals_pieces, totals_pieces_online, totals_individuals, totals_dwellings]
     end
@@ -283,5 +341,9 @@ class FreecenPiece
       place_params[:place_longitude] = place.longitude
       [true, place_params]
     end
+  end
+  # ############################################################################## instances
+  def add_num_dwellings
+    self.num_dwellings = freecen_dwellings.count
   end
 end

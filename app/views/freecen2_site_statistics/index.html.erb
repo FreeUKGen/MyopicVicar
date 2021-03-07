@@ -1,5 +1,6 @@
 <% breadcrumb :freecen2_site_statistics,  @county%>
 <h2 style="text-align: center">Listing <%= @county%> Freecen2 Site Statistics</h2>
+<h4 style="text-align: center">The New columns list the changes in the last 30 days</h4>
 <div class='scrollable'>
   <table  class="table--bordered table--data table--striped " >
     <thead >
@@ -7,6 +8,7 @@
         <th class='sticky-header'>Interval end</th>
         <th class='sticky-header'>Searches</th>
         <th class='sticky-header'>Search Records</th>
+        <th class='sticky-header'>On Line Vld Files</th>
         <th class='sticky-header'>Vld Files</th>
         <th class='sticky-header'>Vld Records</th>
         <th class='sticky-header'>Csv Files</th>
@@ -28,6 +30,7 @@
           <td><%= statistic.searches %></td>
           <td><%= statistic.records[:total][:total][:search_records] %></td>
           <td><%= statistic.records[:total][:total][:vld_files_on_line] %></td>
+          <td><%= statistic.records[:total][:total][:vld_files] %></td>
           <td><%= statistic.records[:total][:total][:vld_entries] %></td>
           <td><%= statistic.records[:total][:total][:csv_files] %></td>
           <td><%= statistic.records[:total][:total][:csv_entries] %></td>

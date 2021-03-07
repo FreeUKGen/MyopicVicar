@@ -1,11 +1,13 @@
 <% breadcrumb :freecen2_site_statistics,  @county%>
-<h2 style="text-align: center"><%= @county%> Freecen2 Site Statistics</h2>
+<h2 style="text-align: center"><%= @county%> Freecen2 Site Statistics on <%= @inverval_end.strftime('%d/%b/%Y') %></h2>
+<h4 style="text-align: center">The New columns list the changes in the previous 30 days</h4>
 <div class='scrollable'>
   <table  class="table--bordered table--data table--striped " >
     <thead >
       <tr>
         <th class='sticky-header'>Year/Period End</th>
         <th class='sticky-header'>Search Records</th>
+        <th class='sticky-header'>On Line Vld Files</th>
         <th class='sticky-header'>Vld Files</th>
         <th class='sticky-header'>Vld Records</th>
         <th class='sticky-header'>Csv Files</th>
@@ -26,6 +28,7 @@
           <td><%= census %></td>
           <td><%= @county_stats[census][:search_records] %></td>
           <td><%= @county_stats[census][:vld_files_on_line] %></td>
+          <td><%= @county_stats[census][:vld_files] %></td>
           <td><%= @county_stats[census][:vld_entries] %></td>
           <td><%= @county_stats[census][:csv_files] %></td>
           <td><%= @county_stats[census][:csv_entries] %></td>
@@ -43,6 +46,7 @@
         <td><%= @inverval_end.strftime('%d/%b/%Y') %></td>
         <td><%= @county_stats[:total][:search_records] %></td>
         <td><%= @county_stats[:total][:vld_files_on_line] %></td>
+        <td><%= @county_stats[:total][:vld_files] %></td>
         <td><%= @county_stats[:total][:vld_entries] %></td>
         <td><%= @county_stats[:total][:csv_files] %></td>
         <td><%= @county_stats[:total][:csv_entries] %></td>

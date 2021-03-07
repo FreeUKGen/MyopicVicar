@@ -1,6 +1,6 @@
 class Freecen2SearchStatistic
   include Mongoid::Document
-  include Mongoid::Timestamps
+  include Mongoid::Timestamps::Short
   # Search Statistics aggregate a single hour's
   # worth of search queries for a single database
   #

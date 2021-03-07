@@ -32,6 +32,14 @@ db.runCommand(
             },
             name: "chapman_code_year_file"
         },
+         {
+            key: {
+                chapman_code: 1,
+                year: 1,
+                incorporated: 1
+            },
+            name: "chapman_code_year_incorporated"
+        },
         {
             key: {
                 freecen2_district_id: 1,

@@ -9,6 +9,7 @@ end
 namespace :freecen do
   desc 'Extract Freecen2 site statistics'
   task :calculate_site_statistics, [:day, :month, :year] => [:environment] do |t, args|
+    #prior to running these make sure the appropriate indexes for search_records and freecen_csv_files have been created
     if args.day.present?
       time = Time.new(args.year.to_i, args.month.to_i, args.day.to_i)
       p "Starting #{time}"
