@@ -104,10 +104,7 @@ class FreecenCsvEntry
   delegate :validation, :chapman_code, to: :freecen_csv_file, prefix: :file, allow_nil: true
 
   before_destroy do |entry|
-    file = entry.freecen_csv_file
-    if file.processed
-      SearchRecord.collection.delete_many(freecen_csv_entry_id: entry._id)
-    end
+    SearchRecord.collection.delete_many(freecen_csv_entry_id: entry._id) if entry.present?
   end
 
   before_save :adjust_case

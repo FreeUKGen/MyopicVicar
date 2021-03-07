@@ -8,20 +8,24 @@
   <!--<![endif]-->
   <head>
     <script src="/prebid_ads.js" type="text/javascript"></script>
-  <% if appname_downcase == 'freereg' %>
-    <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found') || current_page?('/cms/refinery/users/login') %>
-      <script type="text/javascript" src="//m2d.m2.ai/pg.freereg.js" async></script>
+    <% if appname_downcase == 'freereg' %>
+      <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found') || current_page?('/cms/refinery/users/login') %>
+        <%= banner_header_freereg %>
+        <script type="text/javascript" src="//m2d.m2.ai/pg.freereg.js" async></script>
+        <script type="text/javascript" src="//cdn.pubguru.com/fb.js"></script>
+      <% end %>
     <% end %>
-  <% end %>
-    <!-- Google Tag Manager -->
-    <script>
-      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    <% if appname_downcase == 'freecen' %>
+      <!-- Google Tag Manager -->
+      <script>
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
           new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
           j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-          'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-          })(window,document,'script','dataLayer', '<%= "#{gtm_key_value}"%>');
-    </script>
-    <!--End Google Tag Manager -->
+          'https://www.googletagmanager.com/gtm.'+'js?id='+i+dl;f.parentNode.insertBefore(j,f);
+          })(window,document,'script','dataLayer','<%= "#{gtm_key_value}"%>');
+      </script>
+      <!--End Google Tag Manager -->
+    <% end %>
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <meta charset="utf-8"/>
     <% if MyopicVicar::Application.config.template_set == 'freereg' %>
@@ -97,21 +101,15 @@
     <%= javascript_include_tag "javascripts/freecen_gdpr.js" if appname.downcase == 'freecen'%>
     <script src="https://use.fontawesome.com/5b8044f85d.js"></script>
     <%= csrf_meta_tags %>
-    <%# google_analytics_tracking_id = google_analytics_tracking %>
-    <script>
-      window.update_third_party_cookies_user_preference = function (preference) {
-        if(preference == 'accept') {
-          console.log("Third party cookies allowed!");
-        } else if(preference == 'deny') {
-          console.log("Third party cookies denied!");
-        };
-      };
-    </script>
   </head>
   <body ontouchstart class="offcanvas  offcanvas--rev">
     <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=#{gtm_key_value}"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <% if appname_downcase == 'freecen' %>
+      <!-- Google Tag Manager (noscript) -->
+      <noscript><iframe src='https://www.googletagmanager.com/ns.html?id=<%= "#{gtm_key_value}"%>'
+      height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+      <!-- End Google Tag Manager (noscript) -->
+    <% end %>
     <!-- End Google Tag Manager (noscript) -->
     <% if appname_downcase == 'freebmd'%>
       <%= render 'layouts/bmd_main_nav'%>

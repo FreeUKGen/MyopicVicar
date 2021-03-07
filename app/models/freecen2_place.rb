@@ -1,7 +1,7 @@
 class Freecen2Place
   include Mongoid::Document
 
-  include Mongoid::Timestamps::Updated::Short
+  include Mongoid::Timestamps::Short
 
   require 'chapman_code'
   require 'nokogiri'
@@ -45,7 +45,8 @@ class Freecen2Place
   field :transcribers, type: Hash
   field :contributors, type: Hash
   field :action, type: String
-
+  field :place_name_soundex, type: String
+  field :soundex_search, type: Boolean
 
   embeds_many :alternate_freecen2_place_names, cascade_callbacks: true
 
@@ -57,19 +58,19 @@ class Freecen2Place
 
   validate :grid_reference_or_lat_lon_present_and_valid
 
-  before_save :add_location_if_not_present, :add_country, :add_standard_names
+  before_save :add_location_if_not_present, :add_country, :add_standard_names, :add_place_name_soundex
 
   after_save :update_places_cache
 
   has_many :churches, dependent: :restrict_with_error
-  has_many :search_records
+  has_many :search_records, dependent: :restrict_with_error
 
-  has_many :freecen2_pieces
+  has_many :freecen2_pieces, dependent: :restrict_with_error
   has_many :freecen_dwellings
   has_many :sources
 
-  has_many :freecen2_districts
-  has_many :freecen2_civil_parishes
+  has_many :freecen2_districts, dependent: :restrict_with_error
+  has_many :freecen2_civil_parishes, dependent: :restrict_with_error
 
   has_many :image_server_groups
   has_many :gaps
@@ -90,7 +91,8 @@ class Freecen2Place
   index({ chapman_code: 1, _id: 1, disabled: 1, data_present: 1}, { name: "chapman_place_disabled_data_present" })
   index({ location: "2dsphere" }, { min: -200, max: 200 })
   index({ "place_name" => "text", "alternate_freecen2_place_names.alternate_name" => "text", "chapman_code"=> 1}, { name: "text_place_name_chapman" })
-
+  index({ place_name_soundex: 1})
+  index({ "alternate_freecen2_place_names.alternate_name_soundex" => 1})
 
 
 
@@ -156,6 +158,21 @@ class Freecen2Place
       end
       results
     end
+
+    def sound_search(name_soundex, county)
+      if county.present?
+        results = Freecen2Place.where(:place_name_soundex => name_soundex, "disabled" => "false", :chapman_code => ChapmanCode.values_at(county)).
+          or(Freecen2Place.where("alternate_freecen2_place_names.alternate_name_soundex" => name_soundex, "disabled" => "false", :chapman_code => ChapmanCode.values_at(county)))
+        order_by(place_name: 1).all
+      else
+        results = Freecen2Place.where(:place_name_soundex => name_soundex, "disabled" => "false").
+          or(Freecen2Place.where("alternate_freecen2_place_names.alternate_name_soundex" => name_soundex, "disabled" => "false")).
+          order_by(chapman_code: 1, place_name: 1).all
+
+      end
+      results
+    end
+
 
     def valid_chapman_code?(chapman_code)
       result = ChapmanCode.values.include?(chapman_code) ? true : false
@@ -310,25 +327,20 @@ class Freecen2Place
     end
   end
 
+  def add_place_name_soundex
+    self.place_name_soundex = Text::Soundex.soundex(self.standard_place_name)
+  end
+
   def approve
     update_attributes(:error_flag => nil, :standard_place_name => Freecen2Place.standard_place(place_name))
   end
 
   def change_name(param)
     place_name = param[:place_name]
-    old_place_name = self.place_name
-    return [false, 'That place name is already in use'] if Freecen2Place.place(place_name).chapman_code(param[:chapman_code]).exists?
+    save_to_original
+    update(place_name: place_name, standard_place_name: Freecen2Place.standard_place(place_name))
+    return [false, 'Error in save of place; contact the webmaster'] if errors.any?
 
-    unless old_place_name == place_name
-      save_to_original
-      update(place_name: place_name, standard_place_name: Freecen2Place.standard_place(place_name))
-      return [false, 'Error in save of place; contact the webmaster'] if errors.any?
-
-      propogate_place_name_change(old_place_name)
-      propogate_batch_lock
-      recalculate_last_amended_date
-      PlaceCache.refresh_cache(self)
-    end
     [true, '']
   end
 
@@ -336,7 +348,7 @@ class Freecen2Place
     #use the lat/lon if present if not calculate from the grid reference
     return [false, "There is no county selected",nil] if param[:freecen2_place][:chapman_code].blank?
 
-    return [false, "There is no place name entered county", nil] if param[:freecen2_place][:place_name].blank?
+    return [false, "There is no place name entered", nil] if param[:freecen2_place][:place_name].blank?
 
     place = Freecen2Place.where(:chapman_code => param[:freecen2_place][:chapman_code], :place_name => param[:freecen2_place][:place_name]).all #, :disabled.ne => 'true', :error_flag.ne => "Place name is not approved" ).first
 

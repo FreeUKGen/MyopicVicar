@@ -581,6 +581,8 @@ class SearchQuery
   def individual_sex?(individual)
     return true if sex.blank?
 
+    return false if individual.sex.blank?
+
     result = sex.casecmp(individual.sex).zero? ? true : false
     result
   end
@@ -599,6 +601,8 @@ class SearchQuery
 
   def individual_language?(individual)
     return true if language.blank?
+
+    return false if individual.language.blank?
 
     return true if language.casecmp(individual.language).zero?
 
@@ -711,7 +715,7 @@ class SearchQuery
     records = {}
     results.each do |rec|
       rec_id = rec['_id'].to_s
-      records[rec_id] = SearchQuery.add_birth_place_when_absent(rec)
+      #records[rec_id] = SearchQuery.add_birth_place_when_absent(rec)
     end
     self.search_result.records = self.search_result.records.merge(records)
     self.result_count = self.search_result.records.length
@@ -733,7 +737,6 @@ class SearchQuery
         record = SearchQuery.add_search_date_when_absent(record) if record[:search_date].blank?
         records[rec_id] = record
       end
-
     end
     self.search_result = SearchResult.new
     self.search_result.records = records

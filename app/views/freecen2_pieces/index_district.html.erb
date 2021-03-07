@@ -10,8 +10,8 @@
         <th class='sticky-header '>Piece Number</th>
         <th class='sticky-header '>Piece name</th>
         <th class='sticky-header '>District</th>
-        <th class='sticky-header '>Civil parishes</th>
         <th colspan = "2" class='sticky-header '>Actions</th>
+        <th class='sticky-header '>Civil parishes</th>
       </tr>
     </thead>
     <tbody >
@@ -21,12 +21,14 @@
           <td ><%= freecen2_piece.name %></td>
           <td ><%= freecen2_piece.district_name%></td>
           <td ><%= freecen2_piece.civil_parish_names %></td>
-          <td ><%= link_to 'Show', freecen2_piece_path(freecen2_piece,type: @type) , :class => "btn   btn--small"%>
-            <% if %w[data_manager system_administrator].include?(@user.person_role)%>
-              <td ><%= link_to 'Edit', edit_freecen2_piece_path(freecen2_piece,type: @type), data: { confirm: 'Are you sure?' }, :class => "btn   btn--small", title: 'Editing is restricted to, coordinators, data managers and system administrators'%>
-              <% end %>
-            </tr>
+          <td ><%= link_to 'Show', freecen2_piece_path(freecen2_piece,type: @type) , :class => "btn   btn--small"%></td>
+          <% if %w[data_manager system_administrator].include?(@user.person_role)%>
+            <td ><%= link_to 'Edit', edit_freecen2_piece_path(freecen2_piece,type: @type), data: { confirm: 'Are you sure?' }, :class => "btn   btn--small", title: 'Editing is restricted to, coordinators, data managers and system administrators'%></td>
+          <% else%>
+            <td> </td>
           <% end %>
-        </tbody>
-      </table>
-    </div>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

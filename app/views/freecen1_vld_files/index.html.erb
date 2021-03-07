@@ -9,6 +9,7 @@
       <th class='sticky-header '>Full year</th>
       <th class='sticky-header '>Piece</th>
       <th class='sticky-header '>Series</th>
+      <th class='sticky-header '>Transcriber name</th>
       <th colspan = "2" class='sticky-header '>Actions</th>
     </tr>
     <% @freecen1_vld_files.each do |freecen1_vld_file| %>
@@ -20,6 +21,7 @@
         <td><%= freecen1_vld_file.full_year %></td>
         <td><%= freecen1_vld_file.piece %></td>
         <td><%= freecen1_vld_file.series %></td>
+        <td><%= freecen1_vld_file.transcriber_name %></td>
         <td><%= link_to 'Show', freecen1_vld_file_path(freecen1_vld_file) %></td>
       </td>
     </tr>

@@ -69,6 +69,7 @@ class UseridDetail
   validates_format_of :email_address,:with => Devise::email_regexp
   validate :userid_and_email_address_does_not_exist, :transcription_agreement_must_accepted, on: :create
   validate :email_address_does_not_exist, on: :update
+  validate :active_with_inactive_reason
   validates :volunteer_induction_handbook, :code_of_conduct, :volunteer_policy, acceptance: true
 
   before_create :add_lower_case_userid,:capitalize_forename, :captilaize_surname, :remove_secondary_role_blank_entries, :transcription_agreement_value_change
@@ -151,6 +152,38 @@ class UseridDetail
         friendly_email = 'FreeREG Servant <freereg-contacts@freereg.org.uk>'
       end
       friendly_email
+    end
+
+
+    def uploaded_freecen_file(users, transcribers)
+      uploaded = []
+      FreecenCsvFile.where(:userid.exists => true).each do |file|
+        uploaded << file.userid
+      end
+      uploaded = uploaded.uniq
+      total_uploading_users = uploaded.length
+      total_uploading_transcribers = 0
+      uploaded.each do |user|
+        who = UseridDetail.find_by(userid: user)
+        total_uploading_transcribers += 1 if who.person_role == 'transcriber'
+      end
+      users_not_uploading = users - total_uploading_users
+      transcribers_not_uploading = transcribers - total_uploading_transcribers
+      [users_not_uploading, transcribers_not_uploading, total_uploading_users, total_uploading_transcribers]
+    end
+
+    def modern_freecen_active
+      users = 0
+      transcribers = 0
+      start = Time.new(2020, 12, 1).to_i
+      Refinery::Authentication::Devise::User.all.each do |user|
+        next if Time.parse(user.updated_at.to_s).to_i < start
+
+        userid = UseridDetail.find_by(_id: user.userid_detail_id)
+        users += 1 if userid.present?
+        transcribers += 1 if userid.present? && userid.person_role == 'transcriber'
+      end
+      [users, transcribers]
     end
   end
 
@@ -458,6 +491,14 @@ class UseridDetail
       UseridDetail.where(:email_address => self[:email_address]).exists?  && (self.userid != Refinery::Authentication::Devise::User.where(:username => self[:userid]))
       errors.add(:email_address, "Refinery email already exists on change") if
       Refinery::Authentication::Devise::User.where(:email => self[:email_address]).exists? && (self.userid != Refinery::Authentication::Devise::User.where(:username => self[:userid]))
+    end
+  end
+
+  def active_with_inactive_reason
+    if self.active
+      unless self.disabled_reason_standard.blank? and self.disabled_reason.blank?
+        errors.add(:active, "box must be unchecked if Reason for making inactive specified")
+      end
     end
   end
 

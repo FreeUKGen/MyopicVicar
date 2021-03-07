@@ -132,6 +132,18 @@ db.runCommand(
                 },
                 "name" : "freecen2_district_id"
         },
+{
+                "key" : {
+                        "place_name_soundex" : 1
+                },
+                "name" : "place_name_soundex"
+        },
+{
+                "key" : {
+                        "alternate_freecen2_place_names.alternate_name_soundex" : 1
+                },
+                "name" : "alternate_name_soundex"
+        },
     ]
   }
 )
