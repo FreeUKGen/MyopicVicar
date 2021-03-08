@@ -43,6 +43,15 @@ db.runCommand(
                 },
                 "name" : "chapman_code_1_piece_number_1_year_1_suffix_1_parish_number_1"
 
+        },
+        {
+                 "key" : {
+                        "chapman_code" : 1,
+                        "year" : 1,
+                        "status" : 1
+                },
+                "name" : "chapman_code_1__year_1_status_1"
+
         }
 
     ]

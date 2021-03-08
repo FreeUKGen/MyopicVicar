@@ -144,6 +144,49 @@ db.runCommand(
             },
             name: "freecen_individual_id"
         },
+         {
+                "key" : {
+                        "freecen2_district_id" : 1
+                },
+                "name" : "freecen2_district_id",
+                background: true
+        },
+        {
+                "key" : {
+                        "freecen2_place_id" : 1
+                },
+                "name" : "freecen2_place_id",
+                background: true
+        },
+         {
+                "key" : {
+                        "freecen2_piece_id" : 1
+                },
+                "name" : "freecen2_piece_id",
+                background: true
+        },
+        {
+                "key" : {
+                        "freecen2_civil_parish_id" : 1
+                },
+                "name" : "freecen2_civil_parish_id",
+                background: true
+        },
+        {
+                "key" : {
+                        "record_type" : 1
+                },
+                "name" : "record_type",
+                background: true
+        },
+        {
+                "key" : {
+                       "chapman_code" : 1,
+                       "record_type" : 1
+                },
+                "name" : "chapman_record_type",
+                background: true
+        }
 
             ]
   }

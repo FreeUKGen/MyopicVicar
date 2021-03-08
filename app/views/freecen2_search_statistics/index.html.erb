@@ -1,0 +1,61 @@
+<% breadcrumb :freecen2_search_statistics,  'total'%>
+<h2 style="text-align: center">Listing Freecen2 Search Statistics</h2>
+<div class='scrollable'>
+  <table  class="table--bordered table--data table--striped " >
+    <thead >
+      <tr>
+        <th class='sticky-header'>End Date</th>
+        <th class='sticky-header'>Searches</th>
+        <th class='sticky-header'>Zero Results</th>
+        <th class='sticky-header'>Maxed out</th>
+        <th class='sticky-header'>Surname</th>
+        <th class='sticky-header'>Forename</th>
+        <th class='sticky-header'>Place</th>
+        <th class='sticky-header'>Nearby</th>
+        <th class='sticky-header'>Fuzzy</th>
+        <th class='sticky-header'>Zero County</th>
+        <th class='sticky-header'>One County</th>
+        <th class='sticky-header'>Multiple Counties</th>
+        <th class='sticky-header'>Date</th>
+        <th class='sticky-header'>Census Year</th>
+        <th class='sticky-header'>Zero Birth</th>
+        <th class='sticky-header'>One Birth</th>
+        <th class='sticky-header'>Multiple Birth</th>
+        <th class='sticky-header'>Disabled</th>
+        <th class='sticky-header'>Marital</th>
+        <th class='sticky-header'>Sex</th>
+        <th class='sticky-header'>Language</th>
+        <th class='sticky-header'>Occupation</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @freecen2_search_statistics.each do |statistic| %>
+        <tr>
+          <td><%= statistic.interval_end.strftime('%d/%b/%Y') %></td>
+          <td><%= statistic.searches %></td>
+          <td><%= statistic.zero_result %></td>
+          <td><%= statistic.limit_result %></td>
+          <td><%= statistic.ln %></td>
+          <td><%= statistic.fn %></td>
+          <td><%= statistic.place %></td>
+          <td><%= statistic.nearby %></td>
+          <td><%= statistic.fuzzy %></td>
+          <td><%= statistic.zero_county %></td>
+          <td><%= statistic.one_county %></td>
+          <td><%= statistic.multi_county %></td>
+          <td><%= statistic.date %></td>
+          <td><%= statistic.record_type %></td>
+          <td><%= statistic.zero_birth_chapman_codes %></td>
+          <td><%= statistic.one_birth_chapman_codes %></td>
+          <td><%= statistic.multi_birth_chapman_codes%></td>
+          <td><%= statistic.disabled %></td>
+          <td><%= statistic.marital_status %></td>
+          <td><%= statistic.sex %></td>
+          <td><%= statistic.language %></td>
+          <td><%= statistic.occupation %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+<br />

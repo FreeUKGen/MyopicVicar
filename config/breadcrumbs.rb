@@ -53,6 +53,23 @@ crumb :person_role_selection do
   parent :regmanager_userid_options
 end
 
+crumb :freecen2_site_statistics do |county|
+  link 'Freecen2 Statistics'
+  if county == 'total'
+    parent :root
+  else
+    parent :county_options, county
+  end
+end
+crumb :freecen2_search_statistics do |county|
+  link 'Freecen2 Search Statistics'
+  if county == 'total'
+    parent :root
+  else
+    parent :county_options, county
+  end
+end
+
 #................................................File....................................................
 
 crumb :my_own_files do
