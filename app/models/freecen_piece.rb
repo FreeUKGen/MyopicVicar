@@ -54,7 +54,7 @@ class FreecenPiece
   has_many :freecen_dwellings
   has_many :freecen_csv_files
 
-  before_save :add_num_dwellings
+  before_validation :add_num_dwellings
   index(:piece_number => 1, :chapman_code => 1)
   index(:piece_number => 1, :chapman_code => 1, :year => 1, :suffix => 1, :parish_number => 1)
 

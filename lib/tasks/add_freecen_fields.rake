@@ -9,11 +9,11 @@ namespace :freecen do
     # Call the RefreshUcfList library class file with passing the model name as parameter
     FreecenPiece.no_timeout.each do |piece|
       piece.num_dwellings = piece.freecen_dwellings.count
-      piece.save if piece.num_dwellings.blank?
+      piece.save
     end
     Freecen1VldFile.no_timeout.each do |file|
       file.num_entries = file.freecen1_vld_entries.count
-      file.save if file.num_entries.blank?
+      file.save
     end
 
     p "Process finished"
