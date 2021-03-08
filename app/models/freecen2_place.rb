@@ -46,7 +46,8 @@ class Freecen2Place
   field :contributors, type: Hash
   field :action, type: String
   field :place_name_soundex, type: String
-  field :soundex_search, type: Boolean
+  field :advanced_search, type: String
+
 
   embeds_many :alternate_freecen2_place_names, cascade_callbacks: true
 
@@ -173,6 +174,18 @@ class Freecen2Place
       results
     end
 
+    def regexp_search(regexp, county)
+      if county.present?
+        results = Freecen2Place.where(standard_place_name: regexp, "disabled" => "false", :chapman_code => ChapmanCode.values_at(county)).
+          or(Freecen2Place.where("alternate_freecen2_place_names.standard_alternate_name":  regexp, "disabled" => "false", :chapman_code => ChapmanCode.values_at(county)))
+        order_by(place_name: 1).all
+      else
+        results = Freecen2Place.where(standard_place_name: regexp, "disabled" => "false").
+          or(Freecen2Place.where("alternate_freecen2_place_names.standard_alternate_name":  regexp, "disabled" => "false"))
+        order_by(chapman_code: 1, place_name: 1).all
+      end
+      results
+    end
 
     def valid_chapman_code?(chapman_code)
       result = ChapmanCode.values.include?(chapman_code) ? true : false
