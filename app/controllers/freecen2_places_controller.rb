@@ -35,7 +35,7 @@ class Freecen2PlacesController < ApplicationController
       session[:search_names] = {}
       session[:search_names][:search] = params[:freecen2_place][:place_name]
       session[:search_names][:search_county] = params[:freecen2_place][:county]
-      session[:search_names][:soundex_search] = params[:freecen2_place][:soundex_search]
+      session[:search_names][:advanced_search] = params[:freecen2_place][:advanced_search]
       redirect_to search_names_results_freecen2_place_path
     else
       params[:freecen2_place][:chapman_code] = ChapmanCode.values_at(params[:freecen2_place][:county])
@@ -228,14 +228,32 @@ class Freecen2PlacesController < ApplicationController
     return redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'No prior result search') if search_place.blank?
 
     search_county = session[:search_names][:search_county]
-    @soundex = session[:search_names][:soundex_search]
-    if @soundex == 'true'
-      return redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'Soundex search must contain alphabetic characters only') unless search_place.match(/^[A-Za-z ]+$/)
-      name_soundex = Text::Soundex.soundex(Freecen2Place.standard_place(search_place))
-      @sound_head = 'Soundex '
-      @results = Freecen2Place.sound_search(name_soundex, search_county)
+    @advanced_search = session[:search_names][:advanced_search]
+    if @advanced_search.present?
+      redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'Advanced search must contain alphabetic characters only') unless search_place.match(/^[A-Za-z ]+$/)
+      if @advanced_search != "soundex"
+        redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'Partial searches must contain at least 3 characters') unless Freecen2Place.standard_place(search_place).length >=3
+      end
+    end
+    case @advanced_search
+    when "soundex"
+      place_soundex = Text::Soundex.soundex(Freecen2Place.standard_place(search_place))
+      @type_head = 'Soundex '
+      @results = Freecen2Place.sound_search(place_soundex, search_county)
+    when "starts_with"
+      regexp = BSON::Regexp::Raw.new('^' + Freecen2Place.standard_place(search_place))
+      @type_head = 'Starts with '
+      @results = Freecen2Place.regexp_search(regexp, search_county)
+    when "contains"
+      regexp = BSON::Regexp::Raw.new(Freecen2Place.standard_place(search_place))
+      @type_head = 'Contains string '
+      @results = Freecen2Place.regexp_search(regexp, search_county)
+    when "ends_with"
+      regexp = BSON::Regexp::Raw.new(Freecen2Place.standard_place(search_place) + '$')
+      @type_head = 'Ends with '
+      @results = Freecen2Place.regexp_search(regexp, search_county)
     else
-      @sound_head = ' '
+      @type_head = ''
       @results = Freecen2Place.search(search_place, search_county)
     end
     @county = search_county.present? ? search_county : 'All Counties'
