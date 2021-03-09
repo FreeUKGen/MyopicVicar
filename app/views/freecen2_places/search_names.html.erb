@@ -8,7 +8,7 @@
 <div class="island  island--light">
   <%= simple_form_for @freecen2_place, :html => { :class => "grid"}  do |f| %>
     <%= f.input :place_name, :label => "Search for Place name(s). Previous search name preloaded",:hint => "Names entered are case insensitive and should be the stem of a name e.g. ann will locate ann anns ann's anns'. Results will include both or any of the names entered and will be independent of their order." ,:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
-    <fieldset class="input">
+    <fieldset class="input" style="text-align: center">
       <legend><b> Advanced Search options - </b><i>if required select one</i></legend>
       <small> Note: Only alphabetic characters are permitted in advanced searches and a minimum of 3 characters is required for partial name searches.</small>
       <ol class="grid">
