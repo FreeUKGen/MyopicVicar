@@ -827,7 +827,13 @@ class FreecenCsvEntry
         return [messagea, new_page_number]
       end
 
-      if previous_page_number == 0
+
+
+      if previous_page_number == 0 && page_number.blank?
+        messagea = "ERROR: line #{num} Page number #{page_number} is #{messagea}.<br>"
+        record[:error_messages] += messagea
+        return [messagea, new_page_number]
+      elsif previous_page_number == 0
         message = "Info: line #{num} Initial Page number set to #{page_number}.<br>" if info_messages
         record[:info_messages] += message if info_messages
         new_page_number = page_number.to_i
