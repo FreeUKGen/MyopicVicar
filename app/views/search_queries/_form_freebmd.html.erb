@@ -60,7 +60,7 @@
                     <div class="grid">
                         <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half daterangefromgrid">
                             <label class="accessibility" for="from_quarter">Start Quarter</label>
-                            <%= select_tag( 'search_query[start_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.start_quarter)), class: 'select_month_start date_years ', id: 'from_quarter', tabindex: "0")%>
+                            <%= select_tag( 'search_query[start_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.start_quarter)), class: 'select_month_start date_years text-input', id: 'from_quarter', tabindex: "0")%>
                             <%#= month_field_tag('search_query[start_quarter]', set_value(@search_query.start_quarter), min: 1, max:12, step:3 , class: 'select_month_start date_years text-input', id: 'from_quarter', tabindex: "0")%>
                         </div>
                         <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half daterangefromgrid">
@@ -83,7 +83,7 @@
                     <div class="grid">
                         <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half daterangetogrid">
                             <label class="accessibility" for="to_quarter">Finish Quarter</label>
-                            <%= select_tag( 'search_query[end_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.end_quarter)), class: 'select_month_end date_years', id: 'to_quarter', tabindex: "0") %>
+                            <%= select_tag( 'search_query[end_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.end_quarter)), class: 'select_month_end date_years text-input', id: 'to_quarter', tabindex: "0") %>
                         </div>
                         <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half daterangetogrid">
                             <label class="accessibility" for="end_year">Finish Year</label>
@@ -93,7 +93,7 @@
                     </div>
                 </li>
 
-                <div class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole recordTypeGrid">
+                <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole recordTypeGrid">
                     <div class='labels'>
                         <div class="recordtypelabel">
                             <%= label_tag 'record_type', "Record Type #{app_icons[:info]}".html_safe, class: "ttip", tabindex: "0" do %>
@@ -129,7 +129,7 @@
                             <% end %>
                         </li>
                     </ol>
-                </div>
+                </li>
 
                 <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole spousefirstnamess display_none flush--bottom" id="spouse_firstnames_div">
                     <div class='labels'>
@@ -257,25 +257,24 @@
                     </div>
                     <% @districts = DistrictToCounty.includes(:District).distinct.order( 'DistrictName ASC' )%>
                     <%= f.select :districts, @districts.pluck(:DistrictName, :DistrictNumber), {include_hidden: false}, {multiple: true, id: 'search_query_districts', tabindex: "0"} %>
-                    <small class="additional">Select one place or none</small>
+                    <small class="additional">Select one/more Districts or none</small>
                 </li>
             </ol>
             <div class="grid action">
                 <%= button_tag 'Clear Form', type: :reset, class: 'clear_form kittumani' %>
-                <%= button_tag 'Search', type: 'submit', class: ' kittumani' , id: 'search_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
+                <%= button_tag 'Search', type: 'submit', class: ' kittumani spinner-controller ladda-button' , id: 'search_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
             </div>
             <div class="sticky_buttons_css" id="sticky_buttons">
                 <ol class="grid">
-                    <li class="grid__item palm-one-half">
+                    <li class="grid__item one-half palm-one-half">
                         <%= button_tag 'Clear Form', type: :reset, class: 'clear_form_small_screen' %>
                     </li>
-                    <li class="grid__item palm-one-half search_button">
-                        <%= button_tag 'Search', type: 'submit', class: '' , id: 'search_form_submit_small_screen', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => '#C84182'}%>
+                    <li class="grid__item one-half palm-one-half search_button">
+                        <%= button_tag 'Search', type: 'submit', class: 'spinner-controller ladda-button' , id: 'search_form_submit_small_screen', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => '#C84182'}%>
                     </li>
                 </ol>
             </div>
         <% end %>
-        
     </div>
 <%# end %>
     <script type="text/javascript">
@@ -350,7 +349,6 @@
                 $('#search_query_dob_at_death').hide();
                 $('#search_query_min_dob_at_death').hide();
                 $('#search_query_max_dob_at_death').hide();
-                $('#age_at_death_or_date_of_birth_div').hide();
             }
             hide_all_death_options();
 
@@ -443,7 +441,7 @@
                     $('#age_at_death_or_date_of_birth_div').hide();
                 } else if ($(".death").is(":checked") && !$('.birth, .marriage, .checkAll').is(':checked')) {
                     $('#age_at_death_or_date_of_birth_div').show();
-                    $('#death_select_box').prop('disabled', false);
+                    //$('#death_select_box').prop('disabled', false);
                     aad_selection_function();
                     $('#death_select_box').css('background', 'white')
                 } else {
@@ -604,28 +602,37 @@
                 wrapper: "li"
             });
 
-            $('#search_form_submit').click( function() {
+            /*$('#search_form_submit').click( function() {
                 var l = Ladda.create(document.querySelector('.ladda-button'));
                 l.stop();
                 if ($("#new_search_query").valid()) {
                     l.start();
                    $('#new_search_query').submit()
                 } 
-            });
+            });*/
 
-            if (window.matchMedia("(min-width: 576px)").matches) {
-                $('#search_form_submit_small_screen').remove();
-            } else {
-                $( $("#search_form_submit_small_screen") ).appendTo("#search_button" );
+            var width = $(window).width()
 
+            if (width >= 576) {
+                if ($('#search_form_submit_small_screen').hasClass('ladda-button')) {
+                    $('#search_form_submit_small_screen').removeClass('ladda-button');
+                }
+                if (!$('#search_form_submit').hasClass('ladda-button')) {
+                    $('#search_form_submit').addClass('ladda-button');
+                }
             }
 
-            if (window.matchMedia("(max-width: 576px)").matches) {
-                $('#search_form_submit').remove();
+            if (width < 576 ) {
+                if ($('#search_form_submit').hasClass('ladda-button')) {
+                    $('#search_form_submit').removeClass('ladda-button');
+                }
+                if (!$('#search_form_submit_small_screen').hasClass('ladda-button')) {
+                    $('#search_form_submit_small_screen').addClass('ladda-button');
+                }
             }
 
             
-            $('#search_form_submit_small_screen').click( function() {
+            $('.spinner-controller').click( function() {
                 var l = Ladda.create(document.querySelector('.ladda-button'));
                 l.stop();
                 if ($("#new_search_query").valid()) {
@@ -634,7 +641,7 @@
                 }
             });
 
-            if ( $( "#search_form_submit" ).length ) {
+           /* if ( $( "#search_form_submit" ).length ) {
                  $('#search_form_submit').addClass('ladda-button')
             } else {
                  $('#search_form_submit').removeClass('ladda-button')
@@ -652,7 +659,7 @@
 
             } else {
                  $('#search_form_submit_small_screen').removeClass('ladda-button')
-            }
+            }*/
 
 
 

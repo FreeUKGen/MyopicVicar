@@ -142,7 +142,9 @@
               </div>
             </div>
           <% else %>
-            <%= yield %>
+            <div class="push--top">
+              <%= yield %>
+            </div>
           <% end %>
           <% if  session[:userid_detail_id].present?%>
             <div style="float:left;">
