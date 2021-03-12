@@ -136,13 +136,15 @@ db.runCommand(
             key: {
                 freecen_csv_entry_id: 1
             },
-            name: "freecen_csv_entry_id"
+            name: "freecen_csv_entry_id",
+                background: true
         },
         {
             key: {
                 freecen_individual_id: 1
             },
-            name: "freecen_individual_id"
+            name: "freecen_individual_id",
+                background: true
         },
          {
                 "key" : {
