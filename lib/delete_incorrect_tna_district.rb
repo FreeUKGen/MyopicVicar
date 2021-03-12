@@ -11,6 +11,7 @@ class DeleteIncorrectTnaDistrict
       piece.delete
     end
     district.delete
+    message_file.puts "Finished"
     UserMailer.forced_district_deletion(chapman_code, district.name, district.year).deliver_now
   end
 end
