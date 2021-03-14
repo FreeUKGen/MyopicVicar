@@ -597,21 +597,26 @@ class UseridDetailsController < ApplicationController
     when 'Update'
       params[:userid_detail][:previous_syndicate] = @userid.syndicate unless params[:userid_detail][:syndicate] == @userid.syndicate
     when 'Confirm'
+      logger.warn "FREECEN::USER #{params.inspect}"
       if params[:userid_detail][:email_address_valid] == 'true' || params[:userid_detail][:email_address_valid] == true
         @userid.update_attributes(email_address_valid: true, email_address_last_confirmned: Time.new, email_address_validity_change_message: [])
         if @userid.errors.any?
+          logger.warn "FREECEN::USER errors#{@userid.errors.full_messages}"
           flash[:notice] = "The update of the profile was unsuccessful #{@userid.errors.full_messages}"
           redirect_to confirm_email_address_userid_details_path && return
         else
+          logger.warn "FREECEN::USER confirmed"
           flash[:notice] = 'Email address confirmed'
           redirect_to(new_manage_resource_path) && return
         end
       else
+        logger.warn "FREECEN::USER not confirmed"
         flash[:notice] = "Email address was not confirmed; you responded #{params[:userid_detail][:email_address_valid]}. Please edit"
         session[:my_own] = true
         redirect_to(edit_userid_detail_path(@userid)) && return
       end
     end
+    logger.warn "FREECEN::USER fall through"
     email_valid_change_message
     params[:userid_detail][:email_address_last_confirmned] = ['1', 'true'].include?(params[:userid_detail][:email_address_valid]) ? Time.now : ''
     @userid.update_attributes(userid_details_params.except(:userid))
