@@ -541,10 +541,10 @@ class UseridDetail
 
   def need_to_confirm_email_address?
     result = false
-    @user = UseridDetail.userid(self.userid).first
-    @user.email_address_last_confirmned.blank? ? last_date = @user.sign_up_date : last_date = @user.email_address_last_confirmned
+    @user = UseridDetail.find_by(userid: userid)
+    last_date = @user.email_address_last_confirmned.blank? ? @user.sign_up_date : @user.email_address_last_confirmned
     result = true if !@user.email_address_valid || (last_date + FreeregOptionsConstants::CONFIRM_EMAIL_ADDRESS.days < Time.now)
-    return result
+    result
   end
 
   def remember_search(search_query)
