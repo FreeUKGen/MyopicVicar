@@ -495,11 +495,7 @@ class UseridDetail
   end
 
   def active_with_inactive_reason
-    if self.active
-      unless self.disabled_reason_standard.blank? and self.disabled_reason.blank?
-        errors.add(:active, "box must be unchecked if Reason for making inactive specified")
-      end
-    end
+    errors.add(:active, 'box must be unchecked if Reason for making inactive specified') if active && disabled_reason_standard.present?
   end
 
   def self.userid_does_not_exist

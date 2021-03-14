@@ -1,4 +1,5 @@
 <div style="text-align: center">
+  <%= render "flash_notice" %>
   <% unless @user.email_address_validity_change_message.empty?%>
     <div >
       <p>Your email address: <b><%= @user.email_address %></b>, has been made </p>

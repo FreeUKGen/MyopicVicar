@@ -605,7 +605,6 @@ class UseridDetailsController < ApplicationController
           flash[:notice] = "The update of the profile was unsuccessful #{@userid.errors.full_messages}"
           redirect_to confirm_email_address_userid_details_path && return
         else
-          logger.warn "FREECEN::USER confirmed"
           flash[:notice] = 'Email address confirmed'
           redirect_to(new_manage_resource_path) && return
         end
@@ -616,7 +615,6 @@ class UseridDetailsController < ApplicationController
         redirect_to(edit_userid_detail_path(@userid)) && return
       end
     end
-    logger.warn "FREECEN::USER fall through"
     email_valid_change_message
     params[:userid_detail][:email_address_last_confirmned] = ['1', 'true'].include?(params[:userid_detail][:email_address_valid]) ? Time.now : ''
     @userid.update_attributes(userid_details_params.except(:userid))
