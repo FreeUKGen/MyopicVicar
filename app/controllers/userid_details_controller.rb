@@ -597,11 +597,12 @@ class UseridDetailsController < ApplicationController
     when 'Update'
       params[:userid_detail][:previous_syndicate] = @userid.syndicate unless params[:userid_detail][:syndicate] == @userid.syndicate
     when 'Confirm'
-      if params[:userid_detail][:email_address_valid] == 'true'
+      if params[:userid_detail][:email_address_valid] == 'true' || params[:userid_detail][:email_address_valid] == true
         @userid.update_attributes(email_address_valid: true, email_address_last_confirmned: Time.new, email_address_validity_change_message: [])
         flash[:notice] = 'Email address confirmed'
         redirect_to(new_manage_resource_path) && return
       else
+        flash[:notice] = "Email address was not confirmed; value was #{params[:userid_detail][:email_address_valid]}. Please edit"
         session[:my_own] = true
         redirect_to(edit_userid_detail_path(@userid)) && return
       end
