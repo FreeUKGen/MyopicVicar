@@ -40,7 +40,7 @@ class FreecenCsvProcessor
   # note each class inherits from its superior
 
   #:message_file is the log file where system and processing messages are written
-  attr_accessor :freecen_files_directory, :create_search_records, :type_of_project, :force_rebuild, :info_messages,
+  attr_accessor :freecen_files_directory, :create_search_records, :type_of_project, :force_rebuild, :info_messages, :no_pob_warnings,
     :file_range, :message_file, :member_message_file, :project_start_time, :total_records, :total_files, :total_data_errors, :flexible
 
   def initialize(arg1, arg2, arg3, arg4, arg5, arg6)
@@ -57,6 +57,7 @@ class FreecenCsvProcessor
     @flexible = arg5 == 'Traditional' ? false : true
     @type_of_processing = arg6
     @info_messages = @type_of_processing == 'Information' ? true : false
+    @no_pob_warnings = @type_of_processing == 'No POB Warnings' ? true : false
     @error_messages_only = @type_of_processing == 'Error' ? true : false
     EmailVeracity::Config[:skip_lookup] = true
   end
@@ -312,6 +313,7 @@ class CsvFile < CsvFiles
     @project.write_messages_to_all(message, true) unless success
     @project.write_messages_to_all("Working on #{@piece.name} for #{@year}, in #{@piece.chapman_code}.<br>", true) if success
     return [false, message] unless success
+
     @file = FreecenCsvFile.find_by(file_name: @file_name, chapman_code: @chapman_code, userid: @userid)
     @validation = @file.validation if @file.present?
 
@@ -805,7 +807,6 @@ class CsvRecords < CsvFile
     end
 
     while line[n].present?
-      Freecen::FIELD_NAMES_CONVERSION.key(line[n].downcase)
       if Freecen::FIELD_NAMES_CONVERSION.key?(line[n].downcase)
         field_specification[n] = Freecen::FIELD_NAMES_CONVERSION[line[n].downcase]
       else
@@ -912,6 +913,7 @@ class CsvRecord < CsvRecords
   def extract_data_line(num)
     @data_record[:record_number] = num + 1
     @data_record[:messages] = @project.info_messages
+    @data_record[:pob] = @project.no_pob_warnings
     @data_record[:data_transition] = @csvfile.field_specification[first_field_present]
     @data_record[:record_valid] = 'false'
     @data_record = load_data_record
