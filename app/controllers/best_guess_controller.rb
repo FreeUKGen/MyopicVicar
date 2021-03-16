@@ -3,6 +3,7 @@ class BestGuessController < ApplicationController
   skip_before_action :require_login
 
   def show
+    #raise 'hi'
     redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
     @page_number = params[:page_number].to_i
     @search_record = BestGuess.where(RecordNumber: params[:id]).first
@@ -16,6 +17,15 @@ class BestGuessController < ApplicationController
       @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
       @search_result.update_attribute(:viewed_records, @viewed_records)
     end
+  end
+
+  def show_marriage
+    @volume = params[:entry_id]
+    @page = params[:page]
+    @district = params[:district]
+    @quarter = params[:quarter]
+    @record_number = [current_record_number, spouse_record_number]
+    @search_records = BestGuess.where(Volume: @volume, Page: @page, QuarterNumber: params[:quarter], RecordTypeID: params[:record])
   end
 
   def same_page_entries

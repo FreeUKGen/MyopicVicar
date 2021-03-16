@@ -1,0 +1,98 @@
+<%= render 'flash_notice' %>
+
+<% title "Record Details" %>
+<%= link_to "#{app_icons[:left_arrow_pink]} Back".html_safe, search_query_path(@search_query, id: params[:search_id]), class: " btn   btn--small" if params[:search_id].present?%>
+<% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
+  <h1 class="accessibility">Marriage Informations</h1>
+  <div class="grid">
+    <div class="grid__item one-whole lap-one-whole palm-one-whole ">
+      <p class="alpha push-half--top project-text-color flush--bottom"><strong><%= "Entry Information: Marriage Deatials of #{@search_record[:GivenName].upcase} #{@search_record[:Surname].upcase}" %></strong></p>
+      <hr>
+      <section>
+        <div class="grid__item two-thirds lap-one-whole palm-one-whole hard--left">
+          <table class="table--bordered table--data">
+            <tbody>
+              <% record_type = RecordType::display_name(@search_record[:RecordTypeID])%>
+              <tr>
+                <th class="project-text-color">
+                  Event Type
+                </th>
+                <td>
+                  <%= "#{record_type}" %>
+                </td>
+              </tr>
+              <tr>
+                <th class="project-text-color">
+                  Date
+                </th>
+                <td>
+                  <%= format_quarter(@search_record[:QuarterNumber])%>
+                </td>
+              </tr>
+              <tr>
+                <th class="project-text-color">
+                  District
+                </th>
+                <td>
+                  <%= link_to "#{@search_record[:District]}", "http://www.ukbmd.org.uk/reg/districts/#{@search_record[:District].downcase}.html", target: "_blank" %><br>
+                  <span class="weight--normal"><%= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span>
+                </td>
+              </tr>
+              <% unless record_type.downcase == 'death' %>
+                <tr>
+                  <th class="project-text-color">
+                    <%= mother_or_spouse_surname(record_type)%>
+                  </th>
+                  <td>
+                    <%= "#{@search_record[:AssociateName]}" %>
+                  </td>
+                </tr>
+                <% end %>
+              <tr>
+                <th class="project-text-color">
+                  Age at Death/Date of Birth
+                </th>
+                <td>
+                  <%= "#{@search_record[:AgeAtDeath]}" %>
+                </td>
+              </tr>
+              <tr>
+                <th class="project-text-color">
+                  Volume
+                </th>
+                <td>
+                  <%= "#{@search_record[:Volume]}" %>
+                </td>
+              </tr>
+              <tr>
+                <th class="project-text-color" style="font-family: serif;">
+                  Page
+                </th>
+                <td>
+                  <%= link_to "#{@search_record[:Page]}", same_page_entries_path(volume: @search_record[:Volume], page: @search_record[:Page], record: @search_record[:RecordTypeID], quarter: @search_record[:QuarterNumber], district: @search_record[:District]), target: "_blank", title: "#{ApplicationText::SAME_PAGE_ENTRIES_TEXT}" %>
+                  <br>
+                  <span class="weight--normal"><%= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span>
+                </td>
+              </tr>
+              <tr>
+                <th class="project-text-color">
+                  Transcriber
+                </th>
+                <td>
+                  <%= @search_record.transcribers.join(', ') if @search_record.transcribers.present? %>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class='push-half--top'>
+            <div class="float--right">
+              <% if params[:search_id].present? %>
+                <%= link_to '<i class="fa fa-chevron-left view_arrow"></i> Previous Result'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record, @previous_record.friendly_url), class: 'push-half--right push-half--top' unless @previous_record.nil? %>
+                <%= link_to 'Next Result <i class="fa fa-chevron-right view_arrow"></i> '.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record, @next_record.friendly_url), class: 'push-half--right push-half--top' unless @next_record.nil?%>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>

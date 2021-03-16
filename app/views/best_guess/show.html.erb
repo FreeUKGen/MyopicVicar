@@ -55,7 +55,7 @@
                     <%= mother_or_spouse_surname(record_type)%>
                   </th>
                   <td>
-                    <%= "#{@search_record[:AssociateName]}" %>
+                    <%= link_to "#{@search_record[:AssociateName]}".html_safe, show_marriage_details_path(entry_id: @search_record[:RecordNumber]), :rel => "nofollow", :title => "marriage Details"%>
                   </td>
                 </tr>
                 <% end %>
@@ -90,7 +90,7 @@
                   Transcriber
                 </th>
                 <td>
-                  <%= @search_record.transcribers.join(', ') if @search_record.transcribers.present? %>
+                  <%#= @search_record.transcribers.join(', ') if @search_record.transcribers.present? %>
                 </td>
               </tr>
             </tbody>
