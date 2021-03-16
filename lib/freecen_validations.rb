@@ -117,6 +117,8 @@ module FreecenValidations
     def page_number?(field)
       return [true, ''] if field =~ VALID_NUMBER && field.length <= 4
 
+      return [true, 'blank'] if field.blank?
+
       [false, 'invalid number']
     end
 

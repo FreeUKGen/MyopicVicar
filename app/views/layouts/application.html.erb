@@ -103,14 +103,12 @@
     <%= csrf_meta_tags %>
   </head>
   <body ontouchstart class="offcanvas  offcanvas--rev">
-    <!-- Google Tag Manager (noscript) -->
     <% if appname_downcase == 'freecen' %>
       <!-- Google Tag Manager (noscript) -->
       <noscript><iframe src='https://www.googletagmanager.com/ns.html?id=<%= "#{gtm_key_value}"%>'
       height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <!-- End Google Tag Manager (noscript) -->
     <% end %>
-    <!-- End Google Tag Manager (noscript) -->
     <% if appname_downcase == 'freebmd'%>
       <%= render 'layouts/bmd_main_nav'%>
     <% else %>

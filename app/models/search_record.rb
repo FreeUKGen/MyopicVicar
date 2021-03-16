@@ -106,6 +106,25 @@ class SearchRecord
       where(id: id)
     end
 
+    def between_dates(county, previous_midnight, last_midnight)
+      last_id = BSON::ObjectId.from_time(last_midnight)
+      first_id = BSON::ObjectId.from_time(previous_midnight)
+      total_records = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        total_records[year] = SearchRecord.between(_id: first_id..last_id).where(chapman_code: county, record_type: year).count
+      end
+      total_records
+    end
+
+    def before_date(county, last_midnight)
+      last_id = BSON::ObjectId.from_time(last_midnight)
+      total_records = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        total_records[year] = SearchRecord.where(_id: { '$lte' => last_id }, chapman_code: county, record_type: year).count
+      end
+      total_records
+    end
+
     def check_show_parameters(search, param)
       appname = MyopicVicar::Application.config.freexxx_display_name
       messagea = 'We are sorry but the record you requested no longer exists; possibly as a result of some data being edited. You will need to redo the search with the original criteria to obtain the updated version.'

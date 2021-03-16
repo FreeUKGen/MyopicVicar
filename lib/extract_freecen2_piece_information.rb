@@ -57,7 +57,7 @@ class ExtractFreecen2PieceInformation
     'British Ships in home ports' => 'England and Wales Shipping',
   }
   class << self
-    def process(limit, file)
+    def process(_limit, file)
       file_of_parms = Rails.root.join('test_data/new_parms', "#{file}")
       xml = File.open(file_of_parms)
       census = Hash.from_xml(xml)

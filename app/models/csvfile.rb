@@ -6,7 +6,7 @@ class Csvfile < CarrierWave::Uploader::Base
   field :file_name, type: String
   field :process, type: String, default: 'Process tonight'
   field :type_of_field, type: String, default: 'Traditional' # CEN
-  field :type_of_processing, type: String, default: 'Check(Info)' # CEN
+  field :type_of_processing, type: String, default: 'No POB Warnings' # CEN
   field :action, type: String
   # files are stored in Rails.application.config.datafiles
   mount_uploader :csvfile, CsvfileUploader

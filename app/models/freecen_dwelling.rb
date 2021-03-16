@@ -21,6 +21,9 @@ class FreecenDwelling
 
   index({freecen_piece_id: 1,dwelling_number: 1},{background: true})
 
+
+  # ################################################################################ instance
+
   # previous / next dwelling in census (not previous/next search result)
   def prev_next_dwelling_ids
     prev_id = nil

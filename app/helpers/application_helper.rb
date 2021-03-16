@@ -622,7 +622,7 @@ module ApplicationHelper
     data-ad-slot="#{data_ad_slot_header}">
     </ins>
     <script type="text/javascript">
-        (adsbygoogle = window.adsbygoogle || []).push({});
+    (adsbygoogle = window.adsbygoogle || []).push({});
     </script>
     HTML
     if Rails.env.development?
@@ -643,17 +643,16 @@ module ApplicationHelper
     data-ad-slot="#{data_ad_slot_fullwidth}">
     </ins>
     <script type="text/javascript">
-      (adsbygoogle = window.adsbygoogle || []).push({});
+    (adsbygoogle = window.adsbygoogle || []).push({});
     </script>
-        HTML
-        if Rails.env.development?
-          banner = <<-HTML
-          <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
-          HTML
-        end
-        banner.html_safe
-      end
-
+    HTML
+    if Rails.env.development?
+      banner = <<-HTML
+      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
+      HTML
+    end
+    banner.html_safe
+  end
 
                     def adsence_right_side_banner
                       banner = <<-HTML
@@ -878,4 +877,8 @@ From June 1969 the index contains the Date of Birth instead of the Age at Death.
     end
     field
   end
+
+
+
+  
 end

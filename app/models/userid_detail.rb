@@ -69,7 +69,7 @@ class UseridDetail
   validates_format_of :email_address,:with => Devise::email_regexp
   validate :userid_and_email_address_does_not_exist, :transcription_agreement_must_accepted, on: :create
   validate :email_address_does_not_exist, on: :update
-  validate :active_with_inactive_reason
+  validate :active_with_inactive_reason, on: :update
   validates :volunteer_induction_handbook, :code_of_conduct, :volunteer_policy, acceptance: true
 
   before_create :add_lower_case_userid,:capitalize_forename, :captilaize_surname, :remove_secondary_role_blank_entries, :transcription_agreement_value_change
@@ -495,11 +495,7 @@ class UseridDetail
   end
 
   def active_with_inactive_reason
-    if self.active
-      unless self.disabled_reason_standard.blank? and self.disabled_reason.blank?
-        errors.add(:active, "box must be unchecked if Reason for making inactive specified")
-      end
-    end
+    errors.add(:active, 'box must be unchecked if Reason for making inactive specified') if active && disabled_reason_standard.present?
   end
 
   def self.userid_does_not_exist
@@ -541,10 +537,10 @@ class UseridDetail
 
   def need_to_confirm_email_address?
     result = false
-    @user = UseridDetail.userid(self.userid).first
-    @user.email_address_last_confirmned.blank? ? last_date = @user.sign_up_date : last_date = @user.email_address_last_confirmned
+    @user = UseridDetail.find_by(userid: userid)
+    last_date = @user.email_address_last_confirmned.blank? ? @user.sign_up_date : @user.email_address_last_confirmned
     result = true if !@user.email_address_valid || (last_date + FreeregOptionsConstants::CONFIRM_EMAIL_ADDRESS.days < Time.now)
-    return result
+    result
   end
 
   def remember_search(search_query)

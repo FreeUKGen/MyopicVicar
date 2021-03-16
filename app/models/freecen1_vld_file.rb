@@ -1,7 +1,5 @@
 class Freecen1VldFile
   include Mongoid::Document
-
-
   require 'chapman_code'
   require 'freecen_constants'
 
@@ -18,12 +16,10 @@ class Freecen1VldFile
   field :transcriber_name, type: String
   field :transcriber_email_address, type: String
   field :transcriber_userid, type: String
+  field :num_entries, type: Integer, default: 0
 
-  before_save :remove_whitespace
+  before_validation :add_num_entries, :remove_whitespace
 
-  validates_format_of :transcriber_email_address,:with => Devise::email_regexp, :message => 'Invalid email address format'
-  validates :transcriber_name, presence: true
-  validates :transcriber_email_address, presence: true
 
   has_many :freecen1_vld_entries
   has_many :freecen_dwellings
@@ -43,8 +39,53 @@ class Freecen1VldFile
       logger.warn("FREECEN:LOCATION:VALIDATION invalid freecen1_vld_file #{freecen1_vld_file} ") unless result
       result
     end
-  end
 
+    def before_year_totals(time)
+      last_id = BSON::ObjectId.from_time(time)
+      total_files = {}
+      total_entries = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        total_files[year] = Freecen1VldFile.where(_id: { '$lte' => last_id }, full_year: year).count
+        total_entries[year] = Freecen1VldFile.where(_id: { '$lte' => last_id }, full_year: year).sum(:num_entries)
+      end
+      [total_files, total_entries]
+    end
+
+    def between_dates_year_totals(time1, time2)
+      last_id = BSON::ObjectId.from_time(time2)
+      first_id = BSON::ObjectId.from_time(time1)
+      total_files = {}
+      total_entries = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        total_files[year] = Freecen1VldFile.between(_id: first_id..last_id).where(full_year: year).count
+        total_entries[year] = Freecen1VldFile.between(_id: first_id..last_id).where(full_year: year).sum(:num_entries)
+      end
+      [total_files, total_entries]
+    end
+
+    def before_county_year_totals(chapman, time)
+      last_id = BSON::ObjectId.from_time(time)
+      total_files = {}
+      total_entries = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        total_files[year] = Freecen1VldFile.where(_id: { '$lte' => last_id }, dir_name: chapman, full_year: year).count
+        total_entries[year] = Freecen1VldFile.where(_id: { '$lte' => last_id }, dir_name: chapman, full_year: year).sum(:num_entries)
+      end
+      [total_files, total_entries]
+    end
+
+    def between_dates_county_year_totals(chapman, time1, time2)
+      last_id = BSON::ObjectId.from_time(time2)
+      first_id = BSON::ObjectId.from_time(time1)
+      total_files = {}
+      total_entries = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        total_files[year] = Freecen1VldFile.between(_id: first_id..last_id).where(dir_name: chapman, full_year: year).count
+        total_entries[year] = Freecen1VldFile.between(_id: first_id..last_id).where(dir_name: chapman, full_year: year).sum(:num_entries)
+      end
+      [total_files, total_entries]
+    end
+  end
   # ######################################################################### instance methods
 
   def chapman_code
@@ -379,7 +420,12 @@ class Freecen1VldFile
   end
 
   def remove_whitespace
-    self[:transcriber_name] = self[:transcriber_name].squeeze(" ").strip
+    self[:transcriber_name] = self[:transcriber_name].squeeze(' ').strip if self[:transcriber_name].present?
   end
 
+  private
+
+  def add_num_entries
+    self.num_entries = freecen1_vld_entries.count
+  end
 end
