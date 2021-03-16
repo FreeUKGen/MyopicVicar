@@ -16,7 +16,7 @@
     <% end %>
   </p>
   <% when 'freecen' %>
-  <p style="text-align: left" ><% if @site_stat.present? %><%= number_with_delimiter(@site_stat[:n_searches])%><% end%> searches were performed yesterday on <% if @site_stat.present? %><%= number_with_delimiter(@site_stat[:n_records]) %><% end%> records. <br>
+  <p style="text-align: left" ><% if @site_stat.present? %><%= number_with_delimiter(@site_stat[:searches])%><% end%> searches were performed yesterday on <% if @site_stat.present? %><%= number_with_delimiter(@site_stat[:records][:total][:total][:search_records]) %><% end%> records. <br>
     The database was last updated on<%= FreecenUtility.display_date_and_time %>.</p>
   <% when 'freebmd' %>
   <p style="text-align: left" >searches were performed yesterday</p>

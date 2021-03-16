@@ -77,7 +77,7 @@ class Freecen2SearchStatistic
       @freshest_stat_date = Freecen2SearchStatistic.new.terminus_ad_quem
       p "Staring at #{@freshest_stat_date.inspect}"
       @last_midnight = DateTime.new(Time.now.year, Time.now.month, Time.now.day)
-      while @last_midnight > @freshest_stat_date
+      while @last_midnight >= @freshest_stat_date
         stat = Freecen2SearchStatistic.new(db: @@this_database, interval_end: @freshest_stat_date)
         stat.populate
         stat.save!

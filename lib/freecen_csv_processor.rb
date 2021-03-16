@@ -906,6 +906,7 @@ class CsvRecord < CsvRecords
     @data_record[:error_messages] = ''
     @data_record[:warning_messages] = ''
     @data_record[:info_messages] = ''
+    @data_record[:pob] = ''
     @data_record[:field_specification] = @csvfile.field_specification
     @data_record[:record_valid] = 'false' unless @csvfile.validation
   end
