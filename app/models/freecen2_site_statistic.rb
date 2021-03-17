@@ -59,6 +59,8 @@ class Freecen2SiteStatistic
         records[:total][:total][:csv_files_incorporated] += records[:total][year][:csv_files_incorporated]
         records[:total][year][:csv_entries] = totals_csv_entries[year]
         records[:total][:total][:csv_entries] += records[:total][year][:csv_entries]
+        records[:total][year][:csv_entries_incorporated] = totals_csv_individuals[year]
+        records[:total][:total][:csv_entries_incorporated] += records[:total][year][:csv_entries_incorporated]
         records[:total][year][:added_vld_files] = added_vld_files[year]
         records[:total][:total][:added_vld_files] += records[:total][year][:added_vld_files]
         records[:total][year][:added_vld_entries] = added_vld_entries[year]
@@ -68,7 +70,7 @@ class Freecen2SiteStatistic
         records[:total][year][:added_csv_entries] = added_csv_entries[year]
         records[:total][:total][:added_csv_entries] += records[:total][year][:added_csv_entries]
         records[:total][year][:added_csv_entries_incorporated] = added_csv_individuals[year]
-        records[:total][:total][:csv_entries_incorporated] += records[:total][year][:added_csv_entries_incorporated]
+        records[:total][:total][:added_csv_entries_incorporated] += records[:total][year][:added_csv_entries_incorporated]
         records[:total][year][:search_records] = SearchRecord.where(record_type: year).count
         records[:total][:total][:search_records] += records[:total][year][:search_records]
       end
@@ -102,6 +104,8 @@ class Freecen2SiteStatistic
           records[county][:total][:csv_files_incorporated] += records[county][year][:csv_files_incorporated]
           records[county][year][:csv_entries] = totals_csv_entries[year]
           records[county][:total][:csv_entries] += records[county][year][:csv_entries]
+          records[county][year][:csv_entries_incorporated] = totals_csv_individuals[year]
+          records[county][:total][:csv_entries_incorporated] += records[county][year][:csv_entries_incorporated]
           records[county][year][:added_vld_files] = added_vld_files[year]
           records[county][:total][:added_vld_files] += records[county][year][:added_vld_files]
           records[county][year][:added_vld_entries] = added_vld_entries[year]

@@ -480,8 +480,6 @@ end
 #csvfiles
 crumb :new_csvfile do |csvfile, app|
   link 'Upload New File', new_csvfile_path
-  p session[:my_own]
-  p app
   case
   when session[:my_own]
     parent :files, nil if app == 'freereg'

@@ -11,15 +11,16 @@
         <th class='sticky-header'>Vld Files</th>
         <th class='sticky-header'>Vld Records</th>
         <th class='sticky-header'>Csv Files</th>
+        <th class='sticky-header'>Csv Files Incor</th>
         <th class='sticky-header'>Csv Records</th>
-        <th class='sticky-header'>Csv Incorp</th>
+        <th class='sticky-header'>Csv Records Incor</th>
         <th class='sticky-header'>Individuals</th>
         <th class='sticky-header'>Dwellings</th>
         <th class='sticky-header'>New Vld Files</th>
         <th class='sticky-header'>New Vld Records</th>
         <th class='sticky-header'>New Csv Files</th>
-        <th class='sticky-header'>New Csv Entries</th>
-        <th class='sticky-header'>New Csv Incorp</th>
+        <th class='sticky-header'>New Csv Records</th>
+        <th class='sticky-header'>New Csv Records Incor</th>
       </tr>
     </thead>
     <tbody>
@@ -31,8 +32,9 @@
           <td><%= @county_stats[census][:vld_files] %></td>
           <td><%= @county_stats[census][:vld_entries] %></td>
           <td><%= @county_stats[census][:csv_files] %></td>
-          <td><%= @county_stats[census][:csv_entries] %></td>
           <td><%= @county_stats[census][:csv_files_incorporated] %></td>
+          <td><%= @county_stats[census][:csv_entries] %></td>
+          <td><%= @county_stats[census][:csv_entries_incorporated] %></td>
           <td><%= @county_stats[census][:individuals] %></td>
           <td><%= @county_stats[census][:dwellings] %></td>
           <td><%= @county_stats[census][:added_vld_files] %></td>
@@ -49,8 +51,9 @@
         <td><%= @county_stats[:total][:vld_files] %></td>
         <td><%= @county_stats[:total][:vld_entries] %></td>
         <td><%= @county_stats[:total][:csv_files] %></td>
-        <td><%= @county_stats[:total][:csv_entries] %></td>
         <td><%= @county_stats[:total][:csv_files_incorporated] %></td>
+        <td><%= @county_stats[:total][:csv_entries] %></td>
+        <td><%= @county_stats[:total][:csv_entries_incorporated] %></td>
         <td><%= @county_stats[:total][:individuals] %></td>
         <td><%= @county_stats[:total][:dwellings] %></td>
         <td><%= @county_stats[:total][:added_vld_files] %></td>
