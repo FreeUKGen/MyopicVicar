@@ -21,14 +21,14 @@ class BestGuessController < ApplicationController
 
   def show_marriage
     record_number = params[:entry_id]
-    @record = BestGuess.where(RecordNumber: record_number)
+    @record = BestGuess.where(RecordNumber: record_number),first
     spouse_surname = @record.AssociateName
     volume = @record.Volume
     page = @record.Page
     quarter = @record.QuarterNumber
     district_number = @record.district_number
     record_type = @record.RecordTypeID
-    @spouse_record = BestGuessMarriage.where(Surname: spouse_surname, Volume: volume, Page: page, QuarterNumber: quarter, DistrictNumber: district_number, RecordTypeID: record_type )
+    @spouse_record = BestGuessMarriage.where(Surname: spouse_surname, Volume: volume, Page: page, QuarterNumber: quarter, DistrictNumber: district_number, RecordTypeID: record_type)
   end
 
   def same_page_entries
