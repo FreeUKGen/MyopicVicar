@@ -10,7 +10,7 @@
           <% record = @record %>
           <p class="epsilon push-half--top flush--bottom"><strong><%= "Entry Information: #{@record[:GivenName].upcase} #{@record[:Surname].upcase}" %></strong></p>
       <hr>
-          <%= render(:partial => app_partial('entry_information_table')) %>
+          <%= render 'entry_information_table' %>
         </div>
       </section>
       <section>
@@ -18,7 +18,7 @@
         <%% record = @spouse_record%>
         <p class="epsilon push-half--top flush--bottom"><strong><%= "Spouse Information: #{@spouse_record[:GivenName].upcase} #{@spouse_record[:Surname].upcase}" %></strong></p>
       <hr>
-          <%= render(:partial => app_partial('entry_information_table')) %>
+          <%= render 'entry_information_table' %>
         </div>
       </section>
     </div>
