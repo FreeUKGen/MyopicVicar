@@ -26,18 +26,20 @@
         <span class="weight--normal"><%= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span>
       </td>
     </tr>
-    <tr>
-      <th class="project-text-color">
-        <%= mother_or_spouse_surname(record_type)%>
-      </th>
-      <td>
-      	<% if marriage_search %>
-        	<%= link_to "#{record.AssociateName}", show_marriage_details_path(entry_id: record.RecordNumber) %>
-        <% else %>
-        	<%= record.AssociateName %>
-        <% end %>
-      </td>
-    </tr>
+    <% if entry_type == "marriage" %>
+    	<tr>
+	      <th class="project-text-color">
+	        <%= mother_or_spouse_surname(record_type)%>
+	      </th>
+	      <td>
+	      	<% if search == true && record.AssociateName.present? %>
+	        	<%= link_to "#{record.AssociateName}", show_marriage_details_path(entry_id: record.RecordNumber) %>
+	        <% else %>
+	        	<%= record.AssociateName %>
+	        <% end %>
+	      </td>
+    	</tr>
+    <% end %>
     <tr>
       <th class="project-text-color">
         Volume
