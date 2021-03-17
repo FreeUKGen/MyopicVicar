@@ -40,6 +40,16 @@
 	      </td>
     	</tr>
     <% end %>
+    <% if entry_type == "birth" %>
+    	<tr>
+	      <th class="project-text-color">
+	        <%= mother_or_spouse_surname(record_type)%>
+	      </th>
+	      <td>
+	        <%= record.AssociateName %>
+	      </td>
+    	</tr>
+    <% end %>
     <tr>
       <th class="project-text-color">
         Volume
