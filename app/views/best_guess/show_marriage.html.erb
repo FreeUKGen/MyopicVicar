@@ -6,10 +6,12 @@
   <h1 class="accessibility">Marriage Informations</h1>
   <div class="grid">
     <div class="grid__item one-whole lap-one-whole palm-one-whole ">
-      <p class="alpha push-half--top project-text-color flush--bottom"><strong><%= "Entry Information: Marriage Deatials of #{@record[:GivenName].upcase} #{@record[:Surname].upcase}" %></strong></p>
+      <p class="alpha push-half--top project-text-color flush--bottom"><strong><%= "Marriage Details of #{@record[:GivenName].upcase} #{@record[:Surname].upcase}" %></strong></p>
       <hr>
       <section>
-        <div class="grid__item one-half lap-one-half palm-one-whole hard--left">
+        <div class="grid__item one-third lap-one-third palm-one-whole hard--left">
+          <p class="alpha push-half--top project-text-color flush--bottom"><strong><%= "Entry Information: #{@record[:GivenName].upcase} #{@record[:Surname].upcase}" %></strong></p>
+      <hr>
           <table class="table--bordered table--data">
             <tbody>
               <% record_type = RecordType::display_name(@record[:RecordTypeID])%>
@@ -77,7 +79,9 @@
         </div>
       </section>
       <section>
-      <div class="grid__item one-half lap-one-half palm-one-whole hard--left">
+      <div class="grid__item one-third lap-one-third palm-one-whole hard--left">
+        <p class="alpha push-half--top project-text-color flush--bottom"><strong><%= "Entry Information: #{@spouse_record[:GivenName].upcase} #{@spouse_record[:Surname].upcase}" %></strong></p>
+      <hr>
           <table class="table--bordered table--data">
             <tbody>
               <% record_type = RecordType::display_name(@spouse_record.RecordTypeID)%>
