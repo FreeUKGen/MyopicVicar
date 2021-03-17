@@ -21,7 +21,8 @@
       <hr>
       <section>
         <div class="grid__item two-thirds lap-one-whole palm-one-whole hard--left">
-          <%= render partial: 'entry_information_table', locals: {record: @search_record} %>
+          <% record_type = RecordType::display_name(@search_record.RecordTypeID)%>
+          <%= render partial: 'entry_information_table', locals: {record: @search_record, "#{record_type.downcase}_search" => true } %>
           <div class='push-half--top'>
             <div class="float--right">
               <% if params[:search_id].present? %>
@@ -34,7 +35,6 @@
       </section>
       <div class="grid__item one-whole">
         <h4>Scans</h4>
-        <% record_type = RecordType::display_name(@search_record.RecordTypeID)%>
         <% year = from_quarter_number_to_year(@search_record[:QuarterNumber]) %>
         <% event = "#{record_type.capitalize}s" %>
         <% quarter = QuarterDetails.quarters.key(calculate_quarter(@search_record[:QuarterNumber])).capitalize %>
