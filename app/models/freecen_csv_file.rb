@@ -124,7 +124,7 @@ class FreecenCsvFile
     end
 
     def incorporated(status)
-      where(incorprated: status)
+      where(incorporated: status)
     end
 
     def coordinator_lock
