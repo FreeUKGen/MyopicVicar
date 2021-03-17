@@ -26,7 +26,7 @@ class BestGuessController < ApplicationController
     volume = @record.Volume
     page = @record.Page
     quarter = @record.QuarterNumber
-    district_number = @record.district_number
+    district_number = @record.DistrictNumber
     record_type = @record.RecordTypeID
     @spouse_record = BestGuessMarriage.where(Surname: spouse_surname, Volume: volume, Page: page, QuarterNumber: quarter, DistrictNumber: district_number, RecordTypeID: record_type)
   end
