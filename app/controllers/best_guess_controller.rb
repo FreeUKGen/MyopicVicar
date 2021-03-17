@@ -20,12 +20,15 @@ class BestGuessController < ApplicationController
   end
 
   def show_marriage
-    @volume = params[:entry_id]
-    @page = params[:page]
-    @district = params[:district]
-    @quarter = params[:quarter]
-    @record_number = [current_record_number, spouse_record_number]
-    @search_records = BestGuess.where(Volume: @volume, Page: @page, QuarterNumber: params[:quarter], RecordTypeID: params[:record])
+    record_number = params[:entry_id]
+    @record = BestGuess.where(RecordNumber: record_number)
+    spouse_surname = @record.AssociateName
+    volume = @record.Volume
+    page = @record.Page
+    quarter = @record.QuarterNumber
+    district_number = @record.district_number
+    record_type = @record.RecordTypeID
+    @spouse_record = BestGuessMarriage.where(Surname: spouse_surname, Volume: volume, Page: page, QuarterNumber: quarter, DistrictNumber: district_number, RecordTypeID: record_type )
   end
 
   def same_page_entries
