@@ -1,7 +1,5 @@
 <%= render 'flash_notice' %>
-
-<% title "Record Details" %>
-<%= link_to "#{app_icons[:left_arrow_pink]} Back".html_safe, search_query_path(@search_query, id: params[:search_id]), class: " btn   btn--small" if params[:search_id].present?%>
+<% title "Marriage Details" %>
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
   <h1 class="accessibility">Marriage Informations</h1>
   <div class="grid">
@@ -9,142 +7,18 @@
       <p class="alpha push-half--top project-text-color flush--bottom text--center"><strong><%= "Marriage Details of #{@record[:GivenName].upcase} #{@record[:Surname].upcase}" %></strong></p>
       <section>
         <div class="grid__item one-half lap-one-half palm-one-whole">
+          <% record = @record %>
           <p class="epsilon push-half--top flush--bottom"><strong><%= "Entry Information: #{@record[:GivenName].upcase} #{@record[:Surname].upcase}" %></strong></p>
       <hr>
-          <table class="table--bordered table--data">
-            <tbody>
-              <% record_type = RecordType::display_name(@record[:RecordTypeID])%>
-              <tr>
-                <th class="project-text-color">
-                  Event Type
-                </th>
-                <td>
-                  <%= "#{record_type}" %>
-                </td>
-              </tr>
-              <tr>
-                <th class="project-text-color">
-                  Date
-                </th>
-                <td>
-                  <%= format_quarter(@record[:QuarterNumber])%>
-                </td>
-              </tr>
-              <tr>
-                <th class="project-text-color">
-                  District
-                </th>
-                <td>
-                  <%= link_to "#{@record[:District]}", "http://www.ukbmd.org.uk/reg/districts/#{@record[:District].downcase}.html", target: "_blank" %><br>
-                  <span class="weight--normal"><%= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span>
-                </td>
-              </tr>
-              <tr>
-                <th class="project-text-color">
-                  <%= mother_or_spouse_surname(record_type)%>
-                </th>
-                <td>
-                  <%= "#{@record[:AssociateName]}" %>
-                </td>
-              </tr>
-              <tr>
-                <th class="project-text-color">
-                  Volume
-                </th>
-                <td>
-                  <%= "#{@record[:Volume]}" %>
-                </td>
-              </tr>
-              <tr>
-                <th class="project-text-color" style="font-family: serif;">
-                  Page
-                </th>
-                <td>
-                  <%= link_to "#{@record[:Page]}", same_page_entries_path(volume: @record[:Volume], page: @record[:Page], record: @record[:RecordTypeID], quarter: @record[:QuarterNumber], district: @record[:District]), target: "_blank", title: "#{ApplicationText::SAME_PAGE_ENTRIES_TEXT}" %>
-                  <br>
-                  <span class="weight--normal"><%= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span>
-                </td>
-              </tr>
-              <tr>
-                <th class="project-text-color">
-                  Transcriber
-                </th>
-                <td>
-                  <%= @record.transcribers.join(', ') if @record.transcribers.present? %>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <%= render(:partial => app_partial('entry_information_table')) %>
         </div>
       </section>
       <section>
       <div class="grid__item one-half lap-one-half palm-one-whole">
+        <%% record = @spouse_record%>
         <p class="epsilon push-half--top flush--bottom"><strong><%= "Spouse Information: #{@spouse_record[:GivenName].upcase} #{@spouse_record[:Surname].upcase}" %></strong></p>
       <hr>
-          <table class="table--bordered table--data">
-            <tbody>
-              <% record_type = RecordType::display_name(@spouse_record.RecordTypeID)%>
-              <tr>
-                <th class="project-text-color">
-                  Event Type
-                </th>
-                <td>
-                  <%= "#{record_type}" %>
-                </td>
-              </tr>
-              <tr>
-                <th class="project-text-color">
-                  Date
-                </th>
-                <td>
-                  <%= format_quarter(@spouse_record.QuarterNumber)%>
-                </td>
-              </tr>
-              <tr>
-                <th class="project-text-color">
-                  District
-                </th>
-                <td>
-                  <%= link_to "#{@spouse_record.District}", "http://www.ukbmd.org.uk/reg/districts/#{@spouse_record.District.downcase}.html", target: "_blank" %><br>
-                  <span class="weight--normal"><%= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span>
-                </td>
-              </tr>
-              <tr>
-                <th class="project-text-color">
-                  <%= mother_or_spouse_surname(record_type)%>
-                </th>
-                <td>
-                  <%= "#{@spouse_record.AssociateName}" %>
-                </td>
-              </tr>
-              <tr>
-                <th class="project-text-color">
-                  Volume
-                </th>
-                <td>
-                  <%= "#{@spouse_record.Volume}" %>
-                </td>
-              </tr>
-              <tr>
-                <th class="project-text-color" style="font-family: serif;">
-                  Page
-                </th>
-                <td>
-                  <%= link_to "#{@spouse_record.Page}", same_page_entries_path(volume: @spouse_record.Volume, page: @spouse_record.Page, record: @spouse_record.RecordTypeID, quarter: @spouse_record.QuarterNumber, district: @spouse_record.District), target: "_blank", title: "#{ApplicationText::SAME_PAGE_ENTRIES_TEXT}" %>
-                  <br>
-                  <span class="weight--normal"><%= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span>
-                </td>
-              </tr>
-              <tr>
-                <th class="project-text-color">
-                  Transcriber
-                </th>
-                <td>
-                  <%#= @spouse_record.transcribers.join(', ') if @spouse_record.transcribers.present? %>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <%= render(:partial => app_partial('entry_information_table')) %>
         </div>
       </section>
     </div>
