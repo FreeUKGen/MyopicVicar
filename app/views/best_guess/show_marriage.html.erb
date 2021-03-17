@@ -79,7 +79,7 @@
       <div class="grid__item one-half lap-one-half palm-one-whole hard--left">
           <table class="table--bordered table--data">
             <tbody>
-              <% record_type = RecordType::display_name(@spouse_record[:RecordTypeID])%>
+              <% record_type = RecordType::display_name(@spouse_record.RecordTypeID)%>
               <tr>
                 <th class="project-text-color">
                   Event Type
@@ -93,7 +93,7 @@
                   Date
                 </th>
                 <td>
-                  <%= format_quarter(@spouse_record[:QuarterNumber])%>
+                  <%= format_quarter(@spouse_record.QuarterNumber)%>
                 </td>
               </tr>
               <tr>
@@ -101,7 +101,7 @@
                   District
                 </th>
                 <td>
-                  <%= link_to "#{@spouse_record[:District]}", "http://www.ukbmd.org.uk/reg/districts/#{@spouse_record[:District].downcase}.html", target: "_blank" %><br>
+                  <%= link_to "#{@spouse_record.District}", "http://www.ukbmd.org.uk/reg/districts/#{@spouse_record.District.downcase}.html", target: "_blank" %><br>
                   <span class="weight--normal"><%= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span>
                 </td>
               </tr>
@@ -110,7 +110,7 @@
                   <%= mother_or_spouse_surname(record_type)%>
                 </th>
                 <td>
-                  <%= "#{@spouse_record[:AssociateName]}" %>
+                  <%= "#{@spouse_record.AssociateName}" %>
                 </td>
               </tr>
               <tr>
@@ -118,7 +118,7 @@
                   Volume
                 </th>
                 <td>
-                  <%= "#{@spouse_record[:Volume]}" %>
+                  <%= "#{@spouse_record.Volume}" %>
                 </td>
               </tr>
               <tr>
@@ -126,7 +126,7 @@
                   Page
                 </th>
                 <td>
-                  <%= link_to "#{@spouse_record[:Page]}", same_page_entries_path(volume: @spouse_record[:Volume], page: @spouse_record[:Page], record: @spouse_record[:RecordTypeID], quarter: @spouse_record[:QuarterNumber], district: @spouse_record[:District]), target: "_blank", title: "#{ApplicationText::SAME_PAGE_ENTRIES_TEXT}" %>
+                  <%= link_to "#{@spouse_record.Page}", same_page_entries_path(volume: @spouse_record.Volume, page: @spouse_record.Page, record: @spouse_record.RecordTypeID, quarter: @spouse_record.QuarterNumber, district: @spouse_record.District), target: "_blank", title: "#{ApplicationText::SAME_PAGE_ENTRIES_TEXT}" %>
                   <br>
                   <span class="weight--normal"><%= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span>
                 </td>
