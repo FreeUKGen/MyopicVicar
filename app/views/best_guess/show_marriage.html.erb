@@ -7,16 +7,18 @@
       <p class="alpha push-half--top project-text-color flush--bottom text--center"><strong><%= "Marriage Details of #{@record[:GivenName].upcase} #{@record[:Surname].upcase}" %></strong></p>
       <section>
         <div class="grid__item one-half lap-one-half palm-one-whole">
+          <% record_type = RecordType::display_name(@record.RecordTypeID)%>
           <p class="epsilon push-half--top flush--bottom"><strong><%= "Entry Information: #{@record[:GivenName].upcase} #{@record[:Surname].upcase}" %></strong></p>
       <hr>
-          <%= render partial: 'entry_information_table', locals: {record: @record} %>
+          <%= render partial: 'entry_information_table', locals: {record: @record, entry_type: record_type.downcase} %>
         </div>
       </section>
       <section>
       <div class="grid__item one-half lap-one-half palm-one-whole">
+        <% record_type = RecordType::display_name(@spouse_record.RecordTypeID)%>
         <p class="epsilon push-half--top flush--bottom"><strong><%= "Spouse Information: #{@spouse_record[:GivenName].upcase} #{@spouse_record[:Surname].upcase}" %></strong></p>
       <hr>
-          <%= render partial: 'entry_information_table', locals: {record: @spouse_record} %>
+          <%= render partial: 'entry_information_table', locals: {record: @spouse_record, entry_type: record_type.downcase } %>
         </div>
       </section>
     </div>
