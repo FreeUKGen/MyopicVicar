@@ -302,6 +302,16 @@ class FreecenCsvFile
       [totals_csv_files, totals_csv_files_incorporated, totals_csv_entries, totals_individuals, totals_dwellings]
     end
 
+    def before_year_csv_files(chapman_code, year, time)
+      last_id = BSON::ObjectId.from_time(time)
+      if year != 'all'
+        @records = FreecenCsvFile.where(_id: { '$lte' => last_id }, chapman_code: chapman_code, year: year)
+      else
+        @records = FreecenCsvFile.where(_id: { '$lte' => last_id }, chapman_code: chapman_code)
+      end
+      @records
+    end
+
     def before_year_totals(time)
       last_id = BSON::ObjectId.from_time(time)
       totals_csv_files = {}

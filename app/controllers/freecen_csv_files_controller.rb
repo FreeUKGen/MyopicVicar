@@ -314,6 +314,12 @@ class FreecenCsvFilesController < ApplicationController
     when 'recent'
       session[:sort] = 'uploaded_date DESC'
     end
+    if session[:stats_view]
+      if !session[:stats_year].present?
+        session[:stats_year] = params[:stats_year]
+      end
+      session[:selection] = 'all'
+    end
     case
     when session[:syndicate].present?
       if session[:userid_id].blank? && helpers.can_view_files?(session[:role]) && helpers.sorted_by?(session[:sorted_by])
@@ -333,7 +339,16 @@ class FreecenCsvFilesController < ApplicationController
       elsif helpers.can_view_files?(session[:role]) && session[:selection] == 'incorporated'
         @freecen_csv_files = FreecenCsvFile.where(chapman_code: session[:chapman_code], incorporated: true).order_by(session[:sort]).all
       elsif helpers.can_view_files?(session[:role]) && session[:selection] == 'all'
-        @freecen_csv_files = FreecenCsvFile.chapman_code(session[:chapman_code]).order_by(session[:sort]).all
+        if session[:stats_view]
+          if session[:stats_year] != 'all'
+            @freecen_csv_files  = FreecenCsvFile.before_year_csv_files(session[:chapman_code], session[:stats_year], session[:stats_todate]).order_by(session[:sort]).all
+            #@freecen_csv_files = FreecenCsvFile.where(chapman_code: session[:chapman_code], year: session[:stats_year]).order_by(session[:sort]).all
+          else
+            @freecen_csv_files  = FreecenCsvFile.before_year_csv_files(session[:chapman_code], session[:stats_year], session[:stats_todate]).order_by(session[:sort]).all
+          end
+        else
+          @freecen_csv_files = FreecenCsvFile.chapman_code(session[:chapman_code]).order_by(session[:sort]).all
+        end
       end
     end
     #session[:current_page] = @freecen_csv_files.current_page if @freecen_csv_files.present?
