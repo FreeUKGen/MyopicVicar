@@ -101,7 +101,7 @@
 }
 
   .site__header__logo {
-    float: left;
+     float: left;
     position: relative;
     z-index: 3;
     &:focus,
@@ -109,6 +109,7 @@
       background-color: #fff;
       outline: 2px dashed $project-color;
       outline-offset: 7px; // will not work in IE/Edge
+      text-decoration: none; // Safari fix
     }
   }
 
