@@ -292,8 +292,9 @@ class Freecen2Piece
     self.standard_name = Freecen2Place.standard_place(name)
   end
 
-  def check_new_name(new_name)
+  def check_new_name(new_name, user)
     result = Freecen2Piece.find_by(chapman_code: chapman_code, year: year, freecen2_district_id: freecen2_district_id, name: new_name).present? ? false : true
+    result = true if user.person_role == 'system_administrator'
     result
   end
 
