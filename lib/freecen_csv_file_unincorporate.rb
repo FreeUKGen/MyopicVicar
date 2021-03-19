@@ -13,6 +13,7 @@ class FreecenCsvFileUnincorporate
     if result
       success, messagea = unincorporate_records(freecen_file)
       message += messagea
+      puts "#{message}"
     end
     if success
       UserMailer.unincorporation_report(county.county_coordinator, message, file_name, owner).deliver_now
@@ -23,14 +24,11 @@ class FreecenCsvFileUnincorporate
 
   def self.unincorporate_records(freecen_file)
     begin
-
       SearchRecord.where(freecen_csv_file_id: freecen_file.id).delete_all
-
-      FreecenCsvEntry.collection.updateMany({ freecen_csv_file_id: freecen_file.id }, { '$set' => {search_record_id: null } })
-
+      num = FreecenCsvEntry.collection.update_many({ freecen_csv_file_id: freecen_file.id }, '$set' => { search_record_id: nil })
       freecen_file.update_attributes(incorporated: false, incorporated_date: nil)
       success = true
-      message = 'Success'
+      message = "Success #{num} entries updated"
       piece = freecen_file.freecen2_piece
       freecen_file.reload
       piece.reload
