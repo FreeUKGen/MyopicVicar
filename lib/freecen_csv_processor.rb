@@ -750,7 +750,7 @@ class CsvRecords < CsvFile
     n = 0
     @project.write_messages_to_all("Error: line #{n} is empty", true) if @array_of_lines[n][0..24].all?(&:blank?)
     return [false, n] if @array_of_lines[n][0..24].all?(&:blank?)
-    @project.write_messages_to_all("Error: line #{n} has too amy fields", true) if @array_of_lines[n].length > 50
+    @project.write_messages_to_all("Error: line #{n} has too many fields", true) if @array_of_lines[n].length > 50
     return [false, n]  if @array_of_lines[n].length > 50
 
 
