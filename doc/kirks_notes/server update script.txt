@@ -65,3 +65,5 @@ https://docs.google.com/document/d/1rrDCZBlej0U9QjRKgrm83LfpjhD6RQjIo8VRYX9IgGQ/
 userid.generation_time.strftime('%Y-%m-%d %H:%M') #bson objectid  to date
 first_id = BSON::ObjectId.from_time(start) # start =  DateTime.new(2021,1,1)
 searches = Freecen1VldFile.between(_id: first_id..last_id).count # Freecen1VldFile.where(_id: {"$lte"=> last_id}).count
+ SearchRecord.where(freecen_csv_file_id: freecen_file.id).delete_all
+num = FreecenCsvEntry.collection.update_many({ freecen_csv_file_id: freecen_file.id }, '$set' => { search_record_id: nil })
