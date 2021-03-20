@@ -260,11 +260,11 @@ class Freecen2PiecesController < ApplicationController
 
     @freecen2_piece = Freecen2Piece.find_by(_id: params[:id])
     redirect_back(fallback_location: new_manage_resource_path, notice: 'Piece not found') && return if @freecen2_piece.blank?
-
+    get_user_info_from_userid
     if params[:commit] == 'Submit Name'
       redirect_back(fallback_location: manage_counties_path, notice: 'Piece name must not be blank') && return if params[:freecen2_piece][:name].blank?
 
-      proceed = @freecen2_piece.check_new_name(params[:freecen2_piece][:name].strip)
+      proceed = @freecen2_piece.check_new_name(params[:freecen2_piece][:name].strip, @user)
       if proceed
         @freecen2_piece.update_attributes(name: params[:freecen2_piece][:name].strip)
         if @freecen2_piece.errors.any?

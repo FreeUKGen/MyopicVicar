@@ -813,27 +813,23 @@ class SearchRecord
   end
 
   def populate_search_names
-    if transcript_names && transcript_names.size > 0
-      transcript_names.each_with_index do |name_hash|
-        person_type = PersonType::FAMILY
-        if name_hash[:type] == 'primary'
-          person_type=PersonType::PRIMARY
-        end
-        if name_hash[:type] == 'witness'
-          person_type=PersonType::WITNESS
-        end
-        person_role = (name_hash[:role].nil?) ? nil : name_hash[:role]
-        if MyopicVicar::Application.config.template_set == 'freecen' && freecen_csv_entry_id.blank?
-          person_gender = self.freecen_individual.sex.downcase unless self.freecen_individual.nil? || self.freecen_individual.sex.nil?
-        elsif  MyopicVicar::Application.config.template_set == 'freecen' && freecen_csv_entry_id.present?
-          entry = FreecenCsvEntry.find_by(_id: freecen_csv_entry_id)
-          person_gender = entry.sex
-        else
-          person_gender = gender_from_role(person_role)
-        end
-        name = search_name(name_hash[:first_name], name_hash[:last_name], person_type, person_role, person_gender)
-        search_names << name if name
+    return unless transcript_names && transcript_names.size > 0
+
+    transcript_names.each do |name_hash|
+      person_type = PersonType::FAMILY
+      person_type = PersonType::PRIMARY if name_hash[:type] == 'primary'
+      person_type = PersonType::WITNESS if name_hash[:type] == 'witness'
+      person_role = name_hash[:role].nil? ? nil : name_hash[:role]
+      if MyopicVicar::Application.config.template_set == 'freecen' && freecen_csv_entry_id.blank?
+        person_gender = freecen_individual.sex.downcase unless freecen_individual.nil? || freecen_individual.sex.nil?
+      elsif MyopicVicar::Application.config.template_set == 'freecen' && freecen_csv_entry_id.present?
+        entry = FreecenCsvEntry.find_by(_id: freecen_csv_entry_id)
+        person_gender =  entry.present? ? entry.sex : gender_from_role(person_role)
+      else
+        person_gender = gender_from_role(person_role)
       end
+      name = search_name(name_hash[:first_name], name_hash[:last_name], person_type, person_role, person_gender)
+      search_names << name if name
     end
   end
 

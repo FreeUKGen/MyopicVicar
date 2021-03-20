@@ -148,8 +148,22 @@ class FreecenCsvProcessor
   end
 
   def write_member_message_file(message)
-    member_message_file.puts message unless message == '' || (@error_messages_only && (message[0...5] == 'Info:' || message[0...8] == 'Warning:'))
+    member_message_file.puts message if write_member_message?(message)
   end
+
+  def write_member_message?(message)
+    return false if message == '' || (@error_messages_only && (message[0...5] == 'Info:' || message[0...8] == 'Warning:'))
+
+    return false if pob_message?(message)
+
+    true
+  end
+
+  def pob_message?(message)
+    birth = @no_pob_warnings && message.include?('Warning:') && message.include?('Birth') ? true : false
+    birth
+  end
+
 
   def write_messages_to_all(message, no_member_message)
     # avoids sending the message to the member if no_member_message is false
@@ -736,6 +750,9 @@ class CsvRecords < CsvFile
     n = 0
     @project.write_messages_to_all("Error: line #{n} is empty", true) if @array_of_lines[n][0..24].all?(&:blank?)
     return [false, n] if @array_of_lines[n][0..24].all?(&:blank?)
+    @project.write_messages_to_all("Error: line #{n} has too many fields", true) if @array_of_lines[n].length > 50
+    return [false, n]  if @array_of_lines[n].length > 50
+
 
     success, message, @csvfile.field_specification, @csvfile.traditional, @csvfile.header_line = line_one(@array_of_lines[n])
 
