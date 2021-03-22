@@ -7,7 +7,7 @@
   <h2 style="text-align: center"> Files for  <%= session[:syndicate]%><%=@sorted_by%></h2>
 <% elsif session[:county].present? %>
   <% if session[:stats_view] %>
-    <h2 style="text-align: center"> Csv Files for  <%= session[:county]%>: <%= session[:stats_year]%> <%= session[:sorted_by]%></h2>
+    <h2 style="text-align: center"> Csv Files for  <%= session[:county]%>: <%= session[:stats_year]%>; <%= session[:selection]%> <%= session[:sorted_by]%></h2>
   <% else%>
     <h2 style="text-align: center"> Files for  <%= session[:county]%>: <%= session[:selection]%> <%= session[:sorted_by]%></h2>
   <% end%>

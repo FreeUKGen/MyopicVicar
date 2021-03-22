@@ -1,26 +1,38 @@
 module Freecen2SiteStatisticsHelper
-  def data_integrity_flag(census, check_num)
+  def data_integrity_checks(census)
 
     #1) Search records = Individuals
     #2) Online VLD files = VLD files
     #3) CSV files >= CSV Files incorporated
-    #4) CSV entries >= CSV entries incorporated
-    #5) Individuals = VLD entries + CSV entries incorporated
+    #4) CSV records >= CSV records incorporated
+    #5) Individuals = VLD records + CSV records incorporated
 
-    flag = ''
-    case check_num
-    when '1'
-      unless @county_stats[census][:search_records] == @county_stats[census][:individuals] then flag = '*¹' end
-    when '2'
-      unless @county_stats[census][:vld_files_on_line] == @county_stats[census][:vld_files] then flag = '*²' end
-    when '3'
-      unless @county_stats[census][:csv_files] >= @county_stats[census][:csv_files_incorporated] then flag = '*³' end
-    when '4'
-      unless @county_stats[census][:csv_entries] >= @county_stats[census][:csv_entries_incorporated] then flag = '*⁴' end
-    when '5'
-      unless @county_stats[census][:individuals] == @county_stats[census][:vld_entries] + @county_stats[census][:csv_entries_incorporated] then flag = '*⁵' end
+    @num_issues = 0
+    @search_records_flag =''
+    @vld_files_on_line_flag = ''
+    @csv_files_flag = ''
+    @csv_entries_flag = ''
+    @individuals_flag = ''
+    if @county_stats[census][:search_records] != @county_stats[census][:individuals]
+      @search_records_flag = '*¹'
+      @num_issues += 1
     end
-    flag
+    if @county_stats[census][:vld_files_on_line] != @county_stats[census][:vld_files]
+      @vld_files_on_line_flag = '*²'
+      @num_issues += 1
+    end
+    if @county_stats[census][:csv_files] < @county_stats[census][:csv_files_incorporated]
+      @csv_files_flag = '*³'
+      @num_issues += 1
+    end
+    if @county_stats[census][:csv_entries] < @county_stats[census][:csv_entries_incorporated]
+      @csv_entries_flag = '*⁴'
+      @num_issues += 1
+    end
+    if @county_stats[census][:individuals] != @county_stats[census][:vld_entries] + @county_stats[census][:csv_entries_incorporated]
+      @individuals_flag = '*⁵'
+      @num_issues += 1
+    end
   end
 
   def site_statistics_drilldown(cell, census, data_type)
@@ -31,20 +43,34 @@ module Freecen2SiteStatisticsHelper
     end
     case data_type
     when 'search_records'
-      display_cell = cell.to_s + data_integrity_flag(census, '1')
+      display_cell = cell.to_s + @search_records_flag
     when 'vld_files_on_line'
-      display_cell = cell.to_s + data_integrity_flag(census, '2')
+      display_cell = cell.to_s + @vld_files_on_line_flag
     when 'csv_files'
-      display_flagged = cell.to_s + data_integrity_flag(census, '3')
+      display_flagged = cell.to_s + @csv_files_flag
       if cell > 0
-        display_cell = link_to "#{display_flagged}", freecen_csv_files_path(order: 'alphabetic', stats_year: year),:title=>'List details', method: :get
+        if @num_issues > 0
+          display_cell = link_to "#{display_flagged}", freecen_csv_files_path(order: 'alphabetic', stats_year: year, select_recs: 'all'),:title=>'List details', method: :get, style: "color: red"
+        else
+          display_cell = link_to "#{display_flagged}", freecen_csv_files_path(order: 'alphabetic', stats_year: year, select_recs: 'all'),:title=>'List details', method: :get
+        end
       else
-        display_cell = display_flagged
+        display_cell = cell
+      end
+    when 'csv_files_incorporated'
+      if cell > 0
+        if @num_issues > 0
+          display_cell = link_to "#{cell}", freecen_csv_files_path(order: 'alphabetic', stats_year: year, select_recs: 'incorporated'),:title=>'List details', method: :get, style: "color: red"
+        else
+          display_cell = link_to "#{cell}", freecen_csv_files_path(order: 'alphabetic', stats_year: year, select_recs: 'incorporated'),:title=>'List details', method: :get
+        end
+      else
+        display_cell = cell
       end
     when 'csv_entries'
-      display_cell = cell.to_s + data_integrity_flag(census, '4')
+      display_cell = cell.to_s + @csv_entries_flag
     when 'individuals'
-      display_cell = cell.to_s + data_integrity_flag(census, '5')
+      display_cell = cell.to_s + @individuals_flag
     else
       display_cell = cell
     end

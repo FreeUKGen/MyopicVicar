@@ -270,6 +270,9 @@ class ApplicationController < ActionController::Base
     session.delete(:original_message_id)
     session.delete(:query)
     session.delete(:search_names)
+    session[:stats_view] = false
+    session.delete(:stats_year)
+    session.delete(:stats_todate)
   end
 
   def clean_session_for_county
@@ -317,6 +320,8 @@ class ApplicationController < ActionController::Base
     session.delete(:register)
     session.delete(:search_names)
     session.delete(:type)
+    session[:stats_view] = false
+    session.delete(:stats_year)
   end
 
   def clean_session_for_images
