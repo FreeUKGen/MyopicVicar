@@ -318,7 +318,7 @@ class FreecenCsvFilesController < ApplicationController
       if !session[:stats_year].present?
         session[:stats_year] = params[:stats_year]
       end
-      session[:selection] = 'all'
+      session[:selection] = params[:select_recs]
     end
     case
     when session[:syndicate].present?
@@ -332,21 +332,16 @@ class FreecenCsvFilesController < ApplicationController
         @freecen_csv_files = FreecenCsvFile.userid(UseridDetail.find(session[:userid_id]).userid).no_timeout.order_by(session[:sort]).all
       end
     when session[:county].present?
-      if helpers.can_view_files?(session[:role]) && session[:selection] == 'errors'
-        @freecen_csv_files = FreecenCsvFile.chapman_code(session[:chapman_code]).gt(total_errors: 0).order_by(session[:sort]).all
-      elsif helpers.can_view_files?(session[:role]) && session[:selection] == 'validation'
-        @freecen_csv_files = FreecenCsvFile.where(chapman_code: session[:chapman_code], validation: true, incorporated: false).order_by(session[:sort]).all
-      elsif helpers.can_view_files?(session[:role]) && session[:selection] == 'incorporated'
-        @freecen_csv_files = FreecenCsvFile.where(chapman_code: session[:chapman_code], incorporated: true).order_by(session[:sort]).all
-      elsif helpers.can_view_files?(session[:role]) && session[:selection] == 'all'
-        if session[:stats_view]
-          if session[:stats_year] != 'all'
-            @freecen_csv_files  = FreecenCsvFile.before_year_csv_files(session[:chapman_code], session[:stats_year], session[:stats_todate]).order_by(session[:sort]).all
-            #@freecen_csv_files = FreecenCsvFile.where(chapman_code: session[:chapman_code], year: session[:stats_year]).order_by(session[:sort]).all
-          else
-            @freecen_csv_files  = FreecenCsvFile.before_year_csv_files(session[:chapman_code], session[:stats_year], session[:stats_todate]).order_by(session[:sort]).all
-          end
-        else
+      if session[:stats_view]
+        @freecen_csv_files  = FreecenCsvFile.before_year_csv_files(session[:chapman_code], session[:stats_year], session[:stats_todate], params[:select_recs]).order_by(session[:sort]).all
+      else
+        if helpers.can_view_files?(session[:role]) && session[:selection] == 'errors'
+          @freecen_csv_files = FreecenCsvFile.chapman_code(session[:chapman_code]).gt(total_errors: 0).order_by(session[:sort]).all
+        elsif helpers.can_view_files?(session[:role]) && session[:selection] == 'validation'
+          @freecen_csv_files = FreecenCsvFile.where(chapman_code: session[:chapman_code], validation: true, incorporated: false).order_by(session[:sort]).all
+        elsif helpers.can_view_files?(session[:role]) && session[:selection] == 'incorporated'
+          @freecen_csv_files = FreecenCsvFile.where(chapman_code: session[:chapman_code], incorporated: true).order_by(session[:sort]).all
+        elsif helpers.can_view_files?(session[:role]) && session[:selection] == 'all'
           @freecen_csv_files = FreecenCsvFile.chapman_code(session[:chapman_code]).order_by(session[:sort]).all
         end
       end
