@@ -251,6 +251,7 @@ module Freecen
     'alt. chp' => 'birth_county',
     'alt. pob' => 'birth_place',
     'w' => 'language',
+    'l' => 'language',
     'language' => 'language',
     'notes' => 'notes',
     'address_flag' => 'address_flag',

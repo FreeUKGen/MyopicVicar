@@ -66,6 +66,11 @@
           <td class="weight--semibold">
             <%= @freecen1_vld_file.transcriber_userid  %></td>
         </tr>
+        <tr>
+          <td>Created at:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_file.id.generation_time.strftime('%Y-%m-%d %H:%M') %></td>
+        </tr>
       </p>
     </table>
   </div>

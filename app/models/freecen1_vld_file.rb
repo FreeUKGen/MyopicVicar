@@ -99,7 +99,7 @@ class Freecen1VldFile
     success, message, file, census_fields = convert_file_name_to_csv(year, piece, series)
     if success
       file_location = Rails.root.join('tmp', file)
-      success, message = write_csv_file(file_location, census_fields)
+      success, message = write_csv_file(file_location, census_fields, year)
     end
     [success, message, file_location, file]
   end
@@ -172,7 +172,7 @@ class Freecen1VldFile
     [success, message, file, census_fields]
   end
 
-  def write_csv_file(file_location, census_fields)
+  def write_csv_file(file_location, census_fields, year)
     header = census_fields
     @initial_line_hash = {}
     @blank = nil
@@ -190,15 +190,15 @@ class Freecen1VldFile
         next if rec['deleted_flag'].present?
 
         @record_number += 1
-        line = []
-        line = add_fields(line, rec, census_fields)
+        line = add_fields(rec, census_fields, year)
         csv << line
       end
     end
     [true, '']
   end
 
-  def add_fields(line, rec, census_fields)
+  def add_fields(rec, census_fields, year)
+    line = []
     census_fields.each do |field|
       case field
       when 'enumeration_district'
@@ -224,7 +224,7 @@ class Freecen1VldFile
         line << number
         line << address
       when 'surname'
-        line << rec['surname']
+        line << compute_surname(rec)
       when 'forenames'
         line << rec['forenames']
       when 'relationship'
@@ -236,11 +236,11 @@ class Freecen1VldFile
       when 'age'
         line << compute_age(rec)
       when 'occupation'
-        line << rec['occupation']
+        line << compute_occupation(rec, year)
       when 'occupation_category'
-        line << rec['occupation_category']
+        line << compute_occupation_category(rec, year)
       when 'verbatim_birth_county'
-        line << rec['verbatim_birth_county']
+        line << verbatim_birth_county(rec)
       when 'verbatim_birth_place'
         line << rec['verbatim_birth_place']
       when 'birth_county'
@@ -271,16 +271,19 @@ class Freecen1VldFile
       county = @blank
       place = @blank
     else
-      county = rec['birth_county']
+      county = rec['birth_county'].present? && rec['birth_county'].downcase == 'wal' ? 'WLS' : rec['birth_county']
       place =  rec['birth_place']
     end
     [county, place]
   end
 
+  def verbatim_birth_county(rec)
+    county = rec['verbatim_birth_county'].present? && rec['verbatim_birth_county'].downcase == 'wal' ? 'WLS' : rec['verbatim_birth_county']
+  end
+
   def compute_enumeration_district(rec)
-    @special = special_enumeration_district?(rec['enumeration_district'])
-    rec['enumeration_district'] = reformat_enumeration_district(rec['enumeration_district']) if @special
-    if rec['enumeration_district'] == @initial_line_hash['enumeration_district']
+    rec['enumeration_district'] = reformat_enumeration_district(rec['enumeration_district']) if special_enumeration_district?(rec['enumeration_district'])
+    if rec['enumeration_district'] == @initial_line_hash['enumeration_district'] && rec['civil_parish'] == @initial_line_hash['civil_parish'] && @initial_line_hash['ecclesiastical_parish'] == rec['ecclesiastical_parish']
       line = @blank
       @use_blank = true
     else
@@ -293,7 +296,7 @@ class Freecen1VldFile
 
   def special_enumeration_district?(rec)
     ed_chars = rec.chars
-    special_format = ed_chars.length == 2 && ed_chars[0] == '0' ? true : false
+    special_format = (ed_chars.length == 2 && ed_chars[0] == '0') || (ed_chars.length == 3 && ed_chars[1] == '#') ? true : false
     special_format
   end
 
@@ -365,7 +368,10 @@ class Freecen1VldFile
   end
 
   def compute_page_number(rec)
-    if rec['page_number'].present? && rec['page_number'] == @initial_line_hash['page_number']
+    if special_enumeration_district?(@initial_line_hash['enumeration_district'])
+      line = rec['page_number']
+      @initial_line_hash['page_number'] = rec['page_number']
+    elsif rec['page_number'].present? && rec['page_number'] == @initial_line_hash['page_number']
       line = @blank
     else
       line = rec['page_number']
@@ -377,6 +383,22 @@ class Freecen1VldFile
   def compute_schedule_number(rec)
     if %w[b n u v].include?(rec['uninhabited_flag'])
       line = '0'
+    elsif rec['sequence_in_household'] == 1 && rec['schedule_number'] == '0'
+      line = '0'
+      @use_schedule_blank = false
+      @initial_line_hash['schedule_number'] = '0'
+    elsif rec['uninhabited_flag'] == 'x' && rec['schedule_number'].present?
+      line = rec['schedule_number']
+      @use_schedule_blank = false
+      @initial_line_hash['schedule_number'] = rec['schedule_number']
+    elsif rec['uninhabited_flag'] == 'x' && rec['schedule_number'].blank?
+      line = '0'
+      @use_schedule_blank = false
+      @initial_line_hash['schedule_number'] = '0'
+    elsif special_enumeration_district?(@initial_line_hash['enumeration_district'])
+      line = rec['schedule_number']
+      @use_schedule_blank = false
+      @initial_line_hash['schedule_number'] = rec['schedule_number']
     elsif rec['schedule_number'].present? && (rec['schedule_number'] == @initial_line_hash['schedule_number'])
       line = @blank
       @use_schedule_blank = true
@@ -400,16 +422,48 @@ class Freecen1VldFile
     [number, address]
   end
 
+  def compute_surname(rec)
+    line = %w[b n u v].include?(rec['uninhabited_flag']) ? '' : rec[:surname]
+    line
+  end
+
   def compute_age(rec)
     line = rec['age_unit'].present? ? rec['age'] + rec['age_unit'] : rec['age']
+    line
+  end
+
+  def compute_occupation(rec, year)
+    if %w[1841 1851 1861 1871 1881].include?(year)
+      line = rec['occupation']
+    elsif /\(em'ee\)/i.match(rec['occupation']) || /\(em'er\)/i.match(rec['occupation'])|| /\(Notem\)/i.match(rec['occupation'])
+      parts = rec['occupation'].split('(')
+      line = parts[0].strip
+    else
+      line = rec['occupation']
+    end
+    line
+  end
+
+  def compute_occupation_category(rec, year)
+    if %w[1841 1851 1861 1871 1881].include?(year)
+      line = ''
+    elsif /\(em'ee\)/i.match(rec['occupation'])
+      line = 'e'
+    elsif /\(em'er\)/i.match(rec['occupation'])
+      line = 'r'
+    elsif /\(Notem\)/i.match(rec['occupation'])
+      line = 'n'
+    end
     line
   end
 
   def compute_notes(rec)
     if rec['unoccupied_notes'].blank?
       line = rec['notes']
+    elsif rec['notes'].present?
+      line = (rec['notes'] + rec['unoccupied_notes']) unless rec['notes'] == rec['unoccupied_notes']
     else
-      line = rec['notes'].present? ? rec['notes'] += rec['unoccupied_notes'] : rec['unoccupied_notes']
+      line = rec['notes']
     end
     line
   end
