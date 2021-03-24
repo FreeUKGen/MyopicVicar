@@ -5,7 +5,6 @@ task :test_freecen1_vld, [:filename] => [:environment] do |t, args|
 
   p 'start'
   process_file(args.filename)
-
   p 'finished'
 end
 
@@ -19,7 +18,9 @@ def process_file(filename)
   transformer.transform_file_record(file_record)
 
   translator = Freecen::Freecen1VldTranslator.new
-  num_dwel,num_ind = translator.translate_file_record(file_record)
+  num_dwel, num_ind = translator.translate_file_record(file_record)
   #print "\t#{filename} contained #{file_record.freecen_dwellings.count} dwellings in #{file_record.freecen1_vld_entries.count} entries\n"
   print "\t#{filename} contained #{num_dwel} dwellings in #{num_entries} entries\n"
+  return
+
 end

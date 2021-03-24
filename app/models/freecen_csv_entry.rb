@@ -196,7 +196,7 @@ class FreecenCsvEntry
       info_messages = record[:messages]
       new_civil_parish = civil_parish
       message = ''
-      success, messagea = FreecenValidations.valid_location?(civil_parish)
+      success, messagea = FreecenValidations.valid_parish?(civil_parish)
 
       unless success
         if messagea == '?'
@@ -211,10 +211,11 @@ class FreecenCsvEntry
           record[:error_messages] += messageb
           new_civil_parish = previous_civil_parish
           return [messageb, new_civil_parish]
-        elsif messagea == 'INVALID_TEXT'
-          messagea = "ERROR: line #{num} Civil Parish has invalid text #{civil_parish}.<br>"
+        elsif messagea == 'invalid text'
+          messagea = "ERROR: line #{num} Civil Parish #{civil_parish} has invalid text.<br>"
           record[:error_messages] += messagea
-          new_civil_parish = previous_civil_parish
+          new_civil_parish = 'invalid'
+          record[:civil_parish] = record[:civil_parish].gsub('.', 'invalid')
           return [messagea, new_civil_parish]
         end
       end
@@ -327,7 +328,7 @@ class FreecenCsvEntry
       new_ecclesiastical_parish = previous_ecclesiastical_parish
       info_messages = record[:messages]
       message = ''
-      success, messagea = FreecenValidations.valid_location?(ecclesiastical_parish)
+      success, messagea = FreecenValidations.valid_parish?(ecclesiastical_parish)
       unless success
         if messagea == '?'
           messagea = "Warning: line #{num} Ecclesiastical Parish #{ecclesiastical_parish}  has trailing ?. Removed and location_flag set.<br>"
@@ -1463,7 +1464,7 @@ class FreecenCsvEntry
       end
 
       if record[:year] == '1841'
-        if record[:verbatim_birth_place].present?
+        if record[:verbatim_birth_place].present? && record[:verbatim_birth_place] |= '-'
           messageb = "ERROR: line #{num} Verbatim Birth Place #{record[:verbatim_birth_place]} should not be included for #{record[:year]}.<br>"
           message += messageb
           record[:error_messages] += messageb

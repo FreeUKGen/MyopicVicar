@@ -10,6 +10,7 @@ module FreecenValidations
   VALID_ENUMERATOR_SPECIAL = /\A\d#\d\z/.freeze
   VALID_SPECIAL_LOCATION_CODES = %w[b n u v x].freeze
   NARROW_VALID_TEXT = /\A[-\w\s,'\.]*\z/.freeze
+  PARISH_TEXT = /\A[-\w\s,']*\z/.freeze
   TIGHT_VALID_TEXT = /\A[\w\s,'\.]*\z/.freeze
   NARROW_VALID_TEXT_PLUS = /\A[-\w\s,'\.]*\z/.freeze
   BROAD_VALID_TEXT = /\A[-\w\s()\.,&'":;]*\z/.freeze
@@ -67,6 +68,20 @@ module FreecenValidations
       end
       [true, '']
     end
+
+    def valid_parish?(field)
+      return [false, 'blank'] if field.blank?
+
+      unless field.match? PARISH_TEXT
+        if field[-1] == '?' && (field.chomp('?').match? PARISH_TEXT)
+          return [false, '?']
+        else
+          return [false, 'invalid text']
+        end
+      end
+      [true, '']
+    end
+
 
     def enumeration_district?(field)
       return [false, 'blank'] if field.blank?
