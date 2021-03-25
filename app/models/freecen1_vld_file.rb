@@ -202,7 +202,7 @@ class Freecen1VldFile
     census_fields.each do |field|
       case field
       when 'enumeration_district'
-        line << compute_enumeration_district(rec)
+        line << compute_enumeration_district(rec, census_fields)
       when 'civil_parish'
         line << compute_civil_parish(rec)
       when 'ecclesiastical_parish'
@@ -216,7 +216,7 @@ class Freecen1VldFile
       when 'page_number'
         line << compute_page_number(rec)
       when 'schedule_number'
-        line << compute_schedule_number(rec)
+        line << compute_schedule_number(rec, census_fields)
       when 'uninhabited_flag'
         line << compute_uninhabited_flag(rec)
       when 'house_or_street_name'
@@ -281,9 +281,12 @@ class Freecen1VldFile
     county = rec['verbatim_birth_county'].present? && rec['verbatim_birth_county'].downcase == 'wal' ? 'WLS' : rec['verbatim_birth_county']
   end
 
-  def compute_enumeration_district(rec)
+  def compute_enumeration_district(rec, census_fields)
     rec['enumeration_district'] = reformat_enumeration_district(rec['enumeration_district']) if special_enumeration_district?(rec['enumeration_district'])
-    if rec['enumeration_district'] == @initial_line_hash['enumeration_district'] && rec['civil_parish'] == @initial_line_hash['civil_parish'] && @initial_line_hash['ecclesiastical_parish'] == rec['ecclesiastical_parish']
+    if census_fields.include?('ecclesiastical_parish') && (rec['enumeration_district'] == @initial_line_hash['enumeration_district']) && (rec['civil_parish'] == @initial_line_hash['civil_parish']) && (@initial_line_hash['ecclesiastical_parish'] == rec['ecclesiastical_parish'])
+      line = @blank
+      @use_blank = true
+    elsif !census_fields.include?('ecclesiastical_parish') && (rec['enumeration_district'] == @initial_line_hash['enumeration_district']) && (rec['civil_parish'] == @initial_line_hash['civil_parish'])
       line = @blank
       @use_blank = true
     else
@@ -380,8 +383,8 @@ class Freecen1VldFile
     line
   end
 
-  def compute_schedule_number(rec)
-    if %w[b n u v].include?(rec['uninhabited_flag'])
+  def compute_schedule_number(rec, census_fields)
+    if %w[b n u v].include?(rec['uninhabited_flag']) || !census_fields.include?('ecclesiastical_parish')
       line = '0'
     elsif rec['sequence_in_household'] == 1 && rec['schedule_number'] == '0'
       line = '0'
