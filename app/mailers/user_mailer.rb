@@ -74,7 +74,6 @@ class UserMailer < ActionMailer::Base
     @appname = appname
     @contact = contact
     @communication = contact
-    @host = session[:host]
     @send_to = UseridDetail.userid(send_to).first
     @cc_email_addresses = []
     @cc_names = []
@@ -120,7 +119,7 @@ class UserMailer < ActionMailer::Base
     sender_email = UseridDetail.create_friendly_from_email(sender_userid)
     to_email = UseridDetail.create_friendly_from_email(to_userid)
     copy_to_email = UseridDetail.create_friendly_from_email(copy_to_userid)
-    mail(to: [to_email, sender_email, copy_to_email], subject: "#{@sending.person_forename} #{@sending.person_surname} of #{@appname} sent a message #{@reply.subject} in response to reference #{@original_message.identifier}")
+    mail(to: [to_email, sender_email, copy_to_email],  subject: "#{@sending.person_forename} #{@sending.person_surname} of #{@appname} sent a message #{@reply.subject} in response to reference #{@original_message.identifier}")
   end
 
   def feedback_action_request(contact, send_to, copies_to)
