@@ -212,6 +212,7 @@ class Message
 
   def communicate_message_reply(original_message)
     to_userid = original_message.userid
+    copy_to = []
     UserMailer.message_reply(self, to_userid, copy_to, original_message, userid).deliver_now
     add_message_to_userid_messages(UseridDetail.look_up_id(to_userid)) unless to_userid.blank?
     recipients = []
