@@ -63,12 +63,13 @@ module SharedSearchMethods
   def apply_index
     case app_template
     when 'freebmd'
-      BMD_INDEXES_HINT
+      index = BMD_INDEXES_HINT
     when 'freecen'
-      NEW_INDEXES
+      index = NEW_INDEXES
     when 'freereg'
-      MERGED_INDEXES
+      index = MERGED_INDEXES
     end
+    index
   end
 
   def index_score(index_name, search_fields)

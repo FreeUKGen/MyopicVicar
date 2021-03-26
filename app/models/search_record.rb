@@ -76,7 +76,8 @@ class SearchRecord
   field :location_names, type: Array, default: []
   field :search_soundex, type: Array, default: []
 
-  INDEXES.each_pair do |name, fields|
+
+  apply_index.each_pair do |name, fields|
     field_spec = {}
     fields.each { |field| field_spec[field] = 1 }
     index(field_spec, { name: name, background: true })
