@@ -5,8 +5,8 @@ class DeleteIncorrectChapmanDistrict
     message_file = File.new(file_for_messages, 'w')
     message_file.puts "Processing incorrect chapman code #{incorrect_chapman}"
     Freecen2District.where(chapman_code: incorrect_chapman).no_timeout.each do |district|
-      district.freecen2_pieces.no_timeout.each do |piece|
-        piece.freecen2_civil_parishes.no_timeout.each(&:delete)
+      FreecenPiece.where(freecen2_district_id: district.id).no_timeout.each do |piece|
+        FreecenCivilParish.where(freecen2_piece_id: piece.id).no_timeout.each(&:delete)
         piece.delete
       end
       district.delete
