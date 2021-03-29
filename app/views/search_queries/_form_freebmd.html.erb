@@ -608,7 +608,7 @@
                     l.start();
                    $('#new_search_query').submit()
                 } 
-            });*/
+            });
 
             var width = $(window).width()
 
@@ -629,9 +629,18 @@
                     $('#search_form_submit_small_screen').addClass('ladda-button');
                 }
             }
+            */
 
-            
-            $('.spinner-controller').click( function() {
+            $('#search_form_submit').click( function() {
+                var l = Ladda.create(document.querySelector('.ladda-button'));
+                l.stop();
+                if ($("#new_search_query").valid()) {
+                    l.start();
+                   $('#new_search_query').submit()
+                }
+            });
+
+            $('#search_form_submit_small_screen').click( function() {
                 var l = Ladda.create(document.querySelector('.ladda-button'));
                 l.stop();
                 if ($("#new_search_query").valid()) {
