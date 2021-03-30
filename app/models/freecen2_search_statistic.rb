@@ -168,7 +168,7 @@ class Freecen2SearchStatistic
   end
 
   def next_hour(prev_datetime)
-    t = prev_datetime + 3600.seconds
+    t = prev_datetime + 24.hours
     t
   end
 
