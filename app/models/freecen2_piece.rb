@@ -207,8 +207,8 @@ class Freecen2Piece
       new_piece_params[:year] = params['year']
       new_piece_params[:reason_changed] = params['reason_changed']
       new_piece_params[:freecen2_district_id] = params['freecen2_district_id']
-      new_piece_params[:name] = params['name']
-      new_piece_params[:number] = params['number']
+      new_piece_params[:name] = params['name'].strip if params['name'].present?
+      new_piece_params[:number] = params['number'].strip if params['number'].present?
       new_piece_params[:code] = params['code']
       new_piece_params[:notes] = params['notes']
       new_piece_params[:prenote] = params['prenote']
@@ -292,8 +292,9 @@ class Freecen2Piece
     self.standard_name = Freecen2Place.standard_place(name)
   end
 
-  def check_new_name(new_name)
+  def check_new_name(new_name, user)
     result = Freecen2Piece.find_by(chapman_code: chapman_code, year: year, freecen2_district_id: freecen2_district_id, name: new_name).present? ? false : true
+    result = true if user.person_role == 'system_administrator'
     result
   end
 

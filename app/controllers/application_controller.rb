@@ -59,11 +59,10 @@ class ApplicationController < ActionController::Base
           last_midnight = Time.new(time.year, time.month, time.day) - 1.day
           site_stat = Freecen2SiteStatistic.find_by(interval_end: last_midnight)
         end
-
         session[:site_stats] = {}
-        session[:site_stats][:searches] = site_stat.searches
-        session[:site_stats][:records] = site_stat.records[:total][:total][:search_records]
-        session[:site_stats][:added] = (site_stat.records[:total][:total][:added_vld_entries] + site_stat.records[:total][:total][:added_csv_entries_incorporated])
+        session[:site_stats][:searches] = site_stat.present? ? site_stat.searches : 0
+        session[:site_stats][:records] = site_stat.present? ? site_stat.records[:total][:total][:search_records] : 0
+        session[:site_stats][:added] = site_stat.present? ? (site_stat.records[:total][:total][:added_vld_entries] + site_stat.records[:total][:total][:added_csv_entries_incorporated]) : 0
         @site_stat = session[:site_stats]
       end
     else

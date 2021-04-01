@@ -1,4 +1,4 @@
-<h4 style="text-align: center"> If you believe there to be an error in this transcription then please <%= link_to "report (link opens in a new tab)", report_error_contact_path(@search_record, :query => @search_query), target: "_blank" %> it to our data manager.</h4>
+<p style="text-align: center"> If you believe there to be an error in this transcription then <%= link_to "please report it to our data manager (link opens in a new tab)", report_error_contact_path(@search_record, :query => @search_query), target: "_blank" %>.</p>
 <div class="read-length push--bottom" style="margin-left: auto; margin-right: auto;">
   <br>
   <% unless defined?(@printable_format) && @printable_format %>
