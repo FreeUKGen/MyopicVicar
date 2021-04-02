@@ -8,7 +8,7 @@ class BestGuessController < ApplicationController
     @page_number = params[:page_number].to_i
     @search_record = BestGuess.where(RecordNumber: params[:id]).first
     page_entries = @search_record.entries_in_the_page.pluck(:RecordNumber)
-    @next_record_of_page, @previous_record_of_page = next_and_previous_entries_of_page(@search_record, page_entries)
+    @next_record_of_page, @previous_record_of_page = next_and_previous_entries_of_page(@search_record.RecordNumber, page_entries)
     #@previous_record_of_page = get_previous_entry_of_the_page(page_entries,search_record_index)
     @display_date = false
     @new_postem = @search_record.best_guess_hash.postems.new
