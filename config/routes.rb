@@ -572,7 +572,7 @@ MyopicVicar::Application.routes.draw do
   get 'gap_reasons/:id/index(.:format)', :to => 'gap_reasons#index', :as => :index_gap_reason
   resources :gap_reasons
 
-  get ':search_id/entry-information/:id/:friendly(.:format)', :to => 'best_guess#show', :as => :friendly_bmd_record_details
+  get ':search_id/entry-information/:search_result_id/:friendly(.:format)', :to => 'best_guess#show', :as => :friendly_bmd_record_details
   get '/entry-information/:id/:friendly(.:format)', :to => 'best_guess#show', :as => :friendly_bmd_record_details_from_page
   get '/marriage_details/:entry_id/', :to => 'best_guess#show_marriage', :as => :show_marriage_details
   get '/same_page_entries', to: 'best_guess#same_page_entries', as: :same_page_entries
