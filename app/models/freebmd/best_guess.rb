@@ -230,4 +230,8 @@ class BestGuess < FreebmdDbBase
     get_hash = self.best_guess_hash.Hash
     Postem.where(Hash: get_hash).all
   end
+
+  def entries_in_the_page
+    BestGuess.where(Volume: self.Volume, Page: self.Page, QuarterNumber: self.QuarterNumber, RecordTypeID: self.RecordTypeID).order(:Surname, :GivenName)
+  end
 end
