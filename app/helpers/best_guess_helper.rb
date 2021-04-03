@@ -40,12 +40,12 @@ module BestGuessHelper
     (quarter-1)/4 + 1837
   end
 
-  def record_type entry
+  def record_type_name entry
     RecordType::display_name(entry.RecordTypeID)
   end
 
   def format_record_type_for_scan_url entry
-    record_type(entry).capitalize
+    record_type_name(entry).capitalize
   end
 
   def scan_url_constants entry
