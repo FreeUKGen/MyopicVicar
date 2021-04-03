@@ -42,6 +42,75 @@
 
       
   </div>
+  <div class="grid__item one-whole">
+        <h4>Scans</h4>
+        <% year = from_quarter_number_to_year(@search_record[:QuarterNumber]) %>
+        <% event = "#{record_type.capitalize}s" %>
+        <% quarter = QuarterDetails.quarters.key(calculate_quarter(@search_record[:QuarterNumber])).capitalize %>
+        <% image_server = "https://images.freebmd.org.uk/SUG" %>
+        <% scan_links = @search_record.uniq_scanlists %>
+        <% acc_scans = @search_record.get_non_multiple_scans %>
+        <% acc_mul_scans = @search_record.multiple_best_probable_scans%>
+        <% if scan_links.present? %>
+          <ul>
+            <div class="grid">
+              <% scan_links.each do |s| %>
+                <div class = "grid__item one-whole lap-one-whole palm-one-whole push--bottom" >
+                  <% series = s.SeriesRangeFileName %>
+                  <% image_file_path = "#{image_server}/#{year}/#{event}/#{quarter}/#{series}" %>
+                  <div class='labels'>
+                    <%#= label_tag 'scan_name','' , class: "ttip", tabindex: "0"  do %>
+                        <%#="#{series}".html_safe %>
+                    <%# end %>
+                  </div>
+                  <%= link_to "#{series}".html_safe, image_file_path, target: "_blank"%>
+                </div>
+              <% end %>
+            </div>
+          </ul>
+        <% end %>
+        <% if acc_scans.present? %>
+          <ul>
+            <div class="grid">
+              <% acc_scans.each do |s| %>
+                <div class = "grid__item one-whole lap-one-whole palm-one-whole push--bottom" >
+                  <% series = s.SeriesID %>
+                  <% range = "/#{s.range.Range}" if s.Range.present?%>
+                  <% file = s.Filename %>
+                  <% image_file_path = "#{image_server}/#{year}/#{event}/#{quarter}/#{series}#{range}/#{file}" %>
+                  <div class=''>
+                    <%#= label_tag 'scan_name','' , class: "ttip", tabindex: "0"  do %>
+                        <small><%#="#{series}#{range}/#{file}".html_safe %></small>
+                    <%# end %>
+                  </div>
+                  <%= link_to "#{series}#{range}/#{file}".html_safe, image_file_path, target: "_blank"%>
+                </div>
+              <% end %>
+            </div>
+          </ul>
+        <% end %>
+        <% if acc_mul_scans.present? %>
+          <ul>
+            <div class="grid">
+              <% acc_mul_scans.each do |s| %>
+                <div class = "grid__item one-whole lap-one-whole palm-one-whole push--bottom" >
+                  <% series = s.SeriesID %>
+                  <% range = "/#{s.Range}" if s.Range.present?%>
+                  <% @search_record.get_component_images.each do |fn| %>
+                    <% image_file_path = "#{image_server}/#{year}/#{event}/#{quarter}/#{series}#{range}/#{fn}" %>
+                    <div class=''>
+                      <%#= label_tag 'scan_name','' , class: "ttip", tabindex: "0"  do %>
+                          <%#="#{series}#{range}/#{fn}".html_safe %>
+                      <%# end %>
+                    </div>
+                    <%= link_to "#{series}#{range}/#{fn}".html_safe, image_file_path, target: "_blank"%>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </ul>
+        <% end %>
+      </div>
   <script type="text/javascript">
     $("#create_postem").click(
       function() {
