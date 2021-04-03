@@ -39,78 +39,51 @@
           </div>
         </div>
       </section>
-
+<div class="grid__item one-whole lap-one-whole palm-one-whole push--bottom">
+        <h4>Postems</h4>
+        <p>Do you know more about the people or event in this record that you are willing to share with other researchers? We call these helpful additions to the database 'postems'. For example, you you know a more precise place or other details from a certificate or from a search of FreeREG, or more about the family from a search on FreeCEN, or have found other records about them in another country's registration system. Contribute what you know</p>
+        <% if @search_record.postems_list.present? %>
+          <p>Below are the list of postems</p>
+          <table class="table--bordered table--data">
+            <thead>
+              <th>Date</th>
+              <th>Postem</th>
+            </thead>
+            <tbody>
+              <% @search_record.postems_list.each do |postem|%>
+                <tr>
+                  <td>
+                    <%= DateTime.strptime("#{postem.Created}",'%s').to_date if postem.Created.present?%>
+                  </td>
+                  <td>
+                    <%= auto_link(postem.Information, :html => { :target => '_blank' }) %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        <% end%>
+        <p id="create_postem">Add a postem</p>
+        <div class="create_postem_div">
+          <%= semantic_form_for(@new_postem) do |f| %>
+            <%= f.hidden_field('honeypot', value: @new_postem[:honeypot])%>
+            <%= f.hidden_field('Hash', value: @new_postem.Hash) %>
+            <%= hidden_field_tag('search_query', @search_query.id) %>
+            <ol class="grid">
+              <li class="grid__item desk-wide-three-quarters desk-three-quarters lap-three-quarters palm-one-whole push--bottom">
+                <%= text_area_tag 'postem[Information]', nil, rows: 7, style: 'width: 100%'%>
+              </li>
+            
+              <div class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole">
+                <%= button_tag 'Add Postem', type: :submit, class: 'ladda-button kittumani' , id: 'postem_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
+              </div>
+            </ol>
+          <% end %>
+        </div>
+      </div>
       
   </div>
-  <div class="grid__item one-whole">
-        <h4>Scans</h4>
-        <% year = from_quarter_number_to_year(@search_record[:QuarterNumber]) %>
-        <% event = "#{record_type.capitalize}s" %>
-        <% quarter = QuarterDetails.quarters.key(calculate_quarter(@search_record[:QuarterNumber])).capitalize %>
-        <% image_server = "https://images.freebmd.org.uk/SUG" %>
-        <% scan_links = @search_record.uniq_scanlists %>
-        <% acc_scans = @search_record.get_non_multiple_scans %>
-        <% acc_mul_scans = @search_record.multiple_best_probable_scans%>
-        <% if scan_links.present? %>
-          <ul>
-            <div class="grid">
-              <% scan_links.each do |s| %>
-                <div class = "grid__item one-whole lap-one-whole palm-one-whole push--bottom" >
-                  <% series = s.SeriesRangeFileName %>
-                  <% image_file_path = "#{image_server}/#{year}/#{event}/#{quarter}/#{series}" %>
-                  <div class='labels'>
-                    <%#= label_tag 'scan_name','' , class: "ttip", tabindex: "0"  do %>
-                        <%#="#{series}".html_safe %>
-                    <%# end %>
-                  </div>
-                  <%= link_to "#{series}".html_safe, image_file_path, target: "_blank"%>
-                </div>
-              <% end %>
-            </div>
-          </ul>
-        <% end %>
-        <% if acc_scans.present? %>
-          <ul>
-            <div class="grid">
-              <% acc_scans.each do |s| %>
-                <div class = "grid__item one-whole lap-one-whole palm-one-whole push--bottom" >
-                  <% series = s.SeriesID %>
-                  <% range = "/#{s.range.Range}" if s.Range.present?%>
-                  <% file = s.Filename %>
-                  <% image_file_path = "#{image_server}/#{year}/#{event}/#{quarter}/#{series}#{range}/#{file}" %>
-                  <div class=''>
-                    <%#= label_tag 'scan_name','' , class: "ttip", tabindex: "0"  do %>
-                        <small><%#="#{series}#{range}/#{file}".html_safe %></small>
-                    <%# end %>
-                  </div>
-                  <%= link_to "#{series}#{range}/#{file}".html_safe, image_file_path, target: "_blank"%>
-                </div>
-              <% end %>
-            </div>
-          </ul>
-        <% end %>
-        <% if acc_mul_scans.present? %>
-          <ul>
-            <div class="grid">
-              <% acc_mul_scans.each do |s| %>
-                <div class = "grid__item one-whole lap-one-whole palm-one-whole push--bottom" >
-                  <% series = s.SeriesID %>
-                  <% range = "/#{s.Range}" if s.Range.present?%>
-                  <% @search_record.get_component_images.each do |fn| %>
-                    <% image_file_path = "#{image_server}/#{year}/#{event}/#{quarter}/#{series}#{range}/#{fn}" %>
-                    <div class=''>
-                      <%#= label_tag 'scan_name','' , class: "ttip", tabindex: "0"  do %>
-                          <%#="#{series}#{range}/#{fn}".html_safe %>
-                      <%# end %>
-                    </div>
-                    <%= link_to "#{series}#{range}/#{fn}".html_safe, image_file_path, target: "_blank"%>
-                  <% end %>
-                </div>
-              <% end %>
-            </div>
-          </ul>
-        <% end %>
-      </div>
+
   <script type="text/javascript">
     $("#create_postem").click(
       function() {
