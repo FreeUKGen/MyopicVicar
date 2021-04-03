@@ -4,7 +4,6 @@ class BestGuessController < ApplicationController
 
   def show
     #raise 'hi'
-    raise params.inspect
     redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
     @page_number = params[:page_number].to_i
     @search_record = BestGuess.where(RecordNumber: params[:id]).first
