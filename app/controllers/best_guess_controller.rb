@@ -27,8 +27,8 @@ class BestGuessController < ApplicationController
       previous_record_id = nil
       next_record_id = sorted_array[current_index + 1] unless current_index.nil? || sorted_array.nil? || current_index >= sorted_array.length - 1
       previous_record_id = sorted_array[current_index - 1] unless sorted_array.nil? || current_index.nil? || current_index.zero?
-      next_record_of_page = BestGuess.where(RecordNumber: next_record_id) if next_record_id.present?
-      previous_record_of_page = BestGuess.find(RecordNumber: previous_record_id) if previous_record_id.present?
+      next_record_of_page = BestGuess.find(next_record_id) if next_record_id.present?
+      previous_record_of_page = BestGuess.find(previous_record_id) if previous_record_id.present?
       [next_record_of_page, previous_record_of_page]
   end
 
