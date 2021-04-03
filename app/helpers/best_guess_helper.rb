@@ -39,4 +39,26 @@ module BestGuessHelper
   def from_quarter_to_year quarter
     (quarter-1)/4 + 1837
   end
+
+  def record_type entry
+    RecordType::display_name(entry.RecordTypeID)
+  end
+
+  def format_record_type_for_scan_url entry
+    record_type(entry).capitalize
+  end
+
+  def scan_url_constants entry
+    year = from_quarter_to_year(entry.QuarterNumber)
+    event = "#{format_record_type_for_scan_url(entry)}s"
+    quarter = QuarterDetails.quarters.key(calculate_quarter(entry.QuarterNumber)).capitalize
+    image_server = "https://images.freebmd.org.uk/SUG"
+    [year, event, quarter, image_server]
+  end
+
+  def scan_link_url entry
+    @year, @event, @quarter, @image_server = scan_url_constants(entry)
+    image_path = "#{@image_server}/#{@year}/#{@event}/#{@quarter}/"
+    image_path
+  end
 end

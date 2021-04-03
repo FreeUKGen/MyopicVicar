@@ -9,6 +9,9 @@ class BestGuessController < ApplicationController
     @search_record = BestGuess.where(RecordNumber: params[:id]).first
     page_entries = @search_record.entries_in_the_page
     @next_record_of_page, @previous_record_of_page = next_and_previous_entries_of_page(@search_record.RecordNumber, page_entries)
+    @scan_links = self.uniq_scanlists if self.uniq_scanlists.present?
+    @acc_scans = self.get_non_multiple_scans if self.get_non_multiple_scans.present?
+    @acc_mul_scans = self.multiple_best_probable_scans if self.multiple_best_probable_scans
     @display_date = false
     @new_postem = @search_record.best_guess_hash.postems.new
     @postem_honeypot = "postem#{rand.to_s[2..11]}"
@@ -19,6 +22,10 @@ class BestGuessController < ApplicationController
       @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
       @search_result.update_attribute(:viewed_records, @viewed_records)
     end
+  end
+
+  def from_quarter_to_year(quarter)
+    (quarter-1)/4 + 1837
   end
 
   def next_and_previous_entries_of_page(current, sorted_array)
