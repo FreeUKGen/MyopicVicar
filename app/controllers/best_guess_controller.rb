@@ -9,9 +9,9 @@ class BestGuessController < ApplicationController
     @search_record = BestGuess.where(RecordNumber: params[:id]).first
     page_entries = @search_record.entries_in_the_page
     @next_record_of_page, @previous_record_of_page = next_and_previous_entries_of_page(@search_record.RecordNumber, page_entries)
-    @scan_links = self.uniq_scanlists if self.uniq_scanlists.present?
-    @acc_scans = self.get_non_multiple_scans if self.get_non_multiple_scans.present?
-    @acc_mul_scans = self.multiple_best_probable_scans if self.multiple_best_probable_scans
+    @scan_links = @search_record.uniq_scanlists if @search_record.uniq_scanlists.present?
+    @acc_scans = @search_record.get_non_multiple_scans if @search_record.get_non_multiple_scans.present?
+    @acc_mul_scans = @search_record.multiple_best_probable_scans if @search_record.multiple_best_probable_scans
     @display_date = false
     @new_postem = @search_record.best_guess_hash.postems.new
     @postem_honeypot = "postem#{rand.to_s[2..11]}"
