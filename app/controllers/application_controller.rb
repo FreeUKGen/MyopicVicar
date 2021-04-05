@@ -53,7 +53,7 @@ class ApplicationController < ActionController::Base
         end
         session[:site_stats] = @site_stat
       when 'freecen'
-        site_stat = Freecen2SiteStatistic.order_by(interval_end: -1).last
+        site_stat = Freecen2SiteStatistic.order_by(interval_end: -1).first
         session[:site_stats] = {}
         session[:site_stats][:searches] = site_stat.present? ? site_stat.searches : 0
         session[:site_stats][:records] = site_stat.present? ? site_stat.records[:total][:total][:search_records] : 0
