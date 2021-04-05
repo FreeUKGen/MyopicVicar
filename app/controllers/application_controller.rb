@@ -53,13 +53,7 @@ class ApplicationController < ActionController::Base
         end
         session[:site_stats] = @site_stat
       when 'freecen'
-        time = Time.now.utc
-        last_midnight = Time.utc(time.year, time.month, time.day)
-        site_stat = Freecen2SiteStatistic.find_by(interval_end: last_midnight)
-        if site_stat.blank?
-          last_midnight = Time.new(time.year, time.month, time.day) - 1.day
-          site_stat = Freecen2SiteStatistic.find_by(interval_end: last_midnight)
-        end
+        site_stat = Freecen2SiteStatistic.order_by(interval_end: -1).last
         session[:site_stats] = {}
         session[:site_stats][:searches] = site_stat.present? ? site_stat.searches : 0
         session[:site_stats][:records] = site_stat.present? ? site_stat.records[:total][:total][:search_records] : 0
