@@ -41,11 +41,10 @@ class ApplicationController < ActionController::Base
 
   def load_last_stat
     if session[:site_stats].blank?
-      time = Time.now
-      last_midnight = Time.new(time.year, time.month, time.day)
-      # last_midnight = Time.new(2015,10,13)
       case appname.downcase
       when 'freereg'
+        time = Time.now
+        last_midnight = Time.new(time.year, time.month, time.day)
         @site_stat = SiteStatistic.collection.find({ interval_end: last_midnight }, 'projection' => { interval_end: 0, year: 0, month: 0, day: 0, _id: 0 }).first
         if @site_stat.blank?
           time = 1.day.ago
@@ -54,6 +53,8 @@ class ApplicationController < ActionController::Base
         end
         session[:site_stats] = @site_stat
       when 'freecen'
+        time = Time.now.utc
+        last_midnight = Time.utc(time.year, time.month, time.day)
         site_stat = Freecen2SiteStatistic.find_by(interval_end: last_midnight)
         if site_stat.blank?
           last_midnight = Time.new(time.year, time.month, time.day) - 1.day
