@@ -15,7 +15,7 @@
 #
 
 class ApplicationController < ActionController::Base
-
+  rescue_from ActionController::UnknownFormat, with: :missing_template
   protect_from_forgery :with => :reset_session
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :require_login
@@ -211,6 +211,12 @@ class ApplicationController < ActionController::Base
     a = true
     a = false if user.person_role == 'transcriber' || user.person_role == 'researcher' || user.person_role == 'technical'
     a
+  end
+
+  def missing_template
+    logger.warn("#{appname_upcase}:We encountered an unsupported format #{params}")
+    flash[:notice] = 'You requested the display of the page in an unsupported format'
+    redirect_to new_search_query_path
   end
 
   def reject_access(user, action)
