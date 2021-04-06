@@ -3,15 +3,17 @@ class BestGuessController < ApplicationController
   skip_before_action :require_login
 
   def show
-    #raise 'hi'
     redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
     @page_number = params[:page_number].to_i
     @search_record = BestGuess.where(RecordNumber: params[:id]).first
+    @current_record_number = current_record_number(params[:id], params[:record_of_page])
+    @current_record = BestGuess.where(RecordNumber: @current_record_number).first
     page_entries = @search_record.entries_in_the_page
-    @next_record_of_page, @previous_record_of_page = next_and_previous_entries_of_page(@search_record.RecordNumber, page_entries)
+    @next_record_of_page, @previous_record_of_page = next_and_previous_entries_of_page(@current_record_number, page_entries)
     @scan_links = @search_record.uniq_scanlists if @search_record.uniq_scanlists.present?
     @acc_scans = @search_record.get_non_multiple_scans if @search_record.get_non_multiple_scans.present?
     @acc_mul_scans = @search_record.multiple_best_probable_scans if @search_record.multiple_best_probable_scans
+
     @display_date = false
     @new_postem = @search_record.best_guess_hash.postems.new
     @postem_honeypot = "postem#{rand.to_s[2..11]}"
@@ -22,6 +24,15 @@ class BestGuessController < ApplicationController
       @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
       @search_result.update_attribute(:viewed_records, @viewed_records)
     end
+  end
+
+  def current_record_number(search_record_number, page_record_number: nil)
+    if page_record_number.present?
+      record_number = page_record_number
+    else
+      record_number = search_record_number
+    end
+    record_number
   end
 
   def from_quarter_to_year(quarter)

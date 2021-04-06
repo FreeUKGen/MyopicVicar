@@ -11,18 +11,16 @@
 
 <% title "Record Details" %>
 <%= link_to "#{app_icons[:left_arrow_pink]} Back".html_safe, search_query_path(@search_query, id: params[:search_id]), class: " btn   btn--small" if params[:search_id].present?%>
-
-
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
   <h1 class="accessibility">Entry Information</h1>
   <div class="grid">
     <div class="grid__item seven-tenths lap-seven-tenths palm-one-whole ">
-      <p class="alpha push-half--top project-text-color flush--bottom"><strong><%= "Entry Information: #{@search_record[:GivenName].upcase} #{@search_record[:Surname].upcase}" %></strong></p>
+      <p class="alpha push-half--top project-text-color flush--bottom"><strong><%= "Entry Information: #{@current_record[:GivenName].upcase} #{@current_record[:Surname].upcase}" %></strong></p>
       <hr>
       <section>
         <div class="grid__item two-thirds lap-one-whole palm-one-whole hard--left">
-          <% record_type = RecordType::display_name(@search_record.RecordTypeID)%>
-          <%= render partial: 'entry_information_table', locals: {record: @search_record, search: true, entry_type: record_type.downcase } %>
+          <% record_type = RecordType::display_name(@current_record.RecordTypeID)%>
+          <%= render partial: 'entry_information_table', locals: {record: @current_record, search: true, entry_type: record_type.downcase } %>
           <div class='push-half--top'>
             <div class="float--right">
               <% if params[:search_id].present? %>
@@ -32,8 +30,7 @@
                   <%= link_to '<i class="fa fa-chevron-left view_arrow"></i> Previous Entry of Page'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record_of_page, @previous_record_of_page.friendly_url), class: 'push-half--right push-half--top' %>
                 <% end %>
                 <% if @next_record_of_page.present?%>
-                
-                  <%= link_to 'Next Entry in page <i class="fa fa-chevron-right view_arrow"></i> '.html_safe, best_guess_path(@search_record, next_record_of_page: @next_record_of_page), class: 'push-half--right push-half--top' %>
+                  <%= link_to 'Next Entry in page <i class="fa fa-chevron-right view_arrow"></i> '.html_safe, best_guess_path(@search_record, record_of_page: @next_record_of_page), class: 'push-half--right push-half--top' %>
                 <% end %>
               <% end %>
             </div>
@@ -48,7 +45,7 @@
               <% @scan_links.each do |s| %>
                 <div class = "grid__item one-whole lap-one-whole palm-one-whole push--bottom" >
                   <% series = s.SeriesRangeFileName %>
-                  <% image_file_path = "#{scan_link_url(@search_record)}#{series}" %>
+                  <% image_file_path = "#{scan_link_url(@current_record)}#{series}" %>
                   <%= link_to "#{series}".html_safe, image_file_path, target: "_blank"%>
                 </div>
               <% end %>
@@ -63,7 +60,7 @@
                   <% series = s.SeriesID %>
                   <% range = "/#{s.range.Range}" if s.Range.present?%>
                   <% file = s.Filename %>
-                  <% image_file_path = "#{scan_link_url(@search_record)}#{series}#{range}/#{file}" %>
+                  <% image_file_path = "#{scan_link_url(@current_record)}#{series}#{range}/#{file}" %>
                   <%= link_to "#{series}#{range}/#{file}".html_safe, image_file_path, target: "_blank"%>
                 </div>
               <% end %>
@@ -77,8 +74,8 @@
                 <div class = "grid__item one-whole lap-one-whole palm-one-whole push--bottom" >
                   <% series = s.SeriesID %>
                   <% range = "/#{s.Range}" if s.Range.present?%>
-                  <% @search_record.multi_image_filenames.each do |fn| %>
-                    <% image_file_path = "#{scan_link_url(@search_record)}#{series}#{range}/#{fn}" %>
+                  <% @current_record.multi_image_filenames.each do |fn| %>
+                    <% image_file_path = "#{scan_link_url(@current_record)}#{series}#{range}/#{fn}" %>
                     <%= link_to "#{series}#{range}/#{fn}".html_safe, image_file_path, target: "_blank"%>
                   <% end %>
                 </div>
@@ -90,12 +87,12 @@
       <div class="grid__item one-whole lap-one-whole palm-one-whole push--bottom">
         <h4>Corrections</h4>
         <p>If you have a correction to this entry, please submit a correction. Please note that you can view the scan from which this entry was transcribed, please click on .Please examine this image to verify that any correction you submit is the same as in the GRO index.</p>
-        <%= link_to "I have viewed the scan and wish to submit a correction", report_error_contact_path(@search_record, :query => @search_query), target: "_blank" %>
+        <%= link_to "I have viewed the scan and wish to submit a correction", report_error_contact_path(@current_record, :query => @search_query), target: "_blank" %>
       </div>
       <div class="grid__item one-whole lap-one-whole palm-one-whole push--bottom">
         <h4>Postems</h4>
         <p>Do you know more about the people or event in this record that you are willing to share with other researchers? We call these helpful additions to the database 'postems'. For example, you you know a more precise place or other details from a certificate or from a search of FreeREG, or more about the family from a search on FreeCEN, or have found other records about them in another country's registration system. Contribute what you know</p>
-        <% if @search_record.postems_list.present? %>
+        <% if @current_record.postems_list.present? %>
           <p>Below are the list of postems</p>
           <table class="table--bordered table--data">
             <thead>
@@ -103,7 +100,7 @@
               <th>Postem</th>
             </thead>
             <tbody>
-              <% @search_record.postems_list.each do |postem|%>
+              <% @current_record.postems_list.each do |postem|%>
                 <tr>
                   <td>
                     <%= DateTime.strptime("#{postem.Created}",'%s').to_date if postem.Created.present?%>
