@@ -26,7 +26,7 @@ class BestGuessController < ApplicationController
     end
   end
 
-  def current_record_number(search_record_number, page_record_number: nil)
+  def current_record_number(search_record_number, page_record_number = nil)
     if page_record_number.present?
       record_number = page_record_number
     else
