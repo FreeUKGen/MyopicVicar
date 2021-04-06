@@ -5,8 +5,9 @@ class BestGuessController < ApplicationController
   def show
     redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
     @page_number = params[:page_number].to_i
+    record_from_page = params[:record_of_page].to_i if params[:record_of_page].present?
     @search_record = BestGuess.where(RecordNumber: params[:id]).first
-    @current_record_number = current_record_number_to_display(params[:id], params[:record_of_page])
+    @current_record_number = current_record_number_to_display(params[:id].to_i, record_from_page)
     @current_record = BestGuess.where(RecordNumber: @current_record_number).first
     page_entries = @search_record.entries_in_the_page
     @next_record_of_page, @previous_record_of_page = next_and_previous_entries_of_page(@current_record_number, page_entries)
