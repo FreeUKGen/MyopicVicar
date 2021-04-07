@@ -92,7 +92,7 @@
       <div class="grid__item one-whole lap-one-whole palm-one-whole push--bottom">
         <h4>Postems</h4>
         <p>Do you know more about the people or event in this record that you are willing to share with other researchers? We call these helpful additions to the database 'postems'. For example, you you know a more precise place or other details from a certificate or from a search of FreeREG, or more about the family from a search on FreeCEN, or have found other records about them in another country's registration system. Contribute what you know</p>
-        <% if @current_record.postems_list.present? %>
+        <%# if @current_record.postems_list.present? %>
           <p>Below are the list of postems</p>
           <table class="table--bordered table--data">
             <thead>
@@ -112,7 +112,7 @@
               <%# end %>
             </tbody>
           </table>
-        <% end%>
+        <%# end%>
         <p id="create_postem">Add a postem</p>
         <!--div class="create_postem_div">
           <%#= semantic_form_for(@new_postem) do |f| %>
