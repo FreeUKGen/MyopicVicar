@@ -25,20 +25,21 @@
       <tbody>
         <% @order.each do |field| %>
           <% if @all_data.present? || @entry[field].present? %>
+            <% look_up_entry_chain(@entry) %>
             <% case field %>
             <% when 'county' %>
             <tr>
               <td ><%= field.gsub('_',' ').capitalize %></td>
-              <td ><%= @entry[field] %></td>
+              <td ><%= county_name_for_entry %></td>
             </tr>
             <% when 'place' %>
             <tr>
               <td ><%= field.gsub('_',' ').capitalize %>
                 <small> (Links to more information)</small></td>
               <% if @place_id.present? %>
-                <td ><%= link_to(@entry[field], place_freereg_content_path(@place_id)) %></td>
+                <td ><%= link_to(place_name_for_entry, place_freereg_content_path(@place_id)) %></td>
               <% else %>
-                <td ><%= @entry[field] %></td>
+                <td ><%= place_name_for_entry %></td>
               <% end %>
             </tr>
             <% when 'church_name' %>
@@ -46,9 +47,9 @@
               <td ><%= field.gsub('_',' ').capitalize %>
                 <small> (Links to more information)</small></td>
               <% if @church_id.present? %>
-                <td ><%= link_to(@entry[field], church_freereg_content_path(@church_id)) %></td>
+                <td ><%= link_to(church_name_for_entry, church_freereg_content_path(@church_id)) %></td>
               <% else %>
-                <td ><%= @entry[field] %></td>
+                <td ><%= church_name_for_entry %></td>
               <% end %>
             </tr>
             <% when 'register_type' %>
@@ -56,9 +57,9 @@
               <td ><%= field.gsub('_',' ').capitalize%>
                 <small> (Links to more information)</small></td>
               <% if @register_id.present? %>
-                <td ><%= link_to(@entry[field], register_freereg_content_path(@register_id)) %></td>
+                <td ><%= link_to(register_name_for_entry, register_freereg_content_path(@register_id)) %></td>
               <% else %>
-                <td ><%= register_name_for_entry(@entry[field]) %></td>
+                <td ><%= register_name_for_entry %></td>
               <% end %>
             </tr>
             <% when 'image_file_name' %>
