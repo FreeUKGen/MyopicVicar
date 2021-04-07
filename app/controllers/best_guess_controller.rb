@@ -16,7 +16,7 @@ class BestGuessController < ApplicationController
     #@acc_mul_scans = @current_record.multiple_best_probable_scans if @current_record.multiple_best_probable_scans.present?
 
     @display_date = false
-    @new_postem = @current_record.best_guess_hash.postems.new
+    #@new_postem = @current_record.best_guess_hash.postems.new
     @postem_honeypot = "postem#{rand.to_s[2..11]}"
     session[:postem_honeypot] = @postem_honeypot
     if @search_query.present?
