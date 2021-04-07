@@ -194,8 +194,8 @@ class UseridDetailsController < ApplicationController
     redirect_back(fallback_location: options_userid_details_path, notice: 'The userid was not found') && return if @userid.blank?
 
     redirect_back(fallback_location: options_userid_details_path, notice: 'The removal of the userid not permitted as they have batches') && return if @userid.has_files?
-    @userid.update_attributes(syndicate: 'TO BE DESTROYED')
-    flash[:notice] = 'Userid moved to the TO BE DESTROYED syndicate for review'
+    @userid.update_attributes(syndicate: 'To be Destroyed')
+    flash[:notice] = 'Userid moved to the To be Destroyed syndicate for review'
     redirect_to(userid_detail_path(@userid.id))
   end
 
