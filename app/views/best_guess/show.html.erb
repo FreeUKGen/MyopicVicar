@@ -100,16 +100,16 @@
               <th>Postem</th>
             </thead>
             <tbody>
-              <% @current_record.postems_list.each do |postem|%>
-                <tr>
+              <%# @current_record.postems_list.each do |postem|%>
+                <!--tr>
                   <td>
-                    <%= DateTime.strptime("#{postem.Created}",'%s').to_date if postem.Created.present?%>
+                    <%#= DateTime.strptime("#{postem.Created}",'%s').to_date if postem.Created.present?%>
                   </td>
                   <td>
-                    <%= auto_link(postem.Information, :html => { :target => '_blank' }) %>
+                    <%#= auto_link(postem.Information, :html => { :target => '_blank' }) %>
                   </td>
-                </tr>
-              <% end %>
+                </tr-->
+              <%# end %>
             </tbody>
           </table>
         <% end%>
