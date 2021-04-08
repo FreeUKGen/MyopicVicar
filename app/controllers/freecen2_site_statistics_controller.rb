@@ -26,6 +26,9 @@ class Freecen2SiteStatisticsController < ApplicationController
       statistics = Freecen2SiteStatistic.all.order_by(interval_end: -1)
       @county_stats = @freecen2_site_statistics[0].records[session[:chapman_code]]
       @inverval_end = @freecen2_site_statistics[0].interval_end
+      session[:stats_view] = true
+      session[:stats_todate] = @freecen2_site_statistics[0].interval_end
+      session.delete(:stats_year)
       render :index_county
     else
       @county = session[:county].present? ? session[:county] : 'total'
