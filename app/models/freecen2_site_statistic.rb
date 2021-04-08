@@ -19,8 +19,9 @@ class Freecen2SiteStatistic
   class << self
 
     def calculate(time = Time.now.utc)
-      last_midnight = Time.new(time.year, time.month, time.day)
-      previous_midnight = Time.new(time.year, time.month, time.day) - 30 * 24 * 3600
+      last_midnight = Time.utc(time.year, time.month, time.day)
+      previous_midnight = Time.utc(time.year, time.month, time.day) - 24.hours
+      p " Bewteen #{previous_midnight} and #{last_midnight}"
       #last_midnight = Time.new(2019,12,22)
       # find the existing record if it exists
       stat = Freecen2SiteStatistic.find_by(interval_end: last_midnight)

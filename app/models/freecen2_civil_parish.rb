@@ -72,7 +72,7 @@ class Freecen2CivilParish
       new_civil_parish_params[:year] = params['year']
       new_civil_parish_params[:reason_changed] = params['reason_changed']
       new_civil_parish_params[:freecen2_piece_id] = params['freecen2_piece_id']
-      new_civil_parish_params[:name] = params['name']
+      new_civil_parish_params[:name] = params['name'].strip if params['name'].present?
       new_civil_parish_params[:number] = params['number']
       new_civil_parish_params[:suffix] = params['suffix']
       new_civil_parish_params[:note] = params['note']

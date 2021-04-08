@@ -207,8 +207,8 @@ class Freecen2Piece
       new_piece_params[:year] = params['year']
       new_piece_params[:reason_changed] = params['reason_changed']
       new_piece_params[:freecen2_district_id] = params['freecen2_district_id']
-      new_piece_params[:name] = params['name']
-      new_piece_params[:number] = params['number']
+      new_piece_params[:name] = params['name'].strip if params['name'].present?
+      new_piece_params[:number] = params['number'].strip if params['number'].present?
       new_piece_params[:code] = params['code']
       new_piece_params[:notes] = params['notes']
       new_piece_params[:prenote] = params['prenote']

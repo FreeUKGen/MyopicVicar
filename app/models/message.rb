@@ -212,14 +212,12 @@ class Message
 
   def communicate_message_reply(original_message)
     to_userid = original_message.userid
-    copy_to = syndicate_coordinator if syndicate.present?
+    copy_to = []
     UserMailer.message_reply(self, to_userid, copy_to, original_message, userid).deliver_now
     add_message_to_userid_messages(UseridDetail.look_up_id(to_userid)) unless to_userid.blank?
-    add_message_to_userid_messages(UseridDetail.look_up_id(copy_to)) unless copy_to.blank?
-    recipients = Array.new
+    recipients = []
     recipients << to_userid
-    recipients << copy_to unless copy_to.present? && copy_to == to_userid
-    copies = Array.new
+    copies = []
     reply_sent_messages(self, userid, recipients, copies)
   end
 
