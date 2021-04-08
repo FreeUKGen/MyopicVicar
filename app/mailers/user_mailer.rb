@@ -118,8 +118,8 @@ class UserMailer < ActionMailer::Base
     @sending = UseridDetail.userid(sender_userid).first
     sender_email = UseridDetail.create_friendly_from_email(sender_userid)
     to_email = UseridDetail.create_friendly_from_email(to_userid)
-    copy_to_email = UseridDetail.create_friendly_from_email(copy_to_userid)
-    mail(to: [to_email, sender_email, copy_to_email],  subject: "#{@sending.person_forename} #{@sending.person_surname} of #{@appname} sent a message #{@reply.subject} in response to reference #{@original_message.identifier}")
+    copy_to_email = copy_to_userid.present? ? UseridDetail.create_friendly_from_email(copy_to_userid) : ''
+    mail(to: [to_email, sender_email, copy_to_email], subject: "#{@sending.person_forename} #{@sending.person_surname} of #{@appname} sent a message #{@reply.subject} in response to reference #{@original_message.identifier}")
   end
 
   def feedback_action_request(contact, send_to, copies_to)

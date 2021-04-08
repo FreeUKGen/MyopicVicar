@@ -161,12 +161,9 @@ class Freecen2Place
           codes << ChapmanCode.values_at(county)
         end
         results = Freecen2Place.where('$text' => { '$search' => place_name }, 'disabled' => 'false', :chapman_code => { '$in' => codes })
-        .or(Freecen2Place.where("alternate_freecen2_place_names.alternate_name" => place_name, :chapman_code => { '$in' => codes }))
         .order_by(place_name: 1, chapman_code: 1).all
       else
-        results = Freecen2Place.where('$text' => { '$search' => place_name }, 'disabled' => 'false')
-        .or(Freecen2Place.where("alternate_freecen2_place_names.alternate_name" => place_name, :chapman_code => { '$in' => codes }))
-        .order_by(place_name: 1, chapman_code: 1).all
+        results = Freecen2Place.where('$text' => { '$search' => place_name }, 'disabled' => 'false').order_by(place_name: 1, chapman_code: 1).all
       end
       results
     end

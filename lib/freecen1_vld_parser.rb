@@ -317,9 +317,13 @@ module Freecen
       VLD_POSITION_MAP.each_pair do |attribute, location|
         record[attribute] = line[location[0],location[1]]
       end
-      p line if record[:suffix].blank? || record[:suffix].length < 4 || !/\A\d+\z/.match(record[:hh]) || !/\A\d+\s+\z/.match(record[:fo_n]) || !/\A\d+\z/.match(record[:seq_in_household])
-      p record if record[:suffix].blank? || record[:suffix].length < 4 || !/\A\d+\z/.match(record[:hh]) || !/\A\d+\s+\z/.match(record[:fo_n]) || !/\A\d+\z/.match(record[:seq_in_household])
-      crash if record[:suffix].blank? || record[:suffix].length < 4 || !/\A\d+\z/.match(record[:hh]) || !/\A\d+\s+\z/.match(record[:fo_n]) || !/\A\d+\z/.match(record[:seq_in_household])
+      p line if  record[:suffix].length < 4 || !/\A\d+\z/.match(record[:hh]) || !/\A\d+\s+\z/.match(record[:fo_n]) || !/\A\d+\z/.match(record[:seq_in_household])
+      p record if  record[:suffix].length < 4 || !/\A\d+\z/.match(record[:hh]) || !/\A\d+\s+\z/.match(record[:fo_n]) || !/\A\d+\z/.match(record[:seq_in_household])
+      p 'suffix short' if record[:suffix].length < 4
+      p 'household not numeric' if !/\A\d+\z/.match(record[:hh])
+      p 'Folio number not numeric ' if !/\A\d+\s+\z/.match(record[:fo_n])
+      p 'seuence ont numeric ' if !/\A\d+\z/.match(record[:seq_in_household])
+      crash if record[:suffix].length < 4 || !/\A\d+\z/.match(record[:hh]) || !/\A\d+\s+\z/.match(record[:fo_n]) || !/\A\d+\z/.match(record[:seq_in_household])
       record
     end
 

@@ -37,7 +37,7 @@ class Freecen1VldFilesController < ApplicationController
     else
       @type = 'all'
     end
-    redirect_to manage_resources_path && return
+    redirect_to new_manage_resource_path && return
   end
 
   def index
@@ -46,7 +46,9 @@ class Freecen1VldFilesController < ApplicationController
       @freecen1_vld_files = Freecen1VldFile.chapman(session[:chapman_code]).order_by(full_year: 1, piece: 1)
       @chapman_code = session[:chapman_code]
     else
-      redirect_to manage_resources_path && return
+      flash[:notice] = 'A Chapman Code for the display of Freecen vld files does not exist'
+      redirect_to new_manage_resource_path
+      return
     end
   end
 
@@ -74,7 +76,7 @@ class Freecen1VldFilesController < ApplicationController
       @freecen1_vld_file = Freecen1VldFile.find(params[:id])
       @chapman_code = session[:chapman_code]
     end
-    redirect_to manage_resources_path && return
+    redirect_to new_manage_resource_path && return
   end
 
   def load_people
