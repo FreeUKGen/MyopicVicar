@@ -15,7 +15,7 @@
 #
 
 class ApplicationController < ActionController::Base
-
+  rescue_from ActionController::UnknownFormat, with: :missing_template
   protect_from_forgery :with => :reset_session
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :require_login
@@ -41,11 +41,10 @@ class ApplicationController < ActionController::Base
 
   def load_last_stat
     if session[:site_stats].blank?
-      time = Time.now
-      last_midnight = Time.new(time.year, time.month, time.day)
-      # last_midnight = Time.new(2015,10,13)
       case appname.downcase
       when 'freereg'
+        time = Time.now
+        last_midnight = Time.new(time.year, time.month, time.day)
         @site_stat = SiteStatistic.collection.find({ interval_end: last_midnight }, 'projection' => { interval_end: 0, year: 0, month: 0, day: 0, _id: 0 }).first
         if @site_stat.blank?
           time = 1.day.ago
@@ -54,11 +53,7 @@ class ApplicationController < ActionController::Base
         end
         session[:site_stats] = @site_stat
       when 'freecen'
-        site_stat = Freecen2SiteStatistic.find_by(interval_end: last_midnight)
-        if site_stat.blank?
-          last_midnight = Time.new(time.year, time.month, time.day) - 1.day
-          site_stat = Freecen2SiteStatistic.find_by(interval_end: last_midnight)
-        end
+        site_stat = Freecen2SiteStatistic.order_by(interval_end: -1).first
         session[:site_stats] = {}
         session[:site_stats][:searches] = site_stat.present? ? site_stat.searches : 0
         session[:site_stats][:records] = site_stat.present? ? site_stat.records[:total][:total][:search_records] : 0
@@ -216,6 +211,12 @@ class ApplicationController < ActionController::Base
     a = true
     a = false if user.person_role == 'transcriber' || user.person_role == 'researcher' || user.person_role == 'technical'
     a
+  end
+
+  def missing_template
+    logger.warn("#{appname_upcase}:We encountered an unsupported format #{params}")
+    flash[:notice] = 'You requested the display of the page in an unsupported format'
+    redirect_to new_search_query_path
   end
 
   def reject_access(user, action)

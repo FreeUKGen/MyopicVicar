@@ -83,11 +83,11 @@ namespace :foo do
     DeleteIncorrectTnaDistrict.process(args.district)
     puts "Task complete."
   end
-  task :delete_incorrect_chapman_district, [:chapman] => [:environment] do |t, args|
+  task :delete_incorrect_chapman_district, [:chapman, :year] => [:environment] do |t, args|
     # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
     require 'delete_incorrect_chapman_district'
-    puts "Deleting Civil Parishes, Pieces and the District #{args.chapman} "
-    DeleteIncorrectChapmanDistrict.process(args.chapman)
+    puts "Deleting Civil Parishes, Pieces and the District #{args.chapman} year #{args.year}"
+    DeleteIncorrectChapmanDistrict.process(args.chapman, args.year)
     puts "Task complete."
   end
 

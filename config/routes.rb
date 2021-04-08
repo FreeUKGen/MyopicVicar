@@ -334,6 +334,7 @@ MyopicVicar::Application.routes.draw do
   get 'userid_details/technical_registration', :to =>'userid_details#technical_registration', :as => :technical_registration_userid_detail
   get 'userid_details/general', :to =>'userid_details#general', :as => :general_userid_detail
   get 'userid_details/:id/disable(.:format)', :to => 'userid_details#disable', :as => :disable_userid_detail
+  get 'userid_details/:id/move(.:format)', :to => 'userid_details#move', :as => :move_userid_detail
   get 'userid_details/:id/syndicate(.:format)', :to => 'userid_details#syndicate', :as => :syndicate_userid_detail
   get 'userid_details/my_own',  :to => 'userid_details#my_own', :as => :my_own_userid_detail
   get 'userid_details/all', :to => 'userid_details#all', :as => :all_userid_detail

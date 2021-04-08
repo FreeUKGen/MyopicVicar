@@ -385,6 +385,38 @@ module ApplicationHelper
     register_name
   end
 
+  def look_up_entry_chain(entry)
+    @file = entry.freereg1_csv_file
+    @register = @file.register
+    if @register.blank?
+      @church = nil
+      @place = nil
+      @county = nil
+    else
+      @church = @register.church
+      if @church.blank?
+        @place = nil
+        @county = nil
+      else
+        @place = @church.place
+        @county = @place.present? ? @place.county : nil
+      end
+    end
+  end
+
+  def county_name_for_entry
+    county_name = @county.present? ? @county : 'Unknown county'
+  end
+  def place_name_for_entry
+    place_name = @place.present? ? @place.place_name : 'Unknown place'
+  end
+  def church_name_for_entry
+    church_name = @church.present? ? @church.church_name : 'Unknown church'
+  end
+  def register_name_for_entry
+    register_name = @register.blank? ? 'File does not belong to a register' : RegisterType::display_name(@register.register_type)
+  end
+
   def county_name(file)
     county_name = file.county #note county has chapman in file and record)
     case

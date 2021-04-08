@@ -85,7 +85,7 @@ class PhysicalFilesController < ApplicationController
     @paginate = false
     @user = get_user
     session[:by_userid] = false
-    session[:who] = @user
+    session[:who] = @user.userid
     @has_access = ((@user.person_role == 'data_manager') || (@user.person_role == 'system_administrator'))
     render 'index'
   end
