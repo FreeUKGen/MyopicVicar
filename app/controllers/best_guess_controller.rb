@@ -5,20 +5,25 @@ class BestGuessController < ApplicationController
   def show
     redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
     @page_number = params[:page_number].to_i
+    @option = params[:filter_option] if params[:filter_option].present?
     record_from_page = params[:record_of_page].to_i if params[:record_of_page].present?
     @search_record = BestGuess.where(RecordNumber: params[:id]).first
     @current_record_number = current_record_number_to_display(params[:id].to_i, record_from_page)
     @current_record = BestGuess.where(RecordNumber: @current_record_number).first
     page_entries = @search_record.entries_in_the_page
     @next_record_of_page, @previous_record_of_page = next_and_previous_entries_of_page(@current_record_number, page_entries)
-   # @scan_links = @current_record.uniq_scanlists if @current_record.uniq_scanlists.present?
-    #@acc_scans = @current_record.get_non_multiple_scans if @current_record.get_non_multiple_scans.present?
-    #@acc_mul_scans = @current_record.multiple_best_probable_scans if @current_record.multiple_best_probable_scans.present?
+    if @option == '1'
+      @scan_links = @current_record.uniq_scanlists if @current_record.uniq_scanlists.present?
+      @acc_scans = @current_record.get_non_multiple_scans if @current_record.get_non_multiple_scans.present?
+      @acc_mul_scans = @current_record.multiple_best_probable_scans if @current_record.multiple_best_probable_scans.present?
+    end
 
     @display_date = false
-    #@new_postem = @current_record.best_guess_hash.postems.new
-    @postem_honeypot = "postem#{rand.to_s[2..11]}"
-    session[:postem_honeypot] = @postem_honeypot
+    if @option == '2'
+      @new_postem = @current_record.best_guess_hash.postems.new
+      @postem_honeypot = "postem#{rand.to_s[2..11]}"
+      session[:postem_honeypot] = @postem_honeypot
+    end
     if @search_query.present?
       @search_result = @search_query.search_result
       @viewed_records = @search_result.viewed_records

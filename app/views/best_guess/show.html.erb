@@ -10,7 +10,22 @@
 <%= render 'flash_notice' %>
 
 <% title "Record Details" %>
-<%= link_to "#{app_icons[:left_arrow_pink]} Back".html_safe, search_query_path(@search_query, id: params[:search_id]), class: " btn   btn--small" if params[:search_id].present?%>
+<div class="grid">
+  <div class="grid__item seven-tenths lap-seven-tenths palm-one-whole">
+    <div class="grid__item one-third lap-one-third palm-one-half hard--left">
+      <%= link_to "#{app_icons[:left_arrow_pink]} Back".html_safe, search_query_path(@search_query, id: params[:search_id]), class: " btn   btn--small" if params[:search_id].present?%>
+    </div>
+    <div class="grid__item one-third lap-one-third palm-one-half float--right">
+      <%= form_tag friendly_bmd_record_details_path(params[:search_id], @search_record, @search_record.friendly_url), method: :get, id: 'option_form' do %>
+        <%= select_tag('filter_option', options_for_select([['Scan', "1"], ['Postems', "2"], ['Printable Format', "3"]], selected: @option), {:prompt => "More Options", id: 'filter_results', tabindex: "0", onchange: "more_options()"}) %>
+      <% end %>
+      <!--div id="tool_button" class="btn btn--small float--right" onclick="myFunction()"><i class="fa fa-cog" aria-hidden="true"></i> More Options</div-->
+    </div>  
+    
+  </div>
+</div>
+
+<%#= link_to "#{app_icons[:left_arrow_pink]} Back".html_safe, search_query_path(@search_query, id: params[:search_id]), class: " btn   btn--small" if params[:search_id].present?%>
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
   <h1 class="accessibility">Entry Information</h1>
   <div class="grid">
@@ -37,100 +52,104 @@
           </div>
         </div>
       </section>
-      <div class="grid__item one-whole">
-        <h4>Scans</h4>
-        <% if @scan_links.present? %>
-          <ul>
-            <div class="grid">
-              <% @scan_links.each do |s| %>
-                <div class = "grid__item one-whole lap-one-whole palm-one-whole push--bottom" >
-                  <% series = s.SeriesRangeFileName %>
-                  <% image_file_path = "#{scan_link_url(@current_record)}#{series}" %>
-                  <%= link_to "#{series}".html_safe, image_file_path, target: "_blank"%>
-                </div>
-              <% end %>
-            </div>
-          </ul>
-        <% end %>
-        <% if @acc_scans.present? %>
-          <ul>
-            <div class="grid">
-              <% @acc_scans.each do |s| %>
-                <div class = "grid__item one-whole lap-one-whole palm-one-whole push--bottom" >
-                  <% series = s.SeriesID %>
-                  <% range = "/#{s.range.Range}" if s.Range.present?%>
-                  <% file = s.Filename %>
-                  <% image_file_path = "#{scan_link_url(@current_record)}#{series}#{range}/#{file}" %>
-                  <%= link_to "#{series}#{range}/#{file}".html_safe, image_file_path, target: "_blank"%>
-                </div>
-              <% end %>
-            </div>
-          </ul>
-        <% end %>
-        <% if @acc_mul_scans.present? %>
-          <ul>
-            <div class="grid">
-              <% @acc_mul_scans.each do |s| %>
-                <div class = "grid__item one-whole lap-one-whole palm-one-whole push--bottom" >
-                  <% series = s.SeriesID %>
-                  <% range = "/#{s.Range}" if s.Range.present?%>
-                  <% @current_record.multi_image_filenames.each do |fn| %>
-                    <% image_file_path = "#{scan_link_url(@current_record)}#{series}#{range}/#{fn}" %>
-                    <%= link_to "#{series}#{range}/#{fn}".html_safe, image_file_path, target: "_blank"%>
-                  <% end %>
-                </div>
-              <% end %>
-            </div>
-          </ul>
-        <% end %>
-      </div>
+      <% if @option == '1' %>
+        <div class="grid__item one-whole">
+          <h4>Scans</h4>
+          <% if @scan_links.present? %>
+            <ul>
+              <div class="grid">
+                <% @scan_links.each do |s| %>
+                  <div class = "grid__item one-whole lap-one-whole palm-one-whole push--bottom" >
+                    <% series = s.SeriesRangeFileName %>
+                    <% image_file_path = "#{scan_link_url(@current_record)}#{series}" %>
+                    <%= link_to "#{series}".html_safe, image_file_path, target: "_blank"%>
+                  </div>
+                <% end %>
+              </div>
+            </ul>
+          <% end %>
+          <% if @acc_scans.present? %>
+            <ul>
+              <div class="grid">
+                <% @acc_scans.each do |s| %>
+                  <div class = "grid__item one-whole lap-one-whole palm-one-whole push--bottom" >
+                    <% series = s.SeriesID %>
+                    <% range = "/#{s.range.Range}" if s.Range.present?%>
+                    <% file = s.Filename %>
+                    <% image_file_path = "#{scan_link_url(@current_record)}#{series}#{range}/#{file}" %>
+                    <%= link_to "#{series}#{range}/#{file}".html_safe, image_file_path, target: "_blank"%>
+                  </div>
+                <% end %>
+              </div>
+            </ul>
+          <% end %>
+          <% if @acc_mul_scans.present? %>
+            <ul>
+              <div class="grid">
+                <% @acc_mul_scans.each do |s| %>
+                  <div class = "grid__item one-whole lap-one-whole palm-one-whole push--bottom" >
+                    <% series = s.SeriesID %>
+                    <% range = "/#{s.Range}" if s.Range.present?%>
+                    <% @current_record.multi_image_filenames.each do |fn| %>
+                      <% image_file_path = "#{scan_link_url(@current_record)}#{series}#{range}/#{fn}" %>
+                      <%= link_to "#{series}#{range}/#{fn}".html_safe, image_file_path, target: "_blank"%>
+                    <% end %>
+                  </div>
+                <% end %>
+              </div>
+            </ul>
+          <% end %>
+        </div>
+      <% end %>
       <div class="grid__item one-whole lap-one-whole palm-one-whole push--bottom">
         <h4>Corrections</h4>
         <p>If you have a correction to this entry, please submit a correction. Please note that you can view the scan from which this entry was transcribed, please click on .Please examine this image to verify that any correction you submit is the same as in the GRO index.</p>
         <%= link_to "I have viewed the scan and wish to submit a correction", report_error_contact_path(@current_record, :query => @search_query), target: "_blank" %>
       </div>
-      <div class="grid__item one-whole lap-one-whole palm-one-whole push--bottom">
-        <h4>Postems</h4>
-        <p>Do you know more about the people or event in this record that you are willing to share with other researchers? We call these helpful additions to the database 'postems'. For example, you you know a more precise place or other details from a certificate or from a search of FreeREG, or more about the family from a search on FreeCEN, or have found other records about them in another country's registration system. Contribute what you know</p>
-        <%# if @current_record.postems_list.present? %>
-          <p>Below are the list of postems</p>
-          <table class="table--bordered table--data">
-            <thead>
-              <th>Date</th>
-              <th>Postem</th>
-            </thead>
-            <tbody>
-              <%# @current_record.postems_list.each do |postem|%>
-                <!--tr>
-                  <td>
-                    <%#= DateTime.strptime("#{postem.Created}",'%s').to_date if postem.Created.present?%>
-                  </td>
-                  <td>
-                    <%#= auto_link(postem.Information, :html => { :target => '_blank' }) %>
-                  </td>
-                </tr-->
-              <%# end %>
-            </tbody>
-          </table>
-        <%# end%>
-        <p id="create_postem">Add a postem</p>
-        <!--div class="create_postem_div">
-          <%#= semantic_form_for(@new_postem) do |f| %>
-            <%#= f.hidden_field('honeypot', value: @new_postem[:honeypot])%>
-            <%#= f.hidden_field('Hash', value: @new_postem.Hash) %>
-            <%#= hidden_field_tag('search_query', @search_query.id) %>
-            <ol class="grid">
-              <li class="grid__item desk-wide-three-quarters desk-three-quarters lap-three-quarters palm-one-whole push--bottom">
-                <%#= text_area_tag 'postem[Information]', nil, rows: 7, style: 'width: 100%'%>
-              </li>
-            
-              <div class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole">
-                <%#= button_tag 'Add Postem', type: :submit, class: 'ladda-button kittumani' , id: 'postem_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
-              </div>
-            </ol>
-          <%# end %>
-        </div-->
-      </div>
+      <% if @option == '2' %>
+        <div class="grid__item one-whole lap-one-whole palm-one-whole push--bottom">
+          <h4>Postems</h4>
+          <p>Do you know more about the people or event in this record that you are willing to share with other researchers? We call these helpful additions to the database 'postems'. For example, you you know a more precise place or other details from a certificate or from a search of FreeREG, or more about the family from a search on FreeCEN, or have found other records about them in another country's registration system. Contribute what you know</p>
+          <% if @current_record.postems_list.present? %>
+            <p>Below are the list of postems</p>
+            <table class="table--bordered table--data">
+              <thead>
+                <th>Date</th>
+                <th>Postem</th>
+              </thead>
+              <tbody>
+                <% @current_record.postems_list.each do |postem|%>
+                  <tr>
+                    <td>
+                      <%= DateTime.strptime("#{postem.Created}",'%s').to_date if postem.Created.present?%>
+                    </td>
+                    <td>
+                      <%= auto_link(postem.Information, :html => { :target => '_blank' }) %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          <% end%>
+          <p id="create_postem">Add a postem</p>
+          <div class="create_postem_div">
+            <%= semantic_form_for(@new_postem) do |f| %>
+              <%= f.hidden_field('honeypot', value: @new_postem[:honeypot])%>
+              <%= f.hidden_field('Hash', value: @new_postem.Hash) %>
+              <%= hidden_field_tag('search_query', @search_query.id) %>
+              <ol class="grid">
+                <li class="grid__item desk-wide-three-quarters desk-three-quarters lap-three-quarters palm-one-whole push--bottom">
+                  <%= text_area_tag 'postem[Information]', nil, rows: 7, style: 'width: 100%'%>
+                </li>
+              
+                <div class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole">
+                  <%= button_tag 'Add Postem', type: :submit, class: 'ladda-button kittumani' , id: 'postem_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
+                </div>
+              </ol>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
     </div>
     <% unless print_friendly %>
       <% if device_type == :desktop %>
@@ -147,6 +166,9 @@
   </div>
 
   <script type="text/javascript">
+    function more_options(){
+      $('#option_form').submit();
+    };
     $("#create_postem").click(
       function() {
         $(".create_postem_div").show();
