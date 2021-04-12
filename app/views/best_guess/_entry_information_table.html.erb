@@ -77,5 +77,7 @@
         <%#= record.transcribers.join(', ') if record.transcribers.present? %>
       </td>
     </tr>
+    <td  colspan=2><%= link_to 'Report an Error in this Data', report_error_contact_path(record.RecordNumber, query: query), class: 'btn btn--natural' unless  record.blank? || query.blank? %>
+    </td>
   </tbody>
 </table>

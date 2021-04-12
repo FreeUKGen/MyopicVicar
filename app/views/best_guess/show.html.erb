@@ -32,26 +32,39 @@
     <div class="grid__item seven-tenths lap-seven-tenths palm-one-whole ">
       <p class="alpha push-half--top project-text-color flush--bottom"><strong><%= "Entry Information: #{@current_record[:GivenName].upcase} #{@current_record[:Surname].upcase}" %></strong></p>
       <hr>
+      <span  class='additional'>
+        While we have made all efforts to correctly record the information in the original document there may be different interpretations of the written words. <b>If you have access to the original document</b> and believe we have made a mistake you are encouraged to report this to us.
+        <%= link_to 'Report an Error in this Data', report_error_contact_path(@current_record.RecordNumber, query: @search_query), class: 'btn btn--natural' unless  @current_record.blank? || @search_query.blank? %>
+      </span>
       <section>
         <div class="grid__item two-thirds lap-one-whole palm-one-whole hard--left">
           <% record_type = RecordType::display_name(@current_record.RecordTypeID)%>
-          <%= render partial: 'entry_information_table', locals: {record: @current_record, search: true, entry_type: record_type.downcase } %>
-          <div class='push-half--top'>
-            <div class="float--right">
-              <% if params[:search_id].present? %>
+          <%= render partial: 'entry_information_table', locals: {record: @current_record, search: true, entry_type: record_type.downcase, query: @search_query } %>
+        </div>
+        <div class='push-half--top'>
+          <div class="grid__item one-whole">
+            <% if params[:search_id].present? %>
+              <div class='grid__item one-quarter lap-one-quarter palm-one-half'>
                 <%= link_to '<i class="fa fa-chevron-left view_arrow"></i> Previous Result'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record, @previous_record.friendly_url), class: 'push-half--right push-half--top' unless @previous_record.nil? %>
+              </div>
+              <div class='grid__item one-quarter lap-one-quarter palm-one-half'>
                 <%= link_to 'Next Result <i class="fa fa-chevron-right view_arrow"></i> '.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record, @next_record.friendly_url), class: 'push-half--right push-half--top' unless @next_record.nil?%>
+              </div>
+              <div class='grid__item one-quarter lap-one-quarter palm-one-half'>
                 <% if @previous_record_of_page.present?%>
                   <%= link_to '<i class="fa fa-chevron-left view_arrow"></i> Previous Entry of Page'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record_of_page, @previous_record_of_page.friendly_url), class: 'push-half--right push-half--top' %>
                 <% end %>
+              </div>
+              <div class='grid__item one-quarter lap-one-quarter palm-one-half'>
                 <% if @next_record_of_page.present?%>
                   <%= link_to 'Next Entry in page <i class="fa fa-chevron-right view_arrow"></i> '.html_safe, best_guess_path(@search_record.RecordNumber, record_of_page: @next_record_of_page.RecordNumber, search_id: params[:search_id]), class: 'push-half--right push-half--top' %>
                 <% end %>
-              <% end %>
-            </div>
+              </div>
+            <% end %>
           </div>
         </div>
-      </section>
+        </section>
+      
       <% if @option == '1' %>
         <div class="grid__item one-whole">
           <h4>Scans</h4>
@@ -101,11 +114,11 @@
           <% end %>
         </div>
       <% end %>
-      <div class="grid__item one-whole lap-one-whole palm-one-whole push--bottom">
+      <!--div class="grid__item one-whole lap-one-whole palm-one-whole push--bottom">
         <h4>Corrections</h4>
         <p>If you have a correction to this entry, please submit a correction. Please note that you can view the scan from which this entry was transcribed, please click on .Please examine this image to verify that any correction you submit is the same as in the GRO index.</p>
-        <%= link_to "I have viewed the scan and wish to submit a correction", report_error_contact_path(@current_record, :query => @search_query), target: "_blank" %>
-      </div>
+        <%#= link_to "I have viewed the scan and wish to submit a correction", report_error_contact_path(@current_record, :query => @search_query), target: "_blank" %>
+      </div-->
       <% if @option == '2' %>
         <div class="grid__item one-whole lap-one-whole palm-one-whole push--bottom">
           <h4>Postems</h4>
