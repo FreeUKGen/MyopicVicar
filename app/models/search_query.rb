@@ -732,7 +732,7 @@ class SearchQuery
       record = rec # should be a SearchRecord despite Mongoid bug
       rec_id = SearchQuery.app_template == 'freebmd' ? record[:RecordNumber].to_s : record['_id'].to_s
       if SearchQuery.app_template == 'freebmd'
-        rec_attr = record.arrtibutes
+        rec_attr = record.attributes
         hash_attr = record.best_guess_hash.attributes
         res_atrr = rec_attr.merge(hash_attr)
         records[rec_id] = res_atrr
