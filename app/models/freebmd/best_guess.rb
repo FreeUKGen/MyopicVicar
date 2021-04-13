@@ -53,28 +53,36 @@ class BestGuess < FreebmdDbBase
     # return @transcribers if record_info.Confirmed & ENTRY_SYSTEM || record_info.Confirmed & ENTRY_REFERENCE
   end
 
+  def get_rec_hash
+    self.best_guess_hash
+  end
+
+  def get_scan_lists
+    get_rec_hash.scan_lists
+  end
+
   def approved_scanslists
-    self.best_guess_hash.scan_lists.approved
+    get_scan_lists.approved
   end
 
   def unapproved_definitive_scanslists
-    self.best_guess_hash.scan_lists.non_definite.unrejected.definitive if approved_scanslists.blank?
+    get_scan_lists.non_definite.unrejected.definitive if approved_scanslists.blank?
   end
 
   def unapproved_probable_scanslists
-    self.best_guess_hash.scan_lists.non_definite.unrejected.probable if unapproved_definitive_scanslists.blank?
+    get_scan_lists.non_definite.unrejected.probable if unapproved_definitive_scanslists.blank?
   end
 
   def rejected_probable_scanslists
-    self.best_guess_hash.scan_lists.non_definite.rejected.probably_confirm if unapproved_probable_scanslists.blank?
+    get_scan_lists.non_definite.rejected.probably_confirm if unapproved_probable_scanslists.blank?
   end
 
   def rejected_possible_scanslists
-    self.best_guess_hash.scan_lists.non_definite.rejected.possibly_confirm if rejected_probable_scanslists.blank?
+    get_scan_lists.non_definite.rejected.possibly_confirm if rejected_probable_scanslists.blank?
   end
 
   def rejected_likely_scanslists
-    self.best_guess_hash.scan_lists.non_definite.rejected.can_be_confirm if rejected_possible_scanslists.blank?
+    get_scan_lists.non_definite.rejected.can_be_confirm if rejected_possible_scanslists.blank?
   end
 
   def scanlists
@@ -227,7 +235,7 @@ class BestGuess < FreebmdDbBase
     # }
   end
   def postems_list
-    get_hash = self.best_guess_hash.Hash
+    get_hash = get_rec_hash.Hash
     Postem.where(Hash: get_hash).all
   end
 
