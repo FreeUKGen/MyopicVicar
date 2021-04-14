@@ -36,10 +36,18 @@ class BestGuess < FreebmdDbBase
     friendly.downcase!
   end
 
+  def get_rec_links
+    self.best_guess_links
+  end
+
+  def get_rec_hash
+    self.best_guess_hash
+  end
+
   def transcribers
     users = []
     # record_info = BestGuess.includes(:best_guess_links).where(RecordNumber: record).first
-    self.best_guess_links.includes(:accession).each do |link|
+    get_rec_links.includes(:accession).each do |link|
       users << link.accession.bmd_file.submitter.UserID if self.Confirmed & ENTRY_SYSTEM || self.Confirmed & ENTRY_REFERENCE
     end
     users
@@ -51,10 +59,6 @@ class BestGuess < FreebmdDbBase
     # file_submitters =  BmdFile.where(FileNumber: accession_files).pluck(:SubmitterNumber)
     # @transcribers = Submitter.where(SubmitterNumber: file_submitters).pluck(:UserID)
     # return @transcribers if record_info.Confirmed & ENTRY_SYSTEM || record_info.Confirmed & ENTRY_REFERENCE
-  end
-
-  def get_rec_hash
-    self.best_guess_hash
   end
 
   def get_scan_lists
@@ -94,7 +98,18 @@ class BestGuess < FreebmdDbBase
   end
 
   def record_accessions
-    self.best_guess_links.pluck(:AccessionNumber)
+    get_rec_links.pluck(:AccessionNumber) if get_rec_links.present?
+  end
+
+  def record_sequence_number
+    get_rec_links.pluck(:SequenceNumber) if get_rec_links.present?
+  end
+
+  def get_comments
+    CommentLink.includes(:comment).where(AccessionNumber: record_accessions, SequenceNumber: record_sequence_number)
+  end
+
+  def get_comment_text
   end
 
   def record_accession_pages
