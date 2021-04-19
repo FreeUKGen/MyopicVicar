@@ -40,8 +40,14 @@ namespace :freecen do
     puts report
     if args.report_email.present?
       require 'user_mailer'
+      userid = UseridDetail.userid(args.report_email).first
+      if userid.present?
+        friendly_email = "#{userid.person_forename} #{userid.person_surname} <#{userid.email_address}>"
+      else
+        friendly_email = "#{appname} Servant <#{appname}-processing@#{appname}.org.uk>"
+      end
       p "sending email to #{args.report_email} to notify of task completion"
-      UserMailer.freecen_processing_report(args.report_email, "FreeCEN VLD processing #{args.filename} ended", report).deliver
+      UserMailer.freecen_processing_report(friendly_email, "FreeCEN VLD processing #{args.filename} ended", report).deliver
     end
   end
 end

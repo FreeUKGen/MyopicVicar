@@ -188,6 +188,20 @@ db.runCommand(
                 },
                 "name" : "chapman_record_type",
                 background: true
+        },
+        {
+                "key" : {
+                        "freecen1_vld_file_id" : 1
+                },
+                "name" : "freecen1_vld_file_id",
+                background: true
+        },
+        {
+                "key" : {
+                        "freecen_csv_file_id" : 1
+                },
+                "name" : "freecen_csv_file_id",
+                background: true
         }
 
             ]

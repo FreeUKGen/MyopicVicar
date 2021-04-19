@@ -9,11 +9,14 @@ class Freecen1VldFilesController < ApplicationController
     params[:freecen1_vld_file][:dir_name] = session[:chapman_code]
 
     @vldfile = Freecen1VldFile.new(freecen1_vld_file_params)
-    message = 'creation............................................................'
-    logger.warn("#{appname_upcase}:VLD_PROCESSING: #{@vldfile.uploaded_file}" + message)
 
     @vldfile.uploaded_file_name = @vldfile.uploaded_file.identifier
     redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'That is not a VLD file') && return unless @vldfile.check_extension
+
+    redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'That file has been loaded in the monthly update') && return if @vldfile.check_batch_upload
+
+    message = 'creation............................................................'
+    logger.warn("#{appname_upcase}:VLD_PROCESSING: #{@vldfile.uploaded_file}" + message)
 
     @vldfile.userid = session[:userid]
     @vldfile.setup_batch_on_upload

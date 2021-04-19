@@ -532,6 +532,12 @@ class Freecen1VldFile
     result
   end
 
+  def check_batch_upload
+    files = Freecen1VldFile.where(:dir_name => dir_name, :file_name => uploaded_file_name, :action.ne => 'Upload').count
+    result = files > 0 ? true : false
+    result
+  end
+
   def estimate_size
     place = File.join(Rails.application.config.datafiles, dir_name, uploaded_file_name)
     size = File.size?(place)
