@@ -42,15 +42,32 @@
             <%= @freecen1_vld_file.sctpar  %></td>
         </tr>
         <tr>
-          <td>Digest:</td>
+          <td>Number of entries:</td>
           <td class="weight--semibold">
-            <%= @freecen1_vld_file.file_digest  %></td>
+            <%= @freecen1_vld_file.num_entries  %></td>
+        </tr>
+        <tr>
+          <td>Number of dwellings:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_file.freecen_dwellings.count  %></td>
+        </tr>
+        <tr>
+          <td>Number of individuals:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_file.search_records.count  %></td>
         </tr>
         <tr>
           <td>Errors:</td>
           <td class="weight--semibold">
             <%= @freecen1_vld_file.file_errors  %></td>
         </tr>
+        <% if @freecen1_vld_file.action == 'Upload' %>
+          <tr>
+            <td>Uploaded by:</td>
+            <td class="weight--semibold">
+              <%= @freecen1_vld_file.userid  %></td>
+          </tr>
+        <% end%>
         <tr>
           <td>Transcriber name:</td>
           <td class="weight--semibold">

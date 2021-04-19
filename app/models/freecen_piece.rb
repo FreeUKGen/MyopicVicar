@@ -53,6 +53,7 @@ class FreecenPiece
   belongs_to :place, optional: true, index: true
   has_many :freecen_dwellings
   has_many :freecen_csv_files
+  has_many :freecen1_vld_files
 
   before_validation :add_num_dwellings
   index(:piece_number => 1, :chapman_code => 1)

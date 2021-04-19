@@ -1,26 +1,24 @@
 module Freecen
   class Freecen1VldTranslator
-
     def translate_file_record(freecen1_vld_file)
       num_dwel_in_file=0
       num_ind_in_file=0
       # extract dwellings
       freecen1_vld_file.freecen_dwellings.each do |dwelling|
-        num_ind_in_file += translate_dwelling(dwelling, freecen1_vld_file.chapman_code, freecen1_vld_file.full_year)
+        num_ind_in_file += translate_dwelling(dwelling, freecen1_vld_file.chapman_code, freecen1_vld_file.full_year, freecen1_vld_file.id)
         num_dwel_in_file += 1
       end
-      return num_dwel_in_file, num_ind_in_file
+      [num_dwel_in_file, num_ind_in_file]
     end
 
-    def translate_dwelling(dwelling, chapman_code, full_year)
+    def translate_dwelling(dwelling, chapman_code, full_year, file_id)
       num_ind_in_dwel=0
       dwelling.freecen_individuals.each do |individual|
-        translate_individual(individual, chapman_code, full_year)
+        translate_individual(individual, chapman_code, full_year, file_id)
         num_ind_in_dwel += 1
       end
       num_ind_in_dwel
     end
-
 
     def translate_date(individual, census_year)
       age = individual.age.to_i
@@ -67,15 +65,13 @@ module Freecen
       "#{birth_year}-*-*"
     end
 
-
-
-    def translate_individual(individual, chapman_code, full_year)
+    def translate_individual(individual, chapman_code, full_year, file_id)
       # create the search record for the person
       transcript_name = { first_name: individual.forenames, last_name: individual.surname, type: 'primary' }
 
       transcript_date = translate_date(individual, full_year)
 
-      record = SearchRecord.new(transcript_dates: [transcript_date], transcript_names: [transcript_name], chapman_code: chapman_code, record_type: full_year)
+      record = SearchRecord.new(transcript_dates: [transcript_date], transcript_names: [transcript_name], chapman_code: chapman_code, record_type: full_year, freecen1_vld_file_id: file_id)
       record.place = individual.freecen_dwelling.place
       record.birth_chapman_code = individual.verbatim_birth_county if individual.verbatim_birth_county.present?
       record.birth_chapman_code = individual.birth_county if individual.birth_county.present?
@@ -89,6 +85,7 @@ module Freecen
       if record.place.nil?
         raise "\n\n***ERROR! place was nil for #{full_year}-#{chapman_code} individual=#{individual.inspect}\n  dwelling=#{individual.freecen_dwelling.inspect unless individual.freecen_dwelling.nil?}\n\n"
       end
+
       if record.place.data_present == false
         record.place.data_present = true
         place_save_needed = true
@@ -100,7 +97,4 @@ module Freecen
       record.place.save! if place_save_needed
     end
   end
-
-
-
 end

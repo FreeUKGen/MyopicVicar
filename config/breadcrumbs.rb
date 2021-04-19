@@ -503,6 +503,32 @@ crumb :edit_csvfile do |csvfile, file, app|
     parent :syndicate_options, session[:syndicate]
   end
 end
+
+
+#vldfiles
+crumb :new_vldfile do |vldfile, app|
+  link 'Upload New Vld File', new_freecen1_vld_file_path
+  case
+  when session[:my_own]
+    parent :my_own_freecen_vld_files
+  when session[:county]
+    parent :county_options, session[:county]
+  when session[:syndicate]
+    parent :syndicate_options, session[:syndicate]
+  end
+end
+crumb :edit_vldfile do |vldfile, file, app|
+  link 'Edit Vld File', edit_freecen1_vld_file_path
+  case
+  when session[:my_own]
+    parent :my_own_freecen_vld_files, file
+  when session[:county]
+    #parent :files, file
+    parent :county_options, session[:county]
+  when session[:syndicate]
+    parent :syndicate_options, session[:syndicate]
+  end
+end
 # ................................................................. Feedback
 
 crumb :feedback_form do
