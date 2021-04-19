@@ -8,6 +8,7 @@
       <th class='sticky-header '>Full year</th>
       <th class='sticky-header '>Piece</th>
       <th class='sticky-header '>Series</th>
+      <th class='sticky-header '>Loaded</th>
       <th class='sticky-header '>Number of entries</th>
       <th class='sticky-header '>Transcriber name</th>
       <% if %w[system_administrator].include?(@user.person_role)%>
@@ -24,6 +25,7 @@
         <td><%= freecen1_vld_file.full_year %></td>
         <td><%= freecen1_vld_file.piece %></td>
         <td><%= freecen1_vld_file.series %></td>
+        <td><%= freecen1_vld_file.action %></td>
         <td><%= freecen1_vld_file.num_entries  %></td>
         <td><%= freecen1_vld_file.transcriber_name %></td>
         <td><%= link_to 'Show', freecen1_vld_file_path(freecen1_vld_file) %></td>
