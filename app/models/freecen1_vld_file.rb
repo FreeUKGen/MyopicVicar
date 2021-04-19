@@ -25,12 +25,13 @@ class Freecen1VldFile
   field :uploaded_file_name, type: String
   field :uploaded_file_location, type: String
 
-  before_validation :add_num_entries, :remove_whitespace
+  before_validation :remove_whitespace
   mount_uploader :uploaded_file, VldfileUploader
 
   has_many :freecen1_vld_entries
   has_many :freecen_dwellings
-
+  has_many :search_records
+  belongs_to :freecen_piece, optional: true, index: true
 
   class << self
     def chapman(chapman)
@@ -488,84 +489,56 @@ class Freecen1VldFile
   end
 
 # ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,upload
-   def check_for_existing_file_and_save
-    process = true
 
-      file_location = File.join(Rails.application.config.datafiles, userid, file_name)
-      if File.file?(file_location)
-        newdir = File.join(File.join(Rails.application.config.datafiles, userid), '.attic')
-        Dir.mkdir(newdir) unless Dir.exists?(newdir)
-        time = Time.now.to_i.to_s
-        renamed_file = (file_location + '.' + time).to_s
-        File.rename(file_location, renamed_file)
-        FileUtils.mv(renamed_file, newdir, verbose: true)
-        FileUtils.rm(file_location) if File.file?(file_location)
-        user = UseridDetail.where(userid: userid).first
-        if user.present?
-          attic_file = AtticFile.new(name: "#{file_name}.#{time}", date_created: DateTime.strptime(time, '%s'), userid_detail_id: user.id)
-          attic_file.save
-        end
-      end
 
-    process
+  def save_to_attic
+    attic_dir = File.join(File.join(Rails.application.config.datafiles, dir_name), '.attic')
+    FileUtils.mkdir_p(attic_dir)
+    file_location = File.join(Rails.application.config.datafiles, dir_name, uploaded_file_name)
+    if File.file?(file_location)
+      time = Time.now.to_i.to_s
+      renamed_file = (file_location + '.' + time).to_s
+      File.rename(file_location, renamed_file)
+      FileUtils.mv(renamed_file, attic_dir, verbose: true)
+    end
   end
 
   def check_name(name)
     decision = false
-    decision = true if file_name == name
+    decision = true if uploaded_file_name == name
     decision
   end
 
-  def clean_up
-
-    file_location = File.join(Rails.application.config.datafiles, userid, file_name)
-    File.delete(file_location) if File.file?(file_location)
-
+  def delete_search_records
+    Freecen1VldFile.where(dir_name: dir_name, uploaded_file_name: uploaded_file_name).each do |file|
+      SearchRecord.where(freecen1_vld_file_id: file.id).delete_all
+    end
   end
 
-  def create_batch_unless_exists
+  def delete_dwellings
+    Freecen1VldFile.where(dir_name: dir_name, uploaded_file_name: uploaded_file_name).each do |file|
+      FreecenDwelling.where(freecen1_vld_file_id: file.id).delete_all
+    end
+  end
 
+  def clean_up
+    file_location = File.join(Rails.application.config.datafiles, dir_name, uploaded_file_name)
+    File.delete(file_location) if File.file?(file_location)
   end
 
   def check_extension
- p 'extension'
- p  uploaded_file
-
-    file_name_parts = uploaded_file.filename.split('.')
+    file_name_parts = uploaded_file_name.split('.')
     result = file_name_parts[1].present? && file_name_parts[1].casecmp('vld').zero? ? true : false
-  result
-  end
-
-  def estimate_time
-    size = 1
-    place = File.join(Rails.application.config.datafiles, userid, file_name)
-    size = File.size(place)
-    unit = 0.001
-    processing_time = (size.to_i * unit).to_i
-    processing_time
+    result
   end
 
   def estimate_size
-    place = File.join(Rails.application.config.datafiles, userid, file_name)
+    place = File.join(Rails.application.config.datafiles, dir_name, uploaded_file_name)
     size = File.size?(place)
     size
   end
 
-  def physical_file_for_user_exists
-
-    false
-  end
-
-  def process_the_batch(user)
-    proceed = check_for_existing_file_and_save
-    save if proceed
-    message = "The upload with file name #{file_name} was unsuccessful because #{errors.messages}" if errors.any?
-    return [false, message] if errors.any?
-
-    batch = create_batch_unless_exists
-    range = File.join(userid, file_name)
-
-
+  def process_the_batch
     size = estimate_size
     if size.blank? || size.present? && size < 100
       proceed = false
@@ -573,41 +546,27 @@ class Freecen1VldFile
       clean_up
       return [proceed, message]
     end
-
-    processing_time = estimate_time
-
-      batch.update_attributes(waiting_to_be_processed: true, waiting_date: Time.now)
-      logger.warn("FREECEN:VLD_PROCESSING: Starting rake task for #{userid} #{file_name}")
-      pid1 =  spawn("rake build:freecen_csv_process[\"no_search_records\",\"individual\",\"no\",\"#{range}\",\"'Modern'\",\"#{type_of_processing}\"]")
-      message = "The vld file #{file_name} is being checked. You will receive an email when it has been completed."
-      logger.warn("FREECEN:VLD_PROCESSING: rake task for #{pid1}")
-      process = true
-
+    logger.warn("FREECEN:VLD_PROCESSING: Starting rake task for #{userid} #{uploaded_file_name} in #{dir_name}")
+    pid1 = spawn("rake freecen:process_freecen1_vld[#{ File.join(Rails.application.config.datafiles, dir_name, uploaded_file_name)},#{userid}]")
+    message = "The vld file #{uploaded_file_name} is being checked. You will receive an email when it has been completed."
+    logger.warn("FREECEN:VLD_PROCESSING: rake task for #{pid1}")
+    process = true
     [process, message]
   end
 
-  def setup_batch_on_replace(original_file_name)
-    return false, 'The file you are replacing must have the same name' unless check_name(original_file_name)
-
-    proceed = true
-    proceed = physical_file_for_user_exists
-
-    if !proceed
-      message = 'You are attempting to replace a file you do not have. Likely you are a coordinator replacing a file belonging to someone else. You must replace into their userid.'
-
-
-    end
-    [proceed, message]
-  end
-
   def setup_batch_on_upload
-    proceed = true
-    message = ''
-    if PhysicalFile.userid(userid).file_name(file_name).first.present?
-      proceed = false
-      message = 'You cannot upload a file with the same name as one you have already uploaded. You must use the REPLACE option.'
+    file_location = File.join(Rails.application.config.datafiles, dir_name, uploaded_file_name)
+    delete_search_records if File.file?(file_location)
+    delete_dwellings if File.file?(file_location)
+    save_to_attic if File.file?(file_location)
+    file = Freecen1VldFile.find_by(dir_name: dir_name, uploaded_file_name: uploaded_file_name)
+    if file.present?
+
+      piece = file.freecen_piece
+      piece.update_attributes(num_dwellings: 0, num_individuals: 0, freecen1_filename: '', status: '')
+      piece.freecen1_vld_files.delete(file)
+      file.delete
     end
-    [proceed, message]
   end
 
   private

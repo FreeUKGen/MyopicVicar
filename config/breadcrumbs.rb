@@ -510,7 +510,7 @@ crumb :new_vldfile do |vldfile, app|
   link 'Upload New Vld File', new_freecen1_vld_file_path
   case
   when session[:my_own]
-    parent :my_own_freecen_vld_files if app == 'freecen'
+    parent :my_own_freecen_vld_files
   when session[:county]
     parent :county_options, session[:county]
   when session[:syndicate]
@@ -518,10 +518,10 @@ crumb :new_vldfile do |vldfile, app|
   end
 end
 crumb :edit_vldfile do |vldfile, file, app|
-  link 'Replace Vld File', edit_freecen1_vld_file_path
+  link 'Edit Vld File', edit_freecen1_vld_file_path
   case
   when session[:my_own]
-    parent :my_own_freecen_vld_files, file if app == 'freecen'
+    parent :my_own_freecen_vld_files, file
   when session[:county]
     #parent :files, file
     parent :county_options, session[:county]

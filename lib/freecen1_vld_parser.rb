@@ -7,7 +7,6 @@ module Freecen
       @print_performance = print_performance
     end
 
-
     def process_vld_file(filename)
       chapman_code = File.basename(File.dirname(filename))
       chapman_code = chapman_code.sub(/-.*/, '')
@@ -22,26 +21,37 @@ module Freecen
       # to be fixed
       start_time = Time.now
       print("   call FreecenPiece.where() #{start_time.strftime("%I:%M:%S %p")}") if @print_performance
-      if nil == FreecenPiece.where(:year => file_record[:full_year], :chapman_code => chapman_code, :piece_number => file_record[:piece], :parish_number => file_record[:sctpar]).first
+      piece = FreecenPiece.find_by(:year => file_record[:full_year], :chapman_code => chapman_code, :piece_number => file_record[:piece], :parish_number => file_record[:sctpar])
+      if piece.blank?
         raise "***No FreecenPiece found for chapman code #{chapman_code} and piece number #{file_record[:piece]} parish_number #{file_record[:sctpar]}. year=#{file_record[:full_year]} file=#{filename}\nVerify that the PARMS.DAT file is correct and has been loaded by the update task, verify that the .VLD file is in the correct directory and named correctly.\n"
       end
       print("  #{Time.now - start_time} elapsed\n") if @print_performance
 
       start_time = Time.now
       print("   call vldparser persist_to_database #{start_time.strftime("%I:%M:%S %p")}") if @print_performance
-      file = persist_to_database(filename, file_record, entry_records, entry_errors)
+      file = persist_to_database(filename, file_record, entry_records, entry_errors, piece.id)
       print("  #{Time.now - start_time} elapsed\n") if @print_performance
 
       return file, entry_records.length
     end
 
-    def persist_to_database(filename, file_hash, entry_hash_array, entry_errors)
-      file = Freecen1VldFile.new(file_hash)
-      file.file_name = File.basename(filename)
-      file.dir_name = File.basename(File.dirname(filename))
-      file.file_errors = entry_errors unless entry_errors.blank?
-      file.save!
-
+    def persist_to_database(filename, file_hash, entry_hash_array, entry_errors, piece_id)
+      file = Freecen1VldFile.find_by(uploaded_file_name: File.basename(filename), action: 'Upload', dir_name: File.basename(File.dirname(filename)))
+      if file.present?
+        file.update_attributes(file_hash)
+        file.update_attributes(file_name: File.basename(filename))
+        file.update_attributes(freecen_piece_id: piece_id) if piece_id.present?
+        file.update_attributes(file_errors:entry_errors) if entry_errors.present?
+        file.update_attributes(num_entries: entry_hash_array.length)
+      else
+        file = Freecen1VldFile.new(file_hash)
+        file.file_name = File.basename(filename)
+        file.dir_name = File.basename(File.dirname(filename))
+        file.freecen_piece_id = piece_id if piece_id.present?
+        file.file_errors = entry_errors if entry_errors.present?
+        file.num_entries = entry_hash_array.length
+        file.save!
+      end
       entries_to_insert = []
       entry_hash_array.each do |hash|
         entry = Freecen1VldEntry.new

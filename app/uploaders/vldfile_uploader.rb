@@ -12,9 +12,9 @@ class VldfileUploader < CarrierWave::Uploader::Base
   def store_dir
     # "#{Rails.application.config.datafiles}/#{mounted_as}/#{model.userid}/"
     if Rails.application.config.datafiles == '/raid/freecen2/users'
-      "#{Rails.application.config.datafiles}/#{model.userid}/"
+      "#{Rails.application.config.datafiles}/#{model.dir_name}/"
     else
-      "#{Rails.root}/#{Rails.application.config.datafiles}/#{model.userid}/"
+      "#{Rails.root}/#{Rails.application.config.datafiles}/#{model.dir_name}/"
     end
     #{ }"#{Rails.application.config.datafiles}/#{mounted_as}/#{model.userid}/"
     #{}"uploads/#{model.class.to_s.underscore}/#{mounted_as}/#{model.id}"
