@@ -42,6 +42,12 @@ class Freecen2SiteStatistic
       added_vld_files, added_vld_entries = Freecen1VldFile.between_dates_year_totals(previous_midnight, last_midnight)
       totals_csv_files, totals_csv_files_incorporated, totals_csv_entries, totals_csv_individuals, totals_csv_dwellings = FreecenCsvFile.before_year_totals(last_midnight)
       added_csv_files, added_csv_files_incorporated, added_csv_entries, added_csv_individuals, _added_csv_dwellings = FreecenCsvFile.between_dates_year_totals(previous_midnight, last_midnight)
+      p added_csv_files
+      p added_csv_entries
+      p added_csv_files_incorporated
+
+      p  added_csv_individuals
+
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
         records[:total][year] = {}
         records[:total][year][:individuals] = totals_individuals[year] + totals_csv_individuals[year]
@@ -56,8 +62,6 @@ class Freecen2SiteStatistic
         records[:total][:total][:vld_entries] += records[:total][year][:vld_entries]
         records[:total][year][:csv_files] = totals_csv_files[year]
         records[:total][:total][:csv_files] += records[:total][year][:csv_files]
-        records[:total][year][:csv_files_incorporated] = totals_csv_files_incorporated[year]
-        records[:total][:total][:csv_files_incorporated] += records[:total][year][:csv_files_incorporated]
         records[:total][year][:csv_files_incorporated] = totals_csv_files_incorporated[year]
         records[:total][:total][:csv_files_incorporated] += records[:total][year][:csv_files_incorporated]
         records[:total][year][:csv_entries] = totals_csv_entries[year]

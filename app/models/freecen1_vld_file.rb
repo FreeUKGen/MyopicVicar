@@ -54,7 +54,10 @@ class Freecen1VldFile
       total_entries = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
         total_files[year] = Freecen1VldFile.where(_id: { '$lte' => last_id }, full_year: year).count
-        total_entries[year] = Freecen1VldFile.where(_id: { '$lte' => last_id }, full_year: year).sum(:num_entries)
+        total_entries[year] = 0
+        Freecen1VldFile.where(_id: { '$lte' => last_id }, full_year: year).each do |file|
+          total_entries[year] += file.freecen1_vld_entries.length
+        end
       end
       [total_files, total_entries]
     end
@@ -66,7 +69,10 @@ class Freecen1VldFile
       total_entries = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
         total_files[year] = Freecen1VldFile.between(_id: first_id..last_id).where(full_year: year).count
-        total_entries[year] = Freecen1VldFile.between(_id: first_id..last_id).where(full_year: year).sum(:num_entries)
+        total_entries[year] = 0
+        Freecen1VldFile.between(_id: first_id..last_id).where(full_year: year).each do |file|
+          total_entries[year] += file.freecen1_vld_entries.length
+        end
       end
       [total_files, total_entries]
     end
@@ -77,7 +83,10 @@ class Freecen1VldFile
       total_entries = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
         total_files[year] = Freecen1VldFile.where(_id: { '$lte' => last_id }, dir_name: chapman, full_year: year).count
-        total_entries[year] = Freecen1VldFile.where(_id: { '$lte' => last_id }, dir_name: chapman, full_year: year).sum(:num_entries)
+        total_entries[year] = 0
+        Freecen1VldFile.where(_id: { '$lte' => last_id }, dir_name: chapman, full_year: year).each do |file|
+          total_entries[year] += file.freecen1_vld_entries.length
+        end
       end
       [total_files, total_entries]
     end
@@ -89,7 +98,10 @@ class Freecen1VldFile
       total_entries = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
         total_files[year] = Freecen1VldFile.between(_id: first_id..last_id).where(dir_name: chapman, full_year: year).count
-        total_entries[year] = Freecen1VldFile.between(_id: first_id..last_id).where(dir_name: chapman, full_year: year).sum(:num_entries)
+        total_entries[year] = 0
+        Freecen1VldFile.between(_id: first_id..last_id).where(dir_name: chapman, full_year: year).each do |file|
+          total_entries[year] += file.freecen1_vld_entries.length
+        end
       end
       [total_files, total_entries]
     end
