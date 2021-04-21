@@ -20,9 +20,19 @@ class FreecenDwelling
   delegate :place_name, to: :place#, prefix: true
 
   index({freecen_piece_id: 1,dwelling_number: 1},{background: true})
+  before_destroy do |entry|
+    FreecenIndividual.destroy_all(freecen_dwelling_id: entry._id)
+  end
 
 
   # ################################################################################ instance
+
+  def destroy_individuals
+    before_destroy do |entry|
+      SearchRecord.destroy_all(:freereg1_csv_entry_id => entry._id)
+    end
+
+  end
 
   # previous / next dwelling in census (not previous/next search result)
   def prev_next_dwelling_ids

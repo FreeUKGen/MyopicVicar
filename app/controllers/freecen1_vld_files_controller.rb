@@ -1,5 +1,39 @@
 class Freecen1VldFilesController < ApplicationController
   skip_before_action :require_login
+  require 'digest/md5'
+
+  def create
+    # Initial guards
+    redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'You must select a file') && return if params[:freecen1_vld_file].blank? || params[:freecen1_vld_file][:uploaded_file].blank?
+
+    params[:freecen1_vld_file][:dir_name] = session[:chapman_code]
+
+    @vldfile = Freecen1VldFile.new(freecen1_vld_file_params)
+
+    @vldfile.uploaded_file_name = @vldfile.uploaded_file.identifier
+    redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'That is not a VLD file') && return unless @vldfile.check_extension
+
+    redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'That file has been loaded in the monthly update') && return if @vldfile.check_batch_upload
+
+    message = 'creation............................................................'
+    logger.warn("#{appname_upcase}:VLD_PROCESSING: #{@vldfile.uploaded_file}" + message)
+
+    @vldfile.userid = session[:userid]
+    @vldfile.setup_batch_on_upload
+    result = @vldfile.save
+    p @vldfile.errors.full_messages unless result
+    crash unless result
+    @vldfile.update_attributes(uploaded_file_location: @vldfile.uploaded_file.file.file)
+    session.delete(:file_name) if session[:file_name].present?
+    proceed, message = @vldfile.process_the_batch
+    unless proceed
+      logger.warn("#{appname_upcase}:CSV_PROCESSING: " + message)
+      redirect_back(fallback_location: new_freecen1_vld_file_path, notice: message) && return
+    end
+    flash[:notice] = message
+    flash.keep
+    redirect_to(freecen1_vld_files_path(anchor: "#{session[:freecen1_vld_file_id]}")) && return
+  end
 
   def csv_download
     get_user_info_from_userid
@@ -21,6 +55,19 @@ class Freecen1VldFilesController < ApplicationController
     redirect_back(fallback_location: new_manage_resource_path) && return
   end
 
+  def destroy
+    @vldfile = Freecen1VldFile.find(params[:id])
+    file = @vldfile.uploaded_file_name
+    @vldfile.save_to_attic if @vldfile.uploaded_file_name.present?
+    @vldfile.delete_search_records
+    piece = @vldfile.freecen_piece
+    piece.update_attributes(num_dwellings: 0, num_individuals: 0, freecen1_filename: '', status: '')
+    piece.freecen1_vld_files.delete(@vldfile)
+    @vldfile.delete
+    flash[:notice] = "The vld file #{file} has been deleted."
+    redirect_to freecen1_vld_files_path
+  end
+
   def edit
     get_user_info_from_userid
     if params[:id].present?
@@ -37,7 +84,7 @@ class Freecen1VldFilesController < ApplicationController
     else
       @type = 'all'
     end
-    redirect_to manage_resources_path && return
+    redirect_to new_manage_resource_path && return
   end
 
   def index
@@ -46,8 +93,17 @@ class Freecen1VldFilesController < ApplicationController
       @freecen1_vld_files = Freecen1VldFile.chapman(session[:chapman_code]).order_by(full_year: 1, piece: 1)
       @chapman_code = session[:chapman_code]
     else
-      redirect_to manage_resources_path && return
+      flash[:notice] = 'A Chapman Code for the display of Freecen vld files does not exist'
+      redirect_to new_manage_resource_path
+      return
     end
+  end
+
+  def new
+    get_user_info_from_userid
+    @vldfile = Freecen1VldFile.new(userid: session[:userid])
+    @app = appname_downcase
+    @action = 'Upload'
   end
 
   def update
@@ -74,7 +130,7 @@ class Freecen1VldFilesController < ApplicationController
       @freecen1_vld_file = Freecen1VldFile.find(params[:id])
       @chapman_code = session[:chapman_code]
     end
-    redirect_to manage_resources_path && return
+    redirect_to new_manage_resource_path && return
   end
 
   def load_people
@@ -84,6 +140,7 @@ class Freecen1VldFilesController < ApplicationController
       @people << ids.userid
     end
   end
+  #........................................................................................... upload code
 
   private
 

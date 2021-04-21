@@ -21,6 +21,7 @@
         <th class='sticky-header'>New Vld Records</th>
         <th class='sticky-header'>New Csv Files</th>
         <th class='sticky-header'>New Csv Records</th>
+        <th class='sticky-header'>New Csv Files Incor</th>
         <th class='sticky-header'>New Csv Records Incor</th>
       </tr>
     </thead>
@@ -43,6 +44,7 @@
           <td><%= statistic.records[:total][:total][:added_vld_entries] %></td>
           <td><%= statistic.records[:total][:total][:added_csv_files] %></td>
           <td><%= statistic.records[:total][:total][:added_csv_entries] %></td>
+          <td><%= statistic.records[:total][:total][:added_csv_files_incorporated] %></td>
           <td><%= statistic.records[:total][:total][:added_csv_entries_incorporated] %></td>
         </tr>
       <% end %>

@@ -10,6 +10,7 @@ module Freecen
       piece.status = 'Loading' if piece.status != 'Loading'
       piece.save!
       Rails.cache.delete("freecen_coverage_index")#bust cache so status shows
+      number_of_individuals = 0
       freecen1_vld_file.freecen1_vld_entries.each do |entry|
         if dwelling && dwelling.dwelling_number == entry.dwelling_number
           # do nothing -- the dwelling on this record is the same as for the previous entry
@@ -20,14 +21,13 @@ module Freecen
           # first record or different record
           dwelling = dwelling_from_entry(entry, piece)
         end
-        unless dwelling.uninhabited_flag.match(Freecen::Uninhabited::UNINHABITED_PATTERN)
-          individual_from_entry(entry, dwelling)
-          unless piece.nil?
-            piece.inc(:num_individuals => 1)
-          end
-        end
+        next if dwelling.uninhabited_flag.match(Freecen::Uninhabited::UNINHABITED_PATTERN)
+
+        individual_from_entry(entry, dwelling, freecen1_vld_file.id)
+        number_of_individuals += 1
       end
       dwelling.save!
+      piece.num_individuals = number_of_individuals
       piece.save! unless piece.nil?
     end
 
@@ -44,7 +44,7 @@ module Freecen
       dwelling
     end
 
-    def individual_from_entry(entry, dwelling)
+    def individual_from_entry(entry, dwelling, file_id)
       individual = FreecenIndividual.new
       (FreecenIndividual.fields.keys&Freecen1VldEntry.fields.keys).each do |key|
         individual[key] = entry.send(key) unless key == "_id"

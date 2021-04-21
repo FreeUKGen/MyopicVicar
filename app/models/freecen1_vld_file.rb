@@ -3,6 +3,7 @@ class Freecen1VldFile
   require 'chapman_code'
   require 'freecen_constants'
 
+
   field :file_name, type: String
   field :dir_name, type: String
   field :census_type, type: String
@@ -18,12 +19,19 @@ class Freecen1VldFile
   field :transcriber_userid, type: String
   field :num_entries, type: Integer, default: 0
 
-  before_validation :add_num_entries, :remove_whitespace
+  field :userid, type: String
+  field :action, type: String
+  field :uploaded_file, type: String
+  field :uploaded_file_name, type: String
+  field :uploaded_file_location, type: String
 
+  before_validation :remove_whitespace
+  mount_uploader :uploaded_file, VldfileUploader
 
   has_many :freecen1_vld_entries
   has_many :freecen_dwellings
-
+  has_many :search_records
+  belongs_to :freecen_piece, optional: true, index: true
 
   class << self
     def chapman(chapman)
@@ -46,7 +54,10 @@ class Freecen1VldFile
       total_entries = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
         total_files[year] = Freecen1VldFile.where(_id: { '$lte' => last_id }, full_year: year).count
-        total_entries[year] = Freecen1VldFile.where(_id: { '$lte' => last_id }, full_year: year).sum(:num_entries)
+        total_entries[year] = 0
+        Freecen1VldFile.where(_id: { '$lte' => last_id }, full_year: year).each do |file|
+          total_entries[year] += file.freecen1_vld_entries.length
+        end
       end
       [total_files, total_entries]
     end
@@ -58,7 +69,10 @@ class Freecen1VldFile
       total_entries = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
         total_files[year] = Freecen1VldFile.between(_id: first_id..last_id).where(full_year: year).count
-        total_entries[year] = Freecen1VldFile.between(_id: first_id..last_id).where(full_year: year).sum(:num_entries)
+        total_entries[year] = 0
+        Freecen1VldFile.between(_id: first_id..last_id).where(full_year: year).each do |file|
+          total_entries[year] += file.freecen1_vld_entries.length
+        end
       end
       [total_files, total_entries]
     end
@@ -69,7 +83,10 @@ class Freecen1VldFile
       total_entries = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
         total_files[year] = Freecen1VldFile.where(_id: { '$lte' => last_id }, dir_name: chapman, full_year: year).count
-        total_entries[year] = Freecen1VldFile.where(_id: { '$lte' => last_id }, dir_name: chapman, full_year: year).sum(:num_entries)
+        total_entries[year] = 0
+        Freecen1VldFile.where(_id: { '$lte' => last_id }, dir_name: chapman, full_year: year).each do |file|
+          total_entries[year] += file.freecen1_vld_entries.length
+        end
       end
       [total_files, total_entries]
     end
@@ -81,7 +98,10 @@ class Freecen1VldFile
       total_entries = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
         total_files[year] = Freecen1VldFile.between(_id: first_id..last_id).where(dir_name: chapman, full_year: year).count
-        total_entries[year] = Freecen1VldFile.between(_id: first_id..last_id).where(dir_name: chapman, full_year: year).sum(:num_entries)
+        total_entries[year] = 0
+        Freecen1VldFile.between(_id: first_id..last_id).where(dir_name: chapman, full_year: year).each do |file|
+          total_entries[year] += file.freecen1_vld_entries.length
+        end
       end
       [total_files, total_entries]
     end
@@ -461,12 +481,12 @@ class Freecen1VldFile
   end
 
   def compute_notes(rec)
-    if rec['unoccupied_notes'].blank?
-      line = rec['notes']
-    elsif rec['notes'].present?
+    if rec['notes'].present?
       line = (rec['notes'] + rec['unoccupied_notes']) unless rec['notes'] == rec['unoccupied_notes']
+    elsif rec['unoccupied_notes'].present?
+      line = (rec['notes'] + rec['unoccupied_notes'])
     else
-      line = rec['notes']
+       line = @blank
     end
     line
   end
@@ -478,6 +498,93 @@ class Freecen1VldFile
 
   def remove_whitespace
     self[:transcriber_name] = self[:transcriber_name].squeeze(' ').strip if self[:transcriber_name].present?
+  end
+
+# ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,upload
+
+
+  def save_to_attic
+    attic_dir = File.join(File.join(Rails.application.config.datafiles, dir_name), '.attic')
+    FileUtils.mkdir_p(attic_dir)
+    file_location = File.join(Rails.application.config.datafiles, dir_name, uploaded_file_name)
+    if File.file?(file_location)
+      time = Time.now.to_i.to_s
+      renamed_file = (file_location + '.' + time).to_s
+      File.rename(file_location, renamed_file)
+      FileUtils.mv(renamed_file, attic_dir, verbose: true)
+    end
+  end
+
+  def check_name(name)
+    decision = false
+    decision = true if uploaded_file_name == name
+    decision
+  end
+
+  def delete_search_records
+    Freecen1VldFile.where(dir_name: dir_name, uploaded_file_name: uploaded_file_name).each do |file|
+      SearchRecord.where(freecen1_vld_file_id: file.id).delete_all
+    end
+  end
+
+  def delete_dwellings
+    Freecen1VldFile.where(dir_name: dir_name, uploaded_file_name: uploaded_file_name).each do |file|
+      FreecenDwelling.where(freecen1_vld_file_id: file.id).delete_all
+    end
+  end
+
+  def clean_up
+    file_location = File.join(Rails.application.config.datafiles, dir_name, uploaded_file_name)
+    File.delete(file_location) if File.file?(file_location)
+  end
+
+  def check_extension
+    file_name_parts = uploaded_file_name.split('.')
+    result = file_name_parts[1].present? && file_name_parts[1].casecmp('vld').zero? ? true : false
+    result
+  end
+
+  def check_batch_upload
+    files = Freecen1VldFile.where(:dir_name => dir_name, :file_name => uploaded_file_name, :action.ne => 'Upload').count
+    result = files > 0 ? true : false
+    result
+  end
+
+  def estimate_size
+    place = File.join(Rails.application.config.datafiles, dir_name, uploaded_file_name)
+    size = File.size?(place)
+    size
+  end
+
+  def process_the_batch
+    size = estimate_size
+    if size.blank? || size.present? && size < 100
+      proceed = false
+      message = 'The file either does not exist or is too small to be a valid file.'
+      clean_up
+      return [proceed, message]
+    end
+    logger.warn("FREECEN:VLD_PROCESSING: Starting rake task for #{userid} #{uploaded_file_name} in #{dir_name}")
+    pid1 = spawn("rake freecen:process_freecen1_vld[#{ File.join(Rails.application.config.datafiles, dir_name, uploaded_file_name)},#{userid}]")
+    message = "The vld file #{uploaded_file_name} is being checked. You will receive an email when it has been completed."
+    logger.warn("FREECEN:VLD_PROCESSING: rake task for #{pid1}")
+    process = true
+    [process, message]
+  end
+
+  def setup_batch_on_upload
+    file_location = File.join(Rails.application.config.datafiles, dir_name, uploaded_file_name)
+    delete_search_records if File.file?(file_location)
+    delete_dwellings if File.file?(file_location)
+    save_to_attic if File.file?(file_location)
+    file = Freecen1VldFile.find_by(dir_name: dir_name, uploaded_file_name: uploaded_file_name)
+    if file.present?
+
+      piece = file.freecen_piece
+      piece.update_attributes(num_dwellings: 0, num_individuals: 0, freecen1_filename: '', status: '')
+      piece.freecen1_vld_files.delete(file)
+      file.delete
+    end
   end
 
   private

@@ -54,7 +54,7 @@ crumb :person_role_selection do
 end
 
 crumb :freecen2_site_statistics do |county|
-  link 'Freecen2 Statistics'
+  link 'Freecen2 Site Statistics', freecen2_site_statistics_path
   if county == 'total'
     parent :root
   else
@@ -499,6 +499,32 @@ crumb :edit_csvfile do |csvfile, file, app|
   when session[:county]
     parent :files, file
     #parent :county_options, session[:county]
+  when session[:syndicate]
+    parent :syndicate_options, session[:syndicate]
+  end
+end
+
+
+#vldfiles
+crumb :new_vldfile do |vldfile, app|
+  link 'Upload New Vld File', new_freecen1_vld_file_path
+  case
+  when session[:my_own]
+    parent :my_own_freecen_vld_files
+  when session[:county]
+    parent :county_options, session[:county]
+  when session[:syndicate]
+    parent :syndicate_options, session[:syndicate]
+  end
+end
+crumb :edit_vldfile do |vldfile, file, app|
+  link 'Edit Vld File', edit_freecen1_vld_file_path
+  case
+  when session[:my_own]
+    parent :my_own_freecen_vld_files, file
+  when session[:county]
+    #parent :files, file
+    parent :county_options, session[:county]
   when session[:syndicate]
     parent :syndicate_options, session[:syndicate]
   end
@@ -1902,29 +1928,33 @@ crumb :freecen_csv_files do |file|
     link 'List of Files', freecen_csv_files_path(anchor: "#{file.id}", page: "#{session[:current_page]}")
   end
 
-  if session[:my_own]
-    parent :my_own_freecen_csv_files
-  elsif session[:county].present? && %w[county_coordinator system_administrator technical data_manager].include?(session[:role])
-    if session[:piece_id].present?
-      piece = Piece.find_by(_id: piece_id).first
-      if piece.nil?
-        parent :county_options, session[:county]
+  if session[:stats_view]
+    parent :freecen2_site_statistics,  session[:county]
+  else
+    if session[:my_own]
+      parent :my_own_freecen_csv_files
+    elsif session[:county].present? && %w[county_coordinator system_administrator technical data_manager].include?(session[:role])
+      if session[:piece_id].present?
+        piece = Piece.find_by(_id: piece_id).first
+        if piece.nil?
+          parent :county_options, session[:county]
+        else
+          parent :show_piece, session[:county], piece
+        end
       else
-        parent :show_piece, session[:county], piece
+        parent :county_options, session[:county]
       end
-    else
-      parent :county_options, session[:county]
+    elsif %w[volunteer_coordinator syndicate_coordinator].include?(session[:role])
+      parent :userid_details_listing, session[:syndicate]
+    elsif session[:syndicate].present? && %w[county_coordinator system_administrator technical data_manager].include?(session[:role])
+      if session[:userid_id].present?
+        parent :userid_detail, session[:syndicate], UseridDetail.find(session[:userid_id])
+      else
+        parent :syndicate_options, session[:syndicate]
+      end
+    elsif %w[system_administrator technical].include?(session[:role])
+      parent :cenmanager_userid_options
     end
-  elsif %w[volunteer_coordinator syndicate_coordinator].include?(session[:role])
-    parent :userid_details_listing, session[:syndicate]
-  elsif session[:syndicate].present? && %w[county_coordinator system_administrator technical data_manager].include?(session[:role])
-    if session[:userid_id].present?
-      parent :userid_detail, session[:syndicate], UseridDetail.find(session[:userid_id])
-    else
-      parent :syndicate_options, session[:syndicate]
-    end
-  elsif %w[system_administrator technical].include?(session[:role])
-    parent :cenmanager_userid_options
   end
 end
 
