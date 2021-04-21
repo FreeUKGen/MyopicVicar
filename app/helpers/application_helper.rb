@@ -92,6 +92,10 @@ module ApplicationHelper
     link_to 'Volunteer', "/cms/opportunities-to-volunteer-with-#{appname}"
   end
 
+  def nav_freecen_gazetteer
+    link_to('Freecen Gazetteer', '/freecen2_places/search_names', target: :_blank, title: 'Search for an existing place name; opens in a new tab') if appname.downcase == 'freecen'
+  end
+
   def action_manage_image_server(role)
     action = role == 'Manage Image Server' ? true : false
     action

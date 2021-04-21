@@ -1,0 +1,15 @@
+db.runCommand(
+  {
+    createIndexes: "freecen1_vld_entries",
+    indexes: [
+
+         {
+            key: {
+                 freecen1_vld_file_id: 1,
+            },
+            name: "freecen1_vld_file_id"
+        }
+    ]
+  }
+)
+

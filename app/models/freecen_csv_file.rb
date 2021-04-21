@@ -380,12 +380,12 @@ class FreecenCsvFile
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
         totals_dwellings[year] = 0
         totals_individuals[year] = 0
-        FreecenCsvFile.between(_id: first_id..last_id).chapman_code(chapman_code).year(year).incorporated(true).each do |file|
+        FreecenCsvFile.chapman_code(chapman_code).year(year).incorporated(true).between(incorporated_date: time1..time2).each do |file|
           totals_dwellings[year] += file.total_dwellings if file.total_dwellings.present?
           totals_individuals[year] += file.total_individuals if file.total_individuals.present?
         end
-        totals_csv_files[year] = FreecenCsvFile.between(_id: first_id..last_id).chapman_code(chapman_code).year(year).count
-        totals_csv_files_incorporated[year] = FreecenCsvFile.between(_id: first_id..last_id).chapman_code(chapman_code).year(year).incorporated(true).count
+        totals_csv_files[year] = FreecenCsvFile.chapman_code(chapman_code).year(year).between(_id: first_id..last_id).count
+        totals_csv_files_incorporated[year] = FreecenCsvFile.chapman_code(chapman_code).year(year).incorporated(true).between(incorporated_date: time1..time2).count
         totals_csv_entries[year] = 0
         FreecenCsvFile.between(_id: first_id..last_id).chapman_code(chapman_code).year(year).each do |file|
           totals_csv_entries[year] += file.freecen_csv_entries.count
@@ -405,12 +405,12 @@ class FreecenCsvFile
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
         totals_dwellings[year] = 0
         totals_individuals[year] = 0
-        FreecenCsvFile.between(_id: first_id..last_id).year(year).incorporated(true).each do |file|
+        FreecenCsvFile.year(year).incorporated(true).year(year).between(incorporated_date: time1..time2).each do |file|
           totals_dwellings[year] += file.total_dwellings if file.total_dwellings.present?
           totals_individuals[year] += file.total_individuals if file.total_individuals.present?
         end
         totals_csv_files[year] = FreecenCsvFile.between(_id: first_id..last_id).year(year).count
-        totals_csv_files_incorporated[year] = FreecenCsvFile.between(_id: first_id..last_id).year(year).incorporated(true).count
+        totals_csv_files_incorporated[year] = FreecenCsvFile.incorporated(true).year(year).between(incorporated_date: time1..time2).count
         totals_csv_entries[year] = 0
         FreecenCsvFile.between(_id: first_id..last_id).year(year).each do |file|
           totals_csv_entries[year] += file.freecen_csv_entries.count
