@@ -1,11 +1,10 @@
-<section>
-  <%= render 'nav_header_freecen' if  @show_navigation %>
-</section>
+<%= render 'nav_header_freecen' if  @show_navigation %>
 <section>
   <div class="adsense_center cen_unit cen_unit_fullwidth">
     <span>Advertisement</span>
     <%= fullwidth_adsense_freecen %>
   </div>
+  <%= render 'nav_dwelling_freecen' if  @show_navigation %>
   <% if @dwelling %>
     <% if 0 != @dwelling_offset %>
       <p class="text--center">
@@ -13,6 +12,7 @@
       </p>
     <% end %>
     <%= render 'freecen_dwelling' %>
+    <%= render 'nav_individual_freecen' if  @show_navigation %>
     <%= render 'freecen_individuals' %>
   <% end %>
   <%= render '/freecen_csv_entries/donate_and_data_problem' %>
