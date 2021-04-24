@@ -41,7 +41,7 @@ module Freecen
         file.update_attributes(file_hash)
         file.update_attributes(file_name: File.basename(filename))
         file.update_attributes(freecen_piece_id: piece_id) if piece_id.present?
-        file.update_attributes(file_errors:entry_errors) if entry_errors.present?
+        file.update_attributes(file_errors: entry_errors) if entry_errors.present?
         file.update_attributes(num_entries: entry_hash_array.length)
       else
         file = Freecen1VldFile.new(file_hash)

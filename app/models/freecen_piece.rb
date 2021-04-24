@@ -124,12 +124,10 @@ class FreecenPiece
       totals_individuals = {}
       totals_dwellings = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
-        totals_individuals[year] = FreecenPiece.where(_id: { '$lte' => last_id }).year(year).status('Online').sum(:num_individuals)
         totals_pieces[year] = FreecenPiece.where(_id: { '$lte' => last_id }).year(year).count
         totals_pieces_online[year] = FreecenPiece.where(_id: { '$lte' => last_id }).year(year).status('Online').count
-        totals_dwellings[year] = FreecenPiece.where(_id: { '$lte' => last_id }).year(year).status('Online').sum(:num_dwellings)
       end
-      [totals_pieces, totals_pieces_online, totals_individuals, totals_dwellings]
+      [totals_pieces, totals_pieces_online]
     end
 
     def between_dates_year_totals(time1, time2)

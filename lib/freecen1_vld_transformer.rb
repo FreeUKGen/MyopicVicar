@@ -34,10 +34,10 @@ module Freecen
 
     def dwelling_from_entry(entry, piece)
       dwelling = FreecenDwelling.new
-      (FreecenDwelling.fields.keys&Freecen1VldEntry.fields.keys).each do |key|
+      (FreecenDwelling.fields.keys & Freecen1VldEntry.fields.keys).each do |key|
         dwelling[key] = entry.send(key) unless key == "_id"
       end
-      dwelling.freecen1_vld_file=entry.freecen1_vld_file
+      dwelling.freecen1_vld_file = entry.freecen1_vld_file
       dwelling.freecen_piece = piece
       dwelling.place = nil
       dwelling.place = piece.place unless piece.nil?
@@ -46,11 +46,12 @@ module Freecen
 
     def individual_from_entry(entry, dwelling, file_id)
       individual = FreecenIndividual.new
-      (FreecenIndividual.fields.keys&Freecen1VldEntry.fields.keys).each do |key|
+      (FreecenIndividual.fields.keys & Freecen1VldEntry.fields.keys).each do |key|
         individual[key] = entry.send(key) unless key == "_id"
       end
-      individual.freecen1_vld_entry=entry
-      individual.freecen_dwelling=dwelling
+      individual.freecen1_vld_entry = entry
+      individual.freecen1_vld_file = file_id
+      individual.freecen_dwelling = dwelling
       individual.save!
 
       individual

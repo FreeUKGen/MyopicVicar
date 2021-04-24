@@ -12,9 +12,9 @@
         <th class='sticky-header'>Vld Files</th>
         <th class='sticky-header'>Vld Records</th>
         <th class='sticky-header'>Csv Files</th>
-        <th class='sticky-header'>Csv Files Incor</th>
         <th class='sticky-header'>Csv Records</th>
-        <th class='sticky-header'>Csv Records Incor</th>
+        <th class='sticky-header'>Csv Files Incor</th>
+        <th class='sticky-header'>Csv Individuals Incor</th>
         <th class='sticky-header'>Individuals</th>
         <th class='sticky-header'>Dwellings</th>
         <th class='sticky-header'>New Vld Files</th>
@@ -22,7 +22,7 @@
         <th class='sticky-header'>New Csv Files</th>
         <th class='sticky-header'>New Csv Records</th>
         <th class='sticky-header'>New Csv Files Incor</th>
-        <th class='sticky-header'>New Csv Records Incor</th>
+        <th class='sticky-header'>New Csv Individuals Incor</th>
       </tr>
     </thead>
     <tbody>
@@ -35,9 +35,9 @@
           <td><%= statistic.records[:total][:total][:vld_files] %></td>
           <td><%= statistic.records[:total][:total][:vld_entries] %></td>
           <td><%= statistic.records[:total][:total][:csv_files] %></td>
-          <td><%= statistic.records[:total][:total][:csv_files_incorporated] %></td>
           <td><%= statistic.records[:total][:total][:csv_entries] %></td>
-          <td><%= statistic.records[:total][:total][:csv_entries_incorporated] %></td>
+          <td><%= statistic.records[:total][:total][:csv_files_incorporated] %></td>
+          <td><%= statistic.records[:total][:total][:csv_individuals_incorporated] %></td>
           <td><%= statistic.records[:total][:total][:individuals] %></td>
           <td><%= statistic.records[:total][:total][:dwellings] %></td>
           <td><%= statistic.records[:total][:total][:added_vld_files] %></td>
@@ -45,7 +45,7 @@
           <td><%= statistic.records[:total][:total][:added_csv_files] %></td>
           <td><%= statistic.records[:total][:total][:added_csv_entries] %></td>
           <td><%= statistic.records[:total][:total][:added_csv_files_incorporated] %></td>
-          <td><%= statistic.records[:total][:total][:added_csv_entries_incorporated] %></td>
+          <td><%= statistic.records[:total][:total][:added_csv_individuals_incorporated] %></td>
         </tr>
       <% end %>
     </tbody>

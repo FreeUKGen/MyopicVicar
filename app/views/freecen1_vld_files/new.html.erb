@@ -1,5 +1,5 @@
 <% breadcrumb :new_vldfile,  @vldfile, @app%>
-<h2 style="text-align: center"><b>Upload a new VLD file to <%= appname%></b></h2>
+<h2 style="text-align: center"><b>Upload a <% if session[:replace].present?%> replacement VLD file for <%= session[:replace]%> <% else%> new VLD file <% end%> to <%= appname%></b></h2>
 <%= render 'flash_notice' %>
 <ul>
   <% @vldfile.errors.full_messages.each do |msg| %>

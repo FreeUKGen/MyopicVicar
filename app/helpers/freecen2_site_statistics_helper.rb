@@ -16,9 +16,9 @@ module Freecen2SiteStatisticsHelper
     when '3'
       unless @county_stats[census][:csv_files] >= @county_stats[census][:csv_files_incorporated] then flag = '*³' end
     when '4'
-      unless @county_stats[census][:csv_entries] >= @county_stats[census][:csv_entries_incorporated] then flag = '*⁴' end
+      unless @county_stats[census][:csv_entries] >= @county_stats[census][:csv_individuals_incorporated] then flag = '*⁴' end
     when '5'
-      unless @county_stats[census][:individuals] <= @county_stats[census][:vld_entries] + @county_stats[census][:csv_entries_incorporated] then flag = '*⁵' end
+      unless @county_stats[census][:individuals] <= @county_stats[census][:vld_entries] + @county_stats[census][:csv_individuals_incorporated] then flag = '*⁵' end
     end
     flag
   end

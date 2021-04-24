@@ -52,14 +52,22 @@ class Freecen1VldFile
       last_id = BSON::ObjectId.from_time(time)
       total_files = {}
       total_entries = {}
+      total_individuals = {}
+      total_dwellings = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
         total_files[year] = Freecen1VldFile.where(_id: { '$lte' => last_id }, full_year: year).count
         total_entries[year] = 0
+        total_dwellings[year] = 0
+        total_individuals[year] = 0
         Freecen1VldFile.where(_id: { '$lte' => last_id }, full_year: year).each do |file|
           total_entries[year] += file.freecen1_vld_entries.length
+          total_dwellings[year] = file.freecen_dwellings.length
+          file.freecen_dwellings.each do |dwelling|
+            total_individuals[year] += dwelling.freecen_individuals.length
+          end
         end
       end
-      [total_files, total_entries]
+      [total_files, total_entries, total_individuals, total_dwellings]
     end
 
     def between_dates_year_totals(time1, time2)
@@ -67,28 +75,44 @@ class Freecen1VldFile
       first_id = BSON::ObjectId.from_time(time1)
       total_files = {}
       total_entries = {}
+      total_individuals = {}
+      total_dwellings = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
         total_files[year] = Freecen1VldFile.between(_id: first_id..last_id).where(full_year: year).count
         total_entries[year] = 0
+        total_individuals[year] = 0
+        total_dwellings[year] = 0
         Freecen1VldFile.between(_id: first_id..last_id).where(full_year: year).each do |file|
           total_entries[year] += file.freecen1_vld_entries.length
+          file.freecen_dwellings.each do |dwelling|
+            total_individuals[year] += dwelling.freecen_individuals.length
+          end
+          total_dwellings[year] = file.freecen_dwellings.length
         end
       end
-      [total_files, total_entries]
+      [total_files, total_entries, total_individuals, total_dwellings]
     end
 
     def before_county_year_totals(chapman, time)
       last_id = BSON::ObjectId.from_time(time)
       total_files = {}
       total_entries = {}
+      total_individuals = {}
+      total_dwellings = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
         total_files[year] = Freecen1VldFile.where(_id: { '$lte' => last_id }, dir_name: chapman, full_year: year).count
         total_entries[year] = 0
+        total_individuals[year] = 0
+        total_dwellings[year] = 0
         Freecen1VldFile.where(_id: { '$lte' => last_id }, dir_name: chapman, full_year: year).each do |file|
           total_entries[year] += file.freecen1_vld_entries.length
+          file.freecen_dwellings.each do |dwelling|
+            total_individuals[year] += dwelling.freecen_individuals.length
+          end
+          total_dwellings[year] = file.freecen_dwellings.length
         end
       end
-      [total_files, total_entries]
+      [total_files, total_entries, total_individuals, total_dwellings]
     end
 
     def between_dates_county_year_totals(chapman, time1, time2)
@@ -96,14 +120,21 @@ class Freecen1VldFile
       first_id = BSON::ObjectId.from_time(time1)
       total_files = {}
       total_entries = {}
+      total_individuals = {}
+      total_dwellings = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
         total_files[year] = Freecen1VldFile.between(_id: first_id..last_id).where(dir_name: chapman, full_year: year).count
         total_entries[year] = 0
+        total_individuals[year] = 0
         Freecen1VldFile.between(_id: first_id..last_id).where(dir_name: chapman, full_year: year).each do |file|
           total_entries[year] += file.freecen1_vld_entries.length
+          file.freecen_dwellings.each do |dwelling|
+            total_individuals[year] += dwelling.freecen_individuals.length
+          end
+          total_dwellings[year] = file.freecen_dwellings.length
         end
       end
-      [total_files, total_entries]
+      [total_files, total_entries, total_individuals, total_dwellings]
     end
   end
   # ######################################################################### instance methods
@@ -527,9 +558,21 @@ class Freecen1VldFile
     end
   end
 
+  def delete_freecen1_vld_entries
+    Freecen1VldFile.where(dir_name: dir_name, uploaded_file_name: uploaded_file_name).each do |file|
+      Freecen1VldEntry.where(freecen1_vld_file_id: file.id).delete_all
+    end
+  end
+
   def delete_dwellings
     Freecen1VldFile.where(dir_name: dir_name, uploaded_file_name: uploaded_file_name).each do |file|
       FreecenDwelling.where(freecen1_vld_file_id: file.id).delete_all
+    end
+  end
+
+  def delete_individuals
+    Freecen1VldFile.where(dir_name: dir_name, uploaded_file_name: uploaded_file_name).each do |file|
+      FreecenIndividual.where(freecen1_vld_file_id: file.id).delete_all
     end
   end
 
@@ -575,11 +618,12 @@ class Freecen1VldFile
   def setup_batch_on_upload
     file_location = File.join(Rails.application.config.datafiles, dir_name, uploaded_file_name)
     delete_search_records if File.file?(file_location)
+    delete_freecen1_vld_entries if File.file?(file_location)
     delete_dwellings if File.file?(file_location)
+    delete_individuals if File.file?(file_location)
     save_to_attic if File.file?(file_location)
     file = Freecen1VldFile.find_by(dir_name: dir_name, uploaded_file_name: uploaded_file_name)
     if file.present?
-
       piece = file.freecen_piece
       piece.update_attributes(num_dwellings: 0, num_individuals: 0, freecen1_filename: '', status: '')
       piece.freecen1_vld_files.delete(file)

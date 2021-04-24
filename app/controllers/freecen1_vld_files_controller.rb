@@ -4,13 +4,19 @@ class Freecen1VldFilesController < ApplicationController
 
   def create
     # Initial guards
+
     redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'You must select a file') && return if params[:freecen1_vld_file].blank? || params[:freecen1_vld_file][:uploaded_file].blank?
+    session[:replace]
 
     params[:freecen1_vld_file][:dir_name] = session[:chapman_code]
 
     @vldfile = Freecen1VldFile.new(freecen1_vld_file_params)
 
     @vldfile.uploaded_file_name = @vldfile.uploaded_file.identifier
+
+    redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'That is not the same file name') && return if session[:replace].present? && session[:replace] !=  @vldfile.uploaded_file_name
+
+    session.delete(:replace)
     redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'That is not a VLD file') && return unless @vldfile.check_extension
 
     redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'That file has been loaded in the monthly update') && return if @vldfile.check_batch_upload
@@ -60,6 +66,9 @@ class Freecen1VldFilesController < ApplicationController
     file = @vldfile.uploaded_file_name
     @vldfile.save_to_attic if @vldfile.uploaded_file_name.present?
     @vldfile.delete_search_records
+    @vldfile.delete_freecen1_vld_entries
+    @vldfile.delete_dwellings
+    @vldfile.delete_individuals
     piece = @vldfile.freecen_piece
     piece.update_attributes(num_dwellings: 0, num_individuals: 0, freecen1_filename: '', status: '')
     piece.freecen1_vld_files.delete(@vldfile)
@@ -104,6 +113,7 @@ class Freecen1VldFilesController < ApplicationController
     @vldfile = Freecen1VldFile.new(userid: session[:userid])
     @app = appname_downcase
     @action = 'Upload'
+    session[:replace] = params[:replace]
   end
 
   def update
