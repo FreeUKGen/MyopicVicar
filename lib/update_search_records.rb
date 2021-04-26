@@ -16,7 +16,7 @@ class UpdateSearchRecords
     server = SoftwareVersion.extract_server(Socket.gethostname)
     software_version = SoftwareVersion.server(server).app(App.name_downcase).control.first
     version = software_version.version unless software_version.nil?
-    search_version  = software_version.last_search_record_version if search_version.blank? && software_version.last_search_record_version.present?
+    search_version = software_version.last_search_record_version if search_version.blank? && software_version.last_search_record_version.present?
     search_version = 1 if search_version.blank?
     p "Started a search_record update for #{limit} files for #{record_type} and #{search_version} with pause of #{Rails.application.config.emmendation_sleep.to_f} and a force #{force} and order #{order}"
     message_file.puts  "Started a search_record update for #{limit} files for #{record_type} and #{search_version} with pause of #{Rails.application.config.emmendation_sleep.to_f} and a force #{force} and order #{order}"
