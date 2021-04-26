@@ -1171,7 +1171,7 @@ class SearchQuery
   def freebmd_search_records
     @search_index = SearchQuery.get_search_table.index_hint(bmd_adjust_field_names)
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
-    records = SearchQuery.get_search_table.includes(:CountyCombos).includes(:best_guess_hash).where(bmd_params_hash)#.joins(spouse_join_condition).where(bmd_marriage_params)
+    records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)#.joins(spouse_join_condition).where(bmd_marriage_params)
     records = records.where(search_conditions) #unless self.first_name_exact_match
     records = marriage_surname_filteration(records) if self.spouses_mother_surname.present? and self.bmd_record_type == ['3']
     records = spouse_given_name_filter(records) if self.spouse_first_name.present?
