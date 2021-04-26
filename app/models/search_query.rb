@@ -1072,7 +1072,7 @@ class SearchQuery
         end
         # place_id is an adequate index -- all is well; do nothing
       else
-        errors.add(:last_name, 'Wildcard can only be used with a specific place/district.')
+        errors.add(:last_name, 'Wildcard can only be used with a specific place/district.') unless SearchQuery.app_template.downcase == 'freebmd'
         #if last_name.match(WILDCARD)
         #if last_name.index(WILDCARD) < 3
         #errors.add(:last_name, 'Three letters must precede any wildcard in a surname unless a specific place is also chosen.')
