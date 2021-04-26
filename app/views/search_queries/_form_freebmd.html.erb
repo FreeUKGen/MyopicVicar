@@ -133,9 +133,8 @@
 
                 <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole spousefirstnamess display_none flush--bottom" id="spouse_firstnames_div">
                     <div class='labels'>
-                        <%= label_tag 'spouse_first_name', "Spouse first name(s) #{app_icons[:info]}".html_safe, class: "ttip", tabindex: "0" do %>
+                        <%= label_tag 'spouse_first_name', "Spouse first name(s)".html_safe, class: "ttip", tabindex: "0" do %>
                             <%= "Spouse first name(s)".html_safe %>
-                            <span class="ttip__text"><%#= info_tag_text[:spouse_first_name]%></span>
                         <% end %>
                     </div>
                     <%= text_field_tag 'search_query[spouse_first_name]', set_value(@search_query.spouse_first_name), class: 'text-input flush--bottom', placeholder: 'Enter spouse first name(s) here', id: 'spouse_first_name', tabindex: "0"%>
@@ -149,9 +148,8 @@
 
                 <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole spouseormothersurname display_none" id="spouse_or_mother_surname_div">
                     <div class='labels'>
-                        <%= label_tag 'spouses_mother_surname', "Spouse/Mothers surname #{app_icons[:info]}".html_safe, class: "ttip spouse_or_mother_surname_label", tabindex: "0" do %>
-                            <%= "Spouse/Mothers surname #{app_icons[:info]}".html_safe %>
-                            <span class="ttip__text"><%= info_tag_text[:spouse_mother_surname]%></span>
+                        <%= label_tag 'spouses_mother_surname', "Spouse/Mothers surname".html_safe, class: "ttip spouse_or_mother_surname_label", tabindex: "0" do %>
+                            <%= "Spouse/Mothers surname".html_safe %>
                         <% end %>
                     </div>
                     <%= text_field_tag '', set_value(@search_query.spouses_mother_surname) || set_value(@search_query.mother_last_name), class: 'text-input', placeholder: '', id: 'spouses_mother_surname' , tabindex: "0"%>
@@ -473,7 +471,7 @@
                 //$('#spouse_first_name').prop('placeholder', "Enter Spouse First Name(s) here ")
                // $('#spouses_mother_surname').prop('placeholder', "Enter Spouse's surname here")
                 $('#spouses_mother_surname').prop('name', 'search_query[spouses_mother_surname]');
-                $('.spouse_or_mother_surname_label').text("Spouses Surname").append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
+                $('.spouse_or_mother_surname_label').text("Spouses Surname");//.append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
                 //$('#spouses_mother_surname').css('background', 'white');
                 //$('#death_select_box').prop('disabled', 'disabled');
                 //$('#death_select_box').css('background', '#ccc');
