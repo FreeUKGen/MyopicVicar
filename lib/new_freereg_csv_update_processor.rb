@@ -82,7 +82,7 @@ class NewFreeregCsvUpdateProcessor
         @csvfile.clean_up_physical_files_after_failure(@records_processed)
         #@project.communicate_to_managers(@csvfile) if @project.type_of_project == "individual"
       end
-      # sleep(300) if Rails.env.production?
+      sleep(300) if Rails.env.production?
     end
     # p "manager communication"
     #@project.communicate_to_managers(@csvfile) if files_to_be_processed.length >= 2
@@ -111,8 +111,8 @@ class NewFreeregCsvUpdateProcessor
     file = @message_file
     #@message_file.close if @project.type_of_project == "individual"
     user = UseridDetail.where(userid: "REGManager").first
-    #   UserMailer.update_report_to_freereg_manager(file,user).deliver_now
-    user = UseridDetail.where(userid: "Captainkirk").first
+    UserMailer.update_report_to_freereg_manager(file,user).deliver_now
+    user = UseridDetail.where(userid: "ericb").first
     UserMailer.update_report_to_freereg_manager(file,user).deliver_now
   end
 
@@ -528,7 +528,7 @@ class CsvFile < CsvFiles
     #p "communicating failure"
     file = project.member_message_file
     file.close
-    UserMailer.batch_processing_failure(file,@userid,@file_name).deliver_now unless project.type_of_project == "special_selection_1" ||  project.type_of_project == "special_selection_2" ||  project.type_of_project == 'range'
+    UserMailer.batch_processing_failure(file,@userid,@file_name).deliver_now unless project.type_of_project == "special_selection_1" ||  project.type_of_project == "special_selection_2"
     self.clean_up_message(project)
     return true
   end
@@ -537,7 +537,7 @@ class CsvFile < CsvFiles
     #p "communicating success"
     file = project.member_message_file
     file.close
-    UserMailer.batch_processing_success(file,@header[:userid],@header[:file_name]).deliver_now unless project.type_of_project == "special_selection_1" ||  project.type_of_project == "special_selection_2" ||  project.type_of_project == 'range'
+    UserMailer.batch_processing_success(file,@header[:userid],@header[:file_name]).deliver_now unless project.type_of_project == "special_selection_1" ||  project.type_of_project == "special_selection_2"
     self.clean_up_message(project)
     return true
   end

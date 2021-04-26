@@ -1,6 +1,9 @@
 require 'chapman_code'
 
 namespace :foo do
+  # rake foo:update_search_records[number of files, record type,software version, force creation, order files are processed]
+  #eg f2rake  foo:update_search_records[0,bu,"2016-05-27T19:23:31+00:00", true, 1]
+  #number of files of 0 is all, force creation is true or false, order files processed is 1 or -1
 
   task :move_civil_parishes_to_another_county, [:limit, :file_name] => [:environment] do |t, args|
     # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
@@ -220,9 +223,6 @@ namespace :foo do
   end
 
   task :update_search_records,[:limit,:record_type,:version,:force, :order] => [:environment] do |t,args|
-    # rake foo:update_search_records[number of files, record type,software version, force creation, order files are processed]
-    #eg f2rake  foo:update_search_records[0,bu,"2016-05-27T19:23:31+00:00", true, 1]
-    #number of files of 0 is all, force creation is true or false, order files processed is 1 or -1
     #limit is number of files to process 0 is all
     require 'update_search_records'
     UpdateSearchRecords.process(args.limit,args.record_type,args.version,args.force,args.order)
