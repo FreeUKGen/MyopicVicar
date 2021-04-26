@@ -135,7 +135,7 @@ class SearchRecord
   elsif MyopicVicar::Application.config.template_set == 'freecen'
     INDEXES = NEW_INDEXES
   elsif MyopicVicar::Application.config.template_set == 'freereg'
-    INDEXES = MERGED_INDEXES
+    INDEXES = []
   end
 
   INDEXES.each_pair do |name, fields|

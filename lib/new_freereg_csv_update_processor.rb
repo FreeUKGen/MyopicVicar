@@ -82,7 +82,7 @@ class NewFreeregCsvUpdateProcessor
         @csvfile.clean_up_physical_files_after_failure(@records_processed)
         #@project.communicate_to_managers(@csvfile) if @project.type_of_project == "individual"
       end
-      sleep(300) if Rails.env.production?
+      # sleep(300) if Rails.env.production?
     end
     # p "manager communication"
     #@project.communicate_to_managers(@csvfile) if files_to_be_processed.length >= 2
@@ -356,7 +356,7 @@ class CsvFile < CsvFiles
       place = Place.id(place_id).first
       SearchRecord.update_create_search_record(existing_record,self.header[:search_record_version],place) if  project.create_search_records && existing_record.enough_name_fields?
       sleep_time = (Rails.application.config.sleep.to_f).to_f
-      sleep(sleep_time)
+      #sleep(sleep_time)
     end
     success
   end
@@ -506,7 +506,7 @@ class CsvFile < CsvFiles
       files << file_for_entry unless files.include?(file_for_entry)
       actual_record.destroy unless actual_record.nil?
       sleep_time =  sleep_time = (Rails.application.config.sleep.to_f).to_f
-      sleep(sleep_time) unless actual_record.nil?
+      #sleep(sleep_time) unless actual_record.nil?
     end
     #p 'recalculate distribution after clean up'
     files.each do |file|
@@ -573,7 +573,7 @@ class CsvFile < CsvFiles
       success = "new"
     end
     sleep_time = (Rails.application.config.sleep.to_f).to_f
-    sleep(sleep_time)
+    #sleep(sleep_time)
     # p entry.search_record
     return success
   end
@@ -657,7 +657,7 @@ class CsvFile < CsvFiles
         place = Place.id(place_id).first
         SearchRecord.update_create_search_record(existing_record,self.header[:search_record_version],place) if project.create_search_records && existing_record.enough_name_fields?
         sleep_time = (Rails.application.config.sleep.to_f).to_f
-        sleep(sleep_time)
+        #sleep(sleep_time)
       end
     else
       success = self.change_location_for_existing_entry_and_record(existing_record, data_record, project, freereg1_csv_file)
