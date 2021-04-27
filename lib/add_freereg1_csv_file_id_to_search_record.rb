@@ -6,12 +6,12 @@ class AddFreereg1CsvFileIdToSearchRecord
     message_file = File.new(file_for_warning_messages, 'w')
     process_files = 0
     record_numbers = 0
-    Freereg1CsvFile.each do |file|
+    Freereg1CsvFile.no_timeout.each do |file|
       process_files += 1
       break if process_files > limit
 
       file_id = file.id
-      file.freereg1_csv_entries.each do |entry|
+      file.freereg1_csv_entries.no_timeout.each do |entry|
         record_numbers += 1
         entry.search_record.update_attributes(freereg1_csv_file_id: file_id)
       end
