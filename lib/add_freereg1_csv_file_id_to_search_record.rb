@@ -8,7 +8,7 @@ class AddFreereg1CsvFileIdToSearchRecord
     record_numbers = 0
     Freereg1CsvFile.each do |file|
       process_files += 1
-      next if process_files > limit
+      break if process_files > limit
 
       file_id = file.id
       file.freereg1_csv_entries.each do |entry|
