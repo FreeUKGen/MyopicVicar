@@ -1,0 +1,122 @@
+db.runCommand(
+  {
+    createIndexes: "search_records",
+    indexes: [
+        {
+            key: {
+                "search_names.last_name": 1,
+                chapman_code: 1,
+                record_type:1,
+                search_date: 1,
+                secondary_search_date:1
+            },
+            name: "ln_county_rt_sd_ssd"
+        },
+        {
+            key: {
+                "search_names.last_name": 1,
+                "search_names.first_name": 1,
+                chapman_code: 1,
+                record_type:1,
+                search_date: 1,
+                secondary_search_date:1
+            },
+            name: "ln_fn_county_rt_sd_ssd"
+        },
+        {
+            key: {
+                "search_soundex.last_name": 1,
+                chapman_code: 1,
+                record_type:1,
+                search_date: 1,
+                secondary_search_date:1
+            },
+            name: "lnsdx_county_rt_sd_ssd"
+        },
+        {
+            key: {
+                "search_soundex.last_name": 1,
+                "search_soundex.first_name": 1,
+                chapman_code: 1,
+                record_type:1,
+                search_date: 1,
+                secondary_search_date:1
+            },
+            name: "lnsdx_fnsdx_county_rt_sd_ssd"
+        },
+        {
+            key: {
+                "search_names.last_name": 1,
+                place_id: 1,
+                record_type:1,
+                search_date:1,
+                secondary_search_date:1
+            },
+            name: "ln_place_rt_sd_ssd"
+        },
+        {
+            key: {
+                "search_names.last_name": 1,
+                "search_names.first_name": 1,
+                place_id: 1,
+                record_type:1,
+                search_date:1,
+                secondary_search_date:1
+            },
+            name: "ln_fn_place_rt_sd_ssd"
+        },
+        {
+            key: {
+                "search_soundex.last_name": 1,
+                place_id: 1,
+                record_type:1,
+                search_date:1,
+                secondary_search_date:1
+            },
+            name: "lnsdx_place_rt_sd_ssd"
+        },
+        {
+            key: {
+                "search_soundex.last_name": 1,
+                "search_soundex.first_name": 1,
+                place_id: 1,
+                record_type:1,
+                search_date:1,
+                secondary_search_date:1
+            },
+            name: "lnsdx_fnsdx_place_rt_sd_ssd"
+        },
+        {
+            key: {
+                "search_names.first_name": 1,
+                place_id: 1,
+                record_type:1,
+                search_date:1,
+                secondary_search_date:1
+            },
+            name: "fn_place_rt_sd_ssd"
+        },
+        {
+            key: {
+                "search_soundex.first_name": 1,
+                place_id: 1,
+                record_type:1,
+                search_date:1,
+                secondary_search_date:1
+            },
+            name: "fnsdx_place_rt_sd_ssd"
+        },
+        {
+            key: {
+                place_id: 1,
+                record_type:1,
+                search_date:1,
+                secondary_search_date:1
+            },
+            name: "place_rt_sd_ssd"
+        },
+
+
+            ]
+  }
+)
