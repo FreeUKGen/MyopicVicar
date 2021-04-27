@@ -273,6 +273,7 @@ class ApplicationController < ActionController::Base
     session[:stats_view] = false
     session.delete(:stats_year)
     session.delete(:stats_todate)
+    session.delete(:stats_recs)
   end
 
   def clean_session_for_county
@@ -322,6 +323,8 @@ class ApplicationController < ActionController::Base
     session.delete(:type)
     session[:stats_view] = false
     session.delete(:stats_year)
+    session.delete(:stats_todate)
+    session.delete(:stats_recs)
   end
 
   def clean_session_for_images
