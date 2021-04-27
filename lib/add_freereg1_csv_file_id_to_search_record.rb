@@ -11,7 +11,8 @@ class AddFreereg1CsvFileIdToSearchRecord
       break if process_files > limit
 
       file_id = file.id
-      file.freereg1_csv_entries.no_timeout.each do |entry|
+      entries = Freereg1CsvEntry.where(freereg1_csv_file_id: file_id).all
+      entries.no_timeout.each do |entry|
         record_numbers += 1
         entry.search_record.update_attributes(freereg1_csv_file_id: file_id)
       end
