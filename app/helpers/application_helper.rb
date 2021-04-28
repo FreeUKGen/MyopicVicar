@@ -720,7 +720,7 @@ module ApplicationHelper
   end
 
   def banner_header
-    banner = <<-HTML
+    <<-HTML
     <script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <ins class="adsbygoogle adSenseBanner"
     style="display:inline-block;width:728px;height:90px"
@@ -749,7 +749,6 @@ module ApplicationHelper
       <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
       HTML
     end
-    banner.html_safe
   end
 
   def side_banners
