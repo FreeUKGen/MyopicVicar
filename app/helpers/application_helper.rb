@@ -727,10 +727,23 @@ module ApplicationHelper
     data-ad-client = "#{data_ad_client}"
     data-ad-slot = "#{data_ad_slot_header}">
     </ins>
-    <script type="text/javascript">
-    (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
     HTML
+    unless GdprCountries::FOLLOWED_COUNTRIES.include?(request.location.country) || !request.location.blank?
+      <<-HTML
+      <script>
+        window.update_personalized_header_adverts = function (preference) {
+              if(preference == 'accept') {
+                (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0
+              } else if(preference == 'deny') {
+                (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1
+              }
+            };
+      </script>
+      <script type="text/javascript">
+      (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      HTML
+    end
     if Rails.env.development?
       banner = <<-HTML
       <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>

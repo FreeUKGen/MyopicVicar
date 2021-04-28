@@ -45,12 +45,14 @@
   <% end %>
 <% end %>
 </div>
-<!--div class="cookieConsent island island--teal flush--bottom">
-  <div id="cookieText" >
-    We use cookies to ensure you get the best experience with our website. This includes carefully chosen third-party cookies for analysing traffic and advertising. Please select ‘Accept Cookies’ if you consent and wish to continue using the site. <strong><a tabindex = "1" href="/cms/about/cookie-policy" class="cookie_policy_link" id="cookie_policy">More options and information.</a></strong>
+<% unless GdprCountries::FOLLOWED_COUNTRIES.include?(request.location.country) ||  !request.location.blank? %>
+  <div class="cookieConsent island island--teal flush--bottom">
+    <div id="cookieText" >
+      We use cookies to ensure you get the best experience with our website. This includes carefully chosen third-party cookies for analysing traffic and advertising. Please select ‘Accept Cookies’ if you consent and wish to continue using the site. <strong><a tabindex = "1" href="/cms/about/cookie-policy" class="cookie_policy_link" id="cookie_policy">More options and information.</a></strong>
+    </div>
+    <div class = "cookieAcceptButton">
+      <input class="btn btn--small accept_cookies" tabindex="3" type="submit" name="accept_cookies" id="accept_cookies" value="Accept Cookies" />
+    </div>
   </div>
-  <div class = "cookieAcceptButton">
-    <input class="btn btn--small accept_cookies" tabindex="3" type="submit" name="accept_cookies" id="accept_cookies" value="Accept Cookies" />
-  </div>
-</div-->
+  <% end %>
 </header>

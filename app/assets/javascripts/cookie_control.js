@@ -36,8 +36,8 @@ $(document).ready(function() {
     if ((getCookie('userAcceptance') === null) || (getCookie('userAcceptance') == 'unknown') && (getCookie('userAdPersonalization') === null) || (getCookie('userAdPersonalization') == 'unknown')){
       setCookie('userAcceptance', 'unknown', 365);
       setCookie('userAdPersonalization', 'unknown', 365);
-      update_third_party_cookies_user_preference('deny');
-      $('.cookieConsent').slideDown('3000');
+      //update_third_party_cookies_user_preference('deny');
+      $('.cookieConsent').slideDown();
     } else {
       $('.cookieConsent').remove();
     };
@@ -47,7 +47,7 @@ $(document).ready(function() {
   var acceptCookie = function() {
     if ((getCookie('userAcceptance') == 0) || (getCookie('userAcceptance') == 'unknown')) {
       delete_cookie('userAcceptance');
-      update_third_party_cookies_user_preference('accept');
+      //update_third_party_cookies_user_preference('accept');
       setCookie('userAcceptance', 1, 365);
       location.reload();
     };
@@ -57,7 +57,7 @@ $(document).ready(function() {
   var denyCookie = function() {
     if (getCookie('userAcceptance') == 1) {
       delete_cookie('userAcceptance');
-      update_third_party_cookies_user_preference('deny');
+      //update_third_party_cookies_user_preference('deny');
       setCookie('userAcceptance', 0, 365);
       location.reload();
     } else {
@@ -92,15 +92,15 @@ $(document).ready(function() {
 //Default Deny analytics cookies
  if ((getCookie('userAcceptance') === null) || (getCookie('userAcceptance') == 'unknown')) {
      setCookie('userAcceptance', 'unknown', 365 );
-     update_third_party_cookies_user_preference('deny');
+     //update_third_party_cookies_user_preference('deny');
    };
 // Accept Analytic Cookie
   if (getCookie('userAcceptance') == 1) {
-     update_third_party_cookies_user_preference('accept');
+     //update_third_party_cookies_user_preference('accept');
    };
 //Deny analytics cookies
   if (getCookie('userAcceptance') == 0) {
-     update_third_party_cookies_user_preference('deny');
+    // update_third_party_cookies_user_preference('deny');
    };
 
   $('.cookie_check_box').change(function() {
@@ -110,6 +110,7 @@ $(document).ready(function() {
       denyCookie();
     };
   });
+
 
   $('.adsense_check_box').change(function() {
   if($(this).is(":checked")) {
