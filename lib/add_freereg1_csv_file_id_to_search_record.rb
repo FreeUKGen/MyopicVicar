@@ -14,7 +14,7 @@ class AddFreereg1CsvFileIdToSearchRecord
       entries = Freereg1CsvEntry.where(freereg1_csv_file_id: file_id).all
       entries.no_timeout.each do |entry|
         record_numbers += 1
-        entry.search_record.update_attributes(freereg1_csv_file_id: file_id)
+        entry.search_record.update_attributes(freereg1_csv_file_id: file_id) if entry.search_record.present?
       end
       p "Finished #{file.file_name}"
       message_file.puts "#{file.file_name}"
