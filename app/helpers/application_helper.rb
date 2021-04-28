@@ -728,6 +728,7 @@ module ApplicationHelper
     data-ad-slot = "#{data_ad_slot_header}">
     </ins>
     HTML
+    raise request.location.inspect
     unless request.location.present? #|| GdprCountries::FOLLOWED_COUNTRIES.include?(request.location.country)
       <<-HTML
       <script>
