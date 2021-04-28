@@ -115,8 +115,12 @@ db.runCommand(
             },
             name: "place_rt_sd_ssd"
         },
-
-
+        {
+            key: {
+                freereg1_csv_entry_id: 1
+            },
+            name: "freereg1_csv_entry_id"
+        }
             ]
   }
 )
