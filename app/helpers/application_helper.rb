@@ -728,7 +728,7 @@ module ApplicationHelper
     data-ad-slot = "#{data_ad_slot_header}">
     </ins>
     HTML
-    unless !request.location.blank? #|| GdprCountries::FOLLOWED_COUNTRIES.include?(request.location.country)
+    unless request.location.present? #|| GdprCountries::FOLLOWED_COUNTRIES.include?(request.location.country)
       <<-HTML
       <script>
         window.update_personalized_header_adverts = function (preference) {
