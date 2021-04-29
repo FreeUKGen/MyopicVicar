@@ -317,6 +317,7 @@ class FreecenCsvFilesController < ApplicationController
     if session[:stats_view]
       if !session[:stats_year].present?
         session[:stats_year] = params[:stats_year]
+        session[:stats_recs] = params[:select_recs]
       end
       session[:selection] = params[:select_recs]
     end
@@ -333,7 +334,7 @@ class FreecenCsvFilesController < ApplicationController
       end
     when session[:county].present?
       if session[:stats_view]
-        @freecen_csv_files  = FreecenCsvFile.before_year_csv_files(session[:chapman_code], session[:stats_year], session[:stats_todate], params[:select_recs]).order_by(session[:sort]).all
+        @freecen_csv_files  = FreecenCsvFile.before_year_csv_files(session[:chapman_code], session[:stats_year], session[:stats_todate], session[:stats_recs]).order_by(session[:sort]).all
       else
         if helpers.can_view_files?(session[:role]) && session[:selection] == 'errors'
           @freecen_csv_files = FreecenCsvFile.chapman_code(session[:chapman_code]).gt(total_errors: 0).order_by(session[:sort]).all
