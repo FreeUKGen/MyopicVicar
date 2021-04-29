@@ -104,7 +104,7 @@ class SearchRecord
     'lnsdx_fnsdx_place_rt_sd_ssd' => ['search_soundex.last_name', 'search_soundex.first_name', 'place_id', 'record_type', 'search_date', 'secondary_search_date'],
     'fn_place_rt_sd_ssd' => ['search_names.first_name', 'place_id', 'record_type', 'search_date', 'secondary_search_date'],
     'fnsdx_place_rt_sd_ssd' => ['search_soundex.first_name', 'place_id', 'record_type', 'search_date', 'secondary_search_date'],
-    'place_rt_sd_ssd' => ['place_id', 'record_type', 'search_date', 'secondary_search_date'],
+    'place_rt_sd_ssd' => ['place_id', 'record_type', 'search_date', 'secondary_search_date']
   }
 
 
