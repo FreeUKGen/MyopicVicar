@@ -105,7 +105,7 @@ class FreecenCsvProcessor
         @csvfile.communicate_failure_to_member(@records_processed)
         @csvfile.clean_up_physical_files_after_failure(@records_processed)
       end
-      sleep(300) if Rails.env.production
+      sleep(300) if Rails.env.production?
     end
     # p "manager communication"
     #@project.communicate_to_managers(@csvfile) if files_to_be_processed.length >= 2
