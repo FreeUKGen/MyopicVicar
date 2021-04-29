@@ -1269,10 +1269,10 @@ class SearchQuery
     if self.first_name.present? && !self.first_name_exact_match
       if do_wildcard_seach?(self.first_name)
         unless second_name_wildcard
-          query = "BestGuess.GivenName like '#{name_wildcard_search(self.first_name)}%'"
+          query = "BestGuess.GivenName like '#{name_wildcard_search(self.first_name)}'"
         else
           name = self.first_name.slice!(0)
-          query = "BestGuess.OtherNames like '#{name_wildcard_search(self.first_name)}%'"
+          query = "BestGuess.OtherNames like '#{name_wildcard_search(self.first_name)}'"
         end
       end
     end
