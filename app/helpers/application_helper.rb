@@ -612,7 +612,7 @@ module ApplicationHelper
       contactUs: 'Contact Us',
       donation: 'Make a donation to cover our operating costs
       <span class="accessibility">Opens in new window</span>',
-      fugNews: 'News about FreeUKGenealogy
+      fugNews: 'News about Free UK Genealogy
       <span class="accessibility">Opens in new window</span>',
       freeregIcon: '<span class="accessibility">FreeREG</span>',
       freecenIcon: '<span class="accessibility">FreeCEN</span>',
