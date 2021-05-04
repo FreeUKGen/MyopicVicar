@@ -90,11 +90,18 @@ class FreecenCsvProcessor
           @csvfile.clean_up_physical_files_after_failure(@records_processed)
           # @project.communicate_to_managers(@csvfile) if @project.type_of_project == "individual"
         end
-      rescue Exception => msg
+      rescue CSV::MalformedCSVError => msg
+        @project.write_messages_to_all("We were unable to process the file possibly due to an invalid structure or character.<p>", true)
+        @project.write_messages_to_all("#{msg}", true)
+        @project.write_log_file("#{msg.backtrace.inspect}")
         @records_processed = msg
-        @project.write_messages_to_all('The CSVProcessor crashed please provide the following information to your coordinator to send to the System Administrators', true)
+        @csvfile.communicate_failure_to_member(@records_processed)
+        @csvfile.clean_up_physical_files_after_failure(@records_processed)
+      rescue Exception => msg
+        @project.write_messages_to_all("The CSVProcessor crashed please provide the following information to your coordinator to send to the System Administrators", true)
         @project.write_messages_to_all("#{msg}", true)
         @project.write_messages_to_all("#{msg.backtrace.inspect}", true)
+        @records_processed = msg
         @csvfile.communicate_failure_to_member(@records_processed)
         @csvfile.clean_up_physical_files_after_failure(@records_processed)
       end
