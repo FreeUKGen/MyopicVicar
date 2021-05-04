@@ -70,8 +70,10 @@ class Freecen1VldFilesController < ApplicationController
     @vldfile.delete_dwellings
     @vldfile.delete_individuals
     piece = @vldfile.freecen_piece
-    piece.update_attributes(num_dwellings: 0, num_individuals: 0, freecen1_filename: '', status: '')
-    piece.freecen1_vld_files.delete(@vldfile)
+    if piece.present?
+      piece.update_attributes(num_dwellings: 0, num_individuals: 0, freecen1_filename: '', status: '')
+      piece.freecen1_vld_files.delete(@vldfile)
+    end
     @vldfile.delete
     flash[:notice] = "The vld file #{file} has been deleted."
     redirect_to freecen1_vld_files_path
