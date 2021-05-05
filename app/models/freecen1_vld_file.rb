@@ -587,6 +587,12 @@ class Freecen1VldFile
     result
   end
 
+  def check_exists_on_upload
+    files = Freecen1VldFile.where(:dir_name => dir_name, :file_name => uploaded_file_name).count
+    result = files > 0 ? true : false
+    result
+  end
+
   def check_batch_upload
     files = Freecen1VldFile.where(:dir_name => dir_name, :file_name => uploaded_file_name, :action.ne => 'Upload').count
     result = files > 0 ? true : false

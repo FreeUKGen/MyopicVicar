@@ -6,7 +6,6 @@ class Freecen1VldFilesController < ApplicationController
     # Initial guards
 
     redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'You must select a file') && return if params[:freecen1_vld_file].blank? || params[:freecen1_vld_file][:uploaded_file].blank?
-    session[:replace]
 
     params[:freecen1_vld_file][:dir_name] = session[:chapman_code]
 
@@ -14,7 +13,9 @@ class Freecen1VldFilesController < ApplicationController
 
     @vldfile.uploaded_file_name = @vldfile.uploaded_file.identifier
 
-    redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'That is not the same file name') && return if session[:replace].present? && session[:replace] !=  @vldfile.uploaded_file_name
+    redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'That file exits please use the replace action') && return if @vldfile.check_exists_on_upload && session[:replace].blank?
+
+    redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'That is not the same file name') && return if session[:replace].present? && session[:replace] != @vldfile.uploaded_file_name
 
     session.delete(:replace)
     redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'That is not a VLD file') && return unless @vldfile.check_extension
