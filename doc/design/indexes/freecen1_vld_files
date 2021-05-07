@@ -27,15 +27,21 @@ db.runCommand(
         },
         {
             key: {
-                freecen2_district_id: 1,
+                freecen2_district_id: 1
             },
             name: "freecen2_district"
         },
         {
             key: {
-                freecen2_piece_id: 1,
+                freecen2_piece_id: 1
             },
             name: "freecen2_piece"
+        },
+        {
+            key: {
+                freecen_piece_id: 1
+            },
+            name: "freecen_piece"
         }
 
     ]

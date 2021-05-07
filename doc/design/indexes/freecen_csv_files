@@ -51,8 +51,24 @@ db.runCommand(
                 freecen2_piece_id: 1,
             },
             name: "freecen2_piece"
+        },
+         {
+            key: {
+                id: 1,
+                year: 1,
+                incorporated: 1
+            },
+            name: "id_year_incorporated"
+        },
+         {
+            key: {
+                id: 1,
+                chapman_code: 1,
+                year: 1,
+                incorporated: 1
+            },
+            name: "id_chapman_year_incorporated"
         }
-
     ]
   }
 )
