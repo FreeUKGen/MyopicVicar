@@ -36,12 +36,28 @@ class Freecen2SiteStatistic
       stat.searches = searches.present? ? searches.searches : 0
       start = Time.now.utc
       records = Freecen2SiteStatistic.setup_record('total')
-
+      start_time = Time.now
       totals_pieces, totals_pieces_online = FreecenPiece.before_year_totals(last_midnight)
+      piece_time = Time.now
+      piece_execution = piece_time - start_time
+      p "Piece time #{piece_execution}"
       vld_files, vld_entries, totals_individuals, totals_dwellings = Freecen1VldFile.before_year_totals(last_midnight)
+      vld_before_time = Time.now
+      vld_before_time_execution = vld_before_time - piece_time
+      p "Vld before time #{vld_before_time_execution}"
       added_vld_files, added_vld_entries, added_individuals, added_dwellings = Freecen1VldFile.between_dates_year_totals(previous_midnight, last_midnight)
+      vld_added_time = Time.now
+      vld_added_execution = vld_added_time - vld_before_time
+      p "Vld after time #{vld_added_execution}"
       totals_csv_files, totals_csv_files_incorporated, totals_csv_entries, totals_csv_individuals, totals_csv_dwellings = FreecenCsvFile.before_year_totals(last_midnight)
+      csv_before_time = Time.now
+      csv_before_execution = csv_before_time - vld_added_time
+      p "csv before time #{csv_before_execution}"
       added_csv_files, added_csv_files_incorporated, added_csv_entries, added_csv_individuals, _added_csv_dwellings = FreecenCsvFile.between_dates_year_totals(previous_midnight, last_midnight)
+      csv_added_time = Time.now
+      csv_added_execution = csv_added_time - csv_before_time
+      p "csv added time #{csv_before_execution}"
+
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
         records[:total][year] = {}
         records[:total][year][:individuals] = totals_individuals[year] + totals_csv_individuals[year]
