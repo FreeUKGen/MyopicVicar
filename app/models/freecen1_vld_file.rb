@@ -63,7 +63,7 @@ class Freecen1VldFile
         total_individuals[year] = 0
         Freecen1VldFile.where(_id: { '$lte' => last_id }, full_year: year).each do |file|
           total_entries[year] += file.num_entries
-          total_dwellings[year] = file.num_dwellings
+          total_dwellings[year] += file.num_dwellings
           total_individuals[year] += file.num_individuals
         end
       end
@@ -84,7 +84,7 @@ class Freecen1VldFile
         total_dwellings[year] = 0
         Freecen1VldFile.between(_id: first_id..last_id).where(full_year: year).each do |file|
           total_entries[year] += file.num_entries
-          total_dwellings[year] = file.num_dwellings
+          total_dwellings[year] += file.num_dwellings
           total_individuals[year] += file.num_individuals
         end
       end
@@ -104,7 +104,7 @@ class Freecen1VldFile
         total_dwellings[year] = 0
         Freecen1VldFile.where(_id: { '$lte' => last_id }, dir_name: chapman, full_year: year).each do |file|
           total_entries[year] += file.num_entries
-          total_dwellings[year] = file.num_dwellings
+          total_dwellings[year] += file.num_dwellings
           total_individuals[year] += file.num_individuals
         end
       end
@@ -124,7 +124,7 @@ class Freecen1VldFile
         total_individuals[year] = 0
         Freecen1VldFile.between(_id: first_id..last_id).where(dir_name: chapman, full_year: year).each do |file|
           total_entries[year] += file.num_entries
-          total_dwellings[year] = file.num_dwellings
+          total_dwellings[year] += file.num_dwellings
           total_individuals[year] += file.num_individuals
         end
       end
