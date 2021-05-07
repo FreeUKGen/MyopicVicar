@@ -122,6 +122,7 @@ class Freecen1VldFile
         total_files[year] = Freecen1VldFile.between(_id: first_id..last_id).where(dir_name: chapman, full_year: year).count
         total_entries[year] = 0
         total_individuals[year] = 0
+        total_dwellings[year] = 0
         Freecen1VldFile.between(_id: first_id..last_id).where(dir_name: chapman, full_year: year).each do |file|
           total_entries[year] += file.num_entries
           total_dwellings[year] += file.num_dwellings
