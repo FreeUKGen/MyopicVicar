@@ -47,6 +47,7 @@ class FreecenPiece
   field :remarks, type: String
   field :remarks_coord, type: String #visible to coords, not public
   field :online_time, type: Integer
+  field :num_entries, type: Integer, default: 0
   field :num_individuals, type: Integer, default: 0
   field :num_dwellings, type: Integer, default: 0
   belongs_to :freecen1_fixed_dat_entry, index: true, optional: true
@@ -55,7 +56,6 @@ class FreecenPiece
   has_many :freecen_csv_files
   has_many :freecen1_vld_files
 
-  before_validation :add_num_dwellings
   index(:piece_number => 1, :chapman_code => 1)
   index(:piece_number => 1, :chapman_code => 1, :year => 1, :suffix => 1, :parish_number => 1)
 
@@ -342,7 +342,4 @@ class FreecenPiece
     end
   end
   # ############################################################################## instances
-  def add_num_dwellings
-    self.num_dwellings = freecen_dwellings.count
-  end
 end

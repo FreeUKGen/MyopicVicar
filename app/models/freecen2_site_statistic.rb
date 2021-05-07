@@ -36,12 +36,12 @@ class Freecen2SiteStatistic
       stat.searches = searches.present? ? searches.searches : 0
       start = Time.now.utc
       records = Freecen2SiteStatistic.setup_record('total')
-
       totals_pieces, totals_pieces_online = FreecenPiece.before_year_totals(last_midnight)
       vld_files, vld_entries, totals_individuals, totals_dwellings = Freecen1VldFile.before_year_totals(last_midnight)
       added_vld_files, added_vld_entries, added_individuals, added_dwellings = Freecen1VldFile.between_dates_year_totals(previous_midnight, last_midnight)
       totals_csv_files, totals_csv_files_incorporated, totals_csv_entries, totals_csv_individuals, totals_csv_dwellings = FreecenCsvFile.before_year_totals(last_midnight)
       added_csv_files, added_csv_files_incorporated, added_csv_entries, added_csv_individuals, _added_csv_dwellings = FreecenCsvFile.between_dates_year_totals(previous_midnight, last_midnight)
+
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
         records[:total][year] = {}
         records[:total][year][:individuals] = totals_individuals[year] + totals_csv_individuals[year]
