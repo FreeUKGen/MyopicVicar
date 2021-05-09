@@ -21,8 +21,9 @@ namespace :freecen do
       if file.present?
         processed += 1
         dwellings = file.freecen_dwellings.count
-        file.update_attributes(num_individuals: piece.num_individuals, num_dwellings: dwellings)
-        piece.update_attributes(num_dwellings: dwellings, num_entries: file.num_entries)
+        entries = file.freecen1_vld_entries.count
+        file.update_attributes(num_individuals: piece.num_individuals, num_dwellings: dwellings, num_entries: entries, freecen_piece_id: piece.id)
+        piece.update_attributes(num_dwellings: dwellings, num_entries: entries)
       else
         missing += 1 if piece.status == 'Online'
       end
