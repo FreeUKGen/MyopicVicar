@@ -77,13 +77,13 @@
         <%#= record.transcribers.join(', ') if record.transcribers.present? %>
       </td>
     </tr>
-    <% if (record.Confirmed & 512).zero? %>
+    <% unless (record.Confirmed & 512).zero? %>
       <tr>
         <th class="project-text-color">
           Refers
         </th>
         <td>
-           Link to Refered Record
+           <%= link_to "View Reference Record", show_reference_entry_path(entry_id: record.RecordNumber) %><br>
         </td>
       </tr>
     <% end %>
