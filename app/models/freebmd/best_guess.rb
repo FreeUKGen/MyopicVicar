@@ -267,7 +267,7 @@ class BestGuess < FreebmdDbBase
   end
 
   def get_reference_record_numbers
-    pointed_record_information.pluck(:RecordNumber)
+    pointed_record_information.pluck("BestGuessLink.RecordNumber")
   end
 
   def reference_record_information
