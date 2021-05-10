@@ -69,7 +69,7 @@
                       <strong class="results-header"><%= pluralize(@search_results.count, 'Results')%></strong>
                     </div>
                     <div class="grid__item one-sixth lap-one-third palm-one-half float--right">
-                      <div id="tool_button" class="tools bordered dropbtn" onclick="myFunction()"><i class="fa fa-cog" aria-hidden="true"></i> Tools</div>
+                      <div id="tool_button" class="tools bordered dropbtn" onclick="myFunction()" tabindex="0"><i class="fa fa-cog" aria-hidden="true"></i> Tools</div>
                     </div>
                   </div>
                 </div>
@@ -86,22 +86,7 @@
               </div>
             <% end %>
             <% unless print_friendly %>
-              <div class='container push--bottom'>
-                <div class="desk-wide-seven-tenths desk-seven-tenths lap-seven-tenths palm-one-whole">
-                  <div class="grid">
-                    <div class="grid__item desk-wide-one-third desk-one-third lap-one-third palm-one-half">
-                      <%= form_tag search_query_path(@search_query), method: :get, id: 'filter_form' do %>
-                        <%= select_tag('filter_option', options_for_select([['Births', "1"], ['Deaths', "2"], ['Marriages', "3"]], selected: @filter_condition), {:prompt => "Filter By", id: 'filter_results', tabindex: "0", onchange: 'record_type_to_display()'}) %>
-                      <% end %>
-                    </div>
-                    <div class="grid__item desk-wide-one-third desk-one-third lap-one-half palm-one-half  float--right">
-                      <%= form_tag search_query_path(@search_query), method: :get, id: 'limit_form', class: "" do %>
-                        Show <%= select_tag :results_per_page, options_for_select([5,20,40,60,80,100], selected: @results_per_page), class: 'desk-wide-three-fifths desk-three-fifths lap-one-half palm-one-half', style: "margin-left: 10px", id: 'results_per_page', onchange: 'results_to_display()'%>
-                      <% end %>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <%= render(partial: app_specific_partial("search_result_form")) %>
             <% end %>
             <div class="container">
               <div class="grid">
@@ -142,6 +127,9 @@
   <%= render 'no_results' %>
 <% end %>
 <script type="text/javascript">
+  Ladda.bind( 'button[type=submit]' );
+</script>
+<script type="text/javascript">
   var result = window.canRunAds;
   function changeClass(screen_width) {
     if (screen_width.matches) {
@@ -160,11 +148,6 @@
   changeClass(screen_width)
   screen_width.addListener(changeClass);
 
-  //js code to filter results
-
-    function record_type_to_display(){
-      $('#filter_form').submit();
-    };
 
   //js code for pagination
   function results_to_display(){

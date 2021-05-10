@@ -77,6 +77,16 @@
         <%#= record.transcribers.join(', ') if record.transcribers.present? %>
       </td>
     </tr>
+    <% if (record.Confirmed & 512).zero? %>
+      <tr>
+        <th class="project-text-color">
+          Refers
+        </th>
+        <td>
+           Link to Refered Record
+        </td>
+      </tr>
+    <% end %>
     <% if record.get_comments.present? %>
       <tr>
         <th class="project-text-color">
@@ -89,6 +99,7 @@
         <% end %>
       </tr>
     <% end %>
+    
     <% if search == true %>
       <td  colspan=2><%= link_to 'Report an Error in this Data', report_error_contact_path(record.RecordNumber, query: query), class: 'btn btn--natural' unless  record.blank? || query.blank? %>
       </td>

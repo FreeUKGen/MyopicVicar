@@ -257,4 +257,20 @@ class BestGuess < FreebmdDbBase
   def entries_in_the_page
     BestGuess.where(Volume: self.Volume, Page: self.Page, QuarterNumber: self.QuarterNumber, RecordTypeID: self.RecordTypeID).order(:Surname, :GivenName).pluck(:RecordNumber)
   end
+
+  def pointed_record_information
+    Accession.joins(:acc_files)
+      .joins(:best_guess_links)
+      .joins("INNER JOIN BestGuessLink as b1 ON b1.RecordNumber !=BestGuessLink.RecordNumber AND b1.AccessionNumber = acc_files_Accessions.AccessionNumber AND acc_files_Accessions.StartLine+b1.SequenceNumber=Accessions.StartLine+BestGuessLink.SequenceNumber INNER JOIN BestGuess as b ON b.RecordNumber = b1.RecordNumber AND (b.Confirmed & 8 OR b.Confirmed & 512 OR Accessions.SourceType = '+Z')")
+      .where('b.RecordNumber' => self.RecordNumber)
+      .select('Accessions.Year,Accessions.EntryQuarter, Accessions.RecordTypeID, BestGuessLink.RecordNumber, b.Confirmed').group("BestGuessLink.RecordNumber")
+  end
+
+  def get_reference_record_numbers
+    pointed_record_information.pluck(:RecordNumber)
+  end
+
+  def reference_record_information
+    BestGuess.where(RecordNumber: get_reference_record_numbers).order(:Surname, :GivenName).pluck(:RecordNumber)
+  end
 end

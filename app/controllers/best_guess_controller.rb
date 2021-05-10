@@ -17,7 +17,6 @@ class BestGuessController < ApplicationController
       @acc_scans = @current_record.get_non_multiple_scans if @current_record.get_non_multiple_scans.present?
       @acc_mul_scans = @current_record.multiple_best_probable_scans if @current_record.multiple_best_probable_scans.present?
     end
-
     @display_date = false
     if @option == '2'
       @new_postem = @current_record.best_guess_hash.postems.new
@@ -66,6 +65,16 @@ class BestGuessController < ApplicationController
     district_number = @record.DistrictNumber
     record_type = @record.RecordTypeID
     @spouse_record = BestGuess.where(Surname: spouse_surname, Volume: volume, Page: page, QuarterNumber: quarter, DistrictNumber: district_number, RecordTypeID: record_type).first
+  end
+
+  def show_reference_entry
+    record_number = params[:entry_id]
+    @record = BestGuess.where(RecordNumber: record_number).first
+    referral = @record.reference_record_information
+    current_record_number =referral.first
+    current_record_number = params[:referral_number] if params[:referral_number].present?
+    @referral_record = BestGuess.where(RecordNumber: @current_record_number).first
+    @next_record, @previous_record = next_and_previous_entries_of_page(current_record_number, referral)
   end
 
 

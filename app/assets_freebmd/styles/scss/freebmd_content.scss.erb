@@ -973,3 +973,29 @@ transform: matrix(-1, 0, 0, 1, 0, 0);
     color: red;
 }
 
+.floating_action_buttons {
+    @media (min-width: 576px) {
+      display: none !important;
+    }
+    @media (max-width: 576px) {
+      border: none;
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      background-color: $magenta;
+      position: fixed;
+      bottom: 75px;
+      right: 30px;
+      cursor: pointer;
+      color: white;
+      box-shadow: 2px 2px 2px 2px $project_color_faded;
+    }
+}
+
+.floating_action_buttons:hover, .floating_action_buttons:active{
+   box-shadow: 2.1px 2.1px 2.1px 2.1px $project_color_faded;
+   transform: scale(1.05);
+   transition-duration: 0.3s;
+ }
+
+

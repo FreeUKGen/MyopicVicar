@@ -261,16 +261,21 @@
                 <%= button_tag 'Clear Form', type: :reset, class: 'clear_form kittumani' %>
                 <%= button_tag 'Search', type: 'submit', class: ' kittumani spinner-controller ladda-button' , id: 'search_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
             </div>
-            <div class="sticky_buttons_css" id="sticky_buttons">
+            <!--div class="sticky_buttons_css" id="sticky_buttons">
                 <ol class="grid">
                     <li class="grid__item one-half palm-one-half">
-                        <%= button_tag 'Clear Form', type: :reset, class: 'clear_form_small_screen' %>
+                        <%#= button_tag 'Clear Form', type: :reset, class: 'clear_form_small_screen' %>
                     </li>
                     <li class="grid__item one-half palm-one-half search_button">
-                        <%= button_tag 'Search', type: 'submit', class: 'spinner-controller ladda-button' , id: 'search_form_submit_small_screen', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => '#C84182'}%>
+                        <%#= button_tag 'Search', type: 'submit', class: 'spinner-controller ladda-button' , id: 'search_form_submit_small_screen', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => '#C84182'}%>
                     </li>
                 </ol>
-            </div>
+            </div-->
+                <!--li class="grid__item one-half palm-one-half">
+                    <%#= button_tag 'Clear Form', type: :reset, class: 'clear_form_small_screen' %>
+                </li-->
+                <%#= button_tag 'Search', type: 'submit', class: 'floating_action_buttons' , id: 'search_form_submit_small_screen', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => '#C84182'}%>
+                <button class="floating_action_buttons" id="small_screen_search_button"><%= app_icons[:search].html_safe%></button>
         <% end %>
     </div>
 <%# end %>
