@@ -82,7 +82,7 @@ class NewFreeregCsvUpdateProcessor
         @csvfile.clean_up_physical_files_after_failure(@records_processed)
         #@project.communicate_to_managers(@csvfile) if @project.type_of_project == "individual"
       end
-      # sleep(300) if Rails.env.production?
+      sleep(100) if Rails.env.production?
     end
     # p "manager communication"
     #@project.communicate_to_managers(@csvfile) if files_to_be_processed.length >= 2
@@ -106,17 +106,17 @@ class NewFreeregCsvUpdateProcessor
 
   def communicate_to_managers(csvfile)
     records = @total_records
-    records == 0 ? average_time = 0 :  average_time = (Time.new.to_i - @project_start_time.to_i) * 1000 / records
+    records == 0 ? average_time = 0 : average_time = (Time.new.to_i - @project_start_time.to_i) * 1000 / records
     self.write_messages_to_all("Created  #{records} entries at an average time of #{average_time}ms per record at #{Time.new}. <br>",false)
     file = @message_file
     #@message_file.close if @project.type_of_project == "individual"
     user = UseridDetail.where(userid: "REGManager").first
-    UserMailer.update_report_to_freereg_manager(file,user).deliver_now
+    UserMailer.update_report_to_freereg_manager(file, user).deliver_now
     user = UseridDetail.where(userid: "ericb").first
-    UserMailer.update_report_to_freereg_manager(file,user).deliver_now
+    UserMailer.update_report_to_freereg_manager(file, user).deliver_now
   end
 
-  def self.convert_to_bolean(create_search_records,force)
+  def self.convert_to_bolean(create_search_records, force)
     if create_search_records == "create_search_records"
       create_search_records = true
     else
@@ -133,7 +133,7 @@ class NewFreeregCsvUpdateProcessor
   def define_message_file
     file_for_warning_messages = File.join(Rails.root,"log/update_freereg_messages")
     time = Time.new
-    tnsec = time.nsec/1000
+    tnsec = time.nsec / 1000
     time = time.to_i.to_s + tnsec.to_s
     file_for_warning_messages = (file_for_warning_messages + "_" + time + ".log").to_s
     message_file = File.new(file_for_warning_messages, "w")
@@ -528,7 +528,7 @@ class CsvFile < CsvFiles
     #p "communicating failure"
     file = project.member_message_file
     file.close
-    # UserMailer.batch_processing_failure(file,@userid,@file_name).deliver_now unless project.type_of_project == "special_selection_1" ||  project.type_of_project == "special_selection_2"
+    UserMailer.batch_processing_failure(file,@userid,@file_name).deliver_now unless project.type_of_project == "special_selection_1" ||  project.type_of_project == "special_selection_2"
     self.clean_up_message(project)
     return true
   end
@@ -537,7 +537,7 @@ class CsvFile < CsvFiles
     #p "communicating success"
     file = project.member_message_file
     file.close
-    # UserMailer.batch_processing_success(file,@header[:userid],@header[:file_name]).deliver_now unless project.type_of_project == "special_selection_1" ||  project.type_of_project == "special_selection_2"
+    UserMailer.batch_processing_success(file,@header[:userid],@header[:file_name]).deliver_now unless project.type_of_project == "special_selection_1" ||  project.type_of_project == "special_selection_2"
     self.clean_up_message(project)
     return true
   end
