@@ -73,7 +73,7 @@ class BestGuessController < ApplicationController
     referral = @record.reference_record_information
     current_record_number =referral.first
     current_record_number = params[:referral_number] if params[:referral_number].present?
-    @referral_record = BestGuess.where(RecordNumber: @current_record_number).first
+    @referral_record = BestGuess.where(RecordNumber: current_record_number).first
     @next_record, @previous_record = next_and_previous_entries_of_page(current_record_number, referral)
   end
 
