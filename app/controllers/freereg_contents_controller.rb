@@ -220,7 +220,8 @@ class FreeregContentsController < ApplicationController
 
   def unique_register_names
     @register = RegisterUniqueName.find_by(register_id: params[:id])
-    redirect_back(fallback_location: { action: 'new' }, notice: 'That register does not exist') && return if @register.blank?
+    actual_register = Register.find_by(_id: params[:id])
+    redirect_back(fallback_location: { action: 'new' }, notice: 'That register does not exist') && return if @register.blank? || actual_register.blank?
 
     @unique_forenames = @register.unique_forenames
     @unique_surnames = @register.unique_surnames
@@ -288,7 +289,6 @@ class FreeregContentsController < ApplicationController
 
   def variables_for_register_show
     @register = Register.find_by(_id: params[:id])
-    @proceed = true
     @church = @register.church
     if @church.blank?
       @proceed = false
