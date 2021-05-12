@@ -731,7 +731,7 @@ module ApplicationHelper
   end
 
   def banner_header_non_gdpr
-    <<-HTML
+    banner = <<-HTML
       <script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
       <ins class="adsbygoogle adSenseBanner"
       style="display:inline-block;width:728px;height:90px"
