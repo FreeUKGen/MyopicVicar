@@ -756,6 +756,7 @@ module ApplicationHelper
       <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
       HTML
     end
+    banner.html_safe
   end
 
   def banner_header_gdpr
