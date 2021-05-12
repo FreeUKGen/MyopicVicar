@@ -727,7 +727,7 @@ module ApplicationHelper
     else
       banner = banner_header_non_gdpr
     end
-    banner.html_safe
+    banner
   end
 
   def banner_header_non_gdpr
