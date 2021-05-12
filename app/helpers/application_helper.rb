@@ -720,16 +720,22 @@ module ApplicationHelper
   end
 
   def banner_header
+    if GdprCountries::FOLLOWED_COUNTRIES.include?(request.location.country)
+      bannner = banner_header_gdpr
+    else
+      banner = banner_header_non_gdpr
+    end
+    banner.html_safe
+  end
+
+  def banner_header_non_gdpr
     <<-HTML
-    <script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <ins class="adsbygoogle adSenseBanner"
-    style="display:inline-block;width:728px;height:90px"
-    data-ad-client = "#{data_ad_client}"
-    data-ad-slot = "#{data_ad_slot_header}">
-    </ins>
-    HTML
-    unless request.location.present? #|| GdprCountries::FOLLOWED_COUNTRIES.include?(request.location.country)
-      <<-HTML
+      <script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+      <ins class="adsbygoogle adSenseBanner"
+      style="display:inline-block;width:728px;height:90px"
+      data-ad-client = "#{data_ad_client}"
+      data-ad-slot = "#{data_ad_slot_header}">
+      </ins>
       <script>
         window.update_personalized_header_adverts = function (preference) {
               if(preference == 'accept') {
@@ -742,13 +748,32 @@ module ApplicationHelper
       <script type="text/javascript">
       (adsbygoogle = window.adsbygoogle || []).push({});
       </script>
-      HTML
-    end
+    HTML
     if Rails.env.development?
       banner = <<-HTML
       <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
       HTML
     end
+  end
+
+  def banner_header_gdpr
+    banner = <<-HTML
+    <script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <ins class="adsbygoogle adSenseBanner"
+    style="display:inline-block;width:728px;height:90px"
+    data-ad-client = "#{data_ad_client}"
+    data-ad-slot = "#{data_ad_slot_header}">
+    </ins>
+    <script type="text/javascript">
+    (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+    HTML
+    if Rails.env.development?
+      banner = <<-HTML
+      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
+      HTML
+    end
+    banner.html_safe
   end
 
   def side_banners
