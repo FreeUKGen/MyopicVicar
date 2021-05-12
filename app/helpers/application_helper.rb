@@ -720,7 +720,9 @@ module ApplicationHelper
   end
 
   def banner_header
-    if GdprCountries::FOLLOWED_COUNTRIES.include?(request.location.country)
+    location = ""
+    loaction = request.location.country if request.location.present?
+    if GdprCountries::FOLLOWED_COUNTRIES.include?(location)
       bannner = banner_header_gdpr
     else
       banner = banner_header_non_gdpr
