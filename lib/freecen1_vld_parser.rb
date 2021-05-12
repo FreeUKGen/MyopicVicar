@@ -56,51 +56,51 @@ module Freecen
       entry_hash_array.each do |hash|
         entry = Freecen1VldEntry.new
 
-        entry.deleted_flag = hash[:deleted_flag].encode("UTF-8", "Windows-1252") unless hash[:deleted_flag].blank?
+        entry.deleted_flag = hash[:deleted_flag].encode("UTF-8", "iso-8859-1") unless hash[:deleted_flag].blank?
 
-        entry.surname = hash[:s_name].encode("UTF-8", "Windows-1252") unless hash[:s_name].blank?
-        entry.forenames = hash[:f_name].encode("UTF-8", "Windows-1252") unless hash[:f_name].blank?
+        entry.surname = hash[:s_name].encode("UTF-8", "iso-8859-1") unless hash[:s_name].blank?
+        entry.forenames = hash[:f_name].encode("UTF-8", "iso-8859-1") unless hash[:f_name].blank?
 
-        entry.occupation = hash[:occ].encode("UTF-8", "Windows-1252") unless hash[:occ].blank?
-        entry.occupation_flag = hash[:occ_err].encode("UTF-8", "Windows-1252") unless hash[:occ_err].blank?
+        entry.occupation = hash[:occ].encode("UTF-8", "iso-8859-1") unless hash[:occ].blank?
+        entry.occupation_flag = hash[:occ_err].encode("UTF-8", "iso-8859-1") unless hash[:occ_err].blank?
 
-        entry.name_flag = hash[:name_err].encode("UTF-8", "Windows-1252") unless hash[:name_err].blank?
-        entry.relationship = hash[:rel].encode("UTF-8", "Windows-1252") unless hash[:rel].blank?
-        entry.marital_status = hash[:m_stat].encode("UTF-8", "Windows-1252") unless hash[:m_stat].blank?
-        entry.sex = hash[:sex].encode("UTF-8", "Windows-1252") unless hash[:sex].blank?
-        entry.age = hash[:age].encode("UTF-8", "Windows-1252") unless hash[:age].blank?
-        entry.age_unit = hash[:age_unit].encode("UTF-8", "Windows-1252") unless hash[:age_unit].blank?
-        entry.detail_flag = hash[:p_det_err].encode("UTF-8", "Windows-1252") unless hash[:p_det_err].blank?
+        entry.name_flag = hash[:name_err].encode("UTF-8", "iso-8859-1") unless hash[:name_err].blank?
+        entry.relationship = hash[:rel].encode("UTF-8", "iso-8859-1") unless hash[:rel].blank?
+        entry.marital_status = hash[:m_stat].encode("UTF-8", "iso-8859-1") unless hash[:m_stat].blank?
+        entry.sex = hash[:sex].encode("UTF-8", "iso-8859-1") unless hash[:sex].blank?
+        entry.age = hash[:age].encode("UTF-8", "iso-8859-1") unless hash[:age].blank?
+        entry.age_unit = hash[:age_unit].encode("UTF-8", "iso-8859-1") unless hash[:age_unit].blank?
+        entry.detail_flag = hash[:p_det_err].encode("UTF-8", "iso-8859-1") unless hash[:p_det_err].blank?
 
-        entry.civil_parish = hash[:parish].encode("UTF-8", "Windows-1252") unless hash[:parish].blank?
-        entry.ecclesiastical_parish = hash[:ecc_parish].encode("UTF-8", "Windows-1252") unless hash[:ecc_parish].blank?
+        entry.civil_parish = hash[:parish].encode("UTF-8", "iso-8859-1") unless hash[:parish].blank?
+        entry.ecclesiastical_parish = hash[:ecc_parish].encode("UTF-8", "iso-8859-1") unless hash[:ecc_parish].blank?
 
-        entry.dwelling_number = hash[:hh].encode("UTF-8", "Windows-1252") unless hash[:hh].blank?
-        entry.sequence_in_household = hash[:seq_in_household].encode("UTF-8", "Windows-1252") unless hash[:seq_in_household].blank?
+        entry.dwelling_number = hash[:hh].encode("UTF-8", "iso-8859-1") unless hash[:hh].blank?
+        entry.sequence_in_household = hash[:seq_in_household].encode("UTF-8", "iso-8859-1") unless hash[:seq_in_household].blank?
 
         entry.enumeration_district = "#{hash[:enum_n]}#{hash[:enum_a]}"
         entry.schedule_number = "#{hash[:sch_n]}#{hash[:sch_a]}"
         entry.folio_number = "#{hash[:fo_n]}#{hash[:fo_a]}"
-        entry.page_number = hash[:pg_n].encode("UTF-8", "Windows-1252") unless hash[:pg_n].blank?
+        entry.page_number = hash[:pg_n].encode("UTF-8", "iso-8859-1") unless hash[:pg_n].blank?
 
         entry.house_number = hash[:house_n] || hash[:house_a]
 
-        entry.house_number = entry.house_number.encode("UTF-8", "Windows-1252") unless entry.house_number.blank?
+        entry.house_number = entry.house_number.encode("UTF-8", "iso-8859-1") unless entry.house_number.blank?
 
-        entry.house_or_street_name = hash[:street].encode("UTF-8", "Windows-1252") unless hash[:street].blank?
+        entry.house_or_street_name = hash[:street].encode("UTF-8", "iso-8859-1") unless hash[:street].blank?
 
-        entry.uninhabited_flag = hash[:prem_flag].encode("UTF-8", "Windows-1252") unless hash[:prem_flag].blank?
-        entry.unoccupied_notes = hash[:unoccupied_notes].encode("UTF-8", "Windows-1252") unless hash[:unoccupied_notes].blank?
+        entry.uninhabited_flag = hash[:prem_flag].encode("UTF-8", "iso-8859-1") unless hash[:prem_flag].blank?
+        entry.unoccupied_notes = hash[:unoccupied_notes].encode("UTF-8", "iso-8859-1") unless hash[:unoccupied_notes].blank?
 
-        entry.individual_flag = hash[:individual_flag].encode("UTF-8", "Windows-1252") unless hash[:individual_flag].blank?
-        entry.birth_county = hash[:born_cty].encode("UTF-8", "Windows-1252") unless hash[:born_cty].blank?
-        entry.birth_place = hash[:born_place].encode("UTF-8", "Windows-1252") unless hash[:born_place].blank?
-        entry.verbatim_birth_county = hash[:t_born_cty].encode("UTF-8", "Windows-1252") unless hash[:t_born_cty].blank?
-        entry.verbatim_birth_place = hash[:t_born_place].encode("UTF-8", "Windows-1252") unless hash[:t_born_place].blank?
-        entry.birth_place_flag = hash[:place_err].encode("UTF-8", "Windows-1252") unless hash[:place_err].blank?
-        entry.disability = hash[:dis].encode("UTF-8", "Windows-1252") unless hash[:dis].blank?
-        entry.language = hash[:language].encode("UTF-8", "Windows-1252") unless hash[:language].blank?
-        entry.notes = hash[:notes].encode("UTF-8", "Windows-1252") unless hash[:notes].blank?
+        entry.individual_flag = hash[:individual_flag].encode("UTF-8", "iso-8859-1") unless hash[:individual_flag].blank?
+        entry.birth_county = hash[:born_cty].encode("UTF-8", "iso-8859-1") unless hash[:born_cty].blank?
+        entry.birth_place = hash[:born_place].encode("UTF-8", "iso-8859-1") unless hash[:born_place].blank?
+        entry.verbatim_birth_county = hash[:t_born_cty].encode("UTF-8", "iso-8859-1") unless hash[:t_born_cty].blank?
+        entry.verbatim_birth_place = hash[:t_born_place].encode("UTF-8", "iso-8859-1") unless hash[:t_born_place].blank?
+        entry.birth_place_flag = hash[:place_err].encode("UTF-8", "iso-8859-1") unless hash[:place_err].blank?
+        entry.disability = hash[:dis].encode("UTF-8", "iso-8859-1") unless hash[:dis].blank?
+        entry.language = hash[:language].encode("UTF-8", "iso-8859-1") unless hash[:language].blank?
+        entry.notes = hash[:notes].encode("UTF-8", "iso-8859-1") unless hash[:notes].blank?
 
         entry.attributes.delete_if { |key,value| value.blank? }
         entry.freecen1_vld_file = file
@@ -223,12 +223,12 @@ module Freecen
     def process_vld_contents(filename, chapman_code = nil)
       # open the file
       contents = []
-      raw_file = File.read(filename)
+      raw_file = File.read(filename, :encoding => 'iso-8859-1')
       # loop through each 299-byte substring
       record_count = raw_file.length / VLD_RECORD_LENGTH
-      #computed_file_length = record_count * VLD_RECORD_LENGTH
-      #raise "***Incorrect file length for #{filename}  Actual #{File.size(filename)} measured #{raw_file.length} Computed #{computed_file_length} " if raw_file.length != computed_file_length
-      #return contents if raw_file.length != computed_file_length
+      computed_file_length = record_count * VLD_RECORD_LENGTH
+      p  "***Incorrect file length for #{filename}  Actual #{File.size(filename)} measured #{raw_file.length} Computed #{computed_file_length} " if raw_file.length != computed_file_length
+      # return contents if raw_file.length != computed_file_length
 
       (0...record_count).to_a.each do |i|
         contents << process_vld_record(raw_file[i*VLD_RECORD_LENGTH, VLD_RECORD_LENGTH], chapman_code)

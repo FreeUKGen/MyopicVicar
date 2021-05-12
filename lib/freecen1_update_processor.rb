@@ -181,7 +181,7 @@ class Freecen1UpdateProcessor
           if vld.present?
             pc = FreecenPiece.where(year: vld[:full_year], chapman_code: nv['chapman'], piece_number: vld[:piece], parish_number: vld[:sctpar]).first
             if pc.present?
-              pc.update_attribute(:status, 'Online')
+              pc.update_attributes(status: 'Online', num_individuals: vld.num_individuals, num_dwellings: vld.num_dwellings, num_entries: vld.num_entries)
             end
           end
         rescue => e # rescue any exceptions and continue processing the other VLDs

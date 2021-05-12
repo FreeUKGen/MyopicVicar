@@ -18,6 +18,8 @@ class Freecen1VldFile
   field :transcriber_email_address, type: String
   field :transcriber_userid, type: String
   field :num_entries, type: Integer, default: 0
+  field :num_individuals, type: Integer, default: 0
+  field :num_dwellings, type: Integer, default: 0
 
   field :userid, type: String
   field :action, type: String
@@ -60,11 +62,9 @@ class Freecen1VldFile
         total_dwellings[year] = 0
         total_individuals[year] = 0
         Freecen1VldFile.where(_id: { '$lte' => last_id }, full_year: year).each do |file|
-          total_entries[year] += file.freecen1_vld_entries.length
-          total_dwellings[year] = file.freecen_dwellings.length
-          file.freecen_dwellings.each do |dwelling|
-            total_individuals[year] += dwelling.freecen_individuals.length
-          end
+          total_entries[year] += file.num_entries
+          total_dwellings[year] += file.num_dwellings
+          total_individuals[year] += file.num_individuals
         end
       end
       [total_files, total_entries, total_individuals, total_dwellings]
@@ -78,16 +78,15 @@ class Freecen1VldFile
       total_individuals = {}
       total_dwellings = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
-        total_files[year] = Freecen1VldFile.between(_id: first_id..last_id).where(full_year: year).count
+        files = Freecen1VldFile.between(_id: first_id..last_id).where(full_year: year)
+        total_files[year] = files.count
         total_entries[year] = 0
         total_individuals[year] = 0
         total_dwellings[year] = 0
-        Freecen1VldFile.between(_id: first_id..last_id).where(full_year: year).each do |file|
-          total_entries[year] += file.freecen1_vld_entries.length
-          file.freecen_dwellings.each do |dwelling|
-            total_individuals[year] += dwelling.freecen_individuals.length
-          end
-          total_dwellings[year] = file.freecen_dwellings.length
+        files.each do |file|
+          total_entries[year] += file.num_entries
+          total_dwellings[year] += file.num_dwellings
+          total_individuals[year] += file.num_individuals
         end
       end
       [total_files, total_entries, total_individuals, total_dwellings]
@@ -105,11 +104,9 @@ class Freecen1VldFile
         total_individuals[year] = 0
         total_dwellings[year] = 0
         Freecen1VldFile.where(_id: { '$lte' => last_id }, dir_name: chapman, full_year: year).each do |file|
-          total_entries[year] += file.freecen1_vld_entries.length
-          file.freecen_dwellings.each do |dwelling|
-            total_individuals[year] += dwelling.freecen_individuals.length
-          end
-          total_dwellings[year] = file.freecen_dwellings.length
+          total_entries[year] += file.num_entries
+          total_dwellings[year] += file.num_dwellings
+          total_individuals[year] += file.num_individuals
         end
       end
       [total_files, total_entries, total_individuals, total_dwellings]
@@ -126,12 +123,11 @@ class Freecen1VldFile
         total_files[year] = Freecen1VldFile.between(_id: first_id..last_id).where(dir_name: chapman, full_year: year).count
         total_entries[year] = 0
         total_individuals[year] = 0
+        total_dwellings[year] = 0
         Freecen1VldFile.between(_id: first_id..last_id).where(dir_name: chapman, full_year: year).each do |file|
-          total_entries[year] += file.freecen1_vld_entries.length
-          file.freecen_dwellings.each do |dwelling|
-            total_individuals[year] += dwelling.freecen_individuals.length
-          end
-          total_dwellings[year] = file.freecen_dwellings.length
+          total_entries[year] += file.num_entries
+          total_dwellings[year] += file.num_dwellings
+          total_individuals[year] += file.num_individuals
         end
       end
       [total_files, total_entries, total_individuals, total_dwellings]
@@ -584,6 +580,12 @@ class Freecen1VldFile
   def check_extension
     file_name_parts = uploaded_file_name.split('.')
     result = file_name_parts[1].present? && file_name_parts[1].casecmp('vld').zero? ? true : false
+    result
+  end
+
+  def check_exists_on_upload
+    files = Freecen1VldFile.where(dir_name: dir_name, file_name: uploaded_file_name, action: 'Upload').count
+    result = files > 0 ? true : false
     result
   end
 

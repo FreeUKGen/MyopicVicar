@@ -6,7 +6,6 @@ class Freecen1VldFilesController < ApplicationController
     # Initial guards
 
     redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'You must select a file') && return if params[:freecen1_vld_file].blank? || params[:freecen1_vld_file][:uploaded_file].blank?
-    session[:replace]
 
     params[:freecen1_vld_file][:dir_name] = session[:chapman_code]
 
@@ -14,7 +13,9 @@ class Freecen1VldFilesController < ApplicationController
 
     @vldfile.uploaded_file_name = @vldfile.uploaded_file.identifier
 
-    redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'That is not the same file name') && return if session[:replace].present? && session[:replace] !=  @vldfile.uploaded_file_name
+    redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'That file exits please use the replace action') && return if @vldfile.check_exists_on_upload && session[:replace].blank?
+
+    redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'That is not the same file name') && return if session[:replace].present? && session[:replace] != @vldfile.uploaded_file_name
 
     session.delete(:replace)
     redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'That is not a VLD file') && return unless @vldfile.check_extension
@@ -70,8 +71,10 @@ class Freecen1VldFilesController < ApplicationController
     @vldfile.delete_dwellings
     @vldfile.delete_individuals
     piece = @vldfile.freecen_piece
-    piece.update_attributes(num_dwellings: 0, num_individuals: 0, freecen1_filename: '', status: '')
-    piece.freecen1_vld_files.delete(@vldfile)
+    if piece.present?
+      piece.update_attributes(num_dwellings: 0, num_individuals: 0, freecen1_filename: '', status: '')
+      piece.freecen1_vld_files.delete(@vldfile)
+    end
     @vldfile.delete
     flash[:notice] = "The vld file #{file} has been deleted."
     redirect_to freecen1_vld_files_path

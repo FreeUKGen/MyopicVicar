@@ -58,7 +58,9 @@ class ApplicationController < ActionController::Base
         session[:site_stats] = {}
         session[:site_stats][:searches] = site_stat.present? ? site_stat.searches : 0
         session[:site_stats][:records] = site_stat.present? ? site_stat.records[:total][:total][:search_records] : 0
-        session[:site_stats][:added] = site_stat.present? ? (site_stat.records[:total][:total][:added_vld_entries] + site_stat.records[:total][:total][:added_csv_individuals_incorporated]) : 0
+        session[:site_stats][:added] = site_stat.present? && site_stat.records[:total][:total][:added_vld_entries].present? &&
+          site_stat.records[:total][:total][:added_csv_individuals_incorporated].present? ? (site_stat.records[:total][:total][:added_vld_entries] +
+                                                                                             site_stat.records[:total][:total][:added_csv_individuals_incorporated]) : 0
         @site_stat = session[:site_stats]
       end
     else
@@ -274,6 +276,7 @@ class ApplicationController < ActionController::Base
     session[:stats_view] = false
     session.delete(:stats_year)
     session.delete(:stats_todate)
+    session.delete(:stats_recs)
   end
 
   def clean_session_for_county
@@ -323,6 +326,8 @@ class ApplicationController < ActionController::Base
     session.delete(:type)
     session[:stats_view] = false
     session.delete(:stats_year)
+    session.delete(:stats_todate)
+    session.delete(:stats_recs)
   end
 
   def clean_session_for_images

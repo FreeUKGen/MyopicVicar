@@ -332,7 +332,7 @@ class SearchQuery
   end
 
   def explain_plan
-    SearchRecord.where(search_params).max_scan(1 + FreeregOptionsConstants::MAXIMUM_NUMBER_OF_SCANS).asc(:search_date).all.explain
+    SearchRecord.where(search_params).asc(:search_date).all.explain
   end
 
   def explain_plan_no_sort
