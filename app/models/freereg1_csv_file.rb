@@ -547,7 +547,7 @@ class Freereg1CsvFile
     success = Array.new
     success[0] = true
     success[1] = ""
-    Freereg1CsvFile.file_name(self.file_name).userid(self.userid).hint("file_name_1_userid_1_county_1_place_1_church_name_1_register_type_1").each do |batch|
+    Freereg1CsvFile.file_name(self.file_name).userid(self.userid).each do |batch|
       case
       when batch.nil?
         success[0] = false
