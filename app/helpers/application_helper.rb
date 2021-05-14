@@ -719,10 +719,12 @@ module ApplicationHelper
     banner.html_safe
   end
 
+  def user_location
+    request.location.present? ? request.location.country : ""
+  end
+
   def banner_header
-    location = ""
-    loaction = request.location.country if request.location.present?
-    if GdprCountries::FOLLOWED_COUNTRIES.include?(location)
+    if GdprCountries::FOLLOWED_COUNTRIES.include?(user_location)
       bannner = banner_header_gdpr
     else
       banner = banner_header_non_gdpr
