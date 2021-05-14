@@ -727,7 +727,6 @@ module ApplicationHelper
     if GdprCountries::FOLLOWED_COUNTRIES.include?(user_location)
       bannner = banner_header_gdpr
     else
-      raise "hey"
       banner = banner_header_non_gdpr
     end
     banner
