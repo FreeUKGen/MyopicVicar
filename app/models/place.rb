@@ -460,7 +460,18 @@ class Place
   def places_near(radius_factor, system)
     earth_radius = system==MeasurementSystem::ENGLISH ? 3963 : 6379
     # places = Place.where(:data_present => true).limit(500).geo_near(self.location).spherical.max_distance(radius.to_f/earth_radius).distance_multiplier(earth_radius).to_a
-    places = Place.where(:data_present => true).limit(radius_factor).geo_near(self.location).spherical.distance_multiplier(earth_radius).to_a
+    #places = Place.where(:data_present => true).limit(radius_factor).geo_near(self.location).spherical.distance_multiplier(earth_radius).to_a
+    results = Place.collection.aggregate([{ "$geoNear" => { 'near' => { type: "Point", coordinates: self.location },:distanceField => 'dis',
+                                                            :includeLocs => 'loc', :pherical => true } },
+                                          { "$match" => { data_present: true } },
+                                          { "$limit" => radius_factor }
+
+                                          ])
+    places = []
+    results.each do |result|
+      places << Place.find_by(_id: result[:_id])
+    end
+
     # get rid of this place
     places.shift
     places
