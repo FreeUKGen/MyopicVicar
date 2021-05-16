@@ -11,7 +11,7 @@
           <%= select_tag :results_per_page, options_for_select([5,20,40,60,80,100], selected: @results_per_page), id: 'results_per_page', tabindex: 0 %>
         </div>
         <div class="grid__item desk-wide-one-third desk-one-third lap-one-whole palm-one-whole">
-          <%= button_tag 'Update Results', type: 'submit', class: 'spinner-controller ladda-button push--top' , id: 'filter_form_submit', data: {color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
+          <%= button_tag 'Update Results', class: 'spinner-controller ladda-button push--top update_results' , id: 'filter_form_submit', data: {style: "zoom-out", color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
           <%#= submit_tag "Filter", class: 'ladda-button spinner-controller', id: 'submit_filter'%>
         </div>
       </div>

@@ -275,7 +275,8 @@
                     <%#= button_tag 'Clear Form', type: :reset, class: 'clear_form_small_screen' %>
                 </li-->
                 <%#= button_tag 'Search', type: 'submit', class: 'floating_action_buttons' , id: 'search_form_submit_small_screen', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => '#C84182'}%>
-                <button class="floating_action_buttons" id="small_screen_search_button"><%= app_icons[:search].html_safe%></button>
+                <%= button_tag "#{app_icons[:search]}".html_safe, type: 'submit', class: ' floating_action_buttons' , id: 'small_screen_search_button' %>
+                <!--button class="floating_action_buttons" id="small_screen_search_button"><%= app_icons[:search].html_safe%></button-->
         <% end %>
     </div>
 <%# end %>
