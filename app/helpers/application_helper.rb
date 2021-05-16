@@ -740,6 +740,17 @@ module ApplicationHelper
       data-ad-client = "#{data_ad_client}"
       data-ad-slot = "#{data_ad_slot_header}">
       </ins>
+      <script>
+        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
+        window.update_personalized_header_adverts = function (preference) {
+              if(preference == 'accept') {
+                (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0;
+              } else if(preference == 'deny') {
+                (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1;
+              }
+            };
+        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
+      </script>
       <script type="text/javascript">
         (adsbygoogle = window.adsbygoogle || []).push({});
       </script>
