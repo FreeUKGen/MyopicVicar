@@ -1,6 +1,6 @@
 <div class="c-subfooter-1__stats">
     <% case appname.downcase %>
-    <% when 'freereg' %>  
+    <% when 'freereg' %>
     <nav class="c-subfooter-1__stats-heading">
        <!-- <a href="https://www.freereg.org.uk/freereg_contents/new?locale=en">Statistics</a> -->
         <%= link_to helpful_anchors[:statistics].html_safe, helpful_links[:freeregStat], html_options2 %>
@@ -50,7 +50,7 @@
             <dt class="c-subfooter-1__stats-term">Database last updated</dt>
                 <dd class="c-subfooter-1__stats-value">
                 <%= FreecenUtility.display_date_and_time %></dd>
-        </dl>      
+        </dl>
     <% else %>
         <p class="c-subfooter-1__stats-term">Statistics temporarily unavailable</p>
     <% end %>
@@ -62,14 +62,14 @@
     </nav>
     <dl class="c-subfooter-1__stats-list">
         <dt class="c-subfooter-1__stats-term">Active Volunteers</dt>
-            <dd class="c-subfooter-1__stats-value">12,412 all-time</dd>        
+            <dd class="c-subfooter-1__stats-value">12,412 all-time</dd>
             <dd class="c-subfooter-1__stats-value">1,994 last year (estimate)</dd>
-        <dt class="c-subfooter-1__stats-term">4.7 milliion searches per month</dt>   
+        <dt class="c-subfooter-1__stats-term">4.7 milliion searches per month</dt>
         <dt class="c-subfooter-1__stats-term">Record Count</dt>
-          <dd class="c-subfooter-1__stats-value">More than 117.5 million Births</dd>
-          <dd class="c-subfooter-1__stats-value">More than 85.5 million Marriages</dd>
-          <dd class="c-subfooter-1__stats-value">More than 77 million Deaths</dd>
-          <dd class="c-subfooter-1__stats-value"><b>More than 280 million Records</b></dd>
+          <dd class="c-subfooter-1__stats-value">More than 118.8 million Births</dd>
+          <dd class="c-subfooter-1__stats-value">More than 86.6 million Marriages</dd>
+          <dd class="c-subfooter-1__stats-value">More than 77.8 million Deaths</dd>
+          <dd class="c-subfooter-1__stats-value"><b>More than 283.3 million Records</b></dd>
     </dl>
     <% end%>
 </div>
