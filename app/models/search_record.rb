@@ -78,20 +78,33 @@ class SearchRecord
 
 
   CEN_INDEXES = {
-    'ln_county_rt_sd_ssd' => ['search_names.last_name', 'chapman_code', 'record_type', 'search_date', 'secondary_search_date'],
-    'ln_fn_county_rt_sd_ssd' => ['search_names.last_name', 'search_names.first_name', 'chapman_code', 'record_type', 'search_date', 'secondary_search_date'],
-    'lnsdx_county_rt_sd_ssd' => ['search_soundex.last_name', 'chapman_code', 'record_type', 'search_date', 'secondary_search_date'],
-    'lnsdx_fnsdx_county_rt_sd_ssd' => ['search_soundex.last_name', 'search_soundex.first_name', 'chapman_code', 'record_type', 'search_date', 'secondary_search_date'],
-    'ln_place_rt_sd_ssd' => ['search_names.last_name', 'place_id', 'record_type', 'search_date', 'secondary_search_date'],
-    'ln_fn_place_rt_sd_ssd' => ['search_names.last_name', 'search_names.first_name', 'place_id', 'record_type', 'search_date', 'secondary_search_date'],
-    'lnsdx_place_rt_sd_ssd' => ['search_soundex.last_name', 'place_id', 'record_type', 'search_date', 'secondary_search_date'],
-    'lnsdx_fnsdx_place_rt_sd_ssd' => ['search_soundex.last_name', 'search_soundex.first_name', 'place_id', 'record_type', 'search_date', 'secondary_search_date'],
-    'fn_place_rt_sd_ssd' => ['search_names.first_name', 'place_id', 'record_type', 'search_date', 'secondary_search_date'],
-    'fnsdx_place_rt_sd_ssd' => ['search_soundex.first_name', 'place_id', 'record_type', 'search_date', 'secondary_search_date'],
-    'place_rt_sd_ssd' => ['place_id', 'record_type', 'search_date', 'secondary_search_date'],
-    'birth_chapman_code_names_date' => ['birth_chapman_code', 'search_names.last_name', 'search_names.first_name', 'search_date'],
-    'birth_chapman_code_last_name_date' => ['birth_chapman_code', 'search_names.last_name', 'search_date']
+    'ln_rt_sd' => ['search_names.last_name', 'record_type', 'search_date'],
+    'ln_fn_rt_sd' => ['search_names.last_name', 'search_names.first_name', 'record_type', 'search_date'],
+    'lnsdx_rt_sd' => ['search_soundex.last_name', 'record_type', 'search_date'],
+    'lnsdx_fnsdx_rt_sd' => ['search_soundex.last_name', 'search_soundex.first_name', 'record_type', 'search_date']
   }
+
+  CEN_PLACE_INDEXES = {
+    'place_ln_rt_sd' => ['place_id', 'search_names.last_name', 'record_type', 'search_date'],
+    'place_ln_fn_rt_sd' => ['place_id', 'search_names.last_name', 'search_names.first_name', 'record_type', 'search_date'],
+    'place_lnsdx_rt_sd' => ['place_id', 'search_soundex.last_name', 'record_type', 'search_date'],
+    'place_lnsdx_fnsdx_rt_sd' => ['place_id', 'search_soundex.last_name', 'search_soundex.first_name', 'record_type', 'search_date'],
+    'place_fn_rt_sd' => ['place_id', 'search_names.first_name', 'record_type', 'search_date'],
+    'place_fnsdx_rt_sd' => ['place_id', 'search_soundex.first_name', 'record_type', 'search_date'],
+    'place_rt_sd' => ['place_id', 'record_type', 'search_date']
+  }
+
+  CEN_COUNTY_INDEXES = {
+    'county_ln_rt_sd' => ['chapman_code', 'search_names.last_name', 'record_type', 'search_date'],
+    'county_ln_fn_rt_sd' => ['chapman_code', 'search_names.last_name', 'search_names.first_name', 'record_type', 'search_date'],
+    'county_lnsdx_rt_sd' => ['chapman_code', 'search_soundex.last_name', 'record_type', 'search_date'],
+    'county_lnsdx_fnsdx_rt_sd' => ['chapman_code', 'search_soundex.last_name', 'search_soundex.first_name', 'record_type', 'search_date'],
+    'birth_chapman_code_names_date' => ['birth_chapman_code', 'search_names.last_name', 'search_names.first_name', 'record_type', 'search_date'],
+    'birth_chapman_code_last_name_date' => ['birth_chapman_code', 'search_names.last_name', 'record_type', 'search_date'],
+    'birth_chapman_code_soundex_names_date' => ['birth_chapman_code', 'search_soundex.last_name', 'search_soundex.first_name', 'record_type', 'search_date'],
+    'birth_chapman_code_soundex_last_name_date' => ['birth_chapman_code', 'search_soundex.last_name', 'record_type', 'search_date']
+  }
+
 
   REG_INDEXES = {
     'county_ln_rt_sd_ssd' => ['chapman_code', 'search_names.last_name', 'record_type', 'search_date', 'secondary_search_date'],
@@ -133,18 +146,6 @@ class SearchRecord
 
   }
 
-  if MyopicVicar::Application.config.template_set == 'freebmd'
-  elsif MyopicVicar::Application.config.template_set == 'freecen'
-    INDEXES = CEN_INDEXES
-  elsif MyopicVicar::Application.config.template_set == 'freereg'
-    INDEXES = REG_INDEXES
-  end
-
-  INDEXES.each_pair do |name, fields|
-    field_spec = {}
-    fields.each { |field| field_spec[field] = 1 }
-    index(field_spec, { name: name, background: true })
-  end
 
   index({ place_id: 1, locations_names: 1 }, { name: 'place_location' })
 
@@ -367,9 +368,24 @@ class SearchRecord
 
     def index_hint(search_params)
       #raise search_params.inspect
-      candidates = INDEXES.keys
-      scores = {}
       search_fields = fields_from_params(search_params)
+      case MyopicVicar::Application.config.template_set
+      when 'freebmd'
+        candidates = BMD_INDEXES.keys
+      when 'freecen'
+        if search_fields.include?('place_id')
+          candidates = CEN_PLACE_INDEXES.keys
+        elsif search_fields.include?('chapman_code') || search_fields.include?('birth_chapman_code')
+          candidates = CEN_COUNTY_INDEXES.keys
+        else
+          candidates = CEN_INDEXES.keys
+        end
+      when 'freereg'
+        candidates = REG_INDEXES.keys
+      end
+
+      scores = {}
+
       candidates.each { |name| scores[name] = index_score(name, search_fields) }
       best = scores.max_by { |_k, v| v}
       best[0]
