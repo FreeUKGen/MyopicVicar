@@ -81,20 +81,14 @@ class SearchRecord
     'ln_rt_sd' => ['search_names.last_name', 'record_type', 'search_date'],
     'ln_fn_rt_sd' => ['search_names.last_name', 'search_names.first_name', 'record_type', 'search_date'],
     'lnsdx_rt_sd' => ['search_soundex.last_name', 'record_type', 'search_date'],
-    'lnsdx_fnsdx_rt_sd' => ['search_soundex.last_name', 'search_soundex.first_name', 'record_type', 'search_date']
-  }
-
-  CEN_PLACE_INDEXES = {
+    'lnsdx_fnsdx_rt_sd' => ['search_soundex.last_name', 'search_soundex.first_name', 'record_type', 'search_date'],
     'place_ln_rt_sd' => ['place_id', 'search_names.last_name', 'record_type', 'search_date'],
     'place_ln_fn_rt_sd' => ['place_id', 'search_names.last_name', 'search_names.first_name', 'record_type', 'search_date'],
     'place_lnsdx_rt_sd' => ['place_id', 'search_soundex.last_name', 'record_type', 'search_date'],
     'place_lnsdx_fnsdx_rt_sd' => ['place_id', 'search_soundex.last_name', 'search_soundex.first_name', 'record_type', 'search_date'],
     'place_fn_rt_sd' => ['place_id', 'search_names.first_name', 'record_type', 'search_date'],
     'place_fnsdx_rt_sd' => ['place_id', 'search_soundex.first_name', 'record_type', 'search_date'],
-    'place_rt_sd' => ['place_id', 'record_type', 'search_date']
-  }
-
-  CEN_COUNTY_INDEXES = {
+    'place_rt_sd' => ['place_id', 'record_type', 'search_date'],
     'county_ln_rt_sd' => ['chapman_code', 'search_names.last_name', 'record_type', 'search_date'],
     'county_ln_fn_rt_sd' => ['chapman_code', 'search_names.last_name', 'search_names.first_name', 'record_type', 'search_date'],
     'county_lnsdx_rt_sd' => ['chapman_code', 'search_soundex.last_name', 'record_type', 'search_date'],
@@ -259,6 +253,7 @@ class SearchRecord
 
 
     def extract_fields(fields, params, current_field)
+
       if params.is_a?(Hash)
         # walk down the syntax tree
         params.each_pair do |key, value|
@@ -270,6 +265,7 @@ class SearchRecord
           end
           extract_fields(fields, value, new_field)
         end
+
       else
         # terminate
         if indexable_value?(params)
@@ -369,31 +365,28 @@ class SearchRecord
     def index_hint(search_params)
       #raise search_params.inspect
       search_fields = fields_from_params(search_params)
+
       case MyopicVicar::Application.config.template_set
       when 'freebmd'
         candidates = BMD_INDEXES.keys
+        index_component = BMD_INDEXES
       when 'freecen'
-        if search_fields.include?('place_id')
-          candidates = CEN_PLACE_INDEXES.keys
-        elsif search_fields.include?('chapman_code') || search_fields.include?('birth_chapman_code')
-          candidates = CEN_COUNTY_INDEXES.keys
-        else
-          candidates = CEN_INDEXES.keys
-        end
+        candidates = CEN_INDEXES.keys
+        index_component = CEN_INDEXES
       when 'freereg'
         candidates = REG_INDEXES.keys
+        index_component = REG_INDEXES
       end
-
       scores = {}
-
-      candidates.each { |name| scores[name] = index_score(name, search_fields) }
+      candidates.each { |name| scores[name] = index_score(name, search_fields, index_component) }
       best = scores.max_by { |_k, v| v}
       best[0]
     end
 
-    def index_score(index_name, search_fields)
+    def index_score(index_name, search_fields, index_component)
       # raise (NEW_INDEXES[ln_county_rt_sd_ssd]).inspect
-      fields = INDEXES[index_name]
+
+      fields = index_component[index_name]
       # raise fields.inspect
       best_score = -1
       fields.each do |field|
