@@ -11,7 +11,7 @@
           <p class="epsilon push-half--top flush--bottom"><strong><%= "Entry Information: #{@record[:GivenName].upcase} #{@record[:Surname].upcase}" %></strong></p>
       <hr>
           <% if @record.late_entry_description_text_display? %>
-            <%= @referral_record.present? ? ApplicationText::LATE_ENTRY_TEXT_WITH_REFERENCE : ApplicationText::LATE_ENTRY_TEXT_WITHOUT_REFERENCE%>
+            <p><%= @referral_record.present? ? ApplicationText::LATE_ENTRY_TEXT_WITH_REFERENCE : ApplicationText::LATE_ENTRY_TEXT_WITHOUT_REFERENCE%></p>
           <% end %>
           <%= render partial: 'entry_information_table', locals: {record: @record, entry_type: record_type.downcase, search: false} %>
         </div>

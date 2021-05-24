@@ -275,7 +275,11 @@ class BestGuess < FreebmdDbBase
     BestGuess.where(RecordNumber: get_reference_record_numbers).order(:Surname, :GivenName).pluck(:RecordNumber)
   end
 
-  def late_entry_description_text_display?
+  def reference_entry_description_text_display?
     (self.Confirmed & ENTRY_REFERENCE) && (self.Confirmed & ENTRY_LINK).zero?
+  end
+
+  def late_entry_description_text_display?
+    (entryFlag & EntryReference).zero?
   end
 end
