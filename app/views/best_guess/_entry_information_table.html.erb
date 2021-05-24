@@ -2,7 +2,7 @@
   <tbody>
     <% record_type = RecordType::display_name(record.RecordTypeID)%>
     <tr>
-      <th class="project-text-color">
+      <th>
         Event Type
       </th>
       <td>
@@ -10,7 +10,7 @@
       </td>
     </tr>
     <tr>
-      <th class="project-text-color">
+      <th>
         Date
       </th>
       <td>
@@ -18,7 +18,7 @@
       </td>
     </tr>
     <tr>
-      <th class="project-text-color">
+      <th>
         District
       </th>
       <td>
@@ -28,7 +28,7 @@
     </tr>
     <% if entry_type == "marriage" %>
     	<tr>
-	      <th class="project-text-color">
+	      <th>
 	        <%= mother_or_spouse_surname(record_type)%>
 	      </th>
 	      <td>
@@ -43,7 +43,7 @@
     <% end %>
     <% if entry_type == "birth" %>
     	<tr>
-	      <th class="project-text-color">
+	      <th>
 	        <%= mother_or_spouse_surname(record_type)%>
 	      </th>
 	      <td>
@@ -52,7 +52,7 @@
     	</tr>
     <% end %>
     <tr>
-      <th class="project-text-color">
+      <th>
         Volume
       </th>
       <td>
@@ -60,7 +60,7 @@
       </td>
     </tr>
     <tr>
-      <th class="project-text-color" style="font-family: serif;">
+      <th style="font-family: serif;">
         Page
       </th>
       <td>
@@ -70,7 +70,7 @@
       </td>
     </tr>
     <tr>
-      <th class="project-text-color">
+      <th>
         Transcriber
       </th>
       <td>
@@ -80,7 +80,7 @@
     <% if search == true %>
       <% unless (record.Confirmed & 512).zero? %>
         <tr>
-          <th class="project-text-color">
+          <th>
             Refers
           </th>
           <td>
@@ -91,7 +91,7 @@
     <% end %>
     <% if record.get_comments.present? %>
       <tr>
-        <th class="project-text-color">
+        <th>
           Comment
         </th>
         <%  record.get_comments.each do |cl| %>
@@ -103,7 +103,7 @@
     <% end %>
     <% unless search == true %>
       <tr>
-        <th class="project-text-color">
+        <th>
           Help Text
         </th>
         <td>
