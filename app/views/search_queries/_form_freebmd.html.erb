@@ -14,6 +14,7 @@
 <% end %>
 <ul id="errors" class="validation-list text--center"></ul>
     <div class="bmd_search_form">
+        <%= button_tag "#{app_icons[:reset]}".html_safe, type: 'reset', class: ' floating_action_buttons_left' , id: 'small_screen_search_button' %>
         <%= semantic_form_for(@search_query) do |f| %>
             <ol class="grid search_form">
                 <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole firstnamegrid flush--bottom">
@@ -276,6 +277,7 @@
                 </li-->
                 <%#= button_tag 'Search', type: 'submit', class: 'floating_action_buttons' , id: 'search_form_submit_small_screen', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => '#C84182'}%>
                 <%= button_tag "#{app_icons[:search]}".html_safe, type: 'submit', class: ' floating_action_buttons' , id: 'small_screen_search_button' %>
+
                 <!--button class="floating_action_buttons" id="small_screen_search_button"><%= app_icons[:search].html_safe%></button-->
         <% end %>
     </div>

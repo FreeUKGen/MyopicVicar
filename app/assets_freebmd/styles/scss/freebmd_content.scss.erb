@@ -992,7 +992,26 @@ transform: matrix(-1, 0, 0, 1, 0, 0);
     }
 }
 
-.floating_action_buttons:hover, .floating_action_buttons:active{
+.floating_action_buttons_left {
+    @media (min-width: 576px) {
+      display: none !important;
+    }
+    @media (max-width: 576px) {
+      border: none;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background-color: white;
+      position: fixed;
+      top: 500px;
+      right: 40px;
+      cursor: pointer;
+      color: $magenta;
+      box-shadow: 1px 1px 1px 1px grey;
+    }
+}
+
+.floating_action_buttons:active{
    box-shadow: 2.1px 2.1px 2.1px 2.1px $project_color_faded;
    transform: scale(1.05);
    transition-duration: 0.3s;
