@@ -1,5 +1,8 @@
 # Manages the collection of site statistics which are the number of search per day and the number of records added and present
 class Freecen2SiteStatisticsController < ApplicationController
+
+  require 'csv'
+
   def create
     @freecen2_site_statistic = Freecen2SiteStatistic.new(freecen2_site_statistic_params)
     @freecen2_site_statistic.save
@@ -19,6 +22,84 @@ class Freecen2SiteStatisticsController < ApplicationController
     @freecen2_site_statistic = Freecen2SiteStatistic.new
   end
 
+  def export_csv
+
+    start_date = params[:csvdownload][:period_from].to_datetime
+    end_date = params[:csvdownload][:period_to].to_datetime
+
+    if params[:csvdownload][:period_from].to_datetime >= params[:csvdownload][:period_to].to_datetime
+      message = "End Date must be after Start Date"
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
+
+    stats_start = Freecen2SiteStatistic.find_by(interval_end: start_date)
+    stats_end = Freecen2SiteStatistic.find_by(interval_end: end_date)
+
+    @stats_array = []
+    ChapmanCode.merge_counties.each do |county|
+      Freecen::CENSUS_YEARS_ARRAY.each do |census|
+        if stats_end.records.dig(county, census).nil?
+          @total_individuals  = 0
+        else
+          @total_individuals = stats_end.records[county][census][:individuals]
+        end
+        if stats_start.records.dig(county, census).nil?
+          @added_individuals =  @total_individuals
+        else
+          @added_individuals =  @total_individuals - stats_start.records[county][census][:individuals]
+        end
+        if  @added_individuals < 0
+          @added_individuals = 0
+        end
+        county_name = ChapmanCode.name_from_code(county)
+        @stats_array  << [county, county_name, census, @total_individuals,  @added_individuals]
+      end
+    end
+
+    success, message, file_location, file_name = create_csv_file(@stats_array, start_date, end_date)
+
+    if success
+      if File.file?(file_location)
+        send_file(file_location, filename: file_name, x_sendfile: true) && return
+      end
+    else
+      flash[:notice]  = "There was a problem downloading the CSV file"
+    end
+    redirect_back(fallback_location: new_manage_resource_path)
+  end
+
+  def create_csv_file(stats_array, start_date, end_date)
+    file = "FreeCen_Stats_#{start_date.strftime("%Y%m%d")}_#{end_date.strftime("%Y%m%d")}.csv"
+    file_location = Rails.root.join('tmp', file)
+    success, message = write_csv_file(file_location, stats_array)
+
+    [success, message, file_location, file]
+  end
+
+  def write_csv_file(file_location, stats_array)
+    column_headers =%w(chapman_code county census total_individuals added_individuals)
+
+    CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+      csv << column_headers
+      stats_array.each do |rec|
+        csv << rec
+      end
+    end
+    [true, '']
+  end
+
+  def get_stats_dates
+    stats_dates = @freecen2_site_statistics.pluck(:interval_end)
+    all_dates = stats_dates.sort.reverse
+    all_dates_str = all_dates.map { |date| date.to_datetime.strftime("%d/%b/%Y")}
+    array_length = all_dates_str.length
+    end_dates = Array.new(all_dates_str)
+    end_dates.delete_at(array_length -1)
+    start_dates = Array.new(all_dates_str)
+    start_dates.delete_at(0)
+    [start_dates, end_dates]
+  end
+
   def index
     @freecen2_site_statistics = Freecen2SiteStatistic.all.order_by(interval_end: -1)
     if session[:chapman_code].present?
@@ -33,6 +114,9 @@ class Freecen2SiteStatisticsController < ApplicationController
     else
       @county = session[:county].present? ? session[:county] : 'total'
     end
+
+    @period_start_dates, @period_end_dates = get_stats_dates
+
   end
 
   def show
