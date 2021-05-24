@@ -110,7 +110,7 @@
           <% case %>
           <% when record.reference_entry_description_text_display? %>
             <%= ApplicationText::LATE_ENTRY_TEXT_WITH_REFERENCE %>
-          <% when record.late_entry_description_text_display?%>
+          <% when original_record.late_entry_description_text_display?%>
             <%= ApplicationText::REFERENCE_ENTRY_TEXT %>
           <% end %>
         </td>

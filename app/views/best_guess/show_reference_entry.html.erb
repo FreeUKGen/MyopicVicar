@@ -25,7 +25,7 @@
           <% unless @record.late_entry_description_text_display? %>
             <p><%= ApplicationText::REFERENCE_ENTRY_TEXT %></p>
           <% end %>
-	        <%= render partial: 'entry_information_table', locals: {record: @referral_record, entry_type: record_type.downcase, search: false } %>
+	        <%= render partial: 'entry_information_table', locals: {record: @referral_record, entry_type: record_type.downcase, search: false, original_record: @record } %>
 	          <div class='push-half--top'>
           		<div class="grid__item one-whole">
 		           	<div class='grid__item one-quarter lap-one-quarter palm-one-half'>
