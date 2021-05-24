@@ -280,6 +280,6 @@ class BestGuess < FreebmdDbBase
   end
 
   def late_entry_description_text_display?
-    (self.Confirmed & EntryReference).zero?
+    (self.Confirmed & ENTRY_REFERENCE).zero?
   end
 end
