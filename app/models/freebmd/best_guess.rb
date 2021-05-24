@@ -11,6 +11,7 @@ class BestGuess < FreebmdDbBase
   has_many :best_guess_links, class_name: '::BestGuessLink', foreign_key: 'RecordNumber' #, primary_key: ['RecordNumber', 'AccessionNumber', 'SequenceNumber']
   extend SharedSearchMethods
   ENTRY_SYSTEM = 8
+  ENTRY_LINK = 256
   ENTRY_REFERENCE = 512
 
   def friendly_url
@@ -272,5 +273,9 @@ class BestGuess < FreebmdDbBase
 
   def reference_record_information
     BestGuess.where(RecordNumber: get_reference_record_numbers).order(:Surname, :GivenName).pluck(:RecordNumber)
+  end
+
+  def late_entry_description_text_display?
+    (self.Confirmed & ENTRY_REFERENCE) && (self.Confirmed & ENTRY_LINK).zero?
   end
 end

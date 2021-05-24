@@ -237,9 +237,9 @@
                         </div>
                     </div>
 
-                    <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
+                    <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES)) %>
                     <% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil?%>
-                    <%= f.select :chapman_codes, grouped_options_for_select(grouped_options, selected_key = key), {include_blank: 'All Counties'}, {multiple: true, id: 'search_query_chapman_codes', tabindex: "0"} %>
+                    <%= f.select :chapman_codes, grouped_options_for_select(grouped_options, selected_key = key), {include_blank: 'All Counties', include_hidden: false}, {multiple: true, id: 'search_query_chapman_codes', tabindex: "0"} %>
                     <small class="additional">Select one County or none</small>
                 </li>
 
