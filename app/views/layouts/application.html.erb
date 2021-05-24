@@ -15,7 +15,7 @@
         <script type="text/javascript" src="//cdn.pubguru.com/fb.js"></script>
       <% end %>
     <% end %>
-    <% if appname_downcase == 'freecen' %>
+    <% if appname_downcase == 'freecen' || appname_downcase == 'freebmd'%>
       <!-- Google Tag Manager -->
       <script>
         (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -103,7 +103,7 @@
     <%= csrf_meta_tags %>
   </head>
   <body ontouchstart class="offcanvas  offcanvas--rev">
-    <% if appname_downcase == 'freecen' %>
+    <% if appname_downcase == 'freecen' || appname_downcase == 'freebmd'%>
       <!-- Google Tag Manager (noscript) -->
       <noscript><iframe src='https://www.googletagmanager.com/ns.html?id=<%= "#{gtm_key_value}"%>'
       height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
