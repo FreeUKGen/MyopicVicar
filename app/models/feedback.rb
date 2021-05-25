@@ -234,8 +234,7 @@ class Feedback
     if Feedback.github_enabled
       self.add_link_to_attachment
       Octokit.configure do |c|
-        c.login = Rails.application.config.github_issues_login
-        c.password = Rails.application.config.github_issues_password
+        c.access_token = Rails.application.config.github_issues_access_token
       end
       self.screenshot = nil
       response = Octokit.create_issue(Rails.application.config.github_issues_repo, issue_title, issue_body, :labels => [])
