@@ -40,7 +40,7 @@ class GetSoftwareVersion
       date_index = date_index + 1
     end
     p " Start software version with start of #{date_start} and end of #{date_end} for version #{new_version}"
-    client = Octokit::Client.new(login: Rails.application.config.github_issues_login, password: Rails.application.config.github_issues_password)
+    client = Octokit::Client.new(access_token: Rails.application.config.github_issues_access_token)
     software_version = SoftwareVersion.create(server: server, app: appln, date_of_update: date_end, version: new_version, type: 'System')
     search_record_version = SoftwareVersion.server(server).app(appln).search_record.order_by(date_of_update: -1).first
     last_search_record_version = search_record_version.blank? ? new_version : search_record_version.version
