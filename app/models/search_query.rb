@@ -785,6 +785,7 @@ class SearchQuery
     @search_index = SearchRecord.index_hint(@search_parameters)
     # @search_index = 'place_rt_sd_ssd' if query_contains_wildcard?
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
+    logger.warn("#{App.name_upcase}:SEARCH_PARAMETERS: #{@search_parameters}")
     update_attribute(:search_index, @search_index)
 
     #logger.warn @search_parameters.inspect
