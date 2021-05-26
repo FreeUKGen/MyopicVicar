@@ -1,6 +1,6 @@
 <% breadcrumb :freecen2_site_statistics,  @county%>
-<%= render 'stats_csv_download' %>
 <h2 style="text-align: center">Listing <%= @county%> Freecen2 Site Statistics</h2>
+<p style="text-align: center"><%= link_to 'Data Download', data_download_freecen2_site_statistics_path, method: :get, :class => "btn btn--small" %></p>
 <h4 style="text-align: center">The New columns list the changes in the previous 30 days</h4>
 <div class='scrollable'>
   <table  class="table--bordered table--data table--striped " >

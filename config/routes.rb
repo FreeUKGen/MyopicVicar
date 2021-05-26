@@ -74,6 +74,7 @@ MyopicVicar::Application.routes.draw do
 
   resources :site_statistics
 
+  get 'freecen2_site_statistics/data_download', to: 'freecen2_site_statistics#data_download', as: :data_download_freecen2_site_statistics
   get 'freecen2_site_statistics/export_csv', to: 'freecen2_site_statistics#export_csv', as: :export_csv_freecen2_site_statistics
   resources :freecen2_site_statistics
 

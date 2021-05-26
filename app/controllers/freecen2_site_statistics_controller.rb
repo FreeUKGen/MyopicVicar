@@ -60,6 +60,7 @@ class Freecen2SiteStatisticsController < ApplicationController
 
     if success
       if File.file?(file_location)
+        flash[:notice]  = message unless message.empty?
         send_file(file_location, filename: file_name, x_sendfile: true) && return
       end
     else
@@ -88,7 +89,8 @@ class Freecen2SiteStatisticsController < ApplicationController
     [true, '']
   end
 
-  def get_stats_dates
+  def data_download
+    @freecen2_site_statistics = Freecen2SiteStatistic.all.order_by(interval_end: -1)
     stats_dates = @freecen2_site_statistics.pluck(:interval_end)
     all_dates = stats_dates.sort.reverse
     all_dates_str = all_dates.map { |date| date.to_datetime.strftime("%d/%b/%Y")}
@@ -97,7 +99,8 @@ class Freecen2SiteStatisticsController < ApplicationController
     end_dates.delete_at(array_length -1)
     start_dates = Array.new(all_dates_str)
     start_dates.delete_at(0)
-    [start_dates, end_dates]
+    @period_start_dates = start_dates
+    @period_end_dates = end_dates
   end
 
   def index
@@ -114,9 +117,6 @@ class Freecen2SiteStatisticsController < ApplicationController
     else
       @county = session[:county].present? ? session[:county] : 'total'
     end
-
-    @period_start_dates, @period_end_dates = get_stats_dates
-
   end
 
   def show

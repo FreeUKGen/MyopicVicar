@@ -61,6 +61,12 @@ crumb :freecen2_site_statistics do |county|
     parent :county_options, county
   end
 end
+
+crumb :data_download do
+  link 'Data Download'
+  parent :freecen2_site_statistics, 'total'
+end
+
 crumb :freecen2_search_statistics do |county|
   link 'Freecen2 Search Statistics'
   if county == 'total'
