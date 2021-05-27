@@ -111,9 +111,9 @@ class SearchRecord
     'lnsdx_rt_sd_ssd' => ['search_soundex.last_name', 'record_type', 'search_date', 'secondary_search_date'],
     'place_fn_rt_sd_ssd' => ['place_id', 'search_names.first_name', 'record_type', 'search_date', 'secondary_search_date'],
     'place_ln_rt_sd_ssd' => ['place_id', 'search_names.last_name', 'record_type', 'search_date', 'secondary_search_date'],
-    'place_fn_ln_rt_sd_ssd' => ['place_id', 'search_names.first_name', 'search_names.last_name', 'record_type', 'search_date', 'secondary_search_date'],
+    'place_ln_fn_rt_sd_ssd' => ['place_id', 'search_names.last_name', 'search_names.first_name', 'record_type', 'search_date', 'secondary_search_date'],
     'place_fnsdx_rt_sd_ssd' => ['place_id', 'search_soundex.first_name', 'record_type', 'search_date', 'secondary_search_date'],
-    'place_fnsdx_lnsdx_rt_sd_ssd' => ['place_id', 'search_soundex.first_name', 'search_soundex.last_name', 'record_type', 'search_date', 'secondary_search_date'],
+    'place_lnsdx_fnsdx_rt_sd_ssd' => ['place_id', 'search_soundex.last_name', 'search_soundex.first_name', 'record_type', 'search_date', 'secondary_search_date'],
     'place_lnsdx_rt_sd_ssd' => ['place_id', 'search_soundex.last_name', 'record_type', 'search_date', 'secondary_search_date']
   }
 
