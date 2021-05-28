@@ -32,21 +32,21 @@
       </section>
       <section>
       <div class="grid__item one-half lap-one-half palm-one-whole">
-        <% if @referral_record.present? %>
-          <% record_type = RecordType::display_name(@referral_record.RecordTypeID)%>
-          <p class="epsilon push-half--top flush--bottom"><strong><%= "Referal Information: #{@referral_record[:GivenName].upcase} #{@referral_record[:Surname].upcase}" %></strong></p>
+        <% if @secondary_referral_record.present? %>
+          <% record_type = RecordType::display_name(@secondary_referral_record.RecordTypeID)%>
+          <p class="epsilon push-half--top flush--bottom"><strong><%= "Referal Information: #{@secondary_referral_record[:GivenName].upcase} #{@secondary_referral_record[:Surname].upcase}" %></strong></p>
 	        <hr>
-	        <%= render partial: 'entry_information_table', locals: {record: @referral_record, entry_type: record_type.downcase, search: false, original_record: @record } %>
+	        <%= render partial: 'entry_information_table', locals: {record: @secondary_referral_record, entry_type: record_type.downcase, search: false, original_record: @record } %>
 	          <div class='push-half--top'>
           		<div class="grid__item one-whole">
 		           	<div class='grid__item one-quarter lap-one-quarter palm-one-half'>
-		           		<% if @next_record.present?%>
-	                	<%= link_to 'Next Referral Entry<i class="fa fa-chevron-right view_arrow"></i> '.html_safe, show_reference_entry_path(entry_id: @record.RecordNumber, referral_number: @next_record ), class: 'push-half--right push-half--top' unless @next_record.nil?%>
+		           		<% if @secondary_next_record.present?%>
+	                	<%= link_to 'Next Referral Entry<i class="fa fa-chevron-right view_arrow"></i> '.html_safe, show_reference_entry_path(entry_id: @record.RecordNumber, secondary_referral_number: @secondary_next_record ), class: 'push-half--right push-half--top' unless @secondary_next_record.nil?%>
 	                <% end %>
 	              </div>
 	              <div class='grid__item one-quarter lap-one-quarter palm-one-half'>
-	                <% if @previous_record.present?%>
-	                	<%= link_to 'Previous Referral Entry<i class="fa fa-chevron-right view_arrow"></i> '.html_safe, show_reference_entry_path(entry_id: @record.RecordNumber, referral_number: @previous_record ), class: 'push-half--right push-half--top' unless @previous_record.nil?%>
+	                <% if @secondary_previous_record.present?%>
+	                	<%= link_to 'Previous Referral Entry<i class="fa fa-chevron-right view_arrow"></i> '.html_safe, show_reference_entry_path(entry_id: @record.RecordNumber, secondary_referral_number: @secondary_previous_record ), class: 'push-half--right push-half--top' unless @secondary_previous_record.nil?%>
 	                <% end %>
 	              </div>
 	            </div>
