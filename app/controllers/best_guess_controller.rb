@@ -74,8 +74,8 @@ class BestGuessController < ApplicationController
     reference_entry_record_numbers = @record.late_entry_detail
     (@record.Confirmed & BestGuess::ENTRY_LINK).zero? ? late_entry_pointer_record_numbers.unshift(record_number) : reference_entry_record_numbers.unshift(record_number)
     @primary_array, @secondary_array = primary_and_secondary_array(@record, late_entry_pointer_record_numbers, reference_entry_record_numbers)
-    @primary_referral_record, @primary_next_record, @primary_previous_record = record_cycle params[:primary_referral_number], primary_array
-    @secondary_referral_record, @secondary_next_record, @secondary_previous_record = record_cycle params[:secondary_referral_number], secondary_array
+    @primary_referral_record, @primary_next_record, @primary_previous_record = record_cycle params[:primary_referral_number], @primary_array
+    @secondary_referral_record, @secondary_next_record, @secondary_previous_record = record_cycle params[:secondary_referral_number], @secondary_array
   end
 
 
