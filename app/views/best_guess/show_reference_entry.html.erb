@@ -13,7 +13,7 @@
           <%# if @record.reference_entry_description_text_display? %>
             <p><%#= @referral_record.present? ? ApplicationText::LATE_ENTRY_TEXT_WITH_REFERENCE : ApplicationText::LATE_ENTRY_TEXT_WITHOUT_REFERENCE%></p>
           <%# end %>
-          <%= render partial: 'entry_information_table', locals: {record: @record, entry_type: record_type.downcase, search: false} %>
+          <%= render partial: 'entry_information_table', locals: {record: @record, entry_type: record_type.downcase, search: false, original_record: @record } %>
           <div class='push-half--top'>
               <div class="grid__item one-whole">
                 <div class='grid__item one-quarter lap-one-quarter palm-one-half'>
