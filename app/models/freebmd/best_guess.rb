@@ -272,7 +272,7 @@ class BestGuess < FreebmdDbBase
   end
 
   def reference_record_information
-    BestGuess.where(RecordNumber: get_reference_record_numbers).order(:Surname, :GivenName).pluck(:RecordNumber)
+    BestGuess.where(RecordNumber: get_reference_record_numbers)#.order(:Surname, :GivenName).pluck(:RecordNumber)
   end
 
   def reference_entry_description_text_display?
@@ -281,5 +281,21 @@ class BestGuess < FreebmdDbBase
 
   def late_entry_description_text_display?
     (self.Confirmed & ENTRY_REFERENCE).zero?
+  end
+
+  def entry_link_check?
+    (self.Confirmed & ENTRY_LINK).zero?
+  end
+
+  def sorted_reference_records
+    reference_record_information.order(:Surname, :GivenName)
+  end
+
+  def late_entry_pointer
+    sorted_reference_records.select{|rec| (rec.Confirmed & ENTRY_LINK).zero?}.pluck(:RecordNumber)
+  end
+
+  def late_entry_detail
+    sorted_reference_records.select{|rec| !(rec.Confirmed & ENTRY_LINK).zero?}.pluck(:RecordNumber)
   end
 end

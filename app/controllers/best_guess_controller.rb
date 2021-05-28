@@ -70,11 +70,33 @@ class BestGuessController < ApplicationController
   def show_reference_entry
     record_number = params[:entry_id]
     @record = BestGuess.where(RecordNumber: record_number).first
-    referral = @record.reference_record_information
-    current_record_number =referral.first
-    current_record_number = params[:referral_number] if params[:referral_number].present?
-    @referral_record = BestGuess.where(RecordNumber: current_record_number).first
-    @next_record, @previous_record = next_and_previous_entries_of_page(current_record_number, referral)
+    late_entry_pointer_record_numbers = @record.late_entry_pointer
+    reference_entry_record_numbers = @record.late_entry_detail
+    (@record.Confirmed & BestGuess::ENTRY_LINK).zero? ? late_entry_pointer_record_numbers.unshift(record_number) : reference_entry_record_numbers.unshift(record_number)
+    @primary_array, @secondary_array = primary_and_secondary_array(@record, late_entry_pointer_record_numbers, reference_entry_record_numbers)
+    @primary_referral_record, @primary_next_record, @primary_previous_record = record_cycle params[:primary_referral_number], primary_array
+    @secondary__referral_record, @secondary__next_record, @secondary__previous_record = record_cycle params[:secondary_referral_number], secondary_array
+  end
+
+
+  def notes_vino
+     #referral = @record.reference_record_information
+    #current_record_number =  referral.first
+    #current_record_number = params[:referral_number] if params[:primary_referral_number].present?
+    #@referral_record = BestGuess.where(RecordNumber: current_record_number).first
+  end
+
+  def record_cycle current=nil, array
+    current.present? ? current_record_number = current : current_record_number = array.first
+    referral_record = BestGuess.where(RecordNumber: current_record_number).first if current.present?
+    next_record, previous_record = next_and_previous_entries_of_page(current_record_number, array)
+    [referral_record, next_record, previous_record]
+  end
+
+  def primary_and_secondary_array entry, array1, array2
+    (entry.Confirmed & BestGuess::ENTRY_LINK).zero? ? primary_array = array1 : primary_array = array2
+    (entry.Confirmed & BestGuess::ENTRY_LINK).zero? ? secondary_array = array2 : secondary_array = array1
+    [primary_array, secondary_array]
   end
 
 
