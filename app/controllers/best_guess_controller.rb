@@ -88,7 +88,7 @@ class BestGuessController < ApplicationController
 
   def record_cycle current=nil, array
     current.present? ? current_record_number = current : current_record_number = array.first
-    referral_record = BestGuess.where(RecordNumber: current_record_number).first if current.present?
+    referral_record = BestGuess.where(RecordNumber: current_record_number).first if current_record_number.present?
     next_record, previous_record = next_and_previous_entries_of_page(current_record_number, array)
     [referral_record, next_record, previous_record]
   end
