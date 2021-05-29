@@ -2098,6 +2098,17 @@ crumb :tna_change_logs do
   link 'Changes to TNA collections', tna_change_logs_path
   parent :root
 end
+
+######################################FreeBMD Breadcrumbs#########################################################
+
+crumb :entry_information do |search_id, entry_id, friendly_url|
+  link "Entry Information", friendly_bmd_record_details_path
+end
+
+crumb :view_marriage do |entry_id|
+  link "View Marriage", show_marriage_details_path
+  parent :entry_information
+end
 # crumb :projects do
 #   link 'Projects', projects_path
 # end
