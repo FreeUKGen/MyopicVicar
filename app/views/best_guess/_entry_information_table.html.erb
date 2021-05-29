@@ -102,19 +102,21 @@
       </tr>
     <% end %>
     <% unless search == true %>
-      <tr>
-        <th>
-          Help Text
-        </th>
-        <td>
-          <% case %>
-          <% when record.reference_entry_description_text_display? %>
-            <%= ApplicationText::LATE_ENTRY_TEXT_WITH_REFERENCE %>
-          <% when !original_record.late_entry_description_text_display?%>
-            <%= ApplicationText::REFERENCE_ENTRY_TEXT %>
-          <% end %>
-        </td>
-      </tr>
+      <% if reference == true %>
+        <tr>
+          <th>
+            Help Text
+          </th>
+          <td>
+            <% case %>
+            <% when record.reference_entry_description_text_display? %>
+              <%= ApplicationText::LATE_ENTRY_TEXT_WITH_REFERENCE %>
+            <% when !original_record.late_entry_description_text_display?%>
+              <%= ApplicationText::REFERENCE_ENTRY_TEXT %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
     <% end %>
     <% if search == true %>
       <td  colspan=2><%= link_to 'Report an Error in this Data', report_error_contact_path(record.RecordNumber, query: query), class: 'btn btn--natural' unless  record.blank? || query.blank? %>
