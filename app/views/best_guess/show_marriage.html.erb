@@ -20,7 +20,7 @@
           <% record_type = RecordType::display_name(@spouse_record.RecordTypeID)%>
           <p class="epsilon push-half--top flush--bottom"><strong><%= "Spouse Information: #{@spouse_record[:GivenName].upcase} #{@spouse_record[:Surname].upcase}" %></strong></p>
         <hr>
-            <%= render partial: 'entry_information_table', locals: {record: @spouse_record, entry_type: record_type.downcase, search: false } %>
+            <%= render partial: 'entry_information_table', locals: {record: @spouse_record, entry_type: record_type.downcase, search: false, type: "marriages" } %>
         <% else %>
           <p>We do not have information on spouse yet.</p>
         <% end %>
