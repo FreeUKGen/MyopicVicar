@@ -576,7 +576,7 @@ MyopicVicar::Application.routes.draw do
   get '/entry-information/:id/:friendly(.:format)', :to => 'best_guess#show', :as => :friendly_bmd_record_details_from_page
   get ':search_id/:entry_id/marriage_details/', :to => 'best_guess#show_marriage', :as => :show_marriage_details
   get '/reference_details/:entry_id/', :to => 'best_guess#show_reference_entry', :as => :show_reference_entry
-  get '/same_page_entries', to: 'best_guess#same_page_entries', as: :same_page_entries
+  get ':search_id/:entry_id/same_page_entries', to: 'best_guess#same_page_entries', as: :same_page_entries
   resources :best_guess
 
   get "entry-information/cite=:id&scan=1", :to => 'best_guess_hash#show', :as => :citation_url

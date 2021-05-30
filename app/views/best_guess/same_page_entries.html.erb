@@ -14,12 +14,12 @@
         </thead>
         <tbody>
           <% n = 0 %>
-          <% @search_records.each do |search_record| %>
+          <% @page_records.each do |search_record| %>
             <% n = n +1%>
             <% record_type = RecordType::display_name(["#{search_record[:RecordTypeID]}"])%>
             <tr id="<%=search_record[:_id]%>" class="<%= record_type.downcase %>_hover" >
                 <td>
-                  <center><%= link_to("View #{n}".html_safe,friendly_bmd_record_details_from_page_path(search_record.id, search_record.friendly_url), :rel => "nofollow", :title => "", class: "btn  btn--small")%>
+                  <center><%= link_to("View #{n}".html_safe,friendly_bmd_record_details_path(@search_id, search_record.id, search_record.friendly_url), :rel => "nofollow", :title => "", class: "btn  btn--small")%>
                   <i><%#= seen(@search_query,search_record) %></i></center>
                 </td>
               <td class="table--data">

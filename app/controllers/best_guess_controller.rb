@@ -102,6 +102,7 @@ class BestGuessController < ApplicationController
 
 
   def same_page_entries
+    @search_id = params[:search_id]
     @volume = params[:volume]
     @page = params[:page]
     @district = params[:district]
