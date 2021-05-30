@@ -70,6 +70,7 @@ class BestGuessController < ApplicationController
 
   def show_reference_entry
     record_number = params[:entry_id]
+    @search_id = params[:search_id]
     @record = BestGuess.where(RecordNumber: record_number).first
     late_entry_pointer_record_numbers = @record.late_entry_pointer
     reference_entry_record_numbers = @record.late_entry_detail
