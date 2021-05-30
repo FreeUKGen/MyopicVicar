@@ -56,7 +56,7 @@ class BestGuessController < ApplicationController
   end
 
   def show_marriage
-    record_number = params[:id]
+    record_number = params[:entry_id]
     @search_id = params[:search_id]
     @record = BestGuess.where(RecordNumber: record_number).first
     spouse_surname = @record.AssociateName

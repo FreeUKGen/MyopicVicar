@@ -1,7 +1,7 @@
-<% breadcrumb :view_marriage,  id: @record.RecordNumber, search_id: @search_id, friendly: @record.friendly_url %>
 <%= render 'flash_notice' %>
 <% title "Marriage Details" %>
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
+<%= link_to "#{app_icons[:left_arrow_pink]} Back to Search Entry".html_safe, friendly_bmd_record_details_path(params[:search_id], @record, @record.friendly_url), class: " btn   btn--small" unless @record.blank?%>
   <h1 class="accessibility">Marriage Informations</h1>
   <div class="grid">
     <div class="grid__item one-whole lap-one-whole palm-one-whole ">
