@@ -38,7 +38,7 @@
           <% record_type = RecordType::display_name(@secondary_referral_record.RecordTypeID)%>
           <p class="epsilon push-half--top flush--bottom"><strong><%= "Referal Information: #{@secondary_referral_record[:GivenName].upcase} #{@secondary_referral_record[:Surname].upcase}" %></strong></p>
 	        <hr>
-	        <%= render partial: 'entry_information_table', locals: {record: @secondary_referral_record, entry_type: record_type.downcase, search: false, original_record: @record, , type: "reference", search_id: @search_id } %>
+	        <%= render partial: 'entry_information_table', locals: {record: @secondary_referral_record, entry_type: record_type.downcase, search: false, original_record: @record, type: "reference", search_id: @search_id } %>
 	          <div class='push-half--top'>
           		<div class="grid__item one-whole">
 		           	<div class='grid__item one-quarter lap-one-quarter palm-one-half'>
