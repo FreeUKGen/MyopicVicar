@@ -13,7 +13,7 @@
 <div class="grid">
   <div class="grid__item seven-tenths lap-seven-tenths palm-one-whole">
     <div class="grid__item one-third lap-one-third palm-one-half hard--left">
-      <%= link_to "#{app_icons[:left_arrow_pink]} Back to Results".html_safe, search_query_path(@search_query, id: params[:search_id]), class: " btn   btn--small" if params[:search_id].present?%>
+      <%= link_to "#{app_icons[:left_arrow_pink]} Back to Results".html_safe, search_query_path(@search_query, id: params[:search_id], anchor: @current_record.RecordNumber), class: " btn   btn--small" if params[:search_id].present?%>
     </div>
     <div class="grid__item one-third lap-one-third palm-one-half float--right">
       <%= form_tag friendly_bmd_record_details_path(params[:search_id], @search_record, @search_record.friendly_url), method: :get, id: 'option_form' do %>
