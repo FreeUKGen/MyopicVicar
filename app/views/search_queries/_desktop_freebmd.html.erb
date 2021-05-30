@@ -22,7 +22,7 @@
           <% @paginatable_array.each do |search_record| %>
             <% n = n +1 %>
             <% record_type = RecordType::display_name(["#{search_record[:RecordTypeID]}"])%>
-            <tr id="<%=search_record[:_id]%>" class="<%= record_type.downcase %>_hover" >
+            <tr id="<%=search_record[:RecordNumber]%>" class="<%= record_type.downcase %>_hover" >
               <% unless print_friendly %>
                 <td>
                   <center>
