@@ -1,4 +1,4 @@
-<% breadcrumb :view_marriage,  @record.RecordNumber %>
+<% breadcrumb :view_marriage,  entry_id: @record.RecordNumber, search_id: @search_id, friendly_url: @record.friendly_url %>
 <%= render 'flash_notice' %>
 <% title "Marriage Details" %>
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
