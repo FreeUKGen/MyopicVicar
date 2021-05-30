@@ -2101,13 +2101,13 @@ end
 
 ######################################FreeBMD Breadcrumbs#########################################################
 
-crumb :entry_information do |search_id, entry_id, friendly_url|
+crumb :entry_information do |search_id, id, friendly|
   link "Entry Information", friendly_bmd_record_details_path
 end
 
-crumb :view_marriage do |search_id, entry_id, friendly_url|
+crumb :view_marriage do |search_id, id, friendly_url|
   link "View Marriage", show_marriage_details_path
-  parent :entry_information, search_id, entry_id, friendly_url
+  parent :entry_information, search_id, id, friendly_url
 end
 # crumb :projects do
 #   link 'Projects', projects_path
