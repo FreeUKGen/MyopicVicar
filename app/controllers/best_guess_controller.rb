@@ -57,7 +57,7 @@ class BestGuessController < ApplicationController
 
   def show_marriage
     record_number = params[:entry_id]
-    @search_id = params[:search_id]
+    @search_id = params[:search_id] if params[:search_id].present?
     @record = BestGuess.where(RecordNumber: record_number).first
     spouse_surname = @record.AssociateName
     volume = @record.Volume
@@ -70,7 +70,7 @@ class BestGuessController < ApplicationController
 
   def show_reference_entry
     record_number = params[:entry_id]
-    @search_id = params[:search_id]
+    @search_id = params[:search_id] if params[:search_id].present?
     @record = BestGuess.where(RecordNumber: record_number).first
     late_entry_pointer_record_numbers = @record.late_entry_pointer
     reference_entry_record_numbers = @record.late_entry_detail
@@ -103,7 +103,7 @@ class BestGuessController < ApplicationController
 
 
   def same_page_entries
-    @search_id = params[:search_id]
+    @search_id = params[:search_id] if params[:search_id].present?
     record_number = params[:entry_id]
     @record = BestGuess.where(RecordNumber: record_number).first
     @volume = params[:volume]
