@@ -103,11 +103,12 @@ class BestGuessController < ApplicationController
 
   def same_page_entries
     @search_id = params[:search_id]
+    @record = params[:entry_id]
     @volume = params[:volume]
     @page = params[:page]
     @district = params[:district]
     @quarter = params[:quarter]
-    @search_records = BestGuess.where(Volume: @volume, Page: @page, QuarterNumber: params[:quarter], RecordTypeID: params[:record])
+    @page_records = BestGuess.where(Volume: @volume, Page: @page, QuarterNumber: params[:quarter], RecordTypeID: params[:record])
   end
 
   def sort_records(records)
