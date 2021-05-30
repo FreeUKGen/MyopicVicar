@@ -33,7 +33,7 @@
 	      </th>
 	      <td>
 	      	<% if search == true && record.AssociateName.present? %>
-	        	<%= link_to "#{record.AssociateName}", show_marriage_details_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
+	        	<%= link_to "#{record.AssociateName}", show_marriage_details_path(id: record.RecordNumber, search_id: search_id) %><br>
 	        	<span class="weight--normal"><%= "(#{ApplicationText::VIEW_MARRIAGE_TEXT})" %></span>
 	        <% else %>
 	        	<%= record.AssociateName %>
