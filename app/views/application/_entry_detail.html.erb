@@ -24,114 +24,114 @@
       </thead>
       <tbody>
         <% @order.each do |field| %>
-          <% if @all_data.present? || @entry[field].present? %>
-            <% look_up_entry_chain(@entry) %>
-            <% case field %>
-            <% when 'county' %>
+          <% look_up_entry_chain(@entry) %>
+          <% case field %>
+          <% when 'county' %>
+          <tr>
+            <td ><%= field.gsub('_',' ').capitalize %></td>
+            <td ><%= county_name_for_entry %></td>
+          </tr>
+          <% when 'place' %>
+          <tr>
+            <td ><%= field.gsub('_',' ').capitalize %>
+              <small> (Links to more information)</small></td>
+            <% if @place_id.present? %>
+              <td ><%= link_to(place_name_for_entry, place_freereg_content_path(@place_id)) %></td>
+            <% else %>
+              <td ><%= place_name_for_entry %></td>
+            <% end %>
+          </tr>
+          <% when 'church_name' %>
+          <tr>
+            <td ><%= field.gsub('_',' ').capitalize %>
+              <small> (Links to more information)</small></td>
+            <% if @church_id.present? %>
+              <td ><%= link_to(church_name_for_entry, church_freereg_content_path(@church_id)) %></td>
+            <% else %>
+              <td ><%= church_name_for_entry %></td>
+            <% end %>
+          </tr>
+          <% when 'register_type' %>
+          <tr>
+            <td ><%= field.gsub('_',' ').capitalize%>
+              <small> (Links to more information)</small></td>
+            <% if @register_id.present? %>
+              <td ><%= link_to(register_name_for_entry, register_freereg_content_path(@register_id)) %></td>
+            <% else %>
+              <td ><%= register_name_for_entry %></td>
+            <% end %>
+          </tr>
+          <% when 'image_file_name' %>
+          <% if !@image_id.present?  %>
             <tr>
               <td ><%= field.gsub('_',' ').capitalize %></td>
-              <td ><%= county_name_for_entry %></td>
+              <td ><%= @entry[field] %></td>
             </tr>
-            <% when 'place' %>
+          <% else %>
             <tr>
-              <td ><%= field.gsub('_',' ').capitalize %>
-                <small> (Links to more information)</small></td>
-              <% if @place_id.present? %>
-                <td ><%= link_to(place_name_for_entry, place_freereg_content_path(@place_id)) %></td>
-              <% else %>
-                <td ><%= place_name_for_entry %></td>
-              <% end %>
+              <td ><%= field.gsub('_',' ').capitalize %></td>
+              <td >  <%= link_to 'View image', view_image_server_image_path(:object => @image_id), method: :get,:target => '_blank' , :class => 'btn btn--small' %></td>
             </tr>
-            <% when 'church_name' %>
+          <% end %>
+          <% when 'film' %>
+          <% if  current_authentication_devise_user.present? && (@all_data.present? || @entry[field].present?) %>
             <tr>
-              <td ><%= field.gsub('_',' ').capitalize %>
-                <small> (Links to more information)</small></td>
-              <% if @church_id.present? %>
-                <td ><%= link_to(church_name_for_entry, church_freereg_content_path(@church_id)) %></td>
-              <% else %>
-                <td ><%= church_name_for_entry %></td>
-              <% end %>
+              <td >Film</td>
+              <td ><%= @entry.film %></td>
             </tr>
-            <% when 'register_type' %>
+          <% end%>
+          <% when 'film_number' %>
+          <% if  current_authentication_devise_user.present? && (@all_data.present? || @entry[field].present?) %>
             <tr>
-              <td ><%= field.gsub('_',' ').capitalize%>
-                <small> (Links to more information)</small></td>
-              <% if @register_id.present? %>
-                <td ><%= link_to(register_name_for_entry, register_freereg_content_path(@register_id)) %></td>
-              <% else %>
-                <td ><%= register_name_for_entry %></td>
-              <% end %>
+              <td >Film Number</td>
+              <td ><%= @entry.film_number %></td>
             </tr>
-            <% when 'image_file_name' %>
-            <% if !@image_id.present?  %>
-              <tr>
-                <td ><%= field.gsub('_',' ').capitalize %></td>
-                <td ><%= @entry[field] %></td>
-              </tr>
-            <% else %>
-              <tr>
-                <td ><%= field.gsub('_',' ').capitalize %></td>
-                <td >  <%= link_to 'View image', view_image_server_image_path(:object => @image_id), method: :get,:target => '_blank' , :class => 'btn btn--small' %></td>
-              </tr>
-            <% end %>
-            <% when 'film' %>
-            <% if  current_authentication_devise_user.present?%>
-              <tr>
-                <td >Film</td>
-                <td ><%= @entry.film %></td>
-              </tr>
-            <% end%>
-            <% when 'film_number' %>
-            <% if  current_authentication_devise_user.present?%>
-              <tr>
-                <td >Film Number</td>
-                <td ><%= @entry.film_number %></td>
-              </tr>
-            <% end%>
-            <% when 'processed_date' %>
-            <% if  current_authentication_devise_user.present? && @entry.processed_date.present? %>
-              <tr>
-                <td ><%= field.gsub('_',' ').capitalize %></td>
-                <td ><%= @entry.processed_date.strftime('%d %b %Y') %></td>
-              </tr>
-            <% end%>
-            <% when 'line_id' %>
-            <% if  current_authentication_devise_user.present?%>
-              <tr>
-                <td ><%= field.gsub('_',' ').capitalize %></td>
-                <td ><%= @entry.line_id %></td>
-              </tr>
-            <% end%>
-            <% when 'credit' %>
-            <%  creditable = credit(@entry) %>
-            <% if creditable.present? %>
-              <tr>
-                <td ><%= field.gsub('_',' ').capitalize %></td>
-                <td ><%= creditable %></td>
-              </tr>
-            <% end %>
-            <% when 'transcribed_by' %>
-            <%  creditable = transcriber(@entry) %>
-            <% if creditable.present? %>
-              <tr>
-                <td ><%= field.gsub('_',' ').capitalize %></td>
-                <td ><%= creditable %></td>
-              </tr>
-            <% end %>
-            <% when 'error_flag'  %>
-            <% if  current_authentication_devise_user.present?%>
-              <% if @entry.error_flag == 'true' %>
-                <tr style= 'color:blue'>
-                <% else%>
-                  <tr style= 'color:black'>
-                  <% end%>
-                  <td >Error in record</td>
-                  <td >  <%= @entry.error_flag %> </td>
-                </tr>
+          <% end%>
+          <% when 'processed_date' %>
+          <% if  current_authentication_devise_user.present? && (@all_data.present? || @entry[field].present?) %>
+            <tr>
+              <td ><%= field.gsub('_',' ').capitalize %></td>
+              <td ><%= @entry.processed_date.strftime('%d %b %Y') %></td>
+            </tr>
+          <% end%>
+          <% when 'line_id' %>
+          <% if  current_authentication_devise_user.present? && (@all_data.present? || @entry[field].present?) %>
+            <tr>
+              <td ><%= field.gsub('_',' ').capitalize %></td>
+              <td ><%= @entry.line_id %></td>
+            </tr>
+          <% end%>
+          <% when 'credit' %>
+          <%  creditable = credit(@entry) %>
+          <% if creditable.present? %>
+            <tr>
+              <td ><%= field.gsub('_',' ').capitalize %></td>
+              <td ><%= creditable %></td>
+            </tr>
+          <% end %>
+          <% when 'transcribed_by' %>
+          <%  creditable = transcriber_entry(@entry) %>
+          <% if creditable.present? %>
+            <tr>
+              <td ><%= field.gsub('_',' ').capitalize %></td>
+              <td ><%= creditable %></td>
+            </tr>
+          <% end %>
+          <% when 'error_flag'  %>
+          <% if  current_authentication_devise_user.present? && (@all_data.present? || @entry[field].present?) %>
+            <% if @entry.error_flag == 'true' %>
+              <tr style= 'color:blue'>
+              <% else%>
                 <tr style= 'color:black'>
-                </tr>
-              <% end%>
-            <% else%>
+                <% end%>
+                <td >Error in record</td>
+                <td >  <%= @entry.error_flag %> </td>
+              </tr>
+              <tr style= 'color:black'>
+              </tr>
+            <% end%>
+          <% else%>
+            <% if @all_data.present? || @entry[field].present? %>
               <tr>
                 <td ><%= field.gsub('_',' ').capitalize %></td>
                 <td ><%= @entry[field] %></td>

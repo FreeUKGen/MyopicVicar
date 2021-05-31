@@ -311,25 +311,6 @@ class Freereg1CsvEntry
 
   # ...........................................................................Instance methods
 
-  def acknowledge
-    file = self.freereg1_csv_file
-    if file.present?
-      transcriber = file.userid_detail
-      if transcriber.nil?
-        userid = file.userid
-        if userid.present?
-          transcriber = UseridDetail.userid(userid).first
-        end
-      end
-      show,transcribed_by = UseridDetail.can_we_acknowledge_the_transcriber(transcriber)
-      credit = file.credit_name
-    else
-      transcribed_by = nil
-      credit = nil
-    end
-    self.update_attributes(:transcribed_by => transcribed_by, :credit => credit)
-  end
-
   def add_additional_location_fields(batch)
     register = batch.register
     church = register.church
@@ -438,13 +419,13 @@ class Freereg1CsvEntry
     file = entry.freereg1_csv_file
     return if file.blank? || file.ucf_list.blank?
 
-    place, _church, _register = file.location_from_file
+    proceed, place, _church, _register = file.location_from_file
     search_record = entry.search_record
-    if search_record.present?
+    if search_record.present? && proceed
       file.ucf_list.delete_if { |record| record.to_s == search_record.id.to_s }
       file.ucf_updated = DateTime.now.to_date
       file.save
-      if place.present? && place.ucf_list.present? && place.ucf_list[file.id.to_s].present?
+      if proceed && place.present? && place.ucf_list.present? && place.ucf_list[file.id.to_s].present?
         place.ucf_list[file.id.to_s].delete_if { |record| record.to_s == search_record.id.to_s }
         place.save
       end
@@ -482,24 +463,15 @@ class Freereg1CsvEntry
     my_string
   end
 
-  def get_location_ids
-    file = self.freereg1_csv_file
+  def location_ids
+    file = freereg1_csv_file
     if file.present?
       extended_def = file.def
-      register = file.register
-      if register.present?
-        church = register.church
-        if church.present?
-          place = church.place
-          if place.present?
-            place_id = place.id
-            church_id = church.id
-            register_id = register.id
-          end
-        end
-      end
+      proceed, place, church, register = file.location_from_file
     end
-    [place_id, church_id, register_id, extended_def]
+    return [false, nil, nil, nil, extended_def] unless proceed
+
+    [true, place._id, church._id, register._id, extended_def]
   end
 
   def lookup_record_type

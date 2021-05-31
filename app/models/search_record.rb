@@ -189,6 +189,7 @@ class SearchRecord
       messagea = 'We are sorry but the record you requested no longer exists; possibly as a result of some data being edited. You will need to redo the search with the original criteria to obtain the updated version.'
       warning = "#{appname.upcase}::SEARCH::ERROR Missing entry for search record"
       warninga = "#{appname.upcase}::SEARCH::ERROR Missing parameter"
+      messaged = 'There is an issue with the linkages for this records. Please contact us using the Website Problem option to report this message'
       if param[:id].blank?
         logger.warn(warninga)
         logger.warn " #{param[:id]} no longer exists"
@@ -219,6 +220,8 @@ class SearchRecord
           logger.warn "File for #{search_record} no longer exists"
           return [false, search_query, search_record, messagea]
         end
+        proceed, _place_id, _church_id, _register_id, = entry.freereg1_csv_file.location_from_file
+        return [false, search_query, search_record, messaged] unless proceed
       end
       [true, search_query, search_record, '']
     end
@@ -999,14 +1002,16 @@ class SearchRecord
   end
 
   def update_location(entry, file)
-    place = file.register.church.place
-    location_names = []
-    place_name = entry[:place]
-    church_name = entry[:church_name]
-    register_type = RegisterType.display_name(entry[:register_type])
-    location_names << "#{place_name} (#{church_name})"
-    location_names << " [#{register_type}]"
-    update(location_names: location_names, freereg1_csv_entry_id: entry.id, place_id: place.id)
+    proceed, place, church, register = file.location_from_file
+    if proceed
+      location_names = []
+      place_name = place.place_name
+      church_name = church.church_name
+      register_type = RegisterType.display_name(register.register_type)
+      location_names << "#{place_name} (#{church_name})"
+      location_names << " [#{register_type}]"
+      update(location_names: location_names, freereg1_csv_entry_id: entry.id, place_id: place.id)
+    end
   end
 
   def upgrade_search_date!(search_version)

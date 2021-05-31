@@ -622,8 +622,8 @@ class Freereg1CsvFile
   end
 
   def clean_up_place_ucf_list
-    place, _church, _register = self.location_from_file
-    if place.present?
+    proceed, place, _church, _register = self.location_from_file
+    if proceed && place.present?
       ucf_list = place.ucf_list
       ucf_list = ucf_list.delete_if {|key, value| key.to_s == self.id.to_s}
       place.update(ucf_list: ucf_list)
@@ -682,9 +682,15 @@ class Freereg1CsvFile
 
   def location_from_file
     my_register = register
+    return [false] unless register.register_valid?
+
     my_church = my_register.church
+    return [false] unless my_church.church_valid?
+
     my_place = my_church.place
-    [my_place, my_church, my_register]
+    return [false] unless my_place.place_valid?
+
+    [true, my_place, my_church, my_register]
   end
 
   def lock(type)
@@ -851,9 +857,11 @@ class Freereg1CsvFile
   end
 
   def remove_from_ucf_list
-    place, _church, _register = location_from_file
-    place.ucf_list.delete_if { |key, value| key.to_s == id.to_s }
-    place.save
+    proceed, place, _church, _register = location_from_file
+    if proceed
+      place.ucf_list.delete_if { |key, value| key.to_s == id.to_s }
+      place.save
+    end
   end
 
   def search_record_ids_with_wildcard_ucf
@@ -894,10 +902,12 @@ class Freereg1CsvFile
     recalculate_last_amended
     update_number_of_files
     save
-    place, church, register = location_from_file
-    register.calculate_register_numbers
-    church.calculate_church_numbers
-    place.calculate_place_numbers
+    procees, place, church, register = location_from_file
+    if proceed
+      register.calculate_register_numbers
+      church.calculate_church_numbers
+      place.calculate_place_numbers
+    end
   end
 
   def update_number_of_files
