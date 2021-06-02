@@ -23,7 +23,7 @@ module Freecen
         end
         next if dwelling.uninhabited_flag.match(Freecen::Uninhabited::UNINHABITED_PATTERN)
 
-        individual_from_entry(entry, dwelling, freecen1_vld_file.id)
+        individual_from_entry(entry, dwelling, freecen1_vld_file.id, piece)
         number_of_individuals += 1
       end
       dwelling.save!
@@ -39,12 +39,10 @@ module Freecen
       end
       dwelling.freecen1_vld_file = entry.freecen1_vld_file
       dwelling.freecen_piece = piece
-      dwelling.place = nil
-      dwelling.place = piece.place unless piece.nil?
       dwelling
     end
 
-    def individual_from_entry(entry, dwelling, file_id)
+    def individual_from_entry(entry, dwelling, file_id, piece)
       individual = FreecenIndividual.new
       (FreecenIndividual.fields.keys & Freecen1VldEntry.fields.keys).each do |key|
         individual[key] = entry.send(key) unless key == "_id"
@@ -52,6 +50,7 @@ module Freecen
       individual.freecen1_vld_entry = entry
       individual.freecen1_vld_file = file_id
       individual.freecen_dwelling = dwelling
+      individual.freecen_piece = piece
       individual.save!
 
       individual

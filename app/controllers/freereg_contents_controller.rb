@@ -200,10 +200,10 @@ class FreeregContentsController < ApplicationController
 
     @images = Register.image_transcriptions_calculation(params[:id])
     @church = @register.church
-    redirect_back(fallback_location: { action: 'new' }, notice: 'The register has no church; you will need to start again') && return if @church.blank?
+    redirect_back(fallback_location: { action: 'new' }, notice: 'This register has lost its church; you will need to start again') && return if @church.blank?
 
     variables_for_register_show
-    redirect_back(fallback_location: { action: 'new' }, notice: 'The register has no church; you will need to start again') && return unless @proceed
+    redirect_back(fallback_location: { action: 'new' }, notice: 'The register linkages are incorrect; you will need to start again') && return unless @proceed
   end
 
   def unique_church_names
@@ -288,6 +288,7 @@ class FreeregContentsController < ApplicationController
   end
 
   def variables_for_register_show
+    @proceed = true
     @register = Register.find_by(_id: params[:id])
     @church = @register.church
     if @church.blank?

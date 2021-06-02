@@ -28,6 +28,7 @@
         <%= change_freecen_file_owner unless @freecen_csv_file.incorporation_lock %>
         <%= edit_freecen_file %>
         <%= reprocess_freecen_file unless @freecen_csv_file.incorporation_lock %>
+        <%= accept_warnings unless @freecen_csv_file.incorporation_lock  || @freecen_csv_file.total_warnings == 0 %>
       <% end%>
       <% if %w[county_coordinator master_county_coordinator country_coordinator system_administrator data_manager validator executive_director project_manager].include?(@user.person_role) %>
         <%= validate_freecen_file unless @freecen_csv_file.incorporation_lock %>

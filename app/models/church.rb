@@ -256,4 +256,14 @@ class Church
       [true, '']
     end
   end
+
+  def church_valid?
+    result = false
+    if _id.present? && Church.find_by(id: _id).present?
+      result = true
+    else
+      logger.warn("#{MyopicVicar::Application.config.freexxx_display_name.upcase}:CHURCH_ERROR: #{_id} not located")
+    end
+    result
+  end
 end

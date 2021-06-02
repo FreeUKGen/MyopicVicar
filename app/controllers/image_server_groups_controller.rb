@@ -311,7 +311,7 @@ class ImageServerGroupsController < ApplicationController
       # the session[:upload_return] is used to stop a refresh of the upload return action
       proceed, message = @image_server_group.process_uploaded_images(params) if params[:files_uploaded].present?
       proceed = true if params[:files_uploaded].blank?
-      if proceed
+      if proceed && @image_server_group.present?
         @uploaded = params[:files_uploaded]
         @not_uploaded = params[:files_exist]
         @source = @image_server_group.source
@@ -328,12 +328,12 @@ class ImageServerGroupsController < ApplicationController
         params[:files_exist] = nil
       else
         flash[:notice] = "We encountered issues with the processing of the upload of images; #{message}"
-        redirect_to(image_server_group_path(@image_server_group)) && return
+        redirect_to new_manage_resource_path && return
       end
     else
       session.delete(:upload_return)
-      flash[:notice] = "You have refreshed the upload return page and that is not permitted"
-      redirect_to(image_server_group_path(@image_server_group)) && return
+      flash[:notice] = 'You have refreshed the upload return page and that is not permitted'
+      redirect_to new_manage_resource_path && return
     end
   end
 

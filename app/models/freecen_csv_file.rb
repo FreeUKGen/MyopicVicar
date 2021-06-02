@@ -426,6 +426,24 @@ class FreecenCsvFile
   end # self
   # ######################################################################### instance methods
 
+  def accept_warnings
+    return [false, 'The file has been incorporated'] if incorporated
+
+    return [false, 'The file has errors'] if total_errors > 0
+    freecen_csv_entries.where(record_valid: 'false').each do |entry|
+      entry.update_attributes(record_valid: 'true', warning_messages: nil)
+      entry.reload
+      p entry
+    end
+    warnings = freecen_csv_entries.where(record_valid: 'false').count
+    p warnings
+    self.total_warnings = warnings
+    save
+    p self
+    [true, '']
+
+  end
+
   def add_country_to_file
     # rspec tested during  csv processing
     chapman = self.chapman_code

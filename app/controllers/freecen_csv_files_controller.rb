@@ -15,6 +15,17 @@ class FreecenCsvFilesController < ApplicationController
   require 'chapman_code'
   require 'freecen_constants'
 
+  def accept_warnings
+    @freecen_csv_file = FreecenCsvFile.find(params[:id])
+    unless FreecenCsvFile.valid_freecen_csv_file?(params[:id])
+      message = 'The file was not correctly linked. Have your coordinator contact the web master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
+    success, message, = @freecen_csv_file.accept_warnings
+    flash[:notice] = success ? 'All warnings were accepted' : flash[:notice] = "The warnings were not accepted because #{message}"
+    redirect_to freecen_csv_file_path(@freecen_csv_file)
+  end
+
   def by_userid
     # entry by userid
     session[:page] = request.original_url

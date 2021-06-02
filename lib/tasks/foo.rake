@@ -5,6 +5,15 @@ namespace :foo do
   #eg f2rake  foo:update_search_records[0,bu,"2016-05-27T19:23:31+00:00", true, 1]
   #number of files of 0 is all, force creation is true or false, order files processed is 1 or -1
 
+
+  task :check_incorporated_records_exists, [:limit] => [:environment] do |t, args|
+    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+    require 'check_incorporated_records_exists'
+    puts 'check incorporated records exist'
+    CheckIncorporatedRecordsExists.process
+    puts "Task complete."
+  end
+
   task :add_freereg1_csv_file_id_to_search_record, [:limit] => [:environment] do |t, args|
     # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
     require 'add_freereg1_csv_file_id_to_search_record'

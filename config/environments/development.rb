@@ -20,7 +20,7 @@ MyopicVicar::Application.configure do
   # since you don't have to restart the webserver when you make code changes.
   config.cache_classes = false
 
-  config.log_level = :debug
+  config.log_level = :info
   # Log error messages when you accidentally call methods on nil.
   config.whiny_nils = true
 
@@ -73,6 +73,7 @@ MyopicVicar::Application.configure do
   config.backup_directory = MyopicVicar::MongoConfig['backup_directory']
   config.github_issues_login = MyopicVicar::MongoConfig['github_issues_login']
   config.github_issues_password = MyopicVicar::MongoConfig['github_issues_password']
+  config.github_issues_access_token = MyopicVicar::MongoConfig['github_issues_access_token']
   config.github_issues_repo = MyopicVicar::MongoConfig['github_issues_repo']
   config.days_to_retain_search_queries = MyopicVicar::MongoConfig['days_to_retain_search_queries']
   config.days_to_retain_messages = MyopicVicar::MongoConfig['days_to_retain_messages']

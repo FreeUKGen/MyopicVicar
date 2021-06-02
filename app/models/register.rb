@@ -336,6 +336,15 @@ class Register
     end
   end
 
+  def register_valid?
+    result = false
+    if _id.present? && Register.find_by(id: _id).present?
+      result = true
+    else
+      logger.warn("#{MyopicVicar::Application.config.freexxx_display_name.upcase}:REGISTER_ERROR: #{_id} not located")
+    end
+    result
+  end
 
   def update_data_present_in_place(file)
     #also refresh the cache if the place is newly active
