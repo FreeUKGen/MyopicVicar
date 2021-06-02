@@ -71,6 +71,32 @@ module SearchQueriesHelper
   #end
 
   def format_location(search_record)
+    case MyopicVicar::Application.config.template_set
+    when 'freereg'
+      location = format_freereg_location(search_record)
+    when 'freecen'
+      location = format_free_location(search_record)
+    when 'freebmd'
+      location = format_free_location(search_record)
+    end
+    location
+  end
+
+  def format_freereg_location(search_record)
+    result = false
+    entry = search_record.freereg1_csv_entry
+    file = entry.freereg1_csv_file if entry.present?
+    result, place, church, register = file.location_from_file if entry.present?
+    if result
+      location = "#{place.place_name} : #{church.church_name} : #{RegisterType.display_name(register.register_type)}"
+    else
+      location =  'Unknown location'
+      logger.warn "#{appname_upcase}::SEARCH::RECORD ID is  #{search_record.id}"
+    end
+    location
+  end
+
+  def format_free_location(search_record)
     if search_record[:location_name].present?
       search_record[:location_name]
     elsif search_record[:location_names].present?

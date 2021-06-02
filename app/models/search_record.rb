@@ -594,6 +594,32 @@ class SearchRecord
   def emend_all
     self.search_names = Emendor.emend(self.search_names)
   end
+
+  def extract_location_parts
+    place = ''
+    name_parts = location_names[0].split(') ')
+    case
+    when name_parts.length == 1
+      (place, church) = location_names[0].split(' (')
+    when name_parts.length == 2
+      place = name_parts[0] + ")"
+      name_parts[1][0] = ""
+      church = name_parts[1]
+    end
+    if church.present?
+      church = church[0..-2]
+    else
+      church = ''
+    end
+    if location_names[1]
+      reg = location_names[1].gsub('[', '').gsub(']', '').strip
+      register_type = RegisterType::APPROVED_OPTIONS[reg]
+    else
+      register_type = ''
+    end
+    [place, church, register_type]
+  end
+
   def format_location
     location_array = []
     if freereg1_csv_entry
