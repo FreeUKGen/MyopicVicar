@@ -64,6 +64,19 @@ class Church
       return word
     end
 
+    def church_valid?(church)
+      if church.blank?
+        logger.warn("#{MyopicVicar::Application.config.freexxx_display_name.upcase}:CHURCH_ERROR: file had no church")
+        result = false
+      elsif Church.find_by(id: church.id).present?
+        result = true
+      else
+        result = false
+        logger.warn("#{MyopicVicar::Application.config.freexxx_display_name.upcase}:CHURCH_ERROR: #{church.id} not located")
+      end
+      result
+    end
+
     def valid_church?(church)
       result = false
       return result if church.blank?
@@ -255,15 +268,5 @@ class Church
       PlaceCache.refresh_cache(new_place) unless new_place.blank?
       [true, '']
     end
-  end
-
-  def church_valid?
-    result = false
-    if _id.present? && Church.find_by(id: _id).present?
-      result = true
-    else
-      logger.warn("#{MyopicVicar::Application.config.freexxx_display_name.upcase}:CHURCH_ERROR: #{_id} not located")
-    end
-    result
   end
 end

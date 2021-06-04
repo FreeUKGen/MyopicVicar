@@ -169,6 +169,20 @@ class Place
       result
     end
 
+    def place_valid?(place)
+      if place.blank?
+        logger.warn("#{MyopicVicar::Application.config.freexxx_display_name.upcase}:PLACE_ERROR: file had no place")
+        result = false
+      elsif Place.find_by(id: place.id).present?
+        result = true
+      else
+        result = false
+        logger.warn("#{MyopicVicar::Application.config.freexxx_display_name.upcase}:PLACE_ERROR: #{place.id} not located")
+      end
+      result
+    end
+
+
     def valid_place?(place)
       result = false
       return result if place.blank?
@@ -455,16 +469,6 @@ class Place
     end
     PlaceCache.refresh_cache(self)
     return [true, ""]
-  end
-
-  def place_valid?
-    result = false
-    if _id.present? && Place.find_by(id: _id).present?
-      result = true
-    else
-      logger.warn("#{MyopicVicar::Application.config.freexxx_display_name.upcase}:PLACE_ERROR: #{_id} not located")
-    end
-    result
   end
 
   def places_near(radius_factor, system)

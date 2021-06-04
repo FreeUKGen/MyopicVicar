@@ -162,6 +162,19 @@ class Register
       return images
     end
 
+    def register_valid?(register)
+      if register.blank?
+        logger.warn("#{MyopicVicar::Application.config.freexxx_display_name.upcase}:REGISTER_ERROR: file had no register")
+        result = false
+      elsif Register.find_by(id: register.id).present?
+        result = true
+      else
+        result = false
+        logger.warn("#{MyopicVicar::Application.config.freexxx_display_name.upcase}:REGISTER_ERROR: #{register.id} not located")
+      end
+      result
+    end
+
     def update_or_create_register(freereg1_csv_file)
       # find if register exists
       register = find_register(freereg1_csv_file.to_register)
@@ -334,16 +347,6 @@ class Register
       result = Freereg1CsvEntry.collection.find({freereg1_csv_file_id: file.id}).hint("freereg1_csv_file_id_1").update_many({"$set" => {:register_type => self.register_type}})
       file.update_attribute(:register_type,self.register_type)
     end
-  end
-
-  def register_valid?
-    result = false
-    if _id.present? && Register.find_by(id: _id).present?
-      result = true
-    else
-      logger.warn("#{MyopicVicar::Application.config.freexxx_display_name.upcase}:REGISTER_ERROR: #{_id} not located")
-    end
-    result
   end
 
   def update_data_present_in_place(file)

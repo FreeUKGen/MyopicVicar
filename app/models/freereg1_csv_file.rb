@@ -682,29 +682,13 @@ class Freereg1CsvFile
 
   def location_from_file
     my_register = register
-    if my_register.blank?
-      logger.warn("#{MyopicVicar::Application.config.freexxx_display_name.upcase}:REGISTER_ERROR: #{_id} file had no register")
-      return [false]
-
-    end
-    return [false] unless register.register_valid?
+    return [false] unless Register.register_valid?(my_register)
 
     my_church = my_register.church
-    if my_church.blank?
-      logger.warn("#{MyopicVicar::Application.config.freexxx_display_name.upcase}:CHURCH_ERROR: #{_id} file had no church")
-      return [false]
-
-    end
-
-    return [false] unless my_church.church_valid?
+    return [false] unless Church.church_valid?(my_church)
 
     my_place = my_church.place
-    if my_place.blank?
-      logger.warn("#{MyopicVicar::Application.config.freexxx_display_name.upcase}:PLACE_ERROR: #{_id} file had no place")
-      return [false]
-
-    end
-    return [false] unless my_place.place_valid?
+    return [false] unless Place.place_valid?(my_place)
 
     [true, my_place, my_church, my_register]
   end
