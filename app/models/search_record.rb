@@ -99,23 +99,26 @@ class SearchRecord
     'birth_chapman_code_soundex_last_name_date' => ['birth_chapman_code', 'search_soundex.last_name', 'record_type', 'search_date']
   }
 
-
-  REG_INDEXES = {
+  REG_CHAPMAN_INDEXES = {
     'county_ln_rt_sd_ssd' => ['chapman_code', 'search_names.last_name', 'record_type', 'search_date', 'secondary_search_date'],
     'county_fn_ln_rt_sd_ssd' => ['chapman_code', 'search_names.first_name', 'search_names.last_name', 'record_type', 'search_date', 'secondary_search_date'],
     'county_lnsdx_rt_sd_ssd' => ['chapman_code', 'search_soundex.last_name', 'record_type', 'search_date', 'secondary_search_date'],
-    'county_fnsdx_lnsdx_rt_sd_ssd' => ['chapman_code','search_soundex.first_name', 'search_soundex.last_name', 'record_type', 'search_date', 'secondary_search_date'],
-    'ln_fn_rt_sd_ssd' => ['search_names.last_name', 'search_names.first_name', 'record_type', 'search_date', 'secondary_search_date'],
-    'lnsdx_fnsdx_rt_sd_ssd' => ['search_soundex.last_name', 'search_soundex.first_name', 'record_type', 'search_date', 'secondary_search_date'],
-    'ln_rt_sd_ssd' => ['search_names.last_name', 'record_type', 'search_date', 'secondary_search_date'],
-    'lnsdx_rt_sd_ssd' => ['search_soundex.last_name', 'record_type', 'search_date', 'secondary_search_date'],
+    'county_fnsdx_lnsdx_rt_sd_ssd' => ['chapman_code','search_soundex.first_name', 'search_soundex.last_name', 'record_type', 'search_date', 'secondary_search_date']
+  }.freeze
+  REG_PLACE_INDEXES = {
     'place_fn_rt_sd_ssd' => ['place_id', 'search_names.first_name', 'record_type', 'search_date', 'secondary_search_date'],
     'place_ln_rt_sd_ssd' => ['place_id', 'search_names.last_name', 'record_type', 'search_date', 'secondary_search_date'],
     'place_ln_fn_rt_sd_ssd' => ['place_id', 'search_names.last_name', 'search_names.first_name', 'record_type', 'search_date', 'secondary_search_date'],
     'place_fnsdx_rt_sd_ssd' => ['place_id', 'search_soundex.first_name', 'record_type', 'search_date', 'secondary_search_date'],
     'place_lnsdx_fnsdx_rt_sd_ssd' => ['place_id', 'search_soundex.last_name', 'search_soundex.first_name', 'record_type', 'search_date', 'secondary_search_date'],
     'place_lnsdx_rt_sd_ssd' => ['place_id', 'search_soundex.last_name', 'record_type', 'search_date', 'secondary_search_date']
-  }
+  }.freeze
+  REG_BASIC_INDEXES = {
+    'ln_fn_rt_sd_ssd' => ['search_names.last_name', 'search_names.first_name', 'record_type', 'search_date', 'secondary_search_date'],
+    'lnsdx_fnsdx_rt_sd_ssd' => ['search_soundex.last_name', 'search_soundex.first_name', 'record_type', 'search_date', 'secondary_search_date'],
+    'ln_rt_sd_ssd' => ['search_names.last_name', 'record_type', 'search_date', 'secondary_search_date'],
+    'lnsdx_rt_sd_ssd' => ['search_soundex.last_name', 'record_type', 'search_date', 'secondary_search_date'],
+  }.freeze
 
 
   BMD_INDEXES = {
@@ -189,6 +192,7 @@ class SearchRecord
       messagea = 'We are sorry but the record you requested no longer exists; possibly as a result of some data being edited. You will need to redo the search with the original criteria to obtain the updated version.'
       warning = "#{appname.upcase}::SEARCH::ERROR Missing entry for search record"
       warninga = "#{appname.upcase}::SEARCH::ERROR Missing parameter"
+      messaged = 'There is an issue with the linkages for this records. Please contact us using the Website Problem option to report this message'
       if param[:id].blank?
         logger.warn(warninga)
         logger.warn " #{param[:id]} no longer exists"
@@ -219,6 +223,8 @@ class SearchRecord
           logger.warn "File for #{search_record} no longer exists"
           return [false, search_query, search_record, messagea]
         end
+        proceed, _place_id, _church_id, _register_id, = entry.freereg1_csv_file.location_from_file
+        return [false, search_query, search_record, messaged] unless proceed
       end
       [true, search_query, search_record, '']
     end
@@ -365,7 +371,6 @@ class SearchRecord
     def index_hint(search_params)
       #raise search_params.inspect
       search_fields = fields_from_params(search_params)
-
       case MyopicVicar::Application.config.template_set
       when 'freebmd'
         candidates = BMD_INDEXES.keys
@@ -374,8 +379,16 @@ class SearchRecord
         candidates = CEN_INDEXES.keys
         index_component = CEN_INDEXES
       when 'freereg'
-        candidates = REG_INDEXES.keys
-        index_component = REG_INDEXES
+        if search_fields.include?('place_id')
+          candidates = REG_PLACE_INDEXES.keys
+          index_component = REG_PLACE_INDEXES
+        elsif search_fields.include?('chapman_code')
+          candidates = REG_CHAPMAN_INDEXES.keys
+          index_component = REG_CHAPMAN_INDEXES
+        else
+          candidates = REG_BASIC_INDEXES.keys
+          index_component = REG_BASIC_INDEXES
+        end
       end
       scores = {}
       candidates.each { |name| scores[name] = index_score(name, search_fields, index_component) }
@@ -591,6 +604,32 @@ class SearchRecord
   def emend_all
     self.search_names = Emendor.emend(self.search_names)
   end
+
+  def extract_location_parts
+    place = ''
+    name_parts = location_names[0].split(') ')
+    case
+    when name_parts.length == 1
+      (place, church) = location_names[0].split(' (')
+    when name_parts.length == 2
+      place = name_parts[0] + ")"
+      name_parts[1][0] = ""
+      church = name_parts[1]
+    end
+    if church.present?
+      church = church[0..-2]
+    else
+      church = ''
+    end
+    if location_names[1]
+      reg = location_names[1].gsub('[', '').gsub(']', '').strip
+      register_type = RegisterType::APPROVED_OPTIONS[reg]
+    else
+      register_type = ''
+    end
+    [place, church, register_type]
+  end
+
   def format_location
     location_array = []
     if freereg1_csv_entry
@@ -999,14 +1038,16 @@ class SearchRecord
   end
 
   def update_location(entry, file)
-    place = file.register.church.place
-    location_names = []
-    place_name = entry[:place]
-    church_name = entry[:church_name]
-    register_type = RegisterType.display_name(entry[:register_type])
-    location_names << "#{place_name} (#{church_name})"
-    location_names << " [#{register_type}]"
-    update(location_names: location_names, freereg1_csv_entry_id: entry.id, place_id: place.id)
+    proceed, place, church, register = file.location_from_file
+    if proceed
+      location_names = []
+      place_name = place.place_name
+      church_name = church.church_name
+      register_type = RegisterType.display_name(register.register_type)
+      location_names << "#{place_name} (#{church_name})"
+      location_names << " [#{register_type}]"
+      update(location_names: location_names, freereg1_csv_entry_id: entry.id, place_id: place.id)
+    end
   end
 
   def upgrade_search_date!(search_version)

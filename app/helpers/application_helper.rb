@@ -124,12 +124,12 @@ module ApplicationHelper
     credit
   end
 
-  def transcriber(entry)
-    transciber = nil
+  def transcriber_entry(entry)
+    transcriber = nil
     file = entry.freereg1_csv_file
-    transciber = file.userid_detail if file.userid_detail.present?
-    answer, transciber = UseridDetail.can_we_acknowledge_the_transcriber(transciber) if transciber.present?
-    transciber
+    transcriber = file.userid_detail if file.userid_detail.present?
+    answer, transcriber = UseridDetail.can_we_acknowledge_the_transcriber(transcriber) if transcriber.present?
+    transcriber
   end
 
   def google_analytics_tracking
