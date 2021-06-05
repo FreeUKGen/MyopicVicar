@@ -43,22 +43,22 @@ module CheckFreereg1CsvFile
         reason = "Register, #{register.register_type},#{file.register_type}," if reason.blank?
         file.register_type = register.register_type if fix && file.register_type != 'Unspecified'
       end
-      entry = file.freereg1_csv_entries.first
-      search_record = entry.search_record
-      search_place, search_church, search_register = search_record.extract_location_parts
+      #entry = file.freereg1_csv_entries.first
+      #search_record = entry.search_record
+      #search_place, search_church, search_register = search_record.extract_location_parts
 
-      if place.place_name != search_place
-        reason += "Search Place, #{place.place_name}, #{search_place}," if reason.present?
-        reason = "Search Place, #{place.place_name}, #{search_place}," if reason.blank?
-      end
-      if church.church_name != search_church
-        reason += "Search Church, #{church.church_name},#{search_church}," if reason.present?
-        reason = "Search Church, #{church.church_name},#{search_church}," if reason.blank?
-      end
-      if register.register_type != search_register
-        reason += " Search Register, #{register.register_type},#{search_register}," if reason.present?
-        reason = "Search Register, #{register.register_type},#{search_register}," if reason.blank?
-      end
+      #if place.place_name != search_place
+      #reason += "Search Place, #{place.place_name}, #{search_place}," if reason.present?
+      #reason = "Search Place, #{place.place_name}, #{search_place}," if reason.blank?
+      #end
+      #if church.church_name != search_church
+      #reason += "Search Church, #{church.church_name},#{search_church}," if reason.present?
+      #reason = "Search Church, #{church.church_name},#{search_church}," if reason.blank?
+      #end
+      #if register.register_type != search_register
+      #reason += " Search Register, #{register.register_type},#{search_register}," if reason.present?
+      #reason = "Search Register, #{register.register_type},#{search_register}," if reason.blank?
+      #end
       check = true if reason.blank?
       file.save if fix && !check
       reason = ''  if reason.blank?
