@@ -902,7 +902,7 @@ class Freereg1CsvFile
     recalculate_last_amended
     update_number_of_files
     save
-    procees, place, church, register = location_from_file
+    proceed, place, church, register = location_from_file
     if proceed
       register.calculate_register_numbers
       church.calculate_church_numbers
