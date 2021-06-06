@@ -86,8 +86,8 @@ module SearchQueriesHelper
     result = false
     entry = search_record.freereg1_csv_entry
     file = entry.freereg1_csv_file if entry.present?
-    result, place, church, register = file.location_from_file if entry.present?
-    if result
+    result, place, church, register = file.location_from_file if file.present?
+    if file.present? && result
       location = "#{place.place_name} : #{church.church_name} : #{RegisterType.display_name(register.register_type)}"
     else
       location =  'Unknown location'
