@@ -37,7 +37,7 @@
                     <dt class="ttip">
                       <%= "#{search_record[:GivenName]} #{search_record[:Surname]}" %>
                     </dt>
-                    <span class="ttip__text"><% "#{search_record[:Volume]} #{search_record[:Page]}"%></span>
+                    <span class="ttip__text"><%="#{search_record[:Volume]} #{search_record[:Page]}"%></span>
                   </strong>
                   <dt>
                     <%= "#{QuarterDetails.quarters.key((search_record[:QuarterNumber]-1)%4 + 1).upcase} #{(search_record[:QuarterNumber]-1)/4 + 1837}"%>
