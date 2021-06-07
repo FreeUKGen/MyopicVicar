@@ -12,7 +12,7 @@
           <% record_type = RecordType::display_name(@record.RecordTypeID)%>
           <p class="epsilon push-half--top flush--bottom"><strong><%= "Entry Information: #{@record[:GivenName].upcase} #{@record[:Surname].upcase}" %></strong></p>
       <hr>
-          <%= render partial: 'entry_information_table', locals: {record: @record, entry_type: record_type.downcase, search: false, type: "marriages", search_id: @search_id} %>
+          <%= render partial: 'entry_information_table', locals: {record: @record, entry_type: record_type.downcase, search: false, type: "marriages", search_id: @search_id, original_record: @record} %>
         </div>
       </section>
       <section>
@@ -21,7 +21,7 @@
           <% record_type = RecordType::display_name(@spouse_record.RecordTypeID)%>
           <p class="epsilon push-half--top flush--bottom"><strong><%= "Spouse Information: #{@spouse_record[:GivenName].upcase} #{@spouse_record[:Surname].upcase}" %></strong></p>
         <hr>
-            <%= render partial: 'entry_information_table', locals: {record: @spouse_record, entry_type: record_type.downcase, search: false, type: "marriages", search_id: @search_id } %>
+            <%= render partial: 'entry_information_table', locals: {record: @spouse_record, entry_type: record_type.downcase, search: false, type: "marriages", search_id: @search_id,original_record: @record } %>
         <% else %>
           <p>We do not have information on spouse yet.</p>
         <% end %>
