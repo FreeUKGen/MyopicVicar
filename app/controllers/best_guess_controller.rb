@@ -3,6 +3,7 @@ class BestGuessController < ApplicationController
   skip_before_action :require_login
 
   def show
+    raise params.inspect
     redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
     @page_number = params[:page_number].to_i
     @option = params[:filter_option] if params[:filter_option].present?
