@@ -588,8 +588,6 @@ class SearchQuery
       name_params['last_name'] = wildcard_to_regex(last_name.downcase) if last_name
       params['search_names'] =  { '$elemMatch' => name_params}
     else
-      params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes && chapman_codes.size > 0
-      params[:birth_chapman_code] = { '$in' => birth_chapman_codes } if birth_chapman_codes && birth_chapman_codes.size > 0
       if fuzzy
         name_params['first_name'] = Text::Soundex.soundex(first_name) if first_name
         name_params['last_name'] = Text::Soundex.soundex(last_name) if last_name.present?
@@ -783,7 +781,6 @@ class SearchQuery
   def search
     @search_parameters = search_params
     @search_index = SearchRecord.index_hint(@search_parameters)
-    # @search_index = 'place_rt_sd_ssd' if query_contains_wildcard?
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
     logger.warn("#{App.name_upcase}:SEARCH_PARAMETERS: #{@search_parameters}")
     update_attribute(:search_index, @search_index)
