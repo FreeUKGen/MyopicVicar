@@ -554,9 +554,9 @@ class SearchQuery
   end
 
   def locate(record_id)
-    records = self.search_result.records.values
-    position = locate_index(records,record_id)
-    position.present? ? record = records[position] : record = nil
+    records = search_result.records.values
+    position = locate_index(records, record_id)
+    record = position.present? ? records[position] : nil
     record
   end
 
@@ -564,38 +564,33 @@ class SearchQuery
     n = 0
     records.each do |record|
       break if record[:_id].to_s == current
-      n = n + 1
+
+      n += 1
     end
-    return n
+    n
   end
 
   def name_not_blank
-    if last_name.blank? && !adequate_first_name_criteria?
-      errors.add(:first_name, 'A forename, county and place must be part of your search if you have not entered a surname.')
-    end
+    message = 'A forename, county and place must be part of your search if you have not entered a surname.'
+    errors.add(:first_name, message) if last_name.blank? && !adequate_first_name_criteria?
   end
 
   def name_search_params
-    params = Hash.new
-    name_params = Hash.new
-    #type_array = [SearchRecord::PersonType::PRIMARY]
-    #type_array << SearchRecord::PersonType::FAMILY if inclusive
-    #type_array << SearchRecord::PersonType::WITNESS if witness
-    #search_type = type_array.size > 1 ? { '$in' => type_array } : SearchRecord::PersonType::PRIMARY
-    #name_params['type'] = search_type
+    params = {}
+    name_params = {}
     if query_contains_wildcard?
       name_params['first_name'] = wildcard_to_regex(first_name.downcase) if first_name
       name_params['last_name'] = wildcard_to_regex(last_name.downcase) if last_name
-      params['search_names'] = { '$elemMatch' => name_params}
+      params['search_names'] = { '$elemMatch' => name_params }
     else
       if fuzzy
         name_params['first_name'] = Text::Soundex.soundex(first_name) if first_name
         name_params['last_name'] = Text::Soundex.soundex(last_name) if last_name.present?
-        params['search_soundex'] =  { '$elemMatch' => name_params}
+        params['search_soundex'] = { '$elemMatch' => name_params }
       else
         name_params['first_name'] = first_name.downcase if first_name
         name_params['last_name'] = last_name.downcase if last_name.present?
-        params['search_names'] =  { '$elemMatch' => name_params}
+        params['search_names'] = { '$elemMatch' => name_params }
       end
     end
     params
@@ -629,6 +624,7 @@ class SearchQuery
 
   def persist_additional_results(results)
     return unless results
+
     # finally extract the records IDs and persist them
     records = {}
     results.each do |rec|
@@ -667,8 +663,8 @@ class SearchQuery
 
   def place_search_params
     params = {}
+    appname = App.name_downcase
     if place_search?
-      appname = MyopicVicar::Application.config.freexxx_display_name.downcase
       search_place_ids = radius_place_ids
       case appname
       when 'freecen'

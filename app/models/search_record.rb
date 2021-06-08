@@ -103,7 +103,7 @@ class SearchRecord
     'county_ln_rt_sd_ssd' => ['chapman_code', 'search_names.last_name', 'record_type', 'search_date', 'secondary_search_date'],
     'county_fn_ln_rt_sd_ssd' => ['chapman_code', 'search_names.first_name', 'search_names.last_name', 'record_type', 'search_date', 'secondary_search_date'],
     'county_lnsdx_rt_sd_ssd' => ['chapman_code', 'search_soundex.last_name', 'record_type', 'search_date', 'secondary_search_date'],
-    'county_fnsdx_lnsdx_rt_sd_ssd' => ['chapman_code','search_soundex.first_name', 'search_soundex.last_name', 'record_type', 'search_date', 'secondary_search_date']
+    'county_fnsdx_lnsdx_rt_sd_ssd' => ['chapman_code', 'search_soundex.first_name', 'search_soundex.last_name', 'record_type', 'search_date', 'secondary_search_date']
   }.freeze
   REG_PLACE_INDEXES = {
     'place_fn_rt_sd_ssd' => ['place_id', 'search_names.first_name', 'record_type', 'search_date', 'secondary_search_date'],
@@ -117,7 +117,7 @@ class SearchRecord
     'ln_fn_rt_sd_ssd' => ['search_names.last_name', 'search_names.first_name', 'record_type', 'search_date', 'secondary_search_date'],
     'lnsdx_fnsdx_rt_sd_ssd' => ['search_soundex.last_name', 'search_soundex.first_name', 'record_type', 'search_date', 'secondary_search_date'],
     'ln_rt_sd_ssd' => ['search_names.last_name', 'record_type', 'search_date', 'secondary_search_date'],
-    'lnsdx_rt_sd_ssd' => ['search_soundex.last_name', 'record_type', 'search_date', 'secondary_search_date'],
+    'lnsdx_rt_sd_ssd' => ['search_soundex.last_name', 'record_type', 'search_date', 'secondary_search_date']
   }.freeze
 
 
@@ -369,9 +369,8 @@ class SearchRecord
     end
 
     def index_hint(search_params)
-      #raise search_params.inspect
       search_fields = fields_from_params(search_params)
-      case MyopicVicar::Application.config.template_set
+      case App.name_downcase
       when 'freebmd'
         candidates = BMD_INDEXES.keys
         index_component = BMD_INDEXES
@@ -397,10 +396,7 @@ class SearchRecord
     end
 
     def index_score(index_name, search_fields, index_component)
-      # raise (NEW_INDEXES[ln_county_rt_sd_ssd]).inspect
-
       fields = index_component[index_name]
-      # raise fields.inspect
       best_score = -1
       fields.each do |field|
         if search_fields.any? { |param| param == field }
@@ -410,7 +406,7 @@ class SearchRecord
           # bail since search field hasn't been found
         end
       end
-      return best_score
+      best_score
     end
 
     def indexable_value?(param)
