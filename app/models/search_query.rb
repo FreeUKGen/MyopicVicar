@@ -340,7 +340,7 @@ class SearchQuery
   end
 
   def extract_stub(my_name)
-    return if my_name.blank? || !my_name.match(WILDCARD)
+    return if my_name.blank?
 
     name_parts = my_name.split(WILDCARD)
     name_parts[0].downcase
@@ -586,7 +586,7 @@ class SearchQuery
     if query_contains_wildcard?
       name_params['first_name'] = wildcard_to_regex(first_name.downcase) if first_name
       name_params['last_name'] = wildcard_to_regex(last_name.downcase) if last_name
-      params['search_names'] =  { '$elemMatch' => name_params}
+      params['search_names'] = { '$elemMatch' => name_params}
     else
       if fuzzy
         name_params['first_name'] = Text::Soundex.soundex(first_name) if first_name
@@ -717,7 +717,7 @@ class SearchQuery
   def query_contains_wildcard?
     (first_name && first_name.match(WILDCARD)) || (last_name && last_name.match(WILDCARD))? wildcard_search = true : wildcard_search = false
     self.wildcard_search = wildcard_search
-    return wildcard_search
+    wildcard_search
   end
 
   def radius_is_valid
@@ -784,8 +784,6 @@ class SearchQuery
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
     logger.warn("#{App.name_upcase}:SEARCH_PARAMETERS: #{@search_parameters}")
     update_attribute(:search_index, @search_index)
-
-    #logger.warn @search_parameters.inspect
     records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     persist_results(records)
     persist_additional_results(secondary_date_results) if App.name == 'FreeREG' && (result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
