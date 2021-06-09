@@ -1641,7 +1641,6 @@ class SearchQuery
   def marriage_surname_filteration(records)
     records_with_spouse_surname = spouse_surname_records(records)
     records_without_spouse_surname = non_spouse_surname_records(records)
-    raise records_without_spouse_surname.inspect
     spouse_surname_search(records_with_spouse_surname).to_a + search_pre_spouse_surname(records_without_spouse_surname).to_a if self.spouses_mother_surname.present?
   end
 
@@ -1690,6 +1689,7 @@ class SearchQuery
 
   def search_pre_spouse_surname records
     records = records.joins(spouse_join_condition).where(Surname: self.spouses_mother_surname)
+    raise records.inspect
    # records.joins(spouse_join_condition).select {|r|
     #  r[:Surname].downcase == self.spouses_mother_surname.downcase
     #}
