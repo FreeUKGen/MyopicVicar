@@ -1689,8 +1689,7 @@ class SearchQuery
 
   def search_pre_spouse_surname records
     records = records.joins(spouse_join_condition).where(Surname: self.spouses_mother_surname)
-    raise records.joins('inner join BestGuessMarriages as b on b.Volume=BestGuess.Volume and b.Page=BestGuess.Page and b.QuarterNumber=BestGuess.QuarterNumber and b.RecordNumber!= BestGuess.RecordNumber'
-).inspect
+    raise records.joins('inner join BestGuessMarriages as b on b.Volume=BestGuess.Volume and b.Page=BestGuess.Page and b.QuarterNumber=BestGuess.QuarterNumber and b.RecordNumber!= BestGuess.RecordNumber').inspect
    # records.joins(spouse_join_condition).select {|r|
     #  r[:Surname].downcase == self.spouses_mother_surname.downcase
     #}
