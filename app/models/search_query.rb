@@ -1688,7 +1688,7 @@ class SearchQuery
   end
 
   def search_pre_spouse_surname records
-    raise records.joins(spouse_join_condition).inspect
+    raise records.joins(spouse_join_condition).count.inspect
     records = records.joins(spouse_join_condition).where(Surname: self.spouses_mother_surname)
 
    # records.joins(spouse_join_condition).select {|r|
