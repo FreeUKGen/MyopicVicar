@@ -1287,13 +1287,13 @@ class SearchQuery
 
   def surname_wildcard_query
     if self.last_name.present?
-      "BestGuess.Surname like '#{name_wildcard_search(self.last_name)}%'" if do_wildcard_seach?(self.last_name)
+      "BestGuess.Surname like '#{name_wildcard_search(self.last_name)}'" if do_wildcard_seach?(self.last_name)
     end
   end
 
   def mother_surname_wildcard_query
     if self.mother_last_name.present?
-      "BestGuess.AssociateName like '#{name_wildcard_search(self.mother_last_name)}%'" if do_wildcard_seach?self.mother_last_name
+      "BestGuess.AssociateName like '#{name_wildcard_search(self.mother_last_name)}'" if do_wildcard_seach?self.mother_last_name
     end
   end
 
@@ -1683,18 +1683,18 @@ class SearchQuery
     #records.select{|r|
     #  r[:AssociateName].downcase == self.spouses_mother_surname.downcase if r[:AssociateName].present?
     #}
-    records = records.where("BestGuess.AssociateName like '#{name_wildcard_search(self.spouses_mother_surname)}%'") if do_wildcard_seach?self.spouses_mother_surname
+    records = records.where("BestGuess.AssociateName like '#{name_wildcard_search(self.spouses_mother_surname)}'") if do_wildcard_seach?self.spouses_mother_surname
     records
   end
 
   def search_pre_spouse_surname records
-    raise records.joins(spouse_join_condition).where('b.Surname' => self.spouses_mother_surname).inspect
-    records = records.joins(spouse_join_condition).where(Surname: self.spouses_mother_surname)
+    pre_spouse_surname_join = records.joins(spouse_join_condition)
+    records = pre_spouse_surname_join.where('b.Surname' => self.spouses_mother_surname)
 
    # records.joins(spouse_join_condition).select {|r|
     #  r[:Surname].downcase == self.spouses_mother_surname.downcase
     #}
-    records = records.where("BestGuess.Surname like '#{name_wildcard_search(self.spouses_mother_surname)}%'") if do_wildcard_seach?self.spouses_mother_surname
+    records = pre_spouse_surname_join.where("b.Surname like '#{name_wildcard_search(self.spouses_mother_surname)}'") if do_wildcard_seach?self.spouses_mother_surname
     records
   end
 
