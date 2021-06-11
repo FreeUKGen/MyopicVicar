@@ -594,7 +594,8 @@ module ApplicationHelper
       pinterest: '<i class="fa fa-pinterest-square fa-2x"></i>',
       instagram: '<i class="fa fa-instagram fa-2x"></i>',
       left_arrow_pink: '<i class="fa fa-arrow-left"></i>',
-      search: '<i class="fa fa-search"></i>'
+      search: '<i class="fa fa-search"></i>',
+      reset: '<i class="fa fa-times></i>'
     }
   end
 
