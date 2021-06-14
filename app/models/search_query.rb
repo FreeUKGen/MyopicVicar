@@ -198,7 +198,34 @@ class SearchQuery
       rec['search_date'] = search_record.search_dates[0]
       rec
     end
+
+    def does_the_entry_exist?(search_record)
+      case App.name.downcase
+      when 'freereg'
+        entry = search_record[:freereg1_csv_entry_id]
+        if entry.present?
+          actual_entry = Freereg1CsvEntry.find_by(_id: entry)
+          proceed = actual_entry.present? ? true : false
+        else
+          proceed = false
+        end
+      when 'freecen'
+        entry = search_record[:freecsv_csv_entry_id]
+        if entry.present?
+          actual_entry = FreecenCsvEntry.find_by(_id: entry)
+          proceed = actual_entry.present? ? true : false
+        else
+          proceed = false
+        end
+      else
+        proceed = true
+
+      end
+      proceed
+    end
   end
+
+
 
   ############################################################################# instance methods #####################################################
 
@@ -629,7 +656,14 @@ class SearchQuery
     records = {}
     results.each do |rec|
       rec_id = rec['_id'].to_s
-      #records[rec_id] = SearchQuery.add_birth_place_when_absent(rec)
+      proceed = SearchQuery.does_the_entry_exist?(rec)
+      if proceed
+        record = rec
+        records[rec_id] = record
+      else
+        search_record = SearchRecord.find_by(_id: rec['_id'].to_s)
+        search_record.destroy if search_record.present?
+      end
     end
     self.search_result.records = self.search_result.records.merge(records)
     self.result_count = self.search_result.records.length
@@ -644,10 +678,16 @@ class SearchQuery
     records = {}
     results.each do |rec|
       record = rec # should be a SearchRecord despite Mongoid bug
-      rec_id = record['_id'].to_s
-      record = SearchQuery.add_birth_place_when_absent(record) if record[:birth_place].blank? && App.name.downcase == 'freecen'
-      record = SearchQuery.add_search_date_when_absent(record) if record[:search_date].blank?
-      records[rec_id] = record
+      proceed = SearchQuery.does_the_entry_exist?(rec)
+      if proceed
+        rec_id = record['_id'].to_s
+        record = SearchQuery.add_birth_place_when_absent(record) if record[:birth_place].blank? && App.name.downcase == 'freecen'
+        record = SearchQuery.add_search_date_when_absent(record) if record[:search_date].blank?
+        records[rec_id] = record
+      else
+        search_record = SearchRecord.find_by(_id: rec['_id'].to_s)
+        search_record.destroy if search_record.present?
+      end
     end
     self.search_result = SearchResult.new
     self.search_result.records = records
