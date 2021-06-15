@@ -309,6 +309,8 @@ class Freereg1CsvEntry
     end
   end
 
+
+
   # ...........................................................................Instance methods
 
   def add_additional_location_fields(batch)
@@ -604,6 +606,23 @@ class Freereg1CsvEntry
 
   def hex_to_base64_digest(hexdigest)
     [[hexdigest].pack("H*")].pack("m").strip
+  end
+
+  def location_from_entry
+    file = freereg1_csv_file_id
+    return [false] unless Freereg1CsvFile.freereg1_csv_file_valid?(file)
+
+    my_file = Freereg1CsvFile.find_by(_id: file)
+    my_register = my_file.register
+    return [false] unless Register.register_valid?(my_register)
+
+    my_church = my_register.church
+    return [false] unless Church.church_valid?(my_church)
+
+    my_place = my_church.place
+    return [false] unless Place.place_valid?(my_place)
+
+    [true, my_place, my_church, my_register]
   end
 
   def multiple_witness_names?

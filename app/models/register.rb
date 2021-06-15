@@ -164,13 +164,13 @@ class Register
 
     def register_valid?(register)
       if register.blank?
-        logger.warn("#{MyopicVicar::Application.config.freexxx_display_name.upcase}:REGISTER_ERROR: file had no register")
+        logger.warn("#{App.name.upcase}:REGISTER_ERROR: file had no register")
         result = false
       elsif Register.find_by(id: register.id).present?
         result = true
       else
         result = false
-        logger.warn("#{MyopicVicar::Application.config.freexxx_display_name.upcase}:REGISTER_ERROR: #{register.id} not located")
+        logger.warn("#{App.name.upcase}:REGISTER_ERROR: #{register.id} not located")
       end
       result
     end
