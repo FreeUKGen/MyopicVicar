@@ -46,7 +46,9 @@ class BestGuessController < ApplicationController
   end
 
   def next_and_previous_entries_of_page(current, sorted_array)
-      current_index = sorted_array.index(current)
+      array = sorted_array.map(&:to_i)
+      current = current.to_i
+      current_index = array.index(current)
       next_record_id = nil
       previous_record_id = nil
       next_record_id = sorted_array[current_index + 1] unless current_index.nil? || sorted_array.nil? || current_index >= sorted_array.length - 1
