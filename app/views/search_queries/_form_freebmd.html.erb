@@ -13,9 +13,7 @@
     </ul>
 <% end %>
 <ul id="errors" class="validation-list text--center"></ul>
-<%= button_tag "Clear Form", type: 'reset', class: 'btn btn--small float--right project-text-color padding--bottom' , id: 'small_screen_search_buttons' %>
     <div class="bmd_search_form">
-        
         <%= semantic_form_for(@search_query) do |f| %>
             <ol class="grid search_form">
                 <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole firstnamegrid flush--bottom">

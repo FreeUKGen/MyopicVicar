@@ -47,6 +47,7 @@ gem 'sass-rails' #,   '~> 3.2.3'
 gem 'coffee-rails'#, '~> 3.2.1'
 gem 'uglifier'#, '>= 1.0.3'
 gem 'jquery-rails'
+gem 'font_awesome5_rails'
 gem 'refinerycms-county_pages', :path => 'vendor/extensions'
 gem 'rubocop', '~> 0.62.0', require: false
 gem 'rails3-jquery-autocomplete'
