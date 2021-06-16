@@ -43,12 +43,12 @@
           		<div class="grid__item one-whole">
 		           	<div class='grid__item one-quarter lap-one-quarter palm-one-half'>
 		           		<% if @secondary_next_record.present?%>
-	                	<%= link_to 'Next Referral Entry<i class="fa fa-chevron-right view_arrow"></i> '.html_safe, show_reference_entry_path(entry_id: @record.RecordNumber, secondary_referral_number: @secondary_next_record ), class: 'push-half--right push-half--top' unless @secondary_next_record.nil?%>
+	                	<%= link_to 'Next Referral Entry<i class="fa fa-chevron-right view_arrow"></i> '.html_safe, show_reference_entry_path(entry_id: @primary_array.first, secondary_referral_number: @secondary_next_record ), class: 'push-half--right push-half--top' unless @secondary_next_record.nil?%>
 	                <% end %>
 	              </div>
 	              <div class='grid__item one-quarter lap-one-quarter palm-one-half'>
 	                <% if @secondary_previous_record.present?%>
-	                	<%= link_to 'Previous Referral Entry<i class="fa fa-chevron-right view_arrow"></i> '.html_safe, show_reference_entry_path(entry_id: @record.RecordNumber, secondary_referral_number: @secondary_previous_record ), class: 'push-half--right push-half--top' unless @secondary_previous_record.nil?%>
+	                	<%= link_to 'Previous Referral Entry<i class="fa fa-chevron-right view_arrow"></i> '.html_safe, show_reference_entry_path(entry_id: @primary_array.first, secondary_referral_number: @secondary_previous_record ), class: 'push-half--right push-half--top' unless @secondary_previous_record.nil?%>
 	                <% end %>
 	              </div>
 	            </div>
