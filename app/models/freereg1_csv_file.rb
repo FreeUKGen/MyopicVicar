@@ -380,6 +380,19 @@ class Freereg1CsvFile
       logger.warn("FREEREG:LOCATION:VALIDATION invalid freereg1_csv_file id #{freereg1_csv_file} ") unless result
       result
     end
+
+    def freereg1_csv_file_valid?(freereg1_csv_file)
+      if freereg1_csv_file.blank?
+        logger.warn("#{App.name.upcase}:FREEREG_FILE_ERROR: entry had no file")
+        result = false
+      elsif Freereg1CsvFile.find_by(id: freereg1_csv_file).present?
+        result = true
+      else
+        result = false
+        logger.warn("#{App.name.upcase}:FREEREG_FILE_ERROR: #{freereg1_csv_file} not located")
+      end
+      result
+    end
   end # self
 
   # ######################################################################### instance methods
