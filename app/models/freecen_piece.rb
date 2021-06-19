@@ -44,6 +44,7 @@ class FreecenPiece
   field :film_number, type: String
   field :freecen1_filename, type: String
   field :status, type: String
+  field :status_date, type: DateTime
   field :remarks, type: String
   field :remarks_coord, type: String #visible to coords, not public
   field :online_time, type: Integer
