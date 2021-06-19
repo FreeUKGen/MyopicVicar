@@ -27,7 +27,7 @@ namespace :freecen do
       place_save_needed = true
     end
     place.save! if place_save_needed
-    piece.update_attributes(status: 'Online', num_individuals: num_ind, num_dwellings: num_dwel, num_entries: num_entries) if piece.present?
+    piece.update_attributes(status: 'Online', status_date: DateTime.now.in_time_zone('London'), num_individuals: num_ind, num_dwellings: num_dwel, num_entries: num_entries) if piece.present?
     #print "\t#{filename} contained #{file_record.freecen_dwellings.count} dwellings in #{file_record.freecen1_vld_entries.count} entries\n"
     print "\t#{filename} contained #{num_dwel} dwellings #{num_ind} individuals in #{num_entries} entries\n"
   end

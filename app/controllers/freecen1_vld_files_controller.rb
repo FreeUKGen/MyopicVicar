@@ -24,7 +24,6 @@ class Freecen1VldFilesController < ApplicationController
 
     message = 'creation............................................................'
     logger.warn("#{appname_upcase}:VLD_PROCESSING: #{@vldfile.uploaded_file}" + message)
-
     @vldfile.userid = session[:userid]
     @vldfile.setup_batch_on_upload
     result = @vldfile.save

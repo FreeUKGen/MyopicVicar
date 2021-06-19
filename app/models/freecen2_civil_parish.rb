@@ -251,12 +251,15 @@ class Freecen2CivilParish
   end
 
   def do_we_update_place?(file)
-    place = freecen2_place.reload
-    files = []
-    FreecenCsvFile.where(chapman_code: chapman_code, year: year, incorporated: true).all.each do |my_file|
-      files << my_file if my_file.enumeration_districts.keys.include?(name)
+    if freecen2_place.present?
+      files = []
+      FreecenCsvFile.where(chapman_code: chapman_code, year: year, incorporated: true).all.each do |my_file|
+        files << my_file if my_file.enumeration_districts.keys.include?(name)
+      end
+      result = files.count.zero? ? true : false
+    else
+      result = false
     end
-    result = files.count.zero? ? true : false
     result
   end
 

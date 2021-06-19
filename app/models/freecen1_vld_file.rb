@@ -584,8 +584,8 @@ class Freecen1VldFile
   end
 
   def check_exists_on_upload
-    files = Freecen1VldFile.where(dir_name: dir_name, file_name: uploaded_file_name, action: 'Upload').count
-    result = files > 0 ? true : false
+    file_location = File.join(Rails.application.config.vld_file_locations, dir_name, uploaded_file_name)
+    result = File.file?(file_location) ? true : false
     result
   end
 
