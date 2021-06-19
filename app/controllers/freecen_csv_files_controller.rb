@@ -273,11 +273,11 @@ class FreecenCsvFilesController < ApplicationController
 
   def incorporate
     @freecen_csv_file = FreecenCsvFile.find(params[:id])
-    @freecen_csv_file.update_attributes(completes_piece: params[:completes_piece])
     unless FreecenCsvFile.valid_freecen_csv_file?(params[:id])
       message = 'The file was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
+    @freecen_csv_file.update_attributes(completes_piece: params[:completes_piece])
     result, message = @freecen_csv_file.can_we_incorporate?
 
     redirect_back(fallback_location: { action: 'show' }, notice: message) && return unless result
@@ -287,7 +287,7 @@ class FreecenCsvFilesController < ApplicationController
     pid1 =  spawn("rake freecen_csv_file_incorporate[#{@freecen_csv_file.id}]")
     message = "The records for the csv file #{@freecen_csv_file.file_name} are being incorporated. You will receive an email when the task has been completed."
     logger.warn("FREECEN:CSV_PROCESSING: rake task for #{pid1}")
-    redirect_to(show_freecen_csv_file_path(@freecen_csv_file), notice: message) && return
+    redirect_to(freecen_csv_file_path(@freecen_csv_file), notice: message) && return
   end
 
   def unincorporate

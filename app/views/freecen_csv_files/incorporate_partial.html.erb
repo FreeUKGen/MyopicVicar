@@ -14,7 +14,8 @@
     <%=link_to 'No',  incorporate_freecen_csv_file_path(@freecen_csv_file, completes_piece: false), class: 'btn   btn--small', method: :get,
         title: 'Incorporates the records for the CSV file into the database and sets piece status to Part' %><br>
     <br>
-    <p style="text-align: center">(Note: When last CSV file is incorporated, for a Piece with multiple CSV files, the Piece status will be set to Online.)</p>
+    <p style="text-align: center">(Note: When last CSV file is incorporated, for a Piece with multiple CSV files, the Piece status will be set to Online.<br>
+      If the CSV file is not the last to be incorporated the Piece status will be set to Part.)</p>
     <br>
     <%= link_to 'Cancel',request.referer, class: 'btn   btn--small', method: :get,
         title: 'Cancel incorporation' %>
