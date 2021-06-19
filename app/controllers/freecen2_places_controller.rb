@@ -30,6 +30,7 @@ class Freecen2PlacesController < ApplicationController
 
   def create
     @user = get_user
+    params[:freecen2_place][:editor] = @user.userid
     @first_name = @user.person_forename if @user.present?
     if params[:commit] == 'Search Place Names'
       session[:search_names] = {}
@@ -111,7 +112,8 @@ class Freecen2PlacesController < ApplicationController
     @place.alternate_freecen2_place_names.build
     @county = session[:county]
     @chapman_code = session[:chapman_code]
-
+    get_user_info_from_userid
+    @user_userid
   end
 
   def index
@@ -171,6 +173,8 @@ class Freecen2PlacesController < ApplicationController
     @county = session[:county]
     @counties = ChapmanCode.keys.sort
     @counties -= Freecen::UNNEEDED_COUNTIES
+    get_user_info_from_userid
+    @user_userid
   end
 
   def places_counties_and_countries
@@ -289,6 +293,11 @@ class Freecen2PlacesController < ApplicationController
     case
     when params[:commit] == 'Submit'
       @place.save_to_original
+      if params[:freecen2_place][:source].blank?
+        flash[:notice] = 'The source field cannot be empty'
+        render action: 'edit'
+        return
+      end
 
       proceed = @place.update_attributes(freecen2_place_params)
 
