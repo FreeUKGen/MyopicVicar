@@ -1,0 +1,23 @@
+<h2 class=' text--center'>CSV File Incorporation</h2>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+  </div>
+<% end %>
+<h4 class=' text--center'>Preparing to commence incorporation of CSV file: <%= file_name(@freecen_csv_file) %></h4>
+<%= semantic_form_for @freecen_csv_file,:html => {novalidate: "novalidate"} do |f| %>
+  <div  style="text-align: center">
+    <p style="text-align: center">Is this the last CSV file to be incorporated for this Piece? <br>
+    </p>
+    <%=link_to 'Yes', incorporate_freecen_csv_file_path(@freecen_csv_file, completes_piece: true), class: 'btn   btn--small', method: :get,
+        title: 'Incorporates the records for the CSV file into the database and sets piece status to Online' %>
+    <%=link_to 'No',  incorporate_freecen_csv_file_path(@freecen_csv_file, completes_piece: false), class: 'btn   btn--small', method: :get,
+        title: 'Incorporates the records for the CSV file into the database and sets piece status to Part' %><br>
+    <br>
+    <p style="text-align: center">(Note: When last CSV file is incorporated, for a Piece with multiple CSV files, the Piece status will be set to Online.<br>
+      If the CSV file is not the last to be incorporated the Piece status will be set to Part.)</p>
+    <br>
+    <%= link_to 'Cancel',request.referer, class: 'btn   btn--small', method: :get,
+        title: 'Cancel incorporation' %>
+  <% end %>
+</div>
