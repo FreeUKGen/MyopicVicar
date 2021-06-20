@@ -208,7 +208,7 @@ module UseridRole
     'FreeUKGenealogy  Policies' => 'Access the FreeUKGenealogy  Policies',
     'Search Place Names' => 'Search for an existing place name; opens in a new tab'
   }
-  USERID_MANAGER_OPTIONS = ['Select specific userid', 'Select specific email', 'Select specific surname/forename',
+  USERID_MANAGER_OPTIONS = ["Saved Entries",'Select specific userid', 'Select specific email', 'Select specific surname/forename',
                             'Browse userids', 'Select Role', 'Select Secondary Role', 'Transcription Agreement Accepted',
                             'Transcription Agreement Not Accepted', 'Incomplete Registrations', 'Create userid', 'Transcriber Statistics']
   USERID_ACCESS_OPTIONS = ['Select specific userid', 'Select specific email', 'Select specific surname/forename']
@@ -225,7 +225,8 @@ module UseridRole
     'Select Secondary Role' => '/userid_details/secondary_roles',
     'Transcriber Statistics' => '/userid_details/transcriber_statistics',
     'Transcription Agreement Accepted' => '/manage_syndicates/selection?option=Transcription Agreement Accepted',
-    'Transcription Agreement Not Accepted' => '/manage_syndicates/selection?option=Transcription Agreement Not Accepted'
+    'Transcription Agreement Not Accepted' => '/manage_syndicates/selection?option=Transcription Agreement Not Accepted',
+    'Saved Entries' => '/userid_details/list_saved_entry'
   }
   FILE_MANAGEMENT_OPTIONS = ['Upload New Batch', 'List by Number of Errors then Filename', 'List those with Zero Dates', 'List by Filename',
                              'List by uploaded date (ascending)', 'List by uploaded date (descending)', 'List files waiting to be processed', 'Review Specific Batch']

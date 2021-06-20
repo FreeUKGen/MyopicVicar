@@ -125,9 +125,9 @@
           </div-->
         <% end %>
         <div class="container">
-          <%= breadcrumbs  :class => "delta  text--magenta" if appname_downcase="freebmd"%>
+          <%#= breadcrumbs  :class => "delta  text--magenta" if appname_downcase="freebmd"%>
           <% if session[:userid_detail_id].present?%>
-            <%= breadcrumbs  :class => "delta  text--teal"  unless controller_name == "refinery" ||
+            <%= breadcrumbs  :class => "delta  project-text-color"  unless controller_name == "refinery" ||
              controller_name == "pages"%>
           <% end%>
           <% if content_for? :sidebar %>

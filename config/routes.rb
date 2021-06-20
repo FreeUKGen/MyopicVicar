@@ -343,6 +343,7 @@ MyopicVicar::Application.routes.draw do
   get 'userid_details/display', :to =>'userid_details#display', :as => :display_userid_details
   get 'userid_details/incomplete_registrations', :to =>'userid_details#incomplete_registrations', :as => :incomplete_registrations_userid_details
   get 'userid_details/transcriber_statistics', :to =>'userid_details#transcriber_statistics', :as => :transcriber_statistics_userid_details
+  get 'userid_details/list_saved_entry', to: 'userid_details#list_saved_entry', :as => :list_saved_entries_userid_details
   post 'userid_details/new', :to => 'userid_details#create'
   get 'download_txt', to: "userid_details#download_txt"
   resources :userid_details do
@@ -573,12 +574,13 @@ MyopicVicar::Application.routes.draw do
   resources :gap_reasons
 
   get ':search_id/entry-information/:id/:friendly(.:format)', :to => 'best_guess#show', :as => :friendly_bmd_record_details
-  get '/entry-information/:id/:friendly(.:format)', :to => 'best_guess#show', :as => :friendly_bmd_record_details_from_page
+  get '/entry-information/:id/:friendly(.:format)', :to => 'best_guess#show', :as => :friendly_bmd_record_details_non_search
   get ':search_id/:entry_id/marriage_details/', :to => 'best_guess#show_marriage', :as => :show_marriage_details
   get ':search_id/:entry_id/reference_details/', :to => 'best_guess#show_reference_entry', :as => :show_reference_entry
   get ':search_id/:entry_id/same_page_entries', to: 'best_guess#same_page_entries', as: :same_page_entries
+  get ':entry_id/same_page_entries', to: 'best_guess#same_page_entries', as: :same_page_entries_non_search
   resources :best_guess
-
+  post 'entry-information/:id/save_entry', to: 'best_guess#save_entry', as: :save_entry
   get "entry-information/cite=:id&scan=1", :to => 'best_guess_hash#show', :as => :citation_url
   resources :best_guess_hash
 

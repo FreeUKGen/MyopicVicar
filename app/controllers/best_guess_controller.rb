@@ -1,16 +1,23 @@
 class BestGuessController < ApplicationController
   before_action :viewed
   skip_before_action :require_login
+  
 
   def show
-    redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
+    #raise params.inspect
+    #redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
+    params[:search_id].present? ? @search = true : @search = false
+    get_user_info_from_userid if cookies.signed[:userid].present?
+    redirect_back(fallback_location: new_search_query_path) && return unless show_value_check if @search
     @page_number = params[:page_number].to_i
     @option = params[:filter_option] if params[:filter_option].present?
     record_from_page = params[:record_of_page].to_i if params[:record_of_page].present?
     @search_record = BestGuess.where(RecordNumber: params[:id]).first
     @current_record_number = current_record_number_to_display(params[:id].to_i, record_from_page)
     @current_record = BestGuess.where(RecordNumber: @current_record_number).first
-    @anchor_entry = params[:search_entry].present? ? params[:search_entry] : @current_record.RecordNumber
+    if @search
+      @anchor_entry = params[:search_entry].present? ? params[:search_entry] : @current_record.RecordNumber
+    end
     page_entries = @search_record.entries_in_the_page
     @next_record_of_page, @previous_record_of_page = next_and_previous_entries_of_page(@current_record_number, page_entries)
     if @option == '1'
@@ -155,5 +162,24 @@ class BestGuessController < ApplicationController
     @search_record = response ? @search_query.locate(params[:id]) : nil
     return false unless response
     true
+  end
+
+  def save_entry
+    entry_id = params[:id]
+    user = UseridDetail.where(id: cookies.signed[:userid]).first
+    @entry = BestGuess.where(RecordNumber: entry_id).first
+    record_hash = @entry.best_guess_hash.Hash
+    user.saved_entry << record_hash
+    user.save
+    if user.save
+      flash[:notice] = 'The entry is saved'
+    else
+      flash[:notice] = 'unsuccessful'
+    end
+    if params[:search_id].present? 
+      redirect_to friendly_bmd_record_details_path(params[:search_id],entry_id, @entry.friendly_url) 
+    else 
+      redirect_to best_guess_path(@entry.RecordNumber)
+    end
   end
 end

@@ -1,6 +1,9 @@
+<% breadcrumb :same_page_entries, @record  unless @search %>
 <div class='container'>
-  <%= link_to "#{app_icons[:left_arrow_pink]} Back to Results".html_safe, search_query_path(@search_query, id: @search_id, anchor: @record.RecordNumber), class: " btn   btn--small" if @search_id.present?%>
-  <%= link_to "#{app_icons[:left_arrow_pink]} Back to Search Entry".html_safe, friendly_bmd_record_details_path(params[:search_id], @record, @record.friendly_url), class: " btn   btn--small" unless @record.blank?%>
+  <% if @search %>
+    <%= link_to "#{app_icons[:left_arrow_pink]} Back to Results".html_safe, search_query_path(@search_query, id: @search_id, anchor: @record.RecordNumber), class: " btn   btn--small" if @search_id.present?%>
+    <%= link_to "#{app_icons[:left_arrow_pink]} Back to Search Entry".html_safe, friendly_bmd_record_details_path(params[:search_id], @record, @record.friendly_url), class: " btn   btn--small" unless @record.blank?%>
+    <% end %>
   <h1 class="lead"><%= "Entries in Page: #{@page}, Volume: #{@volume} at District: #{@district} for #{format_quarter(@quarter.to_i)}" %></h1>
 </div>
 <div class="container">
@@ -21,7 +24,12 @@
             <% record_type = RecordType::display_name(["#{search_record[:RecordTypeID]}"])%>
             <tr id="<%=search_record[:_id]%>" class="<%= record_type.downcase %>_hover" >
                 <td>
-                  <center><%= link_to("View #{n}".html_safe,friendly_bmd_record_details_path(@search_id, search_record.id, search_record.friendly_url, search_entry: @record), :rel => "nofollow", :title => "", class: "btn  btn--small")%>
+                  <center>
+                    <% if @search %>
+                      <%= link_to("View #{n}".html_safe,friendly_bmd_record_details_path(@search_id, search_record.id, search_record.friendly_url, search_entry: @record), :rel => "nofollow", :title => "", class: "btn  btn--small") %>
+                    <% else %>
+                      <%= link_to("View #{n}".html_safe,friendly_bmd_record_details_non_search_path(search_record.id, search_record.friendly_url, search_entry: @record), :rel => "nofollow", :title => "", class: "btn  btn--small") %>
+                    <% end %>
                   <i><%#= seen(@search_query,search_record) %></i></center>
                 </td>
               <td class="table--data">

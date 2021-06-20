@@ -17,7 +17,11 @@ class PostemsController < ApplicationController
     		flash[:notice] = "Unsuccessful. Please Retry"
     		redirect_to :back
     	end
-      redirect_to friendly_bmd_record_details_path(@search_query.id,@record.RecordNumber, @record.friendly_url)
+      if @search
+        redirect_to friendly_bmd_record_details_path(@search_query.id,@record.RecordNumber, @record.friendly_url)
+      else
+        redirect_to friendly_bmd_record_details_non_search_path(@record.RecordNumber, @record.friendly_url)
+      end
     end
   end
 

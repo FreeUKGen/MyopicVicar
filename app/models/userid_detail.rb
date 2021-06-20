@@ -51,6 +51,7 @@ class UseridDetail
   field :do_not_acknowledge_me, type: Boolean
   field :acknowledge_with_pseudo_name, type: Boolean
   field :pseudo_name, type: String
+  field :saved_entry, type: Array, default: []
   # Note if you add or change fields you may need to update the display and edit field order in /lib/freereg_options_constants
 
   attr_accessor :action, :message, :volunteer_induction_handbook, :code_of_conduct, :volunteer_policy
@@ -685,6 +686,12 @@ class UseridDetail
     return filter_users.count
   end
 
+  def get_saved_entries
+    record_hash = self.saved_entry
+    record_number = BestGuessHash.where(Hash: record_hash).pluck(:RecordNumber)
+    BestGuess.where(RecordNumber: record_number)
+  end
+
   private
 
   def filter_users
@@ -727,5 +734,4 @@ class UseridDetail
       self.new_transcription_agreement = 'Declined'
     end
   end
-
 end #end class
