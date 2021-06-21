@@ -132,6 +132,30 @@ class Freecen1VldFile
       end
       [total_files, total_entries, total_individuals, total_dwellings]
     end
+
+    def delete_search_records(dir_name, uploaded_file_name)
+      Freecen1VldFile.where(dir_name: dir_name, file_name: uploaded_file_name).each do |file|
+        SearchRecord.where(freecen1_vld_file_id: file.id).delete_all
+      end
+    end
+
+    def delete_freecen1_vld_entries(dir_name, uploaded_file_name)
+      Freecen1VldFile.where(dir_name: dir_name, file_name: uploaded_file_name).each do |file|
+        Freecen1VldEntry.where(freecen1_vld_file_id: file.id).delete_all
+      end
+    end
+
+    def delete_dwellings(dir_name, uploaded_file_name)
+      Freecen1VldFile.where(dir_name: dir_name, file_name: uploaded_file_name).each do |file|
+        FreecenDwelling.where(freecen1_vld_file_id: file.id).delete_all
+      end
+    end
+
+    def delete_individuals(dir_name, uploaded_file_name)
+      Freecen1VldFile.where(dir_name: dir_name, file_name: uploaded_file_name).each do |file|
+        FreecenIndividual.where(freecen1_vld_file_id: file.id).delete_all
+      end
+    end
   end
   # ######################################################################### instance methods
 
@@ -527,13 +551,13 @@ class Freecen1VldFile
     self[:transcriber_name] = self[:transcriber_name].squeeze(' ').strip if self[:transcriber_name].present?
   end
 
+
+
 # ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,upload
-
-
   def save_to_attic
-    attic_dir = File.join(File.join(Rails.application.config.datafiles, dir_name), '.attic')
+    attic_dir = File.join(File.join(Rails.application.config.vld_file_locations, dir_name), '.attic')
     FileUtils.mkdir_p(attic_dir)
-    file_location = File.join(Rails.application.config.datafiles, dir_name, uploaded_file_name)
+    file_location = File.join(Rails.application.config.vld_file_locations, dir_name, uploaded_file_name)
     if File.file?(file_location)
       time = Time.now.to_i.to_s
       renamed_file = (file_location + '.' + time).to_s
@@ -548,32 +572,8 @@ class Freecen1VldFile
     decision
   end
 
-  def delete_search_records
-    Freecen1VldFile.where(dir_name: dir_name, uploaded_file_name: uploaded_file_name).each do |file|
-      SearchRecord.where(freecen1_vld_file_id: file.id).delete_all
-    end
-  end
-
-  def delete_freecen1_vld_entries
-    Freecen1VldFile.where(dir_name: dir_name, uploaded_file_name: uploaded_file_name).each do |file|
-      Freecen1VldEntry.where(freecen1_vld_file_id: file.id).delete_all
-    end
-  end
-
-  def delete_dwellings
-    Freecen1VldFile.where(dir_name: dir_name, uploaded_file_name: uploaded_file_name).each do |file|
-      FreecenDwelling.where(freecen1_vld_file_id: file.id).delete_all
-    end
-  end
-
-  def delete_individuals
-    Freecen1VldFile.where(dir_name: dir_name, uploaded_file_name: uploaded_file_name).each do |file|
-      FreecenIndividual.where(freecen1_vld_file_id: file.id).delete_all
-    end
-  end
-
   def clean_up
-    file_location = File.join(Rails.application.config.datafiles, dir_name, uploaded_file_name)
+    file_location = File.join(Rails.application.config.vld_file_locations, dir_name, uploaded_file_name)
     File.delete(file_location) if File.file?(file_location)
   end
 
