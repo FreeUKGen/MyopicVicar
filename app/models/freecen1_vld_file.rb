@@ -596,7 +596,7 @@ class Freecen1VldFile
   end
 
   def estimate_size
-    place = File.join(Rails.application.config.datafiles, dir_name, uploaded_file_name)
+    place = File.join(Rails.application.config.vld_file_locations, dir_name, uploaded_file_name)
     size = File.size?(place)
     size
   end
@@ -610,7 +610,7 @@ class Freecen1VldFile
       return [proceed, message]
     end
     logger.warn("FREECEN:VLD_PROCESSING: Starting rake task for #{userid} #{uploaded_file_name} in #{dir_name}")
-    pid1 = spawn("rake freecen:process_freecen1_vld[#{ File.join(Rails.application.config.datafiles, dir_name, uploaded_file_name)},#{userid}]")
+    pid1 = spawn("rake freecen:process_freecen1_vld[#{ File.join(Rails.application.config.vld_file_locations, dir_name, uploaded_file_name)},#{userid}]")
     message = "The vld file #{uploaded_file_name} is being checked. You will receive an email when it has been completed."
     logger.warn("FREECEN:VLD_PROCESSING: rake task for #{pid1}")
     process = true
