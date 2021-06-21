@@ -39,7 +39,7 @@ crumb :create_userid_detail do |userid_detail|
 end
 
 crumb :list_saved_entries do
-  link "Saved Records"
+  link "Saved Records", list_saved_entries_userid_details_path
   parent :regmanager_userid_options
 end
 
@@ -2109,7 +2109,7 @@ end
 
 
 crumb :entry_information do |rec|
-  link "#{rec.GivenName} #{rec.Surname}", list_saved_entries_userid_details_path
+  link "#{rec.GivenName} #{rec.Surname}"
   parent :list_saved_entries
 end
 
