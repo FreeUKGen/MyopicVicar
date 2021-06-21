@@ -129,7 +129,7 @@
         </tr>
       <% end %>
     <% end %>
-    <% if search == true %>
+    <% if search %>
       <tr>
         <th>
           More Information
@@ -139,8 +139,8 @@
         </td>
       </tr>
     <% end %>
-    <% if search == true %>
-      <td  colspan=2><%= link_to 'Report an Error in this Data', report_error_contact_path(record.RecordNumber, query: query), class: 'btn btn--natural' unless  record.blank? || query.blank? %>
+    <% if search %>
+      <td  colspan=2><%= link_to 'Report an Error in this Data', report_error_contact_path(record.RecordNumber, query: query), class: 'btn btn--natural' unless  record.blank? %>
       </td>
     <% end %>
     <% if more_info%>
