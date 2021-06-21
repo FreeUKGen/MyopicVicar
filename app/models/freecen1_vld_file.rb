@@ -229,7 +229,7 @@ class Freecen1VldFile
     end
     CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
       csv << header
-      records = freecen1_vld_entries
+      records = freecen1_vld_entries.order_by(_id: 1)
       @record_number = 0
       records.each do |rec|
         next if rec.blank?
@@ -618,17 +618,24 @@ class Freecen1VldFile
   end
 
   def setup_batch_on_upload
-    file_location = File.join(Rails.application.config.datafiles, dir_name, uploaded_file_name)
-    delete_search_records if File.file?(file_location)
-    delete_freecen1_vld_entries if File.file?(file_location)
-    delete_dwellings if File.file?(file_location)
-    delete_individuals if File.file?(file_location)
-    save_to_attic if File.file?(file_location)
+    file_location = File.join(Rails.application.config.vld_file_locations, dir_name, uploaded_file_name)
+    if File.file?(file_location)
+      delete_search_records
+      delete_freecen1_vld_entries
+      delete_dwellings
+      delete_individuals
+      save_to_attic
+    end
     file = Freecen1VldFile.find_by(dir_name: dir_name, uploaded_file_name: uploaded_file_name)
-    if file.present?
+    if file.present? && file.freecen_piece.present?
       piece = file.freecen_piece
-      piece.update_attributes(num_dwellings: 0, num_individuals: 0, freecen1_filename: '', status: '')
-      piece.freecen1_vld_files.delete(file)
+      piece.update_attributes(num_dwellings: 0, num_individuals: 0, freecen1_filename: '', status: '') if piece.present?
+      piece.freecen1_vld_files.delete(file) if piece.present?
+      file.delete
+    elsif file.present?
+      piece = FreecenPiece.find_by(file_name: file.file_name)
+      piece.update_attributes(num_dwellings: 0, num_individuals: 0, freecen1_filename: '', status: '') if piece.present?
+      piece.freecen1_vld_files.delete(file) if piece.present?
       file.delete
     end
   end
