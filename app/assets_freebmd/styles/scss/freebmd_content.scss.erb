@@ -1026,16 +1026,22 @@ transform: matrix(-1, 0, 0, 1, 0, 0);
     color: blue;
 }
 
-.postems:active, .postems:hover .fa-envelope:before {
+.postems:focus, .postems:hover .fa-envelope:before {
     content: "\f658";
     font-size: 1.2em !important;
     transition-duration: 0.2s;
+    outline: 2px dashed $magenta;
+    outline-offset: 7px;
+    text-decoration: none;
 }
 
-.scan_files:active, .scan_files:hover .fa-camera:before {
+.scan_files:focus, .scan_files:hover .fa-camera:before {
     content: "\f1c5";
     font-size: 1.2em !important;
     transition-duration: 0.3s;
+    outline: 2px dashed $magenta;
+    outline-offset: 7px;
+    text-decoration: none;
 }
 
 
