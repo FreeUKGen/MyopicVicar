@@ -2109,7 +2109,7 @@ end
 
 
 crumb :entry_information do |rec|
-  link "#{rec.GivenName} #{rec.Surname}"
+  link "#{rec.GivenName} #{rec.Surname}", list_saved_entries_userid_details_path
   parent :list_saved_entries
 end
 
