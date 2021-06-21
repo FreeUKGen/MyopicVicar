@@ -143,7 +143,7 @@
       <td  colspan=2><%= link_to 'Report an Error in this Data', report_error_contact_path(record.RecordNumber, query: query), class: 'btn btn--natural' unless  record.blank? || query.blank? %>
       </td>
     <% end %>
-    <% if more_info.present? %>
+    <% if more_info%>
       <td  colspan=2>
         <% if  @search %>
           <%= link_to 'Complete Details', friendly_bmd_record_details_path(@search_id, record.id, record.friendly_url, search_entry: record), :rel => "nofollow", :title => "", class: 'btn btn--natural'%>
