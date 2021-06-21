@@ -41,11 +41,11 @@ module Freecen
 
       file_location = File.join(Rails.application.config.vld_file_locations, dir_name, file_name)
       if File.file?(file_location)
-        Freecen1VladFile.delete_search_records
-        Freecen1VladFile.delete_freecen1_vld_entries
-        Freecen1VladFile.delete_dwellings
-        Freecen1VladFile.delete_individuals
-        Freecen1VladFile.save_to_attic
+        Freecen1VldFile.delete_search_records
+        Freecen1VldFile.delete_freecen1_vld_entries
+        Freecen1VldFile.delete_dwellings
+        Freecen1VldFile.delete_individuals
+        Freecen1VldFile.save_to_attic
       end
 
       file = Freecen1VldFile.find_by(file_name: file_name, dir_name: dir_name)
