@@ -1,5 +1,6 @@
 class Freecen1VldFile
   include Mongoid::Document
+  include Mongoid::Timestamps::Short
   require 'chapman_code'
   require 'freecen_constants'
 
