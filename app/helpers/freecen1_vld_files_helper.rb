@@ -6,11 +6,20 @@ module Freecen1VldFilesHelper
 
   def piece_link(vld)
     piece = vld.freecen_piece
-    link_to "#{vld.file_name}", freecen_piece_path(piece.id), class: 'btn   btn--small', title: 'Links to the piece'
+    if piece.present?
+      link_to "#{vld.file_name}", freecen_piece_path(piece.id), class: 'btn   btn--small', title: 'Links to the piece'
+    else
+      "#{vld.file_name}"
+    end
   end
+
   def piece_number_link(vld)
     piece = vld.freecen_piece
-    link_to "#{vld.piece}", freecen_piece_path(piece.id), class: 'btn   btn--small'
+    if piece.present?
+      link_to "#{vld.piece}", freecen_piece_path(piece.id), class: 'btn   btn--small'
+    else
+      "#{vld.piece}"
+    end
   end
 
   def loaded_at(vld)
