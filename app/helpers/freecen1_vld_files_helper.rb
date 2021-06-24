@@ -5,9 +5,7 @@ module Freecen1VldFilesHelper
   end
 
   def piece_link(vld)
-    p vld
     piece = vld.freecen_piece
-    p piece
     link_to "#{vld.piece}", freecen_piece_path(piece.id), class: 'btn   btn--small'
   end
 end

@@ -435,13 +435,10 @@ class FreecenCsvFile
     freecen_csv_entries.where(record_valid: 'false').each do |entry|
       entry.update_attributes(record_valid: 'true', warning_messages: nil)
       entry.reload
-      p entry
     end
     warnings = freecen_csv_entries.where(record_valid: 'false').count
-    p warnings
     self.total_warnings = warnings
     save
-    p self
     [true, '']
 
   end

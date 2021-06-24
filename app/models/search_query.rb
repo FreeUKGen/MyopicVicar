@@ -664,14 +664,11 @@ class SearchQuery
         records[rec_id] = record
       else
         search_record = SearchRecord.find_by(_id: rec['_id'].to_s)
-        p "Destroy additional results#{search_record.inspect}"
         search_record.delete if search_record.present?
       end
     end
-    p "additional results #{records.length}"
     self.search_result.records = self.search_result.records.merge(records)
     self.result_count = self.search_result.records.length
-    p self.result_count
     self.runtime_additional = (Time.now.utc - self.updated_at) * 1000
     self.save
   end
@@ -695,11 +692,9 @@ class SearchQuery
         records[rec_id] = record
       else
         search_record = SearchRecord.find_by(_id: rec['_id'].to_s)
-        p "Destroy results #{search_record.inspect}"
         search_record.delete if search_record.present?
       end
     end
-    p "initial results #{records.length}"
     self.search_result = SearchResult.new
     self.search_result.records = records
     self.result_count = records.length
