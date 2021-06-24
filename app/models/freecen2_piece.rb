@@ -51,6 +51,7 @@ class Freecen2Piece
   field :remarks_coord, type: String # visible to coords, not public
   field :online_time, type: Integer
   field :num_individuals, type: Integer, default: 0
+  field :status_date, type: DateTime
 
   belongs_to :freecen2_district, optional: true, index: true
   belongs_to :freecen2_place, optional: true, index: true

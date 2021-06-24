@@ -27,15 +27,30 @@ class FreecenCsvFileUnincorporate
       SearchRecord.where(freecen_csv_file_id: freecen_file.id).destroy_all
       num = FreecenCsvEntry.collection.update_many({ freecen_csv_file_id: freecen_file.id }, '$set' => { search_record_id: nil })
       freecen_file.update_attributes(incorporated: false, incorporated_date: nil)
-      success = true
-      message = "Success #{num} entries updated"
       piece = freecen_file.freecen2_piece
+      freecen_file.update_attributes(completes_piece: false) unless freecen_file.is_whole_piece(piece)
+      total_incorp_files = 0
+      piece.freecen_csv_files.each do |file|
+        if file.incorporated?
+          total_incorp_files += 1
+        end
+      end
+      if total_incorp_files == 0
+        successa = piece.update_attributes(status: '', status_date: nil)
+        messagea = '. Piece status cleared.' if successa
+      else
+        successa = piece.update_attributes(status: 'Part', status_date: DateTime.now.in_time_zone('London'))
+        messagea = '. Piece status set to Part.' if successa
+      end
+      success = true if successa
+      message = " Success - entries updated" if success
+      message += messagea
       freecen_file.reload
       piece.reload
-      success, message = piece.update_place
+      success, messageb = piece.update_place
       piece.freecen2_civil_parishes.each do |civil_parish|
-        success, messagea = civil_parish.update_place(freecen_file)
-        message += messagea unless success
+        success, messagec = civil_parish.update_place(freecen_file)
+        message += messagec unless success
         break unless success
       end
       PlaceCache.refresh(freecen_file.chapman_code) if success
