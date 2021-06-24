@@ -40,6 +40,6 @@ module FreecenPiecesHelper
 
   def vldfile(file_name)
     file = Freecen1VldFile.find_by(file_name: file_name)
-    link_to "#{file_name}" , freecen1_vld_file_path(file.id)
+    link_to "#{file_name}" , freecen1_vld_file_path(file.id), class: 'btn   btn--small'
   end
 end

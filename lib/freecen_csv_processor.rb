@@ -115,8 +115,8 @@ class FreecenCsvProcessor
   end
 
   def self.delete_all
-    FreecenCsvEntry.delete_all
-    FreecenCsvFile.delete_all
+    FreecenCsvEntry.destroy_all
+    FreecenCsvFile.destroy_all
     SearchRecord.delete_freecen_individual_entries
   end
 

@@ -24,7 +24,7 @@ class FreecenCsvFileUnincorporate
 
   def self.unincorporate_records(freecen_file)
     begin
-      SearchRecord.where(freecen_csv_file_id: freecen_file.id).delete_all
+      SearchRecord.where(freecen_csv_file_id: freecen_file.id).destroy_all
       num = FreecenCsvEntry.collection.update_many({ freecen_csv_file_id: freecen_file.id }, '$set' => { search_record_id: nil })
       freecen_file.update_attributes(incorporated: false, incorporated_date: nil)
       success = true

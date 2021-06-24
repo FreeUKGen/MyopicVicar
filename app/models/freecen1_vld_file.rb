@@ -133,27 +133,39 @@ class Freecen1VldFile
       [total_files, total_entries, total_individuals, total_dwellings]
     end
 
-    def delete_search_records(dir_name, uploaded_file_name)
-      Freecen1VldFile.where(dir_name: dir_name, file_name: uploaded_file_name).each do |file|
-        SearchRecord.where(freecen1_vld_file_id: file.id).delete_all
+    def delete_search_records(dir_name, file_name)
+      Freecen1VldFile.where(dir_name: dir_name, file_name: file_name).each do |file|
+        SearchRecord.where(freecen1_vld_file_id: file.id).destroy_all
       end
     end
 
-    def delete_freecen1_vld_entries(dir_name, uploaded_file_name)
-      Freecen1VldFile.where(dir_name: dir_name, file_name: uploaded_file_name).each do |file|
-        Freecen1VldEntry.where(freecen1_vld_file_id: file.id).delete_all
+    def delete_freecen1_vld_entries(dir_name, file_name)
+      Freecen1VldFile.where(dir_name: dir_name, file_name: file_name).each do |file|
+        Freecen1VldEntry.where(freecen1_vld_file_id: file.id).destroy_all
       end
     end
 
-    def delete_dwellings(dir_name, uploaded_file_name)
-      Freecen1VldFile.where(dir_name: dir_name, file_name: uploaded_file_name).each do |file|
-        FreecenDwelling.where(freecen1_vld_file_id: file.id).delete_all
+    def delete_dwellings(dir_name, file_name)
+      Freecen1VldFile.where(dir_name: dir_name, file_name: file_name).each do |file|
+        FreecenDwelling.where(freecen1_vld_file_id: file.id).destroy_all
       end
     end
 
-    def delete_individuals(dir_name, uploaded_file_name)
-      Freecen1VldFile.where(dir_name: dir_name, file_name: uploaded_file_name).each do |file|
-        FreecenIndividual.where(freecen1_vld_file_id: file.id).delete_all
+    def delete_individuals(dir_name, file_name)
+      Freecen1VldFile.where(dir_name: dir_name, file_name: file_name).each do |file|
+        FreecenIndividual.where(freecen1_vld_file_id: file.id).destroy_all
+      end
+    end
+
+    def save_to_attic(dir_name, file_name)
+      attic_dir = File.join(File.join(Rails.application.config.vld_file_locations, dir_name), '.attic')
+      FileUtils.mkdir_p(attic_dir)
+      file_location = File.join(Rails.application.config.vld_file_locations, dir_name, file_name)
+      if File.file?(file_location)
+        time = Time.now.to_i.to_s
+        renamed_file = (file_location + '.' + time).to_s
+        File.rename(file_location, renamed_file)
+        FileUtils.mv(renamed_file, attic_dir, verbose: true)
       end
     end
   end
@@ -554,17 +566,7 @@ class Freecen1VldFile
 
 
 # ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,upload
-  def save_to_attic
-    attic_dir = File.join(File.join(Rails.application.config.vld_file_locations, dir_name), '.attic')
-    FileUtils.mkdir_p(attic_dir)
-    file_location = File.join(Rails.application.config.vld_file_locations, dir_name, uploaded_file_name)
-    if File.file?(file_location)
-      time = Time.now.to_i.to_s
-      renamed_file = (file_location + '.' + time).to_s
-      File.rename(file_location, renamed_file)
-      FileUtils.mv(renamed_file, attic_dir, verbose: true)
-    end
-  end
+
 
   def check_name(name)
     decision = false
@@ -611,7 +613,7 @@ class Freecen1VldFile
     end
     logger.warn("FREECEN:VLD_PROCESSING: Starting rake task for #{userid} #{uploaded_file_name} in #{dir_name}")
     pid1 = spawn("rake freecen:process_freecen1_vld[#{ File.join(Rails.application.config.vld_file_locations, dir_name, uploaded_file_name)},#{userid}]")
-    message = "The vld file #{uploaded_file_name} is being checked. You will receive an email when it has been completed."
+    message = "The vld file #{uploaded_file_name} is being processed. You will receive an email when it has been completed."
     logger.warn("FREECEN:VLD_PROCESSING: rake task for #{pid1}")
     process = true
     [process, message]

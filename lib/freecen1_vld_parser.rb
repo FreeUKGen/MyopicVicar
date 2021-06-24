@@ -38,27 +38,24 @@ module Freecen
     def persist_to_database(filename, file_hash, entry_hash_array, entry_errors, piece_id)
       dir_name = File.basename(File.dirname(filename))
       file_name = File.basename(filename)
-
       file_location = File.join(Rails.application.config.vld_file_locations, dir_name, file_name)
       if File.file?(file_location)
-        Freecen1VldFile.delete_search_records
-        Freecen1VldFile.delete_freecen1_vld_entries
-        Freecen1VldFile.delete_dwellings
-        Freecen1VldFile.delete_individuals
-        Freecen1VldFile.save_to_attic
+        Freecen1VldFile.delete_freecen1_vld_entries(dir_name, file_name)
+        Freecen1VldFile.delete_dwellings(dir_name, file_name)
+        Freecen1VldFile.delete_individuals(dir_name, file_name)
       end
-
       file = Freecen1VldFile.find_by(file_name: file_name, dir_name: dir_name)
       if file.present? && file.freecen_piece.present?
         piece = file.freecen_piece
         piece.update_attributes(num_dwellings: 0, num_individuals: 0, freecen1_filename: '', status: '') if piece.present?
-        piece.freecen1_vld_files.delete(file) if piece.present?
-        file.delete
+        #piece.freecen1_vld_files.delete(file) if piece.present?
+        #file.delete
       elsif file.present?
-        piece = FreecenPiece.find_by(file_name: file.file_name)
+        piece = FreecenPiece.find_by(file_name: file.file_name, dir_name: dir_name)
         piece.update_attributes(num_dwellings: 0, num_individuals: 0, freecen1_filename: '', status: '') if piece.present?
-        piece.freecen1_vld_files.delete(file) if piece.present?
-        file.delete
+        file.update_attributes(freecen_piece_id: piece.id)
+        #piece.freecen1_vld_files.delete(file) if piece.present?
+        #file.delete
       else
         file = Freecen1VldFile.new(file_hash)
         file.action = 'Upload'
