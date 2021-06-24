@@ -37,4 +37,9 @@ module FreecenPiecesHelper
     actual_piece = file.freecen_piece
     piece_number = actual_piece.district_name
   end
+
+  def vldfile(file_name)
+    file = Freecen1VldFile.find_by(file_name: file_name)
+    link_to "#{file_name}" , freecen1_vld_file_path(file.id), class: 'btn   btn--small'
+  end
 end

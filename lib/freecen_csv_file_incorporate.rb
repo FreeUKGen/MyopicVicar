@@ -65,7 +65,7 @@ class FreecenCsvFileIncorporate
     rescue Exception => msg
       puts msg
       puts msg.backtrace.inspect
-      SearchRecord.where(freecen_csv_file_id: @freecen_file_id).delete_all
+      SearchRecord.where(freecen_csv_file_id: @freecen_file_id).destroy_all
       FreecenCsvEntry.collection.update_many({ freecen_csv_file_id: @freecen_file_id }, '$set' => { search_record_id: nil })
       success = false
       message = "#{msg}, #{msg.backtrace.inspect}"

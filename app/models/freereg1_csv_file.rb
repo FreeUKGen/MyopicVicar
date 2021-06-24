@@ -91,7 +91,7 @@ class Freereg1CsvFile
 
   before_destroy do |file|
     file.save_to_attic
-    Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).delete_all
+    Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).destroy_all
   end
 
   belongs_to :register, index: true

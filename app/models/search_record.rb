@@ -250,11 +250,11 @@ class SearchRecord
     end
 
     def delete_freereg1_csv_entries
-      SearchRecord.where(:freereg1_csv_entry_id.exists => true).delete_all
+      SearchRecord.where(:freereg1_csv_entry_id.exists => true).destroy_all
     end
 
     def delete_freecen_individual_entries
-      SearchRecord.where(:freecen_individual_id.exists => true).delete_all
+      SearchRecord.where(:freecen_individual_id.exists => true).destroy_all
     end
 
 
@@ -542,7 +542,7 @@ class SearchRecord
     new_names.delete_if { |_key, value| original_copy.has_value?(value) }
     #remove search names from the search record that are no longer required
     original_names.each_value do |value|
-      search_names.where(value).delete_all
+      search_names.where(value).destroy_all
     end
     #add the new search names to the existing search record
     new_names.each_value { |value| search_names.new(value) }
