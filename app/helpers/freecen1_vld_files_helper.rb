@@ -23,7 +23,7 @@ module Freecen1VldFilesHelper
   end
 
   def loaded_at(vld)
-    if vld.u_at.present?
+    if vld.action.present?
       vld.u_at.strftime('%Y-%m-%d %H:%M')
     else
       vld.id.generation_time.strftime('%Y-%m-%d %H:%M')
