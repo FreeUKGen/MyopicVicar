@@ -42,4 +42,12 @@ module FreecenPiecesHelper
     file = Freecen1VldFile.find_by(file_name: file_name)
     link_to "#{file_name}" , freecen1_vld_file_path(file.id), class: 'btn   btn--small' if file.present?
   end
+
+  def status_date(piece)
+    if piece.status_date.present?
+      piece.status_date
+    else
+      piece.id.generation_time.strftime('%Y-%m-%d %H:%M') if piece.id.present?
+    end
+  end
 end

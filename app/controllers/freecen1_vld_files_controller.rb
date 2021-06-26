@@ -8,7 +8,7 @@ class Freecen1VldFilesController < ApplicationController
 
     params[:freecen1_vld_file][:dir_name] = session[:chapman_code]
 
-    @vldfile = Freecen1VldFile.find_by(dir_name: session[:chapman_code], file_name:  params[:freecen1_vld_file][:uploaded_file].original_filename)
+    @vldfile = Freecen1VldFile.find_by(dir_name: session[:chapman_code], file_name: params[:freecen1_vld_file][:uploaded_file].original_filename)
     if @vldfile.present?
       @vldfile.update_attributes(freecen1_vld_file_params)
     else
@@ -23,11 +23,11 @@ class Freecen1VldFilesController < ApplicationController
 
     session.delete(:replace)
     logger.warn("#{appname_upcase}:VLD_PROCESSING: #{@vldfile.uploaded_file}")
-    @vldfile.userid = session[:userid]
     result = @vldfile.save
+    # deliberate crash if ther save fails
     p @vldfile.errors.full_messages unless result
     crash unless result
-    @vldfile.update_attributes(uploaded_file_location: @vldfile.uploaded_file.file.file)
+    @vldfile.update_attributes(uploaded_file_location: @vldfile.uploaded_file.file.file, userid: session[:userid])
     session.delete(:file_name) if session[:file_name].present?
     proceed, message = @vldfile.process_the_batch
     unless proceed

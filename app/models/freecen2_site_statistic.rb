@@ -21,7 +21,6 @@ class Freecen2SiteStatistic
     def calculate(time = Time.now.utc)
       last_midnight = Time.utc(time.year, time.month, time.day)
       previous_midnight = Time.utc(time.year, time.month, time.day) - 30*24.hours
-      p " Between #{previous_midnight} and #{last_midnight}"
       #last_midnight = Time.new(2019,12,22)
       # find the existing record if it exists
       stat = Freecen2SiteStatistic.find_by(interval_end: last_midnight)
@@ -79,7 +78,6 @@ class Freecen2SiteStatistic
       end
       chaps = 0
       ChapmanCode.merge_counties.each do |county|
-        p county
         chaps += 1
         records = Freecen2SiteStatistic.add_records(records, county)
         search_records = SearchRecord.before_date(county, last_midnight)
@@ -127,9 +125,6 @@ class Freecen2SiteStatistic
           records[county][:total][:added_search_records] += records[county][year][:added_search_records]
         end
       end
-      p 'finished'
-      p chaps
-      p Time.now.utc - start
       stat.records = records
       stat.save
     end
