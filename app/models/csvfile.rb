@@ -60,23 +60,23 @@ class Csvfile < CarrierWave::Uploader::Base
 
   def downcase_extension
     return file_name if MyopicVicar::Application.config.freexxx_display_name.downcase == 'freereg'
-    p 'downcase'
+    logger.warn(" downcase")
     current_name = file_name
-    p current_name
+    logger.warn("  #{current_name}")
     file_name_parts = file_name.split('.')
     file_name_parts[1] = file_name_parts[1].downcase
     new_file_name = file_name_parts[0] + '.' + file_name_parts[1]
-    p new_file_name
+    logger.warn("  #{new_file_name}")
     unless new_file_name == current_name
-      p 'moving'
+      logger.warn(" moving")
       old_file_location = File.join(Rails.application.config.datafiles, userid, current_name)
       new_file_location = File.join(Rails.application.config.datafiles, userid, new_file_name)
-      p old_file_location
-      p new_file_location
+      logger.warn("  #{old_file_location}")
+      logger.warn("  #{new_file_location}")
       File.rename(old_file_location, new_file_location)
     end
-    p new_file_name
-    p File.join(Rails.application.config.datafiles, userid, new_file_name)
+    logger.warn("  #{new_file_name}")
+    logger.warn("  #{File.join(Rails.application.config.datafiles, userid, new_file_name)}")
     new_file_name
   end
 
@@ -90,10 +90,11 @@ class Csvfile < CarrierWave::Uploader::Base
   end
 
   def estimate_size
-    p file_name
+    logger.warn("  #{file_name}")
     place = File.join(Rails.application.config.datafiles, userid, file_name)
-    p place
+    logger.warn("  #{place}")
     size = File.size?(place)
+    logger.warn(" #{size}")
     size
   end
 
