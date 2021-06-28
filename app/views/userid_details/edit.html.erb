@@ -1,6 +1,13 @@
 <% breadcrumb :edit_userid_detail, @syndicate, @userid, params[:page_name] %>
 <p style="text-align: center"><b>Editing Profile for <%= @userid.userid %></b> </p>
 <%= render "flash_notice" %>
-<section>
+<section class="island ">
+  <% case @appname %>
+  <% when 'freecen'%>
+  <%= render 'form_freecen' %>
+  <% when 'freebmd'%>
+  <%= render 'form_freebmd' %>
+  <% when 'freereg'%>
   <%= render 'form' %>
+<% end%>
 </section>

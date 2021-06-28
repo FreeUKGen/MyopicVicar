@@ -1,0 +1,26 @@
+<% breadcrumb :correct_error_record,  @freecen_csv_entry, @freecen_csv_file%>
+<p style="text-align: center">Editing entry error in <b><%= @error_file.record_number %></b> for <b><%= @freecen_csv_file.file_name %></b> (<%= userid(@freecen_csv_file) %>) in <b><%= register_name_for_file(@freecen_csv_file) %></b> of <b> <%= church_name(@freecen_csv_file)%></b> in <b><%= place_name(@freecen_csv_file) %></b> of <b><%= county(@freecen_csv_file) %></b><br>
+  <b>The Error Message(s)<%= @error_file.error_message%></p>
+</b><br>
+<%= render 'flash_notice' %>
+<% case @freecen_csv_file.record_type %>
+<% when "ba" %>
+<% if @freecen_csv_file.def %>
+  <%= render 'extended_baptism_form' %>
+<% else %>
+  <%= render 'original_baptism_form' %>
+<% end %>
+<% when "bu" %>
+<% if @freecen_csv_file.def %>
+  <%= render 'extended_burial_form' %>
+<% else %>
+  <%= render 'original_burial_form' %>
+<% end %>
+<% when "ma" %>
+<% if @freecen_csv_file.def %>
+  <%= render 'extended_marriage_form' %>
+<% else %>
+  <%= render 'original_marriage_form' %>
+<% end %>
+<% end %>
+<br>

@@ -69,6 +69,7 @@ class UseridDetail
   validates_format_of :email_address,:with => Devise::email_regexp
   validate :userid_and_email_address_does_not_exist, :transcription_agreement_must_accepted, on: :create
   validate :email_address_does_not_exist, on: :update
+  validate :active_with_inactive_reason, on: :update
   validates :volunteer_induction_handbook, :code_of_conduct, :volunteer_policy, acceptance: true
 
   before_create :add_lower_case_userid,:capitalize_forename, :captilaize_surname, :remove_secondary_role_blank_entries, :transcription_agreement_value_change
@@ -147,10 +148,44 @@ class UseridDetail
       user = UseridDetail.userid(userid).first
       if user.present?
         friendly_email = "#{user.person_forename} #{user.person_surname} <#{user.email_address}>"
-      else
+      elsif MyopicVicar::Application.config.template_set == 'freereg'
         friendly_email = 'FreeREG Servant <freereg-contacts@freereg.org.uk>'
+      elsif MyopicVicar::Application.config.template_set == 'freecen'
+        friendly_email = 'FreeCEN Servant <freecen-contacts@freecen.org.uk>'
       end
       friendly_email
+    end
+
+
+    def uploaded_freecen_file(users, transcribers)
+      uploaded = []
+      FreecenCsvFile.where(:userid.exists => true).each do |file|
+        uploaded << file.userid
+      end
+      uploaded = uploaded.uniq
+      total_uploading_users = uploaded.length
+      total_uploading_transcribers = 0
+      uploaded.each do |user|
+        who = UseridDetail.find_by(userid: user)
+        total_uploading_transcribers += 1 if who.person_role == 'transcriber'
+      end
+      users_not_uploading = users - total_uploading_users
+      transcribers_not_uploading = transcribers - total_uploading_transcribers
+      [users_not_uploading, transcribers_not_uploading, total_uploading_users, total_uploading_transcribers]
+    end
+
+    def modern_freecen_active
+      users = 0
+      transcribers = 0
+      start = Time.new(2020, 12, 1).to_i
+      Refinery::Authentication::Devise::User.all.each do |user|
+        next if Time.parse(user.updated_at.to_s).to_i < start
+
+        userid = UseridDetail.find_by(_id: user.userid_detail_id)
+        users += 1 if userid.present?
+        transcribers += 1 if userid.present? && userid.person_role == 'transcriber'
+      end
+      [users, transcribers]
     end
   end
 
@@ -325,7 +360,7 @@ class UseridDetail
     users.each do |user|
       @userids << user.email_address
     end
-    return @userids
+    return @userids.sort_by(&:downcase)
   end
 
   def self.get_names_for_selection(syndicate)
@@ -338,7 +373,7 @@ class UseridDetail
       name = user.person_surname + ":" + user.person_forename unless user.person_surname.nil?
       @userids << name
     end
-    return @userids
+    return @userids.sort_by(&:downcase)
   end
 
   def send_invitation_to_create_password
@@ -461,6 +496,10 @@ class UseridDetail
     end
   end
 
+  def active_with_inactive_reason
+    errors.add(:active, 'box must be unchecked if Reason for making inactive specified') if active && disabled_reason_standard.present?
+  end
+
   def self.userid_does_not_exist
     if self.changed.include?('userid')
       errors.add(:base, "Userid Already exists") if UseridDetail.where(:userid => self[:userid]).exists?
@@ -500,10 +539,10 @@ class UseridDetail
 
   def need_to_confirm_email_address?
     result = false
-    @user = UseridDetail.userid(self.userid).first
-    @user.email_address_last_confirmned.blank? ? last_date = @user.sign_up_date : last_date = @user.email_address_last_confirmned
+    @user = UseridDetail.find_by(userid: userid)
+    last_date = @user.email_address_last_confirmned.blank? ? @user.sign_up_date : @user.email_address_last_confirmned
     result = true if !@user.email_address_valid || (last_date + FreeregOptionsConstants::CONFIRM_EMAIL_ADDRESS.days < Time.now)
-    return result
+    result
   end
 
   def remember_search(search_query)

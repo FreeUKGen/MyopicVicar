@@ -1,5 +1,11 @@
-<h1>New FreeCEN Piece</h1>
-
+<% breadcrumb :new_freecen_piece,  @freecen_piece.chapman_code %>
+<h1 style="text-align: center">Creating new FreeCEN Piece for <%=@freecen_piece.chapman_code%></h1>
+<%= render 'flash_notice' %>
+<% if @freecen_piece.errors.any? %>
+  <%= @freecen_piece.errors.full_messages%>
+<% end%>
+<% if @piece_params_errors.present? && @piece_params_errors.any? %>
+  <%= @piece_params_errors%>
+<% end%>
 <%= render 'form' %>
-
 <%# link_to 'Back', freecen_pieces_path %>

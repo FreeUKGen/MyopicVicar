@@ -14,12 +14,25 @@ class FreecenDwelling
   field :unoccupied_notes, type: String
   belongs_to :freecen1_vld_file, index: true
   has_many :freecen_individuals
-  belongs_to :place, index: true
+  belongs_to :place, optional: true, index: true
   belongs_to :freecen_piece, index: true
   delegate :piece_number, :year, :chapman_code, to: :freecen_piece, prefix: true
   delegate :place_name, to: :place#, prefix: true
 
   index({freecen_piece_id: 1,dwelling_number: 1},{background: true})
+  before_destroy do |entry|
+    FreecenIndividual.destroy_all(freecen_dwelling_id: entry._id)
+  end
+
+
+  # ################################################################################ instance
+
+  def destroy_individuals
+    before_destroy do |entry|
+      SearchRecord.destroy_all(:freereg1_csv_entry_id => entry._id)
+    end
+
+  end
 
   # previous / next dwelling in census (not previous/next search result)
   def prev_next_dwelling_ids
@@ -41,27 +54,27 @@ class FreecenDwelling
     #1841 doesn't have ecclesiastical parish or schedule number
     #Scotland doesn't have folio
     if '1841' == year
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-        return ['Census Year', 'County', 'Place', 'Civil Parish', 'Piece', 'Enumeration District', 'Page', 'House Number', 'House or Street Name']
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        return ['Census', 'County', 'District', 'Civil Parish', 'Piece', 'Enumeration District', 'Page', 'House Number', 'House or Street Name']
       end
-      return ['Census Year', 'County', 'Place', 'Civil Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'House Number', 'House or Street Name']
+      return ['Census', 'County', 'District', 'Civil Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'House Number', 'House or Street Name']
     end
-    if ChapmanCode::CODES['Scotland'].member?(chapman_code)
-      return ['Census Year', 'County', 'Place', 'Civil Parish', 'Ecclesiastical Parish', 'Piece', 'Enumeration District', 'Page', 'Schedule', 'House Number', 'House or Street Name']
+    if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+      return ['Census', 'County', 'District', 'Civil Parish', 'Ecclesiastical Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'Schedule', 'House Number', 'House or Street Name']
     end
-    ['Census Year', 'County', 'Place', 'Civil Parish', 'Ecclesiastical Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'Schedule', 'House Number', 'House or Street Name']
+    ['Census', 'County', 'District', 'Civil Parish', 'Ecclesiastical Parish', 'Piece', 'Enumeration District', 'Folio', 'Page', 'Schedule', 'House Number', 'House or Street Name']
   end
   def dwelling_display_values(year, chapman_code)
     #1841 doesn't have ecclesiastical parish or schedule number
     #Scotland doesn't have folio
     disp_county = '' + ChapmanCode::name_from_code(chapman_code) + ' (' + chapman_code + ')' unless chapman_code.nil?
     if '1841' == year
-      if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         return [self.freecen_piece.year, disp_county, self.place.place_name, self.civil_parish, self.freecen_piece.piece_number.to_s, self.enumeration_district, self.page_number, self.house_number, self.house_or_street_name]
       end
       return [self.freecen_piece.year, disp_county, self.place.place_name, self.civil_parish, self.freecen_piece.piece_number.to_s, self.enumeration_district, self.folio_number, self.page_number, self.house_number, self.house_or_street_name]
     end
-    if ChapmanCode::CODES['Scotland'].member?(chapman_code)
+    if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
       return [self.freecen_piece.year, disp_county, self.place.place_name, self.civil_parish, self.ecclesiastical_parish, self.freecen_piece.piece_number.to_s, self.enumeration_district, self.folio_number, self.page_number, self.schedule_number, self.house_number, self.house_or_street_name]
     end
     [self.freecen_piece.year, disp_county, self.place.place_name, self.civil_parish, self.ecclesiastical_parish, self.freecen_piece.piece_number.to_s, self.enumeration_district, self.folio_number, self.page_number, self.schedule_number, self.house_number, self.house_or_street_name]

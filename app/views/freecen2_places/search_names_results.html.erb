@@ -1,0 +1,49 @@
+<% breadcrumb :search_names_results%>
+<h3 style="text-align: center"> <%= @total%> Results in a Freecen2 Place Name <%= @type_head %>Search for '<%= session[:search_names][:search]%>' in <%= @county %></h3>
+<%= render 'flash_notice' %>
+<% if %w[data_manager system_administrator county_coordinator master_county_coordinator validator executive_director project_manager].include?(@user.person_role) %>
+  <div style="text-align: center">
+    <%= link_to 'Create New Freecen2 Place', new_freecen2_place_path(name:session[:search_names][:search]), method: :get, :class => "btn   btn--small", title: 'Permits the addition of a new place' %>
+  </div>
+<% end%>
+<div class="scrollable ">
+  <table  class="table--bordered table--data table--striped " >
+    <thead >
+      <tr>
+        <th class='sticky-header '>Place name</th>
+        <th class='sticky-header t30'>Alternate names </th>
+        <th class='sticky-header '>County </th>
+        <th class='sticky-header '>Latitude:</th>
+        <th class='sticky-header '>Longitude:</th>
+        <th class='sticky-header '>Show on map<br>
+          <small> Opens new tab</small></th>
+        <th class='sticky-header '>Source:</th>
+        <th class='sticky-header t25'>Notes<br>
+          <% if %w[validator data_manager system_administrator county_coordinator master_county_coordinator executive_director project_manager].include?(@user.person_role) %>
+            <th class='sticky-header '>Action<br>
+            </tr>
+          <% end%>
+        </thead>
+        <tbody >
+          <% if @results.present? %>
+            <% @results.each do |place| %>
+              <tr>
+                <td ><%= link_to(place.place_name, freecen2_place_path(place), class: 'btn   btn--small', title: 'Additional information on the place' )%> </td>
+                <td class='t30'> <%= alternate(place) %></td>
+                <td > <%= place.chapman_code %></td>
+                <td > <%= place.latitude%></td>
+                <td > <%= place.longitude%></td>
+                <td > <%= locate(place.latitude,place.longitude) %></td>
+                <td > <%= place.source%></td>
+                <td class='t25'> <%= place.place_notes%></td>
+                <% if %w[validator data_manager system_administrator county_coordinator master_county_coordinator executive_director project_manager].include?(@user.person_role) %>
+                  <td ><%= link_to 'Edit', edit_freecen2_place_path(place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small", title: 'Edit the place including the addition of alternate place names' %></td>
+                </tr>
+              <% end%>
+            <% end%>
+          <% else %>
+            <tr> There are no such names </tr>
+          <% end%>
+        </tbody>
+      </table>
+    </div>

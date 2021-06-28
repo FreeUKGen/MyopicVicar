@@ -1,0 +1,23 @@
+<%= simple_form_for(@site_statistic) do |f| %>
+  <% if @site_statistic.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@site_statistic.errors.count, "error") %> prohibited this site_statistic from being saved:</h2>
+      <ul>
+        <% @site_statistic.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <div class="field">
+    <%= f.input :year, label: 'Year'%>
+    <%= f.input :month, label: 'Month'%>
+    <%= f.input :day, label: 'Day'%>
+    <%= f.input :n_records %>
+    <%= f.input :n_searches %>
+    <%= f.input :n_records_added %>
+  </div>
+  <div class="actions">
+    <%= f.button :submit %>
+  </div>
+<% end %>

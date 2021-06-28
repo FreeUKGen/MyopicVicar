@@ -1,0 +1,47 @@
+db.runCommand(
+  {
+    createIndexes: "freecen2_districts",
+    indexes: [
+        {
+                "key" : {
+                        "_id" : 1
+                },
+                "name" : "_id_"
+        },
+        {
+                "key" : {
+                        "chapman_code" : 1,
+                        "year" : 1,
+                        "name" : 1
+                },
+                "name" : "chapman_code_year_name"
+        },
+         {
+                "key" : {
+                        "chapman_code" : 1,
+                        "name" : 1,
+                        "year" : 1
+                },
+                "name" : "chapman_code_name_year"
+        },
+        {
+                "key" : {
+                        "name" : 1
+                },
+                "name" : "name"
+        },
+        {
+                "key" : {
+                        "year" : 1
+                },
+                "name" : "year"
+        },
+        {
+                "key" : {
+                        "freecen2_place_id" : 1
+                },
+                "name" : "freecen2_place_id"
+        }
+    ]
+  }
+)

@@ -1,0 +1,34 @@
+<% breadcrumb :freecen2_pieces_district,  @freecen2_district.id, @chapman_code, @year %>
+<h1 style="text-align: center">FreeCen2 Pieces for <%= @freecen2_district.name %> in <%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>) in <%= @year%></h1>
+<div style="text-align: center">
+  <%= render 'flash_notice' %>
+</div>
+<div class="scrollable ">
+  <table class="table--bordered table--data just--left table--striped">
+    <thead >
+      <tr>
+        <th class='sticky-header '>Piece Number</th>
+        <th class='sticky-header '>Piece name</th>
+        <th class='sticky-header '>District</th>
+        <th colspan = "2" class='sticky-header '>Actions</th>
+        <th class='sticky-header '>Civil parishes</th>
+      </tr>
+    </thead>
+    <tbody >
+      <% @freecen2_pieces.each do |freecen2_piece| %>
+        <tr id="<%=freecen2_piece.id%>">
+          <td ><%= freecen2_piece.number %></td>
+          <td ><%= freecen2_piece.name %></td>
+          <td ><%= freecen2_piece.district_name%></td>
+          <td ><%= link_to 'Show', freecen2_piece_path(freecen2_piece,type: @type) , :class => "btn   btn--small"%></td>
+          <% if %w[data_manager system_administrator].include?(@user.person_role)%>
+            <td ><%= link_to 'Edit', edit_freecen2_piece_path(freecen2_piece,type: @type), data: { confirm: 'Are you sure?' }, :class => "btn   btn--small", title: 'Editing is restricted to, coordinators, data managers and system administrators'%></td>
+          <% else%>
+            <td> </td>
+          <% end %>
+          <td ><%= freecen2_piece.civil_parish_names %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

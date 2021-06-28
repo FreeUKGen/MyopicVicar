@@ -1,0 +1,26 @@
+<table class="table--bordered table--data" >
+  <thead>
+    <tr>
+      <% FreecenCsvEntry.individual_display_labels(@year,@chapman_code).each do |lbl| %>
+        <td><small>
+            <%= lbl %>
+          </small></td>
+      <% end %>
+    </tr>
+  </thead>
+  <tbody>
+    <% if @freecen_csv_entry.uninhabited_flag.blank? %>
+      <tr>
+        <% @freecen_csv_entry.individual_display_values(@year,@chapman_code).each do |field_val| %>
+          <td class="weight--semibold">
+            <%= field_val %>
+          </td>
+        <% end %>
+      </tr>
+    <% else%>
+      <tr>
+        <p class="text--center">Uninhabited</p>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

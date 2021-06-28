@@ -1,0 +1,32 @@
+<section>
+  <% if @csv.blank? %>
+    <%= render '/freecen_csv_entries/error' %>
+    <%= render '/freecen_csv_entries/csv_census_header' %>
+    <%= render '/freecen_csv_entries/csv_address' %>
+    <% if @freecen_csv_entry.uninhabited_flag.blank?%>
+      <%= render '/freecen_csv_entries/csv_individual_part_1' %>
+      <%= render '/freecen_csv_entries/csv_individual_part_2' %>
+    <% else%>
+      <p style="text-align: center" class="weight--semibold">
+        <%= Freecen::UNINHABITED[@freecen_csv_entry.uninhabited_flag.upcase] %> :
+        <%= @freecen_csv_entry.notes%>
+      </p>
+    <% end%>
+    <%= render '/freecen_csv_entries/flag_display' %>
+  <% else%>
+    <% if @show_navigation %>
+      <%= render '/freecen_csv_entries/csv_census_header' %>
+      <%= render '/freecen_csv_entries/csv_address' %>
+    <% else%>
+      <%= render '/freecen_csv_entries/csv_census_header_print' %>
+      <%= render '/freecen_csv_entries/csv_address_print' %>
+    <% end%>
+    <% if @uninhabited.blank?%>
+      <%= render '/freecen_csv_entries/csv_individual'%>
+    <% else%>
+      <p style="text-align: center" class="weight--semibold">
+        <%= @uninhabited%>
+      </p>
+    <% end%>
+  <% end%>
+</section>

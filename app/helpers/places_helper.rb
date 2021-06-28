@@ -24,10 +24,13 @@ module PlacesHelper
   end
 
   def place_name_from_ucf_list(file)
-
-    filename = Freereg1CsvFile.find_by(_id: file.to_s)
-    if filename.present?
-      link_to "#{filename.file_name}", freereg1_csv_file_path(filename.id.to_s, from: 'place'), method: :get
+    if file.present?
+      filename = Freereg1CsvFile.find_by(_id: file.to_s)
+      if filename.present?
+        link_to "#{filename.file_name}", freereg1_csv_file_path(filename.id.to_s, from: 'place'), method: :get
+      else
+        'None'
+      end
     else
       'None'
     end

@@ -10,6 +10,7 @@ class Place
   require 'master_place_name'
   require 'register_type'
   require 'freereg_validations'
+  # Consider changing modified place name to standard place name as done for Freecen2Place
 
 
   field :country, type: String
@@ -85,6 +86,8 @@ class Place
   has_many :freecen_pieces
   has_many :freecen_dwellings
   has_many :sources
+
+  has_many :freecen2_districts
 
   has_many :image_server_groups
   has_many :gaps
@@ -165,6 +168,20 @@ class Place
       logger.warn("FREEREG:LOCATION:VALIDATION invalid County code #{county} ") unless result
       result
     end
+
+    def place_valid?(place)
+      if place.blank?
+        logger.warn("#{MyopicVicar::Application.config.freexxx_display_name.upcase}:PLACE_ERROR: file had no place")
+        result = false
+      elsif Place.find_by(id: place.id).present?
+        result = true
+      else
+        result = false
+        logger.warn("#{MyopicVicar::Application.config.freexxx_display_name.upcase}:PLACE_ERROR: #{place.id} not located")
+      end
+      result
+    end
+
 
     def valid_place?(place)
       result = false
@@ -457,7 +474,18 @@ class Place
   def places_near(radius_factor, system)
     earth_radius = system==MeasurementSystem::ENGLISH ? 3963 : 6379
     # places = Place.where(:data_present => true).limit(500).geo_near(self.location).spherical.max_distance(radius.to_f/earth_radius).distance_multiplier(earth_radius).to_a
-    places = Place.where(:data_present => true).limit(radius_factor).geo_near(self.location).spherical.distance_multiplier(earth_radius).to_a
+    #places = Place.where(:data_present => true).limit(radius_factor).geo_near(self.location).spherical.distance_multiplier(earth_radius).to_a
+    results = Place.collection.aggregate([{ "$geoNear" => { 'near' => { type: "Point", coordinates: self.location },:distanceField => 'dis',
+                                                            :includeLocs => 'loc', :pherical => true } },
+                                          { "$match" => { data_present: true } },
+                                          { "$limit" => radius_factor }
+
+                                          ])
+    places = []
+    results.each do |result|
+      places << Place.find_by(_id: result[:_id])
+    end
+
     # get rid of this place
     places.shift
     places

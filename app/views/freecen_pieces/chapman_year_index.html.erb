@@ -1,0 +1,38 @@
+<%= render 'chapman_index_header' %>
+<div style="overflow: hidden;">
+  <table class="my-width-min flush--bottom" >
+    <thead >
+      <tr>
+        <th class='sticky-header t5'>Year</th>
+        <th class='sticky-header t5'>Piece</th>
+        <th class='sticky-header t20'>District</th>
+        <th class='sticky-header t30'>Sub places</th>
+        <th class='sticky-header t5'>Parish</th>
+        <th class='sticky-header t5'>Suffix</th>
+        <th class='sticky-header t5'>Inds</th>
+        <th colspan = "3" class='sticky-header t20'>Action</th>
+      </tr>
+    </thead>
+  </table>
+  <div class="scrollable ">
+    <table class=" table--bordered my-width table--data table--striped just--left">
+      <tbody >
+        <% @freecen_pieces.each do |freecen_piece| %>
+          <tr id="<%=freecen_piece.id%>">
+            <td class="t5"><%= freecen_piece.year %></td>
+            <td class="t5"><%= freecen_piece.piece_number %></td>
+            <td class="t20"><%= freecen_piece.district_name%></td>
+            <td class="t30"><%= sub_pieces(freecen_piece.subplaces) %></td>
+            <td class="t5"><%= freecen_piece.parish_number %></td>
+            <td class="t5"><%= freecen_piece.suffix %></td>
+            <td class="t5"><%= freecen_piece.num_individuals %></td>
+            <td class="t20"><%= link_to 'Show', freecen_piece , :class => "btn   btn--small"%>
+              <%= link_to 'Edit', edit_freecen_piece_path(freecen_piece.id), data: { confirm: 'Are you sure?' }, :class => "btn   btn--small" %>
+              <%= link_to 'Destroy', freecen_piece_path(freecen_piece.id), method: :delete, :class => "btn   btn--small",
+              data: { confirm: 'Are you sure you want to destroy this Piece.? It will not happen if there are dependants!' } if ['data_manager', 'system_administrator', 'county_coordinator', 'master_county_coordinator'].include?(@user.person_role) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

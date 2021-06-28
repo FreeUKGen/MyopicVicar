@@ -1,0 +1,29 @@
+<h4 style="text-align: center">Page and Folio Change Index</h4>
+<div style="overflow: hidden;">
+  <div class="scrollable ">
+    <table class="table--bordered my-width table--data just--left">
+      <thead  >
+        <tr >
+          <th class='sticky-header'>Entry Number</th>
+          <th class='sticky-header'>Folio</th>
+          <th class='sticky-header'>Page</th>
+          <th class='sticky-header'>Action</th>
+        </tr>
+      </thead>
+      <tbody >
+        <% @freecen_csv_entries.each do |freecen_csv_entry| %>
+          <% if freecen_csv_entry.error_messages.present? %>
+            <tr id="<%= freecen_csv_entry.id %>" style= "color:red">
+            <%else%>
+              <tr id="<%= freecen_csv_entry.id %>" style= "color:teal">
+              <% end%>
+              <td><%= freecen_csv_entry.record_number%></td>
+              <td><%= folio(freecen_csv_entry) %></td>
+              <td><%= freecen_csv_entry.page_number %></td>
+              <td><%= link_to 'Display', freecen_csv_entry_path(freecen_csv_entry,type: @type), class: 'btn   btn--small' %> </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>

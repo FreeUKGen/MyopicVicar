@@ -15,7 +15,7 @@
 #
 
 class ApplicationController < ActionController::Base
-
+  rescue_from ActionController::UnknownFormat, with: :missing_template
   protect_from_forgery :with => :reset_session
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :require_login
@@ -41,16 +41,27 @@ class ApplicationController < ActionController::Base
 
   def load_last_stat
     if session[:site_stats].blank?
-      time = Time.now
-      last_midnight = Time.new(time.year, time.month, time.day)
-      # last_midnight = Time.new(2015,10,13)
-      @site_stat = SiteStatistic.collection.find({ interval_end: last_midnight }, 'projection' => { interval_end: 0, year: 0, month: 0, day: 0, _id: 0 }).first
-      if @site_stat.blank?
-        time = 1.day.ago
+      case appname.downcase
+      when 'freereg'
+        time = Time.now
         last_midnight = Time.new(time.year, time.month, time.day)
         @site_stat = SiteStatistic.collection.find({ interval_end: last_midnight }, 'projection' => { interval_end: 0, year: 0, month: 0, day: 0, _id: 0 }).first
+        if @site_stat.blank?
+          time = 1.day.ago
+          last_midnight = Time.new(time.year, time.month, time.day)
+          @site_stat = SiteStatistic.collection.find({ interval_end: last_midnight }, 'projection' => { interval_end: 0, year: 0, month: 0, day: 0, _id: 0 }).first
+        end
+        session[:site_stats] = @site_stat
+      when 'freecen'
+        site_stat = Freecen2SiteStatistic.order_by(interval_end: -1).first
+        session[:site_stats] = {}
+        session[:site_stats][:searches] = site_stat.present? ? site_stat.searches : 0
+        session[:site_stats][:records] = site_stat.present? ? site_stat.records[:total][:total][:search_records] : 0
+        session[:site_stats][:added] = site_stat.present? && site_stat.records[:total][:total][:added_vld_entries].present? &&
+          site_stat.records[:total][:total][:added_csv_individuals_incorporated].present? ? (site_stat.records[:total][:total][:added_vld_entries] +
+                                                                                             site_stat.records[:total][:total][:added_csv_individuals_incorporated]) : 0
+        @site_stat = session[:site_stats]
       end
-      session[:site_stats] = @site_stat
     else
       @site_stat = session[:site_stats]
     end
@@ -204,6 +215,12 @@ class ApplicationController < ActionController::Base
     a
   end
 
+  def missing_template
+    logger.warn("#{appname_upcase}:We encountered an unsupported format #{params}")
+    flash[:notice] = 'You requested the display of the page in an unsupported format'
+    redirect_to new_search_query_path
+  end
+
   def reject_access(user, action)
     flash[:notice] = 'You are not permitted to use this action'
     logger.info "#{appname_upcase}:ACCESS ISSUE: The #{user} attempted to access #{action}."
@@ -254,6 +271,11 @@ class ApplicationController < ActionController::Base
     session.delete(:message_id)
     session.delete(:original_message_id)
     session.delete(:query)
+    session.delete(:search_names)
+    session[:stats_view] = false
+    session.delete(:stats_year)
+    session.delete(:stats_todate)
+    session.delete(:stats_recs)
   end
 
   def clean_session_for_county
@@ -299,7 +321,12 @@ class ApplicationController < ActionController::Base
     session.delete(:place)
     session.delete(:church)
     session.delete(:register)
-
+    session.delete(:search_names)
+    session.delete(:type)
+    session[:stats_view] = false
+    session.delete(:stats_year)
+    session.delete(:stats_todate)
+    session.delete(:stats_recs)
   end
 
   def clean_session_for_images
@@ -372,5 +399,6 @@ class ApplicationController < ActionController::Base
     session.delete(:place)
     session.delete(:church)
     session.delete(:register)
+    session.delete(:search_names)
   end
 end

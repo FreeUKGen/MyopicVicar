@@ -14,6 +14,7 @@ class SearchQuery
   module SearchOrder
     TYPE = 'record_type'
     DATE = 'search_date'
+    BIRTH_PLACE = 'birth_place'
     BIRTH_COUNTY = 'birth_chapman_code'
     COUNTY = 'chapman_code'
     LOCATION = 'location'
@@ -22,6 +23,7 @@ class SearchQuery
     ALL_ORDERS = [
       TYPE,
       BIRTH_COUNTY,
+      BIRTH_PLACE,
       DATE,
       COUNTY,
       LOCATION,
@@ -169,9 +171,66 @@ class SearchQuery
 
       [record, true, '']
     end
+
+    def add_birth_place_when_absent(rec)
+      return rec if rec[:birth_place].present?
+
+      search_record = SearchRecord.find_by(_id: rec[:_id])
+      if search_record.freecen_csv_entry_id.present?
+        entry = FreecenCsvEntry.find_by(_id: search_record.freecen_csv_entry_id)
+        birth_place = entry.birth_place.present? ? entry.birth_place : entry.verbatim_birth_place
+        search_record.update_attributes(birth_place: birth_place) if entry.present?
+      else
+        individual = search_record.freecen_individual_id
+        actual_individual = FreecenIndividual.find_by(_id: individual) if individual.present?
+        birth_place = actual_individual.birth_place.present? ? actual_individual.birth_place : actual_individual.verbatim_birth_place
+        search_record.update_attributes(birth_place: birth_place) if actual_individual.present?
+      end
+      rec['birth_place'] = birth_place
+      rec
+    end
+
+    def add_search_date_when_absent(rec)
+      return rec if rec[:search_date].present?
+
+      search_record = SearchRecord.find_by(_id: rec[:_id])
+      search_record.update_attributes(search_date: search_record.search_dates[0])
+      rec['search_date'] = search_record.search_dates[0]
+      rec
+    end
+
+    def does_the_entry_exist?(search_record)
+      case App.name.downcase
+      when 'freereg'
+        entry = search_record[:freereg1_csv_entry_id]
+        if entry.present?
+          actual_entry = Freereg1CsvEntry.find_by(_id: entry)
+          if actual_entry.present?
+            proceed, _place, _church, _register = actual_entry.location_from_entry
+          else
+            proceed = false
+          end
+        else
+          proceed = false
+        end
+      when 'freecen'
+        entry = search_record[:freecsv_csv_entry_id]
+        if entry.present?
+          actual_entry = FreecenCsvEntry.find_by(_id: entry)
+          proceed = actual_entry.present? ? true : false
+        else
+          proceed = false
+        end
+      else
+        proceed = true
+
+      end
+      proceed
+    end
   end
 
   ############################################################################# instance methods #####################################################
+
 
   def adequate_first_name_criteria?
     first_name.present? && chapman_codes.length > 0 && place_ids.present?
@@ -302,7 +361,7 @@ class SearchQuery
   end
 
   def explain_plan
-    SearchRecord.where(search_params).max_scan(1 + FreeregOptionsConstants::MAXIMUM_NUMBER_OF_SCANS).asc(:search_date).all.explain
+    SearchRecord.where(search_params).asc(:search_date).all.explain
   end
 
   def explain_plan_no_sort
@@ -310,7 +369,7 @@ class SearchQuery
   end
 
   def extract_stub(my_name)
-    return if my_name.blank? || !my_name.match(WILDCARD)
+    return if my_name.blank?
 
     name_parts = my_name.split(WILDCARD)
     name_parts[0].downcase
@@ -356,7 +415,8 @@ class SearchQuery
     return search_results if no_additional_census_fields?
 
     search_results.each do |record|
-      individual = FreecenIndividual.find(record[:freecen_individual_id])
+      individual = FreecenIndividual.find(record[:freecen_individual_id]) unless record[:freecen_csv_entry_id].present? && record[:freecen_csv_entry_id].present?
+      individual = FreecenCsvEntry.find(record[:freecen_csv_entry_id]) if record[:freecen_csv_entry_id].present? && record[:freecen_csv_entry_id].present?
       next if individual.blank?
 
       if individual_sex?(individual) && individual_marital_status?(individual) && individual_language?(individual) &&
@@ -400,7 +460,7 @@ class SearchQuery
       search_results = self.filter_name_types(search_results)
       search_results = self.filter_embargoed(search_results)
       search_results = self.filter_census_addional_fields(search_results) if MyopicVicar::Application.config.template_set == 'freecen'
-      search_results.length.present? ? result_count = search_results.length : result_count = 0
+      result_count = search_results.length.present? ? search_results.length : 0
       search_results = self.sort_results(search_results) unless search_results.nil?
 
       ucf_results = self.ucf_results if self.ucf_results.present?
@@ -473,16 +533,20 @@ class SearchQuery
   def individual_sex?(individual)
     return true if sex.blank?
 
-    result = individual.sex == sex ? true : false
+    return false if individual.sex.blank?
+
+    result = sex.casecmp(individual.sex).zero? ? true : false
     result
   end
 
   def individual_marital_status?(individual)
     return true if marital_status.blank?
 
-    return true if marital_status == individual.marital_status
+    return false if individual.marital_status.blank?
 
-    return true if individual.marital_status == 'U' && marital_status == 'S'
+    return true if marital_status.casecmp(individual.marital_status).zero?
+
+    return true if individual.marital_status.casecmp('u').zero? && marital_status.casecmp('s').zero?
 
     false
   end
@@ -490,7 +554,9 @@ class SearchQuery
   def individual_language?(individual)
     return true if language.blank?
 
-    return true if language == individual.language
+    return false if individual.language.blank?
+
+    return true if language.casecmp(individual.language).zero?
 
     false
   end
@@ -517,9 +583,9 @@ class SearchQuery
   end
 
   def locate(record_id)
-    records = self.search_result.records.values
-    position = locate_index(records,record_id)
-    position.present? ? record = records[position] : record = nil
+    records = search_result.records.values
+    position = locate_index(records, record_id)
+    record = position.present? ? records[position] : nil
     record
   end
 
@@ -527,40 +593,33 @@ class SearchQuery
     n = 0
     records.each do |record|
       break if record[:_id].to_s == current
-      n = n + 1
+
+      n += 1
     end
-    return n
+    n
   end
 
   def name_not_blank
-    if last_name.blank? && !adequate_first_name_criteria?
-      errors.add(:first_name, 'A forename, county and place must be part of your search if you have not entered a surname.')
-    end
+    message = 'A forename, county and place must be part of your search if you have not entered a surname.'
+    errors.add(:first_name, message) if last_name.blank? && !adequate_first_name_criteria?
   end
 
   def name_search_params
-    params = Hash.new
-    name_params = Hash.new
-    #type_array = [SearchRecord::PersonType::PRIMARY]
-    #type_array << SearchRecord::PersonType::FAMILY if inclusive
-    #type_array << SearchRecord::PersonType::WITNESS if witness
-    #search_type = type_array.size > 1 ? { '$in' => type_array } : SearchRecord::PersonType::PRIMARY
-    #name_params['type'] = search_type
+    params = {}
+    name_params = {}
     if query_contains_wildcard?
       name_params['first_name'] = wildcard_to_regex(first_name.downcase) if first_name
       name_params['last_name'] = wildcard_to_regex(last_name.downcase) if last_name
-      params['search_names'] =  { '$elemMatch' => name_params}
+      params['search_names'] = { '$elemMatch' => name_params }
     else
-      params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes && chapman_codes.size > 0
-      params[:birth_chapman_code] = { '$in' => birth_chapman_codes } if birth_chapman_codes && birth_chapman_codes.size > 0
       if fuzzy
         name_params['first_name'] = Text::Soundex.soundex(first_name) if first_name
         name_params['last_name'] = Text::Soundex.soundex(last_name) if last_name.present?
-        params['search_soundex'] =  { '$elemMatch' => name_params}
+        params['search_soundex'] = { '$elemMatch' => name_params }
       else
         name_params['first_name'] = first_name.downcase if first_name
         name_params['last_name'] = last_name.downcase if last_name.present?
-        params['search_names'] =  { '$elemMatch' => name_params}
+        params['search_names'] = { '$elemMatch' => name_params }
       end
     end
     params
@@ -570,6 +629,7 @@ class SearchQuery
     if search_result.records.respond_to?(:values)
       search_results = search_result.records.values
       search_results = filter_name_types(search_results)
+      search_results = filter_census_addional_fields(search_results) if MyopicVicar::Application.config.template_set == 'freecen'
       search_results = sort_results(search_results) unless search_results.nil?
       record_number = locate_index(search_results, current)
       next_record_id = nil
@@ -593,11 +653,19 @@ class SearchQuery
 
   def persist_additional_results(results)
     return unless results
+
     # finally extract the records IDs and persist them
-    records = Hash.new
+    records = {}
     results.each do |rec|
       rec_id = rec['_id'].to_s
-      records[rec_id] = rec
+      proceed = SearchQuery.does_the_entry_exist?(rec)
+      if proceed
+        record = rec
+        records[rec_id] = record
+      else
+        search_record = SearchRecord.find_by(_id: rec['_id'].to_s)
+        search_record.delete if search_record.present?
+      end
     end
     self.search_result.records = self.search_result.records.merge(records)
     self.result_count = self.search_result.records.length
@@ -607,14 +675,27 @@ class SearchQuery
 
   def persist_results(results)
     return unless results
+
     # finally extract the records IDs and persist them
-    records = Hash.new
+    records = {}
     results.each do |rec|
       record = rec # should be a SearchRecord despite Mongoid bug
       rec_id = record['_id'].to_s
+      record = SearchQuery.add_birth_place_when_absent(record) if record[:birth_place].blank? && App.name.downcase == 'freecen'
+      record = SearchQuery.add_search_date_when_absent(record) if record[:search_date].blank?
       records[rec_id] = record
+      proceed = SearchQuery.does_the_entry_exist?(rec)
+      if proceed
+        rec_id = record['_id'].to_s
+        record = SearchQuery.add_birth_place_when_absent(record) if record[:birth_place].blank? && App.name.downcase == 'freecen'
+        record = SearchQuery.add_search_date_when_absent(record) if record[:search_date].blank?
+        records[rec_id] = record
+      else
+        search_record = SearchRecord.find_by(_id: rec['_id'].to_s)
+        search_record.delete if search_record.present?
+      end
     end
-    self.search_result =  SearchResult.new
+    self.search_result = SearchResult.new
     self.search_result.records = records
     self.result_count = records.length
     self.runtime = (Time.now.utc - self.updated_at) * 1000
@@ -627,15 +708,24 @@ class SearchQuery
   end
 
   def place_search_params
-    params = Hash.new
+    params = {}
+    appname = App.name_downcase
     if place_search?
       search_place_ids = radius_place_ids
-
-      params[:place_id] = { '$in' => search_place_ids }
+      case appname
+      when 'freecen'
+        params = { '$or' => [{ place_id: { '$in' => search_place_ids } }, { freecen2_place_id: { '$in' => search_place_ids } }] }
+      when 'freereg'
+        params[:place_id] = { '$in' => search_place_ids }
+      end
     else
-      chapman_codes && chapman_codes.size > 0 ? params[:chapman_code] = { '$in' => chapman_codes } : params[:chapman_code] = { '$in' => ChapmanCode.values }
-      # params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes && chapman_codes.size > 0
-      params[:birth_chapman_code] = { '$in' => birth_chapman_codes } if birth_chapman_codes && birth_chapman_codes.size > 0
+      case appname
+      when 'freecen'
+        params[:chapman_code] = chapman_codes.present? ? { '$in' => chapman_codes } : { '$in' => ChapmanCode.values }
+        params[:birth_chapman_code] = { '$in' => birth_chapman_codes } if birth_chapman_codes.present?
+      when 'freereg'
+        params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes.present?
+      end
     end
     params
   end
@@ -653,7 +743,6 @@ class SearchQuery
     record
   end
 
-
   def next_record(current)
     records_sorted = self.results
     return nil if records_sorted.nil?
@@ -670,7 +759,7 @@ class SearchQuery
   def query_contains_wildcard?
     (first_name && first_name.match(WILDCARD)) || (last_name && last_name.match(WILDCARD))? wildcard_search = true : wildcard_search = false
     self.wildcard_search = wildcard_search
-    return wildcard_search
+    wildcard_search
   end
 
   def radius_is_valid
@@ -734,11 +823,9 @@ class SearchQuery
   def search
     @search_parameters = search_params
     @search_index = SearchRecord.index_hint(@search_parameters)
-    # @search_index = 'place_rt_sd_ssd' if query_contains_wildcard?
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
+    logger.warn("#{App.name_upcase}:SEARCH_PARAMETERS: #{@search_parameters}")
     update_attribute(:search_index, @search_index)
-
-    # logger.warn @search_parameters.inspect
     records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     persist_results(records)
     persist_additional_results(secondary_date_results) if App.name == 'FreeREG' && (result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
@@ -785,20 +872,26 @@ class SearchQuery
   def sort_results(results)
     # next reorder in memory
     if results.present?
-      case self.order_field
+      case order_field
       when *selected_sort_fields
+        order = order_field.to_sym
+        results.each do |rec|
+        end
         results.sort! do |x, y|
-          x, y = y, x unless self.order_asc
-          (x[order_field] || '') <=> (y[order_field] || '')
+          if order_asc
+            (x[order] || '') <=> (y[order] || '')
+          else
+            (y[order] || '') <=> (x[order] || '')
+          end
         end
       when SearchOrder::DATE
-        if self.order_asc
+        if order_asc
           results.sort! { |x, y| (x[:search_date] || '') <=> (y[:search_date] || '') }
         else
           results.sort! { |x, y| (y[:search_date] || '') <=> (x[:search_date] || '') }
         end
       when SearchOrder::LOCATION
-        if self.order_asc
+        if order_asc
           results.sort! do |x, y|
             compare_location(x, y)
           end
@@ -808,7 +901,7 @@ class SearchQuery
           end
         end
       when SearchOrder::NAME
-        if self.order_asc
+        if order_asc
           results.sort! do |x, y|
             compare_name(x, y)
           end
@@ -921,6 +1014,6 @@ class SearchQuery
   private
 
   def selected_sort_fields
-    [ SearchOrder::COUNTY, SearchOrder::BIRTH_COUNTY, SearchOrder::TYPE ]
+    [ SearchOrder::COUNTY, SearchOrder::BIRTH_COUNTY, SearchOrder::BIRTH_PLACE, SearchOrder::TYPE ]
   end
 end

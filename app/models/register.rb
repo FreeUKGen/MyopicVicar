@@ -162,6 +162,19 @@ class Register
       return images
     end
 
+    def register_valid?(register)
+      if register.blank?
+        logger.warn("#{App.name.upcase}:REGISTER_ERROR: file had no register")
+        result = false
+      elsif Register.find_by(id: register.id).present?
+        result = true
+      else
+        result = false
+        logger.warn("#{App.name.upcase}:REGISTER_ERROR: #{register.id} not located")
+      end
+      result
+    end
+
     def update_or_create_register(freereg1_csv_file)
       # find if register exists
       register = find_register(freereg1_csv_file.to_register)
@@ -335,7 +348,6 @@ class Register
       file.update_attribute(:register_type,self.register_type)
     end
   end
-
 
   def update_data_present_in_place(file)
     #also refresh the cache if the place is newly active

@@ -1,0 +1,21 @@
+<% breadcrumb :tna_change_logs%>
+<h2 class=" text--center">Listing of the changes made to District, Piece and Civil Parish collections</h2>
+<%= render 'flash_notice' %>
+<table  class="table--bordered   table--data">
+  <tr>
+    <th >Collection</th>
+    <th >Chapman Code</th>
+    <th >Year</th>
+    <th >Userid </th>
+    <th >Parameters</th>
+  </tr>
+  <% @changes.each do |file| %>
+    <tr id="<%=file.id%>">
+      <td > <%= file.tna_collection %>  </td>
+      <td > <%= file.chapman_code %>  </td>
+      <td > <%= file.year %>  </td>
+      <td > <%= file.userid %>  </td>
+      <td > <%= file.parameters %>  </td>
+    </tr>
+  <% end %>
+</table>

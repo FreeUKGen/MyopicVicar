@@ -21,7 +21,7 @@
         </tr>
         <tr>
           <td>District name</td>
-          <td class="weight--semibold"> <%= link_to "#{@freecen_piece.district_name}" , place_path(@freecen_piece.place) %> </td>
+          <td class="weight--semibold"> <%= link_to "#{@freecen_piece.district_name}" , place_path(@freecen_piece.place_id) %> </td>
         </tr>
         <tr>
           <td>Subplaces</td>
@@ -44,12 +44,16 @@
           <td class="weight--semibold"> <%=  @freecen_piece.film_number %> </td>
         </tr>
         <tr>
-          <td>Freecen1 filename</td>
-          <td class="weight--semibold"> <%=  @freecen_piece.freecen1_filename %> </td>
+          <td>Vld filename (Button links to the VLD file)</td>
+          <td class="weight--semibold"> <%=  vldfile(@freecen_piece.freecen1_filename) %> </td>
         </tr>
         <tr>
           <td>Status</td>
           <td class="weight--semibold"> <%=  @freecen_piece.status %> </td>
+        </tr>
+        <tr>
+          <td>Status Date</td>
+          <td class="weight--semibold"> <%=  status_date(@freecen_piece) %> </td>
         </tr>
         <tr>
           <td>Remarks</td>
@@ -64,12 +68,26 @@
           <td class="weight--semibold"> <%=  @freecen_piece.online_time %> </td>
         </tr>
         <tr>
+          <td>Number of entries</td>
+          <td class="weight--semibold"> <%=  @freecen_piece.num_entries %> </td>
+        </tr>
+        <tr>
           <td>Number of individuals</td>
           <td class="weight--semibold"> <%=  @freecen_piece.num_individuals %> </td>
         </tr>
         <tr>
+          <td>Number of dwellings</td>
+          <td class="weight--semibold"> <%=  @freecen_piece.num_dwellings %> </td>
+        </tr>
+        <tr>
           <td>Freecen1 fixed DAT entry</td>
-          <td class="weight--semibold">  <%= link_to 'dat_entry', freecen1_fixed_dat_entry_path(@freecen_piece.freecen1_fixed_dat_entry)  %></td>
+          <td class="weight--semibold">
+            <% if @freecen_piece.freecen1_fixed_dat_entry.present? %>
+              <%= link_to 'dat_entry', freecen1_fixed_dat_entry_path(@freecen_piece.freecen1_fixed_dat_entry)  %>
+            <% else %>
+              Entry created on line
+            <% end%>
+          </td>
         </tr>
       </table>
     </div>

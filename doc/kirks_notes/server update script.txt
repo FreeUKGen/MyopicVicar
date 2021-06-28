@@ -43,11 +43,29 @@ Back to Step a abd repeat for next server
 When complete update refinery
 
 Refinery transfer https://docs.google.com/document/d/1ozrJbHY074xYvwCB3j6NodDdPFPnWU4WySdnZCMeWUw/edit
+https://rundeck.freeukgen.org.uk/
+
 
 alias f2rake='sudo -u webserv bundle exec rake RAILS_ENV=production'
 
 
 Reminder for me
+
+f2rake foo:refresh_ucf_lists[0,0] --trace
  mongoexport --ssl --sslAllowInvalidCertificates --host "mongo5.freeukgen.org.uk:27017" --db freecen_production_2017 --collection freecen_pieces --out pieces.json
  mongoimport --port 27017 --db freecen_20170426 --collection freecen_pieces --file d:/mongo5/pieces.json
+ ps wuax | grep ruby
+  db.freecen2_civil_parishes.find({year: "1871","freecen2_hamlets.name": { $exists: true}, chapman_code: "SOM"}).count()
+  db.freecen2_districts.find({year: "1891", chapman_code: { $ne: "LND"},"freecen2_place_id": null})
+  db.freecen_csv_files.updateOne({_id: ObjectId("5fcca7d8f493fd1d6c1fffc6")},{ $set: { "freecen2_district_id" : ObjectId("5fc7f5d2f4040b3636bb6e7e")}})
+/home/apache/hosts/freereg2/production/tmp/processing_rake_lock_file.txt
+/root/bin/mongoctl
+mongo --host mongo5.freeukgen.org.uk:27017 --ssl --sslAllowInvalidCertificates
+https://docs.google.com/document/d/1rrDCZBlej0U9QjRKgrm83LfpjhD6RQjIo8VRYX9IgGQ/edit#
+userid.generation_time.strftime('%Y-%m-%d %H:%M') #bson objectid  to date
+first_id = BSON::ObjectId.from_time(start) # start =  DateTime.new(2021,1,1)
+searches = Freecen1VldFile.between(_id: first_id..last_id).count # Freecen1VldFile.where(_id: {"$lte"=> last_id}).count
+ SearchRecord.where(freecen_csv_file_id: freecen_file.id).delete_all
+num = FreecenCsvEntry.collection.update_many({ freecen_csv_file_id: freecen_file.id }, '$set' => { search_record_id: nil })
 
+rsync -avz kirkdawson@mongo5.freeukgen.org.uk:/home/kirkdawson/feedbacks.json /home/kirkdawson/

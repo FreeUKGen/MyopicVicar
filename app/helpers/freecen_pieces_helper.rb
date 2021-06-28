@@ -17,4 +17,37 @@ module FreecenPiecesHelper
     place_names.sort_by! { |e| ActiveSupport::Inflector.transliterate(e.downcase) }
     place_names.join(', ')
   end
+
+  def piece_number(file)
+    actual_piece = file.freecen_piece
+    piece_number = actual_piece.piece_number
+  end
+
+  def chapman(file)
+    actual_piece = file.freecen_piece
+    piece_number = actual_piece.chapman_code
+  end
+
+  def year(file)
+    actual_piece = file.freecen_piece
+    piece_number = actual_piece.year
+  end
+
+  def district_name(file)
+    actual_piece = file.freecen_piece
+    piece_number = actual_piece.district_name
+  end
+
+  def vldfile(file_name)
+    file = Freecen1VldFile.find_by(file_name: file_name)
+    link_to "#{file_name}" , freecen1_vld_file_path(file.id), class: 'btn   btn--small' if file.present?
+  end
+
+  def status_date(piece)
+    if piece.status_date.present?
+      piece.status_date
+    else
+      piece.id.generation_time.strftime('%Y-%m-%d %H:%M') if piece.id.present?
+    end
+  end
 end

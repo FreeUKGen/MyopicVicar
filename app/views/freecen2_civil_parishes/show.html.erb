@@ -1,0 +1,111 @@
+<% if @freecen2_civil_parish.blank? || @chapman_code.blank? ||  @year.blank? || @name.blank?%>
+  <div style="text-align: center">Incorrect parameters</div>
+<% else %>
+  <% breadcrumb :show_freecen2_civil_parish,  @freecen2_civil_parish, @chapman_code, @year %>
+  <%= render 'show_header' %>
+  <div class="grid">
+    <section class="island ">
+      <div class="grid__item ">
+        <table   class="table--bordered table--striped  table--data">
+          <colgroup >
+            <col class=t40>
+            <col class=t60>
+          </colgroup>
+          <tr>
+            <th class="caps">Field</th>
+            <th  class="caps">Value</th>
+          </tr>
+          <tr>
+            <td>County</td>
+            <td class="weight--semibold"> <%=  ChapmanCode.name_from_code(@freecen2_civil_parish.chapman_code)%> (<%= @freecen2_civil_parish.chapman_code%>) </td>
+          </tr>
+          <tr>
+            <td>Year</td>
+            <td class="weight--semibold"> <%=  @freecen2_civil_parish.year %> </td>
+          </tr>
+          <tr>
+            <td>Civil Parish name <small>(Standard name)</small></td>
+            <td class="weight--semibold"> <%= @freecen2_civil_parish.name %> (<%= @freecen2_civil_parish.standard_name %>)</td>
+          </tr>
+          <tr>
+            <td>Belongs to Place <small>(Name is a link)</small></td>
+            <td class="weight--semibold"> <%=  civil_place_link(@place) %> </td>
+          </tr>
+          <tr>
+            <td>Belongs to District <small>(Name is a link)</small></td>
+            <td class="weight--semibold"> <%= civil_district_link(@freecen2_civil_parish) %> </td>
+          </tr>
+          <tr>
+            <td>Belongs to Sub District (Piece)<small>(List is a link)</small></td>
+            <td class="weight--semibold"> <%= civil_piece_link( @freecen2_civil_parish)  %></td>
+          </tr>
+          <tr>
+            <td>Notes before name</td>
+            <td class="weight--semibold"> <%=  @freecen2_civil_parish.prenote %> </td>
+          </tr>
+          <tr>
+            <td>Notes</td>
+            <td class="weight--semibold"> <%=  @freecen2_civil_parish.note %> </td>
+          </tr>
+          <tr>
+            <td>Parish Number</td>
+            <td class="weight--semibold"> <%=  @freecen2_civil_parish.number %> </td>
+          </tr>
+          <tr>
+            <td>Suffix</td>
+            <td class="weight--semibold"> <%=  @freecen2_civil_parish.suffix %> </td>
+          </tr>
+          <% if @freecen2_civil_parish.freecen2_hamlets.length > 0 %>
+            <% @freecen2_civil_parish.freecen2_hamlets.each do |hamlet| %>
+              <tr>
+                <td>Hamlet name</td>
+                <td class="weight--semibold"> <%=  hamlet.name %> </td>
+              </tr>
+              <tr>
+                <td>Hamlet Notes before name </td>
+                <td class="weight--semibold"> <%=  hamlet.prenote  %> </td>
+              </tr>
+              <tr>
+                <td>Hamlet Notes</td>
+                <td class="weight--semibold"> <%=  hamlet.note  %> </td>
+              </tr>
+            <% end%>
+          <% end%>
+          <% if @freecen2_civil_parish.freecen2_townships.length > 0 %>
+            <% @freecen2_civil_parish.freecen2_townships.each do |township| %>
+              <tr>
+                <td>Township name</td>
+                <td class="weight--semibold"> <%=  township.name %> </td>
+              </tr>
+              <tr>
+                <td>Township Notes before name </td>
+                <td class="weight--semibold"> <%=  township.prenote  %> </td>
+              </tr>
+              <tr>
+                <td>Township Notes</td>
+                <td class="weight--semibold"> <%=  township.note  %> </td>
+              </tr>
+            <% end%>
+          <% end%>
+          <% if @freecen2_civil_parish.freecen2_wards.length > 0 %>
+            <% @freecen2_civil_parish.freecen2_wards.each do |ward| %>
+              <tr>
+                <td>Ward name</td>
+                <td class="weight--semibold"> <%=  ward.name %> </td>
+              </tr>
+              <tr>
+                <td>Ward Notes before name </td>
+                <td class="weight--semibold"> <%=  ward.prenote  %> </td>
+              </tr>
+              <tr>
+                <td>Ward Notes</td>
+                <td class="weight--semibold"> <%=  ward.note  %> </td>
+              </tr>
+            <% end%>
+          <% end%>
+        </table>
+      </div>
+    </section>
+  </div>
+<% end %>
+<br>

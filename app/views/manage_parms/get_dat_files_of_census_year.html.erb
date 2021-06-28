@@ -1,0 +1,78 @@
+<%#breadcrumb :contacts %>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue">
+    <%= flash[:notice] %><% flash.clear %>
+  </div>
+  <br>
+<% end %>
+
+<h2 class="text--center">List Freecen1 Fixed Dat files for <%= params[:year] %></h2>
+<p class="text--center">
+  <%= link_to 'Add new Parm file', '#', class: "btn  btn--small", id: "addNewParmFile" %>
+</p>
+<div class="grid" id="new-parm-form">
+  <fieldset>
+    <legend>Please upload only the '.dat' files for the year <%= params[:year] %></legend>
+    <% if @errors.present? %>
+      <div id='parm_file_upload_errrors'>
+        <h2 class="gamma"> You have <%= pluralize(@errors.count, "error") %>:  please review</h2>
+        <ul class="validation-list">
+          <% @errors.full_messages.each do |msg| %>
+            <li class="validation-list__error" ><%= msg %></li>
+          <% end %>
+        </ul>
+        <%@errors.clear%>
+      </div>
+    <% end %>
+    <div class="grid__item one-full lap-one-full palm-one-whole">
+      <%= form_tag upload_files_manage_parms_path(year: params[:year], user: @user[:userid]), multipart: true do %>
+        <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
+        <%= select_tag "chapman_code", grouped_options_for_select(grouped_options) %>
+        <label for="file">File to Upload</label> <%= file_field_tag "parm_files"%>
+        <%= submit_tag 'Upload', class: 'btn' %>
+      <% end %>
+    </div>
+  </fieldset>
+</div>
+<div class="grid__item "> 
+  <section class="island ">
+    <div class="scrollable">
+      <div class="table-wrapper" style="margin-top: 20px;">
+        <table class="table--bordered table--data" >
+          <thead>
+            <tr>
+              <th>Filename</th>
+              <th>Dirname</th>
+              <th>Year</th>
+              <th>Chapman code</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @freecen1_fixed_dat_files.each do |freecen1_fixed_dat_file| %>
+              <tr>
+                <td><%= freecen1_fixed_dat_file.filename %></td>
+                <td><%= freecen1_fixed_dat_file.dirname %></td>
+                <td><%= freecen1_fixed_dat_file.year %></td>
+                <td><%= freecen1_fixed_dat_file.chapman_code %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  
+  $(function () {
+    $( "#new-parm-form" ).hide();
+    if (document.getElementById("parm_file_upload_errrors")){
+      $( "#new-parm-form" ).show();
+    }    
+    $("#addNewParmFile").click(function() {
+      event.preventDefault();
+      $( "#new-parm-form" ).slideDown();
+    });
+  });
+</script>

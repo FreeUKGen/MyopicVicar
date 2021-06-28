@@ -1,0 +1,96 @@
+db.runCommand(
+  {
+    createIndexes: "freereg1_csv_entries",
+    indexes: [
+        {
+            key: {
+                freereg1_csv_file_id: 1,
+                file_line_number: 1
+            },
+            name: "freereg1_csv_file_id_file_line_number"
+        },
+        {
+            key: {
+                 freereg1_csv_file_id: 1,
+                 digest: 1
+            },
+            name: "freereg1_csv_file_id_digest"
+        },
+        {
+            key: {
+                 freereg1_csv_file_id: 1,
+                 year: 1
+            },
+            name: "freereg1_csv_file_id_year"
+        },
+        {
+            key: {
+               person_forename: 1
+            },
+            name: "person_forename"
+        },
+        {
+            key: {
+                 mother_forename: 1
+            },
+            name: "mother_forename"
+        },
+        {
+            key: {
+                groom_forenamen: 1
+            },
+            name: "groom_forenamen"
+        },
+        {
+            key: {
+                 groom_father_forename: 1
+            },
+            name: "groom_father_forename"
+        },
+        {
+            key: {
+                 female_relative_forename: 1
+            },
+            name: "female_relative_forename"
+        },
+        {
+            key: {
+                 father_forename: 1
+            },
+            name: "father_forename"
+        },
+        {
+            key: {
+                 burial_person_forename: 1
+            },
+            name: "burial_person_forename"
+        },
+        {
+            key: {
+                 bride_forename: 1
+            },
+            name: "bride_forename"
+        },
+        {
+            key: {
+                 bride_father_forename: 1
+            },
+            name: "bride_father_forename"
+        },
+        {
+            key: {
+                 "multiple_witnesses.witness_forename": 1
+            },
+            name: "multiple_witness_forename"
+        },
+        {
+            key: {
+                 _id: 1,
+                 "embargo_record.id": 1
+            },
+            name: "entry_id_embargo_id"
+        }
+    ]
+  }
+)
+

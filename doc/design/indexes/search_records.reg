@@ -1,0 +1,157 @@
+db.runCommand(
+  {
+    createIndexes: "search_records",
+    indexes: [
+        {
+            key: {
+                chapman_code: 1,
+                "search_names.last_name": 1,
+                record_type:1,
+                search_date: 1,
+                secondary_search_date:1
+            },
+            name: "county_ln_rt_sd_ssd"
+        },
+        {
+            key: {
+                chapman_code: 1,
+                "search_names.first_name": 1,
+                "search_names.last_name": 1,
+                record_type:1,
+                search_date: 1,
+                secondary_search_date:1
+            },
+            name: "county_fn_ln_rt_sd_ssd"
+        },
+         {
+            key: {
+                chapman_code: 1,
+                "search_soundex.last_name": 1,
+                record_type:1,
+                search_date: 1,
+                secondary_search_date:1
+            },
+            name: "county_lnsdx_rt_sd_ssd"
+        },
+         {
+            key: {
+                chapman_code: 1,
+                "search_soundex.first_name": 1,
+                "search_soundex.last_name": 1,
+                record_type:1,
+                search_date: 1,
+                secondary_search_date:1
+            },
+            name: "county_fnsdx_lnsdx_rt_sd_ssd"
+        },
+        {
+            key: {
+                "search_names.last_name": 1,
+                record_type:1,
+                search_date: 1,
+                secondary_search_date:1
+            },
+            name: "ln_rt_sd_ssd"
+        },
+        {
+            key: {
+                "search_names.last_name": 1,
+                "search_names.first_name": 1,
+                record_type:1,
+                search_date: 1,
+                secondary_search_date:1
+            },
+            name: "ln_fn_rt_sd_ssd"
+        },
+        {
+            key: {
+                "search_soundex.last_name": 1,
+                record_type:1,
+                search_date: 1,
+                secondary_search_date:1
+            },
+            name: "lnsdx_rt_sd_ssd"
+        },
+        {
+            key: {
+                "search_soundex.last_name": 1,
+                "search_soundex.first_name": 1,
+                record_type:1,
+                search_date: 1,
+                secondary_search_date:1
+            },
+            name: "lnsdx_fnsdx_rt_sd_ssd"
+        },
+        {
+            key: {
+                place_id: 1,
+                "search_names.first_name": 1,
+                record_type:1,
+                search_date:1,
+                secondary_search_date:1
+            },
+            name: "place_fn_rt_sd_ssd"
+        },
+       {
+            key: {
+                place_id: 1,
+                "search_names.last_name": 1,
+                record_type:1,
+                search_date:1,
+                secondary_search_date:1
+            },
+            name: "place_ln_rt_sd_ssd"
+        },
+        {
+            key: {
+                place_id: 1,
+                "search_names.last_name": 1,
+                "search_names.first_name": 1,
+                record_type:1,
+                search_date:1,
+                secondary_search_date:1
+            },
+            name: "place_ln_fn_rt_sd_ssd"
+        },
+         {
+            key: {
+                place_id: 1,
+                "search_soundex.first_name": 1,
+                record_type:1,
+                search_date:1,
+                secondary_search_date:1
+            },
+            name: "place_fnsdx_rt_sd_ssd"
+        },
+        {
+            key: {
+                 place_id: 1,
+                "search_soundex.last_name": 1,
+                record_type:1,
+                search_date:1,
+                secondary_search_date:1
+            },
+            name: "place_lnsdx_rt_sd_ssd"
+        },
+        {
+            key: {
+                place_id: 1,
+                "search_soundex.last_name": 1,
+                "search_soundex.first_name": 1,
+                record_type:1,
+                search_date:1,
+                secondary_search_date:1
+            },
+            name: "place_lnsdx_fnsdx_rt_sd_ssd"
+        },
+
+        {
+            key: {
+                freereg1_csv_entry_id: 1
+            },
+            name: "freereg1_csv_entry_id"
+        }
+
+            ]
+  }
+)

@@ -1,7 +1,11 @@
 Dear Colleague:
 <p><%= @sender.person_forename%> <%= @sender.person_surname%>, <%= @sender.person_role%> with <%= @appname%> has requested we send you a message on the following subject: <%= @message.subject %>.</p>
-<p>You are requested to log into the Members website <a href="https://<%=@host%>"> <%= @host%> </a></p>
+<p>The message content is provided at the bottom of this email.<p>
+<p>Please DO NOT REPLY to this email.</p>
+<p>You are requested to log into the Members website <a href="https://<%=@host%>"> <%= @host%> </a>
 (if not already logged in) to review the message there. </p>
 <p>On the initial landing page after the log in; select the "Messages" button and on the list of messages select the "Show" for specific message identification <%=@message.identifier%>.</p>
 <p>In many cases you will be able reply to the originator of the message by selecting the "Reply" button at the top of the message being displayed.</p>
-<p>The <%= @appname %> Team</p>
+<p>The following is the message content:</p>
+<p>  <%= @message.body %></p>
+<p>The <%= @appname %> Team.</p>

@@ -34,15 +34,26 @@ module SearchQueriesHelper
     Text::Soundex.soundex(verbatim)
   end
 
+  def birth_place(search_record)
+    birth_place = ''
+    if search_record.freecen_csv_entry_id.present?
+      birth_place = search_record.birth_place
+    else
+      individual = FreecenIndividual.find_by(_id: search_record.freecen_individual_id) if search_record.freecen_individual_id.present?
+      birth_place = individual.birth_place if individual.present?
+    end
+    birth_place
+  end
+
   def format_freecen_birth_year(search_date, record_type)
     search_year = search_date.gsub(/\D.*/,'')
     if search_year == record_type
       search_year
     else
       if record_type == RecordType::CENSUS_1841 && search_year > "1826"
-        "#{search_year.to_i - 3} - #{search_year.to_i + 2}"
+        "#{search_year.to_i - 3}"
       else
-        "#{search_year.to_i - 1} - #{search_year}"
+        "#{search_year.to_i - 1}"
       end
     end
   end
@@ -60,15 +71,56 @@ module SearchQueriesHelper
   #end
 
   def format_location(search_record)
+    case MyopicVicar::Application.config.template_set
+    when 'freereg'
+      location = format_freereg_location(search_record)
+    when 'freecen'
+      location = format_free_location(search_record)
+    when 'freebmd'
+      location = format_free_location(search_record)
+    end
+    location
+  end
+
+  def format_freereg_location(search_record)
+    result = false
+    entry = search_record.freereg1_csv_entry
+    file = entry.freereg1_csv_file if entry.present?
+    result, place, church, register = file.location_from_file if file.present?
+    if file.present? && result
+      location = "#{place.place_name} : #{church.church_name} : #{RegisterType.display_name(register.register_type)}"
+    else
+      location =  'Unknown location'
+      logger.warn "#{appname_upcase}::SEARCH::RECORD ID is  #{search_record.id}"
+    end
+    location
+  end
+
+  def format_free_location(search_record)
     if search_record[:location_name].present?
       search_record[:location_name]
-    elsif
-      search_record[:location_names].present?
+    elsif search_record[:location_names].present?
       format_for_line_breaks(search_record[:location_names])
     else
       ""
     end
   end
+
+  def cen_location(search_record)
+    if search_record.freecen_csv_entry_id.present?
+      entry = FreecenCsvEntry.find_by(_id: search_record.freecen_csv_entry_id)
+      if entry.present?
+        district = entry.where_census_taken.presence || entry.freecen_csv_file.freecen2_piece.district_name
+      else
+        district = Freecen2District.find_by(_id: search_record.freecen2_district_id)
+        district = district.present? ? district.name : search_record[:location_names][0]
+      end
+    else
+      district = search_record[:location_names][0]
+    end
+    district
+  end
+
   def county(search_record)
     chapman = search_record[:chapman_code]
     if chapman.present?

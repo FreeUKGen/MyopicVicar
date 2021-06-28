@@ -26,6 +26,15 @@ namespace :reports do
     puts "Completed Checking #{limit} unique names"
   end
 
+  desc "extract_collection_unique_names"
+  task :extract_collection_unique_names, [:limit] => [:environment] do |t, args|
+    require 'extract_collection_unique_names'
+    limit = args.limit
+    puts "Extracting unique names"
+    ExtractCollectionUniqueNames.process(limit)
+    puts "Completed Checking #{limit} collection unique names"
+  end
+
   desc "extract_unique_cen_field_name"
   task :extract_unique_cen_field_name, [:limit] => [:environment] do |t, args|
     require 'extract_unique_cen_field_name'
