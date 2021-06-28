@@ -27,7 +27,7 @@ class CsvfilesController < ApplicationController
 
     case params[:csvfile][:action]
     when 'Replace'
-      proceed, message = @csvfile.setup_batch_on_replace(session[:file_name])
+      proceed, message = @csvfile.setup_batch_on_replace(@csvfile.file_name)
     when 'Upload'
       proceed, message = @csvfile.setup_batch_on_upload
     end

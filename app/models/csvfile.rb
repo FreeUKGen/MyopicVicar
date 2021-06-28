@@ -122,7 +122,7 @@ class Csvfile < CarrierWave::Uploader::Base
     size = estimate_size
     if size.blank? || size.present? && size < 100
       proceed = false
-      message = 'The file either does not exist or is too small to be a valid file.'
+      message = "The file #{file_name} either does not exist or is too small to be a valid file."
       clean_up
       return [proceed, message]
     end
