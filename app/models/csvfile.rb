@@ -67,23 +67,20 @@ class Csvfile < CarrierWave::Uploader::Base
     file_name_parts[1] = file_name_parts[1].downcase
     new_file_name = file_name_parts[0] + '.' + file_name_parts[1]
     logger.warn("  #{new_file_name}")
-    unless new_file_name == current_name
-      logger.warn(" moving")
-      old_file_location = File.join(Rails.application.config.datafiles, userid, current_name)
-      new_file_location = File.join(Rails.application.config.datafiles, userid, new_file_name)
-      logger.warn("  #{old_file_location}")
-      logger.warn("  #{new_file_location}")
-      logger.warn("  #{File.exist?(old_file_location)}")
-      logger.warn("  #{File.exist?(new_file_location)}")
-      File.rename(old_file_location, new_file_location)
-      logger.warn("  #{File.exist?(old_file_location)}")
-      logger.warn("  #{File.exist?(new_file_location)}")
-    end
-    logger.warn("  #{new_file_name}")
-    logger.warn("  #{File.join(Rails.application.config.datafiles, userid, new_file_name)}")
     new_file_name
   end
 
+  def rename_extention
+    logger.warn(" moving")
+    file_name_parts = file_name.split('.')
+    file_name_parts[1] = file_name_parts[1].downcase
+    new_file_name = file_name_parts[0] + '.' + file_name_parts[1]
+    old_file_location = File.join(Rails.application.config.datafiles, userid, file_name)
+    new_file_location = File.join(Rails.application.config.datafiles, userid, new_file_name)
+    File.rename(old_file_location, new_file_location)
+    logger.warn("  #{File.exist?(old_file_location)}")
+    logger.warn("  #{File.exist?(new_file_location)}")
+  end
   def estimate_time
     size = 1
     place = File.join(Rails.application.config.datafiles, userid, file_name)
@@ -112,11 +109,14 @@ class Csvfile < CarrierWave::Uploader::Base
   end
 
   def process_the_batch(user)
+    p self
     proceed = check_for_existing_file_and_save
     save if proceed
+
     message = "The upload with file name #{file_name} was unsuccessful because #{errors.messages}" if errors.any?
     return [false, message] if errors.any?
 
+    rename_extention
     batch = create_batch_unless_exists
     range = File.join(userid, file_name)
     batch_processing = PhysicalFile.where(userid: userid, file_name: file_name, waiting_to_be_processed: true).exists?
