@@ -73,14 +73,15 @@ class Csvfile < CarrierWave::Uploader::Base
   def rename_extention
     logger.warn(" moving")
     file_name_parts = file_name.split('.')
-    file_name_parts[1] = file_name_parts[1].downcase
-    new_file_name = file_name_parts[0] + '.' + file_name_parts[1]
-    old_file_location = File.join(Rails.application.config.datafiles, userid, file_name)
+    old_file_name = file_name_parts[0] + '.' + file_name_parts[1].upcase
+    new_file_name = file_name_parts[0] + '.' + file_name_parts[1].downcase
+    old_file_location = File.join(Rails.application.config.datafiles, userid, old_file_name)
     new_file_location = File.join(Rails.application.config.datafiles, userid, new_file_name)
-    File.rename(old_file_location, new_file_location)
+    File.rename(old_file_location, new_file_location) if File.exist?(old_file_location)
     logger.warn("  #{File.exist?(old_file_location)}")
     logger.warn("  #{File.exist?(new_file_location)}")
   end
+
   def estimate_time
     size = 1
     place = File.join(Rails.application.config.datafiles, userid, file_name)
