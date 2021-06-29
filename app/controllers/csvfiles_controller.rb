@@ -17,9 +17,6 @@ class CsvfilesController < ApplicationController
     redirect_back(fallback_location: new_csvfile_path, notice: 'There was no userid') && return if @csvfile.userid.blank?
 
     @csvfile.file_name = @csvfile.csvfile.identifier
-    p 'mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm'
-    p @csvfile.file_name
-
     redirect_back(fallback_location: new_csvfile_path, notice: 'The file had an incorrect extension') && return if @csvfile.csvfile.identifier.blank?
 
     @csvfile.file_name = @csvfile.downcase_extension # this is a noop for freereg
@@ -37,7 +34,6 @@ class CsvfilesController < ApplicationController
       logger.warn("#{appname_upcase}:CSV_PROCESSING: " + message)
       flash[:notice] = message
       redirect_back(fallback_location: new_csvfile_path, notice: message) && return
-
     end
 
     proceed, message = @csvfile.process_the_batch(@user)
@@ -45,8 +41,8 @@ class CsvfilesController < ApplicationController
     unless proceed
       logger.warn("#{appname_upcase}:CSV_PROCESSING: " + message)
       redirect_back(fallback_location: new_csvfile_path, notice: message) && return
-
     end
+
     flash[:notice] = message
     flash.keep
     if session[:my_own] && appname_downcase == 'freereg'

@@ -12,6 +12,7 @@ class Csvfile < CarrierWave::Uploader::Base
   mount_uploader :csvfile, CsvfileUploader
 
   def check_for_existing_file_and_save
+    # this saves the exiting file in the attic
     process = true
     batch = PhysicalFile.where(userid: userid, file_name: file_name, base: true).first
     if batch.present?
@@ -42,8 +43,13 @@ class Csvfile < CarrierWave::Uploader::Base
 
   def clean_up
     batch = PhysicalFile.find_by(userid: userid, file_name: file_name, base: true)
-    file_location = File.join(Rails.application.config.datafiles, userid, file_name)
-    File.delete(file_location) if File.file?(file_location)
+    file_name_parts = file_name.split('.')
+    old_file_name = file_name_parts[0] + '.' + file_name_parts[1].upcase
+    new_file_name = file_name_parts[0] + '.' + file_name_parts[1].downcase
+    old_file_location = File.join(Rails.application.config.datafiles, userid, old_file_name)
+    new_file_location = File.join(Rails.application.config.datafiles, userid, new_file_name)
+    File.delete(old_file_location) if File.file?(old_file_location)
+    File.delete(new_file_location) if File.file?(new_file_location)
     batch.delete if batch.present?
   end
 
@@ -60,26 +66,20 @@ class Csvfile < CarrierWave::Uploader::Base
 
   def downcase_extension
     return file_name if MyopicVicar::Application.config.freexxx_display_name.downcase == 'freereg'
-    logger.warn(" downcase")
-    current_name = file_name
-    logger.warn("  #{current_name}")
+
     file_name_parts = file_name.split('.')
     file_name_parts[1] = file_name_parts[1].downcase
     new_file_name = file_name_parts[0] + '.' + file_name_parts[1]
-    logger.warn("  #{new_file_name}")
     new_file_name
   end
 
   def rename_extention
-    logger.warn(" moving")
     file_name_parts = file_name.split('.')
     old_file_name = file_name_parts[0] + '.' + file_name_parts[1].upcase
     new_file_name = file_name_parts[0] + '.' + file_name_parts[1].downcase
     old_file_location = File.join(Rails.application.config.datafiles, userid, old_file_name)
     new_file_location = File.join(Rails.application.config.datafiles, userid, new_file_name)
     File.rename(old_file_location, new_file_location) if File.exist?(old_file_location)
-    logger.warn("  #{File.exist?(old_file_location)}")
-    logger.warn("  #{File.exist?(new_file_location)}")
   end
 
   def estimate_time
@@ -92,11 +92,8 @@ class Csvfile < CarrierWave::Uploader::Base
   end
 
   def estimate_size
-    logger.warn("  #{file_name}")
     place = File.join(Rails.application.config.datafiles, userid, file_name)
-    logger.warn("  #{place}")
     size = File.size?(place)
-    logger.warn(" #{size}")
     size
   end
 
@@ -112,7 +109,6 @@ class Csvfile < CarrierWave::Uploader::Base
   end
 
   def process_the_batch(user)
-    p self
     proceed = check_for_existing_file_and_save
     save if proceed
 
