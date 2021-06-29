@@ -101,10 +101,12 @@ class Csvfile < CarrierWave::Uploader::Base
   end
 
   def physical_file_for_user_exists
-    place = File.join(Rails.application.config.datafiles, userid, file_name)
-    return false if place.blank?
-
-    return true if File.exist?(place)
+    file_name_parts = file_name.split('.')
+    old_file_name = file_name_parts[0] + '.' + file_name_parts[1].upcase
+    new_file_name = file_name_parts[0] + '.' + file_name_parts[1].downcase
+    old_file_location = File.join(Rails.application.config.datafiles, userid, old_file_name)
+    new_file_location = File.join(Rails.application.config.datafiles, userid, new_file_name)
+    return true if File.exist?(old_file_location) || File.exist?(new_file_location)
 
     false
   end
