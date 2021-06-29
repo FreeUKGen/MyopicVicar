@@ -73,7 +73,11 @@ class Csvfile < CarrierWave::Uploader::Base
       new_file_location = File.join(Rails.application.config.datafiles, userid, new_file_name)
       logger.warn("  #{old_file_location}")
       logger.warn("  #{new_file_location}")
+      logger.warn("  #{File.exist?(old_file_location)}")
+      logger.warn("  #{File.exist?(new_file_location)}")
       File.rename(old_file_location, new_file_location)
+      logger.warn("  #{File.exist?(old_file_location)}")
+      logger.warn("  #{File.exist?(new_file_location)}")
     end
     logger.warn("  #{new_file_name}")
     logger.warn("  #{File.join(Rails.application.config.datafiles, userid, new_file_name)}")
