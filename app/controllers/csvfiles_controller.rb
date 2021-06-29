@@ -24,7 +24,7 @@ class CsvfilesController < ApplicationController
 
     @csvfile.file_name = @csvfile.downcase_extension # this is a noop for freereg
     redirect_back(fallback_location: new_csvfile_path, notice: 'A csv file with that name does not exist on your computer (You likely tried to upload a file with a different extension') && return if @csvfile.file_name.blank?
-    crash
+
     case params[:csvfile][:action]
     when 'Replace'
       proceed, message = @csvfile.setup_batch_on_replace(@csvfile.file_name)
