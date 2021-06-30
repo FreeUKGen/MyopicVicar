@@ -90,7 +90,7 @@ class Freecen2SiteStatisticsController < ApplicationController
   end
 
   def get_stats_dates
-    stats_dates = @freecen2_site_statistics.pluck(:interval_end)
+    stats_dates = Freecen2SiteStatistic.pluck(:interval_end)
     all_dates = stats_dates.sort.reverse
     all_dates_str = all_dates.map { |date| date.to_datetime.strftime("%d/%b/%Y")}
     array_length = all_dates_str.length
