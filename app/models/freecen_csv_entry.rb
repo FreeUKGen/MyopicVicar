@@ -1464,7 +1464,7 @@ class FreecenCsvEntry
       end
 
       if record[:year] == '1841'
-        if record[:verbatim_birth_place].present? && record[:verbatim_birth_place] |= '-'
+        if record[:verbatim_birth_place].present? && record[:verbatim_birth_place] != '-'
           messageb = "ERROR: line #{num} Verbatim Birth Place #{record[:verbatim_birth_place]} should not be included for #{record[:year]}.<br>"
           message += messageb
           record[:error_messages] += messageb
