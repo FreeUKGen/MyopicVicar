@@ -204,6 +204,7 @@ MyopicVicar::Application.routes.draw do
   get 'contacts/:id/convert_to_issue(.:format)', :to => 'contacts#convert_to_issue', :as => :convert_contact_to_issue
   get 'contacts/:id/keep',  :to => 'contacts#keep', :as => :keep_contact
   get 'contacts/:id/unkeep',  :to => 'contacts#unkeep', :as => :unkeep_contact
+  get 'contacts/question_answer_finder' => 'contacts#question_answer_finder'
 
   resources :contacts
 

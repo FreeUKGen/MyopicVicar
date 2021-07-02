@@ -27,6 +27,7 @@ class ApplicationController < ActionController::Base
   require 'userid_role'
   require 'register_type'
   require 'quarter_details'
+  require 'freebmd_data_problem'
   helper_method :appname, :appname_upcase, :appname_downcase, :mobile_device?, :device_type
   def appname
     MyopicVicar::Application.config.freexxx_display_name

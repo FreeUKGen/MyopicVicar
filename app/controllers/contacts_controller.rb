@@ -342,6 +342,15 @@ class ContactsController < ApplicationController
     redirect_to(action: 'show') && return
   end
 
+  def question_answer_finder
+    question_id = params[:question_id]
+    question_v = question_id
+    file = File.open("#{Rails.root}/public/faq.html.erb")
+    read_file = file.read
+    file = Nokogiri::HTML(read_file)
+    @answer = file.css("div.answer_#{question_v}").to_html
+  end
+
   private
 
   def contact_params
