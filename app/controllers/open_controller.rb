@@ -53,7 +53,9 @@ class OpenController < ApplicationController
     @search_query.chapman_codes << chapman_code
     # open records filter goes here
     @search_query.save!  #TODO cache this!
-    @open_results = @search_query.search.map{|h| SearchRecord.new(h)}
+    @open_results = @search_query.search.map{|h| SearchRecord.new(h)} unless @search_query.search
+    redirect_back(fallback_location: new_search_query_path, notice: 'No records') && return if @open_results.blank?
+
   end
 
   def places_for_county_surname

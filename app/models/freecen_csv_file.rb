@@ -72,9 +72,11 @@ class FreecenCsvFile
   field :incorporation_lock, type: Boolean, default: false
   field :total_dwellings, type: Integer
   field :total_individuals, type: Integer
+  field :completes_piece, type: Boolean, default: false
 
 
   before_save :add_lower_case_userid_to_file, :add_country_to_file
+  before_create :set_completes_piece_flag
   #after_save :recalculate_last_amended, :update_number_of_files
 
   before_destroy do |file|
@@ -433,13 +435,10 @@ class FreecenCsvFile
     freecen_csv_entries.where(record_valid: 'false').each do |entry|
       entry.update_attributes(record_valid: 'true', warning_messages: nil)
       entry.reload
-      p entry
     end
     warnings = freecen_csv_entries.where(record_valid: 'false').count
-    p warnings
     self.total_warnings = warnings
     save
-    p self
     [true, '']
 
   end
@@ -471,6 +470,18 @@ class FreecenCsvFile
   def add_lower_case_userid_to_file
     # rspec tested directly
     self[:userid_lower_case] = self[:userid].downcase
+  end
+
+  def is_whole_piece(piece)
+    return true if piece.number + ".csv" == self.file_name
+  end
+
+  def set_completes_piece_flag
+    unless self.freecen2_piece_id.blank?
+      self.completes_piece = false
+      piece = Freecen2Piece.find_by(_id: self.freecen2_piece_id)
+      self.completes_piece = true if is_whole_piece(piece)
+    end
   end
 
   def add_to_rake_delete_freecen_csv_file_list
@@ -1180,7 +1191,7 @@ class FreecenCsvFile
     header << 'record_valid' if validation && !header_line.include?('record_valid')
     CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
       csv << header
-      records = freecen_csv_entries
+      records = freecen_csv_entries.order_by(_id: 1)
       records.each do |rec|
         line = []
         line = add_fields(line, rec)

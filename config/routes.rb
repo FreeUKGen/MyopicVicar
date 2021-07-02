@@ -74,6 +74,7 @@ MyopicVicar::Application.routes.draw do
 
   resources :site_statistics
 
+  get 'freecen2_site_statistics/export_csv', to: 'freecen2_site_statistics#export_csv', as: :export_csv_freecen2_site_statistics
   resources :freecen2_site_statistics
 
   get 'freecen2_search_statistics/graphic', to: 'freecen2_search_statistics#graphic', as: :graphic_freecen2_search_statistics
@@ -106,6 +107,7 @@ MyopicVicar::Application.routes.draw do
   get 'freecen_csv_files/:id/validate(.:format)', :to => 'freecen_csv_files#validate', :as => :set_validation_freecen_csv_file
   get 'freecen_csv_files/:id/accept_warnings(.:format)', :to => 'freecen_csv_files#accept_warnings', :as => :accept_warnings_freecen_csv_file
   get 'freecen_csv_files/:id/incorporate(.:format)', :to => 'freecen_csv_files#incorporate', :as => :incorporate_freecen_csv_file
+  get 'freecen_csv_files/:id/incorporate_partial(.:format)', :to => 'freecen_csv_files#incorporate_partial', :as => :incorporate_partial_freecen_csv_file
   get 'freecen_csv_files/:id/unincorporate(.:format)', :to => 'freecen_csv_files#unincorporate', :as => :unincorporate_freecen_csv_file
   resources :freecen_csv_files
 

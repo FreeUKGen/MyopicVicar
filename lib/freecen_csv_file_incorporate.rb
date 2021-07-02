@@ -49,14 +49,23 @@ class FreecenCsvFileIncorporate
                                                 incorporated_date: DateTime.now.in_time_zone('London'))
       # the translate individual adds the civil parishes
 
-      PlaceCache.refresh(freecen_file.chapman_code) if successa #&& successb
-      message += '. Place cache rewritten'
-      success = true if successa #&& successb
-      message = 'File update and or place update failed' unless successa #&& successb
+      successb = true
+      if successa  && freecen_file.completes_piece?
+        successb = piece.update_attributes(status: 'Online', status_date: DateTime.now.in_time_zone('London'))
+        message += '. Piece status set to Online' if successb
+      else
+        successb = piece.update_attributes(status: 'Part', status_date: DateTime.now.in_time_zone('London'))
+        message += '. Piece status set to Part' if successb
+      end
+
+      PlaceCache.refresh(freecen_file.chapman_code) if successa && successb
+      message += '. Place cache rewritten.'
+      success = true if successa && successb
+      message = 'File update and or place update failed' unless successa && successb
     rescue Exception => msg
       puts msg
       puts msg.backtrace.inspect
-      SearchRecord.where(freecen_csv_file_id: @freecen_file_id).delete_all
+      SearchRecord.where(freecen_csv_file_id: @freecen_file_id).destroy_all
       FreecenCsvEntry.collection.update_many({ freecen_csv_file_id: @freecen_file_id }, '$set' => { search_record_id: nil })
       success = false
       message = "#{msg}, #{msg.backtrace.inspect}"

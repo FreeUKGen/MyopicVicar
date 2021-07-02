@@ -198,6 +198,26 @@ class SearchQuery
       rec['search_date'] = search_record.search_dates[0]
       rec
     end
+
+    def does_the_entry_exist?(search_record)
+      case App.name.downcase
+      when 'freereg'
+        entry = search_record[:freereg1_csv_entry_id]
+        if entry.present?
+          actual_entry = Freereg1CsvEntry.find_by(_id: entry)
+          if actual_entry.present?
+            proceed, _place, _church, _register = actual_entry.location_from_entry
+          else
+            proceed = false
+          end
+        else
+          proceed = false
+        end
+      when 'freecen'
+        proceed = true
+      end
+      proceed
+    end
   end
 
   ############################################################################# instance methods #####################################################
@@ -340,7 +360,7 @@ class SearchQuery
   end
 
   def extract_stub(my_name)
-    return if my_name.blank? || !my_name.match(WILDCARD)
+    return if my_name.blank?
 
     name_parts = my_name.split(WILDCARD)
     name_parts[0].downcase
@@ -554,9 +574,9 @@ class SearchQuery
   end
 
   def locate(record_id)
-    records = self.search_result.records.values
-    position = locate_index(records,record_id)
-    position.present? ? record = records[position] : record = nil
+    records = search_result.records.values
+    position = locate_index(records, record_id)
+    record = position.present? ? records[position] : nil
     record
   end
 
@@ -564,40 +584,33 @@ class SearchQuery
     n = 0
     records.each do |record|
       break if record[:_id].to_s == current
-      n = n + 1
+
+      n += 1
     end
-    return n
+    n
   end
 
   def name_not_blank
-    if last_name.blank? && !adequate_first_name_criteria?
-      errors.add(:first_name, 'A forename, county and place must be part of your search if you have not entered a surname.')
-    end
+    message = 'A forename, county and place must be part of your search if you have not entered a surname.'
+    errors.add(:first_name, message) if last_name.blank? && !adequate_first_name_criteria?
   end
 
   def name_search_params
-    params = Hash.new
-    name_params = Hash.new
-    #type_array = [SearchRecord::PersonType::PRIMARY]
-    #type_array << SearchRecord::PersonType::FAMILY if inclusive
-    #type_array << SearchRecord::PersonType::WITNESS if witness
-    #search_type = type_array.size > 1 ? { '$in' => type_array } : SearchRecord::PersonType::PRIMARY
-    #name_params['type'] = search_type
+    params = {}
+    name_params = {}
     if query_contains_wildcard?
       name_params['first_name'] = wildcard_to_regex(first_name.downcase) if first_name
       name_params['last_name'] = wildcard_to_regex(last_name.downcase) if last_name
-      params['search_names'] =  { '$elemMatch' => name_params}
+      params['search_names'] = { '$elemMatch' => name_params }
     else
-      params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes && chapman_codes.size > 0
-      params[:birth_chapman_code] = { '$in' => birth_chapman_codes } if birth_chapman_codes && birth_chapman_codes.size > 0
       if fuzzy
         name_params['first_name'] = Text::Soundex.soundex(first_name) if first_name
         name_params['last_name'] = Text::Soundex.soundex(last_name) if last_name.present?
-        params['search_soundex'] =  { '$elemMatch' => name_params}
+        params['search_soundex'] = { '$elemMatch' => name_params }
       else
         name_params['first_name'] = first_name.downcase if first_name
         name_params['last_name'] = last_name.downcase if last_name.present?
-        params['search_names'] =  { '$elemMatch' => name_params}
+        params['search_names'] = { '$elemMatch' => name_params }
       end
     end
     params
@@ -631,11 +644,19 @@ class SearchQuery
 
   def persist_additional_results(results)
     return unless results
+
     # finally extract the records IDs and persist them
     records = {}
     results.each do |rec|
       rec_id = rec['_id'].to_s
-      #records[rec_id] = SearchQuery.add_birth_place_when_absent(rec)
+      proceed = SearchQuery.does_the_entry_exist?(rec)
+      if proceed
+        record = rec
+        records[rec_id] = record
+      else
+        search_record = SearchRecord.find_by(_id: rec['_id'].to_s)
+        search_record.delete if search_record.present?
+      end
     end
     self.search_result.records = self.search_result.records.merge(records)
     self.result_count = self.search_result.records.length
@@ -654,6 +675,19 @@ class SearchQuery
       record = SearchQuery.add_birth_place_when_absent(record) if record[:birth_place].blank? && App.name.downcase == 'freecen'
       record = SearchQuery.add_search_date_when_absent(record) if record[:search_date].blank?
       records[rec_id] = record
+      proceed = SearchQuery.does_the_entry_exist?(rec)
+      p 'persisting'
+      p proceed
+      if proceed
+        rec_id = record['_id'].to_s
+        record = SearchQuery.add_birth_place_when_absent(record) if record[:birth_place].blank? && App.name.downcase == 'freecen'
+        record = SearchQuery.add_search_date_when_absent(record) if record[:search_date].blank?
+        records[rec_id] = record
+      else
+        p 'deleting'
+        search_record = SearchRecord.find_by(_id: rec['_id'].to_s)
+        search_record.delete if search_record.present?
+      end
     end
     self.search_result = SearchResult.new
     self.search_result.records = records
@@ -669,8 +703,8 @@ class SearchQuery
 
   def place_search_params
     params = {}
+    appname = App.name_downcase
     if place_search?
-      appname = MyopicVicar::Application.config.freexxx_display_name.downcase
       search_place_ids = radius_place_ids
       case appname
       when 'freecen'
@@ -719,7 +753,7 @@ class SearchQuery
   def query_contains_wildcard?
     (first_name && first_name.match(WILDCARD)) || (last_name && last_name.match(WILDCARD))? wildcard_search = true : wildcard_search = false
     self.wildcard_search = wildcard_search
-    return wildcard_search
+    wildcard_search
   end
 
   def radius_is_valid
@@ -783,12 +817,9 @@ class SearchQuery
   def search
     @search_parameters = search_params
     @search_index = SearchRecord.index_hint(@search_parameters)
-    # @search_index = 'place_rt_sd_ssd' if query_contains_wildcard?
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
     logger.warn("#{App.name_upcase}:SEARCH_PARAMETERS: #{@search_parameters}")
     update_attribute(:search_index, @search_index)
-
-    #logger.warn @search_parameters.inspect
     records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     persist_results(records)
     persist_additional_results(secondary_date_results) if App.name == 'FreeREG' && (result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)

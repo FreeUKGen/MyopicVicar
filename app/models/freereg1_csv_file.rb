@@ -91,7 +91,7 @@ class Freereg1CsvFile
 
   before_destroy do |file|
     file.save_to_attic
-    Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).delete_all
+    Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).destroy_all
   end
 
   belongs_to :register, index: true
@@ -378,6 +378,19 @@ class Freereg1CsvFile
       freereg1_csv_file_object = Freereg1CsvFile.find(freereg1_csv_file)
       result = true if freereg1_csv_file_object.present? && Register.valid_register?(freereg1_csv_file_object.register_id)
       logger.warn("FREEREG:LOCATION:VALIDATION invalid freereg1_csv_file id #{freereg1_csv_file} ") unless result
+      result
+    end
+
+    def freereg1_csv_file_valid?(freereg1_csv_file)
+      if freereg1_csv_file.blank?
+        logger.warn("#{App.name.upcase}:FREEREG_FILE_ERROR: entry had no file")
+        result = false
+      elsif Freereg1CsvFile.find_by(id: freereg1_csv_file).present?
+        result = true
+      else
+        result = false
+        logger.warn("#{App.name.upcase}:FREEREG_FILE_ERROR: #{freereg1_csv_file} not located")
+      end
       result
     end
   end # self
@@ -682,13 +695,13 @@ class Freereg1CsvFile
 
   def location_from_file
     my_register = register
-    return [false] unless register.register_valid?
+    return [false] unless Register.register_valid?(my_register)
 
     my_church = my_register.church
-    return [false] unless my_church.church_valid?
+    return [false] unless Church.church_valid?(my_church)
 
     my_place = my_church.place
-    return [false] unless my_place.place_valid?
+    return [false] unless Place.place_valid?(my_place)
 
     [true, my_place, my_church, my_register]
   end
@@ -902,7 +915,7 @@ class Freereg1CsvFile
     recalculate_last_amended
     update_number_of_files
     save
-    procees, place, church, register = location_from_file
+    proceed, place, church, register = location_from_file
     if proceed
       register.calculate_register_numbers
       church.calculate_church_numbers

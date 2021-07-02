@@ -32,6 +32,12 @@ module Freecen2PiecesHelper
     end
   end
 
+  def piece_status(piece)
+    if piece.status.present?
+      status = piece.status + " (" + piece.status_date.to_datetime.strftime("%d/%b/%Y %R") + ")"
+    end
+  end
+
   def csv_files_piece_link(piece)
     link_to 'Freecen Files', freecen_csv_files_path, class: 'btn   btn--small', title:'Csv files for this Piece'
   end

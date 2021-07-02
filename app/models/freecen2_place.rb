@@ -34,6 +34,7 @@ class Freecen2Place
   field :original_longitude, type: String
   field :original_source, type: String
   field :source, type: String
+  field :editor, type: String, default: ''
   field :reason_for_change, type: String
   field :other_reason_for_change, type: String
   field :disabled, type: String, default: "false"
@@ -383,6 +384,8 @@ class Freecen2Place
     return [false, "There is no county selected",nil] if param[:freecen2_place][:chapman_code].blank?
 
     return [false, "There is no place name entered", nil] if param[:freecen2_place][:place_name].blank?
+
+    return [false, "The source of your information is required", nil] if param[:freecen2_place][:source].blank?
 
     place = Freecen2Place.where(:chapman_code => param[:freecen2_place][:chapman_code], :place_name => param[:freecen2_place][:place_name]).all #, :disabled.ne => 'true', :error_flag.ne => "Place name is not approved" ).first
 

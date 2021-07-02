@@ -115,8 +115,8 @@ class FreecenCsvProcessor
   end
 
   def self.delete_all
-    FreecenCsvEntry.delete_all
-    FreecenCsvFile.delete_all
+    FreecenCsvEntry.destroy_all
+    FreecenCsvFile.destroy_all
     SearchRecord.delete_freecen_individual_entries
   end
 
@@ -470,7 +470,7 @@ class CsvFile < CsvFiles
 
     PhysicalFile.remove_waiting_flag(@userid, @file_name)
     @file.update_attributes(was_locked: false, locked_by_transcriber: true) if @file.present? && @file.was_locked
-    batch.delete unless message.include?('is already on system and is locked against replacement')
+    batch.delete unless message.to_s.include?('is already on system and is locked against replacement')
   end
 
   def clean_up_supporting_information(records_processed)

@@ -3,10 +3,10 @@ require 'freecen1_vld_transformer'
 require 'freecen1_vld_translator'
 namespace :freecen do
   # see http://west-penwith.org.uk/fctools/doc/reference.html
-  def process_vld_file(filename)
+  def process_vld_file(filename, userid)
     print "Processing VLD #{filename}\n"
     parser = Freecen::Freecen1VldParser.new
-    file, num_entries = parser.process_vld_file(filename)
+    file, num_entries = parser.process_vld_file(filename, userid)
 
     transformer = Freecen::Freecen1VldTransformer.new
     transformer.transform_file_record(file)
@@ -27,7 +27,7 @@ namespace :freecen do
       place_save_needed = true
     end
     place.save! if place_save_needed
-    piece.update_attributes(status: 'Online', num_individuals: num_ind, num_dwellings: num_dwel, num_entries: num_entries) if piece.present?
+    piece.update_attributes(status: 'Online', status_date: DateTime.now.in_time_zone('London'), num_individuals: num_ind, num_dwellings: num_dwel, num_entries: num_entries) if piece.present?
     #print "\t#{filename} contained #{file_record.freecen_dwellings.count} dwellings in #{file_record.freecen1_vld_entries.count} entries\n"
     print "\t#{filename} contained #{num_dwel} dwellings #{num_ind} individuals in #{num_entries} entries\n"
   end
@@ -36,10 +36,11 @@ namespace :freecen do
   task :process_freecen1_vld, [:filename, :report_email] => [:environment] do |t, args|
     vld_err_messages = []
     begin
-      process_vld_file(args.filename)
+      process_vld_file(args.filename, args.report_email)
     rescue => e
       p e.message
       vld_err_messages << e.message
+      vld_err_messages << "#{e.backtrace.inspect}"
     end
 
     report = "No errors reported"

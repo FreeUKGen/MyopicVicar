@@ -1,10 +1,10 @@
 <% breadcrumb :freecen1_vld_files,@chapman_code, params[:page] %>
 <% session[:file_page] = params[:page]%>
-<h1 style="text-align: center">Listing of FreeCen1 VLD Files for <%= @chapman_code%></h1>
+<h1 style="text-align: center">Listing of <%= @freecen1_vld_files.length %> FreeCen1 VLD Files for <%= @chapman_code%></h1>
 <%= render 'flash_notice' %>
-<% if %w[system_administrator].include?(@user.person_role)%>
+<% if %w[system_administrator data_manager county_coordinator master_county_coordinator].include?(@user.person_role)%>
   <div class="text--center">
     To upload a new file: click this <%= link_to 'Upload new VLD file', new_freecen1_vld_file_path, method: :get , :class => "btn btn--small"%><br>
-    The display will initially show an empty entry for the County at the start of processing. When the processing has finished (after get the email) refresh the page to see the details of the new file. To replace a file use the replace action in the specific file<br>
+    To replace a VLD file use the replace action in the specific file listed below<br>
   </div>
 <% end%>

@@ -99,23 +99,26 @@ class SearchRecord
     'birth_chapman_code_soundex_last_name_date' => ['birth_chapman_code', 'search_soundex.last_name', 'record_type', 'search_date']
   }
 
-
-  REG_INDEXES = {
+  REG_CHAPMAN_INDEXES = {
     'county_ln_rt_sd_ssd' => ['chapman_code', 'search_names.last_name', 'record_type', 'search_date', 'secondary_search_date'],
     'county_fn_ln_rt_sd_ssd' => ['chapman_code', 'search_names.first_name', 'search_names.last_name', 'record_type', 'search_date', 'secondary_search_date'],
     'county_lnsdx_rt_sd_ssd' => ['chapman_code', 'search_soundex.last_name', 'record_type', 'search_date', 'secondary_search_date'],
-    'county_fnsdx_lnsdx_rt_sd_ssd' => ['chapman_code','search_soundex.first_name', 'search_soundex.last_name', 'record_type', 'search_date', 'secondary_search_date'],
-    'ln_fn_rt_sd_ssd' => ['search_names.last_name', 'search_names.first_name', 'record_type', 'search_date', 'secondary_search_date'],
-    'lnsdx_fnsdx_rt_sd_ssd' => ['search_soundex.last_name', 'search_soundex.first_name', 'record_type', 'search_date', 'secondary_search_date'],
-    'ln_rt_sd_ssd' => ['search_names.last_name', 'record_type', 'search_date', 'secondary_search_date'],
-    'lnsdx_rt_sd_ssd' => ['search_soundex.last_name', 'record_type', 'search_date', 'secondary_search_date'],
+    'county_fnsdx_lnsdx_rt_sd_ssd' => ['chapman_code', 'search_soundex.first_name', 'search_soundex.last_name', 'record_type', 'search_date', 'secondary_search_date']
+  }.freeze
+  REG_PLACE_INDEXES = {
     'place_fn_rt_sd_ssd' => ['place_id', 'search_names.first_name', 'record_type', 'search_date', 'secondary_search_date'],
     'place_ln_rt_sd_ssd' => ['place_id', 'search_names.last_name', 'record_type', 'search_date', 'secondary_search_date'],
     'place_ln_fn_rt_sd_ssd' => ['place_id', 'search_names.last_name', 'search_names.first_name', 'record_type', 'search_date', 'secondary_search_date'],
     'place_fnsdx_rt_sd_ssd' => ['place_id', 'search_soundex.first_name', 'record_type', 'search_date', 'secondary_search_date'],
     'place_lnsdx_fnsdx_rt_sd_ssd' => ['place_id', 'search_soundex.last_name', 'search_soundex.first_name', 'record_type', 'search_date', 'secondary_search_date'],
     'place_lnsdx_rt_sd_ssd' => ['place_id', 'search_soundex.last_name', 'record_type', 'search_date', 'secondary_search_date']
-  }
+  }.freeze
+  REG_BASIC_INDEXES = {
+    'ln_fn_rt_sd_ssd' => ['search_names.last_name', 'search_names.first_name', 'record_type', 'search_date', 'secondary_search_date'],
+    'lnsdx_fnsdx_rt_sd_ssd' => ['search_soundex.last_name', 'search_soundex.first_name', 'record_type', 'search_date', 'secondary_search_date'],
+    'ln_rt_sd_ssd' => ['search_names.last_name', 'record_type', 'search_date', 'secondary_search_date'],
+    'lnsdx_rt_sd_ssd' => ['search_soundex.last_name', 'record_type', 'search_date', 'secondary_search_date']
+  }.freeze
 
 
   BMD_INDEXES = {
@@ -247,11 +250,11 @@ class SearchRecord
     end
 
     def delete_freereg1_csv_entries
-      SearchRecord.where(:freereg1_csv_entry_id.exists => true).delete_all
+      SearchRecord.where(:freereg1_csv_entry_id.exists => true).destroy_all
     end
 
     def delete_freecen_individual_entries
-      SearchRecord.where(:freecen_individual_id.exists => true).delete_all
+      SearchRecord.where(:freecen_individual_id.exists => true).destroy_all
     end
 
 
@@ -366,10 +369,8 @@ class SearchRecord
     end
 
     def index_hint(search_params)
-      #raise search_params.inspect
       search_fields = fields_from_params(search_params)
-
-      case MyopicVicar::Application.config.template_set
+      case App.name_downcase
       when 'freebmd'
         candidates = BMD_INDEXES.keys
         index_component = BMD_INDEXES
@@ -377,8 +378,16 @@ class SearchRecord
         candidates = CEN_INDEXES.keys
         index_component = CEN_INDEXES
       when 'freereg'
-        candidates = REG_INDEXES.keys
-        index_component = REG_INDEXES
+        if search_fields.include?('place_id')
+          candidates = REG_PLACE_INDEXES.keys
+          index_component = REG_PLACE_INDEXES
+        elsif search_fields.include?('chapman_code')
+          candidates = REG_CHAPMAN_INDEXES.keys
+          index_component = REG_CHAPMAN_INDEXES
+        else
+          candidates = REG_BASIC_INDEXES.keys
+          index_component = REG_BASIC_INDEXES
+        end
       end
       scores = {}
       candidates.each { |name| scores[name] = index_score(name, search_fields, index_component) }
@@ -387,10 +396,7 @@ class SearchRecord
     end
 
     def index_score(index_name, search_fields, index_component)
-      # raise (NEW_INDEXES[ln_county_rt_sd_ssd]).inspect
-
       fields = index_component[index_name]
-      # raise fields.inspect
       best_score = -1
       fields.each do |field|
         if search_fields.any? { |param| param == field }
@@ -400,7 +406,7 @@ class SearchRecord
           # bail since search field hasn't been found
         end
       end
-      return best_score
+      best_score
     end
 
     def indexable_value?(param)
@@ -536,7 +542,7 @@ class SearchRecord
     new_names.delete_if { |_key, value| original_copy.has_value?(value) }
     #remove search names from the search record that are no longer required
     original_names.each_value do |value|
-      search_names.where(value).delete_all
+      search_names.where(value).destroy_all
     end
     #add the new search names to the existing search record
     new_names.each_value { |value| search_names.new(value) }
@@ -594,6 +600,32 @@ class SearchRecord
   def emend_all
     self.search_names = Emendor.emend(self.search_names)
   end
+
+  def extract_location_parts
+    place = ''
+    name_parts = location_names[0].split(') ')
+    case
+    when name_parts.length == 1
+      (place, church) = location_names[0].split(' (')
+    when name_parts.length == 2
+      place = name_parts[0] + ")"
+      name_parts[1][0] = ""
+      church = name_parts[1]
+    end
+    if church.present?
+      church = church[0..-2]
+    else
+      church = ''
+    end
+    if location_names[1]
+      reg = location_names[1].gsub('[', '').gsub(']', '').strip
+      register_type = RegisterType::APPROVED_OPTIONS[reg]
+    else
+      register_type = ''
+    end
+    [place, church, register_type]
+  end
+
   def format_location
     location_array = []
     if freereg1_csv_entry

@@ -44,12 +44,16 @@
           <td class="weight--semibold"> <%=  @freecen_piece.film_number %> </td>
         </tr>
         <tr>
-          <td>Freecen1 filename</td>
-          <td class="weight--semibold"> <%=  @freecen_piece.freecen1_filename %> </td>
+          <td>Vld filename (Button links to the VLD file)</td>
+          <td class="weight--semibold"> <%=  vldfile(@freecen_piece.freecen1_filename) %> </td>
         </tr>
         <tr>
           <td>Status</td>
           <td class="weight--semibold"> <%=  @freecen_piece.status %> </td>
+        </tr>
+        <tr>
+          <td>Status Date</td>
+          <td class="weight--semibold"> <%=  status_date(@freecen_piece) %> </td>
         </tr>
         <tr>
           <td>Remarks</td>

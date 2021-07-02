@@ -191,7 +191,7 @@ class Freecen1UpdateProcessor
                 place_save_needed = true
               end
               place.save! if place_save_needed
-              pc.update_attributes(status: 'Online', num_individuals: vld.num_individuals, num_dwellings: vld.num_dwellings, num_entries: vld.num_entries)
+              pc.update_attributes(status: 'Online', status_date: DateTime.now.in_time_zone('London'), num_individuals: vld.num_individuals, num_dwellings: vld.num_dwellings, num_entries: vld.num_entries)
             end
           end
         rescue => e # rescue any exceptions and continue processing the other VLDs

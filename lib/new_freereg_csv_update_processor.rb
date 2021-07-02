@@ -92,8 +92,8 @@ class NewFreeregCsvUpdateProcessor
   end
 
   def self.delete_all
-    Freereg1CsvEntry.delete_all
-    Freereg1CsvFile.delete_all
+    Freereg1CsvEntry.destroy_all
+    Freereg1CsvFile.destroy_all
     SearchRecord.delete_freereg1_csv_entries
   end
 

@@ -74,28 +74,28 @@
             </tr>
           <% end %>
           <% when 'film' %>
-          <% if  current_authentication_devise_user.present? && (@all_data.present? || @entry[field].present?) %>
+          <% if @entry[field].present? && (current_authentication_devise_user.present? || @all_data.present?) %>
             <tr>
               <td >Film</td>
               <td ><%= @entry.film %></td>
             </tr>
           <% end%>
           <% when 'film_number' %>
-          <% if  current_authentication_devise_user.present? && (@all_data.present? || @entry[field].present?) %>
+          <% if @entry[field].present? && (current_authentication_devise_user.present? || @all_data.present?) %>
             <tr>
               <td >Film Number</td>
               <td ><%= @entry.film_number %></td>
             </tr>
           <% end%>
           <% when 'processed_date' %>
-          <% if  current_authentication_devise_user.present? && (@all_data.present? || @entry[field].present?) %>
+          <% if @entry[field].present? && (current_authentication_devise_user.present? || @all_data.present?) %>
             <tr>
               <td ><%= field.gsub('_',' ').capitalize %></td>
               <td ><%= @entry.processed_date.strftime('%d %b %Y') %></td>
             </tr>
           <% end%>
           <% when 'line_id' %>
-          <% if  current_authentication_devise_user.present? && (@all_data.present? || @entry[field].present?) %>
+          <% if @entry[field].present? && (current_authentication_devise_user.present? || @all_data.present?) %>
             <tr>
               <td ><%= field.gsub('_',' ').capitalize %></td>
               <td ><%= @entry.line_id %></td>
@@ -118,7 +118,7 @@
             </tr>
           <% end %>
           <% when 'error_flag'  %>
-          <% if  current_authentication_devise_user.present? && (@all_data.present? || @entry[field].present?) %>
+          <% if @entry[field].present? && (current_authentication_devise_user.present? || @all_data.present?) %>
             <% if @entry.error_flag == 'true' %>
               <tr style= 'color:blue'>
               <% else%>

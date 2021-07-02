@@ -1,13 +1,15 @@
 module Freecen
   class Freecen1VldParser
 
+    # Most of this is the original monthly update code with mods to accommodate uploading
+
     #note: FC1 uses "WAL" instead of "WLS" but chapman_code.rg uses "WLS"
     @@valid_birth_counties = ChapmanCode::values + ["ANT", "ARM", "AVN", "CAR", "CAV", "CLA", "CLV", "CMA", "CNN", "COR", "DON", "DOW", "DUB", "ENW", "FER", "GAL", "GTL", "GTM", "HUM", "HWR", "IRL", "KER", "KID", "KIK", "LDY", "LEN", "LET", "LEX", "LIM", "LOG", "LOU", "MAY", "MEA", "MOG", "MSY", "MUN", "NIR", "NYK", "OFF", "ROS", "SLI", "SXE", "SXW", "SYK", "TIP", "TWR", "TYR", "UIE", "WAL", "WAT", "WEM", "WEX", "WIC", "WMD", "WYK"] # adding all chapman codes listed in the FreeUKGENconst mysql database that weren't in ChapmanCode::values. ('OUC','OVF','OVB','UNK' are already in ChapmanCode::values). Do we want to flag these birth counties that are inconsistent with FC1?
     def initialize(print_performance=false)
       @print_performance = print_performance
     end
 
-    def process_vld_file(filename)
+    def process_vld_file(filename, userid)
       chapman_code = File.basename(File.dirname(filename))
       chapman_code = chapman_code.sub(/-.*/, '')
       file_record = process_vld_filename(filename)
@@ -29,22 +31,34 @@ module Freecen
 
       start_time = Time.now
       print("   call vldparser persist_to_database #{start_time.strftime("%I:%M:%S %p")}") if @print_performance
-      file = persist_to_database(filename, file_record, entry_records, entry_errors, piece.id)
+      file = persist_to_database(filename, file_record, entry_records, entry_errors, piece.id, userid)
       print("  #{Time.now - start_time} elapsed\n") if @print_performance
 
       return file, entry_records.length
     end
 
-    def persist_to_database(filename, file_hash, entry_hash_array, entry_errors, piece_id)
-      file = Freecen1VldFile.find_by(uploaded_file_name: File.basename(filename), action: 'Upload', dir_name: File.basename(File.dirname(filename)))
-      if file.present?
-        file.update_attributes(file_hash)
-        file.update_attributes(file_name: File.basename(filename))
-        file.update_attributes(freecen_piece_id: piece_id) if piece_id.present?
-        file.update_attributes(file_errors: entry_errors) if entry_errors.present?
-        file.update_attributes(num_entries: entry_hash_array.length)
+    def persist_to_database(filename, file_hash, entry_hash_array, entry_errors, piece_id, userid)
+      dir_name = File.basename(File.dirname(filename))
+      file_name = File.basename(filename)
+      file = Freecen1VldFile.find_by(dir_name: dir_name, file_name: file_name)
+      file_location = File.join(Rails.application.config.vld_file_locations, dir_name, file_name)
+      if File.file?(file_location)
+        # removes existing records; search records are deleted at same time as entries by call back
+        Freecen1VldFile.delete_freecen1_vld_entries(dir_name, file_name)
+        Freecen1VldFile.delete_dwellings(dir_name, file_name)
+        Freecen1VldFile.delete_individuals(dir_name, file_name)
+      end
+      if file.present? && file.freecen_piece.present?
+        piece = file.freecen_piece
+        piece.update_attributes(num_dwellings: 0, num_individuals: 0, freecen1_filename: '', status: '') if piece.present?
+      elsif file.present?
+        piece = FreecenPiece.find_by(file_name: file.file_name, dir_name: dir_name)
+        piece.update_attributes(num_dwellings: 0, num_individuals: 0, freecen1_filename: '', status: '') if piece.present?
+        file.update_attributes(freecen_piece_id: piece.id)
       else
         file = Freecen1VldFile.new(file_hash)
+        file.action = 'Upload'
+        file.userid = userid
         file.file_name = File.basename(filename)
         file.dir_name = File.basename(File.dirname(filename))
         file.freecen_piece_id = piece_id if piece_id.present?

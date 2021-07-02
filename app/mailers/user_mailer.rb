@@ -494,9 +494,19 @@ class UserMailer < ActionMailer::Base
 
   def county_coordinator_email_lookup(file_name, userid)
     if file_name.blank? || userid.blank?
-      county_coordinator, friendly_email = regmanager_email_lookup
+      case appname.downcase
+      when 'freereg'
+        county_coordinator, friendly_email = regmanager_email_lookup
+      when 'freecen'
+        county_coordinator, friendly_email = cenmanager_email_lookup
+      end
     else
-      batch_id = Freereg1CsvFile.where(file_name: file_name, userid: userid).first
+      case appname.downcase
+      when 'freereg'
+        batch_id = Freereg1CsvFile.where(file_name: file_name, userid: userid).first
+      when 'freecen'
+        batch_id = FreecenCsvFile.where(file_name: file_name, userid: userid).first
+      end
       if batch_id.blank?
         county_coordinator, friendly_email = extract_chapman_code_from_file_name(file_name)
       else
@@ -523,6 +533,14 @@ class UserMailer < ActionMailer::Base
     [regmanager, friendly_email]
   end
 
+
+  def cenmanager_email_lookup
+    regmanager = UseridDetail.userid('CENManger').first
+    friendly_email = "#{regmanager.person_forename} #{regmanager.person_surname} <#{regmanager.email_address}>"
+    [regmanager, friendly_email]
+  end
+
+
   def sndmanager_email_lookup
     sndmanger = UseridDetail.userid('SNDManager').first
     if sndmanger.present?
@@ -536,8 +554,15 @@ class UserMailer < ActionMailer::Base
   end
 
   def extract_chapman_code_from_file_name(file_name)
-    parts = file_name.split('.')
-    chapman_code = parts[0].slice(0..2)
+    case appname.downcase
+    when 'freereg'
+      parts = file_name.split('.')
+      chapman_code = parts[0].slice(0..2)
+    when 'freecen'
+      year, piece, _fields = Freecen2Piece.extract_year_and_piece(file_name, @chapman_code)
+      actual_piece = Freecen2Piece.where(year: year, number: piece.upcase).first
+      chapman_code = actual_piece.chapman_code if actual_piece.present?
+    end
     if ChapmanCode.value?(chapman_code)
       county = County.where(chapman_code: chapman_code).first
       if county.present?
