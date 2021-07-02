@@ -65,8 +65,6 @@ class Csvfile < CarrierWave::Uploader::Base
   end
 
   def downcase_extension
-    return file_name if MyopicVicar::Application.config.freexxx_display_name.downcase == 'freereg'
-
     file_name_parts = file_name.split('.')
     file_name_parts[1] = file_name_parts[1].downcase
     new_file_name = file_name_parts[0] + '.' + file_name_parts[1]
@@ -115,7 +113,7 @@ class Csvfile < CarrierWave::Uploader::Base
     message = "The upload with file name #{file_name} was unsuccessful because #{errors.messages}" if errors.any?
     return [false, message] if errors.any?
 
-    rename_extention
+    rename_extention if MyopicVicar::Application.config.template_set == 'freecen'
     batch = create_batch_unless_exists
     range = File.join(userid, file_name)
     batch_processing = PhysicalFile.where(userid: userid, file_name: file_name, waiting_to_be_processed: true).exists?
