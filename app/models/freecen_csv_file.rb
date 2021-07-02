@@ -473,7 +473,7 @@ class FreecenCsvFile
   end
 
   def is_whole_piece(piece)
-    return true if piece.number + ".csv" == self.file_name
+    return true if piece.number.downcase + ".csv" == self.file_name.downcase
   end
 
   def set_completes_piece_flag
