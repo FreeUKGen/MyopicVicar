@@ -336,12 +336,11 @@ class BestGuess < FreebmdDbBase
 
   def define_url_distict
     district_name = format_district_name
-    district_suffix = $1
+    district_suffix = '1'
     district_name = district_name.gsub(/&/,"and")
     district_name = district_name.gsub(/ /,"-") if get_info_bookmark == "dash"
     district_name = district_name.gsub(/upon/,"on") if get_info_bookmark == "upon"
     district_name = district_name.gsub(/ [A-Za-z]*$/,"") if get_info_bookmark == "trnc"
-    logger.warn "#{district_name}"
     district_name = district_name.gsub(/ /,district_suffix) if get_info_bookmark.match?(/sfx[0-9]/)
     district_name = get_info_bookmark unless get_info_bookmark.match?(/aaaa|dash|upon|trnc|sfx[0-9]/)
     district_name = district_name.gsub(/ /,"%20")
