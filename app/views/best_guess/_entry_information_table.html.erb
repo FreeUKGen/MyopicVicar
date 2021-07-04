@@ -22,8 +22,12 @@
         District
       </th>
       <td>
-        <%= link_to "#{record.District}", "http://www.ukbmd.org.uk/reg/districts/#{record.District.downcase}.html", target: "_blank" %><br>
-        <span class="weight--normal"><%= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span>
+        <% if record.district_linkable? %>
+          <%= link_to "#{record.District}", "http://www.ukbmd.org.uk/reg/districts/#{record.define_url_distict}.html", target: "_blank" %><br>
+          <span class="weight--normal"><%= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span>
+        <% else %>
+          <%= record.District %>
+        <% end %>
       </td>
     </tr>
     <% if entry_type == "marriage" %>
