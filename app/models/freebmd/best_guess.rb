@@ -331,7 +331,7 @@ class BestGuess < FreebmdDbBase
   end
 
   def district_linkable?
-    valid_district && get_district.present? && district_url_definable
+    valid_district && get_district.present? && get_district_name.present? && district_url_definable
   end
 
   def define_url_distict
