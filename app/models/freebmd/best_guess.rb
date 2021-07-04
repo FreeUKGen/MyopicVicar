@@ -318,6 +318,10 @@ class BestGuess < FreebmdDbBase
     get_district.DistrictName
   end
 
+  def format_district_name
+    get_district_name.gsub(/(?<=\S) *\(.*\) *$/,'')
+  end
+
   def get_info_bookmark
     get_district.InfoBookmark
   end
@@ -331,7 +335,7 @@ class BestGuess < FreebmdDbBase
   end
 
   def define_url_distict
-    district_name = get_district_name
+    district_name = format_district_name
     district_suffix = $1
     district_name = district_name.gsub(/&/,"and")
     district_name = district_name.gsub(/ /,"-") if get_info_bookmark == "dash"
