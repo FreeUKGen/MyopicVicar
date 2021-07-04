@@ -13,6 +13,8 @@ class BestGuess < FreebmdDbBase
   ENTRY_SYSTEM = 8
   ENTRY_LINK = 256
   ENTRY_REFERENCE = 512
+  DISTRICT_MISSPELT = 2
+  DISTRICT_ALIAS = 1
 
   def friendly_url
     particles = []
@@ -297,5 +299,47 @@ class BestGuess < FreebmdDbBase
 
   def late_entry_detail
     sorted_reference_records.select{|rec| !(rec.Confirmed & ENTRY_LINK).zero?}.pluck(:RecordNumber)
+  end
+
+  def valid_district
+    (self.DistrictFlag & DISTRICT_MISSPELT).zero?
+  end
+
+  def non_alias_district
+    (self.DistrictFlag & DISTRICT_ALIAS).zero?
+    #$primaryDistrictFlag & $BMD::Const::DistrictAlias && $primaryDistrictName ne $canDistrictName
+  end
+
+  def get_district
+    District.where(DistrictNumber: self.DistrictNumber).first
+  end
+
+  def get_district_name
+    get_district.DistrictName
+  end
+
+  def get_info_bookmark
+    get_district.InfoBookmark
+  end
+
+  def district_url_definable
+    get_info_bookmark.present? && get_info_bookmark != "xxxx"
+  end
+
+  def district_linkable?
+    valid_district && get_district.present? && district_url_definable
+  end
+
+  def define_url_distict
+    district_name = get_district_name
+    district_suffix = $1
+    district_name = district_name.gsub(/&/,"and")
+    district_name = district_name.gsub(/ /,"-") if get_info_bookmark == "dash"
+    district_name = district_name.gsub(/upon/,"on") if get_info_bookmark == "upon"
+    district_name = district_name.gsub(/ [A-Za-z]*$/,"") if get_info_bookmark == "trnc"
+    district_name = district_name.gsub(/ /,district_suffix) if get_info_bookmark.match?(/sfx[0-9]/)
+    district_name = get_info_bookmark unless get_info_bookmark.match?(/aaaa|dash|upon|trnc|sfx[0-9]/)
+    district_name = district_name.gsub(/ /,"%20")
+    district_name
   end
 end
