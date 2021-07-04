@@ -15,7 +15,7 @@ class ContactsController < ApplicationController
 
   require 'freereg_options_constants'
 
-  skip_before_action :require_login, only: [:new, :report_error, :create, :show]
+  skip_before_action :require_login, only: [:new, :report_error, :create, :show, :question_answer_finder]
 
   def archive
     @contact = Contact.find(params[:id]) if params[:id].present?
