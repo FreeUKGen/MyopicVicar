@@ -67,13 +67,13 @@
       
       <% if @option == '1' %>
         <div id="display_scans">
-          <div class="grid__item one-whole">
+          <div class="grid__item two-thirds lap-one-whole palm-one-whole hard--left">
             <h4>Scans</h4>
             <% if @scan_links.present? %>
               <ul>
                 <div class="grid">
                   <% @scan_links.each do |s| %>
-                    <div class = "grid__item one-whole lap-one-whole palm-one-whole push--bottom" >
+                    <div class = "grid__item two-thirds lap-one-whole palm-one-whole hard--left" >
                       <% series = s.SeriesRangeFileName %>
                       <% image_file_path = "#{scan_link_url(@current_record)}#{series}" %>
                       <table class="table--bordered table--data ">
@@ -97,7 +97,7 @@
               <ul>
                 <div class="grid">
                   <% @acc_scans.each do |s| %>
-                    <div class = "grid__item one-whole lap-one-whole palm-one-whole push--bottom" >
+                    <div class = "grid__item two-thirds lap-one-whole palm-one-whole hard--left" >
                       <% series = s.SeriesID %>
                       <% range = "/#{s.range.Range}" if s.Range.present?%>
                       <% file = s.Filename %>
@@ -124,7 +124,7 @@
               <ul>
                 <div class="grid">
                   <% @acc_mul_scans.each do |s| %>
-                    <div class = "grid__item one-whole lap-one-whole palm-one-whole push--bottom" >
+                    <div class = "grid__item two-thirds lap-one-whole palm-one-whole hard--left" >
                       <% series = s.SeriesID %>
                       <% range = "/#{s.Range}" if s.Range.present?%>
                       <% @current_record.multi_image_filenames.each do |fn| %>
