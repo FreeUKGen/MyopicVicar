@@ -76,8 +76,18 @@
                     <div class = "grid__item one-whole lap-one-whole palm-one-whole push--bottom" >
                       <% series = s.SeriesRangeFileName %>
                       <% image_file_path = "#{scan_link_url(@current_record)}#{series}" %>
-                      <%= link_to "#{series}".html_safe, image_file_path, target: "_blank"%>
-                      <%= image_tag(image_file_path,size: "100x100")%>
+                      <table class="table--bordered table--data ">
+                        <thead>
+                          <th>Scan</th>
+                          <th>View Scan</th>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td><%= image_tag(image_file_path,size: "100x100")%></td>
+                            <td><%= link_to "#{series}".html_safe, image_file_path, target: "_blank"%></td>
+                          </tr>
+                        </tbody>
+                      </table>
                     </div>
                   <% end %>
                 </div>
@@ -91,9 +101,20 @@
                       <% series = s.SeriesID %>
                       <% range = "/#{s.range.Range}" if s.Range.present?%>
                       <% file = s.Filename %>
+
                       <% image_file_path = "#{scan_link_url(@current_record)}#{series}#{range}/#{file}" %>
-                      <%= link_to "#{series}#{range}/#{file}".html_safe, image_file_path, target: "_blank"%>
-                      <%= image_tag(image_file_path,size: "100x100")%>
+                      <table class="table--bordered table--data ">
+                        <thead>
+                          <th>Scan</th>
+                          <th>View Scan</th>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td><%= image_tag(image_file_path,size: "100x100")%></td>
+                            <td><%= link_to "#{series}#{range}/#{file}".html_safe, image_file_path, target: "_blank"%></td>
+                          </tr>
+                        </tbody>
+                      </table>
                     </div>
                   <% end %>
                 </div>
@@ -108,8 +129,18 @@
                       <% range = "/#{s.Range}" if s.Range.present?%>
                       <% @current_record.multi_image_filenames.each do |fn| %>
                         <% image_file_path = "#{scan_link_url(@current_record)}#{series}#{range}/#{fn}" %>
-                        <%= link_to "#{series}#{range}/#{fn}".html_safe, image_file_path, target: "_blank"%>
-                        <%= image_tag(image_file_path,size: "100x100")%>
+                        <table class="table--bordered table--data ">
+                        <thead>
+                          <th>Scan</th>
+                          <th>View Scan</th>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td><%= image_tag(image_file_path,size: "100x100")%></td>
+                            <td><%= link_to "#{series}#{range}/#{fn}".html_safe, image_file_path, target: "_blank"%></td>
+                          </tr>
+                        </tbody>
+                      </table>
                       <% end %>
                     </div>
                   <% end %>
