@@ -93,7 +93,7 @@ class BestGuess < FreebmdDbBase
   end
 
   def scanlists
-    approved_scanslists + unapproved_definitive_scanslists + unapproved_probable_scanslists + rejected_probable_scanslists + rejected_possible_scanslists + rejected_likely_scanslists
+    approved_scanslists.to_a + unapproved_definitive_scanslists.to_a + unapproved_probable_scanslists.to_a + rejected_probable_scanslists.to_a + rejected_possible_scanslists.to_a + rejected_likely_scanslists.to_a
   end
 
   def uniq_scanlists
