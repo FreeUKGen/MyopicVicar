@@ -118,14 +118,9 @@
           </div>
         </div>
       <% end %>
-      <!--div class="grid__item one-whole lap-one-whole palm-one-whole push--bottom">
-        <h4>Corrections</h4>
-        <p>If you have a correction to this entry, please submit a correction. Please note that you can view the scan from which this entry was transcribed, please click on .Please examine this image to verify that any correction you submit is the same as in the GRO index.</p>
-        <%#= link_to "I have viewed the scan and wish to submit a correction", report_error_contact_path(@current_record, :query => @search_query), target: "_blank" %>
-      </div-->
       <% if @option == '2' %>
         <div id="display_postems">
-          <div class="grid__item one-whole lap-one-whole palm-one-whole push--bottom">
+          <div class="grid__item two-thirds lap-one-whole palm-one-whole push--bottom">
             <h4>Postems</h4>
             <p>Do you know more about the people or event in this record that you are willing to share with other researchers? We call these helpful additions to the database 'postems'. For example, you you know a more precise place or other details from a certificate or from a search of FreeREG, or more about the family from a search on FreeCEN, or have found other records about them in another country's registration system. Contribute what you know</p>
             <% if @current_record.postems_list.present? %>
