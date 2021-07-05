@@ -670,7 +670,7 @@ class SearchRecord
       place = Freecen2Place.find_by(_id: freecen2_place_id)
       particles << place.place_name if place.present?
     else
-      particles << self.place.place_name if self.place.place_name
+      particles << self.place.place_name if self.place.present?
     end
     # finally date
     particles << search_dates.first
