@@ -5,9 +5,15 @@
         <div class="grid">
           <div class="grid__item one-whole lap-one-whole palm-one-whole ">
           	<% if @search  %>
-            	<%= link_to app_icons[:postem].html_safe, "#{friendly_bmd_record_details_path(params[:search_id], @search_record, @search_record.friendly_url, filter_option: '2')}#display_postems" , class: "project-text-color", onclick: "loadSpinner(this)" %>
+            	<%= link_to  "#{friendly_bmd_record_details_path(params[:search_id], @search_record, @search_record.friendly_url, filter_option: '2')}#display_postems" , class: "project-text-color", onclick: "loadSpinner(this)", alt: 'View Postems' do %>
+            		<%= app_icons[:postem].html_safe %>
+            		<span class="accessibility">Postems</span>
+            	<% end %>
             <% else %>
-            	<%= link_to app_icons[:postem].html_safe, "#{friendly_bmd_record_details_non_search_path(@search_record, @search_record.friendly_url, filter_option: '2')}#display_postems" , class: "project-text-color", onclick: "loadSpinner(this)" %>
+            	<%= link_to "#{friendly_bmd_record_details_non_search_path(@search_record, @search_record.friendly_url, filter_option: '2')}#display_postems" , class: "project-text-color", onclick: "loadSpinner(this)", alt: 'View Postems' do %>
+            		<%= app_icons[:postem].html_safe %>
+            		<span class="accessibility">Postems</span>
+            	<% end %>
             <% end %>
           </div>
           <div class="grid__item one-whole lap-one-whole palm-one-whole ">
@@ -23,9 +29,15 @@
         <div class="grid">
           <div class="grid__item one-whole lap-one-whole palm-one-whole ">
           	<% if @search  %>
-            	<%= link_to app_icons[:camera].html_safe, "#{friendly_bmd_record_details_path(params[:search_id], @search_record, @search_record.friendly_url, filter_option: '1')}#display_scans" , class: "project-text-color", onclick: "loadSpinner(this)"%>
+            	<%= link_to "#{friendly_bmd_record_details_path(params[:search_id], @search_record, @search_record.friendly_url, filter_option: '1')}#display_scans" , class: "project-text-color", onclick: "loadSpinner(this)", alt: 'View Scans' do%>
+            		<%= app_icons[:camera].html_safe %>
+            		<span class="accessibility">Scans</span>
+            	<% end %>
             <% else %>
-            	<%= link_to app_icons[:camera].html_safe, "#{friendly_bmd_record_details_non_search_path(@search_record, @search_record.friendly_url, filter_option: '1')}#display_scans" , class: "project-text-color", onclick: "loadSpinner(this)"%>
+            	<%= link_to "#{friendly_bmd_record_details_non_search_path(@search_record, @search_record.friendly_url, filter_option: '1')}#display_scans" , class: "project-text-color", onclick: "loadSpinner(this)", alt: 'View Scans' do%>
+            		<%= app_icons[:camera].html_safe %>
+            		<span class="accessibility">Scans</span>
+            	<% end %>
             <% end %>
           </div>
           <div class="grid__item one-whole lap-one-whole palm-one-whole ">
@@ -43,7 +55,10 @@
 		      <div class="idk_d">
 		        <div class="grid">
 		          <div class="grid__item one-whole lap-one-whole palm-one-whole ">
-		            <%= link_to app_icons[:heart].html_safe, save_entry_path(@search_record.RecordNumber,search_id: params[:search_id]) , method: :post,  disable_with: "Processing..."  %>
+		            <%= link_to save_entry_path(@search_record.RecordNumber,search_id: params[:search_id]) , method: :post,  disable_with: "Processing..." , alt: 'Save Entry' do%>
+            			<%= app_icons[:heart].html_safe %>
+            			<span class="accessibility">Save Entry</span>
+            		<% end %>
 		          </div>
 		          <div class="grid__item one-whole lap-one-whole palm-one-whole ">
 		            <span class="idk_text">Save Entry</span>

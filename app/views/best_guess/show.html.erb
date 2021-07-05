@@ -27,10 +27,9 @@
 
 <%#= link_to "#{app_icons[:left_arrow_pink]} Back".html_safe, search_query_path(@search_query, id: params[:search_id]), class: " btn   btn--small" if params[:search_id].present?%>
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
-  <h1 class="accessibility">Entry Information</h1>
   <div class="grid">
     <div class="grid__item seven-tenths lap-seven-tenths palm-one-whole ">
-      <p class="alpha push-half--top flush--bottom"><%= "Entry Information: #{@current_record[:GivenName].upcase} #{@current_record[:Surname].upcase}" %></p>
+      <h1 class="beta push-half--top flush--bottom"><%= "Entry Information: #{@current_record[:GivenName].capitalize} #{@current_record[:Surname].upcase}" %></h1>
       <hr>
       <!--span  class='additional'>
         While we have made all efforts to correctly record the information in the original document there may be different interpretations of the written words. <b>If you have access to the original document</b> and believe we have made a mistake you are encouraged to report this to us.
@@ -41,14 +40,15 @@
           <% record_type = RecordType::display_name(@current_record.RecordTypeID)%>
           <%= render partial: 'entry_information_table', locals: {record: @current_record, search: true, entry_type: record_type.downcase, query: @search_query, search_id: params[:search_id], original_record: @current_record, more_info: false } %>
         </div>
+        
         <div class='push-half--top'>
           <div class="grid__item one-whole">
             <% if params[:search_id].present? %>
               <div class='grid__item one-quarter lap-one-quarter palm-one-half'>
-                <%= link_to '<i class="fa fa-chevron-left view_arrow"></i> Previous Result'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record, @previous_record.friendly_url), class: 'push-half--right push-half--top' unless @previous_record.nil? %>
+                <%= link_to '<i class="fa fa-chevron-left view_arrow"></i> Previous Result'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record, @previous_record.friendly_url), class: 'push-half--right push-half--top push--bottom' unless @previous_record.nil? %>
               </div>
               <div class='grid__item one-quarter lap-one-quarter palm-one-half'>
-                <%= link_to 'Next Result <i class="fa fa-chevron-right view_arrow"></i> '.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record, @next_record.friendly_url), class: 'push-half--right push-half--top' unless @next_record.nil?%>
+                <%= link_to 'Next Result <i class="fa fa-chevron-right view_arrow"></i> '.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record, @next_record.friendly_url), class: 'push-half--right push-half--top push--bottom' unless @next_record.nil?%>
               </div>
               <div class='grid__item one-quarter lap-one-quarter palm-one-half'>
                 <% if @previous_record_of_page.present?%>
@@ -77,6 +77,7 @@
                       <% series = s.SeriesRangeFileName %>
                       <% image_file_path = "#{scan_link_url(@current_record)}#{series}" %>
                       <%= link_to "#{series}".html_safe, image_file_path, target: "_blank"%>
+                      <%= image_tag(image_file_path,size: "100x100")%>
                     </div>
                   <% end %>
                 </div>
@@ -167,10 +168,13 @@
           </div>
         </div>
       <% end %>
+      <div class="grid__item two-thirds lap-one-whole palm-one-whole text--center push--top ">
+          <%= link_to 'Report an Error in this Data', report_error_contact_path(@current_record.RecordNumber, query: @search_query), class: 'btn btn--natural' unless  @current_record.blank? %>
+        </div>
     </div>
     <% unless print_friendly %>
       <% if device_type == :desktop %>
-        <div class="grid__item two-tenths lap-one-tenths palm-one-whole "  id='results_table_ad'>
+        <div class="grid__item two-tenths lap-one-tenths palm-one-whole"  id='results_table_ad'>
           <center>
             <p>Advertisement</p>
             <%= adsence_right_side_banner %>
