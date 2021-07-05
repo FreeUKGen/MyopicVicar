@@ -73,9 +73,8 @@
           <div class="grid__item two-thirds lap-one-whole palm-one-whole hard--left">
             <% if @scan_links.present? %>
               <ul>
-                <div class="grid">
+                <div class="grids">
                   <% @scan_links.each do |s| %>
-                    <div class = "grid__item two-thirds lap-one-whole palm-one-whole hard--left" >
                       <% series = s.SeriesRangeFileName %>
                       <% image_file_path = "#{scan_link_url(@current_record)}#{series}" %>
                       <table class="table--bordered table--data ">
@@ -90,16 +89,14 @@
                           </tr>
                         </tbody>
                       </table>
-                    </div>
                   <% end %>
                 </div>
               </ul>
             <% end %>
             <% if @acc_scans.present? %>
               <ul>
-                <div class="grid">
+                <div class="grids">
                   <% @acc_scans.each do |s| %>
-                    <div class = "grid__item two-thirds lap-one-whole palm-one-whole hard--left" >
                       <% series = s.SeriesID %>
                       <% range = "/#{s.range.Range}" if s.Range.present?%>
                       <% file = s.Filename %>
@@ -117,16 +114,14 @@
                           </tr>
                         </tbody>
                       </table>
-                    </div>
                   <% end %>
                 </div>
               </ul>
             <% end %>
             <% if @acc_mul_scans.present? %>
               <ul>
-                <div class="grid">
+                <div class="grids">
                   <% @acc_mul_scans.each do |s| %>
-                    <div class = "grid__item two-thirds lap-one-whole palm-one-whole hard--left" >
                       <% series = s.SeriesID %>
                       <% range = "/#{s.Range}" if s.Range.present?%>
                       <% @current_record.multi_image_filenames.each do |fn| %>
@@ -144,7 +139,6 @@
                         </tbody>
                       </table>
                       <% end %>
-                    </div>
                   <% end %>
                 </div>
               </ul>
