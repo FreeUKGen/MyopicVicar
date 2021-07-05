@@ -93,6 +93,7 @@
                       <% file = s.Filename %>
                       <% image_file_path = "#{scan_link_url(@current_record)}#{series}#{range}/#{file}" %>
                       <%= link_to "#{series}#{range}/#{file}".html_safe, image_file_path, target: "_blank"%>
+                      <%= image_tag(image_file_path,size: "100x100")%>
                     </div>
                   <% end %>
                 </div>
@@ -108,6 +109,7 @@
                       <% @current_record.multi_image_filenames.each do |fn| %>
                         <% image_file_path = "#{scan_link_url(@current_record)}#{series}#{range}/#{fn}" %>
                         <%= link_to "#{series}#{range}/#{fn}".html_safe, image_file_path, target: "_blank"%>
+                        <%= image_tag(image_file_path,size: "100x100")%>
                       <% end %>
                     </div>
                   <% end %>
