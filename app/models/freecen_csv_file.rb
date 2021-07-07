@@ -473,7 +473,7 @@ class FreecenCsvFile
   end
 
   def is_whole_piece(piece)
-    return true if piece.number + ".csv" == self.file_name
+    return true if piece.number.downcase + ".csv" == self.file_name.downcase
   end
 
   def set_completes_piece_flag
@@ -1191,7 +1191,7 @@ class FreecenCsvFile
     header << 'record_valid' if validation && !header_line.include?('record_valid')
     CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
       csv << header
-      records = freecen_csv_entries
+      records = freecen_csv_entries.order_by(_id: 1)
       records.each do |rec|
         line = []
         line = add_fields(line, rec)

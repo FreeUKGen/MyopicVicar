@@ -214,16 +214,7 @@ class SearchQuery
           proceed = false
         end
       when 'freecen'
-        entry = search_record[:freecsv_csv_entry_id]
-        if entry.present?
-          actual_entry = FreecenCsvEntry.find_by(_id: entry)
-          proceed = actual_entry.present? ? true : false
-        else
-          proceed = false
-        end
-      else
         proceed = true
-
       end
       proceed
     end
@@ -685,12 +676,15 @@ class SearchQuery
       record = SearchQuery.add_search_date_when_absent(record) if record[:search_date].blank?
       records[rec_id] = record
       proceed = SearchQuery.does_the_entry_exist?(rec)
+      p 'persisting'
+      p proceed
       if proceed
         rec_id = record['_id'].to_s
         record = SearchQuery.add_birth_place_when_absent(record) if record[:birth_place].blank? && App.name.downcase == 'freecen'
         record = SearchQuery.add_search_date_when_absent(record) if record[:search_date].blank?
         records[rec_id] = record
       else
+        p 'deleting'
         search_record = SearchRecord.find_by(_id: rec['_id'].to_s)
         search_record.delete if search_record.present?
       end
