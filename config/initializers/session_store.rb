@@ -13,8 +13,14 @@
 # limitations under the License.
 #
 # Be sure to restart your server when you modify this file.
-
-MyopicVicar::Application.config.session_store :cookie_store, key: 'FreeReg_session', expire_after: nil #480.minutes
+case MyopicVicar::Application.config.freexxx_display_name
+when 'FreeCEN'
+  MyopicVicar::Application.config.session_store :cookie_store, key: 'FreeCEN_session', expire_after: nil #480.minutes
+when 'FreeREG'
+  MyopicVicar::Application.config.session_store :cookie_store, key: 'FreeREG_session', expire_after: nil #480.minutes
+when 'FreeBMD'
+  MyopicVicar::Application.config.session_store :cookie_store, key: 'FreeBMD_session', expire_after: nil #480.minutes
+end
 
 # Use the database for sessions instead of the cookie-based default,
 # which shouldn't be used to store highly confidential information

@@ -1,0 +1,17 @@
+<% breadcrumb :change_userid_freecen_csv_file,  @freecen_csv_file%>
+<p style="text-align: center"><b><%= file_name(@freecen_csv_file) %> (<%= userid(@freecen_csv_file) %>) in <b><%= @piece.district_name %></b> of <b><%= @piece.chapman_code %></b><br>
+  </p>
+  <% if flash[:notice] %>
+    <div id="notice" style="color:blue"><br>
+      <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+    </div>
+  <% end %>
+  <section class="island  island--light">
+    <p><b></b></p>
+    You are changing <%= @records%> records so it may take some time.
+    <%= simple_form_for @freecen_csv_file,:html => { :class =>  "grid"} do |f| %>
+      <%= f.input :userid,{ :as => :select,:label => "Select userid",:include_blank => false,
+  :required => true, :collection => @userids, :size => 15,:input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 10}  } %>
+      <%= f.button :submit, 'Copy to Userid'   %>
+    <% end %>
+  </section>

@@ -81,7 +81,7 @@ class UseridDetailsController < ApplicationController
     redirect_back(fallback_location: options_userid_details_path, notice: 'The userid was not found') && return if @userid.blank?
 
     session[:type] = 'edit'
-    redirect_back(fallback_location: options_userid_details_path, notice: 'The destruction of the profile not permitted as they have batches') && return if @userid.has_files?
+    redirect_back(fallback_location: options_userid_details_path, notice: 'The removal of the userid not permitted as they have batches') && return if @userid.has_files?
 
     if appname_downcase == 'freereg'
       Freereg1CsvFile.delete_userid_folder(@userid.userid)
@@ -131,6 +131,7 @@ class UseridDetailsController < ApplicationController
     @userid = @user if session[:my_own]
     @current_user = get_user
     @syndicates = Syndicate.get_syndicates
+    @appname = appname_downcase
   end
 
   def general
@@ -188,6 +189,16 @@ class UseridDetailsController < ApplicationController
     @role = session[:role]
   end
 
+  def move
+    load(params[:id])
+    redirect_back(fallback_location: options_userid_details_path, notice: 'The userid was not found') && return if @userid.blank?
+
+    redirect_back(fallback_location: options_userid_details_path, notice: 'The removal of the userid not permitted as they have batches') && return if @userid.has_files?
+    @userid.update_attributes(syndicate: 'To be Destroyed')
+    flash[:notice] = 'Userid moved to the To be Destroyed syndicate for review'
+    redirect_to(userid_detail_path(@userid.id))
+  end
+
   def new
     session[:return_to] = request.fullpath
     session[:type] = 'add'
@@ -201,6 +212,7 @@ class UseridDetailsController < ApplicationController
     else
       @syndicates = Syndicate.get_syndicates_open_for_transcription
     end
+    @appname = appname_downcase
     @userid = UseridDetail.new
   end
 
@@ -552,14 +564,23 @@ class UseridDetailsController < ApplicationController
 
     @total_users = UseridDetail.count
     @total_transcribers = UseridDetail.where(person_role: 'transcriber').count
+    @total_accepted_agreement = UseridDetail.where(new_transcription_agreement: 'Accepted').count
     @total_transcribers_accepted_agreement = UseridDetail.where(person_role: 'transcriber', new_transcription_agreement: 'Accepted').count
+    @total_active = UseridDetail.where(active: true).count
     @total_active_transcribers = UseridDetail.where(person_role: 'transcriber', active: true).count
-    @users_never_uploaded_file = UseridDetail.where(number_of_files: 0).count
-    @users_uploaded_file = UseridDetail.where(number_of_files: { '$ne': 0 }).count
-    @transcribers_never_uploaded_file = UseridDetail.where(person_role: 'transcriber', number_of_files: 0).count
-    @transcriber_uploaded_file = UseridDetail.where(person_role: 'transcriber', number_of_files: { '$ne': 0 }).count
     @incomplete_registrations = UseridDetail.new.incomplete_user_registrations_count
     @incomplete_transcriber_registrations = UseridDetail.new.incomplete_transcribers_registrations_count
+    case appname_downcase
+    when 'freereg'
+      @users_never_uploaded_file = UseridDetail.where(number_of_files: 0).count
+      @users_uploaded_file = UseridDetail.where(number_of_files: { '$ne': 0 }).count
+      @transcribers_never_uploaded_file = UseridDetail.where(person_role: 'transcriber', number_of_files: 0).count
+      @transcriber_uploaded_file = UseridDetail.where(person_role: 'transcriber', number_of_files: { '$ne': 0 }).count
+    when 'freecen'
+      @user_modern_active, @transcribers_modern_active = UseridDetail.modern_freecen_active
+      @users_never_uploaded_file, @transcribers_never_uploaded_file, @users_uploaded_file, @transcriber_uploaded_file = UseridDetail.uploaded_freecen_file(@total_users, @total_transcribers)
+    end
+
     # New statistics
     @total_records_transcribers = return_total_transcriber_records
     @percentage_total_records_by_transcribers = return_percentage_total_records_by_transcribers
@@ -586,11 +607,20 @@ class UseridDetailsController < ApplicationController
     when 'Update'
       params[:userid_detail][:previous_syndicate] = @userid.syndicate unless params[:userid_detail][:syndicate] == @userid.syndicate
     when 'Confirm'
-      if params[:userid_detail][:email_address_valid] == 'true'
+      logger.warn "FREECEN::USER #{params.inspect}"
+      if params[:userid_detail][:email_address_valid] == 'true' || params[:userid_detail][:email_address_valid] == true
         @userid.update_attributes(email_address_valid: true, email_address_last_confirmned: Time.new, email_address_validity_change_message: [])
-        flash[:notice] = 'Email address confirmed'
-        redirect_to(new_manage_resource_path) && return
+        if @userid.errors.any?
+          logger.warn "FREECEN::USER errors#{@userid.errors.full_messages}"
+          flash[:notice] = "The update of the profile was unsuccessful #{@userid.errors.full_messages}"
+          redirect_to confirm_email_address_userid_details_path && return
+        else
+          flash[:notice] = 'Email address confirmed'
+          redirect_to(new_manage_resource_path) && return
+        end
       else
+        logger.warn "FREECEN::USER not confirmed"
+        flash[:notice] = "Email address was not confirmed; you responded #{params[:userid_detail][:email_address_valid]}. Please edit"
         session[:my_own] = true
         redirect_to(edit_userid_detail_path(@userid)) && return
       end

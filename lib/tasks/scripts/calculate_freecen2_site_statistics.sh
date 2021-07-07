@@ -12,7 +12,7 @@ trace() {
 ROOT=/home/apache/hosts/freecen2/production
 cd $ROOT
 umask 0002
-sudo -u webserv bundle exec rake RAILS_ENV=production freereg:calculate_site_statistics --trace
+sudo -u webserv bundle exec rake RAILS_ENV=production freecen:calculate_site_statistics --trace
 exit
 
 

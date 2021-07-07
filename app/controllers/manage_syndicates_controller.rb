@@ -20,7 +20,12 @@ class ManageSyndicatesController < ApplicationController
     @sorted_by = '; sorted by descending number of errors and then file name'
     session[:sorted_by] = @sorted_by
     session[:sort] = 'error DESC, file_name ASC'
-    redirect_to freereg1_csv_files_path
+    case appname_downcase
+    when 'freereg'
+      redirect_to freereg1_csv_files_path
+    when 'freecen'
+      redirect_to freecen_csv_files_path
+    end
   end
 
   def change_recruiting_status
@@ -43,7 +48,12 @@ class ManageSyndicatesController < ApplicationController
     @sorted_by = '; sorted by file name ascending'
     session[:sorted_by] = @sorted_by
     session[:sort] = 'file_name ASC'
-    redirect_to freereg1_csv_files_path
+    case appname_downcase
+    when 'freereg'
+      redirect_to freereg1_csv_files_path
+    when 'freecen'
+      redirect_to freecen_csv_files_path
+    end
   end
 
   def display_by_userid_filename
@@ -53,7 +63,12 @@ class ManageSyndicatesController < ApplicationController
     @sorted_by = '; sorted by userid and then file name ascending)'
     session[:sorted_by] = @sorted_by
     session[:sort] = 'userid_lower_case ASC, file_name ASC'
-    redirect_to freereg1_csv_files_path
+    case appname_downcase
+    when 'freereg'
+      redirect_to freereg1_csv_files_path
+    when 'freecen'
+      redirect_to freecen_csv_files_path
+    end
   end
 
   def display_by_descending_uploaded_date
@@ -63,7 +78,12 @@ class ManageSyndicatesController < ApplicationController
     @sorted_by = '; sorted by most recent date of upload'
     session[:sorted_by] = @sorted_by
     session[:sort] = 'uploaded_date DESC'
-    redirect_to freereg1_csv_files_path
+    case appname_downcase
+    when 'freereg'
+      redirect_to freereg1_csv_files_path
+    when 'freecen'
+      redirect_to freecen_csv_files_path
+    end
   end
 
   def display_by_ascending_uploaded_date
@@ -73,7 +93,12 @@ class ManageSyndicatesController < ApplicationController
     @sorted_by = '; sorted by oldest date of upload'
     session[:sort] = 'uploaded_date ASC'
     session[:sorted_by] = @sorted_by
-    redirect_to freereg1_csv_files_path
+    case appname_downcase
+    when 'freereg'
+      redirect_to freereg1_csv_files_path
+    when 'freecen'
+      redirect_to freecen_csv_files_path
+    end
   end
 
   def display_files_waiting_to_be_processed
@@ -100,13 +125,18 @@ class ManageSyndicatesController < ApplicationController
     @sorted_by = '; selects files with zero date records then alphabetically by userid and file name'
     session[:sorted_by] = @sorted_by
     session[:sort] = 'userid_lower_case ASC, file_name ASC'
-    @freereg1_csv_files = Freereg1CsvFile.syndicate(session[:syndicate]).datemin('0').no_timeout.order_by(session[:sort])
-    render 'freereg1_csv_files/index'
+    case appname_downcase
+    when 'freereg'
+      @freereg1_csv_files = Freereg1CsvFile.syndicate(session[:syndicate]).datemin('0').no_timeout.order_by(session[:sort])
+      render 'freereg1_csv_files/index'
+    when 'freecen'
+      redirect_to freecen_csv_files_path
+    end
+
   end
 
   def syndicates_for_selection
-    all = true if @user.person_role == 'volunteer_coordinator' || @user.person_role == 'data_manager' ||
-      @user.person_role == 'system_administrator' || @user.person_role == 'SNDManager' || @user.person_role == 'documentation_coordinator'
+    all = true if %w[volunteer_coordinator data_manager master_county_coordinator system_administrator documentation_coordinator SNDManager CENManager executive_director project_manager].include?(@user.person_role)
 
     @syndicates = @user.syndicate_groups
     @syndicates = Syndicate.all.order_by(syndicate_code: 1) if all
@@ -119,7 +149,12 @@ class ManageSyndicatesController < ApplicationController
       @syndicates = synd
       @syndicates.sort! if @syndicates.present?
     else
-      logger.warn "FREEREG::USER #{@user.userid} has no syndicates and attempting to manage one"
+      case appname_downcase
+      when 'freereg'
+        logger.warn "FREEREG::USER #{@user.userid} has no syndicates and attempting to manage one"
+      when 'freecen'
+        logger.warn "FREECEN::USER #{@user.userid} has no syndicates and attempting to manage one"
+      end
       redirect_back(fallback_location: new_manage_syndicate_path, notice: 'You do not have any syndicates') && return
     end
   end
@@ -214,11 +249,19 @@ class ManageSyndicatesController < ApplicationController
     @syndicate = session[:syndicate]
     @files = {}
     userids = Syndicate.get_userids_for_syndicate(session[:syndicate])
-    Freereg1CsvFile.in(userid: userids).order_by.order_by(file_name: 1).each do |file|
-      @files["#{file.file_name}:#{file.userid}"] = file._id if file.file_name.present?
+    case appname_downcase
+    when 'freereg'
+      Freereg1CsvFile.in(userid: userids).order_by.order_by(file_name: 1).each do |file|
+        @files["#{file.file_name}:#{file.userid}"] = file._id if file.file_name.present?
+      end
+      @location = 'location.href= "/freereg1_csv_files/" + this.value'
+    when 'freecen'
+      FreecenCsvFile.in(userid: userids).order_by.order_by(file_name: 1).each do |file|
+        @files["#{file.file_name}:#{file.userid}"] = file._id if file.file_name.present?
+      end
+      @location = 'location.href= "/freecen_csv_files/" + this.value'
     end
     @options = @files
-    @location = 'location.href= "/freereg1_csv_files/" + this.value'
     @prompt = 'Select batch'
     render '_form_for_selection'
   end

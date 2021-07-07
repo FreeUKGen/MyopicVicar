@@ -53,7 +53,7 @@ class OpenController < ApplicationController
     @search_query.chapman_codes << chapman_code
     # open records filter goes here
     @search_query.save!  #TODO cache this!
-    @open_results = @search_query.search.map{|h| SearchRecord.new(h)}
+    @open_results = @search_query.search.map{|h| SearchRecord.new(h)} unless @search_query.search
   end
 
   def places_for_county_surname

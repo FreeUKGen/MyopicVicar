@@ -1,0 +1,20 @@
+<table class="table--bordered " style="background-color:#ffffff;">
+  <thead>
+    <tr>
+      <% FreecenCsvEntry.error_display_labels.each do |lbl| %>
+        <td><small>
+            <%= lbl %>
+          </small></td>
+      <% end %>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <% @freecen_csv_entry.error_display_values.each do |field_val| %>
+        <td class="weight--semibold">
+          <%= field_val %>
+        </td>
+      <% end %>
+    </tr>
+  </tbody>
+</table>

@@ -1,133 +1,183 @@
 <%= render 'show_header' %>
-<p>
-  <b>Deleted flag:</b>
-  <%= @freecen1_vld_entry.deleted_flag %>
-</p>
-<p>
-  <b>Household number:</b>
-  <%= @freecen1_vld_entry.dwelling_number %>
-</p>
-<p>
-  <b>Sequence in household:</b>
-  <%= @freecen1_vld_entry.sequence_in_household %>
-</p>
-<p>
-  <b>Civil parish:</b>
-  <%= @freecen1_vld_entry.civil_parish %>
-</p>
-<p>
-  <b>Ecclesiastical parish:</b>
-  <%= @freecen1_vld_entry.ecclesiastical_parish %>
-</p>
-<p>
-  <b>Enumeration district:</b>
-  <%= @freecen1_vld_entry.enumeration_district %>
-</p>
-<p>
-  <b>Folio number:</b>
-  <%= @freecen1_vld_entry.folio_number %>
-</p>
-<p>
-  <b>Page number:</b>
-  <%= @freecen1_vld_entry.page_number %>
-</p>
-<p>
-  <b>Schedule number:</b>
-  <%= @freecen1_vld_entry.schedule_number %>
-</p>
-<p>
-  <b>House number:</b>
-  <%= @freecen1_vld_entry.house_number %>
-</p>
-<p>
-  <b>House or street name:</b>
-  <%= @freecen1_vld_entry.house_or_street_name %>
-</p>
-<p>
-  <b>Uninhabited flag:</b>
-  <%= @freecen1_vld_entry.uninhabited_flag %>
-</p>
-<p>
-  <b>Unoccupied notes:</b>
-  <%= @freecen1_vld_entry.unoccupied_notes %>
-</p>
-<p>
-  <b>Individual flag:</b>
-  <%= @freecen1_vld_entry.individual_flag %>
-</p>
-<p>
-  <b>Surname:</b>
-  <%= @freecen1_vld_entry.surname %>
-</p>
-<p>
-  <b>Forenames:</b>
-  <%= @freecen1_vld_entry.forenames %>
-</p>
-<p>
-  <b>Name flag:</b>
-  <%= @freecen1_vld_entry.name_flag %>
-</p>
-<p>
-  <b>Relationship:</b>
-  <%= @freecen1_vld_entry.relationship %>
-</p>
-<p>
-  <b>Marital status:</b>
-  <%= @freecen1_vld_entry.marital_status %>
-</p>
-<p>
-  <b>Sex:</b>
-  <%= @freecen1_vld_entry.sex %>
-</p>
-<p>
-  <b>Age:</b>
-  <%= @freecen1_vld_entry.age %>
-</p>
-<p>
-  <b>Age unit:</b>
-  <%= @freecen1_vld_entry.age_unit %>
-</p>
-<p>
-  <b>Detail flag:</b>
-  <%= @freecen1_vld_entry.detail_flag %>
-</p>
-<p>
-  <b>Occupation:</b>
-  <%= @freecen1_vld_entry.occupation %>
-</p>
-<p>
-  <b>Occupation flag:</b>
-  <%= @freecen1_vld_entry.occupation_flag %>
-</p>
-<p>
-  <b>Birth county:</b>
-  <%= @freecen1_vld_entry.birth_county %>
-</p>
-<p>
-  <b>Birth place:</b>
-  <%= @freecen1_vld_entry.birth_place %>
-</p>
-<p>
-  <b>Verbatim birth county:</b>
-  <%= @freecen1_vld_entry.verbatim_birth_county %>
-</p>
-<p>
-  <b>Verbatim birth place:</b>
-  <%= @freecen1_vld_entry.verbatim_birth_place %>
-</p>
-<p>
-  <b>Birth place flag:</b>
-  <%= @freecen1_vld_entry.birth_place_flag %>
-</p>
-<p>
-  <b>Disability:</b>
-  <%= @freecen1_vld_entry.disability %>
-</p>
-<p>
-  <b>Language:</b>
-  <%= @freecen1_vld_entry.language %>
-</p>
-<p>
-  <b>Notes:</b>
-  <%= @freecen1_vld_entry.notes %>
-</p>
+<div class="grid">
+  <section class="island ">
+    <div class="grid__item ">
+      <table   class="table--bordered table--striped  table--data">
+        <colgroup >
+          <col class=t40>
+          <col class=t60>
+        </colgroup>
+        <tr>
+          <th class="caps">Field</th>
+          <th  class="caps">Value</th>
+        </tr>
+        <tr>
+          <td>Deleted flag:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.deleted_flag  %></td>
+        </tr>
+        <tr>
+          <td>Household number:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.dwelling_number  %></td>
+        </tr>
+        <tr>
+          <td>Sequence in household:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.sequence_in_household  %></td>
+        </tr>
+        <tr>
+          <td>Civil parish:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.civil_parish  %></td>
+        </tr>
+        <tr>
+          <td>Ecclesiastical parish:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.ecclesiastical_parish  %></td>
+        </tr>
+        <tr>
+          <td>Enumeration district:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.enumeration_district  %></td>
+        </tr>
+        <tr>
+          <td>Folio number:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.folio_number  %></td>
+        </tr>
+        <tr>
+          <td>Page number:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.page_number  %></td>
+        </tr>
+        <tr>
+          <td>Schedule number:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.schedule_number  %></td>
+        </tr>
+        <tr>
+          <td>House number:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.house_number  %></td>
+        </tr>
+        <tr>
+          <td>House or street name:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.house_or_street_name  %></td>
+        </tr>
+        <tr>
+          <td>Uninhabited flag:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.uninhabited_flag  %></td>
+        </tr>
+        <tr>
+          <td>Unoccupied notes:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.unoccupied_notes  %></td>
+        </tr>
+        <tr>
+          <td>Individual flag:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.individual_flag  %></td>
+        </tr>
+        <tr>
+          <td>Surname:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.surname  %></td>
+        </tr>
+        <tr>
+          <td>Forenames:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.forenames  %></td>
+        </tr>
+        <tr>
+          <td>Name flag:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.name_flag  %></td>
+        </tr>
+        <tr>
+          <td>Relationship:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.relationship  %></td>
+        </tr>
+        <tr>
+          <td>Marital status:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.marital_status  %></td>
+        </tr>
+        <tr>
+          <td>Sex:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.sex  %></td>
+        </tr>
+        <tr>
+          <td>Age:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.age  %></td>
+        </tr>
+        <tr>
+          <td>Age unit:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.age_unit  %></td>
+        </tr>
+        <tr>
+          <td>Detail flag:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.detail_flag  %></td>
+        </tr>
+        <tr>
+          <td>Occupation:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.occupation  %></td>
+        </tr>
+        <tr>
+          <td>Occupation flag:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.occupation_flag  %></td>
+        </tr>
+        <tr>
+          <td>Birth county:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.birth_county  %></td>
+        </tr>
+        <tr>
+          <td>Birth place:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.birth_place  %></td>
+        </tr>
+        <tr>
+          <td>Verbatim birth county:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.verbatim_birth_county  %></td>
+        </tr>
+        <tr>
+          <td>Verbatim birth place:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.verbatim_birth_place  %></td>
+        </tr>
+        <tr>
+          <td>Birth place flag:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.birth_place_flag  %></td>
+        </tr>
+        <tr>
+          <td>Disability:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.disability  %></td>
+        </tr>
+        <tr>
+          <td>Language:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.language  %></td>
+        </tr>
+        <tr>
+          <td>Notes:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_entry.notes  %></td>
+        </tr>
+      </table>
+    </div>
+  </section>
+</div>
+<br>

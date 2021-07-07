@@ -91,7 +91,7 @@ class Freereg1CsvFile
 
   before_destroy do |file|
     file.save_to_attic
-    Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).delete_all
+    Freereg1CsvEntry.where(:freereg1_csv_file_id => file._id).destroy_all
   end
 
   belongs_to :register, index: true
@@ -380,6 +380,19 @@ class Freereg1CsvFile
       logger.warn("FREEREG:LOCATION:VALIDATION invalid freereg1_csv_file id #{freereg1_csv_file} ") unless result
       result
     end
+
+    def freereg1_csv_file_valid?(freereg1_csv_file)
+      if freereg1_csv_file.blank?
+        logger.warn("#{App.name.upcase}:FREEREG_FILE_ERROR: entry had no file")
+        result = false
+      elsif Freereg1CsvFile.find_by(id: freereg1_csv_file).present?
+        result = true
+      else
+        result = false
+        logger.warn("#{App.name.upcase}:FREEREG_FILE_ERROR: #{freereg1_csv_file} not located")
+      end
+      result
+    end
   end # self
 
   # ######################################################################### instance methods
@@ -547,7 +560,7 @@ class Freereg1CsvFile
     success = Array.new
     success[0] = true
     success[1] = ""
-    Freereg1CsvFile.file_name(self.file_name).userid(self.userid).hint("file_name_1_userid_1_county_1_place_1_church_name_1_register_type_1").each do |batch|
+    Freereg1CsvFile.file_name(self.file_name).userid(self.userid).each do |batch|
       case
       when batch.nil?
         success[0] = false
@@ -622,8 +635,8 @@ class Freereg1CsvFile
   end
 
   def clean_up_place_ucf_list
-    place, _church, _register = self.location_from_file
-    if place.present?
+    proceed, place, _church, _register = self.location_from_file
+    if proceed && place.present?
       ucf_list = place.ucf_list
       ucf_list = ucf_list.delete_if {|key, value| key.to_s == self.id.to_s}
       place.update(ucf_list: ucf_list)
@@ -682,9 +695,15 @@ class Freereg1CsvFile
 
   def location_from_file
     my_register = register
+    return [false] unless Register.register_valid?(my_register)
+
     my_church = my_register.church
+    return [false] unless Church.church_valid?(my_church)
+
     my_place = my_church.place
-    [my_place, my_church, my_register]
+    return [false] unless Place.place_valid?(my_place)
+
+    [true, my_place, my_church, my_register]
   end
 
   def lock(type)
@@ -851,9 +870,11 @@ class Freereg1CsvFile
   end
 
   def remove_from_ucf_list
-    place, _church, _register = location_from_file
-    place.ucf_list.delete_if { |key, value| key.to_s == id.to_s }
-    place.save
+    proceed, place, _church, _register = location_from_file
+    if proceed
+      place.ucf_list.delete_if { |key, value| key.to_s == id.to_s }
+      place.save
+    end
   end
 
   def search_record_ids_with_wildcard_ucf
@@ -894,10 +915,12 @@ class Freereg1CsvFile
     recalculate_last_amended
     update_number_of_files
     save
-    place, church, register = location_from_file
-    register.calculate_register_numbers
-    church.calculate_church_numbers
-    place.calculate_place_numbers
+    proceed, place, church, register = location_from_file
+    if proceed
+      register.calculate_register_numbers
+      church.calculate_church_numbers
+      place.calculate_place_numbers
+    end
   end
 
   def update_number_of_files
@@ -1163,6 +1186,8 @@ class Freereg1CsvFile
       entries["Mother's Forename"] = all_entries.distinct(:mother_forename).delete_if{|x| x == nil}.sort
       entries["Person's Forename"] = all_entries.distinct(:person_forename).delete_if{|x| x == nil}.sort
       entries["Person's Surname"] = all_entries.distinct(:person_surname).delete_if{|x| x == nil}.sort
+      entries["Witness Surname"] = all_entries.distinct('multiple_witnesses.witness_surname').delete_if{|x| x == nil}.sort
+      entries["Witness Forename"] = all_entries.distinct('multiple_witnesses.witness_forename').delete_if{|x| x == nil}.sort
     when "bu"
       entries["Burial Person's Surname"] = all_entries.distinct(:burial_person_surname).delete_if{|x| x == nil}.sort
       entries["Burial Person's Forename"] = all_entries.distinct(:burial_person_forename).delete_if{|x| x == nil}.sort
@@ -1183,9 +1208,8 @@ class Freereg1CsvFile
       entries["Groom's Mother's Forename"] = all_entries.distinct(:groom_mother_forename).delete_if{|x| x == nil}.sort
       entries["Bride's Mother's Surname"] = all_entries.distinct(:bride_motherr_surname).delete_if{|x| x == nil}.sort
       entries["Bride's Mother's Forename"] = all_entries.distinct(:bride_mother_forename).delete_if{|x| x == nil}.sort
-      entries["Witness Surname"] = all_entries.distinct('multiple_witness.witness_surname').delete_if{|x| x == nil}.sort
-      entries["Witness Forename"] = all_entries.distinct('multiple_witness.witness_forename').delete_if{|x| x == nil}.sort
-
+      entries["Witness Surname"] = all_entries.distinct('multiple_witnesses.witness_surname').delete_if{|x| x == nil}.sort
+      entries["Witness Forename"] = all_entries.distinct('multiple_witnesses.witness_forename').delete_if{|x| x == nil}.sort
     end
     entries
   end

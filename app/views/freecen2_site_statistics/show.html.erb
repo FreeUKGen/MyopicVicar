@@ -1,0 +1,40 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Interval end:</b>
+  <%= @site_statistic.interval_end %>
+</p>
+
+<p>
+  <b>Year:</b>
+  <%= @site_statistic.year %>
+</p>
+
+<p>
+  <b>Month:</b>
+  <%= @site_statistic.month %>
+</p>
+
+<p>
+  <b>Day:</b>
+  <%= @site_statistic.day %>
+</p>
+
+<p>
+  <b>N records:</b>
+  <%= @site_statistic.n_records %>
+</p>
+
+<p>
+  <b>N searches:</b>
+  <%= @site_statistic.n_searches %>
+</p>
+
+<p>
+  <b>N records added:</b>
+  <%= @site_statistic.n_records_added %>
+</p>
+
+
+<%= link_to 'Edit', edit_site_statistic_path(@site_statistic) %> |
+<%= link_to 'Back', site_statistics_path %>

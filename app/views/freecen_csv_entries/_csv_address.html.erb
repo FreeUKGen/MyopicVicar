@@ -1,0 +1,22 @@
+<div class="scrollable ">
+  <table class="table--bordered table--data" >
+    <thead>
+      <tr>
+        <% FreecenCsvEntry.dwelling_display_labels(@year,@chapman_code).each_with_index do |lbl,index| %>
+          <td><small>
+              <%= lbl %>
+            </small></td>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <% @freecen_csv_entry.dwelling_display_values(@year,@chapman_code).each_with_index do |field_val, index| %>
+          <td class="weight--semibold">
+            <%= field_val %>
+          </td>
+        <% end %>
+      </tr>
+    </tbody>
+  </table>
+</div>

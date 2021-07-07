@@ -1,5 +1,12 @@
  <% breadcrumb :create_userid_detail, @userid%>
 <%= render "flash_notice" %>
 <section class="island ">
+  <% case @appname %>
+  <% when 'freecen'%>
+  <%= render 'form_freecen' %>
+  <% when 'freebmd'%>
+  <%= render 'form_freebmd' %>
+  <% when 'freereg'%>
   <%= render 'form' %>
+<% end%>
 </section>

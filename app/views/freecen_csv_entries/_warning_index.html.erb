@@ -1,0 +1,23 @@
+<h4 style="text-align: center">Warning Message Index</h4>
+<div style="overflow: hidden;">
+  <div class="scrollable ">
+    <table class="table--bordered my-width table--data just--left">
+      <thead  >
+        <tr >
+          <th class='sticky-header'>Entry Number</th>
+          <th class='sticky-header'>Message</th>
+          <th class='sticky-header'>Action</th>
+        </tr>
+      </thead>
+      <tbody >
+        <% @freecen_csv_entries.each do |freecen_csv_entry| %>
+          <tr id="<%= freecen_csv_entry.id %>" >
+            <td><%= freecen_csv_entry.record_number%></td>
+            <td><%= freecen_csv_entry.warning_messages.gsub(/\<br\>/, '').gsub(/Warning:/i, '').titleize if freecen_csv_entry.warning_messages.present? %></td>
+            <td><%= link_to 'Display', freecen_csv_entry_path(freecen_csv_entry,type: @type), class: 'btn   btn--small' %> </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

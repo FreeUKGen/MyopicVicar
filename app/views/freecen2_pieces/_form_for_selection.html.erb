@@ -1,0 +1,15 @@
+<% breadcrumb :freecen2_piece_select, @chapman_code%>
+<% if flash[:notice] %>
+  <div id='notice' style='color:blue'><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+  </div>
+<% end %>
+<div class='island '>
+  <%= semantic_form_for @freecen2_piece  do |f| %>
+    <% if @prompt == 'Select Sub district (Piece) by number'%>
+      <%= f.input :action,  as: :select, label:  @prompt, required: true, collection: @options , input_html: {'onchange' => @location,:class => 'simple_form_bgcolour super_large_selection_field_width', size:  5} , hint: 'List is alphabetic so RG9 comes after RG14'%>
+    <% else %>
+      <%= f.input :action,  as: :select, label:  @prompt, required: true, collection: @options , input_html: {'onchange' => @location,:class => 'simple_form_bgcolour super_large_selection_field_width', size:  5} %>
+    <% end %>
+  <% end %>
+</div>

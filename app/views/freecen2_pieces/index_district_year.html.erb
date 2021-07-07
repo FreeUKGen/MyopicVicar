@@ -1,0 +1,30 @@
+<% breadcrumb :freecen2_pieces_district_year, @year, @freecen2_district.id, @chapman_code  %>
+<h2 style="text-align: center">FreeCen2 Pieces for <%=@freecen2_district%> in <%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>) in <% @year%></h2>
+<%= render 'flash_notice' %>
+<div class="scrollable ">
+  <table class="table--bordered my-width table--data just--left table--striped">
+    <thead >
+      <tr>
+        <th class='sticky-header t5'>Year</th>
+        <th class='sticky-header t10'>Piece</th>
+        <th class='sticky-header t15'>District</th>
+        <th class='sticky-header t15'>Piece name</th>
+        <th colspan = "2" class='sticky-header t10'>Actions</th>
+        <th class='sticky-header t45'>Civil parishes</th>
+      </tr>
+    </thead>
+    <tbody >
+      <% @freecen2_pieces.each do |freecen2_piece| %>
+        <tr id="<%=freecen2_piece.id%>">
+          <td ><%= freecen2_piece.year %></td>
+          <td ><%= freecen2_piece.number %></td>
+          <td ><%= freecen2_piece.district_name%></td>
+          <td ><%= freecen2_piece.name %></td>
+          <td ><%= link_to 'Show', freecen2_piece_path(freecen2_piece) , :class => "btn   btn--small"%></td>
+          <td ><%= link_to 'Edit', edit_freecen2_piece_path(freecen2_piece) , :class => "btn   btn--small"%></td>
+          <td ><%= freecen2_piece.civil_parish_names %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

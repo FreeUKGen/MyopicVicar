@@ -16,14 +16,16 @@ module Refinery
               (email = params[:authentication_devise_user][:email]).present?
 
             user = User.where(email: email).first
-
             if user.present?
               token = user.generate_reset_password_token!
               UserMailer.reset_notification(user, request, token).deliver_now
+              redirect_to refinery.login_path,
+                notice: t('email_reset_sent', scope: 'refinery.authentication.devise.users.forgot')
+            else
+              redirect_to refinery.login_path,
+                notice: 'We have no record of that email address. You will likely need to register as a volunteer'
             end
 
-            redirect_to refinery.login_path,
-              notice: t('email_reset_sent', scope: 'refinery.authentication.devise.users.forgot')
           else
             flash.now[:error] = t('blank_email', scope: 'refinery.authentication.devise.users.forgot')
 

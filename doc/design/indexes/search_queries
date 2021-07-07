@@ -1,0 +1,30 @@
+db.runCommand(
+  {
+    createIndexes: "search_queries",
+    indexes: [
+        {
+            key: {
+                c_at: 1
+            },
+            name: "c_at_1"
+        },
+         {
+            key: {
+                day: -1,
+                runtime: -1
+            },
+            name: "day__1_runtime__1"
+        },
+        {
+            key: {
+                day: -1,
+                result_count: -1
+            },
+            name: "day__1_result_count__1"
+        }
+    ]
+  }
+)
+
+ 
+ 

@@ -1,0 +1,103 @@
+db.runCommand(
+  {
+    createIndexes: "freecen_csv_entries",
+    indexes: [
+        {
+            key: {
+                record_number: 1,
+                freecen_csv_file_id: 1
+            },
+            name: "record_number"
+        },
+        {
+            key: {
+                 data_transition: 1,
+                  freecen_csv_file_id: 1
+            },
+            name: "data_transition"
+        },
+        {
+            key: {
+                 dwelling_number: 1,
+                 freecen_csv_file_id: 1
+            },
+            name: "dwelling_number"
+        },
+         {
+            key: {
+                 folio_number: 1,
+                   freecen_csv_file_id: 1
+            },
+            name: "folio_number"
+        },
+        {
+            key: {
+                 page_number: 1,
+                 freecen_csv_file_id: 1
+            },
+            name: "page_number"
+        },
+        {
+            key: {
+                 civil_parish: 1,
+                 freecen_csv_file_id: 1
+            },
+            name: "civil_parish"
+        },
+        {
+            key: {
+                 error_messages: 1,
+                 freecen_csv_file_id: 1
+            },
+            name: "error_messages"
+        },
+       {
+            key: {
+                 warning_messages: 1,
+                 freecen_csv_file_id: 1
+            },
+            name: "warning_messages"
+        },
+        {
+            key: {
+                 info_messages: 1,
+                 freecen_csv_file_id: 1
+            },
+            name: "info_messages"
+        },
+        {
+            key: {
+                 enumeration_district: 1,
+                 freecen_csv_file_id: 1
+            },
+            name: "enumeration_district"
+        },
+        {
+            key: {
+                 flag: 1,
+                 freecen_csv_file_id: 1,
+            },
+            name: "flag"
+        },
+         {
+            key: {
+                 search_record_id: 1,
+            },
+            name: "search_record"
+        },
+         {
+            key: {
+                 freecen2_civil_parish_id: 1,
+            },
+            name: "freecen2_civil_parish"
+        },
+         {
+            key: {
+                 freecen_csv_file_id: 1,
+            },
+            name: "freecen_csv_file_id"
+        }
+    ]
+  }
+)
+

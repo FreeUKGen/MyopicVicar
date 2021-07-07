@@ -1,0 +1,6 @@
+<% breadcrumb :edit_freecen_csv_entry,  @freecen_csv_entry,  @freecen_csv_file %>
+<h3 style="text-align: center">Editing record <b><%= @freecen_csv_entry.record_number %></b> for <%= file_name(@freecen_csv_file) %></b> (<%= @freecen_csv_file.userid %>) in <b><%= @place_name %></b> of <b><%= @chapman_code %></b><br>
+<%= link_to 'Cancel', freecen_csv_entry_path(@freecen_csv_entry), method: :get, class: 'btn   btn--small', title: 'Cancels the Editing session.'%>
+</h3>
+<%= render 'flash_notice' %>
+<%= render 'form' %>

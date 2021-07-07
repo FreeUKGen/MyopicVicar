@@ -1,0 +1,140 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Year:</b>
+  <%= @search_statistic.year %>
+</p>
+
+<p>
+  <b>Month:</b>
+  <%= @search_statistic.month %>
+</p>
+
+<p>
+  <b>Day:</b>
+  <%= @search_statistic.day %>
+</p>
+
+<p>
+  <b>Hour:</b>
+  <%= @search_statistic.hour %>
+</p>
+
+<p>
+  <b>Db:</b>
+  <%= @search_statistic.db %>
+</p>
+
+<p>
+  <b>N:</b>
+  <%= @search_statistic.n %>
+</p>
+
+<p>
+  <b>N zero result:</b>
+  <%= @search_statistic.n_zero_result %>
+</p>
+
+<p>
+  <b>N limit result:</b>
+  <%= @search_statistic.n_limit_result %>
+</p>
+
+<p>
+  <b>Total results:</b>
+  <%= @search_statistic.total_results %>
+</p>
+
+<p>
+  <b>Median results:</b>
+  <%= @search_statistic.median_results %>
+</p>
+
+<p>
+  <b>Total time:</b>
+  <%= @search_statistic.total_time %>
+</p>
+
+<p>
+  <b>Max time:</b>
+  <%= @search_statistic.max_time %>
+</p>
+
+<p>
+  <b>Median time:</b>
+  <%= @search_statistic.median_time %>
+</p>
+
+<p>
+  <b>N time gt 1s:</b>
+  <%= @search_statistic.n_time_gt_1s %>
+</p>
+
+<p>
+  <b>N time gt 10s:</b>
+  <%= @search_statistic.n_time_gt_10s %>
+</p>
+
+<p>
+  <b>N time gt 60s:</b>
+  <%= @search_statistic.n_time_gt_60s %>
+</p>
+
+<p>
+  <b>N ln:</b>
+  <%= @search_statistic.n_ln %>
+</p>
+
+<p>
+  <b>N fn:</b>
+  <%= @search_statistic.n_fn %>
+</p>
+
+<p>
+  <b>N place:</b>
+  <%= @search_statistic.n_place %>
+</p>
+
+<p>
+  <b>N nearby:</b>
+  <%= @search_statistic.n_nearby %>
+</p>
+
+<p>
+  <b>N fuzzy:</b>
+  <%= @search_statistic.n_fuzzy %>
+</p>
+
+<p>
+  <b>N inclusive:</b>
+  <%= @search_statistic.n_inclusive %>
+</p>
+
+<p>
+  <b>N 0 county:</b>
+  <%= @search_statistic.n_0_county %>
+</p>
+
+<p>
+  <b>N 1 county:</b>
+  <%= @search_statistic.n_1_county %>
+</p>
+
+<p>
+  <b>N multi county:</b>
+  <%= @search_statistic.n_multi_county %>
+</p>
+
+<p>
+  <b>N date integer:</b>
+  <%= @search_statistic.n_date_integer %>
+</p>
+
+<p>
+  <b>N r type:</b>
+  <%= @search_statistic.n_r_type %>
+</p>
+
+
+<%= link_to 'Edit', edit_search_statistic_path(@search_statistic) %> |
+<%= link_to 'Back', search_statistics_path %>

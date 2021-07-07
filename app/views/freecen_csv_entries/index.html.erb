@@ -1,0 +1,30 @@
+<% breadcrumb :freecen_csv_entries, @freecen_csv_entry,  @freecen_csv_file, @type%>
+<% file = @freecen_csv_file %>
+<h3 style="text-align: center"><b><%= file_name(file) %></b> (<%= file.userid %>) in <b><%= @place_name %></b> of <b><%= @chapman_code %></b> in Census <b><%= @year %></b><br>
+</h3>
+<h4 style="text-align: center"> There are more fields in the record than shown here</h4>
+<div  style="text-align: center">
+  <%= link_to 'Create new entry', new_freecen_csv_entry_path, method: :get , :class => "btn btn--small" if  @type == 'Ind' %>
+</div>
+<div style="clear:both;"> </div>
+<%= render 'flash_notice' %>
+<% case @type %>
+<% when blank? %>
+<%= render 'flash_notice' %>
+<% when 'Civ' %>
+<%= render 'civil_index' %>
+<% when 'Pag' %>
+<%= render 'page_index' %>
+<% when 'Dwe' %>
+<%= render 'dwelling_index' %>
+<% when 'Ind' %>
+<%= render 'individual_index' %>
+<% when 'Err' %>
+<%= render 'error_index' %>
+<% when 'War' %>
+<%= render 'warning_index' %>
+<% when 'Inf' %>
+<%= render 'information_index' %>
+<% when 'Fla' %>
+<%= render 'flag_index' %>
+<% end %>

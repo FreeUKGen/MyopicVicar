@@ -30,7 +30,6 @@
     color: $project-color;
     background: #fff;
     text-decoration: none;
-    @include vendor(box-shadow, 0 0.222222em 0 #ccc);
   }
   &:active {
     text-decoration: none;
@@ -51,7 +50,6 @@
       &:focus, &:hover {
         background: #fff;
         border-color: $project-color;
-        @include vendor(box-shadow, 0 0.222222em 0 #ccc);
       }
     }
   }

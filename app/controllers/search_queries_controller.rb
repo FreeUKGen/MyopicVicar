@@ -17,8 +17,6 @@ class SearchQueriesController < ApplicationController
   before_action :check_for_mobile, only: :show
   rescue_from Mongo::Error::OperationFailure, with: :search_taking_too_long
   rescue_from Mongoid::Errors::DocumentNotFound, with: :missing_document
-  rescue_from ActionController::UnknownFormat, with: :github_camo
-  #rescue_from ActionView::Template::Error, with: :missing_template
   rescue_from Timeout::Error, with: :search_taking_too_long
   RECORDS_PER_PAGE = 100
 
@@ -86,24 +84,12 @@ class SearchQueriesController < ApplicationController
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
   end
 
-  def github_camo
-    logger.warn("#{appname_upcase}:SEARCH: Search encountered an UnknownFormat #{params}")
-    flash[:notice] = 'We encountered an UnknownFormat'
-    redirect_to new_search_query_path
-  end
-
   def index
     redirect_to action: :new
   end
 
   def missing_document
     logger.warn("#{appname_upcase}:SEARCH: Search encountered a missing document #{params}")
-    flash[:notice] = 'We encountered a problem executing your request. You need to restart your query. If the problem continues please contact us explaining what you were doing that led to the failure.'
-    redirect_to new_search_query_path
-  end
-
-  def missing_template
-    logger.warn("#{appname_upcase}:SEARCH: Search encountered a missing or incorrect template #{params}")
     flash[:notice] = 'We encountered a problem executing your request. You need to restart your query. If the problem continues please contact us explaining what you were doing that led to the failure.'
     redirect_to new_search_query_path
   end
@@ -129,7 +115,7 @@ class SearchQueriesController < ApplicationController
     old_query = SearchQuery.search_id(params[:search_id]).first if params[:search_id].present?
     old_query.search_result.records = {} if old_query.present? && old_query.search_result.present?
     @search_query = SearchQuery.new(old_query.attributes) if old_query.present?
-
+    @chapman_codes = ChapmanCode::CODES
   end
 
   def remember
@@ -275,6 +261,7 @@ class SearchQueriesController < ApplicationController
   def update
     @search_query = SearchQuery.new(search_params.delete_if { |_k, v| v.blank? })
     @search_query.session_id = request.session_options[:id]
+    @chapman_codes = ChapmanCode::CODES
     render :new unless @search_query.save
     redirect_to search_query_path(@search_query)
   end

@@ -1,5 +1,19 @@
-<h1>New freecen1_vld_file</h1>
-
-<%= render 'form' %>
-
-<%= link_to 'Back', freecen1_vld_files_path %>
+<% breadcrumb :new_vldfile,  @vldfile, @app%>
+<h2 style="text-align: center"><b>Upload a <% if session[:replace].present?%> replacement VLD file for <%= session[:replace]%> <% else%> new VLD file <% end%> to <%= appname%></b></h2>
+<%= render 'flash_notice' %>
+<ul>
+  <% @vldfile.errors.full_messages.each do |msg| %>
+    <li><%= msg %></li>
+  <% end %>
+</ul>
+<div class="text--center" >
+  <%= simple_form_for @vldfile, html: { multipart: true } do |f| %>
+    <%= f.input :action, :as => :hidden, :input_html => { :value => @action } %>
+    <%= f.input :uploaded_file, :label => "Select the file to be uploaded from a folder on your computer", :input_html => {  :class => " simple_form_bgcolour simple_form_position_left"} %><br>
+    <p class="text--left">  <b> Behind the scenes</b>, the upload process is a 3 step process that does take some time to fully complete (15-30 minutes). So please be patient. The first step takes a copy of the file from your computer and stores it on the server. The second step returns you to the list of files and a message that the file has been submitted for processing. The processing is a background task on the server and the length of time taken will depend on the number of entries in the file, the number of other people submitting files for processing in both FreeCEN and FreeREG, as well as the number of searches being performed on this server. Replacements will always take longer as the previous entries must first be deleted. The third step is making your entries available and sending you an email that the process is complete. So please do not expect the results of the upload to immediately appear in your list of files. Wait for the email and then refresh the list of files. <br>
+      <p class="text--center text--negative push-half--bottom"> <b>
+          Click the Upload button after selecting your file and it will be submitted for processing</b>
+        <%= f.button :button, 'Upload' ,:button_html => {:class => "btn  btn-small" } %>
+        <br>
+      <% end %>
+    </div>

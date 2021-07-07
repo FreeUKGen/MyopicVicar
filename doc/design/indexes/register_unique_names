@@ -1,0 +1,13 @@
+db.runCommand(
+  {
+    createIndexes: "register_unique_names",
+    indexes: [
+        {
+            key: {
+                register_id: 1,
+            },
+            name: "register_unique_name"
+        }
+    ]
+  }
+)

@@ -1,14 +1,15 @@
 module Freecen
   class Freecen1VldParser
 
+    # Most of this is the original monthly update code with mods to accommodate uploading
+
     #note: FC1 uses "WAL" instead of "WLS" but chapman_code.rg uses "WLS"
     @@valid_birth_counties = ChapmanCode::values + ["ANT", "ARM", "AVN", "CAR", "CAV", "CLA", "CLV", "CMA", "CNN", "COR", "DON", "DOW", "DUB", "ENW", "FER", "GAL", "GTL", "GTM", "HUM", "HWR", "IRL", "KER", "KID", "KIK", "LDY", "LEN", "LET", "LEX", "LIM", "LOG", "LOU", "MAY", "MEA", "MOG", "MSY", "MUN", "NIR", "NYK", "OFF", "ROS", "SLI", "SXE", "SXW", "SYK", "TIP", "TWR", "TYR", "UIE", "WAL", "WAT", "WEM", "WEX", "WIC", "WMD", "WYK"] # adding all chapman codes listed in the FreeUKGENconst mysql database that weren't in ChapmanCode::values. ('OUC','OVF','OVB','UNK' are already in ChapmanCode::values). Do we want to flag these birth counties that are inconsistent with FC1?
     def initialize(print_performance=false)
       @print_performance = print_performance
     end
 
-
-    def process_vld_file(filename)
+    def process_vld_file(filename, userid)
       chapman_code = File.basename(File.dirname(filename))
       chapman_code = chapman_code.sub(/-.*/, '')
       file_record = process_vld_filename(filename)
@@ -22,75 +23,98 @@ module Freecen
       # to be fixed
       start_time = Time.now
       print("   call FreecenPiece.where() #{start_time.strftime("%I:%M:%S %p")}") if @print_performance
-      if nil == FreecenPiece.where(:year => file_record[:full_year], :chapman_code => chapman_code, :piece_number => file_record[:piece], :parish_number => file_record[:sctpar]).first
+      piece = FreecenPiece.find_by(:year => file_record[:full_year], :chapman_code => chapman_code, :piece_number => file_record[:piece], :parish_number => file_record[:sctpar])
+      if piece.blank?
         raise "***No FreecenPiece found for chapman code #{chapman_code} and piece number #{file_record[:piece]} parish_number #{file_record[:sctpar]}. year=#{file_record[:full_year]} file=#{filename}\nVerify that the PARMS.DAT file is correct and has been loaded by the update task, verify that the .VLD file is in the correct directory and named correctly.\n"
       end
       print("  #{Time.now - start_time} elapsed\n") if @print_performance
 
       start_time = Time.now
       print("   call vldparser persist_to_database #{start_time.strftime("%I:%M:%S %p")}") if @print_performance
-      file = persist_to_database(filename, file_record, entry_records, entry_errors)
+      file = persist_to_database(filename, file_record, entry_records, entry_errors, piece.id, userid)
       print("  #{Time.now - start_time} elapsed\n") if @print_performance
 
       return file, entry_records.length
     end
 
-    def persist_to_database(filename, file_hash, entry_hash_array, entry_errors)
-      file = Freecen1VldFile.new(file_hash)
-      file.file_name = File.basename(filename)
-      file.dir_name = File.basename(File.dirname(filename))
-      file.file_errors = entry_errors unless entry_errors.blank?
-      file.save!
-
+    def persist_to_database(filename, file_hash, entry_hash_array, entry_errors, piece_id, userid)
+      dir_name = File.basename(File.dirname(filename))
+      file_name = File.basename(filename)
+      file = Freecen1VldFile.find_by(dir_name: dir_name, file_name: file_name)
+      file_location = File.join(Rails.application.config.vld_file_locations, dir_name, file_name)
+      if File.file?(file_location)
+        # removes existing records; search records are deleted at same time as entries by call back
+        Freecen1VldFile.delete_freecen1_vld_entries(dir_name, file_name)
+        Freecen1VldFile.delete_dwellings(dir_name, file_name)
+        Freecen1VldFile.delete_individuals(dir_name, file_name)
+      end
+      if file.present? && file.freecen_piece.present?
+        piece = file.freecen_piece
+        piece.update_attributes(num_dwellings: 0, num_individuals: 0, freecen1_filename: '', status: '') if piece.present?
+      elsif file.present?
+        piece = FreecenPiece.find_by(file_name: file.file_name, dir_name: dir_name)
+        piece.update_attributes(num_dwellings: 0, num_individuals: 0, freecen1_filename: '', status: '') if piece.present?
+        file.update_attributes(freecen_piece_id: piece.id)
+      else
+        file = Freecen1VldFile.new(file_hash)
+        file.action = 'Upload'
+        file.userid = userid
+        file.file_name = File.basename(filename)
+        file.dir_name = File.basename(File.dirname(filename))
+        file.freecen_piece_id = piece_id if piece_id.present?
+        file.file_errors = entry_errors if entry_errors.present?
+        file.num_entries = entry_hash_array.length
+        file.save!
+      end
       entries_to_insert = []
       entry_hash_array.each do |hash|
         entry = Freecen1VldEntry.new
 
-        entry.deleted_flag = hash[:deleted_flag].encode("UTF-8", "Windows-1252") unless hash[:deleted_flag].blank?
+        entry.deleted_flag = hash[:deleted_flag].encode("UTF-8", "iso-8859-1") unless hash[:deleted_flag].blank?
 
-        entry.surname = hash[:s_name].encode("UTF-8", "Windows-1252") unless hash[:s_name].blank?
-        entry.forenames = hash[:f_name].encode("UTF-8", "Windows-1252") unless hash[:f_name].blank?
+        entry.surname = hash[:s_name].encode("UTF-8", "iso-8859-1") unless hash[:s_name].blank?
+        entry.forenames = hash[:f_name].encode("UTF-8", "iso-8859-1") unless hash[:f_name].blank?
 
-        entry.occupation = hash[:occ].encode("UTF-8", "Windows-1252") unless hash[:occ].blank?
-        entry.occupation_flag = hash[:occ_err].encode("UTF-8", "Windows-1252") unless hash[:occ_err].blank?
+        entry.occupation = hash[:occ].encode("UTF-8", "iso-8859-1") unless hash[:occ].blank?
+        entry.occupation_flag = hash[:occ_err].encode("UTF-8", "iso-8859-1") unless hash[:occ_err].blank?
 
-        entry.name_flag = hash[:name_err].encode("UTF-8", "Windows-1252") unless hash[:name_err].blank?
-        entry.relationship = hash[:rel].encode("UTF-8", "Windows-1252") unless hash[:rel].blank?
-        entry.marital_status = hash[:m_stat].encode("UTF-8", "Windows-1252") unless hash[:m_stat].blank?
-        entry.sex = hash[:sex].encode("UTF-8", "Windows-1252") unless hash[:sex].blank?
-        entry.age = hash[:age].encode("UTF-8", "Windows-1252") unless hash[:age].blank?
-        entry.age_unit = hash[:age_unit].encode("UTF-8", "Windows-1252") unless hash[:age_unit].blank?
-        entry.detail_flag = hash[:p_det_err].encode("UTF-8", "Windows-1252") unless hash[:p_det_err].blank?
+        entry.name_flag = hash[:name_err].encode("UTF-8", "iso-8859-1") unless hash[:name_err].blank?
+        entry.relationship = hash[:rel].encode("UTF-8", "iso-8859-1") unless hash[:rel].blank?
+        entry.marital_status = hash[:m_stat].encode("UTF-8", "iso-8859-1") unless hash[:m_stat].blank?
+        entry.sex = hash[:sex].encode("UTF-8", "iso-8859-1") unless hash[:sex].blank?
+        entry.age = hash[:age].encode("UTF-8", "iso-8859-1") unless hash[:age].blank?
+        entry.age_unit = hash[:age_unit].encode("UTF-8", "iso-8859-1") unless hash[:age_unit].blank?
+        entry.detail_flag = hash[:p_det_err].encode("UTF-8", "iso-8859-1") unless hash[:p_det_err].blank?
 
-        entry.civil_parish = hash[:parish].encode("UTF-8", "Windows-1252") unless hash[:parish].blank?
-        entry.ecclesiastical_parish = hash[:ecc_parish].encode("UTF-8", "Windows-1252") unless hash[:ecc_parish].blank?
+        entry.civil_parish = hash[:parish].encode("UTF-8", "iso-8859-1") unless hash[:parish].blank?
+        entry.ecclesiastical_parish = hash[:ecc_parish].encode("UTF-8", "iso-8859-1") unless hash[:ecc_parish].blank?
 
-        entry.dwelling_number = hash[:hh].encode("UTF-8", "Windows-1252") unless hash[:hh].blank?
-        entry.sequence_in_household = hash[:seq_in_household].encode("UTF-8", "Windows-1252") unless hash[:seq_in_household].blank?
+        entry.dwelling_number = hash[:hh].encode("UTF-8", "iso-8859-1") unless hash[:hh].blank?
+        entry.sequence_in_household = hash[:seq_in_household].encode("UTF-8", "iso-8859-1") unless hash[:seq_in_household].blank?
 
         entry.enumeration_district = "#{hash[:enum_n]}#{hash[:enum_a]}"
         entry.schedule_number = "#{hash[:sch_n]}#{hash[:sch_a]}"
         entry.folio_number = "#{hash[:fo_n]}#{hash[:fo_a]}"
-        entry.page_number = hash[:pg_n].encode("UTF-8", "Windows-1252") unless hash[:pg_n].blank?
+        entry.page_number = hash[:pg_n].encode("UTF-8", "iso-8859-1") unless hash[:pg_n].blank?
 
         entry.house_number = hash[:house_n] || hash[:house_a]
 
-        entry.house_number = entry.house_number.encode("UTF-8", "Windows-1252") unless entry.house_number.blank?
+        entry.house_number = entry.house_number.encode("UTF-8", "iso-8859-1") unless entry.house_number.blank?
 
-        entry.house_or_street_name = hash[:street].encode("UTF-8", "Windows-1252") unless hash[:street].blank?
+        entry.house_or_street_name = hash[:street].encode("UTF-8", "iso-8859-1") unless hash[:street].blank?
 
-        entry.uninhabited_flag = hash[:prem_flag].encode("UTF-8", "Windows-1252") unless hash[:prem_flag].blank?
-        entry.unoccupied_notes = hash[:unoccupied_notes].encode("UTF-8", "Windows-1252") unless hash[:unoccupied_notes].blank?
+        entry.uninhabited_flag = hash[:prem_flag].encode("UTF-8", "iso-8859-1") unless hash[:prem_flag].blank?
+        entry.unoccupied_notes = hash[:unoccupied_notes].encode("UTF-8", "iso-8859-1") unless hash[:unoccupied_notes].blank?
 
-        entry.individual_flag = hash[:individual_flag].encode("UTF-8", "Windows-1252") unless hash[:individual_flag].blank?
-        entry.birth_county = hash[:born_cty].encode("UTF-8", "Windows-1252") unless hash[:born_cty].blank?
-        entry.birth_place = hash[:born_place].encode("UTF-8", "Windows-1252") unless hash[:born_place].blank?
-        entry.verbatim_birth_county = hash[:t_born_cty].encode("UTF-8", "Windows-1252") unless hash[:t_born_cty].blank?
-        entry.verbatim_birth_place = hash[:t_born_place].encode("UTF-8", "Windows-1252") unless hash[:t_born_place].blank?
-        entry.birth_place_flag = hash[:place_err].encode("UTF-8", "Windows-1252") unless hash[:place_err].blank?
-        entry.disability = hash[:dis].encode("UTF-8", "Windows-1252") unless hash[:dis].blank?
-        entry.language = hash[:language].encode("UTF-8", "Windows-1252") unless hash[:language].blank?
-        entry.notes = hash[:notes].encode("UTF-8", "Windows-1252") unless hash[:notes].blank?
+        entry.individual_flag = hash[:individual_flag].encode("UTF-8", "iso-8859-1") unless hash[:individual_flag].blank?
+        entry.birth_county = hash[:born_cty].encode("UTF-8", "iso-8859-1") unless hash[:born_cty].blank?
+        entry.birth_place = hash[:born_place].encode("UTF-8", "iso-8859-1") unless hash[:born_place].blank?
+        entry.verbatim_birth_county = hash[:t_born_cty].encode("UTF-8", "iso-8859-1") unless hash[:t_born_cty].blank?
+        entry.verbatim_birth_place = hash[:t_born_place].encode("UTF-8", "iso-8859-1") unless hash[:t_born_place].blank?
+        entry.birth_place_flag = hash[:place_err].encode("UTF-8", "iso-8859-1") unless hash[:place_err].blank?
+        entry.disability = hash[:dis].encode("UTF-8", "iso-8859-1") unless hash[:dis].blank?
+        entry.language = hash[:language].encode("UTF-8", "iso-8859-1") unless hash[:language].blank?
+        entry.notes = hash[:notes].encode("UTF-8", "iso-8859-1") unless hash[:notes].blank?
 
         entry.attributes.delete_if { |key,value| value.blank? }
         entry.freecen1_vld_file = file
@@ -213,12 +237,12 @@ module Freecen
     def process_vld_contents(filename, chapman_code = nil)
       # open the file
       contents = []
-      raw_file = File.read(filename)
+      raw_file = File.read(filename, :encoding => 'iso-8859-1')
       # loop through each 299-byte substring
       record_count = raw_file.length / VLD_RECORD_LENGTH
       computed_file_length = record_count * VLD_RECORD_LENGTH
-      raise "***Incorrect file length for #{filename} Actual #{number_with_delimiter(raw_file.length)} Computed #{number_with_delimiter(computed_file_length)} " if raw_file.length != computed_file_length
-      return contents if raw_file.length != computed_file_length
+      p  "***Incorrect file length for #{filename}  Actual #{File.size(filename)} measured #{raw_file.length} Computed #{computed_file_length} " if raw_file.length != computed_file_length
+      # return contents if raw_file.length != computed_file_length
 
       (0...record_count).to_a.each do |i|
         contents << process_vld_record(raw_file[i*VLD_RECORD_LENGTH, VLD_RECORD_LENGTH], chapman_code)
@@ -265,7 +289,7 @@ module Freecen
     {
       :deleted_flag => [0,1],
       :hh => [5,6],
-      :suffix => [1,3],
+      :suffix => [1,4],
       :parish => [15,20],
       :enum_n => [35,3],
       :enum_a => [38,1],
@@ -317,7 +341,13 @@ module Freecen
       VLD_POSITION_MAP.each_pair do |attribute, location|
         record[attribute] = line[location[0],location[1]]
       end
-
+      p line if  record[:suffix].length < 4 || !/\A\d+\z/.match(record[:hh]) || !/\A\d+\s+\z/.match(record[:fo_n]) || !/\A\d+\z/.match(record[:seq_in_household])
+      p record if  record[:suffix].length < 4 || !/\A\d+\z/.match(record[:hh]) || !/\A\d+\s+\z/.match(record[:fo_n]) || !/\A\d+\z/.match(record[:seq_in_household])
+      p 'suffix short' if record[:suffix].length < 4
+      p 'household not numeric' if !/\A\d+\z/.match(record[:hh])
+      p 'Folio number not numeric ' if !/\A\d+\s+\z/.match(record[:fo_n])
+      p 'seuence ont numeric ' if !/\A\d+\z/.match(record[:seq_in_household])
+      crash if record[:suffix].length < 4 || !/\A\d+\z/.match(record[:hh]) || !/\A\d+\s+\z/.match(record[:fo_n]) || !/\A\d+\z/.match(record[:seq_in_household])
       record
     end
 
@@ -375,6 +405,5 @@ module Freecen
       end
       record_errors
     end
-
   end
 end

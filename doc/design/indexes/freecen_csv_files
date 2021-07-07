@@ -1,0 +1,74 @@
+db.runCommand(
+  {
+    createIndexes: "freecen_csv_files",
+    indexes: [
+        {
+            key: {
+                userid: 1,
+                uploaded_date: 1
+            },
+            name: "userid_uploaded_date"
+        },
+         {
+            key: {
+                userid: 1,
+                file_name: 1
+            },
+            name: "userid_file_name"
+        },
+        {
+            key: {
+                county: 1,
+                file_name: 1,
+                year: 1
+            },
+            name: "county_file_name_year"
+        },
+         {
+            key: {
+                chapman_code: 1,
+                year: 1,
+                file_name: 1
+            },
+            name: "chapman_code_year_file"
+        },
+         {
+            key: {
+                chapman_code: 1,
+                year: 1,
+                incorporated: 1
+            },
+            name: "chapman_code_year_incorporated"
+        },
+        {
+            key: {
+                freecen2_district_id: 1,
+            },
+            name: "freecen2_district"
+        },
+        {
+            key: {
+                freecen2_piece_id: 1,
+            },
+            name: "freecen2_piece"
+        },
+         {
+            key: {
+                id: 1,
+                year: 1,
+                incorporated: 1
+            },
+            name: "id_year_incorporated"
+        },
+         {
+            key: {
+                id: 1,
+                chapman_code: 1,
+                year: 1,
+                incorporated: 1
+            },
+            name: "id_chapman_year_incorporated"
+        }
+    ]
+  }
+)

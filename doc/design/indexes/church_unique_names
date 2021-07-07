@@ -1,0 +1,13 @@
+db.runCommand(
+  {
+    createIndexes: "church_unique_names",
+    indexes: [
+        {
+            key: {
+                church_id: 1,
+            },
+            name: "church_unique_name"
+        }
+    ]
+  }
+)

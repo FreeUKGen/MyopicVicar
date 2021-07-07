@@ -20,7 +20,7 @@ module Freereg1CsvFilesHelper
   end
 
   def can_view_files?(role)
-    %w[county_coordinator syndicate_coordinator country_coordinator system_administrator technical
+    %w[county_coordinator syndicate_coordinator country_coordinator master_county_coordinator system_administrator technical
        data_manager volunteer_coordinator documentation_coordinator].include?(role)
   end
 

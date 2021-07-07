@@ -23,12 +23,14 @@
         <% if @ucf_results.size > 0 %>
           <h2 class="gamma flush--bottom"> We found <%= pluralize(@result_count, ' Exact Result', ' Exact Results') %> and <br>
             <%= pluralize(@ucf_results.size, ' Uncertain Result', ' Uncertain Results')%></h2>
-        <% else%>
+        <% elsif  @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS  %>
           <h2 class="gamma flush--bottom"> We found <%= pluralize(@result_count, ' Result', ' Results') %></h2>
+        <%else%>
+          <h2 class="gamma flush--bottom"> We found more than <%= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %> Results</h2>
         <% end%>
         <% unless defined?(@printable_format) && @printable_format%>
-          <small class="additional zeta">Results are presented by ascending date. Clicking a column heading sorts by that column. Another click reverses the order.<br>
-            Each View button in the <q>Detail</q> column opens a page with all the information we have for that record.</small>
+          <small class="additional zeta">Listed by birth date. Select a heading to sort by that column; select again to reverse the order.
+            See individual details by selecting the View button.</small>
         <% end %>
       </section>
     </div>

@@ -1,0 +1,22 @@
+<% breadcrumb :new_freecen2_district, @county, @year%>
+<h3 style="text-align: center">Creating a District in  <%=@chapman_code%> for <%=@year%> </b><br>
+</h3>
+<%= render 'flash_notice' %>
+<%= semantic_form_for @freecen2_district, :html => { :class => 'grid'}  do |f| %>
+  <%= f.input :reason_changed,:label => 'Reason for making an addition',:as => :text, :input_html => {:class => ' simple_form_bgcolour  ',   :placeholder => 'Enter the reason for an addition',  :size => '50x5' }%>
+  <%= f.input :name ,  label: 'District name:',  required: true, input_html: {class: ' simple_form_bgcolour large_selection_field_width', size:3 }%>
+  <%= f.input :freecen2_place_id,  label: 'Freecen2 Place name:', include_blank: false, required: true, collection: @places, input_html: {class: ' simple_form_bgcolour large_selection_field_width', size:5 }%>
+  <%= f.input :type,:label => 'Type of District', required: false, include_blank: false, collection:%w[Hundred District] ,:input_html => {:class => ' simple_form_bgcolour large_selection_field_width', :size => 2 }%>
+  <%= f.input :tnaid,:label => 'TNA link (enter None if no link)', required: false, :input_html => { :class => ' simple_form_bgcolour ', :size => 10}%>
+  <%= f.input :notes,label: 'TNA Notes',  as: :text, required: false, input_html: {class: ' simple_form_bgcolour  ',   placeholder: @freecen2_district.notes,  size: '50x5' }%>
+  <%= f.input :code,:label => 'Registration District Number', required: false, :input_html => { :class => ' simple_form_bgcolour ', :size => 10 }%>
+  <%= f.hidden_field :year, :value => @year %>
+  <%= f.hidden_field :chapman_code, :value => @chapman_code %>
+  <div  style="text-align: center">
+    <%= f.action :submit,  :as => :button,  :label =>  'Submit', :button_html => {name: 'commit', value: 'Submit', :class => 'ladda-button' , 'data-style' => 'contract' ,'data-color' => appname_downcase , 'data-size' => 's', 'data-spinner-color' => '#ffffff'  } %>
+    <%= f.action  :cancel, as: :link, label: 'Cancel' %>
+  </div>
+<% end %>
+<script type='text/javascript'>
+  Ladda.bind( 'button[type=submit]' );
+</script>

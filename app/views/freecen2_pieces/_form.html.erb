@@ -1,0 +1,31 @@
+<%= semantic_form_for @freecen2_piece, :html => { :class => 'grid'}  do |f| %>
+  <% if @freecen2_piece[:num_individuals].to_i>0 %>
+    <div style='color:red;'>Warning: Records are already loaded for this piece. Edits could impact existing records.</div>
+  <% end %>
+  <%= f.input :reason_changed,:label => 'Reason for making a change or addition',:as => :text, :input_html => {:class => ' simple_form_bgcolour  ',   :placeholder => 'Enter the reason for a change',  :size => '50x5' }%>
+  <%= f.input :number, label: 'Piece Number', value: @freecen2_piece.number, :input_html => {:class => ' simple_form_bgcolour  ',  :size => 40 } if %w[data_manager system_administrator].include?(@user.person_role)%>
+  <%= f.input :name ,  label: 'Piece (Subdistrict) name (Allows this piece to be merged into another piece. If in doubt talk to the data manager): as used in the search', selected: @freecen2_piece.name, include_blank: false, collection: @freecen2_pieces, input_html: {class: ' simple_form_bgcolour large_selection_field_width', size:5 }  if %w[data_manager system_administrator].include?(@user.person_role)%>
+  <%= f.input :freecen2_place_id,  label: 'Freecen2 Place name:', selected:  @freecen2_place, include_blank: false, collection: @places, input_html: {class: ' simple_form_bgcolour large_selection_field_width', size:5 }%>
+  <%= f.input :parish_number , label: 'Parish number: used for Scotland, leave blank for ENG/WLS', value: @freecen2_piece.parish_number, :input_html => {:class => ' simple_form_bgcolour  ',  :size => 40 } if ChapmanCode::CODES['Scotland'].values.member?(@freecen2_piece.chapman_code)%>
+  <%= f.input :film_number, label: 'Film', value: @freecen2_piece.film_number, :input_html => {:class => ' simple_form_bgcolour  ',  :size => 40 } %>
+  <%= f.input :remarks, label: 'Public notes for Piece', value: @freecen2_piece.remarks, :as => :text, :input_html => {:class => ' simple_form_bgcolour  ',   :placeholder => 'Enter public notes',  :size => '50x5' }%>
+  <%= f.input :remarks_coord, label: 'Management notes for Piece', value: @freecen2_piece.remarks_coord, :as => :text, :input_html => {:class => ' simple_form_bgcolour  ',   :placeholder => 'Enter management notes',  :size => '50x5' }%>
+  <%= f.input :notes,label: 'TNA Notes; add reason for change after their note',  as: :text, input_html: {class: ' simple_form_bgcolour  ',   placeholder: @freecen2_piece.notes,  size: '50x5' }%>
+  <% if %w[data_manager system_administrator].include?(@user.person_role) %>
+    <%= f.input :tnaid,:label => 'TNA link', :input_html => {:class => ' simple_form_bgcolour  ',:size => 10 }%>
+    <%= f.input :code,:label => 'TNA Code', :input_html => {:class => ' simple_form_bgcolour  ',:size => 10 }%>
+    <%= f.input :prenote,:label => 'TNA Pre notes', :input_html => {:class => ' simple_form_bgcolour  ',:size => 10 }%>
+  <% else %>
+    <%= f.input :tnaid,:label => 'TNA link', :input_html => { :disabled => true,:size => 10 }%>
+    <%= f.input :code,:label => 'TNA Code', :input_html => { :disabled => true,:size => 10 }%>
+    <%= f.input :prenote,:label => 'TNA Pre notes', :input_html => { :disabled => true,:size => 10 }%>
+  <% end %>
+  <%= f.input :year,:label => 'Census year', required: false, :input_html => { :disabled => true,:size => 10 }%>
+  <div  style="text-align: center">
+    <%= f.action :submit,  :as => :button,  :label =>  'Submit', :button_html => {name: 'commit', value: 'Submit', :class => 'ladda-button' , 'data-style' => 'contract' ,'data-color' => appname_downcase , 'data-size' => 's', 'data-spinner-color' => '#ffffff'  } %>
+    <%= f.action  :cancel, as: :link, label: 'Cancel' %>
+  <% end %>
+</div>
+<script type='text/javascript'>
+  Ladda.bind( 'button[type=submit]' );
+</script>

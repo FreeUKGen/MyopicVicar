@@ -1,0 +1,64 @@
+db.runCommand(
+  {
+    createIndexes: "freecen_individuals",
+    indexes: [
+        {
+                "key" : {
+                        "freecen_dwelling_id" : 1
+                },
+                "name" : "freecen_dwelling_id",
+                background: true
+        },
+        {
+            key: {
+                birth_county: 1,
+                birth_place: 1
+            },
+            name: "birth_county_birth_place"
+        },
+        {
+            key: {
+                birth_county: 1,
+                verbatim_birth_place: 1
+            },
+            name: "birth_county_verbatim_birth_place"
+        },
+        {
+            key: {
+                verbatim_birth_county: 1,
+                birth_place: 1
+            },
+            name: "verbatim_birth_county_birth_place"
+        },
+         {
+            key: {
+                verbatim_birth_county: 1,
+                verbatim_birth_place: 1
+            },
+            name: "verbatim_birth_county_verbatim_birth_place"
+        },
+        {
+                "key" : {
+                        "freecen1_vld_file_id" : 1
+                },
+                "name" : "freecen1_vld_file_id_1",
+                "background" : true
+        },
+        {
+                "key" : {
+                        "freecen_piece_id" : 1,
+                        "dwelling_number" : 1
+                },
+                "name" : "freecen_piece_id_1_dwelling_number_1",
+                "background" : true
+        },
+        {
+                "key" : {
+                        "freecen_place_id" : 1
+                },
+                "name" : "freecen_piece_id_1",
+                "background" : true
+        }
+            ]
+  }
+)

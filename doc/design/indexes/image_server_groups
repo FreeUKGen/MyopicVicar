@@ -1,0 +1,25 @@
+db.runCommand(
+  {
+    createIndexes: "image_server_groups",
+    indexes: [
+        {
+            key: {
+                source_id: 1
+            },
+            name: "source_id"
+        },
+        {
+            key: {
+                place_id: 1
+            },
+            name: "place_id"
+        },
+        {
+            key: {
+                church_id: 1
+            },
+            name: "church_id"
+        }
+    ]
+  }
+)

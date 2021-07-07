@@ -1,33 +1,96 @@
 <%= render 'show_header' %>
-<p>
-  <b>Census type:</b>
-  <%= @freecen1_vld_file.census_type %>
-</p>
-<p>
-  <b>Raw year:</b>
-  <%= @freecen1_vld_file.raw_year %>
-</p>
-<p>
-  <b>Full year:</b>
-  <%= @freecen1_vld_file.full_year %>
-</p>
-<p>
-  <b>Piece:</b>
-  <%= @freecen1_vld_file.piece %>
-</p>
-<p>
-  <b>Series:</b>
-  <%= @freecen1_vld_file.series %>
-</p>
-<p>
-  <b>Parish:</b>
-  <%= @freecen1_vld_file.sctpar %>
-</p>
-<p>
-  <b>Digest:</b>
-  <%= @freecen1_vld_file.file_digest %>
-</p>
-<p>
-  <b>Errors:</b>
-  <%= @freecen1_vld_file.file_errors %>
-</p>
+<div class="grid">
+  <section class="island ">
+    <div class="grid__item ">
+      <table   class="table--bordered table--striped  table--data">
+        <colgroup >
+          <col class=t40>
+          <col class=t60>
+        </colgroup>
+        <tr>
+          <th class="caps">Field</th>
+          <th  class="caps">Value</th>
+        </tr>
+        <tr>
+          <td>Census type:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_file.census_type %> </td>
+        </tr>
+        <tr>
+          <td>Raw year:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_file.raw_year %> </td>
+        </tr>
+        <tr>
+          <td>Full year:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_file.full_year  %></td>
+        </tr>
+        <tr>
+          <td>Piece number: (Button is link to piece)</td>
+          <td class="weight--semibold">
+            <%= piece_number_link(@freecen1_vld_file)  %></td>
+        </tr>
+        <tr>
+          <td>Series:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_file.series  %></td>
+        </tr>
+        <tr>
+          <td>Parish:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_file.sctpar  %></td>
+        </tr>
+        <tr>
+          <td>Number of entries:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_file.num_entries  %></td>
+        </tr>
+        <tr>
+          <td>Number of individuals:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_file.num_individuals %></td>
+        </tr>
+        <tr>
+          <td>Number of dwellings:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_file.num_dwellings  %></td>
+        </tr>
+        <tr>
+          <td>Errors:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_file.file_errors  %></td>
+        </tr>
+        <% if @freecen1_vld_file.action == 'Upload' %>
+          <tr>
+            <td>Uploaded by:</td>
+            <td class="weight--semibold">
+              <%= @freecen1_vld_file.userid  %></td>
+          </tr>
+        <% end%>
+        <tr>
+          <td>Transcriber name:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_file.transcriber_name  %></td>
+        </tr>
+        <tr>
+          <td>Transcriber email address:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_file.transcriber_email_address  %></td>
+        </tr>
+        <tr>
+          <td>Transcriber userid:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_file.transcriber_userid  %></td>
+        </tr>
+        <tr>
+          <td>Created at:</td>
+          <td class="weight--semibold">
+            <%= loaded_at(@freecen1_vld_file) %></td>
+        </tr>
+      </p>
+    </table>
+  </div>
+</section>
+</div>
+<br>
