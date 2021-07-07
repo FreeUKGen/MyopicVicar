@@ -77,13 +77,14 @@ class SearchQueriesController < ApplicationController
     if @search_query.save
       session[:query] = @search_query.id
       @search_results = @search_query.search_records
-      redirect_to search_query_path(@search_query)
+      redirect_to search_query_path(@search_query, anchor: "bmd_content")
     else
       #message = 'Failed to save search. Please Contact Us with search criteria used and topic of Website Problem'
       #redirect_back(fallback_location: new_search_query_path, notice: message)
       render :new
     end
   end
+
 
   def edit
     @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])

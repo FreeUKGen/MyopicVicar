@@ -36,7 +36,7 @@
         <%= link_to 'Report an Error in this Data', report_error_contact_path(@current_record.RecordNumber, query: @search_query), class: 'btn btn--natural' unless  @current_record.blank? || @search_query.blank? %>
       </span-->
       <section>
-        <div class="grid__item two-thirds lap-one-whole palm-one-whole hard--left">
+        <div class="grid__item two-thirds lap-two-thirds palm-one-whole hard--left">
           <% record_type = RecordType::display_name(@current_record.RecordTypeID)%>
           <%= render partial: 'entry_information_table', locals: {record: @current_record, search: true, entry_type: record_type.downcase, query: @search_query, search_id: params[:search_id], original_record: @current_record, more_info: false } %>
         </div>
@@ -48,18 +48,22 @@
                 <%= link_to '<i class="fa fa-chevron-left view_arrow"></i> Previous Result'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record, @previous_record.friendly_url), class: 'push-half--right push-half--top push--bottom' unless @previous_record.nil? %>
               </div>
               <div class='grid__item one-quarter lap-one-quarter palm-one-half'>
-                <%= link_to 'Next Result <i class="fa fa-chevron-right view_arrow"></i> '.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record, @next_record.friendly_url), class: 'push-half--right push-half--top push--bottom' unless @next_record.nil?%>
+                <%= link_to 'Next Result <i class="fa fa-chevron-right view_arrow"></i>'.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record, @next_record.friendly_url), class: 'push-half--right push-half--top push--bottom' unless @next_record.nil?%>
               </div>
+              <% if @previous_record_of_page.present?%>
               <div class='grid__item one-quarter lap-one-quarter palm-one-half'>
-                <% if @previous_record_of_page.present?%>
+                
                   <%= link_to 'Previous in Page'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record_of_page, @previous_record_of_page.friendly_url, search_entry: @current_record), class: 'push-half--right push-half--top' %>
-                <% end %>
+                
               </div>
+              <% end %>
+              <% if @next_record_of_page.present?%>
               <div class='grid__item one-quarter lap-one-quarter palm-one-half'>
-                <% if @next_record_of_page.present?%>
+                
                   <%= link_to 'Next in Page'.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record_of_page, @next_record_of_page.friendly_url, search_entry: @current_record), class: 'push-half--right push-half--top' %>
-                <% end %>
+                
               </div>
+              <% end %>
             <% end %>
           </div>
         </div>
@@ -67,10 +71,10 @@
       
       <% if @option == '1' %>
         <div id="display_scans">
-          <div class="grid__item two-thirds lap-one-whole palm-one-whole hard--left">
+          <div class="grid__item two-thirds lap-two-thirds palm-one-whole hard--left">
             <h4>Scans</h4>
           </div>
-          <div class="grid__item two-thirds lap-one-whole palm-one-whole hard--left">
+          <div class="grid__item two-thirds lap-two-thirds palm-one-whole hard--left">
             <table class="table--bordered table--data ">
               <thead>
                 <th>Scan</th>
@@ -116,11 +120,14 @@
               </tbody>
             </table>
           </div>
+          <div class="grid__item two-thirds lap-two-thirds palm-one-whole hard--left">
+            <p>If the scan does not contain the entry you may be able to find the scan yourself by clicking <%= link_to "here(link opens in new tab)", "https://images.freebmd.org.uk/cgi/choose.pl", target: "_blank"%></p>
+          </div>
         </div>
       <% end %>
       <% if @option == '2' %>
         <div id="display_postems">
-          <div class="grid__item two-thirds lap-one-whole palm-one-whole push--bottom">
+          <div class="grid__item two-thirds lap-two-thirds palm-one-whole push--bottom hard--left">
             <h4>Postems</h4>
             <p>Do you know more about the people or event in this record that you are willing to share with other researchers? We call these helpful additions to the database 'postems'. For example, you you know a more precise place or other details from a certificate or from a search of FreeREG, or more about the family from a search on FreeCEN, or have found other records about them in another country's registration system. Contribute what you know</p>
             <% if @current_record.postems_list.present? %>
@@ -164,7 +171,7 @@
           </div>
         </div>
       <% end %>
-      <div class="grid__item two-thirds lap-one-whole palm-one-whole text--center push--top ">
+      <div class="grid__item two-thirds lap-two-thirds palm-one-whole text--center push--top ">
           <%= link_to 'Report an Error in this Data', report_error_contact_path(@current_record.RecordNumber, query: @search_query), class: 'btn btn--natural' unless  @current_record.blank? %>
         </div>
     </div>

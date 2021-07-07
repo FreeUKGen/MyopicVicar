@@ -23,7 +23,7 @@
                             <span class="ttip__text"><%= info_tag_text[:firstname]%></span>
                         <% end %>
                     </div>
-                    <%= text_field_tag 'search_query[first_name]', set_value(@search_query.first_name), class: 'text-input flush--bottom', placeholder: 'Enter first name(s) here', role: 'textbox', id: 'first_name', tabindex: "0"%>
+                    <%= text_field_tag 'search_query[first_name]', set_value(@search_query.first_name), class: 'text-input flush--bottom', placeholder: 'Enter first name(s) here', role: 'textbox', id: 'first_name', tabindex: "0" %>
                     <label>
                         <small>
                             <%= check_box_tag 'search_query[first_name_exact_match]', set_value(@search_query.first_name_exact_match), set_value(@search_query.first_name_exact_match),tabindex: "0" %>
@@ -257,6 +257,32 @@
                     <small class="additional">Select one/more Districts or none</small>
                 </li>
             </ol>
+            <fieldset class="input" style="text-align: center">
+              <legend><b> Advanced Search options - </b><i>if required select one</i></legend>
+              <small> Please Note: Only alphabetic characters are permitted in advanced searches and a minimum of 3 characters is required for partial name searches.</small>
+                <ol class="grid">
+                    <li class="grid__item one-quarter lap-one-quarter palm-one-whole">
+                        <%= select_tag( 'search_query[idk]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.start_quarter)), class: ' text-input ', tabindex: "0") %>
+                    </li>
+                    <li class="grid__item one-quarter lap-one-quarter palm-one-whole">
+                        <%= select_tag( 'search_query[idk2]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.start_quarter)), class: ' text-input ', tabindex: "0") %>
+                    </li>
+                </ol>
+               <!--ol class="grid">
+                <li class="grid__item one-quarter lap-one-quarter palm-one-whole" id="soundex_search_input">
+                  <%#= radio_button_tag 'search_query[name]', 'soundex' %> Soundex
+                </li>
+                <li class="grid__item one-quarter lap-one-quarter palm-one-whole" id="starts_with_search_input">
+                  <%#= radio_button_tag :search_query, 'starts_with' %> Starts with
+                </li>
+                <li class="grid__item one-quarter lap-one-quarter palm-one-whole" id="contains_search_input">
+                  <%#= radio_button_tag :search_query, 'contains' %> Contains
+                </li>
+                <li class="grid__item one-quarter lap-one-quarter palm-one-whole" id="ends_with_search_input">
+                  <%#= radio_button_tag :search_query, 'ends_with' %> Ends with
+                </li>
+              </ol-->
+            </fieldset>
             <div class="grid action">
                 <%= button_tag 'Clear Form', type: :reset, class: 'clear_form kittumani' %>
                 <%= button_tag 'Search', type: 'submit', class: ' kittumani spinner-controller ladda-button' , id: 'search_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
@@ -420,6 +446,7 @@
                     $('#spouses_mother_surname').css('background', 'white');
                     $('#spouses_mother_surname').prop('placeholder', "Enter Mother's surname here");
                     $('.spouse_or_mother_surname_label').text("Mothers Surname").append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
+                    $('.spouse_or_mother_surname_label').append('<span class="ttip__text" id="mother_or_spouse_help_text">Mother\'s maiden name</span>')
                     $('#death_select_box').prop('disabled', 'disabled');
                     $('#death_select_box').css('background', '#ccc');
                     $('#death_select_box').val([]);
