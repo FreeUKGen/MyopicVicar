@@ -1,19 +1,27 @@
-<h2 class="epsilon  text--navy">Other FreeUKGenealogy Projects</h2>
-<ul class="icon-list">
-  <li>
-    <% case appname_downcase %>
-    <% when 'freecen' %>
-    <a href="http://freereg.org.uk/" class="icon__freereg"><span class="accessibility">FreeReg</span></a></li>
-  <li>
-    <a href="http://www.freebmd.org.uk/" class="icon__freebmd"><span class="accessibility">FreeBMD</span></a>
-    <% when 'freereg' %>
-    <a href="http://www.freecen.org.uk/" class="icon__freecen"><span class="accessibility">FreeCEN</span></a></li>
-  <li>
-    <a href="http://www.freebmd.org.uk/" class="icon__freebmd"><span class="accessibility">FreeBMD</span></a>
-    <% when 'freebmd' %>
-    <a href="http://www.freecen.org.uk/" class="icon__freecen"><span class="accessibility">FreeCEN</span></a></li>
-  <li>
-    <a href="http://freereg.org.uk/" class="icon__freereg"><span class="accessibility">FreeReg</span></a>
-  <% end %>
-</li>
+<p class="c-subfooter-2__heading epsilon  text--navy">Other FreeUKGenealogy Projects</p>
+<ul class="c-subfooter-2__nav icon-list" role="navigation">
+    <li class="c-subfooter-2__nav-item">
+        <% case appname_downcase %>
+        <% when 'freecen' %>
+            <%= link_to helpful_anchors[:freeregIcon].html_safe, helpful_links[:freereg], html_options_freereg_icon %>
+      </li>
+    <li class="c-subfooter-2__nav-item">
+
+            <%= link_to helpful_anchors[:freebmdIcon].html_safe, helpful_links[:freebmd], html_options_freebmd_icon %>
+        <% when 'freereg' %>
+
+            <%= link_to helpful_anchors[:freecenIcon].html_safe, helpful_links[:freecen], html_options_freecen_icon %>
+      </li>
+    <li class="c-subfooter-2__nav-item">
+ 
+            <%= link_to helpful_anchors[:freebmdIcon].html_safe, helpful_links[:freebmd], html_options_freebmd_icon %>
+        <% when 'freebmd' %>
+  
+            <%= link_to helpful_anchors[:freecenIcon].html_safe, helpful_links[:freecen], html_options_freecen_icon %>
+      </li>
+    <li class="c-subfooter-2__nav-item">
+
+            <%= link_to helpful_anchors[:freeregIcon].html_safe, helpful_links[:freereg], html_options_freereg_icon %>
+        <% end %>
+    </li>
 </ul>
