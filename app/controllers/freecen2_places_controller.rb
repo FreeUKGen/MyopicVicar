@@ -109,9 +109,10 @@ class Freecen2PlacesController < ApplicationController
     @county = session[:county]
     @chapman_code = session[:chapman_code]
     get_user_info_from_userid
-    unless session[:chapman_code] == 'LND' && %w[system_administrator].include?(@user.person_role)
-      redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'Only system administrators can edit LND') && return
-
+    if session[:chapman_code] == 'LND'
+      message = 'Only system administrators can edit LND'
+      redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: message) && return unless
+      %w[system_administrator].include?(@user.person_role)
     end
     @place_name = @place.place_name
     @place.alternate_freecen2_place_names.build

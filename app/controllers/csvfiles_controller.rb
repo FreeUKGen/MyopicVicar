@@ -19,7 +19,7 @@ class CsvfilesController < ApplicationController
     @csvfile.file_name = @csvfile.csvfile.identifier
     redirect_back(fallback_location: new_csvfile_path, notice: 'The file had an incorrect extension') && return if @csvfile.csvfile.identifier.blank?
 
-    @csvfile.file_name = @csvfile.downcase_extension # this is a noop for freereg
+    @csvfile.file_name = @csvfile.downcase_extension if appname_downcase == 'freecen' # this is a noop for freereg
     redirect_back(fallback_location: new_csvfile_path, notice: 'A csv file with that name does not exist on your computer (You likely tried to upload a file with a different extension') && return if @csvfile.file_name.blank?
 
     case params[:csvfile][:action]
