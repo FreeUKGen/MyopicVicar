@@ -106,14 +106,12 @@ class Freecen1VldFilesController < ApplicationController
 
   def index
     get_user_info_from_userid
-    if session[:chapman_code].present?
-      @freecen1_vld_files = Freecen1VldFile.chapman(session[:chapman_code]).order_by(full_year: 1, piece: 1)
-      @chapman_code = session[:chapman_code]
-    else
-      flash[:notice] = 'A Chapman Code for the display of Freecen vld files does not exist'
-      redirect_to new_manage_resource_path
-      return
+    if session[:chapman_code].blank?
+      flash[:notice] = 'A Chapman Code has not been set for the display of Freecen vld files does not exist'
+      redirect_to new_manage_resource_path && return
     end
+    @freecen1_vld_files = Freecen1VldFile.chapman(session[:chapman_code]).order_by(full_year: 1, piece: 1)
+    @chapman_code = session[:chapman_code]
   end
 
   def new
