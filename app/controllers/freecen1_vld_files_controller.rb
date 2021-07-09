@@ -15,7 +15,7 @@ class Freecen1VldFilesController < ApplicationController
       @vldfile = Freecen1VldFile.new(freecen1_vld_file_params)
     end
     @vldfile.uploaded_file_name = @vldfile.uploaded_file.identifier
-    redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'That file exits please use the replace action') && return if @vldfile.check_exists_on_upload && session[:replace].blank?
+    redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'That file exists please use the replace action') && return if @vldfile.check_exists_on_upload && session[:replace].blank?
 
     redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'That is not the same file name') && return if session[:replace].present? && session[:replace] != @vldfile.uploaded_file_name
 
