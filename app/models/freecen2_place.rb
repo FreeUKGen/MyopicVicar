@@ -58,7 +58,10 @@ class Freecen2Place
 
   validates_presence_of :place_name
 
-  validate :grid_reference_or_lat_lon_present_and_valid
+
+  validate do |freecen2_place|
+    Freecen2PlaceValidator.new(freecen2_place).validate_location
+  end
 
   before_save :add_location_if_not_present, :add_country, :add_standard_names, :add_place_name_soundex
 

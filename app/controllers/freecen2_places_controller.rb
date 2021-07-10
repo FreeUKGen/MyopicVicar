@@ -106,8 +106,6 @@ class Freecen2PlacesController < ApplicationController
     load(params[:id])
     redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'That place does not exist') && return if @place.blank?
 
-    @county = session[:county]
-    @chapman_code = session[:chapman_code]
     get_user_info_from_userid
     if session[:chapman_code] == 'LND'
       message = 'Only system administrators can edit LND'
@@ -293,12 +291,22 @@ class Freecen2PlacesController < ApplicationController
     load(params[:id])
     redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'That place does not exist') && return if @place.blank?
 
+    @user = get_user
+    params[:freecen2_place][:editor] = @user.userid
     case
     when params[:commit] == 'Submit'
       @place.save_to_original
       if params[:freecen2_place][:source].blank?
         flash[:notice] = 'The source field cannot be empty'
-        render action: 'edit'
+        redirect_to action: 'edit'
+        return
+      elsif @place.reason_for_change.blank? && params[:freecen2_place][:reason_for_change].blank?
+        flash[:notice] = 'The Reason for Change field cannot be blank'
+        redirect_to action: 'edit'
+        return
+      elsif @place.reason_for_change.present? && params[:freecen2_place][:other_reason_for_change].blank?
+        flash[:notice] = 'The Additional Reason for Change field cannot be blank'
+        redirect_to action: 'edit'
         return
       end
 
