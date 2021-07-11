@@ -1,17 +1,9 @@
 <div class='island  island--light'>
+  <h4 style='text-align: center'>When creating a New Place <b>PLEASE PAY SPECIAL ATTENTION TO THE SPELLING OF THE NAME INCLUDING CAPITALIZATION</b><br>
+    There are 3 boxes for Alternate Names. You may add more by editing the place after this creation.
+  </h4>
   <%= semantic_form_for @place, :html => { :class => 'grid'}  do |f| %>
-    <% if controller.action_name == 'edit' || controller.action_name == 'update'%>
-      <% if @place.reason_for_change.present?%>
-        <%= f.input :other_reason_for_change, as: :text, :label => 'Why are you making this additional change (Required)',:input_html => {:class => 'simple_form_bgcolour', :size => '50x5'}%>
-        <%= f.input :reason_for_change, as: :text, :value => @place.reason_for_change ,:label => 'Previous reason for making a change',:input_html => {:disabled => true, :size => '50x5'}%>
-      <% else%>
-        <%= f.input :reason_for_change, as: :text,:label => 'Why are you making this change (Required)',:input_html => {:class => 'simple_form_bgcolour', :size => '50x5'}%>
-      <% end%>
-    <% end %>
     <% if controller.action_name == 'new' || controller.action_name == 'create'%>
-      <h4 style='text-align: center'>When creating a New Place <b>PLEASE PAY SPECIAL ATTENTION TO THE SPELLING OF THE NAME INCLUDING CAPITALIZATION</b><br>
-        There are 3 boxes for Alternate Names. You may add more by editing the place after this creation.
-      </h4>
       <% if %w[county_coordinator master_county_coordinator country_coordinator system_administrator data_manager validator
                 executive_director project_manager].include?(@user.person_role)%>
       <%= f.input :county,:label => 'Select county from following list', :hint => 'For Edinburghshire use Midlothian: Elgin use Morayshire: Haddington use East Lothian; Kings use Offlay;
@@ -43,6 +35,10 @@
   <%= f.input :source ,:hint => 'Where was the information obtained for this Place entry',:label => 'Information source (Required)',:input_html => {:class => 'simple_form_bgcolour', :size => 40 }%>
   <%= f.input :genuki_url,:hint => 'Paste link for website or leave (make) blank', :label => 'Website for Place',:input_html => {:class => 'simple_form_bgcolour', :size => 40 }%>
   <%= f.input :place_notes,:label => 'Notes about the Place',as: :text, :input_html => { :class => 'simple_form_bgcolour', :size => '50x5' , :placeholder => 'Enter your notes'}%>
+  <% if session[:type] == 'edit' then %>
+    <%= f.input :reason_for_change ,:label => 'Your reason for making the change',:input_html => {:class => 'simple_form_bgcolour', :size => '50x5'}%>
+    <%= f.input :other_reason_for_change ,:label => 'Additional reason for a further change',:input_html => {:class => 'simple_form_bgcolour', :size => '50x5'}%>
+  <% end %>
   <%= f.hidden_field :editor, :value=>@user_userid %>
   <%= f.input :last_amended, :label => 'Date when place records were updated', :input_html => { :disabled => true, :size => 40  }%>
   <div  style='text-align: center'>
