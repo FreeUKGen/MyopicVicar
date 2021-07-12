@@ -211,9 +211,10 @@ module UseridRole
                                  'Review Batches by Most Recent Date of Change', 'Review Batches by Oldest Date of Change', 'Review Specific Batch',
                                  'Upload New Batch', 'Offline Reports', 'Manage Images']
   when 'freecen'
-    COUNTY_MANAGEMENT_OPTIONS = ['Manage FreeCEN2 Places', 'Manage FreeCEN2 Districts', 'Manage FreeCEN2 Pieces', 'Manage FreeCEN2 Civil Parishes',
-                                 'Review Batches by Filename', 'Review Batches with Errors', 'Review Batches being Validated', 'Review Incorporated Batches',
-                                 'Review Specific Batch', 'Upload New Batch', 'County Statistics', 'Manage FreeCEN1 Pieces', 'Manage VLD Files', 'Manage FreeCEN1 Places']
+    COUNTY_MANAGEMENT_OPTIONS = ['Manage FreeCEN2 Places', 'Manage FreeCEN2 Districts', 'Manage FreeCEN2 Pieces', 'Manage FreeCEN2 Pieces',
+                                 'Review All Freecen2 Pieces', 'Review Batches by Filename', 'Review Batches with Errors',
+                                 'Review Batches being Validated', 'Review Incorporated Batches', 'Review Specific Batch', 'Upload New Batch',
+                                 'County Statistics', 'Manage FreeCEN1 Pieces', 'Manage VLD Files', 'Manage FreeCEN1 Places']
   when 'freebmd'
   end
   COUNTY_OPTIONS_TRANSLATION = {
@@ -221,6 +222,7 @@ module UseridRole
     'Active Places' => '/manage_counties/selection?option=Work with Active Places',
     'Specific Place' => '/manage_counties/selection?option=Work with Specific Place',
     'Places with Unapproved Names' => '/manage_counties/selection?option=Places with Unapproved Names',
+    'Review All Freecen2 Pieces' => '/manage_counties/selection?option=Review All Freecen2 Pieces',
     'Review Batches with Errors' => '/manage_counties/selection?option=Review Batches with Errors',
     'Review Batches with Zero Dates' => '/manage_counties/selection?option=Review Batches with Zero Dates',
     'Review Batches being Validated' => '/manage_counties/selection?option=Being Validated',
@@ -248,6 +250,7 @@ module UseridRole
     'Active Places' => 'Lists only those places that have information on churches and registers',
     'Specific Place' => 'List of all places in the county from which you can select just one and review its information',
     'Places with Unapproved Names' => 'List of those places in the county where its information has not been approved',
+    'Review All Freecen2 Pieces' => 'Locate Pieces that have been relocated to another county',
     'Review Batches with Errors' => 'Lists just those batches that contain 1 or more errors',
     'Review Batches with Zero Dates' => 'Lists just those batches that contain have a zero in the date range',
     'Review Batches by Filename' => 'Lists all batches sorted by file name',

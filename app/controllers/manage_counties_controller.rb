@@ -367,6 +367,51 @@ class ManageCountiesController < ApplicationController
     render '_form_for_selection'
   end
 
+  def review_all_freecen2_pieces
+    get_user_info_from_userid
+    @pieces = Freecen2Piece.order_by(year: 1, number: 1)
+  end
+
+  def piece_selection_by_number
+    get_user_info_from_userid
+    @manage_county = ManageCounty.new
+    @options = {}
+    Freecen2Piece.order_by(number: 1, year: 1).each do |piece|
+      @options["#{piece.number} (#{piece.year}) (#{piece.name})"] = piece._id
+    end
+    @location = 'location.href= "/freecen2_pieces/" + this.value'
+    @prompt = 'Select Sub district (Piece) by number'
+    session[:type] = 'all_piece_number'
+    render '_form_for_selection'
+  end
+
+  def piece_selection_by_name
+    get_user_info_from_userid
+    @manage_county = ManageCounty.new
+    @options = {}
+    Freecen2Piece.order_by(name: 1, year: 1).each do |piece|
+      @options["#{piece.name} (#{piece.year}) (#{piece.number})"] = piece._id
+    end
+    @location = 'location.href= "/freecen2_pieces/" + this.value'
+    @prompt = 'Select Sub district (Piece) by name'
+    session[:type] = 'all_piece_name'
+    render '_form_for_selection'
+  end
+
+  def piece_selection_by_year
+    get_user_info_from_userid
+    @manage_county = ManageCounty.new
+    @options = {}
+    Freecen2Piece.order_by(year: 1, number: 1).each do |piece|
+      @options["#{piece.year} (#{piece.number}) (#{piece.name})"] = piece._id
+    end
+    @location = 'location.href= "/freecen2_pieces/" + this.value'
+    @prompt = 'Select Sub district (Piece) by year'
+    session[:type] = 'all_piece_year'
+    render '_form_for_selection'
+  end
+
+
   def review_a_specific_batch
     get_user_info_from_userid
     @manage_county = ManageCounty.new
