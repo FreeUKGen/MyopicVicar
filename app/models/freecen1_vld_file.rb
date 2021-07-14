@@ -159,7 +159,7 @@ class Freecen1VldFile
     end
 
     def save_to_attic(dir_name, file_name)
-      attic_dir = File.join(File.join(Rails.application.config.vld_file_locations, dir_name), '.attic')
+      attic_dir = File.join(File.join(Rails.application.config.vld_file_locations, dir_name), 'attic')
       FileUtils.mkdir_p(attic_dir)
       file_location = File.join(Rails.application.config.vld_file_locations, dir_name, file_name)
       if File.file?(file_location)
