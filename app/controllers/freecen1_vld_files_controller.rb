@@ -72,7 +72,7 @@ class Freecen1VldFilesController < ApplicationController
       dir_name = vldfile.dir_name
       Freecen1VldFile.delete_freecen1_vld_entries(dir_name, file_name)
       Freecen1VldFile.delete_dwellings(dir_name, file_name)
-      Freecen1VldFile.delete_individuals(dir_name, file_name)
+      Freecen1VldFile.delete_individuals(dir_name, file_name)  # has callback to delete search records too
       Freecen1VldFile.save_to_attic(dir_name, file_name)
       piece = vldfile.freecen_piece
       if piece.present?
