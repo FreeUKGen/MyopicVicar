@@ -22,7 +22,7 @@
           <td ><%= freecen2_piece.chapman_code %></td>
           <td ><%= freecen2_piece.name %></td>
           <td ><%= freecen2_piece.district_name%></td>
-          <td ><%= freecen2_piece.place_place_name%></td>
+          <td ><%= freecen2_piece.place_place_name unless freecen2_piece.freecen2_place.blank?%></td>
           <td ><%= freecen2_piece.civil_parish_names %></td>
         </tr>
       <% end %>
