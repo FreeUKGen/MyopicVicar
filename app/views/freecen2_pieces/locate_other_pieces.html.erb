@@ -1,0 +1,33 @@
+<% breadcrumb :locate_other_pieces, session[:chapman_code]%>
+<div style="text-align: center">
+  <%= render 'flash_notice' %>
+</div>
+<div class="scrollable ">
+  <table class="table--bordered table--data just--left table--striped">
+    <thead >
+      <tr>
+        <th class='sticky-header '>Piece Number</th>
+        <th class='sticky-header '>Chapman_code</th>
+        <th class='sticky-header '>Piece name</th>
+        <th class='sticky-header '>District</th>
+        <th class='sticky-header '>Place</th>
+        <th class='sticky-header '>Civil parishes <br>
+          <small>The part in () is the name of any Hamlet, Township, Ward or Place included in the Civil Parish</small></th>
+      </tr>
+    </thead>
+    <tbody >
+      <% @freecen2_pieces.each do |freecen2_piece| %>
+        <tr id="<%=freecen2_piece.name%>">
+          <td ><%= freecen2_piece.number %></td>
+          <td ><%= freecen2_piece.chapman_code %></td>
+          <td ><%= freecen2_piece.name %></td>
+          <td ><%= freecen2_piece.district_name%></td>
+          <td ><%= freecen2_piece.place_place_name%></td>
+          <td ><%= freecen2_piece.civil_parish_names %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+<br>
+<br>

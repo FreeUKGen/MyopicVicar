@@ -1,0 +1,13 @@
+<% breadcrumb :enter_number, @chapman_code %>
+<h2 style="text-align: center">Enter the FreeCen2 Piece Number</h2>
+<%= render 'flash_notice' %>
+<%= semantic_form_for @freecen2_piece, :html => { :class => 'grid'}  do |f| %>
+  <%= f.input :number ,  label: 'Piece number (MUST be an existing number):',  input_html: {class: ' simple_form_bgcolour', size:20 }%>
+  <div  style="text-align: center">
+    <%= f.action :submit,  :as => :button,  :label =>  'Locate', :button_html => {name: 'commit', value: 'Submit Number', :class => 'ladda-button' , 'data-style' => 'contract' ,'data-color' => appname_downcase , 'data-size' => 's', 'data-spinner-color' => '#ffffff'  } %>
+  </div>
+<% end %>
+<script type='text/javascript'>
+  Ladda.bind( 'button[type=submit]' );
+</script>
+<br>

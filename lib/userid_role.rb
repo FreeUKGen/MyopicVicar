@@ -212,8 +212,9 @@ module UseridRole
                                  'Upload New Batch', 'Offline Reports', 'Manage Images']
   when 'freecen'
     COUNTY_MANAGEMENT_OPTIONS = ['Manage FreeCEN2 Places', 'Manage FreeCEN2 Districts', 'Manage FreeCEN2 Pieces', 'Manage FreeCEN2 Civil Parishes',
-                                 'Review Batches by Filename', 'Review Batches with Errors', 'Review Batches being Validated', 'Review Incorporated Batches',
-                                 'Review Specific Batch', 'Upload New Batch', 'County Statistics', 'Manage FreeCEN1 Pieces', 'Manage VLD Files', 'Manage FreeCEN1 Places']
+                                 'Locate moved pieces', 'Review Batches by Filename', 'Review Batches with Errors', 'Review Batches being Validated',
+                                 'Review Incorporated Batches', 'Review Specific Batch', 'Upload New Batch', 'County Statistics',
+                                 'Manage FreeCEN1 Pieces', 'Manage VLD Files', 'Manage FreeCEN1 Places']
   when 'freebmd'
   end
   COUNTY_OPTIONS_TRANSLATION = {
@@ -241,6 +242,7 @@ module UseridRole
     'Manage VLD Files' => '/freecen1_vld_files',
     'Manage FreeCEN1 Places' => '/places',
     'Offline Reports' => '/manage_counties/selection?option=Offline Reports',
+    'Locate Pieces' => '/freecen2_pieces/enter_number'
 
   }
   COUNTY_OPTIONS_TITLES = {
@@ -266,6 +268,7 @@ module UseridRole
     'Manage VLD Files' => 'Minimal tools to manage VLD files',
     'Manage Places' => 'Minimal tools to manage places used by CEN1',
     'Offline Reports' => 'Generate off line reports',
+    'Locate Pieces' => 'Locates Pieces in other counties, perhaps as a result of a move'
 
   }
   case MyopicVicar::Application.config.template_set
