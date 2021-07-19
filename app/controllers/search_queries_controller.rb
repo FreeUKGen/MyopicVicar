@@ -22,6 +22,7 @@ class SearchQueriesController < ApplicationController
   rescue_from Timeout::Error, with: :search_taking_too_long
   #autocomplete :BestGuess, :Surname, full: false,  limit: 5
   #autocomplete :BestGuess, :GivenName, full: false, limit: 5
+  require 'constant'
   RECORDS_PER_PAGE = 100
 
   def about

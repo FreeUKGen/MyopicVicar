@@ -1396,7 +1396,7 @@ class SearchQuery
 
   def wildcard_query_name
     query = Constant::WILDCARD_OPTIONS_HASH[wildcard_option]
-    uery.present? ? query : {}
+    query.present? ? query : {}
   end
 
   def wildcard_query_validation
