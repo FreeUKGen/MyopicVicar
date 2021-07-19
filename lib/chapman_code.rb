@@ -125,7 +125,8 @@ module ChapmanCode
 
     def name_from_code(code)
       codes = {}
-      ChapmanCode::CODES.each_value do |country_value|
+      App.name_downcase == 'freebmd' ? code_hash = ChapmanCode::FREEBMD_CODES : code_hash = ChapmanCode::CODES
+      code_hash.each_value do |country_value|
         country_value.each_pair do |county_key, county_value|
           codes[county_value] = county_key
         end

@@ -48,7 +48,7 @@
                       <%= search_record[:District] %>
                     <% else %>
                       <% if search_record.district_linkable? %>
-                        <%= link_to "#{search_record[:District]}", "http://www.ukbmd.org.uk/reg/districts/#{search_record.define_url_distict}.html", target: "_blank" %>
+                        <%= link_to "#{search_record[:District]}", "http://www.ukbmd.org.uk/reg/districts/#{search_record.define_url_distict}.html", target: "_blank" %><span class="weight--normal"><%= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span>
                       <% else %>
                         <%= search_record[:District] %>
                       <% end %>

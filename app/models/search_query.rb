@@ -8,6 +8,7 @@ class SearchQuery
   require 'name_role'
   require 'date_parser'
   require 'app'
+  require 'constant'
   extend SharedSearchMethods
   # consider extracting this from entities
   module SearchOrder
@@ -148,7 +149,8 @@ class SearchQuery
   field :first_name_exact_match, type: Boolean
   field :identifiable_spouse_only, type:Boolean
   field :death_at_age, type: String
-
+  field :wildcard_field, type: String
+  field :wildcard_option, type: String
   field :birth_chapman_codes, type: Array, default: []
   field :birth_place_name, type: String
   field :disabled, type: Boolean, default: false
@@ -169,6 +171,9 @@ class SearchQuery
   validate :radius_is_valid
   validate :county_is_valid
   validate :wildcard_is_appropriate
+  validate :wildcard_query_validation
+  validate :wildcard_field_validation
+  validate :wildcard_field_value_validation
   #validates_presence_of :last_name || :spouses_mother_surname, allow_blank: true if :spouse_first_name.present?
   #validates_presence_of :last_name, allow_blank: true if :age_at_death
   #validates_presence_of :last_name, allow_blank: true if :min_age_at_death.present?
@@ -1122,10 +1127,14 @@ class SearchQuery
     params
   end
 
+  def mother_name_partial?
+    wildcard_field == Constant::NAME[3]
+  end
+
   def mother_surname_search
     params = {}
     if self.mother_last_name.present?
-      params[:AssociateName] = self.mother_last_name  unless do_wildcard_seach?self.mother_last_name
+      params[:AssociateName] = self.mother_last_name  unless has_wildcard?self.mother_last_name || mother_name_partial?
     end
     params
   end
@@ -1169,10 +1178,20 @@ class SearchQuery
   end
 
   def freebmd_search_records
-    @search_index = SearchQuery.get_search_table.index_hint(bmd_adjust_field_names)
+    search_fields = bmd_adjust_field_names
+    search_fields[:OtherNames] = search_fields.delete(:GivenName) if second_name_search?
+    @search_index = SearchQuery.get_search_table.index_hint(search_fields)
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
     records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)#.joins(spouse_join_condition).where(bmd_marriage_params)
-    records = records.where(search_conditions) #unless self.first_name_exact_match
+    #raise records.where(wildcard_search_conditions).to_sql.inspect
+    records = records.where(wildcard_search_conditions) #unless self.first_name_exact_match
+    #raise records.where(search_conditions).to_sql.inspect
+    records = records.where(search_conditions)
+    firstname_array = first_name.split
+    lastname_array = last_name.split
+    records = records.where(GivenName: firstname_array) if wildcard_option == "Any"
+    records = records.where(GivenName: firstname_array).or(records.where(OtherNames: firstname_array)) if wildcard_option == "In First Name or Middle Name"
+    records = records.where(Surname: llastname_array).or(records.where(OtherNames: lastname_array)) if wildcard_option == "In Middle Name or Surname"
     records = marriage_surname_filteration(records) if self.spouses_mother_surname.present? and self.bmd_record_type == ['3']
     records = spouse_given_name_filter(records) if self.spouse_first_name.present?
     records = combined_results records if date_of_birth_range? || self.dob_at_death.present?
@@ -1261,11 +1280,13 @@ class SearchQuery
 
   def first_name_filteration
     if self.first_name.present? && !self.first_name_exact_match
-      "BestGuess.GivenName like '#{self.first_name}%'" unless do_wildcard_seach?(self.first_name)
+     field, value = "BestGuess.GivenName like ?", "#{self.first_name}%" unless wildcard_query? || has_wildcard?(first_name)
+      #{}"BestGuess.GivenName like '#{self.first_name}%'" unless do_wildcard_seach?(self.first_name)
     end
+    {field => value}
   end
 
-  def first_name_wildcard_query
+  def first_name_wildcard_query_prev
     if self.first_name.present? && !self.first_name_exact_match
       if do_wildcard_seach?(self.first_name)
         unless second_name_wildcard
@@ -1279,6 +1300,188 @@ class SearchQuery
     query
   end
 
+  def first_name_wildcard_query
+    if first_name.present? && !first_name_exact_match
+      if has_wildcard?(first_name)
+          field, value = "BestGuess.GivenName like ?", "#{name_wildcard_search(first_name)}"
+      end
+    end
+    {field => value}
+  end
+
+  def second_name_search?
+    wildcard_option == Constant::ADDITIONAL
+  end
+
+  def second_name_wildcard_query
+    if first_name.present? && !first_name_exact_match
+      if has_wildcard?(first_name)
+          field, value = "BestGuess.OtherNames like ?", "#{name_wildcard_search(first_name)}'"
+      end
+    end
+    {field => value}
+  end
+
+  def new_first_name_starts_with_wildcard_query
+    "BestGuess.GivenName like '#{self.first_name}%'"
+  end
+
+  def new_first_name_ends_with_wildcard_query
+     field, value = "BestGuess.GivenName like ?", "%#{first_name}"
+    #{}"BestGuess.GivenName like '%#{self.first_name}'"
+    {field => value}
+  end
+
+  def new_first_name_contains_wildcard_query
+    field, value = "BestGuess.GivenName like ?", "%#{first_name}%"
+    {field => value}
+    #{}"BestGuess.GivenName like '%#{self.first_name}%'"
+  end
+
+  def starts_with_wildcard_query
+    field, value = "BestGuess.#{get_attribute_name} like ?", "#{wildcard_name_field[wildcard_field]}%"
+    {field => value}
+  end
+
+  def ends_with_wildcard_query
+    field, value = "BestGuess.#{get_attribute_name} like ?", "%#{wildcard_name_field[wildcard_field]}"
+    {field => value}
+  end
+
+  def contains_wildcard_query
+    field, value = "BestGuess.#{get_attribute_name} like ?", "%#{wildcard_name_field[wildcard_field]}%"
+    {field => value}
+  end
+
+  def any_wildcard_query
+    #raise wildcard_name_field[wildcard_field].split.inspect
+    field, value = "BestGuess.#{get_attribute_name} = ?", wildcard_name_field[wildcard_field].split
+    {field => value}
+  end
+
+  def exact_match_wildcard_query
+    field, value = "BestGuess.#{get_attribute_name} = ?", wildcard_name_field[wildcard_field]
+    {field => value}
+  end
+
+  def first_or_middle_name_wildcard_query
+    BestGuess.where(GivenName: first_name.split) || BestGuess.where(OtherNames: first_name.split)
+  end
+
+  def middle_or_surname_wildcard_query
+    BestGuess.where(Surname: last_name.split) || BestGuess.where(OtherNames: last_name.split)
+  end
+
+  def get_attribute_name
+    Constant::NAME_FIELD[wildcard_field]
+  end
+
+  def name_wildcard_query
+    case wildcard_option
+    when "Starts with"
+      query = starts_with_wildcard_query
+    when "Contains"
+      query = contains_wildcard_query
+    when "Ends with"
+      query = ends_with_wildcard_query
+    when "Exact Match"
+      query = exact_match_wildcard_query
+    #when "In First Name or Middle Name"
+      #query = first_or_middle_name_wildcard_query
+    #when "In Middle Name or Surname"
+      #query = middle_or_surname_wildcard_query
+    end
+    query.present? ? query : {}
+  end
+
+  def wildcard_query_name
+    query = Constant::WILDCARD_OPTIONS_HASH[wildcard_option]
+    uery.present? ? query : {}
+  end
+
+  def wildcard_query_validation
+    if wildcard_search?
+      errors.add(:base, "Please select a name field and a wildcard option for partial searches") unless wildcard_query?
+    end
+  end
+
+  def wildcard_field_validation
+    case wildcard_field
+    when Constant::NAME[0]
+      errors.add(:first_name, "First Name must contain at least 3 characters for partial search on First Name") unless wildcard_name_field[Constant::NAME[0]].present?
+    when Constant::NAME[1]
+      errors.add(:first_name, "First Name must contain at least 3 characters for advanced search on Middle Name") unless wildcard_name_field[Constant::NAME[1]].present?
+    when Constant::NAME[2]
+      errors.add(:last_name, "Surname must contain at least 3 characters for surname partial search") unless wildcard_name_field[Constant::NAME[2]].present?
+    when Constant::NAME[3]
+      errors.add(:mother_last_name, "Mothers Surname must contain at least 3 characters for mother surname partial search") unless wildcard_name_field[Constant::NAME[3]].present?
+    end
+  end
+
+  def wildcard_field_value_validation
+    if wildcard_name_field[wildcard_field].present?
+      errors.add(:base, "Search Field used for advanced search must only contain alphabetic characters") unless wildcard_name_field[wildcard_field].match(/^[A-Za-z ]+$/)
+    end
+  end
+
+  def wildcard_name_field
+    {
+      Constant::NAME[0] => first_name,
+      Constant::NAME[1] => first_name,
+      Constant::NAME[2] => last_name,
+      Constant::NAME[3] => mother_last_name,
+    }
+  end
+
+  def firstname_wildcard_query
+    case wildcard_option
+    when "Starts with"
+      new_first_name_starts_with_wildcard_query
+    when "Contains"
+      new_first_name_contains_wildcard_query
+    when "Ends with"
+      new_first_name_ends_with_wildcard_query
+    end
+  end
+
+  def name_field_wildcard_search
+    if wildcard_query?
+      case wildcard_field
+      when "First Name"
+        query = firstname_wildcard_query
+      when "Middle Name"
+        query = second_name_wildcard_query
+      when "Surname"
+        query = surname_wildcard_query
+      end
+      query
+    end
+  end
+
+  def sanitize_hash wildcard_hash
+    wildcard_hash.compact
+  end
+
+  def sanitize_keys wildcard_hash
+    sanitized_hash = sanitize_hash(wildcard_hash)
+    sanitized_hash.keys if sanitized_hash.present?
+  end
+
+  def sanitize_values wildcard_hash
+    sanitized_hash = sanitize_hash(wildcard_hash)
+    sanitized_hash.values if sanitized_hash.present?
+  end
+
+  def search_conditions
+    #raise first_name_filteration.inspect
+    [sanitize_keys(first_name_filteration), sanitize_keys(name_wildcard_query), sanitize_values(first_name_filteration), sanitize_values(name_wildcard_query)].flatten.compact
+    #[first_name_filteration, name_field_wildcard_search, mother_surname_wildcard_query].compact.to_sentence
+  end
+
+  def wildcard_search_conditions
+    [[sanitize_keys(first_name_wildcard_query), sanitize_keys(surname_wildcard_query), sanitize_keys(mother_surname_wildcard_query)].compact.join(' and '), sanitize_values(first_name_wildcard_query), sanitize_values(surname_wildcard_query), sanitize_values(mother_surname_wildcard_query)].flatten.compact
+  end
+
   def second_name_wildcard
     if freebmd_app?
       self.first_name.start_with?('*') && !self.first_name.start_with?('**')
@@ -1287,30 +1490,34 @@ class SearchQuery
 
   def surname_wildcard_query
     if self.last_name.present?
-      "BestGuess.Surname like '#{name_wildcard_search(self.last_name)}'" if do_wildcard_seach?(self.last_name)
+      field, value =  "BestGuess.Surname like ?", "#{name_wildcard_search(self.last_name)}" if has_wildcard?(self.last_name)
     end
+    {field => value}
   end
 
   def mother_surname_wildcard_query
     if self.mother_last_name.present?
-      "BestGuess.AssociateName like '#{name_wildcard_search(self.mother_last_name)}'" if do_wildcard_seach?self.mother_last_name
+      field, value = "BestGuess.AssociateName like ?", "%#{mother_last_name}%" if has_wildcard?self.mother_last_name
     end
-  end
-
-  def search_conditions
-    [first_name_filteration, surname_wildcard_query, mother_surname_wildcard_query, first_name_wildcard_query].compact.to_sentence
+    {field => value}
   end
 
   def bmd_params_hash
-    self.first_name_exact_match ? bmd_adjust_field_names : bmd_adjust_field_names.except!(:GivenName)
+    search_fields = bmd_adjust_field_names
+    #search_fields[:OtherNames] = search_fields.delete(:GivenName) if second_name_search?
+    first_name_exact_match ? search_fields : search_fields.except!(:GivenName)
   end
 
   def name_search_params_bmd
     name_hash = self.attributes.symbolize_keys.except(:_id).keep_if {|k,v|  name_fields.include?(k) && v.present?}
     if name_hash.has_key?(:last_name)
-      name_hash.except!(:last_name) if do_wildcard_seach?(self.last_name)
+      name_hash.except!(:last_name) if has_wildcard?(self.last_name) || surname_partial_query?
     end
     name_hash
+  end
+
+  def surname_partial_query?
+    wildcard_query? && wildcard_field == Constant::NAME[2]
   end
 
   def is_soundex_search?
@@ -1706,6 +1913,14 @@ class SearchQuery
     !name.start_with?('#') if has_wildcard?(name)
   end
 
+  def wildcard_query?
+    wildcard_field.present? && wildcard_option.present?
+  end
+
+  def wildcard_search?
+    wildcard_field.present? || wildcard_option.present?
+  end
+
   def name_wildcard_search name_field
     name_field.gsub(/[*?]/, '*' => '%', '?' => '_')
     #query = "BestGuess.Surname like '#{surname}'"
@@ -1742,6 +1957,12 @@ class SearchQuery
 
   def spouse_surname_join_condition
     'inner join BestGuessMarriages as b on b.Volume=BestGuess.Volume and b.Page=BestGuess.Page and b.QuarterNumber=BestGuess.QuarterNumber and b.RecordNumber!= BestGuess.RecordNumber'
+  end
+
+  def get_district_name
+    districts = self.districts.compact.map(&:to_i)
+    district_names_array = District.where(DistrictNumber: districts).pluck(:DistrictName)
+    district_names_array.join(" or ") if district_names_array.present?
   end
 
   private

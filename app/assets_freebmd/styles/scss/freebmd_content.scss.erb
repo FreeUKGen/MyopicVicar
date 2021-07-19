@@ -383,7 +383,7 @@ select[multiple]:focus option:checked {
 }
 
 .Navbar__Link a {
-    color: #f4f4f4;
+    color: #ffffff;
     float: left;
     text-align: center;
     padding: 10px 16px;
@@ -392,7 +392,7 @@ select[multiple]:focus option:checked {
 }
 
 .Navbar__Link a:hover {
-  background-color: #f4f4f4;
+  background-color: #ffffff;
   color: $magenta;
 }
 
@@ -440,7 +440,7 @@ select[multiple]:focus option:checked {
     }
 
     .Navbar__ToggleShow .Navbar__Link a {
-        color: #f4f4f4;
+        color: #ffffff;
         font-size: 0.8em;
         font-weight: bold;
         height: 50px;
@@ -975,9 +975,6 @@ transform: matrix(-1, 0, 0, 1, 0, 0);
 }
 
 .floating_action_buttons {
-    @media (min-width: 576px) {
-      display: none !important;
-    }
     @media (max-width: 576px) {
       border: none;
       width: 55px;
@@ -991,6 +988,13 @@ transform: matrix(-1, 0, 0, 1, 0, 0);
       color: white;
       box-shadow: 2px 2px 2px 2px $project_color_faded;
     }
+}
+
+.small_screen_actions {
+    @media (min-width: 576px) {
+      display: none !important;
+    }
+
 }
 
 .floating_action_buttons_left {

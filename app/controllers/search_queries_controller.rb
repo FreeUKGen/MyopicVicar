@@ -85,6 +85,10 @@ class SearchQueriesController < ApplicationController
     end
   end
 
+  def valid_wildcard_qurey
+
+  end
+
 
   def edit
     @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
@@ -309,6 +313,14 @@ class SearchQueriesController < ApplicationController
     }
     @districts
   end
+
+  def wildcard_options_dropdown
+    field = params[:field]
+    array = Constant::OPTIONS_HASH[params[:field]]
+    middle_name_option = array
+    @middle_name_option = middle_name_option
+  end
+
 
   private
 
