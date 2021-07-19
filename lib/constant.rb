@@ -7,7 +7,7 @@ module Constant
 		NAME[3] => "AssociateName",
 		NAME[4] => "AssociateName"
 	}
-	WILDCARD_OPTIONS = OPTIONS_HASH.values.flatten.uniq
+	WILDCARD_OPTIONS = ["Starts with", "Contains", "Ends with"]
 	FIRSTNAME_PARTIAL_OPTION = ["Contains", "Ends with", "Any"]
 	MIDDLENAME_PARTIAL_OPTION = ["Starts with", "Contains", "Ends with", "Exact Match"]
 	LASTNAME_PARTIAL_OPTION = ["Starts with", "Contains", "Ends with"]
