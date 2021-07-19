@@ -212,7 +212,7 @@ module UseridRole
                                  'Upload New Batch', 'Offline Reports', 'Manage Images']
   when 'freecen'
     COUNTY_MANAGEMENT_OPTIONS = ['Manage FreeCEN2 Places', 'Manage FreeCEN2 Districts', 'Manage FreeCEN2 Pieces', 'Manage FreeCEN2 Civil Parishes',
-                                 'Locate moved pieces', 'Review Batches by Filename', 'Review Batches with Errors', 'Review Batches being Validated',
+                                 'Locate Pieces', 'Review Batches by Filename', 'Review Batches with Errors', 'Review Batches being Validated',
                                  'Review Incorporated Batches', 'Review Specific Batch', 'Upload New Batch', 'County Statistics',
                                  'Manage FreeCEN1 Pieces', 'Manage VLD Files', 'Manage FreeCEN1 Places']
   when 'freebmd'
