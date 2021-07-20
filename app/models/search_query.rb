@@ -1187,11 +1187,11 @@ class SearchQuery
     records = records.where(wildcard_search_conditions) #unless self.first_name_exact_match
     #raise records.where(search_conditions).to_sql.inspect
     records = records.where(search_conditions)
-    firstname_array = first_name.split
-    lastname_array = last_name.split
-    records = records.where(GivenName: firstname_array) if wildcard_option == "Any"
-    records = records.where(GivenName: firstname_array).or(records.where(OtherNames: firstname_array)) if wildcard_option == "In First Name or Middle Name"
-    records = records.where(Surname: llastname_array).or(records.where(OtherNames: lastname_array)) if wildcard_option == "In Middle Name or Surname"
+    #firstname_array = first_name.split if first_name.present?
+    #lastname_array = last_name.split if last_name.present?
+    records = records.where({ GivenName: first_name.split }) if wildcard_option == "Any"
+    records = records.where({ GivenName: first_name.split }).or(records.where({ OtherNames: first_name.split })) if wildcard_option == "In First Name or Middle Name"
+    records = records.where({ Surname: last_name.split }).or(records.where({ OtherNames: last_name.split })) if wildcard_option == "In Middle Name or Surname"
     records = marriage_surname_filteration(records) if self.spouses_mother_surname.present? and self.bmd_record_type == ['3']
     records = spouse_given_name_filter(records) if self.spouse_first_name.present?
     records = combined_results records if date_of_birth_range? || self.dob_at_death.present?

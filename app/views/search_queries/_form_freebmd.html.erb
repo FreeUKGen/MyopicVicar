@@ -271,7 +271,7 @@
             </li>
             <li class="grid__item one-third lap-one-half palm-one-whole">
                 <%= label_tag "wildcard_options_dropdown",'Select one of the following' , class: "ttip", tabindex: "0" %>
-                <%= select_tag('search_query[wildcard_option]', options_for_select(Constant::WILDCARD_OPTIONS, set_value(@search_query.wildcard_option)), prompt: "Wildcard Options", class: 'text-input', tabindex: "0", multiple: false, id: "wildcard_options_dropdown") %>
+                <%= select_tag('search_query[wildcard_option]', options_for_select([], set_value(@search_query.wildcard_option)), prompt: "Wildcard Options", class: 'text-input', tabindex: "0", multiple: false, id: "wildcard_options_dropdown") %>
             </li>
           </ol>
           <%#= Add any option to search for the name in any of the person's names%>
@@ -360,10 +360,25 @@
                   type: "GET",
                   data : {
                     field: field
-                  },
+                  }
                 });
               };
             });
+
+            if ($("#wildcard_field option:selected").length) {
+                var field = ""
+                $.each($("#wildcard_field option:selected"), function() {
+                    field = $(this).val()
+                    console.log(field)
+                });
+                $.ajax({
+                  url: "/search_queries/wildcard_options_dropdown",
+                  type: "GET",
+                  data : {
+                    field: field
+                  }
+                });
+            };
 
             if ($("#search_query_chapman_codes option:selected").length) {
                 var counties = [];
