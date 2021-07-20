@@ -15,6 +15,7 @@ class Freecen2PiecesController < ApplicationController
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No information in the creation') && return if params[:freecen2_piece].blank?
 
     if params[:commit] == 'Submit Number'
+      params[:freecen2_piece][:number] = params[:freecen2_piece][:number].strip
       redirect_to locate_other_pieces_freecen2_piece_path(number: params[:freecen2_piece][:number])
 
     else
@@ -161,7 +162,7 @@ class Freecen2PiecesController < ApplicationController
 
   def locate_other_pieces
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No Piece Number') && return if params[:number].blank?
-
+    @number = params[:number]
     year, piece, _census_fields = Freecen2Piece.extract_year_and_piece(params[:number], '')
     @freecen2_pieces = []
     session[:type] = 'locate_other_pieces'
