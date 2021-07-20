@@ -44,8 +44,8 @@ class FreecenPiecesController < ApplicationController
     get_user_info_from_userid
     @freecen_piece = FreecenPiece.where('_id' => params[:id]).first
     if @freecen_piece.present?
-      @freecen_piece.delete
-      flash[:notice] = 'Piece destroyed'
+      success = @freecen_piece.delete
+      flash[:notice] = success ? 'Piece destroyed' : 'Piece destroy failed (has associated VLD file)'
     else
       flash[:notice] = 'Piece does not exist'
     end

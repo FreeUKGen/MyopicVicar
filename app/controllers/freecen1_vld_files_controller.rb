@@ -15,7 +15,7 @@ class Freecen1VldFilesController < ApplicationController
       @vldfile = Freecen1VldFile.new(freecen1_vld_file_params)
     end
     @vldfile.uploaded_file_name = @vldfile.uploaded_file.identifier
-    redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'That file exits please use the replace action') && return if @vldfile.check_exists_on_upload && session[:replace].blank?
+    redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'That file exists please use the replace action') && return if @vldfile.check_exists_on_upload && session[:replace].blank?
 
     redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'That is not the same file name') && return if session[:replace].present? && session[:replace] != @vldfile.uploaded_file_name
 
@@ -72,7 +72,7 @@ class Freecen1VldFilesController < ApplicationController
       dir_name = vldfile.dir_name
       Freecen1VldFile.delete_freecen1_vld_entries(dir_name, file_name)
       Freecen1VldFile.delete_dwellings(dir_name, file_name)
-      Freecen1VldFile.delete_individuals(dir_name, file_name)
+      Freecen1VldFile.delete_individuals(dir_name, file_name)  # has callback to delete search records too
       Freecen1VldFile.save_to_attic(dir_name, file_name)
       piece = vldfile.freecen_piece
       if piece.present?
@@ -106,14 +106,12 @@ class Freecen1VldFilesController < ApplicationController
 
   def index
     get_user_info_from_userid
-    if session[:chapman_code].present?
-      @freecen1_vld_files = Freecen1VldFile.chapman(session[:chapman_code]).order_by(full_year: 1, piece: 1)
-      @chapman_code = session[:chapman_code]
-    else
-      flash[:notice] = 'A Chapman Code for the display of Freecen vld files does not exist'
-      redirect_to new_manage_resource_path
-      return
+    if session[:chapman_code].blank?
+      flash[:notice] = 'A Chapman Code has not been set for the display of Freecen vld files does not exist'
+      redirect_to new_manage_resource_path && return
     end
+    @freecen1_vld_files = Freecen1VldFile.chapman(session[:chapman_code]).order_by(full_year: 1, piece: 1)
+    @chapman_code = session[:chapman_code]
   end
 
   def new
