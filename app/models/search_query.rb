@@ -174,6 +174,7 @@ class SearchQuery
   validate :wildcard_query_validation
   validate :wildcard_field_validation
   validate :wildcard_field_value_validation
+  validate :other_partial_option_validation
   #validates_presence_of :last_name || :spouses_mother_surname, allow_blank: true if :spouse_first_name.present?
   #validates_presence_of :last_name, allow_blank: true if :age_at_death
   #validates_presence_of :last_name, allow_blank: true if :min_age_at_death.present?
@@ -1415,6 +1416,15 @@ class SearchQuery
       errors.add(:last_name, "Surname must contain at least 3 characters for surname partial search") unless wildcard_name_field[Constant::NAME[2]].present?
     when Constant::NAME[3]
       errors.add(:mother_last_name, "Mothers Surname must contain at least 3 characters for mother surname partial search") unless wildcard_name_field[Constant::NAME[3]].present?
+    end
+  end
+
+  def other_partial_option_validation
+    case wildcard_option
+    when Constant::OTHER_PARTIAL_OPTION[0]
+      errors.add(:first_name, "First Name must contain at least 3 characters for #{Constant::OTHER_PARTIAL_OPTION[0]} search") unless first_name.present?
+    when Constant::OTHER_PARTIAL_OPTION[1]
+      errors.add(:last_name, "Surname must contain at least 3 characters for #{Constant::OTHER_PARTIAL_OPTION[1]} search") unless last_name.present?
     end
   end
 
