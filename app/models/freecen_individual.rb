@@ -71,6 +71,6 @@ class FreecenIndividual
   end
 
   def destroy_search_record
-    self.search_record.destroy
+    self.search_record.destroy if self.search_record.present?
   end
 end
