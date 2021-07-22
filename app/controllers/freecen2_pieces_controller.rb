@@ -14,18 +14,24 @@ class Freecen2PiecesController < ApplicationController
   def create
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No information in the creation') && return if params[:freecen2_piece].blank?
 
-    @new_freecen2_piece_params = Freecen2Piece.transform_piece_params(params[:freecen2_piece])
-    @freecen2_piece = Freecen2Piece.new(@new_freecen2_piece_params)
-    @freecen2_piece.save
-    if @freecen2_piece.errors.any?
-      redirect_back(fallback_location: new_manage_resource_path, notice: "'There was an error while saving the new piece' #{@freecen2_piece.errors.full_messages}") && return
+    if params[:commit] == 'Submit Number'
+      params[:freecen2_piece][:number] = params[:freecen2_piece][:number].strip
+      redirect_to locate_other_pieces_freecen2_piece_path(number: params[:freecen2_piece][:number])
+
     else
-      @freecen2_piece.reload
-      @freecen2_district = @freecen2_piece.freecen2_district
-      civil_parish_names = @freecen2_piece.add_update_civil_parish_list
-      @freecen2_piece.update(civil_parish_names: civil_parish_names)
-      flash[:notice] = 'The piece was created'
-      redirect_to freecen2_piece_path(@freecen2_piece)
+      @new_freecen2_piece_params = Freecen2Piece.transform_piece_params(params[:freecen2_piece])
+      @freecen2_piece = Freecen2Piece.new(@new_freecen2_piece_params)
+      @freecen2_piece.save
+      if @freecen2_piece.errors.any?
+        redirect_back(fallback_location: new_manage_resource_path, notice: "'There was an error while saving the new piece' #{@freecen2_piece.errors.full_messages}") && return
+      else
+        @freecen2_piece.reload
+        @freecen2_district = @freecen2_piece.freecen2_district
+        civil_parish_names = @freecen2_piece.add_update_civil_parish_list
+        @freecen2_piece.update(civil_parish_names: civil_parish_names)
+        flash[:notice] = 'The piece was created'
+        redirect_to freecen2_piece_path(@freecen2_piece)
+      end
     end
   end
 
@@ -99,6 +105,11 @@ class Freecen2PiecesController < ApplicationController
     @chapman_code = session[:chapman_code]
   end
 
+  def enter_number
+    @freecen2_piece = Freecen2Piece.new
+    @chapman_code = session[:chapman_code]
+  end
+
   def full_index
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No Chapman code') && return if session[:chapman_code].blank?
 
@@ -146,6 +157,19 @@ class Freecen2PiecesController < ApplicationController
       @grand_totals_pieces = Freecen2Piece.grand_totals(@totals_pieces)
     else
       redirect_back(fallback_location: new_manage_resource_path, notice: 'No chapman code') && return
+    end
+  end
+
+  def locate_other_pieces
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No Piece Number') && return if params[:number].blank?
+    @number = params[:number]
+    year, piece, _census_fields = Freecen2Piece.extract_year_and_piece(params[:number], '')
+    @freecen2_pieces = []
+    session[:type] = 'locate_other_pieces'
+    Freecen2Piece.year(year).order_by(number: 1).each do |test_piece|
+      next unless test_piece.number.include?(piece)
+
+      @freecen2_pieces << test_piece
     end
   end
 
@@ -250,7 +274,7 @@ class Freecen2PiecesController < ApplicationController
     end
 
     @place = @freecen2_piece.freecen2_place
-    @chapman_code = session[:chapman_code]
+    @chapman_code = @freecen2_piece.chapman_code
     @type = session[:type]
     session[:freecen2_piece] = @freecen2_piece.name
   end
