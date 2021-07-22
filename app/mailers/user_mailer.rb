@@ -176,36 +176,56 @@ class UserMailer < ActionMailer::Base
     end
   end
 
-  def incorporation_report(userid, message, file, county)
+  def incorporation_report(userid, message, file, owner)
     coordinator = UseridDetail.userid(userid).first
+    owner_details = UseridDetail.userid(owner).first
     @appname = appname
     @message = message
-    subject = "We have processed your request to include #{file} of #{county} into the database"
-    mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", subject: subject) if coordinator.present?
+    subject = "We have processed the request to include #{file} of #{owner} into the database"
+    if coordinator == owner_details
+      mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", subject: subject) if coordinator.present?
+    else
+      mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", cc: "#{owner_details.person_forename} <#{owner_details.email_address}>", subject: subject) if coordinator.present?
+    end
   end
 
-  def incorporation_report_failure(userid, message, file, county)
+  def incorporation_report_failure(userid, message, file, owner)
     coordinator = UseridDetail.userid(userid).first
+    owner_details = UseridDetail.userid(owner).first
     @appname = appname
     @message = message
-    subject =  "We were unable to process your request to include #{file} of #{county} into the database"
-    manager = UseridDetail.userid('Captkirk').first
-    mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", cc: "#{manager.person_forename} <#{manager.email_address}>", subject: subject) if coordinator.present?
+    subject =  "We were unable to process the request to include #{file} of #{owner} into the database"
+    if coordinator == owner_details
+      mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", subject: subject) if coordinator.present?
+    else
+      mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", cc: "#{owner_details.person_forename} <#{owner_details.email_address}>", subject: subject) if coordinator.present?
+    end
   end
 
-  def unincorporation_report(userid, message, file, county)
+  def unincorporation_report(userid, message, file, owner)
     coordinator = UseridDetail.userid(userid).first
+    owner_details = UseridDetail.userid(owner).first
     @appname = appname
     @message = message
-    mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", subject: "Unincorporation report for #{file} of #{county}") if coordinator.present?
+    subject = "We have processed the request to remove #{file} of #{owner} from the database"
+    if coordinator == owner_details
+      mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", subject: subject) if coordinator.present?
+    else
+      mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", cc: "#{owner_details.person_forename} <#{owner_details.email_address}>", subject: subject) if coordinator.present?
+    end
   end
 
-  def unincorporation_report_failure(userid, message, file, county)
+  def unincorporation_report_failure(userid, message, file, owner)
     coordinator = UseridDetail.userid(userid).first
+    owner_details = UseridDetail.userid(owner).first
     @appname = appname
     @message = message
-    manager = UseridDetail.userid('Captkirk').first
-    mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", cc: "#{manager.person_forename} <#{manager.email_address}>", subject: "Unincorporation failure report for #{file} of #{county}") if coordinator.present?
+    subject = "Unincorporation failure report for the removal of #{file} owned by #{owner} from the database"
+    if coordinator == owner_details
+      mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", subject: subject) if coordinator.present?
+    else
+      mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", cc: "#{owner_details.person_forename} <#{owner_details.email_address}>", subject: subject) if coordinator.present?
+    end
   end
 
   def notification_of_technical_registration(user)
