@@ -438,6 +438,10 @@ class FreecenCsvFile
         series = 'RG11'
       when 'RG12'
         series = 'RG12'
+      when 'RG13'
+        series = 'RG13'
+      when 'RG14'
+        series = 'RG14'
       when 'HO107'
         if parts[1].delete('^0-9').to_i <= 999
           series = 'HO107'
@@ -461,8 +465,9 @@ class FreecenCsvFile
       when 'RS9'
         series = 'RS9'
       end
-      vld = series + parts[1] + '.VLD'
-      vld = vld.upcase
+      vld = series.present? ? series + parts[1] + '.VLD' : ''
+      vld = vld.upcase if vld.present?
+      vld
     end
 
     def vld_file_exists(file_name)
