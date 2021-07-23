@@ -466,10 +466,12 @@ class FreecenCsvFile
     end
 
     def vld_file_exists(file_name)
-      vld = FreecenCsvFile.convert_freecen_csv_file_name_to_freecen1_vld_file_name(file_name)
-      result = Freecen1VldFile.find_by(file_name: vld)
-      p result
-      return [true, 'There is a VLD file of that name that should be deleted first'] if result.present?
+      if file_name.present?
+        vld = FreecenCsvFile.convert_freecen_csv_file_name_to_freecen1_vld_file_name(file_name)
+        vld = vld.present? ? vld.downcase : vld
+        result = Freecen1VldFile.find_by(file_name_lower_case: vld)
+        return [true, 'There is a VLD file of that name that should be deleted first'] if result.present?
+      end
 
       [false, '']
     end
