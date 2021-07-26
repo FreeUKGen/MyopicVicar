@@ -7,7 +7,7 @@ task :list_partial_piece_csvfiles => :environment do
   p "Started Partial Piece CSV files List"
   message_file.puts  "Started Partial Piece CSV files List"
   partial_files = 0
-  message_file.puts  "Chapman Code,County Coordinator,Email,CSV File Name,Incorporated,Incorporation date,Piece Status,Piece Status date"
+  message_file.puts  "Chapman Code,County Coordinator,Email,CSV File Name,Userid,Incorporated,Incorporation date,Piece Status,Piece Status date"
   FreecenCsvFile.all.order_by(chapman_code: 1, file_name: 1).each do |file|
     piece = Freecen2Piece.find_by(_id: file.freecen2_piece_id)
     if file.is_whole_piece(piece).blank? && piece.status != 'Online'
@@ -27,7 +27,7 @@ task :list_partial_piece_csvfiles => :environment do
       else
         status_date = ''
       end
-      message_file.puts  "#{file.chapman_code},#{coord},#{email},#{file.file_name},#{incorp},#{incorp_date},#{piece.status},#{status_date}"
+      message_file.puts  "#{file.chapman_code},#{coord},#{email},#{file.file_name},#{file.userid},#{incorp},#{incorp_date},#{piece.status},#{status_date}"
     end
   end
   message_file.puts  "Found #{partial_files} partial piece CSV files where Piece status is not Online."

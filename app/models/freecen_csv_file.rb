@@ -425,6 +425,61 @@ class FreecenCsvFile
       [totals_csv_files, totals_csv_files_incorporated, totals_csv_entries, totals_individuals, totals_dwellings]
     end
 
+    def convert_freecen_csv_file_name_to_freecen1_vld_file_name(description)
+      # Need to add Ireland
+      remove_extension = description.split('.')
+      parts = remove_extension[0].split('_')
+      case parts[0].upcase
+      when 'RG9'
+        series = 'RG09'
+      when 'RG10'
+        series = 'RG10'
+      when 'RG11'
+        series = 'RG11'
+      when 'RG12'
+        series = 'RG12'
+      when 'RG13'
+        series = 'RG13'
+      when 'RG14'
+        series = 'RG14'
+      when 'HO107'
+        if parts[1].delete('^0-9').to_i <= 999
+          series = 'HO107'
+          parts[1] = '0' + parts[1] if parts[1].delete('^0-9').to_i >= 10 && parts[1].delete('^0-9').to_i <= 99
+          parts[1] = '00' + parts[1] if parts[1].delete('^0-9').to_i >= 1 && parts[1].delete('^0-9').to_i <= 9
+        elsif parts[1].delete('^0-9').to_i <= 1465
+          series = 'HO41'
+        elsif parts[1].delete('^0-9').to_i >= 1466
+          series = 'HO51'
+        end
+      when 'HS41'
+        series = 'HS4'
+      when 'HS51'
+        series = 'HS5'
+      when 'RS6'
+        series = 'RS6'
+      when 'RS7'
+        series = 'RS7'
+      when 'RS8'
+        series = 'RS8'
+      when 'RS9'
+        series = 'RS9'
+      end
+      vld = series.present? ? series + parts[1] + '.VLD' : ''
+      vld = vld.upcase if vld.present?
+      vld
+    end
+
+    def vld_file_exists(file_name)
+      if file_name.present?
+        vld = FreecenCsvFile.convert_freecen_csv_file_name_to_freecen1_vld_file_name(file_name)
+        vld = vld.present? ? vld.downcase : vld
+        result = Freecen1VldFile.find_by(file_name_lower_case: vld)
+        return [true, 'There is a VLD file of that name that should be deleted first'] if result.present?
+      end
+
+      [false, '']
+    end
   end # self
   # ######################################################################### instance methods
 
@@ -526,11 +581,11 @@ class FreecenCsvFile
 
   def can_we_unincorporate?
     return [false, 'Not incorporated'] unless incorporated
+
     [true, '']
   end
 
   def can_we_incorporate?
-
     return [false, 'Already incorporated'] if incorporated
 
     return [false, 'Has not been validated incorporated'] unless validation
@@ -551,6 +606,9 @@ class FreecenCsvFile
 
     result, message = civil_parishes_have_freecen2_place
     return [false, "Cannot be incorporated as the file contains #{message}"] unless result
+
+    result, message = FreecenCsvFile.vld_file_exists(file_name)
+    return [false, "Cannot be incorporated. #{message}"] if result
 
     [true, '']
   end

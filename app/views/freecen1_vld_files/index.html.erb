@@ -16,21 +16,23 @@
         <th colspan = "3" class='sticky-header '>Actions</th>
       <% end%>
     </tr>
-    <% @freecen1_vld_files.each do |freecen1_vld_file| %>
-      <tr id="<%= freecen1_vld_file.id%>">
-        <td><%= piece_link(freecen1_vld_file) %></td>
-        <td><%= freecen1_vld_file.num_entries  %></td>
-        <td><%= freecen1_vld_file.num_individuals %></td>
-        <td><%= freecen1_vld_file.num_dwellings %></td>
-        <td><%= loaded_process(freecen1_vld_file.action) %></td>
-        <td><%= loaded_at(freecen1_vld_file) %></td>
-        <td><%= freecen1_vld_file.userid %></td>
-        <td><%= freecen1_vld_file.transcriber_name %></td>
-        <td><%= link_to 'Show', freecen1_vld_file_path(freecen1_vld_file) %></td>
-        <td><%= link_to 'Replace', new_freecen1_vld_file_path(replace: freecen1_vld_file.file_name), data: { confirm: 'Confirm you want to replace this file'}, method: :get if %w[system_administrator data_manager county_coordinator master_county_coordinator].include?(@user.person_role)%></td>
-        <td><%= link_to 'Delete', freecen1_vld_file_path(freecen1_vld_file), data: { confirm: 'Confirm you want to delete this file'}, method: :delete if %w[system_administrator data_manager].include?(@user.person_role)%></td>
-        <td><%= link_to 'Edit', edit_freecen1_vld_file_path(freecen1_vld_file), method: :get, data: { confirm:  'Confirm you want to edit the file'} if %w[system_administrator data_manager county_coordinator master_county_coordinator].include?(@user.person_role)%></td>
-      </tr>
+    <% if @freecen1_vld_files.present? %>
+      <% @freecen1_vld_files.each do |freecen1_vld_file| %>
+        <tr id="<%= freecen1_vld_file.id%>">
+          <td><%= piece_link(freecen1_vld_file) %></td>
+          <td><%= freecen1_vld_file.num_entries  %></td>
+          <td><%= freecen1_vld_file.num_individuals %></td>
+          <td><%= freecen1_vld_file.num_dwellings %></td>
+          <td><%= loaded_process(freecen1_vld_file.action) %></td>
+          <td><%= loaded_at(freecen1_vld_file) %></td>
+          <td><%= freecen1_vld_file.userid %></td>
+          <td><%= freecen1_vld_file.transcriber_name %></td>
+          <td><%= link_to 'Show', freecen1_vld_file_path(freecen1_vld_file) %></td>
+          <td><%= link_to 'Replace', new_freecen1_vld_file_path(replace: freecen1_vld_file.file_name), data: { confirm: 'Confirm you want to replace this file'}, method: :get if %w[system_administrator data_manager county_coordinator master_county_coordinator].include?(@user.person_role)%></td>
+          <td><%= link_to 'Delete', freecen1_vld_file_path(freecen1_vld_file), data: { confirm: 'Confirm you want to delete this file'}, method: :delete if %w[system_administrator data_manager county_coordinator master_county_coordinator].include?(@user.person_role)%></td>
+          <td><%= link_to 'Edit', edit_freecen1_vld_file_path(freecen1_vld_file), method: :get, data: { confirm:  'Confirm you want to edit the file'} if %w[system_administrator data_manager county_coordinator master_county_coordinator].include?(@user.person_role)%></td>
+        </tr>
+      <% end %>
     <% end %>
   </table>
 </div>

@@ -1678,6 +1678,16 @@ crumb :new_freecen2_piece do |district, county, year|
   parent :show_freecen2_district, district, county, year
 end
 
+crumb :enter_number do |county|
+  link 'Enter Piece Number', enter_number_freecen2_piece_path
+  parent :county_options, county
+end
+
+crumb :locate_other_pieces do |county, number|
+  link 'Locate Other Pieces', locate_other_pieces_freecen2_piece_path(number: number)
+  parent :enter_number, county
+end
+
 crumb :freecen2_pieces_chapman do |county, year|
   link 'FreeCen2 Sub Districts (Pieces) by year', freecen2_pieces_chapman_year_index_path(chapman_code: county, year: year, anchor: session[:freecen2_piece])
   parent :freecen2_pieces, county
