@@ -136,7 +136,7 @@ class Freecen2CivilParishesController < ApplicationController
       session.delete(:freecen2_civil_parish)
     else
       flash[:notice] = 'No chapman_code'
-      redirect_to manage_resources_path && return
+      redirect_to new_manage_resource_path && return
     end
   end
 

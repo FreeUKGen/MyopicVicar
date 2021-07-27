@@ -27,7 +27,7 @@
           <% @place.churches.order_by(church_name: 1).each do |church| %>
             <% unless registers_for_church?(church) %>
               <tr class="weight--semibold" >
-                <td scope="row" aria-label="place"> <%= link_to(@place.id, show_place_freereg_content_path(@place.id)) %> </td>
+                <td scope="row" aria-label="place"> <%= link_to(@place.place_name, show_place_freereg_content_path(@place.id)) %> </td>
                 <td aria-label="church"> <%= link_to(church.church_name, show_church_freereg_content_path(church.id)) %> </td>
               </tr>
             <% else%>

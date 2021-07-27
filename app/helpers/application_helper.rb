@@ -92,6 +92,11 @@ module ApplicationHelper
     link_to 'Volunteer', "/cms/opportunities-to-volunteer-with-#{appname}"
   end
 
+  def nav_freecen_gazetteer
+    link_to('Gazetteer', '/freecen2_places/search_names', target: :_blank, title: 'Search for an existing place name; opens in a new tab') if
+    appname.downcase == 'freecen' && session[:userid_detail_id].present?
+  end
+
   def action_manage_image_server(role)
     action = role == 'Manage Image Server' ? true : false
     action
@@ -119,12 +124,12 @@ module ApplicationHelper
     credit
   end
 
-  def transcriber(entry)
-    transciber = nil
+  def transcriber_entry(entry)
+    transcriber = nil
     file = entry.freereg1_csv_file
-    transciber = file.userid_detail if file.userid_detail.present?
-    answer, transciber = UseridDetail.can_we_acknowledge_the_transcriber(transciber) if transciber.present?
-    transciber
+    transcriber = file.userid_detail if file.userid_detail.present?
+    answer, transcriber = UseridDetail.can_we_acknowledge_the_transcriber(transcriber) if transcriber.present?
+    transcriber
   end
 
   def google_analytics_tracking
@@ -412,6 +417,38 @@ module ApplicationHelper
     register_name
   end
 
+  def look_up_entry_chain(entry)
+    @file = entry.freereg1_csv_file
+    @register = @file.register
+    if @register.blank?
+      @church = nil
+      @place = nil
+      @county = nil
+    else
+      @church = @register.church
+      if @church.blank?
+        @place = nil
+        @county = nil
+      else
+        @place = @church.place
+        @county = @place.present? ? @place.county : nil
+      end
+    end
+  end
+
+  def county_name_for_entry
+    county_name = @county.present? ? @county : 'Unknown county'
+  end
+  def place_name_for_entry
+    place_name = @place.present? ? @place.place_name : 'Unknown place'
+  end
+  def church_name_for_entry
+    church_name = @church.present? ? @church.church_name : 'Unknown church'
+  end
+  def register_name_for_entry
+    register_name = @register.blank? ? 'File does not belong to a register' : RegisterType::display_name(@register.register_type)
+  end
+
   def county_name(file)
     county_name = file.county #note county has chapman in file and record)
     case
@@ -622,6 +659,82 @@ module ApplicationHelper
 
   def html_options(alt_text:)
     {target: '_blank', rel: 'noreferrer', alt: alt_text}
+  end
+
+  def app_icons2
+    {
+      facebook: '<i class="fa fa-facebook-square fa-3x" title="facebook"></i>
+      <span class="accessibility">facebook</span>',
+      news: '<i class="fa fa-rss-square fa-3x" title="news"></i>
+      <span class="accessibility">FreeUKGenealogy News</span>',
+      twitter: '<i class="fa fa-twitter-square fa-3x" title="twitter"></i>
+      <span class="accessibility">twitter</span>',
+      pinterest: '<i class="fa fa-pinterest-square fa-3x" title="pinterest"></i>
+      <span class="accessibility">pinterest</span>',
+      instagram: '<i class="fa fa-instagram fa-3x" title="instagram"></i>
+      <span class="accessibility">instagram</span>'
+
+    }
+  end
+
+  def html_options2
+    { rel: 'noreferrer' }
+  end
+
+  def html_options_freereg_icon
+    { class: 'icon__freereg', rel: 'noreferrer' }
+  end
+
+  def html_options_freecen_icon
+    { class: 'icon__freecen', rel: 'noreferrer' }
+  end
+
+  def html_options_freebmd_icon
+    { class: 'icon__freebmd', rel: 'noreferrer' }
+  end
+
+  def html_options_freeukgen_icon
+    { class: 'c-subfooter-1__fug-nav icon__freeukgen__project--light',
+      rel: 'noreferrer' }
+  end
+
+  def helpful_anchors
+    {
+      cookiePolicy: 'Cookie Policy',
+      privacyNotice: 'Privacy Notice
+      <span class="accessibility">Opens in new window</span>',
+      termAndConditions: 'Terms and Conditions',
+      contactUs: 'Contact Us',
+      donation: 'Make a donation to cover our operating costs
+      <span class="accessibility">Opens in new window</span>',
+      fugNews: 'News about Free UK Genealogy
+      <span class="accessibility">Opens in new window</span>',
+      freeregIcon: '<span class="accessibility">FreeREG</span>',
+      freecenIcon: '<span class="accessibility">FreeCEN</span>',
+      freebmdIcon: '<span class="accessibility">FreeBMD</span>',
+      freebmdAccuracy: 'accuracy or completeness',
+      freeukgenIcon: '<span class="accessibility">FreeUKGenealogy</span>',
+      statistics: 'Statistics'
+    }
+  end
+
+  def helpful_links
+    {
+      cookiePolicy: '/cms/about/cookie-policy',
+      privacyNotice: 'https://www.freeukgenealogy.org.uk/files/Documents/Privacy-Notice.pdf',
+      termAndConditions: '/cms/terms-and-conditions',
+      contactUs: '/contacts/new',
+      donation: 'https://www.freeukgenealogy.org.uk/help-us-keep-history-free',
+      fugNews: 'https://www.freeukgenealogy.org.uk/news/',
+      freereg: 'https://www.freereg.org.uk/',
+      freecen: 'https://www.freecen.org.uk/',
+      freebmd: 'https://www.freebmd.org.uk/',
+      freebmdAccuracy: '/cms/help#Accuracy',
+      freeukgen: 'http://www.freeukgenealogy.org.uk/',
+      freeregStat: 'https://www.freereg.org.uk/freereg_contents/new?locale=en',
+      freecenStat: 'https://www.freecen.org.uk/freecen_coverage?locale=en',
+      freebmdStat: 'https://www.freebmd.org.uk/progress.shtml'
+    }
   end
 
   def fullwidth_adsense_freereg
@@ -860,18 +973,68 @@ module ApplicationHelper
     (quarter-1)/4 + 1837
   end
 
-  def date_of_birth_or_death_age_info
-    {
-      death_age: 'The Age at Death may not be known exactly, you can specify a range for the Age at Death, like the following:
-        56-58
-        The only restriction is that the first specified age must be less than the second.
-Alternatively, you can specify an age plus or minus a number of years and this is done using the percent symbol (%) to mean plus or minus, thus the previous example would be
+  def user_location
+    request.location.present? ? request.location.country : ""
+  end
 
-    57%1
-In addition to ranges being allowed in the search, some entries in the index also have a range. If the range specified in the search overlaps the range specified in the index, the entry will be shown in the search results.
+  def banner_header
+    if GdprCountries::FOLLOWED_COUNTRIES.include?(user_location)
+      bannner = banner_header_gdpr
+    else
+      banner = banner_header_non_gdpr
+    end
+    banner
+  end
 
-From June 1969 the index contains the Date of Birth instead of the Age at Death. You use the same format format for the search criterion as given above and FreeBMD works out the Date of Birth.'
-    }
+  def banner_header_non_gdpr
+    banner = <<-HTML
+      <script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+      <ins class="adsbygoogle adSenseBanner"
+      style="display:inline-block;width:728px;height:90px"
+      data-ad-client = "#{data_ad_client}"
+      data-ad-slot = "#{data_ad_slot_header}">
+      </ins>
+      <script>
+        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
+        window.update_personalized_header_adverts = function (preference) {
+              if(preference == 'accept') {
+                (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0;
+              } else if(preference == 'deny') {
+                (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1;
+              }
+            };
+        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
+      </script>
+      <script type="text/javascript">
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    HTML
+    if Rails.env.development?
+      banner = <<-HTML
+      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
+      HTML
+    end
+    banner.html_safe
+  end
+
+  def banner_header_gdpr
+    banner = <<-HTML
+    <script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <ins class="adsbygoogle adSenseBanner"
+    style="display:inline-block;width:728px;height:90px"
+    data-ad-client = "#{data_ad_client}"
+    data-ad-slot = "#{data_ad_slot_header}">
+    </ins>
+    <script type="text/javascript">
+    (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+    HTML
+    if Rails.env.development?
+      banner = <<-HTML
+      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
+      HTML
+    end
+    banner.html_safe
   end
 
   def content_text tag, info_text
@@ -887,9 +1050,5 @@ From June 1969 the index contains the Date of Birth instead of the Age at Death.
       field = '(Seen)' if viewed_records.include?("#{search_record[:_id]}")
     end
     field
-  end
-
-
-
-  
+  end 
 end

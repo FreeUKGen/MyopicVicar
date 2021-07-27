@@ -196,7 +196,7 @@ class FreecenCsvEntry
       info_messages = record[:messages]
       new_civil_parish = civil_parish
       message = ''
-      success, messagea = FreecenValidations.valid_location?(civil_parish)
+      success, messagea = FreecenValidations.valid_parish?(civil_parish)
 
       unless success
         if messagea == '?'
@@ -211,10 +211,11 @@ class FreecenCsvEntry
           record[:error_messages] += messageb
           new_civil_parish = previous_civil_parish
           return [messageb, new_civil_parish]
-        elsif messagea == 'INVALID_TEXT'
-          messagea = "ERROR: line #{num} Civil Parish has invalid text #{civil_parish}.<br>"
+        elsif messagea == 'invalid text'
+          messagea = "ERROR: line #{num} Civil Parish #{civil_parish} has invalid text.<br>"
           record[:error_messages] += messagea
-          new_civil_parish = previous_civil_parish
+          new_civil_parish = 'invalid'
+          record[:civil_parish] = record[:civil_parish].gsub('.', 'invalid')
           return [messagea, new_civil_parish]
         end
       end
@@ -327,7 +328,7 @@ class FreecenCsvEntry
       new_ecclesiastical_parish = previous_ecclesiastical_parish
       info_messages = record[:messages]
       message = ''
-      success, messagea = FreecenValidations.valid_location?(ecclesiastical_parish)
+      success, messagea = FreecenValidations.valid_parish?(ecclesiastical_parish)
       unless success
         if messagea == '?'
           messagea = "Warning: line #{num} Ecclesiastical Parish #{ecclesiastical_parish}  has trailing ?. Removed and location_flag set.<br>"
@@ -1463,7 +1464,7 @@ class FreecenCsvEntry
       end
 
       if record[:year] == '1841'
-        if record[:verbatim_birth_place].present?
+        if record[:verbatim_birth_place].present? && record[:verbatim_birth_place] != '-'
           messageb = "ERROR: line #{num} Verbatim Birth Place #{record[:verbatim_birth_place]} should not be included for #{record[:year]}.<br>"
           message += messageb
           record[:error_messages] += messageb
@@ -1474,7 +1475,7 @@ class FreecenCsvEntry
           if messagea == '?'
             messageb = "Warning: line #{num} Verbatim Birth Place  #{record[:verbatim_birth_place]} has trailing ?. Removed and flag set.<br>"
             message += messageb
-            record[:warning_messages] += messageb unless record[:pob]
+            record[:warning_messages] += messageb
             record[:uncertainy_birth] = 'x'
             record[:verbatim_birth_place] = record[:verbatim_birth_place][0...-1].strip
           else
@@ -1496,7 +1497,7 @@ class FreecenCsvEntry
           messageb = "Warning: line #{num} Verbatim Place of Birth #{record[:verbatim_birth_place]} in #{record[:verbatim_birth_county]} was not found so requires validation.<br>"
           if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
             message += messageb
-            record[:warning_messages] += messageb unless record[:pob]
+            record[:warning_messages] += messageb
           end
         end
       end
@@ -1551,7 +1552,7 @@ class FreecenCsvEntry
           if messagea == '?'
             messageb = "Warning: line #{num} Alt. Birth Place  #{record[:birth_place]} has trailing ?. Removed and flag set.<br>"
             message += messageb
-            record[:warning_messages] += messageb unless record[:pob]
+            record[:warning_messages] += messageb
             record[:uncertainy_birth] = 'x'
             record[:birth_place] = record[:birth_place][0...-1].strip
           else
@@ -1579,13 +1580,13 @@ class FreecenCsvEntry
         if record[:birth_county].present? && valid_alternate_chapman_code && record[:birth_place].present? && place_valid
           messageb = "Warning: line #{num} Alt. Birth Place #{record[:birth_place]} in #{record[:birth_county]} found but MAY require validation.<br>"
           message += messageb   if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
-          record[:warning_messages] += messageb  if (record[:record_valid].blank? || record[:record_valid].casecmp?('false')) && !record[:pob]
+          record[:warning_messages] += messageb  if (record[:record_valid].blank? || record[:record_valid].casecmp?('false'))
         end
 
         if record[:birth_county].present? && valid_alternate_chapman_code && record[:birth_place].present? && !place_valid
           messageb = "Warning: line #{num} Alt. Birth Place #{record[:birth_place]} in #{record[:birth_county]} not found so requires validation.<br>"
           message += messageb  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
-          record[:warning_messages] += messageb if (record[:record_valid].blank? || record[:record_valid].casecmp?('false')) && !record[:pob]
+          record[:warning_messages] += messageb if (record[:record_valid].blank? || record[:record_valid].casecmp?('false'))
         end
       end
 
@@ -1619,7 +1620,7 @@ class FreecenCsvEntry
         record[:error_messages] += messageb
       elsif record[:birth_place_flag].present?
         messagea = "Warning: line #{num} Birth Place Flag is #{record[:birth_place_flag]}.<br>"
-        record[:warning_messages] += messagea unless record[:pob]
+        record[:warning_messages] += messagea
         message += messagea
       end
 

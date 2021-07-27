@@ -44,8 +44,8 @@ class FreecenPiecesController < ApplicationController
     get_user_info_from_userid
     @freecen_piece = FreecenPiece.where('_id' => params[:id]).first
     if @freecen_piece.present?
-      @freecen_piece.delete
-      flash[:notice] = 'Piece destroyed'
+      success = @freecen_piece.delete
+      flash[:notice] = success ? 'Piece destroyed' : 'Piece destroy failed (has associated VLD file)'
     else
       flash[:notice] = 'Piece does not exist'
     end
@@ -73,10 +73,13 @@ class FreecenPiecesController < ApplicationController
       if @totals_pieces.blank? || @totals_pieces_online.blank? || @totals_individuals.blank? || @totals_dwellings.blank? ||
           @grand_totals_pieces.blank? || @grand_totals_pieces_online.blank? || @grand_totals_individuals.blank? || @grand_totals_dwellings.blank?
         flash[:notice] = 'A total for either pieces or individuals or dwellings is blank'
-        redirect_to manage_resources_path && return
+        redirect_to new_manage_resource_path
+        return
       end
     else
-      redirect_to manage_resources_path && return
+      flash[:notice] = 'A Chapman Code for the display of Freecen pieces does not exist'
+      redirect_to new_manage_resource_path
+      return
     end
   end
 

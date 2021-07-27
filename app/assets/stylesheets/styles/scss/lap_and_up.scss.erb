@@ -109,16 +109,17 @@
     display: none;
 }
 
+
 .site__header__logo {
     float: left;
     position: relative;
     z-index: 3;
-
     &:focus,
     &:hover {
-        background-color: #fff;
-        outline: 2px dashed $project-color;
-        outline-offset: 7px; // will not work in IE/Edge
+      background-color: #fff;
+      outline: 2px dashed $project-color;
+      outline-offset: 7px; // will not work in IE/Edge
+      text-decoration: none; // Safari fix
     }
 }
 
@@ -264,17 +265,16 @@
  * A list of icons
  */
 .icon-list {
-    li {
-        @include inline-block;
-        margin-left: $base-spacing-unit * 2;
-        margin-right: $base-spacing-unit * 2;
-
-        a:focus,
-        a:hover {
-            background-color: transparent;
-            outline: 2px dashed $project-color;
-            outline-offset: 7px;
-        }
+  li {
+    @include inline-block;
+    margin-left: $base-spacing-unit * 2;
+    margin-right: $base-spacing-unit * 2;
+    a:focus,
+    a:hover {
+      background-color: transparent;
+      outline: 2px dashed $project-color;
+      outline-offset: 7px;
+      text-decoration: none;
     }
 }
 

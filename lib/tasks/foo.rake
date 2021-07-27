@@ -5,6 +5,23 @@ namespace :foo do
   #eg f2rake  foo:update_search_records[0,bu,"2016-05-27T19:23:31+00:00", true, 1]
   #number of files of 0 is all, force creation is true or false, order files processed is 1 or -1
 
+
+  task :check_incorporated_records_exists, [:limit] => [:environment] do |t, args|
+    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+    require 'check_incorporated_records_exists'
+    puts 'check incorporated records exist'
+    CheckIncorporatedRecordsExists.process
+    puts "Task complete."
+  end
+
+  task :add_freereg1_csv_file_id_to_search_record, [:limit] => [:environment] do |t, args|
+    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+    require 'add_freereg1_csv_file_id_to_search_record'
+    puts 'Add Freereg1 Csv FileId To Search Record'
+    AddFreereg1CsvFileIdToSearchRecord.process(args.limit)
+    puts "Task complete."
+  end
+
   task :move_civil_parishes_to_another_county, [:limit, :file_name] => [:environment] do |t, args|
     # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
     require 'move_civil_parishes_to_another_county'
@@ -83,7 +100,13 @@ namespace :foo do
     DeleteIncorrectTnaDistrict.process(args.district)
     puts "Task complete."
   end
-
+  task :delete_incorrect_chapman_district, [:chapman, :year] => [:environment] do |t, args|
+    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+    require 'delete_incorrect_chapman_district'
+    puts "Deleting Civil Parishes, Pieces and the District #{args.chapman} year #{args.year}"
+    DeleteIncorrectChapmanDistrict.process(args.chapman, args.year)
+    puts "Task complete."
+  end
 
   task :upload_place_dump_from_csv_file_to_freecen2_place_collection, [:file, :limit] => [:environment] do |t, args|
     # This takes reads a csv file of syndicate coordinators and creates the syndicates collection

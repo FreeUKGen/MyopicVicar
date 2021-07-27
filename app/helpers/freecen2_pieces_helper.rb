@@ -9,11 +9,23 @@ module Freecen2PiecesHelper
   end
 
   def district_link(district)
-    link_to "#{district.name}", freecen2_district_path(district), class: 'btn   btn--small', title:' Displays all of the information about the District to which this Sub District (Piece) is linked'
+    if district.present? && session[:type] != 'locate_other_pieces'
+      link_to "#{district.name}", freecen2_district_path(district), class: 'btn   btn--small', title:' Displays all of the information about the District to which this Sub District (Piece) is linked'
+    elsif session[:type] == 'locate_other_pieces'
+      district.name
+    else
+      'There is no district'
+    end
   end
 
   def civil_link(piece)
-    link_to 'Civil Parishes', index_for_piece_freecen2_civil_parishes_path(piece_id: piece.id, type: @type), class: 'btn   btn--small', title:' Displays a list of the Civil Parishes which belong to this Sub District (Piece)'
+    if piece.present? && session[:type] != 'locate_other_pieces'
+      link_to 'Civil Parishes', index_for_piece_freecen2_civil_parishes_path(piece_id: piece.id, type: @type), class: 'btn   btn--small', title:' Displays a list of the Civil Parishes which belong to this Sub District (Piece)'
+    elsif session[:type] == 'locate_other_pieces'
+      'Civil Parishes'
+    else
+      'There is no piece'
+    end
   end
 
   def csv_files_piece(piece)
@@ -32,16 +44,31 @@ module Freecen2PiecesHelper
     end
   end
 
+  def piece_status(piece)
+    if piece.status.present?
+      status = piece.status + " (" + piece.status_date.to_datetime.strftime("%d/%b/%Y %R") + ")"
+    end
+  end
+
   def csv_files_piece_link(piece)
-    link_to 'Freecen Files', freecen_csv_files_path, class: 'btn   btn--small', title:'Csv files for this Piece'
+    if piece.present? && session[:type] != 'locate_other_pieces'
+      link_to 'Freecen Files', freecen_csv_files_path, class: 'btn   btn--small', title:'Csv files for this Piece'
+    elsif session[:type] == 'locate_other_pieces'
+      'Freecen Files'
+    else
+      'There is no piece'
+    end
   end
 
   def individual_civil_link(parish)
     link_to "#{parish.name} #{parish.add_hamlet_township_names}", freecen2_civil_parish_path(parish.id)
   end
+
   def place_link(place)
-    if place.present?
+    if place.present? && session[:type] != 'locate_other_pieces'
       link_to "#{place.place_name}", freecen2_place_path(place.id), class: 'btn   btn--small', title: ' Displays all of the information about the place to which this Sub District (Piece) is linked'
+    elsif session[:type] == 'locate_other_pieces'
+      place.place_name
     else
       'There is no place'
     end

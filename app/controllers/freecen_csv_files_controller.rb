@@ -15,6 +15,17 @@ class FreecenCsvFilesController < ApplicationController
   require 'chapman_code'
   require 'freecen_constants'
 
+  def accept_warnings
+    @freecen_csv_file = FreecenCsvFile.find(params[:id])
+    unless FreecenCsvFile.valid_freecen_csv_file?(params[:id])
+      message = 'The file was not correctly linked. Have your coordinator contact the web master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
+    success, message, = @freecen_csv_file.accept_warnings
+    flash[:notice] = success ? 'All warnings were accepted' : flash[:notice] = "The warnings were not accepted because #{message}"
+    redirect_to freecen_csv_file_path(@freecen_csv_file)
+  end
+
   def by_userid
     # entry by userid
     session[:page] = request.original_url
@@ -256,12 +267,17 @@ class FreecenCsvFilesController < ApplicationController
     redirect_to freecen_csv_entries_path(type: 'Err')
   end
 
+  def incorporate_partial
+    @freecen_csv_file = FreecenCsvFile.find(params[:id])
+  end
+
   def incorporate
     @freecen_csv_file = FreecenCsvFile.find(params[:id])
     unless FreecenCsvFile.valid_freecen_csv_file?(params[:id])
       message = 'The file was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
+    @freecen_csv_file.update_attributes(completes_piece: params[:completes_piece])
     result, message = @freecen_csv_file.can_we_incorporate?
 
     redirect_back(fallback_location: { action: 'show' }, notice: message) && return unless result
@@ -271,8 +287,7 @@ class FreecenCsvFilesController < ApplicationController
     pid1 =  spawn("rake freecen_csv_file_incorporate[#{@freecen_csv_file.id}]")
     message = "The records for the csv file #{@freecen_csv_file.file_name} are being incorporated. You will receive an email when the task has been completed."
     logger.warn("FREECEN:CSV_PROCESSING: rake task for #{pid1}")
-
-    redirect_back(fallback_location: { action: 'show' }, notice: message) && return
+    redirect_to(freecen_csv_file_path(@freecen_csv_file), notice: message) && return
   end
 
   def unincorporate
@@ -314,6 +329,13 @@ class FreecenCsvFilesController < ApplicationController
     when 'recent'
       session[:sort] = 'uploaded_date DESC'
     end
+    if session[:stats_view]
+      if !session[:stats_year].present?
+        session[:stats_year] = params[:stats_year]
+        session[:stats_recs] = params[:select_recs]
+      end
+      session[:selection] = params[:select_recs]
+    end
     case
     when session[:syndicate].present?
       if session[:userid_id].blank? && helpers.can_view_files?(session[:role]) && helpers.sorted_by?(session[:sorted_by])
@@ -326,14 +348,18 @@ class FreecenCsvFilesController < ApplicationController
         @freecen_csv_files = FreecenCsvFile.userid(UseridDetail.find(session[:userid_id]).userid).no_timeout.order_by(session[:sort]).all
       end
     when session[:county].present?
-      if helpers.can_view_files?(session[:role]) && session[:selection] == 'errors'
-        @freecen_csv_files = FreecenCsvFile.chapman_code(session[:chapman_code]).gt(total_errors: 0).order_by(session[:sort]).all
-      elsif helpers.can_view_files?(session[:role]) && session[:selection] == 'validation'
-        @freecen_csv_files = FreecenCsvFile.where(chapman_code: session[:chapman_code], validation: true, incorporated: false).order_by(session[:sort]).all
-      elsif helpers.can_view_files?(session[:role]) && session[:selection] == 'incorporated'
-        @freecen_csv_files = FreecenCsvFile.where(chapman_code: session[:chapman_code], incorporated: true).order_by(session[:sort]).all
-      elsif helpers.can_view_files?(session[:role]) && session[:selection] == 'all'
-        @freecen_csv_files = FreecenCsvFile.chapman_code(session[:chapman_code]).order_by(session[:sort]).all
+      if session[:stats_view]
+        @freecen_csv_files  = FreecenCsvFile.before_year_csv_files(session[:chapman_code], session[:stats_year], session[:stats_todate], session[:stats_recs]).order_by(session[:sort]).all
+      else
+        if helpers.can_view_files?(session[:role]) && session[:selection] == 'errors'
+          @freecen_csv_files = FreecenCsvFile.chapman_code(session[:chapman_code]).gt(total_errors: 0).order_by(session[:sort]).all
+        elsif helpers.can_view_files?(session[:role]) && session[:selection] == 'validation'
+          @freecen_csv_files = FreecenCsvFile.where(chapman_code: session[:chapman_code], validation: true, incorporated: false).order_by(session[:sort]).all
+        elsif helpers.can_view_files?(session[:role]) && session[:selection] == 'incorporated'
+          @freecen_csv_files = FreecenCsvFile.where(chapman_code: session[:chapman_code], incorporated: true).order_by(session[:sort]).all
+        elsif helpers.can_view_files?(session[:role]) && session[:selection] == 'all'
+          @freecen_csv_files = FreecenCsvFile.chapman_code(session[:chapman_code]).order_by(session[:sort]).all
+        end
       end
     end
     #session[:current_page] = @freecen_csv_files.current_page if @freecen_csv_files.present?
@@ -574,7 +600,7 @@ class FreecenCsvFilesController < ApplicationController
       message = 'File has traditional headers and  must be converted before validation'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     elsif file.validation
-      message = 'File is already bring validated'
+      message = 'File is already being validated'
     elsif file.total_errors > 0
       message = 'File has error messages so cannot be validated'
     else

@@ -72,9 +72,11 @@ class FreecenCsvFile
   field :incorporation_lock, type: Boolean, default: false
   field :total_dwellings, type: Integer
   field :total_individuals, type: Integer
+  field :completes_piece, type: Boolean, default: false
 
 
   before_save :add_lower_case_userid_to_file, :add_country_to_file
+  before_create :set_completes_piece_flag
   #after_save :recalculate_last_amended, :update_number_of_files
 
   before_destroy do |file|
@@ -124,7 +126,7 @@ class FreecenCsvFile
     end
 
     def incorporated(status)
-      where(incorprated: status)
+      where(incorporated: status)
     end
 
     def coordinator_lock
@@ -287,20 +289,63 @@ class FreecenCsvFile
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
         totals_dwellings[year] = 0
         totals_individuals[year] = 0
-        FreecenCsvFile.chapman_code(chapman_code).year(year).incorporated(true).each do |file|
-          totals_dwellings[year] += file.total_dwellings if file.total_dwellings.present?
-          totals_individuals[year] += file.total_individuals if file.total_individuals.present?
+        totals_csv_entries[year] = 0
+        FreecenCsvFile.chapman_code(chapman_code).year(year).each do |file|
+          totals_csv_entries[year] += file.total_records if file.total_records.present?
+          if file.incorporated(true)
+            totals_dwellings[year] += file.total_dwellings if file.total_dwellings.present?
+            totals_individuals[year] += file.total_individuals if file.total_individuals.present?
+          end
         end
         totals_csv_files[year] = FreecenCsvFile.chapman_code(chapman_code).year(year).count
         totals_csv_files_incorporated[year] = FreecenCsvFile.chapman_code(chapman_code).year(year).incorporated(true).count
-        totals_csv_entries[year] = 0
-        FreecenCsvFile.chapman_code(chapman_code).year(year).each do |file|
-          totals_csv_entries[year] += file.freecen_csv_entries.count
-        end
       end
 
       [totals_csv_files, totals_csv_files_incorporated, totals_csv_entries, totals_individuals, totals_dwellings]
     end
+
+    def before_year_csv_files(chapman_code, year, time, select_recs)
+      last_id = BSON::ObjectId.from_time(time)
+      if year != 'all'
+        if select_recs == 'all'
+          @records = FreecenCsvFile.where(_id: { '$lte' => last_id }, chapman_code: chapman_code, year: year)
+        else
+          @records = FreecenCsvFile.where(_id: { '$lte' => last_id }, chapman_code: chapman_code, year: year, incorporated: true)
+        end
+      else
+        if select_recs == 'all'
+          @records = FreecenCsvFile.where(_id: { '$lte' => last_id }, chapman_code: chapman_code)
+        else
+          @records = FreecenCsvFile.where(_id: { '$lte' => last_id }, chapman_code: chapman_code, incorporated: true)
+        end
+      end
+      @records
+    end
+
+    def before_year_totals(time)
+      last_id = BSON::ObjectId.from_time(time)
+      totals_csv_files = {}
+      totals_csv_files_incorporated = {}
+      totals_individuals = {}
+      totals_dwellings = {}
+      totals_csv_entries = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        totals_dwellings[year] = 0
+        totals_individuals[year] = 0
+        totals_csv_entries[year] = 0
+        FreecenCsvFile.where(_id: { '$lte' => last_id }).year(year).each do |file|
+          totals_csv_entries[year] += file.total_records if file.total_records.present?
+          if file.incorporated == true
+            totals_dwellings[year] += file.total_dwellings if file.total_dwellings.present?
+            totals_individuals[year] += file.total_individuals if file.total_individuals.present?
+          end
+        end
+        totals_csv_files[year] = FreecenCsvFile.where(_id: { '$lte' => last_id }).year(year).count
+        totals_csv_files_incorporated[year] = FreecenCsvFile.where(_id: { '$lte' => last_id }).year(year).incorporated(true).count
+      end
+      [totals_csv_files, totals_csv_files_incorporated, totals_csv_entries, totals_individuals, totals_dwellings]
+    end
+
 
     def before_county_year_totals(chapman_code, time)
       last_id = BSON::ObjectId.from_time(time)
@@ -312,16 +357,16 @@ class FreecenCsvFile
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
         totals_dwellings[year] = 0
         totals_individuals[year] = 0
-        FreecenCsvFile.where(_id: { '$lte' => last_id }).chapman_code(chapman_code).year(year).incorporated(true).each do |file|
-          totals_dwellings[year] += file.total_dwellings if file.total_dwellings.present?
-          totals_individuals[year] += file.total_individuals if file.total_individuals.present?
+        totals_csv_entries[year] = 0
+        FreecenCsvFile.where(_id: { '$lte' => last_id }).chapman_code(chapman_code).year(year).each do |file|
+          totals_csv_entries[year] += file.total_records if file.total_records.present?
+          if file.incorporated == true
+            totals_dwellings[year] += file.total_dwellings if file.total_dwellings.present?
+            totals_individuals[year] += file.total_individuals if file.total_individuals.present?
+          end
         end
         totals_csv_files[year] = FreecenCsvFile.where(_id: { '$lte' => last_id }).chapman_code(chapman_code).year(year).count
         totals_csv_files_incorporated[year] = FreecenCsvFile.where(_id: { '$lte' => last_id }).chapman_code(chapman_code).year(year).incorporated(true).count
-        totals_csv_entries[year] = 0
-        FreecenCsvFile.where(_id: { '$lte' => last_id }).chapman_code(chapman_code).year(year).each do |file|
-          totals_csv_entries[year] += file.freecen_csv_entries.count
-        end
       end
       [totals_csv_files, totals_csv_files_incorporated, totals_csv_entries, totals_individuals, totals_dwellings]
     end
@@ -337,40 +382,18 @@ class FreecenCsvFile
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
         totals_dwellings[year] = 0
         totals_individuals[year] = 0
-        FreecenCsvFile.between(_id: first_id..last_id).chapman_code(chapman_code).year(year).incorporated(true).each do |file|
-          totals_dwellings[year] += file.total_dwellings if file.total_dwellings.present?
-          totals_individuals[year] += file.total_individuals if file.total_individuals.present?
-        end
-        totals_csv_files[year] = FreecenCsvFile.between(_id: first_id..last_id).chapman_code(chapman_code).year(year).count
-        totals_csv_files_incorporated[year] = FreecenCsvFile.between(_id: first_id..last_id).chapman_code(chapman_code).year(year).incorporated(true).count
         totals_csv_entries[year] = 0
-        FreecenCsvFile.between(_id: first_id..last_id).chapman_code(chapman_code).year(year).each do |file|
-          totals_csv_entries[year] += file.freecen_csv_entries.count
+        FreecenCsvFile.chapman_code(chapman_code).year(year).each do |file|
+          if file.id.between?(first_id, last_id)
+            totals_csv_entries[year] += file.total_records if file.total_records.present?
+          end
+          if file.incorporated == true && file.incorporated_date.between?(time1, time2)
+            totals_dwellings[year] += file.total_dwellings if file.total_dwellings.present?
+            totals_individuals[year] += file.total_individuals if file.total_individuals.present?
+          end
         end
-      end
-      [totals_csv_files, totals_csv_files_incorporated, totals_csv_entries, totals_individuals, totals_dwellings]
-    end
-
-    def before_year_totals(time)
-      last_id = BSON::ObjectId.from_time(time)
-      totals_csv_files = {}
-      totals_csv_files_incorporated = {}
-      totals_individuals = {}
-      totals_dwellings = {}
-      totals_csv_entries = {}
-      Freecen::CENSUS_YEARS_ARRAY.each do |year|
-        totals_dwellings[year] = 0
-        totals_individuals[year] = 0
-        FreecenCsvFile.where(_id: { '$lte' => last_id }).year(year).incorporated(true).each do |file|
-          totals_dwellings[year] += file.total_dwellings if file.total_dwellings.present?
-          totals_individuals[year] += file.total_individuals if file.total_individuals.present?
-        end
-        totals_csv_files[year] = FreecenCsvFile.where(_id: { '$lte' => last_id }).year(year).count
-        totals_csv_files_incorporated[year] = FreecenCsvFile.where(_id: { '$lte' => last_id }).year(year).incorporated(true).count
-        totals_csv_entries[year] = 0
-        FreecenCsvFile.where(_id: { '$lte' => last_id }).year(year).each do |file|
-          totals_csv_entries[year] += file.freecen_csv_entries.count
-        end
+        totals_csv_files[year] = FreecenCsvFile.chapman_code(chapman_code).year(year).between(_id: first_id..last_id).count
+        totals_csv_files_incorporated[year] = FreecenCsvFile.chapman_code(chapman_code).year(year).incorporated(true).between(incorporated_date: time1..time2).count
       end
       [totals_csv_files, totals_csv_files_incorporated, totals_csv_entries, totals_individuals, totals_dwellings]
     end
@@ -386,22 +409,94 @@ class FreecenCsvFile
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
         totals_dwellings[year] = 0
         totals_individuals[year] = 0
-        FreecenCsvFile.between(_id: first_id..last_id).year(year).incorporated(true).each do |file|
-          totals_dwellings[year] += file.total_dwellings if file.total_dwellings.present?
-          totals_individuals[year] += file.total_individuals if file.total_individuals.present?
+        totals_csv_entries[year] = 0
+        FreecenCsvFile.year(year).each do |file|
+          if file.id.between?(first_id, last_id)
+            totals_csv_entries[year] += file.total_records if file.total_records.present?
+          end
+          if file.incorporated == true && file.incorporated_date.between?(time1, time2)
+            totals_dwellings[year] += file.total_dwellings if file.total_dwellings.present?
+            totals_individuals[year] += file.total_individuals if file.total_individuals.present?
+          end
         end
         totals_csv_files[year] = FreecenCsvFile.between(_id: first_id..last_id).year(year).count
-        totals_csv_files_incorporated[year] = FreecenCsvFile.between(_id: first_id..last_id).year(year).incorporated(true).count
-        totals_csv_entries[year] = 0
-        FreecenCsvFile.between(_id: first_id..last_id).year(year).each do |file|
-          totals_csv_entries[year] += file.freecen_csv_entries.count
-        end
+        totals_csv_files_incorporated[year] = FreecenCsvFile.incorporated(true).year(year).between(incorporated_date: time1..time2).count
       end
       [totals_csv_files, totals_csv_files_incorporated, totals_csv_entries, totals_individuals, totals_dwellings]
     end
 
+    def convert_freecen_csv_file_name_to_freecen1_vld_file_name(description)
+      # Need to add Ireland
+      remove_extension = description.split('.')
+      parts = remove_extension[0].split('_')
+      case parts[0].upcase
+      when 'RG9'
+        series = 'RG09'
+      when 'RG10'
+        series = 'RG10'
+      when 'RG11'
+        series = 'RG11'
+      when 'RG12'
+        series = 'RG12'
+      when 'RG13'
+        series = 'RG13'
+      when 'RG14'
+        series = 'RG14'
+      when 'HO107'
+        if parts[1].delete('^0-9').to_i <= 999
+          series = 'HO107'
+          parts[1] = '0' + parts[1] if parts[1].delete('^0-9').to_i >= 10 && parts[1].delete('^0-9').to_i <= 99
+          parts[1] = '00' + parts[1] if parts[1].delete('^0-9').to_i >= 1 && parts[1].delete('^0-9').to_i <= 9
+        elsif parts[1].delete('^0-9').to_i <= 1465
+          series = 'HO41'
+        elsif parts[1].delete('^0-9').to_i >= 1466
+          series = 'HO51'
+        end
+      when 'HS41'
+        series = 'HS4'
+      when 'HS51'
+        series = 'HS5'
+      when 'RS6'
+        series = 'RS6'
+      when 'RS7'
+        series = 'RS7'
+      when 'RS8'
+        series = 'RS8'
+      when 'RS9'
+        series = 'RS9'
+      end
+      vld = series.present? ? series + parts[1] + '.VLD' : ''
+      vld = vld.upcase if vld.present?
+      vld
+    end
+
+    def vld_file_exists(file_name)
+      if file_name.present?
+        vld = FreecenCsvFile.convert_freecen_csv_file_name_to_freecen1_vld_file_name(file_name)
+        vld = vld.present? ? vld.downcase : vld
+        result = Freecen1VldFile.find_by(file_name_lower_case: vld)
+        return [true, 'There is a VLD file of that name that should be deleted first'] if result.present?
+      end
+
+      [false, '']
+    end
   end # self
   # ######################################################################### instance methods
+
+  def accept_warnings
+    return [false, 'The file has been incorporated'] if incorporated
+
+    return [false, 'The file has errors'] if total_errors > 0
+    freecen_csv_entries.where(record_valid: 'false').each do |entry|
+      entry.update_attributes(record_valid: 'true', warning_messages: nil)
+      entry.reload
+    end
+    warnings = freecen_csv_entries.where(record_valid: 'false').count
+    self.total_warnings = warnings
+    save
+    [true, '']
+
+  end
 
   def add_country_to_file
     # rspec tested during  csv processing
@@ -430,6 +525,18 @@ class FreecenCsvFile
   def add_lower_case_userid_to_file
     # rspec tested directly
     self[:userid_lower_case] = self[:userid].downcase
+  end
+
+  def is_whole_piece(piece)
+    return true if piece.number.downcase + ".csv" == self.file_name.downcase
+  end
+
+  def set_completes_piece_flag
+    unless self.freecen2_piece_id.blank?
+      self.completes_piece = false
+      piece = Freecen2Piece.find_by(_id: self.freecen2_piece_id)
+      self.completes_piece = true if is_whole_piece(piece)
+    end
   end
 
   def add_to_rake_delete_freecen_csv_file_list
@@ -474,11 +581,11 @@ class FreecenCsvFile
 
   def can_we_unincorporate?
     return [false, 'Not incorporated'] unless incorporated
+
     [true, '']
   end
 
   def can_we_incorporate?
-
     return [false, 'Already incorporated'] if incorporated
 
     return [false, 'Has not been validated incorporated'] unless validation
@@ -499,6 +606,9 @@ class FreecenCsvFile
 
     result, message = civil_parishes_have_freecen2_place
     return [false, "Cannot be incorporated as the file contains #{message}"] unless result
+
+    result, message = FreecenCsvFile.vld_file_exists(file_name)
+    return [false, "Cannot be incorporated. #{message}"] if result
 
     [true, '']
   end
@@ -1139,7 +1249,7 @@ class FreecenCsvFile
     header << 'record_valid' if validation && !header_line.include?('record_valid')
     CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
       csv << header
-      records = freecen_csv_entries
+      records = freecen_csv_entries.order_by(_id: 1)
       records.each do |rec|
         line = []
         line = add_fields(line, rec)

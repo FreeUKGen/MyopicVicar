@@ -214,7 +214,7 @@ module Freecen
     'Central', 'Clwyd', 'Dumfries and Galloway', 'Dyfed', 'England and Wales Shipping', 'Grampian', 'Gwent', 'Gwynedd', 'Highland', 'London (City)',
     'Lothian', 'Mid Glamorgan', 'Military', 'Orkney', 'Other Locations', 'Out of County', 'Powys', 'Royal Navy Ships', 'Scottish Shipping',
     'Shetland', 'South Glamorgan', 'Strathclyde', 'Tayside', 'Unknown', 'West Glamorgan', 'Western Isles', 'Yorkshire', 'England', 'Scotland',
-    'Ireland', 'Wales', 'Channel Islands'
+    'Ireland', 'Wales'
   ].freeze
 
   OCCUPATIONAL_CATEGORY_1891 = { 'E' => 'Employee', 'R' => 'Employer', 'N' => 'Neither', 'e' => 'Employee', 'r' => 'Employer', 'n' => 'Neither'}.freeze
@@ -251,6 +251,7 @@ module Freecen
     'alt. chp' => 'birth_county',
     'alt. pob' => 'birth_place',
     'w' => 'language',
+    'l' => 'language',
     'language' => 'language',
     'notes' => 'notes',
     'address_flag' => 'address_flag',

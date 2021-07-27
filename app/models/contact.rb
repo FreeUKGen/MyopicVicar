@@ -80,10 +80,11 @@ class Contact
 
     def results(archived, order, user)
       counties = user.county_groups
-      if user.secondary_role == 'volunteer_coordinator'
-        contacts = Contact.where(archived: archived).order_by(order)
+      contacts = Contact.where(archived: archived)
+      if user.secondary_role.include?'volunteer_coordinator'
+        contacts = contacts.where(contact_type: "Volunteering Question").order_by(order)
       elsif %w[county_coordinator country_coordinator].include?(user.person_role)
-        contacts = Contact.where(archived: archived, county: { '$in' => counties }).order_by(order)
+        contacts = contacts.where(county: { '$in' => counties }).order_by(order)
       else
         contacts = Contact.where(archived: archived).order_by(order)
       end
@@ -171,6 +172,7 @@ class Contact
       message.add_message_to_userid_messages(UseridDetail.look_up_id(userid))
     end
   end
+
 
   def add_sender_to_copies_of_contact_action_sent_to_userids(sender_userid)
     copies_of_contact_action_sent_to_userids = self.copies_of_contact_action_sent_to_userids
@@ -264,8 +266,7 @@ class Contact
     if Contact.github_enabled
       self.add_link_to_attachment
       Octokit.configure do |c|
-        c.login = Rails.application.config.github_issues_login
-        c.password = Rails.application.config.github_issues_password
+        c.access_token = Rails.application.config.github_issues_access_token
       end
       self.screenshot = nil
       response = Octokit.create_issue(Rails.application.config.github_issues_repo, issue_title, issue_body, :labels => [])

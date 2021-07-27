@@ -200,10 +200,10 @@ class FreeregContentsController < ApplicationController
 
     @images = Register.image_transcriptions_calculation(params[:id])
     @church = @register.church
-    redirect_back(fallback_location: { action: 'new' }, notice: 'The register has no church; you will need to start again') && return if @church.blank?
+    redirect_back(fallback_location: { action: 'new' }, notice: 'This register has lost its church; you will need to start again') && return if @church.blank?
 
     variables_for_register_show
-    redirect_back(fallback_location: { action: 'new' }, notice: 'The register has no church; you will need to start again') && return unless @proceed
+    redirect_back(fallback_location: { action: 'new' }, notice: 'The register linkages are incorrect; you will need to start again') && return unless @proceed
   end
 
   def unique_church_names
@@ -220,7 +220,8 @@ class FreeregContentsController < ApplicationController
 
   def unique_register_names
     @register = RegisterUniqueName.find_by(register_id: params[:id])
-    redirect_back(fallback_location: { action: 'new' }, notice: 'That register does not exist') && return if @register.blank?
+    actual_register = Register.find_by(_id: params[:id])
+    redirect_back(fallback_location: { action: 'new' }, notice: 'That register does not exist') && return if @register.blank? || actual_register.blank?
 
     @unique_forenames = @register.unique_forenames
     @unique_surnames = @register.unique_surnames
@@ -287,8 +288,8 @@ class FreeregContentsController < ApplicationController
   end
 
   def variables_for_register_show
-    @register = Register.find_by(_id: params[:id])
     @proceed = true
+    @register = Register.find_by(_id: params[:id])
     @church = @register.church
     if @church.blank?
       @proceed = false

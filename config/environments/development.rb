@@ -20,7 +20,7 @@ MyopicVicar::Application.configure do
   # since you don't have to restart the webserver when you make code changes.
   config.cache_classes = false
 
-  config.log_level = :debug
+  config.log_level = :info
   # Log error messages when you accidentally call methods on nil.
   config.whiny_nils = true
 
@@ -73,6 +73,7 @@ MyopicVicar::Application.configure do
   config.backup_directory = MyopicVicar::MongoConfig['backup_directory']
   config.github_issues_login = MyopicVicar::MongoConfig['github_issues_login']
   config.github_issues_password = MyopicVicar::MongoConfig['github_issues_password']
+  config.github_issues_access_token = MyopicVicar::MongoConfig['github_issues_access_token']
   config.github_issues_repo = MyopicVicar::MongoConfig['github_issues_repo']
   config.days_to_retain_search_queries = MyopicVicar::MongoConfig['days_to_retain_search_queries']
   config.days_to_retain_messages = MyopicVicar::MongoConfig['days_to_retain_messages']
@@ -81,6 +82,7 @@ MyopicVicar::Application.configure do
   config.processing_delta = MyopicVicar::MongoConfig['files_for_processing'] unless MyopicVicar::MongoConfig['files_for_processing'].blank?
   config.delete_list = MyopicVicar::MongoConfig['delete_list']
   config.member_open = MyopicVicar::MongoConfig['member_open']
+  config.vld_file_locations = MyopicVicar::MongoConfig['vld_file_locations']
   config.fc1_coverage_stats = MyopicVicar::MongoConfig['fc1_coverage_stats'] unless MyopicVicar::MongoConfig['fc1_coverage_stats'].blank?
   config.fc_parms_upload_dir = MyopicVicar::MongoConfig['fc_parms_upload_dir'] unless MyopicVicar::MongoConfig['fc_parms_upload_dir'].blank?
   config.fc_update_processor_status_file = MyopicVicar::MongoConfig['fc_update_processor_status_file'] unless MyopicVicar::MongoConfig['fc_update_processor_status_file'].blank?

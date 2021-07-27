@@ -75,9 +75,8 @@ class Freecen2SearchStatistic
       @@this_database = this_db
       num = 0
       @freshest_stat_date = Freecen2SearchStatistic.new.terminus_ad_quem
-      p "Staring at #{@freshest_stat_date.inspect}"
-      @last_midnight = DateTime.new(Time.now.year, Time.now.month, Time.now.day)
-      while @last_midnight > @freshest_stat_date
+      @last_midnight = Time.utc(Time.now.year, Time.now.month, Time.now.day)
+      while @last_midnight >= @freshest_stat_date
         stat = Freecen2SearchStatistic.new(db: @@this_database, interval_end: @freshest_stat_date)
         stat.populate
         stat.save!
@@ -156,7 +155,10 @@ class Freecen2SearchStatistic
 
   def terminus_ad_quem
     # increment terminus a quo by 1 hour
+
     @terminus_ad_quem ||= next_hour(terminus_a_quo)
+
+
   end
 
   def terminus_a_quo
@@ -165,13 +167,13 @@ class Freecen2SearchStatistic
   end
 
   def next_hour(prev_datetime)
-    t = Time.parse(prev_datetime.to_s) + (24 * 3600)
-    DateTime.parse(t.to_s)
+    t = prev_datetime + 24.hours
+    t
   end
 
   def earliest_search_query_date
     result = SearchQuery.where(:c_at.ne => nil).asc(:c_at).first.created_at
-    DateTime.new(result.year, result.month, result.day)
+    Time.utc(result.year, result.month, result.day)
   end
 
   def most_recent_statistic_date

@@ -34,6 +34,7 @@ class Freecen2Place
   field :original_longitude, type: String
   field :original_source, type: String
   field :source, type: String
+  field :editor, type: String, default: ''
   field :reason_for_change, type: String
   field :other_reason_for_change, type: String
   field :disabled, type: String, default: "false"
@@ -153,32 +154,57 @@ class Freecen2Place
 
     def search(place_name, county)
       if county.present?
-        results = Freecen2Place.where('$text' => {'$search' => place_name}, "disabled" => "false", :chapman_code => ChapmanCode.values_at(county)).order_by(place_name: 1).all
+        codes = []
+        case county
+        when 'Yorkshire'
+          codes = %w[ERY NRY WRY]
+        else
+          codes << ChapmanCode.values_at(county)
+        end
+        results = Freecen2Place.where('$text' => { '$search' => place_name }, 'disabled' => 'false', :chapman_code => { '$in' => codes })
+        .order_by(place_name: 1, chapman_code: 1).all
       else
-        results = Freecen2Place.where('$text' => {'$search' => place_name}, "disabled" => "false").order_by(place_name: 1, chapman_code: 1).all
+        results = Freecen2Place.where('$text' => { '$search' => place_name }, 'disabled' => 'false').order_by(place_name: 1, chapman_code: 1).all
       end
       results
     end
 
     def sound_search(name_soundex, county)
       if county.present?
-        results = Freecen2Place.where(:place_name_soundex => name_soundex, "disabled" => "false", :chapman_code => ChapmanCode.values_at(county)).
-          or(Freecen2Place.where("alternate_freecen2_place_names.alternate_name_soundex" => name_soundex, "disabled" => "false", :chapman_code => ChapmanCode.values_at(county))).order_by(place_name: 1).all
+        codes = []
+        case county
+        when 'Yorkshire'
+          codes = %w[ERY NRY WRY]
+        else
+          codes << ChapmanCode.values_at(county)
+        end
+        results = Freecen2Place.where(:place_name_soundex => name_soundex, 'disabled' => 'false', :chapman_code => { '$in' => codes })
+        .or(Freecen2Place.where("alternate_freecen2_place_names.alternate_name_soundex" => name_soundex, 'disabled' => 'false', :chapman_code => { '$in' => codes}))
+        .order_by(place_name: 1, chapman_code: 1).all
       else
-        results = Freecen2Place.where(:place_name_soundex => name_soundex, "disabled" => "false").
-          or(Freecen2Place.where("alternate_freecen2_place_names.alternate_name_soundex" => name_soundex, "disabled" => "false")).order_by(place_name: 1, chapman_code: 1).all
-
+        results = Freecen2Place.where(:place_name_soundex => name_soundex, 'disabled' => 'false')
+        .or(Freecen2Place.where("alternate_freecen2_place_names.alternate_name_soundex" => name_soundex, 'disabled' => 'false'))
+        .order_by(place_name: 1, chapman_code: 1).all
       end
       results
     end
 
     def regexp_search(regexp, county)
       if county.present?
-        results = Freecen2Place.where(standard_place_name: regexp, "disabled" => "false", :chapman_code => ChapmanCode.values_at(county)).
-          or(Freecen2Place.where("alternate_freecen2_place_names.standard_alternate_name":  regexp, "disabled" => "false", :chapman_code => ChapmanCode.values_at(county))).order_by(place_name: 1).all
+        codes = []
+        case county
+        when 'Yorkshire'
+          codes = %w[ERY NRY WRY]
+        else
+          codes << ChapmanCode.values_at(county)
+        end
+        results = Freecen2Place.where(standard_place_name: regexp, 'disabled' => 'false', :chapman_code => { '$in' => codes })
+        .or(Freecen2Place.where("alternate_freecen2_place_names.standard_alternate_name":  regexp, 'disabled' => 'false',
+                                :chapman_code => { '$in' => codes })).order_by(place_name: 1, chapman_code: 1).all
       else
-        results = Freecen2Place.where(standard_place_name: regexp, "disabled" => "false").
-          or(Freecen2Place.where("alternate_freecen2_place_names.standard_alternate_name":  regexp, "disabled" => "false")).order_by(place_name: 1, chapman_code: 1).all
+        results = Freecen2Place.where(standard_place_name: regexp, 'disabled' => 'false')
+        .or(Freecen2Place.where("alternate_freecen2_place_names.standard_alternate_name": regexp, 'disabled' => 'false'))
+        .order_by(place_name: 1, chapman_code: 1).all
       end
       results
     end
@@ -358,6 +384,8 @@ class Freecen2Place
     return [false, "There is no county selected",nil] if param[:freecen2_place][:chapman_code].blank?
 
     return [false, "There is no place name entered", nil] if param[:freecen2_place][:place_name].blank?
+
+    return [false, "The source of your information is required", nil] if param[:freecen2_place][:source].blank?
 
     place = Freecen2Place.where(:chapman_code => param[:freecen2_place][:chapman_code], :place_name => param[:freecen2_place][:place_name]).all #, :disabled.ne => 'true', :error_flag.ne => "Place name is not approved" ).first
 

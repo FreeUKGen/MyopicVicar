@@ -74,6 +74,7 @@ MyopicVicar::Application.routes.draw do
 
   resources :site_statistics
 
+  get 'freecen2_site_statistics/export_csv', to: 'freecen2_site_statistics#export_csv', as: :export_csv_freecen2_site_statistics
   resources :freecen2_site_statistics
 
   get 'freecen2_search_statistics/graphic', to: 'freecen2_search_statistics#graphic', as: :graphic_freecen2_search_statistics
@@ -104,7 +105,9 @@ MyopicVicar::Application.routes.draw do
   get 'freecen_csv_files/display_my_own_files_waiting_to_be_processed',  :to => 'freecen_csv_files#display_my_own_files_waiting_to_be_processed', :as => :display_my_own_files_waiting_to_be_processed_freecen_csv_file
   get 'freecen_csv_files/:id/download(.:format)', :to => 'freecen_csv_files#download', :as => :download_freecen_csv_file
   get 'freecen_csv_files/:id/validate(.:format)', :to => 'freecen_csv_files#validate', :as => :set_validation_freecen_csv_file
+  get 'freecen_csv_files/:id/accept_warnings(.:format)', :to => 'freecen_csv_files#accept_warnings', :as => :accept_warnings_freecen_csv_file
   get 'freecen_csv_files/:id/incorporate(.:format)', :to => 'freecen_csv_files#incorporate', :as => :incorporate_freecen_csv_file
+  get 'freecen_csv_files/:id/incorporate_partial(.:format)', :to => 'freecen_csv_files#incorporate_partial', :as => :incorporate_partial_freecen_csv_file
   get 'freecen_csv_files/:id/unincorporate(.:format)', :to => 'freecen_csv_files#unincorporate', :as => :unincorporate_freecen_csv_file
   resources :freecen_csv_files
 
@@ -293,7 +296,8 @@ MyopicVicar::Application.routes.draw do
   get 'freecen2_pieces/full_index', to: 'freecen2_pieces#full_index', as: :full_index_freecen2_pieces
   get 'freecen2_pieces/district_place_name', to: 'freecen2_pieces#district_place_name', as: :district_place_name_freecen2_pieces
   get 'freecen2_pieces/missing_place', to: 'freecen2_pieces#missing_place', as: :missing_place_freecen2_pieces
-  #get 'freecen2_pieces/new', :to => 'freecen2_pieces#new', :as => :piece_new_freecen2_piece
+  get 'freecen2_pieces/enter_number', to: 'freecen2_pieces#enter_number', as: :enter_number_freecen2_piece
+  get 'freecen2_pieces/locate_other_pieces', to: 'freecen2_pieces#locate_other_pieces', as: :locate_other_pieces_freecen2_piece
   #get 'freecen2_pieces/:chapman_code/:year/new', :to => 'freecen2_pieces#new', :as => :new_freecen2_piece
   get 'freecen2_pieces/chapman_year_index', :to => 'freecen2_pieces#chapman_year_index', :as => :freecen2_pieces_chapman_year_index
   get 'freecen2_pieces/index_district', :to => 'freecen2_pieces#index_district', :as => :freecen2_pieces_district_index
@@ -335,6 +339,7 @@ MyopicVicar::Application.routes.draw do
   get 'userid_details/technical_registration', :to =>'userid_details#technical_registration', :as => :technical_registration_userid_detail
   get 'userid_details/general', :to =>'userid_details#general', :as => :general_userid_detail
   get 'userid_details/:id/disable(.:format)', :to => 'userid_details#disable', :as => :disable_userid_detail
+  get 'userid_details/:id/move(.:format)', :to => 'userid_details#move', :as => :move_userid_detail
   get 'userid_details/:id/syndicate(.:format)', :to => 'userid_details#syndicate', :as => :syndicate_userid_detail
   get 'userid_details/my_own',  :to => 'userid_details#my_own', :as => :my_own_userid_detail
   get 'userid_details/all', :to => 'userid_details#all', :as => :all_userid_detail

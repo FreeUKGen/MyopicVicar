@@ -97,7 +97,9 @@
     <%= javascript_include_tag "spin.min.js"%>
     <%= javascript_include_tag "ladda.min.js"%>
     <%= javascript_include_tag "freecen_coverage_graph.js" %>
-    <%= javascript_include_tag "javascripts/freecen_gdpr.js" if appname.downcase == 'freecen'%>
+    <% if appname.downcase == 'freecen' && GdprCountries::FOLLOWED_COUNTRIES.include?(user_location) %>
+      <%= javascript_include_tag "javascripts/freecen_gdpr.js" %>
+    <% end %>
     <%= csrf_meta_tags %>
   </head>
   <body ontouchstart class="offcanvas  offcanvas--rev">
@@ -116,12 +118,6 @@
       <%= render "layouts/header" %>
       <main  class="site__content  icon__honeycomb--top-right" id="bmd_site_content">
         <% unless device_type == :mobile%>
-          <!--div class='side_banners' style="float: left; padding: 10px">
-            <%= side_banners%>
-          </div>
-          <div class='side_banners' style="float: right; padding: 10px; text-align: center;">
-            <%= side_banners%>
-          </div-->
         <% end %>
         <div class="container">
           <%#= breadcrumbs  :class => "delta  text--magenta" if appname_downcase="freebmd"%>

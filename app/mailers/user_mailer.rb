@@ -119,8 +119,8 @@ class UserMailer < ActionMailer::Base
     @sending = UseridDetail.userid(sender_userid).first
     sender_email = UseridDetail.create_friendly_from_email(sender_userid)
     to_email = UseridDetail.create_friendly_from_email(to_userid)
-    copy_to_email = UseridDetail.create_friendly_from_email(copy_to_userid)
-    mail(to: [to_email, sender_email, copy_to_email],  subject: "#{@sending.person_forename} #{@sending.person_surname} of #{@appname} sent a message #{@reply.subject} in response to reference #{@original_message.identifier}")
+    copy_to_email = copy_to_userid.present? ? UseridDetail.create_friendly_from_email(copy_to_userid) : ''
+    mail(to: [to_email, sender_email, copy_to_email], subject: "#{@sending.person_forename} #{@sending.person_surname} of #{@appname} sent a message #{@reply.subject} in response to reference #{@original_message.identifier}")
   end
 
   def feedback_action_request(contact, send_to, copies_to)
@@ -177,36 +177,56 @@ class UserMailer < ActionMailer::Base
     end
   end
 
-  def incorporation_report(userid, message, file, county)
+  def incorporation_report(userid, message, file, owner)
     coordinator = UseridDetail.userid(userid).first
+    owner_details = UseridDetail.userid(owner).first
     @appname = appname
     @message = message
-    subject = "We have processed your request to include #{file} of #{county} into the database"
-    mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", subject: subject) if coordinator.present?
+    subject = "We have processed the request to include #{file} of #{owner} into the database"
+    if coordinator == owner_details
+      mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", subject: subject) if coordinator.present?
+    else
+      mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", cc: "#{owner_details.person_forename} <#{owner_details.email_address}>", subject: subject) if coordinator.present?
+    end
   end
 
-  def incorporation_report_failure(userid, message, file, county)
+  def incorporation_report_failure(userid, message, file, owner)
     coordinator = UseridDetail.userid(userid).first
+    owner_details = UseridDetail.userid(owner).first
     @appname = appname
     @message = message
-    subject =  "We were unable to process your request to include #{file} of #{county} into the database"
-    manager = UseridDetail.userid('Captkirk').first
-    mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", cc: "#{manager.person_forename} <#{manager.email_address}>", subject: subject) if coordinator.present?
+    subject =  "We were unable to process the request to include #{file} of #{owner} into the database"
+    if coordinator == owner_details
+      mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", subject: subject) if coordinator.present?
+    else
+      mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", cc: "#{owner_details.person_forename} <#{owner_details.email_address}>", subject: subject) if coordinator.present?
+    end
   end
 
-  def unincorporation_report(userid, message, file, county)
+  def unincorporation_report(userid, message, file, owner)
     coordinator = UseridDetail.userid(userid).first
+    owner_details = UseridDetail.userid(owner).first
     @appname = appname
     @message = message
-    mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", subject: "Unincorporation report for #{file} of #{county}") if coordinator.present?
+    subject = "We have processed the request to remove #{file} of #{owner} from the database"
+    if coordinator == owner_details
+      mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", subject: subject) if coordinator.present?
+    else
+      mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", cc: "#{owner_details.person_forename} <#{owner_details.email_address}>", subject: subject) if coordinator.present?
+    end
   end
 
-  def unincorporation_report_failure(userid, message, file, county)
+  def unincorporation_report_failure(userid, message, file, owner)
     coordinator = UseridDetail.userid(userid).first
+    owner_details = UseridDetail.userid(owner).first
     @appname = appname
     @message = message
-    manager = UseridDetail.userid('Captkirk').first
-    mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", cc: "#{manager.person_forename} <#{manager.email_address}>", subject: "Unincorporation failure report for #{file} of #{county}") if coordinator.present?
+    subject = "Unincorporation failure report for the removal of #{file} owned by #{owner} from the database"
+    if coordinator == owner_details
+      mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", subject: subject) if coordinator.present?
+    else
+      mail(to: "#{coordinator.person_forename} <#{coordinator.email_address}>", cc: "#{owner_details.person_forename} <#{owner_details.email_address}>", subject: subject) if coordinator.present?
+    end
   end
 
   def notification_of_technical_registration(user)
@@ -497,9 +517,19 @@ class UserMailer < ActionMailer::Base
 
   def county_coordinator_email_lookup(file_name, userid)
     if file_name.blank? || userid.blank?
-      county_coordinator, friendly_email = regmanager_email_lookup
+      case appname.downcase
+      when 'freereg'
+        county_coordinator, friendly_email = regmanager_email_lookup
+      when 'freecen'
+        county_coordinator, friendly_email = cenmanager_email_lookup
+      end
     else
-      batch_id = Freereg1CsvFile.where(file_name: file_name, userid: userid).first
+      case appname.downcase
+      when 'freereg'
+        batch_id = Freereg1CsvFile.where(file_name: file_name, userid: userid).first
+      when 'freecen'
+        batch_id = FreecenCsvFile.where(file_name: file_name, userid: userid).first
+      end
       if batch_id.blank?
         county_coordinator, friendly_email = extract_chapman_code_from_file_name(file_name)
       else
@@ -526,6 +556,14 @@ class UserMailer < ActionMailer::Base
     [regmanager, friendly_email]
   end
 
+
+  def cenmanager_email_lookup
+    regmanager = UseridDetail.userid('CENManger').first
+    friendly_email = "#{regmanager.person_forename} #{regmanager.person_surname} <#{regmanager.email_address}>"
+    [regmanager, friendly_email]
+  end
+
+
   def sndmanager_email_lookup
     sndmanger = UseridDetail.userid('SNDManager').first
     if sndmanger.present?
@@ -539,8 +577,15 @@ class UserMailer < ActionMailer::Base
   end
 
   def extract_chapman_code_from_file_name(file_name)
-    parts = file_name.split('.')
-    chapman_code = parts[0].slice(0..2)
+    case appname.downcase
+    when 'freereg'
+      parts = file_name.split('.')
+      chapman_code = parts[0].slice(0..2)
+    when 'freecen'
+      year, piece, _fields = Freecen2Piece.extract_year_and_piece(file_name, @chapman_code)
+      actual_piece = Freecen2Piece.where(year: year, number: piece.upcase).first
+      chapman_code = actual_piece.chapman_code if actual_piece.present?
+    end
     if ChapmanCode.value?(chapman_code)
       county = County.where(chapman_code: chapman_code).first
       if county.present?

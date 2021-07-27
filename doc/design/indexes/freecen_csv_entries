@@ -93,9 +93,9 @@ db.runCommand(
         },
          {
             key: {
-                 freecen_csv_file: 1,
+                 freecen_csv_file_id: 1,
             },
-            name: "freecen_csv_file"
+            name: "freecen_csv_file_id"
         }
     ]
   }

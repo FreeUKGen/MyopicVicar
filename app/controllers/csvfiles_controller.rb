@@ -19,12 +19,12 @@ class CsvfilesController < ApplicationController
     @csvfile.file_name = @csvfile.csvfile.identifier
     redirect_back(fallback_location: new_csvfile_path, notice: 'The file had an incorrect extension') && return if @csvfile.csvfile.identifier.blank?
 
-    @csvfile.file_name = @csvfile.downcase_extension # this is a noop for freereg
-    redirect_back(fallback_location: new_csvfile_path, notice: 'A CSV file with that name does not exist on your computer (You likely tried to upload a file with a different extension') && return if @csvfile.file_name.blank?
+    @csvfile.file_name = @csvfile.downcase_extension if appname_downcase == 'freecen' # this is a noop for freereg
+    redirect_back(fallback_location: new_csvfile_path, notice: 'A csv file with that name does not exist on your computer (You likely tried to upload a file with a different extension') && return if @csvfile.file_name.blank?
 
     case params[:csvfile][:action]
     when 'Replace'
-      proceed, message = @csvfile.setup_batch_on_replace(session[:file_name])
+      proceed, message = @csvfile.setup_batch_on_replace(@csvfile.file_name)
     when 'Upload'
       proceed, message = @csvfile.setup_batch_on_upload
     end
@@ -34,7 +34,6 @@ class CsvfilesController < ApplicationController
       logger.warn("#{appname_upcase}:CSV_PROCESSING: " + message)
       flash[:notice] = message
       redirect_back(fallback_location: new_csvfile_path, notice: message) && return
-
     end
 
     proceed, message = @csvfile.process_the_batch(@user)
@@ -42,8 +41,8 @@ class CsvfilesController < ApplicationController
     unless proceed
       logger.warn("#{appname_upcase}:CSV_PROCESSING: " + message)
       redirect_back(fallback_location: new_csvfile_path, notice: message) && return
-
     end
+
     flash[:notice] = message
     flash.keep
     if session[:my_own] && appname_downcase == 'freereg'

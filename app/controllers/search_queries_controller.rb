@@ -17,8 +17,6 @@ class SearchQueriesController < ApplicationController
   before_action :check_for_mobile, only: :show
   rescue_from Mongo::Error::OperationFailure, with: :search_taking_too_long
   rescue_from Mongoid::Errors::DocumentNotFound, with: :missing_document
-  rescue_from ActionController::UnknownFormat, with: :github_camo
-  #rescue_from ActionView::Template::Error, with: :missing_template
   rescue_from Timeout::Error, with: :search_taking_too_long
   #autocomplete :BestGuess, :Surname, full: false,  limit: 5
   #autocomplete :BestGuess, :GivenName, full: false, limit: 5
@@ -95,24 +93,12 @@ class SearchQueriesController < ApplicationController
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
   end
 
-  def github_camo
-    logger.warn("#{appname_upcase}:SEARCH: Search encountered an UnknownFormat #{params}")
-    flash[:notice] = 'We encountered an UnknownFormat'
-    redirect_to new_search_query_path
-  end
-
   def index
     redirect_to action: :new
   end
 
   def missing_document
     logger.warn("#{appname_upcase}:SEARCH: Search encountered a missing document #{params}")
-    flash[:notice] = 'We encountered a problem executing your request. You need to restart your query. If the problem continues please contact us explaining what you were doing that led to the failure.'
-    redirect_to new_search_query_path
-  end
-
-  def missing_template
-    logger.warn("#{appname_upcase}:SEARCH: Search encountered a missing or incorrect template #{params}")
     flash[:notice] = 'We encountered a problem executing your request. You need to restart your query. If the problem continues please contact us explaining what you were doing that led to the failure.'
     redirect_to new_search_query_path
   end

@@ -30,6 +30,7 @@ class Freecen2PlacesController < ApplicationController
 
   def create
     @user = get_user
+    params[:freecen2_place][:editor] = @user.userid
     @first_name = @user.person_forename if @user.present?
     if params[:commit] == 'Search Place Names'
       session[:search_names] = {}
@@ -105,13 +106,18 @@ class Freecen2PlacesController < ApplicationController
     load(params[:id])
     redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'That place does not exist') && return if @place.blank?
 
+    @county = session[:county]
+    @chapman_code = session[:chapman_code]
+    get_user_info_from_userid
+    if session[:chapman_code] == 'LND'
+      message = 'Only system administrators can edit LND'
+      redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: message) && return unless
+      %w[system_administrator].include?(@user.person_role)
+    end
     @place_name = @place.place_name
     @place.alternate_freecen2_place_names.build
     @place.alternate_freecen2_place_names.build
     @place.alternate_freecen2_place_names.build
-    @county = session[:county]
-    @chapman_code = session[:chapman_code]
-
   end
 
   def index
@@ -171,6 +177,7 @@ class Freecen2PlacesController < ApplicationController
     @county = session[:county]
     @counties = ChapmanCode.keys.sort
     @counties -= Freecen::UNNEEDED_COUNTIES
+    @counties << 'London (City)' if %w[system_administrator].include?(@user.person_role)
   end
 
   def places_counties_and_countries
@@ -289,6 +296,11 @@ class Freecen2PlacesController < ApplicationController
     case
     when params[:commit] == 'Submit'
       @place.save_to_original
+      if params[:freecen2_place][:source].blank?
+        flash[:notice] = 'The source field cannot be empty'
+        render action: 'edit'
+        return
+      end
 
       proceed = @place.update_attributes(freecen2_place_params)
 

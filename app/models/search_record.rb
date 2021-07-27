@@ -36,6 +36,8 @@ class SearchRecord
   belongs_to :freecen_csv_entry, index: true, optional: true
   belongs_to :freecen_csv_file, index: true, optional: true
   belongs_to :freecen_individual, index: true, optional: true
+  belongs_to :freecen1_vld_file, index: true, optional: true
+
   belongs_to :place, index: true, optional: true
   belongs_to :freecen2_place, index: true, optional: true
   belongs_to :freecen2_civil_parish, index: true, optional: true
@@ -75,13 +77,6 @@ class SearchRecord
   # derived search fields
   field :location_names, type: Array, default: []
   field :search_soundex, type: Array, default: []
-
-
-  apply_index.each_pair do |name, fields|
-    field_spec = {}
-    fields.each { |field| field_spec[field] = 1 }
-    index(field_spec, { name: name, background: true })
-  end
 
   index({ place_id: 1, locations_names: 1 }, { name: 'place_location' })
 
@@ -131,6 +126,7 @@ class SearchRecord
       messagea = 'We are sorry but the record you requested no longer exists; possibly as a result of some data being edited. You will need to redo the search with the original criteria to obtain the updated version.'
       warning = "#{appname.upcase}::SEARCH::ERROR Missing entry for search record"
       warninga = "#{appname.upcase}::SEARCH::ERROR Missing parameter"
+      messaged = 'There is an issue with the linkages for this records. Please contact us using the Website Problem option to report this message'
       if param[:id].blank?
         logger.warn(warninga)
         logger.warn " #{param[:id]} no longer exists"
@@ -161,6 +157,8 @@ class SearchRecord
           logger.warn "File for #{search_record} no longer exists"
           return [false, search_query, search_record, messagea]
         end
+        proceed, _place_id, _church_id, _register_id, = entry.freereg1_csv_file.location_from_file
+        return [false, search_query, search_record, messaged] unless proceed
       end
       [true, search_query, search_record, '']
     end
@@ -186,11 +184,11 @@ class SearchRecord
     end
 
     def delete_freereg1_csv_entries
-      SearchRecord.where(:freereg1_csv_entry_id.exists => true).delete_all
+      SearchRecord.where(:freereg1_csv_entry_id.exists => true).destroy_all
     end
 
     def delete_freecen_individual_entries
-      SearchRecord.where(:freecen_individual_id.exists => true).delete_all
+      SearchRecord.where(:freecen_individual_id.exists => true).destroy_all
     end
 
     def from_annotation(annotation)
@@ -396,7 +394,7 @@ class SearchRecord
     new_names.delete_if { |_key, value| original_copy.has_value?(value) }
     #remove search names from the search record that are no longer required
     original_names.each_value do |value|
-      search_names.where(value).delete_all
+      search_names.where(value).destroy_all
     end
     #add the new search names to the existing search record
     new_names.each_value { |value| search_names.new(value) }
@@ -454,6 +452,32 @@ class SearchRecord
   def emend_all
     self.search_names = Emendor.emend(self.search_names)
   end
+
+  def extract_location_parts
+    place = ''
+    name_parts = location_names[0].split(') ')
+    case
+    when name_parts.length == 1
+      (place, church) = location_names[0].split(' (')
+    when name_parts.length == 2
+      place = name_parts[0] + ")"
+      name_parts[1][0] = ""
+      church = name_parts[1]
+    end
+    if church.present?
+      church = church[0..-2]
+    else
+      church = ''
+    end
+    if location_names[1]
+      reg = location_names[1].gsub('[', '').gsub(']', '').strip
+      register_type = RegisterType::APPROVED_OPTIONS[reg]
+    else
+      register_type = ''
+    end
+    [place, church, register_type]
+  end
+
   def format_location
     location_array = []
     if freereg1_csv_entry
@@ -498,7 +522,7 @@ class SearchRecord
       place = Freecen2Place.find_by(_id: freecen2_place_id)
       particles << place.place_name if place.present?
     else
-      particles << self.place.place_name if self.place.place_name
+      particles << self.place.place_name if self.place.present?
     end
     # finally date
     particles << search_dates.first
@@ -689,27 +713,23 @@ class SearchRecord
   end
 
   def populate_search_names
-    if transcript_names && transcript_names.size > 0
-      transcript_names.each_with_index do |name_hash|
-        person_type = PersonType::FAMILY
-        if name_hash[:type] == 'primary'
-          person_type=PersonType::PRIMARY
-        end
-        if name_hash[:type] == 'witness'
-          person_type=PersonType::WITNESS
-        end
-        person_role = (name_hash[:role].nil?) ? nil : name_hash[:role]
-        if MyopicVicar::Application.config.template_set == 'freecen' && freecen_csv_entry_id.blank?
-          person_gender = self.freecen_individual.sex.downcase unless self.freecen_individual.nil? || self.freecen_individual.sex.nil?
-        elsif  MyopicVicar::Application.config.template_set == 'freecen' && freecen_csv_entry_id.present?
-          entry = FreecenCsvEntry.find_by(_id: freecen_csv_entry_id)
-          person_gender = entry.sex
-        else
-          person_gender = gender_from_role(person_role)
-        end
-        name = search_name(name_hash[:first_name], name_hash[:last_name], person_type, person_role, person_gender)
-        search_names << name if name
+    return unless transcript_names && transcript_names.size > 0
+
+    transcript_names.each do |name_hash|
+      person_type = PersonType::FAMILY
+      person_type = PersonType::PRIMARY if name_hash[:type] == 'primary'
+      person_type = PersonType::WITNESS if name_hash[:type] == 'witness'
+      person_role = name_hash[:role].nil? ? nil : name_hash[:role]
+      if MyopicVicar::Application.config.template_set == 'freecen' && freecen_csv_entry_id.blank?
+        person_gender = freecen_individual.sex.downcase unless freecen_individual.nil? || freecen_individual.sex.nil?
+      elsif MyopicVicar::Application.config.template_set == 'freecen' && freecen_csv_entry_id.present?
+        entry = FreecenCsvEntry.find_by(_id: freecen_csv_entry_id)
+        person_gender =  entry.present? ? entry.sex : gender_from_role(person_role)
+      else
+        person_gender = gender_from_role(person_role)
       end
+      name = search_name(name_hash[:first_name], name_hash[:last_name], person_type, person_role, person_gender)
+      search_names << name if name
     end
   end
 
@@ -866,14 +886,16 @@ class SearchRecord
   end
 
   def update_location(entry, file)
-    place = file.register.church.place
-    location_names = []
-    place_name = entry[:place]
-    church_name = entry[:church_name]
-    register_type = RegisterType.display_name(entry[:register_type])
-    location_names << "#{place_name} (#{church_name})"
-    location_names << " [#{register_type}]"
-    update(location_names: location_names, freereg1_csv_entry_id: entry.id, place_id: place.id)
+    proceed, place, church, register = file.location_from_file
+    if proceed
+      location_names = []
+      place_name = place.place_name
+      church_name = church.church_name
+      register_type = RegisterType.display_name(register.register_type)
+      location_names << "#{place_name} (#{church_name})"
+      location_names << " [#{register_type}]"
+      update(location_names: location_names, freereg1_csv_entry_id: entry.id, place_id: place.id)
+    end
   end
 
   def upgrade_search_date!(search_version)

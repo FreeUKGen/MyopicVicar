@@ -59,7 +59,7 @@ crumb :person_role_selection do
 end
 
 crumb :freecen2_site_statistics do |county|
-  link 'Freecen2 Statistics'
+  link 'Freecen2 Site Statistics', freecen2_site_statistics_path
   if county == 'total'
     parent :root
   else
@@ -485,8 +485,6 @@ end
 #csvfiles
 crumb :new_csvfile do |csvfile, app|
   link 'Upload New File', new_csvfile_path
-  p session[:my_own]
-  p app
   case
   when session[:my_own]
     parent :files, nil if app == 'freereg'
@@ -509,6 +507,17 @@ crumb :edit_csvfile do |csvfile, file, app|
   when session[:syndicate]
     parent :syndicate_options, session[:syndicate]
   end
+end
+
+
+#vldfiles
+crumb :new_vldfile do |vldfile, app|
+  link 'Upload New Vld File', new_freecen1_vld_file_path
+  parent :freecen1_vld_files, session[:county], vldfile
+end
+crumb :edit_vldfile do |vldfile, file, app|
+  link 'Edit Vld File', edit_freecen1_vld_file_path
+  parent :freecen1_vld_files, session[:county], vldfile
 end
 # ................................................................. Feedback
 
@@ -1674,6 +1683,16 @@ crumb :new_freecen2_piece do |district, county, year|
   parent :show_freecen2_district, district, county, year
 end
 
+crumb :enter_number do |county|
+  link 'Enter Piece Number', enter_number_freecen2_piece_path
+  parent :county_options, county
+end
+
+crumb :locate_other_pieces do |county, number|
+  link 'Locate Other Pieces', locate_other_pieces_freecen2_piece_path(number: number)
+  parent :enter_number, county
+end
+
 crumb :freecen2_pieces_chapman do |county, year|
   link 'FreeCen2 Sub Districts (Pieces) by year', freecen2_pieces_chapman_year_index_path(chapman_code: county, year: year, anchor: session[:freecen2_piece])
   parent :freecen2_pieces, county
@@ -1909,29 +1928,33 @@ crumb :freecen_csv_files do |file|
     link 'List of Files', freecen_csv_files_path(anchor: "#{file.id}", page: "#{session[:current_page]}")
   end
 
-  if session[:my_own]
-    parent :my_own_freecen_csv_files
-  elsif session[:county].present? && %w[county_coordinator system_administrator technical data_manager].include?(session[:role])
-    if session[:piece_id].present?
-      piece = Piece.find_by(_id: piece_id).first
-      if piece.nil?
-        parent :county_options, session[:county]
+  if session[:stats_view]
+    parent :freecen2_site_statistics,  session[:county]
+  else
+    if session[:my_own]
+      parent :my_own_freecen_csv_files
+    elsif session[:county].present? && %w[county_coordinator system_administrator technical data_manager].include?(session[:role])
+      if session[:piece_id].present?
+        piece = Piece.find_by(_id: piece_id).first
+        if piece.nil?
+          parent :county_options, session[:county]
+        else
+          parent :show_piece, session[:county], piece
+        end
       else
-        parent :show_piece, session[:county], piece
+        parent :county_options, session[:county]
       end
-    else
-      parent :county_options, session[:county]
+    elsif %w[volunteer_coordinator syndicate_coordinator].include?(session[:role])
+      parent :userid_details_listing, session[:syndicate]
+    elsif session[:syndicate].present? && %w[county_coordinator system_administrator technical data_manager].include?(session[:role])
+      if session[:userid_id].present?
+        parent :userid_detail, session[:syndicate], UseridDetail.find(session[:userid_id])
+      else
+        parent :syndicate_options, session[:syndicate]
+      end
+    elsif %w[system_administrator technical].include?(session[:role])
+      parent :cenmanager_userid_options
     end
-  elsif %w[volunteer_coordinator syndicate_coordinator].include?(session[:role])
-    parent :userid_details_listing, session[:syndicate]
-  elsif session[:syndicate].present? && %w[county_coordinator system_administrator technical data_manager].include?(session[:role])
-    if session[:userid_id].present?
-      parent :userid_detail, session[:syndicate], UseridDetail.find(session[:userid_id])
-    else
-      parent :syndicate_options, session[:syndicate]
-    end
-  elsif %w[system_administrator technical].include?(session[:role])
-    parent :cenmanager_userid_options
   end
 end
 

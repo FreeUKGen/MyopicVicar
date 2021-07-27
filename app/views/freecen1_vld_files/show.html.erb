@@ -27,9 +27,9 @@
             <%= @freecen1_vld_file.full_year  %></td>
         </tr>
         <tr>
-          <td>Piece:</td>
+          <td>Piece number: (Button is link to piece)</td>
           <td class="weight--semibold">
-            <%= @freecen1_vld_file.piece  %></td>
+            <%= piece_number_link(@freecen1_vld_file)  %></td>
         </tr>
         <tr>
           <td>Series:</td>
@@ -42,15 +42,32 @@
             <%= @freecen1_vld_file.sctpar  %></td>
         </tr>
         <tr>
-          <td>Digest:</td>
+          <td>Number of entries:</td>
           <td class="weight--semibold">
-            <%= @freecen1_vld_file.file_digest  %></td>
+            <%= @freecen1_vld_file.num_entries  %></td>
+        </tr>
+        <tr>
+          <td>Number of individuals:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_file.num_individuals %></td>
+        </tr>
+        <tr>
+          <td>Number of dwellings:</td>
+          <td class="weight--semibold">
+            <%= @freecen1_vld_file.num_dwellings  %></td>
         </tr>
         <tr>
           <td>Errors:</td>
           <td class="weight--semibold">
             <%= @freecen1_vld_file.file_errors  %></td>
         </tr>
+        <% if @freecen1_vld_file.action == 'Upload' %>
+          <tr>
+            <td>Uploaded by:</td>
+            <td class="weight--semibold">
+              <%= @freecen1_vld_file.userid  %></td>
+          </tr>
+        <% end%>
         <tr>
           <td>Transcriber name:</td>
           <td class="weight--semibold">
@@ -65,6 +82,11 @@
           <td>Transcriber userid:</td>
           <td class="weight--semibold">
             <%= @freecen1_vld_file.transcriber_userid  %></td>
+        </tr>
+        <tr>
+          <td>Created at:</td>
+          <td class="weight--semibold">
+            <%= loaded_at(@freecen1_vld_file) %></td>
         </tr>
       </p>
     </table>

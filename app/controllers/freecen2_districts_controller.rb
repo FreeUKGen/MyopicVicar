@@ -47,6 +47,7 @@ class Freecen2DistrictsController < ApplicationController
   def create
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No information in the creation') && return if params[:freecen2_district].blank?
 
+    params[:freecen2_district][:name] = params[:freecen2_district][:name].strip if params[:freecen2_district][:name].present?
     params[:freecen2_district][:freecen2_place_id] = Freecen2Place.place_id(params[:freecen2_district][:chapman_code], params[:freecen2_district][:freecen2_place_id])
     @freecen2_district = Freecen2District.new(freecen2_district_params)
     @freecen2_district.save

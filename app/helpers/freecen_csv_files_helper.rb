@@ -100,6 +100,13 @@ module FreecenCsvFilesHelper
       title: 'Copies the file (and any on line edits) to a proofreader or validator or yourself. The file will be processed and the report sent.'
   end
 
+  def accept_warnings
+    link_to 'Accept all warnings', accept_warnings_freecen_csv_file_path(@freecen_csv_file),
+      data: { confirm: 'Are you sure you want to accept all warning messages ' }, class: 'btn   btn--small', method: :get,
+      title: 'Accepts all warning messages.'
+  end
+
+
   def validate_freecen_file
     validation_heading = @freecen_csv_file.validation ? 'Validation under way' : 'Commence validation'
     link_to "#{validation_heading}", set_validation_freecen_csv_file_path(@freecen_csv_file), class: 'btn   btn--small', method: :get,
@@ -108,8 +115,13 @@ module FreecenCsvFilesHelper
 
   def incorporate_freecen_file
     unless @freecen_csv_file.incorporated
-      link_to 'Incorporate file', incorporate_freecen_csv_file_path(@freecen_csv_file), class: 'btn   btn--small', method: :get,
-        title: 'Incorporates the records into the database', data: { confirm:  'Are you sure you want to commence incorporation of the file?' }
+      if @freecen_csv_file.completes_piece
+        link_to 'Incorporate file', incorporate_freecen_csv_file_path(@freecen_csv_file, completes_piece: true), class: 'btn   btn--small', method: :get,
+          title: 'Incorporates the records into the database and sets piece status to Online', data: { confirm:  'Are you sure you want to commence incorporation of the file?' }
+      else
+        link_to 'Incorporate file', incorporate_partial_freecen_csv_file_path(@freecen_csv_file), class: 'btn   btn--small', method: :get,
+          title: 'Checks if partial piece file is last for the piece'
+      end
     else
       link_to 'Remove records from database', unincorporate_freecen_csv_file_path(@freecen_csv_file), class: 'btn   btn--small', method: :get,
         title: 'Removes all of the records from the database', data: { confirm:  'Are you sure you want to remove all of the records from the database?' }

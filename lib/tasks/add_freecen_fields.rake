@@ -7,17 +7,28 @@ namespace :freecen do
     p "Starting at #{start_time}"
 
     # Call the RefreshUcfList library class file with passing the model name as parameter
+    # FreecenPiece.no_timeout.each do |piece|
+    #  piece.num_dwellings = piece.freecen_dwellings.count
+    #  piece.save
+    # end
+    number = 0
+    missing = 0
+    processed = 0
     FreecenPiece.no_timeout.each do |piece|
-      piece.num_dwellings = piece.freecen_dwellings.count
-      piece.save
+      number += 1
+      p number if (number / 100) * 100 == number
+      file = Freecen1VldFile.find_by(file_name: piece.freecen1_filename)
+      if file.present?
+        processed += 1
+        dwellings = file.freecen_dwellings.count
+        entries = file.freecen1_vld_entries.count
+        file.update_attributes(num_individuals: piece.num_individuals, num_dwellings: dwellings, num_entries: entries, freecen_piece_id: piece.id)
+        piece.update_attributes(num_dwellings: dwellings, num_entries: entries)
+      else
+        missing += 1 if piece.status == 'Online'
+      end
     end
-    Freecen1VldFile.no_timeout.each do |file|
-      file.num_entries = file.freecen1_vld_entries.count
-      file.save
-    end
-
-    p "Process finished"
     running_time = Time.now - start_time
-    p "Running time #{running_time} "
+    p "Processed #{number} pieces #{processed} updates in time #{running_time} with #{missing} on-line files missing"
   end
 end

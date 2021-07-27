@@ -29,7 +29,7 @@ class FreecenCsvFileIncorporate
       piece = freecen_file.freecen2_piece
       district = piece.freecen2_district
       chapman_code = freecen_file.chapman_code
-      freecen_file_id = freecen_file.id
+      @freecen_file_id = freecen_file.id
       number = 0
       freecen_file.freecen_csv_entries.no_timeout.each do |entry|
         number += 1
@@ -37,7 +37,7 @@ class FreecenCsvFileIncorporate
         enumeration_districts[parish] = [] if enumeration_districts[parish].blank?
         enumeration_districts[parish] << entry.enumeration_district unless enumeration_districts[parish].include?(entry.enumeration_district)
         place_ids[parish] = entry.freecen2_civil_parish.freecen2_place unless place_ids.key?(parish)
-        entry.translate_individual(piece, district, chapman_code, place_ids[parish], freecen_file_id)
+        entry.translate_individual(piece, district, chapman_code, place_ids[parish], @freecen_file_id)
       end
 
       time_end = Time.now.to_i
@@ -49,13 +49,24 @@ class FreecenCsvFileIncorporate
                                                 incorporated_date: DateTime.now.in_time_zone('London'))
       # the translate individual adds the civil parishes
 
-      PlaceCache.refresh(freecen_file.chapman_code) if successa #&& successb
-      message += '. Place cache rewritten'
-      success = true if successa #&& successb
-      message = 'File update and or place update failed' unless successa #&& successb
+      successb = true
+      if successa  && freecen_file.completes_piece?
+        successb = piece.update_attributes(status: 'Online', status_date: DateTime.now.in_time_zone('London'))
+        message += '. Piece status set to Online' if successb
+      else
+        successb = piece.update_attributes(status: 'Part', status_date: DateTime.now.in_time_zone('London'))
+        message += '. Piece status set to Part' if successb
+      end
+
+      PlaceCache.refresh(freecen_file.chapman_code) if successa && successb
+      message += '. Place cache rewritten.'
+      success = true if successa && successb
+      message = 'File update and or place update failed' unless successa && successb
     rescue Exception => msg
       puts msg
       puts msg.backtrace.inspect
+      SearchRecord.where(freecen_csv_file_id: @freecen_file_id).destroy_all
+      FreecenCsvEntry.collection.update_many({ freecen_csv_file_id: @freecen_file_id }, '$set' => { search_record_id: nil })
       success = false
       message = "#{msg}, #{msg.backtrace.inspect}"
     end

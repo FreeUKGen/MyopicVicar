@@ -44,17 +44,18 @@ class FreecenPiece
   field :film_number, type: String
   field :freecen1_filename, type: String
   field :status, type: String
+  field :status_date, type: DateTime
   field :remarks, type: String
   field :remarks_coord, type: String #visible to coords, not public
   field :online_time, type: Integer
+  field :num_entries, type: Integer, default: 0
   field :num_individuals, type: Integer, default: 0
   field :num_dwellings, type: Integer, default: 0
   belongs_to :freecen1_fixed_dat_entry, index: true, optional: true
   belongs_to :place, optional: true, index: true
-  has_many :freecen_dwellings
-  has_many :freecen_csv_files
+  has_many :freecen_dwellings, dependent: :restrict_with_error
+  has_many :freecen1_vld_files, dependent: :restrict_with_error
 
-  before_validation :add_num_dwellings
   index(:piece_number => 1, :chapman_code => 1)
   index(:piece_number => 1, :chapman_code => 1, :year => 1, :suffix => 1, :parish_number => 1)
 
@@ -123,12 +124,10 @@ class FreecenPiece
       totals_individuals = {}
       totals_dwellings = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
-        totals_individuals[year] = FreecenPiece.where(_id: { '$lte' => last_id }).year(year).status('Online').sum(:num_individuals)
         totals_pieces[year] = FreecenPiece.where(_id: { '$lte' => last_id }).year(year).count
         totals_pieces_online[year] = FreecenPiece.where(_id: { '$lte' => last_id }).year(year).status('Online').count
-        totals_dwellings[year] = FreecenPiece.where(_id: { '$lte' => last_id }).year(year).status('Online').sum(:num_dwellings)
       end
-      [totals_pieces, totals_pieces_online, totals_individuals, totals_dwellings]
+      [totals_pieces, totals_pieces_online]
     end
 
     def between_dates_year_totals(time1, time2)
@@ -343,7 +342,4 @@ class FreecenPiece
     end
   end
   # ############################################################################## instances
-  def add_num_dwellings
-    self.num_dwellings = freecen_dwellings.count
-  end
 end

@@ -181,7 +181,17 @@ class Freecen1UpdateProcessor
           if vld.present?
             pc = FreecenPiece.where(year: vld[:full_year], chapman_code: nv['chapman'], piece_number: vld[:piece], parish_number: vld[:sctpar]).first
             if pc.present?
-              pc.update_attribute(:status, 'Online')
+              place = Place.find_by(_id: pc.place_id)
+              if place.data_present == false
+                place.data_present = true
+                place_save_needed = true
+              end
+              if !place.cen_data_years.include?(piece.year)
+                place.cen_data_years << piece.year
+                place_save_needed = true
+              end
+              place.save! if place_save_needed
+              pc.update_attributes(status: 'Online', status_date: DateTime.now.in_time_zone('London'), num_individuals: vld.num_individuals, num_dwellings: vld.num_dwellings, num_entries: vld.num_entries)
             end
           end
         rescue => e # rescue any exceptions and continue processing the other VLDs
@@ -617,6 +627,7 @@ class Freecen1UpdateProcessor
       log_message("   translate start at #{Time.now.strftime("%I:%M:%S %p")}")
       translator = Freecen::Freecen1VldTranslator.new
       num_dwel, num_ind = translator.translate_file_record(file_record)
+      file_record.update_attributes(num_individuals: num_ind, num_dwellings: num_dwel)
       log_message("\t#{vld_pathname} contained #{num_dwel} dwellings and #{num_ind} individuals in #{num_entries} entries (done at #{Time.now.strftime("%I:%M:%S %p")})\n")
     end
 

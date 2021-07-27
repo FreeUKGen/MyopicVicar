@@ -144,14 +144,6 @@
           </li>
         <% end %>
         <li class="grid__item one-third lap-one-whole palm-one-whole">
-          <%= f.label :search_nearby_places, { :class => "ttip", :tabindex => "0" } do %>
-            <%= f.check_box :search_nearby_places, {},  true, false %>
-            Nearby places
-            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Check to search places near to your selected starting place (up to 40 places in total). You can narrow your search after it has run</span>
-          <% end %>
-        </li>
-        <li class="grid__item one-third lap-one-whole palm-one-whole">
           <%= f.label :fuzzy, { :class => "ttip", :tabindex => "0" } do %>
             <%= f.check_box :fuzzy, {},  true, false %>
             Name Soundex
@@ -159,53 +151,60 @@
             <span class="ttip__text">Check to include the Soundex equivalent of the name: it is used for both surname and forename (if entered)</span>
           <% end %>
         </li>
-        <li class="betterstyling grid__item  one-quarter  palm-one-whole">
-          <label for="region"> Region </label> <input id="region" name="search_query[region]" type="text">
-        </li>
-        <%= f.action :submit,
+        <li class="grid__item one-third lap-one-whole palm-one-whole">
+          <%= f.label :search_nearby_places, { :class => "ttip", :tabindex => "0" } do %>
+            <%= f.check_box :search_nearby_places, {},  true, false %>
+            Nearby places
+            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">Check to search places near to your selected starting place (up to 40 places in total). You can narrow your search after it has run</span>
+          <% end %>
+          <li class="betterstyling grid__item  one-quarter  palm-one-whole">
+            <label for="region"> Region </label> <input id="region" name="search_query[region]" type="text">
+          </li>
+          <%= f.action :submit,
         :as => :button,
         :label => 'Search ',
         :button_html => {id:"freereg_search_button" , :class => "ladda-button" , "data-style" => "contract" ,"data-color" => appname.downcase , "data-size" => "s", "data-spinner-color" => "#ffffff" },
         :wrapper_html => { class: "grid__item one-whole push-half--ends" } %>
-        <li class="grid__item one-whole clear--left">
-          <% x = Rails.application.config.max_search_time/1000 %>
-          <small class="additional push-half--ends">Search times are limited to <%= x %> seconds. <br>
-            Please do not restart the search once it is working as this will actually slow the process.</small>
-        </li>
-      </ol>
-    </fieldset>
-  <% end %>
-</div>
-<script type="text/javascript">
-  Ladda.bind( 'button[type=submit]' );
-</script>
-<script type="text/javascript" >
-  <% if @search_query && @search_query.chapman_codes.size > 0 %>
-    var selection=<%= raw(PlaceCache.where(:chapman_code => @search_query.chapman_codes.first).first.places_json) %>;
-    <% if @search_query.places.size > 0 %>
-      selection["selected"]="<%= @search_query.places.first.id %>";
+          <li class="grid__item one-whole clear--left">
+            <% x = Rails.application.config.max_search_time/1000 %>
+            <small class="additional push-half--ends">Search times are limited to <%= x %> seconds. <br>
+              Please do not restart the search once it is working as this will actually slow the process.</small>
+          </li>
+        </ol>
+      </fieldset>
     <% end %>
-  <% end %>
-  (function($) {$("#search_query_place_ids").remoteChained({
-    parents : "#search_query_chapman_codes",
-    url : "/places/for_search_form.json",
-    loading : "Loading..."
-    <% if @search_query && @search_query.chapman_codes.size == 1 %>
-      , bootstrap: selection
+  </div>
+  <script type="text/javascript">
+    Ladda.bind( 'button[type=submit]' );
+  </script>
+  <script type="text/javascript" >
+    <% if @search_query && @search_query.chapman_codes.size > 0 %>
+      var selection=<%= raw(PlaceCache.where(:chapman_code => @search_query.chapman_codes.first).first.places_json) %>;
+      <% if @search_query.places.size > 0 %>
+        selection["selected"]="<%= @search_query.places.first.id %>";
+      <% end %>
     <% end %>
-  });})(jQuery);
-  $(function(){
-    $("#search_query_place").hide();  // By default use jQuery to hide the second modal
-  
-    // We can use the change(); function to watch the state of the select box and run some conditional logic every time it's changes to hide or show the second select box
-    $("#search_query_chapman_codes").change(function(){
-        if( $("#default").is(':selected') ){
-            $("#search_query_place").show();
-            $("#search_query_place_ids").hide();
-        } else {
-            $("#search_query_place").hide();
-            $("#search_query_place_ids").show();
-        }
-    });
-  })
-</script>
+    (function($) {$("#search_query_place_ids").remoteChained({
+      parents : "#search_query_chapman_codes",
+      url : "/places/for_search_form.json",
+      loading : "Loading..."
+      <% if @search_query && @search_query.chapman_codes.size == 1 %>
+        , bootstrap: selection
+      <% end %>
+    });})(jQuery);
+    $(function(){
+      $("#search_query_place").hide();  // By default use jQuery to hide the second modal
+    
+      // We can use the change(); function to watch the state of the select box and run some conditional logic every time it's changes to hide or show the second select box
+      $("#search_query_chapman_codes").change(function(){
+          if( $("#default").is(':selected') ){
+              $("#search_query_place").show();
+              $("#search_query_place_ids").hide();
+          } else {
+              $("#search_query_place").hide();
+              $("#search_query_place_ids").show();
+          }
+      });
+    })
+  </script>

@@ -90,11 +90,18 @@ class FreecenCsvProcessor
           @csvfile.clean_up_physical_files_after_failure(@records_processed)
           # @project.communicate_to_managers(@csvfile) if @project.type_of_project == "individual"
         end
-      rescue Exception => msg
+      rescue CSV::MalformedCSVError => msg
+        @project.write_messages_to_all("We were unable to process the file possibly due to an invalid structure or character.<p>", true)
+        @project.write_messages_to_all("#{msg}", true)
+        @project.write_log_file("#{msg.backtrace.inspect}")
         @records_processed = msg
-        @project.write_messages_to_all('The CSVProcessor crashed please provide the following information to your coordinator to send to the System Administrators', true)
+        @csvfile.communicate_failure_to_member(@records_processed)
+        @csvfile.clean_up_physical_files_after_failure(@records_processed)
+      rescue Exception => msg
+        @project.write_messages_to_all("The CSVProcessor crashed please provide the following information to your coordinator to send to the System Administrators", true)
         @project.write_messages_to_all("#{msg}", true)
         @project.write_messages_to_all("#{msg.backtrace.inspect}", true)
+        @records_processed = msg
         @csvfile.communicate_failure_to_member(@records_processed)
         @csvfile.clean_up_physical_files_after_failure(@records_processed)
       end
@@ -108,8 +115,8 @@ class FreecenCsvProcessor
   end
 
   def self.delete_all
-    FreecenCsvEntry.delete_all
-    FreecenCsvFile.delete_all
+    FreecenCsvEntry.destroy_all
+    FreecenCsvFile.destroy_all
     SearchRecord.delete_freecen_individual_entries
   end
 
@@ -148,8 +155,22 @@ class FreecenCsvProcessor
   end
 
   def write_member_message_file(message)
-    member_message_file.puts message unless message == '' || (@error_messages_only && (message[0...5] == 'Info:' || message[0...8] == 'Warning:'))
+    member_message_file.puts message if write_member_message?(message)
   end
+
+  def write_member_message?(message)
+    return false if message == '' || (@error_messages_only && (message[0...5] == 'Info:' || message[0...8] == 'Warning:'))
+
+    return false if pob_message?(message)
+
+    true
+  end
+
+  def pob_message?(message)
+    birth = @no_pob_warnings && message.include?('Warning:') && message.include?('Birth') ? true : false
+    birth
+  end
+
 
   def write_messages_to_all(message, no_member_message)
     # avoids sending the message to the member if no_member_message is false
@@ -449,7 +470,7 @@ class CsvFile < CsvFiles
 
     PhysicalFile.remove_waiting_flag(@userid, @file_name)
     @file.update_attributes(was_locked: false, locked_by_transcriber: true) if @file.present? && @file.was_locked
-    batch.delete unless message.include?('is already on system and is locked against replacement')
+    batch.delete unless message.to_s.include?('is already on system and is locked against replacement')
   end
 
   def clean_up_supporting_information(records_processed)
@@ -737,6 +758,9 @@ class CsvRecords < CsvFile
     @project.write_messages_to_all("Error: line #{n} is empty", true) if @array_of_lines[n][0..24].all?(&:blank?)
     return [false, n] if @array_of_lines[n][0..24].all?(&:blank?)
 
+    @project.write_messages_to_all("Error: line #{n} has too many fields", true) if @array_of_lines[n].length > 50
+    return [false, n] if @array_of_lines[n].length > 50
+
     success, message, @csvfile.field_specification, @csvfile.traditional, @csvfile.header_line = line_one(@array_of_lines[n])
 
     file = FreecenCsvFile.find_by(userid: @csvfile.userid, file_name: @csvfile.file_name)
@@ -906,6 +930,7 @@ class CsvRecord < CsvRecords
     @data_record[:error_messages] = ''
     @data_record[:warning_messages] = ''
     @data_record[:info_messages] = ''
+    @data_record[:pob] = ''
     @data_record[:field_specification] = @csvfile.field_specification
     @data_record[:record_valid] = 'false' unless @csvfile.validation
   end
