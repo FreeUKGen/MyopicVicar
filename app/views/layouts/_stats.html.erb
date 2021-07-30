@@ -11,7 +11,7 @@
                 <dd class="c-subfooter-1__stats-value">
                 <%= number_with_delimiter(@site_stat[:n_searches]) %> &nbsp;searches were performed</dd>
             <!--  -->
-                 <% if @site_stat[:n_records_added] > 0 %>
+                 <% if @site_stat[:n_records_added].to_i > 0 %>
                         <dd class="c-subfooter-1__stats-value">Volunteers uploaded&nbsp;
                           <%= number_with_delimiter(@site_stat[:n_records_added]) %> &nbsp;records</dd>
                     <% else %>
