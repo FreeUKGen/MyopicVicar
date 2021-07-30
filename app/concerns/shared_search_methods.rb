@@ -6,8 +6,6 @@ module SharedSearchMethods
     'SURNAME' => ['Surname', 'GivenName', 'QuarterNumber'],
   }
 
-  
- 
   CEN_INDEXES = {
     'ln_rt_sd' => ['search_names.last_name', 'record_type', 'search_date'],
     'ln_fn_rt_sd' => ['search_names.last_name', 'search_names.first_name', 'record_type', 'search_date'],
@@ -36,6 +34,7 @@ module SharedSearchMethods
     'county_lnsdx_rt_sd_ssd' => ['chapman_code', 'search_soundex.last_name', 'record_type', 'search_date', 'secondary_search_date'],
     'county_fnsdx_lnsdx_rt_sd_ssd' => ['chapman_code', 'search_soundex.first_name', 'search_soundex.last_name', 'record_type', 'search_date', 'secondary_search_date']
   }.freeze
+
   REG_PLACE_INDEXES = {
     'place_fn_rt_sd_ssd' => ['place_id', 'search_names.first_name', 'record_type', 'search_date', 'secondary_search_date'],
     'place_ln_rt_sd_ssd' => ['place_id', 'search_names.last_name', 'record_type', 'search_date', 'secondary_search_date'],
@@ -45,14 +44,12 @@ module SharedSearchMethods
     'place_lnsdx_rt_sd_ssd' => ['place_id', 'search_soundex.last_name', 'record_type', 'search_date', 'secondary_search_date']
   }.freeze
 
-
   REG_BASIC_INDEXES = {
     'ln_fn_rt_sd_ssd' => ['search_names.last_name', 'search_names.first_name', 'record_type', 'search_date', 'secondary_search_date'],
     'lnsdx_fnsdx_rt_sd_ssd' => ['search_soundex.last_name', 'search_soundex.first_name', 'record_type', 'search_date', 'secondary_search_date'],
     'ln_rt_sd_ssd' => ['search_names.last_name', 'record_type', 'search_date', 'secondary_search_date'],
     'lnsdx_rt_sd_ssd' => ['search_soundex.last_name', 'record_type', 'search_date', 'secondary_search_date']
   }.freeze
-
 
   BMD_INDEXES = {
     'chapman_code_search_date' => ['chapman_code', 'search_date'],

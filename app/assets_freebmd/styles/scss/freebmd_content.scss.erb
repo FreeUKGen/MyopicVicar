@@ -7,6 +7,11 @@
 @import "FreeUKGenealogy-Core-Frontend/styles/scss/palm";
 
 
+.display_none {
+    @media only screen and (min-width: 1055px) {
+        display: none !important;
+    }
+}
 
 .Navbar {
     display: flex;
@@ -396,7 +401,28 @@ select[multiple]:focus option:checked {
   color: $magenta;
 }
 
+@media only screen and (min-width: 1055px) {
+    .large_screen_hide {
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 570px) {
+    .show_toggle {
+        display: none !important;
+    }
+}
+
+
 @media only screen and (max-width: 1055px) {
+
+    .hide_nav {
+        display: none;
+    }
+
+    .show_toggle {
+        display: block !important;
+    }
 
     .flex_container,
     .Navbar,
@@ -648,23 +674,18 @@ input:disabled:not([type="submit"]):hover {
 }
 
 .dhandam {
-    top: -10px;
     margin: 0px auto !important;
     text-align: center;
     padding-left: 15px;
-    left: 50%;
     margin-left: -130px !important;
-    right: 50%;
 }
 
-.kodhandam {
-    background-color: white;
-    position: absolute;
-    top: -11px;
-    width: 310px;
-    height: 60px;
-
-
+.site_nav_band {
+    background: #c84182;
+    overflow: hidden;
+    right: 0;
+    left: 0;
+    z-index: 0;
 }
 
 .icon__freebmd {
@@ -673,10 +694,11 @@ input:disabled:not([type="submit"]):hover {
     max-width: 300.144px;
     max-height: 87.153px;
     width:110%;
-    height:160%;
-    display: inline-block;
+    height:300%;
+    display: block;
     zoom: 1;
-    background-color: transparent;
+    position: relative;
+    top: -80px;
 
     @include manual-media-query(572px) {
         position: relative;

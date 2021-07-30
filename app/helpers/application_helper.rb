@@ -657,21 +657,21 @@ module ApplicationHelper
     }
   end
 
-  def html_options(alt_text:)
-    {target: '_blank', rel: 'noreferrer', alt: alt_text}
+  def html_options(alt_text: nil)
+    {target: '_blank', rel: 'noreferrer', alt: alt_text.to_s}
   end
 
   def app_icons2
     {
-      facebook: '<i class="fa fa-facebook-square fa-3x" title="facebook"></i>
+      facebook: '<i class="fab fa-facebook-square fa-3x" title="facebook"></i>
       <span class="accessibility">facebook</span>',
       news: '<i class="fa fa-rss-square fa-3x" title="news"></i>
       <span class="accessibility">FreeUKGenealogy News</span>',
-      twitter: '<i class="fa fa-twitter-square fa-3x" title="twitter"></i>
+      twitter: '<i class="fab fa-twitter-square fa-3x" title="twitter"></i>
       <span class="accessibility">twitter</span>',
-      pinterest: '<i class="fa fa-pinterest-square fa-3x" title="pinterest"></i>
+      pinterest: '<i class="fab fa-pinterest-square fa-3x" title="pinterest"></i>
       <span class="accessibility">pinterest</span>',
-      instagram: '<i class="fa fa-instagram fa-3x" title="instagram"></i>
+      instagram: '<i class="fab fa-instagram-square fa-3x" title="instagram"></i>
       <span class="accessibility">instagram</span>'
 
     }
@@ -844,7 +844,7 @@ module ApplicationHelper
                               banner.html_safe
                             end
 
-                            def banner_header
+                            def banner_header_bmd
                               banner = <<-HTML
                                 <script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
                                 <ins class="adsbygoogle adSenseBanner"
