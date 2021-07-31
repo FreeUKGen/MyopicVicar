@@ -13,6 +13,10 @@
     }
 }
 
+.capitalize {
+    text-transform:capitalize !important;
+}
+
 .Navbar {
     display: flex;
     padding-left: 16px;
@@ -413,6 +417,11 @@ select[multiple]:focus option:checked {
     }
 }
 
+@media only screen and (max-width: 570px) {
+    .Navbar__Link-toggle {
+        display: none !important;
+    }
+}
 
 @media only screen and (max-width: 1055px) {
 

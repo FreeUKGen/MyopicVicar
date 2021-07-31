@@ -171,6 +171,18 @@
       }
     </script>
     <script type="text/javascript">
+      var el = document.getElementById("trigger-offcanvas-old");
+      var switchOffCanvas = function() {
+        classie.toggle(document.body, 'offcanvas--active');
+        classie.toggle(el, 'site__header__menu-btn--active');
+      }
+      if (el.addEventListener) {
+        el.addEventListener('click', switchOffCanvas, false);
+      } else if (el.attachEvent) {
+          el.attachEvent('onclick', switchOffCanvas);
+      }
+    </script>
+    <script type="text/javascript">
       $('#source_original_form_type').ready(function(){
         if ($('#source_original_form_type :selected').val() === 'other') {
           $('#original_form_label').show()
