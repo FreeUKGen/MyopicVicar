@@ -634,7 +634,7 @@ module ApplicationHelper
       instagram: '<i class="fa fa-instagram fa-2x"></i>',
       left_arrow_pink: '<i class="fa fa-arrow-left"></i>',
       search: '<i class="fa fa-search"></i>',
-      reset: '<i class="far fa-times></i>',
+      reset: '<i class="fas fa-times></i>',
       postem: '<i class="fas fa-envelope"></i>',
       open_postem: '<i class="fas fa-envelope-open-text"></i>',
       scan_file: '<i class="fas fa-file-image"></i>',

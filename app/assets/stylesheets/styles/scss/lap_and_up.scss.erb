@@ -12,7 +12,14 @@
 @import "FreeUKGenealogy-Core-Frontend/styles/scss/lap_and_up";
 @import "FreeUKGenealogy-Core-Frontend/styles/scss/palm";
 
-
+.navbar_toggle--active {
+    .menu_bar {
+        display: none;
+    }
+    .menu_bar_cancel {
+        display: block;
+    }
+}
 /**
  * Site header
  */
@@ -377,3 +384,8 @@ th.sticky-header {
     position: relative;
     z-index: 3;
 }
+
+.menu_bar_cancel {
+    display: none;
+}
+

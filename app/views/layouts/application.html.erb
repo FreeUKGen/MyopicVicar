@@ -160,15 +160,22 @@
     <!-- example offcanvas switching code -->
     <script type="text/javascript">
       var el = document.getElementById("trigger-offcanvas");
+      var elm = document.getElementById("menu_container");
+      var cancel = document.getElementById("trigger-offcanvas-cancel");
       var switchOffCanvas = function() {
         classie.toggle(document.body, 'offcanvas--active');
-        classie.toggle(el, 'site__header__menu-btn--active');
-      }
+        classie.toggle(elm, 'navbar_toggle--active');      }
       if (el.addEventListener) {
         el.addEventListener('click', switchOffCanvas, false);
       } else if (el.attachEvent) {
           el.attachEvent('onclick', switchOffCanvas);
       }
+      if (cancel.addEventListener) {
+        cancel.addEventListener('click', switchOffCanvas, false);
+      } else if (cancel.attachEvent) {
+          cancel.attachEvent('onclick', switchOffCanvas);
+      }
+
     </script>
     <script type="text/javascript">
       var el = document.getElementById("trigger-offcanvas-old");
