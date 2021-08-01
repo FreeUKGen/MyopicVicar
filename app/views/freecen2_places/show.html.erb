@@ -47,6 +47,10 @@
             <td class="weight--semibold"><%= @place.country %></td>
           </tr>
           <tr>
+            <td>Grid Reference:</td>
+            <td class="weight--semibold"><%= @place.grid_reference %></td>
+          </tr>
+          <tr>
             <td>Latitude:</td>
             <td class="weight--semibold"> <%= @place.latitude%></td>
           </tr>
@@ -59,20 +63,16 @@
             <td class="weight--semibold"><%=locate(@place.latitude,@place.longitude)%></td>
           </tr>
           <tr>
-            <td>Notes about the place :</td>
-            <td class="weight--semibold"><%= @place.place_notes %> </td>
-          </tr>
-          <tr>
-            <td>Editor :</td>
-            <td class="weight--semibold"><%= @place.editor %> </td>
-          </tr>
-          <tr>
             <td>Source:</td>
             <td class="weight--semibold"> <%= @place.source %></td>
           </tr>
           <tr>
             <td>Official website:<small> Opens in new tab</small></td>
             <td class="weight--semibold"><%=official_source(@place.genuki_url)%></td>
+          </tr>
+          <tr>
+            <td>Notes about the place :</td>
+            <td class="weight--semibold"><%= @place.place_notes %> </td>
           </tr>
           <tr>
             <td>Data present for this place:</td>
@@ -82,49 +82,18 @@
             <td>Census years present for this place:</td>
             <td class="weight--semibold"> <%= @place.cen_data_years %></td>
           </tr>
-          <% if  @place.reason_for_change.present? ||  @place.original_place_name.present? || @place.original_grid_reference.present? %>
-            <tr>
-              <td>Original place name:</td>
-              <td class="weight--semibold"> <%= @place.original_place_name %></td>
-            </tr>
-            <tr>
-              <td>Original county:</td>
-              <td class="weight--semibold"> <%= @place.original_county %></td>
-            </tr>
-            <tr>
-              <td>Original country:</td>
-              <td class="weight--semibold"> <%= @place.original_country %></td>
-            </tr>
-            <tr>
-              <td>Original Grid Reference:</td>
-              <td class="weight--semibold"> <%= @place.original_grid_reference %></td>
-            </tr>
-            <tr>
-              <td>Original latitude:</td>
-              <td class="weight--semibold"> <%= @place.original_latitude %></td>
-            </tr>
-            <tr>
-              <td>Original longitude:</td>
-              <td class="weight--semibold"> <%= @place.original_longitude %></td>
-            </tr>
-            <tr>
-              <td>Original source:</td>
-              <td class="weight--semibold"> <%= @place.original_source %></td>
-            </tr>
-            <tr>
-              <td>Reason for changes:</td>
-              <td class="weight--semibold"> <%= @place.reason_for_change %></td>
-            </tr>
-            <tr>
-            <% end%>
-            <tr>
-              <td>Updated </td>
-              <td class="weight--semibold"> <%= @place.u_at.strftime("%d %b %Y") if @place.u_at.present? %></td>
-            </tr>
-            <tr>
-              <td>Created </td>
-              <td class="weight--semibold"> <%= @place.c_at.strftime("%d %b %Y") if @place.c_at.present? %></td>
-            </tr>
-          </table>
-        </div>
+          <tr>
+            <td>Edits </td>
+            <td class="weight--semibold"> <%= link_edits(@place) %></td>
+          </tr>
+          <tr>
+            <td>Updated </td>
+            <td class="weight--semibold"> <%= @place.u_at.strftime("%d %b %Y") if @place.u_at.present? %></td>
+          </tr>
+          <tr>
+            <td>Created </td>
+            <td class="weight--semibold"> <%= @place.c_at.strftime("%d %b %Y") if @place.c_at.present? %></td>
+          </tr>
+        </table>
       </div>
+    </div>

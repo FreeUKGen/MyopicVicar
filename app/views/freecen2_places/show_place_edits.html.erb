@@ -1,0 +1,45 @@
+<% breadcrumb :freecen2_places_edits,  @county, @place%>
+<h3 style="text-align: center"><b>Edits of <%=@place.place_name%> in <%=ChapmanCode.name_from_code(@place.chapman_code)%> (<%=@place.chapman_code%>) </b>.</h3>
+<%= render 'flash_notice' %>
+<div class="grid">
+  <section class="island  ">
+    <div class='scrollable'>
+      <table  class="table--bordered table--data table--striped " >
+        <thead >
+          <tr>
+            <th class='sticky-header '>Updated</th>
+            <th class='sticky-header '>Editor</th>
+            <th class='sticky-header '>Reason</th>
+            <th class='sticky-header '>Pre Name</th>
+            <th class='sticky-header '>Pre Cty</th>
+            <th class='sticky-header '>Pre Grid</th>
+            <th class='sticky-header '>Pre Lat</th>
+            <th class='sticky-header '>Pre Long</th>
+            <th class='sticky-header '>Pre Source</th>
+            <th class='sticky-header '>Pre Website</th>
+            <th class='sticky-header '>Pre Notes</th>
+          </tr>
+        </thead>
+        <tbody  >
+          <% @edits.each do |edit| %>
+            <tr id="<%= edit.id %>">
+              <td > <%= edit.created.strftime("%d %b %Y") if  edit.created.present?%></td>
+              <td > <%= edit.editor%></td>
+              <td > <%= edit.reason%></td>
+              <td > <%= edit.previous_place_name%></td>
+              <td > <%= edit.previous_county%></td>
+              <td > <%= edit.previous_grid_reference%></td>
+              <td > <%= edit.previous_latitude%></td>
+              <td > <%= edit.previous_longitude%></td>
+              <td > <%= edit.previous_source%></td>
+              <td > <%= edit.previous_website%></td>
+              <td > <%= edit.previous_notes%></td>
+            </tr>
+          <% end%>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+<br>
+<br>

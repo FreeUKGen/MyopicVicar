@@ -141,6 +141,14 @@ namespace :foo do
     puts "Task complete."
   end
 
+  task :create_freecen2_place_edit, [:limit] => [:environment] do |t, args|
+    # This reads the state of the Place record and creates the edit record if a change is detected
+    require 'create_freecen2_place_edit'
+    puts "Creating Freecen2 Place Edit with limit #{args.limit}"
+    CreateFreecen2PlaceEdit.process(args.limit)
+    puts "Task complete."
+  end
+
   task :update_freecen2_place_from_csv_file, [:file, :limit] => [:environment] do |t, args|
     # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
     require 'update_freecen2_place_from_csv_file'

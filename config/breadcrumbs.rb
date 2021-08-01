@@ -2040,7 +2040,7 @@ crumb :freecen2_places do |county, place|
   when place.blank?
     link 'Freecen2 Places', freecen2_places_path
   when place.present?
-    link 'Freecen2 Places', freecen2_places_path(:anchor => place.id)
+    link 'Freecen2 Places', freecen2_places_path(anchor: place.id)
   end
   if session[:character].present?
     parent :place_range_options, county, session[:active]
@@ -2083,6 +2083,12 @@ crumb :show_freecen2_place do |county, place|
     parent :search_names
   end
 end
+
+crumb :freecen2_places_edits do |county, place|
+  link 'Freecen2 Place Edits', show_place_edits_freecen2_place_path(place)
+  parent :show_freecen2_place, county, place
+end
+
 crumb :edit_freecen2_place do |county, place|
   link 'Edit Freecen2 Place Information', edit_freecen2_place_path(place)
   parent :show_freecen2_place, county, place
