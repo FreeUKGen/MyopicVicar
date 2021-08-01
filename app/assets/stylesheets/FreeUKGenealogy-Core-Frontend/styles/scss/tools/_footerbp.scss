@@ -1,0 +1,9 @@
+// Mixin for retrieving breakpoints in map
+@mixin forLargeScreens(
+  $size: unquote($default-breakpoint),
+  $breakpoints: $breakpoints
+) {
+  @media (min-width: map-get($breakpoints, $size)) {
+    @content;
+  }
+}
