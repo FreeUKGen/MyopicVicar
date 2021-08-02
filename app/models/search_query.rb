@@ -97,6 +97,7 @@ class SearchQuery
   UCF = /[\[\{}_\*\?]/
   DOB_START_QUARTER = 530
   SPOUSE_SURNAME_START_QUARTER = 301
+  EVENT_YEAR_ONLY = 589
 
   field :first_name, type: String # , :required => false
   field :last_name, type: String # , :required => false
@@ -2013,7 +2014,8 @@ class SearchQuery
     CSV.generate(headers: true) do |csv|
       csv << fields
       searched_records.each do |record|
-        quarter = QuarterDetails.quarter_human(record[:QuarterNumber])
+        qn = record[:QuarterNumber]
+        quarter = qn >= EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(qn) : QuarterDetails.quarter_human(qn)
         record_type = RecordType::display_name(["#{record[:RecordTypeID]}"])
         record["RecordType"] = record_type
         record["Quarter"] = quarter
@@ -2022,7 +2024,6 @@ class SearchQuery
     end
   end
 
-  
   def searched_records
     search_result.records.values
   end

@@ -15,6 +15,7 @@ class BestGuess < FreebmdDbBase
   ENTRY_REFERENCE = 512
   DISTRICT_MISSPELT = 2
   DISTRICT_ALIAS = 1
+  EVENT_YEAR_ONLY = 589
 
   def friendly_url
     particles = []
@@ -345,5 +346,10 @@ class BestGuess < FreebmdDbBase
     district_name = get_info_bookmark unless get_info_bookmark.match?(/aaaa|dash|upon|trnc|sfx[0-9]/)
     district_name = district_name.gsub(/ /,"%20")
     district_name
+  end
+
+  def event_quarter
+    quarter = self[:QuarterNumber]
+    quarter >= EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(quarter) : QuarterDetails.quarter_human(quarter)
   end
 end

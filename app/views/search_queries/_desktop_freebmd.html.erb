@@ -41,7 +41,7 @@
                     </dt>
                   
                   <dt>
-                    <%= "#{QuarterDetails.quarters.key((search_record[:QuarterNumber]-1)%4 + 1).upcase} #{(search_record[:QuarterNumber]-1)/4 + 1837}"%>
+                    <%= search_record.event_quarter %>
                   </dt>
                   <dt>
                     <% if print_friendly %>
