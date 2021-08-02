@@ -133,7 +133,7 @@
 
                 <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole spousefirstnamess display_none flush--bottom" id="spouse_firstnames_div">
                     <div class='labels'>
-                        <%= label_tag 'spouse_first_name', "Spouse first name(s)".html_safe, class: "ttip", tabindex: "0" do %>
+                        <%= label_tag 'spouse_first_name', "Spouse first name(s)".html_safe, class: "ttip" do %>
                             <%= "Spouse first name(s)".html_safe %>
                         <% end %>
                     </div>
@@ -209,7 +209,7 @@
 
                 <li class="grid__item desk-wide-one-sixth desk-one-quarter lap-one-half palm-one-whole volumes">
                     <div class='labels'>
-                        <%= label_tag 'volume', "Volume".html_safe, class: "ttip", tabindex: "0" do %>
+                        <%= label_tag 'volume', "Volume".html_safe, class: "ttip" do %>
                             <%= "Volume".html_safe %>
                             <span class="ttip__text"><%#= info_tag_text[:volume].html_safe %></span>
                         <% end %>
@@ -219,7 +219,7 @@
 
                 <li class="grid__item desk-wide-one-sixth desk-one-quarter lap-one-half palm-one-whole pages">
                     <div class='labels'>
-                        <%= label_tag 'page', "Page".html_safe, class: "ttip", tabindex: "0" do %>
+                        <%= label_tag 'page', "Page".html_safe, class: "ttip" do %>
                             <%= "Page".html_safe %>
                             <span class="ttip__text"><%#= info_tag_text[:page]%></span>
                         <% end %>
@@ -265,12 +265,12 @@
           </div>
           <ol class="grid">
             <li class="grid__item one-third lap-one-half palm-one-whole">
-                <%= label_tag "wildcard_field",'Choose the Name field ' , class: "ttip", tabindex: "0" %>
+                <%= label_tag "wildcard_field",'Choose the Name field ' , class: "ttip" %>
                 <%#= f.select :wildcard_field, ["First Name", "Second Name", "Surname"], {include_hidden: false}, {multiple: true, tabindex: "0"} %>
                 <%= select_tag( 'search_query[wildcard_field]', options_for_select(Constant::NAME, set_value(@search_query.wildcard_field)), prompt: "Wildcard", class: 'text-input', tabindex: "0", id: "wildcard_field") %>
             </li>
             <li class="grid__item one-third lap-one-half palm-one-whole">
-                <%= label_tag "wildcard_options_dropdown",'Select one of the following' , class: "ttip", tabindex: "0" %>
+                <%= label_tag "wildcard_options_dropdown",'Select one of the following' , class: "ttip" %>
                 <%= select_tag('search_query[wildcard_option]', options_for_select([], set_value(@search_query.wildcard_option)), prompt: "Wildcard Options", class: 'text-input', tabindex: "0", multiple: false, id: "wildcard_options_dropdown") %>
             </li>
           </ol>
