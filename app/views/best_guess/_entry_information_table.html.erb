@@ -134,6 +134,19 @@
       <% end %>
     <% end %>
     <% if search %>
+      <% registered = record.event_registration %>
+      <% if registered.present?%>
+        <tr>
+          <th>
+            Registered
+          </th>
+          <td >
+            <%= registered %>
+          </td>
+        </tr>
+      <% end %>
+    <% end %>
+    <% if search %>
       <tr>
         <th>
           More Information

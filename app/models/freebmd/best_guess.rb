@@ -352,4 +352,9 @@ class BestGuess < FreebmdDbBase
     quarter = self[:QuarterNumber]
     quarter >= EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(quarter) : QuarterDetails.quarter_human(quarter)
   end
+
+  def event_registration
+    submissions = Submission.find_by(AccessionNumber: record_accessions, SequenceNumber: record_sequence_number)
+    submissions.Registered if submissions.present?
+  end
 end
