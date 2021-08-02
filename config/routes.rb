@@ -509,6 +509,7 @@ MyopicVicar::Application.routes.draw do
   get 'search_queries/districts_of_selected_counties' => 'search_queries#districts_of_selected_counties'
   get 'search_queries/wildcard_options_dropdown' => 'search_queries#wildcard_options_dropdown'
   post 'search_queries/:id/analyze(.:format)', :to => 'search_queries#analyze', :as => :analyze_search_query
+  get 'search_queries/:id/download_as_csv' => 'search_queries#download_as_csv', as: :search_results_download_as_csv
   resources :search_queries do
     #get :autocomplete_BestGuess_Surname, :on => :collection
     #get :autocomplete_BestGuess_GivenName, :on => :collection

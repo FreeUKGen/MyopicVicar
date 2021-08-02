@@ -307,6 +307,13 @@ class SearchQueriesController < ApplicationController
     @middle_name_option = middle_name_option
   end
 
+  def download_as_csv
+    search_id = params[:id]
+    @search_query = SearchQuery.find_by(id: search_id)
+    send_data @search_query.download_csv, filename: "search_results-#{Date.today}.csv"
+    
+  end
+
 
   private
 

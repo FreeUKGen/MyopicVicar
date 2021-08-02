@@ -75,10 +75,11 @@
                 </div>
                 <div class="seven-tenths palm-one-whole">
                     <div class="grid__item one-third lap-one-third palm-one-half float--right push--bottom">
-                          <div id="myDropdown" class="dropdown-content">
-                            <%= link_to "About this Query", about_search_query_path(@search_query, :page_number => @page_number) %>
-                            <%= link_to "Printable format", show_print_version_search_query_path %>
-                          <a href="#home">Download as CSV</a>
+                      <div id="myDropdown" class="dropdown-content">
+                        <%= link_to "About this Query", about_search_query_path(@search_query, :page_number => @page_number) %>
+                        <%= link_to "Printable format", show_print_version_search_query_path %>
+                        <%#search_results_download_as_csv%>
+                        <%= link_to "Download as CSV", search_results_download_as_csv_path(@search_query) %>
                       </div>
                     </div>
                 </div>

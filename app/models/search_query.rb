@@ -2007,6 +2007,26 @@ class SearchQuery
     district_names_array.join(" or ") if district_names_array.present?
   end
 
+  def download_csv
+    attributes = %w{ GivenName Surname RecordType Quarter District }
+    fields = ["Given Name", "Surname", "Record Type", "Quarter", "District" ]
+    CSV.generate(headers: true) do |csv|
+      csv << fields
+      searched_records.each do |record|
+        quarter = QuarterDetails.quarter_human(record[:QuarterNumber])
+        record_type = RecordType::display_name(["#{record[:RecordTypeID]}"])
+        record["RecordType"] = record_type
+        record["Quarter"] = quarter
+        csv << attributes.map{ |attr| record[attr] }
+      end
+    end
+  end
+
+  
+  def searched_records
+    search_result.records.values
+  end
+
   private
 
   def selected_sort_fields
