@@ -38,14 +38,16 @@ task fc1_fc2_piece_compatibility_report:  :environment do
   p "*** Started FC1 FC2 Piece Compatibility Report"
   total_fc1_pieces = 0
   total_fully_compatible = 0
+  total_district_place_compatible = 0
   total_probably_ok = 0
   total_fc2_missing = 0
   fc1_piece_cnt = 0
   fc2_missing_cnt = 0
   fully_compatible = 0
+  district_place_compatible = 0
   probably_ok = 0
-  detail_file.puts  "Country,FC1 Chapman Code,Year,FC1 Piece Number,Online,FC1 Place Name,FC2 Chapman Code,FC2 Piece Number,FC2 Place Name,Message,Review Required,Review comments"
-  summary_file.puts  "Country,FC1 Chapman Code,FC1 Piece Records Processed,FC1 Full Match Place Name,FC1 Probable Match Place Name,Percentage match,FC2 Piece Records Missing"
+  detail_file.puts  "Country,FC1 Chapman Code,Year,FC1 Piece Number,Online,FC1 Place Name,FC2 Chapman Code,FC2 Piece Number,FC2 Place Name,FC2 District Place Name,Message,Review Required,Review comments"
+  summary_file.puts  "Country,FC1 Chapman Code,FC1 Piece Records Processed,FC1 Full Match Place Name,FC1 Full Match District Place Name,FC1 Probable Match Place Name,Percentage match,FC2 Piece Records Missing,Needs Review"
   this_county = ''
   this_country = ''
 
@@ -58,11 +60,13 @@ task fc1_fc2_piece_compatibility_report:  :environment do
         this_country = fc1_piece.place_country
       else
         if this_county != fc1_piece.chapman_code
-          percentage_match = ((fully_compatible + probably_ok) * 100 / fc1_piece_cnt).round(1).to_s
-          summary_file.puts  "#{this_country},#{this_county},#{fc1_piece_cnt},#{fully_compatible}, #{probably_ok},#{percentage_match},#{fc2_missing_cnt}"
+          percentage_match = ((fully_compatible + probably_ok + district_place_compatible) * 100 / fc1_piece_cnt).round(1).to_s
+          needs_review_cnt = fc1_piece_cnt - (fully_compatible + district_place_compatible)
+          summary_file.puts  "#{this_country},#{this_county},#{fc1_piece_cnt},#{fully_compatible},#{district_place_compatible},#{probably_ok},#{percentage_match},#{fc2_missing_cnt},#{needs_review_cnt}"
           fc1_piece_cnt = 0
           fc2_missing_cnt = 0
           fully_compatible = 0
+          district_place_compatible = 0
           probably_ok = 0
           p "Processing - #{fc1_piece.chapman_code}"
           this_county = fc1_piece.chapman_code
@@ -112,6 +116,15 @@ task fc1_fc2_piece_compatibility_report:  :environment do
           fc2_p_no = fc2_piece.number
           fc2_chap = fc2_piece.chapman_code
           fc2_place = Freecen2Place.find_by(id: fc2_piece.freecen2_place_id)
+          fc2_district = Freecen2District.find_by(id: fc2_piece.freecen2_district_id)
+          fc2_district_place = Freecen2Place.find_by(id: fc2_district.freecen2_place_id)
+
+          if fc2_district_place.present?
+            fc2_district_place_name = fc2_district_place.place_name
+          else
+            fc2_district_place_name = ""
+          end
+
           if fc2_place.present?
             fc2_place_name = fc2_place.place_name
             if fc1_place_name.downcase == fc2_place_name.downcase
@@ -140,9 +153,14 @@ task fc1_fc2_piece_compatibility_report:  :environment do
                   probably_ok  += 1
                   total_probably_ok += 1
                 else
-                  fc2_district = Freecen2District.find_by(id: fc2_piece.freecen2_district_id)
-                  fc2_district_place = Freecen2Place.find_by(id: fc2_district.freecen2_place_id)
-                  message += "Place name mismatch - (NOTE: FC2 District = #{fc2_district.name} - FC2 District Place = #{fc2_district_place.place_name}) +"
+                  if fc1_place_name.downcase == fc2_district_place_name.downcase
+                    message += "Place name matches FC2 District Place name+"
+                    review_reqd = 'N'
+                    district_place_compatible  += 1
+                    total_district_place_compatible += 1
+                  else
+                    message += "Place name mismatch - (NOTE: FC2 District = #{fc2_district.name} - FC2 District Place = #{fc2_district_place.place_name})+"
+                  end
                 end
               end
             end
@@ -152,13 +170,16 @@ task fc1_fc2_piece_compatibility_report:  :environment do
           end
         end
       end
-      detail_file.puts  "#{fc1_piece.place_country},#{fc1_piece.chapman_code},#{fc1_piece.year},#{fc1_piece.piece_number},#{fc1_status},#{fc1_place_name},#{fc2_chap},#{fc2_p_no},#{fc2_place_name},#{message[0..-2]},#{review_reqd}" unless review_reqd == 'N'
+      detail_file.puts  "#{fc1_piece.place_country},#{fc1_piece.chapman_code},#{fc1_piece.year},#{fc1_piece.piece_number},#{fc1_status},#{fc1_place_name},#{fc2_chap},#{fc2_p_no},#{fc2_place_name},#{fc2_district_place_name},#{message[0..-2]},#{review_reqd}"
+      # unless review_reqd == 'N'
     end
   end
-  percentage_match = ((fully_compatible + probably_ok) * 100 / fc1_piece_cnt).round(1).to_s
-  summary_file.puts  "#{this_country},#{this_county},#{fc1_piece_cnt},#{fully_compatible}, #{probably_ok},#{percentage_match},#{fc2_missing_cnt}"
-  percentage_match = ((total_fully_compatible + total_probably_ok) * 100 / total_fc1_pieces).round(1).to_s
-  summary_file.puts  "ALL,ALL,#{total_fc1_pieces},#{total_fully_compatible}, #{total_probably_ok},#{percentage_match},#{total_fc2_missing}"
+  percentage_match = ((fully_compatible + probably_ok + district_place_compatible) * 100 / fc1_piece_cnt).round(1).to_s
+  needs_review_cnt = fc1_piece_cnt - (fully_compatible + district_place_compatible)
+  summary_file.puts  "#{this_country},#{this_county},#{fc1_piece_cnt},#{fully_compatible},#{district_place_compatible},#{probably_ok},#{percentage_match},#{fc2_missing_cnt},#{needs_review_cnt}"
+  percentage_match = ((total_fully_compatible + total_district_place_compatible + total_probably_ok) * 100 / total_fc1_pieces).round(1).to_s
+  needs_review_cnt = total_fc1_pieces- (total_fully_compatible + total_district_place_compatible)
+  summary_file.puts  "ALL,ALL,#{total_fc1_pieces},#{total_fully_compatible},#{total_district_place_compatible},#{total_probably_ok},#{percentage_match},#{total_fc2_missing},#{needs_review_cnt}"
   p "*** Total FC1 Pieces processed = #{total_fc1_pieces}"
   p "*** Finished FC1 FC2 Piece Compatibility Report- see log/fc1_fc2_piece_compatibility_report.csv (and fc1_fc2_piece_compatibility_summary.csv) for output"
 end
