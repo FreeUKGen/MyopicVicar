@@ -13,8 +13,12 @@
     <%= f.input :locked_by_transcriber, :input_html => { :disabled => true, :size => 3} %>
     <%= f.input :locked_by_coordinator, :input_html => {:disabled => true, :size => 3} %>
   <% end %>
-  <% if %w[county_coordinator system_administrator country_coordinator].include?(session[:role]) %>
+  <% if %w[master_county_coordinator county_coordinator system_administrator country_coordinator data_manager].include?(session[:role]) %>
     <%= f.input :incorporation_lock, :label => 'Incorporation lock ',:include_blank => false,
+          :collection => [ true, false],:input_html => {:class => ' simple_form_bgcolour medium_selection_field_width',  :size => 3} %>
+  <% end %>
+  <% if %w[master_county_coordinator county_coordinator system_administrator country_coordinator data_manager].include?(session[:role]) %>
+    <%= f.input :incorporating_lock, :label => 'Incorporating lock ',:include_blank => false,
           :collection => [ true, false],:input_html => {:class => ' simple_form_bgcolour medium_selection_field_width',  :size => 3} %>
   <% end %>
   <div  style="text-align: center">
