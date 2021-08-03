@@ -73,6 +73,7 @@ class FreecenCsvFile
   field :total_dwellings, type: Integer
   field :total_individuals, type: Integer
   field :completes_piece, type: Boolean, default: false
+  field :incorporating_lock, type: Boolean, default: false
 
 
   before_save :add_lower_case_userid_to_file, :add_country_to_file
