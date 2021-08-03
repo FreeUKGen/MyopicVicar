@@ -2,9 +2,8 @@ module SearchRecordsHelper
 
   def dwelling_offset_message(offset)
     msg = ''
-    if 0 == offset
-      return msg
-    end
+    return msg if offset.blank? || offset.to_i == 0
+
     bef_aft = 'after'
     if offset < 0
       bef_aft = 'before'
