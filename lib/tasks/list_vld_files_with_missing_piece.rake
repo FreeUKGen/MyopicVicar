@@ -11,7 +11,7 @@ task :list_vld_files_with_missing_piece => :environment do
   message_file.puts  "Chapman Code,County Coordinator,Email,VLD File Name,Year,Piece Number"
   Freecen1VldFile.all.order_by(dir_name: 1, file_name: 1).each do |file|
     vld_files_cnt += 1
-    piece = FreecenPiece.where(chapman_code: file.dir_name, piece_number: file.piece, year: file.full_year).first
+    piece = FreecenPiece.where(chapman_code: file.dir_name, piece_number: file.piece, year: file.full_year, status: 'Online').first
     if piece.blank?
       vld_piece_missing_cnt += 1
       cnty = County.where(:chapman_code => file.dir_name)
