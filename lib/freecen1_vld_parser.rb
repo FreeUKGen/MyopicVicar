@@ -47,6 +47,7 @@ module Freecen
         Freecen1VldFile.delete_freecen1_vld_entries(dir_name, file_name)
         Freecen1VldFile.delete_dwellings(dir_name, file_name)
         Freecen1VldFile.delete_individuals(dir_name, file_name)
+        Freecen1VldFile.delete_file_errors(dir_name, file_name)
       end
       if file.present? && file.freecen_piece.present?
         piece = file.freecen_piece

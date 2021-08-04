@@ -160,6 +160,12 @@ class Freecen1VldFile
       end
     end
 
+    def delete_file_errors(dir_name, file_name)
+      Freecen1VldFile.where(dir_name: dir_name, file_name: file_name).each do |file|
+        file.update_atttributes(file_errors: nil)
+      end
+    end
+
     def save_to_attic(dir_name, file_name)
       attic_dir = File.join(File.join(Rails.application.config.vld_file_locations, dir_name), '.attic')
       FileUtils.mkdir_p(attic_dir)
