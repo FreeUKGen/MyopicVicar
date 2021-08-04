@@ -162,7 +162,7 @@ class Freecen1VldFile
 
     def delete_file_errors(dir_name, file_name)
       Freecen1VldFile.where(dir_name: dir_name, file_name: file_name).each do |file|
-        file.update_atttributes(file_errors: nil)
+        file.update_attributes(file_errors: nil)
       end
     end
 
