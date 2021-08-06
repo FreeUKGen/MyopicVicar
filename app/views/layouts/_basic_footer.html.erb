@@ -1,40 +1,63 @@
-<div class="island  island--dark  flush--bottom  milli  text--white">
-  <div class="container text--center">
-    <div class="grid">
-      <div class="grid__item  one-third  palm-one-whole text--left">
-        <ul class="nav  nav--stacked  lap-and-up-flush--bottom">
-          <li><%= link_to "Cookie Policy", "/cms/about/cookie-policy" %></li>
-          <li><a href="https://www.freeukgenealogy.org.uk/files/Documents/Privacy-Notice.pdf" target="_blank">Privacy Notice<span class="accessibility">Opens in new window</span></a></li>
-          <li> <%= link_to "Terms and Conditions", "/cms/terms-and-conditions" %></li>
-        </ul>
-      </div>
-      <div class="grid__item  one-third  palm-one-whole  text--left">
-        <ul class="nav  nav--stacked   lap-and-up-flush--bottom">
-          <li><a href="/contacts/new">Contact Us</a></li>
-          <li><a href="https://www.freeukgenealogy.org.uk/help-us-keep-history-free" target="_blank">Make a donation to cover our operating costs<span class="accessibility">Opens in new window</span></a></li>
-          <li> <a href="https://www.freeukgenealogy.org.uk/news/" target="_blank">News about FreeUKGenealogy<span class="accessibility">Opens in new window</span></a></li>
-        </ul>
-      </div>
-      <div class="grid__item  one-third  palm-one-whole">
-        <ul class="nav  nav--stacked   lap-and-up-flush--bottom">
-          <li> Follow us:
-            <p class="accessibility">All open in new windows</p>
-          </li>
-          <li class='social_links'>
-            <%= link_to app_icons[:news].html_safe, social_links[:news], html_options %>
-            <%= link_to app_icons[:facebook].html_safe, social_links[:facebook], html_options %>
-            <%= link_to app_icons[:twitter].html_safe, social_links[:twitter], html_options %>
-          </li>
-          <li class='social_links'>
-            <%= link_to app_icons[:instagram].html_safe, social_links[:instagram], html_options %>
-            <%= link_to app_icons[:pinterest].html_safe, social_links[:pinterest], html_options %>
-            <%= link_to app_icons[:github].html_safe, social_links[:github], html_options %>
-          </li>
-        </ul>
-      </div>
+<!-- <div class="island  island--dark  flush--bottom  milli  text--white"> -->
+<div class="c-subfooter-1 island--dark">
+    <div class="c-subfooter-1__wrap">
+        <!-- <div class="container text--center bfoot-container bfoot-layout"> -->
+        <!-- <div class="grid"> -->
+        <!-- <div class="info-1 grid__item  one-third  palm-one-whole text--left"> -->
+        <!-- <ul class="nav  nav--stacked  lap-and-up-flush--bottom"> -->
+        <div class="c-subfooter-1__nav" role="navigation">
+            <p class="c-subfooter-1__nav-heading">Useful Links</p>
+            <ul class="c-subfooter-1__nav-list">
+                <li class="c-subfooter-1__nav-item">
+                    <%= link_to helpful_anchors[:cookiePolicy].html_safe, helpful_links[:cookiePolicy], html_options2 %>
+                </li>
+                <li class="c-subfooter-1__nav-item">
+                    <%= link_to helpful_anchors[:privacyNotice].html_safe, helpful_links[:privacyNotice], html_options %>
+                </li>
+                <li class="c-subfooter-1__nav-item">
+                    <%= link_to helpful_anchors[:termAndConditions].html_safe, helpful_links[:termAndConditions], html_options2 %>
+                </li>
+                <li class="c-subfooter-1__nav-item">
+                    <%= link_to helpful_anchors[:contactUs].html_safe, helpful_links[:contactUs], html_options2 %>
+                </li>
+                <li class="c-subfooter-1__nav-item">
+                    <%= link_to helpful_anchors[:donation].html_safe, helpful_links[:donation ], html_options %>
+                </li>
+                <li class="c-subfooter-1__nav-item">
+                    <%= link_to helpful_anchors[:fugNews].html_safe, helpful_links[:fugNews ], html_options %>
+                </li>
+            </ul>
+        </div>
+        <!-- <div class="grid__item  one-third  palm-one-whole"> -->
+        <nav class="c-subfooter-1__fug" role="navigation">
+            <p class="c-subfooter-1__fug-heading">A project by</p>
+            <%= link_to helpful_anchors[:freeukgenIcon].html_safe, helpful_links[:freeukgen], html_options_freeukgen_icon %>
+        </nav>
+        <!-- <div class="follow-us grid__item  one-third  palm-one-whole"> -->
+        <nav class="c-subfooter-1__social-nav" role="navigation">
+            <!-- <ul class="nav  nav--stacked   lap-and-up-flush--bottom"> -->
+            <p class="c-subfooter-1__social-nav-heading">Follow us:<span class="accessibility">All open in new windows</span></p>
+            <!-- <section class='social_links'> -->
+            <ul class="c-subfooter-1__social-nav-list nav">
+                <li class="c-subfooter-1__social-nav-item">
+                <%= link_to app_icons2[:news].html_safe, social_links[:news], html_options %>
+                </li>
+                <li class="c-subfooter-1__social-nav-item">
+                <%= link_to app_icons2[:facebook].html_safe, social_links[:facebook], html_options %>
+                </li>
+                <li class="c-subfooter-1__social-nav-item">
+                <%= link_to app_icons2[:twitter].html_safe, social_links[:twitter], html_options %>
+                </li>
+                <li class="c-subfooter-1__social-nav-item">
+                <%= link_to app_icons2[:instagram].html_safe, social_links[:instagram], html_options %>
+                </li>
+                <li class="c-subfooter-1__social-nav-item">
+                <%= link_to app_icons2[:pinterest].html_safe, social_links[:pinterest], html_options %>
+                </li>
+            </ul>
+        </nav>
+        <%= render 'layouts/stats' %>
+        <%= render 'layouts/copyright' %>
+
     </div>
-    <%= render "layouts/stats" %>
-    <br>
-    <%= render 'layouts/copyright' %>
-  </div>
 </div>

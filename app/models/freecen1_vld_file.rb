@@ -27,8 +27,10 @@ class Freecen1VldFile
   field :uploaded_file, type: String
   field :uploaded_file_name, type: String
   field :uploaded_file_location, type: String
+  field :file_name_lower_case, type: String
 
   before_validation :remove_whitespace
+  before_save :add_lower_case
   mount_uploader :uploaded_file, VldfileUploader
 
   has_many :freecen1_vld_entries
@@ -158,6 +160,12 @@ class Freecen1VldFile
       end
     end
 
+    def delete_file_errors(dir_name, file_name)
+      Freecen1VldFile.where(dir_name: dir_name, file_name: file_name).each do |file|
+        file.update_attributes(file_errors: nil)
+      end
+    end
+
     def save_to_attic(dir_name, file_name)
       attic_dir = File.join(File.join(Rails.application.config.vld_file_locations, dir_name), '.attic')
       FileUtils.mkdir_p(attic_dir)
@@ -171,6 +179,10 @@ class Freecen1VldFile
     end
   end
   # ######################################################################### instance methods
+
+  def add_lower_case
+    self[:file_name_lower_case] = self[:file_name].downcase if self[:file_name].present?
+  end
 
   def chapman_code
     dir_name.sub(/-.*/, '')

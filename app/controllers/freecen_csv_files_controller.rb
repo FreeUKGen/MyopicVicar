@@ -277,11 +277,15 @@ class FreecenCsvFilesController < ApplicationController
       message = 'The file was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
+
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'Incorporation already running') && return if  @freecen_csv_file.incorporating_lock
+
     @freecen_csv_file.update_attributes(completes_piece: params[:completes_piece])
     result, message = @freecen_csv_file.can_we_incorporate?
 
     redirect_back(fallback_location: { action: 'show' }, notice: message) && return unless result
 
+    @freecen_csv_file.update_attributes(incorporating_lock: true)
     get_user_info_from_userid
     logger.warn("FREECEN:CSV_PROCESSING: Starting incorporation rake task for #{@freecen_csv_file.file_name}")
     pid1 =  spawn("rake freecen_csv_file_incorporate[#{@freecen_csv_file.id}]")

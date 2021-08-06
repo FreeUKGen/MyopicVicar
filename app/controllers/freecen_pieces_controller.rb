@@ -35,7 +35,7 @@ class FreecenPiecesController < ApplicationController
     get_user_info_from_userid
     @chapman_code = params[:chapman_code]
     @year = params[:year]
-    @freecen_pieces = FreecenPiece.chapman_code(@chapman_code).year(@year).order_by(name: 1)
+    @freecen_pieces = FreecenPiece.chapman_code(@chapman_code).year(@year).order_by(piece_number: 1)
   end
 
   def destroy
@@ -44,8 +44,8 @@ class FreecenPiecesController < ApplicationController
     get_user_info_from_userid
     @freecen_piece = FreecenPiece.where('_id' => params[:id]).first
     if @freecen_piece.present?
-      @freecen_piece.delete
-      flash[:notice] = 'Piece destroyed'
+      success = @freecen_piece.delete
+      flash[:notice] = success ? 'Piece destroyed' : 'Piece destroy failed (has associated VLD file)'
     else
       flash[:notice] = 'Piece does not exist'
     end

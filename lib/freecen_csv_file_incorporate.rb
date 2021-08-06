@@ -12,6 +12,8 @@ class FreecenCsvFileIncorporate
     if result
       success, messagea = incorporate_records(freecen_file)
       message += messagea
+    else
+      UserMailer.incorporation_report_failure(county.county_coordinator, message, file_name, owner).deliver_now
     end
     if success
       UserMailer.incorporation_report(county.county_coordinator, message, file_name, owner).deliver_now
@@ -46,7 +48,7 @@ class FreecenCsvFileIncorporate
       puts "Success; #{number} records in #{actual} seconds or #{per} seconds a record"
       message = "success; #{number} records in #{actual} or #{per} seconds a record"
       successa = freecen_file.update_attributes(incorporated: true, enumeration_districts: enumeration_districts, incorporation_lock: true,
-                                                incorporated_date: DateTime.now.in_time_zone('London'))
+                                                incorporated_date: DateTime.now.in_time_zone('London'), incorporating_lock: false)
       # the translate individual adds the civil parishes
 
       successb = true
@@ -69,6 +71,8 @@ class FreecenCsvFileIncorporate
       FreecenCsvEntry.collection.update_many({ freecen_csv_file_id: @freecen_file_id }, '$set' => { search_record_id: nil })
       success = false
       message = "#{msg}, #{msg.backtrace.inspect}"
+      freecen_file.update_attributes(incorporating_lock: false)
+      p freecen_file
     end
     [success, message]
   end
