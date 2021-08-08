@@ -1224,7 +1224,7 @@ class SearchQuery
     #firstname_array = first_name.split if first_name.present?
     #lastname_array = last_name.split if last_name.present?
     records = records.where({ GivenName: first_name.split }).or(records.where(GivenName: first_name)) if wildcard_option == "Any"
-    records = records.where({ GivenName: first_name.split }).or(records.where({ OtherNames: first_name.split })).or(records.where(GivenName: first_name)) if wildcard_option == "In First Name or Middle Name"
+    records = records.where({ GivenName: first_name.split }).or(records.where({ OtherNames: first_name.split })).or(records.where(GivenName: first_name)).or(records.where(OtherNames: first_name)) if wildcard_option == "In First Name or Middle Name"
     records = records.where({ Surname: last_name.split }).or(records.where({ OtherNames: last_name.split })) if wildcard_option == "In Middle Name or Surname"
     records = marriage_surname_filteration(records) if self.spouses_mother_surname.present? and self.bmd_record_type == ['3']
     records = spouse_given_name_filter(records) if self.spouse_first_name.present?
