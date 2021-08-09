@@ -1219,7 +1219,6 @@ class SearchQuery
     records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)#.joins(spouse_join_condition).where(bmd_marriage_params)
     #raise records.where(wildcard_search_conditions).to_sql.inspect
     records = records.where(wildcard_search_conditions) #unless self.first_name_exact_match
-    #raise records.where(search_conditions).to_sql.inspect
     records = records.where(search_conditions)
     #firstname_array = first_name.split if first_name.present?
     #lastname_array = last_name.split if last_name.present?
@@ -1517,7 +1516,6 @@ class SearchQuery
   end
 
   def search_conditions
-    raise first_name_filteration.inspect
     [sanitize_keys(first_name_filteration), sanitize_keys(name_wildcard_query), sanitize_values(first_name_filteration), sanitize_values(name_wildcard_query)].flatten.compact
     #[first_name_filteration, name_field_wildcard_search, mother_surname_wildcard_query].compact.to_sentence
   end
@@ -1967,11 +1965,15 @@ class SearchQuery
   end
 
   def firstname_wildcard_query?
-    wildcard_field.present? && wildcard_option.present?
+    wildcard_field.present? && wildcard_option.present? && !check_wildcard_option_for_firstname && !check_wildcard_field_for_firstname
   end
 
-  def check_wildcard_option
-    firstname_wildcard_query?
+  def check_wildcard_field_for_firstname
+    wildcard_field == "Last Name" || wildcard_field == "Mothers Surname"
+  end
+
+  def check_wildcard_option_for_firstname
+    wildcard_option == "In Middle Name or Surname"
   end
 
   def wildcard_search?
