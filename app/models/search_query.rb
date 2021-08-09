@@ -1226,6 +1226,7 @@ class SearchQuery
     records = records.where({ GivenName: first_name.split }).or(records.where(GivenName: first_name)) if wildcard_option == "Any"
     records = records.where({ GivenName: first_name.split }).or(records.where({ OtherNames: first_name.split })).or(records.where(GivenName: first_name)).or(records.where(OtherNames: first_name)) if wildcard_option == "In First Name or Middle Name"
     records = records.where({ Surname: last_name.split }).or(records.where({ OtherNames: last_name.split })) if wildcard_option == "In Middle Name or Surname"
+    #raise records.to_sql.inspect
     records = marriage_surname_filteration(records) if self.spouses_mother_surname.present? and self.bmd_record_type == ['3']
     records = spouse_given_name_filter(records) if self.spouse_first_name.present?
     records = combined_results records if date_of_birth_range? || self.dob_at_death.present?
@@ -1314,7 +1315,7 @@ class SearchQuery
 
   def first_name_filteration
     if self.first_name.present? && !self.first_name_exact_match
-     field, value = "BestGuess.GivenName like ?", "#{self.first_name}%" unless wildcard_query? || has_wildcard?(first_name)
+     field, value = "BestGuess.GivenName like ?", "#{self.first_name}%" unless firstname_wildcard_query? || has_wildcard?(first_name)
       #{}"BestGuess.GivenName like '#{self.first_name}%'" unless do_wildcard_seach?(self.first_name)
     end
     {field => value}
@@ -1516,7 +1517,7 @@ class SearchQuery
   end
 
   def search_conditions
-    #raise first_name_filteration.inspect
+    raise first_name_filteration.inspect
     [sanitize_keys(first_name_filteration), sanitize_keys(name_wildcard_query), sanitize_values(first_name_filteration), sanitize_values(name_wildcard_query)].flatten.compact
     #[first_name_filteration, name_field_wildcard_search, mother_surname_wildcard_query].compact.to_sentence
   end
@@ -1963,6 +1964,14 @@ class SearchQuery
 
   def wildcard_query?
     wildcard_field.present? && wildcard_option.present?
+  end
+
+  def firstname_wildcard_query?
+    wildcard_field.present? && wildcard_option.present?
+  end
+
+  def check_wildcard_option
+    firstname_wildcard_query?
   end
 
   def wildcard_search?
