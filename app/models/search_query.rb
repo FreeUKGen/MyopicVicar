@@ -1549,6 +1549,11 @@ class SearchQuery
     search_fields = bmd_adjust_field_names
     #search_fields[:OtherNames] = search_fields.delete(:GivenName) if second_name_search?
     first_name_exact_match ? search_fields : search_fields.except!(:GivenName)
+    surname_middle_name_partial ? search_fields.except!(:Surname) : search_fields
+  end
+
+  def surname_middle_name_partial
+    wildcard_option == "In Middle Name or Surname"
   end
 
   def name_search_params_bmd
