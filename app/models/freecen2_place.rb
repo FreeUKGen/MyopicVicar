@@ -71,6 +71,7 @@ class Freecen2Place
   has_many :search_records, dependent: :restrict_with_error
 
   has_many :freecen2_pieces, dependent: :restrict_with_error
+  has_many :freecen_pieces, dependent: :restrict_with_error
   has_many :freecen_dwellings
   has_many :sources
 
