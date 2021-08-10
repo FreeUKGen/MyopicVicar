@@ -302,6 +302,7 @@ class SearchQueriesController < ApplicationController
 
   def wildcard_options_dropdown
     field = params[:field]
+    @options = params[:option] if params[:option].present?
     array = Constant::OPTIONS_HASH[params[:field]]
     middle_name_option = array
     @middle_name_option = middle_name_option

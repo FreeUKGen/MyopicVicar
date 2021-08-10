@@ -360,24 +360,32 @@
                     field: field
                   }
                 });
-              };
+              } else {
+                $("#wildcard_options_dropdown").find('option').remove().end().append('<option value="">Wildcard Options</option>');
+                 };
             });
 
             if ($("#wildcard_field option:selected").length) {
                 var field = ""
+                var option = "<%= @search_query.wildcard_option %>"
                 $.each($("#wildcard_field option:selected"), function() {
-                    field = $(this).val()
-                    console.log(field)
+                    field = $(this).val();
+                    console.log(field);
+                    console.log(option);
                 });
-                $.ajax({
-                  url: "/search_queries/wildcard_options_dropdown",
-                  type: "GET",
-                  data : {
-                    field: field
-                  }
-                });
+                if(field) {
+                    $.ajax({
+                      url: "/search_queries/wildcard_options_dropdown",
+                      type: "GET",
+                      data : {
+                        field: field,
+                        option: option
+                      }
+                    });
+                };
             };
 
+            
             if ($("#search_query_chapman_codes option:selected").length) {
                 var counties = [];
                 $.each($("#search_query_chapman_codes option:selected"), function() {
