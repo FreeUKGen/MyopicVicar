@@ -267,11 +267,11 @@
             <li class="grid__item one-third lap-one-half palm-one-whole">
                 <%= label_tag "wildcard_field",'Choose the Name field ' , class: "ttip" %>
                 <%#= f.select :wildcard_field, ["First Name", "Second Name", "Surname"], {include_hidden: false}, {multiple: true, tabindex: "0"} %>
-                <%= select_tag( 'search_query[wildcard_field]', options_for_select(Constant::NAME, set_value(@search_query.wildcard_field)), prompt: "Wildcard", class: 'text-input', tabindex: "0", id: "wildcard_field") %>
+                <%= select_tag( 'search_query[wildcard_field]', options_for_select(Constant::NAME, set_value(@search_query.wildcard_field)), prompt: "None chosen", class: 'text-input', tabindex: "0", id: "wildcard_field") %>
             </li>
             <li class="grid__item one-third lap-one-half palm-one-whole">
                 <%= label_tag "wildcard_options_dropdown",'Select one of the following' , class: "ttip" %>
-                <%= select_tag('search_query[wildcard_option]', options_for_select([], set_value(@search_query.wildcard_option)), prompt: "Wildcard Options", class: 'text-input', tabindex: "0", multiple: false, id: "wildcard_options_dropdown") %>
+                <%= select_tag('search_query[wildcard_option]', options_for_select([], set_value(@search_query.wildcard_option)), prompt: "None", class: 'text-input', tabindex: "0", multiple: false, id: "wildcard_options_dropdown") %>
             </li>
           </ol>
           <%#= Add any option to search for the name in any of the person's names%>
@@ -361,7 +361,7 @@
                   }
                 });
               } else {
-                $("#wildcard_options_dropdown").find('option').remove().end().append('<option value="">Wildcard Options</option>');
+                $("#wildcard_options_dropdown").find('option').remove().end().append('<option value="">None</option>');
                  };
             });
 
