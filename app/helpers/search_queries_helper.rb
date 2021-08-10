@@ -116,7 +116,14 @@ module SearchQueriesHelper
         district = district.present? ? district.name : search_record[:location_names][0]
       end
     else
-      district = search_record[:location_names][0]
+      district = ''
+      vld = search_record.freecen1_vld_file
+      place = search_record.place
+      district = place.place_name if place.present?
+      if vld.present? && place.blank?
+        piece = vld.freecen_piece
+        district = piece.district_name if piece.present?
+      end
     end
     district
   end
