@@ -666,7 +666,6 @@ class SearchQuery
 
   def persist_results(results)
     return unless results
-
     # finally extract the records IDs and persist them
     records = {}
     results.each do |rec|
@@ -676,15 +675,12 @@ class SearchQuery
       record = SearchQuery.add_search_date_when_absent(record) if record[:search_date].blank?
       records[rec_id] = record
       proceed = SearchQuery.does_the_entry_exist?(rec)
-      p 'persisting'
-      p proceed
       if proceed
         rec_id = record['_id'].to_s
         record = SearchQuery.add_birth_place_when_absent(record) if record[:birth_place].blank? && App.name.downcase == 'freecen'
         record = SearchQuery.add_search_date_when_absent(record) if record[:search_date].blank?
         records[rec_id] = record
       else
-        p 'deleting'
         search_record = SearchRecord.find_by(_id: rec['_id'].to_s)
         search_record.delete if search_record.present?
       end
@@ -706,12 +702,7 @@ class SearchQuery
     appname = App.name_downcase
     if place_search?
       search_place_ids = radius_place_ids
-      case appname
-      when 'freecen'
-        params = { '$or' => [{ place_id: { '$in' => search_place_ids } }, { freecen2_place_id: { '$in' => search_place_ids } }] }
-      when 'freereg'
-        params[:place_id] = { '$in' => search_place_ids }
-      end
+      params[:place_id] = { '$in' => search_place_ids }
     else
       case appname
       when 'freecen'
