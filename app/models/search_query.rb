@@ -1516,7 +1516,8 @@ class SearchQuery
   end
 
   def search_conditions
-    [sanitize_keys(first_name_filteration), sanitize_keys(name_wildcard_query), sanitize_values(first_name_filteration), sanitize_values(name_wildcard_query)].flatten.compact
+    #[sanitize_keys(first_name_filteration), sanitize_keys(name_wildcard_query), sanitize_values(first_name_filteration), sanitize_values(name_wildcard_query)].flatten.compact
+    [[sanitize_keys(first_name_filteration), sanitize_keys(name_wildcard_query)].compact.join(' and '), sanitize_values(first_name_filteration), sanitize_values(name_wildcard_query)].flatten.compact
     #[first_name_filteration, name_field_wildcard_search, mother_surname_wildcard_query].compact.to_sentence
   end
 
