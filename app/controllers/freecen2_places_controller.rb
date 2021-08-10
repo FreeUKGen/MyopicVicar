@@ -106,10 +106,14 @@ class Freecen2PlacesController < ApplicationController
     load(params[:id])
     redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'That place does not exist') && return if @place.blank?
 
-    @county = session[:county]
-    @chapman_code = session[:chapman_code]
     get_user_info_from_userid
-    if session[:chapman_code] == 'LND'
+    permitted = %w[county_coordinator master_county_coordinator country_coordinator system_administrator data_manager validator
+                   executive_director project_manager].include?(@user.person_role) ? true : false
+    redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'You are not permitted to edit a place') && return unless permitted
+
+    @county = session[:county].present? ? session[:county] : @place.county
+    @chapman_code = session[:chapman_code].present? ? session[:chapman_code] : @place.chapman_code
+    if @chapman_code == 'LND'
       message = 'Only system administrators can edit LND'
       redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: message) && return unless
       %w[system_administrator].include?(@user.person_role)
@@ -167,10 +171,14 @@ class Freecen2PlacesController < ApplicationController
   end
 
   def new
+    get_user_info_from_userid
+    permitted = %w[county_coordinator master_county_coordinator country_coordinator system_administrator data_manager validator
+                   executive_director project_manager].include?(@user.person_role) ? true : false
+    redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'You are not permitted to create a new place') && return unless permitted
+
     @place_name = params[:place] if params[:place].present?
     @place = Freecen2Place.new
     @chapman_code = session[:chapman_code]
-    get_user_info_from_userid
     @place.alternate_freecen2_place_names.build
     @place.alternate_freecen2_place_names.build
     @place.alternate_freecen2_place_names.build
@@ -289,18 +297,32 @@ class Freecen2PlacesController < ApplicationController
     session.delete(:from)
   end
 
+  def show_place_edits
+    load(params[:id])
+    redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'That place does not exist') && return if @place.blank?
+    @edits = @place.freecen2_place_edits.order_by(_id: -1)
+  end
+
   def update
     load(params[:id])
     redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'That place does not exist') && return if @place.blank?
 
     case
     when params[:commit] == 'Submit'
-      @place.save_to_original
+
       if params[:freecen2_place][:source].blank?
         flash[:notice] = 'The source field cannot be empty'
         render action: 'edit'
         return
       end
+      if params[:freecen2_place][:reason_for_change].blank?
+        flash[:notice] = 'The reason field cannot be empty'
+        render action: 'edit'
+        return
+      end
+
+      @place.save_to_original
+      @place.add_freecen2_place_edit(params)
 
       proceed = @place.update_attributes(freecen2_place_params)
 

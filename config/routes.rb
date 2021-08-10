@@ -431,7 +431,7 @@ MyopicVicar::Application.routes.draw do
   resources :registers
 
   resources :master_place_names
-
+  get '/freecen2_places/:id/how_place_edits', to: 'freecen2_places#show_place_edits', as: :show_place_edits_freecen2_place
   get '/freecen2_places/search_names_results', :to => 'freecen2_places#search_names_results', :as => :search_names_results_freecen2_place
   get '/freecen2_places/search_names', :to => 'freecen2_places#search_names', :as => :search_names_freecen2_place
   get 'freecen2_places/:id/rename', :to => 'freecen2_places#rename', :as => :rename_freecen2_place

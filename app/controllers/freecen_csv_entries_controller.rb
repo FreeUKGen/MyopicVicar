@@ -154,6 +154,7 @@ class FreecenCsvEntriesController < ApplicationController
     @dwelling = Freecen::LOCATION_DWELLING
     @counties = ChapmanCode.freecen_birth_codes
     @counties.sort!
+    @freecen_csv_entry.record_valid = false
     get_user_info_from_userid
     session.delete(:propagate_alternate)
     session.delete(:propagate_note)
