@@ -62,6 +62,7 @@ MyopicVicar::Application.routes.draw do
 
   resources :denominations
 
+  get 'embargo_rules/id/process_embargo_rule', to: 'embargo_rules#process_embargo_rule', as: :process_embargo_rule
   resources :embargo_rules
 
   resources :freecen1_fixed_dat_files

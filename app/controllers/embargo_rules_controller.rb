@@ -100,6 +100,9 @@ class EmbargoRulesController < ApplicationController
     end
   end
 
+  def process_embargo_rule
+  end
+
   private
 
   def embargo_rule_params
