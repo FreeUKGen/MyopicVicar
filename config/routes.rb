@@ -62,6 +62,8 @@ MyopicVicar::Application.routes.draw do
 
   resources :denominations
 
+  resources :place_edit_reasons
+
   resources :embargo_rules
 
   resources :freecen1_fixed_dat_files
