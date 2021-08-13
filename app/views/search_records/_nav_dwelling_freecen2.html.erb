@@ -1,0 +1,8 @@
+<section>
+  <% if @search_query.present? %>
+    <p class="text--center">
+      <%= link_to "Printable Format", show_print_version_search_record_path(@search_record), :class => "btn  btn--small"%>
+      <!-- If user looks at next/previous dwellings, hide the generate citation -->
+    </p>
+  <% end%>
+</section>
