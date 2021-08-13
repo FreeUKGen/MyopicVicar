@@ -500,6 +500,10 @@ class Freecen2Place
     edit[:previous_website] = genuki_url
     edit[:previous_notes] = place_notes
     edit[:created] = Time.now
+    edit[:previous_alternate_place_names] = []
+    alternate_freecen2_place_names.each do |alternate|
+      edit[:previous_alternate_place_names] << alternate.alternate_name
+    end
     freecen2_place_edits << edit
   end
 

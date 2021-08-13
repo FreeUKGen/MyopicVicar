@@ -122,6 +122,11 @@ class Freecen2PlacesController < ApplicationController
     @place.alternate_freecen2_place_names.build
     @place.alternate_freecen2_place_names.build
     @place.alternate_freecen2_place_names.build
+
+    @reasons = []
+    PlaceEditReason.all.order_by(reason: 1).each do |reason|
+      @reasons << reason.reason
+    end
   end
 
   def index

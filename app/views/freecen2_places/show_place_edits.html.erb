@@ -1,6 +1,7 @@
 <% breadcrumb :freecen2_places_edits,  @county, @place%>
 <h3 style="text-align: center"><b>Edits of <%=@place.place_name%> in <%=ChapmanCode.name_from_code(@place.chapman_code)%> (<%=@place.chapman_code%>) </b>.</h3>
 <%= render 'flash_notice' %>
+<h4 style="text-align: center"> This table lists the contents of the fields PRIOR to the edit</h4>
 <div class="grid">
   <section class="island  ">
     <div class='scrollable'>
@@ -10,14 +11,15 @@
             <th class='sticky-header '>Updated</th>
             <th class='sticky-header '>Editor</th>
             <th class='sticky-header '>Reason</th>
-            <th class='sticky-header '>Pre Name</th>
-            <th class='sticky-header '>Pre Cty</th>
-            <th class='sticky-header '>Pre Grid</th>
-            <th class='sticky-header '>Pre Lat</th>
-            <th class='sticky-header '>Pre Long</th>
-            <th class='sticky-header '>Pre Source</th>
-            <th class='sticky-header '>Pre Website</th>
-            <th class='sticky-header '>Pre Notes</th>
+            <th class='sticky-header '>Name</th>
+            <th class='sticky-header '>Alternates</th>
+            <th class='sticky-header '>Cty</th>
+            <th class='sticky-header '>Grid</th>
+            <th class='sticky-header '>Lat</th>
+            <th class='sticky-header '>Long</th>
+            <th class='sticky-header '>Source</th>
+            <th class='sticky-header '>Website</th>
+            <th class='sticky-header '>Notes</th>
           </tr>
         </thead>
         <tbody  >
@@ -27,6 +29,7 @@
               <td > <%= edit.editor%></td>
               <td > <%= edit.reason%></td>
               <td > <%= edit.previous_place_name%></td>
+              <td > <%= format_alternates(edit)%></td>
               <td > <%= edit.previous_county%></td>
               <td > <%= edit.previous_grid_reference%></td>
               <td > <%= edit.previous_latitude%></td>

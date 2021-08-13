@@ -1,0 +1,25 @@
+<% breadcrumb :show_place_edit_reason,  @reason%>
+<h2 class="text--center"> Place Edit Reason</h2>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+  </div>
+<% end %>
+<div  class="text--center">  <%= link_to 'Edit Reason', edit_place_edit_reason_path(@reason) , method: :get, :class => "btn btn--small" %>     <%= link_to 'Create Reason', new_place_edit_reason_path , method: :get, :class => "btn btn--small" %> <%= link_to 'Destroy Reason', place_edit_reason_path(@reason), method: :delete, data: { confirm: 'Are you sure you want to destroy this Reason?' } , :class => "btn  btn--small"%>
+</div>
+<div class="grid__item  ">
+  <table class=" table--bordered table--data">
+    <colgroup >
+      <col class="t40">
+      <col class="t60">
+    </colgroup>
+    <tr>
+      <th class="caps">Field</th>
+      <th class="caps">Value</th>
+    </tr>
+    <tr>
+      <td>Reason :</td>
+      <td class="weight--semibold"><%= @reason.reason %></td>
+    </tr>
+  </table>
+</div>

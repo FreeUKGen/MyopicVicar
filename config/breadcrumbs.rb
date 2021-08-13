@@ -983,6 +983,25 @@ crumb :create_denomination do |denomination|
   parent :denominations
 end
 
+#............................................................Place Edit Reasons......................................
+crumb :place_edit_reasons do
+  link 'Place Edit Reasons', place_edit_reasons_path
+  parent :root
+end
+crumb :show_place_edit_reason do |place_edit_reason|
+  link 'Show Reason', place_edit_reason_path(place_edit_reason)
+  parent :place_edit_reasons
+end
+crumb :edit_place_edit_reason do |place_edit_reason|
+  link 'Edit Reason', edit_place_edit_reason_path(place_edit_reason)
+  parent :show_place_edit_reason, place_edit_reason
+end
+crumb :create_place_edit_reason do |place_edit_reason|
+  link 'Create Reason', new_place_edit_reason_path(place_edit_reason)
+  parent :place_edit_reasons
+end
+
+
 crumb :embargo_rules do |county, place, church, register|
   link 'Embargo Rules', embargo_rules_path( :county => county, :place => place, :church => church, :register => register)
   parent :show_register, county, place, church, register

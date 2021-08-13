@@ -26,4 +26,15 @@ module Freecen2PlacesHelper
       'none'
     end
   end
+
+  def format_alternates(edit)
+    alternates = edit.previous_alternate_place_names
+    result = ''
+    if alternates.present?
+      alternates.each do |name|
+        result = result + name + ', '
+      end
+      result = result.gsub(/,\s$/, '')
+    end
+  end
 end
