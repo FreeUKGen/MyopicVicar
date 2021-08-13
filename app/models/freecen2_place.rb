@@ -480,7 +480,7 @@ class Freecen2Place
       self.original_latitude = latitude
       self.original_longitude = longitude
       self.original_source =  source
-      self.original_notes = notes
+      self.original_notes = place_notes
       self.original_website = genuki_url
       save(validate: false)
     end
