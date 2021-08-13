@@ -127,7 +127,6 @@ class Freecen2PlacesController < ApplicationController
     PlaceEditReason.all.order_by(reason: 1).each do |reason|
       @reasons << reason.reason
     end
-    p @reasons
   end
 
   def index

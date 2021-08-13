@@ -31,6 +31,10 @@ class CreateFreecen2PlaceEdit
       edit[:previous_website] = place.genuki_url
       edit[:previous_notes] = place.place_notes
       edit[:created] = place.u_at
+      edit[:previous_alternate_place_names] = []
+      place.alternate_freecen2_place_names.each do |alternate|
+        edit[:previous_alternate_place_names] << alternate.alternate_name
+      end
       place.freecen2_place_edits << edit
     end
     p "#{@number_processed} records processed with #{@number_of_line} edits"

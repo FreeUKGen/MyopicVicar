@@ -5,6 +5,7 @@ class Freecen2PlaceEdit
   field :reason, type: String
   field :created, type: DateTime
   field :previous_place_name, type: String
+  field :previous_alternate_place_names, type: Array
   field :previous_county, type: String
   field :previous_chapman_code, type: String
   field :previous_country, type: String
