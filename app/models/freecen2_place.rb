@@ -37,7 +37,7 @@ class Freecen2Place
   field :original_website, type: String
   field :source, type: String
   field :editor, type: String, default: ''
-  field :reason_for_change, type: String
+  field :reason_for_change, type: Array
   field :other_reason_for_change, type: String
   field :disabled, type: String, default: "false"
   field :master_place_lat, type: String
@@ -487,7 +487,8 @@ class Freecen2Place
   end
 
   def add_freecen2_place_edit(params)
-    edit = Freecen2PlaceEdit.new(editor: params[:freecen2_place][:editor], reason: params[:freecen2_place][:reason_for_change])
+    reason = params[:freecen2_place][:reason_for_change].reject(&:empty?)
+    edit = Freecen2PlaceEdit.new(editor: params[:freecen2_place][:editor], reason: reason)
 
     edit[:previous_chapman_code] = chapman_code
     edit[:previous_county] = county

@@ -320,11 +320,6 @@ class Freecen2PlacesController < ApplicationController
         render action: 'edit'
         return
       end
-      if params[:freecen2_place][:reason_for_change].blank?
-        flash[:notice] = 'The reason field cannot be empty'
-        render action: 'edit'
-        return
-      end
 
       @place.save_to_original
       @place.add_freecen2_place_edit(params)

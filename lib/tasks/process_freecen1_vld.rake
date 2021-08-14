@@ -16,6 +16,8 @@ namespace :freecen do
     file.update_attributes(num_individuals: num_ind, num_dwellings: num_dwel)
 
     piece = file.freecen_piece
+
+    # This code update the place data present and the cen data years -------------------------------
     place = Place.find_by(_id: piece.place_id)
 
     if place.data_present == false
@@ -27,6 +29,7 @@ namespace :freecen do
       place_save_needed = true
     end
     place.save! if place_save_needed
+    # ----------------------------------------------------------------------------------------------
     piece.update_attributes(status: 'Online', status_date: DateTime.now.in_time_zone('London'), num_individuals: num_ind, num_dwellings: num_dwel, num_entries: num_entries) if piece.present?
     #print "\t#{filename} contained #{file_record.freecen_dwellings.count} dwellings in #{file_record.freecen1_vld_entries.count} entries\n"
     print "\t#{filename} contained #{num_dwel} dwellings #{num_ind} individuals in #{num_entries} entries\n"

@@ -1,7 +1,7 @@
 <div class='island  island--light'>
   <%= semantic_form_for @place, :html => { :class => 'grid'}  do |f| %>
     <%= f.hidden_field :editor, :value=>@user_userid %>
-    <%= f.input :reason_for_change ,:label => 'Your reason for making the change', :as => :select, :include_blank => false, :required => true, :collection =>  @reasons, :input_html => {:class => 'simple_form_bgcolour', :size => 5}%>
+    <%= f.input :reason_for_change ,:label => 'Your reason for making the change', :multiple => true, :as => :select, :include_blank => false, :required => true, :collection =>  @reasons, :input_html => {:class => 'simple_form_bgcolour', :size => 5}%>
     <%= f.hidden_field :country, :value=>@place.country %>
     <%= f.hidden_field :county, :value=>@county %>
     <%= f.hidden_field :chapman_code, :value=>@chapman_code %>
