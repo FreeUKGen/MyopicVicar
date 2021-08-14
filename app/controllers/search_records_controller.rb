@@ -292,6 +292,7 @@ class SearchRecordsController < ApplicationController
     @freecen_csv_entry = @search_record.freecen_csv_entry.blank? ? session[:freecen_csv_entry_id] : @search_record.freecen_csv_entry
 
     session[:freecen_csv_entry_id] = @freecen_csv_entry._id
+    @individual = @freecen_csv_entry
     @freecen_csv_file = @freecen_csv_entry.blank? ? FreecenCsvFile.find(session[:freecen_csv_file_id]) : @freecen_csv_entry.freecen_csv_file
     @freecen_csv_file_id, @freecen_csv_file_name, @file_owner = @freecen_csv_file.display_for_csv_show
     @piece = @freecen_csv_file.freecen2_piece

@@ -22,19 +22,35 @@
       <% @individuals.each do |individual| %>
         <tr>
           <% individual.individual_display_values(@year,@chapman_code).each_with_index do |field_val, index| %>
-            <% unless index == 0 %>
-              <td class="weight--semibold">
-                <%= field_val %>
-              </td>
+            <% if index > 0 %>
+              <% if index == 1 && individual == @individual%>
+                <td class="weight--semibold"><span class="accessibility">the person found in your search</span>
+                  <%= field_val %>
+                </td>
+              <% elsif individual == @individual%>
+                <td class="weight--semibold">
+                  <%= field_val %>
+                </td>
+              <% else%>
+                <td >
+                  <%= field_val %>
+                </td>
+              <% end %>
             <% end %>
           <% end %>
           <% if FreecenCsvEntry.part2_individual_display_labels(@year,@chapman_code).present? %>
             <% individual.part2_individual_display_values(@year,@chapman_code).each do |field_val| %>
-              <td class="weight--semibold">
-                <%= field_val %>
-              </td>
+              <% if individual == @individual%>
+                <td class="weight--semibold">
+                  <%= field_val %>
+                </td>
+              <% else%>
+                <td >
+                  <%= field_val %>
+                </td>
+              <% end %>
             <% end %>
-          <% end %>
+          <% end%>
         </tr>
       <% end %>
     </tbody>
