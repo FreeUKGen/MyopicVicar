@@ -179,7 +179,7 @@ class SearchRecord
       first_id = BSON::ObjectId.from_time(previous_midnight)
       total_records = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
-        total_records[year] = SearchRecord.between(_id: first_id..last_id).where(chapman_code: county, record_type: year).count
+        total_records[year] = SearchRecord.between(_id: first_id..last_id).where(chapman_code: county, record_type: year).hint("id_chapman_record_type").count
       end
       total_records
     end
@@ -188,7 +188,9 @@ class SearchRecord
       last_id = BSON::ObjectId.from_time(last_midnight)
       total_records = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
-        total_records[year] = SearchRecord.where(_id: { '$lte' => last_id }, chapman_code: county, record_type: year).count
+        total = SearchRecord.where(chapman_code: county, record_type: year).hint("chapman_record_type").count
+        last_records = SearchRecord.where(_id: { '$gt' => last_id }, chapman_code: county, record_type: year).hint("id_chapman_record_type").count
+        total_records[year] = total - last_records
       end
       total_records
     end

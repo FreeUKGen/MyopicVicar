@@ -60,11 +60,11 @@ class Freecen1VldFile
       total_individuals = {}
       total_dwellings = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
-        total_files[year] = Freecen1VldFile.where(_id: { '$lte' => last_id }, full_year: year).count
+        total_files[year] = Freecen1VldFile.where(_id: { '$lte' => last_id }, full_year: year).hint('id_county_year_file').count
         total_entries[year] = 0
         total_dwellings[year] = 0
         total_individuals[year] = 0
-        Freecen1VldFile.where(_id: { '$lte' => last_id }, full_year: year).each do |file|
+        Freecen1VldFile.where(_id: { '$lte' => last_id }, full_year: year).hint('id_year_file').each do |file|
           total_entries[year] += file.num_entries
           total_dwellings[year] += file.num_dwellings
           total_individuals[year] += file.num_individuals
@@ -81,7 +81,7 @@ class Freecen1VldFile
       total_individuals = {}
       total_dwellings = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
-        files = Freecen1VldFile.between(_id: first_id..last_id).where(full_year: year)
+        files = Freecen1VldFile.between(_id: first_id..last_id).where(full_year: year).hint('id_year_file')
         total_files[year] = files.count
         total_entries[year] = 0
         total_individuals[year] = 0
@@ -102,11 +102,11 @@ class Freecen1VldFile
       total_individuals = {}
       total_dwellings = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
-        total_files[year] = Freecen1VldFile.where(_id: { '$lte' => last_id }, dir_name: chapman, full_year: year).count
+        total_files[year] = Freecen1VldFile.where(_id: { '$lte' => last_id }, dir_name: chapman, full_year: year).hint('id_county_year_file').count
         total_entries[year] = 0
         total_individuals[year] = 0
         total_dwellings[year] = 0
-        Freecen1VldFile.where(_id: { '$lte' => last_id }, dir_name: chapman, full_year: year).each do |file|
+        Freecen1VldFile.where(_id: { '$lte' => last_id }, dir_name: chapman, full_year: year).hint('id_county_year_file').each do |file|
           total_entries[year] += file.num_entries
           total_dwellings[year] += file.num_dwellings
           total_individuals[year] += file.num_individuals
@@ -123,11 +123,11 @@ class Freecen1VldFile
       total_individuals = {}
       total_dwellings = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
-        total_files[year] = Freecen1VldFile.between(_id: first_id..last_id).where(dir_name: chapman, full_year: year).count
+        total_files[year] = Freecen1VldFile.between(_id: first_id..last_id).where(dir_name: chapman, full_year: year).hint('id_county_year_file').count
         total_entries[year] = 0
         total_individuals[year] = 0
         total_dwellings[year] = 0
-        Freecen1VldFile.between(_id: first_id..last_id).where(dir_name: chapman, full_year: year).each do |file|
+        Freecen1VldFile.between(_id: first_id..last_id).where(dir_name: chapman, full_year: year).hint('id_county_year_file').each do |file|
           total_entries[year] += file.num_entries
           total_dwellings[year] += file.num_dwellings
           total_individuals[year] += file.num_individuals
