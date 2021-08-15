@@ -12,7 +12,7 @@ task set_fc2place_in_fc1piece:  :environment do
   total_match_cnt = 0
   this_county = ''
 
-  FreecenPiece.where(place_country:  "England").or(FreecenPiece.where(place_country:  "Wales")).or(FreecenPiece.where(place_country:  "Scotland")).order_by(chapman_code:1, year: 1, piece_number: 1).each do |fc1_piece|
+  FreecenPiece.where(:chapman_code.exists => true ).order_by(chapman_code: 1, year: 1, piece_number: 1).each do |fc1_piece|
     if fc1_piece.status == 'Online'
       message = ''
       total_fc1_piece_cnt += 1
