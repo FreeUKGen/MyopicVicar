@@ -31,4 +31,7 @@ module Constant
 		NAME[3] => MOTHERSNAME_PARTIAL_OPTION,
 		NAME[4] => OTHER_PARTIAL_OPTION
 	}
+
+	PRIVACY_POLICY_LINK = "https://drive.google.com/file/d/10r_c-5d9DDces-OUX7D4UJJKGNIhu8sV/view"
+	EVENT_QUARTER_TO_YEAR = 589
 end

@@ -1,8 +1,9 @@
 <table class="table--bordered table--data">
+  <caption class="accessibility">Entry Information of <%= "#{record.GivenName} #{record.Surname}"%>  </caption>
   <tbody>
     <% record_type = RecordType::display_name(record.RecordTypeID)%>
     <tr>
-      <th>
+      <th scope="row">
         Event Type
       </th>
       <td>
@@ -10,15 +11,15 @@
       </td>
     </tr>
     <tr>
-      <th>
-        Date
+      <th scope="row">
+        <%= record.QuarterNumber <  Constant::EVENT_QUARTER_TO_YEAR ? "Date" : "Year" %>
       </th>
       <td>
         <%= format_quarter(record.QuarterNumber)%>
       </td>
     </tr>
     <tr>
-      <th>
+      <th scope="row">
         District
       </th>
       <td>
@@ -28,11 +29,14 @@
         <% else %>
           <%= record.District %>
         <% end %>
+        <% if record.District.blank? %>
+          <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
+        <% end %>
       </td>
     </tr>
     <% if entry_type == "marriage" %>
     	<tr>
-	      <th>
+	      <th scope="row">
 	        <%= mother_or_spouse_surname(record_type)%>
 	      </th>
 	      <td>
@@ -46,21 +50,27 @@
 	        <% else %>
 	        	<%= record.AssociateName %>
 	        <% end %>
+          <% if record.AssociateName.blank? %>
+            <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
+          <% end %>
 	      </td>
     	</tr>
     <% end %>
     <% if entry_type == "birth" %>
     	<tr>
-	      <th>
+	      <th scope="row">
 	        <%= mother_or_spouse_surname(record_type)%>
 	      </th>
 	      <td>
 	        <%= record.AssociateName %>
+          <% if record.AssociateName.blank? %>
+            <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
+          <% end %>
 	      </td>
     	</tr>
     <% end %>
     <tr>
-      <th>
+      <th scope="row">
         Volume
       </th>
       <td>
@@ -68,15 +78,17 @@
       </td>
     </tr>
     <tr>
-      <th style="font-family: serif;">
+      <th scope="row">
         Page
       </th>
       <td>
         <% unless record.Page.to_i == 0 %>
           <% if @search %>
-            <%= link_to "#{record.Page}", same_page_entries_path(volume: record.Volume, page: record.Page, record: record.RecordTypeID, quarter: record.QuarterNumber, district: record.District, search_id: search_id, entry_id: original_record.RecordNumber), title: "#{ApplicationText::SAME_PAGE_ENTRIES_TEXT}" %>
+            <%= link_to "#{record.Page}", same_page_entries_path(volume: record.Volume, page: record.Page, record: record.RecordTypeID, quarter: record.QuarterNumber, district: record.District, search_id: search_id, entry_id: original_record.RecordNumber), title: "#{ApplicationText::SAME_PAGE_ENTRIES_TEXT}" %><br>
+            <span class="weight--normal"><%= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span>
           <% else %>
-            <%= link_to "#{record.Page}", same_page_entries_non_search_path(volume: record.Volume, page: record.Page, record: record.RecordTypeID, quarter: record.QuarterNumber, district: record.District, entry_id: original_record.RecordNumber), title: "#{ApplicationText::SAME_PAGE_ENTRIES_TEXT}" %>
+            <%= link_to "#{record.Page}", same_page_entries_non_search_path(volume: record.Volume, page: record.Page, record: record.RecordTypeID, quarter: record.QuarterNumber, district: record.District, entry_id: original_record.RecordNumber), title: "#{ApplicationText::SAME_PAGE_ENTRIES_TEXT}" %><br>
+            <span class="weight--normal"><%= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span>
           <% end %>
           <br>
         <% else%>
@@ -85,17 +97,20 @@
       </td>
     </tr>
     <tr>
-      <th>
+      <th scope="row">
         Transcriber
       </th>
       <td>
-        <%#= record.transcribers.join(', ') if record.transcribers.present? %>
+        <%= record.transcribers.join(', ') if record.transcribers.present? %>
+        <% if record.transcribers.blank? %>
+          <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
+        <% end %>
       </td>
     </tr>
     <% if search == true %>
       <% unless (record.Confirmed & 512).zero? %>
         <tr>
-          <th>
+          <th scope="row">
             Refers
           </th>
           <td>
@@ -106,7 +121,7 @@
     <% end %>
     <% if record.get_comments.present? %>
       <tr>
-        <th>
+        <th scope="row">
           Comment
         </th>
         <%  record.get_comments.each do |cl| %>
@@ -119,7 +134,7 @@
     <% unless search == true %>
       <% if type == "reference" %>
         <tr>
-          <th>
+          <th scope="row">
             Help Text
           </th>
           <td>
@@ -137,7 +152,7 @@
       <% registered = record.event_registration %>
       <% if registered.present?%>
         <tr>
-          <th>
+          <th scope="row">
             Registered
           </th>
           <td >
@@ -148,7 +163,7 @@
     <% end %>
     <% if search %>
       <tr>
-        <th>
+        <th scope="row">
           More Information
         </th>
         <td class="project-text-color">

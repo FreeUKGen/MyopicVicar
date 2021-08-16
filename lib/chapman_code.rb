@@ -360,7 +360,7 @@ module ChapmanCode
   }.freeze
 
   FREEBMD_CODES = {
-    'England' => {
+    'England and Wales' => {
       "Anglesey (to Mar1974)" => "AGY",
       "Avon (from Jun1974)" => "AVN",
       "Bedfordshire" => "BDF",

@@ -29,7 +29,7 @@
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
   <div class="grid">
     <div class="grid__item seven-tenths lap-seven-tenths palm-one-whole ">
-      <h1 class="beta push-half--top flush--bottom"><%= "Entry Information: #{@current_record[:GivenName].capitalize} #{@current_record[:Surname].upcase}" %></h1>
+      <h1 class="beta push-half--top flush--bottom"><%= "Entry Information: #{@current_record[:GivenName].camelize} #{@current_record[:Surname].upcase}" %></h1>
       <hr>
       <!--span  class='additional'>
         While we have made all efforts to correctly record the information in the original document there may be different interpretations of the written words. <b>If you have access to the original document</b> and believe we have made a mistake you are encouraged to report this to us.

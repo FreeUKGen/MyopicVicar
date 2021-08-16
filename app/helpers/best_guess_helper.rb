@@ -25,7 +25,12 @@ module BestGuessHelper
   end
 
   def format_quarter quarter
-    "#{(formatted_month quarter).upcase} #{formatted_year quarter}"
+    if quarter <  Constant::EVENT_QUARTER_TO_YEAR
+      date = "#{(formatted_month quarter).upcase} #{formatted_year quarter}"
+    else
+      date = formatted_year quarter
+    end
+    date
   end
 
   def formatted_month quarter

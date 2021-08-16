@@ -232,7 +232,7 @@
                         <div class="countieslabel">
                             <%= label_tag 'search_query_chapman_codes', "Counties".html_safe, class: "ttip",  tabindex: "0" do %>
                                 <%= "Counties".html_safe %>
-                                <span class="ttip__text"><%#= info_tag_text[:counties]%></span>
+                                <small class="additional">Select one or more (hold Ctrl for multiple)</small>
                             <% end %>
                         </div>
                     </div>
@@ -240,7 +240,6 @@
                     <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES)) %>
                     <% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil?%>
                     <%= f.select :chapman_codes, grouped_options_for_select(grouped_options, selected_key = key), {include_blank: 'All Counties', include_hidden: false}, {multiple: true, id: 'search_query_chapman_codes', tabindex: "0"} %>
-                    <small class="additional">Select one County or none</small>
                 </li>
 
                 <li class="grid__item desk-wide-one-third desk-two-fifths lap-one-half palm-one-whole districtss">
@@ -248,13 +247,13 @@
                         <div class='districtslabel'>
                             <%= label_tag 'search_query_districts', "Districts #{app_icons[:info]}".html_safe, class: "ttip",tabindex: "0" do %>
                                 <%= "Districts".html_safe %>
-                                <span class="ttip__text"><%#= info_tag_text[:districts]%></span>
+                                <small class="additional">Select one/more Districts(hold Ctrl for multiple) or none</small>
                             <% end %>
                         </div>
                     </div>
                     <% @districts = DistrictToCounty.includes(:District).distinct.order( 'DistrictName ASC' )%>
                     <%= f.select :districts, @districts.pluck(:DistrictName, :DistrictNumber), {include_hidden: false}, {multiple: true, id: 'search_query_districts', tabindex: "0"} %>
-                    <small class="additional">Select one/more Districts or none</small>
+                    
                 </li>
             </ol>
         </fieldset>
