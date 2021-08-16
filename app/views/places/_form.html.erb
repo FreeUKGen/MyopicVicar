@@ -1,11 +1,14 @@
 <div class="island  island--light">
   <%= render 'flash_notice' %>
   <%= simple_form_for @place, :html => { :class => "grid"}  do |f| %>
+    <%  if appname_downcase == 'freecen' && (@user.person_role == 'data_manager' ||   @user.person_role == 'system_administrator')%>
+      <%= f.input :place_name, :label => "Enter the Place Name",:hint => "Please take extreme care with the Place Name to get it correct!" ,:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+    <% end%>
     <% if controller.action_name == 'new' || controller.action_name == 'create'%>
       <%= f.input :place_name, :label => "Enter the Place Name",:hint => "Please take extreme care with the Place Name to get it correct!" ,:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
     <% end %>
     <%= f.simple_fields_for :alternateplacenames do |alternate| %>
-      <%= alternate.input :alternate_name,:label => "Other Name for Place",:hint => "Alternative name by which place may be known. Use the destroy box below to delete this entry",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+      <%= alternate.input :alternate,:label => "Other Name for Place",:hint => "Alternative name by which place may be known. Use the destroy box below to delete this entry",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
       <%= alternate.input :_destroy, :as => :boolean %>
     <% end %>
     <%= f.input :grid_reference ,:hint => "Must be 2 capital characters followed by  4, 6 or 8 numerics eg NX123456", :label => " Grid Reference ",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
