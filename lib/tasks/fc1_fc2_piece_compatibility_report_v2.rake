@@ -20,7 +20,7 @@ task fc1_fc2_piece_compatibility_report_v2:  :environment do
   this_county = ''
   this_country = ''
 
-  FreecenPiece.where(place_country:  "England").or(FreecenPiece.where(place_country:  "Wales")).or(FreecenPiece.where(place_country:  "Scotland")).order_by(chapman_code:1, year: 1, piece_number: 1).each do |fc1_piece|
+  FreecenPiece.where(:chapman_code.exists => true ).order_by(chapman_code: 1, year: 1, piece_number: 1).each do |fc1_piece|
     if fc1_piece.status == 'Online'
       total_fc1_piece_cnt += 1
       if this_county == ''
