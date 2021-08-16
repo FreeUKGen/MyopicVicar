@@ -20,9 +20,8 @@
             <ol class="grid search_form">
                 <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole firstnamegrid flush--bottom">
                     <div class='labels'>
-                        <%= label_tag 'first_name','' , class: "ttip", tabindex: "0", id: 'firstname'  do %>
-                            <%="First name(s) #{app_icons[:info]}".html_safe %>
-                            <span class="ttip__text"><%= info_tag_text[:firstname]%></span>
+                        <%= label_tag 'first_name','' , class: "ttip", id: 'firstname'  do %>
+                            <%="First name(s)".html_safe %>
                         <% end %>
                     </div>
                     <%= text_field_tag 'search_query[first_name]', set_value(@search_query.first_name), class: 'text-input flush--bottom', placeholder: 'Enter first name(s) here', role: 'textbox', id: 'first_name', tabindex: "0" %>
@@ -36,9 +35,8 @@
 
                 <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole surnamegrid flush--bottom push--bottom">
                     <div class='labels'>
-                        <%= label_tag 'last_name', "Surname #{app_icons[:info]}".html_safe, class: "ttip", tabindex: "0" do %>
-                            <%= "Surname #{app_icons[:info]}".html_safe %>
-                            <span class="ttip__text"><%= info_tag_text[:lastname]%></span>
+                        <%= label_tag 'last_name', "Surname".html_safe, class: "ttip" do %>
+                            <%= "Surname".html_safe %>
                         <% end %>
                     </div>
                     <%= text_field_tag 'search_query[last_name]', set_value(@search_query.last_name)  , class: 'text-input flush--bottom', id: 'last_name', placeholder: 'Enter Surname here', tabindex: "0"%>
