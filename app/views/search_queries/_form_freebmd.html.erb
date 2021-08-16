@@ -51,9 +51,8 @@
                 <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole daterangefromgrid">
                     <div class='labels'>
                         <div class="datereangefromlabel">
-                            <%= label_tag 'from_quarter', "Date range from #{app_icons[:info]}".html_safe, class: "ttip", tabindex: "0" do %>
-                            <%= "Date range from #{app_icons[:info]}".html_safe %>
-                            <span class="ttip__text"><%= info_tag_text[:date_range_from]%></span>
+                            <%= label_tag 'from_quarter', "Date range from #{app_icons[:info]}".html_safe, class: "ttip" do %>
+                                <%= "Date range from".html_safe %>
                             <% end %>
                         </div>
                     </div>
@@ -73,9 +72,8 @@
                 <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole daterangetogrid">
                     <div class='labels'>
                         <div class="todaterangelabel">
-                            <%= label_tag 'to_quarter', "Date range to #{app_icons[:info]}".html_safe, class: "ttip",tabindex: "0" do %>
-                                <%= "Date range to #{app_icons[:info]}".html_safe %>
-                                <span class="ttip__text"><%= info_tag_text[:date_range_to]%></span>
+                            <%= label_tag 'to_quarter', "Date range to #{app_icons[:info]}".html_safe, class: "ttip" do %>
+                                <%= "Date range to".html_safe %>
                             <% end %>
                         </div>
                     </div>
@@ -146,7 +144,7 @@
 
                 <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole spouseormothersurname display_none" id="spouse_or_mother_surname_div">
                     <div class='labels'>
-                        <%= label_tag 'spouses_mother_surname', "Spouse/Mothers surname".html_safe, class: "ttip spouse_or_mother_surname_label", tabindex: "0" do %>
+                        <%= label_tag 'spouses_mother_surname', "Spouse/Mothers surname".html_safe, class: "ttip spouse_or_mother_surname_label" do %>
                             <%= "Spouse/Mothers surname".html_safe %>
                         <% end %>
                     </div>
@@ -464,7 +462,6 @@
                 hide_all_death_options();
                 $('#spouses_mother_surname').removeAttr('value');
                 $('#spouse_first_name').removeAttr('value');
-                $('.spouse_or_mother_surname_label').text("Spouses/Mothers surname").append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
                 $('#spouses_mother_surname').val('').prop('disabled', true)
                 $('#spouses_mother_surname').css('background', '#ccc');
                 $('#spouses_mother_surname').prop('placeholder', '')
@@ -477,6 +474,7 @@
                     $('#spouses_mother_surname').prop('name', 'search_query[mother_last_name]');
                     $('#spouses_mother_surname').css('background', 'white');
                     $('#spouses_mother_surname').prop('placeholder', "Enter Mother's surname here");
+                    $('.spouse_or_mother_surname_label').attr('tabindex', '0');
                     $('.spouse_or_mother_surname_label').text("Mothers Surname").append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
                     $('.spouse_or_mother_surname_label').append('<span class="ttip__text" id="mother_or_spouse_help_text">Mother\'s name before marriage</span>')
                     $('#death_select_box').prop('disabled', 'disabled');
@@ -523,6 +521,7 @@
               //  $('#spouses_mother_surname').prop('placeholder', "Enter Mother's surname here")
                 $('#spouses_mother_surname').prop('name', 'search_query[mother_last_name]');
                 $('.spouse_or_mother_surname_label').text("Mothers Surname").append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
+                $('.spouse_or_mother_surname_label').attr('tabindex', '0');
                 $('.spouse_or_mother_surname_label').append('<span class="ttip__text" id="mother_or_spouse_help_text">Mother\'s name before marriage</span>')
                // $('#spouses_mother_surname').css('background', 'white');
                // $('#death_select_box').prop('disabled', 'disabled');
