@@ -91,4 +91,52 @@ class AddEmbargoRecord
     end
     UserMailer.send_logs(file_for_warning_messages, emails, 'Details of the processing of your embargo rule', 'Embargo completion report').deliver_now
   end
+
+  def self.process_embargo_records_for_a_embargo(rule_id, email)
+    rule = EmbargoRule.find_by(id: rule_id)
+    time = Time.new.strftime("%s")
+    file_for_warning_messages = Rails.root.join('log', "process_embargo_records_#{time}.log")
+    message_file = File.new(file_for_warning_messages, 'w')
+    message_file.puts "Starting adding embargo at #{Time.now}"
+    message_file.puts "processing register #{rule.register.alternate_register_name}"
+    files_for_record_type = rule.register.freereg1_csv_files.where(record_type: rule.record_type)
+    if files_for_record_type.present?
+      files_for_record_type.each do |file|
+        message_file.puts "processing file at #{Time.now}"
+        message_file.puts "#{file.id} #{file.file_name} #{file.county} #{file.place_name} #{file.church_name} #{file.register_type} #{file.userid}"
+        entries_processed = 0
+        file.freereg1_csv_entries.no_timeout.each do |entry|
+          entries_processed = entries_processed + 1
+          end_year = 0
+          end_year = EmbargoRecord.process_embargo_year(rule, entry.year) if entry.year.present?
+          message_file.puts entry.inspect
+          message_file.puts entry.embargo_records.inspect
+          message_file.puts entry.already_has_this_embargo?(rule)
+          change, embargo_record = entry.process_embargo
+          next unless change
+          entry.embargo_records << embargo_record
+          saved = entry.save
+          message_file.puts "save failed #{entry.embargo_records.last.errors.full_messages}" unless saved
+          entry.search_record.update(embargoed: entry.embargo_records.last.embargoed, release_year: end_year)
+          entry.save
+        end
+        message_file.puts "#{entries_processed} were processed for file"
+        message_file.puts "processing file completed at #{Time.now}"
+      end
+      message_file.puts " Processing of embargo records is complete"
+      message_file.close
+    else
+      message_file.puts "We do not have any files for record tye: #{record_type}"
+      message_file.close
+    end
+    userids = []
+    userids << rule.member_who_created unless userids.include?(rule.member_who_created)
+    emails = []
+    emails << email if email.present?
+    userids.each do |user|
+      person = UseridDetail.find_by(_id: user)
+      emails << person.email_address if person.present?
+    end
+    UserMailer.send_logs(file_for_warning_messages, emails, 'Details of the processing of your embargo rule', 'Embargo completion report').deliver_now
+  end
 end

@@ -220,6 +220,21 @@ namespace :foo do
     end
   end
 
+  task :process_embargo_records, [:rule, :email] => [:environment]  do |t, args|
+    require 'add_embargo_record'
+    rake_lock_file = File.join(Rails.root, 'tmp', "#{args.rule}_rake_lock_file.txt")
+    unless File.exist?(rake_lock_file)
+      lock_file = File.new(rake_lock_file, 'w')
+      AddEmbargoRecord.process_embargo_records_for_a_embargo(args.rule, args.email)
+      lock_file.close
+      FileUtils.rm rake_lock_file
+      p "FREEREG:EMBARGO_PROCESSING: embargo processing rake task  finished"
+    else
+      p 'Already running'
+    end
+  end
+
+
   task :update_message_nature_field => [:environment] do
     require 'update_message_nature_field'
     UpdateMessageNatureField.process

@@ -1,5 +1,4 @@
 class EmbargoRulesController < ApplicationController
-
   def create
     redirect_back(fallback_location: { action: 'index', county: session[:county], place: session[:place], church: session[:church], register: session[:register] },
                   notice: 'You must enter a complete set of fields') && return if params[:embargo_rule].blank?
@@ -101,6 +100,15 @@ class EmbargoRulesController < ApplicationController
   end
 
   def process_embargo_rule
+    get_user_info_from_userid
+    @rule = EmbargoRule.find(params[:id])
+    process = @rule.process_embargo_records(@user.email_address)
+    if process.success?
+      flash[:notice] =  process.message
+    else
+      flash[:notice] =  process.error
+    end
+    redirect_to action: 'index', county: session[:county], place: session[:place], church: session[:church], register: session[:register]
   end
 
   private
