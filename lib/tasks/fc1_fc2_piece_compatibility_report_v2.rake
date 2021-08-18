@@ -15,7 +15,7 @@ task fc1_fc2_piece_compatibility_report_v2:  :environment do
   fc1_piece_cnt = 0
   place_match = false
   match_cnt = 0
-  detail_file.puts  "Country,FC1 Chapman Code,Year,FC1 Piece Number,Online,FC1 Place Name,Message,Review comments"
+  detail_file.puts  "Country,FC1 Chapman Code,Year,FC1 Piece Number,Online,FC1 Place Name,FC Place name, Review, Message,Review comments"
   summary_file.puts  "Country,FC1 Chapman Code,FC1 Piece Records Processed,FC1 Match Place Name,Percentage match"
   this_county = ''
   this_country = ''
@@ -70,7 +70,7 @@ task fc1_fc2_piece_compatibility_report_v2:  :environment do
       end
       place_name = '"' + fc1_place_name + '"'   # some place names have a comma in them!
       out_message = '"' +  message[1..-2] + '"'
-      detail_file.puts  "#{fc1_piece.place_country},#{fc1_piece.chapman_code},#{fc1_piece.year},#{fc1_piece.piece_number},#{fc1_status},#{place_name},#{out_message}" unless review_reqd == 'N'
+      detail_file.puts  "#{fc1_piece.place_country},#{fc1_piece.chapman_code},#{fc1_piece.year},#{fc1_piece.piece_number},#{fc1_status},#{place_name},#{fc2_place_name},#{review_reqd},#{out_message}"
     end
   end
   percentage_match = (match_cnt * 100 / fc1_piece_cnt).round(1).to_s
