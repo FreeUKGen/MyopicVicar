@@ -76,19 +76,7 @@ class SearchRecord
   field :location_names, type: Array, default: []
   field :search_soundex, type: Array, default: []
 
-
-  CEN_INDEXES = {
-    'ln_rt_sd' => ['search_names.last_name', 'record_type', 'search_date'],
-    'ln_fn_rt_sd' => ['search_names.last_name', 'search_names.first_name', 'record_type', 'search_date'],
-    'lnsdx_rt_sd' => ['search_soundex.last_name', 'record_type', 'search_date'],
-    'lnsdx_fnsdx_rt_sd' => ['search_soundex.last_name', 'search_soundex.first_name', 'record_type', 'search_date'],
-    'place_ln_rt_sd' => ['place_id', 'search_names.last_name', 'record_type', 'search_date'],
-    'place_ln_fn_rt_sd' => ['place_id', 'search_names.last_name', 'search_names.first_name', 'record_type', 'search_date'],
-    'place_lnsdx_rt_sd' => ['place_id', 'search_soundex.last_name', 'record_type', 'search_date'],
-    'place_lnsdx_fnsdx_rt_sd' => ['place_id', 'search_soundex.last_name', 'search_soundex.first_name', 'record_type', 'search_date'],
-    'place_fn_rt_sd' => ['place_id', 'search_names.first_name', 'record_type', 'search_date'],
-    'place_fnsdx_rt_sd' => ['place_id', 'search_soundex.first_name', 'record_type', 'search_date'],
-    'place_rt_sd' => ['place_id', 'record_type', 'search_date'],
+  CEN_CHAPMAN_INDEXES = {
     'county_ln_rt_sd' => ['chapman_code', 'search_names.last_name', 'record_type', 'search_date'],
     'county_ln_fn_rt_sd' => ['chapman_code', 'search_names.last_name', 'search_names.first_name', 'record_type', 'search_date'],
     'county_lnsdx_rt_sd' => ['chapman_code', 'search_soundex.last_name', 'record_type', 'search_date'],
@@ -97,7 +85,23 @@ class SearchRecord
     'birth_chapman_code_last_name_date' => ['birth_chapman_code', 'search_names.last_name', 'record_type', 'search_date'],
     'birth_chapman_code_soundex_names_date' => ['birth_chapman_code', 'search_soundex.last_name', 'search_soundex.first_name', 'record_type', 'search_date'],
     'birth_chapman_code_soundex_last_name_date' => ['birth_chapman_code', 'search_soundex.last_name', 'record_type', 'search_date']
-  }
+  }.freeze
+  CEN_PLACE_INDEXES = {
+    'place_ln_rt_sd' => ['place_id', 'search_names.last_name', 'record_type', 'search_date'],
+    'place_ln_fn_rt_sd' => ['place_id', 'search_names.last_name', 'search_names.first_name', 'record_type', 'search_date'],
+    'place_lnsdx_rt_sd' => ['place_id', 'search_soundex.last_name', 'record_type', 'search_date'],
+    'place_lnsdx_fnsdx_rt_sd' => ['place_id', 'search_soundex.last_name', 'search_soundex.first_name', 'record_type', 'search_date'],
+    'place_fn_rt_sd' => ['place_id', 'search_names.first_name', 'record_type', 'search_date'],
+    'place_fnsdx_rt_sd' => ['place_id', 'search_soundex.first_name', 'record_type', 'search_date'],
+    'place_rt_sd' => ['place_id', 'record_type', 'search_date']
+  }.freeze
+
+  CEN_BASIC_INDEXES = {
+    'ln_rt_sd' => ['search_names.last_name', 'record_type', 'search_date'],
+    'ln_fn_rt_sd' => ['search_names.last_name', 'search_names.first_name', 'record_type', 'search_date'],
+    'lnsdx_rt_sd' => ['search_soundex.last_name', 'record_type', 'search_date'],
+    'lnsdx_fnsdx_rt_sd' => ['search_soundex.last_name', 'search_soundex.first_name', 'record_type', 'search_date']
+  }.freeze
 
   REG_CHAPMAN_INDEXES = {
     'county_ln_rt_sd_ssd' => ['chapman_code', 'search_names.last_name', 'record_type', 'search_date', 'secondary_search_date'],
@@ -105,6 +109,7 @@ class SearchRecord
     'county_lnsdx_rt_sd_ssd' => ['chapman_code', 'search_soundex.last_name', 'record_type', 'search_date', 'secondary_search_date'],
     'county_fnsdx_lnsdx_rt_sd_ssd' => ['chapman_code', 'search_soundex.first_name', 'search_soundex.last_name', 'record_type', 'search_date', 'secondary_search_date']
   }.freeze
+
   REG_PLACE_INDEXES = {
     'place_fn_rt_sd_ssd' => ['place_id', 'search_names.first_name', 'record_type', 'search_date', 'secondary_search_date'],
     'place_ln_rt_sd_ssd' => ['place_id', 'search_names.last_name', 'record_type', 'search_date', 'secondary_search_date'],
@@ -113,6 +118,7 @@ class SearchRecord
     'place_lnsdx_fnsdx_rt_sd_ssd' => ['place_id', 'search_soundex.last_name', 'search_soundex.first_name', 'record_type', 'search_date', 'secondary_search_date'],
     'place_lnsdx_rt_sd_ssd' => ['place_id', 'search_soundex.last_name', 'record_type', 'search_date', 'secondary_search_date']
   }.freeze
+
   REG_BASIC_INDEXES = {
     'ln_fn_rt_sd_ssd' => ['search_names.last_name', 'search_names.first_name', 'record_type', 'search_date', 'secondary_search_date'],
     'lnsdx_fnsdx_rt_sd_ssd' => ['search_soundex.last_name', 'search_soundex.first_name', 'record_type', 'search_date', 'secondary_search_date'],
@@ -173,7 +179,7 @@ class SearchRecord
       first_id = BSON::ObjectId.from_time(previous_midnight)
       total_records = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
-        total_records[year] = SearchRecord.between(_id: first_id..last_id).where(chapman_code: county, record_type: year).count
+        total_records[year] = SearchRecord.between(_id: first_id..last_id).where(chapman_code: county, record_type: year).hint("id_chapman_record_type").count
       end
       total_records
     end
@@ -182,7 +188,9 @@ class SearchRecord
       last_id = BSON::ObjectId.from_time(last_midnight)
       total_records = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
-        total_records[year] = SearchRecord.where(_id: { '$lte' => last_id }, chapman_code: county, record_type: year).count
+        total = SearchRecord.where(chapman_code: county, record_type: year).hint("chapman_record_type").count
+        last_records = SearchRecord.where(_id: { '$gt' => last_id }, chapman_code: county, record_type: year).hint("id_chapman_record_type").count
+        total_records[year] = total - last_records
       end
       total_records
     end
@@ -259,7 +267,6 @@ class SearchRecord
 
 
     def extract_fields(fields, params, current_field)
-
       if params.is_a?(Hash)
         # walk down the syntax tree
         params.each_pair do |key, value|
@@ -271,7 +278,6 @@ class SearchRecord
           end
           extract_fields(fields, value, new_field)
         end
-
       else
         # terminate
         if indexable_value?(params)
@@ -369,14 +375,24 @@ class SearchRecord
     end
 
     def index_hint(search_params)
+      p search_params
       search_fields = fields_from_params(search_params)
+      p search_fields
       case App.name_downcase
       when 'freebmd'
         candidates = BMD_INDEXES.keys
         index_component = BMD_INDEXES
       when 'freecen'
-        candidates = CEN_INDEXES.keys
-        index_component = CEN_INDEXES
+        if search_fields.include?('place_id')
+          candidates = CEN_PLACE_INDEXES.keys
+          index_component = CEN_PLACE_INDEXES
+        elsif search_fields.include?('chapman_code')
+          candidates = CEN_CHAPMAN_INDEXES.keys
+          index_component = CEN_CHAPMAN_INDEXES
+        else
+          candidates = CEN_BASIC_INDEXES.keys
+          index_component = CEN_BASIC_INDEXES
+        end
       when 'freereg'
         if search_fields.include?('place_id')
           candidates = REG_PLACE_INDEXES.keys

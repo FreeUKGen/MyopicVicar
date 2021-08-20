@@ -52,6 +52,27 @@ db.runCommand(
                 },
                 "name" : "chapman_code_1__year_1_status_1"
 
+        },
+        {
+                 "key" : {
+                        "_id" : -1,
+                        "chapman_code" : 1,
+                        "year" : 1,
+                        "status" : 1
+                },
+                "name" : "id_chapman_code_year_status",
+                background: true
+
+        },
+        {
+                 "key" : {
+                        "_id" : -1,
+                        "year" : 1,
+                        "status" : 1
+                },
+                "name" : "id_year_status",
+                background: true
+
         }
 
     ]

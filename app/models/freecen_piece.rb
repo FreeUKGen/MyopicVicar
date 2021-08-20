@@ -53,6 +53,7 @@ class FreecenPiece
   field :num_dwellings, type: Integer, default: 0
   belongs_to :freecen1_fixed_dat_entry, index: true, optional: true
   belongs_to :place, optional: true, index: true
+  belongs_to :freecen2_place, optional: true, index: true
   has_many :freecen_dwellings, dependent: :restrict_with_error
   has_many :freecen1_vld_files, dependent: :restrict_with_error
 
@@ -78,10 +79,10 @@ class FreecenPiece
       totals_individuals = {}
       totals_dwellings = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
-        totals_individuals[year] = FreecenPiece.chapman_code(chapman_code).year(year).status('Online').sum(:num_individuals)
-        totals_pieces[year] = FreecenPiece.chapman_code(chapman_code).year(year).count
-        totals_pieces_online[year] = FreecenPiece.chapman_code(chapman_code).year(year).status('Online').count
-        totals_dwellings[year] = FreecenPiece.chapman_code(chapman_code).year(year).status('Online').sum(:num_dwellings)
+        totals_individuals[year] = FreecenPiece.chapman_code(chapman_code).year(year).status('Online').hint('chapman_code_1__year_1_status_1').sum(:num_individuals)
+        totals_pieces[year] = FreecenPiece.chapman_code(chapman_code).year(year).hint('chapman_code_1__year_1_status_1').count
+        totals_pieces_online[year] = FreecenPiece.chapman_code(chapman_code).year(year).hint('chapman_code_1__year_1_status_1').status('Online').count
+        totals_dwellings[year] = FreecenPiece.chapman_code(chapman_code).year(year).hint('chapman_code_1__year_1_status_1').status('Online').sum(:num_dwellings)
       end
       [totals_pieces, totals_pieces_online, totals_individuals, totals_dwellings]
     end
@@ -93,10 +94,10 @@ class FreecenPiece
       totals_individuals = {}
       totals_dwellings = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
-        totals_individuals[year] = FreecenPiece.where(_id: { '$lte' => last_id }).chapman_code(chapman_code).year(year).status('Online').sum(:num_individuals)
-        totals_pieces[year] = FreecenPiece.where(_id: { '$lte' => last_id }).chapman_code(chapman_code).year(year).count
-        totals_pieces_online[year] = FreecenPiece.where(_id: { '$lte' => last_id }).chapman_code(chapman_code).year(year).status('Online').count
-        totals_dwellings[year] = FreecenPiece.where(_id: { '$lte' => last_id }).chapman_code(chapman_code).year(year).status('Online').sum(:num_dwellings)
+        totals_individuals[year] = FreecenPiece.where(_id: { '$lte' => last_id }).chapman_code(chapman_code).year(year).status('Online').hint('id_chapman_code_year_status').sum(:num_individuals)
+        totals_pieces[year] = FreecenPiece.where(_id: { '$lte' => last_id }).chapman_code(chapman_code).year(year).hint('id_chapman_code_year_status').count
+        totals_pieces_online[year] = FreecenPiece.where(_id: { '$lte' => last_id }).chapman_code(chapman_code).year(year).status('Online').hint('id_chapman_code_year_status').count
+        totals_dwellings[year] = FreecenPiece.where(_id: { '$lte' => last_id }).chapman_code(chapman_code).year(year).status('Online').hint('id_chapman_code_year_status').sum(:num_dwellings)
       end
       [totals_pieces, totals_pieces_online, totals_individuals, totals_dwellings]
     end
@@ -109,10 +110,10 @@ class FreecenPiece
       totals_individuals = {}
       totals_dwellings = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
-        totals_individuals[year] = FreecenPiece.between(_id: first_id..last_id).chapman_code(chapman_code).year(year).status('Online').sum(:num_individuals)
-        totals_pieces[year] = FreecenPiece.between(_id: first_id..last_id).chapman_code(chapman_code).year(year).count
-        totals_pieces_online[year] = FreecenPiece.between(_id: first_id..last_id).chapman_code(chapman_code).year(year).status('Online').count
-        totals_dwellings[year] = FreecenPiece.between(_id: first_id..last_id).chapman_code(chapman_code).year(year).status('Online').sum(:num_dwellings)
+        totals_individuals[year] = FreecenPiece.between(_id: first_id..last_id).chapman_code(chapman_code).year(year).status('Online').hint('id_chapman_code_year_status').sum(:num_individuals)
+        totals_pieces[year] = FreecenPiece.between(_id: first_id..last_id).chapman_code(chapman_code).year(year).hint('id_chapman_code_year_status').count
+        totals_pieces_online[year] = FreecenPiece.between(_id: first_id..last_id).chapman_code(chapman_code).year(year).status('Online').hint('id_chapman_code_year_status').count
+        totals_dwellings[year] = FreecenPiece.between(_id: first_id..last_id).chapman_code(chapman_code).year(year).status('Online').hint('id_chapman_code_year_status').sum(:num_dwellings)
       end
       [totals_pieces, totals_pieces_online, totals_individuals, totals_dwellings]
     end
@@ -124,8 +125,8 @@ class FreecenPiece
       totals_individuals = {}
       totals_dwellings = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
-        totals_pieces[year] = FreecenPiece.where(_id: { '$lte' => last_id }).year(year).count
-        totals_pieces_online[year] = FreecenPiece.where(_id: { '$lte' => last_id }).year(year).status('Online').count
+        totals_pieces[year] = FreecenPiece.where(_id: { '$lte' => last_id }).year(year).hint('id_year_status').count
+        totals_pieces_online[year] = FreecenPiece.where(_id: { '$lte' => last_id }).year(year).status('Online').hint('id_year_status').count
       end
       [totals_pieces, totals_pieces_online]
     end
@@ -138,10 +139,10 @@ class FreecenPiece
       totals_individuals = {}
       totals_dwellings = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
-        totals_individuals[year] = FreecenPiece.between(_id: first_id..last_id).year(year).status('Online').sum(:num_individuals)
-        totals_pieces[year] = FreecenPiece.between(_id: first_id..last_id).year(year).count
-        totals_pieces_online[year] = FreecenPiece.between(_id: first_id..last_id).year(year).status('Online').count
-        totals_dwellings[year] = FreecenPiece.between(_id: first_id..last_id).year(year).status('Online').sum(:num_dwellings)
+        totals_individuals[year] = FreecenPiece.between(_id: first_id..last_id).year(year).status('Online').hint('id_year_status').sum(:num_individuals)
+        totals_pieces[year] = FreecenPiece.between(_id: first_id..last_id).year(year).hint('id_year_status').count
+        totals_pieces_online[year] = FreecenPiece.between(_id: first_id..last_id).year(year).status('Online').hint('id_year_status').count
+        totals_dwellings[year] = FreecenPiece.between(_id: first_id..last_id).year(year).status('Online').hint('id_year_status').sum(:num_dwellings)
       end
       [totals_pieces, totals_pieces_online, totals_individuals, totals_dwellings]
     end

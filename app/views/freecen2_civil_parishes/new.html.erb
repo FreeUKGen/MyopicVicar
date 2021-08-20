@@ -4,7 +4,7 @@
 <%= render 'flash_notice' %>
 <%= semantic_form_for @freecen2_civil_parish, :html => { :class => 'grid'}  do |f| %>
   <%= f.input :reason_changed,:label => 'Reason for making addition',:as => :text, :input_html => {:class => ' simple_form_bgcolour  ',   :placeholder => 'Enter the reason for addition',  :size => '50x5' }%>
-  <%= f.input :name ,  label: 'Civil Parish Name', input_html: {class: ' simple_form_bgcolour', size:40 }%>
+  <%= f.input :name ,  label: 'Civil Parish Name',  :required => true, input_html: {class: ' simple_form_bgcolour', size:40 }%>
   <%= f.input :number ,  label: 'Civil Parish Number (if any)', input_html: {class: ' simple_form_bgcolour', size:40 }%>
   <%= f.input :suffix ,  label: 'Civil Parish Suffix (if any)', input_html: {class: ' simple_form_bgcolour', size:40 }%>
   <%= f.input :freecen2_place_id,  label: 'Freecen2 Place name:', selected:  @freecen2_place_name, include_blank: false, collection: @places, input_html: {class: ' simple_form_bgcolour very_large_selection_field_width', size:5 }%>

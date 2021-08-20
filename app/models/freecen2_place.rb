@@ -33,9 +33,11 @@ class Freecen2Place
   field :original_latitude, type: String
   field :original_longitude, type: String
   field :original_source, type: String
+  field :original_notes, type: String
+  field :original_website, type: String
   field :source, type: String
   field :editor, type: String, default: ''
-  field :reason_for_change, type: String
+  field :reason_for_change, type: Array
   field :other_reason_for_change, type: String
   field :disabled, type: String, default: "false"
   field :master_place_lat, type: String
@@ -51,6 +53,7 @@ class Freecen2Place
 
 
   embeds_many :alternate_freecen2_place_names, cascade_callbacks: true
+  embeds_many :freecen2_place_edits, cascade_callbacks: true
 
   accepts_nested_attributes_for :alternate_freecen2_place_names, allow_destroy: true, reject_if: :all_blank
 
@@ -68,6 +71,7 @@ class Freecen2Place
   has_many :search_records, dependent: :restrict_with_error
 
   has_many :freecen2_pieces, dependent: :restrict_with_error
+  has_many :freecen_pieces, dependent: :restrict_with_error
   has_many :freecen_dwellings
   has_many :sources
 
@@ -117,39 +121,39 @@ class Freecen2Place
   ############################################################## class methods
   class << self
     def approved
-      where(:error_flag.ne => "Place name is not approved")
+      where(:error_flag.ne => 'Place name is not approved')
     end
 
     def id(id)
-      where(:id => id)
+      where(_id: id)
     end
 
     def chapman_code(chapman)
       if chapman.nil?
         all
       else
-        where(:chapman_code => chapman)
+        where(chapman_code: chapman)
       end
     end
 
     def county(county)
-      where(:county => county)
+      where(county: county)
     end
 
     def data_present
-      where(:data_present => true)
+      where(data_present: true)
     end
 
     def not_disabled
-      where(:disabled => "false")
+      where(disabled: 'false')
     end
 
     def place(place)
-      where(:place_name => place)
+      where(place_name: place)
     end
 
     def standard_place_name(place)
-      where(:standard_place_name => place)
+      where(standard_place_name: place)
     end
 
     def search(place_name, county)
@@ -179,8 +183,8 @@ class Freecen2Place
           codes << ChapmanCode.values_at(county)
         end
         results = Freecen2Place.where(:place_name_soundex => name_soundex, 'disabled' => 'false', :chapman_code => { '$in' => codes })
-        .or(Freecen2Place.where("alternate_freecen2_place_names.alternate_name_soundex" => name_soundex, 'disabled' => 'false', :chapman_code => { '$in' => codes}))
-        .order_by(place_name: 1, chapman_code: 1).all
+        .or(Freecen2Place.where("alternate_freecen2_place_names.alternate_name_soundex" => name_soundex, 'disabled' => 'false',
+                                :chapman_code => { '$in' => codes })).order_by(place_name: 1, chapman_code: 1).all
       else
         results = Freecen2Place.where(:place_name_soundex => name_soundex, 'disabled' => 'false')
         .or(Freecen2Place.where("alternate_freecen2_place_names.alternate_name_soundex" => name_soundex, 'disabled' => 'false'))
@@ -352,14 +356,12 @@ class Freecen2Place
   def add_location_if_not_present
     self[:place_name] = self[:place_name].strip
     self[:standard_place_name] = self[:standard_place_name].strip if self[:standard_place_name]
-    if self.location.blank?
-      if self[:latitude].blank? || self[:longitude].blank? then
-        my_location = self[:grid_reference].to_latlng.to_a
-        self[:latitude] = my_location[0]
-        self[:longitude]= my_location[1]
-      end
-      self.location = [self[:longitude].to_f,self[:latitude].to_f]
+    if self[:grid_reference].present? && self[:grid_reference].is_gridref?
+      my_location = self[:grid_reference].to_latlng.to_a
+      self[:latitude] = my_location[0]
+      self[:longitude] = my_location[1]
     end
+    self.location = [self[:longitude].to_f,self[:latitude].to_f]
   end
 
   def add_place_name_soundex
@@ -435,7 +437,6 @@ class Freecen2Place
   end
 
   def grid_reference_or_lat_lon_present_and_valid
-    #in addition to checking for validities it also sets the location
     if self[:grid_reference].blank?
       if (self[:latitude].blank? || self[:longitude].blank?)
         errors.add(:grid_reference, "Either the grid reference or the lat/lon must be present")
@@ -469,22 +470,43 @@ class Freecen2Place
     places
   end
 
-
-
   def save_to_original
-    if self.original_chapman_code.nil?
-      self.original_chapman_code = self.chapman_code
-      self.original_county = self.county
-      self.original_country = self.country
-      self.original_place_name = self.place_name
-      self.original_grid_reference = self.grid_reference
-      self.original_latitude = self.latitude
-      self.original_longitude = self.longitude
-      self.original_source =  self.source
-      self.save(validate: false)
+    if original_chapman_code.nil?
+      self.original_chapman_code = chapman_code
+      self.original_county = county
+      self.original_country = country
+      self.original_place_name = place_name
+      self.original_grid_reference = grid_reference
+      self.original_latitude = latitude
+      self.original_longitude = longitude
+      self.original_source =  source
+      self.original_notes = place_notes
+      self.original_website = genuki_url
+      save(validate: false)
     end
   end
 
+  def add_freecen2_place_edit(params)
+    reason = params[:freecen2_place][:reason_for_change].reject(&:empty?)
+    edit = Freecen2PlaceEdit.new(editor: params[:freecen2_place][:editor], reason: reason)
+
+    edit[:previous_chapman_code] = chapman_code
+    edit[:previous_county] = county
+    edit[:previous_country] = country
+    edit[:previous_place_name] = place_name
+    edit[:previous_grid_reference] = grid_reference
+    edit[:previous_latitude] = latitude
+    edit[:previous_longitude] = longitude
+    edit[:previous_source] = source
+    edit[:previous_website] = genuki_url
+    edit[:previous_notes] = place_notes
+    edit[:created] = Time.now
+    edit[:previous_alternate_place_names] = []
+    alternate_freecen2_place_names.each do |alternate|
+      edit[:previous_alternate_place_names] << alternate.alternate_name
+    end
+    freecen2_place_edits << edit
+  end
 
   def update_data_present
     if self.data_present?

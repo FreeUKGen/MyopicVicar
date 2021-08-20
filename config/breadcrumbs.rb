@@ -983,6 +983,25 @@ crumb :create_denomination do |denomination|
   parent :denominations
 end
 
+#............................................................Place Edit Reasons......................................
+crumb :place_edit_reasons do
+  link 'Place Edit Reasons', place_edit_reasons_path
+  parent :root
+end
+crumb :show_place_edit_reason do |place_edit_reason|
+  link 'Show Reason', place_edit_reason_path(place_edit_reason)
+  parent :place_edit_reasons
+end
+crumb :edit_place_edit_reason do |place_edit_reason|
+  link 'Edit Reason', edit_place_edit_reason_path(place_edit_reason)
+  parent :show_place_edit_reason, place_edit_reason
+end
+crumb :create_place_edit_reason do |place_edit_reason|
+  link 'Create Reason', new_place_edit_reason_path(place_edit_reason)
+  parent :place_edit_reasons
+end
+
+
 crumb :embargo_rules do |county, place, church, register|
   link 'Embargo Rules', embargo_rules_path( :county => county, :place => place, :church => church, :register => register)
   parent :show_register, county, place, church, register
@@ -2040,7 +2059,7 @@ crumb :freecen2_places do |county, place|
   when place.blank?
     link 'Freecen2 Places', freecen2_places_path
   when place.present?
-    link 'Freecen2 Places', freecen2_places_path(:anchor => place.id)
+    link 'Freecen2 Places', freecen2_places_path(anchor: place.id)
   end
   if session[:character].present?
     parent :place_range_options, county, session[:active]
@@ -2083,6 +2102,12 @@ crumb :show_freecen2_place do |county, place|
     parent :search_names
   end
 end
+
+crumb :freecen2_places_edits do |county, place|
+  link 'Freecen2 Place Edits', show_place_edits_freecen2_place_path(place)
+  parent :show_freecen2_place, county, place
+end
+
 crumb :edit_freecen2_place do |county, place|
   link 'Edit Freecen2 Place Information', edit_freecen2_place_path(place)
   parent :show_freecen2_place, county, place
