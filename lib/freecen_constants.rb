@@ -211,8 +211,8 @@ module Freecen
     Scotland_1881 Scotland_1891 Scotland_1901 Scotland_1911 Ireland_1901 Ireland_1911].freeze
 
   UNNEEDED_COUNTIES = [
-    'Central', 'Clwyd', 'Dumfries and Galloway', 'Dyfed', 'England and Wales Shipping', 'Grampian', 'Gwent', 'Gwynedd', 'Highland', 'London (City)',
-    'Lothian', 'Mid Glamorgan', 'Military', 'Orkney', 'Other Locations', 'Out of County', 'Powys', 'Royal Navy Ships', 'Scottish Shipping',
+    'Central', 'Clwyd', 'Dumfries and Galloway', 'Dyfed', 'Grampian', 'Gwent', 'Gwynedd', 'Highland', 'London (City)',
+    'Lothian', 'Mid Glamorgan', 'Military', 'Orkney', 'Other Locations', 'Out of County', 'Powys',
     'Shetland', 'South Glamorgan', 'Strathclyde', 'Tayside', 'Unknown', 'West Glamorgan', 'Western Isles', 'Yorkshire', 'England', 'Scotland',
     'Ireland', 'Wales'
   ].freeze
