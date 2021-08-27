@@ -5,6 +5,14 @@ class Freecen1UpdateProcessor
   require 'chapman_code'
   require 'freecen1_update_processor'
 
+
+
+
+  # This is the monthly update process script that is now not used
+
+
+
+
   @@log = ""
 
   class << self
