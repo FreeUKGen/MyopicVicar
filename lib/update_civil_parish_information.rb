@@ -149,12 +149,10 @@ class UpdateCivilParishInformation
         return nil
       end
       place_id = UpdateCivilParishInformation.locate_district_place(chapman_code, district_name, district_name, 'District')
-      @district_object = Freecen2District.find_by(name: district_name, code: district_code, chapman_code: chapman_code,
-                                                  year: district_year, type: district_type)
+      @district_object = Freecen2District.find_by(tnaid: district_tnaid)
 
       if @district_object.blank?
-        @output_file.puts "district #{district_tnaid} #{district_code}"
-        @output_file.puts @district_object.errors.full_messages
+        p "district #{district_name} #{district_tnaid} missing"
         crash
       end
       if district_year == '1841'
@@ -183,8 +181,8 @@ class UpdateCivilParishInformation
       end
       result = @district_object.save
       unless result
-        @output_file.puts "district #{district_tnaid} #{district_code}"
-        @output_file.puts @district_object.errors.full_messages
+        p "district #{district_tnaid} #{district_code}"
+        p @district_object.errors.full_messages
         crash
       end
       @district_object
@@ -231,19 +229,18 @@ class UpdateCivilParishInformation
       subdistrict_piece = district['piece'] if subdistrict_piece.blank? && district['piece'].present?
       subdistrict_piece = UpdateCivilParishInformation.convert_piece_number(subdistrict_piece)
       if subdistrict_name.blank?
-        @output_file.puts "Blank name for piece #{subdistrict_tnaid} #{subdistrict_piece} #{subdistrict_code}"
+        p "Blank name for piece #{subdistrict_tnaid} #{subdistrict_piece} #{subdistrict_code}"
         return nil
       end
-      place_id = UpdateCivilParishInformation.locate_subdistrict_place(district_object, subdistrict_name, district_object.freecen2_place_id, 'Piece')
-      @subdistrict_object = Freecen2Piece.find_by(name: subdistrict_name, code: subdistrict_code, tnaid: subdistrict_tnaid,
-                                                  number: subdistrict_piece, year: subdistrict_year,
-                                                  freecen2_district_id: district_object.id, prenote: subdistrict_prenote,
-                                                  chapman_code: district_object.chapman_code)
+
+      @subdistrict_object = Freecen2Piece.find_by(tnaid: subdistrict_tnaid)
 
       if  @subdistrict_object.blank?
-        @output_file.puts "piece #{subdistrict_tnaid} #{subdistrict_piece} #{subdistrict_code}"
-        @output_file.puts @subdistrict_object.errors.full_messages
-        crash
+        @subdistrict_object = Freecen2Piece.find_by(number: (subdistrict_piece + 'A'), year: subdistrict_year)
+        if @subdistrict_object.blank?
+          p "piece #{subdistrict_tnaid},#{subdistrict_piece},#{subdistrict_name},#{subdistrict_code}, #{subdistrict_year}"
+          crash
+        end
       end
       place_id = @subdistrict_object.freecen2_place_id
       value = subdistrict['parish']
@@ -258,12 +255,12 @@ class UpdateCivilParishInformation
           end
         end
       else
-        @output_file.puts " No parishes for district #{subdistrict_name} #{subdistrict_tnaid} "
+        p " No parishes for district #{subdistrict_name} #{subdistrict_tnaid} "
       end
       result = @subdistrict_object.save
       unless result
-        @output_file.puts "piece #{subdistrict_tnaid} #{subdistrict_piece} #{subdistrict_code}"
-        @output_file.puts @subdistrict_object.errors.full_messages
+        p "piece #{subdistrict_tnaid} #{subdistrict_piece} #{subdistrict_code}"
+
         crash
       end
       civil_parish_names = @subdistrict_object.add_update_civil_parish_list
@@ -275,7 +272,7 @@ class UpdateCivilParishInformation
       parish_name = parish['name']
       parish_note = parish['note']
       parish_prenote = parish['prenote']
-      @parish_object = Freecen2CivilParish.find_by(name: parish_name, note: parish_note, freecen2_piece_id: subdistrict_object.id, prenote: parish_prenote,
+      @parish_object = Freecen2CivilParish.find_by(name: Freecen2Place.standard_place(parish_name), note: parish_note, freecen2_piece_id: subdistrict_object.id, prenote: parish_prenote,
                                                    year: subdistrict_object.year, chapman_code: chapman_code)
       if @parish_object.blank?
         place_id = UpdateCivilParishInformation.locate_civil_place(chapman_code, parish_name, subdistrict_object, 'Civil Parish')
@@ -283,14 +280,8 @@ class UpdateCivilParishInformation
                                                  freecen2_place_id: place_id, year: subdistrict_object.year, chapman_code: chapman_code)
         result = @parish_object.save
         unless result
-          @output_file.puts "Parish #{parish_name} "
-          @output_file.puts @parish_object.errors.full_messages
-          crash
-        end
-        result = @parish_object.save
-        unless result
-          @output_file.puts "Parish #{parish_name} "
-          @output_file.puts @parish_object.errors.full_messages
+          p "Parish #{parish_name} not saved"
+
           crash
         end
       end
@@ -305,8 +296,8 @@ class UpdateCivilParishInformation
           chapman_code = ChapmanCode.merge_countries[county_name]
           return chapman_code
         else
-          @output_file.puts 'invalid county name'
-          @output_file.puts county_name
+          p 'invalid county name'
+          p county_name
           return nil
         end
       end
