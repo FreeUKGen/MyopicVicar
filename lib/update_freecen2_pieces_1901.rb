@@ -39,6 +39,9 @@ class UpdateFreecen2Pieces1901
         parish.delete
         fixed += 1
       end
+      piece.reload
+      civil_parish_names = piece.add_update_civil_parish_list
+      piece.update(civil_parish_names: civil_parish_names) unless civil_parish_names == piece.civil_parish_names
     end
     time_diff = Time.new - time_start
     average_record = time_diff * 1000 / records
