@@ -238,8 +238,13 @@ class UpdateCivilParishInformation
       if  @subdistrict_object.blank?
         @subdistrict_object = Freecen2Piece.find_by(number: (subdistrict_piece + 'A'), year: subdistrict_year)
         if @subdistrict_object.blank?
-          p "piece #{subdistrict_tnaid},#{subdistrict_piece},#{subdistrict_name},#{subdistrict_code}, #{subdistrict_year}"
-          crash
+          p "piece missing #{subdistrict_tnaid},#{subdistrict_piece},#{subdistrict_name},#{subdistrict_code}, #{subdistrict_year}"
+          place_id = UpdateCivilParishInformation.locate_subdistrict_place(district_object, subdistrict_name, district_object.freecen2_place_id, 'Piece')
+          @subdistrict_object = Freecen2Piece.new(name: subdistrict_name, code: subdistrict_code, tnaid: subdistrict_tnaid,
+                                                  number: subdistrict_piece, year: subdistrict_year, freecen2_place_id: place_id,
+                                                  freecen2_district_id: district_object.id, prenote: subdistrict_prenote,
+                                                  chapman_code: district_object.chapman_code)
+          @subdistrict_object.save
         end
       end
       place_id = @subdistrict_object.freecen2_place_id
