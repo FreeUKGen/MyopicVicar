@@ -466,11 +466,20 @@ namespace :foo do
 
 
   desc "Refresh the places cache"
-  task :refresh_places_cache => [:environment] do |t,args|
+  task :refresh_places_cache => [:environment] do |t, args|
     if args.extras.count == 0
       PlaceCache.refresh_all
     else
       args.extras.each { |a| PlaceCache.refresh(a.to_s) }
+    end
+  end
+
+  desc "Refresh the freecen2places cache"
+  task :refresh_freecen2places_cache => [:environment] do |t, args|
+    if args.extras.count == 0
+      Freecen2PlaceCache.refresh_all
+    else
+      args.extras.each { |a| Freecen2PlaceCache.refresh(a.to_s) }
     end
   end
 

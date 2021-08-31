@@ -285,6 +285,29 @@ class Freecen2Piece
       end
       line
     end
+
+    def extract_freecen2_piece_vld(description)
+      year, piece, series, = FreecenPiece.extract_year_and_piece(description)
+      if (year == '1841' || year == '1851') && series == 'HO'
+        series = 'HO107'
+      end
+      case year
+      when '1861'
+        series += '9'
+      when '1871'
+        series += '10'
+      when '1881'
+        series += '11'
+      when '1891'
+        series += '12'
+      when '1901'
+        series += '13'
+      when '1911'
+        series += '14'
+      end
+      freecen2_piece_number = series + '_' + piece.to_s
+      [year, freecen2_piece_number]
+    end
   end
 
   # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::Instance methods:::::::::::::::::::::::::::::::::::::::::::::::::::
