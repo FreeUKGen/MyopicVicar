@@ -517,7 +517,7 @@ class Freecen2Place
   end
 
   def update_places_cache
-    PlaceCache.refresh(self.chapman_code)
+    Freecen2PlaceCache.refresh(chapman_code)
   end
 
 end
