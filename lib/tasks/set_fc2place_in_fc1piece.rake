@@ -42,6 +42,15 @@ task set_fc2place_in_fc1piece:  :environment do
           fc2_place_name = fc2_place.place_name
           message += " Place name match (#{fc2_place_name} [#{fc2_place_id}]) +"
           fc1_piece.update_attributes(freecen2_place_id: fc2_place_id)
+          if fc2_place.data_present == false
+            fc2_place.data_present = true
+            fc2_place_save_needed = true
+          end
+          if !fc2_place.cen_data_years.include?(fc1_piece.year)
+            fc2_place.cen_data_years << fc1_piece.year
+            fc2_place_save_needed = true
+          end
+          fc2_place.save! if fc2_place_save_needed
         else
           review_reqd = 'Y'
           message += ' Unable to match place name +'
@@ -50,7 +59,7 @@ task set_fc2place_in_fc1piece:  :environment do
       unless message == ''
         place_name = '"' + fc1_place_name + '"'   # some place names have a comma in them!
         out_message = '"' +  message[1..-2] + '"'
-        log_file.puts   "#{fc1_piece.place_country},#{fc1_piece.chapman_code},#{fc1_piece.year},#{fc1_piece.piece_number},#{fc1_status},#{place_name},#{fc2_place_name},#{review_reqd},#{out_message}"
+        log_file.puts   "#{fc1_piece.place_country},#{fc1_piece.chapman_code},#{fc1_piece.year},#{fc1_piece.piece_number},#{fc1_piece.status},#{place_name},#{fc2_place_name},#{review_reqd},#{out_message}"
       end
     end
   end
