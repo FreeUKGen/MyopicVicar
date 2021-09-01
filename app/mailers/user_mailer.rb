@@ -422,6 +422,12 @@ class UserMailer < ActionMailer::Base
     mail(bcc: ccs, subject: subjects, body: body_message)
   end
 
+  def embargo_process_completion_email(rule_id, ccs)
+    @rule = EmbargoRule.find_by(id: rule_id)
+    @register = @rule.register
+    mail(bcc: 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>', subject: "Embargo processing is complete")
+  end
+
   def update_report_to_freereg_manager(file, user)
     @appname = appname
     attachments['report.log'] = File.read(file)
