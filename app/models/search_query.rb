@@ -131,6 +131,7 @@ class SearchQuery
   field :occupation, type: String
 
   has_and_belongs_to_many :places, inverse_of: nil
+  has_and_belongs_to_many :freecen2_places, inverse_of: nil
 
   embeds_one :search_result
 
@@ -233,7 +234,8 @@ class SearchQuery
 
   def all_radius_places
     all_places = []
-    place_ids.each do |place_id|
+    places = Rails.application.config.freecen2_place_cache ? freecen2_place_ids : place_ids
+    places.each do |place_id|
       if radius_search?
         radius_places(place_id).each do |near_place|
           all_places << near_place
@@ -697,20 +699,36 @@ class SearchQuery
     place_ids && place_ids.size > 0
   end
 
+  def freecen2_place_search?
+    freecen2_place_ids && freecen2_place_ids.size > 0
+  end
+
   def place_search_params
+    p 'place_search_params'
+    p self
     params = {}
     appname = App.name_downcase
-    if place_search?
-      search_place_ids = radius_place_ids
-      params[:place_id] = { '$in' => search_place_ids }
-    else
-      case appname
-      when 'freecen'
-        params[:chapman_code] = chapman_codes.present? ? { '$in' => chapman_codes } : { '$in' => ChapmanCode.values }
-        params[:birth_chapman_code] = { '$in' => birth_chapman_codes } if birth_chapman_codes.present?
-      when 'freereg'
+    case appname
+    when 'freereg'
+      if place_search?
+        search_place_ids = radius_place_ids
+        p search_place_ids
+        params[:place_id] = { '$in' => search_place_ids }
+      else
         params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes.present?
       end
+    when 'freecen'
+      if place_search? || freecen2_place_search?
+        search_place_ids = radius_place_ids
+        if Rails.application.config.freecen2_place_cache
+          params[:freecen2_place_id] = { '$in' => search_place_ids }
+        else
+          params[:place_id] = { '$in' => search_place_ids }
+        end
+      else
+        params[:chapman_code] = chapman_codes.present? ? { '$in' => chapman_codes } : { '$in' => ChapmanCode.values }
+      end
+      params[:birth_chapman_code] = { '$in' => birth_chapman_codes } if birth_chapman_codes.present?
     end
     params
   end
@@ -754,16 +772,22 @@ class SearchQuery
   end
 
   def radius_place_ids
+    p 'radius'
+    p all_radius_places
     radius_ids = []
     all_radius_places.map { |place| radius_ids << place.id }
-    radius_ids.concat(place_ids)
+    if Rails.application.config.freecen2_place_cache
+      radius_ids.concat(freecen2_place_ids)
+    else
+      radius_ids.concat(place_ids)
+    end
     radius_ids.uniq
     self.all_radius_place_ids = radius_ids
     radius_ids
   end
 
   def radius_places(place_id)
-    place = Place.find(place_id)
+    place = Rails.application.config.freecen2_place_cache ? Freecen2Place.find(place_id) : Place.find(place_id)
     place.places_near(radius_factor, place_system)
   end
 
