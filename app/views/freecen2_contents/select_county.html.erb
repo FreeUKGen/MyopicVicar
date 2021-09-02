@@ -1,0 +1,11 @@
+<div class="island">
+  <%= render partial: 'flash_notice' %>
+  <h2 style="text-align: center">Database Records for a Census County</h2>
+  <p style="text-align: center">List contains all counties for which Pieces exist in the Database</p>
+  <%= simple_form_for @county, :html => { :class => "grid"}  do |f| %>
+    <%= f.input :county_description, :as=>:select, :label=>'Please select a Census County:', :collection=>@all_counties, :include_blank=>false, :input_html=>{ :class=>"simple_form_bgcolour simple_form_position overide_selection_field_width", :size=>5, 'onchange'=>@location } %>
+  <% end %>
+  <div  style="text-align: center">
+    <%= link_to 'Cancel' , freecen2_contents_path, method: :get , :class => "btn btn--small" %><br>
+  </div>
+</div>

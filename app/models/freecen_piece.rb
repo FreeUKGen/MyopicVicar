@@ -73,6 +73,10 @@ class FreecenPiece
       where(status: status)
     end
 
+    def freecen2_place_id(id)
+      where(freecen2_place_id: id)
+    end
+
     def county_year_totals(chapman_code)
       totals_pieces = {}
       totals_pieces_online = {}
@@ -102,6 +106,28 @@ class FreecenPiece
       [totals_pieces, totals_pieces_online, totals_individuals, totals_dwellings]
     end
 
+    def before_district_year_totals(chapman_code, this_district, time)
+      last_id = BSON::ObjectId.from_time(time)
+      totals_pieces = {}
+      totals_pieces_online = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        totals_pieces[year]  = 0
+        totals_pieces_online[year] = 0
+        pieces_cnt = 0
+        pieces_online_cnt = 0
+        district_recs = Freecen2District.where(name: this_district, chapman_code: chapman_code, year: year)
+        district_recs.each do |district|
+          #pieces_cnt  = FreecenPiece.where(_id: { '$lte' => last_id }, chapman_code: chapman_code, year: year, freecen2_place_id: district.freecen2_place_id).count
+          # pieces_online_cnt = FreecenPiece.where(_id: { '$lte' => last_id }), chapman_code: chapman_code, year: year, freecen2_place_id: district.freecen2_place_id, status: 'Online').count
+          pieces_cnt  = FreecenPiece.where(_id: { '$lte' => last_id }).chapman_code(chapman_code).year(year).freecen2_place_id(district.freecen2_place_id).hint('id_chapman_code_year_status').count
+          pieces_online_cnt = FreecenPiece.where(_id: { '$lte' => last_id }).chapman_code(chapman_code).year(year).status('Online').freecen2_place_id(district.freecen2_place_id).hint('id_chapman_code_year_status').count
+          totals_pieces[year] +=  pieces_cnt
+          totals_pieces_online[year] += pieces_online_cnt
+        end
+      end
+      [totals_pieces, totals_pieces_online]
+    end
+
     def between_dates_county_year_totals(chapman_code, time1, time2)
       last_id = BSON::ObjectId.from_time(time2)
       first_id = BSON::ObjectId.from_time(time1)
@@ -116,6 +142,23 @@ class FreecenPiece
         totals_dwellings[year] = FreecenPiece.between(_id: first_id..last_id).chapman_code(chapman_code).year(year).status('Online').hint('id_chapman_code_year_status').sum(:num_dwellings)
       end
       [totals_pieces, totals_pieces_online, totals_individuals, totals_dwellings]
+    end
+
+    def between_dates_district_year_totals(chapman_code, this_district, time1, time2)
+      last_id = BSON::ObjectId.from_time(time2)
+      first_id = BSON::ObjectId.from_time(time1)
+      totals_pieces_online = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        totals_pieces_online[year] = 0
+        pieces_online_cnt = 0
+        district_recs = Freecen2District.where(name: this_district, chapman_code: chapman_code, year: year)
+        district_recs.each do |district|
+          # pieces_online_cnt = FreecenPiece.where(:status_date => time1..time2, chapman_code: chapman_code, year: year, freecen2_place_id: district.freecen2_place_id, status: 'Online').count
+          pieces_online_cnt = FreecenPiece.between(_id: first_id..last_id).chapman_code(chapman_code).year(year).status('Online').freecen2_place_id(district.freecen2_place_id).hint('id_chapman_code_year_status').count
+          totals_pieces_online[year] += pieces_online_cnt
+        end
+      end
+      totals_pieces_online
     end
 
     def before_year_totals(time)
@@ -341,6 +384,23 @@ class FreecenPiece
       place_params[:place_longitude] = place.longitude
       [true, place_params]
     end
+
+    def distinct_districts(county, time)
+      last_id = BSON::ObjectId.from_time(time)
+      cnty_districts = []
+      cnty_pieces = FreecenPiece.where(_id: { '$lte' => last_id }, chapman_code: county)
+      cnty_pieces.each do |piece|
+        if piece.freecen2_place_id.present?
+          piece_districts = Freecen2District.where(freecen2_place_id: piece.freecen2_place_id)
+          piece_districts.each do |district|
+            cnty_districts.append(district.name)
+          end
+        end
+      end
+      cnty_districts_uniq = cnty_districts.uniq
+      cnty_districts_uniq
+    end
+
   end
   # ############################################################################## instances
 end

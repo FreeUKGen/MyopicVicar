@@ -143,6 +143,79 @@ class Freecen2Piece
       [year, piece, census_fields]
     end
 
+    def before_year_totals(time)
+      last_id = BSON::ObjectId.from_time(time)
+      totals_pieces = {}
+      totals_pieces_online = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        totals_pieces[year] = Freecen2Piece.where(_id: { '$lte' => last_id }).year(year).count
+        totals_pieces_online[year] = Freecen2Piece.where(status_date: { '$lte' => time }).year(year).status('Online').count
+      end
+      [totals_pieces, totals_pieces_online]
+    end
+
+    def before_county_year_totals(chapman_code, time)
+      last_id = BSON::ObjectId.from_time(time)
+      totals_pieces = {}
+      totals_pieces_online = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        totals_pieces[year] = Freecen2Piece.where(_id: { '$lte' => last_id }).chapman_code(chapman_code).year(year).count
+        totals_pieces_online[year] = Freecen2Piece.where(status_date: { '$lte' => time }).chapman_code(chapman_code).year(year).status('Online').count
+      end
+      [totals_pieces, totals_pieces_online]
+    end
+
+    def before_district_year_totals(chapman_code, this_district, time)
+      last_id = BSON::ObjectId.from_time(time)
+      totals_pieces = {}
+      totals_pieces_online = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        totals_pieces[year]  = 0
+        totals_pieces_online[year] = 0
+        pieces_cnt = 0
+        pieces_online_cnt = 0
+        district_recs = Freecen2District.where(name: this_district, chapman_code: chapman_code, year: year)
+        district_recs.each do |district|
+          pieces_cnt  = Freecen2Piece.where(_id: { '$lte' => last_id }, chapman_code: chapman_code, year: year, freecen2_district_id: district.id).count
+          pieces_online_cnt = Freecen2Piece.where(status_date: { '$lte' => time }, chapman_code: chapman_code, year: year, freecen2_district_id: district.id, status: 'Online').count
+          totals_pieces[year] +=  pieces_cnt
+          totals_pieces_online[year] += pieces_online_cnt
+        end
+      end
+      [totals_pieces, totals_pieces_online]
+    end
+
+
+    def between_dates_year_totals(time1, time2)
+      totals_pieces_online = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        totals_pieces_online[year] = Freecen2Piece.between(status_date: time1..time2).year(year).status('Online').count
+      end
+      totals_pieces_online
+    end
+
+    def between_dates_county_year_totals(chapman_code, time1, time2)
+      last_id = BSON::ObjectId.from_time(time2)
+      totals_pieces_online = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        totals_pieces_online[year] = Freecen2Piece.between(status_date: time1..time2).chapman_code(chapman_code).year(year).status('Online').count
+      end
+      totals_pieces_online
+    end
+
+    def between_dates_district_year_totals(chapman_code, this_district, time1, time2)
+      totals_pieces_online = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        totals_pieces_online[year] = 0
+        pieces_online_cnt = 0
+        district_recs = Freecen2District.where(name: this_district, chapman_code: chapman_code, year: year)
+        district_recs.each do |district|
+          pieces_online_cnt = Freecen2Piece.where(:status_date => time1..time2, chapman_code: chapman_code, year: year, freecen2_district_id: district.id, status: 'Online').count
+          totals_pieces_online[year] += pieces_online_cnt
+        end
+      end
+      totals_pieces_online
+    end
 
 
     def county_year_totals(chapman_code)
@@ -285,6 +358,21 @@ class Freecen2Piece
       end
       line
     end
+
+    def distinct_districts(county, time)
+      last_id = BSON::ObjectId.from_time(time)
+      cnty_districts = []
+      cnty_pieces = Freecen2Piece.where(_id: { '$lte' => last_id }, chapman_code: county)
+      cnty_pieces.each do |piece|
+        if piece.freecen2_district_id.present?
+          district = Freecen2District.find_by(_id: piece.freecen2_district_id)
+          cnty_districts.append(district.name)
+        end
+      end
+      cnty_districts_uniq = cnty_districts.uniq
+      cnty_districts_uniq
+    end
+
   end
 
   # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::Instance methods:::::::::::::::::::::::::::::::::::::::::::::::::::

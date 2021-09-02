@@ -80,7 +80,7 @@ module ApplicationHelper
     when 'freereg'
       link_to('Records', main_app.new_freereg_content_path)
     when 'freecen'
-      link_to('Records', main_app.freecen_coverage_path, id: 'db_coverage_nav')
+      link_to('Records', main_app.freecen2_contents_path)
     when 'freebmd'
       link_to('Records', 'https://www.freebmd.org.uk/progress.shtml', target: :_blank)
     end
@@ -810,112 +810,112 @@ module ApplicationHelper
 
   def banner_header_non_gdpr
     banner = <<-HTML
-      <script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-      <ins class="adsbygoogle adSenseBanner"
-      style="display:inline-block;width:728px;height:90px"
-      data-ad-client = "#{data_ad_client}"
-      data-ad-slot = "#{data_ad_slot_header}">
-      </ins>
-      <script>
-        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
-        window.update_personalized_header_adverts = function (preference) {
-              if(preference == 'accept') {
-                (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0;
-              } else if(preference == 'deny') {
-                (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1;
-              }
-            };
-        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
-      </script>
-      <script type="text/javascript">
-        (adsbygoogle = window.adsbygoogle || []).push({});
-      </script>
-    HTML
-    if Rails.env.development?
-      banner = <<-HTML
-      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
-      HTML
-    end
-    banner.html_safe
-  end
-
-  def banner_header_gdpr
-    banner = <<-HTML
     <script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <ins class="adsbygoogle adSenseBanner"
     style="display:inline-block;width:728px;height:90px"
     data-ad-client = "#{data_ad_client}"
     data-ad-slot = "#{data_ad_slot_header}">
     </ins>
-    <script type="text/javascript">
-    (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
-    HTML
-    if Rails.env.development?
-      banner = <<-HTML
-      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
-      HTML
-    end
-    banner.html_safe
-  end
+    <script>
+    (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
+    window.update_personalized_header_adverts = function (preference) {
+      if(preference == 'accept') {
+          (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0;
+        } else if(preference == 'deny') {
+          (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1;
+        }
+        };
+        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
+        </script>
+        <script type="text/javascript">
+        (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+        HTML
+        if Rails.env.development?
+          banner = <<-HTML
+          <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
+          HTML
+        end
+        banner.html_safe
+      end
 
-  def side_banners
-    banner = <<-HTML
-    <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <ins class="adsbygoogle adSenseBanner"
-    style="display:inline-block;width:120px;height:600px"
-    data-ad-client = "#{data_ad_client}"
-    data-ad-slot = "#{app_advert['data_ad_slot_side']}">
-    </ins>
-    <script type="text/javascript">
-    (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
-    HTML
-    if Rails.env.development?
-      banner = <<-HTML
-      <img src="http://dummyimage.com/120x600/000/fff?text=banner+ad">
-      HTML
-    end
-    banner.html_safe
-  end
+      def banner_header_gdpr
+        banner = <<-HTML
+        <script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <ins class="adsbygoogle adSenseBanner"
+        style="display:inline-block;width:728px;height:90px"
+        data-ad-client = "#{data_ad_client}"
+        data-ad-slot = "#{data_ad_slot_header}">
+        </ins>
+        <script type="text/javascript">
+        (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+        HTML
+        if Rails.env.development?
+          banner = <<-HTML
+          <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
+          HTML
+        end
+        banner.html_safe
+      end
 
-  def side_banners_large
-    banner = <<-HTML
-    <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <ins class="adsbygoogle adSenseBanner"
-    style="display:inline-block;width:300px;height:600px"
-    data-ad-client = "#{data_ad_client}"
-    data-ad-slot = "#{app_advert['side_banners_large_slot']}">
-    </ins>
-    <script type="text/javascript">
-    (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
-    HTML
-    if Rails.env.development?
-      banner = <<-HTML
-      <img src="https://dummyimage.com/300x600/000/fff">
-      HTML
-    end
-    banner.html_safe
-  end
+      def side_banners
+        banner = <<-HTML
+        <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <ins class="adsbygoogle adSenseBanner"
+        style="display:inline-block;width:120px;height:600px"
+        data-ad-client = "#{data_ad_client}"
+        data-ad-slot = "#{app_advert['data_ad_slot_side']}">
+        </ins>
+        <script type="text/javascript">
+        (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+        HTML
+        if Rails.env.development?
+          banner = <<-HTML
+          <img src="http://dummyimage.com/120x600/000/fff?text=banner+ad">
+          HTML
+        end
+        banner.html_safe
+      end
 
-  def side_banners_square
-    banner = <<-HTML
-    <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <ins class="adsbygoogle adSenseBanner"
-    style="display:inline-block;width:336px;height:280px"
-    data-ad-client = "#{data_ad_client}"
-    data-ad-slot = "#{app_advert['side_banners_square_slot']}">
-    </ins>
-    <script type="text/javascript">
-    (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
-    HTML
-    if Rails.env.development?
-      banner = <<-HTML
-      <img src="http://dummyimage.com/300x250/000/fff?text=banner+ad">
-      HTML
-    end
-    banner.html_safe
-  end
-end
+      def side_banners_large
+        banner = <<-HTML
+        <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <ins class="adsbygoogle adSenseBanner"
+        style="display:inline-block;width:300px;height:600px"
+        data-ad-client = "#{data_ad_client}"
+        data-ad-slot = "#{app_advert['side_banners_large_slot']}">
+        </ins>
+        <script type="text/javascript">
+        (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+        HTML
+        if Rails.env.development?
+          banner = <<-HTML
+          <img src="https://dummyimage.com/300x600/000/fff">
+          HTML
+        end
+        banner.html_safe
+      end
+
+      def side_banners_square
+        banner = <<-HTML
+        <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <ins class="adsbygoogle adSenseBanner"
+        style="display:inline-block;width:336px;height:280px"
+        data-ad-client = "#{data_ad_client}"
+        data-ad-slot = "#{app_advert['side_banners_square_slot']}">
+        </ins>
+        <script type="text/javascript">
+        (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+        HTML
+        if Rails.env.development?
+          banner = <<-HTML
+          <img src="http://dummyimage.com/300x250/000/fff?text=banner+ad">
+          HTML
+        end
+        banner.html_safe
+      end
+      end

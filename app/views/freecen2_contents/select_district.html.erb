@@ -1,0 +1,16 @@
+<div class="island">
+  <%= render partial: 'flash_notice' %>
+  <h2 style="text-align: center">Districts in <%= session[:county] %></h2>
+  <p style="text-align: center">List contains all census districts in the county for which Pieces exist in our Database</p>
+  <%= simple_form_for @district, :html => { :class => "grid"}  do |f| %>
+    <%= f.input :name, :as=>:select, :label=>'Please select a District:', :collection=>@all_districts, :include_blank=>false, :input_html=>{ :class=>"simple_form_bgcolour simple_form_position overide_selection_field_width", :size=>5, 'onchange'=> @location} %>
+  <% end %>
+  <div  style="text-align: center">
+    <%= link_to 'Cancel' , index_by_county_freecen2_contents_path, method: :get , :class => "btn btn--small" %><br>
+  </div>
+</div>
+<script>
+  function replace_chars(str) {
+    return str.replace('&', '%26').replace('+','%2B')
+  }
+</script>
