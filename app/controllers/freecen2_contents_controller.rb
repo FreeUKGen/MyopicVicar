@@ -55,8 +55,7 @@ class Freecen2ContentsController < ApplicationController
   end
 
   def get_districts_for_selection(chapman_code,time)
-    @all_districts = Freecen2Content.get_all_county_districts(chapman_code,time)
-    @all_districts.sort!
+    @all_districts = Freecen2Piece.distinct_districts(chapman_code, time).sort!
   end
 
   def new

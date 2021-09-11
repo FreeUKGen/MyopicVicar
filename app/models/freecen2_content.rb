@@ -44,7 +44,7 @@ class Freecen2Content
 
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
         records[:total][year] = {}
-        records[:total][year][:pieces] = fc1_totals_pieces[year] + fc2_totals_pieces[year]
+        records[:total][year][:pieces] = fc2_totals_pieces[year] # fc2_pieces are all the pieces so no need to add fc1_pieces
         records[:total][:total][:pieces] += records[:total][year][:pieces]
         records[:total][year][:pieces_online] = fc1_totals_pieces_online[year] + fc2_totals_pieces_online[year]
         records[:total][:total][:pieces_online] += records[:total][year][:pieces_online]
@@ -73,7 +73,7 @@ class Freecen2Content
 
         Freecen::CENSUS_YEARS_ARRAY.each do |year|
           records[county][year] = {}
-          records[county][year][:pieces] = fc1_totals_pieces[year] + fc2_totals_pieces[year]
+          records[county][year][:pieces] = fc2_totals_pieces[year] # fc2_pieces are all the pieces so no need to add fc1_pieces
           records[county][:total][:pieces] += records[county][year][:pieces]
           records[county][year][:pieces_online] = fc1_totals_pieces_online[year] + fc2_totals_pieces_online[year]
           records[county][:total][:pieces_online] += records[county][year][:pieces_online]
@@ -85,7 +85,7 @@ class Freecen2Content
 
         if records[county][:total][:pieces] > 0
 
-          cnty_districts = Freecen2Content.get_all_county_districts(county, last_midnight)
+          cnty_districts = Freecen2Piece.distinct_districts(county, last_midnight)
 
           if cnty_districts.count > 0
 
@@ -107,7 +107,7 @@ class Freecen2Content
 
               Freecen::CENSUS_YEARS_ARRAY.each do |year|
                 records[county][key_district][year] = {}
-                records[county][key_district][year][:pieces] = fc1_totals_pieces[year] + fc2_totals_pieces[year]
+                records[county][key_district][year][:pieces] = fc2_totals_pieces[year] # fc2_pieces are all the pieces so no need to add fc1_pieces
                 records[county][key_district][:total][:pieces] += records[county][key_district][year][:pieces]
                 records[county][key_district][year][:pieces_online] = fc1_totals_pieces_online[year] + fc2_totals_pieces_online[year]
                 records[county][key_district][:total][:pieces_online] += records[county][key_district][year][:pieces_online]
@@ -172,12 +172,6 @@ class Freecen2Content
       # Full stops cannot be used in Hash keys - E.G. St. Quivox found in fc1 piece for AYR
       # ERROR => BSON::String::IllegalKey: 'St. Quivox' is an illegal key in MongoDB. Keys may not start with '$' or contain a '.'.
       key_district = district.gsub(/\./,"*")
-    end
-
-    def get_all_county_districts(chapman_code, time)
-      unique_fc1_districts = FreecenPiece.distinct_districts(chapman_code, time)
-      unique_fc2_districts = Freecen2Piece.distinct_districts(chapman_code, time)
-      all_districts = (unique_fc1_districts + unique_fc2_districts).uniq
     end
 
   end # self
