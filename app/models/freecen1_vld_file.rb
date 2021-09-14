@@ -37,7 +37,7 @@ class Freecen1VldFile
   has_many :freecen_dwellings
   has_many :search_records
   belongs_to :freecen_piece, optional: true, index: true
-
+  belongs_to :freecen2_civil_parish, optional: true, index: true
   class << self
     def chapman(chapman)
       where(dir_name: chapman)

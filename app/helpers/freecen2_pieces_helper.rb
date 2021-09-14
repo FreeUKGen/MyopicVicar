@@ -29,7 +29,7 @@ module Freecen2PiecesHelper
   end
 
   def csv_files_piece(piece)
-    if piece.freecen_csv_files.present?
+    if piece.vld_files.present?
       files = []
       piece.freecen_csv_files.order_by(file_name: 1).each do |file|
         if file.userid.blank?
@@ -40,9 +40,18 @@ module Freecen2PiecesHelper
       end
       files
     else
-      'There are no csv files'
+      'There are no CSV files'
     end
   end
+
+  def vld_files_piece(piece)
+    if piece.vld_files.present?
+      piece.vld_files
+    else
+      'There are no VLD files'
+    end
+  end
+
 
   def piece_status(piece)
     if piece.status.present?
@@ -52,9 +61,19 @@ module Freecen2PiecesHelper
 
   def csv_files_piece_link(piece)
     if piece.present? && session[:type] != 'locate_other_pieces'
-      link_to 'Freecen Files', freecen_csv_files_path, class: 'btn   btn--small', title:'Csv files for this Piece'
+      link_to 'Freecen CSV Files', freecen_csv_files_path, class: 'btn   btn--small', title:'Csv files for this Piece'
     elsif session[:type] == 'locate_other_pieces'
-      'Freecen Files'
+      'Freecen CSV Files'
+    else
+      'There is no piece'
+    end
+  end
+
+  def vld_files_piece_link(piece)
+    if piece.present? && session[:type] != 'locate_other_pieces'
+      link_to 'Freecen VLD Files', freecen1_vld_files_path, class: 'btn   btn--small', title:'VLD files for this Piece'
+    elsif session[:type] == 'locate_other_pieces'
+      'Freecen VLD Files'
     else
       'There is no piece'
     end

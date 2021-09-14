@@ -40,67 +40,74 @@
             <td class="weight--semibold"> <%= civil_piece_link( @freecen2_civil_parish)  %></td>
           </tr>
           <tr>
-            <td>Notes before name</td>
-            <td class="weight--semibold"> <%=  @freecen2_civil_parish.prenote %> </td>
-          </tr>
-          <tr>
-            <td>Notes</td>
-            <td class="weight--semibold"> <%=  @freecen2_civil_parish.note %> </td>
-          </tr>
-          <tr>
-            <td>Parish Number</td>
-            <td class="weight--semibold"> <%=  @freecen2_civil_parish.number %> </td>
-          </tr>
-          <tr>
-            <td>Suffix</td>
-            <td class="weight--semibold"> <%=  @freecen2_civil_parish.suffix %> </td>
-          </tr>
-          <% if @freecen2_civil_parish.freecen2_hamlets.length > 0 %>
-            <% @freecen2_civil_parish.freecen2_hamlets.each do |hamlet| %>
+            <% if @scotland %>
               <tr>
-                <td>Hamlet name</td>
-                <td class="weight--semibold"> <%=  hamlet.name %> </td>
+                <td><%= vld_files_parish_link(@freecen2_civil_parish) %></td>
+                <td class="weight--semibold"> <%= vld_files_parish(@freecen2_civil_parish) %> </td>
               </tr>
               <tr>
-                <td>Hamlet Notes before name </td>
-                <td class="weight--semibold"> <%=  hamlet.prenote  %> </td>
+                <td>Parish Number</td>
+                <td class="weight--semibold"> <%=  @freecen2_civil_parish.number %> </td>
               </tr>
               <tr>
-                <td>Hamlet Notes</td>
-                <td class="weight--semibold"> <%=  hamlet.note  %> </td>
+                <td>Suffix</td>
+                <td class="weight--semibold"> <%=  @freecen2_civil_parish.suffix %> </td>
               </tr>
+            <% else%>
+              <td>Notes before name</td>
+              <td class="weight--semibold"> <%=  @freecen2_civil_parish.prenote %> </td>
+            </tr>
+            <tr>
+              <td>Notes</td>
+              <td class="weight--semibold"> <%=  @freecen2_civil_parish.note %> </td>
+            </tr>
+            <% if @freecen2_civil_parish.freecen2_hamlets.length > 0 %>
+              <% @freecen2_civil_parish.freecen2_hamlets.each do |hamlet| %>
+                <tr>
+                  <td>Hamlet name</td>
+                  <td class="weight--semibold"> <%=  hamlet.name %> </td>
+                </tr>
+                <tr>
+                  <td>Hamlet Notes before name </td>
+                  <td class="weight--semibold"> <%=  hamlet.prenote  %> </td>
+                </tr>
+                <tr>
+                  <td>Hamlet Notes</td>
+                  <td class="weight--semibold"> <%=  hamlet.note  %> </td>
+                </tr>
+              <% end%>
             <% end%>
-          <% end%>
-          <% if @freecen2_civil_parish.freecen2_townships.length > 0 %>
-            <% @freecen2_civil_parish.freecen2_townships.each do |township| %>
-              <tr>
-                <td>Township name</td>
-                <td class="weight--semibold"> <%=  township.name %> </td>
-              </tr>
-              <tr>
-                <td>Township Notes before name </td>
-                <td class="weight--semibold"> <%=  township.prenote  %> </td>
-              </tr>
-              <tr>
-                <td>Township Notes</td>
-                <td class="weight--semibold"> <%=  township.note  %> </td>
-              </tr>
+            <% if @freecen2_civil_parish.freecen2_townships.length > 0 %>
+              <% @freecen2_civil_parish.freecen2_townships.each do |township| %>
+                <tr>
+                  <td>Township name</td>
+                  <td class="weight--semibold"> <%=  township.name %> </td>
+                </tr>
+                <tr>
+                  <td>Township Notes before name </td>
+                  <td class="weight--semibold"> <%=  township.prenote  %> </td>
+                </tr>
+                <tr>
+                  <td>Township Notes</td>
+                  <td class="weight--semibold"> <%=  township.note  %> </td>
+                </tr>
+              <% end%>
             <% end%>
-          <% end%>
-          <% if @freecen2_civil_parish.freecen2_wards.length > 0 %>
-            <% @freecen2_civil_parish.freecen2_wards.each do |ward| %>
-              <tr>
-                <td>Ward name</td>
-                <td class="weight--semibold"> <%=  ward.name %> </td>
-              </tr>
-              <tr>
-                <td>Ward Notes before name </td>
-                <td class="weight--semibold"> <%=  ward.prenote  %> </td>
-              </tr>
-              <tr>
-                <td>Ward Notes</td>
-                <td class="weight--semibold"> <%=  ward.note  %> </td>
-              </tr>
+            <% if @freecen2_civil_parish.freecen2_wards.length > 0 %>
+              <% @freecen2_civil_parish.freecen2_wards.each do |ward| %>
+                <tr>
+                  <td>Ward name</td>
+                  <td class="weight--semibold"> <%=  ward.name %> </td>
+                </tr>
+                <tr>
+                  <td>Ward Notes before name </td>
+                  <td class="weight--semibold"> <%=  ward.prenote  %> </td>
+                </tr>
+                <tr>
+                  <td>Ward Notes</td>
+                  <td class="weight--semibold"> <%=  ward.note  %> </td>
+                </tr>
+              <% end%>
             <% end%>
           <% end%>
         </table>

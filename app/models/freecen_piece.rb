@@ -155,6 +155,7 @@ class FreecenPiece
       third_and_fourth = stem.slice(2, 2)
       last_three = stem.slice(5, 3)
       last_four = stem.slice(4, 4)
+      last_five = stem.slice(3, 5)
       case first_two_characters
       when 'RG'
         if third_character == '9' || third_and_fourth == '09'
@@ -196,13 +197,13 @@ class FreecenPiece
         if third_character == '6'
           year = '1861'
           piece = last_three
-        elsif third_and_fourth == '7'
+        elsif third_character == '7'
           piece = last_three
           year = '1871'
-        elsif third_and_fourth == '8'
+        elsif third_character == '8'
           piece = last_three
           year = '1881'
-        elsif third_and_fourth == '9'
+        elsif third_character == '9'
           piece = last_three
           year = '1891'
         elsif third_and_fourth == '10'
@@ -216,6 +217,7 @@ class FreecenPiece
           piece = ''
         end
       end
+
       [year, piece.to_i, first_two_characters]
     end
 

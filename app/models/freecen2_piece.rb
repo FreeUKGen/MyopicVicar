@@ -42,9 +42,10 @@ class Freecen2Piece
   field :reason_changed, type: String
   field :action, type: String
 
-
   field :parish_number, type: String
   field :film_number, type: String
+  field :suffix, type: String
+  field :piece_number, type: Integer
 
   field :status, type: String
   field :remarks, type: String
@@ -52,6 +53,8 @@ class Freecen2Piece
   field :online_time, type: Integer
   field :num_individuals, type: Integer, default: 0
   field :status_date, type: DateTime
+
+  field :vld_files, type: Array, default: []
 
   belongs_to :freecen2_district, optional: true, index: true
   belongs_to :freecen2_place, optional: true, index: true
@@ -62,6 +65,7 @@ class Freecen2Piece
   has_many :freecen2_civil_parishes, dependent: :restrict_with_error
   has_many :freecen_dwellings, dependent: :restrict_with_error
   has_many :freecen_csv_files, dependent: :restrict_with_error
+  has_many :freecen1_vld_files, dependent: :restrict_with_error
   has_many :freecen_individuals, dependent: :restrict_with_error
 
   before_save :add_standard_names
@@ -287,23 +291,44 @@ class Freecen2Piece
     end
 
     def extract_freecen2_piece_vld(description)
-      year, piece, series, = FreecenPiece.extract_year_and_piece(description)
-      if (year == '1841' || year == '1851') && series == 'HO'
-        series = 'HO107'
-      end
-      case year
-      when '1861'
-        series += '9'
-      when '1871'
-        series += '10'
-      when '1881'
-        series += '11'
-      when '1891'
-        series += '12'
-      when '1901'
-        series += '13'
-      when '1911'
-        series += '14'
+      year, piece, series = FreecenPiece.extract_year_and_piece(description)
+      series = 'HO107' if (year == '1841' || year == '1851') && series == 'HO'
+      series = 'HS4' if year == '1841' && series == 'HS'
+      series = 'HS5' if year == '1851' && series == 'HS'
+      if series == 'RG'
+        case year
+        when '1861'
+          series += '9'
+        when '1871'
+          series += '10'
+        when '1881'
+          series += '11'
+        when '1891'
+          series += '12'
+        when '1901'
+          series += '13'
+        when '1911'
+          series += '14'
+        end
+
+      elsif series == 'RS'
+        case year
+        when '1861'
+          series += '6'
+        when '1871'
+          series += '7'
+        when '1881'
+          series += '8'
+        when '1891'
+          series += '9'
+        when '1901'
+          series += '13'
+        when '1911'
+          series += '14'
+        end
+      else
+        p series unless series == 'HO107' || series == 'HS4' || series == 'HS5'
+        crash  unless series == 'HO107' || series == 'HS4' || series == 'HS5'
       end
       freecen2_piece_number = series + '_' + piece.to_s
       [year, freecen2_piece_number]

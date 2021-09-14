@@ -90,6 +90,7 @@ class Freecen2PiecesController < ApplicationController
     @freecen2_pieces = @freecen2_piece.piece_names
     @places = Freecen2Place.place_names_plus_alternates(@chapman_code)
     @type = session[:type]
+    @scotland = scotland_county?(@chapman_code)
   end
 
   def edit_name
@@ -103,6 +104,7 @@ class Freecen2PiecesController < ApplicationController
 
     @type = session[:type]
     @chapman_code = session[:chapman_code]
+    @scotland = scotland_county?(@chapman_code)
   end
 
   def enter_number
@@ -195,6 +197,7 @@ class Freecen2PiecesController < ApplicationController
     @freecen2_piece = Freecen2Piece.new(freecen2_district_id: @freecen2_district.id, chapman_code: @chapman_code, year: @year, freecen2_place_id: @freecen2_place)
     session[:type] = 'district_year_index'
     @type = params[:type]
+    @scotland = scotland_county?(@chapman_code)
   end
 
   def refresh_civil_parish_list
@@ -277,6 +280,7 @@ class Freecen2PiecesController < ApplicationController
     @chapman_code = @freecen2_piece.chapman_code
     @type = session[:type]
     session[:freecen2_piece] = @freecen2_piece.name
+    @scotland = scotland_county?(@chapman_code)
   end
 
   def update

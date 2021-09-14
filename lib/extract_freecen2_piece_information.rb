@@ -399,7 +399,7 @@ class ExtractFreecen2PieceInformation
           if place.present?
             place_id = place.id
           else
-            @missing_place_names << "#{myname} a #{type} in | #{chapman_code}"
+            @missing_place_names << "#{myname} a #{type} in | #{chapman_code}"  if @missing_place_names.present?
           end
         end
       end
@@ -423,7 +423,7 @@ class ExtractFreecen2PieceInformation
             if district.freecen2_place_id.present?
               place_id = district.freecen2_place_id
             else
-              @missing_place_names << "#{myname} a #{type} in | #{district.chapman_code}| district #{district.name} "
+              @missing_place_names << "#{myname} a #{type} in | #{district.chapman_code}| district #{district.name} " if @missing_place_names.present?
             end
           end
         end
@@ -433,7 +433,7 @@ class ExtractFreecen2PieceInformation
 
     def locate_civil_place(chapman_code, name, piece, type)
       myname = Freecen2Place.standard_place(name)
-      district_name = piece.freecen2_district.name
+      district_name = Freecen2District.find_by(freecen2_district_id: piece.freecen2_district_id).name if Freecen2District.find_by(freecen2_district_id: piece.freecen2_district_id).present?
       piece_name = piece.name
       place = Freecen2Place.find_by(chapman_code: chapman_code, standard_place_name: myname)
       if place.present?
@@ -450,7 +450,7 @@ class ExtractFreecen2PieceInformation
             if piece.freecen2_place_id.present?
               place_id = piece.freecen2_place_id
             else
-              @missing_place_names << "#{myname} a #{type} in | #{chapman_code}| district #{district_name} | sub district (piece) #{piece_name} "
+              @missing_place_names << "#{myname} a #{type} in | #{chapman_code}| district #{district_name} | sub district (piece) #{piece_name} " if @missing_place_names.present?
             end
           end
         end
