@@ -80,10 +80,9 @@ MyopicVicar::Application.routes.draw do
   get 'freecen2_site_statistics/export_csv', to: 'freecen2_site_statistics#export_csv', as: :export_csv_freecen2_site_statistics
   resources :freecen2_site_statistics
 
-  get 'freecen2_contents/select_county', to: 'freecen2_contents#select_county', as: :select_county_freecen2_contents
   get 'freecen2_contents/county_index', to: 'freecen2_contents#county_index', as: :index_by_county_freecen2_contents
-  get 'freecen2_contents/select_district', to: 'freecen2_contents#select_district', as: :select_district_freecen2_contents
   get 'freecen2_contents/district_index', to: 'freecen2_contents#district_index', as: :index_by_district_freecen2_contents
+  get 'freecen2_contents/piece_index', to: 'freecen2_contents#piece_index', as: :freecen2_contents_piece_index
   resources :freecen2_contents
 
   get 'freecen2_search_statistics/graphic', to: 'freecen2_search_statistics#graphic', as: :graphic_freecen2_search_statistics

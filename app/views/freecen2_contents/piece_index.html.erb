@@ -1,0 +1,11 @@
+<h2 style="text-align: center">Database Pieces for <%= @district_description %> in <%= @county_description %> in <%= @census %> as of  <%= @interval_end.strftime('%d %b %Y') %> </h2>
+<%= link_to 'Choose another County' , freecen2_contents_path, method: :get , :class => "btn btn--small" %>
+<%= link_to 'Choose another District' , index_by_county_freecen2_contents_path, method: :get , :class => "btn btn--small" %><br>
+<br>
+<div>
+  <h1 style="text-align: center"> **** Page under construction **** </h1>
+</div>
+<div  style="text-align: center">
+  <%= link_to 'Back to Totals for District' , index_by_district_freecen2_contents_path(:district_description => @district_description), method: :get , :class => "btn btn--small" %><br>
+</div>
+<br />

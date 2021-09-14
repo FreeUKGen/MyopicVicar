@@ -16,6 +16,10 @@ class Freecen2ContentsController < ApplicationController
     end
     @chapman_code = ChapmanCode.code_from_name(@county_description)
     session[:chapman_code] = @chapman_code
+    get_districts_for_selection(session[:chapman_code],session[:interval_end])
+    @district = Freecen2District.new
+    # district names containing & or + cause problems in hrefs, so call javascript replace_chars to replace with unicode value (function is in the view)
+    @location = 'location.href= "/freecen2_contents/district_index/?district_description=" + replace_chars(this.value)'
   end
 
   def district_index
@@ -26,6 +30,24 @@ class Freecen2ContentsController < ApplicationController
     @chapman_code = session[:chapman_code]
     @district_description = params[:district_description]
     @key_district = Freecen2Content.get_district_key(@district_description)
+    session[:key_district] = @key_district
+    session[:district_description] = @district_description
+  end
+
+  def piece_index
+    @id = session[:contents_id]
+    @freecen2_contents = Freecen2Content.find_by(id: @id)
+    @interval_end = session[:interval_end]
+    @county_description = session[:county]
+    @chapman_code = session[:chapman_code]
+    @district_description = session[:district_description]
+    @census = params[:census_year]
+    session[:census] = @census
+    if params[:census_year] == "all"
+      @census = "All Years"
+    else
+      @census = params[:census_year]
+    end
   end
 
   def create
@@ -67,21 +89,10 @@ class Freecen2ContentsController < ApplicationController
     @interval_end = @freecen2_contents.interval_end
     session[:interval_end] = @interval_end
     session[:contents_id] = @freecen2_contents.id
-  end
-
-  def select_county
     get_counties_for_selection
     @county = County.new
     @location = 'location.href= "/freecen2_contents/county_index/?county_description=" + this.value'
   end
-
-  def select_district
-    get_districts_for_selection(session[:chapman_code],session[:interval_end])
-    @district = Freecen2District.new
-    # district names containing & or + cause problems in hrefs, so call javascript replace_chars to replace with unicode value (function is in the view)
-    @location = 'location.href= "/freecen2_contents/district_index/?district_description=" + replace_chars(this.value)'
-  end
-
 
   def show
     @freecen2_content = Freecen2Content.find(params[:id]) if params[:id].present?
