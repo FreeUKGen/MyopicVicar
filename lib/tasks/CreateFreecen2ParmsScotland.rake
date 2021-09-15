@@ -35,7 +35,7 @@ task :create_freecen2_parms_scotland, [:limit] => :environment do |t, args|
           p district_name
           place_id = ExtractFreecen2PieceInformation.locate_district_place(chapman, district_name, district_name, 'District')
           county_id = County.find_by(chapman_code: chapman).id if County.find_by(chapman_code: chapman).present?
-          @missing_district_places << district_name if place_id.blank?
+          @missing_district_places << chapman + ':' + district_name if place_id.blank?
 
           @district_object = Freecen2District.new(name: district_name, chapman_code: chapman, year: year, freecen2_place_id: place_id,
                                                   county_id: county_id, tnaid: 'None')
@@ -93,7 +93,7 @@ task :create_freecen2_parms_scotland, [:limit] => :environment do |t, args|
             @parish_name = parish_name
             place_id = ExtractFreecen2PieceInformation.locate_civil_place(chapman, parish_name, @subdistrict_object, 'Civil Parish')
 
-            @missing_civil_parish_places << parish_name if place_id.blank?
+            @missing_civil_parish_places << chapman + ':' + parish_name if place_id.blank?
             @parish_object = Freecen2CivilParish.new(name: parish_name,  freecen2_piece_id: @subdistrict_object.id, number: piece.parish_number,
                                                      freecen2_place_id: place_id, year: year, chapman_code: chapman, suffix: piece.suffix)
 
