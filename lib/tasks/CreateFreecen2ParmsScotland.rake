@@ -44,7 +44,7 @@ task :create_freecen2_parms_scotland, [:limit] => :environment do |t, args|
           result = @district_object.save
           crash unless result
 
-          _piece_year, piece2_number = Freecen2Piece.extract_freecen2_piece_vld(piece.freecen1_filename)
+          piece2_number = Freecen2Piece.calculate_freecen2_piece_number(piece)
           @subdistrict_object = Freecen2Piece.new(name: district_name, number: piece2_number, year: year, freecen2_place_id: place_id, chapman_code: chapman,
                                                   freecen2_district_id: @district_object.id, film_number: piece.film_number,
                                                   suffix: piece.suffix, piece_number: piece.piece_number)

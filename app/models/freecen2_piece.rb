@@ -333,6 +333,27 @@ class Freecen2Piece
       freecen2_piece_number = series + '_' + piece.to_s
       [year, freecen2_piece_number]
     end
+
+
+    def calculate_freecen2_piece_number(piece)
+      # applies only to Scotland
+      year = piece.year
+      series = 'RS'
+      series = 'HS4' if year == '1841'
+      series = 'HS5' if year == '1851'
+      case year
+      when '1861'
+        series += '6'
+      when '1871'
+        series += '7'
+      when '1881'
+        series += '8'
+      when '1891'
+        series += '9'
+      end
+      freecen2_piece_number = series + '_' + piece.piece_number.to_s
+    end
+
   end
 
   # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::Instance methods:::::::::::::::::::::::::::::::::::::::::::::::::::
