@@ -15,7 +15,7 @@ task fc1_fc2_piece_compatibility_report_v3:  :environment do
   fc1_piece_cnt = 0
   place_match = false
   match_cnt = 0
-  detail_file.puts  "FC1 Chapman Code,Year,FC1 Piece Number,Online,Review,Message,Review comments"
+  detail_file.puts  "FC1 Chapman Code,Year,FC1 Piece Number,fc1 Filename,Online,Fc2 number,Review,Message,Review comments"
   summary_file.puts  "Country,FC1 Chapman Code,FC1 Piece Records Processed,FC1 Match Place Name,Percentage match"
   this_county = ''
   this_country = ''
@@ -53,13 +53,13 @@ task fc1_fc2_piece_compatibility_report_v3:  :environment do
       review_reqd = 'Y'
       message += ' FC2 Piece missing '
     else
-
+      review_reqd = 'N'
       match_cnt += 1
       total_match_cnt += 1
 
     end
 
-    detail_file.puts  "#{fc1_piece.chapman_code},#{year},#{number},#{fc1_status},#{review_reqd},#{message}"
+    detail_file.puts  "#{fc1_piece.chapman_code},#{year},#{fc1_piece.piece_number},#{fc1_piece.freecen1_filename},#{fc1_status},#{number},#{review_reqd},#{message}"
 
   end
   percentage_match = (match_cnt * 100 / fc1_piece_cnt).round(1).to_s

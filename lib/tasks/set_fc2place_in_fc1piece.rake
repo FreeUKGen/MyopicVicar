@@ -14,34 +14,35 @@ task set_fc2place_in_fc1piece:  :environment do
 
   FreecenPiece.where(:chapman_code.exists => true ).order_by(chapman_code: 1, year: 1, piece_number: 1).each do |fc1_piece|
     review_reqd = 'N'
-    if fc1_piece.status == 'Online'
-      message = ''
-      total_fc1_piece_cnt += 1
-      if this_county == '' || this_county != fc1_piece.chapman_code
-        p "Processing - #{fc1_piece.chapman_code}"
-        this_county = fc1_piece.chapman_code
+
+    message = ''
+    total_fc1_piece_cnt += 1
+    if this_county == '' || this_county != fc1_piece.chapman_code
+      p "Processing - #{fc1_piece.chapman_code}"
+      this_county = fc1_piece.chapman_code
+    end
+    fc1_place = Place.find_by(id: fc1_piece.place_id)
+    if fc1_place.blank?
+      fc1_place_name = ''
+      review_reqd = 'Y'
+      message += ' FC1 Place missing +'
+    else
+      fc1_place_name = fc1_place.place_name
+      place_match, fc2_place_id = Freecen2Place.valid_place(this_county, fc1_place_name)
+      unless place_match
+        # try to match after removing numbers in FC1 place name
+        fc1_replaced_1 = fc1_place_name.gsub(/\s\d\D\d/,"")      # e.g. 1C1
+        fc1_replaced_2 = fc1_replaced_1.gsub(/\s\d\D/,"")      # e.g. 1A
+        fc1_try_match = fc1_replaced_2.gsub(/\d\s/,"")         # e.g. 1
+        place_match, fc2_place_id = Freecen2Place.valid_place(this_county, fc1_try_match)
       end
-      fc1_place = Place.find_by(id: fc1_piece.place_id)
-      if fc1_place.blank?
-        fc1_place_name = ''
-        review_reqd = 'Y'
-        message += ' FC1 Place missing +'
-      else
-        fc1_place_name = fc1_place.place_name
-        place_match, fc2_place_id = Freecen2Place.valid_place(this_county, fc1_place_name)
-        unless place_match
-          # try to match after removing numbers in FC1 place name
-          fc1_replaced_1 = fc1_place_name.gsub(/\s\d\D\d/,"")      # e.g. 1C1
-          fc1_replaced_2 = fc1_replaced_1.gsub(/\s\d\D/,"")      # e.g. 1A
-          fc1_try_match = fc1_replaced_2.gsub(/\d\s/,"")         # e.g. 1
-          place_match, fc2_place_id = Freecen2Place.valid_place(this_county, fc1_try_match)
-        end
-        if place_match
-          total_match_cnt += 1
-          fc2_place = Freecen2Place.find_by(id: fc2_place_id)
-          fc2_place_name = fc2_place.place_name
-          message += " Place name match (#{fc2_place_name} [#{fc2_place_id}]) +"
-          fc1_piece.update_attributes(freecen2_place_id: fc2_place_id)
+      if place_match
+        total_match_cnt += 1
+        fc2_place = Freecen2Place.find_by(id: fc2_place_id)
+        fc2_place_name = fc2_place.place_name
+        message += " Place name match (#{fc2_place_name} [#{fc2_place_id}]) +"
+        fc1_piece.update_attributes(freecen2_place_id: fc2_place_id)
+        if fc1_piece.status == 'Online'
           if fc2_place.data_present == false
             fc2_place.data_present = true
             fc2_place_save_needed = true
@@ -51,11 +52,12 @@ task set_fc2place_in_fc1piece:  :environment do
             fc2_place_save_needed = true
           end
           fc2_place.save! if fc2_place_save_needed
-        else
-          review_reqd = 'Y'
-          message += ' Unable to match place name +'
         end
+      else
+        review_reqd = 'Y'
+        message += ' Unable to match place name +'
       end
+
       unless message == ''
         place_name = '"' + fc1_place_name + '"'   # some place names have a comma in them!
         out_message = '"' +  message[1..-2] + '"'
