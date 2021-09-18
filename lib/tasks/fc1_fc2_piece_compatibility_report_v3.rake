@@ -19,6 +19,8 @@ task fc1_fc2_piece_compatibility_report_v3:  :environment do
   summary_file.puts  "Country,FC1 Chapman Code,FC1 Piece Records Processed,FC1 Match Place Name,Percentage match"
   this_county = ''
   this_country = ''
+  codes = ChapmanCode.remove_codes(ChapmanCode::CODES)
+  codes = codes["Scotland"]
 
   FreecenPiece.where(:chapman_code.exists => true).order_by(chapman_code: 1, year: 1, piece_number: 1).each do |fc1_piece|
 
@@ -42,11 +44,9 @@ task fc1_fc2_piece_compatibility_report_v3:  :environment do
     message = ''
     review_reqd = 'N'
     fc1_piece.status == 'Online' ? fc1_status = 'Y' : fc1_status = 'N'
-    next if fc1_piece.freecen1_filename.blank?
+    piece2_number = Freecen2Piece.calculate_freecen2_piece_number(fc1_piece)
 
-    year, number = Freecen2Piece.extract_freecen2_piece_vld(fc1_piece.freecen1_filename)
-    fc2_piece = Freecen2Piece.find_by(chapman_code: fc1_piece.chapman_code, year: year, number: number)
-
+    fc2_piece = Freecen2Piece.find_by(chapman_code: fc1_piece.chapman_code, year: fc1_piece.year, number: fc1_piece.piece_number)
 
     if fc2_piece.blank?
 
@@ -59,7 +59,7 @@ task fc1_fc2_piece_compatibility_report_v3:  :environment do
 
     end
 
-    detail_file.puts  "#{fc1_piece.chapman_code},#{year},#{fc1_piece.piece_number},#{fc1_piece.freecen1_filename},#{fc1_status},#{number},#{review_reqd},#{message}"
+    detail_file.puts  "#{fc1_piece.chapman_code},#{fc1_piece.year},#{fc1_piece.piece_number},#{fc1_piece.freecen1_filename},#{fc1_status},#{piece2_number},#{review_reqd},#{message}"
 
   end
   percentage_match = (match_cnt * 100 / fc1_piece_cnt).round(1).to_s
@@ -67,5 +67,5 @@ task fc1_fc2_piece_compatibility_report_v3:  :environment do
   percentage_match = (total_match_cnt * 100 / total_fc1_piece_cnt).round(1).to_s
   summary_file.puts  "ALL,ALL,#{total_fc1_piece_cnt},#{total_match_cnt},#{percentage_match}"
   p "*** Total FC1 Pieces processed = #{total_fc1_piece_cnt}"
-  p "*** Finished FC1 FC2 Piece Place Compatibility Report V2 - see log/fc1_fc2_piece_compatibility_report_v2.csv (and fc1_fc2_piece_compatibility_summary_v2.csv) for output"
+  p "*** Finished FC1 FC2 Piece Place Compatibility Report V3 - see log/fc1_fc2_piece_compatibility_report_v3.csv (and fc1_fc2_piece_compatibility_summary_v3.csv) for output"
 end
