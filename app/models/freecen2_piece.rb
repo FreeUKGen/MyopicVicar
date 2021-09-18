@@ -337,7 +337,7 @@ class Freecen2Piece
 
     def calculate_freecen2_piece_number(piece)
       codes = ChapmanCode.remove_codes(ChapmanCode::CODES)
-      codes = codes["Scotland"]
+      codes = codes["Scotland"].values
       if codes.include?(piece.chapman_code)
         # applies only to Scotland
         year = piece.year
@@ -354,8 +354,6 @@ class Freecen2Piece
         when '1891'
           series += '9'
         end
-
-
       else
         series = 'RG'
         series = 'HO107' if year == '1841' || year == '1851'
@@ -373,7 +371,6 @@ class Freecen2Piece
         when '1911'
           series += '14'
         end
-
       end
       freecen2_piece_number = series + '_' + piece.piece_number.to_s
     end

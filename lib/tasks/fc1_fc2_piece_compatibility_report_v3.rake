@@ -20,7 +20,7 @@ task fc1_fc2_piece_compatibility_report_v3:  :environment do
   this_county = ''
   this_country = ''
   codes = ChapmanCode.remove_codes(ChapmanCode::CODES)
-  codes = codes["Scotland"]
+  codes = codes["Scotland"].values
 
   FreecenPiece.where(:chapman_code.exists => true).order_by(chapman_code: 1, year: 1, piece_number: 1).each do |fc1_piece|
 
