@@ -677,7 +677,7 @@ module ApplicationHelper
   def helpful_links
     {
       cookiePolicy: '/cms/about/cookie-policy',
-      privacyNotice: 'https://www.freeukgenealogy.org.uk/files/Documents/Privacy-Notice.pdf',
+      privacyNotice: 'https://drive.google.com/file/d/10r_c-5d9DDces-OUX7D4UJJKGNIhu8sV/view?usp=sharing',
       termAndConditions: '/cms/terms-and-conditions',
       contactUs: '/contacts/new',
       donation: 'https://www.freeukgenealogy.org.uk/help-us-keep-history-free',
