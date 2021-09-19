@@ -36,6 +36,7 @@ class SearchQueriesController < ApplicationController
     @search_query['chapman_codes'] = ['', 'ALD', 'GSY', 'JSY', 'SRK'] if @search_query['chapman_codes'][1].eql?('CHI')
     @search_query['birth_chapman_codes'] = ['', 'ALD', 'GSY', 'JSY', 'SRK'] if @search_query['birth_chapman_codes'][1].eql?('CHI')
     @search_query.session_id = request.session_options[:id]
+    @search_query['partial_search'] = true if @search_query['wildcard_field'].present? && @search_query['wildcard_option'].present?
   end
 
   def analyze
