@@ -84,6 +84,10 @@ class Freecen2Piece
       where(status: status)
     end
 
+    def freecen2_district_id(id)
+      where(freecen2_district_id: id)
+    end
+
     def valid_series?(series)
       return true if %w[HO107 RG9 RG10 RG11 RG12 RG13 RG14].include?(series.upcase)
 

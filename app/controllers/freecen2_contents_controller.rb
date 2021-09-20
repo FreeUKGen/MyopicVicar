@@ -35,18 +35,77 @@ class Freecen2ContentsController < ApplicationController
   end
 
   def piece_index
-    @id = session[:contents_id]
-    @freecen2_contents = Freecen2Content.find_by(id: @id)
-    @interval_end = session[:interval_end]
     @county_description = session[:county]
     @chapman_code = session[:chapman_code]
     @district_description = session[:district_description]
     @census = params[:census_year]
     session[:census] = @census
-    if params[:census_year] == "all"
-      @census = "All Years"
+
+    @interval_end = session[:interval_end]
+    @last_id = BSON::ObjectId.from_time(@interval_end)
+    @piece_ids = []
+    if params[:census_year] =='all'
+      @census = 'All Years'
+      Freecen::CENSUS_YEARS_ARRAY.each do |census|
+        @district_recs = Freecen2District.where(name: @district_description, chapman_code: @chapman_code,year: census)
+        @district_recs.each do |district|
+          Freecen2Piece.freecen2_district_id(district.id).each do |piece|
+            if piece.id <= @last_id
+              @piece_ids << piece.id
+            end
+          end
+        end
+      end
+      @district_pieces = Freecen2Piece.where(_id: { '$in' => @piece_ids}).order_by(name: :asc, number: :asc, year: :asc)
     else
       @census = params[:census_year]
+      @district_recs = Freecen2District.where(name: @district_description, chapman_code: @chapman_code, year: @census)
+      @district_recs.each do |district|
+        Freecen2Piece.freecen2_district_id(district.id).each do |piece|
+          if piece.id <= @last_id
+            @piece_ids << piece.id
+          end
+        end
+      end
+      @district_pieces = Freecen2Piece.where(_id: { '$in' => @piece_ids}).order_by(name: :asc, number: :asc)
+    end
+  end
+
+  def piece_names
+    @county_description = session[:county]
+    @chapman_code = session[:chapman_code]
+    @district_description = session[:district_description]
+    @census = session[:census]
+    @interval_end = session[:interval_end]
+    if params[:contents_piece_id] == nil
+      @piece_id = session[:contents_piece_id]
+    else
+      @piece_id = params[:contents_piece_id]
+      session[:contents_piece_id] = @piece_id
+    end
+    @piece = Freecen2Piece.find_by(_id: @piece_id)
+    @piece_number = @piece.number
+    @piece_name = @piece.name
+    @piece_year = @piece.year
+    @first_names = []
+    @last_names = []
+    @search_records = SearchRecord.where(freecen2_piece_id: @piece._id)
+    @search_records.each do |search_rec|
+      search_rec.search_names.each do |name|
+        @first_names << name.first_name.titleize()
+        @last_names << name.last_name.titleize()
+      end
+    end
+    @first_names = @first_names.uniq
+    @last_names = @last_names.uniq
+    @first_names.sort!
+    @last_names.sort!
+    if params[:name_type] == "Last" ||  params[:name_type].to_s.empty?
+      @unique_names = @last_names
+      @name_type = 'Last'
+    else
+      @unique_names = @first_names
+      @name_type = 'First'
     end
   end
 

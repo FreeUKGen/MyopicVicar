@@ -1,11 +1,53 @@
 <h2 style="text-align: center">Database Pieces for <%= @district_description %> in <%= @county_description %> in <%= @census %> as of  <%= @interval_end.strftime('%d %b %Y') %> </h2>
-<%= link_to 'Choose another County' , freecen2_contents_path, method: :get , :class => "btn btn--small" %>
-<%= link_to 'Choose another District' , index_by_county_freecen2_contents_path, method: :get , :class => "btn btn--small" %><br>
-<br>
-<div>
-  <h1 style="text-align: center"> **** Page under construction **** </h1>
-</div>
 <div  style="text-align: center">
-  <%= link_to 'Back to Totals for District' , index_by_district_freecen2_contents_path(:district_description => @district_description), method: :get , :class => "btn btn--small" %><br>
+  <%= link_to 'Back to Totals for All Counties' , freecen2_contents_path, method: :get , :class => "btn btn--small" %>
+  <%= link_to 'Choose another County' , freecen2_contents_path, method: :get , :class => "btn btn--small" %>
+  <%= link_to 'Choose another District' , index_by_county_freecen2_contents_path, method: :get , :class => "btn btn--small" %>
+  <%= link_to 'Back to Records for ' + @district_description , index_by_district_freecen2_contents_path(:district_description => @district_description), method: :get , :class => "btn btn--small" %><br>
+  <br>
+  <br>
 </div>
-<br />
+<div class='scrollable'>
+  <table  class="table--bordered table--data table--striped my-width " >
+    <thead >
+      <tr>
+        <th class='sticky-header'>Piece name</th>
+        <th class='sticky-header'>Piece Number</th>
+        <% if @census == 'All Years' %>
+          <th class='sticky-header'>Year</th>
+        <% end %>
+        <th class='sticky-header'>Online <br>
+          (Date Online)</th>
+        <th class='sticky-header'>Civil Parishes<br>
+          <small>The part in () is the name of any Hamlet, Township, Ward or Place included in the Civil Parish</small></th>
+        <th class='sticky-header'>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <%  @district_pieces.each do |piece|%>
+        <tr>
+          <td><%= piece.name %></td>
+          <td><%= piece.number %></td>
+          <% if @census == 'All Years' %>
+            <td><%= piece.year %></td>
+          <% end %>
+          <% if piece.status == 'Online' %>
+            <td><%= 'Y' + " (" + piece.status_date.to_datetime.strftime('%d %b %Y') + ")"%></td>
+          <% else%>
+            <td><%= 'N' %></td>
+          <% end%>
+          <% if piece.civil_parish_names == nil %>
+            <td><i> n/a </i></td>
+          <% else%>
+            <td><%= piece.civil_parish_names %></td>
+          <% end%>
+          <% if piece.status == 'Online' %>
+            <td><%= link_to 'Unique Names', freecen2_contents_piece_names_path(:contents_piece_id=> piece.id), class: "btn btn--small", method: :get %> </td>
+          <% else%>
+            <td> N/A </td>
+          <% end%>
+        </tr>
+      <% end%>
+    </tbody>
+  </table>
+</div>

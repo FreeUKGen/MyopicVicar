@@ -1,0 +1,52 @@
+<h2 style="text-align: center">Unique Names for Piece <%= @piece_number %> (<%= @piece_name%>) in <%= @district_description %><br>
+  <%= @county_description %> in <%= @piece_year %> as of  <%= @interval_end.strftime('%d %b %Y') %> </h2>
+<div  style="text-align: center">
+  <%= link_to 'Back to Totals for All Counties' , freecen2_contents_path, method: :get , :class => "btn btn--small" %>
+  <%= link_to 'Choose another County' , freecen2_contents_path, method: :get , :class => "btn btn--small" %>
+  <%= link_to 'Choose another District' , index_by_county_freecen2_contents_path, method: :get , :class => "btn btn--small" %>
+  <%= link_to 'Choose another Piece ', freecen2_contents_piece_index_path(:census_year => @census), method: :get , :class => "btn btn--small" %><br>
+  <br>
+  <br>
+</div>
+<div class="island  island--light">
+  <%= form_with url: freecen2_contents_piece_names_path do |f| %>
+    <div  style="text-align: center">
+      <p><b> Select Name Type - </b><i>(default is Surnames)</i></p>
+      <%= link_to 'Forenames', freecen2_contents_piece_names_path(name_type: "First"), :class => "btn btn--small", :method => :get%>
+      <%= link_to 'Surnames', freecen2_contents_piece_names_path(name_type: "Last"), :class => "btn btn--small", :method => :get%>
+      <p><i>(You may find it useful to use your browser find option to search for critical parts of names)</i></p>
+    <% end%>
+    <fieldset class="inputs" style="border-style: none;">
+      <li class="grid__item one-third palm-one-whole" >
+        <% if @name_type == 'First' %>
+          <h3> Total Unique Forenames: <%= @unique_names.count %></h3>
+        <% else%>
+          <h3> Total Unique Surnames: <%= @unique_names.count %></h3>
+        <% end%>
+      </li>
+      <li class="grid__item one-third palm-one-whole" >
+        <div class='scrollable'>
+          <table  class="table--bordered table--data table--striped my-width just--left" >
+            <thead >
+              <tr>
+                <% if @name_type == 'First' %>
+                  <th class='sticky-header'>Forenames</th>
+                <% else%>
+                  <th class='sticky-header'>Surnames</th>
+                <% end%>
+              </tr>
+            </thead>
+            <tbody>
+              <% @unique_names.each do |name|%>
+                <tr>
+                  <td><%= name %></td>
+                </tr>
+              <% end%>
+            </tbody>
+          </table>
+        </div>
+      </li>
+    </fieldset>
+  </div>
+</div>
+<br />
