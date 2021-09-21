@@ -81,7 +81,10 @@ task set_fc2_piece_for_fc1_v3:  :environment do
       end
     end
     fc2_piece_id = fc2_piece.present? ? fc2_piece.id : ''
+    fc2_district = fc2_piece.freecen2_district if fc2_piece.present?
+    fc2_place = fc2_district.freecen2_place if fc2_district.present?
     fc1_piece.update_attributes(freecen2_piece_id: fc2_piece.id) if fc2_piece.present?
+    fc1_piece.update_attributes(freecen2_place_id: fc2_place.id) if fc2_place.present?
     detail_file.puts  "#{fc1_piece.chapman_code},#{fc1_piece.year},#{fc1_piece.piece_number},#{fc1_piece.freecen1_filename},#{fc1_piece.id} #{fc1_status},#{piece2_number},#{fc2_piece_id}, #{review_reqd},#{message}"
   end
   percentage_match = (match_cnt * 100 / fc1_piece_cnt).round(1).to_s
