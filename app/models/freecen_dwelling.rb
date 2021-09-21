@@ -16,6 +16,11 @@ class FreecenDwelling
   has_many :freecen_individuals
   belongs_to :place, optional: true, index: true
   belongs_to :freecen_piece, index: true
+  belongs_to :freecen2_place, optional: true, index: true, inverse_of: false
+  belongs_to :freecen2_piece, optional: true, index: true, inverse_of: false
+  belongs_to :freecen2_district, optional: true, index: true, inverse_of: false
+
+
   delegate :piece_number, :year, :chapman_code, to: :freecen_piece, prefix: true
   delegate :place_name, to: :place#, prefix: true
 

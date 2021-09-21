@@ -67,6 +67,7 @@ class Freecen2Piece
   has_many :freecen_csv_files, dependent: :restrict_with_error
   has_many :freecen1_vld_files, dependent: :restrict_with_error
   has_many :freecen_individuals, dependent: :restrict_with_error
+  has_many :search_records, dependent: :restrict_with_error
 
   before_save :add_standard_names
   before_update :add_standard_names

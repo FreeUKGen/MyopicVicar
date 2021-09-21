@@ -24,8 +24,9 @@ class FreecenIndividual
   belongs_to :freecen1_vld_file, index: true
   belongs_to :freecen_dwelling, index: true
   belongs_to :freecen1_vld_entry, index: true
-  belongs_to :freecen2_piece, optional: true, index: true
-  belongs_to :freecen_piece, optional: true, index: true
+  belongs_to :freecen2_place, optional: true, index: true, inverse_of: false
+  belongs_to :freecen2_piece, optional: true, index: true, inverse_of: false
+  belongs_to :freecen2_district, optional: true, index: true, inverse_of: false
   has_one :search_record
 
   before_destroy :destroy_search_record
