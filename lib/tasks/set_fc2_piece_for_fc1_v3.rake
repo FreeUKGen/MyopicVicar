@@ -80,12 +80,23 @@ task set_fc2_piece_for_fc1_v3:  :environment do
         end
       end
     end
-    fc2_piece_id = fc2_piece.present? ? fc2_piece.id : ''
-    fc2_district = fc2_piece.freecen2_district if fc2_piece.present?
-    fc2_place = fc2_district.freecen2_place if fc2_district.present?
-    fc1_piece.update_attributes(freecen2_piece_id: fc2_piece.id) if fc2_piece.present?
-    fc1_piece.update_attributes(freecen2_place_id: fc2_place.id) if fc2_place.present?
-    detail_file.puts  "#{fc1_piece.chapman_code},#{fc1_piece.year},#{fc1_piece.piece_number},#{fc1_piece.freecen1_filename},#{fc1_piece.id} #{fc1_status},#{piece2_number},#{fc2_piece_id}, #{review_reqd},#{message}"
+    fc2_piece_id = fc2_piece.present? ? fc2_piece._id : ''
+    fc1_piece.update_attributes(freecen2_piece_id: fc2_piece._id) if fc2_piece.present?
+
+    if fc2_piece.present?
+      fc2_district = fc2_piece.freecen2_district
+    else
+      review_reqd = 'Y'
+      message += ' FC2 District missing '
+    end
+    if fc2_district.present?
+      fc2_place = fc2_district.freecen2_place
+    else
+      review_reqd = 'Y'
+      message += ' FC2 District Place missing '
+    end
+    fc1_piece.update_attributes(freecen2_place_id: fc2_place._id) if fc2_place.present?
+    detail_file.puts  "#{fc1_piece.chapman_code},#{fc1_piece.year},#{fc1_piece.piece_number},#{fc1_piece.freecen1_filename},#{fc1_piece._id} #{fc1_status},#{piece2_number},#{fc2_piece_id}, #{review_reqd},#{message}"
   end
   percentage_match = (match_cnt * 100 / fc1_piece_cnt).round(1).to_s
   summary_file.puts  "#{this_country},#{this_county},#{fc1_piece_cnt},#{match_cnt},#{percentage_match}"
