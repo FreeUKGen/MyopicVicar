@@ -131,7 +131,7 @@ class SearchQuery
   field :occupation, type: String
 
   has_and_belongs_to_many :places, inverse_of: nil
-
+  has_and_belongs_to_many :freecen2_places, inverse_of: nil
   embeds_one :search_result
 
   validate :name_not_blank

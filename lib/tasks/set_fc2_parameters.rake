@@ -14,17 +14,23 @@ task :set_fc2_paramters, [:start, :finish] => [:environment] do |t, args|
   vld_files = Freecen1VldFile.all.order_by(_id: 1).compact
   max_files = vld_files.length
   finish = max_files if finish > max_files
-
   while @number < finish
     @number += 1
     p @number
     file = vld_files[@number]
+    next if file.blank?
+
     p file
     freecen_piece = file.freecen_piece
-    freecen2_piece = Freecen2Piece.find_by(_id: freecen_piece.freecen2_piece_id)
+    freecen2_piece = freecen_piece.freecen2_piece
+    p "Missing Freecen2 piece for #{freecen_piece}" if freecen2_piece.blank?
+    next if freecen2_piece.blank?
+
     freecen2_district = freecen2_piece.freecen2_district
     freecen2_place = freecen2_piece.freecen2_place
-    file.update_attributes(freecen2_piece_id: freecen2_piece._id, freecen2_place_id: freecen2_place._id, freecen2_district_id: freecen2_district._id)
+    freecen2_piece.freecen1_vld_files << file
+    freecen2_district.freecen1_vld_files << file
+    freecen2_place.freecen1_vld_files << file
     if freecen2_place.data_present == false
       freecen2_place.data_present = true
       place_save_needed = true
@@ -34,15 +40,26 @@ task :set_fc2_paramters, [:start, :finish] => [:environment] do |t, args|
       place_save_needed = true
     end
     freecen2_place.save! if place_save_needed
+
     file.freecen_dwellings.each do |dwelling|
-      dwelling.update_attributes(freecen2_piece_id: freecen2_piece._id, freecen2_place_id: freecen2_place._id, freecen2_district_id: freecen2_district._id)
+      freecen2_place.freecen_dwellings << dwelling
+      freecen2_piece.freecen_dwellings << dwelling
       dwelling.freecen_individuals.each do |individual|
-        individual.update_attributes(freecen2_piece_id: freecen2_piece._id, freecen2_place_id: freecen2_place._id, freecen2_district_id: freecen2_district._id)
+        freecen2_place.freecen_individuals << individual
         search_record = individual.search_record
-        search_record.update_attributes(freecen2_piece_id: freecen2_piece._id, freecen2_place_id: freecen2_place._id, freecen2_district_id: freecen2_district._id)
+        freecen2_place.search_records << search_record
       end
     end
+    freecen2_piece.save
+    freecen2_district.save
+    freecen2_place.save
+    if freecen_piece.status == 'Online'
+      freecen2_piece.update_attributes(status: 'Online', status_date: file._id.generation_time.to_datetime.in_time_zone('London'))
+    end
     p file
+    p freecen2_piece
+    p freecen2_district
+    p freecen2_place
   end
   time_end = Time.now
   finished = finish - start + 1

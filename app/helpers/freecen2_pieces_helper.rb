@@ -29,7 +29,7 @@ module Freecen2PiecesHelper
   end
 
   def csv_files_piece(piece)
-    if piece.vld_files.present?
+    if piece.freecen_csv_files.present?
       files = []
       piece.freecen_csv_files.order_by(file_name: 1).each do |file|
         if file.userid.blank?
@@ -45,8 +45,17 @@ module Freecen2PiecesHelper
   end
 
   def vld_files_piece(piece)
-    if piece.vld_files.present?
-      piece.vld_files
+    if piece.freecen1_vld_files.present?
+      files = []
+      piece.freecen1_vld_files.order_by(file_name: 1).each do |file|
+        if file.userid.blank?
+          files << file.file_name + ' ()'
+        else
+          files << file.file_name + ' (' + file.userid + ')'
+        end
+
+      end
+      files
     else
       'There are no VLD files'
     end

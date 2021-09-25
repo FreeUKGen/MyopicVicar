@@ -433,9 +433,11 @@ class ExtractFreecen2PieceInformation
 
     def locate_civil_place(chapman_code, name, piece, type)
       myname = Freecen2Place.standard_place(name)
-      district_name = Freecen2District.find_by(freecen2_district_id: piece.freecen2_district_id).name if Freecen2District.find_by(freecen2_district_id: piece.freecen2_district_id).present?
-      piece_name = piece.name
-      place = Freecen2Place.find_by(chapman_code: chapman_code, standard_place_name: myname)
+      if piece.present?
+        district_name = Freecen2District.find_by(freecen2_district_id: piece.freecen2_district_id).name if piece.present? && Freecen2District.find_by(freecen2_district_id: piece.freecen2_district_id).present?
+        piece_name = piece.name
+        place = Freecen2Place.find_by(chapman_code: chapman_code, standard_place_name: myname)
+      end
       if place.present?
         place_id = place.id
       elsif place.blank?

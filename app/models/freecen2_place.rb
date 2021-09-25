@@ -70,13 +70,14 @@ class Freecen2Place
   has_many :churches, dependent: :restrict_with_error
   has_many :search_records, dependent: :restrict_with_error
 
-  has_many :freecen2_pieces, dependent: :restrict_with_error
+
   has_many :freecen1_vld_files, dependent: :restrict_with_error
   has_many :freecen_pieces, dependent: :restrict_with_error
   has_many :freecen_dwellings, dependent: :restrict_with_error
   has_many :freecen_individuals, dependent: :restrict_with_error
   has_many :sources
 
+  has_many :freecen2_pieces, dependent: :restrict_with_error
   has_many :freecen2_districts, dependent: :restrict_with_error
   has_many :freecen2_civil_parishes, dependent: :restrict_with_error
 

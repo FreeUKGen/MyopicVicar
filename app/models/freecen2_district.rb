@@ -17,21 +17,18 @@ class Freecen2District
   field :reason_changed, type: String
   field :action, type: String
 
-  field :vld_files, type: Array, default: []
+  field :vld_files, type: Array, default: [] #temp
 
   has_many :freecen2_pieces, dependent: :restrict_with_error
-
   has_many :freecen_csv_files, dependent: :restrict_with_error
   has_many :freecen1_vld_files, dependent: :restrict_with_error
-  has_many :freecen_dwellings, dependent: :restrict_with_error
-  has_many :freecen_individuals, dependent: :restrict_with_error
-
-  has_many :search_records, dependent: :restrict_with_error
 
   belongs_to :freecen2_place, optional: true, index: true
   belongs_to :county, optional: true, index: true
+
   delegate :county, to: :county, prefix: true, allow_nil: true
   delegate :place_name, to: :freecen2_place, prefix: :place
+
   before_save :add_standard_names
   before_update :add_standard_names
 
