@@ -224,7 +224,7 @@
     <% if true %>
       <script type="text/javascript" charset="utf-8" >
         <% if @search_query && @search_query.chapman_codes.size > 0 %>
-          var selection=<%= raw(PlaceCache.where(:chapman_code => @search_query.chapman_codes.first).first.places_json) %>;
+          var selection=<%= raw(Freecen2PlaceCache.where(:chapman_code => @search_query.chapman_codes.first).first.places_json) %>;
           <% if @search_query.places.size > 0 %>
             selection["selected"]="<%= @search_query.places.first.id %>";
           <% end %>
