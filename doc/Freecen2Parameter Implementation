@@ -1,0 +1,25 @@
+Freecen2Parameter Implementation.
+
+History.
+Freecen2 was initially implemented using places, freecen_piece, freecen1_vld_files and their entries translated into freecen_dwellings, freecen_individuals and the individuals transformed into search_records linked to a place
+The freecen_piece used the district place for search purposes.
+CSVProc was based on Freecen2Place (The Gazetteer), and the TNA freecen2_district, freecen2_piece and freecen2_civil_parish, freecen_csv_files and their freecen_csv_entries transformed into search records linked to a freecen2_place.
+The Search was conducted against the search_records with records from both being retrieved where appropriate. Displays of the results were displayed based on the type of place record in the search record. 
+This works fine for county level searches and for place based searches except when there are both CSV entries and VLD entries for the same place.
+The place data is of low quality and usually not associated with a location (hence no nearby capability). District names are also poorly formatted and inconsistently entered across years.
+
+Solution. 
+Move to the sole use of Freecen2 parameters based on freecen2_place,freecen2_district, freecen2_piece and freecen2_civil_parish with both freecen1_vld_files and freecen_csv_files linked to freecen2_piece and its linkages. Searches will still be against search_records but solely using freecen2_place.
+The basic process will be to link the freecen_piece to the freecen2_piece; the later being a superset of freecen_piece and fully based on TNA but currently lacking entries for Scotland. Having made that linkage there will be the need to add the freecen2_place to the search record. This will be a slow process as there are nearly 50 million records to update and we cannot shut down Freecen2 while that is done.
+
+The proposed Implementation is as follows.
+1) Use the create_freecen2_scotland_parameters rake to create the Scotland entries in the freecen2 collections. This has no impact to the user community. The entries will however be accessible to the data manager and coordinators for review and editing. There is one parameter; the maximum number to be set. I normally use 6000.
+Should one need to rerun the rake task it is important to first delete any scottidh parameters that have been set. Use the delete_freecen2_scotland_parameters rake. There is one parameter; the maximum number to be deleted. I normally use 6000.
+2) Use the set_fc2_piece_for_fc1_v3 rake to create the linkage between freecen_piece and freecen2_piece. This means the the freecen2_place becomes usable for freecen_piece. The freecen2_piece and freecen2_place have gone through extensive review and correction over the past year. The rake does the linkage through the year and piece number since the later is unique within a year. It also permits following the link to the actual county of the piece since some have been moved. If the number is not found then we look for the integer plus the alphabetic character that has been use on occasion (eg 1234A)
+3) Add a mongo_config field called freecen2_place_cache. Set to false initially. This switch will be use to tell the search engine to use the current place field in the search record. When set to true the search engine will change to using the freecn2_place field for searching. Thus allowing us to rebuild the search record over time.
+4) Use the set_fc2_parameters rake to set all the freecen2 collection linkages for freecen1_vld_files (there are 10,500 in production). The rake task has 3 arguments start, finish and search_record. Start and finish are the number in the array of freecen1_vld_files ordered by date of creation (these means we can pick up new creations at the end). search_records is either absent of something is there. If absent all we do NOT add the freecen2_place linkage. If it is then we DO make the linkage. The latter will take several minutes for some files. Setting start and finish allows us to test and evaluate as well as space out the creation when creating search records. 
+In addition to setting the linkages we also update the status and status date in freecen2_piece if the online status was set in freecen_piece.
+So we initially run the task without creating search records UNTIL we are satisfied that all is well then we commence creation.
+5) Once we have created all search records we can take one production server and change the  freecen2_place_cache configuration variable to true and check that the search performs correctly with freecen2_place
+
+Note look up the actual rake task in the code

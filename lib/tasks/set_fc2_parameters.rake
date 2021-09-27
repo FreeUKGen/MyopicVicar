@@ -20,7 +20,6 @@ task :set_fc2_paramters, [:start, :finish, :search_records] => [:environment] do
     p @number
     file = vld_files[@number]
     next if file.blank?
-
     p file
     freecen_piece = file.freecen_piece
     freecen2_piece = freecen_piece.freecen2_piece
