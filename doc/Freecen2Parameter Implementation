@@ -22,4 +22,6 @@ In addition to setting the linkages we also update the status and status date in
 So we initially run the task without creating search records UNTIL we are satisfied that all is well then we commence creation.
 5) Once we have created all search records we can take one production server and change the  freecen2_place_cache configuration variable to true and check that the search performs correctly with freecen2_place
 
-Note look up the actual rake task in the code
+Note look up the actual rake task in the code.
+The branch is currently fc_1060
+It may be wise to add freecen2_place_cache: false to your development mongo_config.yml file prior to running the branch
