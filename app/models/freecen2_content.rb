@@ -174,6 +174,20 @@ class Freecen2Content
       key_district = district.gsub(/\./,"*")
     end
 
+    def letterize(names)
+      new_list = {}
+      remainder = names
+      ("A".."Z").each do |letter|
+        new_list[letter] = select_elements_starting_with(names, letter)
+        remainder -= new_list[letter]
+      end
+      [new_list, remainder]
+    end
+
+    def select_elements_starting_with(arr, letter)
+      arr.select { |str| str.start_with?(letter) }
+    end
+
   end # self
 
 end # class

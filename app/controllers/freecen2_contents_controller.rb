@@ -92,21 +92,29 @@ class Freecen2ContentsController < ApplicationController
     @search_records = SearchRecord.where(freecen2_piece_id: @piece._id)
     @search_records.each do |search_rec|
       search_rec.search_names.each do |name|
-        @first_names << name.first_name.titleize()
-        @last_names << name.last_name.titleize()
+        @first_names << name.first_name.upcase
+        @last_names << name.last_name.upcase
       end
     end
     @first_names = @first_names.uniq
     @last_names = @last_names.uniq
+    @first_names_cnt = @first_names.count
+    @last_names_cnt = @last_names.count
     @first_names.sort!
     @last_names.sort!
-    if params[:name_type] == "Last" ||  params[:name_type].to_s.empty?
+    if params[:name_type] == "Surnames" ||  params[:name_type].to_s.empty?
       @unique_names = @last_names
-      @name_type = 'Last'
+      @name_type = 'Surnames'
     else
       @unique_names = @first_names
-      @name_type = 'First'
+      @name_type = 'Forenames'
     end
+    if params[:first_letter].present?
+      @first_letter = params[:first_letter]
+    else
+      @first_letter = 'All'
+    end
+    @unique_names, @remainder = Freecen2Content.letterize(@unique_names)
   end
 
   def create
