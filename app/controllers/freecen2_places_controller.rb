@@ -129,6 +129,25 @@ class Freecen2PlacesController < ApplicationController
     end
   end
 
+  def for_search_form
+    if params[:search_query]
+      chapman_codes = params[:search_query][:chapman_codes]
+    else
+      log_possible_host_change
+      chapman_codes = []
+    end
+    county_places = Freecen2PlaceCache.in(chapman_code: chapman_codes)
+    county_response = ''
+    county_places.each do |pc|
+      county_response << pc.places_json if pc.present?
+    end
+    respond_to do |format|
+      format.json do
+        render json: county_response
+      end
+    end
+  end
+
   def index
     get_user_info_from_userid
     @chapman_code = session[:chapman_code]

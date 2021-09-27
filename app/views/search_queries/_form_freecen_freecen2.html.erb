@@ -113,13 +113,13 @@
           </select>
         </li>
         <li class="grid__item three-eighths lap-three-quarters palm-one-whole"  id="search_query_places_input">
-          <label class="label ttip" for="search_query_place_ids" tabindex="0">
+          <label class="label ttip" for="earch_query_freecen2_place_ids" tabindex="0">
             Census Place
             <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
             <span class="ttip__text">This box fills only when a <em>single</em> county is selected. Select one place, or leave blank for <em>all</em> the places in a county. See also the &ldquo;Nearby Places&rdquo; option, below</span>
             <small class="additional">Select nothing or one place</small>
           </label>
-          <select id="search_query_place_ids" name="search_query[place_ids][]" class="select" size="4">
+          <select id="search_query_freecen2_place_ids" name="search_query[freecen2_place_ids][]" class="select" size="4">
             <option value="">List fills when you select one county</option>
           </select>
         </li>
@@ -224,14 +224,14 @@
     <% if true %>
       <script type="text/javascript" charset="utf-8" >
         <% if @search_query && @search_query.chapman_codes.size > 0 %>
-          var selection=<%= raw(PlaceCache.where(:chapman_code => @search_query.chapman_codes.first).first.places_json) %>;
+          var selection=<%= raw(Freecen2PlaceCache.where(:chapman_code => @search_query.chapman_codes.first).first.places_json) %>;
           <% if @search_query.places.size > 0 %>
             selection["selected"]="<%= @search_query.places.first.id %>";
           <% end %>
         <% end %>
-        (function($) {$("#search_query_place_ids").remoteChained({
+        (function($) {$("#search_query_freecen2_place_ids").remoteChained({
         parents : "#search_query_chapman_codes",
-        url : "/places/for_search_form.json",
+        url : "/freecen2_places/for_search_form.json",
         loading : "Loading..."
         <% if @search_query && @search_query.chapman_codes.size == 1 %>
         , bootstrap: selection

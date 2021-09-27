@@ -150,8 +150,12 @@
         <b><%= ChapmanCode.name_from_code(@search_query.chapman_codes[start])  %></b>
         <% start +=1 %>
         <%= @and unless start == counties %>
-      <% end%>.</p>
-    <% place = @search_query.places.map {|pl| pl.place_name} %>
+      <% end%></p>
+    <% if Rails.application.config.freecen2_place_cache %>
+      <% place = @search_query.freecen2_places.map {|pl| pl.place_name} %>
+    <% else %>
+      <% place = @search_query.places.map {|pl| pl.place_name} %>
+    <% end%>
     <% if place.size == 0 %>
       <b>All <% if appname.downcase == 'freecen'%><b>census </b><% end%>places</b> with data in the selected counties were included.
     <% else %>

@@ -62,15 +62,8 @@ class SearchQueriesController < ApplicationController
   end
 
   def create
-    # binding.pry
     condition = true if params[:search_query].present? && params[:search_query][:region].blank?
     redirect_back(fallback_location: new_search_query_path, notice: 'Invalid Search') && return unless condition
-    if Rails.application.config.freecen2_place_cache
-      params[:search_query][:freecen2_place_ids] = params[:search_query][:place_ids]
-      params[:search_query].delete :place_ids
-      p 'adjust'
-      p  params[:search_query]
-    end
 
     @search_query = SearchQuery.new(search_params.delete_if { |_k, v| v.blank? })
     adjust_search_query_parameters
