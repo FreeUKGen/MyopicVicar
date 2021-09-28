@@ -19,21 +19,24 @@ task :set_fc2_paramters, [:start, :finish, :search_records] => [:environment] do
     @number += 1
     p @number
     file = vld_files[@number]
+    message_file.puts "File number #{@number} is blank" if file.blank?
     next if file.blank?
 
     freecen_piece = file.freecen_piece
     freecen2_piece = freecen_piece.freecen2_piece
     p "Missing Freecen2 piece for #{freecen_piece}" if freecen2_piece.blank?
+    message_file.puts "Missing Freecen2 piece for #{freecen_piece}" if freecen2_piece.blank?
     next if freecen2_piece.blank?
 
     freecen2_district = freecen2_piece.freecen2_district
     freecen2_place = freecen2_piece.freecen2_place
     freecen2_piece.freecen1_vld_files << file
     freecen2_district.freecen1_vld_files << file
-    freecen2_place.freecen1_vld_files << file
+    freecen2_place.freecen1_vld_files << file if freecen2_place.present?
     freecen2_piece.save
     freecen2_district.save
-    freecen2_place.save
+    freecen2_place.save if freecen2_place.present?
+    message_file.puts "Missing Freecen2 place for #{freecen_piece}" if freecen2_place.blank?
     if freecen2_place.data_present == false
       freecen2_place.data_present = true
       place_save_needed = true
