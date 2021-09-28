@@ -24,7 +24,7 @@ task :set_fc2_paramters, [:start, :finish, :search_records] => [:environment] do
 
     freecen_piece = file.freecen_piece
     freecen2_piece = freecen_piece.freecen2_piece
-    p "Missing Freecen2 piece for #{freecen_piece}" if freecen2_piece.blank?
+    p "Missing Freecen2 piece for #{freecen_piece.inspect}" if freecen2_piece.blank?
     message_file.puts "Missing Freecen2 piece for #{freecen_piece}" if freecen2_piece.blank?
     next if freecen2_piece.blank?
 
