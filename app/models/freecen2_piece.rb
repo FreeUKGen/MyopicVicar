@@ -58,10 +58,11 @@ class Freecen2Piece
 
   belongs_to :freecen2_district, optional: true, index: true
   belongs_to :freecen2_place, optional: true, index: true
-  belongs_to :freecen_piece, optional: true, index: true
+
   delegate :name, :tnaid, :code, :note, to: :freecen2_district, prefix: :district, allow_nil: true
   delegate :place_name, to: :freecen2_place, prefix: :place
 
+  has_one :freecen_piece, dependent: :restrict_with_error
   has_many :freecen2_civil_parishes, dependent: :restrict_with_error
   has_many :freecen_csv_files, dependent: :restrict_with_error
   has_many :freecen1_vld_files, dependent: :restrict_with_error

@@ -55,9 +55,10 @@ class FreecenPiece
   belongs_to :freecen1_fixed_dat_entry, index: true, optional: true
   belongs_to :place, optional: true, index: true
   belongs_to :freecen2_place, optional: true, index: true
+  belongs_to :freecen2_piece, optional: true, index: true
   has_many :freecen_dwellings, dependent: :restrict_with_error
   has_many :freecen1_vld_files, dependent: :restrict_with_error
-  has_one :freecen2_piece, dependent: :restrict_with_error
+
 
   index(:piece_number => 1, :chapman_code => 1)
   index(:piece_number => 1, :chapman_code => 1, :year => 1, :suffix => 1, :parish_number => 1)

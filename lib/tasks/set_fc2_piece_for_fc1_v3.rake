@@ -81,28 +81,24 @@ task set_fc2_piece_for_fc1_v3:  :environment do
       end
     end
 
-    p fc1_piece
-    p fc2_piece
-
     fc1_piece.freecen2_piece = fc2_piece
+    fc1_piece.freecen2_place = fc2_piece.freecen2_place if fc2_piece.present?
     fc1_piece.save
-    p fc1_piece
 
-
-    crash
-
-    if fc2_piece.present?
-      fc2_district = fc2_piece.freecen2_district
-    else
+    if fc2_piece.blank?
+      review_reqd = 'Y'
+      message += ' FC2 Piece missing '
+    elsif fc2_piece.freecen2_place.blank?
+      review_reqd = 'Y'
+      message += ' FC2 Piece Place missing '
+    elsif fc2_piece.freecen2_district.blank?
       review_reqd = 'Y'
       message += ' FC2 District missing '
-    end
-    if fc2_district.present?
-      fc2_place = fc2_district.freecen2_place
-    else
+    elsif fc2_piece.freecen2_district.freecen2_place.blank?
       review_reqd = 'Y'
       message += ' FC2 District Place missing '
     end
+
     detail_file.puts  "#{fc1_piece.chapman_code},#{fc1_piece.year},#{fc1_piece.piece_number},#{fc1_piece.freecen1_filename},#{fc1_piece._id} #{fc1_status},#{piece2_number}, #{review_reqd},#{message}"
   end
   percentage_match = (match_cnt * 100 / fc1_piece_cnt).round(1).to_s

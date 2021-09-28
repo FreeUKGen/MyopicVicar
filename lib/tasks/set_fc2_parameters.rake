@@ -20,7 +20,7 @@ task :set_fc2_paramters, [:start, :finish, :search_records] => [:environment] do
     p @number
     file = vld_files[@number]
     next if file.blank?
-    p file
+
     freecen_piece = file.freecen_piece
     freecen2_piece = freecen_piece.freecen2_piece
     p "Missing Freecen2 piece for #{freecen_piece}" if freecen2_piece.blank?
@@ -46,23 +46,18 @@ task :set_fc2_paramters, [:start, :finish, :search_records] => [:environment] do
     if freecen_piece.status == 'Online'
       freecen2_piece.update_attributes(status: 'Online', status_date: file._id.generation_time.to_datetime.in_time_zone('London'))
     end
+    p file
 
     if search_record_creation
       file.freecen_dwellings.each do |dwelling|
         freecen2_place.freecen_dwellings << dwelling
-        freecen2_piece.freecen_dwellings << dwelling
         dwelling.freecen_individuals.each do |individual|
           freecen2_place.freecen_individuals << individual
           search_record = individual.search_record
           freecen2_place.search_records << search_record
         end
       end
-      freecen2_piece.save
-      freecen2_district.save
       freecen2_place.save
-      p file
-      p freecen2_piece
-      p freecen2_district
       p freecen2_place
     end
   end
