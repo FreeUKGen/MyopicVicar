@@ -82,12 +82,13 @@ task set_fc2_piece_for_fc1_v3:  :environment do
     end
 
     p fc1_piece
-
+    p fc2_piece
 
     fc1_piece.freecen2_piece = fc2_piece
+    fc1_piece.save
     p fc1_piece
 
-    fc1_piece.save
+
     crash
 
     if fc2_piece.present?
