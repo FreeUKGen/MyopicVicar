@@ -1,6 +1,6 @@
 desc "set_fc2 parameter linkgaes for VLD files, dwelling, individuals and search records"
 task :set_fc2_paramters, [:start, :finish, :search_records] => [:environment] do |t, args|
-  file_for_messages = File.join(Rails.root, 'log/create fc2 parameter linkages')
+  file_for_messages = File.join(Rails.root, 'log/create fc2 parameter linkages.log')
   message_file = File.new(file_for_messages, 'w')
   start = args.start.to_i
   finish = args.finish.to_i
@@ -37,6 +37,8 @@ task :set_fc2_paramters, [:start, :finish, :search_records] => [:environment] do
     freecen2_district.save
     freecen2_place.save if freecen2_place.present?
     message_file.puts "Missing Freecen2 place for #{freecen_piece}" if freecen2_place.blank?
+    next if freecen2_place.blank?
+
     if freecen2_place.data_present == false
       freecen2_place.data_present = true
       place_save_needed = true
@@ -46,6 +48,7 @@ task :set_fc2_paramters, [:start, :finish, :search_records] => [:environment] do
       place_save_needed = true
     end
     freecen2_place.save! if place_save_needed
+
     if freecen_piece.status == 'Online'
       freecen2_piece.update_attributes(status: 'Online', status_date: file._id.generation_time.to_datetime.in_time_zone('London'))
     end
