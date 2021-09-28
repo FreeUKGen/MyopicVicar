@@ -31,6 +31,9 @@ task :set_fc2_paramters, [:start, :finish, :search_records] => [:environment] do
     freecen2_piece.freecen1_vld_files << file
     freecen2_district.freecen1_vld_files << file
     freecen2_place.freecen1_vld_files << file
+    freecen2_piece.save
+    freecen2_district.save
+    freecen2_place.save
     if freecen2_place.data_present == false
       freecen2_place.data_present = true
       place_save_needed = true
