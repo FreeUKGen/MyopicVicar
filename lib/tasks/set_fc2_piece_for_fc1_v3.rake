@@ -80,10 +80,15 @@ task set_fc2_piece_for_fc1_v3:  :environment do
         end
       end
     end
+    fc1_piece.freecen2_piece = nil
+    p fc1_piece
+
 
     fc1_piece.freecen2_piece = fc2_piece
+    p fc1
 
     fc1_piece.save
+    crash
 
     if fc2_piece.present?
       fc2_district = fc2_piece.freecen2_district
