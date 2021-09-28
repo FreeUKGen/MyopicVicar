@@ -25,7 +25,7 @@ task :set_fc2_paramters, [:start, :finish, :search_records] => [:environment] do
     freecen_piece = file.freecen_piece
     freecen2_piece = freecen_piece.freecen2_piece
     p "Missing Freecen2 piece for #{freecen_piece.inspect}" if freecen2_piece.blank?
-    message_file.puts "Missing Freecen2 piece for #{freecen_piece}" if freecen2_piece.blank?
+    message_file.puts "Missing Freecen2 piece for #{freecen_piece.inspect}" if freecen2_piece.blank?
     next if freecen2_piece.blank?
 
     freecen2_district = freecen2_piece.freecen2_district
@@ -36,7 +36,7 @@ task :set_fc2_paramters, [:start, :finish, :search_records] => [:environment] do
     freecen2_piece.save
     freecen2_district.save
     freecen2_place.save if freecen2_place.present?
-    message_file.puts "Missing Freecen2 place for #{freecen_piece}" if freecen2_place.blank?
+    message_file.puts "Missing Freecen2 place for #{freecen_piece.inspect}" if freecen2_place.blank?
     next if freecen2_place.blank?
 
     if freecen2_place.data_present == false
