@@ -23,7 +23,6 @@ task :set_fc2_paramters, [:start, :finish, :search_records] => [:environment] do
     next if file.blank?
 
     message_file.puts "Number #{@number} for file #{file.inspect}"
-    crash if @number == 748
     freecen_piece = file.freecen_piece
     freecen2_piece = freecen_piece.freecen2_piece
     p "Missing Freecen2 piece for #{freecen_piece.inspect}" if freecen2_piece.blank?
