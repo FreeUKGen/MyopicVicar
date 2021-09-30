@@ -56,9 +56,9 @@ task :set_fc2_paramters, [:start, :finish, :search_records] => [:environment] do
     p file
 
     if search_record_creation
-      file.freecen_dwellings.each do |dwelling|
+      file.freecen_dwellings.no_timeout.each do |dwelling|
         freecen2_place.freecen_dwellings << dwelling
-        dwelling.freecen_individuals.each do |individual|
+        dwelling.freecen_individuals.no_timeout.each do |individual|
           freecen2_place.freecen_individuals << individual
           search_record = individual.search_record
           freecen2_place.search_records << search_record
