@@ -1,0 +1,74 @@
+<h2 style="text-align: center">Unique Names for Piece <%= @piece_number %> (<%= @piece_name%>) in <%= @district_description %><br>
+  <%= @county_description %> in <%= @piece_year %> as of  <%= @interval_end.strftime('%d %b %Y') %> </h2>
+<div  style="text-align: center">
+  <%= link_to 'Back to Totals for All Counties' , freecen2_contents_path, method: :get , :class => "btn btn--small" %>
+  <%= link_to 'Choose another County' , freecen2_contents_path, method: :get , :class => "btn btn--small" %>
+  <%= link_to 'Choose another District' , index_by_county_freecen2_contents_path, method: :get , :class => "btn btn--small" %>
+  <%= link_to 'Choose another Piece ', freecen2_contents_piece_index_path(:census_year => @census), method: :get , :class => "btn btn--small" %><br>
+  <br>
+  <p><i>(You may find it useful to use your browser find option to search for critical parts of names)</i></p>
+  <br>
+</div>
+<div class="island island--bordered text--center">
+  <%= form_with url: freecen2_contents_piece_names_path do |f| %>
+    <li class="grid" >
+      <h3 style="text-align: center"> Total Unique <%= @name_type %> : <%= @first_names_cnt %></h3>
+      <b> Switch Name Type To : </b>
+      <% if @name_type == 'Surnames' %>
+        <%= link_to 'Forenames', freecen2_contents_piece_names_path(:name_type => 'Forenames'), :class => "btn btn--small", :method => :get%>
+      <% else%>
+        <%= link_to 'Surnames', freecen2_contents_piece_names_path(:name_type => 'Surnames'), :class => "btn btn--small", :method => :get%>
+      <% end%>
+      <i>(shows all)</i>
+    </li>
+  <% end%>
+  <p>
+    <p><b> Show <%= @name_type %> starting with : </b></p>
+    <% ("A".."Z").each do |letter| %>
+      <% if @unique_names[letter].count > 0 %>
+        <%= link_to letter, freecen2_contents_piece_names_path(:name_type => @name_type, :first_letter => letter), :class => "btn btn--small", :method => :get%>
+      <% end%>
+    <% end%>
+  </p>
+  <p>
+    <% if @remainder.count > 0 %>
+      <%= link_to 'Additional Names', freecen2_contents_piece_names_path(:name_type => @name_type, :first_letter => 'Remainder'), :class => "btn btn--small", :method => :get%>
+    <% end%>
+  </p>
+</div>
+<div class="island  island--light text--center">
+  <fieldset class="inputs" style="border-style: none;">
+    <li class="grid" >
+      <% if @first_letter != 'All' %>
+        <% if @first_letter != 'Remainder' %>
+          <h3 style="text-align: center">Unique <%= @name_type %> Starting with <%= @first_letter%> : <%= @unique_names[@first_letter].count%></h3>
+          <p>
+            <% @unique_names[@first_letter].each do |name| %>
+              <%= name %>&emsp;&nbsp;
+            <% end%>
+          <% else%>
+            <p><b> Additional Names</b></p>
+            <% @remainder.each do |name| %>
+              <%= name %>&emsp;&nbsp;
+            <% end%>
+          <% end%>
+        <% else%>
+          <h3 style="text-align: center">All <%= @name_type %></h3>
+          <% ("A".."Z").each do |letter| %>
+            <p><b><%= letter%></b></p>
+            <p>
+              <% @unique_names[letter].each do |name| %>
+                <%= name %>&emsp;&nbsp;
+              <% end%>
+            </p>
+          <% end%>
+          <p><b> Additional Names</b></p>
+          <p>
+            <% @remainder.each do |name| %>
+              <%= name %>&emsp;&nbsp;
+            <% end%>
+          <% end%>
+        </li>
+      </fieldset>
+    </div>
+    <br />

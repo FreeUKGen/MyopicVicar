@@ -1,0 +1,62 @@
+<h2 style="text-align: center">Database Records for <%= @county_description %> as of <%= @interval_end.strftime('%d %b %Y') %> </h2>
+<div  style="text-align: center">
+  <%= link_to 'Back to Totals for All Counties' , freecen2_contents_path, method: :get , :class => "btn btn--small" %>
+  <%= link_to 'Choose a Different County' , freecen2_contents_path, method: :get , :class => "btn btn--small" %>
+  <br>
+  <br>
+</div>
+<div>
+  <fieldset class="inputs">
+    <li class="grid__item one-third palm-one-whole" >
+      <h3 style="text-align: center"> You may choose a specific District:</h3>
+      <%= simple_form_for @district do |f| %>
+        <%= f.input :name, :as=>:select, label: false, :collection=>@all_districts, :include_blank=>"Select District",  :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :'onchange'=>@location},
+        :hint => '(click the button above to choose from the list of all districts in the county where Pieces exist in the database)' %>
+      <% end %>
+    </li>
+    <li class="grid__item two-thirds palm-one-whole" >
+      <h3 style="text-align: center">Totals for All Districts in <%= @county_description %></h3>
+      <div class='scrollable'>
+        <table  class="table--bordered table--data table--striped " >
+          <thead >
+            <tr>
+              <th class='sticky-header'>Year</th>
+              <th class='sticky-header'>Pieces<br>
+                Online</th>
+              <th class='sticky-header'>Total<br>
+                Pieces</th>
+              <th class='sticky-header'>%<br>
+                Online</th>
+              <th class='sticky-header'>New<br>
+                Pieces<br>
+                Online</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% Freecen::CENSUS_YEARS_ARRAY.each do |census|%>
+              <tr>
+                <td><%= census %></td>
+                <td><%= @freecen2_contents.records[@chapman_code][census][:pieces_online] %></td>
+                <td><%= @freecen2_contents.records[@chapman_code][census][:pieces] %></td>
+                <%= contents_show_percentage(@freecen2_contents.records[@chapman_code][census][:pieces_online], @freecen2_contents.records[@chapman_code][census][:pieces]) %>
+                <td><%= @freecen2_contents.records[@chapman_code][census][:added_pieces_online] %></td>
+              </tr>
+            <% end %>
+            <tr>
+              <td>Total</td>
+              <td><%= @freecen2_contents.records[@chapman_code][:total][:pieces_online] %></td>
+              <td><%= @freecen2_contents.records[@chapman_code][:total][:pieces] %></td>
+              <%= contents_show_percentage(@freecen2_contents.records[@chapman_code][:total][:pieces_online], @freecen2_contents.records[@chapman_code][:total][:pieces]) %>
+              <td><%= @freecen2_contents.records[@chapman_code][:total][:added_pieces_online] %></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </li>
+  </fieldset>
+</div>
+<script>
+  function replace_chars(str) {
+    return str.replace('&', '%26').replace('+','%2B')
+  }
+</script>

@@ -284,6 +284,15 @@ class ApplicationController < ActionController::Base
     session.delete(:stats_year)
     session.delete(:stats_todate)
     session.delete(:stats_recs)
+    session.delete(:contents_id)
+    session.delete(:interval_end)
+    session.delete(:county)
+    session.delete(:county_description)
+    session.delete(:county)
+    session.delete(:key_district)
+    session.delete(:district_description)
+    session.delete(:census)
+    session.delete(:contents_piece_id)
   end
 
   def clean_session_for_county
