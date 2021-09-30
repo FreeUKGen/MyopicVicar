@@ -7,8 +7,12 @@ class BestGuess < FreebmdDbBase
   has_one :best_guess_hash, class_name: '::BestGuessHash', foreign_key: 'RecordNumber'
 
   belongs_to :CountyCombos, foreign_key: 'CountyComboID', primary_key: 'CountyComboID', class_name: '::CountyCombo'
+  belongs_to :district, foreign_key: 'DistrictNumber', primary_key: 'DistrictNumber', class_name: '::District'
   has_many :ScanLinks, primary_key: 'ChunkNumber', foreign_key: 'ChunkNumber'
   has_many :best_guess_links, class_name: '::BestGuessLink', foreign_key: 'RecordNumber' #, primary_key: ['RecordNumber', 'AccessionNumber', 'SequenceNumber']
+  scope :birth_records,   -> { where(RecordTypeID: 1) }
+  scope :death_records,   -> { where(RecordTypeID: 2) }
+  scope :marriage_records,   -> { where(RecordTypeID: 3) }
   extend SharedSearchMethods
   ENTRY_SYSTEM = 8
   ENTRY_LINK = 256
@@ -44,7 +48,24 @@ class BestGuess < FreebmdDbBase
     self.best_guess_links
   end
 
+  def record_hash
+    surname = self.Surname.upcase
+    given_name = self.GivenName.upcase
+    district_name = self.district.DistrictName.upcase
+    volume = self.Volume.upcase
+    page = self.Page.upcase
+    year = QuarterDetails.quarter_year(self.QuarterNumber)
+    quarter = QuarterDetails.quarter(self.QuarterNumber)
+    record_type = self.RecordTypeID
+    record_hash = Digest::MD5.base64digest("#{surname}/#{given_name}/#{district_name}/#{volume}/#{page}/#{year}/#{quarter}/#{record_type}")
+    record_hash.strip.chomp('==')
+  end
+
   def get_rec_hash
+    BestGuessHash.where(Hash: self.record_hash).first
+  end
+
+  def get_rec_hash_old
     self.best_guess_hash
   end
 
@@ -357,4 +378,38 @@ class BestGuess < FreebmdDbBase
     submissions = Submission.find_by(AccessionNumber: record_accessions, SequenceNumber: record_sequence_number)
     submissions.Registered if submissions.present?
   end
+
+  def self.get_birth_unique_names birth_records
+    entries = Hash.new
+    all_entries = birth_records
+    entries["Mother's Surname"] = all_entries.distinct.pluck(:AssociateName).reject(&:blank?).sort
+    entries["Surname"] = all_entries.distinct.pluck(:Surname).reject(&:blank?).sort
+    entries["GivenName"] = all_entries.distinct.pluck(:GivenName).reject(&:blank?).sort
+    entries.delete_if{|k,v| v.blank?}.sort
+    entries
+  end
+
+  def self.get_marriage_unique_names marriage_records
+    entries = Hash.new
+    all_entries = marriage_records
+    entries["Spouse Surname"] = all_entries.distinct.pluck(:AssociateName).reject(&:blank?).sort
+    entries["Surname"] = all_entries.distinct.pluck(:Surname).reject(&:blank?).sort
+    entries["GivenName"] = all_entries.distinct.pluck(:GivenName).reject(&:blank?).sort
+    entries.delete_if{|k,v| v.blank?}.sort
+    entries
+  end
+
+  def self.get_death_unique_names death_records
+    entries = Hash.new
+    all_entries = death_records
+    entries["Surname"] = all_entries.distinct.pluck(:Surname).reject(&:blank?).sort
+    entries["GivenName"] = all_entries.distinct.pluck(:GivenName).reject(&:blank?).sort
+    entries.delete_if{|k,v| v.blank?}.sort
+    entries
+  end
+
+  def get_unique_names
+    
+  end
+
 end

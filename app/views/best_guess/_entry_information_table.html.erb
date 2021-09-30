@@ -171,9 +171,9 @@
         </td>
       </tr>
     <% end %>
-    <% if more_info%>
+    <% if more_info %>
       <td  colspan=2>
-        <% if  @search %>
+        <% if  search %>
           <%= link_to 'Complete Details', friendly_bmd_record_details_path(@search_id, record.id, record.friendly_url, search_entry: record), :rel => "nofollow", :title => "", class: 'btn btn--natural'%>
         <% else %>
           <%= link_to 'Complete Details', friendly_bmd_record_details_non_search_path(record.id, record.friendly_url, search_entry: record), class: 'btn btn--natural'%>

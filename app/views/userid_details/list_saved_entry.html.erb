@@ -15,7 +15,7 @@
       <tr id="<%=search_record[:RecordNumber]%>" class="<%= record_type.downcase %>_hover" >
           <td>
             <center>
-            	<%= link_to("View #{n}".html_safe,friendly_bmd_record_details_non_search_path(search_record.id, search_record.friendly_url), :rel => "nofollow", :title => "", class: "btn  btn--small")%>
+            	<%= link_to("View #{n}".html_safe,friendly_bmd_record_details_non_search_path(search_record.id, search_record.friendly_url, saved_record: true), :rel => "nofollow", :title => "", class: "btn  btn--small")%>
               <%#= link_to("View #{n}".html_safe,best_guess_path(search_record.RecordNumber), :rel => "nofollow", :title => "", class: "btn  btn--small")%>
               <i><%#= seen(@search_query,search_record) %></i>
             </center>
