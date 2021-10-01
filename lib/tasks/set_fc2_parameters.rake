@@ -15,6 +15,10 @@ task :set_fc2_paramters, [:start, :finish, :search_records] => [:environment] do
   vld_files = Freecen1VldFile.all.order_by(_id: 1).compact
   max_files = vld_files.length
   finish = max_files if finish > max_files
+  vld_files.each do |file|
+    message_file.puts "File number #{@number}, #{file.inspect}"
+  end
+
   while @number < finish
     @number += 1
     p @number
