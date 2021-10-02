@@ -77,6 +77,7 @@ class Freecen2Place
   has_many :freecen_individuals, dependent: :restrict_with_error
   has_many :sources
 
+  has_many :freecen_csv_files, dependent: :restrict_with_error
   has_many :freecen2_pieces, dependent: :restrict_with_error
   has_many :freecen2_districts, dependent: :restrict_with_error
   has_many :freecen2_civil_parishes, dependent: :restrict_with_error
