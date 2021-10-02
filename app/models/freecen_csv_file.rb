@@ -86,6 +86,7 @@ class FreecenCsvFile
   end
 
   belongs_to :userid_detail, index: true, optional: true
+  belongs_to :freecen2_place, index: true, optional: true
   belongs_to :freecen2_piece, index: true, optional: true
   belongs_to :freecen2_district, index: true, optional: true
 

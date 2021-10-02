@@ -500,6 +500,13 @@ namespace :foo do
     p "finished"
   end
 
+  desc "Check and Refresh the freecen2 places cache"
+  task :check_and_refresh_freecen2_places_cache => [:environment] do |t,args|
+    Freecen2PlaceCache.check_and_refresh_if_absent
+    p "finished"
+  end
+
+
   task :create_userid_docs, [:type,:range]  => [:environment] do |t, args|
     #this task reads the .uDetails file for each userid and creates the userid_detail collection
     require 'create_userid_docs'

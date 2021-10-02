@@ -15,14 +15,21 @@ task :set_fc2_paramters, [:start, :finish, :search_records] => [:environment] do
   vld_files = Freecen1VldFile.all.order_by(_id: 1).compact
   max_files = vld_files.length
   finish = max_files if finish > max_files
+  num = 0
+  vld_files.each do |file|
+    message_file.puts "File number #{num}, #{file.inspect}"
+    num += 1
+  end
+
   while @number < finish
     @number += 1
-    p @number
+    p "#{@number} at #{Time.now}"
+
     file = vld_files[@number]
     message_file.puts "File number #{@number} is blank" if file.blank?
     next if file.blank?
 
-    message_file.puts "Number #{@number} for file #{file.inspect}"
+    message_file.puts "Number #{@number} at #{Time.now} for file #{file.inspect}"
     freecen_piece = file.freecen_piece
     freecen2_piece = freecen_piece.freecen2_piece
     p "Missing Freecen2 piece for #{freecen_piece.inspect}" if freecen2_piece.blank?
