@@ -19,9 +19,16 @@ db.runCommand(
         },
         {
                 "key" : {
-                        "freecen_place_id" : 1,
+                        "place_id" : 1,
                 },
-                "name" : "freecen_piece_id_1",
+                "name" : "place_id",
+                "background" : true
+        },
+        {
+                "key" : {
+                        "freecen2_place_id" : 1
+                },
+                "name" : "freecen2_place_id_1",
                 "background" : true
         }
                 ]

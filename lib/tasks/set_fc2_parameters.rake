@@ -32,6 +32,7 @@ task :set_fc2_paramters, [:start, :finish, :search_records] => [:environment] do
 
     message_file.puts "Number #{@number} at #{Time.now} for file #{file.inspect}"
     freecen_piece = file.freecen_piece
+    place = freecen_piece.place
     freecen2_piece = freecen_piece.freecen2_piece
     p "Missing Freecen2 piece for #{freecen_piece.inspect}" if freecen2_piece.blank?
     message_file.puts "Missing Freecen2 piece for #{freecen_piece.inspect}" if freecen2_piece.blank?
@@ -61,7 +62,7 @@ task :set_fc2_paramters, [:start, :finish, :search_records] => [:environment] do
     end
 
     if search_record_creation
-      result = SearchRecord.collection.find({ freecen_piece_id: freecen_piece._id }).hint('freecen_piece_id').update_many({ "$set" => {freecen2_place_id: freecen2_place._id } })
+      result = SearchRecord.collection.find({ place_id: place._id }).hint('place_rt_sd').update_many({ "$set" => {freecen2_place_id: freecen2_place._id } })
       p result
     end
   end
