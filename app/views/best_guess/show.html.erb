@@ -38,7 +38,7 @@
       <section>
         <div class="grid__item two-thirds lap-two-thirds palm-one-whole hard--left">
           <% record_type = RecordType::display_name(@current_record.RecordTypeID)%>
-          <%= render partial: 'entry_information_table', locals: {record: @current_record, search: @search, entry_type: record_type.downcase, query: @search_query, search_id: params[:search_id], original_record: @current_record, more_info: false } %>
+          <%= render partial: 'entry_information_table', locals: {record: @current_record, search: @search, entry_type: record_type.downcase, query: @search_query, search_id: params[:search_id], original_record: @current_record, more_info: false, type: "general"} %>
         </div>
         
         <div class='push-half--top'>
