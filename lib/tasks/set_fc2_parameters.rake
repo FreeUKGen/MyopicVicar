@@ -64,8 +64,8 @@ task :set_fc2_paramters, [:start, :finish, :search_records] => [:environment] do
     end
 
     if search_record_creation
-      p SearchRecord.find_by(freecen2_place_id: freecen2_place._id)
-      record = SearchRecord.find_by(freecen2_place_id: freecen2_place._id).present?
+      p SearchRecord.where(freecen2_place_id: freecen2_place.id).first
+      record = SearchRecord.where(freecen2_place_id: freecen2_place.id).first.present?
       p 'done already?'
       p record
 
