@@ -6,7 +6,7 @@
   </p-->
 <!--h1 class="title">Entry Information</h1>
 <p>Has our search engine found the record you are seeking? The next step is to ordering your certificate ! Click on Ordering Certificates to learn what to do now.</p-->
-<% breadcrumb :entry_information, @current_record  unless @search %>
+<% breadcrumb :entry_information, @current_record  if @saved_record %>
 <%= render 'flash_notice' %>
 
 <% title "Record Details" %>
@@ -38,7 +38,7 @@
       <section>
         <div class="grid__item two-thirds lap-two-thirds palm-one-whole hard--left">
           <% record_type = RecordType::display_name(@current_record.RecordTypeID)%>
-          <%= render partial: 'entry_information_table', locals: {record: @current_record, search: true, entry_type: record_type.downcase, query: @search_query, search_id: params[:search_id], original_record: @current_record, more_info: false } %>
+          <%= render partial: 'entry_information_table', locals: {record: @current_record, search: @search, entry_type: record_type.downcase, query: @search_query, search_id: params[:search_id], original_record: @current_record, more_info: false } %>
         </div>
         
         <div class='push-half--top'>

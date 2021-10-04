@@ -2,13 +2,13 @@ class BestGuessController < ApplicationController
   before_action :viewed
   skip_before_action :require_login
   
-
   def show
     #raise params.inspect
     #redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
     params[:search_id].present? ? @search = true : @search = false
     get_user_info_from_userid if cookies.signed[:userid].present?
     redirect_back(fallback_location: new_search_query_path) && return unless show_value_check if @search
+    @saved_record = params[:saved_record] if params[:saved_record].present?
     @page_number = params[:page_number].to_i
     @option = params[:filter_option] if params[:filter_option].present?
     record_from_page = params[:record_of_page].to_i if params[:record_of_page].present?
