@@ -1219,7 +1219,7 @@ class SearchQuery
     @search_index = SearchQuery.get_search_table.index_hint(search_fields)
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
     records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)#.joins(spouse_join_condition).where(bmd_marriage_params)
-    raise records.explain.inspect
+    #raise records.explain.inspect
     records = records.where(wildcard_search_conditions) #unless self.first_name_exact_match
     records = records.where(search_conditions)
     records = records.where({ GivenName: first_name.split }).or(records.where(GivenName: first_name)) if wildcard_option == "Any"
