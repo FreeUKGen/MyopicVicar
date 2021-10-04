@@ -326,6 +326,13 @@ db.runCommand(
             },
             name: "place2_rt_sd",
                 background: true
+        },
+         {
+            key: {
+                freecen_piece_id: 1
+            },
+            name: "freecen_piece_id",
+                background: true
         }
 
             ]

@@ -61,7 +61,7 @@ task :set_fc2_paramters, [:start, :finish, :search_records] => [:environment] do
     end
 
     if search_record_creation
-      result = SearchRecord.collection.find({ freecen1_vld_file_id: file._id }).hint('freecen1_vld_file_id').update_many({ "$set" => {freecen2_place_id: freecen2_place._id } })
+      result = SearchRecord.collection.find({ freecen_piece_id: freecen_piece._id }).hint('freecen_piece_id').update_many({ "$set" => {freecen2_place_id: freecen2_place._id } })
       p result
     end
   end
