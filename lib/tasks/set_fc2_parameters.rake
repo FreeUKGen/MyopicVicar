@@ -64,12 +64,12 @@ task :set_fc2_paramters, [:start, :finish, :search_records] => [:environment] do
     end
 
     if search_record_creation
-      p SearchRecord.where(freecen2_place_id: freecen2_place.id).first
-      record = SearchRecord.where(freecen2_place_id: freecen2_place.id).first.present?
+      p SearchRecord.where(freecen2_place_id: freecen2_place._id).first
+      record = SearchRecord.where(freecen2_place_id: freecen2_place._id).first.present?
       p 'done already?'
       p record
 
-      result = SearchRecord.collection.find({ place_id: place._id }).hint('place_id').update_many({ "$set" => {freecen2_place_id: freecen2_place._id } }) unless record
+      result = SearchRecord.collection.update_many({ place_id: place._id }, "$set" => { freecen2_place_id: freecen2_place._id }) unless record
       p result
       SearchRecord.where(place_id: place._id).each(&:save) unless record
       freecen2_place.save
