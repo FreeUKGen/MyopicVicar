@@ -71,6 +71,8 @@ task :set_fc2_paramters, [:start, :finish, :search_records] => [:environment] do
 
       result = SearchRecord.collection.find({ place_id: place._id }).hint('place_id').update_many({ "$set" => {freecen2_place_id: freecen2_place._id } }) unless record
       p result
+      freecen2_place.save
+      p SearchRecord.where(freecen2_place_id: freecen2_place.id).first
     end
   end
   time_end = Time.now
