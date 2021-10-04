@@ -63,8 +63,12 @@ task :set_fc2_paramters, [:start, :finish, :search_records] => [:environment] do
     end
 
     if search_record_creation
-      result = SearchRecord.collection.find({ place_id: place._id }).hint('place_id').update_many({ "$set" => {freecen2_place_id: freecen2_place._id } })
-      p result
+      record = SearchRecord.find_by(freecen2_place_id: freecen2_place._id).blank?
+      p 'done already'
+      p record
+
+      result = SearchRecord.collection.find({ place_id: place._id }).hint('place_id').update_many({ "$set" => {freecen2_place_id: freecen2_place._id } }) if record
+      p result if record
     end
   end
   time_end = Time.now
