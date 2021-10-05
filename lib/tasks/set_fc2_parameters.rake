@@ -35,17 +35,28 @@ task :set_fc2_paramters, [:start, :finish, :search_records] => [:environment] do
     place = freecen_piece.place
     p place
     freecen2_piece = freecen_piece.freecen2_piece
+    p freecen2_piece
     p "Missing Freecen2 piece for #{freecen_piece.inspect}" if freecen2_piece.blank?
     message_file.puts "Missing Freecen2 piece for #{freecen_piece.inspect}" if freecen2_piece.blank?
     next if freecen2_piece.blank?
 
     freecen2_district = freecen2_piece.freecen2_district
     freecen2_place = freecen2_piece.freecen2_place
+    p 'freecen2_place and count of records'
+    p freecen2_place
+    p freecen2_place.search_records.count
+    p 'number of ppiece files'
+    p freecen2_piece.freecen1_vld_files
     freecen2_piece.freecen1_vld_files = [file]
+
     freecen2_district.freecen1_vld_files = [file]
+
     freecen2_place.freecen1_vld_files = [file] if freecen2_place.present?
     freecen2_piece.save
     freecen2_district.save
+    p 'after save'
+    p freecen2_piece.freecen1_vld_files
+    p freecen2_place.freecen1_vld_files
     message_file.puts "Missing Freecen2 place for #{freecen_piece.inspect}" if freecen2_place.blank?
     next if freecen2_place.blank?
 
@@ -64,16 +75,15 @@ task :set_fc2_paramters, [:start, :finish, :search_records] => [:environment] do
     end
 
     if search_record_creation
-      p SearchRecord.where(freecen2_place_id: freecen2_place._id).first
-      record = SearchRecord.where(freecen2_place_id: freecen2_place._id).first.present?
+      p SearchRecord.find_by(freecen2_place_id: freecen2_place._id)
+      record = SearchRecord.find_by(freecen2_place_id: freecen2_place._id).present?
       p 'done already?'
       p record
-
-      result = SearchRecord.collection.update_many({ place_id: place._id }, "$set" => { freecen2_place_id: freecen2_place._id }) unless record
-      p result
-      SearchRecord.where(place_id: place._id).each(&:save) unless record
+      SearchRecord.where( place_id: place._id).order_by(_id: 1).no_timeout.each do |record|
+        freecen2_place.search_records << record
+      end
       freecen2_place.save
-      p SearchRecord.where(freecen2_place_id: freecen2_place.id).first
+      p SearchRecord.find_by(freecen2_place_id: freecen2_place._id)
     end
   end
   time_end = Time.now
