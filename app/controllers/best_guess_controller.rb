@@ -27,7 +27,9 @@ class BestGuessController < ApplicationController
     end
     @display_date = false
     if @option == '2'
-      @new_postem = @current_record.best_guess_hash.postems.new
+      record_hash_value = @current_record.record_hash
+      record_best_guess_hash = BestGuessHash.where(Hash: record_hash_value).first
+      @new_postem = record_best_guess_hash.postems.new
       @postem_honeypot = "postem#{rand.to_s[2..11]}"
       session[:postem_honeypot] = @postem_honeypot
     end
@@ -169,7 +171,7 @@ class BestGuessController < ApplicationController
     entry_id = params[:id]
     user = UseridDetail.where(id: cookies.signed[:userid]).first
     @entry = BestGuess.where(RecordNumber: entry_id).first
-    record_hash = @entry.best_guess_hash.Hash
+    record_hash = @entry.record_hash
     user.saved_entry << record_hash
     user.save
     if user.save

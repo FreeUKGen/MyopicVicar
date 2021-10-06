@@ -48,7 +48,7 @@
     </div>
   </div>
   <% if cookies.signed[:userid].present?%>
-  	<% unless @user.saved_entry.include?(@search_record.best_guess_hash.Hash)%>
+  	<% unless @user.saved_entry.include?(@search_record.record_hash)%>
   <%#= raise cookies.signed.inspect%>
 		  <div class="idk">
 		    <div class="grid__item one-third lap-one-third palm-one-whole ">
