@@ -63,7 +63,11 @@ module BestGuessHelper
 
   def scan_link_url entry
     @year, @event, @quarter, @image_server = scan_url_constants(entry)
-    image_path = "#{@image_server}/#{@year}/#{@event}/#{@quarter}/"
+    if entry.QuarterNumber <  Constant::EVENT_QUARTER_TO_YEAR
+      image_path = "#{@image_server}/#{@year}/#{@event}/#{@quarter}/"
+    else
+      image_path = "#{@image_server}/#{@year}/#{@event}/"
+    end
     image_path
   end
 end
