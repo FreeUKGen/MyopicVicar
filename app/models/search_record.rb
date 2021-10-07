@@ -35,12 +35,8 @@ class SearchRecord
   belongs_to :freecen_csv_file, index: true, optional: true
   belongs_to :freecen_individual, index: true, optional: true
   belongs_to :freecen1_vld_file, index: true, optional: true
-
   belongs_to :place, index: true, optional: true
   belongs_to :freecen2_place, index: true, optional: true
-  belongs_to :freecen2_civil_parish, index: true, optional: true
-  belongs_to :freecen2_piece, index: true, optional: true
-  belongs_to :freecen2_district, index: true, optional: true
 
   field :annotation_ids, type: Array # , :typecast => 'ObjectId'
 

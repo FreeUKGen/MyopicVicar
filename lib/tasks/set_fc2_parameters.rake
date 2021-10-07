@@ -1,15 +1,15 @@
 desc "set_fc2 parameter linkgaes for VLD files, dwelling, individuals and search records"
-task :set_fc2_paramters, [:start, :finish, :search_records] => [:environment] do |t, args|
+task :set_fc2_parameters, [:start, :finish, :search_records] => [:environment] do |t, args|
   file_for_messages = File.join(Rails.root, 'log/create fc2 parameter linkages.log')
   message_file = File.new(file_for_messages, 'w')
   start = args.start.to_i
   finish = args.finish.to_i
   search_record_creation = args.search_records.present? ? true : false
-  p "Finish #{finish} must be greater than start #{start}" if start >= finish
-  crash if start >= finish
+  p "Finish #{finish} must be greater than start #{start}" if start > finish
+  crash if start > finish
 
-  p "Producing report of creation of fc2 paramter linkages from VLDs starting at #{start} and an end of #{finish} with search record creation #{search_record_creation}"
-  message_file.puts "Producing report of creation of fc2 paramter linkages from VLDs starting at #{start} and an end of #{finish} with search record creation #{search_record_creation}"
+  p "Producing report of creation of fc2 parameter linkages from VLDs starting at #{start} and an end of #{finish} with search record creation #{search_record_creation}"
+  message_file.puts "Producing report of creation of fc2 parameter linkages from VLDs starting at #{start} and an end of #{finish} with search record creation #{search_record_creation}"
   @number = start - 1
   time_start = Time.now
   vld_files = Freecen1VldFile.all.order_by(_id: 1).compact
@@ -29,21 +29,38 @@ task :set_fc2_paramters, [:start, :finish, :search_records] => [:environment] do
     message_file.puts "File number #{@number} is blank" if file.blank?
     next if file.blank?
 
+
     message_file.puts "Number #{@number} at #{Time.now} for file #{file.inspect}"
     freecen_piece = file.freecen_piece
+    p 'piece'
+    p freecen_piece
+    place = freecen_piece.place
+    p place
     freecen2_piece = freecen_piece.freecen2_piece
+    p 'fc2piece'
+    p freecen2_piece
     p "Missing Freecen2 piece for #{freecen_piece.inspect}" if freecen2_piece.blank?
     message_file.puts "Missing Freecen2 piece for #{freecen_piece.inspect}" if freecen2_piece.blank?
     next if freecen2_piece.blank?
 
     freecen2_district = freecen2_piece.freecen2_district
+    p 'fc2dis'
+    p freecen2_district
     freecen2_place = freecen2_piece.freecen2_place
-    freecen2_piece.freecen1_vld_files << file
-    freecen2_district.freecen1_vld_files << file
-    freecen2_place.freecen1_vld_files << file if freecen2_place.present?
+    p 'fc2place'
+    p freecen2_place
+    p 'fc2place files'
+    p freecen2_place.freecen1_vld_files
+    freecen2_piece.freecen1_vld_files = [file]
+    freecen2_district.freecen1_vld_files = [file]
+    freecen2_place.freecen1_vld_files = [file] if freecen2_place.present?
     freecen2_piece.save
     freecen2_district.save
     freecen2_place.save if freecen2_place.present?
+    p 'fc2piece'
+    p freecen2_piece
+    p 'fc2place'
+    p freecen2_district
     message_file.puts "Missing Freecen2 place for #{freecen_piece.inspect}" if freecen2_place.blank?
     next if freecen2_place.blank?
 
@@ -60,19 +77,31 @@ task :set_fc2_paramters, [:start, :finish, :search_records] => [:environment] do
     if freecen_piece.status == 'Online'
       freecen2_piece.update_attributes(status: 'Online', status_date: file._id.generation_time.to_datetime.in_time_zone('London'))
     end
+    p 'file'
     p file
+    p 'fc2place'
+    p freecen2_place
+    p 'fc2place files'
+    p freecen2_place.freecen1_vld_files
 
     if search_record_creation
-      file.freecen_dwellings.no_timeout.each do |dwelling|
-        freecen2_place.freecen_dwellings << dwelling
-        dwelling.freecen_individuals.no_timeout.each do |individual|
-          freecen2_place.freecen_individuals << individual
-          search_record = individual.search_record
-          freecen2_place.search_records << search_record
-        end
+
+      p place.search_records.count
+      place.search_records.no_timeout.each do |record|
+        freecen2_place.search_records << record
       end
+
+      p place.freecen_dwellings.count
+      place.freecen_dwellings.no_timeout.each do |dwellings|
+        freecen2_place.freecen_dwellings << dwellings
+      end
+
       freecen2_place.save
       p freecen2_place
+      p  freecen2_place.search_record_ids
+      p freecen2_place.search_records.count
+      p  freecen2_place.freecen_dwelling_ids
+      p freecen2_place.freecen_dwellings.count
     end
   end
   time_end = Time.now
