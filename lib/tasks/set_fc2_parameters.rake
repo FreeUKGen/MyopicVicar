@@ -39,12 +39,12 @@ task :set_fc2_parameters, [:start, :finish, :search_records] => [:environment] d
 
     freecen2_district = freecen2_piece.freecen2_district
     freecen2_place = freecen2_piece.freecen2_place
-    freecen2_piece.freecen1_vld_files = [file]
-    freecen2_district.freecen1_vld_files = [file]
-    freecen2_place.freecen1_vld_files = [file] if freecen2_place.present?
-    freecen2_piece.save
-    freecen2_district.save
-    freecen2_place.save if freecen2_place.present?
+    freecen2_piece.freecen1_vld_files = [file] unless freecen2_piece.freecen1_vld_files.include?(file)
+    freecen2_district.freecen1_vld_files = [file] unless freecen2_district.freecen1_vld_files.include?(file)
+    freecen2_place.freecen1_vld_files = [file] unless freecen2_district.freecen1_vld_files.include?(file) || freecen2_place.blank?
+    freecen2_piece.save unless freecen2_piece.freecen1_vld_files.include?(file)
+    freecen2_district.save unless freecen2_district.freecen1_vld_files.include?(file)
+    freecen2_place.save unless freecen2_piece.freecen1_vld_files.include?(file) || freecen2_place.blank?
     message_file.puts "Missing Freecen2 place for #{freecen_piece.inspect}" if freecen2_place.blank?
     next if freecen2_place.blank?
 
@@ -63,12 +63,10 @@ task :set_fc2_parameters, [:start, :finish, :search_records] => [:environment] d
     end
     p file
     if search_record_creation
-      freecen2_place
       searches = freecen2_place.search_records.count
-      p  freecen2_place.search_record_ids.count
+      p freecen2_place.search_record_ids.count
       p searches
-      p  freecen2_place.search_record_ids.count
-      if searches == 0
+      if searches.zero?
         place.search_records.no_timeout.each do |record|
           freecen2_place.search_records << record
         end
@@ -76,17 +74,17 @@ task :set_fc2_parameters, [:start, :finish, :search_records] => [:environment] d
       dwellings = freecen2_place.freecen_dwellings.count
       p dwellings
       p  freecen2_place.freecen_dwelling_ids.count
-      if dwellings == 0
+      if dwellings.zero?
         place.freecen_dwellings.no_timeout.each do |dwelling|
           freecen2_place.freecen_dwellings << dwelling
         end
       end
-      if searches == 0 || dwellings == 0
+      if searches.zero? || dwellings.zero?
         freecen2_place.save
         p freecen2_place
-        p  freecen2_place.search_record_ids.count
+        p freecen2_place.search_record_ids.count
         p freecen2_place.search_records.count
-        p  freecen2_place.freecen_dwelling_ids.count
+        p freecen2_place.freecen_dwelling_ids.count
         p freecen2_place.freecen_dwellings.count
       end
     end
