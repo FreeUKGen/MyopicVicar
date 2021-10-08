@@ -1,5 +1,7 @@
 desc "set_fc2 parameter linkgaes for VLD files, dwelling, individuals and search records"
 task :set_fc2_parameters, [:start, :finish, :search_records] => [:environment] do |t, args|
+  require 'create_search_records_freecen2'
+
   file_for_messages = File.join(Rails.root, 'log/create fc2 parameter linkages.log')
   message_file = File.new(file_for_messages, 'w')
   start = args.start.to_i
@@ -62,32 +64,8 @@ task :set_fc2_parameters, [:start, :finish, :search_records] => [:environment] d
       freecen2_piece.update_attributes(status: 'Online', status_date: file._id.generation_time.to_datetime.in_time_zone('London'))
     end
     p file
-    if search_record_creation
-      searches = freecen2_place.search_records.count
-      p freecen2_place.search_record_ids.count
-      p searches
-      if searches.zero?
-        place.search_records.no_timeout.each do |record|
-          freecen2_place.search_records << record
-        end
-      end
-      dwellings = freecen2_place.freecen_dwellings.count
-      p dwellings
-      p  freecen2_place.freecen_dwelling_ids.count
-      if dwellings.zero?
-        place.freecen_dwellings.no_timeout.each do |dwelling|
-          freecen2_place.freecen_dwellings << dwelling
-        end
-      end
-      if searches.zero? || dwellings.zero?
-        freecen2_place.save
-        p freecen2_place
-        p freecen2_place.search_record_ids.count
-        p freecen2_place.search_records.count
-        p freecen2_place.freecen_dwelling_ids.count
-        p freecen2_place.freecen_dwellings.count
-      end
-    end
+    p freecen2_place
+    CreateSearchRecordsFreecen2.process(place, freecen2_place) if search_record_creation
   end
   time_end = Time.now
   finished = finish - start + 1
