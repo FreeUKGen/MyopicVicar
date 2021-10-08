@@ -63,8 +63,11 @@ task :set_fc2_parameters, [:start, :finish, :search_records] => [:environment] d
     end
     p file
     if search_record_creation
+      freecen2_place
       searches = freecen2_place.search_records.count
+      p  freecen2_place.search_record_ids.count
       p searches
+      p  freecen2_place.search_record_ids.count
       if searches == 0
         place.search_records.no_timeout.each do |record|
           freecen2_place.search_records << record
@@ -72,6 +75,7 @@ task :set_fc2_parameters, [:start, :finish, :search_records] => [:environment] d
       end
       dwellings = freecen2_place.freecen_dwellings.count
       p dwellings
+      p  freecen2_place.freecen_dwelling_ids.count
       if dwellings == 0
         place.freecen_dwellings.no_timeout.each do |dwelling|
           freecen2_place.freecen_dwellings << dwelling
