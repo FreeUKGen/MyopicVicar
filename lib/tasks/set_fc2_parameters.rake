@@ -29,38 +29,22 @@ task :set_fc2_parameters, [:start, :finish, :search_records] => [:environment] d
     message_file.puts "File number #{@number} is blank" if file.blank?
     next if file.blank?
 
-
     message_file.puts "Number #{@number} at #{Time.now} for file #{file.inspect}"
     freecen_piece = file.freecen_piece
-    p 'piece'
-    p freecen_piece
     place = freecen_piece.place
-    p place
     freecen2_piece = freecen_piece.freecen2_piece
-    p 'fc2piece'
-    p freecen2_piece
     p "Missing Freecen2 piece for #{freecen_piece.inspect}" if freecen2_piece.blank?
     message_file.puts "Missing Freecen2 piece for #{freecen_piece.inspect}" if freecen2_piece.blank?
     next if freecen2_piece.blank?
 
     freecen2_district = freecen2_piece.freecen2_district
-    p 'fc2dis'
-    p freecen2_district
     freecen2_place = freecen2_piece.freecen2_place
-    p 'fc2place'
-    p freecen2_place
-    p 'fc2place files'
-    p freecen2_place.freecen1_vld_files
     freecen2_piece.freecen1_vld_files = [file]
     freecen2_district.freecen1_vld_files = [file]
     freecen2_place.freecen1_vld_files = [file] if freecen2_place.present?
     freecen2_piece.save
     freecen2_district.save
     freecen2_place.save if freecen2_place.present?
-    p 'fc2piece'
-    p freecen2_piece
-    p 'fc2place'
-    p freecen2_district
     message_file.puts "Missing Freecen2 place for #{freecen_piece.inspect}" if freecen2_place.blank?
     next if freecen2_place.blank?
 
@@ -77,31 +61,30 @@ task :set_fc2_parameters, [:start, :finish, :search_records] => [:environment] d
     if freecen_piece.status == 'Online'
       freecen2_piece.update_attributes(status: 'Online', status_date: file._id.generation_time.to_datetime.in_time_zone('London'))
     end
-    p 'file'
     p file
-    p 'fc2place'
-    p freecen2_place
-    p 'fc2place files'
-    p freecen2_place.freecen1_vld_files
-
     if search_record_creation
-
-      p place.search_records.count
-      place.search_records.no_timeout.each do |record|
-        freecen2_place.search_records << record
+      searches = freecen2_place.search_records.count
+      p searches
+      if searches == 0
+        place.search_records.no_timeout.each do |record|
+          freecen2_place.search_records << record
+        end
       end
-
-      p place.freecen_dwellings.count
-      place.freecen_dwellings.no_timeout.each do |dwellings|
-        freecen2_place.freecen_dwellings << dwellings
+      dwellings = freecen2_place.freecen_dwellings.count
+      p dwellings
+      if dwellings == 0
+        place.freecen_dwellings.no_timeout.each do |dwelling|
+          freecen2_place.freecen_dwellings << dwelling
+        end
       end
-
-      freecen2_place.save
-      p freecen2_place
-      p  freecen2_place.search_record_ids
-      p freecen2_place.search_records.count
-      p  freecen2_place.freecen_dwelling_ids
-      p freecen2_place.freecen_dwellings.count
+      if searches == 0 || dwellings == 0
+        freecen2_place.save
+        p freecen2_place
+        p  freecen2_place.search_record_ids.count
+        p freecen2_place.search_records.count
+        p  freecen2_place.freecen_dwelling_ids.count
+        p freecen2_place.freecen_dwellings.count
+      end
     end
   end
   time_end = Time.now
