@@ -37,11 +37,12 @@ class CreateSearchRecordsFreecen2
       return [true, nil, nil] if file.blank?
 
       message_file.puts "Number #{number} at #{Time.now} for file #{file.id}"
+      p file
       freecen_piece = file.freecen_piece
       place = freecen_piece.place
       freecen2_piece = freecen_piece.freecen2_piece
       p "Missing Freecen2 piece for #{freecen_piece.inspect}" if freecen2_piece.blank?
-      message_file.puts "Missing Freecen2 piece for #{freecen_piece.inspect}" if freecen2_piece.blank?
+      message_file.puts "Missing Freecen2 piece for #{freecen_piece.id} " if freecen2_piece.blank?
       return [true, nil, nil] if freecen2_piece.blank?
 
       freecen2_district = freecen2_piece.freecen2_district
@@ -52,7 +53,8 @@ class CreateSearchRecordsFreecen2
       freecen2_piece.save unless freecen2_piece.freecen1_vld_files.include?(file)
       freecen2_district.save unless freecen2_district.freecen1_vld_files.include?(file)
       freecen2_place.save unless freecen2_piece.freecen1_vld_files.include?(file) || freecen2_place.blank?
-      message_file.puts "Missing Freecen2 place for #{freecen_piece.inspect}" if freecen2_place.blank?
+      p "Missing Freecen2 place for #{freecen_piece.id} with name #{freecen_piece.district_name} in #{freecen_piece.chapman_code}" if freecen2_place.blank?
+      message_file.puts "Missing Freecen2 place for #{freecen_piece.id} with name #{freecen_piece.district_name} in #{freecen_piece.chapman_code}" if freecen2_place.blank?
       return [true, place, freecen2_place] if freecen2_place.blank?
 
       if freecen2_place.data_present == false

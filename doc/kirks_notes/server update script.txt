@@ -69,3 +69,5 @@ searches = Freecen1VldFile.between(_id: first_id..last_id).count # Freecen1VldFi
 num = FreecenCsvEntry.collection.update_many({ freecen_csv_file_id: freecen_file.id }, '$set' => { search_record_id: nil })
 
 rsync -avz kirkdawson@mongo5.freeukgen.org.uk:/home/kirkdawson/feedbacks.json /home/kirkdawson/
+
+ rs.secondaryOk()

@@ -27,12 +27,10 @@ task :set_fc2_parameters, [:start, :finish, :search_records] => [:environment] d
     @number += 1
     p "#{@number} at #{Time.now}"
     file = vld_files[@number]
-
     skip, place, freecen2_place = CreateSearchRecordsFreecen2.setup(file, @number, message_file)
-
     next if skip
 
-    p file
+    p place
     p freecen2_place
     CreateSearchRecordsFreecen2.process(place, freecen2_place) if search_record_creation
   end
