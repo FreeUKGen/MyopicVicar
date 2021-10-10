@@ -347,8 +347,12 @@ module ApplicationHelper
   end
 
   def geo_near_distance(first, last, units)
-    dist = Geocoder::Calculations.distance_between([first.latitude, first.longitude],[ last.latitude, last.longitude], {:units => :mi}) if units == Place::MeasurementSystem::ENGLISH
-    dist = Geocoder::Calculations.distance_between([first.latitude, first.longitude],[ last.latitude, last.longitude],{:units => :km}) if units == Place::MeasurementSystem::SI
+    if first.present? && last.present?
+      dist = Geocoder::Calculations.distance_between([first.latitude, first.longitude], [last.latitude, last.longitude], { units: :mi }) if units == Place::MeasurementSystem::ENGLISH
+      dist = Geocoder::Calculations.distance_between([first.latitude, first.longitude], [last.latitude, last.longitude], { units: :km }) if units == Place::MeasurementSystem::SI
+    else
+      dist = 500
+    end
     dist
   end
 

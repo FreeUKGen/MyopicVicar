@@ -141,6 +141,16 @@
             <% end %>
           </select>
         </li>
+        <li class="grid__item three-eighths lap-three-quarters palm-one-whole">
+        </li>
+        <li class="grid__item one-quarter lap-one-whole palm-one-whole">
+          <%= f.label :search_nearby_places, { :class => "ttip", :tabindex => "0" } do %>
+            <%= f.check_box :search_nearby_places, {},  true, false %>
+            Nearby places
+            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">Check to search places near to your selected starting place (up to 40 places in total). You can narrow your search after it has run</span>
+          <% end %>
+        </li>
       </ol>
     </fieldset>
     <fieldset class="inputs">

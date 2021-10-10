@@ -704,15 +704,12 @@ class SearchQuery
   end
 
   def place_search_params
-    p 'place_search_params'
-    p self
     params = {}
     appname = App.name_downcase
     case appname
     when 'freereg'
       if place_search?
         search_place_ids = radius_place_ids
-        p search_place_ids
         params[:place_id] = { '$in' => search_place_ids }
       else
         params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes.present?
@@ -765,15 +762,7 @@ class SearchQuery
     wildcard_search
   end
 
-  def radius_is_valid
-    if search_nearby_places && places.blank?
-      errors.add(:search_nearby_places, 'A Place must have been selected as a starting point to use the nearby option.')
-    end
-  end
-
   def radius_place_ids
-    p 'radius'
-    p all_radius_places
     radius_ids = []
     all_radius_places.map { |place| radius_ids << place.id }
     if Rails.application.config.freecen2_place_cache
@@ -818,7 +807,11 @@ class SearchQuery
     # param[:userid_detail_id] = self.userid_detail_id
     param[:c_at] = self.c_at
     param[:u_at] = Time.now
-    param[:place_ids] = self.place_ids
+    if Rails.application.config.freecen2_place_cache
+      param[:freecen2_place_ids] = freecen2_place_ids
+    else
+      param[:place_ids] = self.place_ids
+    end
     param
   end
 
@@ -1009,13 +1002,17 @@ class SearchQuery
   end
 
   def radius_is_valid
-    if search_nearby_places && places.count == 0
-      errors.add(:search_nearby_places, "A Place must have been selected as a starting point to use the nearby option.")
+    if Rails.application.config.freecen2_place_cache && search_nearby_places && freecen2_places.count == 0
+      errors.add(:search_nearby_places, 'A Place must have been selected as a starting point to use the nearby option.')
+    elsif !Rails.application.config.freecen2_place_cache && search_nearby_places && places.count == 0
+      errors.add(:search_nearby_places, 'A Place must have been selected as a starting point to use the nearby option.')
     end
   end
 
   def wildcards_are_valid
-    if first_name && begins_with_wildcard(first_name) && places.count == 0
+    if Rails.application.config.freecen2_place_cache && first_name && begins_with_wildcard(first_name) && freecen2_places.count == 0
+      errors.add(:first_name, 'A place must be selected if name queries begin with a wildcard')
+    elsif first_name && begins_with_wildcard(first_name) && places.count == 0
       errors.add(:first_name, 'A place must be selected if name queries begin with a wildcard')
     end
   end
