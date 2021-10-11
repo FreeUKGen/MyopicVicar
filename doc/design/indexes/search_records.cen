@@ -326,6 +326,35 @@ db.runCommand(
             },
             name: "place2_rt_sd",
                 background: true
+        },
+         {
+            key: {
+                freecen_piece_id: 1
+            },
+            name: "freecen_piece_id",
+                background: true
+        },
+        {
+            key: {
+                place_id: 1
+            },
+            name: "place_id",
+            background: true
+        },
+        {
+            key: {
+                place_id: 1,
+                record_type:1,
+                search_date:1
+            },
+            name: "place_rt_sd"
+        },
+        {
+            key: {
+                freecen2_place_id: 1
+            },
+            name: "freecen2_place_id",
+            background: true
         }
 
             ]
