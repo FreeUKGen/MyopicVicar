@@ -1,15 +1,6 @@
-<!--p class="text--right">
-  <%#= link_to "New Search", new_search_query_path, :class => "btn   btn--small bordered push-half--right" %>
-  <%#= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn   btn--small bordered push-half--right" %>
-  <%#= link_to "Printable Format", '#', :class => "btn   btn--small bordered push-half--right"%>
-  <--a href="#" id="citation-toggle" class="btn   btn--small bordered push-half--right citation-toggle">Generate Citation</a>
-  </p-->
-<!--h1 class="title">Entry Information</h1>
-<p>Has our search engine found the record you are seeking? The next step is to ordering your certificate ! Click on Ordering Certificates to learn what to do now.</p-->
+<% title "Record Details" %>
 <% breadcrumb :entry_information, @current_record  if @saved_record %>
 <%= render 'flash_notice' %>
-
-<% title "Record Details" %>
 <div class="grid">
   <div class="grid__item seven-tenths lap-seven-tenths palm-one-whole">
     <div class="grid__item one-third lap-one-third palm-one-half hard--left">
@@ -42,28 +33,28 @@
         </div>
         
         <div class='push-half--top'>
-          <div class="grid__item one-whole">
+          <div class= "grid__item two-thirds lap-two-thirds palm-one-whole hard--left">
+            <% if @previous_record_of_page.present?%>
+              <div class='grid__item one-half lap-one-half palm-one-half'>
+                <%= link_to 'Previous in Page'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record_of_page, @previous_record_of_page.friendly_url, search_entry: @current_record), class: 'push-half--right push-half--top' %>
+              </div>
+            <% end %>
+            <% if @next_record_of_page.present?%>
+              <div class='grid__item one-half lap-one-half palm-one-half'>
+                <%= link_to 'Next in Page'.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record_of_page, @next_record_of_page.friendly_url, search_entry: @current_record), class: 'push-half--right push-half--top' %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+        <div class='push-half--top'>
+          <div class="grid__item two-thirds lap-two-thirds palm-one-whole hard--left">
             <% if params[:search_id].present? %>
-              <div class='grid__item one-quarter lap-one-quarter palm-one-half'>
+              <div class='grid__item one-half lap-one-half palm-one-half'>
                 <%= link_to '<i class="fa fa-chevron-left view_arrow"></i> Previous Result'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record, @previous_record.friendly_url), class: 'push-half--right push-half--top push--bottom' unless @previous_record.nil? %>
               </div>
-              <div class='grid__item one-quarter lap-one-quarter palm-one-half'>
+              <div class='grid__item one-half lap-one-half palm-one-half'>
                 <%= link_to 'Next Result <i class="fa fa-chevron-right view_arrow"></i>'.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record, @next_record.friendly_url), class: 'push-half--right push-half--top push--bottom' unless @next_record.nil?%>
               </div>
-              <% if @previous_record_of_page.present?%>
-              <div class='grid__item one-quarter lap-one-quarter palm-one-half'>
-                
-                  <%= link_to 'Previous in Page'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record_of_page, @previous_record_of_page.friendly_url, search_entry: @current_record), class: 'push-half--right push-half--top' %>
-                
-              </div>
-              <% end %>
-              <% if @next_record_of_page.present?%>
-              <div class='grid__item one-quarter lap-one-quarter palm-one-half'>
-                
-                  <%= link_to 'Next in Page'.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record_of_page, @next_record_of_page.friendly_url, search_entry: @current_record), class: 'push-half--right push-half--top' %>
-                
-              </div>
-              <% end %>
             <% end %>
           </div>
         </div>
@@ -121,7 +112,7 @@
             </table>
           </div>
           <div class="grid__item two-thirds lap-two-thirds palm-one-whole hard--left">
-            <p>If the scan does not contain the entry you may be able to find the scan yourself by clicking <%= link_to "here(link opens in new tab)", "https://images.freebmd.org.uk/cgi/choose.pl", target: "_blank"%></p>
+            <p>If the scan does not contain the entry you may be able to <%= link_to "find the scan on our original site (link opens in new tab)", "https://images.freebmd.org.uk/cgi/choose.pl", target: "_blank"%></p>
           </div>
         </div>
       <% end %>
@@ -161,10 +152,9 @@
                   <li class="grid__item desk-wide-three-quarters desk-three-quarters lap-three-quarters palm-one-whole push--bottom">
                     <%= text_area_tag 'postem[Information]', nil, rows: 7, style: 'width: 100%'%>
                   </li>
-                
-                  <div class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole">
+                  <li class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole">
                     <%= button_tag 'Add Postem', type: :submit, class: 'ladda-button kittumani' , id: 'postem_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
-                  </div>
+                  </li>
                 </ol>
               <% end %>
             </div>
