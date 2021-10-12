@@ -71,7 +71,7 @@ db.runCommand(
                         "status" : 1
                 },
                 "name" : "status_date_1_chapman_code_1__year_1_status_1"
-
+                
         }
     ]
   }

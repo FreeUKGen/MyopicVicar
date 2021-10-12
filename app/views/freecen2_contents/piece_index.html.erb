@@ -1,9 +1,11 @@
-<h2 style="text-align: center">Database Pieces for <%= @district_description %> in <%= @county_description %> in <%= @census %> as of  <%= @interval_end.strftime('%d %b %Y') %> </h2>
+<h2 style="text-align: center">Database Pieces for <%= @place_description %> in District of <%= @district_description %> in <%= @county_description %> in <%= @census %><br>
+  as of  <%= @interval_end.strftime('%d %b %Y') %> </h2>
 <div  style="text-align: center">
   <%= link_to 'Back to Totals for All Counties' , freecen2_contents_path, method: :get , :class => "btn btn--small" %>
-  <%= link_to 'Choose another County' , freecen2_contents_path, method: :get , :class => "btn btn--small" %>
-  <%= link_to 'Choose another District' , index_by_county_freecen2_contents_path, method: :get , :class => "btn btn--small" %>
-  <%= link_to 'Back to Records for ' + @district_description , index_by_district_freecen2_contents_path(:district_description => @district_description), method: :get , :class => "btn btn--small" %><br>
+  <%= choose_another_county_link %>
+  <%= choose_another_district_link(@county_description) %>
+  <%= choose_another_place_link(@county_description, @district_description, @key_district) %>
+  <%= link_to 'Back to Records for ' + @place_description ,  :back, method: :get , :class => "btn btn--small" %><br>
   <br>
   <br>
 </div>
@@ -20,11 +22,10 @@
           (Date Online)</th>
         <th class='sticky-header'>Civil Parishes<br>
           <small>The part in () is the name of any Hamlet, Township, Ward or Place included in the Civil Parish</small></th>
-        <th class='sticky-header'>Actions</th>
       </tr>
     </thead>
     <tbody>
-      <%  @district_pieces.each do |piece|%>
+      <%  @place_pieces.each do |piece|%>
         <tr>
           <td><%= piece.name %></td>
           <td><%= piece.number %></td>
@@ -40,11 +41,6 @@
             <td><i> n/a </i></td>
           <% else%>
             <td><%= piece.civil_parish_names %></td>
-          <% end%>
-          <% if piece.status == 'Online' %>
-            <td><%= link_to 'Unique Names', freecen2_contents_piece_names_path(:contents_piece_id=> piece.id), class: "btn btn--small", method: :get %> </td>
-          <% else%>
-            <td> N/A </td>
           <% end%>
         </tr>
       <% end%>

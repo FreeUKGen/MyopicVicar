@@ -183,10 +183,30 @@ class Freecen2Piece
         totals_pieces_online[year] = 0
         pieces_cnt = 0
         pieces_online_cnt = 0
-        district_recs = Freecen2District.where(name: this_district, chapman_code: chapman_code, year: year)
+        district_recs = Freecen2District.where(chapman_code: chapman_code, year: year, name: this_district)
         district_recs.each do |district|
           pieces_cnt  = Freecen2Piece.where(_id: { '$lte' => last_id }, chapman_code: chapman_code, year: year, freecen2_district_id: district.id).count
           pieces_online_cnt = Freecen2Piece.where(status_date: { '$lte' => time }, chapman_code: chapman_code, year: year, freecen2_district_id: district.id, status: 'Online').count
+          totals_pieces[year] +=  pieces_cnt
+          totals_pieces_online[year] += pieces_online_cnt
+        end
+      end
+      [totals_pieces, totals_pieces_online]
+    end
+
+    def before_place_year_totals(chapman_code, this_district, place_id, time)
+      last_id = BSON::ObjectId.from_time(time)
+      totals_pieces = {}
+      totals_pieces_online = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        totals_pieces[year]  = 0
+        totals_pieces_online[year] = 0
+        pieces_cnt = 0
+        pieces_online_cnt = 0
+        district_recs = Freecen2District.where(chapman_code: chapman_code, year: year, name: this_district)
+        district_recs.each do |district|
+          pieces_cnt  = Freecen2Piece.where(_id: { '$lte' => last_id }, chapman_code: chapman_code, year: year, freecen2_district_id: district._id, freecen2_place_id: place_id).count
+          pieces_online_cnt = Freecen2Piece.where(status_date: { '$lte' => time }, chapman_code: chapman_code, year: year, freecen2_district_id: district._id, freecen2_place_id: place_id, status: 'Online').count
           totals_pieces[year] +=  pieces_cnt
           totals_pieces_online[year] += pieces_online_cnt
         end
@@ -217,7 +237,7 @@ class Freecen2Piece
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
         totals_pieces_online[year] = 0
         pieces_online_cnt = 0
-        district_recs = Freecen2District.where(name: this_district, chapman_code: chapman_code, year: year)
+        district_recs = Freecen2District.where(chapman_code: chapman_code, year: year, name: this_district)
         district_recs.each do |district|
           pieces_online_cnt = Freecen2Piece.where(:status_date => time1..time2, chapman_code: chapman_code, year: year, freecen2_district_id: district.id, status: 'Online').count
           totals_pieces_online[year] += pieces_online_cnt
@@ -226,6 +246,19 @@ class Freecen2Piece
       totals_pieces_online
     end
 
+    def between_dates_place_year_totals(chapman_code, this_district, place_id, time1, time2)
+      totals_pieces_online = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        totals_pieces_online[year] = 0
+        pieces_online_cnt = 0
+        district_recs = Freecen2District.where(chapman_code: chapman_code, year: year, name: this_district)
+        district_recs.each do |district|
+          pieces_online_cnt = Freecen2Piece.where(:status_date => time1..time2, chapman_code: chapman_code, year: year, freecen2_district_id: district._id, freecen2_place_id: place_id, status: 'Online').count
+          totals_pieces_online[year] += pieces_online_cnt
+        end
+      end
+      totals_pieces_online
+    end
 
     def county_year_totals(chapman_code)
       totals_pieces = {}
@@ -368,18 +401,31 @@ class Freecen2Piece
       line
     end
 
-    def distinct_districts(county, time)
-      last_id = BSON::ObjectId.from_time(time)
-      cnty_districts = []
-      cnty_pieces = Freecen2Piece.where(_id: { '$lte' => last_id }, chapman_code: county)
-      cnty_pieces.each do |piece|
-        if piece.freecen2_district_id.present?
-          district = Freecen2District.find_by(_id: piece.freecen2_district_id)
-          cnty_districts.append(district.name)
+    def distinct_districts(county)
+      cnty_pieces_unique_district_ids = Freecen2Piece.chapman_code(county).distinct(:freecen2_district_id)
+      cnty_districts = SortedSet.new
+      cnty_pieces_unique_district_ids.each do |district_id|
+        district = Freecen2District.find_by(_id: district_id)
+        cnty_districts << district.name
+      end
+      cnty_districts
+    end
+
+    def distinct_places(county, district_name)
+      #last_id = BSON::ObjectId.from_time(time)
+      district_places = SortedSet.new
+      district_recs = Freecen2District.where(chapman_code: county, name: district_name)
+      district_recs.each do |district|
+        #district_pieces = Freecen2Piece.where(_id: { '$lte' => last_id }, chapman_code: county, freecen2_district_id: district.id)
+        district_pieces = Freecen2Piece.chapman_code(county).freecen2_district_id(district.id).distinct(:freecen2_place_id)
+        district_pieces.each do |place_id|
+          place = Freecen2Place.find_by(_id: place_id)
+          if place.present?
+            district_places << place.place_name
+          end
         end
       end
-      cnty_districts_uniq = cnty_districts.uniq
-      cnty_districts_uniq
+      district_places
     end
 
     def extract_freecen2_piece_vld(description)

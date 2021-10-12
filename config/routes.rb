@@ -82,6 +82,8 @@ MyopicVicar::Application.routes.draw do
 
   get 'freecen2_contents/county_index', to: 'freecen2_contents#county_index', as: :index_by_county_freecen2_contents
   get 'freecen2_contents/district_index', to: 'freecen2_contents#district_index', as: :index_by_district_freecen2_contents
+  get 'freecen2_contents/place_index', to: 'freecen2_contents#place_index', as: :freecen2_contents_place_index
+  get 'freecen2_contents/place_names', to: 'freecen2_contents#place_names', as: :freecen2_contents_place_names
   get 'freecen2_contents/piece_index', to: 'freecen2_contents#piece_index', as: :freecen2_contents_piece_index
   get 'freecen2_contents/piece_names', to: 'freecen2_contents#piece_names', as: :freecen2_contents_piece_names
   resources :freecen2_contents
