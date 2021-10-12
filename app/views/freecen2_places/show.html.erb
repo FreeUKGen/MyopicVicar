@@ -83,6 +83,14 @@
             <td class="weight--semibold"> <%= @place.cen_data_years %></td>
           </tr>
           <tr>
+            <td>Number of records online for this place:</td>
+            <td class="weight--semibold"> <%= @place.search_records.count %></td>
+          </tr>
+          <tr>
+            <td>Number of pieces (online) for this place:</td>
+            <td class="weight--semibold"> <%= piece_element(@place) %></td>
+          </tr>
+          <tr>
             <td>Edits </td>
             <td class="weight--semibold"> <%= link_edits(@place) %></td>
           </tr>
@@ -90,10 +98,12 @@
             <td>Updated </td>
             <td class="weight--semibold"> <%= @place.u_at.strftime("%d %b %Y") if @place.u_at.present? %></td>
           </tr>
-          <tr>
-            <td>Created </td>
-            <td class="weight--semibold"> <%= @place.c_at.strftime("%d %b %Y") if @place.c_at.present? %></td>
-          </tr>
+          <% if @place.c_at.present?%>
+            <tr>
+              <td>Created </td>
+              <td class="weight--semibold"> <%= @place.c_at.strftime("%d %b %Y") if @place.c_at.present? %></td>
+            </tr>
+          <% end%>
         </table>
       </div>
     </div>

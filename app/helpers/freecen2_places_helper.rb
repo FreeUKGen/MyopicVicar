@@ -37,4 +37,16 @@ module Freecen2PlacesHelper
       result = result.gsub(/,\s$/, '')
     end
   end
+
+  def piece_element(place)
+    if place.freecen2_pieces.count > 0
+      online_pieces = 0
+      place.freecen2_pieces.each do |piece|
+        online_pieces += 1 if piece.status == 'Online'
+      end
+      link_to "#{place.freecen2_pieces.count} (#{online_pieces})", place_pieces_index_freecen2_piece_path(place: place.id), class: 'btn   btn--small', title: 'Links to a listing of the pieces'
+    else
+      'none'
+    end
+  end
 end

@@ -73,6 +73,7 @@ module Freecen
 
       record = SearchRecord.new(transcript_dates: [transcript_date], transcript_names: [transcript_name], chapman_code: chapman_code, record_type: full_year, freecen1_vld_file_id: file_id)
       record.place_id = individual.freecen_piece.place_id if individual.freecen_piece.present?
+      record.freecen2_place_id = individual.freecen_piece.freecen2_place_id if individual.freecen_piece.present?
       record.birth_chapman_code = individual.verbatim_birth_county if individual.verbatim_birth_county.present?
       record.birth_chapman_code = individual.birth_county if individual.birth_county.present?
       record.birth_place = individual.verbatim_birth_place if individual.verbatim_birth_place.present?
@@ -82,7 +83,6 @@ module Freecen
       record.add_digest
       record.save!
       if record.place_id.nil?
-
         raise "\n\n***ERROR! place was nil for #{full_year}-#{chapman_code} individual=#{individual.inspect}\n  dwelling=#{individual.freecen_dwelling.inspect unless individual.freecen_dwelling.nil?}\n\n"
       end
     end

@@ -52,6 +52,7 @@ class Freecen2Piece
   field :remarks_coord, type: String # visible to coords, not public
   field :online_time, type: Integer
   field :num_individuals, type: Integer, default: 0
+  field :num_dwellings, type: Integer, default: 0
   field :status_date, type: DateTime
 
   field :vld_files, type: Array, default: []

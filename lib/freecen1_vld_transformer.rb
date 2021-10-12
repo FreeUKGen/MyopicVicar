@@ -40,6 +40,9 @@ module Freecen
       dwelling.freecen1_vld_file = entry.freecen1_vld_file
       dwelling.freecen_piece = piece
       dwelling.place_id = piece.place_id
+      dwelling.freecen2_place_id = piece.freecen2_place_id
+      dwelling.freecen2_piece_id = piece.freecen2_piece_id
+      dwelling.save!
       dwelling
     end
 
@@ -53,7 +56,6 @@ module Freecen
       individual.freecen_dwelling = dwelling
       individual.freecen_piece = piece
       individual.save!
-
       individual
     end
 

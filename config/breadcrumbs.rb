@@ -1687,6 +1687,12 @@ crumb :freecen2_pieces_full_index do |county|
   parent :freecen2_pieces, county
 end
 
+crumb :place_piece_index do |place|
+  link 'Freecen2 Pieces for a Freecen2 Place', place_pieces_index_freecen2_piece_path(place.id)
+  session[:type] == 'place_index'
+  parent :show_freecen2_place, place.chapman_code, place
+end
+
 crumb :freecen2_piece_select do |county|
   link 'FreeCen2 Piece Selection'
   parent :freecen2_pieces, county

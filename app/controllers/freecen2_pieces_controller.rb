@@ -200,6 +200,13 @@ class Freecen2PiecesController < ApplicationController
     @scotland = scotland_county?(@chapman_code)
   end
 
+  def place_pieces_index
+    get_user_info_from_userid
+    p params
+    @place = Freecen2Place.find_by(_id: params[:place])
+    @pieces = @place.freecen2_pieces if @place.present?
+  end
+
   def refresh_civil_parish_list
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No piece identified') && return if params[:id].blank?
 
