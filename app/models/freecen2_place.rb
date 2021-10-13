@@ -65,7 +65,7 @@ class Freecen2Place
 
   before_save :add_location_if_not_present, :add_country, :add_standard_names, :add_place_name_soundex
 
-  after_save :update_places_cache
+  # after_save :update_places_cache
 
   has_many :search_records, dependent: :restrict_with_error, autosave: true
   has_many :freecen_dwellings, dependent: :restrict_with_error, autosave: true

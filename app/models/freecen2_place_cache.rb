@@ -10,7 +10,6 @@ class Freecen2PlaceCache
     Freecen2PlaceCache.where(chapman_code: county).destroy_all
     # the js library expects a certain format
     county_response = {}
-
     places = Freecen2Place.chapman_code(county).data_present.not_disabled.all.order_by(place_name: -1)
     places.each do |place|
       cen_years_with_data = ''
@@ -19,7 +18,7 @@ class Freecen2PlaceCache
           if cen_years_with_data == ''
             cen_years_with_data += " #{yy}"
           else
-            cen_years_with_data += ",'#{yy}"
+            cen_years_with_data += ", #{yy}"
           end
         end
       end
@@ -63,7 +62,6 @@ class Freecen2PlaceCache
         p "csv file #{file.inspect} has no piece"
       end
     end
-    p 'completed check of csv file linakge'
     ChapmanCode.values.sort.each do |chapman_code|
       p chapman_code
       p Freecen2Place.chapman_code(chapman_code).not_disabled.length

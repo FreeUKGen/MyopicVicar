@@ -30,10 +30,10 @@ task :set_fc2_parameters, [:start, :finish, :search_records] => [:environment] d
     skip, place, freecen2_place = CreateSearchRecordsFreecen2.setup(file, @number, message_file)
     next if skip
 
-    p place
-    p freecen2_place
     CreateSearchRecordsFreecen2.process(place, freecen2_place) if search_record_creation
   end
+  p 'refreshing place cache'
+  Freecen2PlaceCache.refresh_all
   time_end = Time.now
   finished = finish - start + 1
   seconds = (time_end - time_start).to_i
