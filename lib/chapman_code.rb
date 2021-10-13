@@ -66,7 +66,6 @@ module ChapmanCode
     end
 
     def codes_for_cen_county_search
-      p ' This is used in the county selection'
       hsh = {}
       codes = ChapmanCode.remove_codes(ChapmanCode::CODES)
       codes.each_pair do |ctry, ctryval|
