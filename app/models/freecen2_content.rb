@@ -138,33 +138,30 @@ class Freecen2Content
                     @total_places_cnt += 1
 
                     place_rec = Freecen2Place.find_by(chapman_code: county,place_name: this_place)
+
                     if place_rec.present?
                       @place_id = place_rec._id
-                    else
-                      @place_id = ""
+
+                      key_place = Freecen2Content.get_place_key(this_place)
+                      records = Freecen2Content.add_records_place(records, county, key_district, key_place)
+
+                      records[county][key_district][:total][:places] << this_place
+                      records[county][key_district][key_place][:total][:place_id] = @place_id  #No year(s) recorded for places
+
+                      fc2_totals_pieces, fc2_totals_pieces_online = Freecen2Piece.before_place_year_totals(county, this_district, @place_id, last_midnight)
+                      fc2_added_pieces_online  = Freecen2Piece.between_dates_place_year_totals(county, this_district, place_rec.id, previous_midnight, last_midnight)
+
+                      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+                        records[county][key_district][key_place][year] = {}
+                        records[county][key_district][key_place][year][:pieces] = fc2_totals_pieces[year] # fc2_pieces are all the pieces so no need to add fc1_pieces
+                        records[county][key_district][key_place][:total][:pieces] += records[county][key_district][key_place][year][:pieces]
+                        records[county][key_district][key_place][year][:pieces_online] = fc2_totals_pieces_online[year]
+                        records[county][key_district][key_place][:total][:pieces_online] += records[county][key_district][key_place][year][:pieces_online]
+                        records[county][key_district][key_place][year][:added_pieces_online] = fc2_added_pieces_online[year]
+                        records[county][key_district][key_place][:total][:added_pieces_online] += records[county][key_district][key_place][year][:added_pieces_online]
+                      end # year
+
                     end
-
-                    key_place = Freecen2Content.get_place_key(this_place)
-
-                    place_rec = Freecen2Place.find_by(chapman_code:county, place_name: this_place)
-
-                    records = Freecen2Content.add_records_place(records, county, key_district, key_place)
-
-                    records[county][key_district][:total][:places] << this_place
-                    records[county][key_district][key_place][:total][:place_id] = @place_id  #No year(s) recorded for places
-
-                    fc2_totals_pieces, fc2_totals_pieces_online = Freecen2Piece.before_place_year_totals(county, this_district, place_rec.id, last_midnight)
-                    fc2_added_pieces_online  = Freecen2Piece.between_dates_place_year_totals(county, this_district, place_rec.id, previous_midnight, last_midnight)
-
-                    Freecen::CENSUS_YEARS_ARRAY.each do |year|
-                      records[county][key_district][key_place][year] = {}
-                      records[county][key_district][key_place][year][:pieces] = fc2_totals_pieces[year] # fc2_pieces are all the pieces so no need to add fc1_pieces
-                      records[county][key_district][key_place][:total][:pieces] += records[county][key_district][key_place][year][:pieces]
-                      records[county][key_district][key_place][year][:pieces_online] = fc2_totals_pieces_online[year]
-                      records[county][key_district][key_place][:total][:pieces_online] += records[county][key_district][key_place][year][:pieces_online]
-                      records[county][key_district][key_place][year][:added_pieces_online] = fc2_added_pieces_online[year]
-                      records[county][key_district][key_place][:total][:added_pieces_online] += records[county][key_district][key_place][year][:added_pieces_online]
-                    end # year
 
                   end # place
 

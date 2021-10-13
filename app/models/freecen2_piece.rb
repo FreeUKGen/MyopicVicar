@@ -412,11 +412,9 @@ class Freecen2Piece
     end
 
     def distinct_places(county, district_name)
-      #last_id = BSON::ObjectId.from_time(time)
       district_places = SortedSet.new
       district_recs = Freecen2District.where(chapman_code: county, name: district_name)
       district_recs.each do |district|
-        #district_pieces = Freecen2Piece.where(_id: { '$lte' => last_id }, chapman_code: county, freecen2_district_id: district.id)
         district_pieces = Freecen2Piece.chapman_code(county).freecen2_district_id(district.id).distinct(:freecen2_place_id)
         district_pieces.each do |place_id|
           place = Freecen2Place.find_by(_id: place_id)
