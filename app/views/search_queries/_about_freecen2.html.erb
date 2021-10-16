@@ -88,17 +88,19 @@
   </section>
   <section>
     <h3>Location</h3>
-    <p>Search Criteria:
-      The following <b>birth counties</b> were included:
-      <% counties = @search_query.birth_chapman_codes.size %>
-      <% start = 0 %>
-      <% @and = " and " %>
-      <% while start < counties do  %>
-        <b><%= ChapmanCode.name_from_code(@search_query.birth_chapman_codes[start])  %></b>
-        <% start +=1 %>
-        <%= @and unless start == counties %>
-      <% end %>.
-    </p>
+    <% if @search_query.birth_chapman_codes.size > 0 %>
+      <p>Search Criteria:
+        The following <b>birth counties</b> were included:
+        <% counties = @search_query.birth_chapman_codes.size %>
+        <% start = 0 %>
+        <% @and = " and " %>
+        <% while start < counties do  %>
+          <b><%= ChapmanCode.name_from_code(@search_query.birth_chapman_codes[start])  %></b>
+          <% start +=1 %>
+          <%= @and unless start == counties %>
+        <% end %>.
+      </p>
+    <% end %>
     <% if @search_query.radius_search? %>
       <p>
         Search Criteria:
