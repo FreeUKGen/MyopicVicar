@@ -17,6 +17,19 @@ class Freecen2PlacesController < ApplicationController
 
   skip_before_action :require_login, only: [:for_search_form, :for_freereg_content_form, :for_freecen2_piece_form]
 
+  def active_index
+    get_user_info_from_userid
+    @chapman_code = session[:chapman_code]
+    @county = ChapmanCode.has_key(session[:chapman_code])
+    @places = Freecen2Place.where(chapman_code: @chapman_code, data_present: true).all.order_by(place_name: 1)
+    @user = get_user
+    @first_name = @user.person_forename if @user.present?
+    session[:page] = request.original_url
+    session[:manage_places] = true
+    session[:type] = 'active_place_index'
+  end
+
+
   def approve
     session[:return_to] = request.referer
     load(params[:id])
