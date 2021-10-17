@@ -8,7 +8,7 @@
       <%= link_to 'Place for this Church and Register', show_place_freereg_content_path(@place.id), :class => "btn   btn--small" %>
       <%= link_to 'Church for this Register', show_church_freereg_content_path(@church.id), :class => "btn   btn--small" %>
       <%= link_to 'Gaps and Embargoes', gaps_and_embargoes_freereg_content_path(@register.id), :class => "btn   btn--small" %>
-      <%= link_to 'Unique Names', unique_register_names_path(@register.id), method: :get, :class => "btn   btn--small"%>
+      <%= link_to 'Names', unique_register_names_path(@register.id), method: :get, :class => "btn   btn--small"%>
     </div>
     <%= render 'flash_notice' %>
     <br>

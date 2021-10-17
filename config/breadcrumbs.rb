@@ -134,7 +134,7 @@ crumb :show_file do |file|
 end
 
 crumb :unique_names do |file|
-  link 'Unique Names'
+  link 'Names'
   parent :show_file, file
 end
 
