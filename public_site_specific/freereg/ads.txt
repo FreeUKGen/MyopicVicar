@@ -179,3 +179,7 @@ teads.tv, 16795, DIRECT, 15a9c44f6d26cbe1 #teads
 #aol
 adtech.com, 10513, DIRECT #aol
 aolcloud.net, 10513, DIRECT #aol
+
+xandr.com, 3573, RESELLER
+MonetizeMore.com, 1797, DIRECT
+152media.info, 152M16, RESELLER
