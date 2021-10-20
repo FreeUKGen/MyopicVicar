@@ -1,7 +1,7 @@
 <% breadcrumb :syndicates%>
 <h2 class=" text--center">Listing of all syndicates</h2>
 <%= render 'flash_notice' %>
-<div style="text-align: center"> <%= link_to 'Create new syndicate', new_syndicate_path, method: :get , :class => "btn  btn--small" if @user.person_role == "system_administrator"%></div>
+<div style="text-align: center"> <%= link_to 'Create new syndicate', new_syndicate_path, method: :get , :class => "btn  btn--small"  if %w[system_administrator volunteer_coordinator engagement_coordinator executive_director project_manager].include?(@user.person_role) %></div>
 <div class="grid">
   <section class="island  ">
     <div class="grid__item one-whole" >

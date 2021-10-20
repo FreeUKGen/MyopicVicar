@@ -689,7 +689,7 @@ class UseridDetailsController < ApplicationController
   end
 
   def stats_permitted_users?
-    ['system_administrator', 'executive_director', 'project_manager'].include? @current_user.person_role
+    %w[system_administrator executive_director project_manager engagement_coordinator].include? @current_user.person_role
   end
 
   def get_option_parameter(option, location)
