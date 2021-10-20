@@ -13,6 +13,7 @@ class BmdUniqueNames
         birth_records = district.records.where(RecordTypeID: 1)
         marriage_records = district.records.where(RecordTypeID: 3)
         death_records = district.records.where(RecordTypeID: 2)
+        raise "#{birth_records.count},#{marriage_records.count},#{death_records.count}"
         birth_unique_names = BestGuess.get_birth_unique_names birth_records
         marriage_unique_names = BestGuess.get_marriage_unique_names marriage_records
         death_unique_names = BestGuess.get_death_unique_names death_records
