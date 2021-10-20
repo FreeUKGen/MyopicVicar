@@ -9,59 +9,62 @@ class BmdUniqueNames
       num = 0
       time_start = Time.now
       p "Process start time: #{time_start}"
-      District.includes(:records).find_each(batch_size: 20000).each do |district|
-        birth_records = district.records.where(RecordTypeID: 1)
-        marriage_records = district.records.where(RecordTypeID: 3)
-        death_records = district.records.where(RecordTypeID: 2)
-        raise "#{birth_records.count},#{marriage_records.count},#{death_records.count}"
-        birth_unique_names = BestGuess.get_birth_unique_names birth_records
-        marriage_unique_names = BestGuess.get_marriage_unique_names marriage_records
-        death_unique_names = BestGuess.get_death_unique_names death_records
-        if birth_unique_names.present?
-          p 'Producing report of the population of birth uniq names'
-          distinct_birth_forenames = BmdUniqueNames.extract_unique_forenames(birth_unique_names)
-          distinct_birth_surnames = BmdUniqueNames.extract_unique_surnames(birth_unique_names)
-          distinct_birth_forenames = distinct_birth_forenames.sort
-          distinct_birth_surnames = distinct_birth_surnames.sort
-          district_unique_name = DistrictUniqueName.where(district_number: district.DistrictNumber, record_type: 1).first
-          if district_unique_name.present?
-            district_unique_name.update_attributes(unique_forenames: distinct_birth_forenames, unique_surnames: distinct_birth_surnames)
-          else
-            district_unique_name = DistrictUniqueName.new(district_number: district.DistrictNumber, unique_forenames: distinct_birth_forenames, unique_surnames: distinct_birth_surnames, record_type: 1)
-            district_unique_name.save
+      District.find_in_batches.each do |group|
+        p "processing batch"
+        group.each do |district|
+          birth_records = district.records.where(RecordTypeID: 1)
+          marriage_records = district.records.where(RecordTypeID: 3)
+          death_records = district.records.where(RecordTypeID: 2)
+          birth_unique_names = BestGuess.get_birth_unique_names birth_records
+          marriage_unique_names = BestGuess.get_marriage_unique_names marriage_records
+          death_unique_names = BestGuess.get_death_unique_names death_records
+          if birth_unique_names.present?
+            p 'Producing report of the population of birth uniq names'
+            distinct_birth_forenames = BmdUniqueNames.extract_unique_forenames(birth_unique_names)
+            distinct_birth_surnames = BmdUniqueNames.extract_unique_surnames(birth_unique_names)
+            distinct_birth_forenames = distinct_birth_forenames.sort
+            distinct_birth_surnames = distinct_birth_surnames.sort
+            district_unique_name = DistrictUniqueName.where(district_number: district.DistrictNumber, record_type: 1).first
+            if district_unique_name.present?
+              district_unique_name.update_attributes(unique_forenames: distinct_birth_forenames, unique_surnames: distinct_birth_surnames)
+            else
+              district_unique_name = DistrictUniqueName.new(district_number: district.DistrictNumber, unique_forenames: distinct_birth_forenames, unique_surnames: distinct_birth_surnames, record_type: 1)
+              district_unique_name.save
+            end
           end
-        end
-        if marriage_unique_names.present?
-          p 'Producing report of the population of marriage uniq names'
-          distinct_marriage_forenames = BmdUniqueNames.extract_unique_forenames(marriage_unique_names)
-          distinct_marriage_surnames = BmdUniqueNames.extract_unique_surnames(marriage_unique_names)
-          distinct_marriage_forenames = distinct_marriage_forenames.sort
-          distinct_marriage_surnames = distinct_marriage_surnames.sort
-          district_unique_name = DistrictUniqueName.where(district_number: district.DistrictNumber, record_type: 3).first
-          if district_unique_name.present?
-            district_unique_name.update_attributes(unique_forenames: distinct_marriage_forenames, unique_surnames: distinct_marriage_surnames)
-          else
-            district_unique_name = DistrictUniqueName.new(district_number: district.DistrictNumber, unique_forenames: distinct_marriage_forenames, unique_surnames: distinct_marriage_surnames, record_type: 3)
-            district_unique_name.save
+          if marriage_unique_names.present?
+            p 'Producing report of the population of marriage uniq names'
+            distinct_marriage_forenames = BmdUniqueNames.extract_unique_forenames(marriage_unique_names)
+            distinct_marriage_surnames = BmdUniqueNames.extract_unique_surnames(marriage_unique_names)
+            distinct_marriage_forenames = distinct_marriage_forenames.sort
+            distinct_marriage_surnames = distinct_marriage_surnames.sort
+            district_unique_name = DistrictUniqueName.where(district_number: district.DistrictNumber, record_type: 3).first
+            if district_unique_name.present?
+              district_unique_name.update_attributes(unique_forenames: distinct_marriage_forenames, unique_surnames: distinct_marriage_surnames)
+            else
+              district_unique_name = DistrictUniqueName.new(district_number: district.DistrictNumber, unique_forenames: distinct_marriage_forenames, unique_surnames: distinct_marriage_surnames, record_type: 3)
+              district_unique_name.save
+            end
           end
-        end
-        if death_unique_names.present?
-          p 'Producing report of the population of death uniq names'
-          distinct_death_forenames = BmdUniqueNames.extract_unique_forenames(death_unique_names)
-          distinct_death_surnames = BmdUniqueNames.extract_unique_surnames(death_unique_names)
-          distinct_death_forenames = distinct_birth_forenames.sort
-          distinct_death_surnames = distinct_birth_surnames.sort
-          district_unique_name = DistrictUniqueName.where(district_number: district.DistrictNumber, record_type: 2).first
-          if district_unique_name.present?
-            district_unique_name.update_attributes(unique_forenames: distinct_death_forenames, unique_surnames: distinct_death_forenames)
-          else
-            district_unique_name = DistrictUniqueName.new(district_number: district.DistrictNumber, unique_forenames: distinct_death_forenames, unique_surnames: distinct_death_forenames, record_type: 2)
-            district_unique_name.save
+          if death_unique_names.present?
+            p 'Producing report of the population of death uniq names'
+            distinct_death_forenames = BmdUniqueNames.extract_unique_forenames(death_unique_names)
+            distinct_death_surnames = BmdUniqueNames.extract_unique_surnames(death_unique_names)
+            distinct_death_forenames = distinct_birth_forenames.sort
+            distinct_death_surnames = distinct_birth_surnames.sort
+            district_unique_name = DistrictUniqueName.where(district_number: district.DistrictNumber, record_type: 2).first
+            if district_unique_name.present?
+              district_unique_name.update_attributes(unique_forenames: distinct_death_forenames, unique_surnames: distinct_death_forenames)
+            else
+              district_unique_name = DistrictUniqueName.new(district_number: district.DistrictNumber, unique_forenames: distinct_death_forenames, unique_surnames: distinct_death_forenames, record_type: 2)
+              district_unique_name.save
+            end
           end
+          message_file.puts "#{district.DistrictNumber}, #{district.DistrictName}"
+          num += 1
+          break if num == limit
         end
-        message_file.puts "#{district.DistrictNumber}, #{district.DistrictName}"
-        num += 1
-        break if num == limit
+        p "process batch completed"
       end
       time_elapsed = Time.now - time_start
       p "Finished #{num} places in #{time_elapsed}"
