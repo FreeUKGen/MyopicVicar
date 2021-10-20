@@ -4,10 +4,11 @@ class BmdUniqueNames
       file_for_messages = 'log/bmd_extract_names_report.log'
       message_file = File.new(file_for_messages, 'w')
       limit = limit.to_i
-      p 'Producing report of the population of surnames'
+      p 'Producing report of the population of uniq names'
       message_file.puts 'Producing report of unique names'
       num = 0
       time_start = Time.now
+      p "Process start time: #{time_start}"
       District.includes(:records).each do |district|
         birth_records = district.records.where(RecordTypeID: 1)
         marriage_records = district.records.where(RecordTypeID: 3)
@@ -16,6 +17,7 @@ class BmdUniqueNames
         marriage_unique_names = BestGuess.get_marriage_unique_names marriage_records
         death_unique_names = BestGuess.get_death_unique_names death_records
         if birth_unique_names.present?
+          p 'Producing report of the population of birth uniq names'
           distinct_birth_forenames = BmdUniqueNames.extract_unique_forenames(birth_unique_names)
           distinct_birth_surnames = BmdUniqueNames.extract_unique_surnames(birth_unique_names)
           distinct_birth_forenames = distinct_birth_forenames.sort
@@ -29,6 +31,7 @@ class BmdUniqueNames
           end
         end
         if marriage_unique_names.present?
+          p 'Producing report of the population of marriage uniq names'
           distinct_marriage_forenames = BmdUniqueNames.extract_unique_forenames(marriage_unique_names)
           distinct_marriage_surnames = BmdUniqueNames.extract_unique_surnames(marriage_unique_names)
           distinct_marriage_forenames = distinct_marriage_forenames.sort
@@ -42,6 +45,7 @@ class BmdUniqueNames
           end
         end
         if death_unique_names.present?
+          p 'Producing report of the population of death uniq names'
           distinct_death_forenames = BmdUniqueNames.extract_unique_forenames(death_unique_names)
           distinct_death_surnames = BmdUniqueNames.extract_unique_surnames(death_unique_names)
           distinct_death_forenames = distinct_birth_forenames.sort
