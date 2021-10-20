@@ -9,7 +9,7 @@ class BmdUniqueNames
       num = 0
       time_start = Time.now
       p "Process start time: #{time_start}"
-      District.includes(:records).each do |district|
+      District.includes(:records).find_each(batch_size: 20000).each do |district|
         birth_records = district.records.where(RecordTypeID: 1)
         marriage_records = district.records.where(RecordTypeID: 3)
         death_records = district.records.where(RecordTypeID: 2)
