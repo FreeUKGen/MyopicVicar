@@ -36,7 +36,7 @@ class BmdUniqueNames
             p 'Producing report of the population of marriage uniq names'
             distinct_marriage_forenames = BmdUniqueNames.extract_unique_forenames(marriage_unique_names)
             distinct_marriage_surnames = BmdUniqueNames.extract_unique_surnames(marriage_unique_names)
-            distinct_marriage_forenames = distinct_marriage_forenames.sort
+            distinct_marriage_forenames = distinct_marriage_forenames.sort if 
             distinct_marriage_surnames = distinct_marriage_surnames.sort
             district_unique_name = DistrictUniqueName.where(district_number: district.DistrictNumber, record_type: 3).first
             if district_unique_name.present?
@@ -50,13 +50,13 @@ class BmdUniqueNames
             p 'Producing report of the population of death uniq names'
             distinct_death_forenames = BmdUniqueNames.extract_unique_forenames(death_unique_names)
             distinct_death_surnames = BmdUniqueNames.extract_unique_surnames(death_unique_names)
-            distinct_death_forenames = distinct_birth_forenames.sort
-            distinct_death_surnames = distinct_birth_surnames.sort
+            distinct_death_forenames = distinct_death_forenames.sort
+            distinct_death_surnames = distinct_death_surnames.sort
             district_unique_name = DistrictUniqueName.where(district_number: district.DistrictNumber, record_type: 2).first
             if district_unique_name.present?
-              district_unique_name.update_attributes(unique_forenames: distinct_death_forenames, unique_surnames: distinct_death_forenames)
+              district_unique_name.update_attributes(unique_forenames: distinct_death_forenames, unique_surnames: distinct_death_surnames)
             else
-              district_unique_name = DistrictUniqueName.new(district_number: district.DistrictNumber, unique_forenames: distinct_death_forenames, unique_surnames: distinct_death_forenames, record_type: 2)
+              district_unique_name = DistrictUniqueName.new(district_number: district.DistrictNumber, unique_forenames: distinct_death_forenames, unique_surnames: distinct_death_surnames, record_type: 2)
               district_unique_name.save
             end
           end
