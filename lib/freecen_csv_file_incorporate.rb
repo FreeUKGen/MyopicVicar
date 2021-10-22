@@ -61,6 +61,7 @@ class FreecenCsvFileIncorporate
       end
 
       PlaceCache.refresh(freecen_file.chapman_code) if successa && successb
+      Freecen2PlaceCache.refresh(freecen_file.chapman_code) if successa && successb
       message += '. Place cache rewritten.'
       success = true if successa && successb
       message = 'File update and or place update failed' unless successa && successb

@@ -65,7 +65,7 @@ class FreecenCsvFile
   field :header_line, type: Array
   field :validation, type: Boolean, default: false
   field :was_locked, type: Boolean, default: false
-  field :list_of_records, type: Hash
+  field :list_of_records, type: Hash # no longer used
   field :incorporated, type: Boolean, default: false
   field :incorporated_date, type: DateTime
   field :enumeration_districts, type: Hash
@@ -86,6 +86,7 @@ class FreecenCsvFile
   end
 
   belongs_to :userid_detail, index: true, optional: true
+  belongs_to :freecen2_place, index: true, optional: true
   belongs_to :freecen2_piece, index: true, optional: true
   belongs_to :freecen2_district, index: true, optional: true
 
@@ -509,18 +510,6 @@ class FreecenCsvFile
         return
       end
     end
-  end
-
-  def add_list_of_records(type, entries)
-    list_of_records = []
-    entries.each do |entry|
-      list_of_records << entry.id.to_s
-    end
-    records = {}
-    records[:type] = type
-    records[:file] = _id.to_s
-    records[:records] = list_of_records
-    update_attribute(:list_of_records, records)
   end
 
   def add_lower_case_userid_to_file

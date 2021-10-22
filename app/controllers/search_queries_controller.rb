@@ -62,7 +62,6 @@ class SearchQueriesController < ApplicationController
   end
 
   def create
-    # binding.pry
     condition = true if params[:search_query].present? && params[:search_query][:region].blank?
     redirect_back(fallback_location: new_search_query_path, notice: 'Invalid Search') && return unless condition
 

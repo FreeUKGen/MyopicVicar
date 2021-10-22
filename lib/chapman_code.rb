@@ -66,13 +66,13 @@ module ChapmanCode
     end
 
     def codes_for_cen_county_search
-      # This is used in the county selection
       hsh = {}
       codes = ChapmanCode.remove_codes(ChapmanCode::CODES)
       codes.each_pair do |ctry, ctryval|
         ctryhash = {}
         ctryval.each_pair do |kk, vv|
-          ctryhash[kk] = vv unless %w[ALD GSY JSY SRK].include?(vv.to_s) || CODES['Ireland'].values.include?(vv.to_s)
+          ctryhash[kk] = vv unless %w[ALD GSY JSY SRK].include?(vv.to_s) || CODES['Ireland'].values.include?(vv.to_s) ||
+            JSON.parse(Freecen2PlaceCache.find_by(chapman_code: vv.to_s).places_json).with_indifferent_access.blank?
         end
         hsh[ctry] = ctryhash
       end

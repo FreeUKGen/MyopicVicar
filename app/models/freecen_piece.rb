@@ -51,11 +51,14 @@ class FreecenPiece
   field :num_entries, type: Integer, default: 0
   field :num_individuals, type: Integer, default: 0
   field :num_dwellings, type: Integer, default: 0
+
   belongs_to :freecen1_fixed_dat_entry, index: true, optional: true
   belongs_to :place, optional: true, index: true
   belongs_to :freecen2_place, optional: true, index: true
+  belongs_to :freecen2_piece, optional: true, index: true
   has_many :freecen_dwellings, dependent: :restrict_with_error
   has_many :freecen1_vld_files, dependent: :restrict_with_error
+
 
   index(:piece_number => 1, :chapman_code => 1)
   index(:piece_number => 1, :chapman_code => 1, :year => 1, :suffix => 1, :parish_number => 1)
@@ -155,6 +158,7 @@ class FreecenPiece
       third_and_fourth = stem.slice(2, 2)
       last_three = stem.slice(5, 3)
       last_four = stem.slice(4, 4)
+      last_five = stem.slice(3, 5)
       case first_two_characters
       when 'RG'
         if third_character == '9' || third_and_fourth == '09'
@@ -196,13 +200,13 @@ class FreecenPiece
         if third_character == '6'
           year = '1861'
           piece = last_three
-        elsif third_and_fourth == '7'
+        elsif third_character == '7'
           piece = last_three
           year = '1871'
-        elsif third_and_fourth == '8'
+        elsif third_character == '8'
           piece = last_three
           year = '1881'
-        elsif third_and_fourth == '9'
+        elsif third_character == '9'
           piece = last_three
           year = '1891'
         elsif third_and_fourth == '10'
@@ -216,6 +220,7 @@ class FreecenPiece
           piece = ''
         end
       end
+
       [year, piece.to_i, first_two_characters]
     end
 

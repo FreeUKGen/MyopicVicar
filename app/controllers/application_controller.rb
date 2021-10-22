@@ -235,6 +235,13 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def scotland_county?(chapman)
+    codes = ChapmanCode.remove_codes(ChapmanCode::CODES)
+    codes = codes["Scotland"].values
+    result = codes.include?(chapman) ? true : false
+    result
+  end
+
   def device_type
     request.env['mobvious.device_type']
   end

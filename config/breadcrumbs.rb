@@ -1687,6 +1687,12 @@ crumb :freecen2_pieces_full_index do |county|
   parent :freecen2_pieces, county
 end
 
+crumb :place_piece_index do |place|
+  link 'Freecen2 Pieces for a Freecen2 Place', place_pieces_index_freecen2_piece_path(place.id)
+  session[:type] == 'place_index'
+  parent :show_freecen2_place, place.chapman_code, place
+end
+
 crumb :freecen2_piece_select do |county|
   link 'FreeCen2 Piece Selection'
   parent :freecen2_pieces, county
@@ -2075,6 +2081,11 @@ crumb :freecen2_places_full_index do |county, place|
   parent :freecen2_places, county, place
 end
 
+crumb :freecen2_places_active_index do |county, place|
+  link 'Active Index FreeCen2 Places', active_index_freecen2_places_path(county: county, anchor: place)
+  parent :freecen2_places, county, place
+end
+
 crumb :freecen2_place_select do |county|
   link 'FreeCen2 Place Selection'
   parent :freecen2_places, county
@@ -2090,6 +2101,8 @@ crumb :show_freecen2_place do |county, place|
   if session[:search_names].nil?
     if  session[:type] == 'place_index'
       parent :freecen2_places_full_index, session[:county], place
+    elsif  session[:type] == 'active_place_index'
+      parent :freecen2_places_active_index, session[:county], place
     elsif session[:select_place] || place.blank?
       parent :county_options, session[:county] if session[:county].present?
       parent :syndicate_options, session[:syndicate] if session[:syndicate].present?
@@ -2116,7 +2129,13 @@ end
 crumb :create_freecen2_place do |county, place|
   link 'Create New Freecen2 Place', new_freecen2_place_path
   if session[:search_names].nil?
-    parent :freecen2_places, session[:county], place
+    if  session[:type] == 'place_index'
+      parent :freecen2_places_full_index, session[:county], place
+    elsif  session[:type] == 'active_place_index'
+      parent :freecen2_places_active_index, session[:county], place
+    else
+      parent :freecen2_places, session[:county], place
+    end
   elsif session[:search_names].present?
     parent :search_names_results
   else

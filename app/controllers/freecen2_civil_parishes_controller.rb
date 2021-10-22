@@ -8,6 +8,7 @@ class Freecen2CivilParishesController < ApplicationController
     @year = params[:year]
     @freecen2_civil_parishes = Freecen2CivilParish.chapman_code(@chapman_code).year(@year).order_by(year: 1, name: 1)
     session[:type] = 'parish_year_index'
+    @scotland = scotland_county?(@chapman_code)
   end
 
   def create
@@ -77,6 +78,7 @@ class Freecen2CivilParishesController < ApplicationController
     @chapman_code = session[:chapman_code]
     @freecen2_civil_parishes = Freecen2CivilParish.district_place_name(@chapman_code)
     session[:type] = 'parish_district_place_name'
+    @scotland = scotland_county?(@chapman_code)
   end
 
   def edit
@@ -99,6 +101,7 @@ class Freecen2CivilParishesController < ApplicationController
     @freecen2_civil_parish.freecen2_townships.build
     @freecen2_civil_parish.freecen2_wards.build
     @type = params[:type]
+    @scotland = scotland_county?(@chapman_code)
   end
 
   def edit_name
@@ -113,6 +116,7 @@ class Freecen2CivilParishesController < ApplicationController
     @piece = @freecen2_civil_parish.freecen2_piece
     @type = session[:type]
     @chapman_code = session[:chapman_code]
+    @scotland = scotland_county?(@chapman_code)
   end
 
   def full_index
@@ -125,6 +129,7 @@ class Freecen2CivilParishesController < ApplicationController
     @freecen2_civil_parishes_distinct = Kaminari.paginate_array(@freecen2_civil_parishes_distinct).page(params[:page]).per(100)
     session[:current_page_civil_parish] = @freecen2_civil_parishes_distinct.current_page if @freecen2_civil_parishes_distinct.present?
     session[:type] = 'parish_index'
+    @scotland = scotland_county?(@chapman_code)
   end
 
   def index
@@ -134,6 +139,7 @@ class Freecen2CivilParishesController < ApplicationController
       @chapman_code = session[:chapman_code]
       session[:type] = 'parish'
       session.delete(:freecen2_civil_parish)
+      @scotland = scotland_county?(@chapman_code)
     else
       flash[:notice] = 'No chapman_code'
       redirect_to new_manage_resource_path && return
@@ -158,6 +164,7 @@ class Freecen2CivilParishesController < ApplicationController
     @year = @freecen2_piece.year
     @freecen2_civil_parishes = Freecen2CivilParish.where(freecen2_piece_id: params[:piece_id]).all.order_by(name: 1)
     @type = params[:type]
+    @scotland = scotland_county?(@chapman_code)
   end
 
   def missing_place
@@ -185,6 +192,7 @@ class Freecen2CivilParishesController < ApplicationController
     @freecen2_civil_parish.freecen2_wards.build
     session[:type] = session[:type] == 'district_year_index' ? 'district_year_index' : 'piece_year_index'
     @type = params[:type]
+    @scotland = scotland_county?(@chapman_code)
   end
 
   def selection_by_name
@@ -227,6 +235,7 @@ class Freecen2CivilParishesController < ApplicationController
     @chapman_code = @freecen2_civil_parish.chapman_code
     @freecen2_piece = @freecen2_civil_parish.piece_name
     @type = session[:type]
+    @scotland = scotland_county?(@chapman_code)
   end
 
   def update

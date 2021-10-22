@@ -1,26 +1,29 @@
+<% breadcrumb :place_piece_index, @place%>
 <div style="text-align: center">
   <%= render 'flash_notice' %>
 </div>
+<h2 style="text-align: center">Details of the FreeCen2 Pieces for the place <%= @place.place_name%> in <%=ChapmanCode.name_from_code(@place.chapman_code)%></h2>
 <div class="scrollable ">
   <table class="table--bordered table--data just--left table--striped">
     <thead >
       <tr>
         <th class='sticky-header '>Piece Number</th>
         <th class='sticky-header '>Piece name</th>
+        <th class='sticky-header '>Year</th>
         <th class='sticky-header '>District</th>
-        <th colspan = "2" class='sticky-header '>Actions</th>
+        <th class='sticky-header '>Status</th>
         <th class='sticky-header '>Civil parishes <br>
           <small>The part in () is the name of any Hamlet, Township, Ward or Place included in the Civil Parish</small></th>
       </tr>
     </thead>
     <tbody >
-      <% @freecen2_pieces.each do |freecen2_piece| %>
+      <% @pieces.each do |freecen2_piece| %>
         <tr id="<%=freecen2_piece.name%>">
           <td ><%= freecen2_piece.number %></td>
           <td ><%= freecen2_piece.name %></td>
+          <td ><%= freecen2_piece.year %></td>
           <td ><%= freecen2_piece.district_name%></td>
-          <td ><%= link_to 'Show', freecen2_piece_path(freecen2_piece,type: @type) , :class => "btn   btn--small"%></td>
-          <td ><%= link_to 'Edit', edit_freecen2_piece_path(freecen2_piece,type: @type) , :class => "btn   btn--small"%></td>
+          <td ><%= freecen2_piece.status %></td>
           <td ><%= freecen2_piece.civil_parish_names %></td>
         </tr>
       <% end %>

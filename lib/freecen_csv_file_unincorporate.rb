@@ -54,6 +54,7 @@ class FreecenCsvFileUnincorporate
         break unless success
       end
       PlaceCache.refresh(freecen_file.chapman_code) if success
+      Freecen2PlaceCache.refresh(freecen_file.chapman_code) if success
     rescue Exception => msg
       success = false
       message = "#{msg}, #{msg.backtrace.inspect}"

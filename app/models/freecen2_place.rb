@@ -65,18 +65,17 @@ class Freecen2Place
 
   before_save :add_location_if_not_present, :add_country, :add_standard_names, :add_place_name_soundex
 
-  after_save :update_places_cache
+  # after_save :update_places_cache
 
-  has_many :churches, dependent: :restrict_with_error
-  has_many :search_records, dependent: :restrict_with_error
-
-  has_many :freecen2_pieces, dependent: :restrict_with_error
-  has_many :freecen_pieces, dependent: :restrict_with_error
-  has_many :freecen_dwellings
+  has_many :search_records, dependent: :restrict_with_error, autosave: true
+  has_many :freecen_dwellings, dependent: :restrict_with_error, autosave: true
   has_many :sources
-
-  has_many :freecen2_districts, dependent: :restrict_with_error
-  has_many :freecen2_civil_parishes, dependent: :restrict_with_error
+  has_many :freecen1_vld_files, dependent: :restrict_with_error, autosave: true
+  has_many :freecen_csv_files, dependent: :restrict_with_error, autosave: true
+  has_many :freecen_pieces, dependent: :restrict_with_error, autosave: true
+  has_many :freecen2_pieces, dependent: :restrict_with_error, autosave: true
+  has_many :freecen2_districts, dependent: :restrict_with_error, autosave: true
+  has_many :freecen2_civil_parishes, dependent: :restrict_with_error, autosave: true
 
   has_many :image_server_groups
   has_many :gaps
@@ -462,9 +461,18 @@ class Freecen2Place
   end
 
   def places_near(radius_factor, system)
-    earth_radius = system==MeasurementSystem::ENGLISH ? 3963 : 6379
-    # places = Place.where(:data_present => true).limit(500).geo_near(self.location).spherical.max_distance(radius.to_f/earth_radius).distance_multiplier(earth_radius).to_a
-    places = Freecen2Place.where(:data_present => true).limit(radius_factor).geo_near(self.location).spherical.distance_multiplier(earth_radius).to_a
+    earth_radius = system == MeasurementSystem::ENGLISH ? 3963 : 6379
+    results = Freecen2Place.collection.aggregate([{ "$geoNear" => { 'near' => { type: "Point", coordinates: self.location },:distanceField => 'dis',
+                                                                    :includeLocs => 'loc', :pherical => true } },
+                                                  { "$match" => { data_present: true } },
+                                                  { "$limit" => radius_factor }
+
+                                                  ])
+    places = []
+    results.each do |result|
+      places << Freecen2Place.find_by(_id: result[:_id])
+    end
+
     # get rid of this place
     places.shift
     places

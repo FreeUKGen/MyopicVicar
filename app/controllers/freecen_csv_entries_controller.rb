@@ -192,7 +192,6 @@ class FreecenCsvEntriesController < ApplicationController
     elsif @type == 'Fla'
       @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).where(flag: true).all.order_by(record_number: 1)
     end
-    @freecen_csv_file.add_list_of_records(@type, @freecen_csv_entries)
   end
 
   def new

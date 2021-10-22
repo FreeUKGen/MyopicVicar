@@ -192,8 +192,6 @@ MyopicVicar::Application.routes.draw do
 
   resources :feedbacks
 
-
-
   get 'contacts/list_by_type',  :to => 'contacts#list_by_type', :as => :list_by_type_contacts
   get 'contacts/list_by_name',  :to => 'contacts#list_by_name', :as => :list_by_name_contacts
   get 'contacts/list_by_date',  :to => 'contacts#list_by_date', :as => :list_by_date_contacts
@@ -308,6 +306,7 @@ MyopicVicar::Application.routes.draw do
   get 'freecen2_pieces/index_district_year', :to => 'freecen2_pieces#index_district_year', :as => :freecen2_pieces_district_year_index
   get 'freecen2_pieces/:year/select_new_county', :to => 'freecen2_pieces#select_new_county', :as => :select_new_county_freecen2_piece
   get 'freecen2_pieces/csv_index', to: 'freecen2_pieces#csv_index', as: :csv_index_freecen2_piece
+  get 'freecen2_pieces/place_pieces_index', to: 'freecen2_pieces#place_pieces_index', as: :place_pieces_index_freecen2_piece
   resources :freecen2_pieces
 
   get 'freecen2_civil_parishes/selection_by_name', to: 'freecen2_civil_parishes#selection_by_name', as: :selection_by_name_freecen2_civil_parishes
@@ -439,7 +438,9 @@ MyopicVicar::Application.routes.draw do
   get '/freecen2_places/search_names', :to => 'freecen2_places#search_names', :as => :search_names_freecen2_place
   get 'freecen2_places/:id/rename', :to => 'freecen2_places#rename', :as => :rename_freecen2_place
   get 'freecen2_places/full_index', to: 'freecen2_places#full_index', as: :full_index_freecen2_places
+  get 'freecen2_places/active_index', to: 'freecen2_places#active_index', as: :active_index_freecen2_places
   get 'freecen2_places/selection_by_name', to: 'freecen2_places#selection_by_name', as: :selection_by_name_freecen2_places
+  get 'freecen2_places/for_search_form(.:format)', :to => 'freecen2_places#for_search_form', :as => :freecen2_places_for_search_form
   resources :freecen2_places
 
 

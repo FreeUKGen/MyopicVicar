@@ -10,7 +10,6 @@ class Freecen2PlaceCache
     Freecen2PlaceCache.where(chapman_code: county).destroy_all
     # the js library expects a certain format
     county_response = {}
-
     places = Freecen2Place.chapman_code(county).data_present.not_disabled.all.order_by(place_name: -1)
     places.each do |place|
       cen_years_with_data = ''
@@ -19,11 +18,11 @@ class Freecen2PlaceCache
           if cen_years_with_data == ''
             cen_years_with_data += " #{yy}"
           else
-            cen_years_with_data += ",'#{yy}"
+            cen_years_with_data += ", #{yy}"
           end
         end
       end
-      county_response[place.id] = "#{place.place_name} (#{place.chapman_code}#{cen_years_with_data})"
+      county_response[place.id] = "#{place.place_name} (#{cen_years_with_data})"
     end
     county_response = county_response.sort_by { |_, v| v }
     county_response = county_response.to_h
@@ -48,10 +47,55 @@ class Freecen2PlaceCache
   end
 
   def self.check_and_refresh_if_absent
-    ChapmanCode.values.each do |chapman_code|
-      if Freecen2Place.chapman_code(chapman_code).data_present.not_disabled.present? && Freecen2PlaceCache.find_by(chapman_code: chapman_code).places_json.length <= 7
-        refresh(chapman_code)
+    p 'starting'
+    FreecenCsvFile.where(incorporated: true).each do |file|
+      next if file.freecen2_place.present?
+
+      if file.freecen2_piece.present?
+        if file.freecen2_piece.freecen2_place.present?
+          file.freecen2_place = file.freecen2_piece.freecen2_place
+          file.save
+        else
+          p "piece for file #{file.inspect} has no place"
+        end
+      else
+        p "csv file #{file.inspect} has no piece"
       end
+    end
+    ChapmanCode.values.sort.each do |chapman_code|
+      p chapman_code
+      p Freecen2Place.chapman_code(chapman_code).not_disabled.length
+      Freecen2Place.chapman_code(chapman_code).not_disabled.all.order_by(place_name: 1).each do |freecen2_place|
+
+        freecen2_place.update_attributes(data_present: false, cen_data_years: [])
+        freecen2_place_save_needed = false
+        if freecen2_place.freecen1_vld_files.present?
+          freecen2_place.freecen1_vld_files.each do |vld_file|
+            unless freecen2_place.data_present == true
+              freecen2_place.data_present = true
+              freecen2_place_save_needed = true
+            end
+            unless freecen2_place.cen_data_years.include?(vld_file.full_year)
+              freecen2_place.cen_data_years << vld_file.full_year
+              freecen2_place_save_needed = true
+            end
+          end
+        end
+        if freecen2_place.freecen_csv_files.present?
+          freecen2_place.freecen_csv_files.each do |csv_file|
+            unless freecen2_place.data_present == true
+              freecen2_place.data_present = true
+              freecen2_place_save_needed = true
+            end
+            unless freecen2_place.cen_data_years.include?(csv_file.year)
+              freecen2_place.cen_data_years << csv_file.year
+              freecen2_place_save_needed = true
+            end
+          end
+        end
+        freecen2_place.save if freecen2_place_save_needed
+      end
+      refresh(chapman_code)
     end
   end
 end

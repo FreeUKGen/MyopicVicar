@@ -9,13 +9,11 @@ namespace :freecen do
 
     if place.data_present == false
       place.data_present = true
-      place_save_needed = true
     end
     if !place.cen_data_years.include?(piece.year)
       place.cen_data_years << piece.year
-      place_save_needed = true
     end
-    place.save! if place_save_needed
+    place.save!
   end
 
   def process_vld_file(filename, userid)
@@ -35,17 +33,23 @@ namespace :freecen do
 
       piece.update_attributes(freecen2_place_id: freecen2_place.id)
     end
+    freecen2_piece = piece.freecen2_piece
     transformer = Freecen::Freecen1VldTransformer.new
     transformer.transform_file_record(file)
     translator = Freecen::Freecen1VldTranslator.new
     num_dwel, num_ind = translator.translate_file_record(file)
     file.update_attributes(num_individuals: num_ind, num_dwellings: num_dwel)
+    place = Freecen2Place.find_by(_id: piece.freecen2_place_id)
+    file.search_records.each do |record|
+      place.search_records << record
+    end
+    file.freecen_dwellings.each do |record|
+      place.freecen_dwellings << record
+    end
 
     # This code update the freecen2_place data present and the cen data years -------------------------------
-    place = Freecen2Place.find_by(_id: piece.freecen2_place_id)
     update_cache(place, piece)
     # ----------------------------------------------------------------------------------------------
-
 
     # This code update the place data present and the cen data years -------------------------------
     place = Place.find_by(_id: piece.place_id)
@@ -54,6 +58,9 @@ namespace :freecen do
     piece.update_attributes(status: 'Online', status_date: DateTime.now.in_time_zone('London'), num_individuals: num_ind, num_dwellings: num_dwel, num_entries: num_entries) if piece.present?
     #print "\t#{filename} contained #{file_record.freecen_dwellings.count} dwellings in #{file_record.freecen1_vld_entries.count} entries\n"
     print "\t#{filename} contained #{num_dwel} dwellings #{num_ind} individuals in #{num_entries} entries\n"
+    freecen2_piece.update_attributes(status: 'Online', status_date: DateTime.now.in_time_zone('London'), num_individuals: num_ind, num_dwellings: num_dwel) if freecen2_piece.present?
+    freecen2_piece.freecen1_vld_files << [file]
+    freecen2_piece.save!
   end
 
   desc "Process legacy FreeCEN1 VLD file"

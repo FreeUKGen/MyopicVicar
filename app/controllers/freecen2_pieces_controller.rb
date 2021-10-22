@@ -5,7 +5,7 @@ class Freecen2PiecesController < ApplicationController
     get_user_info_from_userid
     @chapman_code = session[:chapman_code]
     @year = params[:year]
-    @freecen2_pieces = Freecen2Piece.chapman_code(@chapman_code).year(@year).order_by(year: 1, name: 1, number: 1).all
+    @freecen2_pieces = Freecen2Piece.chapman_code(@chapman_code).year(@year).order_by(year: 1,number: 1, name: 1).all
     session.delete(:freecen2_civil_parish)
     session.delete(:current_page_civil_parish)
     session[:type] = 'piece_year_index'
@@ -90,6 +90,7 @@ class Freecen2PiecesController < ApplicationController
     @freecen2_pieces = @freecen2_piece.piece_names
     @places = Freecen2Place.place_names_plus_alternates(@chapman_code)
     @type = session[:type]
+    @scotland = scotland_county?(@chapman_code)
   end
 
   def edit_name
@@ -103,6 +104,7 @@ class Freecen2PiecesController < ApplicationController
 
     @type = session[:type]
     @chapman_code = session[:chapman_code]
+    @scotland = scotland_county?(@chapman_code)
   end
 
   def enter_number
@@ -141,7 +143,7 @@ class Freecen2PiecesController < ApplicationController
       @chapman_code = session[:chapman_code]
       @freecen2_district = Freecen2District.find_by(id: params[:freecen2_district_id])
       @type = session[:type]
-      @freecen2_pieces = Freecen2Piece.where(freecen2_district_id: @freecen2_district.id).all.order_by(name: 1, number: 1)
+      @freecen2_pieces = Freecen2Piece.where(freecen2_district_id: @freecen2_district.id).all.order_by( number: 1, name: 1)
       @year = @freecen2_district.year
     else
       redirect_back(fallback_location: new_manage_resource_path, notice: 'No chapman code') && return
@@ -195,6 +197,14 @@ class Freecen2PiecesController < ApplicationController
     @freecen2_piece = Freecen2Piece.new(freecen2_district_id: @freecen2_district.id, chapman_code: @chapman_code, year: @year, freecen2_place_id: @freecen2_place)
     session[:type] = 'district_year_index'
     @type = params[:type]
+    @scotland = scotland_county?(@chapman_code)
+  end
+
+  def place_pieces_index
+    get_user_info_from_userid
+    p params
+    @place = Freecen2Place.find_by(_id: params[:place])
+    @pieces = @place.freecen2_pieces if @place.present?
   end
 
   def refresh_civil_parish_list
@@ -277,6 +287,7 @@ class Freecen2PiecesController < ApplicationController
     @chapman_code = @freecen2_piece.chapman_code
     @type = session[:type]
     session[:freecen2_piece] = @freecen2_piece.name
+    @scotland = scotland_county?(@chapman_code)
   end
 
   def update

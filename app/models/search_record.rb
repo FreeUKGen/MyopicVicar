@@ -35,12 +35,8 @@ class SearchRecord
   belongs_to :freecen_csv_file, index: true, optional: true
   belongs_to :freecen_individual, index: true, optional: true
   belongs_to :freecen1_vld_file, index: true, optional: true
-
   belongs_to :place, index: true, optional: true
   belongs_to :freecen2_place, index: true, optional: true
-  belongs_to :freecen2_civil_parish, index: true, optional: true
-  belongs_to :freecen2_piece, index: true, optional: true
-  belongs_to :freecen2_district, index: true, optional: true
 
   field :annotation_ids, type: Array # , :typecast => 'ObjectId'
 
@@ -94,6 +90,16 @@ class SearchRecord
     'place_fn_rt_sd' => ['place_id', 'search_names.first_name', 'record_type', 'search_date'],
     'place_fnsdx_rt_sd' => ['place_id', 'search_soundex.first_name', 'record_type', 'search_date'],
     'place_rt_sd' => ['place_id', 'record_type', 'search_date']
+  }.freeze
+
+  CEN2_PLACE_INDEXES = {
+    'place2_ln_rt_sd' => ['freecen2_place_id', 'search_names.last_name', 'record_type', 'search_date'],
+    'place2_ln_fn_rt_sd' => ['freecen2_place_id', 'search_names.last_name', 'search_names.first_name', 'record_type', 'search_date'],
+    'place2_lnsdx_rt_sd' => ['freecen2_place_id', 'search_soundex.last_name', 'record_type', 'search_date'],
+    'place2_lnsdx_fnsdx_rt_sd' => ['freecen2_place_id', 'search_soundex.last_name', 'search_soundex.first_name', 'record_type', 'search_date'],
+    'place2_fn_rt_sd' => ['freecen2_place_id', 'search_names.first_name', 'record_type', 'search_date'],
+    'place_2fnsdx_rt_sd' => ['freecen2_place_id', 'search_soundex.first_name', 'record_type', 'search_date'],
+    'place2_rt_sd' => ['freecen2_place_id', 'record_type', 'search_date']
   }.freeze
 
   CEN_BASIC_INDEXES = {
@@ -384,8 +390,13 @@ class SearchRecord
         index_component = BMD_INDEXES
       when 'freecen'
         if search_fields.include?('place_id')
+          p 'place_id'
           candidates = CEN_PLACE_INDEXES.keys
           index_component = CEN_PLACE_INDEXES
+        elsif search_fields.include?('freecen2_place_id')
+          p 'freecen2_place_id'
+          candidates = CEN2_PLACE_INDEXES.keys
+          index_component = CEN2_PLACE_INDEXES
         elsif search_fields.include?('chapman_code')
           candidates = CEN_CHAPMAN_INDEXES.keys
           index_component = CEN_CHAPMAN_INDEXES
