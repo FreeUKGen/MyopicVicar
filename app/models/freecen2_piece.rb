@@ -428,7 +428,27 @@ class Freecen2Piece
   def actual_number
     parts = number.split('_')
     number = parts[1].gsub(/[a-z]/i, '').to_i
-    number
+    case year
+    when '1841'
+      offset = 10000
+    when '1851'
+      offset = 20000
+    when '1861'
+      offset = 30000
+    when '1871'
+      offset = 40000
+    when '1881'
+      offset = 50000
+    when '1891'
+      offset = 60000
+    when '1901'
+      offset = 70000
+    when '1911'
+      offset = 80000
+    when '1921'
+      offset = 90000
+    end
+    number += offset
   end
 
   def update_place
