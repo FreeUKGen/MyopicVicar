@@ -202,9 +202,9 @@ class Freecen2PiecesController < ApplicationController
 
   def place_pieces_index
     get_user_info_from_userid
-    p params
     @place = Freecen2Place.find_by(_id: params[:place])
     @pieces = @place.freecen2_pieces if @place.present?
+    @pieces = @pieces.sort_by(&:actual_number) if @pieces.present?
   end
 
   def refresh_civil_parish_list

@@ -425,6 +425,12 @@ class Freecen2Piece
     result
   end
 
+  def actual_number
+    parts = number.split('_')
+    number = parts[1].gsub(/[a-z]/i, '').to_i
+    number
+  end
+
   def update_place
     message = 'success'
     return [true, message] unless do_we_update_place?
