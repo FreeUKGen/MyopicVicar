@@ -71,8 +71,12 @@ module ChapmanCode
       codes.each_pair do |ctry, ctryval|
         ctryhash = {}
         ctryval.each_pair do |kk, vv|
-          ctryhash[kk] = vv unless %w[ALD GSY JSY SRK].include?(vv.to_s) || CODES['Ireland'].values.include?(vv.to_s) ||
-            JSON.parse(Freecen2PlaceCache.find_by(chapman_code: vv.to_s).places_json).with_indifferent_access.blank?
+          if Rails.application.config.freecen2_place_cache
+            ctryhash[kk] = vv unless %w[ALD GSY JSY SRK].include?(vv.to_s) || CODES['Ireland'].values.include?(vv.to_s) ||
+              JSON.parse(Freecen2PlaceCache.find_by(chapman_code: vv.to_s).places_json).with_indifferent_access.blank?
+          else
+            ctryhash[kk] = vv unless %w[ALD GSY JSY SRK].include?(vv.to_s) || CODES['Ireland'].values.include?(vv.to_s)
+          end
         end
         hsh[ctry] = ctryhash
       end
