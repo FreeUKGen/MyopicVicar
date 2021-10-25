@@ -6,8 +6,8 @@
     	<%= link_to 'View Death Names', unique_district_names_path(id: @district_number, record_type: "death" ), method: :get, :class => "btn   btn--small" unless @record_type == "death"%>
     </div>
     <div class="text--center">
-    	<%= link_to 'View unique surnames', unique_district_names_path( id: @district_number, record_type: @record_type, name_type: 0 ) unless @name_type == 0 %>
-    	<%= link_to 'View unique forenames', unique_district_names_path( id: @district_number, record_type: @record_type, name_type: 1 ) unless @name_type == 1 %>
+    	<%= link_to 'View unique surnames', unique_district_names_path( id: @district_number, record_type: @record_type, name_type: "0" ) unless @name_type == "0" %>
+    	<%= link_to 'View unique forenames', unique_district_names_path( id: @district_number, record_type: @record_type, name_type: "1" ) unless @name_type == "1" %>
     </div>
     <%= render 'flash_notice' %>
     <br>
