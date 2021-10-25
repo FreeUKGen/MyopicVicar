@@ -15,10 +15,11 @@ class DistrictsController < ApplicationController
 		@district_number = params[:id]
 		@district = District.where(DistrictNumber: @district_number).first
 		if @name_type == 0
-			@unique_name = DistrictUniqueName.where(district_number: @district_number, record_type: record_type_id).first.unique_surnames
+			@unique_names = DistrictUniqueName.where(district_number: @district_number, record_type: record_type_id).first.unique_surnames
 		else
-			@unique_name = DistrictUniqueName.where(district_number: @district_number, record_type: record_type_id).first.unique_forenames
+			@unique_names = DistrictUniqueName.where(district_number: @district_number, record_type: record_type_id).first.unique_forenames
 		end
+		@unique_names, @remainders = District.letterize(@unique_names)
 	end
 
 end
