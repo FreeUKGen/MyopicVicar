@@ -10,7 +10,7 @@ class DistrictsController < ApplicationController
 
 	def unique_district_names
 		@record_type = params[:record_type] || "birth"
-		record_type_id = RecordType::FREEBMD_OPTIONS[@record_type.capitalize]
+		record_type_id = RecordType::FREEBMD_OPTIONS[:@record_type.capitalize]
 		@name_type = params[:name_type] || 1
 		@district_number = params[:id]
 		@district = District.where(DistrictNumber: @district_number)
