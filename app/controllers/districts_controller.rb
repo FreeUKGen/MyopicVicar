@@ -1,4 +1,5 @@
 class DistrictsController < ApplicationController
+	skip_before_action :require_login
 	def index
 		@districts = District.not_invented.all
 	end
