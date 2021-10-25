@@ -99,7 +99,7 @@ task set_fc2_piece_for_fc1_v3:  :environment do
       message += ' FC2 District Place missing '
     end
 
-    detail_file.puts  "#{fc1_piece.chapman_code},#{fc1_piece.year},#{fc1_piece.piece_number},#{fc1_piece.freecen1_filename},#{fc1_piece._id} #{fc1_status},#{piece2_number}, #{review_reqd},#{message}"
+    detail_file.puts  "#{fc1_piece.chapman_code},#{fc1_piece.year},#{fc1_piece.piece_number},#{fc1_piece.freecen1_filename},#{fc1_piece._id}, #{fc1_status},#{piece2_number}, #{review_reqd},#{message}"
   end
   percentage_match = (match_cnt * 100 / fc1_piece_cnt).round(1).to_s
   summary_file.puts  "#{this_country},#{this_county},#{fc1_piece_cnt},#{match_cnt},#{percentage_match}"

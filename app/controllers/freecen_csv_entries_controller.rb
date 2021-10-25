@@ -173,25 +173,7 @@ class FreecenCsvEntriesController < ApplicationController
     session[:cen_index_type] = params[:type]
     session.delete(:propagate_alternate)
     session.delete(:propagate_note)
-    if @type.blank?
-      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).all.order_by(record_number: 1)
-    elsif @type == 'Civ'
-      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).in(data_transition: Freecen::LOCATION).all.order_by(record_number: 1)
-    elsif @type == 'Pag'
-      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).in(data_transition: Freecen::LOCATION_PAGE).all.order_by(record_number: 1)
-    elsif @type == 'Dwe'
-      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).in(data_transition: Freecen::LOCATION_DWELLING).all.order_by(record_number: 1)
-    elsif @type == 'Ind'
-      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).all.order_by(record_number: 1)
-    elsif @type == 'Err'
-      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).where(:error_messages.gte => 1).all.order_by(record_number: 1)
-    elsif @type == 'War'
-      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).where(:warning_messages.gte => 1).all.order_by(record_number: 1)
-    elsif @type == 'Inf'
-      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).where(:info_messages.gte => 1).all.order_by(record_number: 1)
-    elsif @type == 'Fla'
-      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).where(flag: true).all.order_by(record_number: 1)
-    end
+    @freecen_csv_entries = @freecen_csv_file.index_type(@type)
   end
 
   def new
@@ -248,9 +230,7 @@ class FreecenCsvEntriesController < ApplicationController
     end
     session.delete(:propagate_note)
     redirect_to freecen_csv_entry_path(@freecen_csv_entry)
-
   end
-
 
   def show
     @freecen_csv_entry = FreecenCsvEntry.find(params[:id]) if params[:id].present?
@@ -260,13 +240,16 @@ class FreecenCsvEntriesController < ApplicationController
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
     display_info
+    session[:current_list_entry] = nil
+    session[:next_list_entry] = nil
+    session[:previous_list_entry] = nil
     @type = session[:cen_index_type]
     session[:freecen_csv_entry_id] = @freecen_csv_entry._id
     @search_record = SearchRecord.find_by(_id: @freecen_csv_entry.search_record_id) if @freecen_csv_file.incorporated
     @file_validation = @freecen_csv_file.validation
     @freecen_csv_entry.add_address(@freecen_csv_file.id, @freecen_csv_entry.dwelling_number)
     @next_entry, @previous_entry = @freecen_csv_entry.next_and_previous_entries
-    @next_list_entry, @previous_list_entry = @freecen_csv_entry.next_and_previous_list_entries
+    @next_list_entry, @previous_list_entry = @freecen_csv_entry.next_and_previous_list_entries(@type)
     session[:current_list_entry] = @freecen_csv_entry.id if @next_list_entry.present? || @previous_list_entry.present?
     session[:next_list_entry] = @next_list_entry.id if @next_list_entry.present?
     session[:previous_list_entry] = @previous_list_entry.id if @previous_list_entry.present?

@@ -2420,20 +2420,16 @@ class FreecenCsvEntry
     [next_entry, previous_entry]
   end
 
-  def next_and_previous_list_entries
-    file_id = freecen_csv_file.id
-    list_of_records = []
-    freecen_csv_file.freecen_csv_entry_ids.each do |entry|
-      list_of_records << entry.to_s
-    end
+  def next_and_previous_list_entries(type)
+    list_of_records = freecen_csv_file.index_type(type).pluck(:_id)
     return [nil, nil] if list_of_records.blank?
 
-    current_index = list_of_records.index(_id.to_s)
+    current_index = list_of_records.find_index(_id)
     return [nil, nil] if current_index.blank?
 
-    records = list_of_records.length
-    next_entry = (current_index + 1) <= records ? FreecenCsvEntry.find_by(_id: list_of_records[current_index + 1]) : nil
-    previous_entry = (current_index - 1) < 0 ?  nil : FreecenCsvEntry.find_by(_id: list_of_records[current_index - 1])
+    number_records = list_of_records.length
+    next_entry = (current_index + 1) <= number_records ? FreecenCsvEntry.find_by(_id: list_of_records[current_index + 1]) : nil
+    previous_entry = (current_index - 1) < 0 ? nil : FreecenCsvEntry.find_by(_id: list_of_records[current_index - 1])
     [next_entry, previous_entry]
   end
 

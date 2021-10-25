@@ -669,6 +669,29 @@ class FreecenCsvFile
     [true, '']
   end
 
+  def index_type(type)
+    if type.blank?
+      entries = freecen_csv_entries.all.order_by(record_number: 1)
+    elsif type == 'Civ'
+      entries = FreecenCsvEntry.where(freecen_csv_file_id: _id).in(data_transition: Freecen::LOCATION).all.order_by(record_number: 1)
+    elsif type == 'Pag'
+      entries = FreecenCsvEntry.where(freecen_csv_file_id: _id).in(data_transition: Freecen::LOCATION_PAGE).all.order_by(record_number: 1)
+    elsif type == 'Dwe'
+      entries = FreecenCsvEntry.where(freecen_csv_file_id: _id).in(data_transition: Freecen::LOCATION_DWELLING).all.order_by(record_number: 1)
+    elsif type == 'Ind'
+      entries = FreecenCsvEntry.where(freecen_csv_file_id:_id).all.order_by(record_number: 1)
+    elsif type == 'Err'
+      entries = FreecenCsvEntry.where(freecen_csv_file_id: _id).where(:error_messages.gte => 1).all.order_by(record_number: 1)
+    elsif type == 'War'
+      entries = FreecenCsvEntry.where(freecen_csv_file_id: _id).where(:warning_messages.gte => 1).all.order_by(record_number: 1)
+    elsif type == 'Inf'
+      entries = FreecenCsvEntry.where(freecen_csv_file_id: _id).where(:info_messages.gte => 1).all.order_by(record_number: 1)
+    elsif type == 'Fla'
+      entries = FreecenCsvEntry.where(freecen_csv_file_id: _id).where(flag: true).all.order_by(record_number: 1)
+    end
+    entries
+  end
+
   def add_csv_fields(line, rec, census_fields)
     census_fields.each do |field|
       case field
