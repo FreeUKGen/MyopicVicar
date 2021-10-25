@@ -156,7 +156,7 @@
                             <%= "Age at Death".html_safe %>
                         <% end %>
                     </div>
-                    <%= select_tag('search_query[death_at_age]', options_for_select(SearchQuery::DEATH_AGE_OPTIONS.map { |k,v| [v,k]}, set_value(@search_query.death_at_age)), {:prompt => "Select Death Age", id: 'death_select_box', class: 'push-half--bottom', tabindex: "0"}) %>
+                    <%= select_tag('search_query[death_at_age]', options_for_select(SearchQuery::DEATH_AGE_OPTIONS.map { |k,v| [v,k]}, set_value(@search_query.death_at_age)), {:prompt => "Select Death Age", id: 'death_select_box', class: 'push-half--bottom text-input', tabindex: "0"}) %>
                     <div id="death_age_and_dob">
                         <div id="death_age">
                             <label class="accessibility" for="search_query_age_at_death">Age at death</label>
@@ -460,23 +460,15 @@
                 hide_all_death_options();
                 $('#spouses_mother_surname').removeAttr('value');
                 $('#spouse_first_name').removeAttr('value');
-                $('#spouses_mother_surname').val('').prop('disabled', true)
-                $('#spouses_mother_surname').css('background', '#ccc');
-                $('#spouses_mother_surname').prop('placeholder', '')
                 $('#spouses_mother_surname').prop('name', '')
-                $('#spouse_first_name').prop('disabled', true)
-                $('#spouse_first_name').prop('placeholder', "")
-                $('#spouse_first_name').css('background', '#ccc');
                 if ($(".birth").is(":checked") && !$('.death, .marriage, .checkAll').is(':checked')) {
                     $('#spouses_mother_surname').prop('disabled', false);
                     $('#spouses_mother_surname').prop('name', 'search_query[mother_last_name]');
-                    $('#spouses_mother_surname').css('background', 'white');
                     $('#spouses_mother_surname').prop('placeholder', "Enter Mother's surname here");
                     $('.spouse_or_mother_surname_label').attr('tabindex', '0');
                     $('.spouse_or_mother_surname_label').text("Mothers Surname").append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
                     $('.spouse_or_mother_surname_label').append('<span class="ttip__text" id="mother_or_spouse_help_text">Mother\'s name before marriage</span>')
                     $('#death_select_box').prop('disabled', 'disabled');
-                    $('#death_select_box').css('background', '#ccc');
                     $('#death_select_box').val([]);
                     $('#spouse_or_mother_surname_div').show();
                     $('#age_at_death_or_date_of_birth_div').hide();
@@ -486,15 +478,12 @@
                     $('#spuse_checkbox').show();
                     $('#spouses_mother_surname').prop('disabled', false)
                     $('#spouses_mother_surname').prop('name', 'search_query[spouses_mother_surname]');
-                    $('#spouses_mother_surname').css('background', 'white');
                     $('#spouses_mother_surname').prop('placeholder', "Enter Spouse's surname here")
                     $('.spouse_or_mother_surname_label').text("Spouses Surname");//.append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
                     $('#death_select_box').prop('disabled', 'disabled');
-                    $('#death_select_box').css('background', '#ccc');
                     $('#death_select_box').val([]);
                     $('#spouses_mother_surname').prop('placeholder', "Enter Spouse's surname here")
                     $('#spouses_mother_surname').prop('name', 'search_query[spouses_mother_surname]');
-                    $('#spouse_first_name').css('background', 'white');
                     $('#spouse_first_name').prop('disabled', false)
                     $('#spouse_first_name').prop('placeholder', "Enter Spouse's First Name(s) here")
                     $('#age_at_death_or_date_of_birth_div').hide();
@@ -502,9 +491,7 @@
                     $('#age_at_death_or_date_of_birth_div').show();
                     //$('#death_select_box').prop('disabled', false);
                     aad_selection_function();
-                    $('#death_select_box').css('background', 'white')
                 } else {
-                    $('#death_select_box').css('background', '#ccc');
                     $('#death_select_box').prop('disabled', 'disabled');
                     $('#death_select_box').val([]);
                     $('#spouse_firstnames_div').hide();
