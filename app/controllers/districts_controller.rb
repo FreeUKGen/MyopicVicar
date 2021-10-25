@@ -19,7 +19,7 @@ class DistrictsController < ApplicationController
 		else
 			@unique_names = DistrictUniqueName.where(district_number: @district_number, record_type: record_type_id).first.unique_forenames
 		end
-		@unique_names, @remainders = District.letterize(@unique_names)
+		@unique_names, @remainders = @district.letterize(@unique_names)
 	end
 
 end
