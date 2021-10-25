@@ -653,7 +653,7 @@ module ApplicationHelper
       github: 'https://github.com/FreeUKGen/FreeBMD2',
       pinterest: 'https://www.pinterest.co.uk/FreeUKGenealogy/',
       instagram: 'https://www.instagram.com/freeukgenealogy/',
-      bmd1_coverage: '/cms/records'
+      bmd1_coverage: districts_path
     }
   end
 

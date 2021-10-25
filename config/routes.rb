@@ -516,6 +516,9 @@ MyopicVicar::Application.routes.draw do
   end
 
   resources :postems
+
+  get 'districts/:id/unique_names' => 'districts#unique_district_names' , as: :unique_district_names
+  resources :districts
   
   resources :s3buckets
 

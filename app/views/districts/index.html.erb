@@ -1,0 +1,62 @@
+<% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
+<h1 class="accessibility">Districts</h1>
+<div class="grid">
+  <div class="grid__item seven-tenths lap-seven-tenths palm-one-whole ">
+    <table class="table--bordered table--data scrollable">
+      <caption class='accessibility'>List of Districts</caption>
+      <thead>
+        <tr>
+            <th>District</th>
+          <th>
+            Volume Information
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <% n = 0 %>
+        <% @districts.each do |district| %>
+          <% n = n +1 %>
+          <tr id="" >
+              <td>
+                <dl>
+                  <dt>
+                    <%= district.DistrictName %>
+                  </dt>
+                  <dt>
+                    Total Transcriptions: <%= district.UsageCount %>
+                  </dt>
+                  <dt>
+                    <%= link_to("Unique Names", unique_district_names_path(id: district.DistrictNumber))%>
+                  </dt>
+                </dl>
+              </td>
+            <td class="table--data">
+              <dl>
+                <dt class="ttip">
+                 Year 1837 to Year 1851: <%= district.Volume1837to1851 %>
+                </dt>
+                <dt>
+                  Year 1852 to Year 1945: <%= district.Volume1852to1945 %>
+                </dt>
+                <dt>
+                  Year 1946 to Year 1965: <%= district.Volume1946to1965 %>
+                </dt>
+                <dt>
+                  Year 1966 to Year 1973: <%= district.Volume1966to1973 %>
+                </dt>
+                <dt>
+                  After Year 1974: <%= district.Volume1974toEnd %>
+                </dt>
+              </dl>
+            </td>
+            
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<!--/div-->
+
+
+
