@@ -30,6 +30,7 @@ class ApplicationController < ActionController::Base
   require 'freebmd_data_problem'
   require 'constant'
   require 'gdpr_countries'
+  require 'application_text'
   helper_method :appname, :appname_upcase, :appname_downcase, :mobile_device?, :device_type
   def appname
     MyopicVicar::Application.config.freexxx_display_name
