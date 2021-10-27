@@ -7,7 +7,7 @@
       <thead>
         <tr>
           <th>District Detail</th>
-          <th>District Name</th>
+          <th>District</th>
           <th>Total Transcriptions</th>
         </tr>
       </thead>
@@ -25,7 +25,7 @@
                   <%= district.DistrictName %>
                 </dt>
                 <dt>
-                  
+                  Existing from <%= district.YearStart%> <%= district.YearEnd <  9999 ? "till #{district.YearEnd}" : "" %>
                 </dt>
                 <dt>
                   <%#= link_to("Unique Names", unique_district_names_path(id: district.DistrictNumber))%>
