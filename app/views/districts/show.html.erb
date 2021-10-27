@@ -85,7 +85,7 @@
                 <th>UKBMD Link</th>
                 <td>
                   <% if @district.district_url_definable? %>
-                    <%= link_to "Click here for more information", "http://www.ukbmd.org.uk/reg/districts/#{district.ukbmd_url_distict}.html", target: "_blank" %><br>
+                    <%= link_to "Click here for more information", "http://www.ukbmd.org.uk/reg/districts/#{@district.ukbmd_url_distict}.html", target: "_blank" %><br>
                     <span class="weight--normal"><%= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span>
                   <% else %>
                     Not Available
