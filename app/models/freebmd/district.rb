@@ -23,7 +23,7 @@ class District < FreebmdDbBase
   end
 
   def format_district_name
-    self.gsub(/(?<=\S) *\(.*\) *$/,'')
+    self.DistrictName.gsub(/(?<=\S) *\(.*\) *$/,'')
   end
 
   def ukbmd_url_distict
