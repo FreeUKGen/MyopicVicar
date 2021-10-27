@@ -6,10 +6,9 @@
       <caption class='accessibility'>List of Districts</caption>
       <thead>
         <tr>
-            <th>District</th>
-          <th>
-            Volume Information
-          </th>
+          <th>District Detail</th>
+          <th>District Name</th>
+          <th>Total Transcriptions</th>
         </tr>
       </thead>
       <tbody>
@@ -17,39 +16,42 @@
         <% @districts.each do |district| %>
           <% n = n +1 %>
           <tr id="" >
-              <td>
-                <dl>
-                  <dt>
-                    <%= district.DistrictName %>
-                  </dt>
-                  <dt>
-                    Total Transcriptions: <%= district.UsageCount %>
-                  </dt>
-                  <dt>
-                    <%= link_to("Unique Names", unique_district_names_path(id: district.DistrictNumber))%>
-                  </dt>
-                </dl>
-              </td>
-            <td class="table--data">
+            <td>
+              <%= link_to("View #{n}", district_path(district.DistrictNumber))%>
+            </td>
+            <td>
               <dl>
-                <dt class="ttip">
-                 Year 1837 to Year 1851: <%= district.Volume1837to1851 %>
+                <dt>
+                  <%= district.DistrictName %>
                 </dt>
                 <dt>
-                  Year 1852 to Year 1945: <%= district.Volume1852to1945 %>
+                  
                 </dt>
                 <dt>
-                  Year 1946 to Year 1965: <%= district.Volume1946to1965 %>
-                </dt>
-                <dt>
-                  Year 1966 to Year 1973: <%= district.Volume1966to1973 %>
-                </dt>
-                <dt>
-                  After Year 1974: <%= district.Volume1974toEnd %>
+                  <%#= link_to("Unique Names", unique_district_names_path(id: district.DistrictNumber))%>
                 </dt>
               </dl>
             </td>
-            
+            <td class="table--data">
+              <%= district.UsageCount %>
+              <!--dl>
+                <dt class="ttip">
+                 Year 1837 to Year 1851: <%#= district.Volume1837to1851 %>
+                </dt>
+                <dt>
+                  Year 1852 to Year 1945: <%#= district.Volume1852to1945 %>
+                </dt>
+                <dt>
+                  Year 1946 to Year 1965: <%#= district.Volume1946to1965 %>
+                </dt>
+                <dt>
+                  Year 1966 to Year 1973: <%#= district.Volume1966to1973 %>
+                </dt>
+                <dt>
+                  After Year 1974: <%#= district.Volume1974toEnd %>
+                </dt>
+              </dl-->
+            </td>
           </tr>
         <% end %>
       </tbody>

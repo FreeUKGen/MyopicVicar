@@ -6,6 +6,15 @@ class DistrictsController < ApplicationController
 
 	def show
 		@district = District.where(DistrictNumber: params[:id]).first
+		birth_uniq_name = DistrictUniqueName.where(district_number: @district.DistrictNumber, record_type: 1).first
+		marriage_uniq_name =  DistrictUniqueName.where(district_number: @district.DistrictNumber, record_type: 3).first
+		death_uniq_name =  DistrictUniqueName.where(district_number: @district.DistrictNumber, record_type: 2).first
+		@birth_uniq_surname_count = birth_uniq_name.unique_surnames.count
+		@birth_uniq_forename_count = birth_uniq_name.unique_forenames.count
+		@marriage_uniq_surname_count = marriage_uniq_name.unique_surnames.count
+		@marriage_uniq_forename_count = marriage_uniq_name.unique_forenames.count
+		@death_uniq_surname_count = death_uniq_name.unique_surnames.count
+		@death_uniq_forename_count = death_uniq_name.unique_forenames.count
 	end
 
 	def unique_district_names
