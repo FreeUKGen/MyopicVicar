@@ -19,7 +19,7 @@ class District < FreebmdDbBase
   end
 
   def district_url_definable?
-    InfoBookmark.present? && InfoBookmark != "xxxx"
+    self.InfoBookmark.present? && self.InfoBookmark != "xxxx"
   end
 
   def format_district_name
@@ -30,11 +30,11 @@ class District < FreebmdDbBase
     district_name = format_district_name
     district_suffix = '1'
     district_name = district_name.gsub(/&/,"and")
-    district_name = district_name.gsub(/ /,"-") if InfoBookmark == "dash"
-    district_name = district_name.gsub(/upon/,"on") if InfoBookmark == "upon"
-    district_name = district_name.gsub(/ [A-Za-z]*$/,"") if InfoBookmark == "trnc"
-    district_name = district_name.gsub(/ [A-Za-z]*$/,district_suffix) if InfoBookmark.match?(/sfx[0-9]/)
-    district_name = InfoBookmark unless InfoBookmark.match?(/aaaa|dash|upon|trnc|sfx[0-9]/)
+    district_name = district_name.gsub(/ /,"-") if self.InfoBookmark == "dash"
+    district_name = district_name.gsub(/upon/,"on") if self.InfoBookmark == "upon"
+    district_name = district_name.gsub(/ [A-Za-z]*$/,"") if self.InfoBookmark == "trnc"
+    district_name = district_name.gsub(/ [A-Za-z]*$/,district_suffix) if self.InfoBookmark.match?(/sfx[0-9]/)
+    district_name = self.InfoBookmark unless self.InfoBookmark.match?(/aaaa|dash|upon|trnc|sfx[0-9]/)
     district_name = district_name.gsub(/ /,"%20")
     district_name
   end
