@@ -27,30 +27,10 @@
                 <dt>
                   Existing from <%= district.YearStart%> <%= district.YearEnd <  9999 ? "till #{district.YearEnd}" : "" %>
                 </dt>
-                <dt>
-                  <%#= link_to("Unique Names", unique_district_names_path(id: district.DistrictNumber))%>
-                </dt>
               </dl>
             </td>
             <td class="table--data">
               <%= district.UsageCount %>
-              <!--dl>
-                <dt class="ttip">
-                 Year 1837 to Year 1851: <%#= district.Volume1837to1851 %>
-                </dt>
-                <dt>
-                  Year 1852 to Year 1945: <%#= district.Volume1852to1945 %>
-                </dt>
-                <dt>
-                  Year 1946 to Year 1965: <%#= district.Volume1946to1965 %>
-                </dt>
-                <dt>
-                  Year 1966 to Year 1973: <%#= district.Volume1966to1973 %>
-                </dt>
-                <dt>
-                  After Year 1974: <%#= district.Volume1974toEnd %>
-                </dt>
-              </dl-->
             </td>
           </tr>
         <% end %>

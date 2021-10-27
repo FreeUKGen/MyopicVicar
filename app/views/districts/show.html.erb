@@ -47,10 +47,10 @@
                 <td>
                   <dl>
                     <dt>
-                      Surnames Count: <%= @birth_uniq_surname_count%>
+                      Forenames Count: <%= @birth_uniq_forename_count%>
                     </dt>
                     <dt>
-                      Forenames Count: <%= @birth_uniq_forename_count%>
+                      Surnames Count: <%= @birth_uniq_surname_count%>
                     </dt>
                   </dl>
                 </td>
@@ -60,10 +60,10 @@
                 <td>
                   <dl>
                     <dt>
-                      Surnames Count: <%= @marriage_uniq_surname_count%>
+                      Forenames Count: <%= @marriage_uniq_forename_count%>
                     </dt>
                     <dt>
-                      Forenames Count: <%= @marriage_uniq_forename_count%>
+                      Surnames Count: <%= @marriage_uniq_surname_count%>
                     </dt>
                   </dl>
                 </td>
@@ -73,12 +73,23 @@
                 <td>
                   <dl>
                     <dt>
-                      Surnames Count: <%= @death_uniq_surname_count%>
-                    </dt>
-                    <dt>
                       Forenames Count: <%= @death_uniq_forename_count%>
                     </dt>
+                    <dt>
+                      Surnames Count: <%= @death_uniq_surname_count%>
+                    </dt>
                   </dl>
+                </td>
+              </tr>
+              <tr>
+                <th>UKBMD Link</th>
+                <td>
+                  <% if @district.district_url_definable? %>
+                    <%= link_to "Click here for more information", "http://www.ukbmd.org.uk/reg/districts/#{district.ukbmd_url_distict}.html", target: "_blank" %><br>
+                    <span class="weight--normal"><%= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span>
+                  <% else %>
+                    Not Available
+                  <% end %>
                 </td>
               </tr>
           </tbody>
