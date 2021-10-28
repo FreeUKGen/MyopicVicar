@@ -14,6 +14,5 @@ task :search_records_per_vld => :environment do
     message_file.puts "#{place.chapman_code}, #{place.place_name}, #{piece.num_individuals}, #{freecen2_place.place_name}" if piece.present? && place.present? && freecen2_place.present?
     message_file.puts "#{place.chapman_code}, #{place.place_name}, #{piece.num_individuals}, Nil" if piece.present? && place.present?
   end
-end
-p "finished"
+  p "finished"
 end
