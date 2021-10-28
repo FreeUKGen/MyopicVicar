@@ -2,31 +2,34 @@
 class CreateSearchRecordsFreecen2
 
   class << self
-    def process(place, freecen2_place)
-      searches = freecen2_place.search_records.count
-      p freecen2_place.search_record_ids.count
-      p searches
-      if searches.zero?
-        place.search_records.no_timeout.each do |record|
-          freecen2_place.search_records << record
+    def process(file_id, freecen2_place)
+      file = Freecen1VldFile.find_by(_id: file_id)
+      p file.freecen_dwellings.count
+      records = 0
+      file.freecen_dwellings.no_timeout.each do |dwelling|
+        time_dwelling_start = Time.now
+        freecen2_place.freecen_dwellings << dwelling
+        dwelling.freecen_individuals.no_timeout.each do |individual|
+          time_individual_start = Time.now
+          freecen2_place.search_records << individual.search_record
+          records += 1
+          time_individual_end = Time.now
+          p time_individual_end - time_individual_start
         end
+        time_dwelling_end = Time.now
+        time_dwelling = time_dwelling_end - time_dwelling_start
+        p 'dwelling_time'
+        p time_dwelling
       end
-      dwellings = freecen2_place.freecen_dwellings.count
-      p dwellings
-      p  freecen2_place.freecen_dwelling_ids.count
-      if dwellings.zero?
-        place.freecen_dwellings.no_timeout.each do |dwelling|
-          freecen2_place.freecen_dwellings << dwelling
-        end
-      end
-      if searches.zero? || dwellings.zero?
-        freecen2_place.save
-        p freecen2_place
-        p freecen2_place.search_record_ids.count
-        p freecen2_place.search_records.count
-        p freecen2_place.freecen_dwelling_ids.count
-        p freecen2_place.freecen_dwellings.count
-      end
+      p records
+      time_start = Time.now
+      freecen2_place.save
+      time_end = Time.now
+      p 'save time'
+      p time_end - time_start
+      p freecen2_place
+      p freecen2_place.freecen_dwellings.count
+      p freecen2_place.search_records.count
     end
 
     def setup(fileid, number, message_file)
