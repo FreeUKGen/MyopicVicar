@@ -7,26 +7,14 @@ class CreateSearchRecordsFreecen2
       p file.freecen_dwellings.count
       records = 0
       file.freecen_dwellings.no_timeout.each do |dwelling|
-        time_dwelling_start = Time.now
         freecen2_place.freecen_dwellings << dwelling
         dwelling.freecen_individuals.no_timeout.each do |individual|
-          time_individual_start = Time.now
           freecen2_place.search_records << individual.search_record
           records += 1
-          time_individual_end = Time.now
-          p time_individual_end - time_individual_start
         end
-        time_dwelling_end = Time.now
-        time_dwelling = time_dwelling_end - time_dwelling_start
-        p 'dwelling_time'
-        p time_dwelling
       end
       p records
-      time_start = Time.now
       freecen2_place.save
-      time_end = Time.now
-      p 'save time'
-      p time_end - time_start
       p freecen2_place
       p freecen2_place.freecen_dwellings.count
       p freecen2_place.search_records.count
