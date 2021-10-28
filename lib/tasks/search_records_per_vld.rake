@@ -9,8 +9,9 @@ task :search_records_per_vld => :environment do
     num += 1
     p num
     piece = FreecenPiece.find_by(_id: vld.freecen_piece_id)
+    freecen2_place = Freecen2Place.find_by(_id: vld.freecen2_place_id)
     place = Place.find_by(_id: piece.place_id) if piece.present?
-    message_file.puts "#{place.chapman_code}, #{place.place_name}, #{piece.num_individuals}" if piece.present? && place.present?
+    message_file.puts "#{place.chapman_code}, #{place.place_name}, #{piece.num_individuals}, #{freecen2_place.place_name}" if piece.present? && place.present?
   end
   p "finished"
 end
