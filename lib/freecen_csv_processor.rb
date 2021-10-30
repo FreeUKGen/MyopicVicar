@@ -470,8 +470,6 @@ class CsvFile < CsvFiles
 
     PhysicalFile.remove_waiting_flag(@userid, @file_name)
     @file.update_attributes(was_locked: false, locked_by_transcriber: true) if @file.present? && @file.was_locked
-    p 'batch '
-    p message.to_s.include?('is already on system and is locked against replacement')
     batch.delete unless message.to_s.include?('is already on system and is locked against replacement')
   end
 
