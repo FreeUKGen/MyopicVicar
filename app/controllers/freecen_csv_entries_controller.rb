@@ -168,11 +168,13 @@ class FreecenCsvEntriesController < ApplicationController
 
     display_info
     @type = params[:type]
-
     @type = session[:cen_index_type] if @type.blank? && session[:cen_index_type].present?
     session[:cen_index_type] = params[:type]
     session.delete(:propagate_alternate)
     session.delete(:propagate_note)
+    session.delete(:current_list_entry)
+    session.delete(:next_list_entry)
+    session.delete(:previous_list_entry)
     @freecen_csv_entries = @freecen_csv_file.index_type(@type)
   end
 
@@ -240,9 +242,6 @@ class FreecenCsvEntriesController < ApplicationController
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
     display_info
-    session[:current_list_entry] = nil
-    session[:next_list_entry] = nil
-    session[:previous_list_entry] = nil
     @type = session[:cen_index_type]
     session[:freecen_csv_entry_id] = @freecen_csv_entry._id
     @search_record = SearchRecord.find_by(_id: @freecen_csv_entry.search_record_id) if @freecen_csv_file.incorporated
