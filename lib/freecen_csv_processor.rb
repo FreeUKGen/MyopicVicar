@@ -86,8 +86,8 @@ class FreecenCsvProcessor
           @project.total_files = @project.total_files + 1
         else
           #p "failed to process file"
-          @csvfile.communicate_failure_to_member(@records_processed)
           @csvfile.clean_up_physical_files_after_failure(@records_processed)
+          @csvfile.communicate_failure_to_member(@records_processed)
           # @project.communicate_to_managers(@csvfile) if @project.type_of_project == "individual"
         end
       rescue CSV::MalformedCSVError => msg
@@ -95,17 +95,17 @@ class FreecenCsvProcessor
         @project.write_messages_to_all("#{msg}", true)
         @project.write_log_file("#{msg.backtrace.inspect}")
         @records_processed = msg
-        @csvfile.communicate_failure_to_member(@records_processed)
         @csvfile.clean_up_physical_files_after_failure(@records_processed)
+        @csvfile.communicate_failure_to_member(@records_processed)
       rescue Exception => msg
         @project.write_messages_to_all("The CSVProcessor crashed please provide the following information to your coordinator to send to the System Administrators", true)
         @project.write_messages_to_all("#{msg}", true)
         @project.write_messages_to_all("#{msg.backtrace.inspect}", true)
         @records_processed = msg
-        @csvfile.communicate_failure_to_member(@records_processed)
         @csvfile.clean_up_physical_files_after_failure(@records_processed)
+        @csvfile.communicate_failure_to_member(@records_processed)
       end
-      sleep(300) if Rails.env.production?
+      sleep(100) if Rails.env.production?
     end
     # p "manager communication"
     #@project.communicate_to_managers(@csvfile) if files_to_be_processed.length >= 2
@@ -470,6 +470,8 @@ class CsvFile < CsvFiles
 
     PhysicalFile.remove_waiting_flag(@userid, @file_name)
     @file.update_attributes(was_locked: false, locked_by_transcriber: true) if @file.present? && @file.was_locked
+    p 'batch '
+    p message.to_s.include?('is already on system and is locked against replacement')
     batch.delete unless message.to_s.include?('is already on system and is locked against replacement')
   end
 
