@@ -792,7 +792,7 @@ module ApplicationHelper
     banner.html_safe
   end
 
-  def adsence_right_side_banner
+  def adsence_right_side_banner_gdpr
     banner = <<-HTML
     <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <ins class="adsbygoogle float--right"
@@ -810,6 +810,46 @@ module ApplicationHelper
       HTML
     end
     banner.html_safe
+  end
+
+  def adsence_right_side_banner_non_gdpr
+    banner = <<-HTML
+    <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <ins class="adsbygoogle float--right"
+    style="display:inline-block;width:300px;height:600px"
+    data-ad-client = "#{data_ad_client}"
+    data-ad-slot = "#{app_advert['data_ad_slot_side']}">
+    </ins>
+    <script type="text/javascript">
+      (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
+      window.update_personalized_header_adverts = function (preference) {
+        if(preference == 'accept') {
+            (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0;
+          } else if(preference == 'deny') {
+            (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1;
+          }
+        };
+        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
+    </script>
+    <script type="text/javascript">
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+    HTML
+    if Rails.env.development?
+      banner = <<-HTML
+      <img src="http://dummyimage.com/120x600/000/fff?text=banner+ad">
+      HTML
+    end
+    banner.html_safe
+  end
+
+  def adsence_right_side_banner
+    if GdprCountries::FOLLOWED_COUNTRIES.include?(user_location)
+      bannner = adsence_right_side_banner_gdpr
+    else
+      banner = adsence_right_side_banner_non_gdpr
+    end
+    banner
   end
 
   def google_advert
@@ -865,6 +905,7 @@ module ApplicationHelper
     end
     banner
   end
+
 
   def banner_header_non_gdpr
     banner = <<-HTML
