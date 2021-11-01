@@ -909,7 +909,7 @@ module ApplicationHelper
       (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
     </script>
     <script type="text/javascript">
-      adsbygoogle = window.adsbygoogle || []).push({});
+      (adsbygoogle = window.adsbygoogle || []).push({});
     </script>
     HTML
     if Rails.env.development?
