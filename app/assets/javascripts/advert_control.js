@@ -26,7 +26,7 @@ $(document).ready(function() {
           //update_personalized_page_adverts('accept');
           update_personalized_header_adverts('accept');
         };
-        iif ( $( ".reg_side_advert" ).length ) {
+        if ( $( ".reg_side_advert" ).length ) {
           //update_personalized_page_adverts('deny');
           update_personalized_side_adverts('accept');
         };
