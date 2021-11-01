@@ -43,6 +43,13 @@
         }
       };
     </script>
+    <% if appname_downcase == 'freereg' %>
+      <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found') || current_page?('/cms/refinery/users/login') %>
+        <div class="bnner-horz reg_adsense reg_unit reg_page_level_ads">
+          <%= banner_header_freereg %>
+        </div>
+      <% end %>
+    <% end %>
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <meta charset="utf-8"/>
     <% if MyopicVicar::Application.config.template_set == 'freereg' %>

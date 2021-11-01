@@ -12,7 +12,11 @@ $(document).ready(function() {
         };
         if ( $( ".reg_side_advert" ).length ) {
           //update_personalized_page_adverts('deny');
-          update_personalized_header_adverts('deny');
+          update_personalized_side_adverts('deny');
+        };
+        if ( $( ".reg_page_level_ads" ).length ) {
+          //update_personalized_page_adverts('deny');
+          update_page_level_adverts_consent('deny');
         };
        };
     // Personalized Advert
@@ -22,8 +26,13 @@ $(document).ready(function() {
           //update_personalized_page_adverts('accept');
           update_personalized_header_adverts('accept');
         };
-        if ( $( ".reg_side_advert" ).length ) {
-          update_personalized_header_adverts('accept');
+        iif ( $( ".reg_side_advert" ).length ) {
+          //update_personalized_page_adverts('deny');
+          update_personalized_side_adverts('accept');
+        };
+        if ( $( ".reg_page_level_ads" ).length ) {
+          //update_personalized_page_adverts('deny');
+          update_page_level_adverts_consent('accept');
         };
        };
     //Non Personalized Advert
@@ -34,7 +43,12 @@ $(document).ready(function() {
           update_personalized_header_adverts('deny');
         };
         if ( $( ".reg_side_advert" ).length ) {
-          update_personalized_header_adverts('deny');
+          //update_personalized_page_adverts('deny');
+          update_personalized_side_adverts('deny');
+        };
+        if ( $( ".reg_page_level_ads" ).length ) {
+          //update_personalized_page_adverts('deny');
+          update_page_level_adverts_consent('deny');
         };
       };
     };
