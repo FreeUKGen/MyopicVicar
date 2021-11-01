@@ -898,6 +898,7 @@ module ApplicationHelper
   end
 
   def banner_header
+    logger.warn(user_location.inspect)
     if GdprCountries::FOLLOWED_COUNTRIES.include?(user_location)
       bannner = banner_header_gdpr
     else
