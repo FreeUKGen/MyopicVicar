@@ -47,15 +47,6 @@ module SearchQueriesHelper
 
   def format_freecen_birth_year(search_date, record_type)
     search_year = search_date.gsub(/\D.*/,'')
-    if search_year == record_type
-      search_year
-    else
-      if record_type == RecordType::CENSUS_1841 && search_year > "1826"
-        "#{search_year.to_i - 3}"
-      else
-        "#{search_year.to_i - 1}"
-      end
-    end
   end
 
   def format_start_date(year)
