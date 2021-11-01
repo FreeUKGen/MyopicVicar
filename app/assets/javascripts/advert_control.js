@@ -23,7 +23,7 @@ $(document).ready(function() {
           update_personalized_header_adverts('accept');
         };
         if ( $( ".reg_side_advert" ).length ) {
-          update_personalized_adverts('accept');
+          update_personalized_header_adverts('accept');
         };
        };
     //Non Personalized Advert
@@ -34,7 +34,7 @@ $(document).ready(function() {
           update_personalized_header_adverts('deny');
         };
         if ( $( ".reg_side_advert" ).length ) {
-          update_personalized_adverts('deny');
+          update_personalized_header_adverts('deny');
         };
       };
     };
