@@ -90,28 +90,30 @@ class FreecenCsvProcessor
           @csvfile.communicate_failure_to_member(@records_processed)
           # @project.communicate_to_managers(@csvfile) if @project.type_of_project == "individual"
         end
-      rescue CSV::MalformedCSVError => msg
+      rescue CSV::MalformedCSVError => e
         @project.write_messages_to_all("We were unable to process the file possibly due to an invalid structure or character.<p>", true)
-        @project.write_messages_to_all("#{msg}", true)
-        @project.write_log_file("#{msg.backtrace.inspect}")
-        @records_processed = msg
+        @project.write_messages_to_all("#{e.message}", true)
+        @project.write_log_file("#{e.backtrace.inspect}")
+        @records_processed = e.message
         @csvfile.clean_up_physical_files_after_failure(@records_processed)
         @csvfile.communicate_failure_to_member(@records_processed)
-      rescue Exception => msg
-        @project.write_messages_to_all("The CSVProcessor crashed please provide the following information to your coordinator to send to the System Administrators", true)
-        @project.write_messages_to_all("#{msg}", true)
-        @project.write_messages_to_all("#{msg.backtrace.inspect}", true)
-        @records_processed = msg
-        @csvfile.clean_up_physical_files_after_failure(@records_processed)
-        @csvfile.communicate_failure_to_member(@records_processed)
+      rescue StandardError => e
+        if e.message.to_s.include?('Username and Password not accepted')
+          p 'Email error'
+        else
+          @project.write_messages_to_all("#{e.message}", true)
+          @project.write_messages_to_all("#{e.backtrace.inspect}", true)
+          message = 'The CSVProcessor crashed please provide the following information to your coordinator to send to the System Administrators'
+          @project.write_messages_to_all(message, true)
+          @records_processed = e.message
+          @csvfile.clean_up_physical_files_after_failure(@records_processed)
+          @csvfile.communicate_failure_to_member(@records_processed)
+        end
+      ensure
+        sleep(100) if Rails.env.production?
       end
-      sleep(100) if Rails.env.production?
     end
-    # p "manager communication"
-    #@project.communicate_to_managers(@csvfile) if files_to_be_processed.length >= 2
-    at_exit do
-      # p "goodbye"
-    end
+    p 'Finished'
   end
 
   def self.delete_all
@@ -458,12 +460,6 @@ class CsvFile < CsvFiles
     [false, message]
   end
 
-  def clean_up_message
-
-    #File.delete(@project.message_file) if @project.type_of_project == 'individual' && File.exists?(@project.message_file) && !Rails.env.test?
-
-  end
-
   def clean_up_physical_files_after_failure(message)
     batch = PhysicalFile.userid(@userid).file_name(@file_name).first
     return true if batch.blank?
@@ -493,19 +489,17 @@ class CsvFile < CsvFiles
     to = File.join(@full_dirname, copy_file_name)
     FileUtils.cp_r(file, to, remove_destination: true)
     UserMailer.batch_processing_failure(file, @userid, @file_name).deliver_now unless @project.type_of_project == "special_selection_1" ||  @project.type_of_project == "special_selection_2"
-    clean_up_message
     true
   end
 
   def communicate_file_processing_results
-    #p "communicating success"
+    p "communicating success"
     file = @project.member_message_file
     file.close
     copy_file_name = "#{@header[:file_name]}.txt"
     to = File.join(@full_dirname, copy_file_name)
     FileUtils.cp_r(file, to, remove_destination: true)
     UserMailer.batch_processing_success(file, @header[:userid], @header[:file_name]).deliver_now unless @project.type_of_project == "special_selection_1" ||  @project.type_of_project == "special_selection_2"
-    clean_up_message
     true
   end
 
