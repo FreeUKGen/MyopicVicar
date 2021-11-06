@@ -463,6 +463,17 @@ class Freecen2Piece
     [success, message]
   end
 
+  def piece_search_records
+    records = 0
+    freecen1_vld_files.each do |file|
+      records += file.num_individuals
+    end
+    freecen_csv_files.each do |file|
+      records += file.total_records
+    end
+    records
+  end
+
   def piece_names
     pieces = Freecen2Piece.where(chapman_code: chapman_code, year: year, freecen2_district_id: freecen2_district_id).all.order_by(name: 1)
     @pieces = []

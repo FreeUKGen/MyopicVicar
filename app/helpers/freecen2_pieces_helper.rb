@@ -141,4 +141,9 @@ module Freecen2PiecesHelper
   def piece_index_link(chapman_code, year)
     link_to "#{year}", freecen2_pieces_chapman_year_index_path(chapman_code: "#{chapman_code}", year: "#{year}"), method: :get, class: 'btn   btn--small', title: 'List of Sub Districts (Pieces) for this year'
   end
+
+  def piece_record_count(piece)
+    count = piece.piece_search_records
+    number_with_delimiter(count)
+  end
 end

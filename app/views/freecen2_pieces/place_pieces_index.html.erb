@@ -12,6 +12,7 @@
         <th class='sticky-header '>Year</th>
         <th class='sticky-header '>District</th>
         <th class='sticky-header '>Status</th>
+        <th class='sticky-header '>Records</th>
         <th class='sticky-header '>Civil parishes <br>
           <small>The part in () is the name of any Hamlet, Township, Ward or Place included in the Civil Parish</small></th>
       </tr>
@@ -24,6 +25,7 @@
           <td ><%= freecen2_piece.year %></td>
           <td ><%= freecen2_piece.district_name%></td>
           <td ><%= freecen2_piece.status %></td>
+          <td ><%= piece_record_count(freecen2_piece) %></td>
           <td ><%= freecen2_piece.civil_parish_names %></td>
         </tr>
       <% end %>
