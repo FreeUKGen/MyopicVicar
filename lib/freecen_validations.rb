@@ -13,7 +13,7 @@ module FreecenValidations
   PARISH_TEXT = /\A[-\w\s,']*\z/.freeze
   TIGHT_VALID_TEXT = /\A[\w\s,'\.]*\z/.freeze
   NARROW_VALID_TEXT_PLUS = /\A[-\w\s,'\.]*\z/.freeze
-  BROAD_VALID_TEXT = /\A[-\w\s()\.,&'":;âêîôûŷŵÂÊÎÔÛŶŴáéíóúýẃÁÉÍÓÝẂäëïöüÿẅÄËÏÖÜŸẄàèìòùẁÀÈÌÒÙẀ]*\z/.freeze
+  BROAD_VALID_TEXT = /\A[-\w\s()\.,&'":;]*\z/.freeze
   BROAD_VALID_TEXT_PLUS = /\A[-\w\s()\/\.,&'":;?]*\z/.freeze
   VALID_PIECE = /\A(R|H)(G|O|S)/i.freeze
   VALID_AGE_MAXIMUM = { 'd' => 100, 'w' => 100, 'm' => 100, 'y' => 120, 'h' => 100, '?' => 100, 'years' => 120, 'months' => 100, 'weeks' => 100,
