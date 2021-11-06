@@ -84,7 +84,7 @@
           </tr>
           <tr>
             <td>Number of records online for this place:</td>
-            <td class="weight--semibold"> <%= @place.search_records.count %></td>
+            <td class="weight--semibold"> <%= number_with_delimiter(@place.search_records.count) %></td>
           </tr>
           <tr>
             <td>Number of pieces (online) for this place:</td>
