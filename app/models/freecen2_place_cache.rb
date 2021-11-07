@@ -68,7 +68,7 @@ class Freecen2PlaceCache
       check = 0
       Freecen2Place.chapman_code(chapman_code).not_disabled.all.no_timeout.order_by(place_name: 1).each do |freecen2_place|
         check += 1
-
+        p check
         freecen2_place.update_attributes(data_present: false, cen_data_years: []) unless freecen2_place.data_present == false
         freecen2_place_save_needed = false
         if freecen2_place.freecen1_vld_files.present?
@@ -83,8 +83,8 @@ class Freecen2PlaceCache
             end
           end
         end
-        if freecen2_place.freecen_csv_files.present?
-          freecen2_place.freecen_csv_files.each do |csv_file|
+        if freecen2_place.freecen_csv_files.incorporated(true).present?
+          freecen2_place.freecen_csv_files.incorporated(true).each do |csv_file|
             unless freecen2_place.data_present == true
               freecen2_place.data_present = true
               freecen2_place_save_needed = true

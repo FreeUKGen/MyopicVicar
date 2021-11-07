@@ -144,6 +144,12 @@ db.runCommand(
                 },
                 "name" : "alternate_name_soundex"
         },
+{
+                "key" : {
+                        "data_present" : 1
+                },
+                "name" : "place_present"
+        }
     ]
   }
 )
