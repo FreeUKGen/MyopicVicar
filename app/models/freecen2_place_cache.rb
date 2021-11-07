@@ -65,9 +65,11 @@ class Freecen2PlaceCache
     ChapmanCode.values.sort.each do |chapman_code|
       p chapman_code
       p Freecen2Place.chapman_code(chapman_code).not_disabled.length
-      Freecen2Place.chapman_code(chapman_code).not_disabled.all.order_by(place_name: 1).each do |freecen2_place|
+      check = 0
+      Freecen2Place.chapman_code(chapman_code).not_disabled.all.no_timeout.order_by(place_name: 1).each do |freecen2_place|
+        check += 1
 
-        freecen2_place.update_attributes(data_present: false, cen_data_years: [])
+        freecen2_place.update_attributes(data_present: false, cen_data_years: []) unless freecen2_place.data_present == false
         freecen2_place_save_needed = false
         if freecen2_place.freecen1_vld_files.present?
           freecen2_place.freecen1_vld_files.each do |vld_file|
@@ -93,7 +95,9 @@ class Freecen2PlaceCache
             end
           end
         end
+        freecen2_place.cen_data_years = freecen2_place.cen_data_years.sort if freecen2_place_save_needed
         freecen2_place.save if freecen2_place_save_needed
+        p "#{check}, #{freecen2_place.place_name} updated " if freecen2_place_save_needed
       end
       refresh(chapman_code)
     end
