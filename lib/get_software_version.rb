@@ -49,42 +49,6 @@ class GetSoftwareVersion
     search_record_version = SoftwareVersion.create(server: server, app: appln, date_of_update: date_end, version: new_version, type: 'Search Record')
     save_version = false
     save_search_version = false
-
-    date_range.each do |date|
-      # deal with all commitments
-      response = client.commits_on('FreeUKGen/MyopicVicar', date)
-      if response.present?
-        response.each do |commit|
-          commitment = Commitment.new
-          commitment[:commitment_number] = commit[:sha]
-          commitment[:author] = commit[:commit][:author][:name]
-          commitment[:date_committed] = commit[:commit][:author][:date]
-          commitment[:commitment_message] = commit[:commit][:message]
-          software_version.commitments << commitment
-          save_version = true
-        end
-      end
-      # deal with only search record commitments
-      all_responses = []
-      mods.each do |mod|
-        responses = client.commits_on('FreeUKGen/MyopicVicar', date, path: mod)
-        all_responses << responses if responses.present?
-      end
-      if all_responses.present?
-        last_search_record_version = new_version
-        all_responses.each do |mod|
-          mod.each do |commit|
-            commitment = Commitment.new
-            commitment[:commitment_number] = commit[:sha]
-            commitment[:author] = commit[:commit][:author][:name]
-            commitment[:date_committed] = commit[:commit][:author][:date]
-            commitment[:commitment_message] = commit[:commit][:message]
-            search_record_version.commitments << commitment
-            save_search_version = true
-          end
-        end
-      end
-    end
     software_version.destroy unless save_version
     search_record_version.destroy unless save_search_version
     control_record.update_attributes(version: new_version, last_search_record_version: last_search_record_version, date_of_update: date_end)
