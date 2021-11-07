@@ -71,18 +71,26 @@ class Freecen2PlaceCache
         p check
         freecen2_place.update_attributes(data_present: false, cen_data_years: []) unless freecen2_place.data_present == false
         freecen2_place_save_needed = false
+        vld_check = 0
+        p 'checking files present'
         if freecen2_place.freecen1_vld_files.present?
+          p 'vld files present'
           freecen2_place.freecen1_vld_files.each do |vld_file|
+            vld_check += 1
+            p " vld #{vld_check}"
             unless freecen2_place.data_present == true
+              p 'place data_present'
               freecen2_place.data_present = true
               freecen2_place_save_needed = true
             end
             unless freecen2_place.cen_data_years.include?(vld_file.full_year)
+              p 'cen to be added'
               freecen2_place.cen_data_years << vld_file.full_year
               freecen2_place_save_needed = true
             end
           end
         end
+
         if freecen2_place.freecen_csv_files.incorporated(true).present?
           freecen2_place.freecen_csv_files.incorporated(true).each do |csv_file|
             unless freecen2_place.data_present == true
