@@ -49,7 +49,7 @@ class Freecen2PlaceCache
   def self.check_and_refresh_if_absent
     file_count = 0
     p 'starting csv'
-    FreecenCsvFile.where(incorporated: true).each do |file|
+    FreecenCsvFile.where(incorporated: true).no_timeout.each do |file|
       file_count += 1
       p file_count
       update_place = false
