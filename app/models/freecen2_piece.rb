@@ -145,7 +145,7 @@ class Freecen2Piece
         year = '1911'
         census_fields = Freecen::CEN2_SCT_1911
       end
-      piece = parts[0] + '_' + parts[1]
+      piece = parts[1].present? ? parts[0] + '_' + parts[1] : parts[0]
       [year, piece, census_fields]
     end
 

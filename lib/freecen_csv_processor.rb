@@ -100,6 +100,8 @@ class FreecenCsvProcessor
       rescue StandardError => e
         if e.message.to_s.include?('Username and Password not accepted')
           p 'Email error'
+          @records_processed = e.message
+          @csvfile.clean_up_physical_files_after_failure(@records_processed)
         else
           @project.write_messages_to_all("#{e.message}", true)
           @project.write_messages_to_all("#{e.backtrace.inspect}", true)
@@ -387,7 +389,7 @@ class CsvFile < CsvFiles
         success = false
       end
     else
-      message = "Error: File name does not have a valid piece number. It is #{file_name}. <br>"
+      message = "Error: File name does not have a valid piece number. It is #{file_name}. Most likely you have forgotten the _ after the series. <br>"
       success = false
     end
     [success, message, year, actual_piece, fields]

@@ -35,7 +35,7 @@ module FreecenValidations
       return false if field.blank?
 
       parts = field.split('_')
-      return false if parts.length.zero?
+      return false if parts.length == 1
 
       return false unless Freecen2Piece.valid_series?(parts[0])
 
