@@ -57,25 +57,16 @@ class Freecen2PlaceCache
       update_place = false
       freecen2_place = file.freecen2_place
       if freecen2_place.blank?
-        p "Freecen2_place is missing for #{file.inspect}"
+        p " 888888888888888888888888 Freecen2_place is missing for #{file.inspect}"
       else
-        p freecen2_place
-        unless freecen2_place.data_present
-          update_place = true
-        end
+        update_place = true unless freecen2_place.data_present
         cen_years = freecen2_place.cen_data_years
         unless cen_years.include?(file.year)
-
           cen_years << file.year
-          p  cen_years
           update_place = true
         end
-        p 'about to save'
         freecen2_place.update_attributes(data_present: true, cen_data_years: cen_years.sort) if update_place
-        p 'place saved'
       end
-
-      p freecen2_place
     end
     p 'finished csv'
     p 'starting vld'
@@ -83,29 +74,18 @@ class Freecen2PlaceCache
       file_count += 1
       p file_count
       update_place = false
-      p file.id
       freecen2_place = file.freecen2_place
-      p freecen2_place
       if freecen2_place.blank?
-        p "Freecen2_place is missing for #{file.inspect}"
+        p "(((((((((((((((((((((((((((((((((Freecen2_place is missing for #{file.inspect}"
       else
-        unless freecen2_place.data_present
-          p 'need to set dataprent'
-          update_place = true
-          p 'set data present'
-        end
-        p freecen2_place.cen_data_years
+        update_place = true  unless freecen2_place.data_present
         cen_years = freecen2_place.cen_data_years
         unless cen_years.include?(file.full_year)
           cen_years << file.full_year
-          p cen_years
           update_place = true
         end
-        p 'about to save'
         freecen2_place.update_attributes(data_present: true, cen_data_years: cen_years.sort) if update_place
-        p 'place saved'
       end
-      p freecen2_place
     end
     refresh_all
   end
