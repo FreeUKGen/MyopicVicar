@@ -47,8 +47,6 @@ class Freecen2PlaceCache
   end
 
   def self.check_and_refresh_if_absent
-    num = Freecen2Place.collection.update_many({ data_present: true }, '$set' => { data_present: false, cen_data_years: [] })
-    p num
     file_count = 0
     p 'starting csv'
     FreecenCsvFile.where(incorporated: true).each do |file|
@@ -66,6 +64,7 @@ class Freecen2PlaceCache
           update_place = true
         end
         freecen2_place.update_attributes(data_present: true, cen_data_years: cen_years.sort) if update_place
+        p "#{freecen2_place.place_name} updated" if update_place
       end
     end
     p 'finished csv'
@@ -85,6 +84,7 @@ class Freecen2PlaceCache
           update_place = true
         end
         freecen2_place.update_attributes(data_present: true, cen_data_years: cen_years.sort) if update_place
+        p "#{freecen2_place.place_name} updated" if update_place
       end
     end
     refresh_all
