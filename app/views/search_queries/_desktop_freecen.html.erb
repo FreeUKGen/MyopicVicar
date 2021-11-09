@@ -48,10 +48,10 @@
   <% end%>
 </td>
 <td>
-  <%= ChapmanCode::name_from_code(search_record.birth_chapman_code) %>
+  <%= search_birth_county(search_record) %>
 </td>
 <td>
-  <%= birth_place(search_record) %>
+  <%= search_birth_place(search_record) %>
 </td>
 <td>
   <%= format_freecen_birth_year(search_record.transcript_dates.first, search_record.record_type) %>
