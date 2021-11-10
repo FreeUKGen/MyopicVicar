@@ -46,6 +46,7 @@ module SearchQueriesHelper
     verbatim_birth_place = entry.verbatim_birth_place if entry.present?
     birth = birth + ' (or ' + verbatim_birth_place + ')' if birth.present? && birth != verbatim_birth_place
     birth = verbatim_birth_place if birth.blank?
+    birth
   end
 
 
@@ -61,6 +62,7 @@ module SearchQueriesHelper
     verbatim_birth_county_name = ChapmanCode.name_from_code(entry.verbatim_birth_county) if entry.present?
     birth_county_name = birth_county_name + ' (or ' + verbatim_birth_county_name + ')' if birth_county_name.present? && birth_county_name != verbatim_birth_county_name
     birth_county_name = verbatim_birth_county_name if birth_county_name.blank?
+    birth_county_name
   end
 
   def format_freecen_birth_year(search_date, record_type)
