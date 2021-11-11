@@ -529,15 +529,9 @@ class Freecen2Place
   end
 
   def update_data_present_after_vld_delete(piece)
-    p piece
     year = piece.year
-    p year
     file = Freecen1VldFile.find_by(freecen2_place_id: _id, full_year: year)
-    p 'by year'
-    p file
     files = Freecen1VldFile.find_by(freecen2_place_id: _id)
-    p 'by total'
-    p files
     update_attributes(data_present: false, cen_data_years: []) if files.blank?
     update_attributes(cen_data_years: (cen_data_years - [year])) if files.present? && file.blank?
     piece.update_attributes(status: '', status_date: '') if file.blank?
