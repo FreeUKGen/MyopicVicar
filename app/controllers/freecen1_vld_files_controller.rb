@@ -71,14 +71,27 @@ class Freecen1VldFilesController < ApplicationController
       file_name = vldfile.file_name
       dir_name = vldfile.dir_name
       Freecen1VldFile.delete_freecen1_vld_entries(dir_name, file_name)
+      p 'after entry deletion'
       Freecen1VldFile.delete_dwellings(dir_name, file_name)
+      p 'after dwelling deletion'
       Freecen1VldFile.delete_individuals(dir_name, file_name)  # has callback to delete search records too
+      p 'after individual/record deletion'
       Freecen1VldFile.save_to_attic(dir_name, file_name)
       piece = vldfile.freecen_piece
       if piece.present?
         piece.update_attributes(num_dwellings: 0, num_individuals: 0, freecen1_filename: '', status: '')
         piece.freecen1_vld_files.delete(vldfile)
+        freecen2_piece = piece.freecen2_piece
+        freecen2_piece.freecen1_vld_files.delete(vldfile) if freecen2_piece.present?
+        freecen2_place = vldfile.freecen2_place
+        freecen2_place.freecen1_vld_files.delete(vldfile) if freecen2_place.present?
+        freecen2_district = vldfile.freecen2_district
+        freecen2_district.freecen1_vld_files.delete(vldfile) if freecen2_district.present?
+        freecen2_place.update_data_present_after_vld_delete(freecen2_piece)
+        p ' after file linkage deletions'
       end
+
+
     end
     flash[:notice] = "The vld file #{file_name} has been deleted."
     vldfile.delete if vldfile.present?
