@@ -539,7 +539,7 @@ class Freecen2Place
     p 'by total'
     p files
     update_attributes(data_present: false, cen_data_years: []) if files.blank?
-    update_attributes(cen_data_years: (cen_data_years - [year])) if file.present?
+    update_attributes(cen_data_years: (cen_data_years - [year])) if files.present? && file.blank?
     piece.update_attributes(status: '', status_date: '') if file.blank?
     piece.freecen_piece.update_attributes(status: '', status_date: '') if piece.freecen_piece.present? && file.blank?
   end
