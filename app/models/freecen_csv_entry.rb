@@ -2673,16 +2673,6 @@ class FreecenCsvEntry
     record.add_digest
     record.save!
     update_attributes(search_record_id: record.id)
-
-    unless place.data_present
-      place.data_present = true
-      place_save_needed = true
-    end
-
-    unless place.cen_data_years.include?(year)
-      place.cen_data_years << year
-      place_save_needed = true
-    end
-    place.save! if place_save_needed
+    place.update_data_present(piece)
   end
 end
