@@ -24,13 +24,13 @@ class Freecen2ContentsController < ApplicationController
     @interval_end = @freecen2_contents.interval_end
     @view_place_records = params["view_place_records"]
     if @view_place_records.present?
-      @place_description = @view_place_records["place_description"]
       @county_description = @view_place_records["county_description"]
+      @place_description = @view_place_records["county_description"]
       @from_main_records_page = "YES"
     else
       @county_description = params[:county_description]
       @place_description = params[:place_description]
-      @from_main_records_page = params[:from_main_records_page]
+      @from_main_records_page = "NO"
     end
     @chapman_code = ChapmanCode.code_from_name(@county_description)
     @key_place = Freecen2Content.get_place_key(@place_description)
@@ -86,7 +86,6 @@ class Freecen2ContentsController < ApplicationController
   end
 
   def for_view_places_form
-    p "AEV HERE"
     if params["view_place_records"].present?
       county_description = params[:view_place_records][:county_description]
       chapman_code = ChapmanCode.code_from_name(county_description)
@@ -122,11 +121,27 @@ class Freecen2ContentsController < ApplicationController
     @all_counties = @freecen2_contents.records[:total][:counties].sort!
     p "AEV100 Controller Index"
     #
-    @places_for_county = ['Castle Cary','Milborne Port']
+    #@places_for_county = @freecen2_contents.records["SOM"][:total][:places]
     #
     @location = 'location.href= "/freecen2_contents/county_index/?county_description=" + this.value'
   end
 
+
+  def for_unique_names
+    if params[:view_place_records]
+      county_description = params[:view_place_records][:county_description]
+    else
+      log_possible_host_change
+      county_description = ''
+    end
+    chapman_code = ChapmanCode.code_from_name(county_description)
+    county_places = @freecen2_contents.records[chapman_code][:total][:places]
+    if county_places.present?
+      county_places
+    else
+      "No places found"
+    end
+  end
 
   private
 
