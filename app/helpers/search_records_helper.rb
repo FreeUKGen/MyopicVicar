@@ -42,4 +42,5 @@ module SearchRecordsHelper
     field = Rails.application.config.website + '/search_records/' + record
     field
   end
+
 end
