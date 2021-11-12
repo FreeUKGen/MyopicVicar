@@ -41,7 +41,6 @@ class FreecenCsvFileIncorporate
         place_ids[parish] = entry.freecen2_civil_parish.freecen2_place unless place_ids.key?(parish)
         entry.translate_individual(piece, district, chapman_code, place_ids[parish], @freecen_file_id)
       end
-
       time_end = Time.now.to_i
       actual = time_end - start
       per = actual / number

@@ -517,7 +517,7 @@ class Freecen2Place
   end
 
   def update_data_present(piece)
-    unless piece.blank? && cen_data_years.include?(piece.year)
+    if piece.present? && !cen_data_years.include?(piece.year)
       cen_data = cen_data_years
       cen_data << piece.year
     end
