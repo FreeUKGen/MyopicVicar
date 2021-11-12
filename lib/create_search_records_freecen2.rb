@@ -48,16 +48,7 @@ class CreateSearchRecordsFreecen2
       freecen2_piece.save unless freecen2_piece.freecen1_vld_files.include?(file)
       freecen2_district.save unless freecen2_district.freecen1_vld_files.include?(file)
       freecen2_place.save unless freecen2_place.freecen1_vld_files.include?(file)
-
-      if freecen2_place.data_present == false
-        freecen2_place.data_present = true
-        place_save_needed = true
-      end
-      unless freecen2_place.cen_data_years.include?(freecen_piece.year)
-        freecen2_place.cen_data_years << freecen_piece.year
-        place_save_needed = true
-      end
-      freecen2_place.save! if place_save_needed
+      freecen2_place.update_data_present(freecen2_piece)
 
       if freecen_piece.status == 'Online'
         freecen2_piece.update_attributes(status: 'Online', status_date: file._id.generation_time.to_datetime.in_time_zone('London'))

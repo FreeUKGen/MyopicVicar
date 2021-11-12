@@ -34,9 +34,6 @@ task :set_fc2_parameters, [:start, :finish, :search_records] => [:environment] d
   end
   p 'refreshing place cache'
   Freecen2PlaceCache.refresh_all
-  FreecenCsvFile.each do |csv_file|
-    csv_file.update_attribute(:list_of_records, nil)
-  end
 
   time_end = Time.now
   finished = finish - start + 1
