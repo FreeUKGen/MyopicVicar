@@ -636,16 +636,16 @@ class Place
     self.ucf_list.values.inject([]) { |accum, value| accum + value }
   end
 
-  def update_data_present
-    if self.data_present?
-      self.update_attribute(:data_present,true)
-    else
-      self.update_attribute(:data_present,false)
+  def update_data_present(piece)
+    unless piece.blank? && cen_data_years.include?(piece.year)
+      cen_data = cen_data_years
+      cen_data << piece.year
     end
+    update_attributes(data_present: true, cen_data_years: cen_data) if cen_data.present?
   end
 
   def update_places_cache
-    PlaceCache.refresh(self.chapman_code)
+    Freecen2PlaceCache.refresh(chapman_code)
   end
 
   def update_ucf_list(file)
