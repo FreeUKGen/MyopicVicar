@@ -80,7 +80,8 @@ module ApplicationHelper
     when 'freereg'
       link_to('Records', main_app.new_freereg_content_path)
     when 'freecen'
-      link_to('Records', main_app.freecen_coverage_path, id: 'db_coverage_nav')
+      #link_to('Records', main_app.freecen_coverage_path, id: 'db_coverage_nav')
+      link_to('Records', main_app.freecen2_contents_path)
     when 'freebmd'
       link_to('Records', 'https://www.freebmd.org.uk/progress.shtml', target: :_blank)
     end

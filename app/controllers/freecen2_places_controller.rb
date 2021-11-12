@@ -156,7 +156,7 @@ class Freecen2PlacesController < ApplicationController
     end
     respond_to do |format|
       format.json do
-        render json: county_response
+        render county_response
       end
     end
   end

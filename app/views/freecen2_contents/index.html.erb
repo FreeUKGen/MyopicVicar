@@ -1,0 +1,106 @@
+<% if flash[:notice] %>
+  <div class="weight--semibold text--center"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+  </div>
+<% end %>
+<div>
+  <fieldset class="inputs">
+    <legend align="center">
+      <h2>Database Records as of <%= @interval_end.strftime('%d %b %Y')%></h2>
+    </legend>
+    <%= simple_form_for :view_place_records, url: freecen2_contents_place_index_path, method: :get do |n| %>
+      <li class="grid__item one-third palm-one-whole" ><br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <p style="text-align: center"> <b>Census Place</b><br>
+          <small class="additional">You may view the Database Totals for a specific Place
+            and get a list of Unique Names in the database for each census year</small></p>
+        <div class="field">
+          <legend align="center">Click box below to choose a County</legend>
+          <%= n.input :county_description, :id=>'county_description', :as=>:select, :include_blank =>"Select a County", :collection => @all_counties,  :label => false,  :input_html => {:'onchange'=>"setHiddenValueCounty()"}%>
+        </div>
+        <div class="field">
+          <legend align="center">Click box below to choose a Place</legend>
+          <%= n.input :place_description, :id=>'place_description', :as=>:select, :include_blank =>"Fills when a County is selected", :collection => [],  :label => false %>
+        </div>
+        <%= n.submit 'View Place Records',  :class => "btn   btn--small"%>
+      <% end %>
+    </li>
+    <li class="grid__item two-thirds palm-one-whole" >
+      <h3 style="text-align: center">Totals for All Counties</h3>
+      <p style="text-align: center"><i> <small class="additional">Censuses are broken into Pieces by the National Archives<br>
+            (a Piece consists of a related set of census pages)<br>
+            New Pieces Online are those added to the database in the previous 30 days</small></i></p>
+      <div class='scrollable'>
+        <table  class="table--bordered table--data table--striped " >
+          <thead >
+            <tr>
+              <th class='sticky-header'>Year</th>
+              <th class='sticky-header'>Pieces<br>
+                Online</th>
+              <th class='sticky-header'>Total<br>
+                Pieces</th>
+              <th class='sticky-header'>%<br>
+                Online</th>
+              <th class='sticky-header'>New<br>
+                Pieces<br>
+                Online</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% Freecen::CENSUS_YEARS_ARRAY.each do |census|%>
+              <tr>
+                <td><%= census %></td>
+                <td><%= @freecen2_contents.records[:total][census][:pieces_online] %></td>
+                <td><%= @freecen2_contents.records[:total][census][:pieces] %></td>
+                <%= contents_show_percentage(@freecen2_contents.records[:total][census][:pieces_online], @freecen2_contents.records[:total][census][:pieces]) %>
+                <td><%= @freecen2_contents.records[:total][census][:added_pieces_online] %></td>
+              </tr>
+            <% end %>
+            <tr>
+              <td>Total</td>
+              <td><%= @freecen2_contents.records[:total][:total][:pieces_online] %></td>
+              <td><%= @freecen2_contents.records[:total][:total][:pieces] %></td>
+              <%= contents_show_percentage(@freecen2_contents.records[:total][:total][:pieces_online], @freecen2_contents.records[:total][:total][:pieces]) %>
+              <td><%= @freecen2_contents.records[:total][:total][:added_pieces_online] %></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="text-align: center"><b>You may view the Database Totals for a specific County</b></p>
+      <li class="grid__item one-half palm-one-whole" >
+        <br>
+      </li>
+      <li class="grid__item one-third palm-one-whole" >
+        <%= simple_form_for :county_recs, method: :get do |c| %>
+          <legend align="center">Click box below to choose a County</legend>
+          <%= c.input :county_description, :as=>:select, label: false, :collection=>@all_counties, :include_blank=>"Select a County",  :input_html => { :'onchange'=>@location }%>
+        <% end %>
+      </li>
+    </li>
+  </fieldset>
+  <p class=" text--center">
+    <small><em> [Note: The original Database Coverage page can be found <%= link_to "HERE" , freecen_coverage_path, :title => "Database Coverage"  %>]<br>
+      </small></p>
+    <br>
+  </div>
+  <script>
+    function setHiddenValueCounty() {
+        //var mess = "Function Called"
+        //window.alert(mess);
+        // Get the value from the select tag
+        //var dropdown = document.getElementById("freecen2_content_county_select");
+        //var hidden = document.getElementById("freecen2_content_county_selected");
+        //window.alert(hidden);
+        //var selectedValue = dropdown.val;
+        window.alert("In County function")
+        //window.alert(selectedValue);
+        //window.alert("val=" + selectedValue);
+        // Set the hidden tag's value to the select tag value we got in the last line
+        //hidden.val = selectedValue;
+      }
+  </script>

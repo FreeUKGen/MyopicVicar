@@ -80,6 +80,14 @@ MyopicVicar::Application.routes.draw do
   get 'freecen2_site_statistics/export_csv', to: 'freecen2_site_statistics#export_csv', as: :export_csv_freecen2_site_statistics
   resources :freecen2_site_statistics
 
+  get 'freecen2_contents/county_index', to: 'freecen2_contents#county_index', as: :index_by_county_freecen2_contents
+  get 'freecen2_contents/place_index', to: 'freecen2_contents#place_index', as: :freecen2_contents_place_index
+  get 'freecen2_contents/place_names', to: 'freecen2_contents#place_names', as: :freecen2_contents_place_names
+  get 'freecen2_contents/piece_index', to: 'freecen2_contents#piece_index', as: :freecen2_contents_piece_index
+  get 'freecen2_contents/piece_names', to: 'freecen2_contents#piece_names', as: :freecen2_contents_piece_names
+  get 'freecen2_contents/for_view_places_form(.:format)', :to => 'freecen2_contents#for_view_places_form', :as => :freecen2_contents_for_view_places_form
+  resources :freecen2_contents
+
   get 'freecen2_search_statistics/graphic', to: 'freecen2_search_statistics#graphic', as: :graphic_freecen2_search_statistics
   resources :freecen2_search_statistics
 

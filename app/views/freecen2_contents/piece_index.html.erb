@@ -1,0 +1,50 @@
+<h2 style="text-align: center">Database Pieces for <%= @place_description %> in <%= @county_description %> in <%= @census %><br>
+  as of  <%= @interval_end.strftime('%d %b %Y') %> </h2>
+<div  style="text-align: center">
+  <%= link_to 'Back to Totals for All Counties' , freecen2_contents_path, method: :get , :class => "btn btn--small" %>
+  <% if @from_main_records_page == 'NO' %>
+    <%= choose_another_county_link %>
+    <%= choose_another_place_link(@county_description) %>
+  <% end %>
+  <%= link_to 'Back to Records for ' + @place_description ,  :back, method: :get , :class => "btn btn--small" %><br>
+  <br>
+  <br>
+</div>
+<div class='scrollable'>
+  <table  class="table--bordered table--data table--striped my-width " >
+    <thead >
+      <tr>
+        <th class='sticky-header'>Piece name</th>
+        <th class='sticky-header'>Piece Number</th>
+        <% if @census == 'All Years' %>
+          <th class='sticky-header'>Year</th>
+        <% end %>
+        <th class='sticky-header'>Online <br>
+          (Date Online)</th>
+        <th class='sticky-header'>Civil Parishes<br>
+          <small>The part in () is the name of any Hamlet, Township, Ward or Place included in the Civil Parish</small></th>
+      </tr>
+    </thead>
+    <tbody>
+      <%  @place_pieces.each do |piece|%>
+        <tr>
+          <td><%= piece.name %></td>
+          <td><%= piece.number %></td>
+          <% if @census == 'All Years' %>
+            <td><%= piece.year %></td>
+          <% end %>
+          <% if piece.status == 'Online' %>
+            <td><%= 'Y' + " (" + piece.status_date.to_datetime.strftime('%d %b %Y') + ")"%></td>
+          <% else%>
+            <td><%= 'N' %></td>
+          <% end%>
+          <% if piece.civil_parish_names == nil %>
+            <td><i> n/a </i></td>
+          <% else%>
+            <td><%= piece.civil_parish_names %></td>
+          <% end%>
+        </tr>
+      <% end%>
+    </tbody>
+  </table>
+</div>
