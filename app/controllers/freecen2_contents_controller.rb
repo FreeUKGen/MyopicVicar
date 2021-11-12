@@ -85,21 +85,6 @@ class Freecen2ContentsController < ApplicationController
     @unique_names, @remainder = Freecen2Content.letterize(@unique_names)
   end
 
-  def for_view_places_form
-    if params["view_place_records"].present?
-      county_description = params[:view_place_records][:county_description]
-      chapman_code = ChapmanCode.code_from_name(county_description)
-      id = session[:contents_id]
-      freecen2_contents = Freecen2Content.find_by(id: id)
-      county_places = freecen2_contents.records[county][:total][:places]
-      respond_to do |format|
-        format.json do
-          render json: county_places
-        end
-      end
-    end
-  end
-
   def create
     @freecen2_content = Freecen2Content.new(freecen2_content_params)
     @freecen2_content.save
@@ -128,6 +113,8 @@ class Freecen2ContentsController < ApplicationController
 
 
   def for_unique_names
+    id = session[:contents_id]
+    freecen2_contents = Freecen2Content.find_by(id: id)
     if params[:view_place_records]
       county_description = params[:view_place_records][:county_description]
     else
@@ -135,11 +122,15 @@ class Freecen2ContentsController < ApplicationController
       county_description = ''
     end
     chapman_code = ChapmanCode.code_from_name(county_description)
-    county_places = @freecen2_contents.records[chapman_code][:total][:places]
+    county_places = freecen2_contents.records[chapman_code][:total][:places]
     if county_places.present?
-      county_places
+      respond_to do |format|
+        format.json do
+          render json: county_places
+        end
+      end
     else
-      "No places found"
+      flash[:notice] = 'An Error was encountered: No places found'
     end
   end
 

@@ -1,3 +1,4 @@
+<%= render 'flash_notice' %>
 <div>
   <fieldset class="inputs">
     <legend align="center">
@@ -15,12 +16,11 @@
           <small class="additional">You may view the Database Totals for a specific Place
             and get a list of Unique Names for each census year</small></p>
         <b> Select a County </b>
-        <select class="select" id="county_description""  name="county_description" required="required" size="3" >
+        <select class="select" id="county_description"  name="county_description" required="required" size="3" >
           <% @all_counties.each do |value| %>
             <option value="<%=value%>" ><%=value%></option>
           <% end %>
         </select>
-        <%# ====== %>
         <b> Select a Place </b>
         <select class="select" id="place_description" name="place_description" required="required" size="3">
           <option value="">List fills when you select a county</option>
