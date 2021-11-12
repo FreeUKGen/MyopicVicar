@@ -11,8 +11,9 @@ class Freecen2ContentsController < ApplicationController
     @county_description = params[:county_description]
     @chapman_code = ChapmanCode.code_from_name(@county_description)
     @all_places = @freecen2_contents.records[@chapman_code][:total][:places].sort
-    @from_main_records_page = 'NO'
-    location_href = 'location.href= "/freecen2_contents/place_index/?from_main_records_page=''' + @from_main_records_page + '''&county_description=''' + @county_description + '''&place_description='
+    #@from_main_records_page = 'NONO'
+    #location_href = 'location.href= "/freecen2_contents/place_index/?from_main_records_page=''' + @from_main_records_page + '''&county_description=''' + @county_description + '''&place_description='
+    location_href = 'location.href= "/freecen2_contents/place_index/?county_description=''' + @county_description + '''&place_description='
     # place names containing & or + cause problems in hrefs, so call javascript replace_chars to replace with unicode value (function is in the view)
     @location = location_href + '" + replace_chars(this.value)'
   end
@@ -22,16 +23,8 @@ class Freecen2ContentsController < ApplicationController
     @id = session[:contents_id]
     @freecen2_contents = Freecen2Content.find_by(id: @id)
     @interval_end = @freecen2_contents.interval_end
-    @view_place_records = params["view_place_records"]
-    if @view_place_records.present?
-      @county_description = @view_place_records["county_description"]
-      @place_description = @view_place_records["county_description"]
-      @from_main_records_page = "YES"
-    else
-      @county_description = params[:county_description]
-      @place_description = params[:place_description]
-      @from_main_records_page = "NO"
-    end
+    @county_description = params[:county_description]
+    @place_description = params[:place_description]
     @chapman_code = ChapmanCode.code_from_name(@county_description)
     @key_place = Freecen2Content.get_place_key(@place_description)
     @place_id = @freecen2_contents.records[@chapman_code][@key_place][:total][:place_id]
@@ -48,7 +41,6 @@ class Freecen2ContentsController < ApplicationController
     @census = params[:census_year]
     @place_description = params[:place_description]
     @place_id = params[:place_id]
-    @from_main_records_page = params[:from_main_records_page]
     if params[:census_year] == 'all'
       @census = 'All Years'
       @place_pieces = Freecen2Piece.where(_id: { '$lte' => @last_id },freecen2_place_id: @place_id)
@@ -63,7 +55,6 @@ class Freecen2ContentsController < ApplicationController
     @chapman_code = ChapmanCode.code_from_name(@county_description)
     @year = params[:census_year]
     @place_description = params[:place_description]
-    @from_main_records_page = params[:from_main_records_page]
     @place = Freecen2Place.find_by(chapman_code: @chapman_code, place_name: @place_description)
     @place_unique_names = Freecen2PlaceUniqueName.find_by(freecen2_place_id: @place.id)
     @first_names = @place_unique_names.unique_forenames[@year]
