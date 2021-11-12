@@ -78,6 +78,13 @@ class Freecen1VldFilesController < ApplicationController
       if piece.present?
         piece.update_attributes(num_dwellings: 0, num_individuals: 0, freecen1_filename: '', status: '')
         piece.freecen1_vld_files.delete(vldfile)
+        freecen2_piece = piece.freecen2_piece
+        freecen2_piece.freecen1_vld_files.delete(vldfile) if freecen2_piece.present?
+        freecen2_place = vldfile.freecen2_place
+        freecen2_place.freecen1_vld_files.delete(vldfile) if freecen2_place.present?
+        freecen2_district = vldfile.freecen2_district
+        freecen2_district.freecen1_vld_files.delete(vldfile) if freecen2_district.present?
+        freecen2_place.update_data_present_after_vld_delete(freecen2_piece)
       end
     end
     flash[:notice] = "The vld file #{file_name} has been deleted."
