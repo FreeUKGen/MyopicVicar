@@ -125,12 +125,6 @@ class Freecen2Content
                   records[county][key_place][year][:added_pieces_online] = fc2_added_pieces_online[year]
                   records[county][key_place][:total][:added_pieces_online] += records[county][key_place][year][:added_pieces_online]
 
-                  #place_first_names, place_last_names = unique_names_place(@place_id, year) if fc2_totals_pieces_online[year] > 0
-                  #records[county][key_district][key_place][year][:first_names] = SortedSet.new
-                  #records[county][key_district][key_place][year][:last_names] = SortedSet.new
-                  #records[county][key_district][key_place][year][:first_names] = place_first_names
-                  #records[county][key_district][key_place][year][:last_names] = place_last_names
-
                 end # year
 
               end
@@ -158,7 +152,7 @@ class Freecen2Content
       stat.records = records
       stat.save
 
-      remove_older_records(last_midnight)
+      #remove_older_records(last_midnight)
       run_time = Time.now.utc - start
 
       p "#{run_time} secs"

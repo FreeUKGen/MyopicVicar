@@ -91,8 +91,10 @@
       </small></p>
     <br>
   </div>
-  <script type="text/javascript" charset="utf-8" >
-    (function($) {$("#place_description").remoteChained({
-    parents : "#county_description",
-    url : "/freecen2_contents/for_unique_names"});})(jQuery);
-  </script>
+  <% if true %>
+    <script type="text/javascript" charset="utf-8" >
+      (function($) {$("#place_description").remoteChained({
+      parents : "#county_description",
+      url : "/freecen2_contents/for_unique_names"});})(jQuery);
+    </script>
+  <% end %>

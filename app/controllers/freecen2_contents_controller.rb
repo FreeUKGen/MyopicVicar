@@ -104,10 +104,6 @@ class Freecen2ContentsController < ApplicationController
     @interval_end = @freecen2_contents.interval_end
     session[:contents_id] = @freecen2_contents.id
     @all_counties = @freecen2_contents.records[:total][:counties].sort!
-    p "AEV100 Controller Index"
-    #
-    #@places_for_county = @freecen2_contents.records["SOM"][:total][:places]
-    #
     @location = 'location.href= "/freecen2_contents/county_index/?county_description=" + this.value'
   end
 
@@ -115,18 +111,21 @@ class Freecen2ContentsController < ApplicationController
   def for_unique_names
     id = session[:contents_id]
     freecen2_contents = Freecen2Content.find_by(id: id)
-    if params[:view_place_records]
-      county_description = params[:view_place_records][:county_description]
+    if params[:county_description]
+      county_description = params[:county_description]
     else
       log_possible_host_change
       county_description = ''
     end
     chapman_code = ChapmanCode.code_from_name(county_description)
     county_places = freecen2_contents.records[chapman_code][:total][:places]
-    if county_places.present?
+    county_places.sort!
+    county_places_hash = {}
+    county_places.each { |place| county_places_hash[place] = place}
+    if county_places_hash.present?
       respond_to do |format|
         format.json do
-          render json: county_places
+          render json: county_places_hash
         end
       end
     else
