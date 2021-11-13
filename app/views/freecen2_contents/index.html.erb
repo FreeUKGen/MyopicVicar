@@ -74,16 +74,13 @@
           </tbody>
         </table>
       </div>
-      <p style="text-align: center"><b>You may view the Database Totals for a specific County</b></p>
-      <li class="grid__item one-half palm-one-whole" >
-        <br>
-      </li>
-      <li class="grid__item one-third palm-one-whole" >
+      <div style="text-align: center"><b>View County Totals</b><br>
+        <small class="additional">You may view the Database Records for a specific County</small>
         <%= simple_form_for :county_recs, method: :get do |c| %>
-          <legend align="center">Click box below to choose a County</legend>
-          <%= c.input :county_description, :as=>:select, label: false, :collection=>@all_counties, :include_blank=>"Select a County",  :input_html => { :'onchange'=>@location }%>
+          <b>Select a County</b><br>
+          <%= select_tag "county_description", options_for_select(@all_counties), id: "select_county", size: 3, "onchange" => @location %>
         <% end %>
-      </li>
+      </div>
     </li>
   </fieldset>
   <p class=" text--center">
