@@ -6,10 +6,6 @@ module Freecen2ContentsHelper
     display_cell = content_tag(:td, percent.to_s)
   end
 
-  def choose_another_county_link
-    return link_to 'Choose another County',freecen2_contents_path,method: :get,:class => 'btn btn--small'
-  end
-
   def choose_another_place_link(county_description)
     return link_to 'Choose another Place',index_by_county_freecen2_contents_path(county_description: county_description),method: :get,:class => 'btn btn--small'
   end

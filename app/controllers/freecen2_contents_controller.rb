@@ -10,9 +10,7 @@ class Freecen2ContentsController < ApplicationController
     @interval_end = @freecen2_contents.interval_end
     @county_description = params[:county_description]
     @chapman_code = ChapmanCode.code_from_name(@county_description)
-    @all_places = @freecen2_contents.records[@chapman_code][:total][:places].sort
-    #@from_main_records_page = 'NONO'
-    #location_href = 'location.href= "/freecen2_contents/place_index/?from_main_records_page=''' + @from_main_records_page + '''&county_description=''' + @county_description + '''&place_description='
+    @all_places = @freecen2_contents.records[@chapman_code][:total][:places]
     location_href = 'location.href= "/freecen2_contents/place_index/?county_description=''' + @county_description + '''&place_description='
     # place names containing & or + cause problems in hrefs, so call javascript replace_chars to replace with unicode value (function is in the view)
     @location = location_href + '" + replace_chars(this.value)'
@@ -94,7 +92,7 @@ class Freecen2ContentsController < ApplicationController
     @freecen2_contents = Freecen2Content.order(interval_end: :desc).first
     @interval_end = @freecen2_contents.interval_end
     session[:contents_id] = @freecen2_contents.id
-    @all_counties = @freecen2_contents.records[:total][:counties].sort!
+    @all_counties = @freecen2_contents.records[:total][:counties]
     @location = 'location.href= "/freecen2_contents/county_index/?county_description=" + this.value'
   end
 
@@ -110,7 +108,6 @@ class Freecen2ContentsController < ApplicationController
     end
     chapman_code = ChapmanCode.code_from_name(county_description)
     county_places = freecen2_contents.records[chapman_code][:total][:places]
-    county_places.sort!
     county_places_hash = {}
     county_places.each { |place| county_places_hash[place] = place}
     if county_places_hash.present?

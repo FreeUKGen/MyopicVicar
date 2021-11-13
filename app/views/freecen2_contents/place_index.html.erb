@@ -1,7 +1,6 @@
 <h2 style="text-align: center">Database Records for <%= @place_description %> in <%= @county_description %> as of  <%= @interval_end.strftime('%d %b %Y') %> </h2>
 <div  style="text-align: center">
   <%= link_to 'Back to Totals for All Counties' , freecen2_contents_path, method: :get , :class => "btn btn--small" %>
-  <%= choose_another_county_link  %>
   <%= choose_another_place_link(@county_description) %>
   <br>
   <br>

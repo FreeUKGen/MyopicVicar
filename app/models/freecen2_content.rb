@@ -59,7 +59,8 @@ class Freecen2Content
       # County totals
 
       chaps = 0
-      @total_places_cnt = 0
+      total_places_cnt = 0
+      counties_array = []
 
       ChapmanCode.merge_counties.each do |county|
 
@@ -81,7 +82,7 @@ class Freecen2Content
         if county_pieces_total > 0
 
           records = Freecen2Content.add_records_county(records, county)
-          records[:total][:counties] <<  ChapmanCode.name_from_code(county)
+          counties_array <<  ChapmanCode.name_from_code(county)
 
           Freecen::CENSUS_YEARS_ARRAY.each do |year|
             records[county][year] = {}
@@ -97,6 +98,7 @@ class Freecen2Content
           # place totals
 
           places = Freecen2Place.where(chapman_code: county, disabled: "false").sort
+          places_array = []
 
           if places.count > 0
 
@@ -104,12 +106,12 @@ class Freecen2Content
 
               if this_place.freecen2_pieces.present?
 
-                @total_places_cnt += 1
+                total_places_cnt += 1
 
                 key_place = Freecen2Content.get_place_key(this_place.place_name)
                 records = Freecen2Content.add_records_place(records, county, key_place)
 
-                records[county][:total][:places] << this_place.place_name
+                places_array << this_place.place_name
                 records[county][key_place][:total][:place_id] = this_place._id
 
                 fc2_totals_pieces, fc2_totals_pieces_online = Freecen2Piece.before_place_year_totals(county, this_place._id, last_midnight)
@@ -127,6 +129,9 @@ class Freecen2Content
 
                 end # year
 
+                places_array_sorted = places_array.sort
+                records[county][:total][:places] = places_array_sorted
+
               end
 
             end # places
@@ -135,6 +140,9 @@ class Freecen2Content
             county_name = ChapmanCode.name_from_code(county)
             p "************ (#{county}) - #{county_name} - County has no places"
           end
+
+          counties_array_sorted = counties_array.sort
+          records[:total][:counties] = counties_array_sorted
 
         else
           county_name = ChapmanCode.name_from_code(county)
@@ -147,7 +155,7 @@ class Freecen2Content
 
       p 'finished gathering latest data'
       p "counties = #{chaps}"
-      p "places = #{@total_places_cnt}"
+      p "places = #{total_places_cnt}"
 
       stat.records = records
       stat.save
