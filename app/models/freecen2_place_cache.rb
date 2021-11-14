@@ -54,8 +54,6 @@ class Freecen2PlaceCache
       p file_count
       freecen2_place = file.freecen2_place
       if freecen2_place.present?
-        p ' file to place'
-        p freecen2_place
         freecen2_place.update_data_present_after_csv_delete
       end
       piece = file.freecen2_piece

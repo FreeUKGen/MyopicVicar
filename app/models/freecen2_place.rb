@@ -541,26 +541,16 @@ class Freecen2Place
   def update_data_present_after_csv_delete
     parishes = Freecen2CivilParish.where(freecen2_place_id: _id).count
     vld_files = Freecen1VldFile.where(freecen2_place_id: _id).count
-    p "delete data present"
-    p parishes
-    p vld_files
     update_attributes(data_present: false, cen_data_years: []) if parishes.zero? && vld_files.zero?
 
     if parishes >= 1 || vld_files >= 1
       cen_years = []
       Freecen2CivilParish.where(freecen2_place_id: _id).each do |parish|
-        p 'parish'
-        p parish
         cen_years << parish.year unless cen_years.include?(parish.year) || parish.freecen_csv_entries.blank?
-        p cen_years
       end
       Freecen1VldFile.where(freecen2_place_id: _id).each do |vld_file|
-        p 'vld_file'
-        p vld_file
         cen_years << vld_file.full_year unless cen_years.include?(vld_file.full_year)
       end
-      p 'cen'
-      p cen_years
       data_present = cen_years.length.zero? ? false : true
       update_attributes(data_present: data_present, cen_data_years: cen_years)
     end
