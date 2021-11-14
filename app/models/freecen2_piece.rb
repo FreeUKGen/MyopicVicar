@@ -68,8 +68,6 @@ class Freecen2Piece
   has_many :freecen_csv_files, dependent: :restrict_with_error, autosave: true
   has_many :freecen1_vld_files, dependent: :restrict_with_error, autosave: true
 
-
-
   before_save :add_standard_names
   before_update :add_standard_names
 
@@ -148,8 +146,6 @@ class Freecen2Piece
       piece = parts[1].present? ? parts[0] + '_' + parts[1] : parts[0]
       [year, piece, census_fields]
     end
-
-
 
     def county_year_totals(chapman_code)
       totals_pieces = {}
