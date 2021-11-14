@@ -52,11 +52,14 @@ class Freecen2PlaceCache
     FreecenCsvFile.where(incorporated: true).no_timeout.each do |file|
       file_count += 1
       p file_count
+      p "#{file._id} #{file.chapman_code} #{file.file_name}"
       freecen2_place = file.freecen2_place
       if freecen2_place.present?
+        p " Place #{freecen2_place.place_name}"
         freecen2_place.update_data_present_after_csv_delete
       end
       piece = file.freecen2_piece
+      p "Piece #{piece.number}"
       piece.freecen2_civil_parishes.no_timeout.each do |civil_parish|
         next if civil_parish.freecen_csv_entries.blank?
 
