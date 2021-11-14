@@ -9,10 +9,11 @@
     <li class="grid__item one-third palm-one-whole" >
       <br>
       <br>
-      <div style="text-align: center"><b>View Place Totals</b><br>
-        <small class="additional">You may view the Database Records for a specific Place</small>
+      <div style="text-align: center"><b>Place and Unique Names</b><br>
+        <small class="additional">You may view the Database Records for a specific Place
+          and if there is data Online also get a list of Unique Names</small>
         <%= simple_form_for :place_recs, method: :get do |c| %>
-          <b>Select a County</b><br>
+          <b>Select a Place</b><br>
           <%= select_tag "place_description", options_for_select(@all_places), id: "select_place", size: 3, "onchange" => @location %>
         <% end %>
       </div>

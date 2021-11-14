@@ -4,26 +4,26 @@
     <legend align="center">
       <h2>Database Records as of <%= @interval_end.strftime('%d %b %Y')%></h2>
     </legend>
-    <%= simple_form_for :view_place_records, url: freecen2_contents_place_index_path, method: :get do |n| %>
+    <%= simple_form_for :view_place_records,  method: :get do |n| %>
       <li class="grid__item one-third palm-one-whole" ><br>
         <br>
         <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <p style="text-align: center"> <b>Unique Names</b><br>
-          <small class="additional">You may view the Database Records for a specific Place
-            and if there is data Online also get a list of Unique Names</small></p>
+        <div style="text-align: center"> <b>County</b><br>
+          <small class="additional">You may view the Database Records for a specific County</small></div>
         <b> Select a County </b>
         <select class="select" id="county_description"  name="county_description" required="required" size="3" >
           <% @all_counties.each do |value| %>
             <option value="<%=value%>" ><%=value%></option>
           <% end %>
+          <br>
+          <%= n.submit 'View County Records',  :class => "btn   btn--small"%><br>
+          <div style="text-align: center"> <b>Place and Unique Names</b>
+            <small class="additional">You may view the Database Records for a specific Place
+              and if there is data Online also get a list of Unique Names</small></div>
         </select>
         <b> Select a Place </b>
-        <select class="select" id="place_description" name="place_description" required="required" size="3">
-          <option value="">List fills when you select a county</option>
+        <select class="select" id="place_description" name="place_description" size="3">
+          <option value="">List fills when you select a County</option>
           <% if false %>
             <% @places_for_county.each do |value| %>
               <option value="<%=value%>" ><%=value%></option>
@@ -73,13 +73,6 @@
             </tr>
           </tbody>
         </table>
-      </div>
-      <div style="text-align: center"><b>View County Totals</b><br>
-        <small class="additional">You may view the Database Records for a specific County</small>
-        <%= simple_form_for :county_recs, method: :get do |c| %>
-          <b>Select a County</b><br>
-          <%= select_tag "county_description", options_for_select(@all_counties), id: "select_county", size: 3, "onchange" => @location %>
-        <% end %>
       </div>
     </li>
   </fieldset>

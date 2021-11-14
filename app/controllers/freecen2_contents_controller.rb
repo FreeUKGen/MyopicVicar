@@ -5,11 +5,7 @@ class Freecen2ContentsController < ApplicationController
   skip_before_action :require_login
 
   def county_index
-    @id = session[:contents_id]
-    @freecen2_contents = Freecen2Content.find_by(id: @id)
-    @interval_end = @freecen2_contents.interval_end
-    @county_description = params[:county_description]
-    @chapman_code = ChapmanCode.code_from_name(@county_description)
+    set_county_vars
     @all_places = @freecen2_contents.records[@chapman_code][:total][:places]
     location_href = 'location.href= "/freecen2_contents/place_index/?county_description=''' + @county_description + '''&place_description='
     # place names containing & or + cause problems in hrefs, so call javascript replace_chars to replace with unicode value (function is in the view)
@@ -18,24 +14,16 @@ class Freecen2ContentsController < ApplicationController
 
 
   def place_index
-    @id = session[:contents_id]
-    @freecen2_contents = Freecen2Content.find_by(id: @id)
-    @interval_end = @freecen2_contents.interval_end
-    @county_description = params[:county_description]
+    set_county_vars
     @place_description = params[:place_description]
-    @chapman_code = ChapmanCode.code_from_name(@county_description)
     @key_place = Freecen2Content.get_place_key(@place_description)
     @place_id = @freecen2_contents.records[@chapman_code][@key_place][:total][:place_id]
     Freecen2PlaceUniqueName.find_by(freecen2_place_id: @place_id).present? ? @has_names = true : @has_names = false
   end
 
   def piece_index
-    @id = session[:contents_id]
-    @freecen2_contents = Freecen2Content.find_by(id: @id)
-    @interval_end = @freecen2_contents.interval_end
+    set_county_vars
     @last_id = BSON::ObjectId.from_time(@interval_end)
-    @county_description = params[:county_description]
-    @chapman_code = ChapmanCode.code_from_name(@county_description)
     @census = params[:census_year]
     @place_description = params[:place_description]
     @place_id = params[:place_id]
@@ -94,6 +82,28 @@ class Freecen2ContentsController < ApplicationController
     session[:contents_id] = @freecen2_contents.id
     @all_counties = @freecen2_contents.records[:total][:counties]
     @location = 'location.href= "/freecen2_contents/county_index/?county_description=" + this.value'
+    if params[:commit] == 'View County Records'
+      set_county_vars
+      @all_places = @freecen2_contents.records[@chapman_code][:total][:places]
+      location_href = 'location.href= "/freecen2_contents/place_index/?county_description=''' + @county_description + '''&place_description='
+      # place names containing & or + cause problems in hrefs, so call javascript replace_chars to replace with unicode value (function is in the view)
+      @location = location_href + '" + replace_chars(this.value)'
+      render 'county_index'
+    else
+      if params[:commit] == 'View Place Records'
+        @place_description = params[:place_description]
+        if !@place_description.present?
+          flash[:notice] = 'You must select a Place'
+        else
+          @county_description = params[:county_description]
+          @key_place = Freecen2Content.get_place_key(@place_description)
+          @chapman_code = ChapmanCode.code_from_name(@county_description)
+          @place_id = @freecen2_contents.records[@chapman_code][@key_place][:total][:place_id]
+          Freecen2PlaceUniqueName.find_by(freecen2_place_id: @place_id).present? ? @has_names = true : @has_names = false
+          render 'place_index'
+        end
+      end
+    end
   end
 
 
@@ -119,6 +129,14 @@ class Freecen2ContentsController < ApplicationController
     else
       flash[:notice] = 'An Error was encountered: No places found'
     end
+  end
+
+  def set_county_vars
+    @id = session[:contents_id]
+    @freecen2_contents = Freecen2Content.find_by(id: @id)
+    @interval_end = @freecen2_contents.interval_end
+    @county_description = params[:county_description]
+    @chapman_code = ChapmanCode.code_from_name(@county_description)
   end
 
   private
