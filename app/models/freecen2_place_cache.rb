@@ -52,19 +52,21 @@ class Freecen2PlaceCache
     FreecenCsvFile.where(incorporated: true).no_timeout.each do |file|
       file_count += 1
       p file_count
-      update_place = false
+      p "#{file._id} #{file.chapman_code} #{file.file_name}"
       freecen2_place = file.freecen2_place
-      if freecen2_place.blank?
-        p " 888888888888888888888888 Freecen2_place is missing for #{file.inspect}"
-      else
-        update_place = true unless freecen2_place.data_present
-        cen_years = freecen2_place.cen_data_years
-        unless cen_years.include?(file.year)
-          cen_years << file.year
-          update_place = true
-        end
-        freecen2_place.update_attributes(data_present: true, cen_data_years: cen_years.sort) if update_place
-        p "#{freecen2_place.place_name} updated" if update_place
+      if freecen2_place.present?
+        p " Place #{freecen2_place.place_name}"
+        freecen2_place.update_data_present_after_csv_delete
+      end
+      piece = file.freecen2_piece
+      p "Piece #{piece.number}"
+      piece.freecen2_civil_parishes.no_timeout.each do |civil_parish|
+        next if civil_parish.freecen_csv_entries.blank?
+
+        freecen2_place = civil_parish.freecen2_place
+        freecen2_place.update_data_present(piece)
+        p "#{freecen2_place.place_name} updated"
+        piece.save!
       end
     end
     p 'finished csv'
