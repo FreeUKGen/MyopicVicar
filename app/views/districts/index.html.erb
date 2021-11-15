@@ -15,9 +15,9 @@
         <% n = 0 %>
         <% @districts.each do |district| %>
           <% n = n +1 %>
-          <tr id="" >
-            <td>
-              <%= link_to("View #{n}", district_path(district.DistrictNumber))%>
+          <tr>
+            <td id="show_district_detail">
+              <%= link_to("View #{n}", district_friendly_url_path(district.district_friendly_url), class: "show_district", data: { params: "id=#{district.DistrictNumber}" } )%>
             </td>
             <td>
               <dl>
@@ -39,6 +39,7 @@
   </div>
 </div>
 <!--/div-->
+
 
 
 

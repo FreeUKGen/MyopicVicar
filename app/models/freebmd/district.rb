@@ -38,4 +38,15 @@ class District < FreebmdDbBase
     district_name = district_name.gsub(/ /,"%20")
     district_name
   end
+
+  def district_friendly_url
+    particles = []
+    # first the primary names
+    particles << self.DistrictName if self.DistrictName
+
+    friendly = "details-of-#{particles.join('-')}-district"
+    friendly.gsub!(/\W/, '-')
+    friendly.gsub!(/-+/, '-')
+    friendly.downcase!
+  end
 end
