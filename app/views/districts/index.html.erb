@@ -15,9 +15,9 @@
         <% n = 0 %>
         <% @districts.each do |district| %>
           <% n = n +1 %>
-          <tr>
+          <tr data-val="<%= district.id %>">
             <td id="show_district_detail">
-              <%= link_to("View #{n}", district_friendly_url_path(district.district_friendly_url), class: "show_district", data: { params: "id=#{district.DistrictNumber}" } )%>
+              <%= link_to("View #{n}", district_friendly_url_path(district.district_friendly_url), class: "show_district" )%>
             </td>
             <td>
               <dl>
@@ -39,7 +39,17 @@
   </div>
 </div>
 <!--/div-->
-
+<script>
+$( ".show_district" ).click(function () {
+  var id = $(this).closest("tr").data("val");
+  $.ajax({
+      type: "GET",
+      data: {
+          id: id
+      }
+  });
+});
+</script>
 
 
 
