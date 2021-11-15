@@ -147,6 +147,65 @@ class Freecen2Piece
       [year, piece, census_fields]
     end
 
+    def before_year_totals(time)
+      last_id = BSON::ObjectId.from_time(time)
+      totals_pieces = {}
+      totals_pieces_online = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        totals_pieces[year] = Freecen2Piece.where(_id: { '$lte' => last_id }).year(year).count
+        totals_pieces_online[year] = Freecen2Piece.where(status_date: { '$lte' => time }).year(year).status('Online').count
+      end
+      [totals_pieces, totals_pieces_online]
+    end
+
+    def before_county_year_totals(chapman_code, time)
+      last_id = BSON::ObjectId.from_time(time)
+      totals_pieces = {}
+      totals_pieces_online = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        totals_pieces[year] = Freecen2Piece.where(_id: { '$lte' => last_id }).chapman_code(chapman_code).year(year).count
+        totals_pieces_online[year] = Freecen2Piece.where(status_date: { '$lte' => time }).chapman_code(chapman_code).year(year).status('Online').count
+      end
+      [totals_pieces, totals_pieces_online]
+    end
+
+    def before_place_year_totals(chapman_code, place_id, time)
+      last_id = BSON::ObjectId.from_time(time)
+      totals_pieces = {}
+      totals_pieces_online = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        totals_pieces[year]  = Freecen2Piece.where(_id: { '$lte' => last_id }, freecen2_place_id: place_id).chapman_code(chapman_code).year(year).count
+        totals_pieces_online[year] = Freecen2Piece.where(status_date: { '$lte' => time }, freecen2_place_id: place_id).chapman_code(chapman_code).year(year).status('Online').count
+      end
+      [totals_pieces, totals_pieces_online]
+    end
+
+    def between_dates_year_totals(time1, time2)
+      totals_pieces_online = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        totals_pieces_online[year] = Freecen2Piece.between(status_date: time1..time2).year(year).status('Online').count
+      end
+      totals_pieces_online
+    end
+
+    def between_dates_county_year_totals(chapman_code, time1, time2)
+      last_id = BSON::ObjectId.from_time(time2)
+      totals_pieces_online = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        totals_pieces_online[year] = Freecen2Piece.between(status_date: time1..time2).chapman_code(chapman_code).year(year).status('Online').count
+      end
+      totals_pieces_online
+    end
+
+    def between_dates_place_year_totals(chapman_code, place_id, time1, time2)
+      totals_pieces_online = {}
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        totals_pieces_online[year] = 0
+        totals_pieces_online[year]  = Freecen2Piece.where(:status_date => time1..time2, chapman_code: chapman_code, year: year, freecen2_place_id: place_id, status: 'Online').count
+      end
+      totals_pieces_online
+    end
+
     def county_year_totals(chapman_code)
       totals_pieces = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
