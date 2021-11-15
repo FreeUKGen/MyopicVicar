@@ -68,8 +68,6 @@ class Freecen2Piece
   has_many :freecen_csv_files, dependent: :restrict_with_error, autosave: true
   has_many :freecen1_vld_files, dependent: :restrict_with_error, autosave: true
 
-
-
   before_save :add_standard_names
   before_update :add_standard_names
 
@@ -171,7 +169,6 @@ class Freecen2Piece
       [totals_pieces, totals_pieces_online]
     end
 
-
     def before_place_year_totals(chapman_code, place_id, time)
       last_id = BSON::ObjectId.from_time(time)
       totals_pieces = {}
@@ -182,7 +179,6 @@ class Freecen2Piece
       end
       [totals_pieces, totals_pieces_online]
     end
-
 
     def between_dates_year_totals(time1, time2)
       totals_pieces_online = {}
