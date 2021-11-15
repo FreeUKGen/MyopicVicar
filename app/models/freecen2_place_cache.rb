@@ -54,6 +54,9 @@ class Freecen2PlaceCache
       p file_count
       p "#{file._id} #{file.chapman_code} #{file.file_name}"
       freecen2_place = file.freecen2_place
+      p 'bypassing' if freecen2_place.present? && freecen2_place.u_at > 1.day.ago
+      next if freecen2_place.present? && freecen2_place.u_at > 1.day.ago
+
       if freecen2_place.present?
         p " Place #{freecen2_place.place_name}"
         freecen2_place.update_data_present_after_csv_delete
