@@ -5,6 +5,7 @@ class DistrictsController < ApplicationController
 	end
 
 	def show
+		raise params.inspect
 		@district = District.where(DistrictNumber: params[:id]).first
 		birth_uniq_name = DistrictUniqueName.where(district_number: @district.DistrictNumber, record_type: 1).first
 		marriage_uniq_name =  DistrictUniqueName.where(district_number: @district.DistrictNumber, record_type: 3).first
