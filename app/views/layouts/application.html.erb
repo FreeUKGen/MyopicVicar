@@ -43,7 +43,7 @@
         }
       };
     </script>
-    <% if GdprCountries::FOLLOWED_COUNTRIES.include?(user_location) %>
+    <% unless GdprCountries::FOLLOWED_COUNTRIES.include?(user_location) %>
       <script>
         (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
         window.update_personalized_adverts = function (preference) {

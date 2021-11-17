@@ -787,6 +787,7 @@ module ApplicationHelper
     style="display:inline-block;width: #{width}px;height: #{height}px"
     data-ad-client="#{data_ad_client}"
     data-ad-slot= "#{slot_number(slot_name)}">
+    <a href ="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/?_ga=2.145101431.251616756.1548792447-1735478806.1548792447"><img src='png/header-donate.png' alt= "Donations - FreeUKGenealogy"></a>
     </ins>
     <script type="text/javascript">
     (adsbygoogle = window.adsbygoogle || []).push({});
