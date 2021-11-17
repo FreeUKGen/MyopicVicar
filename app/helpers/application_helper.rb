@@ -753,13 +753,13 @@ module ApplicationHelper
 
   def get_slot_code_from_slot_name
     {
-      header: app_advert['data_ad_slot_header'],
-      right_side: app_advert['data_ad_slot_side'],
-      google: app_advert['data_ad_slot_google_advert'],
-      coverage: app_advert['data_ad_slot_coverage'],
-      fullwidth: app_advert['data_ad_slot_fullwidth'],
-      large_side_banners: app_advert['side_banners_large_slot'],
-      square_side: app_advert['side_banners_square_slot'] 
+      "header" => app_advert['data_ad_slot_header'],
+      "right_side" => app_advert['data_ad_slot_side'],
+      "google" => app_advert['data_ad_slot_google_advert'],
+      "coverage" => app_advert['data_ad_slot_coverage'],
+      "fullwidth" => app_advert['data_ad_slot_fullwidth'],
+      "large_side_banners" => app_advert['side_banners_large_slot'],
+      "square_side" => app_advert['side_banners_square_slot'] 
     }
   end
 
@@ -769,10 +769,6 @@ module ApplicationHelper
 
   def non_gdpr_advert(slot_name)
     #@data_ad_slot = current_page?(freecen_coverage_path) ? data_ad_slot_coverage : data_ad_slot_google_advert
-    logger.warn(slot_number(slot_name))
-    logger.warn(slot_name)
-    logger.warn(get_slot_code_from_slot_name["header"])
-    logger.warn(get_slot_code_from_slot_name[:header])
     banner = <<-HTML
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <!-- Responsive ad -->
