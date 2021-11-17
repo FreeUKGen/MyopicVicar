@@ -35,5 +35,5 @@ Rails.application.configure do
   config.assets.precompile += %w[advert_control.js]
   config.assets.precompile += %w( javascripts/freecen_gdpr.js )
   config.assets.precompile += %w( javascripts/freecen_advert_control.js )
-  config.assets.precompile += %w( javascripts/freereg_advert_control.js )
+  config.assets.precompile += %w[javascripts/freereg_advert_control.js]
 end
