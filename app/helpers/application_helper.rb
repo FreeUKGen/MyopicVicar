@@ -777,12 +777,14 @@ module ApplicationHelper
   end
 
   def non_gdpr_advert(slot_name, size)
+    width = get_advert_size[size][0]
+    height = get_advert_size[size][1]
     #@data_ad_slot = current_page?(freecen_coverage_path) ? data_ad_slot_coverage : data_ad_slot_google_advert
     banner = <<-HTML
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <!-- Responsive ad -->
     <ins class="adsbygoogle adSenseBanner"
-    style='display:inline-block;width: get_advert_size[size][0]px;height: get_advert_size[size][1]px'
+    style="display:inline-block;width: #{width}px;height: #{height}px"
     data-ad-client="#{data_ad_client}"
     data-ad-slot= "#{slot_number(slot_name)}">
     </ins>
@@ -801,21 +803,23 @@ module ApplicationHelper
     (adsbygoogle = window.adsbygoogle || []).push({});
     </script>
     HTML
-    if Rails.env.development?
-      banner = <<-HTML
-      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
-      HTML
-    end
+    #if Rails.env.development?
+     # banner = <<-HTML
+     # <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
+     # HTML
+    #end
     banner.html_safe
   end
 
   def gdpr_advert(slot_name, size)
     #@data_ad_slot = current_page?(freecen_coverage_path) ? data_ad_slot_coverage : data_ad_slot_google_advert
+    width = get_advert_size[size][0]
+    height = get_advert_size[size][1]
     banner = <<-HTML
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <!-- Responsive ad -->
     <ins class="adsbygoogle adSenseBanner"
-    style="display:inline-block; width: get_advert_size[size][0]px;height: get_advert_size[size][1]px"
+    style="display:inline-block; width: #{width}px;height: #{height}px"
     data-ad-client="#{data_ad_client}"
     data-ad-slot= "#{slot_number(slot_name)}">
     </ins>
