@@ -771,6 +771,8 @@ module ApplicationHelper
     #@data_ad_slot = current_page?(freecen_coverage_path) ? data_ad_slot_coverage : data_ad_slot_google_advert
     logger.warn(slot_number(slot_name))
     logger.warn(slot_name)
+    logger.warn(get_slot_code_from_slot_name["header"])
+    logger.warn(get_slot_code_from_slot_name[:header])
     banner = <<-HTML
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <!-- Responsive ad -->
