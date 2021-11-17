@@ -18,7 +18,7 @@ class Freecen2ContentsController < ApplicationController
     @place_description = params[:place_description]
     @key_place = Freecen2Content.get_place_key(@place_description)
     @place_id = @freecen2_contents.records[@chapman_code][@key_place][:total][:place_id]
-    Freecen2PlaceUniqueName.find_by(freecen2_place_id: @place_id).present? ? @has_names = true : @has_names = false
+    check_names_exist
   end
 
   def piece_index
@@ -91,15 +91,14 @@ class Freecen2ContentsController < ApplicationController
       render 'county_index'
     else
       if params[:commit] == 'View Place Records'
+        set_county_vars
         @place_description = params[:place_description]
         if !@place_description.present?
           flash[:notice] = 'You must select a Place'
         else
-          @county_description = params[:county_description]
           @key_place = Freecen2Content.get_place_key(@place_description)
-          @chapman_code = ChapmanCode.code_from_name(@county_description)
           @place_id = @freecen2_contents.records[@chapman_code][@key_place][:total][:place_id]
-          Freecen2PlaceUniqueName.find_by(freecen2_place_id: @place_id).present? ? @has_names = true : @has_names = false
+          check_names_exist
           render 'place_index'
         end
       end
@@ -138,6 +137,23 @@ class Freecen2ContentsController < ApplicationController
     @county_description = params[:county_description]
     @chapman_code = ChapmanCode.code_from_name(@county_description)
   end
+
+  def check_names_exist
+    @has_some_names = false
+    @has_names = {}
+    @names =  Freecen2PlaceUniqueName.find_by(freecen2_place_id: @place_id)
+    if @names.present?
+      Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        if @names.unique_forenames[year].present? and @names.unique_surnames[year].present?
+          @has_names[year] = true
+          @has_some_names = true
+        else
+          @has_names[year] = false
+        end
+      end
+    end
+  end
+
 
   private
 
