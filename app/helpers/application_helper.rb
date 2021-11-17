@@ -769,7 +769,6 @@ module ApplicationHelper
 
   def non_gdpr_advert(slot_name)
     #@data_ad_slot = current_page?(freecen_coverage_path) ? data_ad_slot_coverage : data_ad_slot_google_advert
-    slot_number = get_slot_code_from_slot_name[slot_name]
     banner = <<-HTML
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <!-- Responsive ad -->
@@ -803,7 +802,6 @@ module ApplicationHelper
 
   def gdpr_advert(slot_name)
     #@data_ad_slot = current_page?(freecen_coverage_path) ? data_ad_slot_coverage : data_ad_slot_google_advert
-    get_slot_code_from_slot_name
     banner = <<-HTML
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <!-- Responsive ad -->
