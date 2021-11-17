@@ -742,11 +742,11 @@ module ApplicationHelper
     }
   end
 
-  def advert_code(slot_name)
+  def advert_code(slot_name, size)
     if GdprCountries::FOLLOWED_COUNTRIES.include?(user_location)
-      bannner = gdpr_advert(slot_name)
+      bannner = gdpr_advert(slot_name, size)
     else
-      banner = non_gdpr_advert(slot_name)
+      banner = non_gdpr_advert(slot_name, size)
     end
     banner
   end
@@ -763,17 +763,26 @@ module ApplicationHelper
     }
   end
 
+  def get_advert_size
+    {
+      "horz" => [728,90],#width,height
+      "side" => [120,600],
+      "side_big" => [300,600],
+      "square" => [336, 280]
+    }
+  end
+
   def slot_number(slot_name)
     get_slot_code_from_slot_name[slot_name]
   end
 
-  def non_gdpr_advert(slot_name)
+  def non_gdpr_advert(slot_name, size)
     #@data_ad_slot = current_page?(freecen_coverage_path) ? data_ad_slot_coverage : data_ad_slot_google_advert
     banner = <<-HTML
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <!-- Responsive ad -->
     <ins class="adsbygoogle adSenseBanner"
-    style="display:inline-block;width:728px;height:90px"
+    style='display:inline-block;width: get_advert_size[size][0]px;height: get_advert_size[size][1]px'
     data-ad-client="#{data_ad_client}"
     data-ad-slot= "#{slot_number(slot_name)}">
     </ins>
@@ -800,13 +809,13 @@ module ApplicationHelper
     banner.html_safe
   end
 
-  def gdpr_advert(slot_name)
+  def gdpr_advert(slot_name, size)
     #@data_ad_slot = current_page?(freecen_coverage_path) ? data_ad_slot_coverage : data_ad_slot_google_advert
     banner = <<-HTML
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <!-- Responsive ad -->
     <ins class="adsbygoogle adSenseBanner"
-    style="display:inline-block;width:728px;height:90px"
+    style="display:inline-block; width: get_advert_size[size][0]px;height: get_advert_size[size][1]px"
     data-ad-client="#{data_ad_client}"
     data-ad-slot= "#{slot_number(slot_name)}">
     </ins>
