@@ -62,3 +62,10 @@
     .freeREG #C, .freeREG #donateBtn svg {fill:#b48282; stroke:#b48282}
 
 #donate.freeREG:hover #donateBtn, #donate.freeREG:focus #donateBtn {color: #b48282}
+
+ins.adsbygoogle a {
+    display: none !important;
+}
+ins.adsbygoogle[data-ad-status="unfilled"] a {
+    display: block;
+}
