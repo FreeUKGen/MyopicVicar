@@ -743,11 +743,11 @@ module ApplicationHelper
   end
 
   def advert_code(slot_name, size)
-    if GdprCountries::FOLLOWED_COUNTRIES.include?(user_location)
-      bannner = gdpr_advert(slot_name, size)
-    else
+    #if GdprCountries::FOLLOWED_COUNTRIES.include?(user_location)
+      #bannner = gdpr_advert(slot_name, size)
+    #else
       banner = non_gdpr_advert(slot_name, size)
-    end
+    #end
     banner
   end
 
@@ -793,11 +793,11 @@ module ApplicationHelper
     (adsbygoogle = window.adsbygoogle || []).push({});
     </script>
     HTML
-    #if Rails.env.development?
-     # banner = <<-HTML
-     # <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
-     # HTML
-    #end
+    if Rails.env.development?
+      banner = <<-HTML
+      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
+      HTML
+    end
     banner.html_safe
   end
 
