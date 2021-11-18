@@ -21,10 +21,10 @@ task :check_cen_data_years_for_csv, [:limit] => :environment do |t, args|
         cen_data = freecen2_place.cen_data_years
         cen_data << piece.year
       end
-      p "Updating #{civil_parish.name} #{freecen2_place.cen_data_years} with #{cen_data}"
+      p "Updating #{civil_parish.name} #{freecen2_place.cen_data_years} with #{cen_data}" if cen_data.present?
       freecen2_place.update_attributes(data_present: true, cen_data_years: cen_data) if cen_data.present?
 
-      p "#{freecen2_place.place_name} updated"
+      p "#{freecen2_place.place_name} updated" if cen_data.present?
 
     end
   end
