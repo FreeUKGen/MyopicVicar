@@ -17,7 +17,7 @@
           <% n = n +1 %>
           <tr data-num="<%= district.DistrictNumber %>" data-name= "<%= district.DistrictName %>">
             <td id="show_district_detail">
-              <%= link_to("View #{n}", district_friendly_url_path(district.district_friendly_url), id: "more_info", remote: false)%>
+              <%= link_to("View #{n}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber))%>
             </td>
             <td>
               <dl>
@@ -39,20 +39,4 @@
   </div>
 </div>
 <!--/div-->
- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<script>
-  $( "#more_info" ).click(function () {
-    var id = $(this).closest("tr").data("num")
-    var name = $(this).closest("tr").data("name")
-    $.ajax({
-      url: '/districts/${id}',
-      type: "GET",
-      data: {
-        dabbu: id
-      }
-    });
-  });
-</script>
-
-
 
