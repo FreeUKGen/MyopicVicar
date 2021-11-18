@@ -56,11 +56,12 @@ class FreecenIndividual
 
   def individual_display_values(year, chapman_code)
     birth = birth_place
-    birth = birth + ' (or ' + verbatim_birth_place + ')' if birth_place.present? && birth_place != verbatim_birth_place
+    birth = birth + ' (or ' + verbatim_birth_place + ')' if birth_place.present? && verbatim_birth_place.present? && birth_place != verbatim_birth_place
     birth = verbatim_birth_place if birth_place.blank?
     birth_county_name = ChapmanCode.name_from_code(birth_county)
     verbatim_birth_county_name = ChapmanCode.name_from_code(verbatim_birth_county)
-    birth_county_name = birth_county_name + ' (or ' + verbatim_birth_county_name + ')' if birth_county_name.present? && birth_county_name != verbatim_birth_county_name
+    birth_county_name = birth_county_name + ' (or ' + verbatim_birth_county_name + ')' if birth_county_name.present? &&
+      verbatim_birth_county_name.present? && birth_county_name != verbatim_birth_county_name
     birth_county_name = verbatim_birth_county_name if birth_county_name.blank?
 
     disp_age = age
