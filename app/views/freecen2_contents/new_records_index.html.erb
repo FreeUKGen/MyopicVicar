@@ -1,0 +1,35 @@
+<h2 style="text-align: center">Places with Pieces added to the database in the previous 30 days as of  <%= @interval_end.strftime('%d %b %Y') %> </h2>
+<div  style="text-align: center">
+  <%= link_to 'Back to Totals for All Counties' , freecen2_contents_path, method: :get , :class => "btn btn--small" %>
+  <br>
+  <br>
+</div>
+<div class='scrollable'>
+  <table  class="table--bordered table--data table--striped my-width " >
+    <thead >
+      <tr>
+        <th class='sticky-header'>County</th>
+        <th class='sticky-header'>Place</th>
+        <th class='sticky-header'>Year</th>
+        <th colspan = "2" class='sticky-header t15'>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @freecen2_contents.new_records.each do |entry| %>
+        <tr>
+          <td><%= entry[0] %></td>
+          <td><%= entry[1] %></td>
+          <td><%= entry[2] %></td>
+          <td><%= link_to 'View Pieces', freecen2_contents_piece_index_path(:county_description => entry[0],  :place_description => entry[1], :place_id => get_place_id(entry[0], entry[1]), :census_year => entry[2], :new_records => 'Y'), class: "btn btn--small", method: :get %></td>
+          <% if names_exist_for_place_year(entry[0], entry[1], entry[2]) == true %>
+          <td><%= link_to 'Unique Names', freecen2_contents_place_names_path(:county_description => entry[0], :place_description => entry[1], :place_id => get_place_id(entry[0], entry[1]), :census_year => entry[2], :new_records => 'Y'), class: "btn btn--small", method: :get %></td>
+          <% else %>
+          <td> N/A </td>
+          <% end %>
+
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+<br />

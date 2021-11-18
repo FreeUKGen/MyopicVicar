@@ -17,6 +17,7 @@ class Freecen2Content
   field :county_selected, type: String
 
   field :records, type: Hash # [chapman_code] [place_name]
+  field :new_records, type: Array
 
   index({ interval_end: -1})
 
@@ -36,6 +37,8 @@ class Freecen2Content
       stat.month = time.month
       stat.day = time.day
       start = Time.now.utc
+
+      new_records = []
 
       # County
 
@@ -127,6 +130,11 @@ class Freecen2Content
                   records[county][key_place][year][:added_pieces_online] = fc2_added_pieces_online[year]
                   records[county][key_place][:total][:added_pieces_online] += records[county][key_place][year][:added_pieces_online]
 
+                  if fc2_added_pieces_online[year] > 0
+                    county_name = ChapmanCode.name_from_code(county)
+                    new_records << [county_name, this_place.place_name, year]
+                  end
+
                 end # year
 
                 places_array_sorted = places_array.sort
@@ -158,6 +166,7 @@ class Freecen2Content
       p "places = #{total_places_cnt}"
 
       stat.records = records
+      stat.new_records = new_records.sort
       stat.save
 
       #remove_older_records(last_midnight)

@@ -18,8 +18,7 @@
           <br>
           <%= n.submit 'View County Records',  :class => "btn   btn--small"%><br>
           <div style="text-align: center"> <b>Place and Unique Names</b>
-            <small class="additional">You may view the Database Records for a specific Place
-              and if there is data Online also get a list of Unique Names</small></div>
+            <small class="additional">You may view the Database Records for a specific Place and if there is data Online also get a list of Unique Names</small></div>
         </select>
         <b> Select a Place </b>
         <select class="select" id="place_description" name="place_description" size="3">
@@ -31,7 +30,12 @@
           <% end %>
         </select>
         <%= n.submit 'View Place Records',  :class => "btn   btn--small"%>
-      <% end %>
+       <br>
+       <div style="text-align: center"> <b>New Pieces Online</b><br>
+          <small class="additional">You may view a list of Places with Pieces added to the database in the previous 30 days</small>
+          <br>
+       <p><%= link_to 'View Recent Additions', freecen2_contents_new_records_index_path(), class: "btn btn--small", method: :get %></p></div>
+             <% end %>
     </li>
     <li class="grid__item two-thirds palm-one-whole" >
       <h3 style="text-align: center">Totals for All Counties</h3>
@@ -77,7 +81,7 @@
     </li>
   </fieldset>
   <p class=" text--center">
-    <small><em> [Note: The original Database Coverage page can be found <%= link_to "HERE" , freecen_coverage_path, :title => "Database Coverage"  %>]<br>
+    <small><em> [Note: The original Database Coverage page can be found <%= link_to "HERE" , freecen_coverage_path, :title => "Database Coverage"  %>]</em><br>
       </small></p>
     <br>
   </div>

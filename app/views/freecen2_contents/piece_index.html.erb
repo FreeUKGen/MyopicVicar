@@ -2,8 +2,12 @@
   as of  <%= @interval_end.strftime('%d %b %Y') %> </h2>
 <div  style="text-align: center">
   <%= link_to 'Back to Totals for All Counties' , freecen2_contents_path, method: :get , :class => "btn btn--small" %>
+  <% if params[:new_records] == 'Y' %>
+<%= link_to 'Back to Recent Additions' ,  :back, method: :get , :class => "btn btn--small" %><br>
+  <% else %>
   <%= choose_another_place_link(@county_description) %>
   <%= link_to 'Back to Records for ' + @place_description ,  :back, method: :get , :class => "btn btn--small" %><br>
+  <% end %>
   <br>
   <br>
 </div>

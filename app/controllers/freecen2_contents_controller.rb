@@ -12,6 +12,12 @@ class Freecen2ContentsController < ApplicationController
     @location = location_href + '" + replace_chars(this.value)'
   end
 
+  def new_records_index
+    @id = session[:contents_id]
+    @freecen2_contents = Freecen2Content.find_by(id: @id)
+    @interval_end = @freecen2_contents.interval_end
+  end
+
 
   def place_index
     set_county_vars

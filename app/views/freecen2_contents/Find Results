@@ -1,0 +1,21 @@
+Searching 6 files for "View Additions"
+
+0 matches
+
+Searching 6 files for "Back to Additions"
+
+/Users/annevandervord/FreeCen/MyopicVicar/app/views/freecen2_contents/piece_index.html.erb:
+    4    <%= link_to 'Back to Totals for All Counties' , freecen2_contents_path, method: :get , :class => "btn btn--small" %>
+    5    <% if params[:new_records] == 'Y' %>
+    6: <%= link_to 'Back to Recent Additions' ,  :back, method: :get , :class => "btn btn--small" %><br>
+    7    <% else %>
+    8    <%= choose_another_place_link(@county_description) %>
+
+/Users/annevandervord/FreeCen/MyopicVicar/app/views/freecen2_contents/place_names.html.erb:
+    4    <%= link_to 'Back to Totals for All Counties' , freecen2_contents_path, method: :get , :class => "btn btn--small" %>
+    5    <% if params[:new_records] == 'Y' %>
+    6: <%= link_to 'Back to Recent Additions' ,  :back, method: :get , :class => "btn btn--small" %><br>
+    7    <% else %>
+    8    <%= choose_another_place_link(@county_description) %>
+
+2 matches across 2 files
