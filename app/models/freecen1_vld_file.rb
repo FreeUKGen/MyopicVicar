@@ -203,6 +203,18 @@ class Freecen1VldFile
     [success, message, file_location, file]
   end
 
+  def create_entry_csv_file
+    #this makes aback up copy of the file in the attic and creates a new one
+    @chapman_code = chapman_code
+    year, piece, series = FreecenPiece.extract_year_and_piece(file_name)
+    success, message, file, census_fields = convert_file_name_to_csv(year, piece, series)
+    if success
+      file_location = Rails.root.join('tmp', file)
+      success, message = write_entry_csv_file(file_location, Freecen1VldEntry.fields.keys, year)
+    end
+    [success, message, file_location, file]
+  end
+
   def convert_file_name_to_csv(year, piece, series)
     case series
     when 'RG'
@@ -294,6 +306,35 @@ class Freecen1VldFile
       end
     end
     [true, '']
+  end
+
+  def write_entry_csv_file(file_location, census_fields, year)
+    header = census_fields
+    @initial_line_hash = {}
+    @blank = nil
+    @dash = '-'
+    census_fields.each do |field|
+      @initial_line_hash[field] = nil
+    end
+    CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+      csv << header
+      records = freecen1_vld_entries.order_by(_id: 1)
+      @record_number = 0
+      records.each do |rec|
+        @record_number += 1
+        line = add_entry_fields(rec, census_fields, year)
+        csv << line
+      end
+    end
+    [true, '']
+  end
+
+  def add_entry_fields(rec, census_fields, year)
+    line = []
+    census_fields.each do |field|
+      line << rec[field.to_s]
+    end
+    line
   end
 
   def add_fields(rec, census_fields, year)
