@@ -132,7 +132,7 @@ class Freecen2Content
 
                   if fc2_added_pieces_online[year] > 0
                     county_name = ChapmanCode.name_from_code(county)
-                    new_records << [county_name, this_place.place_name, year]
+                    new_records << [county_name, this_place.place_name, county, this_place._id, year]
                   end
 
                 end # year

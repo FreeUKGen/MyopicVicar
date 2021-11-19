@@ -2,7 +2,7 @@
   in <%= @county_description %> in <%= @year %> </h2>
 <div  style="text-align: center">
   <%= link_to 'Back to Totals for All Counties' , freecen2_contents_path, method: :get , :class => "btn btn--small" %>
-  <% if params[:new_records] == 'Y' %>
+  <% if params[:new_records] == 'All' %>
 <%= link_to 'Back to Recent Additions' ,  :back, method: :get , :class => "btn btn--small" %><br>
   <% else %>
   <%= choose_another_place_link(@county_description) %>

@@ -16,6 +16,18 @@ class Freecen2ContentsController < ApplicationController
     @id = session[:contents_id]
     @freecen2_contents = Freecen2Content.find_by(id: @id)
     @interval_end = @freecen2_contents.interval_end
+    @recent_additions = []
+    @additions_county = params[:new_records]
+    if @additions_county  == 'All'
+      @recent_additions = @freecen2_contents.new_records
+    else
+      @freecen2_contents.new_records.each do |entry|
+        # [0] = county name [1] = place name [2] = chapman code [3] = freecen2_place_id [4] = year
+        if entry[0] == @additions_county
+          @recent_additions << entry
+        end
+      end
+    end
   end
 
 
