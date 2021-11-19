@@ -19,4 +19,9 @@ module Freecen2ContentsHelper
     return has_names
   end
 
+  def locate_place_link(place_id)
+    place = Freecen2Place.find_by(id: place_id)
+    link_to 'Location', "https://www.google.com/maps/search/?api=1&query=#{place.latitude},#{place.longitude}", target: :_blank, class: 'btn   btn--small', title: 'Shows the location on a Google map in a new tab'
+  end
+
 end
