@@ -403,4 +403,11 @@ class BestGuess < FreebmdDbBase
     
   end
 
+  def self.get_records(result_array)
+    result_array.map{|result| BestGuess.find(result.to_i)}
+  end
+
+  def self.results_hash(result_array)
+    self.get_records(result_array).map{|result| result.record_hash }
+  end
 end

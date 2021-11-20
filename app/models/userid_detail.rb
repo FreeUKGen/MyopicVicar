@@ -64,6 +64,7 @@ class UseridDetail
   has_many :freereg1_csv_files, dependent: :restrict_with_error
   has_many :attic_files, dependent: :restrict_with_error
   has_many :assignments
+  has_many :saved_searches
 
   validates_presence_of :userid,:syndicate,:email_address, :person_role, :person_surname, :person_forename,
     :skill_level #,:new_transcription_agreement

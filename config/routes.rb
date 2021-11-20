@@ -510,12 +510,14 @@ MyopicVicar::Application.routes.draw do
   get 'search_queries/wildcard_options_dropdown' => 'search_queries#wildcard_options_dropdown'
   post 'search_queries/:id/analyze(.:format)', :to => 'search_queries#analyze', :as => :analyze_search_query
   get 'search_queries/:id/download_as_csv' => 'search_queries#download_as_csv', as: :search_results_download_as_csv
+  post 'search_queries/:id/save_search', to: 'saved_search#save_search', as: :save_search
   resources :search_queries do
     #get :autocomplete_BestGuess_Surname, :on => :collection
     #get :autocomplete_BestGuess_GivenName, :on => :collection
   end
 
   resources :postems
+  resources :saved_search
 
   get 'districts/:id/unique_names' => 'districts#unique_district_names' , as: :unique_district_names
   get 'districts/:id/:friendly(.:format)', :to => 'districts#show', as: :district_friendly_url
@@ -596,6 +598,7 @@ MyopicVicar::Application.routes.draw do
   post 'entry-information/:id/save_entry', to: 'best_guess#save_entry', as: :save_entry
   get "entry-information/cite=:id&scan=1", :to => 'best_guess_hash#show', :as => :citation_url
   resources :best_guess_hash
+
 
   # This line mounts Refinery's routes at the root of your application.
   # This means, any requests to the root URL of your application will go to Refinery::PagesController#home.

@@ -85,46 +85,47 @@ module UseridRole
     }
   when 'freebmd'
     OPTIONS = {
-      'checker' => ["Saved Entries", 'Communicate', 'Profile', 'Roadmap'],
-      'computer' => ["Saved Entries", 'Profile', 'Roadmap'],
-      'researcher' => ["Saved Entries", "Saved Entries",'Communicate', 'Profile', 'Roadmap'],
-      'pending' => ["Saved Entries", 'Profile'],
-      'contacts_coordinator' => ["Saved Entries", 'Communicate', 'Contacts', 'Display County Coordinators',
+      'checker' => ["Saved Entries", "View Saved Searches",'Communicate', 'Profile', 'Roadmap'],
+      'computer' => ["Saved Entries", "View Saved Searches", 'Profile', 'Roadmap'],
+      'researcher' => ["Saved Entries", "View Saved Searches",'Communicate', 'Profile', 'Roadmap'],
+      'pending' => ["Saved Entries", "View Saved Searches", 'Profile'],
+      'contacts_coordinator' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Contacts', 'Display County Coordinators',
                                  'Display Syndicate Coordinators', 'Display Userids', 'Feedback', 'Manage Counties', 'Profile', 'System Documentation', 'Roadmap'],
-      'county_coordinator' => ["Saved Entries", 'Communicate', 'Contacts', 'Display Userids', 'Manage County', 'Manage Syndicate', 'Profile', 'Roadmap'],
-      'data_manager' => ["Saved Entries", 'Communicate', 'Contacts', 'Display Userids', 'Display Syndicate Coordinators', 'Display County Coordinators', 'Manage Counties', 'Manage Syndicates', 'Profile', 'Roadmap' ],
-      'documentation_coordinator' => ["Saved Entries", 'Communicate', 'Display Userids', 'Feedback', 'Manage Syndicates',
+      'county_coordinator' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Contacts', 'Display Userids', 'Manage County', 'Manage Syndicate', 'Profile', 'Roadmap'],
+      'data_manager' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Contacts', 'Display Userids', 'Display Syndicate Coordinators', 'Display County Coordinators', 'Manage Counties', 'Manage Syndicates', 'Profile', 'Roadmap' ],
+      'documentation_coordinator' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Display Userids', 'Feedback', 'Manage Syndicates',
                                       'Manage Counties', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation'],
-      'engagement_coordinator' => ["Saved Entries", 'Communicate', 'Contacts', 'Manage Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation'],
+      'engagement_coordinator' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Contacts', 'Manage Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation'],
 
-      'executive_director' => ["Saved Entries", 'Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators',
+      'executive_director' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators',
                                'Feedback', 'Profile', 'Manage Userids', 'Message System', 'RefineryCMS', 'Roadmap',
                                'Site Statistics', 'Search Performance', 'Syndicate Coordinators', 'System Documentation'],
-      'genealogy_coordinator' => ["Saved Entries", 'Communicate', 'Contacts', 'Profile', 'Roadmap', 'System Documentation'],
-      'general_communication_coordinator' => ["Saved Entries", 'Communicate', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation'],
+      'genealogy_coordinator' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Contacts', 'Profile', 'Roadmap', 'System Documentation'],
+      'general_communication_coordinator' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation'],
 
-      'project_manager' => ["Saved Entries", 'Communicate', 'Contacts', 'Manage Userids', 'Feedback', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
+      'project_manager' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Contacts', 'Manage Userids', 'Feedback', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
                             'System Documentation'],
-      'publicity_coordinator' => ["Saved Entries", 'Communicate', 'Contacts', 'Profile', 'Roadmap', 'System Documentation'],
+      'publicity_coordinator' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Contacts', 'Profile', 'Roadmap', 'System Documentation'],
 
-      'syndicate_coordinator' => ["Saved Entries", 'Communicate', 'Manage Syndicate', 'Profile', 'Roadmap'],
-      'system_administrator' => ["Saved Entries", 'Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Database Statistics','Feedback', 'FreeCen Errors',
+      'syndicate_coordinator' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Manage Syndicate', 'Profile', 'Roadmap'],
+      'system_administrator' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Database Statistics','Feedback', 'FreeCen Errors',
                                  'Manage Counties', 'Manage FreeCen Coverage', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
                                  'Software Version Information', 'Syndicate Coordinators', 'System Documentation'],
-      'trainee' => ["Saved Entries", 'Communicate', 'Profile', 'Roadmap'],
-      'technical' => ["Saved Entries", 'Communicate', 'Contacts', 'Feedback', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
+      'trainee' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Profile', 'Roadmap'],
+      'technical' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Contacts', 'Feedback', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
                       'System Documentation'],
 
-      'transcriber' => ["Saved Entries", 'Communicate', 'Profile', 'Roadmap'],
-      'validator' => ["Saved Entries", 'Communicate', 'Profile', 'Roadmap'],
-      'volunteer_coordinator' => ["Saved Entries", 'Communicate', 'Contacts', 'Manage Syndicates', 'Manage Userids', 'Profile', 'Roadmap'],
-      'website_coordinator' => ["Saved Entries", 'Communicate', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation']
+      'transcriber' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Profile', 'Roadmap'],
+      'validator' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Profile', 'Roadmap'],
+      'volunteer_coordinator' => ["Saved Entries", "Saved Searches", 'Communicate', 'Contacts', 'Manage Syndicates', 'Manage Userids', 'Profile', 'Roadmap'],
+      'website_coordinator' => ["Saved Entries", "Saved Searches", 'Communicate', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation']
 
     }
   end
   #'/messages/communications?source=original',
   OPTIONS_TRANSLATION = {
     'Saved Entries' => '/userid_details/list_saved_entry',
+    "View Saved Searches" => '/saved_search',
     'Communicate' => '/messages/communications?source=original',
     'Denominations' => '/denominations',
     'Database Statistics' => '/freecen_coverage/grand_totals',

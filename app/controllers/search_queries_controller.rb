@@ -234,10 +234,12 @@ class SearchQueriesController < ApplicationController
     else
       response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display unless MyopicVicar::Application.config.template_set == 'freebmd'
       response, @search_results, @ucf_results, @result_count = @search_query.get_bmd_search_results if MyopicVicar::Application.config.template_set == 'freebmd'
+      
       @filter_condition = params[:filter_option]
       @search_results = filtered_results if RecordType::BMD_RECORD_TYPE_ID.include?(@filter_condition.to_i)
       @results_per_page = params[:results_per_page] || 20
       total_page = @search_results.count
+      @bmd_search_results = @search_results if MyopicVicar::Application.config.template_set == 'freebmd'
       @paginatable_array = Kaminari.paginate_array(@search_results, total_count: @search_results.count).page(params[:page]).per(@results_per_page)
       if !response || @search_results.nil? || @search_query.result_count.nil?
         logger.warn("#{appname_upcase}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
@@ -313,9 +315,7 @@ class SearchQueriesController < ApplicationController
     search_id = params[:id]
     @search_query = SearchQuery.find_by(id: search_id)
     send_data @search_query.download_csv, filename: "search_results-#{Date.today}.csv"
-    
   end
-
 
   private
 
