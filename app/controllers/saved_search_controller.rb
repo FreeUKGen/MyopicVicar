@@ -12,14 +12,14 @@ class SavedSearchController < ApplicationController
     if @saved_search.present?
     	flash[:notice] = "Search is already saved"
     else
-    	saved_search = @user.saved_searches.new(search_id: search_id, results: @results_hash)
+    	saved_search = @user.saved_searches.new(search_id: @search_id, results: @results_hash)
     	if saved_search.save
       	flash[:notice] = "Search Saved Successfully"
     	else
       	flash[:notice] = "We experienced problem, please try again later"
     	end
     end
-    redirect_to search_query_path(search_id)
+    redirect_to search_query_path(@search_id)
   end
 
   def get_saved_search
