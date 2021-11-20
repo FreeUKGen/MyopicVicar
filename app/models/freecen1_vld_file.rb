@@ -407,7 +407,7 @@ class Freecen1VldFile
   end
 
   def compute_alternate(rec)
-    if rec['birth_county'] == rec['verbatim_birth_county'] && rec['birth_place'] == rec['verbatim_birth_place']
+    if (rec['birth_county'] == rec['verbatim_birth_county'] && rec['birth_place'] == rec['verbatim_birth_place']) || rec['uninhabited_flag'] == 'u'
       county = @blank
       place = @blank
     else
@@ -419,6 +419,8 @@ class Freecen1VldFile
 
   def verbatim_birth_county(rec)
     county = rec['verbatim_birth_county'].present? && rec['verbatim_birth_county'].downcase == 'wal' ? 'WLS' : rec['verbatim_birth_county']
+    county = rec['uninhabited_flag'] == 'u' ? @blank : county
+    county
   end
 
   def compute_enumeration_district(rec, census_fields)
