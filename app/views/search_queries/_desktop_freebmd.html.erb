@@ -1,6 +1,6 @@
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
     <h1 class="accessibility">Search Results</h1>
-      <table class="table--bordered table--data scrollable">
+      <table class="table--bordered table--data">
         <caption class='accessibility'>Column 1 has link to details of record; Column 2 can be sorted on First Name; Column 3 can be sorted by event.</caption>
         <thead>
           <tr>
@@ -18,7 +18,7 @@
             </th>
           </tr>
         </thead>
-        <tbody>
+        <tbody class="scrollable">
           <% n = 0 %>
           <% search_results.each do |search_record| %>
             <% n = n +1 %>
