@@ -232,7 +232,8 @@ class SearchQueriesController < ApplicationController
       @saved_search = SavedSearch.find(@save_search_id)
       #raise save_search_result_hash.inspect
       #records = BestGuess.get_best_guess_records(save_search_result_hash)
-      @save_search_results, @ucf_save_results, @save_result_count = @saved_search.get_bmd_saved_search_results
+      saved_search_results, @ucf_save_results, @save_result_count = @saved_search.get_bmd_saved_search_results
+      @save_search_results = @search_query.sort_results(saved_search_results)
     end
     if @search_query.result_count >= max_result
       @result_count = @search_query.result_count
