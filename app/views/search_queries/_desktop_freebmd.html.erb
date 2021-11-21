@@ -69,7 +69,7 @@
     <!--/div-->
     <% unless print_friendly %>
       <div class='text--center inline-block'>
-        <%= paginate @paginatable_array %>
+        <%= paginate @paginatable_array if @paginatable_array.present? %>
       </div>
     <% end %>
 
