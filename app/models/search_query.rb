@@ -1574,7 +1574,9 @@ class SearchQuery
   end
 
   def bmd_saved_search_results
-    BestGuess.get_best_guess_records(@save_search_id)
+    save_search_result_hash = SavedSearch.find(@save_search_id).results
+      #raise save_search_result_hash.inspect
+    BestGuess.get_best_guess_records(save_search_result_hash)
   end
 
   def get_bmd_search_results
