@@ -227,7 +227,7 @@ class SearchQueriesController < ApplicationController
     redirect_back(fallback_location: new_search_query_path) && return if @search_query.result_count.blank?
     max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS unless appname_downcase == 'freebmd'
     max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS if appname_downcase == 'freebmd'
-    @save_search_id = params[:saved_search_id] if params[:saved_search_id].present?
+    @save_search_id = params[:saved_search] if params[:saved_search].present?
     if @search_query.result_count >= max_result
       @result_count = @search_query.result_count
       @search_results = []
@@ -322,7 +322,7 @@ class SearchQueriesController < ApplicationController
     #raise params.inspect
     @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     redirect_back(fallback_location: new_search_query_path) && return if @search_query.result_count.blank?
-    @save_search_id = params[:saved_search]
+    @save_search_id = params[:saved_search_id]
     @saved_search = SavedSearch.find(@save_search_id)
     saved_search_results, @ucf_save_results, @save_result_count = @saved_search.get_bmd_saved_search_results
     @save_search_results = @search_query.sort_results(saved_search_results)
