@@ -1573,10 +1573,23 @@ class SearchQuery
     self.search_result.records.values
   end
 
+  def bmd_saved_search_results
+    BestGuess.get_best_guess_records(@save_search_id)
+  end
+
   def get_bmd_search_results
     search_results = self.sort_search_results
     return get_bmd_search_response, search_results.map{|h| SearchQuery.get_search_table.new(h)}, ucf_search_results, search_result_count if get_bmd_search_response
     return get_bmd_search_response if !get_bmd_search_response
+  end
+
+  def get_bmd_saved_search_results
+    search_results = self.sort_saved_search_results
+    return search_results, ucf_save_search_results, saved_search_result_count
+  end
+
+  def ucf_save_search_results
+    []
   end
 
   def ucf_search_results
@@ -1585,6 +1598,14 @@ class SearchQuery
 
   def search_result_count
     bmd_search_results.length
+  end
+
+  def saved_search_result_count
+    bmd_saved_search_results.length
+  end
+
+  def sort_saved_search_results
+    self.sort_results(bmd_saved_search_results) unless bmd_saved_search_results.nil?
   end
 
   def sort_search_results
@@ -1597,6 +1618,10 @@ class SearchQuery
 
   def get_bmd_search_response
     self.search_result.records.respond_to?(:values)
+  end
+
+  def get_bmd_save_search_response
+    self.respond_to?(:bmd_saved_search_results)
   end
 
   def date_of_birth_range?

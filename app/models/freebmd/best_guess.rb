@@ -51,7 +51,8 @@ class BestGuess < FreebmdDbBase
   def record_hash
     surname = self.Surname.upcase
     given_name = self.GivenName.upcase
-    district_name = self.district.DistrictName.upcase
+    #district_name = self.district.DistrictName.upcase
+    district_name = self.District.upcase
     volume = self.Volume.upcase
     page = self.Page.upcase
     year = QuarterDetails.quarter_year(self.QuarterNumber)
@@ -409,5 +410,9 @@ class BestGuess < FreebmdDbBase
 
   def self.results_hash(result_array)
     self.get_records(result_array).map{|result| result.record_hash }
+  end
+
+  def self.get_best_guess_records(hash_array)
+    hash_array.map{|hash| BestGuessHash.find_by(Hash: hash).best_guess}
   end
 end

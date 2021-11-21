@@ -12,7 +12,7 @@
       <tr>
         <td>
           <center>
-            <%= link_to("Run this search", '#', :rel => "nofollow", :title => "", class: "btn  btn--small")%>
+            <%= link_to("Run this search", search_query_path(search.search_id, saved_search: search.id), :rel => "nofollow", :title => "", class: "btn  btn--small")%>
           </center>
         </td>
         <td class="table--data">
