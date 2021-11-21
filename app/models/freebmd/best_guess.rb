@@ -413,6 +413,6 @@ class BestGuess < FreebmdDbBase
   end
 
   def self.get_best_guess_records(hash_array)
-    hash_array.map{|hash| BestGuessHash.find_by(Hash: hash).best_guess}
+    hash_array.map{|h| BestGuessHash.find_by(Hash: h).best_guess}
   end
 end
