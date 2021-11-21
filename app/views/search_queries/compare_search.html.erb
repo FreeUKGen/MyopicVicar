@@ -18,15 +18,15 @@
 <section>
 	<div class="container">
 	  <div class="grid">
-	  	<div class="scrollable">
 		    <div class="grid__item one-half lap-one-half palm-one-whole " id='bmd_results'>
 		    	Search Results
-		      <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @save_search_results, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => false})  %>
-		    </div>
+		    	<div class="scrollable">
+			      <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @save_search_results, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => false})  %>
+		    	</div>
 		  </div>
-		  <div class="scrollable">
-		    <div class="grid__item one-half lap-one-half palm-one-whole " id='bmd_results'>
-		    	Saved Search Results
+		  <div class="grid__item one-half lap-one-half palm-one-whole " id='bmd_results'>
+		  	Saved Search Results
+		    <div class="scrollable">
 		      <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @search_results, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => false})  %>
 		    </div>
 		  </div>
