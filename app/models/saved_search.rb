@@ -21,7 +21,7 @@ class SavedSearch
   end
 
   def sort_saved_search_results
-    SearchQuery.sort_results(bmd_saved_search_results) unless bmd_saved_search_results.nil?
+    #SearchQuery.sort_results(bmd_saved_search_results) unless bmd_saved_search_results.nil?
   end
 
   def get_bmd_save_search_response
