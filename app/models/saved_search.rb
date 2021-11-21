@@ -12,7 +12,7 @@ class SavedSearch
   end
 
    def get_bmd_saved_search_results
-    search_results = SearchQuery.sort_saved_search_results
+    search_results = sort_saved_search_results
     return search_results, ucf_save_search_results, saved_search_result_count
   end
 
