@@ -14,7 +14,7 @@
         <% if cookies.signed[:userid].present? %>
           <%= link_to "Save this search", save_search_path(@search_query.id), class: "btn   btn--small", method: "post" %>
           <% if @save_search_id.present? %>
-            <%= link_to "Compare", search_query_path(@search_query.id, saved_search: @save_search_id, compare_search: true), class: "btn   btn--small" %>
+            <%= link_to "Compare", compare_search_path(@search_query.id, saved_search_id: @save_search_id, compare_search: true), class: "btn   btn--small" %>
           <% end %>
         <% end %>
 
@@ -97,34 +97,21 @@
             <% unless print_friendly %>
               <%= render(partial: app_specific_partial("search_result_form")) %>
             <% end %>
-            <% if params[:compare_search].present?%>
-              <div class="container">
-                <div class="grid">
-                  <div class="grid__item one-half lap-one-half palm-one-whole " id='bmd_results'>
-                    <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @save_search_results, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => false})  %>
-                  </div>
-                  <div class="grid__item one-half lap-one-half palm-one-whole " id='bmd_results'>
-                    <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @search_results, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => false})  %>
-                  </div>
+            <div class="container">
+              <div class="grid">
+                <div class="grid__item seven-tenths lap-seven-tenths palm-one-whole " id='bmd_results'>
+                  <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @search_results, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => false})  %>
                 </div>
-              </div>
-            <% else%>
-              <div class="container">
-                <div class="grid">
-                  <div class="grid__item seven-tenths lap-seven-tenths palm-one-whole " id='bmd_results'>
-                    <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @search_results, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => false})  %>
-                  </div>
-                  <% unless print_friendly %>
-                    <% if device_type == :desktop %>
-                      <div class="grid__item two-tenths lap-two-tenths palm-one-whole "  id='results_table_ad'>
-                        <center><p>Advertisement</p>
-                        <%= adsence_right_side_banner %></center>
-                      </div>
-                    <% end %>
+                <% unless print_friendly %>
+                  <% if device_type == :desktop %>
+                    <div class="grid__item two-tenths lap-two-tenths palm-one-whole "  id='results_table_ad'>
+                      <center><p>Advertisement</p>
+                      <%= adsence_right_side_banner %></center>
+                    </div>
                   <% end %>
-                </div>
+                <% end %>
               </div>
-            <% end %>
+            </div>
           <% else %>
             <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @search_results, :inclusive => @search_query.inclusive, :witness =>@search_query.witness, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => false})  %>
           <% end%>

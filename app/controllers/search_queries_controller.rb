@@ -227,14 +227,7 @@ class SearchQueriesController < ApplicationController
     redirect_back(fallback_location: new_search_query_path) && return if @search_query.result_count.blank?
     max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS unless appname_downcase == 'freebmd'
     max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS if appname_downcase == 'freebmd'
-    @save_search_id = params[:saved_search] if params[:saved_search].present?
-    if params[:compare_search].present?
-      @saved_search = SavedSearch.find(@save_search_id)
-      #raise save_search_result_hash.inspect
-      #records = BestGuess.get_best_guess_records(save_search_result_hash)
-      saved_search_results, @ucf_save_results, @save_result_count = @saved_search.get_bmd_saved_search_results
-      @save_search_results = @search_query.sort_results(saved_search_results)
-    end
+    @save_search_id = params[:saved_search_id] if params[:saved_search_id].present?
     if @search_query.result_count >= max_result
       @result_count = @search_query.result_count
       @search_results = []
@@ -323,6 +316,17 @@ class SearchQueriesController < ApplicationController
     search_id = params[:id]
     @search_query = SearchQuery.find_by(id: search_id)
     send_data @search_query.download_csv, filename: "search_results-#{Date.today}.csv"
+  end
+
+  def compare_search
+    #raise params.inspect
+    @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
+    redirect_back(fallback_location: new_search_query_path) && return if @search_query.result_count.blank?
+    @save_search_id = params[:saved_search]
+    @saved_search = SavedSearch.find(@save_search_id)
+    saved_search_results, @ucf_save_results, @save_result_count = @saved_search.get_bmd_saved_search_results
+    @save_search_results = @search_query.sort_results(saved_search_results)
+    response, @search_results, @ucf_results, @result_count = @search_query.get_bmd_search_results
   end
 
   private
