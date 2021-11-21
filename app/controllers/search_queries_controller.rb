@@ -229,10 +229,10 @@ class SearchQueriesController < ApplicationController
     max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS if appname_downcase == 'freebmd'
     @save_search_id = params[:saved_search] if params[:saved_search].present?
     if params[:compare_search].present?
-      #save_search_result_hash = SavedSearch.find(@save_search_id).results
+      @saved_search = SavedSearch.find(@save_search_id)
       #raise save_search_result_hash.inspect
       #records = BestGuess.get_best_guess_records(save_search_result_hash)
-      @save_search_results, @ucf_save_results, @save_result_count = @search_query.get_bmd_saved_search_results
+      @save_search_results, @ucf_save_results, @save_result_count = @saved_search.get_bmd_saved_search_results
     end
     if @search_query.result_count >= max_result
       @result_count = @search_query.result_count
