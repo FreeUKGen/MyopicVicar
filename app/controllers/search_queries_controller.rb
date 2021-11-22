@@ -326,8 +326,8 @@ class SearchQueriesController < ApplicationController
     response, @search_results, @ucf_results, @result_count = @search_query.get_bmd_search_results
     if params[:filter_option].present?
       @filter_condition = params[:filter_option]
-      @search_results = filtered_search_results if filtered_search_results.present?
-      @save_search_results = filter_saved_search_results if filter_saved_search_results.present?
+      @search_results = filtered_search_results #if filtered_search_results.present?
+      @save_search_results = filter_saved_search_results #if filter_saved_search_results.present?
     end
   end
 

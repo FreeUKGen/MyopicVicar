@@ -30,7 +30,7 @@
 	  </div>
 	<% end %>
 </section>
-<div class="grid">
+<div class="grid push-half--top">
 	<div class="grid__item one-whole lap-one-whole palm-one-whole">
 		<hr class='grid__item one-whole lap-one-whole palm-one-whole'>
 	</div>
@@ -39,16 +39,24 @@
 	<div class="container">
 	  <div class="grid">
 		    <div class="grid__item one-half lap-one-half palm-one-whole " id='bmd_results'>
-		    	<strong><%= pluralize(@search_results.count, 'results')%></strong>
-		    	<div class="scrollable">
-			      <%= render(partial: "compare_search_table", :locals => {:search_results => @search_results})  %>
-		    	</div>
+		    	<% if @search_results.present? %>
+			    	<strong><%= pluralize(@search_results.count, 'results')%></strong>
+			    	<div class="scrollable">
+				      <%= render(partial: "compare_search_table", :locals => {:search_results => @search_results})  %>
+			    	</div>
+			    	<% else%>
+			    		Not Available
+		    	<% end %>
 		  </div>
 		  <div class="grid__item one-half lap-one-half palm-one-whole " id='bmd_results'>
-		  	<strong><%= pluralize(@save_result_count, 'saved search results')%></strong>
-		    <div class="scrollable">
-		      <%= render(partial: "compare_search_table", :locals => {:search_results => @save_search_results})  %>
-		    </div>
+		  	<% if @save_search_results.present? %>
+			  	<strong><%= pluralize(@save_search_results.count, 'saved search results')%></strong>
+			    <div class="scrollable">
+			      <%= render(partial: "compare_search_table", :locals => {:search_results => @save_search_results})  %>
+			    </div>
+			  <% else %>
+			    Not Available
+			  <% end %>
 		  </div>
 	  </div>
 	</div>
