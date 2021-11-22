@@ -25,7 +25,7 @@
 	      <%= select_tag(:filter_option, options_for_select([['Births', "1"], ['Deaths', "2"], ['Marriages', "3"],["Newly Added", "4"],["Removed", "5"]], selected: @filter_condition), {:prompt => "Filter By", id: 'compare_filter_results', tabindex: "0"}) %>
 	    </div>
 	    <div class="grid__item desk-wide-one-third desk-one-third lap-one-whole palm-one-whole">
-	      <%= button_tag 'Update Comparision', class: 'spinner-controller ladda-button push--top update_comparision' , id: 'filter_form_submit', data: {style: "zoom-out", color: appname.downcase, size: "s", "spinner-color" => "#ffffff"} %>
+	      <%= button_tag 'Update Comparision', class: 'spinner-controller ladda-button push--top update_results' , id: 'filter_form_submit', data: {style: "zoom-out", color: appname.downcase, size: "s", "spinner-color" => "#ffffff"} %>
 	    </div>
 	  </div>
 	<% end %>
