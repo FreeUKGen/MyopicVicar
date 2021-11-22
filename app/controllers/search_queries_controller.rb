@@ -343,6 +343,8 @@ class SearchQueriesController < ApplicationController
       records = @search_query.search_result.records.keys - @saved_search_result_hash
       result = @search_query.search_result.records.select{|k,v| select_hash.include?(k)}
       records = result.values
+    when 5
+      records = nil
     end
     records
   end
@@ -351,6 +353,8 @@ class SearchQueriesController < ApplicationController
     case @filter_condition.to_i
     when RecordType::BMD_RECORD_TYPE_ID.include?(@filter_condition.to_i)
       records = filter(@save_search_results)
+    when 4
+      records = nil
     when 5
       select_hash = @saved_search_result_hash - @search_query.search_results.records.keys
       records = BestGuess.get_best_guess_records(select_hash)

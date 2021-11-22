@@ -17,11 +17,6 @@
 		</div>
 	</div>
 </section>
-<div class="grid">
-	<div class="grid__item one-whole lap-one-whole palm-one-whole">
-		<hr class=' seven-tenths palm-one-whole push--top'>
-	</div>
-</div>
 <section>
 	<%= form_tag compare_search_path(params[:id], saved_search_id: params[:saved_search_id] ), method: :get, id: 'compare_filter_form' do %>
 	  <div class="grid">
@@ -35,6 +30,11 @@
 	  </div>
 	<% end %>
 </section>
+<div class="grid">
+	<div class="grid__item one-whole lap-one-whole palm-one-whole">
+		<hr class='grid__item one-whole lap-one-whole palm-one-whole'>
+	</div>
+</div>
 <section>
 	<div class="container">
 	  <div class="grid">
