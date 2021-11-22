@@ -7,7 +7,7 @@ class SavedSearchController < ApplicationController
 	def save_search
     @search_id = params[:id]
     search_results = SearchQuery.find(@search_id).search_result.records.keys
-    @results_hash = BestGuess.results_hash(search_results)
+    @results_hash = search_results#BestGuess.results_hash(search_results)
 		get_saved_search
     if @saved_search.present?
     	flash[:notice] = "Search is already saved"
