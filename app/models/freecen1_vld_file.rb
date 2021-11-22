@@ -298,8 +298,6 @@ class Freecen1VldFile
       records.each do |rec|
         next if rec.blank?
 
-        next if rec['deleted_flag'].present?
-
         @record_number += 1
         line = add_fields(rec, census_fields, year)
         csv << line
@@ -339,6 +337,11 @@ class Freecen1VldFile
 
   def add_fields(rec, census_fields, year)
     line = []
+    if rec['deleted_flag'].present?
+      rec['uninhabited_flag'] = 'n'
+      rec['notes'] = rec['notes'].present? ? 'Deleted flag set on VLD; ' + rec['notes'] : 'Deleted flag set on VLD; '
+      p rec
+    end
     census_fields.each do |field|
       case field
       when 'enumeration_district'
@@ -513,11 +516,11 @@ class Freecen1VldFile
   end
 
   def compute_page_number(rec)
-    if special_enumeration_district?(@initial_line_hash['enumeration_district'])
+    if rec['page_number'].present? && rec['page_number'] == @initial_line_hash['page_number']
+      line = @blank
+    elsif special_enumeration_district?(@initial_line_hash['enumeration_district'])
       line = rec['page_number']
       @initial_line_hash['page_number'] = rec['page_number']
-    elsif rec['page_number'].present? && rec['page_number'] == @initial_line_hash['page_number']
-      line = @blank
     else
       line = rec['page_number']
       @initial_line_hash['page_number'] = rec['page_number']
@@ -526,8 +529,15 @@ class Freecen1VldFile
   end
 
   def compute_schedule_number(rec, census_fields)
-    if %w[b n u v].include?(rec['uninhabited_flag']) || !census_fields.include?('ecclesiastical_parish')
+    if !census_fields.include?('ecclesiastical_parish')
       line = '0'
+    elsif rec['schedule_number'].present? && (rec['schedule_number'] == @initial_line_hash['schedule_number'])
+      line = @blank
+      @use_schedule_blank = true
+    elsif %w[b n u v].include?(rec['uninhabited_flag'])
+      line = rec['schedule_number']
+      @use_schedule_blank = false
+      @initial_line_hash['schedule_number'] = rec['schedule_number']
     elsif rec['sequence_in_household'] == 1 && rec['schedule_number'] == '0'
       line = '0'
       @use_schedule_blank = false
@@ -544,9 +554,6 @@ class Freecen1VldFile
       line = rec['schedule_number']
       @use_schedule_blank = false
       @initial_line_hash['schedule_number'] = rec['schedule_number']
-    elsif rec['schedule_number'].present? && (rec['schedule_number'] == @initial_line_hash['schedule_number'])
-      line = @blank
-      @use_schedule_blank = true
     else
       line = rec['schedule_number']
       @use_schedule_blank = false
@@ -603,12 +610,14 @@ class Freecen1VldFile
   end
 
   def compute_notes(rec)
-    if rec['notes'].present?
+    if rec['notes'].present? && rec['unoccupied_notes'].present?
       line = (rec['notes'] + rec['unoccupied_notes']) unless rec['notes'] == rec['unoccupied_notes']
+    elsif rec['notes'].present? && rec['unoccupied_notes'].blank?
+      line = rec['notes']
     elsif rec['unoccupied_notes'].present?
-      line = (rec['notes'] + rec['unoccupied_notes'])
+      line = rec['unoccupied_notes']
     else
-       line = @blank
+      line = @blank
     end
     line
   end
@@ -622,10 +631,7 @@ class Freecen1VldFile
     self[:transcriber_name] = self[:transcriber_name].squeeze(' ').strip if self[:transcriber_name].present?
   end
 
-
-
 # ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,upload
-
 
   def check_name(name)
     decision = false
