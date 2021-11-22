@@ -250,10 +250,6 @@ class SearchQueriesController < ApplicationController
     end
   end
 
-  def filtered_results
-    @search_results.select{ |r|  r["RecordTypeID"] == @filter_condition.to_i }
-  end
-
   def show_print_version
     @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
@@ -323,15 +319,52 @@ class SearchQueriesController < ApplicationController
     @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     redirect_back(fallback_location: new_search_query_path) && return if @search_query.result_count.blank?
     @save_search_id = params[:saved_search_id]
+    @search_results = filtered_search_results
     @saved_search = SavedSearch.find(@save_search_id)
     saved_search_results, @ucf_save_results, @save_result_count = @saved_search.get_bmd_saved_search_results
     @save_search_results = @search_query.sort_results(saved_search_results)
     response, @search_results, @ucf_results, @result_count = @search_query.get_bmd_search_results
+    if params[:filter_option].present?
+      @filter_condition = params[:filter_option]
+      @search_results = filtered_search_results if filtered_search_results.present?
+      @save_search_results = filter_saved_search_results if filter_saved_search_results.present?
+    end
+  end
+
+  def filtered_results
+    @search_results.select{ |r|  r["RecordTypeID"] == @filter_condition.to_i }
+  end
+
+  def filtered_search_results
+    case @filter_condition.to_i
+    when RecordType::BMD_RECORD_TYPE_ID.include?(@filter_condition.to_i)
+      records = filter(@search_results)
+    when 4
+      records = @search_query.search_result.records.keys - @saved_search_result_hash
+      result = @search_query.search_result.records.select{|k,v| select_hash.include?(k)}
+      records = result.values
+    end
+    records
+  end
+
+  def filter_saved_search_results
+    case @filter_condition.to_i
+    when RecordType::BMD_RECORD_TYPE_ID.include?(@filter_condition.to_i)
+      records = filter(@save_search_results)
+    when 5
+      select_hash = @saved_search_result_hash - @search_query.search_results.records.keys
+      records = BestGuess.get_best_guess_records(select_hash)
+    end
+    records
   end
 
   private
 
   def search_params
     params.require(:search_query).permit!
+  end
+
+  def filter(results)
+    results.select{|r| r["RecordTypeID"] == @filter_condition.to_i }
   end
 end

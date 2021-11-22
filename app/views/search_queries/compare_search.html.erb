@@ -17,19 +17,37 @@
 		</div>
 	</div>
 </section>
+<div class="grid">
+	<div class="grid__item one-whole lap-one-whole palm-one-whole">
+		<hr class=' seven-tenths palm-one-whole push--top'>
+	</div>
+</div>
+<section>
+	<%= form_tag compare_search_path(params[:id], saved_search_id: params[:saved_search_id] ), method: :get, id: 'compare_filter_form' do %>
+	  <div class="grid">
+	    <div class="grid__item desk-wide-one-third desk-one-third lap-one-whole palm-one-whole">
+	      <%= label_tag 'filter_results', 'Filter By' %>
+	      <%= select_tag(:filter_option, options_for_select([['Births', "1"], ['Deaths', "2"], ['Marriages', "3"],["Newly Added", "4"],["Removed", "5"]], selected: @filter_condition), {:prompt => "Filter By", id: 'compare_filter_results', tabindex: "0"}) %>
+	    </div>
+	    <div class="grid__item desk-wide-one-third desk-one-third lap-one-whole palm-one-whole">
+	      <%= button_tag 'Update Comparision', class: 'spinner-controller ladda-button push--top update_comparision' , id: 'filter_form_submit', data: {style: "zoom-out", color: appname.downcase, size: "s", "spinner-color" => "#ffffff"} %>
+	    </div>
+	  </div>
+	<% end %>
+</section>
 <section>
 	<div class="container">
 	  <div class="grid">
 		    <div class="grid__item one-half lap-one-half palm-one-whole " id='bmd_results'>
 		    	<strong><%= pluralize(@search_results.count, 'results')%></strong>
 		    	<div class="scrollable">
-			      <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @save_search_results, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => false})  %>
+			      <%= render(:partial => compare_search_table, :locals => {:search_results => @search_results})  %>
 		    	</div>
 		  </div>
 		  <div class="grid__item one-half lap-one-half palm-one-whole " id='bmd_results'>
 		  	<strong><%= pluralize(@save_result_count, 'saved search results')%></strong>
 		    <div class="scrollable">
-		      <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @search_results, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => false})  %>
+		      <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @save_search_results})  %>
 		    </div>
 		  </div>
 	  </div>
