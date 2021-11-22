@@ -319,8 +319,8 @@ class SearchQueriesController < ApplicationController
     @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     redirect_back(fallback_location: new_search_query_path) && return if @search_query.result_count.blank?
     @save_search_id = params[:saved_search_id]
-    @search_results = filtered_search_results
     @saved_search = SavedSearch.find(@save_search_id)
+    @saved_search_result_hash = @saved_search.results
     saved_search_results, @ucf_save_results, @save_result_count = @saved_search.get_bmd_saved_search_results
     @save_search_results = @search_query.sort_results(saved_search_results)
     response, @search_results, @ucf_results, @result_count = @search_query.get_bmd_search_results
@@ -340,7 +340,7 @@ class SearchQueriesController < ApplicationController
     if RecordType::BMD_RECORD_TYPE_ID.include?(filter_cond)
       records = filter(@search_results)
     elsif filter_cond == 4
-      records = @search_query.search_result.records.keys - @saved_search_result_hash
+      select_hash = @search_query.search_result.records.keys - @saved_search_result_hash
       result = @search_query.search_result.records.select{|k,v| select_hash.include?(k)}
       records = result.values
     else filter_cond == 5
