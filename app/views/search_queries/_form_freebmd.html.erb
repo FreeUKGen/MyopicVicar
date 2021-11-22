@@ -129,7 +129,7 @@
                 <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole spousefirstnamess display_none flush--bottom" id="spouse_firstnames_div">
                     <div class='labels'>
                         <%= label_tag 'spouse_first_name', "Spouse first name(s)".html_safe, class: "ttip" do %>
-                            <%= "Spouse first name(s)".html_safe %>
+                            <%= "Spouse's first name(s)".html_safe %>
                         <% end %>
                     </div>
                     <%= text_field_tag 'search_query[spouse_first_name]', set_value(@search_query.spouse_first_name), class: 'text-input flush--bottom', placeholder: 'Enter spouse first name(s) here', id: 'spouse_first_name', tabindex: "0"%>
@@ -224,9 +224,9 @@
                 <li class="grid__item desk-wide-one-third desk-two-fifths lap-one-half palm-one-whole countiess">
                     <div class='labels'>
                         <div class="countieslabel">
-                            <%= label_tag 'search_query_chapman_codes', "Counties".html_safe, class: "ttip",  tabindex: "0" do %>
+                            <%= label_tag 'search_query_chapman_codes', "Counties".html_safe, class: "ttip" do %>
                                 <%= "Counties".html_safe %>
-                                <small class="additional">Select one or more (hold Ctrl for multiple)</small>
+                                <small class="additional">Select none, one or more Counties (hold Ctrl for multiple)</small>
                             <% end %>
                         </div>
                     </div>
@@ -239,7 +239,7 @@
                 <li class="grid__item desk-wide-one-third desk-two-fifths lap-one-half palm-one-whole districtss">
                     <div class='labels'>
                         <div class='districtslabel'>
-                            <%= label_tag 'search_query_districts', "Districts #{app_icons[:info]}".html_safe, class: "ttip",tabindex: "0" do %>
+                            <%= label_tag 'search_query_districts', "Districts #{app_icons[:info]}".html_safe, class: "ttip" do %>
                                 <%= "Districts".html_safe %>
                                 <small class="additional">Select none, one or more Districts (hold Ctrl for multiple)</small>
                             <% end %>
@@ -466,7 +466,7 @@
                     $('#spouses_mother_surname').prop('name', 'search_query[mother_last_name]');
                     $('#spouses_mother_surname').prop('placeholder', "Enter Mother's surname here");
                     $('.spouse_or_mother_surname_label').attr('tabindex', '0');
-                    $('.spouse_or_mother_surname_label').text("Mothers Surname").append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
+                    $('.spouse_or_mother_surname_label').text("Mother's Surname").append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
                     $('.spouse_or_mother_surname_label').append('<span class="ttip__text" id="mother_or_spouse_help_text">Mother\'s name before marriage</span>')
                     $('#death_select_box').prop('disabled', 'disabled');
                     $('#death_select_box').val([]);
@@ -479,7 +479,7 @@
                     $('#spouses_mother_surname').prop('disabled', false)
                     $('#spouses_mother_surname').prop('name', 'search_query[spouses_mother_surname]');
                     $('#spouses_mother_surname').prop('placeholder', "Enter Spouse's surname here")
-                    $('.spouse_or_mother_surname_label').text("Spouses Surname");//.append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
+                    $('.spouse_or_mother_surname_label').text("Spouse's Surname");//.append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
                     $('#death_select_box').prop('disabled', 'disabled');
                     $('#death_select_box').val([]);
                     $('#spouses_mother_surname').prop('placeholder', "Enter Spouse's surname here")
@@ -489,7 +489,7 @@
                     $('#age_at_death_or_date_of_birth_div').hide();
                 } else if ($(".death").is(":checked") && !$('.birth, .marriage, .checkAll').is(':checked')) {
                     $('#age_at_death_or_date_of_birth_div').show();
-                    //$('#death_select_box').prop('disabled', false);
+                    $('#death_select_box').prop('disabled', false);
                     aad_selection_function();
                 } else {
                     $('#death_select_box').prop('disabled', 'disabled');
@@ -533,7 +533,7 @@
                 $('#spuse_checkbox').show();
                 $('#age_at_death_or_date_of_birth_div').hide();
             } else if ($(".death").is(":checked") && !$('.birth, .marriage, .checkAll').is(':checked')) {
-                //$('#death_select_box').prop('disabled', false);
+                $('#death_select_box').prop('disabled', false);
                 //$('#spouses_mother_surname').val('').prop('disabled', true)
                 //$('#spouses_mother_surname').css('background', '#ccc');
                 //$('#spouses_mother_surname').prop('placeholder', '');
