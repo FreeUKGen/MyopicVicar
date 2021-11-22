@@ -41,13 +41,13 @@
 		    <div class="grid__item one-half lap-one-half palm-one-whole " id='bmd_results'>
 		    	<strong><%= pluralize(@search_results.count, 'results')%></strong>
 		    	<div class="scrollable">
-			      <%= render(:partial => compare_search_table, :locals => {:search_results => @search_results})  %>
+			      <%= render(partial: "compare_search_table", :locals => {:search_results => @search_results})  %>
 		    	</div>
 		  </div>
 		  <div class="grid__item one-half lap-one-half palm-one-whole " id='bmd_results'>
 		  	<strong><%= pluralize(@save_result_count, 'saved search results')%></strong>
 		    <div class="scrollable">
-		      <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @save_search_results})  %>
+		      <%= render(partial: "compare_search_table", :locals => {:search_results => @save_search_results})  %>
 		    </div>
 		  </div>
 	  </div>
