@@ -27,4 +27,12 @@ class SavedSearchController < ApplicationController
   	@saved_search = @user.saved_searches.where(search_id: @search_id, results: @results_hash)
   end
 
+  def destroy
+  	get_user_info_from_userid
+    saved_search = @user.saved_searches.where(id: params[:id])
+    saved_search.destroy
+    flash[:notice] = 'The search removed successfully'
+    redirect_to saved_search_index_path
+  end
+
 end

@@ -4,7 +4,8 @@
   <thead>
     <tr>
       <th>Search Again</th>
-      <th>Search Query ID</th>
+      <th>Search Details</th>
+      <th>Action</th>
     </tr>
   </thead>
   <tbody>
@@ -21,9 +22,11 @@
             <% search_criteria = bmd_search_criteria(search_query) %>
             <% search_criteria.each do |name, value| %>
               <dt class="criteria__name epsilon"><%= name %>: <span><strong><%= value %></strong></span></dt>
-              <!--dd class="criteria__value zeta"><%#= value %></dd-->
             <% end %>
           </dl>
+        </td>
+        <td>
+          <%= link_to 'Destroy', "/saved_search/#{search.id}", method: :delete, data: { confirm: 'Are you sure?' } %></td>
         </td>
       </tr>
     <% end %>
