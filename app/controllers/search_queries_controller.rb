@@ -336,26 +336,26 @@ class SearchQueriesController < ApplicationController
   end
 
   def filtered_search_results
-    case @filter_condition.to_i
-    when RecordType::BMD_RECORD_TYPE_ID.include?(@filter_condition.to_i)
+    filter_cond = @filter_condition.to_i
+    if RecordType::BMD_RECORD_TYPE_ID.include?(filter_cond)
       records = filter(@search_results)
-    when 4
+    elsif filter_cond == 4
       records = @search_query.search_result.records.keys - @saved_search_result_hash
       result = @search_query.search_result.records.select{|k,v| select_hash.include?(k)}
       records = result.values
-    when 5
+    else filter_cond == 5
       records = nil
     end
     records
   end
 
   def filter_saved_search_results
-    case @filter_condition.to_i
-    when RecordType::BMD_RECORD_TYPE_ID.include?(@filter_condition.to_i)
+    filter_cond = @filter_condition.to_i
+    if RecordType::BMD_RECORD_TYPE_ID.include?(filter_cond)
       records = filter(@save_search_results)
-    when 4
+    elsif filter_cond == 4
       records = nil
-    when 5
+    else filter_cond == 5
       select_hash = @saved_search_result_hash - @search_query.search_results.records.keys
       records = BestGuess.get_best_guess_records(select_hash)
     end
