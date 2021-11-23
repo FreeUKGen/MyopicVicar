@@ -338,7 +338,7 @@ class Freecen1VldFile
   def add_fields(rec, census_fields, year)
     line = []
     if rec['deleted_flag'].present?
-      rec['uninhabited_flag'] = 'n'
+      rec['uninhabited_flag'] = 'x'
       rec['notes'] = rec['notes'].present? ? 'Deleted flag set on VLD; ' + rec['notes'] : 'Deleted flag set on VLD; '
       p rec
     end
@@ -519,7 +519,7 @@ class Freecen1VldFile
     if rec['page_number'].present? && rec['page_number'] == @initial_line_hash['page_number']
       line = @blank
     elsif special_enumeration_district?(@initial_line_hash['enumeration_district'])
-      line = rec['page_number']
+      line = rec['sequence_in_household'] == 1 ? rec['page_number'] : line = @blank
       @initial_line_hash['page_number'] = rec['page_number']
     else
       line = rec['page_number']
@@ -531,6 +531,10 @@ class Freecen1VldFile
   def compute_schedule_number(rec, census_fields)
     if !census_fields.include?('ecclesiastical_parish')
       line = '0'
+    elsif special_enumeration_district?(@initial_line_hash['enumeration_district'])
+      line = rec['sequence_in_household'] == 1 ? rec['schedule_number'] : line = @blank
+      @use_schedule_blank = false
+      @initial_line_hash['schedule_number'] = rec['schedule_number']
     elsif rec['schedule_number'].present? && (rec['schedule_number'] == @initial_line_hash['schedule_number'])
       line = @blank
       @use_schedule_blank = true
@@ -550,10 +554,7 @@ class Freecen1VldFile
       line = '0'
       @use_schedule_blank = false
       @initial_line_hash['schedule_number'] = '0'
-    elsif special_enumeration_district?(@initial_line_hash['enumeration_district'])
-      line = rec['schedule_number']
-      @use_schedule_blank = false
-      @initial_line_hash['schedule_number'] = rec['schedule_number']
+
     else
       line = rec['schedule_number']
       @use_schedule_blank = false
