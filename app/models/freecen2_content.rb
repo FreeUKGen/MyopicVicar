@@ -117,7 +117,7 @@ class Freecen2Content
                 places_array << this_place.place_name
                 records[county][key_place][:total][:place_id] = this_place._id
 
-                fc2_totals_pieces, fc2_totals_pieces_online = Freecen2Piece.before_place_year_totals(county, this_place._id, last_midnight)
+                fc2_totals_pieces, fc2_totals_pieces_online, fc2_totals_records_online = Freecen2Piece.before_place_year_totals(county, this_place._id, last_midnight)
                 fc2_added_pieces_online  = Freecen2Piece.between_dates_place_year_totals(county, this_place._id, previous_midnight, last_midnight)
 
 
@@ -127,6 +127,8 @@ class Freecen2Content
                   records[county][key_place][:total][:pieces] += records[county][key_place][year][:pieces]
                   records[county][key_place][year][:pieces_online] = fc2_totals_pieces_online[year]
                   records[county][key_place][:total][:pieces_online] += records[county][key_place][year][:pieces_online]
+                  records[county][key_place][year][:records_online] = fc2_totals_records_online[year]
+                  records[county][key_place][:total][:records_online] += records[county][key_place][year][:records_online]
                   records[county][key_place][year][:added_pieces_online] = fc2_added_pieces_online[year]
                   records[county][key_place][:total][:added_pieces_online] += records[county][key_place][year][:added_pieces_online]
 
@@ -202,6 +204,7 @@ class Freecen2Content
       records[county][field][:total] = {}
       records[county][field][:total][:pieces] = 0
       records[county][field][:total][:pieces_online] = 0
+      records[county][field][:total][:records_online] = 0
       records[county][field][:total][:added_pieces_online] = 0
       return records
     end

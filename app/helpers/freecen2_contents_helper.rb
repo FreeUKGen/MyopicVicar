@@ -24,4 +24,27 @@ module Freecen2ContentsHelper
     link_to 'Location', "https://www.google.com/maps/search/?api=1&query=#{place.latitude},#{place.longitude}", target: :_blank, class: 'btn   btn--small', title: 'Shows the location on a Google map in a new tab'
   end
 
+
+  def records_for_piece(piece_id,piece_status)
+    record_count = 0
+    if piece_status == "Online"
+      piece = Freecen2Piece.find_by(id: piece_id)
+      if piece.present?
+        if piece.freecen1_vld_files.present?
+          vld_files = piece.freecen1_vld_files
+          vld_files.each do |vld_file|
+            record_count += vld_file.num_individuals
+          end
+        else
+          if piece.freecen_csv_files.present?
+            csv_files = piece.freecen_csv_files
+            csv_files.each do |csv_file|
+              record_count += csv_file.freecen_csv_entries.count
+            end
+          end
+        end
+      end
+    end
+    return record_count
+  end
 end

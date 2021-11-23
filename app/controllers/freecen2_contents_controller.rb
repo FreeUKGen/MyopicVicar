@@ -1,4 +1,3 @@
-# Manages the collection of FreeCen database contents data (Records tab on main application) which are number of total pieces present, number of pieces online and new pieces
 class Freecen2ContentsController < ApplicationController
   require 'chapman_code'
   require 'freecen_constants'
@@ -7,9 +6,14 @@ class Freecen2ContentsController < ApplicationController
   def county_index
     set_county_vars
     @all_places = @freecen2_contents.records[@chapman_code][:total][:places]
-    location_href = 'location.href= "/freecen2_contents/place_index/?county_description=''' + @county_description + '''&place_description='
-    # place names containing & or + cause problems in hrefs, so call javascript replace_chars to replace with unicode value (function is in the view)
-    @location = location_href + '" + replace_chars(this.value)'
+    if params[:commit] == 'View Place Records'
+      if !params[:place_description].present? || params[:place_description] == ''
+        flash[:notice] = 'You must select a Place'
+      else
+        session[:contents_place_description] = params[:place_description]
+        redirect_to freecen2_contents_place_index_path and return
+      end
+    end
   end
 
   def new_records_index
@@ -30,10 +34,13 @@ class Freecen2ContentsController < ApplicationController
     end
   end
 
-
   def place_index
     set_county_vars
-    @place_description = params[:place_description]
+    if params[:place_description].present?
+      @place_description = params[:place_description]
+    else
+      @place_description = session[:contents_place_description]
+    end
     @key_place = Freecen2Content.get_place_key(@place_description)
     @place_id = @freecen2_contents.records[@chapman_code][@key_place][:total][:place_id]
     check_names_exist
@@ -99,30 +106,22 @@ class Freecen2ContentsController < ApplicationController
     @interval_end = @freecen2_contents.interval_end
     session[:contents_id] = @freecen2_contents.id
     @all_counties = @freecen2_contents.records[:total][:counties]
-    @location = 'location.href= "/freecen2_contents/county_index/?county_description=" + this.value'
+    @all_counties.unshift('')
     if params[:commit] == 'View County Records'
-      set_county_vars
-      @all_places = @freecen2_contents.records[@chapman_code][:total][:places]
-      location_href = 'location.href= "/freecen2_contents/place_index/?county_description=''' + @county_description + '''&place_description='
-      # place names containing & or + cause problems in hrefs, so call javascript replace_chars to replace with unicode value (function is in the view)
-      @location = location_href + '" + replace_chars(this.value)'
-      render 'county_index'
+      session[:contents_county_description] = params[:county_description]
+      redirect_to index_by_county_freecen2_contents_path and return
     else
       if params[:commit] == 'View Place Records'
-        set_county_vars
-        @place_description = params[:place_description]
-        if !@place_description.present?
+        if !params[:place_description].present? || params[:place_description] == ''
           flash[:notice] = 'You must select a Place'
         else
-          @key_place = Freecen2Content.get_place_key(@place_description)
-          @place_id = @freecen2_contents.records[@chapman_code][@key_place][:total][:place_id]
-          check_names_exist
-          render 'place_index'
+          session[:contents_county_description] = params[:county_description]
+          session[:contents_place_description] = params[:place_description]
+          redirect_to freecen2_contents_place_index_path and return
         end
       end
     end
   end
-
 
   def for_unique_names
     id = session[:contents_id]
@@ -135,7 +134,7 @@ class Freecen2ContentsController < ApplicationController
     end
     chapman_code = ChapmanCode.code_from_name(county_description)
     county_places = freecen2_contents.records[chapman_code][:total][:places]
-    county_places_hash = {}
+    county_places_hash = {"" => "Select a Place in " + county_description + "..."}
     county_places.each { |place| county_places_hash[place] = place}
     if county_places_hash.present?
       respond_to do |format|
@@ -152,7 +151,11 @@ class Freecen2ContentsController < ApplicationController
     @id = session[:contents_id]
     @freecen2_contents = Freecen2Content.find_by(id: @id)
     @interval_end = @freecen2_contents.interval_end
-    @county_description = params[:county_description]
+    if params[:county_description].present?
+      @county_description = params[:county_description]
+    else
+      @county_description = session[:contents_county_description]
+    end
     @chapman_code = ChapmanCode.code_from_name(@county_description)
   end
 
@@ -171,7 +174,6 @@ class Freecen2ContentsController < ApplicationController
       end
     end
   end
-
 
   private
 

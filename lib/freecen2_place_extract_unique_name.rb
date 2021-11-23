@@ -18,9 +18,6 @@ class Freecen2PlaceExtractUniqueName
         place_ids = SearchRecord.between(u_at: previous_time..time_start).map{|p| p.freecen2_place_id.to_s }.uniq
       end
 
-      #Freecen2Place.between(u_at: previous_time..time_start).data_present.no_timeout.each do |place|
-      #Freecen2Place.between(u_at: previous_time..time_start).search_records.present?.no_timeout.each do |place|
-
       place_ids.each do |place_id|
 
         unique_forenames = {}

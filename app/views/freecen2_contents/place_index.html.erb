@@ -1,10 +1,10 @@
+<h1 class="accessibility">Database Record totals for a place with options to view pieces and unique names</h1>
 <h2 style="text-align: center">Database Records for <%= @place_description %> in <%= @county_description %> as of  <%= @interval_end.strftime('%d %b %Y') %> </h2>
 <div  style="text-align: center">
   <%= link_to 'Back to Totals for All Counties' , freecen2_contents_path, method: :get , :class => "btn btn--small" %>
   <%= choose_another_place_link(@county_description) %>
-  <%= locate_place_link(@place) %>
-  <br>
-  <br>
+  <%= locate_place_link(@place_id) %>
+  <p></p>
   <p><i>Where applicable you can use the Action buttons to view a list of Pieces (including Civil Parish names) and/or a list of Unique Names (surnames/forenames)</i></p>
 </div>
 <div class='scrollable'>
@@ -12,6 +12,7 @@
     <thead >
       <tr>
         <th class='sticky-header'>Year</th>
+        <th class='sticky-header'>Records Online</th>
         <th class='sticky-header'>Pieces Online</th>
         <th class='sticky-header'>Total Pieces</th>
         <th class='sticky-header'>% Online</th>
@@ -27,6 +28,7 @@
       <% Freecen::CENSUS_YEARS_ARRAY.each do |census| %>
         <tr>
           <td><%= census %></td>
+          <td><%= @freecen2_contents.records[@chapman_code][@key_place][census][:records_online] %></td>
           <td><%= @freecen2_contents.records[@chapman_code][@key_place][census][:pieces_online] %></td>
           <td><%= @freecen2_contents.records[@chapman_code][@key_place][census][:pieces] %></td>
           <%= contents_show_percentage(@freecen2_contents.records[@chapman_code][@key_place][census][:pieces_online], @freecen2_contents.records[@chapman_code][@key_place][census][:pieces]) %>
@@ -51,6 +53,7 @@
       <% end %>
       <tr>
         <td>Total</td>
+        <td><%= @freecen2_contents.records[@chapman_code][@key_place][:total][:records_online] %></td>
         <td><%= @freecen2_contents.records[@chapman_code][@key_place][:total][:pieces_online] %></td>
         <td><%= @freecen2_contents.records[@chapman_code][@key_place][:total][:pieces] %></td>
         <%= contents_show_percentage(@freecen2_contents.records[@chapman_code][@key_place][:total][:pieces_online], @freecen2_contents.records[@chapman_code][@key_place][:total][:pieces]) %>
@@ -63,4 +66,3 @@
     </tbody>
   </table>
 </div>
-<br />

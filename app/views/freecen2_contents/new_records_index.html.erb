@@ -1,18 +1,18 @@
 <% if @additions_county == 'All' %>
+<h1 class="accessibility">Database Record totals for recent additions</h1>
   <h2 style="text-align: center">Recent Additions for All Counties as of  <%= @interval_end.strftime('%d %b %Y') %> </h2>
 <% else %>
-  <h2 style="text-align: center">Recent additions for <%= @additions_county %>  as of  <%= @interval_end.strftime('%d %b %Y') %> </h2>
+  <h2 style="text-align: center">Recent Additions for <%= @additions_county %>  as of  <%= @interval_end.strftime('%d %b %Y') %> </h2>
 <% end %>
 <h3 style="text-align: center">Places with Pieces added to the database in the previous 30 days </h3>
 <div  style="text-align: center">
   <% if @additions_county == 'All' %>
     <%= link_to 'Back to Totals for All Counties' , freecen2_contents_path, method: :get , :class => "btn btn--small" %>
   <% else %>
-    <%= link_to 'Back to Totals for ' + @additions_county , :back, method: :get , :class => "btn btn--small" %>
+    <%= link_to 'Back to Totals for ' + @additions_county , index_by_county_freecen2_contents_path(county_description: @additions_county), method: :get , :class => "btn btn--small" %>
   <% end %>
-  <br>
-  <br>
 </div>
+<p></p>
 <div class='scrollable'>
   <table  class="table--bordered table--data table--striped my-width " >
     <thead >

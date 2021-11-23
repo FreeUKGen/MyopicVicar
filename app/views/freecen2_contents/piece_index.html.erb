@@ -1,3 +1,4 @@
+<h1 class="accessibility">Database Pieces</h1>
 <h2 style="text-align: center">Database Pieces for <%= @place_description %> in <%= @county_description %> in <%= @census %><br>
   as of  <%= @interval_end.strftime('%d %b %Y') %> </h2>
 <div  style="text-align: center">
@@ -8,10 +9,9 @@
     <%= choose_another_place_link(@county_description) %>
     <%= link_to 'Back to Records for ' + @place_description ,  :back, method: :get , :class => "btn btn--small" %>
   <% end %>
-  <%= locate_place_link(@place) %>
-  <br>
-  <br>
+  <%= locate_place_link(@place_id) %>
 </div>
+<p></p>
 <div class='scrollable'>
   <table  class="table--bordered table--data table--striped my-width " >
     <thead >
@@ -21,8 +21,8 @@
         <% if @census == 'All Years' %>
           <th class='sticky-header'>Year</th>
         <% end %>
-        <th class='sticky-header'>Online <br>
-          (Date Online)</th>
+        <th class='sticky-header'>Online (Date)</th>
+        <th class='sticky-header'>Records Online</th>
         <th class='sticky-header'>Civil Parishes<br>
           <small>The part in () is the name of any Hamlet, Township, Ward or Place included in the Civil Parish</small></th>
       </tr>
@@ -40,6 +40,7 @@
           <% else%>
             <td><%= 'N' %></td>
           <% end%>
+          <td><%= records_for_piece(piece.id, piece.status) %></td>
           <% if piece.civil_parish_names == nil %>
             <td><i> n/a </i></td>
           <% else%>
