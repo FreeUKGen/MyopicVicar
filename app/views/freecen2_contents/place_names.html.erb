@@ -4,33 +4,36 @@
 <div  style="text-align: center">
   <%= link_to 'Back to Totals for All Counties' , freecen2_contents_path, method: :get , :class => "btn btn--small" %>
   <% if params[:new_records] == 'All' %>
-<%= link_to 'Back to Recent Additions' ,  :back, method: :get , :class => "btn btn--small" %><br>
+    <%= link_to 'Back to Recent Additions' ,  :back, method: :get , :class => "btn btn--small" %><br>
   <% else %>
-  <%= choose_another_place_link(@county_description) %>
-  <%= link_to 'Back to Records for ' + @place_description, freecen2_contents_place_index_path(:county_description => @county_description, :place_description => @place_description), class: "btn btn--small", method: :get %>
+    <%= choose_another_place_link(@county_description) %>
+    <%= link_to 'Back to Records for ' + @place_description, freecen2_contents_place_index_path(:county_description => @county_description, :place_description => @place_description), class: "btn btn--small", method: :get %>
   <% end %><br>
   <p><i>(You may find it useful to use your browser find option to search for critical parts of names)</i></p>
 </div>
 <div class="island island--bordered text--center">
   <%= form_with url: freecen2_contents_place_names_path do |f| %>
-  <nl>
-    <li class="grid" >
-      <% if @name_type == 'Forenames' %>
-        <h3 style="text-align: center"> Total Unique <%= @name_type %> : <%= @first_names_cnt %></h3>
-      <% else %>
-        <h3 style="text-align: center"> Total Unique <%= @name_type %> : <%= @last_names_cnt %></h3>
-      <% end %>
-      <h4> Switch Name Type To : </h4>
-      <% if @name_type == 'Surnames' %>
-        <%= link_to 'Forenames', freecen2_contents_place_names_path(:county_description => @county_description, :place_description => @place_description, :place_id => @place_id, :census_year => @year, :name_type => 'Forenames'), :class => "btn btn--small", :method => :get%>
-      <% else %>
-        <%= link_to 'Surnames', freecen2_contents_place_names_path(:county_description => @county_description,  :place_description => @place_description, :place_id => @place_id, :census_year => @year, :name_type => 'Surnames'), :class => "btn btn--small", :method => :get%>
-      <% end %>
-    </li></nl>
+    <nl>
+      <li class="grid" >
+        <% if @name_type == 'Forenames' %>
+          <h3 style="text-align: center"> Total Unique <%= @name_type %> : <%= @first_names_cnt %></h3>
+        <% else %>
+          <h3 style="text-align: center"> Total Unique <%= @name_type %> : <%= @last_names_cnt %></h3>
+        <% end %>
+        <h4> Switch Name Type To : </h4>
+        <% if @name_type == 'Surnames' %>
+          <%= link_to 'Forenames', freecen2_contents_place_names_path(:county_description => @county_description, :place_description => @place_description, :place_id => @place_id, :census_year => @year, :name_type => 'Forenames'), :class => "btn btn--small", :method => :get%>
+        <% else %>
+          <%= link_to 'Surnames', freecen2_contents_place_names_path(:county_description => @county_description,  :place_description => @place_description, :place_id => @place_id, :census_year => @year, :name_type => 'Surnames'), :class => "btn btn--small", :method => :get%>
+        <% end %>
+      </li>
+    </nl>
   <% end%>
   <p>
     <% if @first_names_cnt >0 || @last_names_cnt > 0 %>
-      <p><h4> Show <%= @name_type %> starting with : </h4></p>
+      <p>
+        <h4> Show <%= @name_type %> starting with : </h4>
+      </p>
     <% end %>
     <% if @first_letter != 'All' %>
       <%= link_to 'Any',freecen2_contents_place_names_path(:county_description => @county_description, :place_description => @place_description, :place_id => @place_id, :census_year => @year, :name_type => @name_type, :first_letter => 'All'), :class => "btn btn--small", :method => :get%>
@@ -49,44 +52,52 @@
 </div>
 <div class="island  island--light text--center">
   <fieldset class="inputs" style="border-style: none;">
-     <% if @first_letter != 'All' %>
-       <% if @first_letter != 'Remainder' %>
-          <legend style="text-align: center"><h4>Unique <%= @name_type %> Starting with <%= @first_letter%> : <%= @unique_names[@first_letter].count%></h4></legend>
-       <% else %>
-          <legend style="text-align: center"><h4>Additional Names : <%= @remainder.count%></h4></legend>
-       <% end %>
-     <% else %>
-       <legend style="text-align: center"><h4>All <%= @name_type %></h4></legend>
-     <% end %>
+    <% if @first_letter != 'All' %>
+      <% if @first_letter != 'Remainder' %>
+        <legend style="text-align: center">
+          <h4>Unique <%= @name_type %> Starting with <%= @first_letter%> : <%= @unique_names[@first_letter].count%></h4>
+        </legend>
+      <% else %>
+        <legend style="text-align: center">
+          <h4>Additional Names : <%= @remainder.count%></h4>
+        </legend>
+      <% end %>
+    <% else %>
+      <legend style="text-align: center">
+        <h4>All <%= @name_type %></h4>
+      </legend>
+    <% end %>
     <nl>
-    <li class="grid" >
-      <% if @first_letter != 'All' %>
-        <% if @first_letter != 'Remainder' %>
-          <p>
-            <% @unique_names[@first_letter].each do |name| %>
-              <%= name %>&emsp;&nbsp;
-            <% end %>
-          <% else %>
-            <% @remainder.each do |name| %>
-              <%= name %>&emsp;&nbsp;
-            <% end %>
-          <% end %>
-        <% else %>
-          <% ("A".."Z").each do |letter| %>
-            <p><b><%= letter%></b></p>
+      <li class="grid" >
+        <% if @first_letter != 'All' %>
+          <% if @first_letter != 'Remainder' %>
             <p>
-              <% @unique_names[letter].each do |name| %>
+              <% @unique_names[@first_letter].each do |name| %>
                 <%= name %>&emsp;&nbsp;
               <% end %>
-            </p>
-          <% end%>
-          <p><b> Additional Names</b></p>
-          <p>
-            <% @remainder.each do |name| %>
-              <%= name %>&emsp;&nbsp;
+            <% else %>
+              <% @remainder.each do |name| %>
+                <%= name %>&emsp;&nbsp;
+              <% end %>
             <% end %>
-          <% end %>
-        </p></li></nl>
-      </fieldset>
-    </div>
-    <br />
+          <% else %>
+            <% ("A".."Z").each do |letter| %>
+              <p><b><%= letter%></b></p>
+              <p>
+                <% @unique_names[letter].each do |name| %>
+                  <%= name %>&emsp;&nbsp;
+                <% end %>
+              </p>
+            <% end%>
+            <p><b> Additional Names</b></p>
+            <p>
+              <% @remainder.each do |name| %>
+                <%= name %>&emsp;&nbsp;
+              <% end %>
+            <% end %>
+          </p>
+        </li>
+      </nl>
+    </fieldset>
+  </div>
+  <br />

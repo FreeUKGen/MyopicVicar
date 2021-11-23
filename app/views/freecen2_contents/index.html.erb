@@ -1,14 +1,15 @@
 <div class="grid__item one_whole palm-one-whole" >
-<%= render 'flash_notice' %>
-<br>
-<h1 class="accessibility">Database Record totals with option to view totals for a specific county or place or recent database addtions</h1>
+  <%= render 'flash_notice' %>
+  <br>
+  <h1 class="accessibility">Database Record totals with option to view totals for a specific county or place or recent database addtions</h1>
   <h2 class="title text--center">Database Records as of <%= @interval_end.strftime('%d %b %Y')%></h2>
   <div class="grid__item one-third palm-one-whole" >
     <%= simple_form_for :view_county_records,  method: :get do |c| %>
       <fieldset class="inputs" >
         <legend>Counties and Places</legend>
         <div style="text-align: center">
-          <small class="additional">You may view the Database Records for <br>a specific County</small></div>
+          <small class="additional">You may view the Database Records for <br>
+            a specific County</small></div>
         <label class="label ttip" for="county_description" >
           Click box to select a County
           <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
@@ -49,7 +50,9 @@
 </div>
 <div class="grid__item two-thirds palm-one-whole" >
   <fieldset style="border-style: none;">
-    <legend style="text-align: center"><h3>Totals for All Counties</h3></legend>
+    <legend style="text-align: center">
+      <h3>Totals for All Counties</h3>
+    </legend>
     <p style="text-align: center"><i> <small class="additional">Censuses are broken into Pieces by the National Archives<br>
           (a Piece consists of a related set of census pages)<br>
           New Pieces Online are those added to the database in the previous 30 days</small></i></p>
