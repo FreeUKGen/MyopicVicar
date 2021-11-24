@@ -338,7 +338,6 @@ class Freecen1VldFile
   def add_fields(rec, census_fields, year)
     line = []
     if rec['deleted_flag'].present?
-      rec['uninhabited_flag'] = 'n'
       rec['notes'] = rec['notes'].present? ? 'Deleted flag set on VLD; ' + rec['notes'] : 'Deleted flag set on VLD; '
       p rec
     end
