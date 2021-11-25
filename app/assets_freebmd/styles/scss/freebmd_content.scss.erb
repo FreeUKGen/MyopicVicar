@@ -1068,13 +1068,15 @@ transform: matrix(-1, 0, 0, 1, 0, 0);
     color: blue;
 }
 
-.postems:focus, .postems:hover .fa-envelope:before {
+.postems:focus .fa-envelope:before, .postems:hover .fa-envelope:before {
     content: "\f658";
     font-size: 1.2em !important;
-    transition-duration: 0.2s;
+}
+.table_link:focus, .table_link:hover {
     outline: 2px dashed $magenta;
-    outline-offset: 7px;
+    outline-offset: -5px;
     text-decoration: none;
+    background-color: "#fff"
 }
 
 .scan_files:focus, .scan_files:hover .fa-camera:before {
@@ -1113,5 +1115,10 @@ transform: matrix(-1, 0, 0, 1, 0, 0);
     display: none;
 }
 
+
+.right_ttip {
+    top: -5px !important;
+    left: 25% !important;
+}
 
 
