@@ -35,12 +35,12 @@
         <div class='push-half--top'>
           <div class= "grid__item two-thirds lap-two-thirds palm-one-whole hard--left">
             <% if @previous_record_of_page.present?%>
-              <div class='grid__item one-half lap-one-half palm-one-half'>
+              <div class='grid__item one-half lap-one-half palm-one-half push-half--bottom text--right'>
                 <%= link_to 'Previous in Page'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record_of_page, @previous_record_of_page.friendly_url, search_entry: @current_record), class: 'push-half--right push-half--top' %>
               </div>
             <% end %>
             <% if @next_record_of_page.present?%>
-              <div class='grid__item one-half lap-one-half palm-one-half'>
+              <div class='grid__item one-half lap-one-half palm-one-half push-half--bottom text--left'>
                 <%= link_to 'Next in Page'.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record_of_page, @next_record_of_page.friendly_url, search_entry: @current_record), class: 'push-half--right push-half--top' %>
               </div>
             <% end %>
@@ -49,10 +49,10 @@
         <div class='push-half--top'>
           <div class="grid__item two-thirds lap-two-thirds palm-one-whole hard--left">
             <% if params[:search_id].present? %>
-              <div class='grid__item one-half lap-one-half palm-one-half'>
+              <div class='grid__item one-half lap-one-half palm-one-half text--left'>
                 <%= link_to '<i class="fa fa-chevron-left view_arrow"></i> Previous Result'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record, @previous_record.friendly_url), class: 'push-half--right push-half--top push--bottom' unless @previous_record.nil? %>
               </div>
-              <div class='grid__item one-half lap-one-half palm-one-half'>
+              <div class='grid__item one-half lap-one-half palm-one-half text--right'>
                 <%= link_to 'Next Result <i class="fa fa-chevron-right view_arrow"></i>'.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record, @next_record.friendly_url), class: 'push-half--right push-half--top push--bottom' unless @next_record.nil?%>
               </div>
             <% end %>
