@@ -12,8 +12,9 @@ class BestGuessController < ApplicationController
     @page_number = params[:page_number].to_i
     @option = params[:filter_option] if params[:filter_option].present?
     record_from_page = params[:record_of_page].to_i if params[:record_of_page].present?
-    @search_record = BestGuess.where(RecordNumber: params[:id]).first
-    @current_record_number = current_record_number_to_display(params[:id].to_i, record_from_page)
+    #######################################################################################################
+    @search_record = BestGuess.where(RecordNumber: @search_record_number).first
+    @current_record_number = current_record_number_to_display(@search_record_number.to_i, record_from_page)
     @current_record = BestGuess.where(RecordNumber: @current_record_number).first
     if @search
       @anchor_entry = params[:search_entry].present? ? params[:search_entry] : @current_record.RecordNumber
@@ -153,8 +154,8 @@ class BestGuessController < ApplicationController
     messagea = 'We are sorry but the record you requested no longer exists; possibly as a result of some data being edited. You will need to redo the search with the original criteria to obtain the updated version.'
     warning = "#{appname_upcase}::SEARCH::ERROR Missing entry for search record"
     warninga = "#{appname_upcase}::SEARCH::ERROR Missing parameter"
-    current_record_number = params[:search_entry].present? ? params[:search_entry] : params[:id]
-    if current_record_number.blank?
+    @search_record_number = params[:search_entry].present? ? params[:search_entry] : params[:id]
+    if @search_record_number.blank?
       flash[:notice] = messagea
       logger.warn(warninga)
       logger.warn " #{params[:id]} no longer exists"
@@ -162,7 +163,7 @@ class BestGuessController < ApplicationController
       return false
     end
     @search_query = SearchQuery.find(session[:query]) if session[:query].present?
-    response, @next_record, @previous_record = @search_query.bmd_next_and_previous_records(current_record_number)
+    response, @next_record, @previous_record = @search_query.bmd_next_and_previous_records(@search_record_number)
     @search_record = response ? @search_query.locate(params[:id]) : nil
     return false unless response
     true
