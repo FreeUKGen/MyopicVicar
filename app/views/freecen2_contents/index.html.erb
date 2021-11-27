@@ -9,29 +9,32 @@
         <legend>Counties and Places</legend>
         <div style="text-align: center">
           <small class="additional">You may view the Database Records for <br>
-            a specific County</small></div>
+            a specific County. <br>
+            <i> Note: Counties in brackets have no Pieces Online.</i></small></div>
         <label class="label ttip" for="county_description" >
-          Click box to select a County
+          County
           <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-          <span class="ttip__text">Required. Only Counties with Pieces are included.</span> </label>
+          <span class="ttip__text">Required. <br>
+            Only Counties with Pieces are included.</span> </label>
         <select class="select" id="county_description"  name="county_description" required="required">
-          <% @all_counties.each do |value| %>
-            <option value="<%=value%>" ><%=value%></option>
+          <% @all_counties.each do |key, value| %>
+            <option value="<%=key%>" ><%=value%></option>
           <% end %>
         </select>
         <%= c.submit 'View County Records',  :class => "btn   btn--small"%><br>
         <div style="text-align: center">
-          <small class="additional">You may view the Database Records for a specific Place and if there is data Online also get a list of Unique Names</small></div>
+          <small class="additional">You may view the Database Records for a specific Place and if there are Pieces Online also get a list of Names currently in the Database.<br>
+            <i> Note: Places in brackets have no Pieces Online.</i></small></div>
       </select>
       <label class="label ttip" for="place_description" >
-        Click box to select a Place
+        Place
         <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
         <span class="ttip__text">List fills when a County is selected. Only Places with Pieces are included.</span> </label>
       <select class="select" id="place_description" name="place_description">
         <option value="">List fills when you select a County</option>
         <% if false %>
-          <% @places_for_county.each do |value| %>
-            <option value="<%=value%>" ><%=value%></option>
+          <% @places_for_county.each do |key, value| %>
+            <option value="<%=key%>" ><%=value%></option>
           <% end %>
         <% end %>
       </select>

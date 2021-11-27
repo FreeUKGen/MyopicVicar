@@ -1,5 +1,5 @@
-<h1 class="accessibility">Unique names for a place with option to view forenames or surnames</h1>
-<h2 style="text-align: center">Unique Names for <%= @place_description %> <br>
+<h1 class="accessibility">List Names currently in the Database for a place with option to view forenames or surnames</h1>
+<h2 style="text-align: center">Names from <%= @place_description %> <br>
   in <%= @county_description %> in <%= @year %> </h2>
 <div  style="text-align: center">
   <%= link_to 'Back to Totals for All Counties' , freecen2_contents_path, method: :get , :class => "btn btn--small" %>
@@ -16,9 +16,9 @@
     <nl>
       <li class="grid" >
         <% if @name_type == 'Forenames' %>
-          <h3 style="text-align: center"> Total Unique <%= @name_type %> : <%= @first_names_cnt %></h3>
+          <h3 style="text-align: center"> Total <%= @name_type %> : <%= @first_names_cnt %></h3>
         <% else %>
-          <h3 style="text-align: center"> Total Unique <%= @name_type %> : <%= @last_names_cnt %></h3>
+          <h3 style="text-align: center"> Total <%= @name_type %> : <%= @last_names_cnt %></h3>
         <% end %>
         <h4> Switch Name Type To : </h4>
         <% if @name_type == 'Surnames' %>
@@ -55,7 +55,7 @@
     <% if @first_letter != 'All' %>
       <% if @first_letter != 'Remainder' %>
         <legend style="text-align: center">
-          <h4>Unique <%= @name_type %> Starting with <%= @first_letter%> : <%= @unique_names[@first_letter].count%></h4>
+          <h4><%= @name_type %> Starting with <%= @first_letter%> : <%= @unique_names[@first_letter].count%></h4>
         </legend>
       <% else %>
         <legend style="text-align: center">

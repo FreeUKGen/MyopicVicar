@@ -47,4 +47,11 @@ module Freecen2ContentsHelper
     end
     return record_count
   end
+
+  def records_for_place(chapman_code, place_description, census)
+    record_count = 0
+    key_place = Freecen2Content.get_place_key(place_description)
+    record_count = @freecen2_contents.records[chapman_code][key_place][census][:records_online]
+    return record_count
+  end
 end

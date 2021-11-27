@@ -10,15 +10,15 @@
       <fieldset class="inputs">
         <legend>Places in <%= @county_description %></legend>
         <div style="text-align: center">
-          <small class="additional">You may view the Database Records for a specific Place and if there is data Online also get a list of Unique Names</small></div>
+          <small class="additional">You may view the Database Records for a specific Place and if there are Pieces Online also get a list of Names currently in the Database.<br>
+            <i> Note: Places in brackets have no Pieces Online.</i></small></div>
         <label class="label ttip" for="place_description" >
-          Click box to select a Place
+          Place
           <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
           <span class="ttip__text">Required. Only Places with Pieces are included.</span> </label>
         <select class="select" id="place_description"  name="place_description" required="required">
-          <option value="" ><%='Select a Place in ' + @county_description + ' ...'%></option>
-          <% @all_places.each do |value| %>
-            <option value="<%=value%>" ><%=value%></option>
+          <% @places_for_county.each do |key, value| %>
+            <option value="<%=key%>" ><%=value%></option>
           <% end %>
         </select>
         <%= p.submit 'View Place Records',  :class => "btn   btn--small"%><br>
