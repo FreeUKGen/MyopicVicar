@@ -153,7 +153,8 @@ class BestGuessController < ApplicationController
     messagea = 'We are sorry but the record you requested no longer exists; possibly as a result of some data being edited. You will need to redo the search with the original criteria to obtain the updated version.'
     warning = "#{appname_upcase}::SEARCH::ERROR Missing entry for search record"
     warninga = "#{appname_upcase}::SEARCH::ERROR Missing parameter"
-    if params[:id].blank?
+    current_record_number = params[:search_entry].present? ? params[:search_entry] : params[:id]
+    if current_record_number.blank?
       flash[:notice] = messagea
       logger.warn(warninga)
       logger.warn " #{params[:id]} no longer exists"
@@ -161,7 +162,7 @@ class BestGuessController < ApplicationController
       return false
     end
     @search_query = SearchQuery.find(session[:query]) if session[:query].present?
-    response, @next_record, @previous_record = @search_query.next_and_previous_records(params[:id])
+    response, @next_record, @previous_record = @search_query.bmd_next_and_previous_records(current_record_number)
     @search_record = response ? @search_query.locate(params[:id]) : nil
     return false unless response
     true

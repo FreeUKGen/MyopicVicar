@@ -1,37 +1,25 @@
 <% title "Record Details" %>
 <% breadcrumb :entry_information, @current_record  if @saved_record %>
 <%= render 'flash_notice' %>
-<div class="grid">
+<!--div class="grid">
   <div class="grid__item seven-tenths lap-seven-tenths palm-one-whole">
-    <div class="grid__item one-third lap-one-third palm-one-half hard--left">
+    <div class="grid__item one-third lap-one-third palm-one-half hard--left"-->
       <%= link_to "#{app_icons[:left_arrow_pink]} Back to Results".html_safe, search_query_path(@search_query, anchor: @anchor_entry), class: " btn   btn--small" if params[:search_id].present?%>
-    </div>
-    <div class="grid__item one-third lap-one-third palm-one-half float--right">
-      <%#= form_tag friendly_bmd_record_details_path(params[:search_id], @search_record, @search_record.friendly_url), method: :get, id: 'option_form' do %>
-        <%#= select_tag('filter_option', options_for_select([['Scan', "1"], ['Postems', "2"], ['Printable Format', "3"]], selected: @option), {:prompt => "More Options", id: 'filter_results', tabindex: "0", onchange: "more_options()"}) %>
-      <%# end %>
-      <!--div id="tool_button" class="btn btn--small float--right" onclick="myFunction()"><i class="fa fa-cog" aria-hidden="true"></i> More Options</div-->
-    </div>  
+    <!--/div>
+    
     
   </div>
-</div>
-
-<%#= link_to "#{app_icons[:left_arrow_pink]} Back".html_safe, search_query_path(@search_query, id: params[:search_id]), class: " btn   btn--small" if params[:search_id].present?%>
+</div-->
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
   <div class="grid">
-    <div class="grid__item seven-tenths lap-seven-tenths palm-one-whole ">
+    <div class="grid__item seven-tenths lap-one-whole palm-one-whole ">
       <h1 class="beta push-half--top flush--bottom"><%= "Entry Information: #{@current_record[:GivenName].camelize} #{@current_record[:Surname].upcase}" %></h1>
       <hr>
-      <!--span  class='additional'>
-        While we have made all efforts to correctly record the information in the original document there may be different interpretations of the written words. <b>If you have access to the original document</b> and believe we have made a mistake you are encouraged to report this to us.
-        <%= link_to 'Report an Error in this Data', report_error_contact_path(@current_record.RecordNumber, query: @search_query), class: 'btn btn--natural' unless  @current_record.blank? || @search_query.blank? %>
-      </span-->
       <section>
-        <div class="grid__item two-thirds lap-two-thirds palm-one-whole hard--left">
+        <div class="grid__item two-thirds lap-one-whole palm-one-whole hard--left">
           <% record_type = RecordType::display_name(@current_record.RecordTypeID)%>
           <%= render partial: 'entry_information_table', locals: {record: @current_record, search: @search, entry_type: record_type.downcase, query: @search_query, search_id: params[:search_id], original_record: @current_record, more_info: false, type: "general"} %>
         </div>
-        
         <div class='push-half--top'>
           <div class= "grid__item two-thirds lap-two-thirds palm-one-whole hard--left">
             <% if @previous_record_of_page.present?%>
@@ -58,7 +46,7 @@
             <% end %>
           </div>
         </div>
-        </section>
+      </section>
       
       <% if @option == '1' %>
         <div id="display_scans">
@@ -167,7 +155,7 @@
     </div>
     <% unless print_friendly %>
       <% if device_type == :desktop %>
-        <div class="grid__item two-tenths lap-one-tenths palm-one-whole"  id='results_table_ad'>
+        <div class="grid__item two-tenths"  id='results_table_ad'>
           <center>
             <p>Advertisement</p>
             <%= adsence_right_side_banner %>

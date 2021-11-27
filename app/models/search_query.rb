@@ -724,6 +724,26 @@ class SearchQuery
     [response, next_record, previous_record]
   end
 
+  def bmd_next_and_previous_records current
+    if search_result.records.respond_to?(:values)
+      search_results = search_result.records.values
+      #search_results = filter_name_types(search_results)
+      search_results = sort_results(search_results) unless search_results.nil?
+      record_number = locate_index(search_results, current)
+      next_record_id = nil
+      previous_record_id = nil
+      search_id = 'RecordNumber' 
+      next_record_id = search_results[record_number + 1][search_id] unless record_number.nil? || search_results.nil? || record_number >= search_results.length - 1
+      previous_record_id = search_results[record_number - 1][search_id] unless search_results.nil? || record_number.nil? || record_number.zero?
+      next_record = BestGuess.find(next_record_id) if next_record_id.present?
+      previous_record = BestGuess.find(previous_record_id) if previous_record_id.present?
+      response = true
+    else
+      response = false
+    end
+    [response, next_record, previous_record]
+  end
+
   def no_additional_census_fields?
     result = false
     result = true if !disabled && occupation.blank? && marital_status.blank? && language.blank? && sex.blank?
