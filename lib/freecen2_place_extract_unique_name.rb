@@ -72,8 +72,8 @@ class Freecen2PlaceExtractUniqueName
       if search_records.present?
         search_records.each do |search_rec|
           search_rec.search_names.each do |name|
-            first_names << name.first_name.upcase
-            last_names << name.last_name.upcase
+            first_names << name.first_name.upcase unless name.first_name.blank?
+            last_names << name.last_name.upcase unless name.last_name.blank?
           end
         end
       end
