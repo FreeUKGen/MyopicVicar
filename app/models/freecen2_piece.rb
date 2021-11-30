@@ -162,11 +162,13 @@ class Freecen2Piece
       last_id = BSON::ObjectId.from_time(time)
       totals_pieces = {}
       totals_pieces_online = {}
+      totals_records_online = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
         totals_pieces[year] = Freecen2Piece.where(_id: { '$lte' => last_id }).chapman_code(chapman_code).year(year).count
         totals_pieces_online[year] = Freecen2Piece.where(status_date: { '$lte' => time }).chapman_code(chapman_code).year(year).status('Online').count
+        totals_records_online[year] = SearchRecord.where(_id: { '$lte' => last_id }, chapman_code: chapman_code, record_type: year).count
       end
-      [totals_pieces, totals_pieces_online]
+      [totals_pieces, totals_pieces_online, totals_records_online]
     end
 
     def before_place_year_totals(chapman_code, place_id, time)

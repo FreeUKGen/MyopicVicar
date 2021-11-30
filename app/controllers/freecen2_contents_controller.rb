@@ -131,8 +131,8 @@ class Freecen2ContentsController < ApplicationController
   end
 
   def for_unique_names
-    id = session[:contents_id]
-    @freecen2_contents = Freecen2Content.find_by(id: id)
+    @id = session[:contents_id]
+    @freecen2_contents = Freecen2Content.find_by(id: @id)
     if params[:county_description]
       county_description = params[:county_description]
     else
@@ -155,6 +155,10 @@ class Freecen2ContentsController < ApplicationController
   end
 
   def set_county_vars
+    if session[:contents_id].blank?
+      @freecen2_contents = Freecen2Content.order(interval_end: :desc).first
+      session[:contents_id] = @freecen2_contents.id
+    end
     @id = session[:contents_id]
     @freecen2_contents = Freecen2Content.find_by(id: @id)
     @interval_end = @freecen2_contents.interval_end

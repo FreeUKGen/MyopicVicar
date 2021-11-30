@@ -73,7 +73,7 @@ class Freecen2Content
 
         chaps += 1
 
-        fc2_totals_pieces, fc2_totals_pieces_online = Freecen2Piece.before_county_year_totals(county, last_midnight)
+        fc2_totals_pieces, fc2_totals_pieces_online, fc2_totals_records_online = Freecen2Piece.before_county_year_totals(county, last_midnight)
         fc2_added_pieces_online = Freecen2Piece.between_dates_county_year_totals(county, previous_midnight, last_midnight)
 
         county_pieces_total = 0
@@ -93,6 +93,8 @@ class Freecen2Content
             records[county][:total][:pieces] += records[county][year][:pieces]
             records[county][year][:pieces_online] = fc2_totals_pieces_online[year]
             records[county][:total][:pieces_online] += records[county][year][:pieces_online]
+            records[county][year][:records_online] = fc2_totals_records_online[year]
+            records[county][:total][:records_online] += records[county][year][:records_online]
             records[county][year][:added_pieces_online] = fc2_added_pieces_online[year]
             records[county][:total][:added_pieces_online] += records[county][year][:added_pieces_online]
 
@@ -195,6 +197,7 @@ class Freecen2Content
       records[field][:total][:places] = []
       records[field][:total][:pieces] = 0
       records[field][:total][:pieces_online] = 0
+      records[field][:total][:records_online] = 0
       records[field][:total][:added_pieces_online] = 0
       return records
     end
