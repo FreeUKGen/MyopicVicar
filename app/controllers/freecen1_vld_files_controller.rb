@@ -76,7 +76,7 @@ class Freecen1VldFilesController < ApplicationController
       Freecen1VldFile.save_to_attic(dir_name, file_name)
       piece = vldfile.freecen_piece
       if piece.present?
-        piece.update_attributes(num_dwellings: 0, num_individuals: 0, num_entries: 0, freecen1_filename: '', status: '')
+        piece.update_attributes(num_dwellings: 0, num_individuals: 0, num_entries: 0, freecen1_filename: '', status: '', status_date: '')
         piece.freecen1_vld_files.delete(vldfile)
         freecen2_piece = piece.freecen2_piece
         freecen2_piece.freecen1_vld_files.delete(vldfile) if freecen2_piece.present?
