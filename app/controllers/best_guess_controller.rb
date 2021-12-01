@@ -57,7 +57,7 @@ class BestGuessController < ApplicationController
   end
 
   def show_marriage
-    params[:search_id].present? ? @search = true : @search = false 
+    params[:search_id].present? ? @search = true : @search = false
     record_number = params[:entry_id]
     @search_id = params[:search_id] if @search
     @record = BestGuess.where(RecordNumber: record_number).first
@@ -92,7 +92,7 @@ class BestGuessController < ApplicationController
 
   def record_cycle current=nil, array
     current.present? ? current_record_number = current : current_record_number = array.first
-    referral_record = BestGuess.where(RecordNumber: current_record_number).first if current_record_number.present?
+    referral_record = BestGuess.find(current_record_number) if current_record_number.present?
     next_record, previous_record = next_and_previous_entries_of_page(current_record_number, array)
     [referral_record, next_record, previous_record]
   end
