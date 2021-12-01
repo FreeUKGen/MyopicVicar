@@ -40,7 +40,7 @@
 	        <%= mother_or_spouse_surname(record_type)%>
 	      </th>
 	      <td>
-	      	<% if search == true && record.AssociateName.present? %>
+	      	<% if search && record.AssociateName.present? %>
             <% if @search %>
 	        	  <%= link_to "#{record.AssociateName}", show_marriage_details_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
             <% else %>
@@ -74,7 +74,7 @@
         Volume
       </th>
       <td>
-        <%= "#{record.Volume}" %>
+        <%= "#{ record.Volume }" %>
       </td>
     </tr>
     <tr>
@@ -131,7 +131,7 @@
         <% end %>
       </tr>
     <% end %>
-    <% unless search == true %>
+    <% unless search %>
       <% if type == "reference" %>
         <tr>
           <th scope="row">
