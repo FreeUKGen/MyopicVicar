@@ -740,7 +740,7 @@ class SearchQuery
     else
       response = false
     end
-    [response, next_record_id, previous_record_id]
+    [response, next_record, previous_record]
   end
 
   def no_additional_census_fields?
