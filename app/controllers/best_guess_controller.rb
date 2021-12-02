@@ -147,7 +147,6 @@ class BestGuessController < ApplicationController
     messagea = 'We are sorry but the record you requested no longer exists; possibly as a result of some data being edited. You will need to redo the search with the original criteria to obtain the updated version.'
     warning = "#{appname_upcase}::SEARCH::ERROR Missing entry for search record"
     warninga = "#{appname_upcase}::SEARCH::ERROR Missing parameter"
-    @search_record_number = params[:search_entry].present? ? params[:search_entry] : params[:id]
     if @search_record_number.blank?
       flash[:notice] = messagea
       logger.warn(warninga)
