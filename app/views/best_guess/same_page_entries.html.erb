@@ -26,7 +26,7 @@
                 <td>
                   <center>
                     <% if @search %>
-                      <%= link_to("View #{n}".html_safe,friendly_bmd_record_details_path(@search_id, search_record.id, search_record.friendly_url, search_entry: @record), :rel => "nofollow", :title => "", class: "btn  btn--small") %>
+                      <%= link_to("View #{n}".html_safe,friendly_bmd_record_details_path(@search_id, search_record.id, search_record.friendly_url), :rel => "nofollow", :title => "", class: "btn  btn--small") %>
                     <% else %>
                       <%= link_to("View #{n}".html_safe,friendly_bmd_record_details_non_search_path(search_record.id, search_record.friendly_url, search_entry: @record), :rel => "nofollow", :title => "", class: "btn  btn--small") %>
                     <% end %>

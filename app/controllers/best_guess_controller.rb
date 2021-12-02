@@ -110,9 +110,10 @@ class BestGuessController < ApplicationController
 
 
   def same_page_entries
+    params[:search_id].present? ? @search = true : @search = false
     @search_id = params[:search_id] if params[:search_id].present?
     record_number = params[:entry_id]
-    @record = BestGuess.where(RecordNumber: record_number).first
+    @record = BestGuess.find(record_number)
     @volume = params[:volume]
     @page = params[:page]
     @district = params[:district]
