@@ -8,9 +8,9 @@ class BestGuessController < ApplicationController
       session[:search_entry_number] = params[:search_entry] if params[:search_entry].present?
       @search_record_number = session[:search_entry_number]
       @anchor_entry = @search_record_number
+      redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
     end
     get_user_info_from_userid if cookies.signed[:userid].present?
-    redirect_back(fallback_location: new_search_query_path) && return unless show_value_check if @search
     @saved_record = params[:saved_record] if params[:saved_record].present?
     @page_number = params[:page_number].to_i
     @option = params[:filter_option] if params[:filter_option].present?
@@ -157,7 +157,7 @@ class BestGuessController < ApplicationController
     end
     @search_query = SearchQuery.find(session[:query]) if session[:query].present?
     response, @next_record, @previous_record = @search_query.bmd_next_and_previous_records(@search_record_number)
-    @search_record = response ? @search_query.locate(params[:id]) : nil
+    @search_record = response ? @search_query.locate(@search_record_number) : nil
     return false unless response
     true
   end
