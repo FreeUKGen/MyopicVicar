@@ -21,6 +21,7 @@
           <% if params[:search_id].present? %>
             <%= render partial: 'entry_information_table', locals: {record: @current_record, search: @search, entry_type: record_type.downcase, query: @search_query, search_id: params[:search_id], original_record: @original_record, type: "general"} %>
           <% else %>
+            <%= render partial: 'entry_information_table', locals: {record: @current_record, search: @search, entry_type: record_type.downcase, original_record: @original_record, type: "general"} %>
           <% end %>
         </div>
         <% if @search %>

@@ -7,9 +7,10 @@ class BestGuessController < ApplicationController
     show_saved_record = params[:saved_record]
     params[:search_id].present? ? @search = true : @search = false
     @search_entry = params[:search_entry]
+    @saved_entry_number = params[:saved_entry]
     prepare_for_show_search_entry if @search
     get_user_info_from_userid if cookies.signed[:userid].present?
-    prepare_to_show_saved_entry if show_saved_record
+    prepare_to_show_saved_entry if show_saved_record == "true"
     @original_record = get_original_record(search_id,show_saved_record)
     @page_number = params[:page_number].to_i
     @option = params[:filter_option] if params[:filter_option].present?
@@ -202,8 +203,8 @@ class BestGuessController < ApplicationController
   def get_original_record search_id=nil, saved_record=nil
     if search_id.present?
       original_record = @search_record
-    elsif saved_record
-      original_record = @saved_record
+    elsif saved_record == "true"
+      original_record = @saved_entry
     else
     end
     original_record
@@ -218,9 +219,10 @@ class BestGuessController < ApplicationController
   end
 
   def prepare_to_show_saved_entry
-    session[:saved_search_record] = params[:saved_entry] if params[:search_entry].present?
-    @saved_record = session[:saved_search_record]
-    @anchor_entry = @saved_record
+    session[:saved_search_record] = @saved_entry_number if @saved_entry_number.present?
+    saved_record = session[:saved_search_record]
+    @anchor_entry = saved_record
+    @saved_entry = BestGuess.find(saved_record)
   end
 
 end
