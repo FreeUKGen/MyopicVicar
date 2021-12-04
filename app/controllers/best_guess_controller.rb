@@ -150,7 +150,7 @@ class BestGuessController < ApplicationController
       return false
     end
     @search_query = SearchQuery.find(session[:query]) if session[:query].present?
-    response, @next_record, @previous_record = @search_query.bmd_next_and_previous_records(@search_record_number) unless params[:old_search_results] == "true"
+    response, @next_record, @previous_record = @search_query.bmd_next_and_previous_records(@search_record_number)
     @search_record = response ? @search_query.locate(@search_record_number) : nil
     return false unless response
     true
