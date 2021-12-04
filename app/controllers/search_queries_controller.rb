@@ -11,10 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 #
+
 class SearchQueriesController < ApplicationController
   skip_before_action :require_login
   skip_before_action :verify_authenticity_token
   before_action :check_for_mobile, only: :show
+  before_action :require_login, only: :compare_search
   rescue_from Mongo::Error::OperationFailure, with: :search_taking_too_long
   rescue_from Mongoid::Errors::DocumentNotFound, with: :missing_document
   rescue_from Timeout::Error, with: :search_taking_too_long
@@ -316,10 +318,11 @@ class SearchQueriesController < ApplicationController
 
   def compare_search
     #raise params.inspect
+    get_user_info_from_userid
     @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     redirect_back(fallback_location: new_search_query_path) && return if @search_query.result_count.blank?
     @save_search_id = params[:saved_search_id]
-    @saved_search = SavedSearch.find(@save_search_id)
+    @saved_search = @user.saved_searches.find(@save_search_id)
     @saved_search_result_hash = @saved_search.results
     saved_search_results, @ucf_save_results, @save_result_count = @saved_search.get_bmd_saved_search_results
     @save_search_results = @search_query.sort_results(saved_search_results)
@@ -356,7 +359,7 @@ class SearchQueriesController < ApplicationController
     elsif filter_cond == 4
       records = nil
     else filter_cond == 5
-      select_hash = @saved_search_result_hash - @search_query.search_results.records.keys
+      select_hash = @saved_search_result_hash - @search_query.search_result.records.keys
       records = BestGuess.get_best_guess_records(select_hash)
     end
     records

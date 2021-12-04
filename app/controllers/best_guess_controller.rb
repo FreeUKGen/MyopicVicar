@@ -212,6 +212,7 @@ class BestGuessController < ApplicationController
 
   def prepare_for_show_search_entry
     session[:search_entry_number] = @search_entry if @search_entry.present?
+    clean_session_for_search
     @search_record_number = session[:search_entry_number]
     @anchor_entry = @search_record_number
     redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
@@ -220,9 +221,18 @@ class BestGuessController < ApplicationController
 
   def prepare_to_show_saved_entry
     session[:saved_search_record] = @saved_entry_number if @saved_entry_number.present?
+    clean_session_for_saved_entry
     saved_record = session[:saved_search_record]
     @anchor_entry = saved_record
     @saved_entry = BestGuess.find(saved_record)
+  end
+
+  def clean_session_for_search
+    session.delete(:saved_search_record)
+  end
+
+  def clean_session_for_saved_entry
+    session.delete(:search_entry_number)
   end
 
 end

@@ -2136,10 +2136,12 @@ crumb :entry_information do |rec|
   parent :list_saved_entries
 end
 
-crumb :same_page_entries do |record|
-  link "Entries of page #{record.Page}", same_page_entries_non_search_path(volume: record.Volume, page: record.Page, record: record.RecordTypeID, quarter: record.QuarterNumber, district: record.District, entry_id: record.RecordNumber)
-  parent :entry_information, record
-end
+#if params[:saved_record].present?
+  crumb :same_page_entries do |record|
+    link "Entries of page #{record.Page}", same_page_entries_non_search_path(volume: record.Volume, page: record.Page, record: record.RecordTypeID, quarter: record.QuarterNumber, district: record.District, entry_id: record.RecordNumber)
+    parent :entry_information, record
+  end
+#end
 # crumb :projects do
 #   link 'Projects', projects_path
 # end
