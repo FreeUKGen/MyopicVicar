@@ -5,7 +5,7 @@
   <thead>
     <tr>
       <% unless print_friendly %>
-        <% unless old_search_results == "true"%>
+        <% unless old_search_results %>
           <th>Detail</th>
         <% end %>
       <% end %>
@@ -20,7 +20,7 @@
       <% record_type = RecordType::display_name(["#{search_record[:RecordTypeID]}"])%>
       <tr id="<%=search_record[:RecordNumber]%>" class="<%= record_type.downcase %>_hover" >
         <% unless print_friendly %>
-          <% unless old_search_results == "true"%>
+          <% unless old_search_results%>
             <td>
               <center>
                 <%= link_to("View #{n}".html_safe,friendly_bmd_record_details_path(@search_query.id,search_record.id, search_record.friendly_url, old_search_results: old_search_results), rel: "nofollow", class: "btn  btn--small")%>
