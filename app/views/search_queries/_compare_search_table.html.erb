@@ -20,7 +20,7 @@
         <% unless print_friendly %>
           <td>
             <center>
-              <%= link_to("View #{n}".html_safe,friendly_bmd_record_details_path(@search_query.id,search_record.id, search_record.friendly_url), :rel => "nofollow", :title => "", class: "btn  btn--small")%>
+              <%= link_to("View #{n}".html_safe,friendly_bmd_record_details_path(@search_query.id,search_record.id, search_record.friendly_url, old_search_results: old_search_results), :rel => "nofollow", :title => "", class: "btn  btn--small")%>
               <i><%= seen(@search_query,search_record) %></i>
             </center>
           </td>
