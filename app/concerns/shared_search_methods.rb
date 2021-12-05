@@ -172,4 +172,91 @@ module SharedSearchMethods
   def app_template
     MyopicVicar::Application.config.template_set
   end
+
+  def sort_results(results)
+    # next reorder in memory
+   # raise SearchOrder::SURNAME.inspect
+    if results.present?
+      case order_field
+      when *selected_sort_fields
+        order = order_field.to_sym
+        results.each do |rec|
+        end
+        results.sort! do |x, y|
+          if order_asc
+            (x[order] || '') <=> (y[order] || '')
+          else
+            (y[order] || '') <=> (x[order] || '')
+          end
+        end
+      when SearchOrder::DATE
+        if order_asc
+          results.sort! { |x, y| (x[:search_date] || '') <=> (y[:search_date] || '') }
+        else
+          results.sort! { |x, y| (y[:search_date] || '') <=> (x[:search_date] || '') }
+        end
+      when SearchOrder::LOCATION
+        if order_asc
+          results.sort! do |x, y|
+            compare_location(x, y)
+          end
+        else
+          results.sort! do |x, y|
+            compare_location(y, x) # note the reverse order
+          end
+        end
+      when SearchOrder::NAME
+        if order_asc
+          results.sort! do |x, y|
+            compare_name(x, y)
+          end
+        else
+          results.sort! do |x, y|
+            compare_name(y, x) # note the reverse order
+          end
+        end
+      when SearchOrder::SURNAME
+        if self.order_asc
+          results.sort! do |x, y|
+            compare_name_bmd(y, x, 'Surname','GivenName')
+          end
+        else
+          results.sort! do |x, y|
+             compare_name_bmd(x,y, 'Surname','GivenName')
+          end
+        end
+      when SearchOrder::FIRSTNAME
+        if self.order_asc
+          results.sort! do |x, y|
+            compare_name_bmd(y, x, 'GivenName','Surname')
+          end
+        else
+          results.sort! do |x, y|
+             compare_name_bmd(x,y, 'GivenName','Surname')
+          end
+        end
+      when SearchOrder::BMD_RECORD_TYPE
+        if self.order_asc
+          results.sort! do |x, y|
+            compare_name_bmd(y, x, 'RecordTypeID')
+          end
+        else
+          results.sort! do |x, y|
+             compare_name_bmd(x,y, 'RecordTypeID')
+          end
+        end
+       when SearchOrder::BMD_DATE
+        if self.order_asc
+          results.sort! do |x, y|
+            compare_name_bmd(y, x, 'QuarterNumber')
+          end
+        else
+          results.sort! do |x, y|
+             compare_name_bmd(x,y, 'QuarterNumber')
+          end
+        end
+      end
+    end
+    results
+  end
 end

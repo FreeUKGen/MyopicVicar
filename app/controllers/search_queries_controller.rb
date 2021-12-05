@@ -324,7 +324,7 @@ class SearchQueriesController < ApplicationController
     @save_search_id = params[:saved_search_id]
     @saved_search = @user.saved_searches.find(@save_search_id)
     @saved_search_result_hash = @saved_search.results
-    saved_search_results, @ucf_save_results, @save_result_count = @saved_search.get_bmd_saved_search_results
+    saved_search_response, saved_search_results, @ucf_save_results, @save_result_count = @saved_search.get_bmd_saved_search_results
     @save_search_results = @search_query.sort_results(saved_search_results)
     response, @search_results, @ucf_results, @result_count = @search_query.get_bmd_search_results
     if params[:filter_option].present?
