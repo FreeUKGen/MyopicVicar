@@ -223,6 +223,7 @@ class SearchQueriesController < ApplicationController
   def show
     #raise params.inspect
     @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
+    @search_results = @search_query.search_records if params[:saved_search].present?
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
 
     flash[:notice] = 'Your search results are not available. Please repeat your search' if @search_query.result_count.blank?
@@ -345,7 +346,7 @@ class SearchQueriesController < ApplicationController
     elsif filter_cond == 4
       select_hash = @search_query.search_result.records.keys - @saved_search_result_hash
       result = @search_query.search_result.records.select{|k,v| select_hash.include?(k)}
-      records = result.values
+      records = result.values.map{|h| BestGuess.new(h)}
     else filter_cond == 5
       records = nil
     end
@@ -361,7 +362,7 @@ class SearchQueriesController < ApplicationController
     else filter_cond == 5
       select_hash = @saved_search_result_hash - @search_query.search_result.records.keys
       result = @saved_search.saved_search_result.records.select{|k,v| select_hash.include?(k)}
-      records = result.values#BestGuess.get_best_guess_records(select_hash)
+      records = result.values.map{|h| BestGuess.new(h)}#BestGuess.get_best_guess_records(select_hash)
     end
     records
   end
