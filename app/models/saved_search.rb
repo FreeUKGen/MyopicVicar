@@ -12,13 +12,13 @@ class SavedSearch
   belongs_to :userid_detail
 
   def bmd_saved_search_results
-    save_search_result_hash = self.saved_search_result.records
+    save_search_result_hash = self.saved_search_result.records.values
     #BestGuess.get_best_guess_records(save_search_result_hash)
   end
 
    def get_bmd_saved_search_results
     search_results = bmd_saved_search_results
-    return get_bmd_save_search_response, search_results.map{|h| SearchQuery.get_search_table.new(h)}, ucf_search_results, search_result_count if get_bmd_save_search_response
+    return get_bmd_save_search_response, search_results.map{|h| SearchQuery.get_search_table.new(h)}, ucf_save_search_results, result_count if get_bmd_save_search_response
     return get_bmd_save_search_response if !get_bmd_save_search_response
     #return search_results, ucf_save_search_results, saved_search_result_count
   end

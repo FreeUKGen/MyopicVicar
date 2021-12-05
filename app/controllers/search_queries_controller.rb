@@ -323,7 +323,7 @@ class SearchQueriesController < ApplicationController
     redirect_back(fallback_location: new_search_query_path) && return if @search_query.result_count.blank?
     @save_search_id = params[:saved_search_id]
     @saved_search = @user.saved_searches.find(@save_search_id)
-    @saved_search_result_hash = @saved_search.results
+    @saved_search_result_hash = @saved_search.saved_search_result.records.keys
     saved_search_response, saved_search_results, @ucf_save_results, @save_result_count = @saved_search.get_bmd_saved_search_results
     @save_search_results = @search_query.sort_results(saved_search_results)
     response, @search_results, @ucf_results, @result_count = @search_query.get_bmd_search_results
@@ -360,7 +360,8 @@ class SearchQueriesController < ApplicationController
       records = nil
     else filter_cond == 5
       select_hash = @saved_search_result_hash - @search_query.search_result.records.keys
-      records = BestGuess.get_best_guess_records(select_hash)
+      result = @saved_search.saved_search_result.records.select{|k,v| select_hash.include?(k)}
+      records = result.values#BestGuess.get_best_guess_records(select_hash)
     end
     records
   end
