@@ -32,7 +32,7 @@ class SavedSearchController < ApplicationController
   def destroy
   	get_user_info_from_userid
     saved_search = @user.saved_searches.find(params[:id])
-    saved_search.saved_search_result.destroy
+    saved_search.saved_search_result.destroy if saved_search.saved_search_result.present?
     saved_search.destroy
     flash[:notice] = 'The search removed successfully'
     redirect_to saved_search_index_path
