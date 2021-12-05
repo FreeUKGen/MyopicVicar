@@ -67,7 +67,7 @@ class Freecen2Content
 
       ChapmanCode.merge_counties.each do |county|
 
-        # Testing -  if county == "SOM" || county == "LND" || county == "KEN"
+        # Testing -  if county == "SOM" || county == "LND" || county == "ESS"
 
         p "Starting to process County: #{county}"
 
@@ -109,7 +109,7 @@ class Freecen2Content
 
             places.each do |this_place|
 
-              if this_place.freecen2_pieces.present?
+              if this_place.freecen2_pieces.present? || SearchRecord.where(freecen2_place_id: this_place._id).present?
 
                 total_places_cnt += 1
 
@@ -119,12 +119,16 @@ class Freecen2Content
                 places_array << this_place.place_name
                 records[county][key_place][:total][:place_id] = this_place._id
 
-                fc2_totals_pieces, fc2_totals_pieces_online, fc2_totals_records_online = Freecen2Piece.before_place_year_totals(county, this_place._id, last_midnight)
+                fc2_totals_pieces, fc2_totals_pieces_online, fc2_totals_records_online, fc2_piece_ids = Freecen2Piece.before_place_year_totals(county, this_place._id, last_midnight)
                 fc2_added_pieces_online  = Freecen2Piece.between_dates_place_year_totals(county, this_place._id, previous_midnight, last_midnight)
 
+                piece_ids_array = []
 
                 Freecen::CENSUS_YEARS_ARRAY.each do |year|
                   records[county][key_place][year] = {}
+                  records[county][key_place][year][:piece_ids] = []
+                  records[county][key_place][year][:piece_ids] = fc2_piece_ids[year]
+                  piece_ids_array.concat(fc2_piece_ids[year])
                   records[county][key_place][year][:pieces] = fc2_totals_pieces[year] # fc2_pieces are all the pieces so no need to add fc1_pieces
                   records[county][key_place][:total][:pieces] += records[county][key_place][year][:pieces]
                   records[county][key_place][year][:pieces_online] = fc2_totals_pieces_online[year]
@@ -143,6 +147,7 @@ class Freecen2Content
 
                 places_array_sorted = places_array.sort
                 records[county][:total][:places] = places_array_sorted
+                records[county][key_place][:total][:piece_ids] = piece_ids_array
 
               end
 
@@ -205,6 +210,7 @@ class Freecen2Content
     def add_records_place(records, county, field)
       records[county][field] = {}
       records[county][field][:total] = {}
+      records[county][field][:total][:piece_ids] = []
       records[county][field][:total][:pieces] = 0
       records[county][field][:total][:pieces_online] = 0
       records[county][field][:total][:records_online] = 0

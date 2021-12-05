@@ -173,15 +173,40 @@ class Freecen2Piece
 
     def before_place_year_totals(chapman_code, place_id, time)
       last_id = BSON::ObjectId.from_time(time)
+      piece_ids = {}
       totals_pieces = {}
       totals_pieces_online = {}
       totals_records_online = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
-        totals_pieces[year]  = Freecen2Piece.where(_id: { '$lte' => last_id }, freecen2_place_id: place_id).chapman_code(chapman_code).year(year).count
-        totals_pieces_online[year] = Freecen2Piece.where(status_date: { '$lte' => time }, freecen2_place_id: place_id).chapman_code(chapman_code).year(year).status('Online').count
+        piece_ids_array = []
+        vld_total_pieces = 0
+        csv_total_pieces = 0
+        vld_total_pieces_online = 0
+        csv_total_pieces_online = 0
+        pieces = Freecen2Piece.where(_id: { '$lte' => last_id }, freecen2_place_id: place_id, chapman_code: chapman_code, year: year)
+        pieces.each do |piece|
+          unless SearchRecord.where(freecen2_piece_id: piece._id).present? # CSVProc data
+            vld_total_pieces += 1
+            piece_ids_array << piece._id
+            vld_total_pieces_online += 1  if piece.status == 'Online'
+          end
+        end
+        csv_piece_ids = SearchRecord.where(_id: { '$lte' => last_id }, chapman_code: chapman_code, record_type: year, freecen2_place_id: place_id).pluck(:freecen2_piece_id).uniq
+        if csv_piece_ids.present?
+          csv_piece_ids.each do |csv_piece_id|
+            if csv_piece_id.present?
+              csv_total_pieces += 1
+              csv_total_pieces_online += 1
+              piece_ids_array << csv_piece_id
+            end
+          end
+        end
+        totals_pieces[year] = vld_total_pieces + csv_total_pieces
+        totals_pieces_online[year] = vld_total_pieces_online + csv_total_pieces_online
+        piece_ids[year] = piece_ids_array
         totals_records_online[year] = SearchRecord.where(_id: { '$lte' => last_id }, chapman_code: chapman_code, freecen2_place_id: place_id, record_type: year).count
       end
-      [totals_pieces, totals_pieces_online, totals_records_online]
+      [totals_pieces, totals_pieces_online, totals_records_online, piece_ids]
     end
 
     def between_dates_year_totals(time1, time2)
@@ -205,7 +230,16 @@ class Freecen2Piece
       totals_pieces_online = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
         totals_pieces_online[year] = 0
-        totals_pieces_online[year]  = Freecen2Piece.where(:status_date => time1..time2, chapman_code: chapman_code, year: year, freecen2_place_id: place_id, status: 'Online').count
+        vld_total_pieces_online = 0
+        csv_total_pieces_online = 0
+        pieces_online = Freecen2Piece.where(status_date: (time1..time2), freecen2_place_id: place_id, chapman_code: chapman_code, year: year, status:'Online')
+        pieces_online.each do |piece|
+          unless SearchRecord.where(freecen2_piece_id: piece._id).present? # CSVProc data
+            vld_total_pieces_online += 1
+          end
+        end
+        csv_total_pieces_online += SearchRecord.where(c_at: (time1..time2), chapman_code: chapman_code, record_type: year, freecen2_place_id: place_id).distinct('freecen2_piece_id').count   # CSVProc data
+        totals_pieces_online[year] = vld_total_pieces_online + csv_total_pieces_online
       end
       totals_pieces_online
     end

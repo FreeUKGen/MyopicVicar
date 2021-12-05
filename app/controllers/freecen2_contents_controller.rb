@@ -8,7 +8,7 @@ class Freecen2ContentsController < ApplicationController
     records_places = @freecen2_contents.records[@chapman_code][:total][:places]
     @places_for_county = {}
     @places_for_county =  {"" => "Select a Place in " + @county_description + " ..."}
-    records_places.each { |place| @places_for_county[place] = add_brackets_place(@chapman_code, place)}
+    records_places.each { |place| @places_for_county[place] = add_dates_place(@chapman_code, place)}
     if params[:commit] == 'View Place Records'
       if !params[:place_description].present? || params[:place_description] == ''
         flash[:notice] = 'You must select a Place'
@@ -57,12 +57,15 @@ class Freecen2ContentsController < ApplicationController
     @census = params[:census_year]
     @place_description = params[:place_description]
     @place_id = params[:place_id]
+    @key_place = Freecen2Content.get_place_key(@place_description)
     if params[:census_year] == 'all'
       @census = 'All Years'
-      @place_pieces = Freecen2Piece.where(_id: { '$lte' => @last_id },freecen2_place_id: @place_id).order_by(name: 1, year: 1, number: 1)
+      @place_piece_ids = @freecen2_contents.records[@chapman_code][@key_place][:total][:piece_ids]
+      @place_pieces = Freecen2Piece.where(:_id.in => @place_piece_ids).order_by(name: 1, year: 1, number: 1)
     else
       @census = params[:census_year]
-      @place_pieces = Freecen2Piece.where(_id: { '$lte' => @last_id },freecen2_place_id: @place_id, year: @census).order_by(name: 1, number: 1)
+      @place_piece_ids = @freecen2_contents.records[@chapman_code][@key_place][@census][:piece_ids]
+      @place_pieces = Freecen2Piece.where(:_id.in => @place_piece_ids).order_by(name: 1, number: 1)
     end
   end
 
@@ -113,7 +116,7 @@ class Freecen2ContentsController < ApplicationController
     records_counties = @freecen2_contents.records[:total][:counties]
     @all_counties = {}
     @all_counties =  {"" => "Select a County ... "}
-    records_counties.each { |county| @all_counties[county] = add_brackets_county(county)}
+    records_counties.each { |county| @all_counties[county] = county}
     if params[:commit] == 'View County Records'
       session[:contents_county_description] = params[:county_description]
       redirect_to index_by_county_freecen2_contents_path and return
@@ -142,7 +145,7 @@ class Freecen2ContentsController < ApplicationController
     chapman_code = ChapmanCode.code_from_name(county_description)
     county_places = @freecen2_contents.records[chapman_code][:total][:places]
     county_places_hash = {"" => "Select a Place in " + county_description + " ..."}
-    county_places.each { |place| county_places_hash[place] =  add_brackets_place(chapman_code, place)}
+    county_places.each { |place| county_places_hash[place] =  add_dates_place(chapman_code, place)}
     if county_places_hash.present?
       respond_to do |format|
         format.json do
@@ -186,22 +189,15 @@ class Freecen2ContentsController < ApplicationController
     end
   end
 
-  def add_brackets_county(county_description)
-    chapman_code = ChapmanCode.code_from_name(county_description)
-    if @freecen2_contents.records[chapman_code][:total][:pieces_online] > 0
-      county_dropdown = county_description
-    else
-      county_dropdown = '(' + county_description + ')'
-    end
-    return county_dropdown
-  end
-
-  def add_brackets_place(chapman_code, place_description)
+  def add_dates_place(chapman_code, place_description)
+    place_dropdown = place_description
     key_place = Freecen2Content.get_place_key(place_description)
-    if @freecen2_contents.records[chapman_code][key_place][:total][:pieces_online] > 0
-      place_dropdown = place_description
-    else
-      place_dropdown = '(' + place_description + ')'
+    if @freecen2_contents.records[chapman_code][key_place][:total][:records_online] > 0
+      place = Freecen2Place.find_by(chapman_code: chapman_code, place_name: place_description)
+      if !place.cen_data_years.blank?
+        years = "(" + place.cen_data_years.to_s.gsub(/\"|\[|\]/,"") + ")"
+        place_dropdown = place_description + ' ' + years
+      end
     end
     return place_dropdown
   end
