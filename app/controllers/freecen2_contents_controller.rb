@@ -133,7 +133,7 @@ class Freecen2ContentsController < ApplicationController
     end
   end
 
-  def for_unique_names
+  def for_place_names
     @id = session[:contents_id]
     @freecen2_contents = Freecen2Content.find_by(id: @id)
     if params[:county_description]

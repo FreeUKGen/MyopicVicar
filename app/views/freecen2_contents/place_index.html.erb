@@ -1,5 +1,5 @@
-<h1 class="accessibility">Database Record totals for a place with options to view pieces and names</h1>
-<h2 style="text-align: center">Database Records for <%= @place_description %> in <%= @county_description %> as of  <%= @interval_end.strftime('%d %b %Y') %> </h2>
+<h2 style="text-align: center">Database Records for <%= @place_description %> in <%= @county_description %> as of  <%= @interval_end.strftime('%d %b %Y') %>
+  <span class="accessibility">Database Record totals for a place with options to view pieces and names</span></h2>
 <div  style="text-align: center">
   <%= link_to 'Back to Totals for All Counties' , freecen2_contents_path, method: :get , :class => "btn btn--small" %>
   <%= choose_another_place_link(@county_description) %>

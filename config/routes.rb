@@ -85,7 +85,7 @@ MyopicVicar::Application.routes.draw do
   get 'freecen2_contents/place_names', to: 'freecen2_contents#place_names', as: :freecen2_contents_place_names
   get 'freecen2_contents/piece_index', to: 'freecen2_contents#piece_index', as: :freecen2_contents_piece_index
   get 'freecen2_contents/new_records_index', to: 'freecen2_contents#new_records_index', as: :freecen2_contents_new_records_index
-  get 'freecen2_contents/for_unique_names', :to => 'freecen2_contents#for_unique_names', :as => :freecen2_contents_for_unique_names
+  get 'freecen2_contents/for_place_names', :to => 'freecen2_contents#for_place_names', :as => :freecen2_contents_for_place_names
 
   resources :freecen2_contents
 

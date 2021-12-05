@@ -1,6 +1,6 @@
-<h1 class="accessibility">Database Pieces</h1>
 <h2 style="text-align: center">Database Pieces for <%= @place_description %> in <%= @county_description %> in <%= @census %><br>
-  as of  <%= @interval_end.strftime('%d %b %Y') %> </h2>
+  as of  <%= @interval_end.strftime('%d %b %Y') %>
+  <span class="accessibility">Database Pieces for a specific Place in a specific County</span></h2>
 <div  style="text-align: center">
   <%= link_to 'Back to Totals for All Counties' , freecen2_contents_path, method: :get , :class => "btn btn--small" %>
   <% if params[:new_records] == 'All' %>

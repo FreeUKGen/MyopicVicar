@@ -1,6 +1,6 @@
-<h1 class="accessibility">List Names currently in the Database for a place with option to view forenames or surnames</h1>
 <h2 style="text-align: center">Names from <%= @place_description %> <br>
-  in <%= @county_description %> in <%= @year %> </h2>
+  in <%= @county_description %> in <%= @year %>
+  <span class="accessibility">List Names currently in the Database for a place with option to view forenames or surnames</span></h2>
 <div  style="text-align: center">
   <%= link_to 'Back to Totals for All Counties' , freecen2_contents_path, method: :get , :class => "btn btn--small" %>
   <% if params[:new_records] == 'All' %>

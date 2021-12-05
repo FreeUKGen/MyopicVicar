@@ -1,8 +1,10 @@
 <% if @additions_county == 'All' %>
-  <h1 class="accessibility">Database Record totals for recent additions</h1>
-  <h2 style="text-align: center">Recent Additions for All Counties as of  <%= @interval_end.strftime('%d %b %Y') %> </h2>
+  <h2 style="text-align: center">Recent Additions for All Counties as of  <%= @interval_end.strftime('%d %b %Y') %>
+    <span class="accessibility">Database Record totals for Pieces added online in the last 30 days</span></h2>
 <% else %>
-  <h2 style="text-align: center">Recent Additions for <%= @additions_county %>  as of  <%= @interval_end.strftime('%d %b %Y') %> </h2>
+  <h2 style="text-align: center">Recent Additions for <%= @additions_county %>  as of  <%= @interval_end.strftime('%d %b %Y') %>
+    <span class="accessibility">Database Record totals for Pieces for a specific County added online in the last 30 days</span>
+  </h2>
 <% end %>
 <h3 style="text-align: center">Places with Pieces added to the database in the previous 30 days </h3>
 <div  style="text-align: center">
