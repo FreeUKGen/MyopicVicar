@@ -34,7 +34,7 @@ module BestGuessHelper
   end
 
   def format_quarter_name quarter
-    QuarterDetails.quarter_hash[calculate_quarter(quarter)]
+    QuarterDetails.quarter_hash[calculate_quarter(quarter).to_s]
   end
 
   def formatted_month quarter
