@@ -10,14 +10,16 @@
         <%= "#{record_type}" %>
       </td>
     </tr>
-    <tr>
-      <th scope="row">
-        <%= record.QuarterNumber <  Constant::EVENT_QUARTER_TO_YEAR ? "Date" : "Year" %>
-      </th>
-      <td>
-        <%= format_quarter(record.QuarterNumber)%>
-      </td>
-    </tr>
+    <% if record.QuarterNumber <  Constant::EVENT_QUARTER_TO_YEAR %>
+      <tr>
+        <th scope="row">
+          Date
+        </th>
+        <td>
+          <%= format_quarter(record.QuarterNumber) %>
+        </td>
+      </tr>
+    <% end %>
     <tr>
       <th scope="row">
         District

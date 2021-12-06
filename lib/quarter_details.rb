@@ -41,4 +41,13 @@ module QuarterDetails
       "12" => "December",
     }
   end
+
+  def self.quarter_hash
+    {
+      "1" => "Jan to Mar",
+      "2" => "Apr to Jun",
+      "3" => "Jul to Sept",
+      "4" => "Oct to Dec",
+    }
+  end
 end
