@@ -26,7 +26,7 @@ module BestGuessHelper
 
   def format_quarter quarter
     if quarter <  Constant::EVENT_QUARTER_TO_YEAR
-      date = "#{(format_quarter_name quarter).capitalize} #{formatted_year quarter}"
+      date = "#{(format_quarter_name quarter).camelize} #{formatted_year quarter}"
     else
       #date = formatted_year quarter
     end
