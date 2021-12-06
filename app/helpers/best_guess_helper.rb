@@ -41,6 +41,11 @@ module BestGuessHelper
     from_quarter_to_year quarter
   end
 
+  def format_registered registered_date, quarter
+    registered = registered_date.split('.')
+    "#{QuarterDetails.month_hash[registered[0]]} #{formatted_year(record.QuarterNumber)[0..1]registered[1]}"
+  end
+
   def from_quarter_to_year quarter
     (quarter-1)/4 + 1837
   end

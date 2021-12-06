@@ -223,6 +223,17 @@ class SearchQueriesController < ApplicationController
   def show
     #raise params.inspect
     @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
+    if params[:sort_option].present?
+      order_field = params[:sort_option]
+      if order_field == @search_query.order_field
+        # reverse the directions
+        @search_query.order_asc = !@search_query.order_asc
+      else
+        @search_query.order_field = order_field
+        @search_query.order_asc = true
+      end
+      @search_query.save!
+    end
     @search_results = @search_query.search_records if params[:saved_search].present?
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
 
@@ -238,9 +249,15 @@ class SearchQueriesController < ApplicationController
     else
       response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display unless MyopicVicar::Application.config.template_set == 'freebmd'
       response, @search_results, @ucf_results, @result_count = @search_query.get_bmd_search_results if MyopicVicar::Application.config.template_set == 'freebmd'
-      
       @filter_condition = params[:filter_option]
       @search_results = filtered_results if RecordType::BMD_RECORD_TYPE_ID.include?(@filter_condition.to_i)
+      #if params[:sort_option].present?
+        #if @search_query.order_asc
+         # @search_results = @search_results.order(:order_field)
+        #else
+         # @search_results = @search_results.order(order_field: :desc)
+        #end
+      #end
       @results_per_page = params[:results_per_page] || 20
       total_page = @search_results.count
       @bmd_search_results = @search_results if MyopicVicar::Application.config.template_set == 'freebmd'

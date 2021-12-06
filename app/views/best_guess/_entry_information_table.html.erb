@@ -149,14 +149,14 @@
       <% end %>
     <% end %>
     <% if search %>
-      <% registered = record.event_registration %>
-      <% if registered.present?%>
+      <% event_registered = record.event_registration %>
+      <% if event_registered.present?%>
         <tr>
           <th scope="row">
             Registered
           </th>
           <td >
-            <%= registered %>
+            <%= format_registered(event_registered, record.QuarterNumber) %>
           </td>
         </tr>
       <% end %>

@@ -24,4 +24,21 @@ module QuarterDetails
     #{}"#{QuarterDetails.quarters.key((search_record[:QuarterNumber]-1)%4 + 1).upcase} #{(search_record[:QuarterNumber]-1)/4 + 1837}"
     "#{quarter_month(record_quarter_number).upcase} #{quarter_year(record_quarter_number)}"
   end
+
+  def self.month_hash
+    {
+      "01" => "January",
+      "02" => "February",
+      "03" => "March",
+      "04" => "April",
+      "05" => "May",
+      "06" => "June",
+      "07" => "July",
+      "08" => "August",
+      "09" => "September",
+      "10" => "October",
+      "11" => "November",
+      "12" => "December",
+    }
+  end
 end

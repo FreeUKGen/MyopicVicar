@@ -7,13 +7,13 @@
             <% unless print_friendly %>
               <th>Detail</th>
             <% end %>
-            <th>
-              <%= link_to_unless(print_friendly, 'Individual',
+            <th>Individual
+              <%#= link_to_unless(print_friendly, 'Individual',
             reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::FIRSTNAME)) %>
             </th>
             
-            <th>
-              <%= link_to_unless(print_friendly, 'Record Type',
+            <th>Record Type
+              <%#= link_to_unless(print_friendly, 'Record Type',
             reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_RECORD_TYPE)) %>
             </th>
           </tr>
