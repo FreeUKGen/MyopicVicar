@@ -1,0 +1,13 @@
+db.runCommand(
+  {
+    createIndexes: "freecen2_contents",
+    indexes: [
+        {
+            key: {
+                interval_end: -1
+            },
+            name: "interval_end_1"
+        }
+    ]
+  }
+)
