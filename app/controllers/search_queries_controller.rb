@@ -224,6 +224,7 @@ class SearchQueriesController < ApplicationController
     #raise params.inspect
     @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     if params[:sort_option].present?
+      @sort_condition = params[:sort_option]
       order_field = params[:sort_option]
       if order_field == @search_query.order_field
         # reverse the directions

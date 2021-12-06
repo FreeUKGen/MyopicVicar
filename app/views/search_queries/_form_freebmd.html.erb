@@ -147,7 +147,7 @@
                             <%= "Spouse/Mothers surname".html_safe %>
                         <% end %>
                     </div>
-                    <%= text_field_tag '', set_value(@search_query.spouses_mother_surname) || set_value(@search_query.mother_last_name), class: 'text-input', placeholder: '', id: 'spouses_mother_surname' , tabindex: "0"%>
+                    <%= text_field_tag '', set_value(@search_query.spouses_mother_surname) || set_value(@search_query.mother_last_name), class: 'text-input', placeholder: '', id: 'spouses_mother_surname'%>
                 </li>
                 
                 <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole dateofbirths display_none flush--bottom" id= "age_at_death_or_date_of_birth_div">
@@ -201,7 +201,7 @@
                     
                 </li>
 
-                <li class="grid__item desk-wide-one-sixth desk-one-quarter lap-one-half palm-one-whole volumes">
+                <li class="grid__item desk-wide-one-eighth desk-one-quarter lap-one-half palm-one-whole volumes">
                     <div class='labels'>
                         <%= label_tag 'volume', "Volume".html_safe, class: "ttip" do %>
                             <%= "Volume".html_safe %>
@@ -211,7 +211,7 @@
                     <%= text_field_tag 'search_query[volume]', set_value(@search_query.volume), class: 'text-input', id: 'volume', placeholder: 'Enter Volume', tabindex: "0" %>
                 </li>
 
-                <li class="grid__item desk-wide-one-sixth desk-one-quarter lap-one-half palm-one-whole pages">
+                <li class="grid__item desk-wide-one-eighth desk-one-quarter lap-one-half palm-one-whole pages">
                     <div class='labels'>
                         <%= label_tag 'page', "Page".html_safe, class: "ttip" do %>
                             <%= "Page".html_safe %>
@@ -221,7 +221,7 @@
                     <%= text_field_tag 'search_query[page]', set_value(@search_query.page), class: 'text-input', id: 'page', placeholder: 'Enter Page', tabindex: "0"%>
                 </li>
 
-                <li class="grid__item desk-wide-one-third desk-two-fifths lap-one-half palm-one-whole countiess">
+                <li class="grid__item desk-wide-three-eighths desk-three-eighths lap-one-half palm-one-whole countiess">
                     <div class='labels'>
                         <div class="countieslabel">
                             <%= label_tag 'search_query_chapman_codes', "Counties".html_safe, class: "ttip" do %>
@@ -233,10 +233,13 @@
 
                     <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES)) %>
                     <% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil?%>
-                    <%= f.select :chapman_codes, grouped_options_for_select(grouped_options, selected_key = key), {include_blank: 'All Counties', include_hidden: false}, {multiple: true, id: 'search_query_chapman_codes', tabindex: "0"} %>
+                    <%= f.select :chapman_codes, raw("<marquee>#{grouped_options_for_select(grouped_options, selected_key = key)}</marquee>"), {include_blank: 'All Counties', include_hidden: false}, {multiple: true, id: 'search_query_chapman_codes', tabindex: "0", style:"overflow-x: scroll !important"} %>
+                    <%#= f.select(:chapman_codes, {}, multiple: true) do %>
+                        <%#= grouped_options_for_select(grouped_options, selected_key = key)%>
+                    <%# end %>
                 </li>
 
-                <li class="grid__item desk-wide-one-third desk-two-fifths lap-one-half palm-one-whole districtss">
+                <li class="grid__item desk-wide-three-eighths desk-three-eighths lap-one-half palm-one-whole districtss">
                     <div class='labels'>
                         <div class='districtslabel'>
                             <%= label_tag 'search_query_districts', "Districts #{app_icons[:info]}".html_safe, class: "ttip" do %>
@@ -295,6 +298,31 @@
         <% end %>
     </div>
 <%# end %>
+<style>
+    #spouse_or_mother_surname_div, #age_at_death_or_date_of_birth_div, #spouse_firstnames_div {
+        display: none;
+    }
+    #search_query_chapman_code {
+        overflow-x: scroll;
+    }
+
+    #search_query_chapman_codes optgroup option:hover {
+        position: relative;
+    }
+        /*animation: slide 10s linear infinite;
+}
+@keyframes slide {
+  0% {
+    transform-origin: translatex(-0%)
+  }
+
+  100% {
+    transform: translatex(-100%)
+  }
+}*?
+
+    
+</style>
     <script type="text/javascript">
 
     </script>
@@ -470,6 +498,7 @@
                     $('.spouse_or_mother_surname_label').append('<span class="ttip__text" id="mother_or_spouse_help_text">Mother\'s name before marriage</span>')
                     $('#death_select_box').prop('disabled', 'disabled');
                     $('#death_select_box').val([]);
+                    aad_selection_function();
                     $('#spouse_or_mother_surname_div').show();
                     $('#age_at_death_or_date_of_birth_div').hide();
                 } else if ($(".marriage").is(":checked") && !$('.birth, .death, .checkAll').is(':checked')) {
@@ -482,6 +511,7 @@
                     $('.spouse_or_mother_surname_label').text("Spouse's Surname");//.append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
                     $('#death_select_box').prop('disabled', 'disabled');
                     $('#death_select_box').val([]);
+                    aad_selection_function();
                     $('#spouses_mother_surname').prop('placeholder', "Enter Spouse's surname here")
                     $('#spouses_mother_surname').prop('name', 'search_query[spouses_mother_surname]');
                     $('#spouse_first_name').prop('disabled', false)
@@ -494,6 +524,7 @@
                 } else {
                     $('#death_select_box').prop('disabled', 'disabled');
                     $('#death_select_box').val([]);
+                    aad_selection_function();
                     $('#spouse_firstnames_div').hide();
                     $('#spuse_checkbox').hide();
                     $('#spouse_or_mother_surname_div').hide();
@@ -512,6 +543,7 @@
                // $('#death_select_box').prop('disabled', 'disabled');
                // $('#death_select_box').css('background', '#ccc');
                 $('#death_select_box').val([]);
+                aad_selection_function();
                 $('#spouse_or_mother_surname_div').show();
                 $('#spouse_firstnames_div').hide();
                 $('#spouse_first_name').val('');
@@ -527,6 +559,7 @@
                 //$('#death_select_box').prop('disabled', 'disabled');
                 //$('#death_select_box').css('background', '#ccc');
                 $('#death_select_box').val([]);
+                aad_selection_function();
                 //$('#spouse_first_name').css('background', 'white');
                 $('#spouse_or_mother_surname_div').show();
                 $('#spouse_firstnames_div').show();
@@ -560,6 +593,7 @@
                 //$('#spouses_mother_surname').css('background', '#ccc');
                 $('#spouses_mother_surname').val('');
                 $('#death_select_box').val([]);
+                aad_selection_function();
                 //$('#spouse_first_name').prop('disabled', true)
                 //$('#spouse_first_name').prop('placeholder', "")
                 //$('#spouse_first_name').css('background', '#ccc');

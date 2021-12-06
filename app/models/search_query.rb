@@ -1754,6 +1754,7 @@ class SearchQuery
   end
 
   def aad_search records
+    #raise self.min_age_at_death.inspect
     unless self.match_recorded_ages_or_dates
       records = records.where(AgeAtDeath: ['', self.age_at_death])
     else
