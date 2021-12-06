@@ -43,7 +43,8 @@ module BestGuessHelper
 
   def format_registered registered_date, quarter
     registered = registered_date.split('.')
-    value = "#{QuarterDetails.month_hash[registered[0]]} #{formatted_year(quarter)[0..1]}#{registered[1]}"
+    year = formatted_year(quarter).to_s
+    value = "#{QuarterDetails.month_hash[registered[0]]} #{year[0..1]}#{registered[1]}"
     value
   end
 
