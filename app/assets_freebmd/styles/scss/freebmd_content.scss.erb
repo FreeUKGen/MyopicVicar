@@ -1078,6 +1078,24 @@ transform: matrix(-1, 0, 0, 1, 0, 0);
     text-decoration: none;
     background-color: "#fff"
 }
+.table_link:focus i, .table_link:hover i {
+    display: none;
+}
+.postems_link:focus:before, .postems_link:hover:before {
+    content: "Postems"
+}
+
+.scans_link:focus:before, .scans_link:hover:before {
+    content: "Scans"
+}
+
+.save_link:focus:before, .save_link:hover:before {
+    content: "Save Entry"
+}
+
+.saved_link:focus:before, .saved_link:hover:before {
+    content: "Entry is saved"
+}
 
 .scan_files:focus, .scan_files:hover .fa-camera:before {
     content: "\f1c5";
