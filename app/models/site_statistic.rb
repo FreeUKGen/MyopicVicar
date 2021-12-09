@@ -153,7 +153,7 @@ class SiteStatistic
     end
 
     def add_fields(record)
-      line = "#{record.interval_end},#{record.n_records},#{record.n_searches},#{record.n_records_added}"
+      line = "\"#{record.interval_end}\",#{record.n_records},#{record.n_searches},#{record.n_records_added}"
     end
   end
 end
