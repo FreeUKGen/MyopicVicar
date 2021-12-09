@@ -20,11 +20,6 @@ class SiteStatistic
   field :n_records_1871, type: Integer
   field :n_records_1881, type: Integer
   field :n_records_1891, type: Integer
-  field :n_searches, type: Integer
-  field :n_records_added, type: Integer
-  field :n_records_added_marriages, type: Integer
-  field :n_records_added_burials, type: Integer
-  field :n_records_added_baptisms, type: Integer
   field :n_records_added_1841, type: Integer
   field :n_records_added_1851, type: Integer
   field :n_records_added_1861, type: Integer
@@ -143,16 +138,22 @@ class SiteStatistic
     end
 
     def write_csv_file(file_location, stats_array)
-      column_headers = %w(interval year month day records searches added)
+      column_headers = %w(interval records searches added)
 
       CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
         csv << column_headers
         stats_array.each do |rec|
           p rec
-          csv << rec
+          line = add_fields(rec)
+          p line
+          csv << line
         end
       end
       [true, '']
+    end
+
+    def add_fields(record)
+      line = "#{record.interval_end},#{record.n_records},#{record.n_searches},#{record.n_records_added}"
     end
   end
 end
