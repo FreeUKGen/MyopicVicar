@@ -1,14 +1,14 @@
 namespace :freecen do
-  desc 'Extract Freecen2 contents'
-  task :calculate_contents, [:day, :month, :year] => [:environment] do |t, args|
-    if args.day.present?
-      time = Time.new(args.year.to_i, args.month.to_i, args.day.to_i)
-      p "Starting #{time}"
-      Freecen2Content.calculate(time)
+  desc 'Extract Freecen2 contents for Records display'
+  task :calculate_contents, [:all_counties] => [:environment] do |t, args|
+    if args.all_counties.present?
+      mode = 'FULL'
     else
-      p "Starting #{Time.current}"
-      Freecen2Content.calculate
+      mode = 'CHANGED-ONLY'  # only update counties with changed data
     end
+    time = Time.current
+    p "Starting #{time} - Mode = #{mode}"
+    Freecen2Content.calculate(time,mode)
     p 'Finished'
   end
 end

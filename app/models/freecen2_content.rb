@@ -23,31 +23,40 @@ class Freecen2Content
 
   class << self
 
-    def calculate(time = Time.now.utc) # AEV Testing + 24.hours
+    def calculate(time, mode)
 
-      # AEV Testing - update_all = true # AEV
-      update_all = false
+      if mode == 'FULL'
+        update_all = true
+      else
+        update_all = false
+      end
 
       last_midnight = Time.utc(time.year, time.month, time.day)
       previous_midnight = Time.utc(time.year, time.month, time.day) - 30*24.hours
 
-      previous_stat_data = Freecen2Content.order(interval_end: :desc).first
-      no_previous_data_present = false
+      if update_all
+        stat = Freecen2Content.find_by(interval_end: last_midnight)
+        stat = Freecen2Content.new if stat.blank?
+      else
+        previous_stat_data = Freecen2Content.order(interval_end: :desc).first
+        no_previous_data_present = false
 
-      if previous_stat_data.present?
-        if previous_stat_data.interval_end == last_midnight
-          stat = previous_stat_data
+        if previous_stat_data.present?
+          if previous_stat_data.interval_end == last_midnight
+            stat = previous_stat_data
+          else
+            stat = Freecen2Content.new
+          end
         else
+          no_previous_data_present = true
           stat = Freecen2Content.new
         end
-      else
-        no_previous_data_present = true
-        stat = Freecen2Content.new
       end
 
       p "New Pieces Online = between #{previous_midnight} and #{last_midnight}"
 
       # populate it
+
       stat.interval_end = last_midnight
       stat.year = time.year
       stat.month = time.month
@@ -56,7 +65,8 @@ class Freecen2Content
 
       # County
 
-      if no_previous_data_present
+
+      if no_previous_data_present || update_all
         records = Freecen2Content.setup_records(records, 'total')
         new_records = []
       else
@@ -67,6 +77,7 @@ class Freecen2Content
           new_records = previous_stat_data.new_records
         end
       end
+
 
       # Overall Totals
 
@@ -113,16 +124,20 @@ class Freecen2Content
         county_name = ChapmanCode.name_from_code(county)
         new_county = false
 
-        if county_pieces_total > 0
-          if records[county].present?
-            if update_all || county_total_records_online != records[county][:total][:records_online] || county_pieces_total != records[county][:total][:pieces]
-              refresh_county = true
+        if update_all
+          refresh_county = true
+        else
+          if county_pieces_total > 0
+            if records[county].present?
+              if update_all || county_total_records_online != records[county][:total][:records_online] || county_pieces_total != records[county][:total][:pieces]
+                refresh_county = true
+              else
+                refresh_county = false
+              end
             else
-              refresh_county = false
+              new_county = true      # new county to be processed for first time
+              refresh_county = true
             end
-          else
-            new_county = true      # new county to be processed for first time
-            refresh_county = true
           end
         end
 
@@ -140,7 +155,7 @@ class Freecen2Content
             new_records = updated_array
           end
 
-          if no_previous_data_present || new_county
+          if no_previous_data_present || new_county || update_all
             records = Freecen2Content.add_records_county(records, county)
           end
           counties_array <<  county_name
@@ -179,7 +194,7 @@ class Freecen2Content
 
                 key_place = Freecen2Content.get_place_key(this_place.place_name)
 
-                if no_previous_data_present or records[county][key_place].blank?
+                if no_previous_data_present || records[county][key_place].blank? || update_all
                   records = Freecen2Content.add_records_place(records, county, key_place)
                 end
 
@@ -252,11 +267,13 @@ class Freecen2Content
       p "counties updated = #{chaps}"
       p "places updated = #{total_places_cnt}"
 
-
-      # adjust for 'new_records' that are no longer new (I.e. > 30 days old)
-      # new_records - [0] = County name, [1] = Place name, [2] = chapman_code, [3] = fc2_PLACE_id, [4] = year
-
-      if new_records.size > 0
+      if !update_all && new_records.size > 0
+        # nb overall totals are always re-calculated so no need to adjust those
+        #
+        # adjust for 'new_records' that are no longer new (I.e. > 30 days old)
+        # new_records - [0] = County name, [1] = Place name, [2] = chapman_code, [3] = fc2_PLACE_id, [4] = year
+        #
+        p "Adjusting Recently Added"
         adjusted_array = []
         new_records.each do |entry|
           key_place = Freecen2Content.get_place_key(entry[1])
@@ -264,14 +281,17 @@ class Freecen2Content
           place_id = entry[3]
           year = entry[4]
 
-          all_years_pieces_online = Freecen2Piece.between_dates_place_year_totals(chapman_code, place_id, previous_midnight, last_midnight)
-          pieces_online_cnt  = all_years_pieces_online[year]
-          diff = records[chapman_code][key_place][year][:added_pieces_online]  - pieces_online_cnt
+          place_all_years_pieces_online = Freecen2Piece.between_dates_place_year_totals(chapman_code, place_id, previous_midnight, last_midnight)
+          place_pieces_online_cnt  = place_all_years_pieces_online[year]
+          diff_place  = records[chapman_code][key_place][year][:added_pieces_online]  - place_pieces_online_cnt
+          records[chapman_code][key_place][year][:added_pieces_online] += diff_place
+          records[chapman_code][key_place][:total][:added_pieces_online] += diff_place
 
-          records[chapman_code][key_place][year][:added_pieces_online] += diff
-          records[chapman_code][key_place][:total][:added_pieces_online] += diff
-          records[chapman_code][year][:added_pieces_online] += diff
-          records[chapman_code][:total][:added_pieces_online] += diff
+          county_all_years_pieces_online = Freecen2Piece.between_dates_county_year_totals(chapman_code, previous_midnight, last_midnight)
+          county_pieces_online_cnt  = county_all_years_pieces_online[year]
+          diff_county = records[chapman_code][year][:added_pieces_online]  - county_pieces_online_cnt
+          records[chapman_code][year][:added_pieces_online] += diff_county
+          records[chapman_code][:total][:added_pieces_online] += diff_county
 
           if records[chapman_code][key_place][year][:added_pieces_online] > 0
             adjusted_array << entry
@@ -283,8 +303,6 @@ class Freecen2Content
       stat.records = records
       stat.new_records = new_records.sort
       stat.save
-
-      #remove_older_records(last_midnight) - not used AEV
 
       run_time = Time.now.utc - start
 
@@ -323,18 +341,6 @@ class Freecen2Content
       records[county][field][:total][:records_online] = 0
       records[county][field][:total][:added_pieces_online] = 0
       return records
-    end
-
-    def remove_older_records(latest)  # not used
-      del_cnt = 0
-      all_recs = Freecen2Content.where().all
-      all_recs.each do |rec|
-        if rec.interval_end < latest
-          rec.destroy
-          del_cnt += 1
-        end
-      end
-      p "#{del_cnt} older record(s) deleted"
     end
 
     def get_place_key(place)
