@@ -145,7 +145,7 @@ class SiteStatistic
         stats_array.each do |rec|
           p rec
           line = []
-          line = add_fields(line, rec)
+          line = SiteStatistic.add_fields(line, rec)
           p line
           csv << line
         end
