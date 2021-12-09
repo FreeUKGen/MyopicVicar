@@ -134,6 +134,7 @@ class SiteStatistic
       SiteStatistic.between(interval_end: start_date..end_date).each do |statistic|
         stats_array << statistic
       end
+      p stats_array
       file = "Site_Stats_#{start_date.strftime("%Y%m%d")}_#{end_date.strftime("%Y%m%d")}.csv"
       file_location = Rails.root.join('tmp', file)
       success, message = SiteStatistic.write_csv_file(file_location, stats_array)
@@ -147,6 +148,7 @@ class SiteStatistic
       CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
         csv << column_headers
         stats_array.each do |rec|
+          p rec
           csv << rec
         end
       end
