@@ -157,7 +157,7 @@ class SiteStatistic
       line << record.n_records_burials
       line << record.n_records_added
       line << record.n_records_added_baptisms
-      line << record.n_records_added_marriage
+      line << record.n_records_added_marriages
       line << record.n_records_added_burials
       line
     end
