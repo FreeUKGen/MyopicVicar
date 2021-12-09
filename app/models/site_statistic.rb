@@ -121,15 +121,10 @@ class SiteStatistic
     end
 
     def create_csv_file(start_date, end_date)
-      p 'create csv'
-      p start_date
-      p end_date
-      p "#{ SiteStatistic.between(interval_end: start_date..end_date).count} records"
       stats_array = []
       SiteStatistic.between(interval_end: start_date..end_date).each do |statistic|
         stats_array << statistic
       end
-      p stats_array
       file = "Site_Stats_#{start_date.strftime("%Y%m%d")}_#{end_date.strftime("%Y%m%d")}.csv"
       file_location = Rails.root.join('tmp', file)
       success, message = SiteStatistic.write_csv_file(file_location, stats_array)
@@ -138,15 +133,13 @@ class SiteStatistic
     end
 
     def write_csv_file(file_location, stats_array)
-      column_headers = %w(interval records searches added)
+      column_headers = %w(year month day searches records baptisms marriages burials 'added records' 'added baptisms' 'added marriages' 'added burials')
 
       CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
         csv << column_headers
         stats_array.each do |rec|
-          p rec
           line = []
           line = SiteStatistic.add_fields(line, rec)
-          p line
           csv << line
         end
       end
@@ -154,7 +147,19 @@ class SiteStatistic
     end
 
     def add_fields(line, record)
-      line << "\"#{record.interval_end}\",#{record.n_records},#{record.n_searches},#{record.n_records_added}"
+      line << record.year
+      line << record.month
+      line << record.day
+      line << record.n_searches
+      line << record.n_records
+      line << record.n_records_baptisms
+      line << record.n_records_marriages
+      line << record.n_records_burials
+      line << record.n_records_added
+      line << record.n_records_added_baptisms
+      line << record.n_records_added_marriage
+      line << record.n_records_added_burials
+      line
     end
   end
 end
