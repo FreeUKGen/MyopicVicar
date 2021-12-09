@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+
 class NewFreeregCsvUpdateProcessor
   # This class processes a file or files of CSV records.
-  #It converts them into entries and stores them in the freereg1_csv_entries     collection
+  # It converts them into entries and stores them in the freereg1_csv_entries collection
   require "csv"
   require 'email_veracity'
   require 'text'
@@ -70,20 +71,20 @@ class NewFreeregCsvUpdateProcessor
     @project.write_log_file("#{files_to_be_processed.length}\t files selected for processing. <br>")
     files_to_be_processed.each do |file|
       @csvfile = CsvFile.new(file)
-      success, @records_processed,@data_errors = @csvfile.a_single_csv_file_process(@project)
+      success, @records_processed, @data_errors = @csvfile.a_single_csv_file_process(@project)
       if success
         #p "processed file"
         @project.total_records = @project.total_records + @records_processed unless @records_processed.nil?
         @project.total_data_errors = @project.total_data_errors + data_errors unless @data_errors
-        @project.total_files =  @project.total_files  + 1
+        @project.total_files += 1
       else
-        #p "failed to process file"
-        @csvfile.communicate_failure_to_member(@project,@records_processed)
         @csvfile.clean_up_physical_files_after_failure(@records_processed)
+        @csvfile.communicate_failure_to_member(@project, @records_processed)
         #@project.communicate_to_managers(@csvfile) if @project.type_of_project == "individual"
       end
       sleep(100) if Rails.env.production?
     end
+
     # p "manager communication"
     #@project.communicate_to_managers(@csvfile) if files_to_be_processed.length >= 2
     at_exit do
@@ -106,28 +107,18 @@ class NewFreeregCsvUpdateProcessor
 
   def communicate_to_managers(csvfile)
     records = @total_records
-    records == 0 ? average_time = 0 : average_time = (Time.new.to_i - @project_start_time.to_i) * 1000 / records
-    self.write_messages_to_all("Created  #{records} entries at an average time of #{average_time}ms per record at #{Time.new}. <br>",false)
+    average_time = records == 0 ? 0 : (Time.new.to_i - @project_start_time.to_i) * 1000 / records
+    write_messages_to_all("Created  #{records} entries at an average time of #{average_time}ms per record at #{Time.new}. <br>", false)
     file = @message_file
-    #@message_file.close if @project.type_of_project == "individual"
-    user = UseridDetail.where(userid: "REGManager").first
-    UserMailer.update_report_to_freereg_manager(file, user).deliver_now
-    user = UseridDetail.where(userid: "ericb").first
+    # @message_file.close if @project.type_of_project == "individual"
+    user = UseridDetail.where(userid: 'REGManager').first
     UserMailer.update_report_to_freereg_manager(file, user).deliver_now
   end
 
   def self.convert_to_bolean(create_search_records, force)
-    if create_search_records == "create_search_records"
-      create_search_records = true
-    else
-      create_search_records = false
-    end
-    if force == "force_rebuild"
-      force = true
-    else
-      force = false
-    end
-    return force, create_search_records
+    create_search_records =  create_search_records == 'create_search_records' ? true : false
+    force = force == 'force_rebuild' ? true : false
+    [force, create_search_records]
   end
 
   def define_message_file
@@ -138,21 +129,21 @@ class NewFreeregCsvUpdateProcessor
     file_for_warning_messages = (file_for_warning_messages + "_" + time + ".log").to_s
     message_file = File.new(file_for_warning_messages, "w")
     message_file.chmod( 0664 )
-    return message_file
+    message_file
   end
 
   def write_member_message_file(message)
-    self.member_message_file.puts message
+    member_message_file.puts message
   end
 
-  def write_messages_to_all(message,no_member_message)
-    #avoids sending the message to the member if no_member_message is false
-    self.write_log_file(message)
-    self.write_member_message_file(message) if no_member_message
+  def write_messages_to_all(message, no_member_message)
+    # avoids sending the message to the member if no_member_message is false
+    write_log_file(message)
+    write_member_message_file(message) if no_member_message
   end
 
   def write_log_file(message)
-    self.message_file.puts message
+    message_file.puts message
   end
 end
 
@@ -184,20 +175,21 @@ class CsvFiles < NewFreeregCsvUpdateProcessor
   def get_the_individual_file_to_be_processed(project)
     #p "individual file selection"
     files = GetFiles.get_all_of_the_filenames(project.freereg_files_directory,project.file_range)
-    return files
+    files
   end
 
   def get_the_range_files_to_be_processed(project)
     #p "range file selection"
     files = GetFiles.get_all_of_the_filenames(project.freereg_files_directory,project.file_range)
-    return files
+    files
   end
+
   def get_the_special_selection_1_files_to_be_processed(project)
-    #p "special selection 1 files"
+    # p "special selection 1 files"
     time_start = Time.utc(2016,"apr",29,01,23,0)
     time_end = Time.utc(2016,"may",02,0,30,0)
-    #p time_start
-    #p time_end
+    # p time_start
+    # p time_end
     time_start = time_start.to_f
     time_end = time_end.to_f
     files = Array.new
@@ -210,19 +202,19 @@ class CsvFiles < NewFreeregCsvUpdateProcessor
           affected_file = File.join(project.freereg_files_directory, file.userid, file.file_name)
           files << affected_file
           actual_file = Freereg1CsvFile.userid(file.userid).file_name(file.file_name).first
-          total_entries = total_entries + actual_file.freereg1_csv_entries.count unless actual_file.blank?
+          total_entries += actual_file.freereg1_csv_entries.count if actual_file.present?
         end
       end
     end
     #p "#{files.length} met the selection criteria with #{total_entries} entries"
-    return files
+    files
   end
   def get_the_special_selection_2_files_to_be_processed(project)
-    #p "special selection 2 files"
+    # p "special selection 2 files"
     time_start = Time.utc(2016,"may",02,0,19,1)
     time_end = Time.utc(2016,"may",04,0,30,0,)
-    #p time_start
-    #p time_end
+    # p time_start
+    # p time_end
     time_start = time_start.to_f
     time_end = time_end.to_f
     files = Array.new
@@ -316,30 +308,37 @@ class CsvFile < CsvFiles
     success, message = self.ensure_processable?(project) unless project.force_rebuild
     #p "finished file checking #{message}. <br>"
     return false, message unless success
-    success, message  = self.slurp_the_csv_file(project)
-    #p "finished slurp #{success} #{message}"
-    return false,message unless success
+
+    success, message = self.slurp_the_csv_file(project)
+    return [false, message] unless success
+
     @csv_records = CsvRecords.new(@array_of_data_lines)
     success, message = @csv_records.separate_into_header_and_data_lines(self,project)
     #p "got header and data lines"
-    return false,"lines not extracted #{message}. <br>" unless success
+    return [false, "lines not extracted #{message}. <br>"] unless success
+
     success, message = @csv_records.get_the_file_information_from_the_headers(self,project)
     #p "finished header"
-    return success,"header errors" unless success
+    return [success,"header errors"] unless success
+
     success,@records_processed = @csv_records.extract_the_data(self,project)
     #p "finished data"
-    return success,"Data not extracted #{@records_processed}. <br>" unless success
+    return [success,"Data not extracted #{@records_processed}. <br>"] unless success
+
     success,@records_processed,@data_errors = self.process_the_data(project) if success
-    return success,"Data not processed #{@records_processed}. <br>" unless success
+    return [success,"Data not processed #{@records_processed}. <br>"] unless success
+
     success, message = self.clean_up_supporting_information(project)
     #p "finished clean up"
     records = @total_records
     time = ((Time.new.to_i  - @file_start.to_i)*1000) / records unless records == 0
     project.write_messages_to_all("Created  #{@total_records} entries at an average time of #{time}ms per record at #{Time.new}. <br>",true)
-    return success,"clean up failed #{message}. <br>" unless success
+    return [success,"clean up failed #{message}. <br>"] unless success
+
     success, message = self.communicate_file_processing_results(project)
     #p "finished com"
-    return success,"communication failed #{message}. <br>" unless success
+    return [success,"communication failed #{message}. <br>"] unless success
+
     [true, @total_records, @total_data_errors]
   end
 
@@ -348,7 +347,7 @@ class CsvFile < CsvFiles
     #update location of record
     record = existing_record.search_record
     success = 'change'
-    if  record.blank?
+    if record.blank?
       success = 'change'
       #transform_search_record is a method in freereg1_csv_entry.rb.rb
       # enough_name_fields is a method in freereg1_csv_entry.rb that ensures we have names to create a search record on
@@ -477,10 +476,10 @@ class CsvFile < CsvFiles
   end
 
   def clean_up_physical_files_after_failure(message)
-    #p "clean up after failure"
     batch = PhysicalFile.userid(@userid).file_name(@file_name).first
     return true if batch.blank? || message.blank?
-    PhysicalFile.remove_waiting_flag(@userid,@file_name)
+
+    PhysicalFile.remove_waiting_flag(@userid, @file_name)
     batch.delete if message.include?("header errors") || message.include?("does not exist. ") || message.include?("userid does not exist. ")
   end
 
@@ -525,7 +524,6 @@ class CsvFile < CsvFiles
   end
 
   def communicate_failure_to_member(project, message)
-    #p "communicating failure"
     file = project.member_message_file
     file.close
     UserMailer.batch_processing_failure(file,@userid,@file_name).deliver_now unless project.type_of_project == "special_selection_1" ||  project.type_of_project == "special_selection_2"
@@ -586,6 +584,7 @@ class CsvFile < CsvFiles
     file_for_member_messages = (file_for_member_messages + "_" + time + ".log").to_s
     member_message_file = File.new(file_for_member_messages, "w")
     return member_message_file
+
   end
 
 
@@ -845,21 +844,24 @@ class CsvFile < CsvFiles
       csvtxt = File.open(@file, "rb", :encoding => "ASCII-8BIT:ASCII-8BIT"){|f| f.read}
       project.write_messages_to_all("Empty file",true) if csvtxt.blank?
       return false if csvtxt.blank?
+
       code,csvtxt = self.determine_if_utf8(csvtxt,project)
       code = self.get_codeset_from_header(code,csvtxt,project)
       code, message, csvtxt = self.check_and_set_characterset(code,csvtxt,project)
       csvtxt = self.standardize_line_endings(csvtxt)
       success = self.extract_the_array_of_lines(csvtxt)
-    rescue  => e
-      project.write_messages_to_all("csv slurp rescue #{e.message}",false)
+    rescue => e
+
+      project.write_messages_to_all("csv slurp rescue #{e.message}", true)
       error_message = "#{@userid}\t#{@file_name} *We were unable to process the file possibly due to an invalid structure or character. Please consult the System Administrator*. <br>"
-      project.write_messages_to_all(error_message,true)
+      project.write_messages_to_all(error_message, true)
       project.write_log_file("#{e.message}")
       project.write_log_file("#{e.backtrace.inspect}")
       success = false
       message = e.message
     ensure
-      return success, message
+      [success, message]
+
       #we ensure that processing keeps going by dropping out through the bottom
     end #begin end
   end
