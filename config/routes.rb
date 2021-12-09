@@ -180,6 +180,7 @@ MyopicVicar::Application.routes.draw do
 
   resources :search_statistics
 
+  get 'site_statistics/export_csv', to: 'site_statistics#export_csv', as: :export_csv_site_statistics
   resources :site_statistics
 
   get 'feedbacks/list_by_userid',  :to => 'feedbacks#list_by_userid', :as => :list_by_userid_feedbacks
