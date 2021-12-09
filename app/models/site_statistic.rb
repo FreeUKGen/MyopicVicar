@@ -133,7 +133,7 @@ class SiteStatistic
     end
 
     def write_csv_file(file_location, stats_array)
-      column_headers = %w(year month day searches records baptisms marriages burials 'added records' 'added baptisms' 'added marriages' 'added burials')
+      column_headers = %w(year month day searches records baptisms marriages burials added-records added-baptisms added-marriages added-burials)
 
       CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
         csv << column_headers
