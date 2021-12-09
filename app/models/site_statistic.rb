@@ -144,6 +144,7 @@ class SiteStatistic
         csv << column_headers
         stats_array.each do |rec|
           p rec
+          line = []
           line = add_fields(rec)
           p line
           csv << line
