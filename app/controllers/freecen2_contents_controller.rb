@@ -13,6 +13,7 @@ class Freecen2ContentsController < ApplicationController
       if !params[:place_description].present? || params[:place_description] == ''
         flash[:notice] = 'You must select a Place'
       else
+        session[:contents_county_description] = @county_description
         session[:contents_place_description] = params[:place_description]
         redirect_to freecen2_contents_place_index_path and return
       end
@@ -20,6 +21,10 @@ class Freecen2ContentsController < ApplicationController
   end
 
   def new_records_index
+    if session[:contents_id].blank?
+      @freecen2_contents = Freecen2Content.order(interval_end: :desc).first
+      session[:contents_id] = @freecen2_contents.id
+    end
     @id = session[:contents_id]
     @freecen2_contents = Freecen2Content.find_by(id: @id)
     @interval_end = @freecen2_contents.interval_end
@@ -70,8 +75,7 @@ class Freecen2ContentsController < ApplicationController
   end
 
   def place_names
-    @county_description = params[:county_description]
-    @chapman_code = ChapmanCode.code_from_name(@county_description)
+    set_county_vars
     @year = params[:census_year]
     @place_description = params[:place_description]
     @place = Freecen2Place.find_by(chapman_code: @chapman_code, place_name: @place_description)
@@ -167,6 +171,7 @@ class Freecen2ContentsController < ApplicationController
     @interval_end = @freecen2_contents.interval_end
     if params[:county_description].present?
       @county_description = params[:county_description]
+      session[:contents_county_description] = @county_description
     else
       @county_description = session[:contents_county_description]
     end
@@ -176,8 +181,9 @@ class Freecen2ContentsController < ApplicationController
   def check_names_exist
     @has_some_names = false
     @has_names = {}
-    @names =  Freecen2PlaceUniqueName.find_by(freecen2_place_id: @place_id)
-    if @names.present?
+    names_present = Freecen2PlaceUniqueName.find_by(freecen2_place_id: @place_id).present?
+    if names_present
+      @names =  Freecen2PlaceUniqueName.find_by(freecen2_place_id: @place_id)
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
         if @names.unique_forenames[year].present? and @names.unique_surnames[year].present?
           @has_names[year] = true
