@@ -29,7 +29,9 @@ class Freecen2ContentsController < ApplicationController
     @freecen2_contents = Freecen2Content.find_by(id: @id)
     @interval_end = @freecen2_contents.interval_end
     @recent_additions = []
-    @additions_county = params[:new_records]
+    if params[:new_records].present?
+      @additions_county = params[:new_records]
+    end
     if @freecen2_contents.new_records.present?
       if @additions_county  == 'All'
         @recent_additions = @freecen2_contents.new_records
@@ -173,7 +175,9 @@ class Freecen2ContentsController < ApplicationController
       @county_description = params[:county_description]
       session[:contents_county_description] = @county_description
     else
-      @county_description = session[:contents_county_description]
+      if session[:contents_county_description].present?
+        @county_description = session[:contents_county_description]
+      end
     end
     @chapman_code = ChapmanCode.code_from_name(@county_description)
   end
