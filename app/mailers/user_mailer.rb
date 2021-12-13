@@ -234,11 +234,12 @@ class UserMailer < ActionMailer::Base
     manager = nil
     if appname.downcase == 'freereg'
       manager = UseridDetail.userid("REGManager").first
+      get_coordinator_name
+      mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{manager.person_forename} <#{manager.email_address}>", :subject => "#{appname} transcriber registration") unless @coordinator.nil?
     elsif appname.downcase == 'freecen'
-      manager = UseridDetail.userid("CENManager").first
+      get_coordinator_name
+      mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} transcriber registration") unless @coordinator.nil?
     end
-    get_coordinator_name
-    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{manager.person_forename} <#{manager.email_address}>", :subject => "#{appname} technical registration notification") unless @coordinator.nil?
   end
 
   def notification_of_transcriber_creation(user)
@@ -254,11 +255,12 @@ class UserMailer < ActionMailer::Base
     manager = nil
     if appname.downcase == 'freereg'
       manager = UseridDetail.userid("REGManager").first
+      get_coordinator_name
+      mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{manager.person_forename} <#{manager.email_address}>", :subject => "#{appname} transcriber registration") unless @coordinator.nil?
     elsif appname.downcase == 'freecen'
-      manager = UseridDetail.userid("CENManager").first
+      get_coordinator_name
+      mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} transcriber registration") unless @coordinator.nil?
     end
-    get_coordinator_name
-    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{manager.person_forename} <#{manager.email_address}>", :subject => "#{appname} transcriber registration") unless @coordinator.nil?
   end
 
   def notification_of_researcher_registration(user)

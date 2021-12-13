@@ -180,12 +180,12 @@ class SearchQuery
       if search_record.freecen_csv_entry_id.present?
         entry = FreecenCsvEntry.find_by(_id: search_record.freecen_csv_entry_id)
         birth_place = entry.birth_place.present? ? entry.birth_place : entry.verbatim_birth_place
-        search_record.update_attributes(birth_place: birth_place) if entry.present?
+        search_record.set(birth_place: birth_place) if entry.present?
       else
         individual = search_record.freecen_individual_id
         actual_individual = FreecenIndividual.find_by(_id: individual) if individual.present?
         birth_place = actual_individual.birth_place.present? ? actual_individual.birth_place : actual_individual.verbatim_birth_place
-        search_record.update_attributes(birth_place: birth_place) if actual_individual.present?
+        search_record.set(birth_place: birth_place) if actual_individual.present?
       end
       rec['birth_place'] = birth_place
       rec
@@ -195,7 +195,7 @@ class SearchQuery
       return rec if rec[:search_date].present?
 
       search_record = SearchRecord.find_by(_id: rec[:_id])
-      search_record.update_attributes(search_date: search_record.search_dates[0])
+      search_record.set(search_date: search_record.search_dates[0])
       rec['search_date'] = search_record.search_dates[0]
       rec
     end

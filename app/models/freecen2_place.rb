@@ -516,16 +516,43 @@ class Freecen2Place
     freecen2_place_edits << edit
   end
 
-  def update_data_present
-    if self.data_present?
-      self.update_attribute(:data_present,true)
-    else
-      self.update_attribute(:data_present,false)
+  def update_data_present(piece)
+    if piece.present? && !cen_data_years.include?(piece.year)
+      cen_data = cen_data_years
+      cen_data << piece.year
     end
+    update_attributes(data_present: true, cen_data_years: cen_data) if cen_data.present?
   end
 
   def update_places_cache
     Freecen2PlaceCache.refresh(chapman_code)
   end
 
+  def update_data_present_after_vld_delete(piece)
+    year = piece.year
+    file = Freecen1VldFile.find_by(freecen2_place_id: _id, full_year: year)
+    files = Freecen1VldFile.find_by(freecen2_place_id: _id)
+    update_attributes(data_present: false, cen_data_years: []) if files.blank?
+    update_attributes(cen_data_years: (cen_data_years - [year])) if files.present? && file.blank?
+    piece.update_attributes(status: '', status_date: '') if file.blank?
+    piece.freecen_piece.update_attributes(status: '', status_date: '') if piece.freecen_piece.present? && file.blank?
+  end
+
+  def update_data_present_after_csv_delete
+    parishes = Freecen2CivilParish.where(freecen2_place_id: _id).count
+    vld_files = Freecen1VldFile.where(freecen2_place_id: _id).count
+    update_attributes(data_present: false, cen_data_years: []) if parishes.zero? && vld_files.zero?
+
+    if parishes >= 1 || vld_files >= 1
+      cen_years = []
+      Freecen2CivilParish.where(freecen2_place_id: _id).each do |parish|
+        cen_years << parish.year unless cen_years.include?(parish.year) || parish.freecen_csv_entries.blank?
+      end
+      Freecen1VldFile.where(freecen2_place_id: _id).each do |vld_file|
+        cen_years << vld_file.full_year unless cen_years.include?(vld_file.full_year)
+      end
+      data_present = cen_years.length.zero? ? false : true
+      update_attributes(data_present: data_present, cen_data_years: cen_years)
+    end
+  end
 end

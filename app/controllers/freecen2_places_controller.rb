@@ -124,8 +124,8 @@ class Freecen2PlacesController < ApplicationController
                    executive_director project_manager].include?(@user.person_role) ? true : false
     redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'You are not permitted to edit a place') && return unless permitted
 
-    @county = session[:county].present? ? session[:county] : @place.county
-    @chapman_code = session[:chapman_code].present? ? session[:chapman_code] : @place.chapman_code
+    @county = @place.county
+    @chapman_code = @place.chapman_code
     if @chapman_code == 'LND'
       message = 'Only system administrators can edit LND'
       redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: message) && return unless

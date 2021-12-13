@@ -49,4 +49,8 @@ module Freecen2PlacesHelper
       'none'
     end
   end
+
+  def cen_years(cen_data_years)
+    data_years = cen_data_years.present? ? cen_data_years.sort : ''
+  end
 end

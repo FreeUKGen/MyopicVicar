@@ -47,55 +47,51 @@ class Freecen2PlaceCache
   end
 
   def self.check_and_refresh_if_absent
-    p 'starting'
-    FreecenCsvFile.where(incorporated: true).each do |file|
-      next if file.freecen2_place.present?
+    file_count = 0
+    p 'starting csv'
+    FreecenCsvFile.where(incorporated: true).no_timeout.each do |file|
+      file_count += 1
+      p file_count
+      p "#{file._id} #{file.chapman_code} #{file.file_name}"
+      freecen2_place = file.freecen2_place
+      p 'bypassing' if freecen2_place.present? && freecen2_place.u_at > 1.day.ago
+      next if freecen2_place.present? && freecen2_place.u_at > 1.day.ago
 
-      if file.freecen2_piece.present?
-        if file.freecen2_piece.freecen2_place.present?
-          file.freecen2_place = file.freecen2_piece.freecen2_place
-          file.save
-        else
-          p "piece for file #{file.inspect} has no place"
-        end
+      if freecen2_place.present?
+        p " Place #{freecen2_place.place_name}"
+        freecen2_place.update_data_present_after_csv_delete
+      end
+      piece = file.freecen2_piece
+      p "Piece #{piece.number}"
+      piece.freecen2_civil_parishes.no_timeout.each do |civil_parish|
+        next if civil_parish.freecen_csv_entries.blank?
+
+        freecen2_place = civil_parish.freecen2_place
+        freecen2_place.update_data_present(piece)
+        p "#{freecen2_place.place_name} updated"
+        piece.save!
+      end
+    end
+    p 'finished csv'
+    p 'starting vld'
+    Freecen1VldFile.no_timeout.each do |file|
+      file_count += 1
+      p file_count
+      update_place = false
+      freecen2_place = file.freecen2_place
+      if freecen2_place.blank?
+        p "(((((((((((((((((((((((((((((((((Freecen2_place is missing for #{file.inspect}"
       else
-        p "csv file #{file.inspect} has no piece"
+        update_place = true  unless freecen2_place.data_present
+        cen_years = freecen2_place.cen_data_years
+        unless cen_years.include?(file.full_year)
+          cen_years << file.full_year
+          update_place = true
+        end
+        freecen2_place.update_attributes(data_present: true, cen_data_years: cen_years.sort) if update_place
+        p "#{freecen2_place.place_name} updated" if update_place
       end
     end
-    ChapmanCode.values.sort.each do |chapman_code|
-      p chapman_code
-      p Freecen2Place.chapman_code(chapman_code).not_disabled.length
-      Freecen2Place.chapman_code(chapman_code).not_disabled.all.order_by(place_name: 1).each do |freecen2_place|
-
-        freecen2_place.update_attributes(data_present: false, cen_data_years: [])
-        freecen2_place_save_needed = false
-        if freecen2_place.freecen1_vld_files.present?
-          freecen2_place.freecen1_vld_files.each do |vld_file|
-            unless freecen2_place.data_present == true
-              freecen2_place.data_present = true
-              freecen2_place_save_needed = true
-            end
-            unless freecen2_place.cen_data_years.include?(vld_file.full_year)
-              freecen2_place.cen_data_years << vld_file.full_year
-              freecen2_place_save_needed = true
-            end
-          end
-        end
-        if freecen2_place.freecen_csv_files.present?
-          freecen2_place.freecen_csv_files.each do |csv_file|
-            unless freecen2_place.data_present == true
-              freecen2_place.data_present = true
-              freecen2_place_save_needed = true
-            end
-            unless freecen2_place.cen_data_years.include?(csv_file.year)
-              freecen2_place.cen_data_years << csv_file.year
-              freecen2_place_save_needed = true
-            end
-          end
-        end
-        freecen2_place.save if freecen2_place_save_needed
-      end
-      refresh(chapman_code)
-    end
+    refresh_all
   end
 end

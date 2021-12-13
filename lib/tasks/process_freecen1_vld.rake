@@ -7,13 +7,8 @@ namespace :freecen do
   def update_cache(place, piece)
     raise "No place" if place.blank?
 
-    if place.data_present == false
-      place.data_present = true
-    end
-    if !place.cen_data_years.include?(piece.year)
-      place.cen_data_years << piece.year
-    end
-    place.save!
+    place.update_data_present(piece)
+    place.update_places_cache
   end
 
   def process_vld_file(filename, userid)
@@ -61,6 +56,11 @@ namespace :freecen do
     freecen2_piece.update_attributes(status: 'Online', status_date: DateTime.now.in_time_zone('London'), num_individuals: num_ind, num_dwellings: num_dwel) if freecen2_piece.present?
     freecen2_piece.freecen1_vld_files << [file]
     freecen2_piece.save!
+    freecen2_place.freecen1_vld_files << [file]
+    freecen2_place.save!
+    freecen2_district = freecen2_piece.freecen2_district
+    freecen2_district.freecen1_vld_files << [file]
+    freecen2_district.save!
   end
 
   desc "Process legacy FreeCEN1 VLD file"

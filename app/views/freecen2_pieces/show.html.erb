@@ -41,8 +41,12 @@
           <td class="weight--semibold"> <%=  "#{@freecen2_piece.civil_parish_names}"  %></td>
         </tr>
         <tr>
-          <td><%= csv_files_piece_link(@freecen2_piece) %></td>
-          <td class="weight--semibold"> <%=  csv_files_piece(@freecen2_piece) %> </td>
+          <td><%= csv_files_piece_link_unincorporated(@freecen2_piece) %></td>
+          <td class="weight--semibold"> <%=  csv_files_piece_unincorporated(@freecen2_piece) %> </td>
+        </tr>
+        <tr>
+          <td><%= csv_files_piece_link_incorporated(@freecen2_piece) %></td>
+          <td class="weight--semibold"> <%=  csv_files_piece_incorporated(@freecen2_piece) %> </td>
         </tr>
         <tr>
           <td><%= vld_files_piece_link(@freecen2_piece) %></td>

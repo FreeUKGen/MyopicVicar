@@ -55,7 +55,7 @@ class Freecen2DistrictsController < ApplicationController
       redirect_back(fallback_location: new_manage_resource_path, notice: "'There was an error while saving the new piece' #{@freecen2_district.errors.full_messages}") && return
     else
       @freecen2_district.reload
-      flash[:notice] = 'The piece was created'
+      flash[:notice] = 'The district was created'
       redirect_to freecen2_district_path(@freecen2_district)
     end
   end

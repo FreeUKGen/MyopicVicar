@@ -594,7 +594,7 @@ class Place
       end #end of register
       self.update_attribute(:last_amended, church.last_amended) if (Freereg1CsvFile.convert_date(church.last_amended ) > Freereg1CsvFile.convert_date(self.last_amended))
     end #end of church
-    self.update_data_present
+    self.update_reg_data_present
   end
 
   def relocate_place(param)
@@ -636,7 +636,7 @@ class Place
     self.ucf_list.values.inject([]) { |accum, value| accum + value }
   end
 
-  def update_data_present
+  def update_reg_data_present
     if self.data_present?
       self.update_attribute(:data_present,true)
     else
@@ -644,8 +644,16 @@ class Place
     end
   end
 
+  def update_data_present(piece)
+    unless piece.blank? && cen_data_years.include?(piece.year)
+      cen_data = cen_data_years
+      cen_data << piece.year
+    end
+    update_attributes(data_present: true, cen_data_years: cen_data) if cen_data.present?
+  end
+
   def update_places_cache
-    PlaceCache.refresh(self.chapman_code)
+    PlaceCache.refresh(chapman_code)
   end
 
   def update_ucf_list(file)
