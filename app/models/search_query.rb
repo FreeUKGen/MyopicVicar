@@ -225,7 +225,7 @@ class SearchQuery
 
 
   def adequate_first_name_criteria?
-    first_name.present? && chapman_codes.length > 0 && place_ids.present?
+    first_name.present? && chapman_codes.length > 0 && freecen2_place_ids.present?
   end
 
   def all_counties_have_both_surname_and_firstname
