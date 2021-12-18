@@ -263,12 +263,25 @@ class SearchQueriesController < ApplicationController
       total_page = @search_results.count
       @bmd_search_results = @search_results if MyopicVicar::Application.config.template_set == 'freebmd'
       @paginatable_array = Kaminari.paginate_array(@search_results, total_count: @search_results.count).page(params[:page]).per(@results_per_page)
+      @max_result = maximum_results
       if !response || @search_results.nil? || @search_query.result_count.nil?
         logger.warn("#{appname_upcase}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
         flash[:notice] = 'Your search results are not available. Please repeat your search'
         redirect_to(new_search_query_path(search_id: @search_query)) && return
       end
     end
+  end
+
+  def maximum_results
+    case appname_downcase
+    when 'freebmd'
+      max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS
+    when 'freecen'
+      max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+    when 'freereg'
+      max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+    end
+    max_result
   end
 
   def show_print_version

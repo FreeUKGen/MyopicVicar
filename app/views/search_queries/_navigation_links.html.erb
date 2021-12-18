@@ -1,0 +1,16 @@
+<% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
+<% unless print_friendly %>
+ 	<div class="grid">
+	  <div class="grid__item one-whole lap-one-whole palm-one-whole push-half--bottom ">
+	    <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn   btn--small " %>
+	    <%= link_to "New Search", new_search_query_path, :class => "btn   btn--small white_button" %>
+	    <%= link_to "View Search Criteria", '#', class: "btn   btn--small" , id: "view_search_criteria"%>
+	    <% if cookies.signed[:userid].present? %>
+	      <%= link_to "Save this search", save_search_path(@search_query.id), class: "btn   btn--small", method: "post" %>
+	      <% if @save_search_id.present? %>
+	        <%= link_to "Compare", compare_search_path(@search_query.id, saved_search_id: @save_search_id, compare_search: true), class: "btn   btn--small" %>
+	      <% end %>
+	    <% end %>
+  	</div>
+	</div>
+<% end %>
