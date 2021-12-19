@@ -1,45 +1,40 @@
 class BestGuessController < ApplicationController
   before_action :viewed
   skip_before_action :require_login
-  
+
   def show
     search_id = params[:search_id]
     show_saved_record = params[:saved_record]
-    params[:search_id].present? ? @search = true : @search = false
+    @search = params[:search_id].present? ? true : false
     @search_entry = params[:search_entry]
     @saved_entry_number = params[:saved_entry]
     prepare_for_show_search_entry if @search
     get_user_info_from_userid if cookies.signed[:userid].present?
-    prepare_to_show_saved_entry if show_saved_record == "true"
-    @original_record = get_original_record(search_id,show_saved_record)
+    prepare_to_show_saved_entry if show_saved_record == 'true'
+    @original_record = get_original_record(search_id, show_saved_record)
     @page_number = params[:page_number].to_i
     @option = params[:filter_option] if params[:filter_option].present?
-    record_from_page = params[:record_of_page].to_i if params[:record_of_page].present?
+    # record_from_page = params[:record_of_page].to_i if params[:record_of_page].present?
     record_id = params[:id]
     @current_record = BestGuess.find(record_id)
     page_entries = @current_record.entries_in_the_page
     @next_record_of_page, @previous_record_of_page = next_and_previous_entries_of_page(record_id, page_entries)
     @display_date = false
     show_postem_or_scan
-    if @search_query.present?
-      @search_result = @search_query.search_result
-      @viewed_records = @search_result.viewed_records
-      @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
-      @search_result.update_attribute(:viewed_records, @viewed_records)
-    end
+    return if @search_query.blank?
+
+    @search_result = @search_query.search_result
+    @viewed_records = @search_result.viewed_records
+    @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
+    @search_result.update(viewed_records: @viewed_records)
   end
 
   def current_record_number_to_display(search_record_number, page_record_number = nil)
-    if page_record_number.present?
-      record_number = page_record_number
-    else
-      record_number = search_record_number
-    end
-    record_number
+    page_record_number || search_record_number
   end
 
   def from_quarter_to_year(quarter)
-    (quarter-1)/4 + 1837
+    (quarter - 1) / 4 + 1837
   end
 
   def next_and_previous_entries_of_page(current, sorted_array)
@@ -56,7 +51,7 @@ class BestGuessController < ApplicationController
   end
 
   def show_marriage
-    params[:search_id].present? ? @search = true : @search = false
+    @search = params[:search_id].present? ? true : false
     record_number = params[:entry_id]
     @search_id = params[:search_id] if @search
     @record = BestGuess.where(RecordNumber: record_number).first
@@ -81,30 +76,28 @@ class BestGuessController < ApplicationController
     @secondary_referral_record, @secondary_next_record, @secondary_previous_record = record_cycle params[:secondary_referral_number], @secondary_array
   end
 
-
-  def notes_vino
-     #referral = @record.reference_record_information
+  #def notes_vino
+    #referral = @record.reference_record_information
     #current_record_number =  referral.first
     #current_record_number = params[:referral_number] if params[:primary_referral_number].present?
     #@referral_record = BestGuess.where(RecordNumber: current_record_number).first
-  end
+  #end
 
-  def record_cycle current=nil, array
-    current.present? ? current_record_number = current : current_record_number = array.first
+  def record_cycle(current = nil, array)
+    current_record_number = current.presence || array.first
     referral_record = BestGuess.find(current_record_number) if current_record_number.present?
     next_record, previous_record = next_and_previous_entries_of_page(current_record_number, array)
     [referral_record, next_record, previous_record]
   end
 
-  def primary_and_secondary_array entry, array1, array2
+  def primary_and_secondary_array(entry, array1, array2)
     (entry.Confirmed & BestGuess::ENTRY_LINK).zero? ? primary_array = array1 : primary_array = array2
     (entry.Confirmed & BestGuess::ENTRY_LINK).zero? ? secondary_array = array2 : secondary_array = array1
     [primary_array, secondary_array]
   end
 
-
   def same_page_entries
-    params[:search_id].present? ? @search = true : @search = false
+    @search = params[:search_id].present? ? true : false
     @search_id = params[:search_id] if params[:search_id].present?
     record_number = params[:entry_id]
     @record = BestGuess.find(record_number)
@@ -140,7 +133,6 @@ class BestGuessController < ApplicationController
 
   def show_value_check
     messagea = 'We are sorry but the record you requested no longer exists; possibly as a result of some data being edited. You will need to redo the search with the original criteria to obtain the updated version.'
-    warning = "#{appname_upcase}::SEARCH::ERROR Missing entry for search record"
     warninga = "#{appname_upcase}::SEARCH::ERROR Missing parameter"
     if @search_record_number.blank?
       flash[:notice] = messagea
@@ -150,12 +142,11 @@ class BestGuessController < ApplicationController
       return false
     end
     @search_query = SearchQuery.find(session[:query]) if session[:query].present?
-    if @search_query.blank?
-      @search_query = SearchQuery.find(params[:search_id]) if params[:search_id].present?
-    end
+    @search_query = SearchQuery.find(params[:search_id]) if @search_query.blank? && params[:search_id].present?
     response, @next_record, @previous_record = @search_query.bmd_next_and_previous_records(@search_record_number)
     @search_record = response ? @search_query.locate(@search_record_number) : nil
     return false unless response
+
     true
   end
 
@@ -166,14 +157,10 @@ class BestGuessController < ApplicationController
     record_hash = @entry.record_hash
     user.saved_entry << record_hash
     user.save
-    if user.save
-      flash[:notice] = 'The entry is saved'
-    else
-      flash[:notice] = 'unsuccessful'
-    end
-    if params[:search_id].present? 
+    flash[:notice] = user.save ? 'The entry is saved' : 'unsuccessful'
+    if params[:search_id].present?
       redirect_to friendly_bmd_record_details_path(params[:search_id],entry_id, @entry.friendly_url) 
-    else 
+    else
       redirect_to best_guess_path(@entry.RecordNumber)
     end
   end
@@ -203,12 +190,11 @@ class BestGuessController < ApplicationController
     session[:postem_honeypot] = @postem_honeypot
   end
 
-  def get_original_record search_id=nil, saved_record=nil
+  def get_original_record(search_id = nil, saved_record = nil)
     if search_id.present?
       original_record = @search_record
-    elsif saved_record == "true"
+    elsif saved_record == 'true'
       original_record = @saved_entry
-    else
     end
     original_record
   end
@@ -219,6 +205,7 @@ class BestGuessController < ApplicationController
     @search_record_number = session[:search_entry_number]
     @anchor_entry = @search_record_number
     redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
+
     @search_record = BestGuess.find(@search_record_number)
   end
 
@@ -237,5 +224,4 @@ class BestGuessController < ApplicationController
   def clean_session_for_saved_entry
     session.delete(:search_entry_number)
   end
-
 end
