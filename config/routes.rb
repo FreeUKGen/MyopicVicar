@@ -522,6 +522,9 @@ MyopicVicar::Application.routes.draw do
 
   get 'districts/:id/unique_names' => 'districts#unique_district_names' , as: :unique_district_names
   get 'districts/:id/:friendly(.:format)', :to => 'districts#show', as: :district_friendly_url
+  get 'districts/alphabet_selection', to: 'districts#alphabet_selection', as: :district_alphabet_selection
+  get 'districts/districts_list', :to =>'districts#districts_list', :as => :districts_list
+
   resources :districts
   
   resources :s3buckets

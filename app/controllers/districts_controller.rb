@@ -1,8 +1,9 @@
 class DistrictsController < ApplicationController
-	skip_before_action :require_login
+	require 'freebmd_constants'
+  skip_before_action :require_login
 	def index
-		@districts = District.not_invented.all
-	end
+	  @districts = District.not_invented.all
+  end
 
 	def show
 		id = params[:id]
@@ -34,4 +35,21 @@ class DistrictsController < ApplicationController
 		@unique_names, @remainders = @district.letterize(@unique_names)
 	end
 
+  def alphabet_selection
+  	@districts = District.new
+    @options = FreebmdConstants::ALPHABETS[0]
+    @location = 'location.href= "/districts/districts_list?params=" + this.value'
+    @prompt = 'Select District Range'
+  end
+
+  def districts_list
+  	#raise params.inspect
+    @character = params[:params]
+    @all_districts = District.not_invented.all
+    @districts = []
+    @all_districts.each do |district|
+      @districts << district if district.DistrictName =~ ::Regexp.new(/^[#{@character}]/)
+    end
+    render :index
+  end
 end
