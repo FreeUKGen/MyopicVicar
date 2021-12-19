@@ -1,0 +1,15 @@
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
+  </div>
+<% end %>
+<div class="island text--center">
+  <%#= raise @options.inspect %>
+  <div class="simple_form_bgcolour text--center overide_selection_field_width">
+    <%= label_tag 'Make a selection' %>
+    <%= select_tag('selection', options_for_select(@options), { 'onchange' => @location, size: 4 , label: "Make a Selection"}) %>
+  </div>
+  <%#= simple_form_for @districts  do |f| %>
+    <%#= f.input :action,  as: :select, label: "Make a Selection", required: true, collection: @options ,input_html: { 'onchange' => @location, class: "simple_form_bgcolour simple_form_position overide_selection_field_width", size: 4 } %>
+  <%# end %>
+</div>
