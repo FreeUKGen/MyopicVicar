@@ -185,7 +185,7 @@ class Freecen2ContentsController < ApplicationController
     if @freecen2_contents.records[chapman_code][key_place][:total][:records_online].positive?
       place = Freecen2Place.find_by(chapman_code: chapman_code, place_name: place_description)
       unless place.cen_data_years.blank?
-        years = "(" + place.cen_data_years.to_s.gsub(/\"|\[|\]/,"") + ")"
+        years = "(" + place.cen_data_years.sort.to_s.gsub(/\"|\[|\]/,"") + ")"
         place_dropdown = "#{place_description} #{years}"
       end
     end
