@@ -85,7 +85,7 @@
                 <th>UKBMD Link</th>
                 <td colspan="2">
                   <% if @district.district_url_definable? %>
-                    <%= link_to "More information about #{@district.capitalize} on UKBMD", "http://www.ukbmd.org.uk/reg/districts/#{@district.ukbmd_url_distict}.html", target: "_blank" %><br>
+                    <%= link_to "More information about #{@district.DistrictName.capitalize} on UKBMD", "http://www.ukbmd.org.uk/reg/districts/#{@district.ukbmd_url_distict}.html", target: "_blank" %><br>
                     <span class="weight--normal"><%= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span>
                   <% else %>
                     Not Available
