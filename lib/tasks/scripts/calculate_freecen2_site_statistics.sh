@@ -27,7 +27,7 @@ trace() {
   NOW=$( date +'%Y-%m-%d %H:%M:%S' )
   echo "[calculate_freecen2_contents] ${NOW} $@" >&2
 }
-sudo -u webserv bundle exec rake RAILS_ENV=production freecen:calculate_contents[all] --trace
+sudo -u webserv bundle exec rake RAILS_ENV=production freecen:calculate_contents --trace
 
 trace() {
   NOW=$( date +'%Y-%m-%d %H:%M:%S' )
