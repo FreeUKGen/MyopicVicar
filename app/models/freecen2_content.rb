@@ -1,4 +1,5 @@
 class Freecen2Content
+
   require 'chapman_code'
   require 'userid_role'
   require 'register_type'
@@ -10,21 +11,14 @@ class Freecen2Content
   field :month, type: Integer
   field :day, type: Integer
 
-  #  Unique Names placeholders
-  field :county_select, type: String
-  field :place_select, type: String
-  field :year_select, type: String
-  field :county_selected, type: String
-
   field :records, type: Hash # [chapman_code] [place_name]
   field :new_records, type: Array
 
-  index({ interval_end: -1})
+  index({ interval_end: -1 })
 
   class << self
 
     def calculate(time, mode)
-
       if mode == 'FULL'
         update_all = true
       else
@@ -32,7 +26,8 @@ class Freecen2Content
       end
 
       last_midnight = Time.utc(time.year, time.month, time.day)
-      previous_midnight = Time.utc(time.year, time.month, time.day) - 30*24.hours
+
+      previous_midnight = Time.utc(time.year, time.month, time.day) - 30 * 24.hours
 
       if update_all
         stat = Freecen2Content.find_by(interval_end: last_midnight)
@@ -181,10 +176,10 @@ class Freecen2Content
 
           # place totals
 
-          places = Freecen2Place.where(chapman_code: county, disabled: "false").sort
+          places = Freecen2Place.where(chapman_code: county, disabled: 'false').sort
           places_array = []
 
-          if places.count > 0
+          if places.count.positive?
 
             places.each do |this_place|
 
@@ -202,7 +197,7 @@ class Freecen2Content
                 records[county][key_place][:total][:place_id] = this_place._id
 
                 fc2_totals_pieces, fc2_totals_pieces_online, fc2_totals_records_online, fc2_piece_ids = Freecen2Piece.before_place_year_totals(county, this_place._id, last_midnight)
-                fc2_added_pieces_online  = Freecen2Piece.between_dates_place_year_totals(county, this_place._id, previous_midnight, last_midnight)
+                fc2_added_pieces_online = Freecen2Piece.between_dates_place_year_totals(county, this_place._id, previous_midnight, last_midnight)
 
                 piece_ids_array = []
                 records[county][key_place][:total][:piece_ids] = []
@@ -240,7 +235,6 @@ class Freecen2Content
 
             end # places
 
-
           else
             county_name = ChapmanCode.name_from_code(county)
             p "************ (#{county}) - #{county_name} - County has no places"
@@ -248,7 +242,7 @@ class Freecen2Content
 
         else
           if county_pieces_total > 0
-            counties_array <<  ChapmanCode.name_from_code(county)
+            counties_array << ChapmanCode.name_from_code(county)
           else
             county_name = ChapmanCode.name_from_code(county)
             p "************ (#{county}) - #{county_name} - County has no pieces"
@@ -263,39 +257,40 @@ class Freecen2Content
 
       # AEV Testing - end
 
-      p 'finished gathering latest data'
-      p "counties updated = #{chaps}"
-      p "places updated = #{total_places_cnt}"
+      p 'Finished gathering latest data'
+      p "Counties updated = #{chaps}"
+      p "Places updated = #{total_places_cnt}"
 
-      if !update_all && new_records.size > 0
+      if !update_all && new_records.size.positive?
         # nb overall totals are always re-calculated so no need to adjust those
         #
         # adjust for 'new_records' that are no longer new (I.e. > 30 days old)
         # new_records - [0] = County name, [1] = Place name, [2] = chapman_code, [3] = fc2_PLACE_id, [4] = year
         #
         p "Adjusting Recently Added"
+
         adjusted_array = []
         new_records.each do |entry|
+
           key_place = Freecen2Content.get_place_key(entry[1])
           chapman_code = entry[2]
           place_id = entry[3]
           year = entry[4]
 
           place_all_years_pieces_online = Freecen2Piece.between_dates_place_year_totals(chapman_code, place_id, previous_midnight, last_midnight)
-          place_pieces_online_cnt  = place_all_years_pieces_online[year]
-          diff_place  = records[chapman_code][key_place][year][:added_pieces_online]  - place_pieces_online_cnt
-          records[chapman_code][key_place][year][:added_pieces_online] += diff_place
-          records[chapman_code][key_place][:total][:added_pieces_online] += diff_place
+          place_pieces_online_cnt = place_all_years_pieces_online[year]
+          diff_place = records[chapman_code][key_place][year][:added_pieces_online] - place_pieces_online_cnt
+          records[chapman_code][key_place][year][:added_pieces_online] -= diff_place
+          records[chapman_code][key_place][:total][:added_pieces_online] -= diff_place
 
           county_all_years_pieces_online = Freecen2Piece.between_dates_county_year_totals(chapman_code, previous_midnight, last_midnight)
-          county_pieces_online_cnt  = county_all_years_pieces_online[year]
-          diff_county = records[chapman_code][year][:added_pieces_online]  - county_pieces_online_cnt
-          records[chapman_code][year][:added_pieces_online] += diff_county
-          records[chapman_code][:total][:added_pieces_online] += diff_county
+          county_pieces_online_cnt = county_all_years_pieces_online[year]
+          diff_county = records[chapman_code][year][:added_pieces_online] - county_pieces_online_cnt
+          records[chapman_code][year][:added_pieces_online] -= diff_county
+          records[chapman_code][:total][:added_pieces_online] -= diff_county
 
-          if records[chapman_code][key_place][year][:added_pieces_online] > 0
-            adjusted_array << entry
-          end
+          adjusted_array << entry if records[chapman_code][key_place][year][:added_pieces_online].positive?
+
         end
         new_records = adjusted_array
       end
@@ -308,7 +303,8 @@ class Freecen2Content
 
       p "#{run_time} secs"
 
-    end # calc
+    end
+    # calc
 
     def setup_records(records, field)
       records = {}
@@ -351,7 +347,7 @@ class Freecen2Content
     def letterize(names)
       new_list = {}
       remainder = names
-      ("A".."Z").each do |letter|
+      ('A'..'Z').each do |letter|
         new_list[letter] = select_elements_starting_with(names, letter)
         remainder -= new_list[letter]
       end
@@ -362,6 +358,8 @@ class Freecen2Content
       arr.select { |str| str.start_with?(letter) }
     end
 
-  end # self
+  end
+  # self
 
-end # class
+end
+# class
