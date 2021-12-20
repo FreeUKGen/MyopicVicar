@@ -75,8 +75,6 @@ MyopicVicar::Application.routes.draw do
 
   resources :freecen_individuals
 
-  resources :site_statistics
-
   get 'freecen2_site_statistics/export_csv', to: 'freecen2_site_statistics#export_csv', as: :export_csv_freecen2_site_statistics
   resources :freecen2_site_statistics
 
@@ -180,6 +178,7 @@ MyopicVicar::Application.routes.draw do
 
   resources :search_statistics
 
+  get 'site_statistics/export_csv', to: 'site_statistics#export_csv', as: :export_csv_site_statistics
   resources :site_statistics
 
   get 'feedbacks/list_by_userid',  :to => 'feedbacks#list_by_userid', :as => :list_by_userid_feedbacks
