@@ -1,5 +1,5 @@
 module ApplicationText
-	NEW_TAB_LINK_TEXT = "Link opens in new tab."
+	NEW_TAB_LINK_TEXT = "External Link: Opens in new tab."
 	SAME_PAGE_ENTRIES_TEXT = "Click to view other entries on this page"
 	VIEW_MARRIAGE_TEXT = "View Marriage"
 	LATE_ENTRY_TEXT_WITH_REFERENCE = "This entry appears to be a Late Entry referring to entry displayed on Right."
