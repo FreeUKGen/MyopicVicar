@@ -82,7 +82,7 @@ module ApplicationHelper
     when 'freecen'
       link_to('Records', main_app.freecen_coverage_path, id: 'db_coverage_nav')
     when 'freebmd'
-      link_to('Records', social_links[:bmd1_coverage])
+      link_to('Records', main_app.district_alphabet_selection_path)
     end
   end
 
@@ -625,8 +625,8 @@ module ApplicationHelper
       twitter: 'https://www.twitter.com/freeukgen',
       github: 'https://github.com/FreeUKGen/FreeBMD2',
       pinterest: 'https://www.pinterest.co.uk/FreeUKGenealogy/',
-      instagram: 'https://www.instagram.com/freeukgenealogy/',
-      bmd1_coverage: district_alphabet_selection_path
+      instagram: 'https://www.instagram.com/freeukgenealogy/'
+     # bmd1_coverage: "#{district_alphabet_selection_path}"
     }
   end
 
