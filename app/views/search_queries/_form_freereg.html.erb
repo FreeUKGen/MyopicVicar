@@ -21,7 +21,7 @@
           <label class="ttip" for="last_name" tabindex="0">
             Surname
             <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Use upper- or lower-case. If you do not enter a surname (last-name) you <em>must</em> enter a forename, select one county and choose a single record type</span>
+            <span class="ttip__text">Use upper- or lower-case. If you do not enter a surname (last-name) you <em>must</em> enter a forename, select one county and choose a place</span>
           </label>
           <% if @search_query.last_name.nil? %>
             <input id="last_name" name="search_query[last_name]" type="text" class="text-input" placeholder="Optional">
