@@ -5,6 +5,7 @@ task :investigate_birth_places, %i[chapman year lim] => :environment do |_t, arg
   file_for_warning_messages = 'log/birth_places.csv'
   FileUtils.mkdir_p(File.dirname(file_for_warning_messages))
   message_file = File.new(file_for_warning_messages, 'w')
+  message_file.puts 'Code,Year,File,Type,Verb Code, Verb Place, Verb Valid, Alt Code, Alt Place, Alt Valid'
   chapman_code = args.chapman.to_s
   limit = args.lim.to_i
   year = args.year.to_s
@@ -48,10 +49,10 @@ task :investigate_birth_places, %i[chapman year lim] => :environment do |_t, arg
       line << "#{file.file_name},"
       line << "#{place[:type]},"
       line << "#{place[:verb_county]},"
-      line << "#{place[:verb_place]},"
+      line << "\"#{place[:verb_place]}\","
       line << "#{place[:verb_place_valid]},"
       line << "#{place[:alt_county]},"
-      line << "#{place[:alt_place]},"
+      line << "\"#{place[:alt_place]}\","
       line << "#{place[:alt_place_valid]},"
       message_file.puts line
     end
