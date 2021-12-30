@@ -4,7 +4,6 @@ class Freecen1VldFile
   require 'chapman_code'
   require 'freecen_constants'
 
-
   field :file_name, type: String
   field :dir_name, type: String
   field :census_type, type: String
