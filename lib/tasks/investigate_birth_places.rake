@@ -15,14 +15,14 @@ task :investigate_birth_places, %i[chapman year lim] => :environment do |_t, arg
   birth_places = {}
   birth_places[chapman_code] = []
   p files.length
-  files.each.no_timeout do |file|
+  files.each do |file|
     file_count += 1
     next if file_count > limit
 
     p "Processing #{file.file_name}"
     entries = Freecen1VldEntry.where(freecen1_vld_file_id: file.id)
     p entries.length
-    entries.each.no_timeout do |entry|
+    entries.each do |entry|
       individual = FreecenIndividual.find_by(freecen1_vld_entry_id: entry._id)
       duplicate = {}
       if individual.present?
@@ -66,7 +66,7 @@ end
 
 def self.add_to_collection(birth_places, birth_place)
   result = true
-  birth_places.each.no_timeout do |place|
+  birth_places.each do |place|
     if place[:verb_county] == birth_place[:verb_county] && place[:verb_place] == birth_place[:verb_place] &&
         place[:alt_county] == birth_place[:alt_county] && place[:alt_place] == birth_place[:alt_place]
       result = false
