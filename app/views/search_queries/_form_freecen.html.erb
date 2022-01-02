@@ -78,7 +78,7 @@
           <label class="label ttip" for="search_query_birth_chapman_codes" tabindex="0">
             Birth County
             <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">If you select more than one county, <em>all</em> places within those counties will be searched</span>
+            <span class="ttip__text">These are grouped into sections for England, Ireland, Islands, Scotland, Wales and a Special category. If you select more than one county, <em>all</em> places within those counties will be searched</span>
             <small class="additional">Select one to three (hold Ctrl for multiple)</small>
           </label>
           <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.codes_for_cen_county)%>
