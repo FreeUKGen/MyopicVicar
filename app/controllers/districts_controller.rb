@@ -36,14 +36,13 @@ class DistrictsController < ApplicationController
 	end
 
   def alphabet_selection
-  	@districts = District.new
+  	@district = District.new
     @options = FreebmdConstants::ALPHABETS[0]
     @location = 'location.href= "/districts/districts_list?params=" + this.value'
     @prompt = 'Select District Range'
   end
 
   def districts_list
-  	#raise params.inspect
     @character = params[:params]
     @all_districts = District.not_invented.all
     @districts = []
