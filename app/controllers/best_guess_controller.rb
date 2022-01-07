@@ -157,7 +157,7 @@ class BestGuessController < ApplicationController
     record_hash = @entry.record_hash
     user.saved_entry << record_hash
     user.save
-    flash[:notice] = user.save ? 'The entry is saved' : 'unsuccessful'
+    flash[:notice] = user.save ? "The entry is saved. Use 'View Saved Searches' action in Your Actions list to view your saved searches list." : 'unsuccessful'
     if params[:search_id].present?
       redirect_to friendly_bmd_record_details_path(params[:search_id],entry_id, @entry.friendly_url) 
     else

@@ -299,13 +299,14 @@ class SearchQueriesController < ApplicationController
       response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display unless MyopicVicar::Application.config.template_set == 'freebmd'
       response, @search_results, @ucf_results, @result_count = @search_query.get_bmd_search_results if MyopicVicar::Application.config.template_set == 'freebmd'
       @paginatable_array = @search_results
+      @max_result = maximum_results
       if !response || @search_results.nil? || @search_query.result_count.nil?
         logger.warn("#{appname_upcase}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
         flash[:notice] = 'Your search results are not available. Please repeat your search'
         redirect_to(new_search_query_path(search_id: @search_query)) && return
       end
     end
-    render 'show', layout: false
+    render 'show', layout: 'printable_layout'
   end
 
   def show_query

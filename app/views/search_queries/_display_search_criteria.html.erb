@@ -4,17 +4,19 @@
     <%= name %>: <b><%= value %></b> ;
   <% end %><br>
   <h4 class="accessiblity"><%= pluralize(@result_count, ' Search Result', ' Search Results') %></h4>
-  <% if Rails.application.config.freecen2_place_cache %>
-    <% search_freecen2_params_for_display(@search_query).each do |name, value| %>
-      <%= name %>: <b><%= value %></b> ;
-    <% end %><br>
-    <%= pluralize(@result_count, ' Search Result', ' Search Results') %>
-  <% else%>
-    <% search_params_for_display(@search_query).each do |name, value| %>
-      <%= name %>: <b><%= value %></b> ;
-    <% end %><br>
-    <%= pluralize(@result_count, ' Search Result', ' Search Results') %>
-  <% end%>
+  <% unless appname_downcase == 'freebmd' %>
+    <% if Rails.application.config.freecen2_place_cache %>
+      <% search_freecen2_params_for_display(@search_query).each do |name, value| %>
+        <%= name %>: <b><%= value %></b> ;
+      <% end %><br>
+      <%= pluralize(@result_count, ' Search Result', ' Search Results') %>
+    <% else%>
+      <% search_params_for_display(@search_query).each do |name, value| %>
+        <%= name %>: <b><%= value %></b> ;
+      <% end %><br>
+      <%= pluralize(@result_count, ' Search Result', ' Search Results') %>
+    <% end%>
+  <% end %>
 <% else %>
     <div class='container' id='search_criteria_container'>
       <div class="grid">
@@ -48,22 +50,24 @@
             </div>
           </section>
         </div>
-        <div class="grid__item  one-third lap-one-third  palm-one-whole  push-half--top">
-          <section class="islet islet--light soft--left hard--bottom">
-            <% if @ucf_results.size > 0 %>
-              <h2 class="gamma flush--bottom"> We found <%= pluralize(@result_count, ' Exact Result', ' Exact Results') %> and <br>
-                <%= pluralize(@ucf_results.size, ' Uncertain Result', ' Uncertain Results')%></h2>
-            <% elsif  @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS  %>
-              <h2 class="gamma flush--bottom"> We found <%= pluralize(@result_count, ' Result', ' Results') %></h2>
-            <%else%>
-              <h2 class="gamma flush--bottom"> We found more than <%= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %> Results</h2>
-            <% end%>
-            <% unless defined?(@printable_format) && @printable_format%>
-              <small class="additional zeta">Listed by birth date. Select a heading to sort by that column; select again to reverse the order.
-                See individual details by selecting the View button.</small>
-            <% end %>
-          </section>
-        </div>
+        <% unless appname_downcase == 'freebmd' %>
+          <div class="grid__item  one-third lap-one-third  palm-one-whole  push-half--top">
+            <section class="islet islet--light soft--left hard--bottom">
+              <% if @ucf_results.size > 0 %>
+                <h2 class="gamma flush--bottom"> We found <%= pluralize(@result_count, ' Exact Result', ' Exact Results') %> and <br>
+                  <%= pluralize(@ucf_results.size, ' Uncertain Result', ' Uncertain Results')%></h2>
+              <% elsif  @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS  %>
+                <h2 class="gamma flush--bottom"> We found <%= pluralize(@result_count, ' Result', ' Results') %></h2>
+              <%else%>
+                <h2 class="gamma flush--bottom"> We found more than <%= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %> Results</h2>
+              <% end%>
+              <% unless defined?(@printable_format) && @printable_format%>
+                <small class="additional zeta">Listed by birth date. Select a heading to sort by that column; select again to reverse the order.
+                  See individual details by selecting the View button.</small>
+              <% end %>
+            </section>
+          </div>
+        <% end %>
       </div>
     </div>
 <% end %>
