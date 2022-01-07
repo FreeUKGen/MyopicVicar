@@ -12,6 +12,8 @@ class FreecenCsvFileIncorporate
     if result
       success, messagea = incorporate_records(freecen_file)
       message += messagea
+    else
+      UserMailer.incorporation_report_failure(county.county_coordinator, message, file_name, owner).deliver_now
     end
     if success
       UserMailer.incorporation_report(county.county_coordinator, message, file_name, owner).deliver_now
@@ -39,14 +41,13 @@ class FreecenCsvFileIncorporate
         place_ids[parish] = entry.freecen2_civil_parish.freecen2_place unless place_ids.key?(parish)
         entry.translate_individual(piece, district, chapman_code, place_ids[parish], @freecen_file_id)
       end
-
       time_end = Time.now.to_i
       actual = time_end - start
       per = actual / number
       puts "Success; #{number} records in #{actual} seconds or #{per} seconds a record"
       message = "success; #{number} records in #{actual} or #{per} seconds a record"
       successa = freecen_file.update_attributes(incorporated: true, enumeration_districts: enumeration_districts, incorporation_lock: true,
-                                                incorporated_date: DateTime.now.in_time_zone('London'))
+                                                incorporated_date: DateTime.now.in_time_zone('London'), incorporating_lock: false)
       # the translate individual adds the civil parishes
 
       successb = true
@@ -59,6 +60,7 @@ class FreecenCsvFileIncorporate
       end
 
       PlaceCache.refresh(freecen_file.chapman_code) if successa && successb
+      Freecen2PlaceCache.refresh(freecen_file.chapman_code) if successa && successb
       message += '. Place cache rewritten.'
       success = true if successa && successb
       message = 'File update and or place update failed' unless successa && successb
@@ -69,6 +71,8 @@ class FreecenCsvFileIncorporate
       FreecenCsvEntry.collection.update_many({ freecen_csv_file_id: @freecen_file_id }, '$set' => { search_record_id: nil })
       success = false
       message = "#{msg}, #{msg.backtrace.inspect}"
+      freecen_file.update_attributes(incorporating_lock: false)
+      p freecen_file
     end
     [success, message]
   end

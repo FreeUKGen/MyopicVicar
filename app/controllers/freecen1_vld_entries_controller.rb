@@ -1,5 +1,5 @@
 class Freecen1VldEntriesController < ApplicationController
-  skip_before_action :require_login
+  skip_before_action :require_login, only: [:show]
 
   def index
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No file identified') && return if params[:file].blank?

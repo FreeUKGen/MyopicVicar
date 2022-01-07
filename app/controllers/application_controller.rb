@@ -237,6 +237,13 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def scotland_county?(chapman)
+    codes = ChapmanCode.remove_codes(ChapmanCode::CODES)
+    codes = codes["Scotland"].values
+    result = codes.include?(chapman) ? true : false
+    result
+  end
+
   def device_type
     request.env['mobvious.device_type']
   end
@@ -279,6 +286,9 @@ class ApplicationController < ActionController::Base
     session.delete(:stats_year)
     session.delete(:stats_todate)
     session.delete(:stats_recs)
+    session.delete(:contents_id)
+    session.delete(:contents_county_description)
+    session.delete(:contents_place_description)
   end
 
   def clean_session_for_county

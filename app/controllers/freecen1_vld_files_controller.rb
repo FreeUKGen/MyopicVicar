@@ -1,5 +1,5 @@
 class Freecen1VldFilesController < ApplicationController
-  skip_before_action :require_login
+
   require 'digest/md5'
 
   def create
@@ -76,8 +76,15 @@ class Freecen1VldFilesController < ApplicationController
       Freecen1VldFile.save_to_attic(dir_name, file_name)
       piece = vldfile.freecen_piece
       if piece.present?
-        piece.update_attributes(num_dwellings: 0, num_individuals: 0, freecen1_filename: '', status: '')
+        piece.update_attributes(num_dwellings: 0, num_individuals: 0, num_entries: 0, freecen1_filename: '', status: '', status_date: '')
         piece.freecen1_vld_files.delete(vldfile)
+        freecen2_piece = piece.freecen2_piece
+        freecen2_piece.freecen1_vld_files.delete(vldfile) if freecen2_piece.present?
+        freecen2_place = vldfile.freecen2_place
+        freecen2_place.freecen1_vld_files.delete(vldfile) if freecen2_place.present?
+        freecen2_district = vldfile.freecen2_district
+        freecen2_district.freecen1_vld_files.delete(vldfile) if freecen2_district.present?
+        freecen2_place.update_data_present_after_vld_delete(freecen2_piece)
       end
     end
     flash[:notice] = "The vld file #{file_name} has been deleted."
@@ -102,6 +109,26 @@ class Freecen1VldFilesController < ApplicationController
       @type = 'all'
     end
     redirect_to new_manage_resource_path && return
+  end
+
+  def entry_csv_download
+    get_user_info_from_userid
+    @freecen1_vld_file = Freecen1VldFile.find(params[:id])
+    unless Freecen1VldFile.valid_freecen1_vld_file?(params[:id])
+      message = 'The file was not correctly linked. Have your coordinator contact the web master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
+
+    success, message, file_location, file_name = @freecen1_vld_file.create_entry_csv_file
+    if success
+      if File.file?(file_location)
+        send_file(file_location, filename: file_name, x_sendfile: true) && return
+      end
+    else
+      flash[:notice] = "There was a problem saving the file prior to download. Please send this message #{message} to your coordinator"
+    end
+
+    redirect_back(fallback_location: new_manage_resource_path) && return
   end
 
   def index

@@ -55,7 +55,7 @@ class Freecen2DistrictsController < ApplicationController
       redirect_back(fallback_location: new_manage_resource_path, notice: "'There was an error while saving the new piece' #{@freecen2_district.errors.full_messages}") && return
     else
       @freecen2_district.reload
-      flash[:notice] = 'The piece was created'
+      flash[:notice] = 'The district was created'
       redirect_to freecen2_district_path(@freecen2_district)
     end
   end
@@ -106,6 +106,7 @@ class Freecen2DistrictsController < ApplicationController
     @places = @freecen2_district.district_place_names
     @type = session[:type]
     @chapman_code = session[:chapman_code]
+    @scotland = scotland_county?(@chapman_code)
   end
 
   def edit_name
@@ -119,6 +120,7 @@ class Freecen2DistrictsController < ApplicationController
 
     @type = session[:type]
     @chapman_code = session[:chapman_code]
+    @scotland = scotland_county?(@chapman_code)
   end
 
   def force
@@ -180,6 +182,7 @@ class Freecen2DistrictsController < ApplicationController
     @freecen2_district = Freecen2District.new(chapman_code: params[:chapman_code], year: params[:year])
     session[:type] = 'district_year_index'
     @type = session[:type]
+    @scotland = scotland_county?(@chapman_code)
   end
   def selection_by_name
     @chapman_code = session[:chapman_code]
@@ -221,6 +224,7 @@ class Freecen2DistrictsController < ApplicationController
     @chapman_code = session[:chapman_code]
     session[:freecen2_district] = @freecen2_district.name
     @type = session[:type]
+    @scotland = scotland_county?(@chapman_code)
   end
 
   def update

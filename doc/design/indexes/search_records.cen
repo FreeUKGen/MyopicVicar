@@ -236,6 +236,14 @@ db.runCommand(
         },
         {
                 "key" : {
+                       "chapman_code" : 1,
+                       "record_type" : 1
+                },
+                "name" : "chapman_record_type",
+                background: true
+        },
+        {
+                "key" : {
                         "freecen1_vld_file_id" : 1
                 },
                 "name" : "freecen1_vld_file_id",
@@ -246,6 +254,77 @@ db.runCommand(
                         "freecen_csv_file_id" : 1
                 },
                 "name" : "freecen_csv_file_id",
+                background: true
+        },
+        {
+            key: {
+               freecen2_place_id: 1,
+                "search_names.last_name": 1,
+                record_type:1,
+                search_date:1
+            },
+            name: "place2_ln_rt_sd",
+                background: true
+        },
+        {
+            key: {
+              freecen2_place_id: 1,
+                "search_names.last_name": 1,
+                "search_names.first_name": 1,
+                record_type:1,
+                search_date:1
+            },
+            name: "place2_ln_fn_rt_sd",
+                background: true
+        },
+        {
+            key: {
+                 freecen2_place_id: 1,
+                "search_soundex.last_name": 1,
+                record_type:1,
+                search_date:1
+            },
+            name: "place2_lnsdx_rt_sd",
+                background: true
+        },
+        {
+            key: {
+                freecen2_place_id: 1,
+                "search_soundex.last_name": 1,
+                "search_soundex.first_name": 1,
+                record_type:1,
+                search_date:1
+            },
+            name: "place2_lnsdx_fnsdx_rt_sd",
+                background: true
+        },
+        {
+            key: {
+               freecen2_place_id: 1,
+                "search_names.first_name": 1,
+                record_type:1,
+                search_date:1
+            },
+            name: "place2_fn_rt_sd",
+                background: true
+        },
+        {
+            key: {
+               freecen2_place_id: 1,
+                "search_soundex.first_name": 1,
+                record_type:1,
+                search_date:1
+            },
+            name: "place2_fnsdx_rt_sd",
+                background: true
+        },
+        {
+            key: {
+               freecen2_place_id: 1,
+                record_type:1,
+                search_date:1
+            },
+            name: "place2_rt_sd",
                 background: true
         }
 

@@ -28,10 +28,10 @@ module Freecen2PiecesHelper
     end
   end
 
-  def csv_files_piece(piece)
+  def csv_files_piece_unincorporated(piece)
     if piece.freecen_csv_files.present?
       files = []
-      piece.freecen_csv_files.order_by(file_name: 1).each do |file|
+      piece.freecen_csv_files.incorporated(false).order_by(file_name: 1).each do |file|
         if file.userid.blank?
           files << file.file_name + ' ()'
         else
@@ -40,9 +40,43 @@ module Freecen2PiecesHelper
       end
       files
     else
-      'There are no csv files'
+      'There are no unincorporated CSV files'
     end
   end
+
+  def csv_files_piece_incorporated(piece)
+    if piece.freecen_csv_files.present?
+      files = []
+      piece.freecen_csv_files.incorporated(true).order_by(file_name: 1).each do |file|
+        if file.userid.blank?
+          files << file.file_name + ' ()'
+        else
+          files << file.file_name + ' (' + file.userid + ')'
+        end
+      end
+      files
+    else
+      'There are no incorporated CSV files'
+    end
+  end
+
+  def vld_files_piece(piece)
+    if piece.freecen1_vld_files.present?
+      files = []
+      piece.freecen1_vld_files.order_by(file_name: 1).each do |file|
+        if file.userid.blank?
+          files << file.file_name + ' ()'
+        else
+          files << file.file_name + ' (' + file.userid + ')'
+        end
+
+      end
+      files
+    else
+      'There are no VLD files'
+    end
+  end
+
 
   def piece_status(piece)
     if piece.status.present?
@@ -50,11 +84,32 @@ module Freecen2PiecesHelper
     end
   end
 
-  def csv_files_piece_link(piece)
+  def csv_files_piece_link_unincorporated(piece)
     if piece.present? && session[:type] != 'locate_other_pieces'
-      link_to 'Freecen Files', freecen_csv_files_path, class: 'btn   btn--small', title:'Csv files for this Piece'
+      link_to 'Unincorporated Freecen CSV Files', freecen_csv_files_path, class: 'btn   btn--small', title:'Csv files for this Piece'
     elsif session[:type] == 'locate_other_pieces'
-      'Freecen Files'
+      'Unincorporated Freecen CSV Files'
+    else
+      'There is no piece'
+    end
+  end
+
+  def csv_files_piece_link_incorporated(piece)
+    if piece.present? && session[:type] != 'locate_other_pieces'
+      link_to 'Incorporated Freecen CSV Files', freecen_csv_files_path, class: 'btn   btn--small', title:'Csv files for this Piece'
+    elsif session[:type] == 'locate_other_pieces'
+      'Incorporated Freecen CSV Files'
+    else
+      'There is no piece'
+    end
+  end
+
+
+  def vld_files_piece_link(piece)
+    if piece.present? && session[:type] != 'locate_other_pieces'
+      link_to 'Freecen VLD Files', freecen1_vld_files_path, class: 'btn   btn--small', title:'VLD files for this Piece'
+    elsif session[:type] == 'locate_other_pieces'
+      'Freecen VLD Files'
     else
       'There is no piece'
     end
@@ -85,5 +140,10 @@ module Freecen2PiecesHelper
 
   def piece_index_link(chapman_code, year)
     link_to "#{year}", freecen2_pieces_chapman_year_index_path(chapman_code: "#{chapman_code}", year: "#{year}"), method: :get, class: 'btn   btn--small', title: 'List of Sub Districts (Pieces) for this year'
+  end
+
+  def piece_record_count(piece)
+    count = piece.piece_search_records
+    number_with_delimiter(count)
   end
 end

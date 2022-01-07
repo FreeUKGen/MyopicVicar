@@ -9,7 +9,7 @@ module FreecenCsvEntriesHelper
   def next_list_entry
     next_list_entry = FreecenCsvEntry.find_by(id: session[:next_list_entry])
     link_to "Next #{Freecen::Listings::NAMES[session[:cen_index_type]]} entry", freecen_csv_entry_path(next_list_entry), method: :get, class: "btn btn--small",
-      title: "Show the previous entry in the #{Freecen::Listings::NAMES[session[:cen_index_type]]} List" if next_list_entry.present? && session[:cen_index_type] != 'Ind'
+      title: "Show the next in the #{Freecen::Listings::NAMES[session[:cen_index_type]]} List" if next_list_entry.present? && session[:cen_index_type] != 'Ind'
   end
 
   def current_list_entry

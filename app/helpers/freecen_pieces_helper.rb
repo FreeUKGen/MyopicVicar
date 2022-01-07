@@ -44,10 +44,6 @@ module FreecenPiecesHelper
   end
 
   def status_date(piece)
-    if piece.status_date.present?
-      piece.status_date
-    else
-      piece.id.generation_time.strftime('%Y-%m-%d %H:%M') if piece.id.present?
-    end
+    piece.status_date if piece.status_date.present?
   end
 end

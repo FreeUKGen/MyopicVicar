@@ -3,31 +3,34 @@
 </h3>
 <%= render 'flash_notice' %>
 <%= semantic_form_for @freecen2_civil_parish, :html => { :class => 'grid'}  do |f| %>
-  <%= f.input :reason_changed,:label => 'Reason for making addition',:as => :text, :input_html => {:class => ' simple_form_bgcolour  ',   :placeholder => 'Enter the reason for addition',  :size => '50x5' }%>
-  <%= f.input :name ,  label: 'Civil Parish Name', input_html: {class: ' simple_form_bgcolour', size:40 }%>
-  <%= f.input :number ,  label: 'Civil Parish Number (if any)', input_html: {class: ' simple_form_bgcolour', size:40 }%>
-  <%= f.input :suffix ,  label: 'Civil Parish Suffix (if any)', input_html: {class: ' simple_form_bgcolour', size:40 }%>
-  <%= f.input :freecen2_place_id,  label: 'Freecen2 Place name:', selected:  @freecen2_place_name, include_blank: false, collection: @places, input_html: {class: ' simple_form_bgcolour very_large_selection_field_width', size:5 }%>
-  <%= f.input :note, label: 'TNA Notes',  as: :text, input_html: {class: ' simple_form_bgcolour  ',   placeholder: @freecen2_civil_parish.note,  size: '50x5' }%>
-  <%= f.input :prenote, label: 'TNA Prenote',  as: :text, input_html: {class: ' simple_form_bgcolour  ',   placeholder: @freecen2_civil_parish.note,  size: '50x5' }%>
-  <h4 style='text-align: center'>The following sections are for the addition of Hamlets, Townships and Wards within the Civil Parish</h4>
-  <h4 style='text-align: center'>Hamlets within the Civil Parish</h4>
-  <%= f.simple_fields_for :freecen2_hamlets do |multiple| %>
-    <%= multiple.input :name,:input_html => {:class => ' simple_form_bgcolour  ', :size => 40 } %>
-    <%= multiple.input :note,:input_html => { :class => ' simple_form_bgcolour  ',:size => 40 } %>
-    <%= multiple.input :prenote,:input_html => { :class => ' simple_form_bgcolour  ',:size => 40 } %>
-  <% end %>
-  <h4 style='text-align: center'>Townships within the Civil Parish</h4>
-  <%= f.simple_fields_for :freecen2_townships do |multiple| %>
-    <%= multiple.input :name,:input_html => {:class => ' simple_form_bgcolour  ', :size => 40 } %>
-    <%= multiple.input :note,:input_html => { :class => ' simple_form_bgcolour  ',:size => 40 } %>
-    <%= multiple.input :prenote,:input_html => { :class => ' simple_form_bgcolour  ',:size => 40 } %>
-  <% end %>
-  <h4 style='text-align: center'>Wards within the Civil Parish</h4>
-  <%= f.simple_fields_for :freecen2_wards do |multiple| %>
-    <%= multiple.input :name,:input_html => {:class => ' simple_form_bgcolour  ', :size => 40 } %>
-    <%= multiple.input :note,:input_html => { :class => ' simple_form_bgcolour  ',:size => 40 } %>
-    <%= multiple.input :prenote,:input_html => { :class => ' simple_form_bgcolour  ',:size => 40 } %>
+  <%= f.input :reason_changed,:label => 'Reason for making addition',required: true,:as => :text, :input_html => {:class => ' simple_form_bgcolour  ',   :placeholder => 'Enter the reason for addition',  :size => '50x5' }%>
+  <%= f.input :name ,  label: 'Civil Parish Name',  :required => true, input_html: {class: ' simple_form_bgcolour', size:40 }%>
+  <%= f.input :freecen2_place_id,  label: 'Freecen2 Place name:',required: true, selected:  @freecen2_place_name, include_blank: false, collection: @places, input_html: {class: ' simple_form_bgcolour very_large_selection_field_width', size:5 }%>
+  <% if @scotland %>
+    <%= f.input :number ,  label: 'Civil Parish Number: e.g. 10', required: true, input_html: {class: ' simple_form_bgcolour', size:40 }%>
+    <%= f.input :suffix ,  label: 'Civil Parish Suffix: e.g. a or b', required: true, input_html: {class: ' simple_form_bgcolour', size:40 }%>
+  <%else%>
+    <%= f.input :note, label: 'TNA Notes',  as: :text, input_html: {class: ' simple_form_bgcolour  ',   placeholder: @freecen2_civil_parish.note,  size: '50x5' }%>
+    <%= f.input :prenote, label: 'TNA Prenote',  as: :text, input_html: {class: ' simple_form_bgcolour  ',   placeholder: @freecen2_civil_parish.note,  size: '50x5' }%>
+    <h4 style='text-align: center'>The following sections are for the addition of Hamlets, Townships and Wards within the Civil Parish</h4>
+    <h4 style='text-align: center'>Hamlets within the Civil Parish</h4>
+    <%= f.simple_fields_for :freecen2_hamlets do |multiple| %>
+      <%= multiple.input :name,:input_html => {:class => ' simple_form_bgcolour  ', :size => 40 } %>
+      <%= multiple.input :note,:input_html => { :class => ' simple_form_bgcolour  ',:size => 40 } %>
+      <%= multiple.input :prenote,:input_html => { :class => ' simple_form_bgcolour  ',:size => 40 } %>
+    <% end %>
+    <h4 style='text-align: center'>Townships within the Civil Parish</h4>
+    <%= f.simple_fields_for :freecen2_townships do |multiple| %>
+      <%= multiple.input :name,:input_html => {:class => ' simple_form_bgcolour  ', :size => 40 } %>
+      <%= multiple.input :note,:input_html => { :class => ' simple_form_bgcolour  ',:size => 40 } %>
+      <%= multiple.input :prenote,:input_html => { :class => ' simple_form_bgcolour  ',:size => 40 } %>
+    <% end %>
+    <h4 style='text-align: center'>Wards within the Civil Parish</h4>
+    <%= f.simple_fields_for :freecen2_wards do |multiple| %>
+      <%= multiple.input :name,:input_html => {:class => ' simple_form_bgcolour  ', :size => 40 } %>
+      <%= multiple.input :note,:input_html => { :class => ' simple_form_bgcolour  ',:size => 40 } %>
+      <%= multiple.input :prenote,:input_html => { :class => ' simple_form_bgcolour  ',:size => 40 } %>
+    <% end %>
   <% end %>
   <%= f.hidden_field :chapman_code, :value=>@chapman_code %>
   <%= f.hidden_field :year, :value=>@year %>

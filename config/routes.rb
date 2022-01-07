@@ -62,6 +62,9 @@ MyopicVicar::Application.routes.draw do
 
   resources :denominations
 
+  get 'embargo_rules/:id/process_embargo_rule', to: 'embargo_rules#process_embargo_rule', as: :process_embargo_rule
+  resources :place_edit_reasons
+
   resources :embargo_rules
 
   resources :freecen1_fixed_dat_files
@@ -72,16 +75,24 @@ MyopicVicar::Application.routes.draw do
 
   resources :freecen_individuals
 
-  resources :site_statistics
-
   get 'freecen2_site_statistics/export_csv', to: 'freecen2_site_statistics#export_csv', as: :export_csv_freecen2_site_statistics
   resources :freecen2_site_statistics
+
+  get 'freecen2_contents/county_index', to: 'freecen2_contents#county_index', as: :index_by_county_freecen2_contents
+  get 'freecen2_contents/place_index', to: 'freecen2_contents#place_index', as: :freecen2_contents_place_index
+  get 'freecen2_contents/place_names', to: 'freecen2_contents#place_names', as: :freecen2_contents_place_names
+  get 'freecen2_contents/piece_index', to: 'freecen2_contents#piece_index', as: :freecen2_contents_piece_index
+  get 'freecen2_contents/new_records_index', to: 'freecen2_contents#new_records_index', as: :freecen2_contents_new_records_index
+  get 'freecen2_contents/for_place_names', :to => 'freecen2_contents#for_place_names', :as => :freecen2_contents_for_place_names
+
+  resources :freecen2_contents
 
   get 'freecen2_search_statistics/graphic', to: 'freecen2_search_statistics#graphic', as: :graphic_freecen2_search_statistics
   resources :freecen2_search_statistics
 
   resources :freecen1_vld_entries
 
+  get 'freecen1_vld_files/:id/entry_csv_download(.:format)', to: 'freecen1_vld_files#entry_csv_download', as: :entry_csv_download_freecen1_vld_file
   get 'freecen1_vld_files/:id/csv_download(.:format)', to: 'freecen1_vld_files#csv_download', as: :csv_download_freecen1_vld_file
   resources :freecen1_vld_files
 
@@ -167,6 +178,7 @@ MyopicVicar::Application.routes.draw do
 
   resources :search_statistics
 
+  get 'site_statistics/export_csv', to: 'site_statistics#export_csv', as: :export_csv_site_statistics
   resources :site_statistics
 
   get 'feedbacks/list_by_userid',  :to => 'feedbacks#list_by_userid', :as => :list_by_userid_feedbacks
@@ -188,8 +200,6 @@ MyopicVicar::Application.routes.draw do
   get 'feedbacks/:id/unkeep',  :to => 'feedbacks#unkeep', :as => :unkeep_feedback
 
   resources :feedbacks
-
-
 
   get 'contacts/list_by_type',  :to => 'contacts#list_by_type', :as => :list_by_type_contacts
   get 'contacts/list_by_name',  :to => 'contacts#list_by_name', :as => :list_by_name_contacts
@@ -306,6 +316,7 @@ MyopicVicar::Application.routes.draw do
   get 'freecen2_pieces/index_district_year', :to => 'freecen2_pieces#index_district_year', :as => :freecen2_pieces_district_year_index
   get 'freecen2_pieces/:year/select_new_county', :to => 'freecen2_pieces#select_new_county', :as => :select_new_county_freecen2_piece
   get 'freecen2_pieces/csv_index', to: 'freecen2_pieces#csv_index', as: :csv_index_freecen2_piece
+  get 'freecen2_pieces/place_pieces_index', to: 'freecen2_pieces#place_pieces_index', as: :place_pieces_index_freecen2_piece
   resources :freecen2_pieces
 
   get 'freecen2_civil_parishes/selection_by_name', to: 'freecen2_civil_parishes#selection_by_name', as: :selection_by_name_freecen2_civil_parishes
@@ -433,12 +444,14 @@ MyopicVicar::Application.routes.draw do
   resources :registers
 
   resources :master_place_names
-
+  get '/freecen2_places/:id/how_place_edits', to: 'freecen2_places#show_place_edits', as: :show_place_edits_freecen2_place
   get '/freecen2_places/search_names_results', :to => 'freecen2_places#search_names_results', :as => :search_names_results_freecen2_place
   get '/freecen2_places/search_names', :to => 'freecen2_places#search_names', :as => :search_names_freecen2_place
   get 'freecen2_places/:id/rename', :to => 'freecen2_places#rename', :as => :rename_freecen2_place
   get 'freecen2_places/full_index', to: 'freecen2_places#full_index', as: :full_index_freecen2_places
+  get 'freecen2_places/active_index', to: 'freecen2_places#active_index', as: :active_index_freecen2_places
   get 'freecen2_places/selection_by_name', to: 'freecen2_places#selection_by_name', as: :selection_by_name_freecen2_places
+  get 'freecen2_places/for_search_form(.:format)', :to => 'freecen2_places#for_search_form', :as => :freecen2_places_for_search_form
   resources :freecen2_places
 
 

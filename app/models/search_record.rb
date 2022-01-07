@@ -37,12 +37,8 @@ class SearchRecord
   belongs_to :freecen_csv_file, index: true, optional: true
   belongs_to :freecen_individual, index: true, optional: true
   belongs_to :freecen1_vld_file, index: true, optional: true
-
   belongs_to :place, index: true, optional: true
   belongs_to :freecen2_place, index: true, optional: true
-  belongs_to :freecen2_civil_parish, index: true, optional: true
-  belongs_to :freecen2_piece, index: true, optional: true
-  belongs_to :freecen2_district, index: true, optional: true
 
   field :annotation_ids, type: Array # , :typecast => 'ObjectId'
 
@@ -78,6 +74,8 @@ class SearchRecord
   field :location_names, type: Array, default: []
   field :search_soundex, type: Array, default: []
 
+
+
   index({ place_id: 1, locations_names: 1 }, { name: 'place_location' })
 
   class << self
@@ -107,7 +105,7 @@ class SearchRecord
       first_id = BSON::ObjectId.from_time(previous_midnight)
       total_records = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
-        total_records[year] = SearchRecord.between(_id: first_id..last_id).where(chapman_code: county, record_type: year).count
+        total_records[year] = SearchRecord.between(_id: first_id..last_id).where(chapman_code: county, record_type: year).hint("id_chapman_record_type").count
       end
       total_records
     end
@@ -116,7 +114,9 @@ class SearchRecord
       last_id = BSON::ObjectId.from_time(last_midnight)
       total_records = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
-        total_records[year] = SearchRecord.where(_id: { '$lte' => last_id }, chapman_code: county, record_type: year).count
+        total = SearchRecord.where(chapman_code: county, record_type: year).hint("chapman_record_type").count
+        last_records = SearchRecord.where(_id: { '$gt' => last_id }, chapman_code: county, record_type: year).hint("id_chapman_record_type").count
+        total_records[year] = total - last_records
       end
       total_records
     end
@@ -190,6 +190,7 @@ class SearchRecord
     def delete_freecen_individual_entries
       SearchRecord.where(:freecen_individual_id.exists => true).destroy_all
     end
+
 
     def from_annotation(annotation)
       Rails.logger.debug("from_annotation processing #{annotation.inspect}")

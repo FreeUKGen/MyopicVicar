@@ -197,7 +197,7 @@ class Message
     add_message_to_userid_messages(UseridDetail.look_up_id(sender)) unless sender.blank? || ccs.include?(sender)
     ccs << sender
     ccs = ccs.uniq
-    slice_size = 50
+    slice_size = 30
     slices = ccs.length / slice_size
     first = 0
     last = slice_size - 1

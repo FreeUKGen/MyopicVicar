@@ -2288,125 +2288,129 @@ class FreecenCsvEntry
   def self.part2_individual_display_labels(year, chapman_code)
     case year
     when '1851'
-      ['Nationality', 'Birth County', 'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Notes']
+      ['Nationality', 'Birth County', 'Birth Place', 'Disability', 'Notes']
     when '1861'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Birth County Entered', 'Birth Place', 'Preferred Birth County', 'Preferred Birth Place',  'Disability', 'Notes']
+        ['Birth County', 'Birth Place', 'Disability', 'Notes']
       else
-        ['Nationality', 'Birth County',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Notes']
+        ['Nationality', 'Birth County', 'Birth Place', 'Disability', 'Notes']
       end
     when '1871'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Birth County Entered',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Notes']
+        ['Birth County', 'Birth Place', 'Disability', 'Notes']
       else
-        ['Nationality', 'Birth County',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Notes']
+        ['Nationality', 'Birth County', 'Birth Place', 'Disability', 'Notes']
       end
     when '1881'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Birth County Entered',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Notes']
+        ['Birth County', 'Birth Place', 'Disability', 'Notes']
       else
-        ['Nationality', 'Birth County',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Notes']
+        ['Nationality', 'Birth County', 'Birth Place', 'Disability', 'Notes']
       end
     when '1891'
       # only Wales 1891 has language field
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Birth County Entered',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Notes']
+        ['Birth County', 'Birth Place', 'Disability', 'Notes']
       elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code)
-        ['Nationality', 'Birth County',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Language', 'Notes']
+        ['Nationality', 'Birth County', 'Birth Place', 'Disability', 'Language', 'Notes']
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
-        ['Birth County Entered',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Notes']
+        ['Birth County', 'Birth Place', 'Disability', 'Notes']
       else
-        ['Nationality', 'Birth County',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Notes']
+        ['Nationality', 'Birth County', 'Birth Place', 'Disability', 'Notes']
       end
     when '1901'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Birth County Entered',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Language', 'Notes']
+        ['Birth County', 'Birth Place', 'Disability', 'Language', 'Notes']
       elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code)
-        ['Nationality', 'Birth County',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Language', 'Notes']
+        ['Nationality', 'Birth County', 'Birth Place', 'Disability', 'Language', 'Notes']
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
-        ['Birth County Entered',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Notes']
+        ['Birth County', 'Birth Place', 'Disability', 'Notes']
       else
-        ['Nationality', 'Birth County',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Notes']
+        ['Nationality', 'Birth County',  'Birth Place', 'Disability', 'Notes']
       end
     when '1911'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Nationality', 'Birth County',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Language', 'Notes']
+        ['Nationality', 'Birth County',  'Birth Place', 'Disability', 'Language', 'Notes']
       elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code) || chapman_code == 'IOM'
-        ['Nationality', 'Birth County',  'Birth Place', 'Disability', 'Preferred Birth County', 'Preferred Birth Place', 'Disability Notes', 'Language', 'Notes']
+        ['Nationality', 'Birth County',  'Birth Place', 'Disability', 'Disability Notes', 'Language', 'Notes']
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
-        ['Nationality', 'Birth County',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Notes']
+        ['Nationality', 'Birth County',  'Birth Place', 'Disability', 'Notes']
       elsif %w[CHI ALD GSY JSY].include?(chapman_code)
-        ['Nationality', 'Birth County',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', "Father's Place of Birth", 'Disability', 'Notes']
+        ['Nationality', 'Birth County',  'Birth Place', "Father's Place of Birth", 'Disability', 'Notes']
       else
-        ['Nationality', 'Birth County',  'Birth Place', 'Preferred Birth County', 'Preferred Birth Place', 'Disability', 'Disability Notes', 'Notes']
+        ['Nationality', 'Birth County',  'Birth Place', 'Disability', 'Disability Notes', 'Notes']
       end
     end
   end
 
   def part2_individual_display_values(year, chapman_code)
-    birth = verbatim_birth_place
-    selected_birth = birth_place
+    birth = birth_place
+    birth = birth + ' (or ' + verbatim_birth_place + ')' if birth_place.present? && birth_place != verbatim_birth_place
+    birth = verbatim_birth_place if birth_place.blank?
     birth_county_name = ChapmanCode.name_from_code(birth_county)
     verbatim_birth_county_name = ChapmanCode.name_from_code(verbatim_birth_county)
+    birth_county_name = birth_county_name + ' (or ' + verbatim_birth_county_name + ')' if birth_county_name.present? && birth_county_name != verbatim_birth_county_name
+    birth_county_name = verbatim_birth_county_name if birth_county_name.blank?
+
     note = notes.gsub(/\<br\>/, '') if notes.present?
     lang = Freecen::LANGUAGE[language]
     case year
     when '1851'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, note]
+        [birth_county_name, birth,  note]
       else
-        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, note]
+        [nationality, birth_county_name, birth, disability, note]
       end
     when '1861'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, note]
+        [birth_county_name, birth, disability, note]
       else
-        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, note]
+        [nationality, birth_county_name, birth, disability, note]
       end
     when '1871'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, note]
+        [birth_county_name, birth, disability, note]
       else
-        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, note]
+        [nationality, birth_county_name, birth, disability, note]
       end
     when '1881'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, note]
+        [birth_county_name, birth, disability, note]
       else
-        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, note]
+        [nationality, birth_county_name, birth, disability, note]
       end
     when '1891'
       # only Wales 1891 has language field
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, note]
+        [birth_county_name, birth, disability, note]
       elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code)
-        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, lang, note]
+        [nationality, birth_county_name, birth, disability, lang, note]
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
-        [verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, note]
+        [birth_county_name, birth, disability, note]
       else
-        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, note]
+        [nationality, birth_county_name, birth, disability, note]
       end
     when '1901'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, lang, note]
+        [birth_county_name, birth, disability, lang, note]
       elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code)
-        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, lang, note]
+        [nationality, birth_county_name, birth, disability, lang, note]
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
-        [verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, lang, note]
+        [birth_county_name, birth,  disability, lang, note]
       else
-        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, note]
+        [nationality, birth_county_name, birth, disability, note]
       end
     when '1911'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, lang, note]
+        [nationality, birth_county_name, birth, disability, lang, note]
       elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code) || chapman_code == 'IOM'
-        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, diability_notes, lang, note]
+        [nationality, birth_county_name, birth, disability, diability_notes, lang, note]
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
-        [verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, lang, note]
+        [birth_county_name, birth, disability, lang, note]
       elsif %w[CHI ALD GSY JSY].include?(chapman_code)
-        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, father_place_of_birth, disability, disability_notes, lang, note]
+        [nationality, birth_county_name, birth, father_place_of_birth, disability, disability_notes, lang, note]
       else
-        [nationality, verbatim_birth_county_name, birth, birth_county_name, selected_birth, disability, disability_notes, note]
+        [nationality, birth_county_name, birth, disability, disability_notes, note]
       end
     end
   end
@@ -2420,17 +2424,16 @@ class FreecenCsvEntry
     [next_entry, previous_entry]
   end
 
-  def next_and_previous_list_entries
-    file_id = freecen_csv_file.id
-    list_of_records = freecen_csv_file.list_of_records
+  def next_and_previous_list_entries(type)
+    list_of_records = freecen_csv_file.index_type(type).pluck(:_id)
     return [nil, nil] if list_of_records.blank?
 
-    current_index = list_of_records[:records].index(_id.to_s)
+    current_index = list_of_records.find_index(_id)
     return [nil, nil] if current_index.blank?
 
-    records = list_of_records[:records].length
-    next_entry = (current_index + 1) <= records ? FreecenCsvEntry.find_by(_id: list_of_records[:records][current_index + 1]) : nil
-    previous_entry = (current_index - 1) < 0 ?  nil : FreecenCsvEntry.find_by(_id: list_of_records[:records][current_index - 1])
+    number_records = list_of_records.length
+    next_entry = (current_index + 1) <= number_records ? FreecenCsvEntry.find_by(_id: list_of_records[current_index + 1]) : nil
+    previous_entry = (current_index - 1) < 0 ? nil : FreecenCsvEntry.find_by(_id: list_of_records[current_index - 1])
     [next_entry, previous_entry]
   end
 
@@ -2674,16 +2677,6 @@ class FreecenCsvEntry
     record.add_digest
     record.save!
     update_attributes(search_record_id: record.id)
-
-    unless place.data_present
-      place.data_present = true
-      place_save_needed = true
-    end
-
-    unless place.cen_data_years.include?(year)
-      place.cen_data_years << year
-      place_save_needed = true
-    end
-    place.save! if place_save_needed
+    place.update_data_present(piece)
   end
 end

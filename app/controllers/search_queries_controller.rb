@@ -67,9 +67,6 @@ class SearchQueriesController < ApplicationController
   end
 
   def create
-    #raise params.inspect
-    # binding.pry
-    #raise params[:search_query][:chapman_codes].reject { |c| c.empty? }.inspect
     condition = true if params[:search_query].present? && params[:search_query][:region].blank?
     redirect_back(fallback_location: new_search_query_path, notice: 'Invalid Search') && return unless condition
 
@@ -120,7 +117,8 @@ class SearchQueriesController < ApplicationController
   end
 
   def new
-    @page = session[:message] == 'load' ? Refinery::Page.where(slug: 'message').first.parts.first.body.html_safe : nil
+    page = Refinery::Page.where(slug: 'message').first
+    @page = session[:message] == 'load' && page.present? && page.parts.first.present? ? page.parts.first.body.html_safe : nil
 
     @search_query = SearchQuery.new
     session.delete(:query)

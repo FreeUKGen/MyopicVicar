@@ -8,23 +8,47 @@
   <!--<![endif]-->
   <head>
     <script src="/prebid_ads.js" type="text/javascript"></script>
+    <script>
+    // Define dataLayer and the gtag function.
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+
+      // Default ad_storage to 'denied'.
+      gtag('consent', 'default', {
+        'ad_storage': 'denied',
+        'analytics_storage': 'denied'
+      });
+    </script>
+    <!-- Google Tag Manager -->
+    <script>
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','<%= "#{gtm_key_value}"%>');
+    </script>
+      <!-- End Google Tag Manager -->
+    <script>
+      window.update_analytics = function (preference) {
+        if(preference == 'accept') {
+            gtag('consent', 'update', {
+              'ad_storage': 'granted',
+        'analytics_storage': 'granted'
+            });
+        } else if(preference == 'deny') {
+            gtag('consent', 'update', {
+              'ad_storage': 'denied',
+        'analytics_storage': 'denied'
+            });
+        }
+      };
+    </script>
     <% if appname_downcase == 'freereg' %>
       <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found') || current_page?('/cms/refinery/users/login') %>
-        <%= banner_header_freereg %>
-        <script type="text/javascript" src="//m2d.m2.ai/pg.freereg.js" async></script>
-        <script type="text/javascript" src="//cdn.pubguru.com/fb.js"></script>
+        <div class="reg_adsense reg_unit reg_page_level_ads">
+          <%= banner_header_freereg %>
+        </div>
       <% end %>
-    <% end %>
-    <% if appname_downcase == 'freecen' || appname_downcase == 'freebmd'%>
-      <!-- Google Tag Manager -->
-      <script>
-        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-          j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-          'https://www.googletagmanager.com/gtm.'+'js?id='+i+dl;f.parentNode.insertBefore(j,f);
-          })(window,document,'script','dataLayer','<%= "#{gtm_key_value}"%>');
-      </script>
-      <!--End Google Tag Manager -->
     <% end %>
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <meta charset="utf-8"/>

@@ -10,6 +10,13 @@ db.runCommand(
                 file_name: 1
             },
             name: "id_county_year_file"
+        },{
+            key: {
+                dir_name: 1,
+                full_year: 1,
+                file_name: 1
+            },
+            name: "county_year_file"
         },
          {
             key: {
@@ -42,6 +49,12 @@ db.runCommand(
                 freecen_piece_id: 1
             },
             name: "freecen_piece"
+        },
+        {
+            key: {
+                freecen2_place_id: 1
+            },
+            name: "freecen2_place"
         }
 
     ]

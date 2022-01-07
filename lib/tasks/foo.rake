@@ -38,7 +38,7 @@ namespace :foo do
   end
 
   task :update_freecen2_pieces_1901, [:limit] => [:environment] do |t, args|
-    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+
     require 'update_freecen2_pieces_1901'
     puts "Update Freecen2 Piece dropping Civil Parishes for 1901"
     UpdateFreecen2Pieces1901.process(args.limit)
@@ -46,7 +46,7 @@ namespace :foo do
   end
 
   task :update_freecen2_pieces_1861_lnd, [:limit] => [:environment] do |t, args|
-    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+
     require 'update_freecen2_pieces_1861_lnd'
     puts "Update Freecen2 Piece dropping Pieces and Civil Parishes for LDN in 1861"
     UpdateFreecen2Pieces1861Lnd.process(args.limit)
@@ -54,7 +54,7 @@ namespace :foo do
   end
 
   task :update_freecen2_pieces_1911, [:limit] => [:environment] do |t, args|
-    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+
     require 'update_freecen2_pieces_1911'
     puts "Update Freecen2 Piece dropping Civil Parishes for 1911"
     UpdateFreecen2Pieces1911.process(args.limit)
@@ -141,6 +141,14 @@ namespace :foo do
     puts "Task complete."
   end
 
+  task :create_freecen2_place_edit, [:limit] => [:environment] do |t, args|
+    # This reads the state of the Place record and creates the edit record if a change is detected
+    require 'create_freecen2_place_edit'
+    puts "Creating Freecen2 Place Edit with limit #{args.limit}"
+    CreateFreecen2PlaceEdit.process(args.limit)
+    puts "Task complete."
+  end
+
   task :update_freecen2_place_from_csv_file, [:file, :limit] => [:environment] do |t, args|
     # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
     require 'update_freecen2_place_from_csv_file'
@@ -214,11 +222,26 @@ namespace :foo do
       lock_file = File.new(rake_lock_file, 'w')
       AddEmbargoRecord.process(args.limit)
       lock_file.close
-      File.delete(rake_lock_file)
+      FileUtils.rm rake_lock_file
     else
       p 'Already running'
     end
   end
+
+  task :process_embargo_records, [:rule, :email] => [:environment]  do |t, args|
+    require 'add_embargo_record'
+    rake_lock_file = File.join(Rails.root, 'tmp', "#{args.rule}_rake_lock_file.txt")
+    unless File.exist?(rake_lock_file)
+      lock_file = File.new(rake_lock_file, 'w')
+      AddEmbargoRecord.process_embargo_records_for_a_embargo(args.rule, args.email)
+      lock_file.close
+      FileUtils.rm rake_lock_file
+      p "FREEREG:EMBARGO_PROCESSING: embargo processing rake task  finished"
+    else
+      p 'Already running'
+    end
+  end
+
 
   task :update_message_nature_field => [:environment] do
     require 'update_message_nature_field'
@@ -443,11 +466,20 @@ namespace :foo do
 
 
   desc "Refresh the places cache"
-  task :refresh_places_cache => [:environment] do |t,args|
+  task :refresh_places_cache => [:environment] do |t, args|
     if args.extras.count == 0
       PlaceCache.refresh_all
     else
       args.extras.each { |a| PlaceCache.refresh(a.to_s) }
+    end
+  end
+
+  desc "Refresh the freecen2places cache"
+  task :refresh_freecen2places_cache => [:environment] do |t, args|
+    if args.extras.count == 0
+      Freecen2PlaceCache.refresh_all
+    else
+      args.extras.each { |a| Freecen2PlaceCache.refresh(a.to_s) }
     end
   end
 
@@ -467,6 +499,13 @@ namespace :foo do
     PlaceCache.check_and_refresh_if_absent
     p "finished"
   end
+
+  desc "Check and Refresh the freecen2 places cache"
+  task :check_and_refresh_freecen2_places_cache => [:environment] do |t,args|
+    Freecen2PlaceCache.check_and_refresh_if_absent
+    p "finished"
+  end
+
 
   task :create_userid_docs, [:type,:range]  => [:environment] do |t, args|
     #this task reads the .uDetails file for each userid and creates the userid_detail collection

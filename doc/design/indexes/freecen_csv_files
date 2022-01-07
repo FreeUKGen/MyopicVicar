@@ -68,7 +68,15 @@ db.runCommand(
                 incorporated: 1
             },
             name: "id_chapman_year_incorporated"
+        },
+        {
+            key: {
+                freecen2_place_id: 1,
+                incorporated: 1
+            },
+            name: "freecen2_place_incorporated"
         }
+
     ]
   }
 )

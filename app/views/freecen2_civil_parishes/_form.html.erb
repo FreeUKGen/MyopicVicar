@@ -1,25 +1,30 @@
 <%= semantic_form_for @freecen2_civil_parish, :html => { :class => 'grid'}  do |f| %>
-  <%= f.input :reason_changed,:label => 'Reason for making a change or addition',:as => :text, :input_html => {:class => ' simple_form_bgcolour  ',   :placeholder => 'Enter the reason for a change',  :size => '50x5' }%>
-  <%= f.input :name ,  label: 'Civil Parish (Allows this Parish to be merged into another Parish. If in doubt talk to the data manager):', selected: @freecen2_civil_parish.name, include_blank: false, collection: @freecen2_civil_parishes, input_html: {class: ' simple_form_bgcolour large_selection_field_width', size:5 }   if %w[data_manager system_administrator].include?(@user.person_role)%>
-  <%= f.input :freecen2_place_id,  label: 'Freecen2 Place name:', selected:  @freecen2_place, include_blank: false, collection: @places, input_html: {class: ' simple_form_bgcolour large_selection_field_width', size:5 }%>
-  <%= f.input :note, label: 'TNA Notes',  as: :text, input_html: {class: ' simple_form_bgcolour  ',   placeholder: @freecen2_civil_parish.note,  size: '50x5' }%>
-  <h4 style='text-align: center'>Hamlets within the Civil Parish</h4>
-  <%= f.simple_fields_for :freecen2_hamlets do |multiple| %>
-    <%= multiple.input :name,:input_html => {:class => ' simple_form_bgcolour  ', :size => 40 } %>
-    <%= multiple.input :note,:input_html => { :class => ' simple_form_bgcolour  ',:size => 40 } %>
-    <%= multiple.input :_destroy, :as => :boolean ,:input_html => {:class => ' simple_form_bgcolour  '} %>
-  <% end %>
-  <h4 style='text-align: center'>Townships within the Civil Parish</h4>
-  <%= f.simple_fields_for :freecen2_townships do |multiple| %>
-    <%= multiple.input :name,:input_html => {:class => ' simple_form_bgcolour  ', :size => 40 } %>
-    <%= multiple.input :note,:input_html => { :class => ' simple_form_bgcolour  ',:size => 40 } %>
-    <%= multiple.input :_destroy, :as => :boolean ,:input_html => {:class => ' simple_form_bgcolour  '} %>
-  <% end %>
-  <h4 style='text-align: center'>Wards within the Civil Parish</h4>
-  <%= f.simple_fields_for :freecen2_wards do |multiple| %>
-    <%= multiple.input :name,:input_html => {:class => ' simple_form_bgcolour  ', :size => 40 } %>
-    <%= multiple.input :note,:input_html => { :class => ' simple_form_bgcolour  ',:size => 40 } %>
-    <%= multiple.input :_destroy, :as => :boolean ,:input_html => {:class => ' simple_form_bgcolour  '} %>
+  <%= f.input :reason_changed,:label => 'Reason for making a change or addition',required: true,:as => :text, :input_html => {:class => ' simple_form_bgcolour  ',   :placeholder => 'Enter the reason for a change',  :size => '50x5' }%>
+  <%= f.input :name ,  label: 'Civil Parish (Allows this Parish to be merged into another Parish. If in doubt talk to the data manager):', selected: @freecen2_civil_parish.name, required: true, include_blank: false, collection: @freecen2_civil_parishes, input_html: {class: ' simple_form_bgcolour large_selection_field_width', size:5 }   if %w[data_manager system_administrator].include?(@user.person_role)%>
+  <%= f.input :freecen2_place_id,  required: true, label: 'Freecen2 Place name:', selected:  @freecen2_place, include_blank: false, collection: @places, input_html: {class: ' simple_form_bgcolour large_selection_field_width', size:5 }%>
+  <% unless @scotland %>
+    <%= f.input :note, label: 'TNA Notes',  as: :text, input_html: {class: ' simple_form_bgcolour  ',   placeholder: @freecen2_civil_parish.note,  size: '50x5' }%>
+    <h4 style='text-align: center'>Hamlets within the Civil Parish</h4>
+    <%= f.simple_fields_for :freecen2_hamlets do |multiple| %>
+      <%= multiple.input :name,:input_html => {:class => ' simple_form_bgcolour  ', :size => 40 } %>
+      <%= multiple.input :note,:input_html => { :class => ' simple_form_bgcolour  ',:size => 40 } %>
+      <%= multiple.input :_destroy, :as => :boolean ,:input_html => {:class => ' simple_form_bgcolour  '} %>
+    <% end %>
+    <h4 style='text-align: center'>Townships within the Civil Parish</h4>
+    <%= f.simple_fields_for :freecen2_townships do |multiple| %>
+      <%= multiple.input :name,:input_html => {:class => ' simple_form_bgcolour  ', :size => 40 } %>
+      <%= multiple.input :note,:input_html => { :class => ' simple_form_bgcolour  ',:size => 40 } %>
+      <%= multiple.input :_destroy, :as => :boolean ,:input_html => {:class => ' simple_form_bgcolour  '} %>
+    <% end %>
+    <h4 style='text-align: center'>Wards within the Civil Parish</h4>
+    <%= f.simple_fields_for :freecen2_wards do |multiple| %>
+      <%= multiple.input :name,:input_html => {:class => ' simple_form_bgcolour  ', :size => 40 } %>
+      <%= multiple.input :note,:input_html => { :class => ' simple_form_bgcolour  ',:size => 40 } %>
+      <%= multiple.input :_destroy, :as => :boolean ,:input_html => {:class => ' simple_form_bgcolour  '} %>
+    <% end %>
+  <% else%>
+    <%= f.input :number ,  label: 'Civil Parish Number: e.g. 10', required: true, input_html: {class: ' simple_form_bgcolour', size:40 }%>
+    <%= f.input :suffix ,  label: 'Civil Parish Suffix: e.g. a or b', required: true, input_html: {class: ' simple_form_bgcolour', size:40 }%>
   <% end %>
   <div  style="text-align: center">
     <%= f.action :submit,  :as => :button,  :label =>  'Submit', :button_html => {name: 'commit', value: 'Submit', :class => 'ladda-button' , 'data-style' => 'contract' ,'data-color' => appname_downcase , 'data-size' => 's', 'data-spinner-color' => '#ffffff'  } %>

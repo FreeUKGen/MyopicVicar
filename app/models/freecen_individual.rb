@@ -21,12 +21,15 @@ class FreecenIndividual
   field :disability, type: String
   field :language, type: String
   field :notes, type: String
+
   belongs_to :freecen1_vld_file, index: true
   belongs_to :freecen_dwelling, index: true
   belongs_to :freecen1_vld_entry, index: true
+  belongs_to :freecen2_place, optional: true, index: true
   belongs_to :freecen2_piece, optional: true, index: true
   belongs_to :freecen_piece, optional: true, index: true
-  has_one :search_record
+
+  has_one :search_record, dependent: :restrict_with_error, autosave: true
 
   before_destroy :destroy_search_record
 
@@ -52,22 +55,31 @@ class FreecenIndividual
   end
 
   def individual_display_values(year, chapman_code)
+    birth = birth_place
+    birth = birth + ' (or ' + verbatim_birth_place + ')' if birth_place.present? && verbatim_birth_place.present? && birth_place != verbatim_birth_place
+    birth = verbatim_birth_place if birth_place.blank?
+    birth_county_name = ChapmanCode.name_from_code(birth_county)
+    verbatim_birth_county_name = ChapmanCode.name_from_code(verbatim_birth_county)
+    birth_county_name = birth_county_name + ' (or ' + verbatim_birth_county_name + ')' if birth_county_name.present? &&
+      verbatim_birth_county_name.present? && birth_county_name != verbatim_birth_county_name
+    birth_county_name = verbatim_birth_county_name if birth_county_name.blank?
+
     disp_age = age
     if age_unit.present? && 'y' != age_unit
       disp_age = age + age_unit
     end
     disp_occupation = occupation
     if year == '1841'
-      return [surname, forenames, sex, disp_age, disp_occupation, verbatim_birth_county, notes]
+      return [surname, forenames, sex, disp_age, disp_occupation, birth_county_name, notes]
     elsif year == '1891'
       # only Wales 1891 has language field
       if ChapmanCode::CODES['Wales'].values.member?(chapman_code) || ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        return [surname, forenames, relationship, marital_status, sex, disp_age, disp_occupation, verbatim_birth_county, verbatim_birth_place, disability, language, notes]
+        return [surname, forenames, relationship, marital_status, sex, disp_age, disp_occupation, birth_county_name, birth, disability, language, notes]
       end
-      return [surname, forenames, relationship, marital_status, sex, disp_age, disp_occupation, verbatim_birth_county, verbatim_birth_place, disability, notes]
+      return [surname, forenames, relationship, marital_status, sex, disp_age, disp_occupation, birth_county_name, birth, disability, notes]
     end
     # standard fields for 1851 - 1881
-    [surname, forenames, relationship, marital_status, sex, disp_age, disp_occupation, verbatim_birth_county, verbatim_birth_place, disability, notes]
+    [surname, forenames, relationship, marital_status, sex, disp_age, disp_occupation, birth_county_name, birth, disability, notes]
   end
 
   def destroy_search_record

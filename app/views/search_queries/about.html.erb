@@ -11,5 +11,16 @@
     <%= link_to "Back", search_query_path(@search_query ), :class => "btn   btn--small  "%>
   </div>
   <h2>About this Query</h2>
-  <%= render app_specific_partial('about') %>
+  <% case appname_downcase %>
+  <% when 'freereg' %>
+    <%= render 'about' %>
+  <% when 'freecen' %>
+    <% if Rails.application.config.freecen2_place_cache %>
+      <%= render 'about_freecen2' %>
+    <% else%>
+      <%= render 'about_freecen' %>
+    <% end%>
+  <% when 'freebmd' %>
+    <%= render 'about_freebmd' %>
+  <% end %>
 </div>

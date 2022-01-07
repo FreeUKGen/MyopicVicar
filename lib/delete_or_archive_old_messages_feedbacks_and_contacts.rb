@@ -1,7 +1,7 @@
 class DeleteOrArchiveOldMessagesFeedbacksAndContacts
   class << self
     def process
-      #The purpose of this clean up utility is to eliminate search records that are unconnected with an entry. Or an entry without a batch
+
       Mongoid.load!("#{Rails.root}/config/mongoid.yml")
       Mongoid.raise_not_found_error = false
       file_for_warning_messages = 'log/delete_old_messages_feedbacks_and_contacts.log'

@@ -54,7 +54,7 @@ module Freereg1CsvFilesHelper
   end
 
   def unique_names
-    link_to 'Unique names', unique_names_freereg1_csv_file_path(object: @freereg1_csv_file.id), method: :get, class: 'btn   btn--small'
+    link_to 'Names', unique_names_freereg1_csv_file_path(object: @freereg1_csv_file.id), method: :get, class: 'btn   btn--small'
   end
 
   def remove_batch

@@ -11,8 +11,6 @@ https://docs.google.com/forms/d/1QX4-Cw5-d4ipZVZ4uvl2QPcCvnA5Sm0Aj-IWJhP7igA/
 
 Ensure you let us know what idea you might like to help develop, or indeed if you have a new idea you would like to discuss. We will update the ideas as often as possible, however it is always a good idea to check them out on Github too (see below for instructions).
 
-If you are interested in Google’s Summer of Code, please read and apply here: https://summerofcode.withgoogle.com/get-started/.
-
 Next you will need to sign our CLA agreement, <a href="https://www.clahub.com/agreements/FreeUKGen/MyopicVicar">sign the Contributor License Agreement</a>. 
 
 ## Our Code of Conduct
