@@ -32,6 +32,7 @@ class Freecen2ContentsController < ApplicationController
     @recent_additions = []
     @additions_county = params[:new_records] if params[:new_records].present?
     return if @freecen2_contents.new_records.blank?
+    redirect_back(fallback_location: freecen2_contents_path, notice: 'Recent Additions not found') && return if @additions_county.blank?
 
     if @additions_county == 'All'
       @recent_additions = @freecen2_contents.new_records

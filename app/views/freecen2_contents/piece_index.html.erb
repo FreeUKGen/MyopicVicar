@@ -10,6 +10,8 @@
     <%= link_to 'Back to Records for ' + @place_description ,  :back, method: :get , :class => "btn btn--small" %>
   <% end %>
   <%= locate_place_link(@place_id) %>
+  <p></p>
+  <p><i>Note: An Online status of P indicates that only part of the Piece is currently online</i></p>
 </div>
 <p></p>
 <div class='scrollable'>
@@ -37,6 +39,8 @@
           <% end %>
           <% if piece.status == 'Online' %>
             <td><%= 'Y' + " (" + piece.status_date.to_datetime.strftime('%d %b %Y') + ")"%></td>
+          <% elsif piece.status == 'Part' %>
+            <td><%= 'P' + " (" + piece.status_date.to_datetime.strftime('%d %b %Y') + ")"%></td>
           <% else%>
             <td><%= 'N' %></td>
           <% end%>
