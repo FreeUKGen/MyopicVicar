@@ -43,6 +43,19 @@
         }
       };
     </script>
+    <% unless GdprCountries::FOLLOWED_COUNTRIES.include?(user_location) %>
+      <script>
+        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
+        window.update_personalized_adverts = function (preference) {
+          if(preference == 'accept') {
+            (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0;
+          } else if(preference == 'deny') {
+            (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1;
+          }
+        };
+        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
+      </script>
+    <% end %>
     <% if appname_downcase == 'freereg' %>
       <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found') || current_page?('/cms/refinery/users/login') %>
         <div class="reg_adsense reg_unit reg_page_level_ads">
@@ -110,17 +123,16 @@
     <%= stylesheet_link_tag "styles/css/donate_icon" %>
     <%= stylesheet_link_tag "styles/css/freereg_content" %>
     <!-- JavaScripts -->
-
     <%= javascript_include_tag "application"%>
     <%= javascript_include_tag "jquery.min.js"%>
     <%= javascript_include_tag "jquery.validate.min.js"%>
     <%= javascript_include_tag "jquery.chained.remote.js"%>
     <%= javascript_include_tag "cookie_control.js"%>
-    <%= javascript_include_tag "advert_control.js"%>
     <%= javascript_include_tag "jquery.cookiesDirective.js"%>
     <%= javascript_include_tag "spin.min.js"%>
     <%= javascript_include_tag "ladda.min.js"%>
     <%= javascript_include_tag "freecen_coverage_graph.js" %>
+    <%= javascript_include_tag "#{appname.downcase}_advert_control.js" %>
     <% if appname.downcase == 'freecen' && GdprCountries::FOLLOWED_COUNTRIES.include?(user_location) %>
       <%= javascript_include_tag "javascripts/freecen_gdpr.js" %>
     <% end %>
