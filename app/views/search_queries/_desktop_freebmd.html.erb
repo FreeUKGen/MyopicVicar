@@ -41,7 +41,14 @@
                     </dt>
                   
                   <dt>
-                    <%= search_record.event_quarter %>
+                    <% if search_record.QuarterNumber <  Constant::EVENT_QUARTER_TO_YEAR %>
+                      <%= format_quarter(search_record.QuarterNumber) %>
+                    <% else %>
+                      <% event_registered = search_record.event_registration %>
+                      <% if event_registered.present?%>
+                        <%= format_registered(event_registered, search_record.QuarterNumber) %>
+                      <% end %>
+                    <% end %>
                   </dt>
                   <dt>
                     <% if print_friendly %>
