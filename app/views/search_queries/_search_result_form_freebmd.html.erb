@@ -8,7 +8,7 @@
         </div>
         <div class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole">
           <%= label_tag 'sort_results', 'Sort By' %>
-          <%= select_tag(:sort_option, options_for_select([['First Name(s)', "GivenName"], ['Surname', "Surname"], ['Record Type', "RecordTypeID"], ['Quarter', "QuarterNumber"], ['District', "District"]], selected: @sort_condition), {:prompt => "Sort By", id: 'sort_results', tabindex: "0"}) %>
+          <%#= select_tag(:sort_option, options_for_select([['First Name(s)', "GivenName"], ['Surname', "Surname"], ['Record Type', "RecordTypeID"], ['Quarter', "QuarterNumber"], ['District', "District"]], selected: @sort_condition), {:prompt => "Sort By", id: 'sort_results', tabindex: "0"}) %>
           <%= select_tag(:sort_option, options_for_select([['Year', "QuarterNumber"], ['District', "District"], ['First Name(s)', "GivenName"], ['Surname', "Surname"]], selected: @sort_condition), {:prompt => "Sort By", id: 'sort_results', tabindex: "0"}) %>
         </div>
 
