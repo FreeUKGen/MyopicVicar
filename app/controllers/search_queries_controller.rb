@@ -226,7 +226,7 @@ class SearchQueriesController < ApplicationController
       order_field = params[:sort_option]
       if order_field == @search_query.order_field
         # reverse the directions
-        @search_query.order_asc = !@search_query.order_asc
+        @search_query.order_asc = !@search_query.order_asc unless params[:page].present?
       else
         @search_query.order_field = order_field
         @search_query.order_asc = true
@@ -269,6 +269,7 @@ class SearchQueriesController < ApplicationController
       end
     end
   end
+
 
   def maximum_results
     case appname_downcase

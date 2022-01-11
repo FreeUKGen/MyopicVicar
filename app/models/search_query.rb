@@ -377,10 +377,14 @@ class SearchQuery
 
   def compare_name_bmd(x, y, order_field, next_order_field=nil)
     if x[order_field] == y[order_field]
-      if x[next_order_field].nil? || y[next_order_field].nil?
-        return x[next_order_field].to_s <=> y[next_order_field].to_s
+      #raise x[order_field].inspect
+      next_order_field.each do |field|
+        if x[field].nil? || y[field].nil?
+          return x[field].to_s <=> y[field].to_s
+        end
+        next if x[field] == y[field]
+        return x[field] <=> y[field]
       end
-      return x[next_order_field] <=> y[next_order_field]
     end
     if x[order_field].nil? || y[order_field].nil?
       return x[order_field].to_s <=> y[order_field].to_s
@@ -1036,35 +1040,37 @@ class SearchQuery
           end
         end
       when SearchOrder::SURNAME
-        #if self.order_asc
-         # results.sort! do |x, y|
-         #   compare_name_bmd(y, x, 'Surname','GivenName')
-         # end
-       # else
-          #results.sort! do |x, y|
-          #   compare_name_bmd(x,y, 'Surname','GivenName')
-          #end
-        #end
-         if order_asc
-          results.sort! { |x, y| (x[:Surname] || '') <=> (y[:Surname] || '') }
+        if self.order_asc
+          results.sort! do |x, y|
+            compare_name_bmd(y, x, 'Surname',['GivenName', 'QuarterNumber', 'DistrictName'])
+          end
         else
-          results.sort! { |x, y| (y[:Surname] || '') <=> (x[:Surname] || '') }
+          results.sort! do |x, y|
+            compare_name_bmd(x,y, 'Surname',['GivenName', 'QuarterNumber', 'DistrictName'])
+          end
         end
-      when SearchOrder::FIRSTNAME
-        #if self.order_asc
-          #results.sort! do |x, y|
-           # compare_name_bmd(y, x, 'GivenName','Surname')
-          #end
+         #if order_asc
+          #results.sort! { |x, y| (x[:Surname] || '') <=> (y[:Surname] || '') }
         #else
-         # results.sort! do |x, y|
-           #  compare_name_bmd(x,y, 'GivenName','Surname')
-          #end
+          #results.sort! { |x, y| (y[:Surname] || '') <=> (x[:Surname] || '') }
         #end
-        if order_asc
-          results.sort! { |x, y| (x[:GivenName] || '') <=> (y[:GivenName] || '') }
+      when SearchOrder::FIRSTNAME
+        if self.order_asc
+          results.sort! do |x, y|
+           compare_name_bmd(y, x, 'GivenName', ['Surname', 'QuarterNumber', 'DistrictName'])
+          end
         else
-          results.sort! { |x, y| (y[:GivenName] || '') <=> (x[:GivenName] || '') }
+          results.sort! do |x, y|
+             compare_name_bmd(x,y, 'GivenName',['Surname', 'QuarterNumber', 'DistrictName'])
+          end
         end
+        #raise 'hi'
+        #if order_asc
+
+         # results.sort! { |x, y| (x[:GivenName] || '') <=> (y[:GivenName] || '') }
+        #else
+         # results.sort! { |x, y| (y[:GivenName] || '') <=> (x[:GivenName] || '') }
+        #end
       when SearchOrder::BMD_RECORD_TYPE
         #if self.order_asc
          # results.sort! do |x, y|
@@ -1081,16 +1087,25 @@ class SearchQuery
           results.sort! { |x, y| (y[:RecordTypeID] || '') <=> (x[:RecordTypeID] || '') }
         end
        when SearchOrder::BMD_DATE
-        if order_asc
-          results.sort! { |x, y| (x[:QuarterNumber] || '') <=> (y[:QuarterNumber] || '') }
+        if self.order_asc
+          results.sort! do |x, y|
+           compare_name_bmd(y, x, 'QuarterNumber', ['Surname', 'GivenName', 'DistrictName'])
+          end
         else
-          results.sort! { |x, y| (y[:QuarterNumber] || '') <=> (x[:QuarterNumber] || '') }
+          results.sort! do |x, y|
+             compare_name_bmd(x,y, 'QuarterNumber', ['Surname', 'GivenName', 'DistrictName'])
+          end
         end
+        
       when SearchOrder::DISTRICT
-        if order_asc
-          results.sort! { |x, y| (x[:District] || '') <=> (y[:District] || '') }
+        if self.order_asc
+          results.sort! do |x, y|
+           compare_name_bmd(y, x, 'DistrictName', ['Surname', 'GivenName', 'QuarterNumber'])
+          end
         else
-          results.sort! { |x, y| (y[:District] || '') <=> (x[:District] || '') }
+          results.sort! do |x, y|
+             compare_name_bmd(x,y, 'DistrictName', ['Surname', 'GivenName', 'QuarterNumber'])
+          end
         end
       end
     end
