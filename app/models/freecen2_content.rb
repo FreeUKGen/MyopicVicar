@@ -124,7 +124,7 @@ class Freecen2Content
         else
           if county_pieces_total > 0
             if records[county].present?
-              if update_all || county_total_records_online != records[county][:total][:records_online] || county_pieces_total != records[county][:total][:pieces]
+              if update_all || county_needs_updating(records, county, county_pieces_total, county_total_records_online)
                 refresh_county = true
               else
                 refresh_county = false
@@ -193,12 +193,12 @@ class Freecen2Content
                   records = Freecen2Content.add_records_place(records, county, key_place)
                 end
 
-                places_array << this_place.place_name
                 records[county][key_place][:total][:place_id] = this_place._id
 
                 fc2_totals_pieces, fc2_totals_pieces_online, fc2_totals_records_online, fc2_piece_ids = Freecen2Piece.before_place_year_totals(county, this_place._id, last_midnight)
                 fc2_added_pieces_online = Freecen2Piece.between_dates_place_year_totals(county, this_place._id, previous_midnight, last_midnight)
 
+                place_dates = '=('
                 piece_ids_array = []
                 records[county][key_place][:total][:piece_ids] = []
                 records[county][key_place][:total][:pieces] = 0
@@ -225,7 +225,20 @@ class Freecen2Content
                     new_records << [county_name, this_place.place_name, county, this_place._id, year]
                   end
 
+                  if fc2_totals_pieces_online[year].positive?
+                    place_dates += year + ', '
+                  end
+
                 end # year
+
+
+                if place_dates.length > 2
+                  place_dates.delete_suffix!(', ')
+                  place_dates += ')'
+                  places_array << this_place.place_name + place_dates
+                else
+                  places_array << this_place.place_name
+                end
 
                 places_array_sorted = places_array.sort
                 records[county][:total][:places] = places_array_sorted
@@ -337,6 +350,24 @@ class Freecen2Content
       records[county][field][:total][:records_online] = 0
       records[county][field][:total][:added_pieces_online] = 0
       return records
+    end
+
+    def county_needs_updating(records, county, county_pieces_total, county_total_records_online)
+      needs_update = false
+
+      if county_total_records_online != records[county][:total][:records_online] || county_pieces_total != records[county][:total][:pieces]
+        needs_update = true
+      else
+        county_places = records[county][:total][:places]
+        county_places.each do |place|
+          place_name = place.split('=')[0]
+          if Freecen2Place.find_by(chapman_code: county, place_name: place_name).blank?
+            needs_update = true
+            break
+          end
+        end
+      end
+      return needs_update
     end
 
     def get_place_key(place)

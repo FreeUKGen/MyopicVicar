@@ -1,5 +1,15 @@
 module Freecen2ContentsHelper
 
+
+  def contents_check_for_partials(piece_ids, pieces_online)
+    partial_flag = ''
+    piece_ids.each do |piece_id|
+      partial_flag = '*' if Freecen2Piece.find_by(id: piece_id, status: 'Part').present?
+      break if partial_flag == '*'
+    end
+    display_cell = content_tag(:td, pieces_online.to_s + partial_flag)
+  end
+
   def contents_show_percentage(pieces_online, pieces)
     percent = 0
     percent = ((pieces_online.to_f / pieces.to_f) * 100).round(1) if pieces_online > 0
@@ -24,10 +34,9 @@ module Freecen2ContentsHelper
     link_to 'Location', "https://www.google.com/maps/search/?api=1&query=#{place.latitude},#{place.longitude}", target: :_blank, class: 'btn   btn--small', title: 'Shows the location on a Google map in a new tab'
   end
 
-
-  def records_for_piece(piece_id,piece_status)
+  def records_for_piece(piece_id, piece_status)
     record_count = 0
-    if piece_status == "Online"
+    if %w[Online Part].include?(piece_status)
       piece = Freecen2Piece.find_by(id: piece_id)
       if piece.present?
         if piece.freecen1_vld_files.present?

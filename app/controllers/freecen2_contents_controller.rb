@@ -9,7 +9,8 @@ class Freecen2ContentsController < ApplicationController
     records_places = @freecen2_contents.records[@chapman_code][:total][:places]
     @places_for_county = {}
     @places_for_county =  { '' => "Select a Place in #{@county_description} ..." }
-    records_places.each { |place| @places_for_county[place] = add_dates_place(@chapman_code, place) }
+    records_places.each { |place| @places_for_county[remove_dates_place(place)] = place.gsub('=', ' ') if Freecen2Place.find_by(chapman_code: @chapman_code, place_name: remove_dates_place(place)).present? }
+    #county_places.each { |place| county_places_hash[remove_dates_place(place)] = place.gsub('=', ' ') if Freecen2Place.find_by(chapman_code: chapman_code, place_name: remove_dates_place(place)).present? }
     return unless params[:commit] == 'View Place Records'
 
     if !params[:place_description].present? || params[:place_description] == ''
@@ -32,6 +33,7 @@ class Freecen2ContentsController < ApplicationController
     @recent_additions = []
     @additions_county = params[:new_records] if params[:new_records].present?
     return if @freecen2_contents.new_records.blank?
+    redirect_back(fallback_location: freecen2_contents_path, notice: 'Recent Additions not found') && return if @additions_county.blank?
 
     if @additions_county == 'All'
       @recent_additions = @freecen2_contents.new_records
@@ -139,7 +141,7 @@ class Freecen2ContentsController < ApplicationController
     chapman_code = ChapmanCode.code_from_name(county_description)
     county_places = @freecen2_contents.records[chapman_code][:total][:places]
     county_places_hash = { '' => "Select a Place in #{county_description} ..." }
-    county_places.each { |place| county_places_hash[place] = add_dates_place(chapman_code, place) }
+    county_places.each { |place| county_places_hash[remove_dates_place(place)] = place.gsub('=', ' ') if Freecen2Place.find_by(chapman_code: chapman_code, place_name: remove_dates_place(place)).present? }
     if county_places_hash.present?
       respond_to do |format|
         format.json do
@@ -179,17 +181,8 @@ class Freecen2ContentsController < ApplicationController
     end
   end
 
-  def add_dates_place(chapman_code, place_description)
-    place_dropdown = place_description
-    key_place = Freecen2Content.get_place_key(place_description)
-    if @freecen2_contents.records[chapman_code][key_place][:total][:records_online].positive?
-      place = Freecen2Place.find_by(chapman_code: chapman_code, place_name: place_description)
-      unless place.cen_data_years.blank?
-        years = "(" + place.cen_data_years.sort.to_s.gsub(/\"|\[|\]/,"") + ")"
-        place_dropdown = "#{place_description} #{years}"
-      end
-    end
-    place_dropdown
+  def remove_dates_place(place_with_dates)
+    place_name = place_with_dates.split('=')[0]
   end
 
   private
