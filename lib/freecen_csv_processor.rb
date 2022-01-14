@@ -159,22 +159,28 @@ class FreecenCsvProcessor
   end
 
   def write_member_message_file(message)
+    message = pob_message(message)
     member_message_file.puts message if write_member_message?(message)
   end
 
   def write_member_message?(message)
     return false if message == '' || (@error_messages_only && (message[0...5] == 'Info:' || message[0...8] == 'Warning:'))
 
-    return false if pob_message?(message)
-
     true
   end
 
-  def pob_message?(message)
-    birth = @no_pob_warnings && message.include?('Warning:') && message.include?('Birth') ? true : false
-    birth
+  def pob_message(message)
+    message_parts = message.split('<br>')
+    new_message = ''
+    if message_parts.length == 1
+      new_message += message_parts[0] unless @no_pob_warnings && message_parts[0].include?('Warning:') && message_parts[0].include?('Birth')
+    else
+      message_parts.each do |part|
+        new_message += (part + '<br>') unless @no_pob_warnings && part.include?('Warning:') && part.include?('Birth')
+      end
+    end
+    new_message
   end
-
 
   def write_messages_to_all(message, no_member_message)
     # avoids sending the message to the member if no_member_message is false
