@@ -41,7 +41,7 @@ class FreecenCsvProcessor
 
   #:message_file is the log file where system and processing messages are written
   attr_accessor :freecen_files_directory, :create_search_records, :type_of_project, :force_rebuild, :info_messages, :no_pob_warnings,
-    :file_range, :message_file, :member_message_file, :project_start_time, :total_records, :total_files, :total_data_errors, :flexible
+    :file_range, :message_file, :member_message_file, :project_start_time, :total_records, :total_files, :total_data_errors, :flexible, :line_num
 
   def initialize(arg1, arg2, arg3, arg4, arg5, arg6)
     @create_search_records = arg1
@@ -60,6 +60,7 @@ class FreecenCsvProcessor
     @no_pob_warnings = @type_of_processing == 'No POB Warnings' ? true : false
     @error_messages_only = @type_of_processing == 'Error' ? true : false
     EmailVeracity::Config[:skip_lookup] = true
+    @line_num = 0
   end
 
   def self.activate_project(create_search_records, type, force, range, type_of_field, type_of_processing)
@@ -159,24 +160,31 @@ class FreecenCsvProcessor
   end
 
   def write_member_message_file(message)
-    message = pob_message(message)
+    message = pob_message(message) if message.present?
     member_message_file.puts message if write_member_message?(message)
   end
 
   def write_member_message?(message)
-    return false if message == '' || (@error_messages_only && (message[0...5] == 'Info:' || message[0...8] == 'Warning:'))
+    return false if message.blank? || message == '' || (@error_messages_only && (message[0...5] == 'Info:' || message[0...8] == 'Warning:'))
 
     true
   end
 
   def pob_message(message)
     message_parts = message.split('<br>')
-    new_message = ''
     if message_parts.length == 1
-      new_message += message_parts[0] unless @no_pob_warnings && message_parts[0].include?('Warning:') && message_parts[0].include?('Birth')
+      new_message = "#{message_parts[0]}" unless @no_pob_warnings && message_parts[0].include?('Warning:') && message_parts[0].include?('Birth')
     else
       message_parts.each do |part|
-        new_message += (part + '<br>') unless @no_pob_warnings && part.include?('Warning:') && part.include?('Birth')
+        next if @error_messages_only && part.include?('Warning:') && part.include?('Birth')
+
+        next if @no_pob_warnings && part.include?('Warning:') && part.include?('Birth')
+
+        if new_message.blank?
+          new_message = "#{part}"
+        else
+          new_message += "\n#{part}"
+        end
       end
     end
     new_message
