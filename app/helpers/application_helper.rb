@@ -80,20 +80,7 @@ module ApplicationHelper
     when 'freereg'
       link_to('Records', main_app.new_freereg_content_path)
     when 'freecen'
-      new_records_pages = false
-      if  session[:userid_detail_id].present?
-        get_user_info_from_userid
-        if @user.present? && @user.person_role.present?
-          if @user.person_role == 'system_administrator'
-            new_records_pages = true
-          end
-        end
-      end
-      if new_records_pages == true
-        link_to('Records', main_app.freecen2_contents_path)
-      else
-        link_to('Records', main_app.freecen_coverage_path, id: 'db_coverage_nav')
-      end
+      link_to('Records', main_app.freecen2_contents_path)
     when 'freebmd'
       link_to('Records', 'https://www.freebmd.org.uk/progress.shtml', target: :_blank)
     end
