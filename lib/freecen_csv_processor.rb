@@ -181,9 +181,9 @@ class FreecenCsvProcessor
         next if @no_pob_warnings && part.include?('Warning:') && part.include?('Birth')
 
         if new_message.blank?
-          new_message = "#{part}"
+          new_message = "#{part}\r\n"
         else
-          new_message += "\n#{part}"
+          new_message += "#{part}\r\n"
         end
       end
     end
