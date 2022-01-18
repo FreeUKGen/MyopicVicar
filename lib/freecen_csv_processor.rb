@@ -173,7 +173,7 @@ class FreecenCsvProcessor
   def pob_message(message)
     message_parts = message.split('<br>')
     if message_parts.length == 1
-      new_message = "#{message_parts[0]}" unless @no_pob_warnings && message_parts[0].include?('Warning:') && message_parts[0].include?('Birth')
+      new_message = "#{message_parts[0]}<br>" unless @no_pob_warnings && message_parts[0].include?('Warning:') && message_parts[0].include?('Birth')
     else
       message_parts.each do |part|
         next if @error_messages_only && part.include?('Warning:') && part.include?('Birth')
@@ -181,9 +181,9 @@ class FreecenCsvProcessor
         next if @no_pob_warnings && part.include?('Warning:') && part.include?('Birth')
 
         if new_message.blank?
-          new_message = "#{part}\r\n"
+          new_message = "#{part}<br>"
         else
-          new_message += "#{part}\r\n"
+          new_message += "#{part}<br>"
         end
       end
     end
@@ -342,7 +342,7 @@ class CsvFile < CsvFiles
     @file_start = Time.new
     p "FREECEN:CSV_PROCESSING: Started on the file #{@header[:file_name]} for #{@header[:userid]} at #{@file_start}"
     @project.write_log_file("******************************************************************* <br>")
-    @project.write_messages_to_all("Started on the file #{@header[:file_name]} for #{@header[:userid]} at #{@file_start}. <p>", true)
+    @project.write_messages_to_all("Started on the file #{@header[:file_name]} for #{@header[:userid]} at #{@file_start}.<br>", true)
     success, message = ensure_processable? unless @project.force_rebuild
     # p "finished file checking #{message}. <br>"
     return [false, message] unless success
