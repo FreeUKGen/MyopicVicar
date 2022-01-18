@@ -282,9 +282,9 @@ class Freecen2PlacesController < ApplicationController
     search_county = session[:search_names][:search_county]
     @advanced_search = session[:search_names][:advanced_search]
     if @advanced_search.present?
-      redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'Advanced search must contain alphabetic characters only') unless search_place.match(/^[A-Za-z ]+$/)
+      redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'Advanced search must contain alphabetic characters only') && return unless search_place.match(/^[A-Za-z ]+$/)
       if @advanced_search != "soundex"
-        redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'Partial searches must contain at least 3 characters') unless Freecen2Place.standard_place(search_place).length >=3
+        redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'Partial searches must contain at least 3 characters') && return unless Freecen2Place.standard_place(search_place).length >=3
       end
     end
     case @advanced_search
