@@ -64,9 +64,13 @@ class FreecenIndividual
       verbatim_birth_county_name.present? && birth_county_name != verbatim_birth_county_name
     birth_county_name = verbatim_birth_county_name if birth_county_name.blank?
 
-    disp_age = age
-    if age_unit.present? && 'y' != age_unit
-      disp_age = age + age_unit
+    if age == '999'
+      disp_age = 'unk'
+    else
+      disp_age = age
+      if age_unit.present? && 'y' != age_unit
+        disp_age = age + age_unit
+      end
     end
     disp_occupation = occupation
     if year == '1841'

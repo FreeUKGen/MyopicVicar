@@ -67,7 +67,9 @@ module SearchQueriesHelper
   end
 
   def format_freecen_birth_year(search_date, record_type)
-    search_year = search_date.gsub(/\D.*/,'')
+    search_date_year = search_date.gsub(/\D.*/, '')
+    # trap where age was recorded as 999 assumes indiv has to be < 200 yrs old
+    search_date_year.to_i < record_type.to_i - 200 ? 'unk' : search_date_year
   end
 
   def format_start_date(year)
