@@ -114,7 +114,9 @@ class SearchRecordsController < ApplicationController
 
   def add_evidence_explained_values
     @piece = @cen_piece
-    @place = @dwelling.place.place_name
+    @place = @dwelling.place
+    @place = @dwelling.freecen2_place if @place.blank?
+    @place = @place.place_name if @place.present?
     @enumeration_district = @dwelling.enumeration_district
     @civil_parish = @dwelling.civil_parish
     @ecclesiastical_parish = @dwelling.ecclesiastical_parish
