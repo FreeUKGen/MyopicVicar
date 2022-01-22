@@ -101,19 +101,19 @@ class Freecen2Content
 
       ChapmanCode.merge_counties.each do |county|
 
-        # AEV Testing -  if county == "SOM" || county == "LND" || county == "ESS"
+        # AEV Testing - if county == "SOM" || county == "LND" || county == "ESS"
 
         p "Processing County: #{county}"
 
         fc2_totals_pieces, fc2_totals_pieces_online, fc2_totals_records_online = Freecen2Piece.before_county_year_totals(county, last_midnight)
-        fc2_added_pieces_online = Freecen2Piece.between_dates_county_year_totals(county, previous_midnight, last_midnight)
+        fc2_added_pieces_online, fc2_added_records_online = Freecen2Piece.between_dates_county_year_totals(county, previous_midnight, last_midnight)
 
         county_pieces_total = 0
-        county_total_records_online = 0
+        county_added_records_online = 0
 
         Freecen::CENSUS_YEARS_ARRAY.each do |year|
           county_pieces_total += fc2_totals_pieces[year]
-          county_total_records_online += fc2_totals_records_online[year]
+          county_added_records_online += fc2_added_records_online[year]
         end
 
         county_name = ChapmanCode.name_from_code(county)
@@ -124,7 +124,7 @@ class Freecen2Content
         else
           if county_pieces_total > 0
             if records[county].present?
-              if update_all || county_needs_updating(records, county, county_pieces_total, county_total_records_online)
+              if update_all || county_needs_updating(records, county, county_pieces_total, county_added_records_online)
                 refresh_county = true
               else
                 refresh_county = false
@@ -159,6 +159,7 @@ class Freecen2Content
           records[county][:total][:pieces_online] = 0
           records[county][:total][:records_online] = 0
           records[county][:total][:added_pieces_online] = 0
+          records[county][:total][:added_records_online] = 0
 
           Freecen::CENSUS_YEARS_ARRAY.each do |year|
 
@@ -169,6 +170,8 @@ class Freecen2Content
             records[county][:total][:pieces_online] += records[county][year][:pieces_online]
             records[county][year][:records_online] = fc2_totals_records_online[year]
             records[county][:total][:records_online] += records[county][year][:records_online]
+            records[county][year][:added_records_online] = fc2_added_records_online[year]
+            records[county][:total][:added_records_online] += records[county][year][:added_records_online]
             records[county][year][:added_pieces_online] = fc2_added_pieces_online[year]
             records[county][:total][:added_pieces_online] += records[county][year][:added_pieces_online]
 
@@ -196,7 +199,7 @@ class Freecen2Content
                 records[county][key_place][:total][:place_id] = this_place._id
 
                 fc2_totals_pieces, fc2_totals_pieces_online, fc2_totals_records_online, fc2_piece_ids = Freecen2Piece.before_place_year_totals(county, this_place._id, last_midnight)
-                fc2_added_pieces_online = Freecen2Piece.between_dates_place_year_totals(county, this_place._id, previous_midnight, last_midnight)
+                fc2_added_pieces_online, fc2_added_records_online = Freecen2Piece.between_dates_place_year_totals(county, this_place._id, previous_midnight, last_midnight)
 
                 place_dates = '=('
                 piece_ids_array = []
@@ -205,6 +208,7 @@ class Freecen2Content
                 records[county][key_place][:total][:pieces_online] = 0
                 records[county][key_place][:total][:records_online] = 0
                 records[county][key_place][:total][:added_pieces_online] = 0
+                records[county][key_place][:total][:added_records_online] = 0
 
                 Freecen::CENSUS_YEARS_ARRAY.each do |year|
                   records[county][key_place][year] = {}
@@ -217,12 +221,14 @@ class Freecen2Content
                   records[county][key_place][:total][:pieces_online] += records[county][key_place][year][:pieces_online]
                   records[county][key_place][year][:records_online] = fc2_totals_records_online[year]
                   records[county][key_place][:total][:records_online] += records[county][key_place][year][:records_online]
+                  records[county][key_place][year][:added_records_online] = fc2_added_records_online[year]
+                  records[county][key_place][:total][:added_records_online] += records[county][key_place][year][:added_records_online]
                   records[county][key_place][year][:added_pieces_online] = fc2_added_pieces_online[year]
                   records[county][key_place][:total][:added_pieces_online] += records[county][key_place][year][:added_pieces_online]
 
-                  if fc2_added_pieces_online[year] > 0
+                  if fc2_added_records_online[year] > 0
                     county_name = ChapmanCode.name_from_code(county)
-                    new_records << [county_name, this_place.place_name, county, this_place._id, year]
+                    new_records << [county_name, this_place.place_name, county, this_place._id, year, fc2_added_records_online[year]]
                   end
 
                   if fc2_totals_pieces_online[year].positive?
@@ -278,7 +284,7 @@ class Freecen2Content
         # nb overall totals are always re-calculated so no need to adjust those
         #
         # adjust for 'new_records' that are no longer new (I.e. > 30 days old)
-        # new_records - [0] = County name, [1] = Place name, [2] = chapman_code, [3] = fc2_PLACE_id, [4] = year
+        # new_records - [0] = County name, [1] = Place name, [2] = chapman_code, [3] = fc2_PLACE_id, [4] = year, [5] = added records
         #
         p "Adjusting Recently Added"
 
@@ -289,20 +295,29 @@ class Freecen2Content
           chapman_code = entry[2]
           place_id = entry[3]
           year = entry[4]
+          added_recs = entry[5]
 
-          place_all_years_pieces_online = Freecen2Piece.between_dates_place_year_totals(chapman_code, place_id, previous_midnight, last_midnight)
-          place_pieces_online_cnt = place_all_years_pieces_online[year]
-          diff_place = records[chapman_code][key_place][year][:added_pieces_online] - place_pieces_online_cnt
-          records[chapman_code][key_place][year][:added_pieces_online] -= diff_place
-          records[chapman_code][key_place][:total][:added_pieces_online] -= diff_place
+          place_added_pieces_online, place_added_records  = Freecen2Piece.between_dates_place_year_totals(chapman_code, place_id, previous_midnight, last_midnight)
+          place_pieces_online_cnt =  place_added_pieces_online[year]
+          diff_place_pieces = records[chapman_code][key_place][year][:added_pieces_online] - place_pieces_online_cnt
+          records[chapman_code][key_place][year][:added_pieces_online] -= diff_place_pieces
+          records[chapman_code][key_place][:total][:added_pieces_online] -= diff_place_pieces
+          place_recs_cnt =  place_added_records[year]
+          diff_place_recs = records[chapman_code][key_place][year][:added_records_online] - place_recs_cnt
+          records[chapman_code][key_place][year][:added_records_online] -= diff_place_recs
+          records[chapman_code][key_place][:total][:added_records_online] -= diff_place_recs
 
-          county_all_years_pieces_online = Freecen2Piece.between_dates_county_year_totals(chapman_code, previous_midnight, last_midnight)
-          county_pieces_online_cnt = county_all_years_pieces_online[year]
-          diff_county = records[chapman_code][year][:added_pieces_online] - county_pieces_online_cnt
-          records[chapman_code][year][:added_pieces_online] -= diff_county
-          records[chapman_code][:total][:added_pieces_online] -= diff_county
+          county_added_pieces_online, county_added_records = Freecen2Piece.between_dates_county_year_totals(chapman_code, previous_midnight, last_midnight)
+          county_pieces_online_cnt = county_added_pieces_online[year]
+          diff_county_pieces = records[chapman_code][year][:added_pieces_online] - county_pieces_online_cnt
+          records[chapman_code][year][:added_pieces_online] -= diff_county_pieces
+          records[chapman_code][:total][:added_pieces_online] -= diff_county_pieces
+          county_recs_cnt = county_added_records[year]
+          diff_county_recs = records[chapman_code][year][:added_records_online] - county_recs_cnt
+          records[chapman_code][year][:added_records_online] -= diff_county_recs
+          records[chapman_code][:total][:added_records_online] -= diff_county_recs
 
-          adjusted_array << entry if records[chapman_code][key_place][year][:added_pieces_online].positive?
+          adjusted_array << entry if records[chapman_code][key_place][year][:added_pieces_online].positive? || records[chapman_code][key_place][year][:added_records_online].positive?
 
         end
         new_records = adjusted_array
@@ -338,6 +353,7 @@ class Freecen2Content
       records[field][:total][:pieces_online] = 0
       records[field][:total][:records_online] = 0
       records[field][:total][:added_pieces_online] = 0
+      records[field][:total][:added_records_online] = 0
       return records
     end
 
@@ -349,13 +365,14 @@ class Freecen2Content
       records[county][field][:total][:pieces_online] = 0
       records[county][field][:total][:records_online] = 0
       records[county][field][:total][:added_pieces_online] = 0
+      records[county][field][:total][:added_records_online] = 0
       return records
     end
 
-    def county_needs_updating(records, county, county_pieces_total, county_total_records_online)
+    def county_needs_updating(records, county, county_pieces_total, county_added_records_online)
       needs_update = false
 
-      if county_total_records_online != records[county][:total][:records_online] || county_pieces_total != records[county][:total][:pieces]
+      if county_added_records_online != records[county][:total][:added_records_online] || county_pieces_total != records[county][:total][:pieces]
         needs_update = true
       else
         county_places = records[county][:total][:places]

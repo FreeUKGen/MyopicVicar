@@ -243,38 +243,51 @@ class Freecen2Piece
     end
 
     def between_dates_county_year_totals(chapman_code, time1, time2)
+      first_id = BSON::ObjectId.from_time(time1)
       last_id = BSON::ObjectId.from_time(time2)
       totals_pieces_online = {}
+      totals_records_online = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
         totals_pieces_online[year] = Freecen2Piece.between(status_date: time1..time2).chapman_code(chapman_code).year(year).status('Online').count
+        totals_records_online_all = SearchRecord.where(chapman_code: chapman_code, record_type: year).count
+        totals_records_online_to_ignore_before = SearchRecord.where(_id: { '$lt' => first_id }, chapman_code: chapman_code, record_type: year).count
+        totals_records_online_to_ignore_after = SearchRecord.where(_id: { '$gt' => last_id }, chapman_code: chapman_code, record_type: year).count
+        totals_records_online[year] = totals_records_online_all - totals_records_online_to_ignore_before - totals_records_online_to_ignore_after
       end
-      totals_pieces_online
+      [totals_pieces_online, totals_records_online]
     end
 
     def between_dates_place_year_totals(chapman_code, place_id, time1, time2)
       totals_pieces_online = {}
+      totals_records_online = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
         totals_pieces_online[year] = 0
         vld_total_pieces_online = 0
         csv_total_pieces_online = 0
+        vld_total_records_online = 0
+        csv_total_records_online = 0
         pieces_online = Freecen2Piece.where(status_date: (time1..time2), freecen2_place_id: place_id, chapman_code: chapman_code, year: year, status:'Online')
         pieces_online.each do |piece|
           unless SearchRecord.where(freecen2_piece_id: piece._id).present? # CSVProc data
             vld_total_pieces_online += 1
+            vld_total_records_online += piece.num_individuals
           end
         end
-
         csv_piece_ids = SearchRecord.where(c_at: (time1..time2), chapman_code: chapman_code, record_type: year, freecen2_place_id: place_id).pluck(:freecen2_piece_id).uniq
         if csv_piece_ids.present?
           csv_piece_ids.each do |csv_piece_id|
             if csv_piece_id.present?
-              csv_total_pieces_online += 1 if Freecen2Piece.find_by(_id: csv_piece_id, status: 'Online').present?
+              if Freecen2Piece.find_by(_id: csv_piece_id, status: 'Online').present?
+                csv_total_pieces_online += 1
+                csv_total_records_online = SearchRecord.where(freecen2_piece_id: csv_piece_id).count
+              end
             end
           end
         end
         totals_pieces_online[year] = vld_total_pieces_online + csv_total_pieces_online
+        totals_records_online[year] = vld_total_records_online + csv_total_records_online
       end
-      totals_pieces_online
+      [totals_pieces_online, totals_records_online]
     end
 
     def county_year_totals(chapman_code)
