@@ -14,8 +14,12 @@ module Freecen2ContentsHelper
     content_tag(:td, percent.to_s)
   end
 
-  def choose_another_place_link(county_description)
-    return link_to 'Choose another Place',index_by_county_freecen2_contents_path(county_description: county_description),method: :get,:class => 'btn btn--small'
+  def county_index_link(county_description, place_description)
+    if place_description == 'all'
+      return link_to "Back to Records for #{county_description}", index_by_county_freecen2_contents_path(county_description: county_description), method: :get, :class => 'btn btn--small'
+    else
+      return link_to "Choose another Place in #{county_description}", index_by_county_freecen2_contents_path(county_description: county_description), method: :get, :class => 'btn btn--small'
+    end
   end
 
   def names_exist_for_place_year(place_id, year)

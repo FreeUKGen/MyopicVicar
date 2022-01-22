@@ -160,10 +160,12 @@ class Freecen2Content
           records[county][:total][:records_online] = 0
           records[county][:total][:added_pieces_online] = 0
           records[county][:total][:added_records_online] = 0
+          records[county][:total][:piece_ids] = []
 
           Freecen::CENSUS_YEARS_ARRAY.each do |year|
 
             records[county][year] = {}
+            records[county][year][:piece_ids] = []
             records[county][year][:pieces] = fc2_totals_pieces[year] # fc2_pieces are all the pieces so no need to add fc1_pieces
             records[county][:total][:pieces] += records[county][year][:pieces]
             records[county][year][:pieces_online] = fc2_totals_pieces_online[year]
@@ -215,6 +217,8 @@ class Freecen2Content
                   records[county][key_place][year][:piece_ids] = []
                   records[county][key_place][year][:piece_ids] = fc2_piece_ids[year]
                   piece_ids_array.concat(fc2_piece_ids[year])
+                  records[county][year][:piece_ids].concat(fc2_piece_ids[year])
+                  records[county][:total][:piece_ids].concat(fc2_piece_ids[year])
                   records[county][key_place][year][:pieces] = fc2_totals_pieces[year] # fc2_pieces are all the pieces so no need to add fc1_pieces
                   records[county][key_place][:total][:pieces] += records[county][key_place][year][:pieces]
                   records[county][key_place][year][:pieces_online] = fc2_totals_pieces_online[year]
@@ -348,6 +352,7 @@ class Freecen2Content
     def add_records_county(records, field)
       records[field] = {}
       records[field][:total] = {}
+      records[field][:total][:piece_ids] = []
       records[field][:total][:places] = []
       records[field][:total][:pieces] = 0
       records[field][:total][:pieces_online] = 0

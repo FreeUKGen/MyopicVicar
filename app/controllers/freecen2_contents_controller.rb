@@ -10,7 +10,6 @@ class Freecen2ContentsController < ApplicationController
     @places_for_county = {}
     @places_for_county =  { '' => "Select a Place in #{@county_description} ..." }
     records_places.each { |place| @places_for_county[remove_dates_place(place)] = place.gsub('=', ' ') if Freecen2Place.find_by(chapman_code: @chapman_code, place_name: remove_dates_place(place)).present? }
-    #county_places.each { |place| county_places_hash[remove_dates_place(place)] = place.gsub('=', ' ') if Freecen2Place.find_by(chapman_code: chapman_code, place_name: remove_dates_place(place)).present? }
     return unless params[:commit] == 'View Place Records'
 
     if !params[:place_description].present? || params[:place_description] == ''
@@ -39,7 +38,7 @@ class Freecen2ContentsController < ApplicationController
       @recent_additions = @freecen2_contents.new_records
     else
       @freecen2_contents.new_records.each do |entry|
-        # [0] = county name [1] = place name [2] = chapman code [3] = freecen2_place_id [4] = year
+        # [0] = county name, [1] = place name, [2] = chapman code, [3] = freecen2_place_id, [4] = year, [5] = added records
         @recent_additions << entry if entry[0] == @additions_county
       end
     end
@@ -61,22 +60,32 @@ class Freecen2ContentsController < ApplicationController
   def piece_index
     redirect_back(fallback_location: freecen2_contents_path, notice: 'County not found') && return if set_county_vars == false
 
-    if params[:census_year].blank? || params[:place_description].blank? || params[:place_id].blank?
-      redirect_back(fallback_location: freecen2_contents_path, notice: 'Place not found') && return
+    if params[:census_year].blank? || params[:place_description].blank? || (params[:place_description] != 'all' && params[:place_id].blank?)
+      redirect_back(fallback_location: freecen2_contents_path, notice: 'County or Place not found') && return
     end
 
     @census = params[:census_year]
     @place_description = params[:place_description]
-    @place_id = params[:place_id]
-    @key_place = Freecen2Content.get_place_key(@place_description)
+    if @place_description != 'all'
+      @place_id = params[:place_id]
+      @key_place = Freecen2Content.get_place_key(@place_description)
+    end
     if params[:census_year] == 'all'
       @census = 'All Years'
-      @place_piece_ids = @freecen2_contents.records[@chapman_code][@key_place][:total][:piece_ids]
-      @place_pieces = Freecen2Piece.where(:_id.in => @place_piece_ids).order_by(name: 1, year: 1, number: 1)
+      if params[:place_description] == 'all'
+        @place_piece_ids = @freecen2_contents.records[@chapman_code][:total][:piece_ids]
+      else
+        @place_piece_ids = @freecen2_contents.records[@chapman_code][@key_place][:total][:piece_ids]
+      end
+      @place_pieces = Freecen2Piece.where(:_id.in => @place_piece_ids).order_by(status_date: -1, name: 1, year: 1, number: 1)
     else
       @census = params[:census_year]
-      @place_piece_ids = @freecen2_contents.records[@chapman_code][@key_place][@census][:piece_ids]
-      @place_pieces = Freecen2Piece.where(:_id.in => @place_piece_ids).order_by(name: 1, number: 1)
+      if params[:place_description] == 'all'
+        @place_piece_ids = @freecen2_contents.records[@chapman_code][@census][:piece_ids]
+      else
+        @place_piece_ids = @freecen2_contents.records[@chapman_code][@key_place][@census][:piece_ids]
+      end
+      @place_pieces = Freecen2Piece.where(:_id.in => @place_piece_ids).order_by(status_date: -1, name: 1, number: 1)
     end
   end
 
@@ -130,13 +139,13 @@ class Freecen2ContentsController < ApplicationController
   end
 
   def for_place_names
-    @id = session[:contents_id]
-    @freecen2_contents = Freecen2Content.find_by(id: @id)
-    if params[:county_description]
+    if params[:county_description] && session[:contents_id]
+      @id = session[:contents_id]
+      @freecen2_contents = Freecen2Content.find_by(id: @id)
       county_description = params[:county_description]
     else
       log_possible_host_change
-      county_description = ''
+      flash[:notice] = 'An Error was encountered' && return
     end
     chapman_code = ChapmanCode.code_from_name(county_description)
     county_places = @freecen2_contents.records[chapman_code][:total][:places]
