@@ -6,7 +6,7 @@
   <% if params[:new_records] == 'All' %>
     <%= link_to 'Back to Recent Additions' ,  :back, method: :get , :class => "btn btn--small" %><br>
   <% else %>
-    <%= choose_another_place_link(@county_description) %>
+    <%= county_index_link(@county_description, @place_description) %>
     <%= link_to 'Back to Records for ' + @place_description, freecen2_contents_place_index_path(:county_description => @county_description, :place_description => @place_description), class: "btn btn--small", method: :get %>
   <% end %><br>
   <p><i>(You may find it useful to use your browser find option to search for critical parts of names)</i></p>
