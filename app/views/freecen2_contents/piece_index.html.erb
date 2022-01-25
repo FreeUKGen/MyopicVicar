@@ -21,7 +21,10 @@
     <% end %>
   <% end %>
   <p></p>
-  <p><b>Select a link below to change the order of display</b><br>
+  <p><% if @order == 'status' %>
+    List is ordered by Piece Name within Online status/date so that the most recent Pieces Online are listed first<br>
+    <% end %>
+    <b>Select a link below to change the order of display</b><br>
     <% unless @order == 'status' %>
       <%= link_to 'Most Recent Online', display_pieces_by_status_freecen2_contents_path(:county_description => @county_description,  :place_description => @place_description, :place_id => @place_id, :census_year => @census, :order => @order), class: "btn btn--small", method: :get %>
     <% end %>
