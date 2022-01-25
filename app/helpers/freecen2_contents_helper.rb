@@ -31,9 +31,13 @@ module Freecen2ContentsHelper
     return has_names
   end
 
-  def locate_place_link(place_id)
+  def locate_place_link(place_id, button_size)
     place = Freecen2Place.find_by(id: place_id)
-    link_to 'Location', "https://www.google.com/maps/search/?api=1&query=#{place.latitude},#{place.longitude}", target: :_blank, class: 'btn   btn--small', title: 'Shows the location on a Google map in a new tab'
+    if button_size == 'exsmall'
+      link_to 'Location', "https://www.google.com/maps/search/?api=1&query=#{place.latitude},#{place.longitude}", target: :_blank, class: 'btn   btn--exsmall', title: 'Shows the location on a Google map in a new tab'
+    else
+      link_to 'Location', "https://www.google.com/maps/search/?api=1&query=#{place.latitude},#{place.longitude}", target: :_blank, class: 'btn   btn--small', title: 'Shows the location on a Google map in a new tab'
+    end
   end
 
   def records_for_piece(piece_id, piece_status)

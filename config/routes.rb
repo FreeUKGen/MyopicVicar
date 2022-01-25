@@ -81,9 +81,11 @@ MyopicVicar::Application.routes.draw do
   get 'freecen2_contents/county_index', to: 'freecen2_contents#county_index', as: :index_by_county_freecen2_contents
   get 'freecen2_contents/place_index', to: 'freecen2_contents#place_index', as: :freecen2_contents_place_index
   get 'freecen2_contents/place_names', to: 'freecen2_contents#place_names', as: :freecen2_contents_place_names
-  get 'freecen2_contents/piece_index', to: 'freecen2_contents#piece_index', as: :freecen2_contents_piece_index
+  get 'freecen2_contents/display_pieces_by_status', to: 'freecen2_contents#display_pieces_by_status', as: :display_pieces_by_status_freecen2_contents
+  get 'freecen2_contents/display_pieces_by_name', to: 'freecen2_contents#display_pieces_by_name', as: :display_pieces_by_name_freecen2_contents
+  get 'freecen2_contents/display_pieces_by_number', to: 'freecen2_contents#display_pieces_by_number', as: :display_pieces_by_number_freecen2_contents
   get 'freecen2_contents/new_records_index', to: 'freecen2_contents#new_records_index', as: :freecen2_contents_new_records_index
-  get 'freecen2_contents/for_place_names', :to => 'freecen2_contents#for_place_names', :as => :freecen2_contents_for_place_names
+  get 'freecen2_contents/for_place_names', to: 'freecen2_contents#for_place_names', as: :freecen2_contents_for_place_names
 
   resources :freecen2_contents
 
