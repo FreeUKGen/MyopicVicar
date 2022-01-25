@@ -77,6 +77,7 @@ class Freecen2ContentsController < ApplicationController
       else
         @place_piece_ids = @freecen2_contents.records[@chapman_code][@key_place][:total][:piece_ids]
       end
+
       @place_pieces = Freecen2Piece.where(:_id.in => @place_piece_ids).order(order_by_for_total)
     else
       @census_text = params[:census_year]
