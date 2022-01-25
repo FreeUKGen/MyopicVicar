@@ -12,7 +12,7 @@ class Freecen2ContentsController < ApplicationController
     records_places.each { |place| @places_for_county[remove_dates_place(place)] = place.gsub('=', ' ') if Freecen2Place.find_by(chapman_code: @chapman_code, place_name: remove_dates_place(place)).present? }
     return unless params[:commit] == 'View Place Records'
 
-    if !params[:place_description].present? || params[:place_description] == ''
+    if params[:place_description].blank? || params[:place_description] == ''
       flash[:notice] = 'You must select a Place'
     else
       session[:contents_county_description] = @county_description
@@ -57,7 +57,7 @@ class Freecen2ContentsController < ApplicationController
     check_names_exist
   end
 
-  def piece_index
+  def piece_index_setup(order_by_for_total, order_by_for_year)
     redirect_back(fallback_location: freecen2_contents_path, notice: 'County not found') && return if set_county_vars == false
 
     if params[:census_year].blank? || params[:place_description].blank? || (params[:place_description] != 'all' && params[:place_id].blank?)
@@ -71,22 +71,44 @@ class Freecen2ContentsController < ApplicationController
       @key_place = Freecen2Content.get_place_key(@place_description)
     end
     if params[:census_year] == 'all'
-      @census = 'All Years'
+      @census_text = 'All Years'
       if params[:place_description] == 'all'
         @place_piece_ids = @freecen2_contents.records[@chapman_code][:total][:piece_ids]
       else
         @place_piece_ids = @freecen2_contents.records[@chapman_code][@key_place][:total][:piece_ids]
       end
-      @place_pieces = Freecen2Piece.where(:_id.in => @place_piece_ids).order_by(status_date: -1, name: 1, year: 1, number: 1)
+
+      @place_pieces = Freecen2Piece.where(:_id.in => @place_piece_ids).order(order_by_for_total)
     else
-      @census = params[:census_year]
+      @census_text = params[:census_year]
       if params[:place_description] == 'all'
         @place_piece_ids = @freecen2_contents.records[@chapman_code][@census][:piece_ids]
       else
         @place_piece_ids = @freecen2_contents.records[@chapman_code][@key_place][@census][:piece_ids]
       end
-      @place_pieces = Freecen2Piece.where(:_id.in => @place_piece_ids).order_by(status_date: -1, name: 1, number: 1)
+      @place_pieces = Freecen2Piece.where(:_id.in => @place_piece_ids).order(order_by_for_year)
     end
+  end
+
+  def display_pieces_by_status
+    piece_index_setup('status DESC, status_date DESC, name ASC, year ASC, number ASC', 'status DESC, status_date DESC, name ASC, number ASC')
+    @order_text = 'Most Recent Online'
+    @order = 'status'
+    render 'piece_index'
+  end
+
+  def display_pieces_by_name
+    piece_index_setup('name ASC, year ASC, number ASC', 'name ASC, number ASC')
+    @order_text = 'Piece Name'
+    @order = 'name'
+    render 'piece_index'
+  end
+
+  def display_pieces_by_number
+    piece_index_setup('number ASC', 'number ASC')
+    @order_text = 'Piece Number'
+    @order = 'number'
+    render 'piece_index'
   end
 
   def place_names
