@@ -37,7 +37,6 @@ class Freecen2SiteStatisticsController < ApplicationController
     when 'individuals'
       report_start = Freecen2SiteStatistic.find_by(interval_end: start_date)
       report_end = Freecen2SiteStatistic.find_by(interval_end: end_date)
-
       ChapmanCode.merge_counties.each do |county|
         Freecen::CENSUS_YEARS_ARRAY.each do |census|
           @total_individuals = report_end.records.dig(county, census).nil? ? 0 : report_end.records[county][census][:individuals]
@@ -106,20 +105,25 @@ class Freecen2SiteStatisticsController < ApplicationController
   def get_stats_dates
     stats_dates = @freecen2_site_statistics.pluck(:interval_end)
     all_dates = stats_dates.sort.reverse
-    all_dates_str = all_dates.map { |date| date.to_datetime.strftime("%d/%b/%Y")}
+    all_dates_str = all_dates.map { |date| date.to_datetime.strftime("%d/%b/%Y") }
     array_length = all_dates_str.length
     end_dates = Array.new(all_dates_str)
-    end_dates.delete_at(array_length -1)
+    end_dates.delete_at(array_length - 1)
     start_dates = Array.new(all_dates_str)
     start_dates.delete_at(0)
     [start_dates, end_dates]
+  end
+
+  def grand_totals
+    @freecen2_site_statistics = Freecen2SiteStatistic.order_by(interval_end: -1).first
+    @freecen2_contents = Freecen2Content.order(interval_end: :desc).first
+    @interval_end = @freecen2_contents.interval_end
   end
 
   def index
     @freecen2_site_statistics = Freecen2SiteStatistic.all.order_by(interval_end: -1)
     if session[:chapman_code].present?
       @county = session[:county]
-      statistics = Freecen2SiteStatistic.all.order_by(interval_end: -1)
       @county_stats = @freecen2_site_statistics[0].records[session[:chapman_code]]
       @inverval_end = @freecen2_site_statistics[0].interval_end
       session[:stats_view] = true
@@ -131,7 +135,6 @@ class Freecen2SiteStatisticsController < ApplicationController
     end
 
     @period_start_dates, @period_end_dates = get_stats_dates
-
   end
 
   def show
@@ -142,6 +145,7 @@ class Freecen2SiteStatisticsController < ApplicationController
   def update
     @freecen2_site_statistic = Freecen2SiteStatistic.find(params[:id]) if params[:id].present?
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No such record') && return if @freecen2_site_statistic.blank?
+
     proceed = @freecen2_site_statistic.update_attributes(freecen2_site_statistic_params)
     unless proceed
       flash[:notice] = 'There were errors'
