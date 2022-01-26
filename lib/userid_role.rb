@@ -88,7 +88,7 @@ module UseridRole
   OPTIONS_TRANSLATION = {
     'Communicate' => '/messages/communications?source=original',
     'Denominations' => '/denominations',
-    'Database Statistics' => '/freecen2_site_statistics/grand_totals',
+    'Database Statistics' => '/freecen_coverage/grand_totals',
     'GAP Reasons' => '/gap_reasons',
     'Saved Searches' => '/my_saved_searches',
     'Profile' => '/userid_details/my_own',
@@ -135,7 +135,7 @@ module UseridRole
   OPTIONS_TITLES = {
     'Communicate' => 'Communicate to a member of FreeUKGeneology',
     'Denominations' => 'Make changes to the list of denominations',
-    'Database Statistics' => 'Access the FreeCEN2 database summary',
+    'Database Statistics' => 'Access the FreeCEN database contents',
     'GAP Reasons' => 'Make changes to the list of GAP reasons',
     'Saved Searches' => 'Access your saved searches',
     'Profile' => 'Display or Edit four personal information',
