@@ -23,66 +23,80 @@ class Freecen2SiteStatisticsController < ApplicationController
   end
 
   def export_csv
-
     start_date = params[:csvdownload][:period_from].to_datetime
     end_date = params[:csvdownload][:period_to].to_datetime
+    report_type = params[:csvdownload][:report_type]
 
     if params[:csvdownload][:period_from].to_datetime >= params[:csvdownload][:period_to].to_datetime
-      message = "End Date must be after Start Date"
+      message = 'End Date must be after Start Date'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
 
-    stats_start = Freecen2SiteStatistic.find_by(interval_end: start_date)
-    stats_end = Freecen2SiteStatistic.find_by(interval_end: end_date)
+    @report_array = []
+    case report_type
+    when 'individuals'
+      report_start = Freecen2SiteStatistic.find_by(interval_end: start_date)
+      report_end = Freecen2SiteStatistic.find_by(interval_end: end_date)
 
-    @stats_array = []
-    ChapmanCode.merge_counties.each do |county|
-      Freecen::CENSUS_YEARS_ARRAY.each do |census|
-        if stats_end.records.dig(county, census).nil?
-          @total_individuals  = 0
-        else
-          @total_individuals = stats_end.records[county][census][:individuals]
+      ChapmanCode.merge_counties.each do |county|
+        Freecen::CENSUS_YEARS_ARRAY.each do |census|
+          @total_individuals = report_end.records.dig(county, census).nil? ? 0 : report_end.records[county][census][:individuals]
+          @added_individuals = report_start.records.dig(county, census).nil? ? @total_individuals : @total_individuals - report_start.records[county][census][:individuals]
+          @added_individuals = 0 if @added_individuals.negative?
+
+          county_name = ChapmanCode.name_from_code(county)
+          @report_array << [county, county_name, census, @total_individuals, @added_individuals]
         end
-        if stats_start.records.dig(county, census).nil?
-          @added_individuals =  @total_individuals
-        else
-          @added_individuals =  @total_individuals - stats_start.records[county][census][:individuals]
+      end
+
+    when 'pieces'
+      report_pieces = Freecen2Piece.between_dates_pieces_online(start_date, end_date)
+      if report_pieces.size.positive?
+        report_pieces.each do |entry|
+          @report_array << entry
         end
-        if  @added_individuals < 0
-          @added_individuals = 0
-        end
-        county_name = ChapmanCode.name_from_code(county)
-        @stats_array  << [county, county_name, census, @total_individuals,  @added_individuals]
+      else
+        @report_array << ['No Pieces found']
       end
     end
 
-    success, message, file_location, file_name = create_csv_file(@stats_array, start_date, end_date)
+    success, message, file_location, file_name = create_csv_file(@report_array, report_type, start_date, end_date)
 
     if success
       if File.file?(file_location)
-        flash[:notice]  = message unless message.empty?
+        flash[:notice] = message unless message.empty?
         send_file(file_location, filename: file_name, x_sendfile: true) && return
       end
     else
-      flash[:notice]  = "There was a problem downloading the CSV file"
+      flash[:notice] = 'There was a problem downloading the CSV file'
     end
     redirect_back(fallback_location: new_manage_resource_path)
   end
 
-  def create_csv_file(stats_array, start_date, end_date)
-    file = "FreeCen_Stats_#{start_date.strftime("%Y%m%d")}_#{end_date.strftime("%Y%m%d")}.csv"
+  def create_csv_file(report_array, report_type, start_date, end_date)
+    case report_type
+    when 'individuals'
+      rep_lead = 'FreeCen_Stats_'
+    when 'pieces'
+      rep_lead = 'FreeCen_Pieces_'
+    end
+    file = "#{rep_lead}#{start_date.strftime('%Y%m%d')}_#{end_date.strftime('%Y%m%d')}.csv"
     file_location = Rails.root.join('tmp', file)
-    success, message = write_csv_file(file_location, stats_array)
+    success, message = write_csv_file(file_location, report_array, report_type)
 
     [success, message, file_location, file]
   end
 
-  def write_csv_file(file_location, stats_array)
-    column_headers =%w(chapman_code county census total_individuals added_individuals)
-
+  def write_csv_file(file_location, report_array, report_type)
+    case report_type
+    when 'individuals'
+      column_headers = %w[chapman_code county census total_individuals added_individuals]
+    when 'pieces'
+      column_headers = %w[chapman_code year number name status date records]
+    end
     CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
       csv << column_headers
-      stats_array.each do |rec|
+      report_array.each do |rec|
         csv << rec
       end
     end

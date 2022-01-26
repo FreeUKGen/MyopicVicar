@@ -290,6 +290,16 @@ class Freecen2Piece
       [totals_pieces_online, totals_records_online]
     end
 
+    def between_dates_pieces_online(start_date, end_date)
+      @pieces_online = []
+      @pieces = Freecen2Piece.where(status_date: start_date..end_date, status: 'Online').or(Freecen2Piece.where(status_date: start_date..end_date, status: 'Part'))
+      @pieces.each do |piece|
+        num_records = piece.num_individuals.positive? ? piece.num_individuals : SearchRecord.where(freecen2_piece_id: piece.id).count
+        @pieces_online << [piece.chapman_code, piece.year, piece.number, piece.name, piece.status, piece.status_date.strftime('%d/%b/%Y'), num_records]
+      end
+      @pieces_online.sort
+    end
+
     def county_year_totals(chapman_code)
       totals_pieces = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
