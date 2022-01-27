@@ -58,12 +58,6 @@ class Freecen2ContentsController < ApplicationController
   end
 
   def piece_index_setup(order_by_for_total, order_by_for_year)
-    redirect_back(fallback_location: freecen2_contents_path, notice: 'County not found') && return if set_county_vars == false
-
-    if params[:census_year].blank? || params[:place_description].blank? || (params[:place_description] != 'all' && params[:place_id].blank?)
-      redirect_back(fallback_location: freecen2_contents_path, notice: 'County or Place not found') && return
-    end
-
     @census = params[:census_year]
     @place_description = params[:place_description]
     if @place_description != 'all'
@@ -91,24 +85,42 @@ class Freecen2ContentsController < ApplicationController
   end
 
   def display_pieces_by_status
-    piece_index_setup('status DESC, status_date DESC, name ASC, year ASC, number ASC', 'status DESC, status_date DESC, name ASC, number ASC')
-    @order_text = 'Most Recent Online'
-    @order = 'status'
-    render 'piece_index'
+    redirect_to(freecen2_contents_path, notice: 'County not found') && return if set_county_vars == false
+
+    if params[:census_year].blank? || params[:place_description].blank? || (params[:place_description] != 'all' && params[:place_id].blank?)
+      redirect_to(freecen2_contents_path, notice: 'County or Place not found') && return
+    else
+      piece_index_setup('status DESC, status_date DESC, name ASC, year ASC, number ASC', 'status DESC, status_date DESC, name ASC, number ASC')
+      @order_text = 'Most Recent Online'
+      @order = 'status'
+      render 'piece_index'
+    end
   end
 
   def display_pieces_by_name
-    piece_index_setup('name ASC, year ASC, number ASC', 'name ASC, number ASC')
-    @order_text = 'Piece Name'
-    @order = 'name'
-    render 'piece_index'
+    redirect_to(freecen2_contents_path, notice: 'County not found') && return if set_county_vars == false
+
+    if params[:census_year].blank? || params[:place_description].blank? || (params[:place_description] != 'all' && params[:place_id].blank?)
+      redirect_to(freecen2_contents_path, notice: 'County or Place not found') && return
+    else
+      piece_index_setup('name ASC, year ASC, number ASC', 'name ASC, number ASC')
+      @order_text = 'Piece Name'
+      @order = 'name'
+      render 'piece_index'
+    end
   end
 
   def display_pieces_by_number
-    piece_index_setup('number ASC', 'number ASC')
-    @order_text = 'Piece Number'
-    @order = 'number'
-    render 'piece_index'
+    redirect_to(freecen2_contents_path, notice: 'County not found') && return if set_county_vars == false
+
+    if params[:census_year].blank? || params[:place_description].blank? || (params[:place_description] != 'all' && params[:place_id].blank?)
+      redirect_to(freecen2_contents_path, notice: 'County or Place not found') && return
+    else
+      piece_index_setup('number ASC', 'number ASC')
+      @order_text = 'Piece Number'
+      @order = 'number'
+      render 'piece_index'
+    end
   end
 
   def place_names
