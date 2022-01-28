@@ -137,20 +137,24 @@ class Freecen2ContentsController < ApplicationController
     @year = params[:census_year]
     @place_description = params[:place_description]
     @place = Freecen2Place.find_by(chapman_code: @chapman_code, place_name: @place_description)
-    @place_unique_names = Freecen2PlaceUniqueName.find_by(freecen2_place_id: @place.id)
-    @first_names = @place_unique_names.unique_forenames[@year]
-    @last_names = @place_unique_names.unique_surnames[@year]
-    @first_names_cnt = @first_names.count
-    @last_names_cnt = @last_names.count
-    if params[:name_type] == 'Surnames' || params[:name_type].to_s.empty?
-      @unique_names = @last_names
-      @name_type = 'Surnames'
+    if @place.present?
+      @place_unique_names = Freecen2PlaceUniqueName.find_by(freecen2_place_id: @place.id)
+      @first_names = @place_unique_names.unique_forenames[@year]
+      @last_names = @place_unique_names.unique_surnames[@year]
+      @first_names_cnt = @first_names.count
+      @last_names_cnt = @last_names.count
+      if params[:name_type] == 'Surnames' || params[:name_type].to_s.empty?
+        @unique_names = @last_names
+        @name_type = 'Surnames'
+      else
+        @unique_names = @first_names
+        @name_type = 'Forenames'
+      end
+      @first_letter = params[:first_letter].presence || 'All'
+      @unique_names, @remainder = Freecen2Content.letterize(@unique_names)
     else
-      @unique_names = @first_names
-      @name_type = 'Forenames'
+      redirect_back(fallback_location: freecen2_contents_path, notice: 'Place not found') && return
     end
-    @first_letter = params[:first_letter].presence || 'All'
-    @unique_names, @remainder = Freecen2Content.letterize(@unique_names)
   end
 
   def index
