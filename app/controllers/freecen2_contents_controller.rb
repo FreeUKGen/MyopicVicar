@@ -190,17 +190,21 @@ class Freecen2ContentsController < ApplicationController
       flash[:notice] = 'An Error was encountered' && return
     end
     chapman_code = ChapmanCode.code_from_name(county_description)
-    county_places = @freecen2_contents.records[chapman_code][:total][:places]
-    county_places_hash = { '' => "Select a Place in #{county_description} ..." }
-    county_places.each { |place| county_places_hash[remove_dates_place(place)] = place.gsub('=', ' ') if Freecen2Place.find_by(chapman_code: chapman_code, place_name: remove_dates_place(place)).present? }
-    if county_places_hash.present?
-      respond_to do |format|
-        format.json do
-          render json: county_places_hash
+    if chapman_code.present?
+      county_places = @freecen2_contents.records[chapman_code][:total][:places]
+      county_places_hash = { '' => "Select a Place in #{county_description} ..." }
+      county_places.each { |place| county_places_hash[remove_dates_place(place)] = place.gsub('=', ' ') if Freecen2Place.find_by(chapman_code: chapman_code, place_name: remove_dates_place(place)).present? }
+      if county_places_hash.present?
+        respond_to do |format|
+          format.json do
+            render json: county_places_hash
+          end
         end
+      else
+        flash[:notice] = 'An Error was encountered: No places found'
       end
     else
-      flash[:notice] = 'An Error was encountered: No places found'
+      redirect_back(fallback_location: freecen2_contents_path, notice: 'County not found') && return
     end
   end
 
