@@ -57,6 +57,10 @@ class Freecen2ContentsController < ApplicationController
     check_names_exist
   end
 
+  def piece_index
+    redirect_to(freecen2_contents_path, notice: 'Obsolete link') && return
+  end
+
   def piece_index_setup(order_by_for_total, order_by_for_year)
     @census = params[:census_year]
     @place_description = params[:place_description]
