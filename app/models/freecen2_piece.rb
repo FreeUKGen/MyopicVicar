@@ -55,7 +55,8 @@ class Freecen2Piece
   field :num_dwellings, type: Integer, default: 0
   field :status_date, type: DateTime
 
-  field :vld_files, type: Array, default: []
+  field :vld_files, type: Array, default: [] # used for Scotland pieces where there can be multiple files for a single piece
+  field :shared_vld_file, type: String # used when a file has multiple pieces; usually only occurs with piece has been broken into parts
 
   belongs_to :freecen2_district, optional: true, index: true
   belongs_to :freecen2_place, optional: true, index: true

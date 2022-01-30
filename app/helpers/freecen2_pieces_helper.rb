@@ -61,17 +61,29 @@ module Freecen2PiecesHelper
   end
 
   def vld_files_piece(piece)
+    p 'vld_files_piece'
+    p piece
+    p piece.freecen1_vld_files
+    p piece.vld_files
+    p piece.shared_vld_file
     if piece.freecen1_vld_files.present?
+      # normal link to vld file (usually only 1)
       files = []
       piece.freecen1_vld_files.order_by(file_name: 1).each do |file|
         if file.userid.blank?
-          files << file.file_name + ' ()'
+          files << file.file_name
         else
           files << file.file_name + ' (' + file.userid + ')'
         end
-
       end
       files
+    elsif piece.vld_files.present?
+      # used for Scotland pieces where there can be multiple files for a single piece
+      piece.vld_files
+    elsif piece.shared_vld_file.present?
+      # used when a file has multiple pieces; usually only occurs with piece has been broken into parts
+      file = Freecen1VldFile.find_by(_id: piece.shared_vld_file)
+      file.file_name if file.present?
     else
       'There are no VLD files'
     end
@@ -86,7 +98,7 @@ module Freecen2PiecesHelper
 
   def csv_files_piece_link_unincorporated(piece)
     if piece.present? && session[:type] != 'locate_other_pieces'
-      link_to 'Unincorporated Freecen CSV Files', freecen_csv_files_path, class: 'btn   btn--small', title:'Csv files for this Piece'
+      link_to 'Unincorporated Freecen CSV Files', freecen_csv_files_path, class: 'btn   btn--small', title: 'Csv files for this Piece'
     elsif session[:type] == 'locate_other_pieces'
       'Unincorporated Freecen CSV Files'
     else
@@ -96,7 +108,7 @@ module Freecen2PiecesHelper
 
   def csv_files_piece_link_incorporated(piece)
     if piece.present? && session[:type] != 'locate_other_pieces'
-      link_to 'Incorporated Freecen CSV Files', freecen_csv_files_path, class: 'btn   btn--small', title:'Csv files for this Piece'
+      link_to 'Incorporated Freecen CSV Files', freecen_csv_files_path, class: 'btn   btn--small', title: 'Csv files for this Piece'
     elsif session[:type] == 'locate_other_pieces'
       'Incorporated Freecen CSV Files'
     else
@@ -104,10 +116,9 @@ module Freecen2PiecesHelper
     end
   end
 
-
   def vld_files_piece_link(piece)
     if piece.present? && session[:type] != 'locate_other_pieces'
-      link_to 'Freecen VLD Files', freecen1_vld_files_path, class: 'btn   btn--small', title:'VLD files for this Piece'
+      link_to 'Freecen VLD Files', freecen1_vld_files_path, class: 'btn   btn--small', title: 'VLD files for this Piece'
     elsif session[:type] == 'locate_other_pieces'
       'Freecen VLD Files'
     else
