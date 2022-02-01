@@ -61,11 +61,6 @@ module Freecen2PiecesHelper
   end
 
   def vld_files_piece(piece)
-    p 'vld_files_piece'
-    p piece
-    p piece.freecen1_vld_files
-    p piece.vld_files
-    p piece.shared_vld_file
     if piece.freecen1_vld_files.present?
       # normal link to vld file (usually only 1)
       files = []

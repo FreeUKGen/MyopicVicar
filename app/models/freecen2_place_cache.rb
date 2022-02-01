@@ -7,6 +7,7 @@ class Freecen2PlaceCache
   index({ chapman_code: 1 }, { name: "chapman_code" })
 
   def self.refresh(county)
+    p "refreshing #{county}"
     Freecen2PlaceCache.where(chapman_code: county).destroy_all
     # the js library expects a certain format
     county_response = {}

@@ -41,8 +41,13 @@ namespace :freecen do
       end
 
       regexp = BSON::Regexp::Raw.new('^' + piece2_number + '\D')
-      parts = Freecen2Piece.where(number: regexp)
+      parts = Freecen2Piece.where(number: regexp).order_by(number: 1)
       unless parts.count.zero?
+        freecen2_place = parts[0].freecen2_place
+        freecen2_place.freecen1_vld_files << [file]
+        freecen2_place.data_present = true
+        freecen2_place.cen_data_years << parts[0].year unless freecen2_place.cen_data_years.include?(parts[0].year)
+        freecen2_place.save!  if fixit
         parts.each do |part|
           processed += 1
           part.update_attributes(status: 'Online', status_date: file._id.generation_time.to_datetime.in_time_zone('London'), shared_vld_file: file.id) if fixit
@@ -52,6 +57,7 @@ namespace :freecen do
         end
       end
     end
+    Freecen2PlaceCache.refresh_all if fixit
     number -= 1 if number == limit + 1
     running_time = Time.now - start_time
     p "Processed #{number} files #{processed} updates in time #{running_time} with #{missing} on-line files missing"

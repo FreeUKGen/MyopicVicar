@@ -656,4 +656,48 @@ class Freecen2Piece
     tna = TnaChangeLog.create(userid: userid, year: year, chapman_code: chapman_code, parameters: previous_changes, tna_collection: "#{self.class}")
     tna.save
   end
+
+  def update_parts_status_on_file_upload(file, freecen1_piece)
+    return if file.blank? || freecen1_piece.blank?
+
+    piece2_number = Freecen2Piece.calculate_freecen2_piece_number(freecen1_piece)
+    regexp = BSON::Regexp::Raw.new('^' + piece2_number + '\D')
+    parts = Freecen2Piece.where(number: regexp).order_by(number: 1)
+    return if parts.count.zero?
+
+    parts.each do |part|
+      part.update_attributes(status: 'Online', status_date: file._id.generation_time.to_datetime.in_time_zone('London'), shared_vld_file: file.id)
+    end
+  end
+
+  def  update_parts_status_on_file_deletion(file, freecen1_piece)
+    return if file.blank? || freecen1_piece.blank?
+
+    piece2_number = Freecen2Piece.calculate_freecen2_piece_number(freecen1_piece)
+    regexp = BSON::Regexp::Raw.new('^' + piece2_number + '\D')
+    parts = Freecen2Piece.where(number: regexp).order_by(number: 1)
+
+    return if parts.count.zero?
+
+    parts.each do |part|
+      part.update_attributes(status: '', status_date: '', shared_vld_file: '')
+    end
+  end
+
+  def self.find_by_vld_file_name(freecen1_piece)
+    return if freecen1_piece.blank?
+
+    piece2_number = Freecen2Piece.calculate_freecen2_piece_number(freecen1_piece)
+    freecen2_piece = Freecen2Piece.find_by(number: piece2_number)
+    freecen2_place = freecen2_piece.freecen2_place if freecen2_piece.present?
+    return [freecen2_piece, freecen2_place] if freecen2_piece.present?
+
+    regexp = BSON::Regexp::Raw.new('^' + piece2_number + '\D')
+    parts = Freecen2Piece.where(number: regexp).order_by(number: 1)
+
+    return if parts.count.zero?
+
+    freecen2_place = parts[0].freecen2_place
+    [parts[0], freecen2_place]
+  end
 end
