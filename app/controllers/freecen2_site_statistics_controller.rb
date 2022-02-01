@@ -91,7 +91,7 @@ class Freecen2SiteStatisticsController < ApplicationController
     when 'individuals'
       column_headers = %w[chapman_code county census total_individuals added_individuals]
     when 'pieces'
-      column_headers = %w[chapman_code year number name status date records]
+      column_headers = %w[chapman_code year number name civil_parishes status date records]
     end
     CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
       csv << column_headers

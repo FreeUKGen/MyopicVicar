@@ -296,7 +296,7 @@ class Freecen2Piece
       @pieces = Freecen2Piece.where(status_date: start_date..end_date, status: 'Online').or(Freecen2Piece.where(status_date: start_date..end_date, status: 'Part'))
       @pieces.each do |piece|
         num_records = piece.num_individuals.positive? ? piece.num_individuals : SearchRecord.where(freecen2_piece_id: piece.id).count
-        @pieces_online << [piece.chapman_code, piece.year, piece.number, piece.name, piece.status, piece.status_date.strftime('%d/%b/%Y'), num_records]
+        @pieces_online << [piece.chapman_code, piece.year, piece.number, piece.name, piece.civil_parish_names, piece.status, piece.status_date.strftime('%d/%b/%Y'), num_records]
       end
       @pieces_online.sort
     end
