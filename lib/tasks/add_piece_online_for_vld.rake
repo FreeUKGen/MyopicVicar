@@ -32,7 +32,6 @@ namespace :freecen do
       freecen2_piece = Freecen2Piece.find_by(number: piece2_number)
 
       if freecen2_piece.blank?
-
         p "#{piece2_number} for #{file.file_name} is missing"
       elsif !freecen2_piece.status == 'Online'
         p "#{piece2_number} status for #{file.file_name} is missing and added"
@@ -44,16 +43,21 @@ namespace :freecen do
       parts = Freecen2Piece.where(number: regexp).order_by(number: 1)
       unless parts.count.zero?
         freecen2_place = parts[0].freecen2_place
-        freecen2_place.freecen1_vld_files << [file]
-        freecen2_place.data_present = true
-        freecen2_place.cen_data_years << parts[0].year unless freecen2_place.cen_data_years.include?(parts[0].year)
-        freecen2_place.save!  if fixit
-        parts.each do |part|
-          processed += 1
-          part.update_attributes(status: 'Online', status_date: file._id.generation_time.to_datetime.in_time_zone('London'), shared_vld_file: file.id) if fixit
-          p "Setting #{part.number} to online"
-          p part
-          p file
+        if freecen2_place.blank?
+          p "Piece has no place #{parts[0]}"
+          crash
+        else
+          freecen2_place.freecen1_vld_files << [file]
+          freecen2_place.data_present = true
+          freecen2_place.cen_data_years << parts[0].year unless freecen2_place.cen_data_years.include?(parts[0].year)
+          freecen2_place.save!  if fixit
+          parts.each do |part|
+            processed += 1
+            part.update_attributes(status: 'Online', status_date: file._id.generation_time.to_datetime.in_time_zone('London'), shared_vld_file: file.id) if fixit
+            p "Setting #{part.number} to online"
+            p part
+            p file
+          end
         end
       end
     end
