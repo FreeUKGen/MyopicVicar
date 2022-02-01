@@ -44,7 +44,7 @@ namespace :freecen do
       unless parts.count.zero?
         freecen2_place = parts[0].freecen2_place
         if freecen2_place.blank?
-          p "Piece has no place #{parts[0]}"
+          p "Piece has no place #{parts[0].inspect}"
         else
           freecen2_place.freecen1_vld_files << [file]
           freecen2_place.data_present = true
