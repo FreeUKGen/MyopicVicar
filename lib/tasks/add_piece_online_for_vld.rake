@@ -46,22 +46,22 @@ namespace :freecen do
 
       regexp = BSON::Regexp::Raw.new('^' + piece2_number + '\D')
       parts = Freecen2Piece.where(number: regexp).order_by(number: 1)
-      unless parts.count.zero?
-        freecen2_place = parts[0].freecen2_place
-        if freecen2_place.blank?
-          message_file.puts "Piece has no place #{parts[0].inspect}"
-        else
-          freecen2_place.freecen1_vld_files << [file]
-          freecen2_place.data_present = true
-          freecen2_place.cen_data_years << parts[0].year unless freecen2_place.cen_data_years.include?(parts[0].year)
-          freecen2_place.save!  if fixit
-          parts.each do |part|
-            processed += 1
-            part.update_attributes(status: 'Online', status_date: file._id.generation_time.to_datetime.in_time_zone('London'), shared_vld_file: file.id) if fixit
-            message_file.puts "Setting #{part.number} to online"
-            message_file.puts part.inspect
-            message_file.puts file.inspect
-          end
+      next if parts.count.zero?
+
+      freecen2_place = parts[0].freecen2_place
+      if freecen2_place.blank?
+        message_file.puts "Piece has no place #{parts[0].inspect}"
+      else
+        freecen2_place.freecen1_vld_files << [file]
+        freecen2_place.data_present = true
+        freecen2_place.cen_data_years << parts[0].year unless freecen2_place.cen_data_years.include?(parts[0].year)
+        freecen2_place.save! if fixit
+        parts.each do |part|
+          processed += 1
+          part.update_attributes(status: 'Online', status_date: file._id.generation_time.to_datetime.in_time_zone('London'), shared_vld_file: file.id) if fixit
+          message_file.puts "Setting #{part.number} to online"
+          message_file.puts part.inspect
+          message_file.puts file.inspect
         end
       end
     end
