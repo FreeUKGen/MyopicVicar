@@ -85,8 +85,8 @@ class UseridDetail
 
   scope :users_marked_active, ->{ where(active: true) }
   scope :users_accepted_new_transcription_agreement, ->{ where(new_transcription_agreement: "Accepted") }
-  scope :new_users, ->{ where(sign_up_date: {'$gte' : new_date }) }
-  scope :old_users, ->{ where(sign_up_date: {'$lt' : new_date }) }
+  scope :new_users, ->{ where(sign_up_date: {'$gte': new_date }) }
+  scope :old_users, ->{ where(sign_up_date: {'$lt': new_date }) }
   scope :user_role_transcriber, -> { where(person_role: 'transcriber') }
 
   class << self
