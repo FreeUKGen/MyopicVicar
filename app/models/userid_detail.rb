@@ -718,11 +718,11 @@ class UseridDetail
     end
   end
 
-  def number_of_transcribers_uploaded_file_recently
+  def self.number_of_transcribers_uploaded_file_recently
     user_role_transcriber.where(last_upload: {'$gt': 3.months.ago}).count
   end
 
-  def return_percentage_all_users_accepted_transcriber_agreement
+  def self.return_percentage_all_users_accepted_transcriber_agreement
     total_users = users_count.to_f
     total_users_accepted = users_accepted_new_transcription_agreement.count.to_f
     if total_users == 0 || total_users_accepted == 0
@@ -732,7 +732,7 @@ class UseridDetail
     end
   end
 
-  def return_percentage_total_records_by_transcribers
+  def self.return_percentage_total_records_by_transcribers
     total_records_all = return_total_records.to_f
     total_records_open_transcribers = return_total_transcriber_records.to_f
     if total_records_all == 0 || total_records_open_transcribers == 0
@@ -742,7 +742,7 @@ class UseridDetail
     end
   end
 
-  def return_total_transcriber_records
+  def self.return_total_transcriber_records
     total_records = 0
     UseridDetail.where(person_role: 'transcriber', new_transcription_agreement: 'Accepted', number_of_records: { '$ne': 0 }).each do |count|
       total_records += count.number_of_records
@@ -750,7 +750,7 @@ class UseridDetail
     total_records
   end
 
-  def return_total_records
+  def self.return_total_records
     total_records = 0
     UseridDetail.where(number_of_records: { '$ne': 0 }).each do |count|
       total_records += count.number_of_records

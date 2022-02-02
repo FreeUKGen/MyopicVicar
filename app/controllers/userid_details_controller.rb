@@ -522,10 +522,10 @@ class UseridDetailsController < ApplicationController
 
     # New statistics
     @total_records_transcribers = @current_user.return_total_transcriber_records
-    @percentage_total_records_by_transcribers = @current_user.return_percentage_total_records_by_transcribers
+    @percentage_total_records_by_transcribers = UseridDetail.return_percentage_total_records_by_transcribers
     @total_transcribers_accepted_agreement_no_records = UseridDetail.where(person_role: 'transcriber', new_transcription_agreement: 'Accepted', number_of_records: 0).count
-    @percentage_all_users_who_accepted_transcription_agreement = @current_user.return_percentage_all_users_accepted_transcriber_agreement
-    @percentage_existing_users_who_accepted_transcription_agreement = @current_user.return_percentage_all_existing_users_accepted_transcriber_agreement
+    @percentage_all_users_who_accepted_transcription_agreement = UseridDetail.return_percentage_all_users_accepted_transcriber_agreement
+    @percentage_existing_users_who_accepted_transcription_agreement = UseridDetail.return_percentage_all_existing_users_accepted_transcriber_agreement
     @percentage_active_existing_users_who_accepted_transcription_agreement = UseridDetail.return_percentage_all_existing_active_users_accepted_transcriber_agreement
     @new_users_last_30_days = UseridDetail.where(sign_up_date: { '$gt': DateTime.now - 30.days }).count
     @new_users_last_90_days = UseridDetail.where(sign_up_date: { '$gt': DateTime.now - 90.days }).count
