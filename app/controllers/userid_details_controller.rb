@@ -521,8 +521,8 @@ class UseridDetailsController < ApplicationController
     end
 
     # New statistics
-    @total_records_transcribers = UseridDetail.return_total_transcriber_records
-    @percentage_total_records_by_transcribers = UseridDetail.return_percentage_total_records_by_transcribers
+    @total_records_transcribers = @current_user.return_total_transcriber_records
+    @percentage_total_records_by_transcribers = @current_user.return_percentage_total_records_by_transcribers
     @total_transcribers_accepted_agreement_no_records = UseridDetail.where(person_role: 'transcriber', new_transcription_agreement: 'Accepted', number_of_records: 0).count
     @percentage_all_users_who_accepted_transcription_agreement = UseridDetail.return_percentage_all_users_accepted_transcriber_agreement
     @percentage_existing_users_who_accepted_transcription_agreement = UseridDetail.return_percentage_all_existing_users_accepted_transcriber_agreement
