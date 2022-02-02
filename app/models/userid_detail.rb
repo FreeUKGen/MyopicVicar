@@ -78,15 +78,15 @@ class UseridDetail
   #after_update :update_refinery
   before_destroy :delete_refinery_user_and_userid_folder
 
-  current_year = DateTime.now.year
-  old_date = "2017/10/17"
-  new_date = DateTime.new(current_year, 01, 01)
-  users_count = UseridDetail.count
+  @current_year = DateTime.now.year
+  @old_date = "2017/10/17"
+  @new_date = DateTime.new(@current_year, 01, 01)
+  @users_count = UseridDetail.count
 
   scope :users_marked_active, ->{ where(active: true) }
   scope :users_accepted_new_transcription_agreement, ->{ where(new_transcription_agreement: "Accepted") }
-  scope :new_users, ->{ where(sign_up_date: {'$gte': new_date }) }
-  scope :old_users, ->{ where(sign_up_date: {'$lt': new_date }) }
+  scope :new_users, ->{ where(sign_up_date: {'$gte': @new_date }) }
+  scope :old_users, ->{ where(sign_up_date: {'$lt': @new_date }) }
   scope :user_role_transcriber, -> { where(person_role: 'transcriber') }
 
   class << self
@@ -723,7 +723,7 @@ class UseridDetail
   end
 
   def self.return_percentage_all_users_accepted_transcriber_agreement
-    total_users = users_count.to_f
+    total_users = @users_count.to_f
     total_users_accepted = users_accepted_new_transcription_agreement.count.to_f
     if total_users == 0 || total_users_accepted == 0
       return 0
