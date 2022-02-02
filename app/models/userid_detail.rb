@@ -698,7 +698,7 @@ class UseridDetail
     return filter_users.count
   end
 
-  def return_percentage_all_existing_users_accepted_transcriber_agreement
+  def self.return_percentage_all_existing_users_accepted_transcriber_agreement
     total_existing_users = old_users.count.to_f
     total_existing_users_accepted = old_users.users_accepted_new_transcription_agreement.count.to_f
     if total_existing_users == 0 || total_existing_users_accepted == 0
@@ -708,7 +708,7 @@ class UseridDetail
     end
   end
 
-  def return_percentage_all_existing_active_users_accepted_transcriber_agreement
+  def self.return_percentage_all_existing_active_users_accepted_transcriber_agreement
     total_existing_active_users = users_marked_active.old_users.count.to_f
     total_existing_active_users_accepted = users_marked_active.old_users.users_accepted_new_transcription_agreement.count.to_f
     if total_existing_active_users == 0 || total_existing_active_users_accepted == 0
