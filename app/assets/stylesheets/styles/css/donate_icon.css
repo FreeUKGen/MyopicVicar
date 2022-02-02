@@ -1,64 +1,83 @@
 #center {
-  text-align: center }
+ text-align:center
+}
 #donate {
-  position: relative;
-  display: inline-block;
-  margin-bottom: 1.55556rem }
-  .btn-donate {
-    position: absolute;;
-    margin: auto;
-    left: 0;
-    right: 0;
-    width: 75px;
-    transition: 0.5s }
-  #donateOverlay {
-    fill: #facfd0;
-    z-index: 3 }
-    #donateCoin {
-      z-index: 2 }
-      #donateBox {
-        -webkit-filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-        z-index: 1 }
-        #donateBtn {
-          position: relative;
-          display: block;
-          width: auto;
-          margin: 90px auto 0;
-          padding: 3px 45px;
-          color: #FFF;
-          font-size: 1.1em;
-          font-weight: bold;
-          z-index: 0 }
-          #donateBtn svg {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            padding: 0 2px;
-            stroke-width: 2px;
-            z-index: -1 }
-  #donate:hover #donateCoin, #donate:focus #donateCoin {
-    padding-top: 35px }
-    #donate:hover #donateOverlay, #donate:focus #donateOverlay {
-      fill: #F02181 }
-      #donate:hover #donateBtn svg, #donate:focus #donateBtn svg  {
-        fill: #FFF }
-  .freeGen #A {fill: #00e5ca}
-    .freeGen #B {fill: #00beaa}
-    .freeGen #C, .freeGen #donateBtn svg {fill:#009e97; stroke:#009e97}
-    #donate.freeGen:hover #donateBtn, #donate.freeGen:focus #donateBtn {color: #009e97}
-  .freeBMD #A {fill: #f02181}
-    .freeBMD #B {fill: #c91b67}
-    .freeBMD #C, .freeBMD #donateBtn svg {fill:#a31158; stroke:#a31158}
-    #donate.freeBMD:hover #donateBtn, #donate.freeBMD:focus #donateBtn {color: #a31158}
-  .freeCEN #A {fill: #fce233}
-    .freeCEN #B {fill: #f7b527}
-    .freeCEN #C, .freeCEN #donateBtn svg {fill:#f38f1c; stroke:#f38f1c}
-    #donate.freeCEN:hover #donateBtn, #donate.freeCEN:focus #donateBtn {color: #f38f1c}
-  .freeREG #A {fill: #f0dec0}
-    .freeREG #B {fill: #d2ac99}
-    .freeREG #C, .freeREG #donateBtn svg {fill:#b48282; stroke:#b48282}
+ position:relative;
+ display:inline-block;
+ margin-bottom:1.55556rem
+}
 
-#donate.freeREG:hover #donateBtn, #donate.freeREG:focus #donateBtn {color: #b48282}
+.btn-donate {
+ position:absolute;
+ margin:auto;
+ left:0;
+ right:0;
+ width:75px;
+ transition:0.5s
+}
+#donateOverlay {
+ fill:#facfd0;
+ z-index:3
+}
+#donateCoin {
+ z-index:2
+}
+#donateBox {
+ -webkit-filter:drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+ filter:drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+ z-index:1
+}
+#donateBtn {
+ position:relative;
+ display:block;
+ width:auto;
+ margin:90px auto 0;
+ padding:3px 45px;
+ color:#FFF;
+ font-size:1.1em;
+ font-weight:bold;
+ z-index:0
+}
+#donateBtn svg {
+ position:absolute;
+ width:100%;
+ height:100%;
+ top:0;
+ left:0;
+ padding:0 2px;
+ stroke-width:2px;
+ z-index:-1
+}
+#donate:hover #donateCoin,
+#donate:focus #donateCoin {
+ padding-top:35px;
+}
+#donate:hover #donateOverlay,
+#donate:focus #donateOverlay {
+ fill:#F02181
+}
+#donate:hover #donateBtn svg,
+#donate:focus #donateBtn svg {
+ fill:#FFF
+}
+#A {
+ fill:#a7e3e1;
+}
+#B {
+ fill:#2eb2a4;
+}
+#C,
+#donateBtn svg {
+ fill:#00857e;
+ stroke:#00857e;
+}
+a#donate:focus,
+a#donate:hover {
+  text-decoration: none;
+  background-color: #fff;
+}
+
+#donate:hover #donateBtn,
+#donate:focus #donateBtn {
+ color:#00857e;
+}
