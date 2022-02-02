@@ -529,7 +529,7 @@ class UseridDetailsController < ApplicationController
     @percentage_active_existing_users_who_accepted_transcription_agreement = UseridDetail.return_percentage_all_existing_active_users_accepted_transcriber_agreement
     @new_users_last_30_days = UseridDetail.where(sign_up_date: { '$gt': DateTime.now - 30.days }).count
     @new_users_last_90_days = UseridDetail.where(sign_up_date: { '$gt': DateTime.now - 90.days }).count
-    @number_of_transcribers_recently_uploaded_file = @current_user.number_of_transcribers_uploaded_file_recently
+    @number_of_transcribers_recently_uploaded_file = UseridDetail.number_of_transcribers_uploaded_file_recently
   end
 
   def update
