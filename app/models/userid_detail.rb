@@ -747,7 +747,7 @@ class UseridDetail
     UseridDetail.where(person_role: 'transcriber', new_transcription_agreement: 'Accepted', number_of_records: { '$ne': 0 }).each do |count|
       total_records += count.number_of_records
     end
-    total_records
+    return total_records
   end
 
   def return_total_records
