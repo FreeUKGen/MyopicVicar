@@ -37,6 +37,7 @@ namespace :freecen do
       freecen2_piece = Freecen2Piece.find_by(number: piece2_number)
 
       if freecen2_piece.blank?
+        missing += 1
         message_file.puts "#{piece2_number} for #{file.file_name} is missing"
       elsif !freecen2_piece.status == 'Online'
         message_file.puts "#{piece2_number} status for #{file.file_name} is missing and added"
