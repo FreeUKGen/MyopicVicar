@@ -17,14 +17,19 @@ namespace :freecen do
     number = 0
     missing = 0
     processed = 0
+
+    file_for_warning_messages = 'log/add_piece_online_for_vld.log'
+    FileUtils.mkdir_p(File.dirname(file_for_warning_messages))
+    message_file = File.new(file_for_warning_messages, 'w')
+    message_file.puts "Starting vld checks at #{start_time} with limit #{limit} with fix  #{fixit}"
     Freecen1VldFile.no_timeout.order_by(_id: -1).each do |file|
       number += 1
       break if number == limit + 1
 
       p number if (number / 100) * 100 == number
       freecen1_piece = FreecenPiece.find_by(_id: file.freecen_piece_id)
-      p "#{file.file_name} has no freecen1 piece" if freecen1_piece.blank?
-      p file if freecen1_piece.blank?
+      pmessage_file.puts "#{file.file_name} has no freecen1 piece" if freecen1_piece.blank?
+      message_file.puts file.inspect if freecen1_piece.blank?
       missing += 1 if freecen1_piece.blank?
       next if freecen1_piece.blank?
 
@@ -32,10 +37,10 @@ namespace :freecen do
       freecen2_piece = Freecen2Piece.find_by(number: piece2_number)
 
       if freecen2_piece.blank?
-        p "#{piece2_number} for #{file.file_name} is missing"
+        message_file.puts "#{piece2_number} for #{file.file_name} is missing"
       elsif !freecen2_piece.status == 'Online'
-        p "#{piece2_number} status for #{file.file_name} is missing and added"
-        p freecen2_piece
+        message_file.puts "#{piece2_number} status for #{file.file_name} is missing and added"
+        message_file.puts freecen2_piece.inspect
         freecen2_piece.update_attributes(status: 'Online', status_date: file._id.generation_time.to_datetime.in_time_zone('London')) if fixit
       end
 
@@ -44,7 +49,7 @@ namespace :freecen do
       unless parts.count.zero?
         freecen2_place = parts[0].freecen2_place
         if freecen2_place.blank?
-          p "Piece has no place #{parts[0].inspect}"
+          message_file.puts "Piece has no place #{parts[0].inspect}"
         else
           freecen2_place.freecen1_vld_files << [file]
           freecen2_place.data_present = true
@@ -53,9 +58,9 @@ namespace :freecen do
           parts.each do |part|
             processed += 1
             part.update_attributes(status: 'Online', status_date: file._id.generation_time.to_datetime.in_time_zone('London'), shared_vld_file: file.id) if fixit
-            p "Setting #{part.number} to online"
-            p part
-            p file
+            message_file.puts "Setting #{part.number} to online"
+            message_file.puts part.inspect
+            message_file.puts file.inspect
           end
         end
       end
@@ -63,6 +68,7 @@ namespace :freecen do
     Freecen2PlaceCache.refresh_all if fixit
     number -= 1 if number == limit + 1
     running_time = Time.now - start_time
+    message_file.puts "Processed #{number} files #{processed} updates in time #{running_time} with #{missing} on-line files missing"
     p "Processed #{number} files #{processed} updates in time #{running_time} with #{missing} on-line files missing"
   end
 end
