@@ -58,4 +58,16 @@ class EmbargoRule
       f.write("#{register_id},#{DateTime.now}\n")
     end
   end
+
+  def process_embargo_records(email = nil)
+    rake_lock_file = File.join(Rails.root, 'tmp', "#{self.id}_rake_lock_file.txt")
+    if File.exist?(rake_lock_file)
+      logger.warn("FREEREG:EMBARGO_PROCESSING: rake lock file #{rake_lock_file} already exists")
+      return OpenStruct.new(success?: false, error: "The embargo records are being processed")
+    else
+      logger.warn("FREEREG:EMBARGO_PROCESSING: Starting embargo processing rake task for #{self.register} for record type #{self.record_type}")
+      pid1 = spawn("rake foo:process_embargo_records[\"#{self.id}\",\"#{email}\"]")
+      return OpenStruct.new(success?: true, message: "The embargo records are being processed. You will recieve an email when completed ")
+    end
+  end
 end

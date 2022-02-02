@@ -154,6 +154,7 @@ class FreecenCsvEntriesController < ApplicationController
     @dwelling = Freecen::LOCATION_DWELLING
     @counties = ChapmanCode.freecen_birth_codes
     @counties.sort!
+    @freecen_csv_entry.record_valid = false
     get_user_info_from_userid
     session.delete(:propagate_alternate)
     session.delete(:propagate_note)
@@ -167,31 +168,14 @@ class FreecenCsvEntriesController < ApplicationController
 
     display_info
     @type = params[:type]
-
     @type = session[:cen_index_type] if @type.blank? && session[:cen_index_type].present?
     session[:cen_index_type] = params[:type]
     session.delete(:propagate_alternate)
     session.delete(:propagate_note)
-    if @type.blank?
-      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).all.order_by(record_number: 1)
-    elsif @type == 'Civ'
-      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).in(data_transition: Freecen::LOCATION).all.order_by(record_number: 1)
-    elsif @type == 'Pag'
-      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).in(data_transition: Freecen::LOCATION_PAGE).all.order_by(record_number: 1)
-    elsif @type == 'Dwe'
-      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).in(data_transition: Freecen::LOCATION_DWELLING).all.order_by(record_number: 1)
-    elsif @type == 'Ind'
-      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).all.order_by(record_number: 1)
-    elsif @type == 'Err'
-      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).where(:error_messages.gte => 1).all.order_by(record_number: 1)
-    elsif @type == 'War'
-      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).where(:warning_messages.gte => 1).all.order_by(record_number: 1)
-    elsif @type == 'Inf'
-      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).where(:info_messages.gte => 1).all.order_by(record_number: 1)
-    elsif @type == 'Fla'
-      @freecen_csv_entries = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id).where(flag: true).all.order_by(record_number: 1)
-    end
-    @freecen_csv_file.add_list_of_records(@type, @freecen_csv_entries)
+    session.delete(:current_list_entry)
+    session.delete(:next_list_entry)
+    session.delete(:previous_list_entry)
+    @freecen_csv_entries = @freecen_csv_file.index_type(@type)
   end
 
   def new
@@ -248,9 +232,7 @@ class FreecenCsvEntriesController < ApplicationController
     end
     session.delete(:propagate_note)
     redirect_to freecen_csv_entry_path(@freecen_csv_entry)
-
   end
-
 
   def show
     @freecen_csv_entry = FreecenCsvEntry.find(params[:id]) if params[:id].present?
@@ -266,7 +248,7 @@ class FreecenCsvEntriesController < ApplicationController
     @file_validation = @freecen_csv_file.validation
     @freecen_csv_entry.add_address(@freecen_csv_file.id, @freecen_csv_entry.dwelling_number)
     @next_entry, @previous_entry = @freecen_csv_entry.next_and_previous_entries
-    @next_list_entry, @previous_list_entry = @freecen_csv_entry.next_and_previous_list_entries
+    @next_list_entry, @previous_list_entry = @freecen_csv_entry.next_and_previous_list_entries(@type)
     session[:current_list_entry] = @freecen_csv_entry.id if @next_list_entry.present? || @previous_list_entry.present?
     session[:next_list_entry] = @next_list_entry.id if @next_list_entry.present?
     session[:previous_list_entry] = @previous_list_entry.id if @previous_list_entry.present?

@@ -1,7 +1,7 @@
 <% breadcrumb :countries%>
 <h2 class=" text--center">Listing of all Countries</h2>
 <%= render 'flash_notice' %>
-<% if @user.person_role == 'system_administrator'%>
+<% if %w[system_administrator volunteer_coordinator engagement_coordinator executive_director project_manager].include?(@user.person_role) %>
   <div  class=" text--center push--bottom">
     <%= link_to 'Add Country', new_country_path,:class => "btn btn--small", method: :get %>
   </div>

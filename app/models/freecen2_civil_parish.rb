@@ -17,9 +17,12 @@ class Freecen2CivilParish
   field :reason_changed, type: String
   field :action, type: String
 
+  field :vld_files, type: Array, default: []
+
   belongs_to :freecen2_piece, optional: true, index: true
   belongs_to :freecen2_place, optional: true, index: true
   has_many :freecen_csv_entries
+
 
   embeds_many :freecen2_hamlets
   embeds_many :freecen2_townships

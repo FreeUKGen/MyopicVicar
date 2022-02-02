@@ -41,33 +41,47 @@
           <td class="weight--semibold"> <%=  "#{@freecen2_piece.civil_parish_names}"  %></td>
         </tr>
         <tr>
-          <td><%= csv_files_piece_link(@freecen2_piece) %></td>
-          <td class="weight--semibold"> <%=  csv_files_piece(@freecen2_piece) %> </td>
+          <td><%= csv_files_piece_link_unincorporated(@freecen2_piece) %></td>
+          <td class="weight--semibold"> <%=  csv_files_piece_unincorporated(@freecen2_piece) %> </td>
+        </tr>
+        <tr>
+          <td><%= csv_files_piece_link_incorporated(@freecen2_piece) %></td>
+          <td class="weight--semibold"> <%=  csv_files_piece_incorporated(@freecen2_piece) %> </td>
+        </tr>
+        <tr>
+          <td><%= vld_files_piece_link(@freecen2_piece) %></td>
+          <td class="weight--semibold"> <%= vld_files_piece(@freecen2_piece) %> </td>
         </tr>
         <tr>
           <td>Status</td>
           <td class="weight--semibold"> <%= piece_status(@freecen2_piece) %></td>
         </tr>
         <tr>
-          <td>Code</td>
-          <td class="weight--semibold"> <%= @freecen2_piece.code%> </td>
-        </tr>
-        <tr>
-          <td>Notes before name</td>
-          <td class="weight--semibold"> <%= @freecen2_piece.prenote%> </td>
-        </tr>
-        <tr>
           <td>Film</td>
           <td class="weight--semibold"> <%= @freecen2_piece.film_number%> </td>
         </tr>
-        <tr>
-          <td>Notes</td>
-          <td class="weight--semibold"> <%= @freecen2_piece.notes%> </td>
-        </tr>
-        <tr>
-          <td>National Archives Link <small> (Opens in a new tab)</small></td>
-          <td class="weight--semibold"><%= tna(@freecen2_piece.tnaid) %> </td>
-        </tr>
+        <% unless @scotland %>
+          <tr>
+            <td>Code</td>
+            <td class="weight--semibold"> <%= @freecen2_piece.code%> </td>
+          </tr>
+          <tr>
+            <td>Notes before name</td>
+            <td class="weight--semibold"> <%= @freecen2_piece.prenote%> </td>
+          </tr>
+          <tr>
+            <td>Notes</td>
+            <td class="weight--semibold"> <%= @freecen2_piece.notes%> </td>
+          </tr>
+          <tr>
+            <td>Data Manager's Comments</td>
+            <td class="weight--semibold"> <%= @freecen2_piece.reason_changed%> </td>
+          </tr>
+          <tr>
+            <td>National Archives Link <small> (Opens in a new tab)</small></td>
+            <td class="weight--semibold"><%= tna(@freecen2_piece.tnaid) %> </td>
+          </tr>
+        <% end%>
       </table>
     </div>
   </section>

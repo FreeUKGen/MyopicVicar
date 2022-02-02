@@ -46,4 +46,16 @@ module Freecen2CivilParishesHelper
     piece = civil_parish.freecen2_piece
     "#{piece.number}"
   end
+
+  def vld_files_parish_link(civil_parish)
+    link_to 'Freecen VLD Files', freecen1_vld_files_path, class: 'btn   btn--small', title:'VLD files for this Civil Parish'
+  end
+
+  def vld_files_parish(civil_parish)
+    if civil_parish.vld_files.present?
+      civil_parish.vld_files
+    else
+      'There are no VLD file'
+    end
+  end
 end

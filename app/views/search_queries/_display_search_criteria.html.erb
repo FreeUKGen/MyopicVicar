@@ -1,21 +1,39 @@
 <% if defined?(@printable_format) && @printable_format %>
-  <% search_params_for_display(@search_query).each do |name, value| %>
-    <%= name %>: <b><%= value %></b> ;
-  <% end %><br>
-  <%= pluralize(@result_count, ' Search Result', ' Search Results') %>
+  <% if Rails.application.config.freecen2_place_cache %>
+    <% search_freecen2_params_for_display(@search_query).each do |name, value| %>
+      <%= name %>: <b><%= value %></b> ;
+    <% end %><br>
+    <%= pluralize(@result_count, ' Search Result', ' Search Results') %>
+  <% else%>
+    <% search_params_for_display(@search_query).each do |name, value| %>
+      <%= name %>: <b><%= value %></b> ;
+    <% end %><br>
+    <%= pluralize(@result_count, ' Search Result', ' Search Results') %>
+  <% end%>
 <% else %>
   <div class="grid">
     <div class="grid__item  two-thirds  lap-two-thirds  palm-one-whole push-half--top">
       <section class="islet islet--light soft--left hard--bottom">
         <h2 class="gamma flush--bottom"><em>When you searched for:</em></h2>
-        <div class="criteria-group">
-          <% search_params_for_display(@search_query).each do |name, value| %>
-            <dl class="criteria">
-              <dt class="criteria__name"><%= name %></dt>
-              <dd class="criteria__value"><%= value %></dd>
-            </dl>
-          <% end %>
-        </div>
+        <% if Rails.application.config.freecen2_place_cache %>
+          <div class="criteria-group">
+            <% search_freecen2_params_for_display(@search_query).each do |name, value| %>
+              <dl class="criteria">
+                <dt class="criteria__name"><%= name %></dt>
+                <dd class="criteria__value"><%= value %></dd>
+              </dl>
+            <% end %>
+          </div>
+        <% else%>
+          <div class="criteria-group">
+            <% search_params_for_display(@search_query).each do |name, value| %>
+              <dl class="criteria">
+                <dt class="criteria__name"><%= name %></dt>
+                <dd class="criteria__value"><%= value %></dd>
+              </dl>
+            <% end %>
+          </div>
+        <% end %>
       </section>
     </div>
     <div class="grid__item  one-third lap-one-third  palm-one-whole  push-half--top">

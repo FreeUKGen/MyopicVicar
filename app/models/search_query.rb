@@ -131,6 +131,7 @@ class SearchQuery
   field :occupation, type: String
 
   has_and_belongs_to_many :places, inverse_of: nil
+  has_and_belongs_to_many :freecen2_places, inverse_of: nil
 
   embeds_one :search_result
 
@@ -179,12 +180,12 @@ class SearchQuery
       if search_record.freecen_csv_entry_id.present?
         entry = FreecenCsvEntry.find_by(_id: search_record.freecen_csv_entry_id)
         birth_place = entry.birth_place.present? ? entry.birth_place : entry.verbatim_birth_place
-        search_record.update_attributes(birth_place: birth_place) if entry.present?
+        search_record.set(birth_place: birth_place) if entry.present?
       else
         individual = search_record.freecen_individual_id
         actual_individual = FreecenIndividual.find_by(_id: individual) if individual.present?
         birth_place = actual_individual.birth_place.present? ? actual_individual.birth_place : actual_individual.verbatim_birth_place
-        search_record.update_attributes(birth_place: birth_place) if actual_individual.present?
+        search_record.set(birth_place: birth_place) if actual_individual.present?
       end
       rec['birth_place'] = birth_place
       rec
@@ -194,7 +195,7 @@ class SearchQuery
       return rec if rec[:search_date].present?
 
       search_record = SearchRecord.find_by(_id: rec[:_id])
-      search_record.update_attributes(search_date: search_record.search_dates[0])
+      search_record.set(search_date: search_record.search_dates[0])
       rec['search_date'] = search_record.search_dates[0]
       rec
     end
@@ -224,7 +225,11 @@ class SearchQuery
 
 
   def adequate_first_name_criteria?
-    first_name.present? && chapman_codes.length > 0 && place_ids.present?
+    if MyopicVicar::Application.config.template_set == 'freecen'
+      first_name.present? && chapman_codes.length.positive? && freecen2_place_ids.present?
+    else
+      first_name.present? && chapman_codes.length.positive? && place_ids.present?
+    end
   end
 
   def all_counties_have_both_surname_and_firstname
@@ -233,7 +238,8 @@ class SearchQuery
 
   def all_radius_places
     all_places = []
-    place_ids.each do |place_id|
+    places = Rails.application.config.freecen2_place_cache ? freecen2_place_ids : place_ids
+    places.each do |place_id|
       if radius_search?
         radius_places(place_id).each do |near_place|
           all_places << near_place
@@ -666,7 +672,6 @@ class SearchQuery
 
   def persist_results(results)
     return unless results
-
     # finally extract the records IDs and persist them
     records = {}
     results.each do |rec|
@@ -676,15 +681,12 @@ class SearchQuery
       record = SearchQuery.add_search_date_when_absent(record) if record[:search_date].blank?
       records[rec_id] = record
       proceed = SearchQuery.does_the_entry_exist?(rec)
-      p 'persisting'
-      p proceed
       if proceed
         rec_id = record['_id'].to_s
         record = SearchQuery.add_birth_place_when_absent(record) if record[:birth_place].blank? && App.name.downcase == 'freecen'
         record = SearchQuery.add_search_date_when_absent(record) if record[:search_date].blank?
         records[rec_id] = record
       else
-        p 'deleting'
         search_record = SearchRecord.find_by(_id: rec['_id'].to_s)
         search_record.delete if search_record.present?
       end
@@ -701,25 +703,33 @@ class SearchQuery
     place_ids && place_ids.size > 0
   end
 
+  def freecen2_place_search?
+    freecen2_place_ids && freecen2_place_ids.size > 0
+  end
+
   def place_search_params
     params = {}
     appname = App.name_downcase
-    if place_search?
-      search_place_ids = radius_place_ids
-      case appname
-      when 'freecen'
-        params = { '$or' => [{ place_id: { '$in' => search_place_ids } }, { freecen2_place_id: { '$in' => search_place_ids } }] }
-      when 'freereg'
+    case appname
+    when 'freereg'
+      if place_search?
+        search_place_ids = radius_place_ids
         params[:place_id] = { '$in' => search_place_ids }
-      end
-    else
-      case appname
-      when 'freecen'
-        params[:chapman_code] = chapman_codes.present? ? { '$in' => chapman_codes } : { '$in' => ChapmanCode.values }
-        params[:birth_chapman_code] = { '$in' => birth_chapman_codes } if birth_chapman_codes.present?
-      when 'freereg'
+      else
         params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes.present?
       end
+    when 'freecen'
+      if place_search? || freecen2_place_search?
+        search_place_ids = radius_place_ids
+        if Rails.application.config.freecen2_place_cache
+          params[:freecen2_place_id] = { '$in' => search_place_ids }
+        else
+          params[:place_id] = { '$in' => search_place_ids }
+        end
+      else
+        params[:chapman_code] = chapman_codes.present? ? { '$in' => chapman_codes } : { '$in' => ChapmanCode.values }
+      end
+      params[:birth_chapman_code] = { '$in' => birth_chapman_codes } if birth_chapman_codes.present?
     end
     params
   end
@@ -756,23 +766,21 @@ class SearchQuery
     wildcard_search
   end
 
-  def radius_is_valid
-    if search_nearby_places && places.blank?
-      errors.add(:search_nearby_places, 'A Place must have been selected as a starting point to use the nearby option.')
-    end
-  end
-
   def radius_place_ids
     radius_ids = []
     all_radius_places.map { |place| radius_ids << place.id }
-    radius_ids.concat(place_ids)
+    if Rails.application.config.freecen2_place_cache
+      radius_ids.concat(freecen2_place_ids)
+    else
+      radius_ids.concat(place_ids)
+    end
     radius_ids.uniq
     self.all_radius_place_ids = radius_ids
     radius_ids
   end
 
   def radius_places(place_id)
-    place = Place.find(place_id)
+    place = Rails.application.config.freecen2_place_cache ? Freecen2Place.find(place_id) : Place.find(place_id)
     place.places_near(radius_factor, place_system)
   end
 
@@ -803,7 +811,11 @@ class SearchQuery
     # param[:userid_detail_id] = self.userid_detail_id
     param[:c_at] = self.c_at
     param[:u_at] = Time.now
-    param[:place_ids] = self.place_ids
+    if Rails.application.config.freecen2_place_cache
+      param[:freecen2_place_ids] = freecen2_place_ids
+    else
+      param[:place_ids] = self.place_ids
+    end
     param
   end
 
@@ -994,13 +1006,17 @@ class SearchQuery
   end
 
   def radius_is_valid
-    if search_nearby_places && places.count == 0
-      errors.add(:search_nearby_places, "A Place must have been selected as a starting point to use the nearby option.")
+    if Rails.application.config.freecen2_place_cache && search_nearby_places && freecen2_places.count == 0
+      errors.add(:search_nearby_places, 'A Place must have been selected as a starting point to use the nearby option.')
+    elsif !Rails.application.config.freecen2_place_cache && search_nearby_places && places.count == 0
+      errors.add(:search_nearby_places, 'A Place must have been selected as a starting point to use the nearby option.')
     end
   end
 
   def wildcards_are_valid
-    if first_name && begins_with_wildcard(first_name) && places.count == 0
+    if Rails.application.config.freecen2_place_cache && first_name && begins_with_wildcard(first_name) && freecen2_places.count == 0
+      errors.add(:first_name, 'A place must be selected if name queries begin with a wildcard')
+    elsif first_name && begins_with_wildcard(first_name) && places.count == 0
       errors.add(:first_name, 'A place must be selected if name queries begin with a wildcard')
     end
   end

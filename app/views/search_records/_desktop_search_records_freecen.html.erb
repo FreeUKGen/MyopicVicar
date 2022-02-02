@@ -1,4 +1,8 @@
+<% if  @show_navigation%>
   <%= render 'nav_dwelling_freecen' if  @show_navigation %>
+<% else%>
+  <%= link_to "Printable Format", show_print_version_search_record_path(@search_record), :class => "btn  btn--small"%>
+<% end%>
 <% if @dwelling %>
   <% if 0 != @dwelling_offset %>
     <p class="text--center">

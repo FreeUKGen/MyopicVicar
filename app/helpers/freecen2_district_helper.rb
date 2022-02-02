@@ -24,6 +24,18 @@ module Freecen2DistrictHelper
     end
   end
 
+  def vld_files_link(freecen2_district)
+    link_to 'Freecen VLD Files', freecen1_vld_files_path, class: 'btn   btn--small', title:'VLD files for this District'
+  end
+
+  def vld_files_district(freecen2_district)
+    if freecen2_district.vld_files.present?
+      freecen2_district.vld_files
+    else
+      'There are no VLD files'
+    end
+  end
+
   def csv_files_district(freecen2_district)
     if freecen2_district.freecen_csv_files.present?
       files = []
@@ -32,12 +44,12 @@ module Freecen2DistrictHelper
       end
       files
     else
-      'There are no csv files'
+      'There are no CSV files'
     end
   end
 
   def csv_files_link(freecen2_district)
-    link_to 'Freecen Files', freecen_csv_files_path, class: 'btn   btn--small', title:'Csv files for this District'
+    link_to 'Freecen CSV Files', freecen_csv_files_path, class: 'btn   btn--small', title:'Csv files for this District'
   end
 
   def district_piece_link(freecen2_district)

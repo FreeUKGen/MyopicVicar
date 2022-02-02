@@ -77,7 +77,7 @@ module Freecen
   CENSUS_YEARS_ARRAY = ['1841', '1851', '1861', '1871', '1881', '1891', '1901', '1911'].freeze
   CHAPMAN_CODE_ELIMINATIONS = ['England', 'Scotland', 'Wales', 'Ireland', 'Clwyd', 'Dyfed', 'Gwent', 'Gwynedd', 'Powys', 'Mid Glamorgan',
                                'South Glamorgan', 'West Glamorgan', 'Borders', 'Central', 'Dumfries and Galloway', 'Grampian', 'Highland', 'Lothian',
-                               'Orkney Isles', 'Shetland Isles', 'Strathclyde', 'Tayside', 'Western Isles'].freeze
+                               'Orkney', 'Shetland', 'Strathclyde', 'Tayside', 'Western'].freeze
 
   LOCATION = %w[enumeration_district civil_parish ecclesiastical_parish where_census_taken ward parliamentary_constituency poor_law_union
                        police_district sanitary_district special_water_district scavenging_district special_lighting_district school_board
@@ -211,8 +211,8 @@ module Freecen
     Scotland_1881 Scotland_1891 Scotland_1901 Scotland_1911 Ireland_1901 Ireland_1911].freeze
 
   UNNEEDED_COUNTIES = [
-    'Central', 'Clwyd', 'Dumfries and Galloway', 'Dyfed', 'England and Wales Shipping', 'Grampian', 'Gwent', 'Gwynedd', 'Highland', 'London (City)',
-    'Lothian', 'Mid Glamorgan', 'Military', 'Orkney', 'Other Locations', 'Out of County', 'Powys', 'Royal Navy Ships', 'Scottish Shipping',
+    'Central', 'Clwyd', 'Dumfries and Galloway', 'Dyfed', 'Grampian', 'Gwent', 'Gwynedd', 'Highland', 'London (City)',
+    'Lothian', 'Mid Glamorgan', 'Military', 'Orkney', 'Other Locations', 'Out of County', 'Powys',
     'Shetland', 'South Glamorgan', 'Strathclyde', 'Tayside', 'Unknown', 'West Glamorgan', 'Western Isles', 'Yorkshire', 'England', 'Scotland',
     'Ireland', 'Wales'
   ].freeze

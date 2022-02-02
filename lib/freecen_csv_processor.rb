@@ -41,7 +41,7 @@ class FreecenCsvProcessor
 
   #:message_file is the log file where system and processing messages are written
   attr_accessor :freecen_files_directory, :create_search_records, :type_of_project, :force_rebuild, :info_messages, :no_pob_warnings,
-    :file_range, :message_file, :member_message_file, :project_start_time, :total_records, :total_files, :total_data_errors, :flexible
+    :file_range, :message_file, :member_message_file, :project_start_time, :total_records, :total_files, :total_data_errors, :flexible, :line_num
 
   def initialize(arg1, arg2, arg3, arg4, arg5, arg6)
     @create_search_records = arg1
@@ -60,6 +60,7 @@ class FreecenCsvProcessor
     @no_pob_warnings = @type_of_processing == 'No POB Warnings' ? true : false
     @error_messages_only = @type_of_processing == 'Error' ? true : false
     EmailVeracity::Config[:skip_lookup] = true
+    @line_num = 0
   end
 
   def self.activate_project(create_search_records, type, force, range, type_of_field, type_of_processing)
@@ -86,32 +87,36 @@ class FreecenCsvProcessor
           @project.total_files = @project.total_files + 1
         else
           #p "failed to process file"
-          @csvfile.communicate_failure_to_member(@records_processed)
           @csvfile.clean_up_physical_files_after_failure(@records_processed)
+          @csvfile.communicate_failure_to_member(@records_processed)
           # @project.communicate_to_managers(@csvfile) if @project.type_of_project == "individual"
         end
-      rescue CSV::MalformedCSVError => msg
+      rescue CSV::MalformedCSVError => e
         @project.write_messages_to_all("We were unable to process the file possibly due to an invalid structure or character.<p>", true)
-        @project.write_messages_to_all("#{msg}", true)
-        @project.write_log_file("#{msg.backtrace.inspect}")
-        @records_processed = msg
-        @csvfile.communicate_failure_to_member(@records_processed)
+        @project.write_messages_to_all("#{e.message}", true)
+        @project.write_log_file("#{e.backtrace.inspect}")
+        @records_processed = e.message
         @csvfile.clean_up_physical_files_after_failure(@records_processed)
-      rescue Exception => msg
-        @project.write_messages_to_all("The CSVProcessor crashed please provide the following information to your coordinator to send to the System Administrators", true)
-        @project.write_messages_to_all("#{msg}", true)
-        @project.write_messages_to_all("#{msg.backtrace.inspect}", true)
-        @records_processed = msg
         @csvfile.communicate_failure_to_member(@records_processed)
-        @csvfile.clean_up_physical_files_after_failure(@records_processed)
+      rescue StandardError => e
+        if e.message.to_s.include?('Username and Password not accepted')
+          p 'Email error'
+          @records_processed = e.message
+          @csvfile.clean_up_physical_files_after_failure(@records_processed)
+        else
+          @project.write_messages_to_all("#{e.message}", true)
+          @project.write_messages_to_all("#{e.backtrace.inspect}", true)
+          message = 'The CSVProcessor crashed please provide the following information to your coordinator to send to the System Administrators'
+          @project.write_messages_to_all(message, true)
+          @records_processed = e.message
+          @csvfile.clean_up_physical_files_after_failure(@records_processed)
+          @csvfile.communicate_failure_to_member(@records_processed)
+        end
+      ensure
+        sleep(100) if Rails.env.production?
       end
-      sleep(300) if Rails.env.production?
     end
-    # p "manager communication"
-    #@project.communicate_to_managers(@csvfile) if files_to_be_processed.length >= 2
-    at_exit do
-      # p "goodbye"
-    end
+    p 'Finished'
   end
 
   def self.delete_all
@@ -155,22 +160,35 @@ class FreecenCsvProcessor
   end
 
   def write_member_message_file(message)
+    message = pob_message(message) if message.present?
     member_message_file.puts message if write_member_message?(message)
   end
 
   def write_member_message?(message)
-    return false if message == '' || (@error_messages_only && (message[0...5] == 'Info:' || message[0...8] == 'Warning:'))
-
-    return false if pob_message?(message)
+    return false if message.blank? || message == '' || (@error_messages_only && (message[0...5] == 'Info:' || message[0...8] == 'Warning:'))
 
     true
   end
 
-  def pob_message?(message)
-    birth = @no_pob_warnings && message.include?('Warning:') && message.include?('Birth') ? true : false
-    birth
-  end
+  def pob_message(message)
+    message_parts = message.split('<br>')
+    if message_parts.length == 1
+      new_message = "#{message_parts[0]}<br>" unless @no_pob_warnings && message_parts[0].include?('Warning:') && message_parts[0].include?('Birth')
+    else
+      message_parts.each do |part|
+        next if @error_messages_only && part.include?('Warning:') && part.include?('Birth')
 
+        next if @no_pob_warnings && part.include?('Warning:') && part.include?('Birth')
+
+        if new_message.blank?
+          new_message = "#{part}<br>"
+        else
+          new_message += "#{part}<br>"
+        end
+      end
+    end
+    new_message
+  end
 
   def write_messages_to_all(message, no_member_message)
     # avoids sending the message to the member if no_member_message is false
@@ -324,7 +342,7 @@ class CsvFile < CsvFiles
     @file_start = Time.new
     p "FREECEN:CSV_PROCESSING: Started on the file #{@header[:file_name]} for #{@header[:userid]} at #{@file_start}"
     @project.write_log_file("******************************************************************* <br>")
-    @project.write_messages_to_all("Started on the file #{@header[:file_name]} for #{@header[:userid]} at #{@file_start}. <p>", true)
+    @project.write_messages_to_all("Started on the file #{@header[:file_name]} for #{@header[:userid]} at #{@file_start}.<br>", true)
     success, message = ensure_processable? unless @project.force_rebuild
     # p "finished file checking #{message}. <br>"
     return [false, message] unless success
@@ -385,7 +403,7 @@ class CsvFile < CsvFiles
         success = false
       end
     else
-      message = "Error: File name does not have a valid piece number. It is #{file_name}. <br>"
+      message = "Error: File name does not have a valid piece number. It is #{file_name}. Most likely you have forgotten the _ after the series. <br>"
       success = false
     end
     [success, message, year, actual_piece, fields]
@@ -458,12 +476,6 @@ class CsvFile < CsvFiles
     [false, message]
   end
 
-  def clean_up_message
-
-    #File.delete(@project.message_file) if @project.type_of_project == 'individual' && File.exists?(@project.message_file) && !Rails.env.test?
-
-  end
-
   def clean_up_physical_files_after_failure(message)
     batch = PhysicalFile.userid(@userid).file_name(@file_name).first
     return true if batch.blank?
@@ -493,19 +505,17 @@ class CsvFile < CsvFiles
     to = File.join(@full_dirname, copy_file_name)
     FileUtils.cp_r(file, to, remove_destination: true)
     UserMailer.batch_processing_failure(file, @userid, @file_name).deliver_now unless @project.type_of_project == "special_selection_1" ||  @project.type_of_project == "special_selection_2"
-    clean_up_message
     true
   end
 
   def communicate_file_processing_results
-    #p "communicating success"
+    p "communicating success"
     file = @project.member_message_file
     file.close
     copy_file_name = "#{@header[:file_name]}.txt"
     to = File.join(@full_dirname, copy_file_name)
     FileUtils.cp_r(file, to, remove_destination: true)
     UserMailer.batch_processing_success(file, @header[:userid], @header[:file_name]).deliver_now unless @project.type_of_project == "special_selection_1" ||  @project.type_of_project == "special_selection_2"
-    clean_up_message
     true
   end
 

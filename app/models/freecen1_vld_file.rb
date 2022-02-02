@@ -4,7 +4,6 @@ class Freecen1VldFile
   require 'chapman_code'
   require 'freecen_constants'
 
-
   field :file_name, type: String
   field :dir_name, type: String
   field :census_type, type: String
@@ -27,14 +26,19 @@ class Freecen1VldFile
   field :uploaded_file, type: String
   field :uploaded_file_name, type: String
   field :uploaded_file_location, type: String
+  field :file_name_lower_case, type: String
 
   before_validation :remove_whitespace
+  before_save :add_lower_case
   mount_uploader :uploaded_file, VldfileUploader
 
   has_many :freecen1_vld_entries
   has_many :freecen_dwellings
   has_many :search_records
   belongs_to :freecen_piece, optional: true, index: true
+  belongs_to :freecen2_place, optional: true, index: true
+  belongs_to :freecen2_piece, optional: true, index: true
+  belongs_to :freecen2_district, optional: true, index: true
 
   class << self
     def chapman(chapman)
@@ -58,11 +62,11 @@ class Freecen1VldFile
       total_individuals = {}
       total_dwellings = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
-        total_files[year] = Freecen1VldFile.where(_id: { '$lte' => last_id }, full_year: year).count
+        total_files[year] = Freecen1VldFile.where(_id: { '$lte' => last_id }, full_year: year).hint('id_county_year_file').count
         total_entries[year] = 0
         total_dwellings[year] = 0
         total_individuals[year] = 0
-        Freecen1VldFile.where(_id: { '$lte' => last_id }, full_year: year).each do |file|
+        Freecen1VldFile.where(_id: { '$lte' => last_id }, full_year: year).hint('id_year_file').each do |file|
           total_entries[year] += file.num_entries
           total_dwellings[year] += file.num_dwellings
           total_individuals[year] += file.num_individuals
@@ -79,7 +83,7 @@ class Freecen1VldFile
       total_individuals = {}
       total_dwellings = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
-        files = Freecen1VldFile.between(_id: first_id..last_id).where(full_year: year)
+        files = Freecen1VldFile.between(_id: first_id..last_id).where(full_year: year).hint('id_year_file')
         total_files[year] = files.count
         total_entries[year] = 0
         total_individuals[year] = 0
@@ -100,11 +104,11 @@ class Freecen1VldFile
       total_individuals = {}
       total_dwellings = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
-        total_files[year] = Freecen1VldFile.where(_id: { '$lte' => last_id }, dir_name: chapman, full_year: year).count
+        total_files[year] = Freecen1VldFile.where(_id: { '$lte' => last_id }, dir_name: chapman, full_year: year).hint('id_county_year_file').count
         total_entries[year] = 0
         total_individuals[year] = 0
         total_dwellings[year] = 0
-        Freecen1VldFile.where(_id: { '$lte' => last_id }, dir_name: chapman, full_year: year).each do |file|
+        Freecen1VldFile.where(_id: { '$lte' => last_id }, dir_name: chapman, full_year: year).hint('id_county_year_file').each do |file|
           total_entries[year] += file.num_entries
           total_dwellings[year] += file.num_dwellings
           total_individuals[year] += file.num_individuals
@@ -121,11 +125,11 @@ class Freecen1VldFile
       total_individuals = {}
       total_dwellings = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
-        total_files[year] = Freecen1VldFile.between(_id: first_id..last_id).where(dir_name: chapman, full_year: year).count
+        total_files[year] = Freecen1VldFile.between(_id: first_id..last_id).where(dir_name: chapman, full_year: year).hint('id_county_year_file').count
         total_entries[year] = 0
         total_individuals[year] = 0
         total_dwellings[year] = 0
-        Freecen1VldFile.between(_id: first_id..last_id).where(dir_name: chapman, full_year: year).each do |file|
+        Freecen1VldFile.between(_id: first_id..last_id).where(dir_name: chapman, full_year: year).hint('id_county_year_file').each do |file|
           total_entries[year] += file.num_entries
           total_dwellings[year] += file.num_dwellings
           total_individuals[year] += file.num_individuals
@@ -158,6 +162,12 @@ class Freecen1VldFile
       end
     end
 
+    def delete_file_errors(dir_name, file_name)
+      Freecen1VldFile.where(dir_name: dir_name, file_name: file_name).each do |file|
+        file.update_attributes(file_errors: nil)
+      end
+    end
+
     def save_to_attic(dir_name, file_name)
       attic_dir = File.join(File.join(Rails.application.config.vld_file_locations, dir_name), '.attic')
       FileUtils.mkdir_p(attic_dir)
@@ -172,6 +182,10 @@ class Freecen1VldFile
   end
   # ######################################################################### instance methods
 
+  def add_lower_case
+    self[:file_name_lower_case] = self[:file_name].downcase if self[:file_name].present?
+  end
+
   def chapman_code
     dir_name.sub(/-.*/, '')
   end
@@ -184,6 +198,18 @@ class Freecen1VldFile
     if success
       file_location = Rails.root.join('tmp', file)
       success, message = write_csv_file(file_location, census_fields, year)
+    end
+    [success, message, file_location, file]
+  end
+
+  def create_entry_csv_file
+    #this makes aback up copy of the file in the attic and creates a new one
+    @chapman_code = chapman_code
+    year, piece, series = FreecenPiece.extract_year_and_piece(file_name)
+    success, message, file, census_fields = convert_file_name_to_csv(year, piece, series)
+    if success
+      file_location = Rails.root.join('tmp', file)
+      success, message = write_entry_csv_file(file_location, Freecen1VldEntry.fields.keys, year)
     end
     [success, message, file_location, file]
   end
@@ -271,8 +297,6 @@ class Freecen1VldFile
       records.each do |rec|
         next if rec.blank?
 
-        next if rec['deleted_flag'].present?
-
         @record_number += 1
         line = add_fields(rec, census_fields, year)
         csv << line
@@ -281,8 +305,41 @@ class Freecen1VldFile
     [true, '']
   end
 
+  def write_entry_csv_file(file_location, census_fields, year)
+    header = census_fields
+    @initial_line_hash = {}
+    @blank = nil
+    @dash = '-'
+    census_fields.each do |field|
+      @initial_line_hash[field] = nil
+    end
+    CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+      csv << header
+      records = freecen1_vld_entries.order_by(_id: 1)
+      @record_number = 0
+      records.each do |rec|
+        @record_number += 1
+        line = add_entry_fields(rec, census_fields, year)
+        csv << line
+      end
+    end
+    [true, '']
+  end
+
+  def add_entry_fields(rec, census_fields, year)
+    line = []
+    census_fields.each do |field|
+      line << rec[field.to_s]
+    end
+    line
+  end
+
   def add_fields(rec, census_fields, year)
     line = []
+    if rec['deleted_flag'].present?
+      rec['notes'] = rec['notes'].present? ? 'Deleted flag set on VLD; ' + rec['notes'] : 'Deleted flag set on VLD; '
+      p rec
+    end
     census_fields.each do |field|
       case field
       when 'enumeration_district'
@@ -351,7 +408,7 @@ class Freecen1VldFile
   end
 
   def compute_alternate(rec)
-    if rec['birth_county'] == rec['verbatim_birth_county'] && rec['birth_place'] == rec['verbatim_birth_place']
+    if (rec['birth_county'] == rec['verbatim_birth_county'] && rec['birth_place'] == rec['verbatim_birth_place']) || %w[b n u v].include?(rec['uninhabited_flag'])
       county = @blank
       place = @blank
     else
@@ -363,6 +420,8 @@ class Freecen1VldFile
 
   def verbatim_birth_county(rec)
     county = rec['verbatim_birth_county'].present? && rec['verbatim_birth_county'].downcase == 'wal' ? 'WLS' : rec['verbatim_birth_county']
+    county = %w[b n u v].include?(rec['uninhabited_flag']) ? @blank : county
+    county
   end
 
   def compute_enumeration_district(rec, census_fields)
@@ -455,11 +514,11 @@ class Freecen1VldFile
   end
 
   def compute_page_number(rec)
-    if special_enumeration_district?(@initial_line_hash['enumeration_district'])
+    if rec['page_number'].present? && rec['page_number'] == @initial_line_hash['page_number']
+      line = @blank
+    elsif special_enumeration_district?(@initial_line_hash['enumeration_district'])
       line = rec['page_number']
       @initial_line_hash['page_number'] = rec['page_number']
-    elsif rec['page_number'].present? && rec['page_number'] == @initial_line_hash['page_number']
-      line = @blank
     else
       line = rec['page_number']
       @initial_line_hash['page_number'] = rec['page_number']
@@ -468,8 +527,15 @@ class Freecen1VldFile
   end
 
   def compute_schedule_number(rec, census_fields)
-    if %w[b n u v].include?(rec['uninhabited_flag']) || !census_fields.include?('ecclesiastical_parish')
+    if !census_fields.include?('ecclesiastical_parish')
       line = '0'
+    elsif rec['schedule_number'].present? && (rec['schedule_number'] == @initial_line_hash['schedule_number'])
+      line = @blank
+      @use_schedule_blank = true
+    elsif %w[b n u v].include?(rec['uninhabited_flag'])
+      line = rec['schedule_number']
+      @use_schedule_blank = false
+      @initial_line_hash['schedule_number'] = rec['schedule_number']
     elsif rec['sequence_in_household'] == 1 && rec['schedule_number'] == '0'
       line = '0'
       @use_schedule_blank = false
@@ -486,9 +552,6 @@ class Freecen1VldFile
       line = rec['schedule_number']
       @use_schedule_blank = false
       @initial_line_hash['schedule_number'] = rec['schedule_number']
-    elsif rec['schedule_number'].present? && (rec['schedule_number'] == @initial_line_hash['schedule_number'])
-      line = @blank
-      @use_schedule_blank = true
     else
       line = rec['schedule_number']
       @use_schedule_blank = false
@@ -545,12 +608,14 @@ class Freecen1VldFile
   end
 
   def compute_notes(rec)
-    if rec['notes'].present?
+    if rec['notes'].present? && rec['unoccupied_notes'].present?
       line = (rec['notes'] + rec['unoccupied_notes']) unless rec['notes'] == rec['unoccupied_notes']
+    elsif rec['notes'].present? && rec['unoccupied_notes'].blank?
+      line = rec['notes']
     elsif rec['unoccupied_notes'].present?
-      line = (rec['notes'] + rec['unoccupied_notes'])
+      line = rec['unoccupied_notes']
     else
-       line = @blank
+      line = @blank
     end
     line
   end
@@ -564,10 +629,7 @@ class Freecen1VldFile
     self[:transcriber_name] = self[:transcriber_name].squeeze(' ').strip if self[:transcriber_name].present?
   end
 
-
-
 # ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,upload
-
 
   def check_name(name)
     decision = false

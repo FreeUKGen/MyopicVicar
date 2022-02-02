@@ -134,7 +134,7 @@ crumb :show_file do |file|
 end
 
 crumb :unique_names do |file|
-  link 'Unique Names'
+  link 'Names'
   parent :show_file, file
 end
 
@@ -983,6 +983,25 @@ crumb :create_denomination do |denomination|
   parent :denominations
 end
 
+#............................................................Place Edit Reasons......................................
+crumb :place_edit_reasons do
+  link 'Place Edit Reasons', place_edit_reasons_path
+  parent :root
+end
+crumb :show_place_edit_reason do |place_edit_reason|
+  link 'Show Reason', place_edit_reason_path(place_edit_reason)
+  parent :place_edit_reasons
+end
+crumb :edit_place_edit_reason do |place_edit_reason|
+  link 'Edit Reason', edit_place_edit_reason_path(place_edit_reason)
+  parent :show_place_edit_reason, place_edit_reason
+end
+crumb :create_place_edit_reason do |place_edit_reason|
+  link 'Create Reason', new_place_edit_reason_path(place_edit_reason)
+  parent :place_edit_reasons
+end
+
+
 crumb :embargo_rules do |county, place, church, register|
   link 'Embargo Rules', embargo_rules_path( :county => county, :place => place, :church => church, :register => register)
   parent :show_register, county, place, church, register
@@ -1668,6 +1687,12 @@ crumb :freecen2_pieces_full_index do |county|
   parent :freecen2_pieces, county
 end
 
+crumb :place_piece_index do |place|
+  link 'Freecen2 Pieces for a Freecen2 Place', place_pieces_index_freecen2_piece_path(place.id)
+  session[:type] = 'place_index'
+  parent :show_freecen2_place, place.chapman_code, place
+end
+
 crumb :freecen2_piece_select do |county|
   link 'FreeCen2 Piece Selection'
   parent :freecen2_pieces, county
@@ -1676,6 +1701,16 @@ end
 crumb :new_freecen2_piece do |district, county, year|
   link 'Create FreeCen2 Piece'
   parent :show_freecen2_district, district, county, year
+end
+
+crumb :enter_number do |county|
+  link 'Enter Piece Number', enter_number_freecen2_piece_path
+  parent :county_options, county
+end
+
+crumb :locate_other_pieces do |county, number|
+  link 'Locate Other Pieces', locate_other_pieces_freecen2_piece_path(number: number)
+  parent :enter_number, county
 end
 
 crumb :freecen2_pieces_chapman do |county, year|
@@ -2030,7 +2065,7 @@ crumb :freecen2_places do |county, place|
   when place.blank?
     link 'Freecen2 Places', freecen2_places_path
   when place.present?
-    link 'Freecen2 Places', freecen2_places_path(:anchor => place.id)
+    link 'Freecen2 Places', freecen2_places_path(anchor: place.id)
   end
   if session[:character].present?
     parent :place_range_options, county, session[:active]
@@ -2043,6 +2078,11 @@ end
 
 crumb :freecen2_places_full_index do |county, place|
   link 'Full Index FreeCen2 Places', full_index_freecen2_places_path(county: county, anchor: place)
+  parent :freecen2_places, county, place
+end
+
+crumb :freecen2_places_active_index do |county, place|
+  link 'Active Index FreeCen2 Places', active_index_freecen2_places_path(county: county, anchor: place)
   parent :freecen2_places, county, place
 end
 
@@ -2061,6 +2101,8 @@ crumb :show_freecen2_place do |county, place|
   if session[:search_names].nil?
     if  session[:type] == 'place_index'
       parent :freecen2_places_full_index, session[:county], place
+    elsif  session[:type] == 'active_place_index'
+      parent :freecen2_places_active_index, session[:county], place
     elsif session[:select_place] || place.blank?
       parent :county_options, session[:county] if session[:county].present?
       parent :syndicate_options, session[:syndicate] if session[:syndicate].present?
@@ -2073,6 +2115,12 @@ crumb :show_freecen2_place do |county, place|
     parent :search_names
   end
 end
+
+crumb :freecen2_places_edits do |county, place|
+  link 'Freecen2 Place Edits', show_place_edits_freecen2_place_path(place)
+  parent :show_freecen2_place, county, place
+end
+
 crumb :edit_freecen2_place do |county, place|
   link 'Edit Freecen2 Place Information', edit_freecen2_place_path(place)
   parent :show_freecen2_place, county, place
@@ -2081,7 +2129,13 @@ end
 crumb :create_freecen2_place do |county, place|
   link 'Create New Freecen2 Place', new_freecen2_place_path
   if session[:search_names].nil?
-    parent :freecen2_places, session[:county], place
+    if  session[:type] == 'place_index'
+      parent :freecen2_places_full_index, session[:county], place
+    elsif  session[:type] == 'active_place_index'
+      parent :freecen2_places_active_index, session[:county], place
+    else
+      parent :freecen2_places, session[:county], place
+    end
   elsif session[:search_names].present?
     parent :search_names_results
   else

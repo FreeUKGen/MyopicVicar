@@ -1,24 +1,73 @@
-<div>
-  <br>
+<div class="c-subfooter-1__stats">
   <% case appname.downcase %>
   <% when 'freereg' %>
+  <nav class="c-subfooter-1__stats-heading">
+    <!-- <a href="https://www.freereg.org.uk/freereg_contents/new?locale=en">Statistics</a> -->
+    <%= link_to helpful_anchors[:statistics].html_safe, helpful_links[:freeregStat], html_options2 %>
+  </nav>
   <% if @site_stat %>
-    <p style="text-align: left" > <%= number_with_delimiter(@site_stat[:n_searches])%> searches were performed on <%= number_with_delimiter(@site_stat[:n_records]) %> records
-      (<%= number_with_delimiter(@site_stat[:n_records_baptisms]) %> baptisms, <%= number_with_delimiter(@site_stat[:n_records_marriages]) %> marriages and
-      <%= number_with_delimiter(@site_stat[:n_records_burials]) %> burials)<br>
-      <% if @site_stat[:n_records_added]  %>
-        <%= number_with_delimiter(@site_stat[:n_records_added]) %> records  (<%= number_with_delimiter(@site_stat[:n_records_added_baptisms]) %> baptisms, <%= number_with_delimiter(@site_stat[:n_records_added_marriages]) %> marriages and
-        <%= number_with_delimiter(@site_stat[:n_records_added_burials]) %> burials) were added
+    <dl class="c-subfooter-1__stats-list">
+      <dt class="c-subfooter-1__stats-term">Yesterday</dt>
+      <dd class="c-subfooter-1__stats-value">
+        <%= number_with_delimiter(@site_stat[:n_searches]) %> &nbsp;searches were performed</dd>
+      <!--  -->
+      <% if @site_stat[:n_records_added].to_i > 0 %>
+        <dd class="c-subfooter-1__stats-value">Volunteers uploaded&nbsp;
+          <%= number_with_delimiter(@site_stat[:n_records_added]) %> &nbsp;records</dd>
       <% else %>
-        No records were added
+        <dd class="c-subfooter-1__stats-value">No records were added</dd>
       <% end %>
-      in the 24 hrs ending at midnight GMT.
-    <% end %>
-  </p>
+      <!--  -->
+      <dt class="c-subfooter-1__stats-term">Record Count</dt>
+      <dd class="c-subfooter-1__stats-value">
+        <%= number_with_delimiter(@site_stat[:n_records]) %> &nbsp;Records</dd>
+      <dd class="c-subfooter-1__stats-value">
+        <%= number_with_delimiter(@site_stat[:n_records_baptisms]) %> &nbsp;Baptisms</dd>
+      <dd class="c-subfooter-1__stats-value">
+        <%= number_with_delimiter(@site_stat[:n_records_marriages]) %> &nbsp;Marriages</dd>
+      <dd class="c-subfooter-1__stats-value">
+        <%= number_with_delimiter(@site_stat[:n_records_burials]) %> &nbsp;Burials</dd>
+    </dl>
+  <% else %>
+    <p class="c-subfooter-1__stats-term">Statistics temporarily unavailable</p>
+  <% end %>
+  <!--  -->
   <% when 'freecen' %>
-  <p style="text-align: left" ><% if @site_stat.present? %><%= number_with_delimiter(@site_stat[:searches])%><% end%> searches were performed yesterday on <% if @site_stat.present? %><%= number_with_delimiter(@site_stat[:records]) %><% end%> records. <br>
-    In the past 30 days we added <% if @site_stat.present? %><%= number_with_delimiter(@site_stat[:added])%><% end%> records.</p>
+  <nav class="c-subfooter-1__stats-heading">
+    <!-- <a href="https://www.freecen.org.uk/freecen_coverage?locale=en">Statistics</a> -->
+    <%= link_to helpful_anchors[:statistics].html_safe, helpful_links[:freecenStat], html_options2 %>
+  </nav>
+  <% if @site_stat %>
+    <dl class="c-subfooter-1__stats-list">
+      <dt class="c-subfooter-1__stats-term">Yesterday</dt>
+      <dd class="c-subfooter-1__stats-value">
+        <%= number_with_delimiter(@site_stat[:searches]) %> &nbsp;searches were performed</dd>
+      <dt class="c-subfooter-1__stats-term">Record Count</dt>
+      <dd class="c-subfooter-1__stats-value">
+        <%= number_with_delimiter(@site_stat[:records]) %> &nbsp;Records</dd>
+      <dt class="c-subfooter-1__stats-term">In the past 30 days volunteers added</dt>
+      <dd class="c-subfooter-1__stats-value">
+        <%= number_with_delimiter(@site_stat[:added]) %> &nbsp;Records</dd>
+    </dl>
+  <% else %>
+    <p class="c-subfooter-1__stats-term">Statistics temporarily unavailable</p>
+  <% end %>
+  <!--  -->
   <% when 'freebmd' %>
-  <p style="text-align: left" >searches were performed yesterday</p>
+  <nav class="c-subfooter-1__stats-heading">
+    <!-- <a href="https://www.freebmd.org.uk/progress.shtml">Statistics</a> -->
+    <%= link_to helpful_anchors[:statistics].html_safe, helpful_links[:freebmdStat], html_options2 %>
+  </nav>
+  <dl class="c-subfooter-1__stats-list">
+    <dt class="c-subfooter-1__stats-term">Active Volunteers</dt>
+    <dd class="c-subfooter-1__stats-value">12,412 all-time</dd>
+    <dd class="c-subfooter-1__stats-value">1,994 last year (estimate)</dd>
+    <dt class="c-subfooter-1__stats-term">4.7 milliion searches per month</dt>
+    <dt class="c-subfooter-1__stats-term">Record Count</dt>
+    <dd class="c-subfooter-1__stats-value">More than 118.8 million Births</dd>
+    <dd class="c-subfooter-1__stats-value">More than 86.6 million Marriages</dd>
+    <dd class="c-subfooter-1__stats-value">More than 77.8 million Deaths</dd>
+    <dd class="c-subfooter-1__stats-value"><b>More than 283.3 million Records</b></dd>
+  </dl>
 <% end%>
 </div>

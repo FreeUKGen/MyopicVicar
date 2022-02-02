@@ -21,7 +21,7 @@
           <label class="ttip" for="last_name" tabindex="0">
             Surname
             <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Use upper- or lower-case. If you do not enter a surname (last-name) you <em>must</em> enter a forename, select one county and choose a single record type</span>
+            <span class="ttip__text">Use upper- or lower-case. If you do not enter a surname (last-name) you <em>must</em> enter a forename, select one county and choose a place</span>
           </label>
           <% if @search_query.last_name.nil? %>
             <input id="last_name" name="search_query[last_name]" type="text" class="text-input" placeholder="Optional">
@@ -179,7 +179,7 @@
     Ladda.bind( 'button[type=submit]' );
   </script>
   <script type="text/javascript" >
-    <% if @search_query && @search_query.chapman_codes.size > 0 %>
+    <% if @search_query && @search_query.chapman_codes.size > 0 && PlaceCache.where(:chapman_code => @search_query.chapman_codes.first).first.present?%>
       var selection=<%= raw(PlaceCache.where(:chapman_code => @search_query.chapman_codes.first).first.places_json) %>;
       <% if @search_query.places.size > 0 %>
         selection["selected"]="<%= @search_query.places.first.id %>";

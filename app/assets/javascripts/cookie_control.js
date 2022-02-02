@@ -2,11 +2,13 @@ $(document).ready(function() {
   var app_name = window.location.hostname;
   // Delete Cookie
   window.delete_cookie = function(name, path, domain) {
-    if (getCookie(name)) document.cookie = name + '=' +
+    if (getCookie(name)) {
+      document.cookie = name + '=' +
       (('/') ? ';path=' + '/' : '') +
       ((app_name) ? ';domain=' + app_name : '') +
          ';expires=Thu, 01-Jan-1970 00:00:01 GMT';
-  }
+    }
+  };
 
   // Switch Cookie checkbox value
   var toggleCookieCheckbox = function() {
@@ -92,15 +94,15 @@ $(document).ready(function() {
 //Default Deny analytics cookies
  if ((getCookie('userAcceptance') === null) || (getCookie('userAcceptance') == 'unknown')) {
      setCookie('userAcceptance', 'unknown', 365 );
-     //update_third_party_cookies_user_preference('deny');
+     update_analytics('deny');
    };
 // Accept Analytic Cookie
   if (getCookie('userAcceptance') == 1) {
-     //update_third_party_cookies_user_preference('accept');
+     update_analytics('accept');
    };
 //Deny analytics cookies
   if (getCookie('userAcceptance') == 0) {
-    // update_third_party_cookies_user_preference('deny');
+    update_analytics('deny');
    };
 
   $('.cookie_check_box').change(function() {

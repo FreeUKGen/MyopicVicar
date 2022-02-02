@@ -9,36 +9,31 @@
  * using your own, so you can completely modify how inuit.css works without ever
  * having to alter the framework itself.
  */
-$lap-start:         570px;
-$desk-start:        1024px;
-$desk-wide-start:   1200px;
-$base-font-size:    18px;
-$base-line-height:  28px;
-$brand-face:        "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$lap-start: 570px;
+$desk-start: 1024px;
+$desk-wide-start: 1200px;
+$base-font-size: 18px;
+$base-line-height: 28px;
+$brand-face: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
 
-$container-width:   960px;
-
+$container-width: 960px;
 
 /**
  * Font-sizes
  */
-$giga-size:         96px; // .giga
-$mega-size:         72px; // .mega
-$kilo-size:         60px; // .kilo
+$giga-size: 96px; // .giga
+$mega-size: 72px; // .mega
+$kilo-size: 60px; // .kilo
 
-$h1-size:           36px; // .alpha
-$h2-size:           32px; // .beta
-$h3-size:           22px; // .gamma
-$h4-size:           20px; // .delta
-$h5-size:           18px; // .epsilon
-$h6-size:           14px; // .zeta
+$h1-size: 36px; // .alpha
+$h2-size: 32px; // .beta
+$h3-size: 22px; // .gamma
+$h4-size: 20px; // .delta
+$h5-size: 18px; // .epsilon
+$h6-size: 14px; // .zeta
 
-$milli-size:        13px; // .milli
-$micro-size:        12px; // .micro
-
-
-
-
+$milli-size: 13px; // .milli
+$micro-size: 12px; // .micro
 
 /*------------------------------------*\
     $OBJECTS-AND-ABSTRACTIONS
@@ -49,90 +44,86 @@ $micro-size:        12px; // .micro
  * and introducing objects and abstractions is as simple as switching the
  * following variables to `true`.
  */
-$use-grids:         true;
-$use-flexbox:       true;
-$use-columns:       true;
-$use-nav:           true;
-$use-options:       true;
-$use-pagination:    true;
-$use-breadcrumb:    true;
-$use-media:         true;
-$use-marginalia:    true;
-$use-island:        true;
-$use-block-list:    true;
-$use-matrix:        true;
-$use-split:         true;
-$use-this-or-this:  true;
-$use-link-complex:  true;
-$use-flyout:        true;
-$use-arrows:        true;
-$use-sprite:        true;
-$use-icon-text:     true;
-$use-beautons:      true;
-$use-lozenges:      true;
-$use-rules:         true;
-$use-stats:         true;
-$use-greybox:       true;
-
-
+$use-grids: true;
+$use-flexbox: true;
+$use-columns: true;
+$use-nav: true;
+$use-options: true;
+$use-pagination: true;
+$use-breadcrumb: true;
+$use-media: true;
+$use-marginalia: true;
+$use-island: true;
+$use-block-list: true;
+$use-matrix: true;
+$use-split: true;
+$use-this-or-this: true;
+$use-link-complex: true;
+$use-flyout: true;
+$use-arrows: true;
+$use-sprite: true;
+$use-icon-text: true;
+$use-beautons: true;
+$use-lozenges: true;
+$use-rules: true;
+$use-stats: true;
+$use-greybox: true;
 
 /*------------------------------------*\
     $COLOURS
 \*------------------------------------*/
 
-$teal:                 #00857E;
-$teal-faded:           #A6E3E1;
-$teal-on-light:        #B83675;
+$teal: #00857e;
+$teal-faded: #a6e3e1;
+$teal-on-light: #b83675;
 
-$magenta:              #C84182;
-$magenta-faded:        #ECC5D9;
-$magenta-on-light:     #BE3778;
+$magenta: #c84182;
+$magenta-faded: #ecc5d9;
+$magenta-on-light: #be3778;
 
-$lavender:             #825da8;
-$lavender-faded:       #cbbbf7;
-$lavender-on-light:    #78549C;
+$lavender: #825da8;
+$lavender-faded: #cbbbf7;
+$lavender-on-light: #78549c;
 
-$turquoise:            #007fad;
-$turquoise-faded:      #b8ecff;
-$turquoise-on-light:   #0078a3;
+$turquoise: #007fad;
+$turquoise-faded: #b8ecff;
+$turquoise-on-light: #0078a3;
 
-$navy:                 #517481;
-$blue:                 #3C78b4;
+$navy: #517481;
+$blue: #3c78b4;
 
-$red:                  #DB0000;
-$green:                #008000;
-$pink:                 #cc00cc;
-$indigo:               #9d14ff;
+$red: #db0000;
+$green: #008000;
+$pink: #cc00cc;
+$indigo: #9d14ff;
 
-$default-text:         #222222;
-$focus-hover:          #333344;
-$light:                #f4f4f4;
-$lesslight:            #dedede;
-$neutral:              #707070;
-$grey:                 #444444;
-$dark:                 #333333;
-
+$default-text: #222222;
+$focus-hover: #333344;
+$light: #f4f4f4;
+$lesslight: #dedede;
+$neutral: #707070;
+$grey: #444444;
+$dark: #333333;
 
 // some english aliases that we use around the place
 
-$brand-color:           $teal;
-$brand-color-faded:     $teal-faded;
-$brand-color-on-light:  $teal-on-light;
+$brand-color: $teal;
+$brand-color-faded: $teal-faded;
+$brand-color-on-light: $teal-on-light;
 
-$project-color:          $teal;
-$project-color-faded:    $teal-faded;
+$project-color: $teal;
+$project-color-faded: $teal-faded;
 $project-color-on-light: $teal-on-light;
 
-$positive:               $green;
+$positive: $green;
 
-$negative:               $red;
+$negative: $red;
 
-$alert-text:             $red;
-
+$alert-text: $red;
 
 // 3 arrays of english strings that give us access to the above, as appropriate
 
-$isle-colours:(
+$isle-colours: (
   "brand" $brand-color #fff,
   "project" $project-color #fff,
   "teal" $teal #fff,
@@ -146,7 +137,7 @@ $isle-colours:(
   "dark" $dark $lesslight
 );
 
-$btn-colours:(
+$btn-colours: (
   "brand" $brand-color #fff,
   "project" $project-color #fff,
   "teal" $teal #fff,
@@ -164,7 +155,7 @@ $btn-colours:(
   "light" $light $grey
 );
 
-$text-colours:(
+$text-colours: (
   "brand" $brand-color,
   "teal" $teal,
   "magenta" $magenta,
@@ -180,3 +171,12 @@ $text-colours:(
   "pink" $pink,
   "indigo" $indigo
 );
+
+// fug footer breakpoints
+$default-breakpoint: bp2 !default;
+
+$breakpoints: (
+  bp1: 220px,
+  bp2: 480px,
+  bp3: 768px
+) !default;

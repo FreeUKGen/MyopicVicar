@@ -34,28 +34,42 @@ module SearchQueriesHelper
     Text::Soundex.soundex(verbatim)
   end
 
-  def birth_place(search_record)
-    birth_place = ''
+  def search_birth_place(search_record)
+    birth = ''
+    verbatim_birth_place = ''
     if search_record.freecen_csv_entry_id.present?
-      birth_place = search_record.birth_place
+      entry = search_record.freecen_csv_entry
     else
-      individual = FreecenIndividual.find_by(_id: search_record.freecen_individual_id) if search_record.freecen_individual_id.present?
-      birth_place = individual.birth_place if individual.present?
+      entry = search_record.freecen_individual
     end
-    birth_place
+    birth = entry.birth_place if entry.present?
+    verbatim_birth_place = entry.verbatim_birth_place if entry.present?
+    birth = birth + ' (or ' + verbatim_birth_place + ')' if birth.present? && verbatim_birth_place.present? && birth != verbatim_birth_place
+    birth = verbatim_birth_place if birth.blank?
+    birth
+  end
+
+
+  def search_birth_county(search_record)
+    birth_county_name = ''
+    verbatim_birth_county_name = ''
+    if search_record.freecen_csv_entry_id.present?
+      entry = search_record.freecen_csv_entry
+    else
+      entry = search_record.freecen_individual
+    end
+    birth_county_name = ChapmanCode.name_from_code(entry.birth_county) if entry.present?
+    verbatim_birth_county_name = ChapmanCode.name_from_code(entry.verbatim_birth_county) if entry.present?
+    birth_county_name = birth_county_name + ' (or ' + verbatim_birth_county_name + ')' if birth_county_name.present? &&
+      verbatim_birth_county_name.present? && birth_county_name != verbatim_birth_county_name
+    birth_county_name = verbatim_birth_county_name if birth_county_name.blank?
+    birth_county_name
   end
 
   def format_freecen_birth_year(search_date, record_type)
-    search_year = search_date.gsub(/\D.*/,'')
-    if search_year == record_type
-      search_year
-    else
-      if record_type == RecordType::CENSUS_1841 && search_year > "1826"
-        "#{search_year.to_i - 3}"
-      else
-        "#{search_year.to_i - 1}"
-      end
-    end
+    search_date_year = search_date.gsub(/\D.*/, '')
+    # trap where age was recorded as 999 assumes indiv has to be < 200 yrs old
+    search_date_year.to_i < record_type.to_i - 200 ? 'unk' : search_date_year
   end
 
   def format_start_date(year)
@@ -116,7 +130,18 @@ module SearchQueriesHelper
         district = district.present? ? district.name : search_record[:location_names][0]
       end
     else
-      district = search_record[:location_names][0]
+      if Rails.application.config.freecen2_place_cache
+        place = search_record.freecen2_place
+        district = place.place_name if place.present?
+      else
+        vld = search_record.freecen1_vld_file
+        place = search_record.place
+        district = place.place_name if place.present?
+        if vld.present? && place.blank?
+          piece = vld.freecen_piece
+          district = piece.district_name if piece.present?
+        end
+      end
     end
     district
   end
