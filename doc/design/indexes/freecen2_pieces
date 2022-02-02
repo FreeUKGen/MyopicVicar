@@ -53,6 +53,12 @@ db.runCommand(
                         "tnaid" : 1
                 },
                 "name" : "tnaid"
+        },
+        {
+                "key" : {
+                        "piece_number" : 1
+                },
+                "name" : "piece_number"
         }
     ]
   }
