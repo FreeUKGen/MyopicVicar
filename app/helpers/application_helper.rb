@@ -737,7 +737,7 @@ module ApplicationHelper
       cookiePolicy: '/cms/about/cookie-policy',
       privacyNotice: 'https://drive.google.com/file/d/10r_c-5d9DDces-OUX7D4UJJKGNIhu8sV/view?usp=sharing',
       termAndConditions: '/cms/terms-and-conditions',
-      contactUs: '/contacts/new',
+      contactUs: '/cms/help/frequently-asked-questions-researchers?',
       donation: 'https://www.freeukgenealogy.org.uk/help-us-keep-history-free',
       fugNews: 'https://www.freeukgenealogy.org.uk/news/',
       freereg: 'https://www.freereg.org.uk/',
