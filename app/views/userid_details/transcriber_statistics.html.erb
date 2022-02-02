@@ -64,7 +64,7 @@
           <tr>
             <td style="font-weight: bold;">Total number of transcribers who have accepted New Transcription Agreement, but have no records </td>
             <td>--</td>
-            <td ><%= @total_transcribers_accepted_agreement_no_records %></td>
+            <td><%= @total_transcribers_accepted_agreement_no_records %></td>
           </tr>
         <% end%>
         <tr>
@@ -74,23 +74,27 @@
         <tr>
           <td style="font-weight: bold;">Percentage of (existing) users who accepted New Transcription Agreement </td>
           <td ><%= @percentage_existing_users_who_accepted_transcription_agreement.to_i %> % </td>
+          <td>--</td>
         </tr>
         <tr>
           <td style="font-weight: bold;">Percentage of active (existing) users who accepted New Transcription Agreement </td>
           <td ><%= @percentage_active_existing_users_who_accepted_transcription_agreement.to_i %> % </td>
+          <td>--</td>
         </tr>
         <tr>
           <td style="font-weight: bold;">Number of transcribers uploaded file in last 3 months</td>
-          <td ></td>
+          <td >--</td>
           <td><%= @number_of_transcribers_recently_uploaded_file %></td>
         </tr>
         <tr>
           <td style="font-weight: bold;">New Registrations (last 30 days) </td>
           <td ><%= @new_users_last_30_days %></td>
+          <td>--</td>
         </tr>
         <tr>
           <td style="font-weight: bold;">New Registrations (last 90 days) </td>
           <td ><%= @new_users_last_90_days %></td>
+          <td>--</td>
         </tr>
       </table>
     </div>
