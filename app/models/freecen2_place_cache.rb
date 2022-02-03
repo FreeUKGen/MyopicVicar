@@ -34,7 +34,7 @@ class Freecen2PlaceCache
 
   def self.refresh_all(county = '')
     if county == ''
-      ChapmanCode.values.each do |chapman_code|
+      ChapmanCode.values.uniq.each do |chapman_code|
         refresh(chapman_code)
       end
     else
