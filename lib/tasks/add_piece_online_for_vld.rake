@@ -24,12 +24,11 @@ namespace :freecen do
     message_file.puts "Starting vld checks at #{start_time} with limit #{limit} with fix  #{fixit}"
     Freecen1VldFile.no_timeout.order_by(_id: -1).each do |file|
       number += 1
+      message_file.puts number
       break if number == limit + 1
 
       p number if (number / 100) * 100 == number
       timestep1 = Time.now
-
-
       freecen1_piece = FreecenPiece.find_by(_id: file.freecen_piece_id)
       if freecen1_piece.blank?
         message_file.puts "#{file.file_name} has no freecen1 piece"
@@ -37,14 +36,8 @@ namespace :freecen do
         missing += 1
         next
       end
-      message_file.puts  'one'
-      message_file.puts Time.now - timestep1
       piece2_number = Freecen2Piece.calculate_freecen2_piece_number(freecen1_piece)
-      message_file.puts  'two'
-      message_file.puts Time.now - timestep1
       freecen2_piece = Freecen2Piece.find_by(number: piece2_number)
-      message_file.puts  'four'
-      message_file.puts Time.now - timestep1
       if freecen2_piece.blank?
         missing += 1
         message_file.puts "#{piece2_number} for #{file.file_name} is missing"
@@ -53,11 +46,9 @@ namespace :freecen do
         message_file.puts freecen2_piece.inspect
         freecen2_piece.update_attributes(status: 'Online', status_date: file._id.generation_time.to_datetime.in_time_zone('London')) if fixit
       end
-      message_file.puts 'five'
-      message_file.puts Time.now - timestep1
       regexp = BSON::Regexp::Raw.new('^' + piece2_number + '\D')
       parts = Freecen2Piece.where(number: regexp).order_by(number: 1)
-      message_file.puts 'six'
+      message_file.puts 'After regex'
       message_file.puts Time.now - timestep1
       next if parts.count.zero?
 
@@ -69,7 +60,7 @@ namespace :freecen do
         freecen2_place.data_present = true
         freecen2_place.cen_data_years << parts[0].year unless freecen2_place.cen_data_years.include?(parts[0].year)
         freecen2_place.save! if fixit
-        message_file.puts 'seven'
+        message_file.puts 'Place Update'
         message_file.puts parts.count
         message_file.puts Time.now - timestep1
         parts.each do |part|
@@ -79,7 +70,7 @@ namespace :freecen do
           message_file.puts part.inspect
           message_file.puts file.inspect
         end
-        message_file.puts 'eight'
+        message_file.puts 'Piece parts update'
         message_file.puts Time.now - timestep1
       end
     end
