@@ -53,26 +53,27 @@ namespace :freecen do
       next if parts.count.zero?
 
       freecen2_place = parts[0].freecen2_place
-      if freecen2_place.blank?
-        message_file.puts "Piece has no place #{parts[0].inspect}"
-      else
-        freecen2_place.freecen1_vld_files << [file] unless file.freecen2_place_id == freecen2_place._id
-        freecen2_place.data_present = true unless freecen2_place.data_present == true
-        freecen2_place.cen_data_years << parts[0].year unless freecen2_place.cen_data_years.include?(parts[0].year)
-        freecen2_place.save! if fixit
-        message_file.puts 'Place Update'
-        message_file.puts parts.count
-        message_file.puts Time.now - timestep1
-        parts.each do |part|
-          processed += 1
-          part.update_attributes(status: 'Online', status_date: file._id.generation_time.to_datetime.in_time_zone('London'), shared_vld_file: file.id) if fixit
-          message_file.puts "Setting #{part.number} to online"
-          message_file.puts part.inspect
-          message_file.puts file.inspect
-        end
-        message_file.puts 'Piece parts update'
-        message_file.puts Time.now - timestep1
+      message_file.puts "Piece has no place #{parts[0].inspect}" if freecen2_place.blank?
+      file_present = true if file.freecen2_place_id == freecen2_place._id
+      date_present = true if freecen2_place.data_present == true
+      cen_years_present = true if freecen2_place.cen_data_years.include?(parts[0].year)
+      freecen2_place.freecen1_vld_files << [file] unless file_present
+      freecen2_place.data_present = true unless date_present
+      freecen2_place.cen_data_years << parts[0].year unless cen_years_present
+      freecen2_place.save! if fixit && (!cen_years_present || !file_present || !date_present)
+      message_file.puts 'Place Update'
+      message_file.puts parts.count
+      message_file.puts Time.now - timestep1
+      parts.each do |part|
+        processed += 1
+        part.update_attributes(status: 'Online', status_date: file._id.generation_time.to_datetime.in_time_zone('London'), shared_vld_file: file.id) if fixit
+        message_file.puts "Setting #{part.number} to online"
+        message_file.puts part.inspect
+        message_file.puts file.inspect
       end
+      message_file.puts 'Piece parts update'
+      message_file.puts Time.now - timestep1
+
     end
     Freecen2PlaceCache.refresh_all if fixit
     number -= 1 if number == limit + 1
