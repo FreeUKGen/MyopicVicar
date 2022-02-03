@@ -56,8 +56,8 @@ namespace :freecen do
       if freecen2_place.blank?
         message_file.puts "Piece has no place #{parts[0].inspect}"
       else
-        freecen2_place.freecen1_vld_files << [file]
-        freecen2_place.data_present = true
+        freecen2_place.freecen1_vld_files << [file] unless file.freecen2_place_id == freecen2_place._id
+        freecen2_place.data_present = true unless freecen2_place.data_present == true
         freecen2_place.cen_data_years << parts[0].year unless freecen2_place.cen_data_years.include?(parts[0].year)
         freecen2_place.save! if fixit
         message_file.puts 'Place Update'
