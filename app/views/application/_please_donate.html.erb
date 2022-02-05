@@ -1,11 +1,11 @@
 <div class="read-length push--bottom" style="margin-left: auto; margin-right: auto;">
   <br>
   <% unless defined?(@printable_format) && @printable_format %>
+    <p class="push-half--bottom">While most other genealogy sites charge you to find and read records, <b><%= appname %></b> is dedicated to keeping our searches free. A small donation towards our costs would really help us keep it that way. </p>
     <% if MyopicVicar::Application.config.template_set == 'freecen' %>
       <center><a href="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/" class="freeCEN" id="donate"><%= DonateIconHelper::DONATE_ICON.html_safe %></a></center>
     <% else %>
       <center><a href="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/" class="freeREG" id="donate"><%= DonateIconHelper::DONATE_ICON.html_safe %></a></center>
     <% end %>
-    <p class="push-half--bottom">While most other genealogy sites charge you to find and read records, <b><%= appname %></b> is dedicated to keeping our searches free. A small donation towards our costs would really help us keep it that way. </p>
   <% end %>
 </div>
