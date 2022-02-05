@@ -295,7 +295,15 @@ class Freecen2Piece
       @pieces_online = []
       @pieces = Freecen2Piece.where(status_date: start_date..end_date, status: 'Online').or(Freecen2Piece.where(status_date: start_date..end_date, status: 'Part'))
       @pieces.each do |piece|
-        num_records = piece.num_individuals.positive? ? piece.num_individuals : SearchRecord.where(freecen2_piece_id: piece.id).count
+        if piece.status == 'Online'
+          num_records = piece.num_individuals.positive? ? piece.num_individuals : SearchRecord.where(freecen2_piece_id: piece.id).count
+        else
+          csv_files = FreecenCsvFile.where(freecen2_piece_id: piece.id, incorporated_date: start_date..end_date)
+          num_records = 0
+          csv_files.each do |file|
+            num_records += file.total_individuals
+          end
+        end
         @pieces_online << [piece.chapman_code, piece.year, piece.number, piece.name, piece.civil_parish_names, piece.status, piece.status_date.strftime('%d/%b/%Y'), num_records]
       end
       @pieces_online.sort
