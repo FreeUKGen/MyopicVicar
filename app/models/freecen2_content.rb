@@ -105,7 +105,7 @@ class Freecen2Content
 
         p "Processing County: #{county}"
 
-        fc2_totals_pieces, fc2_totals_pieces_online, fc2_totals_records_online = Freecen2Piece.before_county_year_totals(county, last_midnight)
+        fc2_totals_pieces, fc2_totals_pieces_online, fc2_totals_records_online, fc2_piece_ids = Freecen2Piece.before_county_year_totals(county, last_midnight)
         fc2_added_pieces_online, fc2_added_records_online = Freecen2Piece.between_dates_county_year_totals(county, previous_midnight, last_midnight)
 
         county_pieces_total = 0
@@ -165,7 +165,8 @@ class Freecen2Content
           Freecen::CENSUS_YEARS_ARRAY.each do |year|
 
             records[county][year] = {}
-            records[county][year][:piece_ids] = []
+            records[county][year][:piece_ids] = fc2_piece_ids[year]
+            records[county][:total][:piece_ids].concat(fc2_piece_ids[year])
             records[county][year][:pieces] = fc2_totals_pieces[year] # fc2_pieces are all the pieces so no need to add fc1_pieces
             records[county][:total][:pieces] += records[county][year][:pieces]
             records[county][year][:pieces_online] = fc2_totals_pieces_online[year]
@@ -200,8 +201,8 @@ class Freecen2Content
 
                 records[county][key_place][:total][:place_id] = this_place._id
 
-                fc2_totals_pieces, fc2_totals_pieces_online, fc2_totals_records_online, fc2_piece_ids = Freecen2Piece.before_place_year_totals(county, this_place._id, last_midnight)
-                fc2_added_pieces_online, fc2_added_records_online = Freecen2Piece.between_dates_place_year_totals(county, this_place._id, previous_midnight, last_midnight)
+                fc2_totals_pieces, fc2_totals_pieces_online, fc2_totals_records_online, fc2_piece_ids = Freecen2Piece.before_place_year_totals(this_place._id, last_midnight)
+                fc2_added_pieces_online, fc2_added_records_online = Freecen2Piece.between_dates_place_year_totals(this_place._id, previous_midnight, last_midnight)
 
                 place_dates = '=('
                 piece_ids_array = []
@@ -217,8 +218,6 @@ class Freecen2Content
                   records[county][key_place][year][:piece_ids] = []
                   records[county][key_place][year][:piece_ids] = fc2_piece_ids[year]
                   piece_ids_array.concat(fc2_piece_ids[year])
-                  records[county][year][:piece_ids].concat(fc2_piece_ids[year])
-                  records[county][:total][:piece_ids].concat(fc2_piece_ids[year])
                   records[county][key_place][year][:pieces] = fc2_totals_pieces[year] # fc2_pieces are all the pieces so no need to add fc1_pieces
                   records[county][key_place][:total][:pieces] += records[county][key_place][year][:pieces]
                   records[county][key_place][year][:pieces_online] = fc2_totals_pieces_online[year]
@@ -278,7 +277,7 @@ class Freecen2Content
 
       end # county
 
-      # AEV Testing - end
+      # AEV Testing -end
 
       p 'Finished gathering latest data'
       p "Counties updated = #{chaps}"
@@ -301,7 +300,7 @@ class Freecen2Content
           year = entry[4]
           added_recs = entry[5]
 
-          place_added_pieces_online, place_added_records  = Freecen2Piece.between_dates_place_year_totals(chapman_code, place_id, previous_midnight, last_midnight)
+          place_added_pieces_online, place_added_records  = Freecen2Piece.between_dates_place_year_totals(place_id, previous_midnight, last_midnight)
           place_pieces_online_cnt =  place_added_pieces_online[year]
           diff_place_pieces = records[chapman_code][key_place][year][:added_pieces_online] - place_pieces_online_cnt
           records[chapman_code][key_place][year][:added_pieces_online] -= diff_place_pieces
