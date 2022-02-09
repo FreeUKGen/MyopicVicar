@@ -68,23 +68,25 @@ class Freecen2ContentsController < ApplicationController
       @place_id = params[:place_id]
       @key_place = Freecen2Content.get_place_key(@place_description)
     end
-    if params[:census_year] == 'all'
-      @census_text = 'All Years'
-      if params[:place_description] == 'all'
-        @place_piece_ids = @freecen2_contents.records[@chapman_code][:total][:piece_ids]
-      else
-        @place_piece_ids = @freecen2_contents.records[@chapman_code][@key_place][:total][:piece_ids]
-      end
+    if set_county_vars == true
+      if params[:census_year] == 'all'
+        @census_text = 'All Years'
+        if params[:place_description] == 'all'
+          @place_piece_ids = @freecen2_contents.records[@chapman_code][:total][:piece_ids]
+        else
+          @place_piece_ids = @freecen2_contents.records[@chapman_code][@key_place][:total][:piece_ids]
+        end
 
-      @place_pieces = Freecen2Piece.where(:_id.in => @place_piece_ids).order(order_by_for_total)
-    else
-      @census_text = params[:census_year]
-      if params[:place_description] == 'all'
-        @place_piece_ids = @freecen2_contents.records[@chapman_code][@census][:piece_ids]
+        @place_pieces = Freecen2Piece.where(:_id.in => @place_piece_ids).order(order_by_for_total)
       else
-        @place_piece_ids = @freecen2_contents.records[@chapman_code][@key_place][@census][:piece_ids]
+        @census_text = params[:census_year]
+        if params[:place_description] == 'all'
+          @place_piece_ids = @freecen2_contents.records[@chapman_code][@census][:piece_ids]
+        else
+          @place_piece_ids = @freecen2_contents.records[@chapman_code][@key_place][@census][:piece_ids]
+        end
+        @place_pieces = Freecen2Piece.where(:_id.in => @place_piece_ids).order(order_by_for_year)
       end
-      @place_pieces = Freecen2Piece.where(:_id.in => @place_piece_ids).order(order_by_for_year)
     end
   end
 
@@ -93,8 +95,11 @@ class Freecen2ContentsController < ApplicationController
 
     if params[:census_year].blank? || params[:place_description].blank? || (params[:place_description] != 'all' && params[:place_id].blank?)
       redirect_to(freecen2_contents_path, notice: 'County or Place not found') && return
+
     else
       piece_index_setup('status DESC, status_date DESC, name ASC, year ASC, number ASC', 'status DESC, status_date DESC, name ASC, number ASC')
+      redirect_to(freecen2_contents_path, notice: 'County or Place not found') && return if @place_pieces.blank?
+
       @order_text = 'Most Recent Online'
       @order = 'status'
       render 'piece_index'
@@ -106,8 +111,11 @@ class Freecen2ContentsController < ApplicationController
 
     if params[:census_year].blank? || params[:place_description].blank? || (params[:place_description] != 'all' && params[:place_id].blank?)
       redirect_to(freecen2_contents_path, notice: 'County or Place not found') && return
+
     else
       piece_index_setup('name ASC, year ASC, number ASC', 'name ASC, number ASC')
+      redirect_to(freecen2_contents_path, notice: 'County or Place not found') && return if @place_pieces.blank?
+
       @order_text = 'Piece Name'
       @order = 'name'
       render 'piece_index'
@@ -119,8 +127,11 @@ class Freecen2ContentsController < ApplicationController
 
     if params[:census_year].blank? || params[:place_description].blank? || (params[:place_description] != 'all' && params[:place_id].blank?)
       redirect_to(freecen2_contents_path, notice: 'County or Place not found') && return
+
     else
       piece_index_setup('number ASC', 'number ASC')
+      redirect_to(freecen2_contents_path, notice: 'County or Place not found') && return if @place_pieces.blank?
+
       @order_text = 'Piece Number'
       @order = 'number'
       render 'piece_index'
