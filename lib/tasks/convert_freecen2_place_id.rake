@@ -6,13 +6,13 @@ namespace :freecen do
     old_place = args.old.to_s
     new_place = args.new.to_s
     fixit = args.fix.to_s == 'Y'
-    p "Starting conversion of freecen2_place linkage from #{old_place} to #{new_place} at #{start_time} with fix  #{fixit}"
-    file_for_warning_messages = 'log/convert_freecen2_place_id.log'
-    FileUtils.mkdir_p(File.dirname(file_for_warning_messages))
-    message_file = File.new(file_for_warning_messages, 'w')
-    message_file.puts "Starting conversion of freecen2_place linkage from #{old_place} to #{new_place} at #{start_time} with fix  #{fixit}"
     old_place_entry = Freecen2Place.find_by(_id: old_place)
     new_place_entry = Freecen2Place.find_by(_id: new_place)
+    file_for_warning_messages = "log/convert_freecen2_place_#{old_place_entry.place_name}.log"
+    FileUtils.mkdir_p(File.dirname(file_for_warning_messages))
+    message_file = File.new(file_for_warning_messages, 'w')
+    p "Starting conversion of freecen2_place linkage from #{old_place} to #{new_place} at #{start_time} with fix  #{fixit}"
+    message_file.puts "Starting conversion of freecen2_place linkage from #{old_place} to #{new_place} at #{start_time} with fix  #{fixit}"
     message_file.puts 'old'
     p 'old'
     message_file.puts "#{old_place_entry.inspect}"
