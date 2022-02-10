@@ -27,24 +27,24 @@ namespace :freecen do
     else
       p 'Census years'
       message_file.puts 'Census years'
-      new_cen_data_years = new_place_entry.cen_data_years
-      p new_cen_data_years
-      message_file.puts "#{new_cen_data_years}"
       old_cen_data_years = old_place_entry.cen_data_years
       p old_cen_data_years
       message_file.puts "#{old_cen_data_years}"
+      new_cen_data_years = new_place_entry.cen_data_years
+      p new_cen_data_years
+      message_file.puts "#{new_cen_data_years}"
       updated_new_cen_data_years = new_cen_data_years | old_cen_data_years
       updated_new_cen_data_years.sort!
       p updated_new_cen_data_years
       message_file.puts "#{updated_new_cen_data_years}"
       p 'Data present'
       message_file.puts 'Data present'
-      new_cen_data_present = new_place_entry.data_present
-      p new_cen_data_present
-      message_file.puts "#{new_cen_data_present}"
       old_cen_data_present = old_place_entry.data_present
       p old_cen_data_present
       message_file.puts "#{old_cen_data_present}"
+      new_cen_data_present = new_place_entry.data_present
+      p new_cen_data_present
+      message_file.puts "#{new_cen_data_present}"
       updated_cen_data_present = updated_new_cen_data_years.present? ? true : false
       p updated_cen_data_present
       message_file.puts "#{updated_cen_data_present}"
