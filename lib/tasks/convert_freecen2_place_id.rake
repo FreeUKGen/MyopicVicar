@@ -94,7 +94,7 @@ namespace :freecen do
       p records_updated
       message_file.puts "#{records_updated.inspect}"
       new_place_entry.update_attributes(cen_data_years: updated_new_cen_data_years, data_present: updated_cen_data_present) if fixit
-      old_place_entry.update_attributes(disabled: 'true') if fixit
+      old_place_entry.update_attributes(disabled: 'true', data_present: false, cen_data_years: []) if fixit
       message_file.puts 'Updated places'
       message_file.puts "#{old_place_entry.inspect}"
       message_file.puts "#{new_place_entry.inspect}"
