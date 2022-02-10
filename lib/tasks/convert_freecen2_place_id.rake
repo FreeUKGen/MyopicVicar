@@ -42,9 +42,9 @@ namespace :freecen do
       new_cen_data_present = new_place_entry.data_present
       p new_cen_data_present
       message_file.puts "#{new_cen_data_present}"
-      old_cen_data_present = new_place_entry.data_present
+      old_cen_data_present = old_place_entry.data_present
       p old_cen_data_present
-      message_file.puts "#{new_cen_data_present}"
+      message_file.puts "#{old_cen_data_present}"
       updated_cen_data_present = updated_new_cen_data_years.present? ? true : false
       p updated_cen_data_present
       message_file.puts "#{updated_cen_data_present}"
