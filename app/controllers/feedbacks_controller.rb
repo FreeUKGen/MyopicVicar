@@ -198,7 +198,7 @@ class FeedbacksController < ApplicationController
     if source == 'show'
       redirect_to action: 'show', id: id
     else
-      redirect_to action: 'list_archived'
+      redirect_to action: 'index'
     end
   end
 
