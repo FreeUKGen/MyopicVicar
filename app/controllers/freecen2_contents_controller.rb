@@ -97,7 +97,7 @@ class Freecen2ContentsController < ApplicationController
       redirect_to(freecen2_contents_path, notice: 'County or Place not found') && return
 
     else
-      piece_index_setup('status DESC, status_date DESC, name ASC, year ASC, number ASC', 'status DESC, status_date DESC, name ASC, number ASC')
+      piece_index_setup('status DESC, status_date.try(:to_date) DESC, name ASC, year ASC, number ASC', 'status DESC, status_date DESC, name ASC, number ASC')
       redirect_to(freecen2_contents_path, notice: 'County or Place not found') && return if @place_pieces.blank?
 
       @order_text = 'Most Recent Online'
