@@ -59,18 +59,33 @@
 <% else %>
   <header class="site__header bmd_site_header">
     <div class="flush--sides soft--sides">
-      <div class="grid">
-        <div class="grid__item one-eighth lap-one-fifth palm-one-third" style="transform: rotate(-10deg) scale(1.15); margin-left: 3.8em;">
-          <%= image_tag 'png/beta.png', alt: "this is beta version of FreeBMD" %>
+      <% unless device_type == :mobile %>
+        <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found') || current_page?('/cms/refinery/users/login')%>
+          <div class="bnner-horz bmd_adsenses header_ads">
+            <a href="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/">
+              <%= image_tag 'png/header-donate.png',  class: "donations", alt: "Donations - FreeUKGenealogy" %>
+            </a>
+            <%= advert_code("header", "horz") %>
+          </div>
+        <% end %>
+      <% end %>
+      <div class="one-tenth lap-up-one-eighth lap-one-seventh palm-one-third" style="transform: rotate(-10deg) scale(1.15); margin-left: 3.8em;">
+        <%= image_tag 'png/beta.png', alt: "this is beta version of FreeBMD" %>
+      </div>
+    </div>
+      
+      <!--div class="grid">
+        <div class="grid__item one-eighth lap-one-fifth palm-one-third" >
+          
         </div>
         <div class="grid__item seven-eighths lap-five-sixths palm-three-quarters">
           <% unless device_type == :mobile %>
             <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found') || current_page?('/cms/refinery/users/login')%>
               <div class="bnner-horz bmd_adsense header_ad">
                 <a href="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/">
-                  <%= image_tag 'png/header-donate.png',  class: "donations", alt: "Donations - FreeUKGenealogy" %>
+                  <%#= image_tag 'png/header-donate.png',  class: "donations", alt: "Donations - FreeUKGenealogy" %>
                 </a>
-                <%= advert_code("header", "horz") %>
+                <%#= advert_code("header", "horz") %>
               </div>
               <% unless GdprCountries::FOLLOWED_COUNTRIES.include?(user_location)%>
                 <div class="cookieConsent island island--teal flush--bottom">
@@ -85,7 +100,7 @@
             <% end %>
           <% end %>
         </div>
-      </div>
+      </div-->
     </div>
     <div id="trigger-offcanvas-old">
       <button type="button"  class="site__header__menu-btn">
