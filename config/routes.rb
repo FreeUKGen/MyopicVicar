@@ -455,6 +455,7 @@ MyopicVicar::Application.routes.draw do
   get 'freecen2_places/for_search_form(.:format)', :to => 'freecen2_places#for_search_form', :as => :freecen2_places_for_search_form
   resources :freecen2_places
 
+  resources :freecen2_place_sources
 
   get 'places/:id/approve', :to => 'places#approve', :as => :approve_place
   get 'places/:id/rename', :to => 'places#rename', :as => :rename_place

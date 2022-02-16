@@ -2151,6 +2151,25 @@ crumb :relocate_freecen2_place do |county, place|
   parent :show_freecen2_place, county, place
 end
 
+# ............................................................freecen2_place_sources......................................
+crumb :freecen2_place_sources do
+  link 'Place Sources', freecen2_place_sources_path
+  parent :root
+end
+crumb :show_freecen2_place_source do |freecen2_place_source|
+  link 'Show Source', freecen2_place_source_path(freecen2_place_source)
+  parent :freecen2_place_sources
+end
+crumb :edit_freecen2_place_source do |freecen2_place_source|
+  link 'Edit Source', edit_freecen2_place_source_path(freecen2_place_source)
+  parent :show_freecen2_place_source, freecen2_place_source
+end
+crumb :create_freecen2_place_source do |freecen2_place_source|
+  link 'Create Source', new_freecen2_place_source_path(freecen2_place_source)
+  parent :freecen2_place_sources
+end
+
+
 crumb :search_names_results do |search, search_county|
   link 'Search Place Names Results', search_names_results_freecen2_place_path
   parent :search_names
