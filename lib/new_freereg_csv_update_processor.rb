@@ -299,47 +299,60 @@ class CsvFile < CsvFiles
 
   def a_single_csv_file_process(project)
     #p "single csv file"
-    success = true
-    project.member_message_file = self.define_member_message_file
-    @file_start = Time.new
-    p "FREEREG:CSV_PROCESSING: Started on the file #{@header[:file_name]} for #{@header[:userid]} at #{@file_start}"
-    project.write_log_file("******************************************************************* <br>")
-    project.write_messages_to_all("Started on the file #{@header[:file_name]} for #{@header[:userid]} at #{@file_start}. <p>", true)
-    success, message = self.ensure_processable?(project) unless project.force_rebuild
-    #p "finished file checking #{message}. <br>"
-    return false, message unless success
+    begin
+      success = true
+      project.member_message_file = self.define_member_message_file
+      @file_start = Time.new
+      p "FREEREG:CSV_PROCESSING: Started on the file #{@header[:file_name]} for #{@header[:userid]} at #{@file_start}"
+      project.write_log_file("******************************************************************* <br>")
+      project.write_messages_to_all("Started on the file #{@header[:file_name]} for #{@header[:userid]} at #{@file_start}. <p>", true)
+      success, message = self.ensure_processable?(project) unless project.force_rebuild
+      #p "finished file checking #{message}. <br>"
+      return false, message unless success
 
-    success, message = self.slurp_the_csv_file(project)
-    return [false, message] unless success
+      success, message = self.slurp_the_csv_file(project)
+      return [false, message] unless success
 
-    @csv_records = CsvRecords.new(@array_of_data_lines)
-    success, message = @csv_records.separate_into_header_and_data_lines(self,project)
-    #p "got header and data lines"
-    return [false, "lines not extracted #{message}. <br>"] unless success
+      @csv_records = CsvRecords.new(@array_of_data_lines)
+      success, message = @csv_records.separate_into_header_and_data_lines(self,project)
+      #p "got header and data lines"
+      return [false, "lines not extracted #{message}. <br>"] unless success
 
-    success, message = @csv_records.get_the_file_information_from_the_headers(self,project)
-    #p "finished header"
-    return [success,"header errors"] unless success
+      success, message = @csv_records.get_the_file_information_from_the_headers(self,project)
+      #p "finished header"
+      return [success,"header errors"] unless success
 
-    success,@records_processed = @csv_records.extract_the_data(self,project)
-    #p "finished data"
-    return [success,"Data not extracted #{@records_processed}. <br>"] unless success
+      success,@records_processed = @csv_records.extract_the_data(self,project)
+      #p "finished data"
+      return [success,"Data not extracted #{@records_processed}. <br>"] unless success
 
-    success,@records_processed,@data_errors = self.process_the_data(project) if success
-    return [success,"Data not processed #{@records_processed}. <br>"] unless success
+      success,@records_processed,@data_errors = self.process_the_data(project) if success
+      return [success,"Data not processed #{@records_processed}. <br>"] unless success
 
-    success, message = self.clean_up_supporting_information(project)
-    #p "finished clean up"
-    records = @total_records
-    time = ((Time.new.to_i  - @file_start.to_i)*1000) / records unless records == 0
-    project.write_messages_to_all("Created  #{@total_records} entries at an average time of #{time}ms per record at #{Time.new}. <br>",true)
-    return [success,"clean up failed #{message}. <br>"] unless success
+      success, message = self.clean_up_supporting_information(project)
+      #p "finished clean up"
+      records = @total_records
+      time = ((Time.new.to_i  - @file_start.to_i)*1000) / records unless records == 0
+      project.write_messages_to_all("Created  #{@total_records} entries at an average time of #{time}ms per record at #{Time.new}. <br>",true)
+      return [success,"clean up failed #{message}. <br>"] unless success
 
-    success, message = self.communicate_file_processing_results(project)
-    #p "finished com"
-    return [success,"communication failed #{message}. <br>"] unless success
+      success, message = self.communicate_file_processing_results(project)
+      #p "finished com"
+      return [success,"communication failed #{message}. <br>"] unless success
 
-    [true, @total_records, @total_data_errors]
+    rescue => e
+
+      project.write_messages_to_all("csv slurp rescue #{e.message}", true)
+      error_message = "#{@userid}\t#{@file_name} *We were unable to process the file possibly due to an invalid structure or character. Please consult the System Administrator*. <br>"
+      project.write_messages_to_all(error_message, true)
+      project.write_log_file("#{e.message}")
+      project.write_log_file("#{e.backtrace.inspect}")
+      success = false
+      message = e.message
+    ensure
+      [success, @total_records, @total_data_errors]
+    end
+
   end
 
   def change_location_for_existing_entry_and_record(existing_record, data_record, project, freereg1_csv_file)
@@ -469,10 +482,7 @@ class CsvFile < CsvFiles
   end
 
   def clean_up_message(project)
-    begin
-      File.delete(project.message_file) if project.type_of_project == "individual" && File.exists?(project.message_file) && !Rails.env.test?
-    rescue
-    end
+    File.delete(project.message_file) if project.type_of_project == "individual" && File.exists?(project.message_file) && !Rails.env.test?
   end
 
   def clean_up_physical_files_after_failure(message)
