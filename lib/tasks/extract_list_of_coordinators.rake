@@ -9,14 +9,14 @@ task :extract_list_of_coordinators, %i[group limit] => :environment do |_t, args
   record_number = 0
   case coordinators
   when 'syndicate'
-    message_file.puts 'Code, Coordinator Userid, Description, Notes, Previous Coordinator, Accepting Volunteers'
+    message_file.puts 'Code, Coordinator Userid, Description, Previous Coordinator, Notes, Accepting Volunteers'
     Syndicate.order_by(syndicate_code: 1).each do |syndicate|
       message_file.puts "#{syndicate.syndicate_code},#{syndicate.syndicate_coordinator},#{syndicate.syndicate_description},#{syndicate.previous_syndicate_coordinator},#{syndicate.syndicate_notes},#{syndicate.accepting_transcribers}"
       record_number += 1
       break if record_number >= limit
     end
   when 'county'
-    message_file.puts 'Code, Coordinator Userid, Description, Notes, Previous Coordinator'
+    message_file.puts 'Code, Coordinator Userid, Description, Previous Coordinator, Notes '
     County.order_by(chapman_code: 1).each do |county|
       message_file.puts "#{county.chapman_code},#{county.county_coordinator},#{county.county_description},#{county.previous_county_coordinator},#{county.county_notes}"
       record_number += 1
