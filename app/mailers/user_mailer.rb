@@ -572,7 +572,7 @@ class UserMailer < ActionMailer::Base
   def sndmanager_email_lookup
     sndmanger = UseridDetail.userid('SNDManager').first
     if sndmanger.present?
-      friendly_email = "#{sndmager.person_forename} #{sndmager.person_surname} <#{sndmager.email_address}>"
+      friendly_email = "#{sndmanger.person_forename} #{sndmanger.person_surname} <#{sndmanger.email_address}>"
       [sndmanger, friendly_email]
 
     else
