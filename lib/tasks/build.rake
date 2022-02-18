@@ -581,6 +581,8 @@ namespace :build do
     rescue Exception => msg
       p "rescue"
       p msg
+      p msg.message
+      p "#{msg.backtrace.inspect}"
       p "FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
       FileUtils.rm(rake_lock_file, :force => true) if rake_lock_file.present? && File.exist?(rake_lock_file)
       p "Still there" if rake_lock_file.present? && File.exist?(rake_lock_file)
