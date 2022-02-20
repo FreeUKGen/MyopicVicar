@@ -42,7 +42,7 @@ class NewFreeregCsvUpdateProcessor
 
   #:message_file is the log file where system and processing messages are written
   attr_accessor :freereg_files_directory,:create_search_records,:type_of_project,:force_rebuild,
-    :file_range,:message_file,:member_message_file,:project_start_time,:total_records, :total_files,:total_data_errors
+    :file_range,:message_file,:member_message_file,:project_start_time,:total_records, :total_files,:total_data_errors, :records_processed, :success
 
   def initialize(arg1,arg2,arg3,arg4,arg5,arg6)
     @create_search_records = arg2
@@ -60,7 +60,7 @@ class NewFreeregCsvUpdateProcessor
 
   def self.activate_project(create_search_records,type,force,range)
     force, create_search_records = NewFreeregCsvUpdateProcessor.convert_to_bolean(create_search_records,force)
-    @project =  NewFreeregCsvUpdateProcessor.new(Rails.application.config.datafiles,create_search_records,type,force,range,Time.new)
+    @project = NewFreeregCsvUpdateProcessor.new(Rails.application.config.datafiles,create_search_records,type,force,range,Time.new)
     @project.write_log_file("Started csv file processor project. #{@project.inspect} using website #{Rails.application.config.website}. <br>")
     @csvfiles = CsvFiles.new
     success, files_to_be_processed = @csvfiles.get_the_files_to_be_processed(@project)
@@ -71,15 +71,28 @@ class NewFreeregCsvUpdateProcessor
     @project.write_log_file("#{files_to_be_processed.length}\t files selected for processing. <br>")
     files_to_be_processed.each do |file|
       @csvfile = CsvFile.new(file)
-      success, @records_processed, @data_errors = @csvfile.a_single_csv_file_process(@project)
-      if success
-        #p "processed file"
+      @success, @records_processed, @data_errors = @csvfile.a_single_csv_file_process(@project)
+      p 'result'
+      p @success
+      p @csvfile.success
+      p @total_records
+      p @total_data_errors
+      p  @records_processed
+      p @csvfile.total_records
+
+      if @success
+        p "processed file"
         @project.total_records = @project.total_records + @records_processed unless @records_processed.nil?
-        @project.total_data_errors = @project.total_data_errors + data_errors unless @data_errors
+        @project.total_data_errors = @project.total_data_errors + @data_errors if @data_errors.present?
         @project.total_files += 1
       else
-        @csvfile.clean_up_physical_files_after_failure(@records_processed)
-        @csvfile.communicate_failure_to_member(@project, @records_processed)
+        p 'failure'
+        p  @csvfile
+
+        @csvfile.clean_up_physical_files_after_failure(@csvfile.total_records)
+        p 'general_communication_coordinator'
+        @csvfile.communicate_failure_to_member(@project, @csvfile.total_records)
+        @project.total_files += 1
         #@project.communicate_to_managers(@csvfile) if @project.type_of_project == "individual"
       end
       sleep(100) if Rails.env.production?
@@ -254,7 +267,7 @@ class CsvFile < CsvFiles
 
   attr_accessor :header, :list_of_registers, :header_error, :system_error, :data_hold,
     :array_of_data_lines, :default_charset, :file, :file_name, :userid, :uploaded_date, :slurp_fail_message,
-    :file_start, :file_locations, :data, :unique_locations, :unique_existing_locations,
+    :file_start, :file_locations, :data, :unique_locations, :unique_existing_locations, :success,
     :all_existing_records, :total_files, :total_records, :total_data_errors, :total_header_errors, :place_id, :uploaded_file_is_flexible_format
   def initialize(file)
     standalone_filename = File.basename(file)
@@ -300,59 +313,61 @@ class CsvFile < CsvFiles
   def a_single_csv_file_process(project)
     #p "single csv file"
     begin
-      success = true
+      @success = true
       project.member_message_file = self.define_member_message_file
       @file_start = Time.new
       p "FREEREG:CSV_PROCESSING: Started on the file #{@header[:file_name]} for #{@header[:userid]} at #{@file_start}"
       project.write_log_file("******************************************************************* <br>")
       project.write_messages_to_all("Started on the file #{@header[:file_name]} for #{@header[:userid]} at #{@file_start}. <p>", true)
-      success, message = self.ensure_processable?(project) unless project.force_rebuild
+      @success, message = self.ensure_processable?(project) unless project.force_rebuild
       #p "finished file checking #{message}. <br>"
-      return false, message unless success
+      return false, message unless @success
 
-      success, message = self.slurp_the_csv_file(project)
-      return [false, message] unless success
+      @success, message = self.slurp_the_csv_file(project)
+      return [false, message] unless @success
 
       @csv_records = CsvRecords.new(@array_of_data_lines)
-      success, message = @csv_records.separate_into_header_and_data_lines(self,project)
+      @success, message = @csv_records.separate_into_header_and_data_lines(self,project)
       #p "got header and data lines"
-      return [false, "lines not extracted #{message}. <br>"] unless success
+      return [false, "lines not extracted #{message}. <br>"] unless @success
 
-      success, message = @csv_records.get_the_file_information_from_the_headers(self,project)
+      @success, message = @csv_records.get_the_file_information_from_the_headers(self,project)
       #p "finished header"
-      return [success,"header errors"] unless success
+      return [@success,"header errors"] unless @success
 
-      success,@records_processed = @csv_records.extract_the_data(self,project)
+      @success,@records_processed = @csv_records.extract_the_data(self,project)
       #p "finished data"
-      return [success,"Data not extracted #{@records_processed}. <br>"] unless success
+      return [@success,"Data not extracted #{@records_processed}. <br>"] unless @success
 
-      success,@records_processed,@data_errors = self.process_the_data(project) if success
-      return [success,"Data not processed #{@records_processed}. <br>"] unless success
+      @success, @records_processed, @data_errors = self.process_the_data(project) if @success
+      return [@success,"Data not processed #{@records_processed}. <br>"] unless @success
 
-      success, message = self.clean_up_supporting_information(project)
+      @success, message = self.clean_up_supporting_information(project)
       #p "finished clean up"
       records = @total_records
-      time = ((Time.new.to_i  - @file_start.to_i)*1000) / records unless records == 0
-      project.write_messages_to_all("Created  #{@total_records} entries at an average time of #{time}ms per record at #{Time.new}. <br>",true)
-      return [success,"clean up failed #{message}. <br>"] unless success
+      time = ((Time.new.to_i - @file_start.to_i) * 1000) / records unless records.zero?
+      project.write_messages_to_all("Created  #{@total_records} entries at an average time of #{time}ms per record at #{Time.new}. <br>", true)
+      return [@success, "clean up failed #{message}. <br>"] unless @success
 
-      success, message = self.communicate_file_processing_results(project)
+      @success, message = self.communicate_file_processing_results(project)
       #p "finished com"
-      return [success,"communication failed #{message}. <br>"] unless success
+      return [@success, "communication failed #{message}. <br>"] unless @success
 
     rescue => e
-
-      project.write_messages_to_all("csv slurp rescue #{e.message}", true)
-      error_message = "#{@userid}\t#{@file_name} *We were unable to process the file possibly due to an invalid structure or character. Please consult the System Administrator*. <br>"
+      p "FREEREG:CSV_PROCESSOR_FAILURE: #{e.message}"
+      p "FREEREG:CSV_PROCESSOR_FAILURE: #{e.backtrace.inspect}"
+      error_message = "#{@userid}\t#{@file_name} *We were unable to process the file. Please contact your coordinator or the System Administrator with this message*. <br>"
       project.write_messages_to_all(error_message, true)
+      project.write_messages_to_all("Rescued from crash #{e.message}", true)
       project.write_log_file("#{e.message}")
       project.write_log_file("#{e.backtrace.inspect}")
-      success = false
-      message = e.message
-    ensure
-      [success, @total_records, @total_data_errors]
-    end
+      @success = false
+      @total_records = e.message
+      @total_data_errors = nil
 
+    ensure
+      [@success, @total_records, @total_data_errors]
+    end
   end
 
   def change_location_for_existing_entry_and_record(existing_record, data_record, project, freereg1_csv_file)
@@ -486,9 +501,17 @@ class CsvFile < CsvFiles
   end
 
   def clean_up_physical_files_after_failure(message)
+    p 'clean up'
+    p message
+    p @userid
+    p @file_name
+
     batch = PhysicalFile.userid(@userid).file_name(@file_name).first
     return true if batch.blank? || message.blank?
 
+    p 'clean_up_physical_files_after_failure'
+    p @userid
+    p @file_name
     PhysicalFile.remove_waiting_flag(@userid, @file_name)
     batch.delete if message.include?("header errors") || message.include?("does not exist. ") || message.include?("userid does not exist. ")
   end
@@ -849,31 +872,17 @@ class CsvFile < CsvFiles
   def slurp_the_csv_file(project)
     #p "starting the slurp"
     #read entire .csv as binary text (no encoding/conversion)
-    begin
-      success = true
-      csvtxt = File.open(@file, "rb", :encoding => "ASCII-8BIT:ASCII-8BIT"){|f| f.read}
-      project.write_messages_to_all("Empty file",true) if csvtxt.blank?
-      return false if csvtxt.blank?
+    success = true
+    csvtxt = File.open(@file, "rb", :encoding => "ASCII-8BIT:ASCII-8BIT"){|f| f.read}
+    project.write_messages_to_all("Empty file", true) if csvtxt.blank?
+    return false if csvtxt.blank?
 
-      code,csvtxt = self.determine_if_utf8(csvtxt,project)
-      code = self.get_codeset_from_header(code,csvtxt,project)
-      code, message, csvtxt = self.check_and_set_characterset(code,csvtxt,project)
-      csvtxt = self.standardize_line_endings(csvtxt)
-      success = self.extract_the_array_of_lines(csvtxt)
-    rescue => e
-
-      project.write_messages_to_all("csv slurp rescue #{e.message}", true)
-      error_message = "#{@userid}\t#{@file_name} *We were unable to process the file possibly due to an invalid structure or character. Please consult the System Administrator*. <br>"
-      project.write_messages_to_all(error_message, true)
-      project.write_log_file("#{e.message}")
-      project.write_log_file("#{e.backtrace.inspect}")
-      success = false
-      message = e.message
-    ensure
-      [success, message]
-
-      #we ensure that processing keeps going by dropping out through the bottom
-    end #begin end
+    code, csvtxt = self.determine_if_utf8(csvtxt,project)
+    code = self.get_codeset_from_header(code,csvtxt,project)
+    code, message, csvtxt = self.check_and_set_characterset(code, csvtxt, project)
+    csvtxt = self.standardize_line_endings(csvtxt)
+    success = self.extract_the_array_of_lines(csvtxt)
+    [success, message]
   end
 
   def standardize_line_endings(csvtxt)
@@ -1383,32 +1392,21 @@ class CsvRecord < CsvRecords
   def extract_data_line(csvrecords, csvfile, project, line)
     #p "extracting data line"
     #p "#{line}"
-    begin
-      success, register_location = self.extract_register_location(csvrecords,csvfile,project,line)
-      return false unless success
-      #@current_register_location << register_location unless @current_register_location.include?(register_location)
-      type = csvfile.header[:record_type]
-      case type
-      when RecordType::BAPTISM
-        self.process_baptism_data_fields(csvrecords,csvfile,project,line)
-      when RecordType::BURIAL
-        self.process_burial_data_fields(csvrecords,csvfile,project,line)
-      when RecordType::MARRIAGE
-        self.process_marriage_data_fields(csvrecords,csvfile,project,line)
-      end# end of case
+    success, register_location = self.extract_register_location(csvrecords, csvfile, project, line)
+    return false unless success
 
-    rescue  => e
-      p "FREEREG:CSV_PROCESSOR_FAILURE: #{e.message}"
-      p "FREEREG:CSV_PROCESSOR_FAILURE: #{csvfile.userid} #{csvfile.file_name} at line #{line} crashed the processor. <br>"
-      p "FREEREG:CSV_PROCESSOR_FAILURE: #{e.backtrace.inspect}"
-      project.write_messages_to_all("FREEREG:CSV_PROCESSOR_FAILURE: #{e.message}",false)
-      error_message = "FREEREG:CSV_PROCESSOR_FAILURE: #{csvfile.userid} #{csvfile.file_name} at line #{line} crashed the processor. <br>"
-      project.write_messages_to_all(error_message,true)
-      project.write_log_file("#{e.message}")
-      project.write_log_file("#{e.backtrace.inspect}")
-      success = false
-    end
-    return success
+    #@current_register_location << register_location unless @current_register_location.include?(register_location)
+    type = csvfile.header[:record_type]
+    case type
+    when RecordType::BAPTISM
+      self.process_baptism_data_fields(csvrecords, csvfile, project, line)
+    when RecordType::BURIAL
+      self.process_burial_data_fields(csvrecords, csvfile, project, line)
+    when RecordType::MARRIAGE
+      self.process_marriage_data_fields(csvrecords, csvfile, project, line)
+    end# end of case
+
+    success
   end
   def validate_and_set_register_type(possible_register_type)
     if possible_register_type =~ FreeregOptionsConstants::VALID_REGISTER_TYPES
