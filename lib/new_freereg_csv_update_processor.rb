@@ -489,6 +489,7 @@ class CsvFile < CsvFiles
     return true if batch.blank?
 
     PhysicalFile.remove_waiting_flag(@userid, @file_name)
+    batch.update_attributes(file_processed_date: nil)
     batch.delete if message.include?("header errors") || message.include?("does not exist. ") || message.include?("userid does not exist. ")
   end
 
