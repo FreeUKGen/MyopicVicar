@@ -553,13 +553,17 @@ namespace :build do
       if args.type == 'individual'
         p 'FREEREG:CSV_PROCESSING: starting an individual project'
         NewFreeregCsvUpdateProcessor.activate_project(args.search_record, args.type, args.force, args.range)
-      elsif File.exist?(Rails.root.join('tmp', 'processing_rake_lock_file.txt')) || File.exist?(Rails.root.join('tmp', 'processor_initiation_lock_file.txt'))
-        p 'FREEREG:CSV_PROCESSING: rake lock files already exists. Exiting'
+      elsif File.exist?(Rails.root.join('tmp', 'processing_rake_lock_file.txt'))
+        p 'FREEREG:CSV_PROCESSING: rake lock file already exists. Exiting'
       else
         rake_lock_file = Rails.root.join('tmp/processing_rake_lock_file.txt')
         #set the processor running flag
         @locking_file = File.new(rake_lock_file, 'w')
         p "FREEREG:CSV_PROCESSING: Created rake lock file #{rake_lock_file} and processing files"
+        p 'FREEREG:CSV_PROCESSING: Initiation lock present' if File.exist?(Rails.root.join('tmp/processing_rake_lock_file.txt'))
+        x = File.open(Rails.root.join('tmp/processor_initiation_lock_file.txt'))
+        x.close
+        FileUtils.rm_f(x)
         while PhysicalFile.waiting.exists?
           NewFreeregCsvUpdateProcessor.activate_project(args.search_record, args.type, args.force, args.range)
           sleep(300)
