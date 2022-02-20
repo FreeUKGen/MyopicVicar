@@ -92,6 +92,7 @@ class NewFreeregCsvUpdateProcessor
         @csvfile.clean_up_physical_files_after_failure(@csvfile.total_records)
         p 'general_communication_coordinator'
         @csvfile.communicate_failure_to_member(@project, @csvfile.total_records)
+        communicate_to_managers(@csvfile.total_records)
         @project.total_files += 1
         #@project.communicate_to_managers(@csvfile) if @project.type_of_project == "individual"
       end

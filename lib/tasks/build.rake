@@ -560,10 +560,12 @@ namespace :build do
         #set the processor running flag
         @locking_file = File.new(rake_lock_file, 'w')
         p "FREEREG:CSV_PROCESSING: Created rake lock file #{rake_lock_file} and processing files"
-        p 'FREEREG:CSV_PROCESSING: Initiation lock present' if File.exist?(Rails.root.join('tmp/processing_rake_lock_file.txt'))
-        x = File.open(Rails.root.join('tmp/processor_initiation_lock_file.txt'))
-        x.close
-        FileUtils.rm_f(x)
+        if File.exist?(Rails.root.join('tmp//processor_initiation_lock_file.txt'))
+          p 'FREEREG:CSV_PROCESSING: Initiation lock present'
+          x = File.open(Rails.root.join('tmp/processor_initiation_lock_file.txt'))
+          x.close
+          FileUtils.rm_f(x)
+        end
         while PhysicalFile.waiting.exists?
           NewFreeregCsvUpdateProcessor.activate_project(args.search_record, args.type, args.force, args.range)
           sleep(300)
