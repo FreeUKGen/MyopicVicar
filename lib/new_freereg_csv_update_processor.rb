@@ -72,35 +72,19 @@ class NewFreeregCsvUpdateProcessor
     files_to_be_processed.each do |file|
       @csvfile = CsvFile.new(file)
       @success, @records_processed, @data_errors = @csvfile.a_single_csv_file_process(@project)
-      p 'result'
-      p @success
-      p @csvfile.success
-      p @total_records
-      p @total_data_errors
-      p  @records_processed
-      p @csvfile.total_records
-
       if @success
-        p "processed file"
         @project.total_records = @project.total_records + @records_processed unless @records_processed.nil?
         @project.total_data_errors = @project.total_data_errors + @data_errors if @data_errors.present?
         @project.total_files += 1
       else
-        p 'failure'
-        p  @csvfile
-
         @csvfile.clean_up_physical_files_after_failure(@csvfile.total_records)
-        p 'general_communication_coordinator'
         @csvfile.communicate_failure_to_member(@project, @csvfile.total_records)
-        communicate_to_managers(@csvfile.total_records)
+        #@project.communicate_to_managers(@csvfile.total_records)
         @project.total_files += 1
         #@project.communicate_to_managers(@csvfile) if @project.type_of_project == "individual"
       end
       sleep(100) if Rails.env.production?
     end
-
-    # p "manager communication"
-    #@project.communicate_to_managers(@csvfile) if files_to_be_processed.length >= 2
     at_exit do
       # p "goodbye"
     end
@@ -365,7 +349,6 @@ class CsvFile < CsvFiles
       @success = false
       @total_records = e.message
       @total_data_errors = nil
-
     ensure
       [@success, @total_records, @total_data_errors]
     end
@@ -502,17 +485,9 @@ class CsvFile < CsvFiles
   end
 
   def clean_up_physical_files_after_failure(message)
-    p 'clean up'
-    p message
-    p @userid
-    p @file_name
-
     batch = PhysicalFile.userid(@userid).file_name(@file_name).first
-    return true if batch.blank? || message.blank?
+    return true if batch.blank?
 
-    p 'clean_up_physical_files_after_failure'
-    p @userid
-    p @file_name
     PhysicalFile.remove_waiting_flag(@userid, @file_name)
     batch.delete if message.include?("header errors") || message.include?("does not exist. ") || message.include?("userid does not exist. ")
   end

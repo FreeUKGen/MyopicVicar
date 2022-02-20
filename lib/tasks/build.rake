@@ -579,8 +579,6 @@ namespace :build do
     ensure
       p 'FREEREG:CSV_PROCESSING: removing rake lock file'
       if @locking_file.present?
-        p @locking_file
-        p File.exist?(@locking_file)
         @locking_file.close
         FileUtils.rm_f(@locking_file)
       end
@@ -590,7 +588,6 @@ namespace :build do
         FileUtils.rm_f(x)
       end
       sleep(10)
-      p 'here'
       p 'Processing lock file there' if File.exist?(Rails.root.join('tmp/processing_rake_lock_file.txt'))
       p 'Processor initiation lock file there' if File.exist?(Rails.root.join('tmp/processor_initiation_lock_file.txt'))
     end
@@ -612,34 +609,43 @@ namespace :build do
       elsif args.force == "force_rebuild"
         p "FREEREG:CSV_PROCESSING: starting a force rebuild"
         NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
+      elsif File.exist?(Rails.root.join('tmp', 'processing_rake_lock_file.txt'))
+        p 'FREEREG:CSV_PROCESSING: rake lock file already exists. Exiting'
       else
-        rake_lock_file = File.join(Rails.root,"tmp","processing_rake_lock_file.txt")
-        processor_initiation_lock_file = File.join(Rails.root,"tmp","processor_initiation_lock_file.txt")
-        File.delete(processor_initiation_lock_file) if File.exist?(processor_initiation_lock_file)
-        if rake_lock_file.present? && File.exist?(rake_lock_file)
-          p "FREEREG:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists. Continuing with processing"
-          while PhysicalFile.waiting.exists?
-            NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
-            sleep(300)
-          end
-          p "FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
-          FileUtils.rm(rake_lock_file, :force => true) if rake_lock_file.present? && File.exist?(rake_lock_file)
-        else
-          locking_file = File.new(rake_lock_file, "w")
-          p "FREEREG:CSV_PROCESSING: Created rake lock file #{rake_lock_file} and processing files"
-          while PhysicalFile.waiting.exists?
-            NewFreeregCsvUpdateProcessor.activate_project(args.search_record,args.type,args.force,args.range)
-            sleep(300)
-          end
+        rake_lock_file = Rails.root.join('tmp/processing_rake_lock_file.txt')
+        #set the processor running flag
+        @locking_file = File.new(rake_lock_file, 'w')
+        p "FREEREG:CSV_PROCESSING: Created rake lock file #{rake_lock_file} and processing files"
+        if File.exist?(Rails.root.join('tmp//processor_initiation_lock_file.txt'))
+          p 'FREEREG:CSV_PROCESSING: Initiation lock present'
+          x = File.open(Rails.root.join('tmp/processor_initiation_lock_file.txt'))
+          x.close
+          FileUtils.rm_f(x)
+        end
+        while PhysicalFile.waiting.exists?
+          NewFreeregCsvUpdateProcessor.activate_project(args.search_record, args.type, args.force, args.range)
+          sleep(300)
         end
       end
-      p "FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
-      FileUtils.rm(rake_lock_file, :force => true) if rake_lock_file.present? && File.exist?(rake_lock_file)
     rescue Exception => msg
-      p "rescue"
+      p 'rescue the rake task'
       p msg
-      p "FREEREG:CSV_PROCESSING: removing rake lock file #{rake_lock_file}"
-      FileUtils.rm(rake_lock_file, :force => true) if rake_lock_file.present? && File.exist?(rake_lock_file)
+      p msg.message
+      p "#{msg.backtrace.inspect}"
+    ensure
+      p 'FREEREG:CSV_PROCESSING: removing rake lock file'
+      if @locking_file.present?
+        @locking_file.close
+        FileUtils.rm_f(@locking_file)
+      end
+      if File.exist?(Rails.root.join('tmp/processor_initiation_lock_file.txt'))
+        x = File.open(Rails.root.join('tmp/processor_initiation_lock_file.txt'))
+        x.close
+        FileUtils.rm_f(x)
+      end
+      sleep(10)
+      p 'Processing lock file there' if File.exist?(Rails.root.join('tmp/processing_rake_lock_file.txt'))
+      p 'Processor initiation lock file there' if File.exist?(Rails.root.join('tmp/processor_initiation_lock_file.txt'))
     end
   end
 
