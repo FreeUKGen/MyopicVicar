@@ -78,15 +78,15 @@
         <div class="grid__item one-eighth lap-one-fifth palm-one-third" >
           
         </div>
-        <div class="grid__item seven-eighths lap-five-sixths palm-three-quarters">
+        <div class="grid__item seven-eighths lap-five-sixths palm-three-quarters"-->
           <% unless device_type == :mobile %>
             <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found') || current_page?('/cms/refinery/users/login')%>
-              <div class="bnner-horz bmd_adsense header_ad">
+              <!--div class="bnner-horz bmd_adsense header_ad">
                 <a href="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/">
                   <%#= image_tag 'png/header-donate.png',  class: "donations", alt: "Donations - FreeUKGenealogy" %>
                 </a>
                 <%#= advert_code("header", "horz") %>
-              </div>
+              </div-->
               <% unless GdprCountries::FOLLOWED_COUNTRIES.include?(user_location)%>
                 <div class="cookieConsent island island--teal flush--bottom">
                   <div id="cookieText" >
@@ -100,7 +100,7 @@
             <% end %>
           <% end %>
         </div>
-      </div-->
+      <!--/div-->
     </div>
     <div id="trigger-offcanvas-old">
       <button type="button"  class="site__header__menu-btn">
