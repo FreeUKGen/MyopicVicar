@@ -120,15 +120,15 @@ class BestGuess < FreebmdDbBase
   end
 
   def uniq_scanlists
-    scanlists.uniq[0..5] if scanlists.exists?
+    scanlists.uniq[0..5] if scanlists.present?
   end
 
   def record_accessions
-    get_rec_links.pluck(:AccessionNumber) if get_rec_links.exists?
+    get_rec_links.pluck(:AccessionNumber) if get_rec_links.present?
   end
 
   def record_sequence_number
-    get_rec_links.pluck(:SequenceNumber) if get_rec_links.exists?
+    get_rec_links.pluck(:SequenceNumber) if get_rec_links.present?
   end
 
   def get_comments
@@ -189,12 +189,12 @@ class BestGuess < FreebmdDbBase
   end
 
   def combined_scans
-    scans = page_scans if page_scans.exists?
-    unless page_scans.exists?
-      if series_scans.exists? && filename_scans.exists?
+    scans = page_scans if page_scans.present?
+    unless page_scans.present?
+      if series_scans.present? && filename_scans.present?
         scans = series_scans + filename_scans
-      elsif series_scans.exists? && !filename_scans.exists?
-        scans = series_scans if series_scans.exists?
+      elsif series_scans.present? && !filename_scans.present?
+        scans = series_scans if series_scans.present?
       else 
         scans =  filename_scans
       end
@@ -207,28 +207,28 @@ class BestGuess < FreebmdDbBase
   end
 
   def non_implied_scans
-    all_scans.where('ImagePage.Implied' => 0) if all_scans.exists?
+    all_scans.where('ImagePage.Implied' => 0) if all_scans.present?
   end
 
   def scan_with_range
-    non_implied_scans.reject{|s| s.Range = ""} if non_implied_scans.exists?
+    non_implied_scans.reject{|s| s.Range = ""} if non_implied_scans.present?
   end
 
   def best_probable_scans
     surname_start_letter = self.Surname[0].upcase
     non_implied_scans.select{|scan|
-      if scan.StartLetters.exists? && scan.EndLetters.exists?
+      if scan.StartLetters.present? && scan.EndLetters.present?
         (scan.StartLetters.upcase..scan.EndLetters.upcase).include?(surname_start_letter)
-      elsif scan.range.StartLetters.exists? && scan.range.EndLetters.exists?
+      elsif scan.range.StartLetters.present? && scan.range.EndLetters.present?
         (scan.range.StartLetters.upcase..scan.range.EndLetters.upcase).include?(surname_start_letter)
       else
       end
-    } if non_implied_scans.exists?
+    } if non_implied_scans.present?
   end
 
   def scans_with_out_file_character_check
     if best_probable_scans.to_a.count < 3
-      non_implied_scans.all if non_implied_scans.exists?
+      non_implied_scans.all if non_implied_scans.present?
     end
   end
 
@@ -237,19 +237,19 @@ class BestGuess < FreebmdDbBase
   end
 
   def multiple_best_probable_scans
-    unless uniq_scanlists.exists?
-      all_acc_scans.reject{|scan| scan.MultipleFiles = 0 }.uniq[0..6] if all_acc_scans.exists?
+    unless uniq_scanlists.present?
+      all_acc_scans.reject{|scan| scan.MultipleFiles = 0 }.uniq[0..6] if all_acc_scans.present?
     end
   end
 
   def get_non_multiple_scans
-    unless uniq_scanlists.exists?
-      all_acc_scans.select{|scan| scan.MultipleFiles = 0 }.uniq[0..6] if all_acc_scans.exists?
+    unless uniq_scanlists.present?
+      all_acc_scans.select{|scan| scan.MultipleFiles = 0 }.uniq[0..6] if all_acc_scans.present?
     end
   end
 
   def final_acc_scans
-    all_acc_scans unless scanlists.exists?
+    all_acc_scans unless scanlists.present?
   end
 
   def component_images
@@ -350,11 +350,11 @@ class BestGuess < FreebmdDbBase
   end
 
   def district_url_definable
-    get_info_bookmark.exists? && get_info_bookmark != "xxxx"
+    get_info_bookmark.present? && get_info_bookmark != "xxxx"
   end
 
   def district_linkable?
-    valid_district && get_district.exists? && get_district_name.exists? && district_url_definable
+    valid_district && get_district.present? && get_district_name.present? && district_url_definable
   end
 
   def define_url_distict
@@ -368,7 +368,7 @@ class BestGuess < FreebmdDbBase
 
   def event_registration
     submissions = Submission.find_by(AccessionNumber: record_accessions, SequenceNumber: record_sequence_number)
-    submissions.Registered if submissions.exists?
+    submissions.Registered if submissions.present?
   end
 
   def self.get_birth_unique_names birth_records
