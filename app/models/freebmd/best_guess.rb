@@ -30,8 +30,8 @@ class BestGuess < FreebmdDbBase
     # then the record types
     particles << RecordType.display_name(self.RecordTypeID)
     # then county name
-    county_code = self.CountyCombos.County if self.CountyCombos.exists?
-    particles << ChapmanCode.name_from_code(county_code) if county_code.exists?
+    county_code = self.CountyCombos.County if self.CountyCombos.present?
+    particles << ChapmanCode.name_from_code(county_code) if county_code.present?
     # then location
     particles << self.District if self.District
     # then volume
