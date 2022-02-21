@@ -816,7 +816,8 @@ module ApplicationHelper
     <ins class="adsbygoogle adSenseBanner"
       style="display:inline-block;width: #{width}px;height: #{height}px"
       data-ad-client="#{data_ad_client}"
-      data-ad-slot= "#{slot_number(slot_name)}">
+      data-ad-slot= "#{slot_number(slot_name)}"
+      data-full-width-responsive="true">
     </ins>
     <script type="text/javascript">
       (adsbygoogle = window.adsbygoogle || []).push({});
@@ -865,7 +866,8 @@ module ApplicationHelper
     <ins class="adsbygoogle adSenseBanner"
     style="display:inline-block; width: #{width}px;height: #{height}px"
     data-ad-client="#{data_ad_client}"
-    data-ad-slot= "#{slot_number(slot_name)}">
+    data-ad-slot= "#{slot_number(slot_name)}"
+    data-full-width-responsive="true">
     </ins>
     <script type="text/javascript">
     (adsbygoogle = window.adsbygoogle || []).push({});
