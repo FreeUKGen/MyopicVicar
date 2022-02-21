@@ -30,7 +30,12 @@ class Freecen2PlaceSourcesController < ApplicationController
 
   def index
     get_user_info_from_userid
-    @sources = Freecen2PlaceSource.all.order_by(source: 1)
+    sources_array = Freecen2PlaceSource.all.map { |rec| [rec.source, rec.source.downcase] }
+    sources_array_sorted = sources_array.sort_by { |entry| entry[1] }
+    @sources = []
+    sources_array_sorted.each do |entry|
+      @sources << Freecen2PlaceSource.find_by(source: entry[0])
+    end
   end
 
   def new

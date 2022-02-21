@@ -205,10 +205,13 @@ class Freecen2PlacesController < ApplicationController
   end
 
   def get_sources
+    sources_array = Freecen2PlaceSource.all.map { |rec| [rec.source, rec.source.downcase] }
+    sources_array_sorted = sources_array.sort_by { |entry| entry[1] }
     @sources = []
-    Freecen2PlaceSource.all.order_by(source: 1).each do |source|
-      @sources << source.source
+    sources_array_sorted.each do |entry|
+      @sources << entry[0]
     end
+
   end
 
   def load(place_id)
