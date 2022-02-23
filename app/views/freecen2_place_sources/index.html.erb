@@ -1,0 +1,28 @@
+<% breadcrumb :freecen2_place_sources%>
+<h2 class="text--center"> List of Sources for FreeCEN2 Places</h2>
+<div style="text-align: center"><%= link_to 'Create New Source',new_freecen2_place_source_path, method: :get , :class => "btn btn--small"  %></div>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+  </div>
+<% end %>
+<div>
+  <table class=" table--bordered table--data">
+    <% if @sources.present? %>
+      <tr>
+        <th> Source</th>
+        <th colspan = "3">Actions</th>
+      </tr>
+      <% @sources.each do |freecen2_place_source| %>
+        <tr>
+          <td><%= freecen2_place_source.source %></td>
+          <td><%= link_to 'Show', freecen2_place_source_path(freecen2_place_source) %></td>
+          <td><%= edit_freecen2_place_source_link(freecen2_place_source, 'link') %></td>
+          <td><%= destroy_freecen2_place_source_link(freecen2_place_source, 'link') %></td>
+        </tr>
+      <% end %>
+    <% else%>
+      <p class="text--center"> No Freecen2 Place Sources created</p>
+    <% end%>
+  </table>
+</div>
