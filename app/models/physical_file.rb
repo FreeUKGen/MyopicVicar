@@ -61,7 +61,7 @@ class PhysicalFile
     end
     def remove_waiting_flag(id,file)
       batch = PhysicalFile.userid(id).file_name(file).first
-      batch.update_attributes(:waiting_to_be_processed => false, :waiting_date => nil) if batch.present?
+      batch.update_attributes(waiting_to_be_processed: false, waiting_date: nil) if batch.present?
     end
     def remove_base_flag(id,file)
       batch = PhysicalFile.userid(id).file_name(file).first
