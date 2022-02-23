@@ -27,11 +27,16 @@ namespace :freecen do
     message_file = File.new(file_for_warning_messages, 'w')
     p "Starting conversion of #{vld_entry.file_name} in Scs to freecen2 from #{old_place_entry.place_name} in #{old_place_entry.chapman_code} to #{new_place_entry.place_name} in #{new_place_entry.chapman_code} at #{start_time} with fix  #{fixit}"
     message_file.puts "Starting conversion of #{vld_entry.file_name} in Scs to freecen2 from #{old_place_entry.place_name} in #{old_place_entry.chapman_code} to #{new_place_entry.place_name} in #{new_place_entry.chapman_code} at #{start_time} with fix  #{fixit}"
+    p 'vld'
     p vld_entry.inspect
-    p "Current piece #{old_piece_entry.inspect} Current place #{old_place_entry.inspect}"
-    message_file.puts "Current piece #{old_piece_entry.inspect} Current place #{old_place_entry.inspect}"
-    p "Current freecen2 piece #{old_freecen2_piece_entry.inspect} Current freecen2 place #{old_freecen2_place_entry.inspect}"
-    message_file.puts "Current freecen2 piece #{old_freecen2_piece_entry.inspect} Current freecen2 place #{old_freecen2_place_entry.inspect}"
+    p 'Old'
+    p "Old piece #{old_piece_entry.inspect} old place #{old_place_entry.inspect}"
+    message_file.puts "Old piece #{old_piece_entry.inspect} old place #{old_place_entry.inspect}"
+    p "Old freecen2 piece #{old_freecen2_piece_entry.inspect} Old freecen2 place #{old_freecen2_place_entry.inspect}"
+    message_file.puts "Old freecen2 piece #{old_freecen2_piece_entry.inspect} Old freecen2 place #{old_freecen2_place_entry.inspect}"
+    p 'New'
+    p "New freecen2 piece #{new_freecen2_piece_entry.inspect} New freecen2 place #{new_place_entry.inspect}"
+    message_file.puts "New freecen2 piece #{new_freecen2_piece_entry.inspect} New freecen2 place #{new_place_entry.inspect}"
 
     new_freecen2_piece_entry.update_attributes(num_individuals: old_piece_entry.num_individuals, num_dwellings: old_piece_entry.num_dwellings, status: old_piece_entry.status, status_date: old_piece_entry.status_date) if fixit
 
@@ -46,7 +51,6 @@ namespace :freecen do
     p "Dwellings #{FreecenDwelling.where(freecen1_vld_file_id: vld).count}"
     message_file.puts "Dwellings #{FreecenDwelling.where(freecen1_vld_file_id: vld).count}"
     number_of_individuals = 0
-
 
     FreecenDwelling.where(freecen1_vld_file_id: vld).each do |dwelling|
       dwelling.update_attributes(freecen2_piece_id: piece, freecen2_place_id: place) if fixit
