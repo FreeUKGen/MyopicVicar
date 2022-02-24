@@ -42,11 +42,11 @@ namespace :freecen do
 
     old_freecen2_piece_entry.update_attributes(freecen2_place_id: place, num_individuals: nil, num_dwellings: nil, status: nil, status_date: nil) if fixit
 
-    old_freecen2_place_entry.update_data_present_after_vld_delete(old_freecen2_piece_entry) if fixit
-
     new_place_entry.update_data_present(new_freecen2_piece_entry) if fixit
 
     vld_entry.update_attributes(freecen2_piece_id: piece, freecen2_place_id: place, freecen2_district_id: district) if fixit
+
+    old_freecen2_place_entry.update_data_present_after_vld_delete(old_freecen2_piece_entry) if fixit
 
     p "Dwellings #{FreecenDwelling.where(freecen1_vld_file_id: vld).count}"
     message_file.puts "Dwellings #{FreecenDwelling.where(freecen1_vld_file_id: vld).count}"
@@ -64,7 +64,7 @@ namespace :freecen do
     p "Individuals #{number_of_individuals}"
     message_file.puts "Individuals #{number_of_individuals}"
     Freecen2PlaceCache.refresh(new_place_entry.chapman_code) if fixit
-    Freecen2PlaceCache.refresh(old_place_entry.chapman_code) if fixit
+    Freecen2PlaceCache.refresh(old_frecen2_place_entry.chapman_code) if fixit
     running_time = Time.now - start_time
     message = 'Finished' if message.blank?
     message_file.puts "#{message} after #{running_time}"
