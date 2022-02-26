@@ -1,6 +1,8 @@
 namespace :freecen do
-  desc 'converts freecen2 place linkages'
-  task :convert_scs_to_freecen2, %i[vld district piece place fix] => :environment do |_t, args|
+  desc 'converts vld to new freecen2 linkages'
+  task :convert_vld_to_new_freecen2_linkage, %i[vld district piece place fix] => :environment do |_t, args|
+    # this task moves a vld file and and all its linkages to a new district, piece and place
+    # was used to move incorrectly linked vlds in SCS
     # Print the time before start the process
     start_time = Time.now
     fixit = args.fix.to_s == 'Y'
