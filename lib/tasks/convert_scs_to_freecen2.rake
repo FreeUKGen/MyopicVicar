@@ -64,7 +64,7 @@ namespace :freecen do
     p "Individuals #{number_of_individuals}"
     message_file.puts "Individuals #{number_of_individuals}"
     Freecen2PlaceCache.refresh(new_place_entry.chapman_code) if fixit
-    Freecen2PlaceCache.refresh(old_frecen2_place_entry.chapman_code) if fixit
+    Freecen2PlaceCache.refresh(old_freecen2_place_entry.chapman_code) if fixit
     running_time = Time.now - start_time
     message = 'Finished' if message.blank?
     message_file.puts "#{message} after #{running_time}"

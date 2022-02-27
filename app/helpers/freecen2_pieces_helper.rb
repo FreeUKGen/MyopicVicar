@@ -87,7 +87,7 @@ module Freecen2PiecesHelper
 
   def piece_status(piece)
     if piece.status.present?
-      status = piece.status_date.to_datetime.present? ? piece.status + " (" + piece.status_date.to_datetime.strftime("%d/%b/%Y %R") + ")" : piece.status
+      status = piece.status_date.present? ? piece.status + " (" + piece.status_date.to_datetime.strftime("%d/%b/%Y %R") + ")" : piece.status
     end
   end
 
