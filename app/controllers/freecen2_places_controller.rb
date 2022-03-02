@@ -211,7 +211,6 @@ class Freecen2PlacesController < ApplicationController
     sources_array_sorted.each do |entry|
       @sources << entry[0]
     end
-
   end
 
   def load(place_id)
@@ -385,6 +384,18 @@ class Freecen2PlacesController < ApplicationController
         flash[:notice] = 'The valid Website for Place Source is required'
         get_reasons
         get_sources
+        render action: 'edit'
+        return
+      end
+
+      error_message = @place.check_alternate_names(params[:freecen2_place][:alternate_freecen2_place_names_attributes], @place.chapman_code, params[:freecen2_place][:place_name])
+      unless error_message == 'None'
+        flash[:notice] = error_message
+        get_reasons
+        get_sources
+        @place.alternate_freecen2_place_names.build
+        @place.alternate_freecen2_place_names.build
+        @place.alternate_freecen2_place_names.build
         render action: 'edit'
         return
       end
