@@ -12,6 +12,7 @@
           <th class="t40 caps">Statistic</th>
           <th class="t30 caps">All Members</th>
           <th class="t30 caps">Transcribers</th>
+          <th class="t30 caps">Timeline</th>
         </tr>
         <tr>
           <td style="font-weight: bold;">Total numbers</td>
@@ -86,6 +87,7 @@
           <td style="font-weight: bold;">Number of transcribers uploaded file in last 3 months</td>
           <td >--</td>
           <td><%= @number_of_transcribers_recently_uploaded_file %></td>
+          <td><%= select_tag "timeline in months", options_for_select([3, 6, 12, 36, 60], 3)%></td>
         </tr>
         <tr>
           <td style="font-weight: bold;">New Registrations (last 30 days) </td>
@@ -96,6 +98,13 @@
           <td style="font-weight: bold;">New Registrations (last 90 days) </td>
           <td ><%= @new_users_last_90_days %></td>
           <td>--</td>
+        </tr>
+        <tr>
+          <% if appname_downcase == 'freereg'%>
+            <td style="font-weight: bold;">Image groups available for allocation</td>
+            <td ><%= @images_groups_unallocated %></td>
+            <td>--</td>
+          <% end %>
         </tr>
       </table>
     </div>
