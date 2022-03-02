@@ -77,8 +77,8 @@ class NewFreeregCsvUpdateProcessor
         @project.total_data_errors = @project.total_data_errors + @data_errors if @data_errors.present?
         @project.total_files += 1
       else
-        @csvfile.clean_up_physical_files_after_failure(@csvfile.total_records)
-        @csvfile.communicate_failure_to_member(@project, @csvfile.total_records)
+        @csvfile.clean_up_physical_files_after_failure(@records_processed)
+        @csvfile.communicate_failure_to_member(@project,@records_processed)
         #@project.communicate_to_managers(@csvfile.total_records)
         @project.total_files += 1
         #@project.communicate_to_managers(@csvfile) if @project.type_of_project == "individual"
