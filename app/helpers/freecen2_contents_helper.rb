@@ -1,11 +1,17 @@
 module Freecen2ContentsHelper
   def contents_check_for_partials(piece_ids, pieces_online)
     partial_flag = ''
-    piece_ids.each do |piece_id|
-      partial_flag = '*' if Freecen2Piece.find_by(id: piece_id, status: 'Part').present?
-      break if partial_flag == '*'
+    # if piece_ids.blank? || pieces_online.blank?
+    if piece_ids.blank?
+      display_val = '0'
+    else
+      piece_ids.each do |piece_id|
+        partial_flag = '*' if Freecen2Piece.find_by(id: piece_id, status: 'Part').present?
+        break if partial_flag == '*'
+      end
+      display_val = pieces_online.to_s + partial_flag
     end
-    content_tag(:td, pieces_online.to_s + partial_flag)
+    content_tag(:td, display_val)
   end
 
   def contents_show_percentage(pieces_online, pieces)
