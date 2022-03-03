@@ -570,6 +570,11 @@ namespace :build do
           NewFreeregCsvUpdateProcessor.activate_project(args.search_record, args.type, args.force, args.range)
           sleep(300)
         end
+        p 'FREEREG:CSV_PROCESSING: removing rake lock file'
+        if @locking_file.present?
+          @locking_file.close
+          FileUtils.rm_f(@locking_file)
+        end
       end
     rescue Exception => msg
       p 'FREEREG:CSV_PROCESSING: rescue the rake task'
