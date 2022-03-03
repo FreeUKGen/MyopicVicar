@@ -85,9 +85,6 @@ class NewFreeregCsvUpdateProcessor
       end
       sleep(100) if Rails.env.production?
     end
-    at_exit do
-      # p "goodbye"
-    end
   end
 
   def self.delete_all
