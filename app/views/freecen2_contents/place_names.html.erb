@@ -9,7 +9,7 @@
     <%= county_index_link(@county_description, @place_description) %>
     <%= link_to 'Back to Records for ' + @place_description, freecen2_contents_place_index_path(:county_description => @county_description, :place_description => @place_description), class: "btn btn--small", method: :get %>
   <% end %><br>
-  <p><i>(You may find it useful to use your browser find option to search for critical parts of names)</i></p>
+  <p><small>Note: You may find it useful to use your browser find option to search for critical parts of names</small></p>
 </div>
 <div class="island island--bordered text--center">
   <%= form_with url: freecen2_contents_place_names_path do |f| %>
@@ -51,53 +51,51 @@
   </p>
 </div>
 <div class="island  island--light text--center">
-  <fieldset class="inputs" style="border-style: none;">
-    <% if @first_letter != 'All' %>
-      <% if @first_letter != 'Remainder' %>
-        <legend style="text-align: center">
-          <h4><%= @name_type %> Starting with <%= @first_letter%> : <%= @unique_names[@first_letter].count%></h4>
-        </legend>
-      <% else %>
-        <legend style="text-align: center">
-          <h4>Additional Names : <%= @remainder.count%></h4>
-        </legend>
-      <% end %>
+  <% if @first_letter != 'All' %>
+    <% if @first_letter != 'Remainder' %>
+      <div style="text-align: center">
+        <h4><%= @name_type %> Starting with <%= @first_letter%> : <%= @unique_names[@first_letter].count%></h4>
+      </div>
     <% else %>
-      <legend style="text-align: center">
-        <h4>All <%= @name_type %></h4>
-      </legend>
+      <div style="text-align: center">
+        <h4>Additional Names : <%= @remainder.count%></h4>
+      </div>
     <% end %>
-    <nl>
-      <li class="grid" >
-        <% if @first_letter != 'All' %>
-          <% if @first_letter != 'Remainder' %>
-            <p>
-              <% @unique_names[@first_letter].each do |name| %>
-                <%= name %>&emsp;&nbsp;
-              <% end %>
-            <% else %>
-              <% @remainder.each do |name| %>
-                <%= name %>&emsp;&nbsp;
-              <% end %>
+  <% else %>
+    <div style="text-align: center">
+      <h4>All <%= @name_type %></h4>
+    </div>
+  <% end %>
+  <nl>
+    <li class="grid" >
+      <% if @first_letter != 'All' %>
+        <% if @first_letter != 'Remainder' %>
+          <p>
+            <% @unique_names[@first_letter].each do |name| %>
+              <%= name %>&emsp;&nbsp;
             <% end %>
           <% else %>
-            <% ("A".."Z").each do |letter| %>
-              <p><b><%= letter%></b></p>
-              <p>
-                <% @unique_names[letter].each do |name| %>
-                  <%= name %>&emsp;&nbsp;
-                <% end %>
-              </p>
-            <% end%>
-            <p><b> Additional Names</b></p>
+            <% @remainder.each do |name| %>
+              <%= name %>&emsp;&nbsp;
+            <% end %>
+          <% end %>
+        <% else %>
+          <% ("A".."Z").each do |letter| %>
+            <p><b><%= letter%></b></p>
             <p>
-              <% @remainder.each do |name| %>
+              <% @unique_names[letter].each do |name| %>
                 <%= name %>&emsp;&nbsp;
               <% end %>
+            </p>
+          <% end%>
+          <p><b> Additional Names</b></p>
+          <p>
+            <% @remainder.each do |name| %>
+              <%= name %>&emsp;&nbsp;
             <% end %>
-          </p>
-        </li>
-      </nl>
-    </fieldset>
+          <% end %>
+        </p>
+      </li>
+    </nl>
   </div>
   <br />

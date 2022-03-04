@@ -5,14 +5,16 @@
   <%= county_index_link(@county_description, @place_description) %>
   <%= locate_place_link(@place_id, 'small') %>
   <p></p>
-  <p><i>Where applicable you can use the Action buttons to view a list of Pieces (including Civil Parish names) and/or a list of Names (surnames/forenames)<br>
-      Note: A * next to the number of Pieces Online indicates that only part of one or more pieces is currently online - use View Pieces to see details</i></p>
+  <p><small>Where applicable you can use the Action buttons to view a list of Pieces (including Civil Parish names) and/or a list of Names (surnames/forenames)<br>
+      Note: A * next to the number of Pieces Online indicates that only part of one or more pieces is currently online<br>
+      Use View Pieces to see details</small></p>
 </div>
 <div class='scrollable'>
   <table  class="table--bordered table--data table--striped my-width " >
+    <caption class="accessibility">The first column is the census year. The other columns give the number of Records online, the number of Pieces online, the total number of Pieces for the year, the percentage of these that are online and the number of Pieces added in the last 30 days.</caption>
     <thead >
       <tr>
-        <th class='sticky-header'>Year</th>
+        <th scope="row" class='sticky-header'>Year</th>
         <th class='sticky-header'>Records Online</th>
         <th class='sticky-header'>Pieces Online</th>
         <th class='sticky-header'>Total Pieces</th>
@@ -56,7 +58,7 @@
         </tr>
       <% end %>
       <tr>
-        <td>Total</td>
+        <td scope="row">Totals</td>
         <td><%= @freecen2_contents.records[@chapman_code][@key_place][:total][:records_online] %></td>
         <%= contents_check_for_partials(@freecen2_contents.records[@chapman_code][@key_place][:total][:piece_ids], @freecen2_contents.records[@chapman_code][@key_place][:total][:pieces_online]) %>
         <td><%= @freecen2_contents.records[@chapman_code][@key_place][:total][:pieces] %></td>

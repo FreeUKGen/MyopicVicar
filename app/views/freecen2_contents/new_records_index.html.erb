@@ -17,10 +17,18 @@
 <p></p>
 <div class='scrollable'>
   <table  class="table--bordered table--data table--striped my-width " >
-    <thead >
+     <% if @additions_county == 'All' %>
+    <caption class="accessibility">The first column is the County. The other columns give Place name, the census year, the number of records added in the last 30 days and links to view a list of Pieces or Names for the Place.</caption>
+    <% else %>
+    <caption class="accessibility">The first column is the PLace name. The other columns give the census year, the number of records added in the last 30 days and links to view a list of Pieces or Names for the Place.</caption>
+      <% end %>
+    <thead>
       <tr>
         <% if @additions_county == 'All' %>
-          <th class='sticky-header'>County</th>
+          <th scope="row" class='sticky-header'>County</th>
+          <th class='sticky-header'>Place</th>
+          <% else %>
+          <th scope="row" class='sticky-header'>Place</th>
         <% end %>
         <th class='sticky-header'>Place</th>
         <th class='sticky-header'>Year</th>
