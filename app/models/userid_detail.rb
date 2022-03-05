@@ -718,8 +718,8 @@ class UseridDetail
     end
   end
 
-  def self.number_of_transcribers_uploaded_file_recently
-    user_role_transcriber.where(last_upload: {'$gt': 3.months.ago}).count
+  def self.number_of_transcribers_uploaded_file_recently(month)
+    user_role_transcriber.where(last_upload: {'$gt': month.months.ago}).count
   end
 
   def self.return_percentage_all_users_accepted_transcriber_agreement
