@@ -45,7 +45,11 @@ class Freecen2ContentsController < ApplicationController
   end
 
   def place_index
+    redirect_back(fallback_location: freecen2_contents_path, notice: 'County not found') && return if !session[:contents_county_description].presence
+
     redirect_back(fallback_location: freecen2_contents_path, notice: 'County not found') && return if set_county_vars == false
+
+    redirect_back(fallback_location: freecen2_contents_path, notice: 'Place not found') && return if !session[:contents_place_description].presence
 
     @place_description = params[:place_description].presence || session[:contents_place_description]
     if @place_description.blank?
@@ -62,6 +66,10 @@ class Freecen2ContentsController < ApplicationController
   end
 
   def piece_index_setup(order_by_for_total, order_by_for_year)
+    redirect_to(freecen2_contents_path, notice: 'Census Year not found') && return if !params[:census_year].presence || params[:census_year].blank?
+
+    redirect_to(freecen2_contents_path, notice: 'Place not found') && return if !params[:place_description].presence || params[:place_description].blank?
+
     @census = params[:census_year]
     @place_description = params[:place_description]
     if @place_description != 'all'
@@ -91,6 +99,8 @@ class Freecen2ContentsController < ApplicationController
   end
 
   def display_pieces_by_status
+    redirect_back(fallback_location: freecen2_contents_path, notice: 'County not found') && return if session[:contents_county_description].blank? && params[:county_description].blank?
+
     redirect_to(freecen2_contents_path, notice: 'County not found') && return if set_county_vars == false
 
     if params[:census_year].blank? || params[:place_description].blank? || (params[:place_description] != 'all' && params[:place_id].blank?)
@@ -107,6 +117,8 @@ class Freecen2ContentsController < ApplicationController
   end
 
   def display_pieces_by_name
+    redirect_back(fallback_location: freecen2_contents_path, notice: 'County not found') && return if session[:contents_county_description].blank? && params[:county_description].blank?
+
     redirect_to(freecen2_contents_path, notice: 'County not found') && return if set_county_vars == false
 
     if params[:census_year].blank? || params[:place_description].blank? || (params[:place_description] != 'all' && params[:place_id].blank?)
@@ -123,6 +135,8 @@ class Freecen2ContentsController < ApplicationController
   end
 
   def display_pieces_by_number
+    redirect_back(fallback_location: freecen2_contents_path, notice: 'County not found') && return if session[:contents_county_description].blank? && params[:county_description].blank?
+
     redirect_to(freecen2_contents_path, notice: 'County not found') && return if set_county_vars == false
 
     if params[:census_year].blank? || params[:place_description].blank? || (params[:place_description] != 'all' && params[:place_id].blank?)
@@ -139,7 +153,13 @@ class Freecen2ContentsController < ApplicationController
   end
 
   def place_names
+    redirect_back(fallback_location: freecen2_contents_path, notice: 'County not found') && return if session[:contents_county_description].blank? && params[:county_description].blank?
+
     redirect_back(fallback_location: freecen2_contents_path, notice: 'County not found') && return if set_county_vars == false
+
+    if !params[:census_year].presence || !params[:place_description].presence
+      redirect_back(fallback_location: freecen2_contents_path, notice: 'Names not found') && return
+    end
 
     if params[:census_year].blank? || params[:place_description].blank?
       redirect_back(fallback_location: freecen2_contents_path, notice: 'Names not found') && return
